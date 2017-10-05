@@ -1,0 +1,31 @@
+/* ------------------------------------*\
+    $ICONS
+\*------------------------------------ */
+.icon {
+  display: inline-block;
+}
+
+.icon--xs {
+  width: $icon-xsmall;
+  height: $icon-xsmall;
+}
+
+.icon--s {
+  width: $icon-small;
+  height: $icon-small;
+}
+
+.icon--m {
+  width: $icon-medium;
+  height: $icon-medium;
+}
+
+.icon--l {
+  width: $icon-large;
+  height: $icon-large;
+}
+
+.icon--xl {
+  width: $icon-xlarge;
+  height: $icon-xlarge;
+}

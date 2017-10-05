@@ -1,0 +1,42 @@
+/* ------------------------------------*\
+    $TEXT ELEMENTS
+\*------------------------------------ */
+
+/**
+ * Abstracted paragraphs
+ */
+p,
+ul,
+ol,
+dt,
+dd,
+pre {
+  @include p;
+}
+
+/**
+ * Bold
+ */
+b,
+strong {
+  font-weight: 700;
+}
+
+/**
+ * Horizontal Rule
+ */
+hr {
+  height: 1px;
+  border: none;
+  background-color: $border-color;
+
+  @include center-block;
+}
+
+/**
+ * Abbreviation
+ */
+abbr {
+  border-bottom: 1px dotted $border-color;
+  cursor: help;
+}

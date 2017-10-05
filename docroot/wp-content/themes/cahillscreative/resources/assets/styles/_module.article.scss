@@ -1,0 +1,186 @@
+/* ------------------------------------*\
+    $ARTICLE
+\*------------------------------------ */
+
+ol,
+ul {
+  .article__body & {
+    margin-left: 0;
+
+    li {
+      list-style: none;
+      padding-left: $pad;
+      text-indent: rem(-10);
+
+      &::before {
+        color: $primary-color;
+        width: rem(10);
+        display: inline-block;
+      }
+
+      li {
+        list-style: none;
+      }
+    }
+  }
+}
+
+ol {
+  .article__body & {
+    counter-reset: item;
+
+    li {
+      &::before {
+        content: counter(item) ". ";
+        counter-increment: item;
+      }
+
+      li {
+        counter-reset: item;
+
+        &::before {
+          content: "\002010";
+        }
+      }
+    }
+  }
+}
+
+ul {
+  .article__body & {
+    li {
+      &::before {
+        content: "\002022";
+      }
+
+      li {
+        &::before {
+          content: "\0025E6";
+        }
+      }
+    }
+  }
+}
+
+body#tinymce,
+.article__body {
+  p,
+  ul,
+  ol,
+  dt,
+  dd {
+    @include p;
+  }
+
+  p span,
+  p strong span {
+    font-family: $font !important;
+  }
+
+  strong {
+    font-weight: bold;
+  }
+
+  > p:empty,
+  > h2:empty,
+  > h3:empty {
+    display: none;
+  }
+
+  > h1,
+  > h2,
+  > h3,
+  > h4 {
+    margin-top: $space-double;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h1,
+  h2 {
+    + * {
+      margin-top: $space-and-half;
+    }
+  }
+
+  h3,
+  h4,
+  h5,
+  h6 {
+    + * {
+      margin-top: $space-half;
+    }
+  }
+
+  img {
+    height: auto;
+  }
+
+  hr {
+    margin-top: $space-half;
+    margin-bottom: $space-half;
+
+    @include media('>large') {
+      margin-top: $space;
+      margin-bottom: $space;
+    }
+  }
+
+  figcaption {
+    @include font--s;
+  }
+
+  figure {
+    max-width: none;
+    width: auto !important;
+  }
+
+  .wp-caption-text {
+    display: block;
+    line-height: 1.3;
+    text-align: left;
+  }
+
+  .size-full {
+    width: auto;
+  }
+
+  .size-thumbnail {
+    max-width: rem(400);
+    height: auto;
+  }
+
+  .aligncenter {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+
+    figcaption {
+      text-align: center;
+    }
+  }
+
+  @include media('>small') {
+    .alignleft,
+    .alignright {
+      min-width: 50%;
+      max-width: 50%;
+
+      img {
+        width: 100%;
+      }
+    }
+
+    .alignleft {
+      float: left;
+      margin: $space-and-half $space-and-half 0 0;
+    }
+
+    .alignright {
+      float: right;
+      margin: $space-and-half 0 0 $space-and-half;
+    }
+  }
+}

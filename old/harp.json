@@ -1,0 +1,9 @@
+{
+    "globals": {
+        "SiteName": "Cahill's Creative",
+        "title": "Cahill's Creative",
+        "uri": "http://cahillscreative.com/",
+        "imagesUri": "http://cahillscreative.com/images/",
+        "fullUrl": "http://cahillscreative.com"
+    }
+}

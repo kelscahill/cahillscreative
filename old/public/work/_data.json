@@ -1,0 +1,183 @@
+{
+	"index": {
+		"title": "Work",
+		"mainClass": "work-page",
+		"metaTitle": "Work | Freelance Graphic Design Projects | Freelance Design | Scranton, Wayne County, Pike County PA",
+		"metaKeywords": "freelance graphic design, freelance design Scranton, design gallery wayne county",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here. "
+	},
+	"wood-working": {
+		"title": "Wood Working",
+		"metaTitle": "Wood Working | Branding + Web Design Agency | Freelance Graphic & Web Design Scranton PA",
+		"metaKeywords": "chalkboards, furniture, woodworking wayne county pa, woodworking ",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/wood_working/",
+		"description": "With my passion for wood working and graphic design, I have merged the two and created unique furniture and chalkboards. Each item is hand crafted from premium pine and stained to give the rustic look. If you are interested in doing a DIY piece yourself, click the button below.",
+		"services": [
+			"Chalkboards",
+			"Furntiture"
+		],
+		"link": "https://www.etsy.com/listing/270690202/rustic-pallet-tv-stand-plans?ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=rustic%20tv%20stand%20plans&ref=sr_gallery_1"
+	},
+	"coatesville-country-club": {
+		"title": "Coatesville Country Club",
+		"metaTitle": "Coatesville Country Club | Freelance Graphic & Web Designer Scranton | Branding, Websites, Logos Pike County | Cahill’s Creative Wayne County PA",
+		"metaKeywords": "logo design, print design, branding",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/coatesville/",
+		"description": "The majestic Coatesville Country Club resides in Chester County, PA and offers a luxurious, yet affordable atmosphere for its members. Located in a quiet town where family values are strong, the club prides itself on its truly family-friendly atmosphere. The tones and shapes used were inspired by clean grass clippings. Since rebranding the club, it has seen a 100% increase in new member enrollment in just shy of a year's time. <em>(Work created while at DesignDesign, Inc.)</em>",
+		"services": [
+			"Identity",
+			"Print",
+			"Branding"
+		]
+	},
+	"painted-view": {
+		"title": "A Painted View",
+		"metaTitle": "A Painted View | Freelance Graphic Design Projects | Freelance Design | Scranton, Wayne County, Pike County PA",
+		"metaKeywords": "website design, website development, responsive design, branding",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/painted_view/",
+		"description": "A Painted View Ranch is a hidden gem nestled in the Wet Mountain Valley of Colorado. The ranch gets its name from the picturesque scenery that surrounds it and offers visitors a true western experience. After working with the client one-on-one, my design was inspired by the owner's passion to expose more people to the stunning area. I used subtle textures, earthy graphics, and an organic color palette to further compliment what mother nature already created. <em>(Work created while at DesignDesign, Inc.)</em>",
+		"services": [
+			"Website Design",
+			"Website Development",
+			"Resonsive Design",
+			"Branding"
+		],
+		"link": "http://apaintedview.com/"
+	},
+	"domaine-hudson": {
+		"title": "Domaine Hudson",
+		"metaTitle": "Domaine Hudson | Wayne County Branding + Web Design Agency | Scranton, Wayne County, Pike County PA",
+		"metaKeywords": "website design, website development, branding",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/domaine_hudson/",
+		"description": "With a wine selection that would rival any European restaurant, Domaine Hudson brings numerous cultured choices to the small state of Delaware. The design uses rich shades of red and purple that are inspired from an elegant glass of wine. The success of the design and SEO enabled the site to surpass over 150 views in a single day. <em>(Work created while at DesignDesign, Inc.)</em>",
+		"services": [
+			"Website Design",
+			"Website Development",
+			"Branding"
+		],
+		"link": "http://www.domainehudson.com/"
+	},
+	"the-market-at-liberty-place": {
+		"title": "The Market at Liberty Place",
+		"metaTitle": "The Market at Liberty Place | Pick County Branding + Web Design Agency | Scranton, Wayne County, Pike County PA",
+		"metaKeywords": "website design, website development, branding",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/market/",
+		"description": "The Market at Liberty Place houses over 8 niche vendors in a spacious indoor facility located in downtown Kennett Square. My website design was inspired by the charming architecture of the surrounding artistic town. The site features market inspired graphics including chalkboards, signage and raw textures. <em>(Work created while at DesignDesign, Inc.)</em>",
+		"services": [
+			"Website Design",
+			"Website Development",
+			"Branding"
+		],
+		"link": "http://www.themarketatlibertyplace.com/"
+	},
+	"sylvan": {
+		"title": "Sylvan",
+		"metaTitle": "Sylvan | Graphic & Web Design Projects | Freelance Design | Scranton, Wayne County, Pike County PA",
+		"metaKeywords": "branding, print design, website design, tradeshow design",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/sylvan/",
+		"description": "Sylvan is a global company that produces mushroom spawn and yet deals with their customers on a personal level. They are dedicated to product refinement, as well as their branding refinement. Over the past year I have slowly evolved and modernized their existing brand, all while staying within the company's guidelines. <em>(Work created while at DesignDesign, Inc.)</em>",
+		"services": [
+			"Branding",
+			"Print",
+			"Website Design",
+			"Tradeshow"
+		]
+	},
+	"woodsons-reserve": {
+		"title": "Woodson's Reserve",
+		"metaTitle": "Woodson's Reserve | Web Design & Development Agency | Freelance Design | Scranton, Wayne County, Pike County PA",
+		"metaKeywords": "website developement wayne county pa",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/woodsons_reserve/",
+		"description": "<em>This project was completed through my job at The Archer Group.</em>",
+		"services": [
+			"Website Development"
+		],
+		"link": "http://www.woodsonsreserve.com/"
+	},
+	"honey-bee": {
+		"title": "Honey Bee",
+		"metaTitle": "Honey Bee | Graphic Design & Branding Agency | Freelance Design | Scranton, Wayne County, Pike County PA",
+		"metaKeywords": "logo design pike county pa, branding wayne country pa, website design, print design wayne county pa",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/honey_bee/",
+		"description": "Honey Bee is an elegant 'farm to table' restaurant, cafe, and bar that captures the essence of nature's nectar in every dish, pastry, and beverage served. The color palette was inspired by the warmth of honey with a daffodil yellow and the modern elegance with a warm gray. I used three clean lines of the daffodil yellow to portray the strips of a buzzing bee and to mimic the Honey Bee logo throughout my design.",
+		"services": [
+			"Logo Design",
+			"Branding",
+			"Print",
+			"Website Design"
+		]
+	},
+	"cabelas": {
+		"title": "Cabela's Annual Report",
+		"metaTitle": "Cabela's Annual Report | Graphic Design & Print Design Agency | Freelance Design | Scranton, Wayne County, Pike County PA",
+		"metaKeywords": "print design, photography wayne county pa, branding",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/cabelas/",
+		"description": "Cabela's Annual Report is for people who have a passion for the sport of hunting. Within each image of my own photography, I feature a mounted animal with cross hairs along with a tip on how to land a record size kill. To bring the outdoors into the design, I chose a woodsy and organic color palette combined with natural textures to pull it all together.",
+		"services": [
+			"Print",
+			"Photography",
+			"Branding"
+		]
+	},
+	"sled-junkies": {
+		"title": "Sled Junkies",
+		"metaTitle": "Sled Junkies | Freelance Graphic Design Projects | Freelance Design | Scranton, Wayne County, Pike County PA",
+		"metaKeywords": "logo design wayne county, branding, print",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/sled_junkies/",
+		"description": "Sled Junkies is a spectacular newsletter for die hard snowmobile enthusiasts that love to break free from life on groomed trails. My design for Sled Junkies comes from the rough and rebellious style of snocross. This can be seen in the broken grid structure and layers of cut paper to create the illusion of snow. Screens of lime green and black were used throughout to mimic the boldness of snocross.",
+		"services": [
+			"Logo Design",
+			"Branding",
+			"Print"
+		]
+	},
+	"cams": {
+		"title": "CAMS Pro",
+		"metaTitle": "CAMS Pro | Web Design & Development Agency | Freelance Design | Scranton, Wayne County, Pike County PA",
+		"metaKeywords": "website developement, website design, web design",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/cams/",
+		"description": "Description coming soon!",
+		"services": [
+			"Website Design",
+			"Website Development"
+		],
+		"link": "http://www.cams-photo.com/"
+	},
+	"morgan-stanley": {
+		"title": "Morgan Stanley",
+		"metaTitle": "Morgan Stanley | Web Design & Development Agency | Freelance Design | Scranton, Wayne County, Pike County PA",
+		"metaKeywords": "website development wayne county pa",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/morgan_stanley/",
+		"description": "<em>This project was completed through my job at The Archer Group.</em>",
+		"services": [
+			"Website Development"
+		],
+		"link": "http://www.morganstanley.com/spc/knowledge/"
+	},
+	"o2up": {
+		"title": "O2UP",
+		"metaTitle": "O2UP | Freelance Graphic Design Projects | Freelance Design | Scranton, Wayne County, Pike County PA",
+		"metaKeywords": "logo design, branding, print, packaging",
+		"metaDescription": "My freelance graphic design, branding, logo and website projects for clients in Scranton, Wayne County & Pike County, PA and the surrounding area can be found here.",
+		"imagePath": "work/o2up/",
+		"description": "O2Up is an energetic and lively oxygen bar that can be found in the heart of Boston, MA. People of all ages come to get that extra jolt of power after a long and grueling day. The structure of the oxygen molecule with its eight surrounding electrons is what lead my design for this company. I decided to use the molecule combined with the concentric circles and the electric color palette to portray the energy of O2Up.",
+		"services": [
+			"Logo Design",
+			"Branding",
+			"Print",
+			"Packaging"
+		]
+	}
+}

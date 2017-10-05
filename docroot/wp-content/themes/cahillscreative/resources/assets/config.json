@@ -1,0 +1,19 @@
+{
+  "entry": {
+    "main": [
+      "./scripts/plugins.js",
+      "./scripts/main.js",
+      "./styles/main.scss"
+    ],
+    "customizer": [
+      "./scripts/customizer.js"
+    ]
+  },
+  "publicPath": "/wp-content/themes/cahillscreative",
+  "devUrl": "http://cahillscreative.dev",
+  "proxyUrl": "http://localhost:3000",
+  "cacheBusting": "[name]_[hash:8]",
+  "watch": [
+    "{app,resources/views}/**/*.php"
+  ]
+}

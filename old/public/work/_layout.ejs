@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- partial("../_partials/_head") %>
+  <body id="top">	
+	  <div id="wrapper" class="interior work<% if(typeof(mainClass) !== "undefined") { %><%- mainClass %><% } %>">
+	    <%- partial("../_partials/_nav") %>
+	    <%- partial("../_partials/_header") %>
+	    <main id="master-area" class="master-area">	
+				<%- yield %>
+	    </main> 
+	    <%- partial("../_partials/_footer") %>
+	  </div>
+	  <%- partial("../_partials/_scripts") %>
+  </body>
+</html>
