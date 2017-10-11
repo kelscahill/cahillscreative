@@ -16,10 +16,10 @@
 
 let almMasonryInit = true; // flag
 
-let almMasonry = (container, items, selector, animation, speed, init, filtering) => {
+let almMasonry = (container, items, selector, animation, horizontalOrder, speed, init, filtering) => {	
       
    let duration = (speed+100)/1000 +'s'; // Add 100 for some delay
-   let hidden = 'scale(0.5)'; 
+   let hidden = 'scale(0.5)';
    let visible = 'scale(1)';
    
    if(animation === 'zoom-out'){
@@ -42,6 +42,8 @@ let almMasonry = (container, items, selector, animation, speed, init, filtering)
       visible = 'translateY(0)';
    }
    
+   horizontalOrder = (horizontalOrder === 'true') ? true : false;
+   
 	if(!filtering){
 
 		// First Run
@@ -52,6 +54,8 @@ let almMasonry = (container, items, selector, animation, speed, init, filtering)
 				container.masonry({
 					itemSelector: selector,
 					transitionDuration: duration,
+					columnWidth: selector,
+					horizontalOrder: horizontalOrder,
                hiddenStyle: {
                   transform: hidden,
                   opacity: 0
@@ -79,7 +83,7 @@ let almMasonry = (container, items, selector, animation, speed, init, filtering)
 		container.masonry('destroy'); // destroy masonry
 		almMasonryInit = true; // reset almMasonryInit
 		container.append( items );
-		almMasonry(container, items, selector, animation, speed, true, false);
+		almMasonry(container, items, selector, animation, horizontalOrder, speed, true, false);
 
 	}
 

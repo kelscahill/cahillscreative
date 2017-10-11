@@ -13,4 +13,8 @@
   display: block;
   margin: $space auto;
   padding: 0;
+
+  @include media('>large') {
+    margin: $space-double auto;
+  }
 }

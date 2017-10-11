@@ -358,8 +358,10 @@ jQuery(document).ready(function($) {
       var paging_classes = $('#alm-paging input#paging-classes').val();
       if(paging !== 'false' && paging != undefined){
          output += ' paging="'+paging+'"';
-         output += ' paging_controls="'+paging_controls+'"';
-         output += ' paging_show_at_most="'+paging_show_at_most+'"';
+         output += ' paging_controls="'+paging_controls+'"';    
+         if(paging_show_at_most !== ''){     
+            output += ' paging_show_at_most="'+paging_show_at_most+'"';
+         }
          if(paging_classes !== ''){
             output += ' paging_classes="'+paging_classes+'"';
          }
@@ -939,11 +941,15 @@ jQuery(document).ready(function($) {
 	      $('.masonry-options-hide').slideUp(150, 'alm_easeInOutQuad');
 			var masonry_selector = $('.transition input#masonry-item').val();
 			var masonry_animation = $('input[name=masonry-animation]:checked').val();
+			var masonry_horizontalorder = $('input[name=masonry-horizontalorder]:checked').val();
 			if(masonry_selector !== ''){
          	output += ' masonry_selector="'+ masonry_selector +'"';
          }
          if(masonry_animation !== '' && masonry_animation !== 'default'){
          	output += ' masonry_animation="'+ masonry_animation +'"';
+         }
+         if(masonry_horizontalorder !== 't'){
+         	output += ' masonry_horizontalorder="false"';
          }
          
       }else{
@@ -953,8 +959,18 @@ jQuery(document).ready(function($) {
 
 			// Hide transition_container if masonry is selected
 	      var transition_container = $('.transition input[name=remove_container]:checked').val();
-	      if(transition_container === 'f' && seo !== 'true' && previous !== 'true')
+	      var transition_container_classes = $('.transition input#transition-container-classes').val();
+	      if(transition_container === 'f' && seo !== 'true' && previous !== 'true'){
 	         output += ' transition_container="false"';
+	         $('.transition-container-classes-wrap').slideUp(150, 'alm_easeInOutQuad');
+	      }else{
+		      $('.transition-container-classes-wrap').slideDown(150, 'alm_easeInOutQuad');
+	      }
+	      
+	      // Hide transition_container_classes if Previous Post or Next Page is true.
+	      if(transition_container_classes !== '' && transition_container !== 'f' && previous !== 'true' && nextpage !== 'true'){
+		      output += ' transition_container_classes="'+ transition_container_classes +'"';
+	      }
 	         
       }
       // Speed

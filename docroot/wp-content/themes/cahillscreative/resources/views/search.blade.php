@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-  @include('patterns.breadcrumbs')
   <section class="section section__main">
     <div class="layout-container">
       <article @php(post_class('article narrow--xl center-block spacing--double'))>

@@ -1,4 +1,3 @@
-@include('patterns.breadcrumbs')
 <section class="section section__main">
   <div class="layout-container section__main--inner">
     <article @php(post_class('article narrow spacing'))>
@@ -15,12 +14,25 @@
           <img src="{{ $image_small }}" alt="{{ $image_alt }}">
         </picture>
         <div class="article__content space--double-top">
-          <div class="article__content--left">
+          <div class="article__content--left spacing sticky">
+            <div class="author-meta spacing--half">
+              <div class="author-meta__image round">
+                @php echo get_avatar(get_the_author_meta( 'ID', 80 )) @endphp
+              </div>
+              <div class="author-meta__name">
+                {{ get_the_author_meta('first_name') }} {{ get_the_author_meta('last_name') }}
+              </div>
+            </div>
+            <hr class="divider" />
             @include('partials/entry-meta')
+            @include('patterns.share-tools')
+            @if(get_field('etsy_link'))
+              <a href="{{ get_field('etsy_link') }}" class="btn"><span class="font--primary--xs">Download</span>PDF Plans</a>
+            @endif
           </div>
           <div class="article__content--right spacing--double">
             @php(the_content())
-            @include('patterns.share-tools')
+            @include('partials.comments')
           </div>
         </div>
       </div>

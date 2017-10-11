@@ -16,7 +16,7 @@
 
   // Use this variable to set up the common and page specific functions. If you
   // rename this variable, you will also need to rename the namespace below.
-  var wilkes = {
+  var cc = {
     // All pages
     'common': {
       init: function() {
@@ -42,6 +42,23 @@
           $('.no-fouc').removeClass('no-fouc');
         });
 
+        // Smooth scrolling on anchor clicks
+        $(function() {
+          $('a[href*="#"]:not([href="#"])').click(function() {
+            $('.nav__primary, .nav-toggler').removeClass('main-nav-is-active');
+            if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+              var target = $(this.hash);
+              target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+              if (target.length) {
+                $('html, body').animate({
+                  scrollTop: target.offset().top - 50
+                }, 1000);
+                return false;
+              }
+            }
+          });
+        });
+
         /**
          * Slick sliders
          */
@@ -63,32 +80,12 @@
         $('.sticky').fixTo('body', {
           className: 'sticky-is-active',
           useNativeSticky: false,
-          zIndex: 9999,
-          mind: '#wpadminbar',
-        });
-
-        // Add active class the menu-nav link
-        var url = window.location.toString();
-
-        $('.main-nav a').each(function() {
-           var myHref = $(this).attr('href');
-           if (url == myHref) {
-              $(this).addClass('active');
-              $(this).parents().addClass('active');
-           }
+          mind: '.utility__nav'
         });
 
         /**
          * Main class toggling function
          */
-        $('.nav__toggle').click(function() {
-         $('html, body').toggleClass('main-nav-is-active');
-        });
-        $('.body-overlay').click(function() {
-         $('html, body').removeClass('main-nav-is-active');
-         $('.header__nav').removeClass('is-active');
-        });
-
         var $toggled = '';
         var toggleClasses = function(element) {
           var $this = element,
@@ -160,56 +157,6 @@
     'home': {
       init: function() {
         // JavaScript to be fired on the home page
-        $('.slick-hero').slick({
-          slidesToShow: 1,
-          prevArrow: '<span class="icon--arrow icon--arrow-prev"></span>',
-          nextArrow: '<span class="icon--arrow icon--arrow-next"></span>',
-          dots: true,
-          autoplay: true,
-          arrows: false,
-          infinite: true,
-          speed: 250,
-          fade: true,
-          cssEase: 'linear',
-          autoplaySpeed: 12000,
-          pauseOnFocus: false,
-          pauseOnHover: false,
-        });
-
-        $('.hero__video').each(function() {
-          var videoId = $(this).children('.hero__video-container').attr('data-videoid');
-          if (videoId != 'undefined') {
-            $.ajax({
-              url: '//content.jwplatform.com/feeds/' + videoId + '.json',
-              dataType: 'JSON',
-            }).done(function(data) {
-              jwplayer('js-hero__video--' + videoId).setup({
-                autostart: true,
-                controls: false,
-                playlist: data.playlist,
-                mute: true,
-                repeat: false,
-                stretching: 'fill',
-                height: '100%',
-                width: '100%',
-              });
-            });
-          }
-        });
-
-        $('.slick-hero').on('afterChange', function() {
-          // If a JWPlayer is active, play video it before advancing.
-          for (var i=0; i<document.getElementsByClassName('jwplayer').length;i++) {
-            jwplayer(document.getElementsByClassName('jwplayer')[i]).play(true);
-          }
-        });
-
-        $('.slick-hero').on('beforeChange', function() {
-          // If a JWPlayer is playing, stop it before advancing.
-          for (var i=0; i<document.getElementsByClassName('jwplayer').length;i++) {
-            jwplayer(document.getElementsByClassName('jwplayer')[i]).pause(true);
-          }
-        });
       },
       finalize: function() {
         // JavaScript to be fired on the home page, after the init JS
@@ -222,7 +169,7 @@
   var UTIL = {
     fire: function(func, funcname, args) {
       var fire;
-      var namespace = wilkes;
+      var namespace = cc;
       funcname = (funcname === undefined) ? 'init' : funcname;
       fire = func !== '';
       fire = fire && namespace[func];

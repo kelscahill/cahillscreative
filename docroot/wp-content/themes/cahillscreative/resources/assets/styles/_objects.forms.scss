@@ -40,7 +40,6 @@ input[type=url],
 textarea,
 select {
   width: 100%;
-  border-radius: rem(7);
 }
 
 select {
@@ -48,7 +47,7 @@ select {
   -moz-appearance: none;
   appearance: none;
   cursor: pointer;
-  background: url('../../assets/images/icon--arrow--down.svg') $white center right rem(10) no-repeat;
+  background: url('../../assets/images/arrow--small.svg') $white center right rem(10) no-repeat;
   background-size: rem(10);
 }
 
@@ -107,30 +106,31 @@ input[type=radio] + span {
   input {
     height: 100%;
     max-height: rem(50);
-    width: calc(100% - 50px);
-    border-radius: rem(8) 0 0 rem(8);
+    width: calc(100% - 100px);
+    background-color: transparent;
+    border: 1px solid $white;
+    color: $white;
 
     @include p;
   }
 
   button {
     display: flex;
-    width: rem(50);
+    justify-content: center;
+    width: rem(100);
     padding: 0;
     margin: 0;
-    border-radius: 0 rem(8) rem(8) 0;
     position: relative;
+    background-color: $white;
+    border-radius: 0;
+    color: $body-color;
+    text-align: center;
 
-    &::after {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      margin: 0 auto;
-      height: rem(15);
-      width: rem(15);
-      background-size: rem(15);
+    @include font--primary--xs;
+
+    &:hover {
+      background-color: rgba($white, 0.8);
+      color: $body-color;
     }
   }
 }
@@ -141,18 +141,29 @@ input[type=radio] + span {
   flex-wrap: nowrap;
   position: relative;
   overflow: hidden;
-  height: rem(50);
-  width: 100%;
+  height: rem(40);
+
+  input[type=text]:focus,
+  &:hover input[type=text] {
+    width: 100%;
+    min-width: rem(200);
+    background-color: rgba(black, 0.8);
+
+    @include media('>large') {
+      width: rem(200);
+      min-width: none;
+    }
+  }
 
   input[type=text] {
-    border-radius: rem(7);
-    background-color: #002441;
-    height: rem(50);
+    background-color: transparent;
+    height: rem(40);
     border: none;
-    width: 100%;
-    right: 0;
-    position: absolute;
     color: white;
+    font-size: rem(14);
+    width: rem(100);
+    padding-left: rem($utility-header-height);
+    z-index: 1;
 
     /* Chrome/Opera/Safari */
     &::-webkit-input-placeholder {
@@ -177,13 +188,18 @@ input[type=radio] + span {
 
   button {
     background-color: transparent;
-    padding: $pad-half;
-    padding-left: $pad;
     position: absolute;
-    right: 0;
-    height: 100%;
+    left: 0;
     display: flex;
     align-items: center;
+    width: rem($utility-header-height);
+    height: rem($utility-header-height);
+    z-index: 2;
+    padding: 0;
+
+    span {
+      margin: 0 auto;
+    }
 
     &::after {
       display: none;

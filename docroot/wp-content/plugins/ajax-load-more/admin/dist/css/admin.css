@@ -889,7 +889,7 @@ a.layout-hover:hover img {
 .ajax-load-more .toggle-all.closed .inner-wrap:before {
   content: '\f067'; }
 
-#alm-builder * {
+#alm-builder {
   font-family: -apple-system,BlinkMacSystemFont, "Segoe UI", Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; }
 
 .ajax-load-more ul {
@@ -1216,6 +1216,8 @@ a.layout-hover:hover img {
           box-shadow: none !important; }
 
 .ajax-load-more input[type=text]:focus,
+.ajax-load-more input[type=number]:focus,
+.ajax-load-more input[type=email]:focus,
 .ajax-load-more textarea:focus {
   border-color: #999;
   -webkit-box-shadow: 0 0 3px #ccc;
@@ -1330,6 +1332,10 @@ a.layout-hover:hover img {
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.3); }
 
+hr.indented {
+  width: calc(100% - 72px);
+  margin-left: 36px; }
+
 .ajax-load-more .section-title {
   float: left;
   padding: 20px 0 20px 36px;
@@ -1340,7 +1346,7 @@ a.layout-hover:hover img {
   float: none; }
 
 .ajax-load-more .section-title h4 {
-  font-size: 15px;
+  font-size: 16px;
   margin-bottom: 13px; }
 
 .ajax-load-more .section-title p,
@@ -1928,7 +1934,7 @@ table.highlight {
 
 /* Repeaters */
 .repeaters .repeater-wrap {
-  padding: 12px 15px 8px !important; }
+  padding: 12px 15px 10px !important; }
 
 .repeater-wrap label {
   cursor: default; }

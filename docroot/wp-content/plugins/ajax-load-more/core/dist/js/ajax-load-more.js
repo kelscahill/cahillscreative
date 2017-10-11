@@ -18,7 +18,7 @@
 
 var almMasonryInit = true; // flag
 
-var almMasonry = function almMasonry(container, items, selector, animation, speed, init, filtering) {
+var almMasonry = function almMasonry(container, items, selector, animation, horizontalOrder, speed, init, filtering) {
 
   var duration = (speed + 100) / 1000 + 's'; // Add 100 for some delay
   var hidden = 'scale(0.5)';
@@ -44,6 +44,8 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
     visible = 'translateY(0)';
   }
 
+  horizontalOrder = horizontalOrder === 'true' ? true : false;
+
   if (!filtering) {
 
     // First Run
@@ -54,6 +56,8 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
         container.masonry({
           itemSelector: selector,
           transitionDuration: duration,
+          columnWidth: selector,
+          horizontalOrder: horizontalOrder,
           hiddenStyle: {
             transform: hidden,
             opacity: 0
@@ -80,7 +84,7 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
     container.masonry('destroy'); // destroy masonry
     almMasonryInit = true; // reset almMasonryInit
     container.append(items);
-    almMasonry(container, items, selector, animation, speed, true, false);
+    almMasonry(container, items, selector, animation, horizontalOrder, speed, true, false);
   }
 };
 'use strict';
@@ -147,8 +151,9 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
       alm.max_pages = parseInt(alm.content.attr('data-max-pages'));
       alm.pause_override = alm.content.attr('data-pause-override'); // true | false
       alm.pause = alm.content.attr('data-pause'); // true | false
-      alm.transition = alm.content.attr('data-transition');
-      alm.transition_container = alm.content.attr('data-transition-container');
+      alm.transition = alm.content.attr('data-transition'); // Transition
+      alm.transition_container = alm.content.attr('data-transition-container'); // Transition Container
+      alm.tcc = alm.content.attr('data-transition-container-classes'); // Transition Container Classes
       alm.speed = alm.content.attr('data-transition-speed');
       alm.images_loaded = alm.content.attr('data-images-loaded');
       alm.destroy_after = alm.content.attr('data-destroy-after');
@@ -293,6 +298,7 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
       alm.permalink = alm.content.attr('data-seo-permalink');
       alm.pageview = alm.content.attr('data-seo-pageview');
       alm.start_page = alm.content.attr('data-seo-start-page');
+      alm.trailing_slash = alm.content.attr('data-seo-trailing-slash') === 'false' ? '' : '/';
 
       if (alm.start_page) {
 
@@ -437,13 +443,21 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
       if (alm.transition === undefined) {
          alm.transition = 'slide';
       }
+      if (alm.tcc === undefined) {
+         // transition_container_classes
+         alm.tcc = '';
+      }
 
       alm.is_masonry_preloaded = false;
       if (alm.transition === 'masonry') {
          alm.masonry_selector = alm.content.attr('data-masonry-selector');
          alm.masonry_animation = alm.content.attr('data-masonry-animation');
+         alm.masonry_horizontalorder = alm.content.attr('data-masonry-horizontalorder');
          if (alm.masonry_animation === undefined) {
             alm.masonry_animation = 'standard';
+         }
+         if (alm.masonry_horizontalorder === undefined) {
+            alm.masonry_horizontalorder = 'true';
          }
          alm.masonry_wrap = alm.content;
          alm.transition_container = false;
@@ -514,12 +528,10 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
       alm.container.append('<div class="' + alm.prefix + 'btn-wrap"/>');
       alm.btnWrap = $('.' + alm.prefix + 'btn-wrap', alm.container);
 
+      // Paging add-on
       if (alm.paging) {
-
-         // Paging add-on
          alm.content.parent().addClass('loading'); // add loading class to main container
       } else {
-
          // If paging is false
          $('.' + alm.prefix + 'btn-wrap', alm.container).append('<button id="load-more" class="' + alm.prefix + 'load-more-btn more' + alm.button_class + '">' + alm.button_label + '</button>');
          alm.button = $('.alm-load-more-btn', alm.container);
@@ -744,7 +756,6 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
                }
             });
          }
-
          // Standard ALM
          else {
                $.ajax({
@@ -756,6 +767,7 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
                      query_type: queryType,
                      nonce: alm_localize.alm_nonce,
                      cache_id: alm.cache_id,
+                     cache_logged_in: alm.cache_logged_in,
                      repeater: alm.repeater,
                      theme_repeater: alm.theme_repeater,
                      acf: alm.acf_array,
@@ -894,7 +906,7 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
 
                // Is pagination
                if (total > 0) {
-                  alm.el = $('<div class="alm-reveal"/>');
+                  alm.el = $('<div class="alm-reveal' + alm.tcc + '"/>');
                   alm.el.append('<div class="alm-paging-content"></div><div class="alm-paging-loading"></div>');
                   $('.alm-paging-content', alm.el).append(alm.data).hide();
                   alm.content.append(alm.el);
@@ -975,13 +987,13 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
                               // > Paged
                               pagenum = k + 1 + p;
                               if (alm.permalink === 'default') {
-                                 div = $('<div class="alm-reveal alm-seo" data-url="' + alm.canonical_url + '' + alm.search_value + '&paged=' + pagenum + '" data-page="' + pagenum + '" />');
+                                 div = $('<div class="alm-reveal alm-seo' + alm.tcc + '" data-url="' + alm.canonical_url + '' + alm.search_value + '&paged=' + pagenum + '" data-page="' + pagenum + '" />');
                               } else {
-                                 div = $('<div class="alm-reveal alm-seo" data-url="' + alm.canonical_url + 'page/' + pagenum + '/' + alm.search_value + '" data-page="' + pagenum + '" />');
+                                 div = $('<div class="alm-reveal alm-seo' + alm.tcc + '" data-url="' + alm.canonical_url + 'page/' + pagenum + alm.trailing_slash + alm.search_value + '" data-page="' + pagenum + '" />');
                               }
                            } else {
                               // First Page
-                              div = $('<div class="alm-reveal alm-seo"  data-url="' + alm.canonical_url + '' + alm.search_value + '" data-page="1" />');
+                              div = $('<div class="alm-reveal alm-seo' + alm.tcc + '"  data-url="' + alm.canonical_url + '' + alm.search_value + '" data-page="1" />');
                            }
 
                            div.append(seo_data[k]);
@@ -1002,22 +1014,22 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
 
                               if (alm.seo) {
                                  if (alm.permalink === 'default') {
-                                    alm.el = $('<div class="alm-reveal alm-seo" data-url="' + alm.canonical_url + '' + alm.search_value + '&paged=' + pagenum + '" data-page="' + pagenum + '" />');
+                                    alm.el = $('<div class="alm-reveal alm-seo' + alm.tcc + '" data-url="' + alm.canonical_url + '' + alm.search_value + '&paged=' + pagenum + '" data-page="' + pagenum + '" />');
                                  } else {
-                                    alm.el = $('<div class="alm-reveal alm-seo" data-url="' + alm.canonical_url + 'page/' + pagenum + '/' + alm.search_value + '" data-page="' + pagenum + '" />');
+                                    alm.el = $('<div class="alm-reveal alm-seo' + alm.tcc + '" data-url="' + alm.canonical_url + 'page/' + pagenum + alm.trailing_slash + alm.search_value + '" data-page="' + pagenum + '" />');
                                  }
                               } else {
                                  // Basic ALM
-                                 alm.el = $('<div class="alm-reveal" />');
+                                 alm.el = $('<div class="alm-reveal' + alm.tcc + '" />');
                               }
                            } else {
 
                               if (alm.seo) {
                                  // SEO [Page 1]
-                                 alm.el = $('<div class="alm-reveal alm-seo" data-url="' + alm.canonical_url + '' + alm.search_value + '" data-page="1" />');
+                                 alm.el = $('<div class="alm-reveal alm-seo' + alm.tcc + '" data-url="' + alm.canonical_url + '' + alm.search_value + '" data-page="1" />');
                               } else {
                                  // Basic ALM
-                                 alm.el = $('<div class="alm-reveal" />');
+                                 alm.el = $('<div class="alm-reveal' + alm.tcc + '" />');
                               }
                            }
 
@@ -1061,7 +1073,7 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
                } else if (alm.transition === 'masonry') {
                   // masonry
 
-                  almMasonry(alm.masonry_wrap, alm.el, alm.masonry_selector, alm.masonry_animation, alm.speed, alm.init, alm_is_filtering);
+                  almMasonry(alm.masonry_wrap, alm.el, alm.masonry_selector, alm.masonry_animation, alm.masonry_horizontalorder, alm.speed, alm.init, alm_is_filtering);
 
                   if (!alm.paging) {
                      alm.button.delay(alm.speed).removeClass('loading');
@@ -1153,7 +1165,7 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
                   alm.AjaxLoadMore.triggerDone();
                }
             } else {
-               // Cache
+               // Cache 
                if (total < alm.posts_per_page) {
                   alm.AjaxLoadMore.triggerDone();
                }
@@ -1181,6 +1193,9 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
                alm.disable_ajax = true;
                if (!alm.paging) {
                   alm.button.delay(alm.speed).fadeOut(alm.speed);
+                  if ($.isFunction($.fn.almDestroyed)) {
+                     $.fn.almDestroyed(alm);
+                  }
                }
             }
          }
@@ -1200,7 +1215,7 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
        */
       alm.AjaxLoadMore.pagingPreloadedInit = function (data) {
 
-         alm.el = $('<div class="alm-reveal"/>');
+         alm.el = $('<div class="alm-reveal' + alm.tcc + '"/>');
          alm.el.append('<div class="alm-paging-content">' + data + '</div><div class="alm-paging-loading"></div>');
          alm.content.append(alm.el);
          alm.content.parent().removeClass('loading'); // Remove loading class from main container
@@ -1504,7 +1519,7 @@ var almMasonry = function almMasonry(container, items, selector, animation, spee
          // Masonry + Preloaded
          alm.window.bind('load', function () {
             if (alm.is_masonry_preloaded) {
-               almMasonry(alm.masonry_wrap, alm.el, alm.masonry_selector, alm.masonry_animation, alm.speed, true, false);
+               almMasonry(alm.masonry_wrap, alm.el, alm.masonry_selector, alm.masonry_animation, alm.masonry_horizontalorder, alm.speed, true, false);
             }
          });
       };

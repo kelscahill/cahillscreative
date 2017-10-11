@@ -375,8 +375,9 @@ function sbp_use_google_libraries() {
 
 function sbp_lazy_load_for_images() {
 
-	require_once( SPEED_BOOSTER_PACK_PATH . 'inc/crazy-lazy.php' );
-
+	if ( !class_exists( 'CrazyLazy' ) ) {
+		require_once(SPEED_BOOSTER_PACK_PATH . 'inc/crazy-lazy.php');
+	}
 }	//	End function sbp_lazy_load_for_images()
 
 

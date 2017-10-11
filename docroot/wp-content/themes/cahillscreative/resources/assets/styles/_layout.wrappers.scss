@@ -27,6 +27,8 @@
  */
 .narrow {
   max-width: rem(800);
+
+  @include center-block;
 }
 
 .narrow--xs {

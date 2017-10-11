@@ -197,17 +197,22 @@
                           extraKeys: {"Ctrl-Space": "autocomplete"},
                         });
                      </script>
+                     
                      <?php if(!$local_template){ ?>
 
 							<input type="submit" value="<?php _e('Save Template', 'ajax-load-more'); ?>" class="button button-primary save-repeater" data-editor-id="template-default">
 		            	<div class="saved-response">&nbsp;</div>
 							<?php include( ALM_PATH . 'admin/includes/components/repeater-options.php'); ?>
 
-							<?php } else { ?>
-
+							<?php } else { 
+                        $file_directory = get_option('stylesheet') .'/'. strtolower(substr(basename($template_dir), strrpos(basename($template_dir), '/')));
+							?>
+ 
 							<p class="warning-callout"><?php _e('It appears you are loading the <a href="https://connekthq.com/plugins/ajax-load-more/docs/repeater-templates/#default-template" target="_blank"><b>default template</b></a> (<em>default.php</em>) from your current theme directory. To modify this template, you must edit the file directly on your server.', 'ajax-load-more'); ?></p>
+							<p class="file-location" title="<?php echo $filename; ?>" style="margin-top: 20px;"><?php _e('File Location', 'ajax-load-more'); ?>:<code><?php echo $file_directory; ?>/default.php</code></p>
 
 							<?php } ?>
+							
 		            </div>
 	            </div>
 			   </div>

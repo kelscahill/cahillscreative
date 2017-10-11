@@ -12,6 +12,14 @@
   background: linear-gradient(to bottom, rgba(black, 0.25) 0%, rgba(black, 0.25) 100%) no-repeat border-box;
 }
 
+.round {
+  border-radius: 50%;
+  overflow: hidden;
+  width: rem(80);
+  height: rem(80);
+  min-width: rem(80);
+}
+
 /**
  * Clearfix - extends outer container with floated children.
  */

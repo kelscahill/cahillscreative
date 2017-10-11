@@ -969,7 +969,9 @@ function alm_admin_init(){
 		'ajax-load-more',
 		'alm_general_settings'
 	);
-
+   
+   /*
+   Removed in 3.2.1   
 	add_settings_field(  // Nonce security
 		'_alm_nonce_security',
 		__('Ajax Security', 'ajax-load-more' ),
@@ -977,6 +979,7 @@ function alm_admin_init(){
 		'ajax-load-more',
 		'alm_general_settings'
 	);
+	*/
 
 	add_settings_field(  // Scroll to top on load
 		'_alm_scroll_top',
@@ -1181,7 +1184,7 @@ function alm_disable_dynamic_callback(){
 
 	$html =  '<input type="hidden" name="alm_settings[_alm_disable_dynamic]" value="0" />';
 	$html .= '<input type="checkbox" name="alm_settings[_alm_disable_dynamic]" id="_alm_disable_dynamic" value="1"'. (($options['_alm_disable_dynamic']) ? ' checked="checked"' : '') .' />';
-	$html .= '<label for="_alm_disable_dynamic">'.__('Disable dynamic population of categories, tags and authors in the Shortcode Builder.<span style="display:block">Recommended if you have an extraordinary number of categories, tags and/or authors.', 'ajax-load-more').'</label>';
+	$html .= '<label for="_alm_disable_dynamic">'.__('Disable dynamic population of categories, tags and authors in the Shortcode Builder.<span style="display:block">Recommended if you have a large number of categories, tags and/or authors.', 'ajax-load-more').'</label>';
 
 	echo $html;
 }
@@ -1224,7 +1227,7 @@ function alm_container_type_callback() {
 function alm_class_callback(){
 	$options = get_option( 'alm_settings' );
 
-	$html = '<label for="alm_settings[_alm_classname]">'.__('Add classes to Ajax Load More container - classes are applied globally and will appear with every instance of Ajax Load More. <span style="display:block">You can also add classes when building a shortcode.</span>', 'ajax-load-more').'</label><br/>';
+	$html = '<label for="alm_settings[_alm_classname]">'.__('Add custom classes to the <i>.alm-listing</i> container - classes are applied globally and will appear with every instance of Ajax Load More. <span style="display:block">You can also add classes when building a shortcode.</span>', 'ajax-load-more').'</label><br/>';
 	$html .= '<input type="text" id="alm_settings[_alm_classname]" name="alm_settings[_alm_classname]" value="'.$options['_alm_classname'].'" placeholder="posts listing etc..." /> ';
 
 	echo $html;

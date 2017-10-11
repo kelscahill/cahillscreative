@@ -51,8 +51,13 @@
 </p>
 
  <p>
-<input id="sbp_settings[lazy_load]" name="sbp_settings[lazy_load]" type="checkbox" value="1" <?php checked( 1, isset( $sbp_options['lazy_load'] ) ); ?> />
-<label for="sbp_settings[lazy_load]"><?php _e( 'Lazy load images to improve speed', 'sb-pack' ); ?></label>
+     <?php if ( is_plugin_active('crazy-lazy/crazy-lazy.php') ) { ?>
+         <input id="sbp_settings[lazy_load]" name="sbp_settings[lazy_load]" type="hidden" value="<?php echo(isset( $sbp_options['lazy_load'] )? '1' : '0' ); ?>" />
+         <label for="sbp_settings[lazy_load]"><?php _e( 'Lazy loading already handled by CrazyLazy plugin', 'sb-pack' ); ?></label>
+     <?php } else {?>
+        <input id="sbp_settings[lazy_load]" name="sbp_settings[lazy_load]" type="checkbox" value="1" <?php checked( 1, isset( $sbp_options['lazy_load'] ) ); ?> />
+        <label for="sbp_settings[lazy_load]"><?php _e( 'Lazy load images to improve speed', 'sb-pack' ); ?></label>
+     <?php } ?>
 </p>
 
 
@@ -291,16 +296,16 @@ var jpegCompression = '<?php echo $this->image_compression; ?>';
 </strong></p>
 <br>
 <p class="description sp-link"><strong>
-   <a href="https://shortpixel.com/booster/af/KQD2XAB28044?autoreferrer=1" target="_blank">
+   <a href="https://shortpixel.com/h/af/U3NQVWK31472" target="_blank">
        <?php _e( 'Test your website with  ShortPixel for free to see how much you could gain by optimizing your images.', 'sb-pack' ); ?>
    </a>
 </strong></p>
-<a href="https://shortpixel.com/booster/af/KQD2XAB28044?autoreferrer=1" target="_blank"><img src="<?php echo $this->plugin_url . "inc/images/sp.png"; ?>" class="sbp-sp"/></a>
+<a href="https://shortpixel.com/h/af/U3NQVWK31472" target="_blank"><img src="<?php echo $this->plugin_url . "inc/images/sp.png"; ?>" class="sbp-sp"/></a>
 <p class="description">
     <?php _e( 'ShortPixel is an easy to use, comprehensive, stable and frequently updated image optimization plugin supported by the friendly team that created it. Using a powerful set of specially tuned algorithms, it squeezes the most of each image striking the best balance between image size and quality. Current images can be all optimized with a single click. Newly added images are automatically resized/rescaled and optimized on the fly, in the background.', 'sb-pack' ); ?>
 </p>
 <p class="description-link">
-    <a href="https://shortpixel.com/booster/af/KQD2XAB28044?autoreferrer=1" target="_blank">&gt;&gt; <?php _e( 'More info', 'sb-pack' ); ?></a>
+    <a href="https://shortpixel.com/h/af/U3NQVWK31472" target="_blank">&gt;&gt; <?php _e( 'More info', 'sb-pack' ); ?></a>
 </p>
 </div>
 

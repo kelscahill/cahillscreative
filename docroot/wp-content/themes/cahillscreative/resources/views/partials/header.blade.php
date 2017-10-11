@@ -1,24 +1,21 @@
-@php
-  $classes = '';
-  if (is_front_page() || is_page_template("views/template-news.blade.php")  || is_page_template("views/template-landing.blade.php") || is_page_template("views/template-news.blade.php") || is_page_template("views/template-events.blade.php")) {
-    $classes = ' header--transparent position--absolute shadow';
-  }
-@endphp
-<div class="body-overlay"></div>
-<header class="{{ 'header'.$classes }}">
-
-  <div class="header--inner">
-    <div class="header--left">
-      <a class="header__logo" href="{{ home_url('/') }}">@include('patterns.logo')</a>
+<header role="banner">
+  <div class="header__utility background-color--black">
+    <div class="header__utility--left">
+      <a href="https://cahillscreative.us3.list-manage.com/subscribe/post?u=1bf312784f904cef8899dc68d&amp;id=864ef19e83" target="_blank" class="header__utility-mailing">
+        <span class="icon icon--s space--half-right">
+          @include('patterns.icon__email')
+        </span>
+        <span class="color--white font--primary--xs">Join our mailing list!</span>
+      </a>
     </div>
-    <div class="header--right">
-      <div class="header__search space--half-right hide-until--m">
+    <div class="header__utility--right">
+      <div class="header__utility-search">
         @include('patterns.form--search')
       </div>
-      <div class="header__social hide-until--m">
+      <div class="header__utility-social">
         @include('patterns.social-links')
       </div>
-      @include('partials.navigation')
     </div>
   </div>
+  @include('partials.navigation')
 </header>

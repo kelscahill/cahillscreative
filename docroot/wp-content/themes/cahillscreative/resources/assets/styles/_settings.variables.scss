@@ -29,6 +29,8 @@ $information: #000db5;
 /**
  * Style Colors
  */
+$primary-color: $black;
+$secondary-color: $white;
 $background-color: $off-white;
 $link-color: $primary-color;
 $link-hover: $gray;
@@ -109,5 +111,6 @@ $breakpoints: (
  */
 $article-max: rem(950);
 $sidebar-width: 320;
+$utility-header-height: 40;
 $small-header-height: 60;
-$wide-header-height: 90;
+$large-header-height: 150;

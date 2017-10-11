@@ -3,8 +3,8 @@ Contributors: dcooney, connekthq
 Donate link: https://connekthq.com/donate/
 Tags: infinite scroll, infinite scrolling, scroll, infinite, lazy load, lazy loading, endless scroll, pagination, ajax pagination, ajax, ajax posts, ajax load posts, woocommerce, ajax load more
 Requires at least: 3.6
-Tested up to: 4.8.1
-Stable tag: 3.2.0
+Tested up to: 4.8.2
+Stable tag: 3.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -107,8 +107,10 @@ Ajax Load More accepts a number of parameters that are passed to the WordPress q
 *   **transition** - Choose a posts reveal transition (slide/fade/masonry/none). Default = 'slide'
 *   **transition_speed** - The speed of the loading transition in milliseconds. (slide/fade/none). Default = '250'
 *   **transition_container** - Display the Ajax Load More (.alm-reveal) loading container. Default = 'true'
+*   **transition_container_classes** - Add classes to the `.alm-reveal` transition div.
 *   **masonry_selector** - The target classname of each masonry item. Default = null
 *   **masonry_animation** - Select a loading transition type for Masonry items. (default/zoom-out/slide-up/slide-down/none). Default = default
+*   **masonry_horizontalorder** - Maintain horizontal order. Default = true
 *   **images_loaded** - Wait for all images to load before displaying ajax loaded content (true/false). Default = 'false'
 *   **destroy_after** - Remove ajax load more functionality after 'n' number of pages have been loaded. Default = null
 *   **progress_bar** - Display progress bar indicator at the top of the window while loading Ajax content. Default = 'false'
@@ -200,7 +202,14 @@ The following [functions](https://connekthq.com/plugins/ajax-load-more/docs/call
     };
 
 
-**Done** - The almDone() function is triggered after all posts have been loaded..
+**Destroyed** - The almDestroyed() function is dispatched after the destroy_after shortcode parameter is triggered.
+
+    $.fn.almDestroyed = function(alm){
+    	console.log('"Ajax Load More functionality has been destroyed!');
+    };
+
+
+**Done** - The almDone() function is triggered after all posts have been loaded.
 
     $.fn.almDone = function(alm){
     	console.log('All posts have been loaded!');
@@ -355,6 +364,20 @@ How to install Ajax Load More.
 
 
 == Changelog ==
+
+= 3.2.1 - October 5, 2017 =
+
+* NEW - Added new filter to optionally remove the trailing slash in URL of the SEO add-on. `add_filter('alm_seo_remove_trailing_slash', '__return_true');`
+* NEW - Added new `transition_container_classes` parameter that allows for custom classes to be added to the `.alm-reveal` container div.
+* NEW - Added new `almDestroyed` callback function that is dispatched after destroy_after has been triggered.
+ADD-ONS
+* NEW - Added `horizontalOrder` support for built in Masonry. The `masonry_horizontalorder` shortcode param will lay out items to maintain horizontal left-to-right order.
+* FIX - Fix for font icons not showing in shortcode builder.
+* FIX - Fix for issue with cache being created by logged in users even if 'Don't cache files for logged in users' is selected in the ALM settings.
+* UPDATE - Removed Nonce security option from ALM Settings.
+* UPDATE - Code cleanup, updating HTML markup in some areas.
+* UPDATE - Various UI/UX enhancements
+
 
 = 3.2.0 - August 8, 2017 =
 

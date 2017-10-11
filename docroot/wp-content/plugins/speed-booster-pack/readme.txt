@@ -1,10 +1,10 @@
-﻿=== Speed Booster Pack ===
-Contributors: SpeedWorks
+=== Speed Booster Pack ===
+Contributors: machothemes, silkalns
 Donate link:
 Tags: speed, optimization, performance, scripts to the footer, google libraries, font awesome cdn, defer parsing of javascript, remove query strings, lazy load images, gtmetrix, google pageSpeed, yslow, eliminate external render-blocking javascript and css, compression, async, render-blocking css
 Requires at least: 3.6
 Tested up to: 4.8
-Stable tag: 3.4
+Stable tag: 3.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,11 +59,7 @@ Future Development:
 
 = Recommended Plugins =
 
-* [ShortPixel Image Compresson](https://wordpress.org/plugins/shortpixel-image-optimiser/) - An image optimization plugin that further boosts your site's speed.
 * [Simple Author Box](http://wordpress.org/plugins/simple-author-box/) - A simple but cool author box with social icons.
-* [Verify Ownership](http://wordpress.org/plugins/verify-ownership/) - Adds meta tag verification codes to your site.
-
-**Keywords:** booster, performance, wp optimize, minimify, minify, lazy load, lazy loading, optimize javascript, render blocking, above the fold, Leverage browser caching, gzip compression, html minify,improve page load time, js optimizer, css optimizer, defer parsing of javascript, remove query strings, lazy load images, gtmetrix, google pageSpeed, yslow, eliminate external render-blocking javascript and css, compression, async, pingdom, webpagetest, speed up website, above-the-fold, loading speed, move scritps, autoptimize, asynchronously, change jpeg quality, image compression, change jpg quality, browser caching, query string, remove query strings, junk header, page loading, improve page loading, autooptimize, css minify, js, javascript, minimify
 
 
 == Installation ==
@@ -79,6 +75,9 @@ Future Development:
 2. The Google Page Speed results on our [testing site](http://tiguandesign.com/testing-speed-booster/) (v2.5)
 
 == Changelog ==
+
+= 3.5 =
+* Fix compatibility with the CrazyLazy plugin.
 
 = 3.4 =
 * Added an option to increase your page load speed by minifying JavaScript and HTML. Removed option to remove RSD Link, since its impact on improving speed was insignificant.

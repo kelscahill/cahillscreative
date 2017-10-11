@@ -16,13 +16,3 @@ th {
 td {
   padding: rem(15);
 }
-
-tr {
-  &:nth-child(even) {
-    background-color: $tan;
-  }
-
-  &:nth-child(odd) {
-    background-color: rgba($tan, 0.4);
-  }
-}

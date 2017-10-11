@@ -7,9 +7,9 @@
 
 <?php
    $alm_options = get_option( 'alm_settings' );
-   if(!isset($alm_options['_alm_disable_dynamic'])) // Check if '_alm_disable_dynamic is set within settings
+   if(!isset($alm_options['_alm_disable_dynamic'])){ // Check if '_alm_disable_dynamic is set within settings
 	   $alm_options['_alm_disable_dynamic'] = '0';
-
+	}
 	$disable_dynamic_content = $alm_options['_alm_disable_dynamic'];
 ?>
 
@@ -49,7 +49,7 @@
             <div class="clear"></div>
             <hr>
             <div class="section-title">
-               <h4><?php _e('Post ID', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Leave this field blank and Ajax Load More will get the ID from the global $post object','ajax-load-more'); ?>"></a></h4>
+               <h4><?php _e('Post ID', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Leave this field blank and Ajax Load More will get the ID from the global $post object','ajax-load-more'); ?>."></a></h4>
       		 	<p><?php _e('The ID of the current page/post.', 'ajax-load-more'); ?></p>
       		 </div>
             <div class="wrap">
@@ -453,7 +453,7 @@
             <div class="section-title">
                <h4>
                   <?php _e('Google Analytics', 'ajax-load-more'); ?>
-                  <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('You must have a reference to your Google Analytics tracking code already on the page','ajax-load-more'); ?>"></a>
+                  <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('You must have a reference to your Google Analytics tracking code already on the page','ajax-load-more'); ?>."></a>
                </h4>
       		 	<p><?php _e('Each time a page is loaded it will count as a pageview', 'ajax-load-more'); ?>.</p>
       		 </div>
@@ -474,7 +474,7 @@
             <div class="section-title">
                <h4>
                   <?php _e('Scroll to Page', 'ajax-load-more'); ?>
-                  <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Set Scroll Speed to 0 to disable scrolling to page','ajax-load-more'); ?>"></a>
+                  <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Set Scroll Speed to 0 to disable scrolling to page','ajax-load-more'); ?>."></a>
                </h4>
       		 	<p>
          		 	<?php _e('Scroll users automatically to the next page on \'Load More\' button click', 'ajax-load-more'); ?>.
@@ -484,14 +484,14 @@
                <div class="inner half">
                   <label for="next-page-scroll-speed" class="full">
                      <?php _e('Scroll Speed', 'ajax-load-more'); ?>
-                     <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Scrolling speed in milliseconds (e.g. 1 second = 1000)','ajax-load-more'); ?>"></a>
+                     <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Scrolling speed in milliseconds (e.g. 1 second = 1000)','ajax-load-more'); ?>."></a>
                   </label>
                   <input id="next-page-scroll-speed" name="next-page-scroll-speed" class="alm_element sm" type="number" min="0" max="5000" step="25" value="250" placeholder="250">
                </div>
                <div class="inner half">
                   <label for="next-page-scroll-top" class="full">
                      <?php _e('Scroll Top', 'ajax-load-more'); ?>
-                     <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('The scrolltop position of the window (used with scrolling and fwd/back browser buttons)','ajax-load-more'); ?>"></a>
+                     <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('The scrolltop position of the window (used with scrolling and fwd/back browser buttons)','ajax-load-more'); ?>."></a>
                   </label>
                   <input id="next-page-scroll-top" name="next-page-scroll-top" class="alm_element sm" type="number" min="0" max="1000" step="1" value="30" placeholder="30">
                </div>
@@ -664,7 +664,7 @@
             <div class="clear"></div>
             <hr>
             <div class="section-title">
-               <h4><?php _e('Taxonomy', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Selecting a taxonomy means only previous posts from the same taxonomy term will be returned. If a post has multiple terms attached, each term will be considered using an OR relationship query','ajax-load-more'); ?>"></a></h4>
+               <h4><?php _e('Taxonomy', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Selecting a taxonomy means only previous posts from the same taxonomy term will be returned. If a post has multiple terms attached, each term will be considered using an OR relationship query','ajax-load-more'); ?>."></a></h4>
       		 	<p><?php _e('Query previous posts from the same taxonomy term(s).', 'ajax-load-more'); ?></p>
       		 </div>
             <div class="wrap">
@@ -697,7 +697,7 @@
             <div class="clear"></div>
             <hr>
             <div class="section-title">
-               <h4><?php _e('Excluded Terms ', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('A comma-separated list of excluded terms by ID','ajax-load-more'); ?>"></a></h4>
+               <h4><?php _e('Excluded Terms ', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('A comma-separated list of excluded terms by ID','ajax-load-more'); ?>."></a></h4>
       		 	<p><?php _e('Exclude posts by term ID from the previous post query.', 'ajax-load-more'); ?></p>
       		 </div>
             <div class="wrap">
@@ -761,7 +761,7 @@
 
             <div class="section-title">
                <h4><?php _e('Base URL', 'ajax-load-more'); ?>
-               <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Set a default Base URL in the Ajax Load More settings panel','ajax-load-more'); ?>"></a></h4>
+               <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Set a default Base URL in the Ajax Load More settings panel','ajax-load-more'); ?>."></a></h4>
       		 	<p><?php _e('Enter the base URL to your installation of the REST API.', 'ajax-load-more'); ?></p>
       		 </div>
             <div class="wrap">
@@ -775,7 +775,7 @@
 
             <div class="section-title">
                <h4><?php _e('Namespace', 'ajax-load-more'); ?>
-               <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Set a default Namespace in the Ajax Load More settings panel','ajax-load-more'); ?>"></a></h4>
+               <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Set a default Namespace in the Ajax Load More settings panel','ajax-load-more'); ?>."></a></h4>
       		 	<p><?php _e('Enter the custom namespace for this Ajax Load More query.', 'ajax-load-more'); ?></p>
       		 </div>
             <div class="wrap">
@@ -789,7 +789,7 @@
 
             <div class="section-title">
                <h4><?php _e('Endpoint', 'ajax-load-more'); ?>
-               <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Set a default Endpoint in the Ajax Load More settings panel','ajax-load-more'); ?>"></a></h4>
+               <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Set a default Endpoint in the Ajax Load More settings panel','ajax-load-more'); ?>."></a></h4>
       		 	<p><?php _e('Enter your custom endpoint for this Ajax Load More query.', 'ajax-load-more'); ?></p>
       		 </div>
             <div class="wrap">
@@ -928,7 +928,7 @@
 
          <!-- ID -->
          <div class="section-title">
-            <h4><?php _e('ID', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Adding a unique ID will allow you target this specific Ajax Load More instance with the alm_query_args_id() filter.','ajax-load-more'); ?>"></a></h4>
+            <h4><?php _e('ID', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Adding a unique ID will allow you target this specific Ajax Load More instance with the alm_query_args_id() filter','ajax-load-more'); ?>."></a></h4>
    		 	<p><?php _e('Set a unique ID for this Ajax Load More instance.', 'ajax-load-more'); ?><br/>
    		 	&raquo; <a href="https://connekthq.com/plugins/ajax-load-more/docs/filter-hooks/#alm_query_args_[id]" target="_blank">Learn More</a></p>
    		 </div>
@@ -945,7 +945,7 @@
 
          <!-- Container Type -->
          <div class="section-title">
-            <h4><?php _e('Container Type', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('You can define a global container type on the Ajax Load More settings screen','ajax-load-more'); ?>"></a></h4>
+            <h4><?php _e('Container Type', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('You can define a global container type on the Ajax Load More settings screen','ajax-load-more'); ?>."></a></h4>
    		 	<p><?php _e('Override the global Container Type  set on the <a href="admin.php?page=ajax-load-more">ALM Settings page</a>.', 'ajax-load-more'); ?></p>
    		</div>
          <div class="wrap">
@@ -976,12 +976,12 @@
 
          <!-- Container Classes -->
          <div class="section-title">
-            <h4><?php _e('Container Classes', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('You can define global container classes on the Ajax Load More settings screen','ajax-load-more'); ?>"></a></h4>
-   		 	<p><?php _e('Add custom CSS classes to the Ajax Load More container. <br/><br/> e.g. portfolio-listing large-12 etc', 'ajax-load-more'); ?></p>
+            <h4><?php _e('Container Classes', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('You can define global container classes on the Ajax Load More settings screen','ajax-load-more'); ?>."></a></h4>
+   		 	<p><?php _e('Add custom CSS classes to the <span>.alm-listing</span> container. <br/><br/> e.g. portfolio-listing large-12 etc', 'ajax-load-more'); ?></p>
    		 </div>
          <div class="wrap">
             <div class="inner">
-               <input class="alm_element" name="container-classes" type="text" id="container-classes" placeholder="portfolio-listing large-12">
+               <input class="alm_element" name="container-classes" type="text" id="container-classes" placeholder="listing large-12 columns">
             </div>
          </div>
       </div>
@@ -1008,7 +1008,7 @@
          <hr/>
 
          <div class="section-title">
-	         <h4><?php _e('Loading Label', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Leave field empty to not update text while loading content','ajax-load-more'); ?>"></a></h4>
+	         <h4><?php _e('Loading Label', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Leave field empty to not update text while loading content','ajax-load-more'); ?>."></a></h4>
    		 	<p><?php _e('Update the text of the <em>Load More</em> button while content is loading.', 'ajax-load-more'); ?></p>
    		 </div>
          <div class="wrap">
@@ -1048,7 +1048,7 @@
             <div class="clear"></div>
             <hr>
             <div class="section-title">
-               <h4><?php _e('Scroll Distance', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Distance is based on the position of the loading button from the bottom of the screen','ajax-load-more'); ?>"></a></h4>
+               <h4><?php _e('Scroll Distance', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Distance is based on the position of the loading button from the bottom of the screen','ajax-load-more'); ?>."></a></h4>
       		 	<p><?php _e('The distance from the bottom of the screen to trigger loading of posts. (Default = 150)', 'ajax-load-more'); ?></p>
       		 </div>
             <div class="wrap">
@@ -1061,7 +1061,7 @@
             <div class="clear"></div>
             <hr>
             <div class="section-title">
-               <h4><?php _e('Scroll Container', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Confine Ajax Load More scrolling to a parent container.','ajax-load-more'); ?>"></a></h4>
+               <h4><?php _e('Scroll Container', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Confine Ajax Load More scrolling to a parent container','ajax-load-more'); ?>."></a></h4>
       		 	<p><?php _e('Enter the ID or classname of the parent container', 'ajax-load-more'); ?></p>
       		 </div>
             <div class="wrap">
@@ -1074,7 +1074,7 @@
             <div class="clear"></div>
             <hr>
             <div class="section-title">
-               <h4><?php _e('Maximum Pages', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('If using an Infinite Scroll button style you should set this to 0','ajax-load-more'); ?>"></a></h4>
+               <h4><?php _e('Maximum Pages', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('If using an Infinite Scroll button style you should set this to 0','ajax-load-more'); ?>."></a></h4>
       		 	<p><?php _e('Maximum number of pages to load while scrolling. (0 = unlimited)', 'ajax-load-more'); ?></p>
       		 </div>
             <div class="wrap">
@@ -1132,9 +1132,14 @@
 
 	         <div class="clear"></div>
 	         <hr>
+	         <div class="section-title full" style="padding-bottom: 10px;">
+	         	<h4><?php _e('Masonry Options', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Ajax Load More does not support all available Masonry options','ajax-load-more'); ?>."></a></h4>
+	         	<p><?php _e('The following Masonry <a href="https://masonry.desandro.com/options.html" target="_blank">options</a> are supported by Ajax Load More', 'ajax-load-more'); ?>.</p>
+	         </div>
+	         <div class="clear"></div>
 
 	         <div class="section-title">
-	            <h4><?php _e('Masonry Item Selector', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Item Selector is required for Masonry to target each element loaded with Ajax','ajax-load-more'); ?>"></a></h4>
+	            <h4><?php _e('Item Selector', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Item Selector is required for Masonry to target each element loaded with Ajax','ajax-load-more'); ?>."></a></h4>
 	   		 	<p><?php _e('Enter the target classname of each masonry item', 'ajax-load-more'); ?>.<br/>
 	   		 	e.g <span>.grid-item</span>
 	   		 	</p>
@@ -1144,43 +1149,43 @@
 	               <input type="text" class="alm_element" name="masonry-item" id="masonry-item" placeholder=".grid-item">
 	            </div>
 	         </div>
+	         
 	         <div class="clear"></div>
-	         <hr>
+	         <hr class="indented" />
 
 	         <div class="section-title">
-	            <h4><?php _e('Masonry Animation', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('All Masonry animations include a fade-in effect as items are loaded','ajax-load-more'); ?>"></a></h4>
-	   		 	<p><?php _e('Select a loading transition for Masonry items', 'ajax-load-more'); ?>.
-	   		 	</p>
-	   		 </div>
-	   		 <div class="wrap">
+	            <h4><?php _e('Animation Type', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('All Masonry animations include a fade-in effect as items are loaded','ajax-load-more'); ?>."></a></h4>
+	   		 	<p><?php _e('Select a loading transition for Masonry items', 'ajax-load-more'); ?>.</p>
+	   		</div>
+	   		<div class="wrap">
 	            <div class="inner">
                   <ul>
                      <li style="width:100%;">
                         <input class="alm_element" type="radio" name="masonry-animation" value="default" id="masonry-animation-default" checked>
                         <label for="masonry-animation-default">
                            <?php _e('Default (Zoom)', 'ajax-load-more'); ?> 
-                           <span class="description"><?php _e('Items will scale up from 50% to 100% size on load','ajax-load-more'); ?>.</span>
+                           <span class="description"><?php _e('Items scale up from 50% to 100% size on load','ajax-load-more'); ?>.</span>
                         </label>
                      </li>
                      <li style="width:100%;">
                         <input class="alm_element" type="radio" name="masonry-animation" value="zoom-out" id="masonry-animation-zoom-out">
                         <label for="masonry-animation-zoom-out">
-                           <?php _e('Zoom Out', 'ajax-load-more'); ?> 
-                           <span class="description"><?php _e('The reverse of the Default animation - Items will scale down from 125% to 100% size on load','ajax-load-more'); ?>.</span>
+                           <?php _e('Zoom Out', 'ajax-load-more'); ?>  
+                           <span class="description"><?php _e('Items scale down from 125% to 100% size on load','ajax-load-more'); ?>.</span>
                         </label>
                      </li>
                      <li style="width:100%;">
                         <input class="alm_element" type="radio" name="masonry-animation" value="slide-up" id="masonry-animation-up">
                         <label for="masonry-animation-up">
                            <?php _e('Slide Up', 'ajax-load-more'); ?>
-                           <span class="description"><?php _e('Items will animate up as they are loaded into view.','ajax-load-more'); ?></span>
+                           <span class="description"><?php _e('Items animate up as they are loaded into view.','ajax-load-more'); ?></span>
                         </label>
                      </li>
                      <li style="width:100%;">
                         <input class="alm_element" type="radio" name="masonry-animation" value="slide-down" id="masonry-animation-down">
                         <label for="masonry-animation-down">
                            <?php _e('Slide Down', 'ajax-load-more'); ?>
-                           <span class="description"><?php _e('Items will animate down as they are loaded into view.','ajax-load-more'); ?></span>
+                           <span class="description"><?php _e('Items animate down when loaded into view.','ajax-load-more'); ?></span>
                         </label>
                      </li>
                      <li style="width:100%;">
@@ -1190,6 +1195,29 @@
                         </label>
                      </li>
                   </ul>	               
+	            </div>
+	         </div>
+	         
+	         <div class="clear"></div>
+	         <hr class="indented" />
+
+	         <div class="section-title">
+	            <h4><?php _e('Horizontal Order', 'ajax-load-more'); ?></h4>
+	   		 	<p><?php _e('Lays out items to maintain left-to-right order', 'ajax-load-more'); ?>.
+	   		 	</p>
+	   		 </div>
+	   		 <div class="wrap">
+	            <div class="inner">
+						<ul>
+							<li>
+								<input class="alm_element" type="radio" name="masonry-horizontalorder" value="t" id="horizontalOrder_t" checked="checked">
+								<label for="horizontalOrder_t"><?php _e('True', 'ajax-load-more'); ?></label>
+							</li>
+							<li>
+								<input class="alm_element" type="radio" name="masonry-horizontalorder" value="f" id="horizontalOrder_f">
+								<label for="horizontalOrder_f"><?php _e('False', 'ajax-load-more'); ?></label>
+							</li>
+						</ul>
 	            </div>
 	         </div>
 
@@ -1202,7 +1230,7 @@
 	         <hr>
 
 	         <div class="section-title">
-	            <h4><?php _e('Container', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Removing the transition container may have undesired results and is not recommended.','ajax-load-more'); ?>"></a></h4>
+	            <h4><?php _e('Transition Container', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Removing the transition container may have undesired results and is not recommended','ajax-load-more'); ?>."></a></h4>
 	   		 	<p><?php _e('Remove the <span>.alm-reveal</span> loading container from Ajax Load More', 'ajax-load-more'); ?>.</p>
 	   		 </div>
 	         <div class="wrap">
@@ -1215,6 +1243,22 @@
 	               </ul>
 	            </div>
 	         </div>
+	         
+	         <div class="transition-container-classes-wrap">
+		         <div class="clear"></div>
+		         <hr>
+	
+		         <div class="section-title">
+		            <h4><?php _e('Transition Container Classes', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('This setting is not available with the Previous Post or Next Page add-ons','ajax-load-more'); ?>."></a></h4>
+		   		 	<p><?php _e('Add custom classes to the <span>.alm-reveal</span> loading container', 'ajax-load-more'); ?>.</p>
+		   		 </div>
+		         <div class="wrap">
+		            <div class="inner">
+		               <input type="text" class="alm_element" name="transition-container-classes" id="transition-container-classes" placeholder="row large-12 etc">
+		            </div>
+		         </div>
+	         </div>
+	         
          </div>
          <!-- End Hide transition_container if Masonry is selected -->     
 
@@ -1222,7 +1266,7 @@
          <hr>
 
          <div class="section-title">
-            <h4><?php _e('Speed', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('0.5 seconds = 500, 1 second = 1000 etc.','ajax-load-more'); ?>"></a></h4>
+            <h4><?php _e('Speed', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('0.5 seconds = 500, 1 second = 1000 etc','ajax-load-more'); ?>."></a></h4>
    		 	<p><?php _e('The speed of the loading transition in milliseconds', 'ajax-load-more'); ?>.<br/></p>
    		 </div>
          <div class="wrap">
@@ -1250,7 +1294,7 @@
                     <label for="pause_t"><?php _e('True', 'ajax-load-more'); ?></label>
                    </li>
                    <li>
-                    <input class="alm_element" type="radio" name="pause" value="f" id="pause_f" checked>
+                    <input class="alm_element" type="radio" name="pause" value="f" id="pause_f" checked="checked">
                     <label for="pause_f"><?php _e('False', 'ajax-load-more'); ?></label>
                    </li>
                </ul>
@@ -1316,7 +1360,7 @@
       <h3 class="heading"><?php _e('Images Loaded', 'ajax-load-more'); ?></h3>
       <div class="expand-wrap">
          <div class="section-title">
-   		 	<p><?php _e('Wait for all images to load before displaying ajax loaded content', 'ajax-load-more'); ?>. <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Background images are not supported','ajax-load-more'); ?>"></a></p>
+   		 	<p><?php _e('Wait for all images to load before displaying ajax loaded content', 'ajax-load-more'); ?>. <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Background images are not supported','ajax-load-more'); ?>."></a></p>
    		</div>
          <div class="wrap">
 	         <div class="inner">
@@ -1343,7 +1387,7 @@
          <!-- Destroy After -->
          <div class="expand-wrap">
 	         <div class="section-title">
-	   		 	<p><?php _e('Remove Ajax Load More functionality after \'<em>n</em>\' number of pages have been loaded.', 'ajax-load-more'); ?></p>
+	   		 	<p><?php _e('Remove Ajax Load More functionality after {<em>n</em>} number of pages have been loaded.', 'ajax-load-more'); ?></p>
 	   		</div>
 	         <div class="wrap">
 	            <div class="inner">
@@ -1420,7 +1464,7 @@
 			         <hr/>
 
 			         <div class="section-title">
-			            <h4><?php _e('Sticky Posts', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Sticky posts are only available for Posts.','ajax-load-more'); ?>"></a></h4>
+			            <h4><?php _e('Sticky Posts', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Sticky posts are only available for Posts','ajax-load-more'); ?>."></a></h4>
 			   		 	<p><?php _e('Preserve the ordering of sticky posts by having them appear first in the Ajax listing.', 'ajax-load-more'); ?></p>
 			   		 </div>
 			         <div class="wrap">
@@ -1484,7 +1528,7 @@
          <div class="section-title">
             <h4>Include</h4>
             <p><?php _e('A comma separated list of categories to include by slug. (design, research etc...)', 'ajax-load-more'); ?><br/>
-            &raquo; <a href="admin.php?page=ajax-load-more-examples#example-category"><?php _e('View Example', 'ajax-load-more'); ?></a></p>
+            &raquo; <a href="admin.php?page=ajax-load-more-help&section=examples#example-category" target="_blank"><?php _e('View Example', 'ajax-load-more'); ?></a></p>
          </div>
          <div class="wrap">
             <div class="inner">
@@ -1543,7 +1587,7 @@
 		<div class="expand-wrap">
    		<div class="section-title">
    		<h4><?php _e('Include', 'ajax-load-more'); ?></h4>
-   		<p><?php _e('A comma separated list of tags to include by slug. (toronto, canada etc...)', 'ajax-load-more'); ?><br/>&raquo; <a href="admin.php?page=ajax-load-more-examples#example-tag"><?php _e('View Example', 'ajax-load-more'); ?></a></p>
+   		<p><?php _e('A comma separated list of tags to include by slug. (toronto, canada etc...)', 'ajax-load-more'); ?><br/>&raquo; <a href="admin.php?page=ajax-load-more-help&section=examples#example-tag" target="_blank"><?php _e('View Example', 'ajax-load-more'); ?></a></p>
    		</div>
    		<div class="wrap">
    		   <div class="inner">
@@ -1619,7 +1663,7 @@
       <h3 class="heading"><?php _e('Date', 'ajax-load-more'); ?></h3>
       <div class="expand-wrap">
          <div class="section-title">
-   		 	<p><?php _e('Enter a year, month(number) and day to query by date archive.<br/>&raquo; <a href="admin.php?page=ajax-load-more-examples#example-date">View Example</a>', 'ajax-load-more'); ?></p>
+   		 	<p><?php _e('Enter a year, month(number) and day to query by date archive.<br/>&raquo; <a href="admin.php?page=ajax-load-more-help&section=examples#example-date" target="_blank">View Example</a>', 'ajax-load-more'); ?></p>
    		 </div>
          <div class="wrap">
             <div class="inner">
@@ -1658,7 +1702,7 @@
             <div id="meta-query-relation">
                <div class="inner border-top highlighted">
                   <div class="wrap-30 wrap-50">
-                     <label for="meta-relation" class="full"><?php _e('Relation:', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('The logical relationship between each custom field when there is more than one.','ajax-load-more'); ?>"></a></label>
+                     <label for="meta-relation" class="full"><?php _e('Relation:', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('The logical relationship between each custom field when there is more than one','ajax-load-more'); ?>."></a></label>
                      <select class="alm_element meta-relation" name="meta-relation">
                         <option value="AND" selected="selected">AND</option>
                         <option value="OR">OR</option>
@@ -1691,7 +1735,7 @@
 		echo '<h3 class="heading">' . __('Author', 'ajax-load-more') . '</h3>';
 		echo '<div class="expand-wrap">';
 		echo '<div class="section-title">';
-		echo '<p>' . __('Select an Author to query(by ID).', 'ajax-load-more') . '<br/>&raquo; <a href="admin.php?page=ajax-load-more-examples#example-author">View Example</a></p>';
+		echo '<p>' . __('Select an Author to query(by ID).', 'ajax-load-more') . '<br/>&raquo; <a href="admin.php?page=ajax-load-more-help&section=examples#example-author" target="_blank">View Example</a></p>';
 		echo '</div>';
 		echo '<div class="wrap"><div class="inner">';
 		if(!$disable_dynamic_content){
@@ -1743,7 +1787,7 @@
          <hr/>
          <div class="section-title">
             <h4><?php _e('Exclude', 'ajax-load-more'); ?></h4>
-   		 	<p><?php _e('A comma separated list of post ID\'s to exclude from query.', 'ajax-load-more'); ?><br/>&raquo; <a href="admin.php?page=ajax-load-more-examples#example-exclude"><?php _e('View Example', 'ajax-load-more'); ?></a></p>
+   		 	<p><?php _e('A comma separated list of post ID\'s to exclude from query.', 'ajax-load-more'); ?><br/>&raquo; <a href="admin.php?page=ajax-load-more-help&section=examples#example-exclude" target="_blank"><?php _e('View Example', 'ajax-load-more'); ?></a></p>
    		 </div>
          <div class="wrap">
             <div class="inner">
@@ -1753,7 +1797,7 @@
          <div class="clear"></div>
          <hr/>
          <div class="section-title">
-            <h4><?php _e('Post Status', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Post Status parameters are only available for logged in (admin) users. Non logged in users will only have access to view content in a \'publish\' or \'inherit\' state. ','ajax-load-more'); ?>"></a></h4>
+            <h4><?php _e('Post Status', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Post Status parameters are only available for logged in (admin) users. Non logged in users will only have access to view content in a \'publish\' or \'inherit\' state.','ajax-load-more'); ?>."></a></h4>
    		 	<p><?php _e('Select status of the post.', 'ajax-load-more'); ?></p>
    		 </div>
          <div class="wrap">
@@ -1830,7 +1874,7 @@
       <h3 class="heading"><?php _e('Custom Arguments', 'ajax-load-more'); ?></h3>
       <div class="expand-wrap">
          <div class="section-title">
-   		 	<p><?php _e('A semicolon separated list of custom value:pair arguments.', 'ajax-load-more'); ?>  <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Custom Arguments can be used to query by parameters not available in the Shortcode Builder.','ajax-load-more'); ?>"></a><br/><br/>e.g. tag_slug__and:design,development; event_display:upcoming</p>
+   		 	<p><?php _e('A semicolon separated list of custom value:pair arguments.', 'ajax-load-more'); ?>  <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Custom Arguments can be used to query by parameters not available in the Shortcode Builder','ajax-load-more'); ?>."></a><br/><br/>e.g. tag_slug__and:design,development; event_display:upcoming</p>
    		 </div>
          <div class="wrap">
             <div class="inner">

@@ -3,32 +3,52 @@
   $image_medium = wp_get_attachment_image_src($thumb_id, $thumb_size . '--m')[0];
   $alt = get_post_meta($thumb_id, '_wp_attachment_image_alt', true);
 @endphp
-<div class="block block__featured">
-  <a href="{{ $link }}" class="block__media">
-    <div class="block__overlay"></div>
+<div class="block background-color--white">
+  <a href="{{ $link }}" class="block__link">
     @if (!empty($thumb_id))
       <picture class="block__thumb">
         <source srcset="{{ $image_medium }}" media="(min-width:500px)">
         <img src="{{ $image_small }}" alt="{{ $alt }}">
       </picture>
     @endif
-  </a>
-  <a href="{{ $link }}" class="block__content block__hover padding spacing--half @if(!empty($excerpt)){{ 'hover' }}@endif">
-    <div class="block__header spacing--half">
-      @if (!empty($parent_id))
-        <div class="block__kicker kicker">
-          @if (get_field('page_icon', $parent_id))
-            <span class="icon icon--m icon--{{ the_field('page_icon', $parent_id) }} space--half-right"></span>
-          @endif
-          <p class="font--m color--white">{{ get_the_title($parent_id) }}</p>
+    <div class="block__content spacing--half">
+      @if (!empty($kicker))
+        <div class="block__kicker font--primary--xs">
+          {{ $kicker[0]->name }}
         </div>
       @endif
-      <h3 class="link--cta link--cta--white font--primary--m"><div class="block__title">{{ $title }}</div><</h3>
-    </div>
-    @if(!empty($excerpt))
-      <div class="block__excerpt">
-        <p class="color--white">{{ $excerpt }}</p>
+      <div class="block__title font--primary--m">
+        {{ $title }}
       </div>
-    @endif
+      <div class="block__meta color--gray">
+        @include('partials.entry-meta')
+      </div>
+    </div>
   </a>
+  <div class="block__toolbar">
+    <div class="block__toolbar--left">
+      <div class="block__toolbar-like space--right">
+        <span class="icon icon--s space--half-right">@include('patterns/icon__like')</span>
+        <span class="font--primary--xs color--gray">
+          @if(function_exists('wp_ulike'))
+            @php wp_ulike('get'); @endphp
+          @endif
+        </span>
+      </div>
+      <div class="block__toolbar-comment space--right">
+        <span class="icon icon--s space--half-right">@include('patterns/icon__comment')</span>
+        <span class="font--primary--xs color--gray">
+          @php
+            comments_number('0', '1', '%');
+          @endphp
+        </span>
+      </div>
+    </div>
+    <div class="block__toolbar--right">
+      <div class="block__toolbar-share">
+        <span class="font--primary--xs color--gray">Share</span>
+        <span class="icon icon--s space--half-left">@include('patterns/icon__share')</span>
+      </div>
+    </div>
+  </div>
 </div>

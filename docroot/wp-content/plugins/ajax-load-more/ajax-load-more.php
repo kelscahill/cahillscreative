@@ -7,15 +7,16 @@ Text Domain: ajax-load-more
 Author: Darren Cooney
 Twitter: @KaptonKaos
 Author URI: https://connekthq.com
-Version: 3.2.0
+Version: 3.2.1
 License: GPL
 Copyright: Darren Cooney & Connekt Media
+
 */
 
 
 
-define('ALM_VERSION', '3.2.0');
-define('ALM_RELEASE', 'August 8, 2017');
+define('ALM_VERSION', '3.2.1');
+define('ALM_RELEASE', 'October 5, 2017');
 define('ALM_STORE_URL', 'https://connekthq.com');
 
 
@@ -258,16 +259,13 @@ if( !class_exists('AjaxLoadMore') ):
 			$dependencies = apply_filters( 'alm_js_dependencies', array('jquery') );
 
 
-   		// Load JS
-
-   		// Core JS
+   		// Load Core JS
    		wp_register_script( 'ajax-load-more', plugins_url( '/core/dist/js/ajax-load-more.min.js', __FILE__ ), $dependencies,  ALM_VERSION, true );
 
-   		// Progress Bar JS
+   		// Load Progress Bar JS
    		wp_register_script( 'ajax-load-more-progress', plugins_url( '/core/src/js/vendor/pace/pace.min.js', __FILE__ ), 'ajax-load-more',  ALM_VERSION, true );
 
-
-   		// Load CSS
+   		// Load Core CSS
    		if(!isset($options['_alm_disable_css']) || $options['_alm_disable_css'] != '1'){
          	$file = plugins_url('/core/dist/css/ajax-load-more.min.css', __FILE__ );
             ALM_ENQUEUE::alm_enqueue_css('ajax-load-more', $file);
@@ -321,7 +319,10 @@ if( !class_exists('AjaxLoadMore') ):
 
    		$nonce = $_GET['nonce'];
    		$options = get_option( 'alm_settings' );
-   		if(!is_user_logged_in()){ // Skip nonce verification if user is logged in
+
+   		// Nonce removed in ALM 3.2.1
+   		/*
+      		if(!is_user_logged_in()){ // Skip nonce verification if user is logged in
    		   $options = get_option( 'alm_settings' );
    		   // check alm_settings for _alm_nonce_security
    		   if(isset($options['_alm_nonce_security']) & $options['_alm_nonce_security'] == '1'){
@@ -329,6 +330,7 @@ if( !class_exists('AjaxLoadMore') ):
       		      die('Error, could not verify WP nonce.');
             }
          }
+         */
 
    		$id = (isset($_GET['id'])) ? $_GET['id'] : '';
    		$slug = (isset($_GET['slug'])) ? $_GET['slug'] : '';
@@ -337,6 +339,11 @@ if( !class_exists('AjaxLoadMore') ):
    		$queryType = (isset($_GET['query_type'])) ? $_GET['query_type'] : 'standard';	// 'standard' or 'totalposts'; totalposts returns $alm_found_posts
 
    		$cache_id = (isset($_GET['cache_id'])) ? $_GET['cache_id'] : '';
+   		$cache_logged_in = (isset($_GET['cache_logged_in'])) ? $_GET['cache_logged_in'] : false;
+   		$do_create_cache = true;
+   		if($cache_logged_in === 'true' && is_user_logged_in()){
+      		$do_create_cache = false;
+   		}
 
    		$repeater = (isset($_GET['repeater'])) ? $_GET['repeater'] : 'default';
    		$type = alm_get_repeater_type($repeater);
@@ -738,7 +745,7 @@ if( !class_exists('AjaxLoadMore') ):
 	   	 *
 	   	 * @return null
 	   	 */
-         if(!empty($cache_id) && has_action('alm_cache_create_dir')){
+         if(!empty($cache_id) && has_action('alm_cache_create_dir') && $do_create_cache){
             apply_filters('alm_cache_create_dir', $cache_id, $canonical_url);
          }
 
@@ -807,9 +814,13 @@ if( !class_exists('AjaxLoadMore') ):
       	   	 * Cache Add-on hook
       	   	 * If Cache is enabled, check the cache file
       	   	 *
+      	   	 * @param $cache_id          String     ID of the ALM cache
+      	   	 * @param $do_create_cache   Boolean    Should cache be created for this user
+      	   	 *
+      	   	 * @updated 3.2.1
       	   	 * @return null
       	   	 */
-   	         if(!empty($cache_id) && has_action('alm_cache_installed')){
+   	         if(!empty($cache_id) && has_action('alm_cache_installed') && $do_create_cache){
       	         if($previous_post){
          	         // Previous Post Cache
    	               apply_filters('alm_previous_post_cache_file', $cache_id, $previous_post_slug, $data);

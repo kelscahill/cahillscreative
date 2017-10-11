@@ -1,3 +1,13 @@
 /* ------------------------------------*\
     $BLOCKS
 \*------------------------------------ */
+
+.block__latest {
+  display: flex;
+  flex-direction: column;
+
+  .block__link {
+    display: flex;
+    flex-direction: row;
+  }
+}

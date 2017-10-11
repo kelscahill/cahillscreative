@@ -60,6 +60,30 @@ button.alm-load-more-btn{
 		outline: none !important;
 		box-shadow: none !important;
    }
+
+   /* Loading Icon */
+	&:before,
+	&.done:before{
+		background: none;
+		width: 0;
+	}
+
+	/* Loading :before */
+	&.loading:before {
+      background: #fff url("../../../core/img/ajax-loader.gif") no-repeat center center;
+      width: 30px;
+      height: 30px;
+      margin: 6px;
+      border-radius:2px;
+      display: inline-block;
+      z-index: 0;
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      overflow: hidden;
+      transition: width 0.5s ease-in-out;
+	}
 }
 
 .alm-masonry,

@@ -283,7 +283,7 @@
         box-shadow: none;
         opacity: 0.6;
         border-radius: rem(7);
-        background-color: $tertiary-color;
+        background-color: $primary-color;
 
         @include media('>medium') {
           width: rem(20);
