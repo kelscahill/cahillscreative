@@ -35,47 +35,30 @@ input[type="submit"] {
   margin-top: $space-double;
 }
 
-button.alm-load-more-btn.btn.more {
-  width: 100%;
+button.alm-load-more-btn.more {
+  width: auto;
   border-radius: rem(50);
-  background: $button-color;
+  background: transparent;
+  border: 1px solid $black;
+  color: $black;
   position: relative;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
-  padding-left: 0;
-  padding-right: 0;
+  padding-left: $pad-double;
+  padding-right: $pad-double;
+
+  @include font--primary--xs;
 
   &.done {
-    background: $button-color;
     opacity: 0.5;
   }
 
   &:hover {
     background-color: $button-hover;
+    color: $white;
   }
 
   &::after {
     display: none;
-  }
-
-  &.loading {
-    padding-left: 0;
-  }
-
-  &.loading::before,
-  &::before {
-    background: none;
-    width: rem(8);
-    height: rem(8);
-    margin: 0 rem(5) 0 0;
-    border-radius: 0;
-    display: inline-block;
-    z-index: 1;
-    content: '+';
-    position: relative;
-    left: 0;
-    top: rem(-1);
-    overflow: visible;
-    transition: none;
   }
 }

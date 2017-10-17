@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" href="<?php bloginfo('template_directory'); ?>/assets/images/favicon-16x16.png" sizes="16x16">
   <link rel="shortcut icon" href="<?php bloginfo('template_directory'); ?>/assets/images/favicon.ico">
   @php(wp_head())
-
+  <script async type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=59de926f8f5cbd0012eba274&product=custom-share-buttons"></script>
   <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   <script>
     (adsbygoogle = window.adsbygoogle || []).push({

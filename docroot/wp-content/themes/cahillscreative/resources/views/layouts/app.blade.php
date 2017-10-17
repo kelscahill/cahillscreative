@@ -1,6 +1,7 @@
 <!doctype html>
 <html @php(language_attributes())>
   @include('partials.head')
+  <div class="overlay"></div>
   <body id="top" @php(body_class())>
     @php(do_action('get_header'))
     @include('partials.header')

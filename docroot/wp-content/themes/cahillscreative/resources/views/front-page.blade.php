@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+  @include('patterns.section__hero')
   @while(have_posts()) @php(the_post())
     <section class="section section__main">
       <div class="layout-container section__main--inner">

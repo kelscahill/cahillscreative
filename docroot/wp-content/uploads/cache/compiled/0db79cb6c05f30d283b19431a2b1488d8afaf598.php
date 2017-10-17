@@ -10,7 +10,7 @@
     </div>
     <div class="header__utility--right">
       <div class="header__utility-search">
-        <?php echo $__env->make('patterns.form--search', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+        <?php echo $__env->make('patterns.form__search', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
       </div>
       <div class="header__utility-social">
         <?php echo $__env->make('patterns.social-links', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -151,3 +151,40 @@
     }
   }
 }
+
+/**
+ * Full column grid
+ */
+.grid--full {
+  @include media ('>small') {
+    width: 100%;
+
+    > * {
+      width: 50%;
+    }
+  }
+
+  @include media ('>large') {
+    > * {
+      width: 33.33%;
+    }
+  }
+
+  @include media ('>xlarge') {
+    > * {
+      width: 25%;
+    }
+  }
+
+  @include media ('>xxlarge') {
+    > * {
+      width: 20%;
+    }
+  }
+
+  @include media ('>xxxlarge') {
+    > * {
+      width: 16.67%;
+    }
+  }
+}

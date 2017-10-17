@@ -80,7 +80,39 @@
         $('.sticky').fixTo('body', {
           className: 'sticky-is-active',
           useNativeSticky: false,
-          mind: '.utility__nav'
+          mind: '.header__utility'
+        });
+
+        $('.sticky-filter').fixTo('.main', {
+          className: 'sticky-is-active',
+          useNativeSticky: false,
+          mind: '.header__utility'
+        });
+
+        $('.filter-toggle').click(function() {
+          $('body').toggleClass('filter-is-active');
+        });
+
+        $('.filter-clear').click(function(e) {
+          e.preventDefault();
+          $('.filter-item').removeClass('this-is-active');
+        });
+
+        /**
+         * Tooltip
+         */
+        $('.tooltip-toggle').click(function() {
+          $('.overlay').show();
+        });
+
+        $('.tooltip-close').click(function() {
+          $(this).parent().parent().removeClass('is-active');
+          $('.overlay').hide();
+        });
+
+        $('.overlay').click(function() {
+          $(this).hide();
+          $('.tooltip').removeClass('is-active');
         });
 
         /**

@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "03a037741d723a7fb25d"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "bebe88834c938a1af808"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -706,7 +706,7 @@
 /******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return hotCreateRequire(43)(__webpack_require__.s = 43);
+/******/ 	return hotCreateRequire(56)(__webpack_require__.s = 56);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -943,7 +943,7 @@ var options = {
   name: ''
 };
 if (true) {
-  var querystring = __webpack_require__(/*! querystring */ 11);
+  var querystring = __webpack_require__(/*! querystring */ 12);
   var overrides = querystring.parse(__resourceQuery.slice(1));
   if (overrides.path) options.path = overrides.path;
   if (overrides.timeout) options.timeout = overrides.timeout;
@@ -1063,11 +1063,11 @@ if (typeof window !== 'undefined') {
 }
 
 function createReporter() {
-  var strip = __webpack_require__(/*! strip-ansi */ 12);
+  var strip = __webpack_require__(/*! strip-ansi */ 13);
 
   var overlay;
   if (typeof document !== 'undefined' && options.overlay) {
-    overlay = __webpack_require__(/*! ./client-overlay */ 13);
+    overlay = __webpack_require__(/*! ./client-overlay */ 14);
   }
 
   var styles = {
@@ -1120,7 +1120,7 @@ function createReporter() {
   };
 }
 
-var processUpdate = __webpack_require__(/*! ./process-update */ 14);
+var processUpdate = __webpack_require__(/*! ./process-update */ 15);
 
 var customHandler;
 var subscribeAllHandler;
@@ -1185,7 +1185,7 @@ if (module) {
   };
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, "?timeout=20000&reload=true", __webpack_require__(/*! ./../webpack/buildin/module.js */ 15)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, "?timeout=20000&reload=true", __webpack_require__(/*! ./../webpack/buildin/module.js */ 16)(module)))
 
 /***/ }),
 /* 3 */
@@ -1393,7 +1393,8 @@ module.exports = function () {
 
 /***/ }),
 /* 5 */,
-/* 6 */
+/* 6 */,
+/* 7 */
 /* no static exports found */
 /* all exports used */
 /*!*********************************************************************************************************************!*\
@@ -1402,15 +1403,15 @@ module.exports = function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = {
-  XmlEntities: __webpack_require__(/*! ./lib/xml-entities.js */ 8),
-  Html4Entities: __webpack_require__(/*! ./lib/html4-entities.js */ 7),
+  XmlEntities: __webpack_require__(/*! ./lib/xml-entities.js */ 9),
+  Html4Entities: __webpack_require__(/*! ./lib/html4-entities.js */ 8),
   Html5Entities: __webpack_require__(/*! ./lib/html5-entities.js */ 0),
   AllHtmlEntities: __webpack_require__(/*! ./lib/html5-entities.js */ 0)
 };
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /* no static exports found */
 /* all exports used */
 /*!**********************************************************************************************************************************!*\
@@ -1568,7 +1569,7 @@ module.exports = Html4Entities;
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /* no static exports found */
 /* all exports used */
 /*!********************************************************************************************************************************!*\
@@ -1734,7 +1735,7 @@ module.exports = XmlEntities;
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /* no static exports found */
 /* all exports used */
 /*!************************************************************************************************************************!*\
@@ -1830,7 +1831,7 @@ var isArray = Array.isArray || function (xs) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /* no static exports found */
 /* all exports used */
 /*!************************************************************************************************************************!*\
@@ -1927,7 +1928,7 @@ var objectKeys = Object.keys || function (obj) {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /* no static exports found */
 /* all exports used */
 /*!***********************************************************************************************************************!*\
@@ -1938,12 +1939,12 @@ var objectKeys = Object.keys || function (obj) {
 "use strict";
 
 
-exports.decode = exports.parse = __webpack_require__(/*! ./decode */ 9);
-exports.encode = exports.stringify = __webpack_require__(/*! ./encode */ 10);
+exports.decode = exports.parse = __webpack_require__(/*! ./decode */ 10);
+exports.encode = exports.stringify = __webpack_require__(/*! ./encode */ 11);
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /* no static exports found */
 /* all exports used */
 /*!******************************************************************************************************************!*\
@@ -1961,7 +1962,7 @@ module.exports = function (str) {
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /* no static exports found */
 /* all exports used */
 /*!**************************************************!*\
@@ -2010,7 +2011,7 @@ var colors = {
 };
 ansiHTML.setColors(colors);
 
-var Entities = __webpack_require__(/*! html-entities */ 6).AllHtmlEntities;
+var Entities = __webpack_require__(/*! html-entities */ 7).AllHtmlEntities;
 var entities = new Entities();
 
 exports.showProblems =
@@ -2051,7 +2052,7 @@ function problemType (type) {
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /* no static exports found */
 /* all exports used */
 /*!**************************************************!*\
@@ -2194,7 +2195,7 @@ module.exports = function(hash, moduleMap, options) {
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /* no static exports found */
 /* all exports used */
 /*!***********************************!*\
@@ -2227,7 +2228,6 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 16 */,
 /* 17 */,
 /* 18 */
 /* no static exports found */
@@ -2273,7 +2273,20 @@ wp.customize('blogname', function (value) {
 /* 40 */,
 /* 41 */,
 /* 42 */,
-/* 43 */
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */
 /* no static exports found */
 /* all exports used */
 /*!*********************************************************************************************!*\

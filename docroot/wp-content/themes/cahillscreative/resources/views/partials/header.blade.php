@@ -10,7 +10,7 @@
     </div>
     <div class="header__utility--right">
       <div class="header__utility-search">
-        @include('patterns.form--search')
+        @include('patterns.form__search')
       </div>
       <div class="header__utility-social">
         @include('patterns.social-links')

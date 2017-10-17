@@ -1,0 +1,1 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 21"><title>Plus</title><path d="M20.5,10H11V.5a.5.5,0,0,0-1,0V10H.5a.5.5,0,0,0,0,1H10v9.5a.5.5,0,0,0,1,0V11h9.5a.5.5,0,0,0,0-1Z" fill="#393939"/></svg>

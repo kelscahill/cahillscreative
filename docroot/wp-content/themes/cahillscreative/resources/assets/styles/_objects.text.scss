@@ -105,7 +105,9 @@ h5 {
  */
 @mixin font--secondary--xl() {
   font-size: rem(80);
+  line-height: 1;
   font-family: $font-secondary;
+  text-transform: capitalize;
 
   @include media ('>large') {
     font-size: rem(110);
@@ -161,6 +163,15 @@ h5 {
 
 .font--s {
   @include font--s;
+}
+
+.font--sans-serif {
+  font-family: $sans-serif;
+}
+
+.font--sans-serif--small {
+  font-size: rem(12);
+  font-weight: 400;
 }
 
 /**

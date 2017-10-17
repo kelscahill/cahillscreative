@@ -2,6 +2,18 @@
     $BLOCKS
 \*------------------------------------ */
 
+.block__post {
+  padding: $pad;
+  border: 1px solid $gray-light;
+  transition: all 0.25s ease;
+
+  &:hover,
+  &:focus {
+    border-color: $black;
+    color: $black;
+  }
+}
+
 .block__latest {
   display: flex;
   flex-direction: column;
@@ -9,5 +21,127 @@
   .block__link {
     display: flex;
     flex-direction: row;
+  }
+}
+
+.block__toolbar {
+  border-top: 1px solid $border-color;
+  margin-left: -$space;
+  margin-right: -$space;
+  margin-top: $space;
+  padding: $pad;
+  padding-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+
+  &--left {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: sans-serif;
+    text-align: left;
+  }
+
+  &--right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+}
+
+.block__toolbar-item {
+  display: flex;
+  align-items: center;
+}
+
+/**
+ * Tooltip
+ */
+.tooltip {
+  cursor: pointer;
+  position: relative;
+
+  &.is-active {
+    .tooltip-wrap {
+      display: table;
+    }
+  }
+}
+
+.tooltip-wrap {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  background-color: $white;
+  width: 100%;
+  height: auto;
+  z-index: 99999;
+  box-shadow: 1px 2px 3px rgba(black, 0.5);
+}
+
+.tooltip-item {
+  padding: $pad-half $pad;
+  border-bottom: 1px solid $border-color;
+  transition: all 0.25s ease;
+
+  &:hover {
+    background-color: $gray-light;
+  }
+}
+
+.tooltip-close {
+  border: none;
+
+  &:hover {
+    background-color: $black;
+    font-size: rem(12);
+  }
+}
+
+.no-touch {
+  .tooltip-wrap {
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: auto;
+  }
+}
+
+.wpulike.wpulike-heart {
+  .wp_ulike_general_class {
+    text-shadow: none;
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  .wp_ulike_btn.wp_ulike_put_image {
+    padding: rem(10) !important;
+    width: rem(20);
+    height: rem(20);
+    border: none;
+
+    a {
+      padding: 0;
+      background: url('../../assets/images/icon__like.svg') center center no-repeat;
+      background-size: rem(20);
+    }
+  }
+
+  .wp_ulike_general_class.wp_ulike_is_already_liked a {
+    background: url('../../assets/images/icon__liked.svg') center center no-repeat;
+    background-size: rem(20);
+  }
+
+  .count-box {
+    font-family: $sans-serif;
+    font-size: rem(12);
+    padding: 0;
+    margin-left: rem(5);
+    color: $gray;
   }
 }

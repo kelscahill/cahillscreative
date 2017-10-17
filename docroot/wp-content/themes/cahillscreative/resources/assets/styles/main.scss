@@ -69,7 +69,7 @@
 \*------------------------------------ */
 @import "tools.mixins";
 @import "tools.include-media";
-$tests: false;
+$tests: true;
 
 @import "tools.mq-tests";
 

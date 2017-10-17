@@ -1,6 +1,7 @@
 <!doctype html>
 <html <?php (language_attributes()); ?>>
   <?php echo $__env->make('partials.head', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+  <div class="overlay"></div>
   <body id="top" <?php (body_class()); ?>>
     <?php (do_action('get_header')); ?>
     <?php echo $__env->make('partials.header', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
