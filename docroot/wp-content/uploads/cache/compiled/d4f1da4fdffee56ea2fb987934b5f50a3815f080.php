@@ -26,6 +26,7 @@
           <h2 class="font--primary--s">Recent Posts</h2>
           <hr class="divider center-block" />
           <?php (the_content()); ?>
+          <div id="response" class="filter-response"></div>
           <?php if($posts->have_posts()): ?>
             <div class="grid grid--full">
               <?php while($posts->have_posts()): ?> <?php ($posts->the_post()); ?>

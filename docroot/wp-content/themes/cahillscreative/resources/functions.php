@@ -17,6 +17,46 @@ $sage_error = function ($message, $subtitle = '', $title = '') {
     wp_die($message, $title);
 };
 
+function misha_filter_function(){
+
+  $args = array(
+  	'post_type' => 'post',
+    'orderby' => 'date',
+  );
+
+  if( isset( $_POST['projects'] ) )
+		$args['tax_query'] = array(
+			array(
+				'taxonomy' => 'projects',
+				'field' => 'term_id',
+				'terms' => array($_POST['projects']),
+        'operator' => 'IN',
+			)
+		);
+
+
+
+	$query = new WP_Query( $args );
+
+	if( $query->have_posts() ) :
+		while( $query->have_posts() ): $query->the_post();
+			echo '<h2>' . $query->post->post_title . '</h2>';
+      echo $_POST['projects'];
+		endwhile;
+		wp_reset_postdata();
+	else :
+		echo 'No posts found';
+	endif;
+
+	die();
+}
+
+add_action('wp_ajax_myfilter', 'misha_filter_function');
+add_action('wp_ajax_nopriv_myfilter', 'misha_filter_function');
+
+
+
+
 /**
  * Ensure compatible version of PHP is used
  */

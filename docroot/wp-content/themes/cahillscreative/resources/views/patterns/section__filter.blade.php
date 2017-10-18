@@ -2,7 +2,7 @@
   <div class="filter-toggle js-toggle-parent">
     <span class="font--primary--xs color--gray filter-label"><span class="icon icon--s space--half-right path-fill--gray">@include('patterns.icon__filter')</span>Filter</span>
   </div>
-  <form class="filter-wrap">
+  <form class="filter-wrap" action="<?php echo site_url() ?>/wp-admin/admin-ajax.php" method="POST" id="filter">
     @if (is_category('diy'))
       <div class="filter-item__container filter-item__container-projects">
         <div class="filter-item__toggle filter-item__toggle-projects font--primary--s js-toggle-parent">Project</div>
@@ -16,8 +16,8 @@
           <div class="filter-items">
             @foreach ($term_projects as $term)
               <div class="filter-item">
-                <input type="checkbox" value="{{ $term->name }}" id="{{ $term->name }}">
-                <label for="{{ $term->name }}">{{ $term->name }}</label>
+                <input type="checkbox" value="{{ $term->term_id }}, " id="{{ $term->slug }}" name="projects">
+                <label for="{{ $term->slug }}">{{ $term->name }}</label>
               </div>
             @endforeach
           </div>
@@ -35,8 +35,8 @@
           <div class="filter-items">
             @foreach ($term_room as $term)
               <div class="filter-item">
-                <input type="checkbox" value="{{ $term->name }}" id="{{ $term->name }}">
-                <label for="{{ $term->name }}">{{ $term->name }}</label>
+                <input type="checkbox" value="{{ $term->term_id }}, " id="{{ $term->slug }}" name="room">
+                <label for="{{ $term->slug }}">{{ $term->name }}</label>
               </div>
             @endforeach
           </div>
@@ -51,37 +51,37 @@
           ));
         @endphp
         @if ($term_cost)
-          <div class="filter-items" data-post-type="post" data-type="checkbox" data-parameter="category">
+          <div class="filter-items">
             @foreach ($term_cost as $term)
-              <div class="filter-item" id="slider">
-                <input type="checkbox" value="{{ $term->name }}" id="{{ $term->name }}">
-                <label for="{{ $term->name }}">{{ $term->name }}</label>
+              <div class="filter-item" name="categoryfilter">
+                <input type="checkbox" value="{{ $term->term_id }}, " id="{{ $term->slug }}" name="cost">
+                <label for="{{ $term->slug }}">{{ $term->name }}</label>
               </div>
             @endforeach
           </div>
         @endif
       </div>
-      <div class="filter-item__container filter-item__container-skill is-active">
-        <div class="filter-item__toggle filter-item__toggle-skill font--primary--s">Skill Level</div>
-        @php
-          $term_skill = get_terms( array(
-            'taxonomy' => 'skill_levels',
-            'hide_empty' => false,
-          ));
-        @endphp
-        @if ($term_skill)
-          <div class="filter-items">
-            @foreach ($term_skill as $term)
-              <div class="filter-item filter-item__{{ $term->slug }} js-toggle">
-                <p class="font--sans-serif--small">{{ $term->name }}</p>
-              </div>
-            @endforeach
+      <div class="filter-item__container filter-item__container-skill">
+        <div class="filter-item__toggle filter-item__toggle-skill font--primary--s js-toggle-parent">Skill Level</div>
+        <div class="filter-items" data-type="checkbox" data-parameter="category">
+          <div class="filter-item">
+            <input type="checkbox" value="beginner" id="beginner" name="skill_level">
+            <label for="beginner">Beginner</label>
           </div>
-        @endif
+          <div class="filter-item">
+            <input type="checkbox" value="intermediate" id="intermediate" name="skill_level">
+            <label for="intermediate">Intermediate</label>
+          </div>
+          <div class="filter-item">
+            <input type="checkbox" value="advanced" id="advanced" name="skill_level">
+            <label for="advanced">Advanced</label>
+          </div>
+        </div>
       </div>
       <div class="filter-footer">
-        <button type="button" class="filter-apply">Apply Filters</button>
-        <button type="button" class="filter-clear">Clear Filter</button>
+        <button type="submit" class="filter-apply">Apply Filters</button>
+        <button type="submit" class="filter-clear">Clear Filter</button>
+        <input type="hidden" name="action" value="myfilter">
       </div>
     @else
       <select class="filter-item">
