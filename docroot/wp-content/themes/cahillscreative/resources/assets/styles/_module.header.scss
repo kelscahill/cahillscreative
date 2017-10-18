@@ -11,6 +11,8 @@
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
+  overflow: hidden;
+  border-bottom: 1px solid #4a4a4a;
 
   a:hover {
     opacity: 0.8;

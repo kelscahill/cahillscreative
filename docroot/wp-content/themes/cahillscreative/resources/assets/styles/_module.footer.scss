@@ -6,6 +6,7 @@
   position: relative;
   display: flex;
   flex-direction: row;
+  overflow: hidden;
   padding: $pad-double 0 $pad 0;
 
   a {

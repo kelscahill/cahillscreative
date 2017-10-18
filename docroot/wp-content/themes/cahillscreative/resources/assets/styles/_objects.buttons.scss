@@ -15,7 +15,9 @@ input[type="submit"] {
   border: none;
   transition: all 0.3s ease-in-out;
   border-radius: rem(50);
-  font-weight: 700;
+  text-align: center;
+
+  @include font--primary--xs;
 
   @include media ('>medium') {
     padding: rem(12) $pad-and-half;

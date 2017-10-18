@@ -1,6 +1,6 @@
 <section class="section section__filter filter sticky-filter">
   <div class="filter-toggle js-toggle-parent">
-    <span class="font--primary--xs color--gray">Filter</span>
+    <span class="font--primary--xs color--gray filter-label"><span class="icon icon--s space--half-right path-fill--gray"><?php echo $__env->make('patterns.icon__filter', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>Filter</span>
   </div>
   <form class="filter-wrap">
     <?php if(is_category('diy')): ?>
@@ -42,6 +42,25 @@
           </div>
         <?php endif; ?>
       </div>
+      <div class="filter-item__container filter-item__container-cost">
+        <div class="filter-item__toggle filter-item__toggle-cost font--primary--s js-toggle-parent">Cost</div>
+        <?php 
+          $term_cost = get_terms( array(
+            'taxonomy' => 'cost',
+            'hide_empty' => false,
+          ));
+         ?>
+        <?php if($term_cost): ?>
+          <div class="filter-items" data-post-type="post" data-type="checkbox" data-parameter="category">
+            <?php $__currentLoopData = $term_cost; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+              <div class="filter-item" id="slider">
+                <input type="checkbox" value="<?php echo e($term->name); ?>" id="<?php echo e($term->name); ?>">
+                <label for="<?php echo e($term->name); ?>"><?php echo e($term->name); ?></label>
+              </div>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+          </div>
+        <?php endif; ?>
+      </div>
       <div class="filter-item__container filter-item__container-skill is-active">
         <div class="filter-item__toggle filter-item__toggle-skill font--primary--s">Skill Level</div>
         <?php 
@@ -60,28 +79,10 @@
           </div>
         <?php endif; ?>
       </div>
-      <div class="filter-item__container filter-item__container-cost is-active">
-        <div class="filter-item__toggle filter-item__toggle-cost font--primary--s">Cost</div>
-        <?php 
-          $term_cost = get_terms( array(
-            'taxonomy' => 'cost',
-            'hide_empty' => false,
-          ));
-         ?>
-        <?php if($term_cost): ?>
-          <div class="filter-items">
-            <?php $__currentLoopData = $term_cost; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-              <div class="filter-item">
-                <input type="checkbox" value="<?php echo e($term->name); ?>" id="<?php echo e($term->name); ?>">
-                <label for="<?php echo e($term->name); ?>"><?php echo e($term->name); ?></label>
-              </div>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-          </div>
-        <?php endif; ?>
+      <div class="filter-footer">
+        <button type="button" class="filter-apply">Apply Filters</button>
+        <button type="button" class="filter-clear">Clear Filter</button>
       </div>
-      <a href="" class="filter-clear">
-        Clear Filter
-      </a>
     <?php else: ?>
       <select class="filter-item">
         <option selected>Category</option>

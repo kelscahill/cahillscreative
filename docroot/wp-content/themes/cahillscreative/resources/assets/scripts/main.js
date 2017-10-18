@@ -96,6 +96,7 @@
         $('.filter-clear').click(function(e) {
           e.preventDefault();
           $('.filter-item').removeClass('this-is-active');
+          $('.filter-item input[type=checkbox]').attr('checked',false);
         });
 
         /**
@@ -179,6 +180,78 @@
           e.preventDefault();
           toggleClasses($(this).parent());
         });
+
+        $(function() {
+
+      	/*
+      	* alm_adv_filter()
+      	* https://connekthq.com/plugins/ajax-load-more/examples/filtering/advanced-filtering/
+      	*
+      	*/
+
+        var alm_is_animating = false;
+
+        function alm_adv_filter(){
+
+        	if(alm_is_animating){
+        		return false; // Exit if filtering is still active
+        	}
+
+        	alm_is_animating = true;
+
+        	var obj= {},
+        		 count = 0;
+
+        	// Loop each filter menu
+        	$('.filter-item').each(function(e){
+        		var menu = $(this),
+        		    type = menu.data('type'), // type of filter elements (checkbox/radio/select)
+        		    parameter = menu.data('parameter'), // category/tag/year
+        		    value = '',
+        		    count = 0;
+
+        		// Loop each item in the menu
+        		if(type === 'checkbox' || type === 'radio'){ // Checkbox or Radio
+        			$('input:checked', menu).each(function(){
+        				count++;
+        				var el = $(this);
+
+        				// Build comma separated string of items
+        				if(count > 1){
+        					value += ','+el.val();
+        				}else{
+        					value += el.val();
+        				}
+        			});
+        		}
+
+        		if(type === 'select'){ // Select
+        			var select = $(this);
+        			value += select.val();
+        		}
+
+        		obj[parameter] = value; // add value(s) to obj
+
+        	});
+
+        	console.log(obj);
+
+        	var data = obj;
+        	$.fn.almFilter('fade', '300', data); // Send data to Ajax Load More
+        }
+
+        $('.filter-apply').on('click', alm_adv_filter); // 'Apply Filter' button click
+
+        /*
+        * almFilterComplete()
+        * Callback function sent from core Ajax Load More
+        *
+        */
+        $.fn.almFilterComplete = function(){
+        	alm_is_animating = false; // clear animating flag
+        };
+
+        })(jQuery);
 
       },
       finalize: function() {

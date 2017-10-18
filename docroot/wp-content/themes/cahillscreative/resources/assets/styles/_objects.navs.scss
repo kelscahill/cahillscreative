@@ -2,16 +2,6 @@
     $NAVIGATION
 \*------------------------------------ */
 
-.nav__primary-mobile {
-  display: none;
-  flex-direction: column;
-  width: 100%;
-  position: absolute;
-  background-color: white;
-  top: rem($small-header-height);
-  box-shadow: 0 1px 2px rgba($black, 0.4);
-}
-
 .nav__primary {
   display: flex;
   flex-wrap: nowrap;
@@ -37,6 +27,16 @@
     @include media('>large') {
       display: flex;
     }
+  }
+
+  &-mobile {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    position: absolute;
+    background-color: white;
+    top: rem($small-header-height);
+    box-shadow: 0 1px 2px rgba($black, 0.4);
   }
 }
 

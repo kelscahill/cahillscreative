@@ -1,6 +1,6 @@
 <section class="section section__filter filter sticky-filter">
   <div class="filter-toggle js-toggle-parent">
-    <span class="font--primary--xs color--gray">Filter</span>
+    <span class="font--primary--xs color--gray filter-label"><span class="icon icon--s space--half-right path-fill--gray">@include('patterns.icon__filter')</span>Filter</span>
   </div>
   <form class="filter-wrap">
     @if (is_category('diy'))
@@ -42,6 +42,25 @@
           </div>
         @endif
       </div>
+      <div class="filter-item__container filter-item__container-cost">
+        <div class="filter-item__toggle filter-item__toggle-cost font--primary--s js-toggle-parent">Cost</div>
+        @php
+          $term_cost = get_terms( array(
+            'taxonomy' => 'cost',
+            'hide_empty' => false,
+          ));
+        @endphp
+        @if ($term_cost)
+          <div class="filter-items" data-post-type="post" data-type="checkbox" data-parameter="category">
+            @foreach ($term_cost as $term)
+              <div class="filter-item" id="slider">
+                <input type="checkbox" value="{{ $term->name }}" id="{{ $term->name }}">
+                <label for="{{ $term->name }}">{{ $term->name }}</label>
+              </div>
+            @endforeach
+          </div>
+        @endif
+      </div>
       <div class="filter-item__container filter-item__container-skill is-active">
         <div class="filter-item__toggle filter-item__toggle-skill font--primary--s">Skill Level</div>
         @php
@@ -60,28 +79,10 @@
           </div>
         @endif
       </div>
-      <div class="filter-item__container filter-item__container-cost is-active">
-        <div class="filter-item__toggle filter-item__toggle-cost font--primary--s">Cost</div>
-        @php
-          $term_cost = get_terms( array(
-            'taxonomy' => 'cost',
-            'hide_empty' => false,
-          ));
-        @endphp
-        @if ($term_cost)
-          <div class="filter-items">
-            @foreach ($term_cost as $term)
-              <div class="filter-item">
-                <input type="checkbox" value="{{ $term->name }}" id="{{ $term->name }}">
-                <label for="{{ $term->name }}">{{ $term->name }}</label>
-              </div>
-            @endforeach
-          </div>
-        @endif
+      <div class="filter-footer">
+        <button type="button" class="filter-apply">Apply Filters</button>
+        <button type="button" class="filter-clear">Clear Filter</button>
       </div>
-      <a href="" class="filter-clear">
-        Clear Filter
-      </a>
     @else
       <select class="filter-item">
         <option selected>Category</option>
