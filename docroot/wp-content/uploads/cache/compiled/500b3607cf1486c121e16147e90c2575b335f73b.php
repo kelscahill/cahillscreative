@@ -35,7 +35,7 @@
         <?php endif; ?>
       </div>
       <a href="<?php echo e($link); ?>#comments" class="block__toolbar-item block__toolbar-comment space--right">
-        <span class="icon icon--m space--half-right"><?php echo $__env->make('patterns/icon__comment', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
+        <span class="icon icon--s space--half-right"><?php echo $__env->make('patterns/icon__comment', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
         <span class="font--sans-serif font--sans-serif--small color--gray">
           <?php 
             comments_number('0', '1', '%');
@@ -46,7 +46,7 @@
     <div class="block__toolbar--right tooltip">
       <div class="block__toolbar-item block__toolbar-share tooltip-toggle js-toggle-parent">
         <span class="font--primary--xs color--gray">Share</span>
-        <span class="icon icon--m space--half-left"><?php echo $__env->make('patterns/icon__share', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
+        <span class="icon icon--s space--half-left"><?php echo $__env->make('patterns/icon__share', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
       </div>
       <div class="block__toolbar-share-tooltip tooltip-wrap">
         <div class="tooltip-item font--primary--xs text-align--center color--gray">Share Post</div>

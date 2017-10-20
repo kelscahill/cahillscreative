@@ -6,6 +6,10 @@
   padding: $pad;
   border: 1px solid $gray-light;
   transition: all 0.25s ease;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  height: 100%;
 
   &:hover,
   &:focus {
@@ -130,6 +134,11 @@
       background: url('../../assets/images/icon__like.svg') center center no-repeat;
       background-size: rem(20);
     }
+  }
+
+  .wp_ulike_general_class.wp_ulike_is_unliked a {
+    background: url('../../assets/images/icon__like.svg') center center no-repeat;
+    background-size: rem(20);
   }
 
   .wp_ulike_general_class.wp_ulike_is_already_liked a {

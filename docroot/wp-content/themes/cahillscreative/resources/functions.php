@@ -17,6 +17,9 @@ $sage_error = function ($message, $subtitle = '', $title = '') {
     wp_die($message, $title);
 };
 
+/**
+ * Blog Filter
+ */
 function misha_filter_function(){
 
   $args = array(
@@ -33,8 +36,6 @@ function misha_filter_function(){
         'operator' => 'IN',
 			)
 		);
-
-
 
 	$query = new WP_Query( $args );
 
@@ -53,9 +54,6 @@ function misha_filter_function(){
 
 add_action('wp_ajax_myfilter', 'misha_filter_function');
 add_action('wp_ajax_nopriv_myfilter', 'misha_filter_function');
-
-
-
 
 /**
  * Ensure compatible version of PHP is used
@@ -158,3 +156,116 @@ add_filter('upload_mimes', 'cc_mime_types');
 /**
  * Post Types
  */
+
+ function cptui_register_my_taxes() {
+
+	/**
+	 * Taxonomy: Room.
+	 */
+
+	$labels = array(
+		"name" => __( "Room", "sage" ),
+		"singular_name" => __( "Room", "sage" ),
+	);
+
+	$args = array(
+		"label" => __( "Room", "sage" ),
+		"labels" => $labels,
+		"public" => true,
+		"hierarchical" => false,
+		"label" => "Room",
+		"show_ui" => true,
+		"show_in_menu" => true,
+		"show_in_nav_menus" => true,
+		"query_var" => true,
+		"rewrite" => array( 'slug' => 'room', 'with_front' => true, ),
+		"show_admin_column" => false,
+		"show_in_rest" => false,
+		"rest_base" => "",
+		"show_in_quick_edit" => false,
+	);
+	register_taxonomy( "room", array( "post" ), $args );
+
+	/**
+	 * Taxonomy: Cost.
+	 */
+
+	$labels = array(
+		"name" => __( "Cost", "sage" ),
+		"singular_name" => __( "Cost", "sage" ),
+	);
+
+	$args = array(
+		"label" => __( "Cost", "sage" ),
+		"labels" => $labels,
+		"public" => true,
+		"hierarchical" => false,
+		"label" => "Cost",
+		"show_ui" => true,
+		"show_in_menu" => true,
+		"show_in_nav_menus" => true,
+		"query_var" => true,
+		"rewrite" => array( 'slug' => 'cost', 'with_front' => true, ),
+		"show_admin_column" => false,
+		"show_in_rest" => false,
+		"rest_base" => "",
+		"show_in_quick_edit" => false,
+	);
+	register_taxonomy( "cost", array( "post" ), $args );
+
+	/**
+	 * Taxonomy: Projects.
+	 */
+
+	$labels = array(
+		"name" => __( "Project", "sage" ),
+		"singular_name" => __( "Project", "sage" ),
+	);
+
+	$args = array(
+		"label" => __( "Project", "sage" ),
+		"labels" => $labels,
+		"public" => true,
+		"hierarchical" => false,
+		"label" => "Projects",
+		"show_ui" => true,
+		"show_in_menu" => true,
+		"show_in_nav_menus" => true,
+		"query_var" => true,
+		"rewrite" => array( 'slug' => 'project', 'with_front' => true, ),
+		"show_admin_column" => false,
+		"show_in_rest" => false,
+		"rest_base" => "",
+		"show_in_quick_edit" => false,
+	);
+	register_taxonomy( "project", array( "post" ), $args );
+
+	/**
+	 * Taxonomy: Skill Levels.
+	 */
+
+	$labels = array(
+		"name" => __( "Skill Level", "sage" ),
+		"singular_name" => __( "Skill Level", "sage" ),
+	);
+
+	$args = array(
+		"label" => __( "Skill Level", "sage" ),
+		"labels" => $labels,
+		"public" => true,
+		"hierarchical" => false,
+		"label" => "Skill Levels",
+		"show_ui" => true,
+		"show_in_menu" => true,
+		"show_in_nav_menus" => true,
+		"query_var" => true,
+		"rewrite" => array( 'slug' => 'skill_level', 'with_front' => true, ),
+		"show_admin_column" => false,
+		"show_in_rest" => false,
+		"rest_base" => "",
+		"show_in_quick_edit" => false,
+	);
+	register_taxonomy( "skill_level", array( "post" ), $args );
+}
+
+add_action( 'init', 'cptui_register_my_taxes' );

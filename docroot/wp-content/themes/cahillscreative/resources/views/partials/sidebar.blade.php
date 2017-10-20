@@ -1,4 +1,4 @@
-<aside class="sidebar">
+<aside class="sidebar shift-right">
   <div class="widget">
     <h5 class="font--primary--xs color--black">Advertisements</h5>
     <hr />

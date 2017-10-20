@@ -8,7 +8,7 @@
         <div class="filter-item__toggle filter-item__toggle-projects font--primary--s js-toggle-parent">Project</div>
         <?php 
           $term_projects = get_terms( array(
-            'taxonomy' => 'projects',
+            'taxonomy' => 'project',
             'hide_empty' => false,
           ));
          ?>

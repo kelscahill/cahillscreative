@@ -21,6 +21,7 @@ $black: #393939;
 $off-white: #f7f8f3;
 $gray: #979797;
 $gray-light: #ececec;
+$bronze: #cd7232;
 $error: #f00;
 $valid: #089e00;
 $warning: #fff664;
@@ -79,9 +80,9 @@ $verticalspacing: (mobile: 20, desktop: 30);
 /**
  * Icon Sizing
  */
-$icon-xsmall: rem(10);
-$icon-small: rem(15);
-$icon-medium: rem(20);
+$icon-xsmall: rem(15);
+$icon-small: rem(20);
+$icon-medium: rem(30);
 $icon-large: rem(50);
 $icon-xlarge: rem(80);
 

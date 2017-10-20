@@ -8,6 +8,11 @@
   flex-direction: row;
   overflow: hidden;
   padding: $pad-double 0 $pad 0;
+  margin-bottom: rem(80);
+
+  @include media('>medium') {
+    margin-bottom: 0;
+  }
 
   a {
     color: $white;
@@ -33,10 +38,7 @@
   flex-direction: column;
 
   > div {
-    margin-top: $space-double;
-
-    @include media('>medium') {
-      margin-top: 0;
+    @include media('>xlarge') {
       width: 50%;
       flex-direction: row;
     }
@@ -137,6 +139,27 @@
     &:hover {
       opacity: 0.8;
     }
+  }
+}
+
+.footer__posts {
+  margin-top: $space;
+
+  @include media('>medium') {
+    margin-top: 0;
+  }
+}
+
+.footer__ads {
+  margin-top: $space-double;
+
+  @include media('>medium') {
+    display: none;
+  }
+
+  @include media('>xlarge') {
+    display: block;
+    margin-top: 0;
   }
 }
 

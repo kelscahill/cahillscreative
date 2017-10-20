@@ -1,8 +1,18 @@
 <section class="section section__main">
   <div class="layout-container section__main--inner">
-    <article @php(post_class('article narrow spacing--double'))>
+    <article @php(post_class('article spacing--double'))>
       @include('partials.page-header')
-      <div class="article__body spacing">
+      <div class="article__body spacing narrow narrow--xl">
+        @php
+          $thumb_id = get_post_thumbnail_id();
+          $image_small = wp_get_attachment_image_src($thumb_id, 'horiz__16x9--s')[0];
+          $image_medium = wp_get_attachment_image_src($thumb_id, 'horiz__16x9--m')[0];
+          $image_alt = get_post_meta($thumb_id, '_wp_attachment_image_alt', true);
+        @endphp
+        <picture class="block__thumb">
+          <source srcset="{{ $image_medium }}" media="(min-width:500px)">
+          <img src="{{ $image_small }}" alt="{{ $image_alt }}">
+        </picture>
         @php(the_content())
       </div>
     </article>

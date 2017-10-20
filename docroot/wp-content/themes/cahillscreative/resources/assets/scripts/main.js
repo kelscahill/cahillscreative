@@ -74,13 +74,26 @@
           cssEase: 'linear',
         });
 
+        $('.slick-gallery').slick({
+          prevArrow: '<span class="icon--arrow icon--arrow-prev"></span>',
+          nextArrow: '<span class="icon--arrow icon--arrow-next"></span>',
+          dots: true,
+          autoplay: false,
+          arrows: true,
+          infinite: true,
+          speed: 250,
+          fade: true,
+          cssEase: 'linear',
+        });
+
         /**
          * Fixto
          */
-        $('.sticky').fixTo('body', {
+        $('.sticky').fixTo('.sticky-parent', {
           className: 'sticky-is-active',
           useNativeSticky: false,
-          mind: '.header__utility'
+          mind: '.header__utility',
+          top: 20
         });
 
         $('.sticky-filter').fixTo('.main', {

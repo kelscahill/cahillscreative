@@ -172,7 +172,7 @@ add_image_size('featured__hero--xl', 1600, 600, array('center', 'center'));
 add_image_size('horiz__16x9--s', 500, 280, array('center', 'center'));
 add_image_size('horiz__16x9--m', 800, 450, array('center', 'center'));
 add_image_size('horiz__16x9--l', 1100, 620, array('center', 'center'));
-//add_image_size('horiz__16x9--xl', 1600, 900, array('center', 'center'));
+add_image_size('horiz__16x9--xl', 1600, 900, array('center', 'center'));
 
 // 4:3 crop.
 add_image_size('horiz__4x3--s', 500, 375, array('center', 'center'));

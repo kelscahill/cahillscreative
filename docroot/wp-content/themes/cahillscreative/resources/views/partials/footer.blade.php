@@ -36,12 +36,11 @@
         <div class="footer__ads">
           <span class="color--gray font--primary--xs space--half-bottom">Advertisements</span>
           <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-          <!-- Footer Ad -->
+          <!-- Footer Ad (Rectangle) -->
           <ins class="adsbygoogle"
-               style="display:block"
+               style="display:inline-block;width:336px;height:280px"
                data-ad-client="ca-pub-3133257559155527"
-               data-ad-slot="7618817683"
-               data-ad-format="auto"></ins>
+               data-ad-slot="9671017956"></ins>
           <script>
           (adsbygoogle = window.adsbygoogle || []).push({});
           </script>

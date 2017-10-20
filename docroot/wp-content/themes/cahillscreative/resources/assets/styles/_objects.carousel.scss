@@ -140,13 +140,12 @@
       line-height: 0;
       font-size: 0;
       color: transparent;
-      background: transparent;
-      box-shadow: 0 0 0 1px $white;
+      background: $gray;
     }
 
     &.slick-active {
       button {
-        background-color: $white;
+        background-color: $black;
       }
     }
   }
@@ -158,179 +157,54 @@
   transition: all 0.25s ease;
 
   &:hover {
-    opacity: 0.8;
+    opacity: 1;
   }
 }
 
-.slick-hero,
 .slick-gallery {
+  flex-direction: column;
+  margin-left: -$space;
+  margin-right: -$space;
+  width: calc(100% + 40px);
   align-items: center;
-  position: relative;
 
-  .slick-arrow {
-    position: absolute;
-    z-index: 99;
-    top: 50%;
-  }
-
-  .icon--arrow-prev {
-    left: 0;
-    transform: translateY(-50%) rotate(180deg);
-  }
-
-  .icon--arrow-next {
-    right: 0;
-    transform: translateY(-50%);
-  }
-}
-
-.slick-testimonials {
-  .icon--arrow-prev {
-    transform: rotate(180deg);
-  }
-}
-
-.slick-hero {
-  background: black;
-
-  .slick-list,
-  .slick-track,
-  .slick-slide {
-    height: 100vh;
-    width: 100vw;
-    min-width: 100%;
-    max-width: 100%;
-    display: flex;
-  }
-
-  .slick-slide {
-    visibility: hidden;
-    opacity: 0 !important;
-    background-color: black !important;
-    z-index: -1;
-    transition: all 0.5s cubic-bezier(0.28, 0, 0.18, 1) !important;
-
-    &.slick-active {
-      z-index: 1;
-      visibility: visible;
-      opacity: 1 !important;
-    }
-  }
-
-  &.slick-slider .slick-background {
-    transition: transform 11.5s cubic-bezier(0.28, 0, 0.18, 1);
-    transition-delay: 0.25s;
-    transform: scale(1.001, 1.001);
-  }
-
-  &.slick-slider .slick-active > .slick-background {
-    transform: scale(1.1, 1.1) translate3d(0, 0, 0);
-    transform-origin: 50% 50%;
-  }
-
-  .slick-dots {
-    position: absolute;
-    bottom: $space;
-    left: 0;
-    right: 0;
+  @include media('>large') {
     margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
-    height: auto;
-
-    @include media('>medium') {
-      height: 100%;
-      right: auto;
-      left: rem(-5);
-      top: 0;
-      bottom: 0;
-      margin: auto;
-      width: rem(65);
-      flex-direction: column;
-      display: flex !important;
-    }
-
-    li {
-      padding: rem(6.5);
-      text-align: center;
-
-      @include media('>medium') {
-        padding: rem(6.5) 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        width: 100%;
-      }
-
-      &.slick-active {
-        button {
-          opacity: 1;
-
-          @include media('>medium') {
-            width: 100% !important;
-          }
-        }
-      }
-
-      button {
-        display: block;
-        width: rem(65);
-        height: rem(6);
-        text-align: center;
-        box-shadow: none;
-        opacity: 0.6;
-        border-radius: rem(7);
-        background-color: $primary-color;
-
-        @include media('>medium') {
-          width: rem(20);
-        }
-
-        &::after {
-          display: none;
-        }
-      }
-    }
+    width: 100%;
   }
-}
 
-.slick-testimonials,
-.slick-gallery {
   .slick-list,
   .slick-track,
   .slick-slide {
     height: auto;
     width: 100%;
     display: flex;
+    position: relative;
+  }
+
+  .slick-arrow {
+    position: absolute;
+    z-index: 99;
+    top: calc(50% - 20px);
+    transform: translateY(calc(-50% - 20px));
+    opacity: 0.2;
+  }
+
+  .icon--arrow-prev {
+    left: rem(-60);
+    transform: translateY(-50%) rotate(180deg);
+    background-position: center right;
+  }
+
+  .icon--arrow-next {
+    right: rem(-60);
+    transform: translateY(-50%);
+    background-position: center right;
   }
 }
 
-.hero__video {
-  background: 50% 50% / cover no-repeat;
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
-
-  &.jwplayer {
-    transition: opacity 1s ease-in-out;
-  }
-
-  &.is-fading .jwplayer {
-    opacity: 0;
-  }
-
-  .jwplayer.jw-flag-aspect-mode {
-    height: 100% !important;
-  }
-
-  .jw-state-playing {
-    opacity: 1;
-  }
+.touch .slick-gallery .slick-arrow {
+  display: none;
 }
 
 .jwplayer.jw-stretch-uniform video {

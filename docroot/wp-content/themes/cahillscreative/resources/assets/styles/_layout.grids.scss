@@ -156,6 +156,15 @@
  * Full column grid
  */
 .grid--full {
+  display: flex;
+  justify-content: stretch;
+  flex-direction: row;
+  position: relative;
+
+  > * {
+    margin: $space-half 0;
+  }
+
   @include media ('>small') {
     width: 100%;
 
@@ -173,18 +182,6 @@
   @include media ('>xlarge') {
     > * {
       width: 25%;
-    }
-  }
-
-  @include media ('>xxlarge') {
-    > * {
-      width: 20%;
-    }
-  }
-
-  @include media ('>xxxlarge') {
-    > * {
-      width: 16.67%;
     }
   }
 }

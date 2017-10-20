@@ -22,6 +22,72 @@
   margin: 0 auto;
 }
 
+.wrap--2-col {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+
+  @include media('>xlarge') {
+    flex-direction: row;
+  }
+
+  .shift-left {
+    @include media('>xlarge') {
+      width: calc(100% - 320px);
+      padding-right: $pad;
+    }
+  }
+
+  .shift-right {
+    margin-top: $space-double;
+
+    @include media('>medium') {
+      padding-left: rem(170);
+    }
+
+    @include media('>xlarge') {
+      width: rem(320);
+      padding-left: $pad;
+      margin-top: 0;
+    }
+  }
+}
+
+.wrap--2-col--small {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+
+  @include media('>medium') {
+    flex-direction: row;
+  }
+
+  .shift-left--small {
+    width: rem(150);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
+    display: none;
+
+    @include media('>medium') {
+      padding-right: $pad;
+      display: flex;
+    }
+  }
+
+  .shift-right--small {
+    width: 100%;
+
+    @include media('>medium') {
+      padding-left: $pad;
+      width: calc(100% - 150px);
+    }
+  }
+}
+
 /**
  * Wrapping element to keep content contained and centered at narrower widths.
  */

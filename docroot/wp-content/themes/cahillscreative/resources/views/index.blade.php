@@ -35,7 +35,7 @@
                   $title = get_the_title($id);
                   $excerpt = get_the_excerpt($id);
                   $thumb_id = get_post_thumbnail_id($id);
-                  $thumb_size = 'horiz__4x3';
+                  $thumb_size = 'square';
                   $kicker = get_the_category($id);
                   $link = get_permalink($id);
                   $date = date('F j, Y', strtotime(get_the_date()));

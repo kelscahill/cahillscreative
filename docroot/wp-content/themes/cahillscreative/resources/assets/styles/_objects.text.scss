@@ -52,7 +52,7 @@ h2 {
   font-size: rem(16);
   line-height: rem(20);
   font-family: $font-primary;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 2px;
   text-transform: uppercase;
 
@@ -107,7 +107,8 @@ h5 {
   font-size: rem(80);
   line-height: 1;
   font-family: $font-secondary;
-  text-transform: capitalize;
+  letter-spacing: normal;
+  text-transform: none;
 
   @include media ('>large') {
     font-size: rem(110);
@@ -125,6 +126,9 @@ h5 {
 @mixin font--secondary--l() {
   font-size: rem(40);
   font-family: $font-secondary;
+  letter-spacing: normal;
+  text-transform: none;
+  line-height: 1.2;
 
   @include media ('>large') {
     font-size: rem(50);

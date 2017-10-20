@@ -2,6 +2,128 @@
     $ARTICLE
 \*------------------------------------ */
 
+.article__categories {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid $gray-light;
+  border-bottom: 1px solid $gray-light;
+  padding: $pad;
+
+  @include media('>medium') {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.article__category {
+  display: flex;
+  flex-direction: row;
+  text-align: left;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  > * {
+    width: 50%;
+  }
+
+  span {
+    padding-right: $pad;
+    min-width: rem(120);
+    text-align: right;
+  }
+
+  @include media('>medium') {
+    flex-direction: column;
+    text-align: center;
+    width: auto;
+
+    > * {
+      width: auto;
+    }
+
+    span {
+      padding-right: 0;
+      text-align: center;
+      margin-bottom: rem(5);
+    }
+  }
+}
+
+.article__content--left {
+  .divider {
+    margin: $space-half auto;
+  }
+}
+
+.article__body {
+  padding-bottom: $pad-double;
+}
+
+.article__image {
+  margin-left: -$space;
+  margin-right: -$space;
+
+  @include media('>medium') {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.article__toolbar {
+  position: fixed;
+  bottom: 0;
+  margin: 0;
+  left: 0;
+  width: 100%;
+  height: rem(40);
+  background: white;
+  padding: 0 $pad-half;
+  z-index: 9999;
+
+  @include media('>medium') {
+    display: none;
+  }
+
+  .block__toolbar--right {
+    display: flex;
+    align-items: center;
+
+    a {
+      line-height: rem(40);
+    }
+
+    .icon {
+      width: rem(10);
+      height: rem(20);
+      position: relative;
+      top: rem(5);
+      margin-left: $space-half;
+    }
+  }
+}
+
+.article__share {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.article__share-link {
+  transition: all 0.25s ease;
+  margin-left: auto;
+  margin-right: auto;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
 ol,
 ul {
   .article__body & {
