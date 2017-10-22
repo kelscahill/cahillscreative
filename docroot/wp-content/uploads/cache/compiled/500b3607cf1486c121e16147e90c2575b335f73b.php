@@ -14,7 +14,7 @@
     <div class="block__content spacing--half">
       <?php if(!empty($kicker)): ?>
         <div class="block__kicker font--primary--xs color--gray">
-          <?php echo e($kicker[0]->name); ?>
+          <?php echo e($kicker); ?>
 
         </div>
       <?php endif; ?>
@@ -34,14 +34,16 @@
           <?php  wp_ulike('get');  ?>
         <?php endif; ?>
       </div>
-      <a href="<?php echo e($link); ?>#comments" class="block__toolbar-item block__toolbar-comment space--right">
-        <span class="icon icon--s space--half-right"><?php echo $__env->make('patterns/icon__comment', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
-        <span class="font--sans-serif font--sans-serif--small color--gray">
-          <?php 
-            comments_number('0', '1', '%');
-           ?>
-        </span>
-      </a>
+      <?php if(comments_open()): ?>
+        <a href="<?php echo e($link); ?>#comments" class="block__toolbar-item block__toolbar-comment space--right">
+          <span class="icon icon--s space--half-right"><?php echo $__env->make('patterns/icon__comment', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
+          <span class="font--sans-serif font--sans-serif--small color--gray">
+            <?php 
+              comments_number('0', '1', '%');
+             ?>
+          </span>
+        </a>
+      <?php endif; ?>
     </div>
     <div class="block__toolbar--right tooltip">
       <div class="block__toolbar-item block__toolbar-share tooltip-toggle js-toggle-parent">

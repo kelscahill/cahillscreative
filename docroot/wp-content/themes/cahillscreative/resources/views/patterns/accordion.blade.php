@@ -23,16 +23,26 @@
         </div>
         <div class="accordion-item__body article__body spacing padding--zero step">
           @foreach ($instructions as $item)
-            <div class="step-item">
-              <div class="step-item__number"><span class="font--primary--xs color--gray">Step</span></div>
+            <div class="step-item sticky-parent">
+              <div class="step-item__number sticky"><span class="font--primary--xs color--gray">Step</span></div>
               <div class="step-item__content spacing">
                 @php echo wpautop($item['instructions_content']); @endphp
-                @if (!empty($item['instructions_image']))
-                  <picture class="block__thumb">
-                    <source srcset="{{ $item['instructions_image']['sizes']['horiz__4x3--l'] }}" media="(min-width:800px)">
-                    <source srcset="{{ $item['instructions_image']['sizes']['horiz__4x3--l'] }}" media="(min-width:500px)">
-                    <img src="{{ $item['instructions_image']['sizes']['horiz__4x3--l'] }}" alt="{{ $item['instructions_image']['alt'] }}">
-                  </picture>
+                @php $images = $item['instructions_image']; @endphp
+                @if ($images)
+                  @foreach ($images as $image)
+                    @if ($image['caption'])
+                      <div class="instructions__caption text-align--center space--double-top">
+                        <h5 class="font--primary--xs">{{ $image['caption'] }}</h5>
+                        <h6 class="font--s color--gray">{{ $image['description'] }}</h6>
+                      </div>
+                    @endif
+                    <picture class="block__thumb">
+                      <source srcset="{{ $image['sizes']['flex-height--m'] }}" media="(min-width:1300px)">
+                      <source srcset="{{ $image['sizes']['flex-height--l'] }}" media="(min-width:900px)">
+                        <source srcset="{{ $image['sizes']['flex-height--m'] }}" media="(min-width:400px)">
+                      <img src="{{ $image['sizes']['flex-height--s'] }}" alt="{{ $image['alt'] }}">
+                    </picture>
+                  @endforeach
                 @endif
               </div>
             </div>

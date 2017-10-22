@@ -28,7 +28,7 @@ strong {
 hr {
   height: 1px;
   border: none;
-  background-color: $border-color;
+  background-color: $gray;
 
   @include center-block;
 }

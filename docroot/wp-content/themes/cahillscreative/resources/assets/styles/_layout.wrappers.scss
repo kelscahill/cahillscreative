@@ -59,6 +59,7 @@
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: flex-start;
+  position: relative;
 
   @include media('>medium') {
     flex-direction: row;
@@ -86,6 +87,10 @@
       width: calc(100% - 150px);
     }
   }
+}
+
+.shift-left--small.sticky-is-active {
+  max-width: rem(150) !important;
 }
 
 /**

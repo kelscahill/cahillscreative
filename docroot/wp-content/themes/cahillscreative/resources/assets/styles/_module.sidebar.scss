@@ -1,3 +1,48 @@
 /* ------------------------------------*\
     $SIDEBAR
 \*------------------------------------ */
+
+.widget-tags {
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+
+    .tag::before {
+      content: " , ";
+    }
+
+    .tag:first-child::before {
+      content: "";
+    }
+  }
+}
+
+.widget-mailing {
+  form {
+    input {
+      border-color: $black;
+      color: $black;
+    }
+  }
+
+  button {
+    background-color: $black;
+    color: $white;
+
+    &:hover {
+      background-color: black;
+      color: $white;
+    }
+  }
+}
+
+.widget-related {
+  .block {
+    margin-bottom: $space;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

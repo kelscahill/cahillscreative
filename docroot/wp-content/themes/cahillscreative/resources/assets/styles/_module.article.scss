@@ -7,8 +7,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-top: 1px solid $gray-light;
-  border-bottom: 1px solid $gray-light;
+  border-top: 1px solid $gray;
+  border-bottom: 1px solid $gray;
   padding: $pad;
 
   @include media('>medium') {
@@ -56,6 +56,12 @@
 .article__content--left {
   .divider {
     margin: $space-half auto;
+  }
+}
+
+.article__content--right {
+  .yarpp-related {
+    display: none;
   }
 }
 
@@ -197,11 +203,6 @@ body#tinymce,
   dt,
   dd {
     @include p;
-  }
-
-  p span,
-  p strong span {
-    font-family: $font !important;
   }
 
   strong {

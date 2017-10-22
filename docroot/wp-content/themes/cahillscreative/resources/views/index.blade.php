@@ -1,44 +1,71 @@
 @php
-  // Display posts by category
-  if (is_category('diy')) {
-    $category = 'diy';
-  } elseif (is_category('health')) {
-    $category = 'health';
+  $id = get_queried_object_id();
+  if (is_tag()) {
+    $args = array(
+     'post_type' => array(
+       'post',
+       'affiliate',
+     ),
+     'posts_per_page' => 12,
+     'post_status' => 'publish',
+     'order' => 'DESC',
+     'tax_query' => array(
+       array(
+         'taxonomy' => 'post_tag',
+         'field' => 'slug',
+         'terms' => get_cat_name($id)
+       )
+     )
+   );
+  } elseif (is_category()) {
+     $args = array(
+      'post_type' => 'post',
+      'category_name' => get_cat_name($id),
+      'posts_per_page' => 12,
+      'post_status' => 'publish',
+      'order' => 'DESC',
+    );
   } else {
-    $category = '';
+    $args = array(
+      'post_type' => 'post',
+      'posts_per_page' => 12,
+      'post_status' => 'publish',
+      'order' => 'DESC',
+    );
   }
-  $posts = new WP_Query(array(
-    'post_type' => 'post',
-    'category_name' => $category,
-    'posts_per_page' => 12,
-    'post_status' => 'publish',
-    'order' => 'DESC',
-  ));
+  $posts = new WP_Query($args);
 @endphp
 @extends('layouts.app')
 @section('content')
   @include('patterns.section__hero')
-  @include('patterns.section__filter')
+  <?php /* @include('patterns.section__filter') */ ?>
   <section class="section section__main">
     <div class="layout-container section__main--inner">
       <article @php(post_class('article spacing--double'))>
         <div class="article__body spacing text-align--center">
           <h2 class="font--primary--s">Recent Posts</h2>
           <hr class="divider center-block" />
-          @php(the_content())
-          <div id="response" class="filter-response"></div>
+          @if (get_field('intro'))
+            <p class="page-intro">{{ get_field('intro') }}</p>
+          @endif
+          <?php /* <div id="response" class="filter-response"></div> */ ?>
           @if ($posts->have_posts())
             <div class="grid grid--full">
               @while ($posts->have_posts()) @php($posts->the_post())
                 @php
-                  $id = get_the_ID();
-                  $title = get_the_title($id);
-                  $excerpt = get_the_excerpt($id);
-                  $thumb_id = get_post_thumbnail_id($id);
+                  $post_id = get_the_ID();
+                  $title = get_the_title($post_id);
+                  $excerpt = get_the_excerpt($post_id);
+                  $thumb_id = get_post_thumbnail_id($post_id);
                   $thumb_size = 'square';
-                  $kicker = get_the_category($id);
-                  $link = get_permalink($id);
-                  $date = date('F j, Y', strtotime(get_the_date()));
+                  $link = get_permalink($post_id);
+                  $date = date('F j, Y', strtotime(get_the_date($post_id)));
+                  $post_type = get_post_type($post_id);
+                  if ($post_type == 'affiliate') {
+                    $kicker = 'Shop';
+                  } else {
+                    $kicker = get_the_category($post_id)[0]->name;
+                  }
                 @endphp
                 <div class="grid-item">
                   @include('patterns.block')

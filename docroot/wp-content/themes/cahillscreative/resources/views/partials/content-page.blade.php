@@ -2,7 +2,7 @@
   <div class="layout-container section__main--inner">
     <article @php(post_class('article spacing--double'))>
       @include('partials.page-header')
-      <div class="article__body spacing narrow narrow--xl">
+      <div class="article__body spacing narrow narrow--l">
         @php
           $thumb_id = get_post_thumbnail_id();
           $image_small = wp_get_attachment_image_src($thumb_id, 'horiz__16x9--s')[0];
@@ -16,6 +16,5 @@
         @php(the_content())
       </div>
     </article>
-    @include('partials.sidebar')
   </div>
 </section>

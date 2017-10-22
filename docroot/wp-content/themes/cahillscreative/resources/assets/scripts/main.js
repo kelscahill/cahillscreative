@@ -89,18 +89,30 @@
         /**
          * Fixto
          */
-        $('.sticky').fixTo('.sticky-parent', {
-          className: 'sticky-is-active',
-          useNativeSticky: false,
-          mind: '.header__utility',
-          top: 20
-        });
+        if (window.location.hash) {
+        } else {
+          $('.sticky').fixTo('.sticky-parent', {
+            className: 'sticky-is-active',
+            useNativeSticky: false,
+            mind: '.header__utility',
+            top: 15
+          });
+        }
 
         $('.sticky-filter').fixTo('.main', {
           className: 'sticky-is-active',
           useNativeSticky: false,
           mind: '.header__utility'
         });
+
+        if (!isMobile()) {
+          $('.sticky-ad').fixTo('.main', {
+            className: 'sticky-is-active',
+            useNativeSticky: false,
+            mind: '.header__utility',
+            top: 15
+          });
+        }
 
         $('.filter-toggle').click(function() {
           $('body').toggleClass('filter-is-active');

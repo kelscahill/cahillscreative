@@ -21,20 +21,17 @@
           </div>
         </div>
         <div class="footer__mailing">
-          <span class="color--gray font--primary--xs">Join the mailing list</span>
-          <form action="https://cahillscreative.us3.list-manage.com/subscribe/post?u=1bf312784f904cef8899dc68d&amp;id=864ef19e83" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="form--inline space--half-top validate" target="_blank" novalidate>
-            <input id="mce-EMAIL" name="EMAIL" type="email" placeholder="Email address" name="email"/>
-            <button class="btn">Sign Up</button>
-          </form>
+          <h3 class="color--gray font--primary--xs">Join the mailing list</h3>
+          @include('patterns/form__newsletter')
         </div>
       </div>
       <div class="grid-item footer--right">
         <div class="footer__posts spacing">
-          <span class="color--gray font--primary--xs">Latest Posts</span>
+          <h3 class="color--gray font--primary--xs">Latest Posts</h3>
           @include('patterns.feed__latest')
         </div>
         <div class="footer__ads">
-          <span class="color--gray font--primary--xs space--half-bottom">Advertisements</span>
+          <h3 class="color--gray font--primary--xs space--half-bottom">Advertisements</h3>
           <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
           <!-- Footer Ad (Rectangle) -->
           <ins class="adsbygoogle"

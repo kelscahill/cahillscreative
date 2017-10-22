@@ -167,6 +167,7 @@
   margin-right: -$space;
   width: calc(100% + 40px);
   align-items: center;
+  max-height: 100vh;
 
   @include media('>large') {
     margin: 0 auto;
@@ -188,6 +189,11 @@
     top: calc(50% - 20px);
     transform: translateY(calc(-50% - 20px));
     opacity: 0.2;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 
   .icon--arrow-prev {
@@ -204,7 +210,7 @@
 }
 
 .touch .slick-gallery .slick-arrow {
-  display: none;
+  display: none !important;
 }
 
 .jwplayer.jw-stretch-uniform video {

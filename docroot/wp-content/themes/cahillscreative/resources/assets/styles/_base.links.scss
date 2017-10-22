@@ -5,7 +5,7 @@ a {
   text-decoration: none;
   color: $link-color;
   transition: all 0.6s ease-out;
-  cursor: pointer;
+  cursor: pointer !important;
 
   &:hover {
     text-decoration: none;

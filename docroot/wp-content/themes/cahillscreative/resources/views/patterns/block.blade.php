@@ -14,7 +14,7 @@
     <div class="block__content spacing--half">
       @if (!empty($kicker))
         <div class="block__kicker font--primary--xs color--gray">
-          {{ $kicker[0]->name }}
+          {{ $kicker}}
         </div>
       @endif
       <div class="block__title font--primary--m color--black">
@@ -32,14 +32,16 @@
           @php wp_ulike('get'); @endphp
         @endif
       </div>
-      <a href="{{ $link }}#comments" class="block__toolbar-item block__toolbar-comment space--right">
-        <span class="icon icon--s space--half-right">@include('patterns/icon__comment')</span>
-        <span class="font--sans-serif font--sans-serif--small color--gray">
-          @php
-            comments_number('0', '1', '%');
-          @endphp
-        </span>
-      </a>
+      @if (comments_open())
+        <a href="{{ $link }}#comments" class="block__toolbar-item block__toolbar-comment space--right">
+          <span class="icon icon--s space--half-right">@include('patterns/icon__comment')</span>
+          <span class="font--sans-serif font--sans-serif--small color--gray">
+            @php
+              comments_number('0', '1', '%');
+            @endphp
+          </span>
+        </a>
+      @endif
     </div>
     <div class="block__toolbar--right tooltip">
       <div class="block__toolbar-item block__toolbar-share tooltip-toggle js-toggle-parent">

@@ -37,6 +37,7 @@ input[type=search],
 input[type=tel],
 input[type=text],
 input[type=url],
+input[type=search],
 textarea,
 select {
   width: 100%;
@@ -100,6 +101,16 @@ input[type=radio] + label {
   line-height: 1;
 }
 
+input[type=submit] {
+  margin-top: $space;
+
+  &:hover {
+    background-color: black;
+    color: white;
+    cursor: pointer;
+  }
+}
+
 .form--inline {
   display: flex;
   justify-content: stretch;
@@ -109,18 +120,45 @@ input[type=radio] + label {
   input {
     height: 100%;
     max-height: rem(50);
-    width: calc(100% - 100px);
+    width: calc(100% - 80px);
     background-color: transparent;
     border: 1px solid $white;
     color: $white;
+    z-index: 1;
 
-    @include p;
+    /* Chrome/Opera/Safari */
+    &::-webkit-input-placeholder {
+      color: $gray;
+
+      @include font--s;
+    }
+
+    /* Firefox 19+ */
+    &::-moz-placeholder {
+      color: $gray;
+
+      @include font--s;
+    }
+
+    /* IE 10+ */
+    &:-ms-input-placeholder {
+      color: $gray;
+
+      @include font--s;
+    }
+
+    /* Firefox 18- */
+    &:-moz-placeholder {
+      color: $gray;
+
+      @include font--s;
+    }
   }
 
   button {
     display: flex;
     justify-content: center;
-    width: rem(100);
+    width: rem(80);
     padding: 0;
     margin: 0;
     position: relative;
@@ -145,9 +183,117 @@ input[type=radio] + label {
   position: relative;
   overflow: hidden;
   height: rem(40);
+  width: 100%;
+  border-bottom: 1px solid $gray;
+
+  input[type=text] {
+    background-color: transparent;
+    height: rem(40);
+    border: none;
+    color: $gray;
+    z-index: 1;
+    padding-left: 0;
+
+    /* Chrome/Opera/Safari */
+    &::-webkit-input-placeholder {
+      color: $black;
+
+      @include font--primary--xs;
+    }
+
+    /* Firefox 19+ */
+    &::-moz-placeholder {
+      color: $black;
+
+      @include font--primary--xs;
+    }
+
+    /* IE 10+ */
+    &:-ms-input-placeholder {
+      color: $black;
+
+      @include font--primary--xs;
+    }
+
+    /* Firefox 18- */
+    &:-moz-placeholder {
+      color: $black;
+
+      @include font--primary--xs;
+    }
+  }
+
+  button {
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(40);
+    height: rem(40);
+    z-index: 2;
+    padding: 0;
+
+    &:hover span {
+      transform: scale(1.1);
+    }
+
+    span {
+      transition: all 0.25s ease;
+      margin: 0 auto;
+
+      svg path {
+        fill: $black;
+      }
+    }
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+header .form__search {
+  position: relative;
+  border: none;
+
+  input[type=text] {
+    color: white;
+    font-size: rem(14);
+    width: rem(110);
+    padding-left: rem($utility-header-height);
+
+    /* Chrome/Opera/Safari */
+    &::-webkit-input-placeholder {
+      color: $white;
+
+      @include font--primary--xs;
+    }
+
+    /* Firefox 19+ */
+    &::-moz-placeholder {
+      color: $white;
+
+      @include font--primary--xs;
+    }
+
+    /* IE 10+ */
+    &:-ms-input-placeholder {
+      color: $white;
+
+      @include font--primary--xs;
+    }
+
+    /* Firefox 18- */
+    &:-moz-placeholder {
+      color: $white;
+
+      @include font--primary--xs;
+    }
+  }
 
   input[type=text]:focus,
-  &:hover input[type=text] {
+  &:hover input[type=text],
+  input[type=text]:not(:placeholder-shown) {
     width: 100%;
     min-width: rem(200);
     background-color: rgba(black, 0.8);
@@ -158,54 +304,48 @@ input[type=radio] + label {
     }
   }
 
-  input[type=text] {
-    background-color: transparent;
-    height: rem(40);
-    border: none;
-    color: white;
-    font-size: rem(14);
-    width: rem(100);
-    padding-left: rem($utility-header-height);
-    z-index: 1;
-
-    /* Chrome/Opera/Safari */
-    &::-webkit-input-placeholder {
-      color: white;
-    }
-
-    /* Firefox 19+ */
-    &::-moz-placeholder {
-      color: white;
-    }
-
-    /* IE 10+ */
-    &:-ms-input-placeholder {
-      color: white;
-    }
-
-    /* Firefox 18- */
-    &:-moz-placeholder {
-      color: white;
-    }
-  }
-
   button {
-    background-color: transparent;
     position: absolute;
     left: 0;
-    display: flex;
-    align-items: center;
     width: rem($utility-header-height);
     height: rem($utility-header-height);
-    z-index: 2;
-    padding: 0;
 
     span {
-      margin: 0 auto;
-    }
-
-    &::after {
-      display: none;
+      svg path {
+        fill: $white;
+      }
     }
   }
+}
+
+.search-form {
+  max-width: rem(400);
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  label {
+    font-size: inherit;
+    margin: 0;
+    padding: 0;
+  }
+
+  .search-field {
+    font-size: inherit;
+    padding: $pad-half;
+  }
+
+  .search-submit {
+    border-radius: 0;
+    padding: $pad-half;
+    margin-top: 0;
+  }
+}
+
+label {
+  margin-bottom: rem(5);
+
+  @include font--primary--xs;
 }

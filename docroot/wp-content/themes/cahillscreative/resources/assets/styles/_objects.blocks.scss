@@ -21,6 +21,7 @@
 .block__latest {
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 
   .block__link {
     display: flex;
@@ -141,6 +142,7 @@
     background-size: rem(20);
   }
 
+  .wp_ulike_btn.wp_ulike_put_image.image-unlike,
   .wp_ulike_general_class.wp_ulike_is_already_liked a {
     background: url('../../assets/images/icon__liked.svg') center center no-repeat;
     background-size: rem(20);

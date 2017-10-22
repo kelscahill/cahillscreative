@@ -23,16 +23,26 @@
         </div>
         <div class="accordion-item__body article__body spacing padding--zero step">
           <?php $__currentLoopData = $instructions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <div class="step-item">
-              <div class="step-item__number"><span class="font--primary--xs color--gray">Step</span></div>
+            <div class="step-item sticky-parent">
+              <div class="step-item__number sticky"><span class="font--primary--xs color--gray">Step</span></div>
               <div class="step-item__content spacing">
                 <?php  echo wpautop($item['instructions_content']);  ?>
-                <?php if(!empty($item['instructions_image'])): ?>
-                  <picture class="block__thumb">
-                    <source srcset="<?php echo e($item['instructions_image']['sizes']['horiz__4x3--l']); ?>" media="(min-width:800px)">
-                    <source srcset="<?php echo e($item['instructions_image']['sizes']['horiz__4x3--l']); ?>" media="(min-width:500px)">
-                    <img src="<?php echo e($item['instructions_image']['sizes']['horiz__4x3--l']); ?>" alt="<?php echo e($item['instructions_image']['alt']); ?>">
-                  </picture>
+                <?php  $images = $item['instructions_image'];  ?>
+                <?php if($images): ?>
+                  <?php $__currentLoopData = $images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php if($image['caption']): ?>
+                      <div class="instructions__caption text-align--center space--double-top">
+                        <h5 class="font--primary--xs"><?php echo e($image['caption']); ?></h5>
+                        <h6 class="font--s color--gray"><?php echo e($image['description']); ?></h6>
+                      </div>
+                    <?php endif; ?>
+                    <picture class="block__thumb">
+                      <source srcset="<?php echo e($image['sizes']['flex-height--m']); ?>" media="(min-width:1300px)">
+                      <source srcset="<?php echo e($image['sizes']['flex-height--l']); ?>" media="(min-width:900px)">
+                        <source srcset="<?php echo e($image['sizes']['flex-height--m']); ?>" media="(min-width:400px)">
+                      <img src="<?php echo e($image['sizes']['flex-height--s']); ?>" alt="<?php echo e($image['alt']); ?>">
+                    </picture>
+                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 <?php endif; ?>
               </div>
             </div>
