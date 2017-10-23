@@ -33,6 +33,7 @@
                 </picture>
               </div>
               @php(the_content())
+              @include('patterns.section__pagination')
             </div> <!-- ./article__content--right -->
           </div> <!-- ./article__content -->
           @include('partials.sidebar')

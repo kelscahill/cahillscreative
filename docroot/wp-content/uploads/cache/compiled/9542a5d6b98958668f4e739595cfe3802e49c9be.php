@@ -16,6 +16,7 @@
       $alt = get_post_meta($thumb_id, '_wp_attachment_image_alt', true);
       $title = get_the_title($id);
       $link = get_the_permalink($id);
+      $date = get_the_date();
      ?>
     <?php echo $__env->make('patterns.block__latest', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
   <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

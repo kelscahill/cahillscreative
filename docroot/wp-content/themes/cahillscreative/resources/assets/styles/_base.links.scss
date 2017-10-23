@@ -16,3 +16,8 @@ a {
     color: $body-color;
   }
 }
+
+a.text-link {
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -33,3 +33,7 @@
 .icon--arrow {
   background: url('../../assets/images/arrow__carousel.svg') center center no-repeat;
 }
+
+.icon--arrow.icon--arrow-prev {
+  transform: rotate(180deg);
+}

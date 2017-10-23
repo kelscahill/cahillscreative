@@ -33,6 +33,7 @@
                 </picture>
               </div>
               <?php (the_content()); ?>
+              <?php echo $__env->make('patterns.section__pagination', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
             </div> <!-- ./article__content--right -->
           </div> <!-- ./article__content -->
           <?php echo $__env->make('partials.sidebar', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

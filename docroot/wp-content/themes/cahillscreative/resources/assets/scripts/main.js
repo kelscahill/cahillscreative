@@ -86,6 +86,34 @@
           cssEase: 'linear',
         });
 
+        $('.slick-favorites').slick({
+          prevArrow: '<span class="icon--arrow icon--arrow-prev"></span>',
+          nextArrow: '<span class="icon--arrow icon--arrow-next"></span>',
+          dots: false,
+          infinite: false,
+          speed: 300,
+          slidesToShow: 4,
+          slidesToScroll: 4,
+          responsive: [
+            {
+              breakpoint: 700,
+              settings: {
+                slidesToShow: 3,
+                slidesToScroll: 3,
+                infinite: true,
+                dots: true
+              }
+            },
+            {
+              breakpoint: 500,
+              settings: {
+                slidesToShow: 2,
+                slidesToScroll: 2
+              }
+            }
+          ]
+        });
+
         /**
          * Fixto
          */
@@ -106,7 +134,7 @@
         });
 
         if (!isMobile()) {
-          $('.sticky-ad').fixTo('.main', {
+          $('.sticky-ad').fixTo('.section__main', {
             className: 'sticky-is-active',
             useNativeSticky: false,
             mind: '.header__utility',

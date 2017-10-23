@@ -73,7 +73,11 @@
               <?php endwhile; ?>
               <?php (wp_reset_query()); ?>
             </div>
-            <?php  echo do_shortcode('[ajax_load_more container_type="div" css_classes="spacing--double" post_type="post" scroll="false" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]');  ?>
+            <?php if(is_tag()): ?>
+              <?php  echo do_shortcode('[ajax_load_more container_type="div" post_type="post, affiliate" scroll="false" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]');  ?>
+            <?php else: ?>
+              <?php  echo do_shortcode('[ajax_load_more container_type="div" post_type="post" scroll="false" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]');  ?>
+            <?php endif; ?>
           <?php else: ?>
             <p><?php echo e(__('Sorry, no results were found.', 'sage')); ?></p>
             <?php echo get_search_form(false); ?>

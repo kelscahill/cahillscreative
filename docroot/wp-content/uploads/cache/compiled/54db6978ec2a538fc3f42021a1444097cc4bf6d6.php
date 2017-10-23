@@ -11,7 +11,7 @@
 
       </div>
       <div class="block__meta color--gray">
-        <?php echo $__env->make('partials.entry-meta', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+        <time class="updated color--gray font--s" datetime="<?php echo e(get_post_time('c', true)); ?>"><?php echo e($date); ?></time>
       </div>
     </div>
   </a>

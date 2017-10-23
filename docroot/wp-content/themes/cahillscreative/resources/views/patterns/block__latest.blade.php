@@ -10,7 +10,7 @@
         {{ $title }}
       </div>
       <div class="block__meta color--gray">
-        @include('partials.entry-meta')
+        <time class="updated color--gray font--s" datetime="{{ get_post_time('c', true) }}">{{ $date }}</time>
       </div>
     </div>
   </a>

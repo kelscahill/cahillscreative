@@ -7,7 +7,7 @@
         <h1 class="article__header-title font--secondary--l">{{ the_title() }}</h1>
       </div>
       <div class="article__categories narrow">
-        @php $project = get_terms('project'); @endphp
+        @php $project = get_the_terms($post->ID, 'project'); @endphp
         @if ($project)
           <div class="article__category">
             <span class="font--primary--xs">Project</span>
@@ -16,7 +16,7 @@
             @endforeach
           </div>
         @endif
-        @php $room = get_terms('room'); @endphp
+        @php $room = get_the_terms($post->ID, 'room'); @endphp
         @if ($room)
           <div class="article__category">
             <span class="font--primary--xs">Room</span>
@@ -25,7 +25,7 @@
             @endforeach
           </div>
         @endif
-        @php $cost = get_terms('cost'); @endphp
+        @php $cost = get_the_terms($post->ID, 'cost'); @endphp
         @if ($cost)
           <div class="article__category">
             <span class="font--primary--xs">Cost</span>
@@ -34,7 +34,7 @@
             @endforeach
           </div>
         @endif
-        @php $skill = get_terms('skill_level'); @endphp
+        @php $skill = get_the_terms($post->ID, 'skill_level'); @endphp
         @if ($skill)
           <div class="article__category">
             <span class="font--primary--xs">Skill Level</span>
@@ -68,7 +68,8 @@
             </div>
             <div class="article__content--right spacing--double shift-right--small">
               @php(the_content())
-              @include('patterns.accordion')
+              @include('patterns.section__accordion')
+              @include('patterns.section__pagination')
             </div>
           </div> <!-- ./article__content -->
           @include('partials.sidebar')
@@ -120,3 +121,4 @@
     </article>
   </div>
 </section>
+@include('patterns.section__favorites')

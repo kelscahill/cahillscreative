@@ -2,6 +2,10 @@
     $PAGE SECTIONS
 \*------------------------------------ */
 
+.section--padding {
+  padding: $pad-double 0;
+}
+
 .section__main {
   padding: $pad-double 0;
 }

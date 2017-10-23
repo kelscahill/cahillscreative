@@ -73,7 +73,11 @@
               @endwhile
               @php(wp_reset_query())
             </div>
-            @php echo do_shortcode('[ajax_load_more container_type="div" css_classes="spacing--double" post_type="post" scroll="false" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]'); @endphp
+            @if (is_tag())
+              @php echo do_shortcode('[ajax_load_more container_type="div" post_type="post, affiliate" scroll="false" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]'); @endphp
+            @else
+              @php echo do_shortcode('[ajax_load_more container_type="div" post_type="post" scroll="false" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]'); @endphp
+            @endif
           @else
             <p>{{ __('Sorry, no results were found.', 'sage') }}</p>
             {!! get_search_form(false) !!}

@@ -7,7 +7,7 @@
         <h1 class="article__header-title font--secondary--l"><?php echo e(the_title()); ?></h1>
       </div>
       <div class="article__categories narrow">
-        <?php  $project = get_terms('project');  ?>
+        <?php  $project = get_the_terms($post->ID, 'project');  ?>
         <?php if($project): ?>
           <div class="article__category">
             <span class="font--primary--xs">Project</span>
@@ -16,7 +16,7 @@
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
           </div>
         <?php endif; ?>
-        <?php  $room = get_terms('room');  ?>
+        <?php  $room = get_the_terms($post->ID, 'room');  ?>
         <?php if($room): ?>
           <div class="article__category">
             <span class="font--primary--xs">Room</span>
@@ -25,7 +25,7 @@
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
           </div>
         <?php endif; ?>
-        <?php  $cost = get_terms('cost');  ?>
+        <?php  $cost = get_the_terms($post->ID, 'cost');  ?>
         <?php if($cost): ?>
           <div class="article__category">
             <span class="font--primary--xs">Cost</span>
@@ -34,7 +34,7 @@
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
           </div>
         <?php endif; ?>
-        <?php  $skill = get_terms('skill_level');  ?>
+        <?php  $skill = get_the_terms($post->ID, 'skill_level');  ?>
         <?php if($skill): ?>
           <div class="article__category">
             <span class="font--primary--xs">Skill Level</span>
@@ -69,7 +69,8 @@
             </div>
             <div class="article__content--right spacing--double shift-right--small">
               <?php (the_content()); ?>
-              <?php echo $__env->make('patterns.accordion', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+              <?php echo $__env->make('patterns.section__accordion', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+              <?php echo $__env->make('patterns.section__pagination', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
             </div>
           </div> <!-- ./article__content -->
           <?php echo $__env->make('partials.sidebar', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
@@ -121,3 +122,4 @@
     </article>
   </div>
 </section>
+<?php echo $__env->make('patterns.section__favorites', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
