@@ -3,16 +3,15 @@ if (post_password_required()) {
   return;
 }
  ?>
-
 <section id="comments" class="comments">
   <?php if(have_comments()): ?>
-    <h2 class="font--primary--xs">
+    <h2 class="font--primary--s">
       <?php echo sprintf(_nx('One response to &ldquo;%2$s&rdquo;', '%1$s responses to &ldquo;%2$s&rdquo;', get_comments_number(), 'comments title', 'sage'), number_format_i18n(get_comments_number()), '<span>' . get_the_title() . '</span>'); ?>
 
     </h2>
 
     <ol class="comment-list">
-      <?php echo wp_list_comments(['style' => 'ol', 'short_ping' => true]); ?>
+      <?php echo wp_list_comments(['style' => 'ol', 'short_ping' => true, 'avatar_size' => 80]); ?>
 
     </ol>
 

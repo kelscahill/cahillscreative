@@ -96,6 +96,8 @@
   padding: $pad-half $pad;
   border-bottom: 1px solid $border-color;
   transition: all 0.25s ease;
+  display: block;
+  width: 100%;
 
   &:hover {
     background-color: $gray-light;

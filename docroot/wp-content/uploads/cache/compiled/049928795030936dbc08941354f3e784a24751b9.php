@@ -6,44 +6,52 @@
         <hr class="divider" />
         <h1 class="article__header-title font--secondary--l"><?php echo e(the_title()); ?></h1>
       </div>
-      <div class="article__categories narrow">
-        <?php  $project = get_the_terms($post->ID, 'project');  ?>
-        <?php if($project): ?>
-          <div class="article__category">
-            <span class="font--primary--xs">Project</span>
-            <?php $__currentLoopData = $project; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-              <p><?php echo e($term->name); ?></p>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-          </div>
-        <?php endif; ?>
-        <?php  $room = get_the_terms($post->ID, 'room');  ?>
-        <?php if($room): ?>
-          <div class="article__category">
-            <span class="font--primary--xs">Room</span>
-            <?php $__currentLoopData = $room; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-              <p><?php echo e($term->name); ?></p>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-          </div>
-        <?php endif; ?>
-        <?php  $cost = get_the_terms($post->ID, 'cost');  ?>
-        <?php if($cost): ?>
-          <div class="article__category">
-            <span class="font--primary--xs">Cost</span>
-            <?php $__currentLoopData = $cost; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-              <p><?php echo e($term->name); ?></p>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-          </div>
-        <?php endif; ?>
-        <?php  $skill = get_the_terms($post->ID, 'skill_level');  ?>
-        <?php if($skill): ?>
-          <div class="article__category">
-            <span class="font--primary--xs">Skill Level</span>
-            <?php $__currentLoopData = $skill; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-              <p><?php echo e($term->name); ?></p>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-          </div>
-        <?php endif; ?>
-      </div>
+      <?php 
+        $project = get_the_terms($post->ID, 'project');
+        $room = get_the_terms($post->ID, 'room');
+        $cost = get_the_terms($post->ID, 'cost');
+        $skill = get_the_terms($post->ID, 'skill_level');
+       ?>
+      <?php if($project || $room || $cost || $skill): ?>
+        <div class="article__categories narrow">
+          <?php  $project = get_the_terms($post->ID, 'project');  ?>
+          <?php if($project): ?>
+            <div class="article__category">
+              <span class="font--primary--xs">Project</span>
+              <?php $__currentLoopData = $project; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <p><?php echo e($term->name); ?></p>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
+          <?php endif; ?>
+          <?php  $room = get_the_terms($post->ID, 'room');  ?>
+          <?php if($room): ?>
+            <div class="article__category">
+              <span class="font--primary--xs">Room</span>
+              <?php $__currentLoopData = $room; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <p><?php echo e($term->name); ?></p>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
+          <?php endif; ?>
+          <?php  $cost = get_the_terms($post->ID, 'cost');  ?>
+          <?php if($cost): ?>
+            <div class="article__category">
+              <span class="font--primary--xs">Cost</span>
+              <?php $__currentLoopData = $cost; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <p><?php echo e($term->name); ?></p>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
+          <?php endif; ?>
+          <?php  $skill = get_the_terms($post->ID, 'skill_level');  ?>
+          <?php if($skill): ?>
+            <div class="article__category">
+              <span class="font--primary--xs">Skill Level</span>
+              <?php $__currentLoopData = $skill; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <p><?php echo e($term->name); ?></p>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
+          <?php endif; ?>
+        </div>
+      <?php endif; ?>
       <div class="article__gallery narrow narrow--xl">
         <?php echo $__env->make('patterns.section__gallery', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
       </div>
@@ -110,7 +118,7 @@
               </div>
             </div> <!-- ./block__toolbar--left -->
             <div class="block__toolbar--right">
-              <?php  $next_post = get_next_post();  ?>
+              <?php  $next_post = get_next_post(true, '', 'category');  ?>
               <?php if( !empty($next_post) ): ?>
                 <?php  $link = get_permalink($next_post->ID);  ?>
                 <a href="<?php echo e($link); ?>" class="font--primary--xs">Next Post<span class="icon icon--xs"><?php echo $__env->make('patterns/arrow__carousel', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span></a>

@@ -2,11 +2,11 @@
   <div class="widget widget-search">
     @include('patterns/form__search')
   </div>
-  <div class="widget widget-tags">
-    <h3 class="font--primary--xs">Tags</h3>
-    <hr />
-    @php $tags = get_the_tags(); @endphp
-    @if ($tags)
+  @php $tags = get_the_tags(); @endphp
+  @if ($tags)
+    <div class="widget widget-tags">
+      <h3 class="font--primary--xs">Tags</h3>
+      <hr />
       <div class="tags">
         @foreach ($tags as $tag)
           <div class="tag">
@@ -14,8 +14,8 @@
           </div>
         @endforeach
       </div>
-    @endif
-  </div>
+    </div>
+  @endif
   <div class="widget widget-related">
     <h3 class="font--primary--xs">Related Posts</h3>
     <hr />

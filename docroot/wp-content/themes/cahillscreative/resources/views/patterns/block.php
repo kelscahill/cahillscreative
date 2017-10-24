@@ -34,13 +34,15 @@
         <div class="block__title font--primary--m color--black">
           <?php echo $title ; ?>
         </div>
-        <div class="block__meta color--gray">
-          <?php if ($post_type == 'page'): ?>
+        <?php if ($post_type == 'page'): ?>
+          <div class="block__meta color--gray">
             <?php the_excerpt(); ?>
-          <?php else: ?>
+          </div>
+        <?php else if (!empty($date)): ?>
+          <div class="block__meta color--gray">
             <time class="updated color--gray font--s" datetime="<?php echo get_post_time('c', true); ?>"><?php echo $date; ?></time>
-          <?php endif; ?>
-        </div>
+          </div>
+        <?php endif; ?>
       </div>
     </a>
     <?php if ($post_type != 'page'): ?>
@@ -67,11 +69,11 @@
           </div>
           <div class="block__toolbar-share-tooltip tooltip-wrap">
             <div class="tooltip-item font--primary--xs text-align--center color--gray">Share Post</div>
-            <div data-title="<?php echo $title; ?>" data-image="<?php echo $image_small; ?>" data-description="<?php echo $excerpt; ?>" data-url="<?php echo $link; ?>" data-network="facebook" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black"><?php include(locate_template('patterns/icon__facebook')); ?></span>Facebook</div>
-            <div data-title="<?php echo $title; ?>" data-image="<?php echo $image_small; ?>" data-description="<?php echo $excerpt; ?>" data-url="<?php echo $link; ?>" data-network="twitter" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black"><?php include(locate_template('patterns/icon__twitter')); ?></span>Twitter</div>
-            <div data-title="<?php echo $title; ?>" data-image="<?php echo $image_small; ?>" data-description="<?php echo $excerpt; ?>" data-url="<?php echo $link; ?>" data-network="pinterest" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black"><?php include(locate_template('patterns/icon__pinterest')); ?></span>Pinterest</div>
-            <div data-title="<?php echo $title; ?>" data-image="<?php echo $image_small; ?>" data-description="<?php echo $excerpt; ?>" data-url="<?php echo $link; ?>" data-network="linkedin" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black"><?php include(locate_template('patterns/icon__linkedin')); ?></span>LinkedIn</div>
-            <div data-title="<?php echo $title; ?>" data-image="<?php echo $image_small; ?>" data-description="<?php echo $excerpt; ?>" data-url="<?php echo $link; ?>" data-network="email" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black"><?php include(locate_template('patterns/icon__email')); ?></span>Email</div>
+            <a aria-label="Share on Facebook" href="https://facebook.com/sharer/sharer.php?u=<?php echo $link; ?>" class="tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">@include('patterns.icon__facebook')</span>Facebook</a>
+            <a aria-label="Share on Twitter" href="https://twitter.com/intent/tweet/?text=<?php echo $title; ?><?php echo ': ' . $excerpt; ?>&amp;url=<?php echo $link; ?>" class="tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">@include('patterns.icon__twitter')</span>Twitter</a>
+            <a aria-label="Share on Pinterest" href="https://pinterest.com/pin/create/button/?url=<?php echo $link; ?>&amp;media=<?php echo $image_medium; ?>&amp;description=<?php echo $title; ?><?php echo ': ' . $excerpt; ?>" class="tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">@include('patterns.icon__pinterest')</span>Pinterest</a>
+            <a aria-label="Share on LinkedIn" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=<?php echo $link; ?>&amp;title=<?php echo $title; ?>&amp;summary=<?php echo ': ' . $excerpt; ?>&amp;source=<?php echo $link; ?>" class="tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">@include('patterns.icon__linkedin')</span>LinkedIn</a>
+            <a aria-label="Share by E-Mail" href="mailto:?subject=<?php echo $title; ?>&amp;body=<?php echo $excerpt; ?>" target="_self" class="tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">@include('patterns.icon__email')</span>Email</a>
             <div class="tooltip-item tooltip-close font--primary--xs text-align--center background-color--black color--white">Close Share</div>
           </div>
         </div>

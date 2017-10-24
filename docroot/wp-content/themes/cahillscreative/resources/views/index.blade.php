@@ -55,12 +55,16 @@
                 @php
                   $post_id = get_the_ID();
                   $title = get_the_title($post_id);
-                  $excerpt = get_the_excerpt($post_id);
                   $thumb_id = get_post_thumbnail_id($post_id);
                   $thumb_size = 'square';
                   $link = get_permalink($post_id);
                   $date = date('F j, Y', strtotime(get_the_date($post_id)));
                   $post_type = get_post_type($post_id);
+                  if (get_the_excerpt() != '') {
+                    $excerpt = get_the_excerpt('',FALSE,'');
+                  } else {
+                    $excerpt = wp_trim_words(get_the_content('',FALSE,''), 100, '...');
+                  }
                   if ($post_type == 'affiliate') {
                     $kicker = 'Shop';
                   } else {
@@ -74,9 +78,9 @@
               @php(wp_reset_query())
             </div>
             @if (is_tag())
-              @php echo do_shortcode('[ajax_load_more container_type="div" post_type="post, affiliate" scroll="false" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]'); @endphp
+              @php echo do_shortcode('[ajax_load_more css_classes="spacing" container_type="div" post_type="post, affiliate" scroll="true" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]'); @endphp
             @else
-              @php echo do_shortcode('[ajax_load_more container_type="div" post_type="post" scroll="false" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]'); @endphp
+              @php echo do_shortcode('[ajax_load_more css_classes="spacing" container_type="div" post_type="post" scroll="true" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]'); @endphp
             @endif
           @else
             <p>{{ __('Sorry, no results were found.', 'sage') }}</p>

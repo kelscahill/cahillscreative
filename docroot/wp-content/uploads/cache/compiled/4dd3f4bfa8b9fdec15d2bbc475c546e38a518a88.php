@@ -2,11 +2,11 @@
   <div class="widget widget-search">
     <?php echo $__env->make('patterns/form__search', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
   </div>
-  <div class="widget widget-tags">
-    <h3 class="font--primary--xs">Tags</h3>
-    <hr />
-    <?php  $tags = get_the_tags();  ?>
-    <?php if($tags): ?>
+  <?php  $tags = get_the_tags();  ?>
+  <?php if($tags): ?>
+    <div class="widget widget-tags">
+      <h3 class="font--primary--xs">Tags</h3>
+      <hr />
       <div class="tags">
         <?php $__currentLoopData = $tags; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tag): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
           <div class="tag">
@@ -14,8 +14,8 @@
           </div>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
       </div>
-    <?php endif; ?>
-  </div>
+    </div>
+  <?php endif; ?>
   <div class="widget widget-related">
     <h3 class="font--primary--xs">Related Posts</h3>
     <hr />

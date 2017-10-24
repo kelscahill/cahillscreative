@@ -35,6 +35,11 @@ input[type="submit"] {
 
 .alm-btn-wrap {
   margin-top: $space-double;
+
+  &::after,
+  &::before {
+    display: none;
+  }
 }
 
 .btn--outline {
@@ -99,6 +104,11 @@ input[type="submit"] {
   }
 }
 
+.alm-btn-wrap {
+  margin: 0;
+  padding: 0;
+}
+
 button.alm-load-more-btn.more {
   width: auto;
   border-radius: rem(50);
@@ -110,11 +120,19 @@ button.alm-load-more-btn.more {
   transition: all 0.3s ease-in-out;
   padding-left: $pad-double;
   padding-right: $pad-double;
+  margin: 0 auto;
+  height: rem(40);
 
   @include font--primary--xs;
 
   &.done {
-    opacity: 0.5;
+    opacity: 0.3;
+    pointer-events: none;
+
+    &:hover {
+      background-color: transparent;
+      color: $body-color;
+    }
   }
 
   &:hover {
@@ -122,7 +140,8 @@ button.alm-load-more-btn.more {
     color: $white;
   }
 
-  &::after {
-    display: none;
+  &::after,
+  &::before {
+    display: none !important;
   }
 }

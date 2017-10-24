@@ -56,7 +56,7 @@
         <span class="accordion-item__toggle spacing--zero"></span>
       </div>
       <div class="accordion-item__body article__body spacing padding--zero">
-        <?php echo $__env->make('partials.comments', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+        <?php  comments_template( '/partials/comments.blade.php', true );  ?>
       </div>
     </div>
   </div>

@@ -17,6 +17,8 @@ $sage_error = function ($message, $subtitle = '', $title = '') {
     wp_die($message, $title);
 };
 
+remove_filter('term_description','wpautop');
+
 /**
  * Blog Filter
  */

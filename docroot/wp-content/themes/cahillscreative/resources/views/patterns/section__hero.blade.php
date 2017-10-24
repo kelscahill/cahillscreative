@@ -1,7 +1,17 @@
 @php
   $id = get_queried_object_id();
-  if (is_category() || is_home() || is_tag()) {
-    $thumb_id = 'default';
+  if (is_tag()) {
+    $thumb_id = get_field('category_featured_image', 'category_' . get_cat_ID(get_cat_name($id)))['ID'];
+    $title = get_cat_name($id);
+    $excerpt = get_the_excerpt();
+    $category = 'tag';
+  } else if (is_category()) {
+    $thumb_id = get_field('category_featured_image', 'category_' . get_cat_ID(get_cat_name($id)))['ID'];
+    $title = get_cat_name($id);
+    $excerpt = category_description($id);
+    $category = 'blog';
+  } else if (is_home()) {
+    $thumb_id = get_post_thumbnail_id();
     $title = get_the_title(6);
     $excerpt = get_the_excerpt(6);
     $category = get_cat_name($id);
@@ -22,6 +32,9 @@
     } else {
       $category = get_the_title($post->post_parent);
     }
+  }
+  if (empty($thumb_id)) {
+    $thumb_id = 'default';
   }
 @endphp
 <section class="section section__hero background--cover background-image--{{ $thumb_id }}">
@@ -57,7 +70,7 @@
       <h2 class="section__hero-subtitle font--primary--m color--white">Websites that kick ass.</h2>
     @endif
     @if (!empty($excerpt))
-      <p class="section__hero-excerpt color--white">{{ $excerpt }}</p>
+      <div class="section__hero-excerpt color--white">{{ $excerpt }}</div>
     @endif
   </div>
 </section>

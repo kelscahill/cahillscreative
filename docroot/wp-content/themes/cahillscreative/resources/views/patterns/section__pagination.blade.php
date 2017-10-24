@@ -1,6 +1,6 @@
 @php
-  $prev_post = get_previous_post();
-  $next_post = get_next_post();
+  $prev_post = get_previous_post(true, '', 'category');
+  $next_post = get_next_post(true, '', 'category');
 @endphp
 <div class="article__nav">
   <div class="article__nav--inner">

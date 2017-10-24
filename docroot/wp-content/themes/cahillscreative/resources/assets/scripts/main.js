@@ -37,6 +37,29 @@
           $('html').addClass(' no-touch');
         }
 
+        // check window width
+        var getWidth = function() {
+          var width;
+          if (document.body && document.body.offsetWidth) {
+            width = document.body.offsetWidth;
+          }
+          if (document.compatMode === 'CSS1Compat' &&
+              document.documentElement &&
+              document.documentElement.offsetWidth ) {
+             width = document.documentElement.offsetWidth;
+          }
+          if (window.innerWidth) {
+             width = window.innerWidth;
+          }
+          return width;
+        };
+        window.onload = function() {
+          getWidth();
+        };
+        window.onresize = function() {
+          getWidth();
+        };
+
         // Prevent flash of unstyled content
         $(document).ready(function() {
           $('.no-fouc').removeClass('no-fouc');
@@ -100,15 +123,20 @@
               settings: {
                 slidesToShow: 3,
                 slidesToScroll: 3,
-                infinite: true,
-                dots: true
               }
             },
             {
               breakpoint: 500,
               settings: {
                 slidesToShow: 2,
-                slidesToScroll: 2
+                slidesToScroll: 2,
+              }
+            },
+            {
+              breakpoint: 375,
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
               }
             }
           ]
@@ -133,7 +161,7 @@
           mind: '.header__utility'
         });
 
-        if (!isMobile()) {
+        if (getWidth() >= 1200 && $(window).height() > $('.sticky-ad').height()) {
           $('.sticky-ad').fixTo('.section__main', {
             className: 'sticky-is-active',
             useNativeSticky: false,

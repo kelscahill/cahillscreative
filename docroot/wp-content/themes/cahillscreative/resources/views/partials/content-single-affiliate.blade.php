@@ -73,7 +73,7 @@
               </div>
             </div> <!-- ./block__toolbar--left -->
             <div class="block__toolbar--right">
-              @php $next_post = get_next_post(); @endphp
+              @php $next_post = get_next_post(true, '', 'category'); @endphp
               @if ( !empty($next_post) )
                 @php $link = get_permalink($next_post->ID); @endphp
                 <a href="{{ $link }}" class="font--primary--xs">Next Item<span class="icon icon--xs">@include('patterns/arrow__carousel')</span></a>
@@ -85,3 +85,4 @@
     </article>
   </div>
 </section>
+@include('patterns.section__favorites')

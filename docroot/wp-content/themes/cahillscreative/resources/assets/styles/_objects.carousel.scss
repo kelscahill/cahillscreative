@@ -161,6 +161,18 @@
   }
 }
 
+.slick-favorites,
+.slick-gallery {
+  .slick-list,
+  .slick-track,
+  .slick-slide {
+    height: auto;
+    width: 100%;
+    display: flex;
+    position: relative;
+  }
+}
+
 .slick-gallery {
   flex-direction: column;
   margin-left: -$space;
@@ -172,15 +184,6 @@
   @include media('>large') {
     margin: 0 auto;
     width: 100%;
-  }
-
-  .slick-list,
-  .slick-track,
-  .slick-slide {
-    height: auto;
-    width: 100%;
-    display: flex;
-    position: relative;
   }
 
   .slick-arrow {

@@ -56,7 +56,7 @@
         <span class="accordion-item__toggle spacing--zero"></span>
       </div>
       <div class="accordion-item__body article__body spacing padding--zero">
-        @include('partials.comments')
+        @php comments_template( '/partials/comments.blade.php', true ); @endphp
       </div>
     </div>
   </div>

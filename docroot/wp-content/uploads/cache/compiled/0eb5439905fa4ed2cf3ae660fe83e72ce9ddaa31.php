@@ -6,13 +6,13 @@
    'posts_per_page' => 12,
    'post_status' => 'publish',
    'order' => 'DESC',
-   'tax_query' => array(
-     array(
-       'taxonomy' => 'post_tag',
-       'field' => 'slug',
-       'terms' => 'favorite'
-     )
-   )
+  //  'tax_query' => array(
+  //    array(
+  //      'taxonomy' => 'post_tag',
+  //      'field' => 'slug',
+  //      'terms' => 'favorite'
+  //    )
+  //  )
  );
  $posts = new WP_Query($args);
  ?>
@@ -35,9 +35,12 @@
                   $thumb_id = get_post_thumbnail_id($post_id);
                   $thumb_size = 'square';
                   $link = get_permalink($post_id);
-                  $date = date('F j, Y', strtotime(get_the_date($post_id)));
                   $post_type = get_post_type($post_id);
-                  $kicker = 'Shop';
+                  if (get_the_category($post_id)[0]->slug == 'diy') {
+                    $kicker = 'Home Decor';
+                  } else {
+                    $kicker = get_the_category($post_id)[0]->name;
+                  }
                  ?>
                 <div class="grid-item">
                   <?php echo $__env->make('patterns.block', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
@@ -45,7 +48,7 @@
               <?php endwhile; ?>
               <?php (wp_reset_query()); ?>
             </div>
-            <?php  echo do_shortcode('[ajax_load_more container_type="div" css_classes="spacing--double" post_type="affiliate" scroll="false" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]');  ?>
+            <?php  echo do_shortcode('[ajax_load_more container_type="div" css_classes="spacing" post_type="affiliate" scroll="true" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]');  ?>
           <?php else: ?>
             <p><?php echo e(__('Sorry, no results were found.', 'sage')); ?></p>
             <?php echo get_search_form(false); ?>
