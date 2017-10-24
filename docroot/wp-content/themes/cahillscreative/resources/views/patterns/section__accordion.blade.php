@@ -47,6 +47,9 @@
               </div>
             </div>
           @endforeach
+          @if(get_field('etsy_link'))
+            <a href="{{ get_field('etsy_link') }}" class="btn center-block" target="_blank">Download PDF Plans</a>
+          @endif
         </div>
       </div>
     @endif

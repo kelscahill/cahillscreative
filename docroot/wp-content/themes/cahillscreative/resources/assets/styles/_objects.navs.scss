@@ -44,7 +44,7 @@
   &.current_page_item,
   &.current-menu-parent {
     > .primary-nav__link {
-      font-weight: 900;
+      color: $gray-med;
     }
   }
 }

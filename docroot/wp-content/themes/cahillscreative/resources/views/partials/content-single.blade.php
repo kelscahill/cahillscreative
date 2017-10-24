@@ -105,15 +105,7 @@
                 <div class="block__toolbar-item block__toolbar-share tooltip-toggle js-toggle-parent">
                   <span class="icon icon--s space--half-left">@include('patterns/icon__share')</span>
                 </div>
-                <div class="block__toolbar-share-tooltip tooltip-wrap">
-                  <div class="tooltip-item font--primary--xs text-align--center color--gray">Share Post</div>
-                  <div data-title="{{ $title }}" data-image="{{ $image_small }}" data-description="{{ $excerpt }}" data-url="{{ $link }}" data-network="facebook" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">@include('patterns.icon__facebook')</span>Facebook</div>
-                  <div data-title="{{ $title }}" data-image="{{ $image_small }}" data-description="{{ $excerpt }}" data-url="{{ $link }}" data-network="twitter" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">@include('patterns.icon__twitter')</span>Twitter</div>
-                  <div data-title="{{ $title }}" data-image="{{ $image_small }}" data-description="{{ $excerpt }}" data-url="{{ $link }}" data-network="pinterest" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">@include('patterns.icon__pinterest')</span>Pinterest</div>
-                  <div data-title="{{ $title }}" data-image="{{ $image_small }}" data-description="{{ $excerpt }}" data-url="{{ $link }}" data-network="linkedin" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">@include('patterns.icon__linkedin')</span>LinkedIn</div>
-                  <div data-title="{{ $title }}" data-image="{{ $image_small }}" data-description="{{ $excerpt }}" data-url="{{ $link }}" data-network="email" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">@include('patterns.icon__email')</span>Email</div>
-                  <div class="tooltip-item tooltip-close font--primary--xs text-align--center background-color--black color--white">Close Share</div>
-                </div>
+                @include('patterns/share-tooltip')
               </div>
             </div> <!-- ./block__toolbar--left -->
             <div class="block__toolbar--right">

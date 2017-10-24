@@ -3,13 +3,18 @@
   if (is_tag()) {
     $thumb_id = get_field('category_featured_image', 'category_' . get_cat_ID(get_cat_name($id)))['ID'];
     $title = get_cat_name($id);
-    $excerpt = get_the_excerpt();
+    $excerpt = category_description($id);
     $category = 'tag';
   } else if (is_category()) {
     $thumb_id = get_field('category_featured_image', 'category_' . get_cat_ID(get_cat_name($id)))['ID'];
     $title = get_cat_name($id);
     $excerpt = category_description($id);
     $category = 'blog';
+  } elseif (is_archive('work')) {
+    $thumb_id = get_post_thumbnail_id(36);
+    $title = get_the_title(36);
+    $excerpt = get_field('intro', 36, false);
+    $category = get_field('display_title', 36);
   } else if (is_home()) {
     $thumb_id = get_post_thumbnail_id();
     $title = get_the_title(6);

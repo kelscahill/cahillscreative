@@ -65,6 +65,10 @@
           $('.no-fouc').removeClass('no-fouc');
         });
 
+        $('.primary-nav--with-subnav.js-toggle > a').click(function(e) {
+          e.preventDefault();
+        });
+
         // Smooth scrolling on anchor clicks
         $(function() {
           $('a[href*="#"]:not([href="#"])').click(function() {

@@ -47,6 +47,9 @@
               </div>
             </div>
           <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+          <?php if(get_field('etsy_link')): ?>
+            <a href="<?php echo e(get_field('etsy_link')); ?>" class="btn center-block" target="_blank">Download PDF Plans</a>
+          <?php endif; ?>
         </div>
       </div>
     <?php endif; ?>

@@ -106,15 +106,7 @@
                 <div class="block__toolbar-item block__toolbar-share tooltip-toggle js-toggle-parent">
                   <span class="icon icon--s space--half-left"><?php echo $__env->make('patterns/icon__share', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
                 </div>
-                <div class="block__toolbar-share-tooltip tooltip-wrap">
-                  <div class="tooltip-item font--primary--xs text-align--center color--gray">Share Post</div>
-                  <div data-title="<?php echo e($title); ?>" data-image="<?php echo e($image_small); ?>" data-description="<?php echo e($excerpt); ?>" data-url="<?php echo e($link); ?>" data-network="facebook" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black"><?php echo $__env->make('patterns.icon__facebook', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>Facebook</div>
-                  <div data-title="<?php echo e($title); ?>" data-image="<?php echo e($image_small); ?>" data-description="<?php echo e($excerpt); ?>" data-url="<?php echo e($link); ?>" data-network="twitter" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black"><?php echo $__env->make('patterns.icon__twitter', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>Twitter</div>
-                  <div data-title="<?php echo e($title); ?>" data-image="<?php echo e($image_small); ?>" data-description="<?php echo e($excerpt); ?>" data-url="<?php echo e($link); ?>" data-network="pinterest" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black"><?php echo $__env->make('patterns.icon__pinterest', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>Pinterest</div>
-                  <div data-title="<?php echo e($title); ?>" data-image="<?php echo e($image_small); ?>" data-description="<?php echo e($excerpt); ?>" data-url="<?php echo e($link); ?>" data-network="linkedin" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black"><?php echo $__env->make('patterns.icon__linkedin', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>LinkedIn</div>
-                  <div data-title="<?php echo e($title); ?>" data-image="<?php echo e($image_small); ?>" data-description="<?php echo e($excerpt); ?>" data-url="<?php echo e($link); ?>" data-network="email" class="st-custom-button tooltip-item"><span class="icon icon--xs space--half-right path-fill--black"><?php echo $__env->make('patterns.icon__email', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>Email</div>
-                  <div class="tooltip-item tooltip-close font--primary--xs text-align--center background-color--black color--white">Close Share</div>
-                </div>
+                <?php echo $__env->make('patterns/share-tooltip', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
               </div>
             </div> <!-- ./block__toolbar--left -->
             <div class="block__toolbar--right">

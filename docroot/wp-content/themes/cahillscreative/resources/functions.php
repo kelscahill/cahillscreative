@@ -361,7 +361,7 @@ function cptui_register_my_cpts() {
     "query_var" => true,
     "menu_icon" => "dashicons-format-gallery",
     "supports" => array( "title", "editor", "thumbnail", "excerpt" ),
-    "taxonomies" => array( "post_tag" ),
+    "taxonomies" => array( "post_tag", "category" ),
   );
 
   register_post_type( "work", $args );

@@ -25,6 +25,13 @@
       'post_status' => 'publish',
       'order' => 'DESC',
     );
+  } elseif (is_archive('work')) {
+    $args = array(
+      'post_type' => 'work',
+      'posts_per_page' => 12,
+      'post_status' => 'publish',
+      'order' => 'DESC',
+    );
   } else {
     $args = array(
       'post_type' => 'post',
@@ -67,6 +74,8 @@
                   }
                   if ($post_type == 'affiliate') {
                     $kicker = 'Shop';
+                  } else if ($post_type == 'work') {
+                    $kicker = strip_tags(get_the_tag_list('',', ',''));
                   } else {
                     $kicker = get_the_category($post_id)[0]->name;
                   }
