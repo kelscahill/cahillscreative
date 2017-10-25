@@ -6,7 +6,7 @@
 button,
 input[type="submit"] {
   display: table;
-  padding: $pad-half $pad-and-half;
+  padding: rem(13) $pad-and-half rem(12) $pad-and-half;
   vertical-align: middle;
   cursor: pointer;
   color: $white;
@@ -19,10 +19,6 @@ input[type="submit"] {
 
   @include font--primary--xs;
 
-  @include media ('>medium') {
-    padding: rem(12) $pad-and-half;
-  }
-
   &:focus {
     outline: 0;
   }
@@ -30,6 +26,15 @@ input[type="submit"] {
   &:hover {
     background-color: $button-hover;
     color: $white;
+  }
+
+  &.center {
+    display: table;
+    width: auto;
+    padding-left: $pad;
+    padding-right: $pad;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 

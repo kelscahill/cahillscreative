@@ -69,6 +69,10 @@
           e.preventDefault();
         });
 
+        if ($('.btn--download').length) {
+          $('body').addClass('margin--80');
+        }
+
         // Smooth scrolling on anchor clicks
         $(function() {
           $('a[href*="#"]:not([href="#"])').click(function() {

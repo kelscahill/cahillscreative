@@ -24,7 +24,7 @@
     $thumb_id = get_post_thumbnail_id();
     $title = 'We Create';
     $excerpt = get_the_excerpt();
-  } else if (get_post_thumbnail_id()) {
+  } else {
     $thumb_id = get_post_thumbnail_id();
     $excerpt = get_the_excerpt();
     if (get_field('display_title')) {
@@ -75,7 +75,7 @@
       <h2 class="section__hero-subtitle font--primary--m color--white">Websites that kick ass.</h2>
     @endif
     @if (!empty($excerpt))
-      <div class="section__hero-excerpt color--white">{{ $excerpt }}</div>
+      <p class="section__hero-excerpt color--white">{{ $excerpt }}</p>
     @endif
   </div>
 </section>

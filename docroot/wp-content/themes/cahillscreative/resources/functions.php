@@ -17,7 +17,42 @@ $sage_error = function ($message, $subtitle = '', $title = '') {
     wp_die($message, $title);
 };
 
+/**
+ * Ensure compatible version of PHP is used
+ */
+if (version_compare('5.6.4', phpversion(), '>=')) {
+    $sage_error(__('You must be using PHP 5.6.4 or greater.', 'sage'), __('Invalid PHP version', 'sage'));
+}
+
+/**
+ * Ensure compatible version of WordPress is used
+ */
+if (version_compare('4.7.0', get_bloginfo('version'), '>=')) {
+    $sage_error(__('You must be using WordPress 4.7.0 or greater.', 'sage'), __('Invalid WordPress version', 'sage'));
+}
+
+/**
+ * Ensure dependencies are loaded
+ */
+if (!class_exists('Roots\\Sage\\Container')) {
+    if (!file_exists($composer = __DIR__.'/../vendor/autoload.php')) {
+        $sage_error(
+            __('You must run <code>composer install</code> from the Sage directory.', 'sage'),
+            __('Autoloader not found.', 'sage')
+        );
+    }
+    require_once $composer;
+}
+
 remove_filter('term_description','wpautop');
+
+/**
+ * Load ajax script on news template
+ */
+function enqueue_ajax_load_more() {
+   wp_enqueue_script('ajax-load-more'); // Already registered, just needs to be enqueued
+}
+add_action('wp_enqueue_scripts', 'enqueue_ajax_load_more');
 
 /**
  * Blog Filter
@@ -57,40 +92,6 @@ function misha_filter_function(){
 add_action('wp_ajax_myfilter', 'misha_filter_function');
 add_action('wp_ajax_nopriv_myfilter', 'misha_filter_function');
 
-/**
- * Ensure compatible version of PHP is used
- */
-if (version_compare('5.6.4', phpversion(), '>=')) {
-    $sage_error(__('You must be using PHP 5.6.4 or greater.', 'sage'), __('Invalid PHP version', 'sage'));
-}
-
-/**
- * Ensure compatible version of WordPress is used
- */
-if (version_compare('4.7.0', get_bloginfo('version'), '>=')) {
-    $sage_error(__('You must be using WordPress 4.7.0 or greater.', 'sage'), __('Invalid WordPress version', 'sage'));
-}
-
-/**
- * Ensure dependencies are loaded
- */
-if (!class_exists('Roots\\Sage\\Container')) {
-    if (!file_exists($composer = __DIR__.'/../vendor/autoload.php')) {
-        $sage_error(
-            __('You must run <code>composer install</code> from the Sage directory.', 'sage'),
-            __('Autoloader not found.', 'sage')
-        );
-    }
-    require_once $composer;
-}
-
-/**
- * Load ajax script on news template
- */
-function enqueue_ajax_load_more() {
-   wp_enqueue_script('ajax-load-more'); // Already registered, just needs to be enqueued
-}
-add_action('wp_enqueue_scripts', 'enqueue_ajax_load_more');
 
 /**
  * Add excerpt to pages

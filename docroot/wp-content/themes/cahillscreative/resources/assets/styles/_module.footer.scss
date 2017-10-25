@@ -8,7 +8,6 @@
   flex-direction: row;
   overflow: hidden;
   padding: $pad-double 0 $pad 0;
-  margin-bottom: rem(80);
 
   @include media('>medium') {
     margin-bottom: 0;

@@ -36,3 +36,15 @@ body#tinymce {
     padding-top: rem(100);
   }
 }
+
+.single:not('single-work') {
+  .footer {
+    margin-bottom: rem(40);
+  }
+
+  &.margin--80 {
+    .footer {
+      margin-bottom: rem(80);
+    }
+  }
+}

@@ -50,7 +50,13 @@
     <div class="layout-container section__main--inner">
       <article <?php (post_class('article spacing--double')); ?>>
         <div class="article__body spacing text-align--center">
-          <h2 class="font--primary--s">Recent Posts</h2>
+          <h2 class="font--primary--s">
+            <?php if(is_archive('work')): ?>
+              Recent Work
+            <?php else: ?>
+              Recent Posts
+            <?php endif; ?>
+          </h2>
           <hr class="divider center-block" />
           <?php if(get_field('intro')): ?>
             <p class="page-intro"><?php echo e(get_field('intro')); ?></p>
@@ -59,38 +65,21 @@
           <?php if($posts->have_posts()): ?>
             <div class="grid grid--full">
               <?php while($posts->have_posts()): ?> <?php ($posts->the_post()); ?>
-                <?php 
-                  $post_id = get_the_ID();
-                  $title = get_the_title($post_id);
-                  $thumb_id = get_post_thumbnail_id($post_id);
-                  $thumb_size = 'square';
-                  $link = get_permalink($post_id);
-                  $date = date('F j, Y', strtotime(get_the_date($post_id)));
-                  $post_type = get_post_type($post_id);
-                  if (get_the_excerpt() != '') {
-                    $excerpt = get_the_excerpt('',FALSE,'');
-                  } else {
-                    $excerpt = wp_trim_words(get_the_content('',FALSE,''), 100, '...');
-                  }
-                  if ($post_type == 'affiliate') {
-                    $kicker = 'Shop';
-                  } else if ($post_type == 'work') {
-                    $kicker = strip_tags(get_the_tag_list('',', ',''));
-                  } else {
-                    $kicker = get_the_category($post_id)[0]->name;
-                  }
-                 ?>
-                <div class="grid-item">
-                  <?php echo $__env->make('patterns.block', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-                </div>
+                <?php echo $__env->make('patterns.block', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
               <?php endwhile; ?>
               <?php (wp_reset_query()); ?>
             </div>
-            <?php if(is_tag()): ?>
-              <?php  echo do_shortcode('[ajax_load_more css_classes="spacing" container_type="div" post_type="post, affiliate" scroll="true" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]');  ?>
-            <?php else: ?>
-              <?php  echo do_shortcode('[ajax_load_more css_classes="spacing" container_type="div" post_type="post" scroll="true" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]');  ?>
-            <?php endif; ?>
+            <?php 
+              if (is_tag()) {
+                echo do_shortcode('[ajax_load_more tag="' .get_the_category()[0]->slug .'" container_type="div" post_type="post, affiliate" scroll="false" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]');
+              } elseif (is_category()) {
+                echo do_shortcode('[ajax_load_more category="' . get_the_category()[0]->slug .'" container_type="div" post_type="post" scroll="true" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]');
+              } elseif (is_archive('work')) {
+                echo do_shortcode('[ajax_load_more container_type="div" post_type="work" scroll="true" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]');
+              } else {
+                echo do_shortcode('[ajax_load_more container_type="div" post_type="post" scroll="true" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]');
+              }
+             ?>
           <?php else: ?>
             <p><?php echo e(__('Sorry, no results were found.', 'sage')); ?></p>
             <?php echo get_search_form(false); ?>

@@ -17,6 +17,18 @@
   background: linear-gradient(to bottom, rgba(black, 0.5) 0%, rgba(black, 0.5) 100%) no-repeat border-box;
 }
 
+.image-overlay {
+  padding: 0;
+
+  &::before {
+    content: "";
+    position: relative;
+    display: block;
+    width: 100%;
+    background: rgba(black, 0.2);
+  }
+}
+
 .round {
   border-radius: 50%;
   overflow: hidden;

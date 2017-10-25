@@ -16,7 +16,7 @@
           </div>
         </div>
         @if (have_posts())
-          @php echo do_shortcode('[ajax_load_more css_classes="spacing" post_type="post, affiliate" search="'. get_search_query() .'" orderby="relevance" posts_per_page="12" scroll="true" button_label="Show More Results" transition_container="false"]'); @endphp
+          @php echo do_shortcode('[ajax_load_more post_type="post, affiliate, work" search="'. get_search_query() .'" orderby="relevance" posts_per_page="12" scroll="true" button_label="Show More Results" transition_container="false"]'); @endphp
         @else
           <p class="text-align--center space--zero">{{ __('Sorry, no results were found.', 'sage') }}</p>
           {!! get_search_form(false) !!}

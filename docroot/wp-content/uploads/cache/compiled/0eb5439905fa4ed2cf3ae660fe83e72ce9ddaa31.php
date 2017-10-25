@@ -48,7 +48,7 @@
               <?php endwhile; ?>
               <?php (wp_reset_query()); ?>
             </div>
-            <?php  echo do_shortcode('[ajax_load_more container_type="div" css_classes="spacing" post_type="affiliate" scroll="true" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]');  ?>
+            <?php  echo do_shortcode('[ajax_load_more container_type="div" css_classes="spacing" post_type="affiliate" scroll="true" transition_container="false" button_label="Load More Items" posts_per_page="12" offset="12"]');  ?>
           <?php else: ?>
             <p><?php echo e(__('Sorry, no results were found.', 'sage')); ?></p>
             <?php echo get_search_form(false); ?>
