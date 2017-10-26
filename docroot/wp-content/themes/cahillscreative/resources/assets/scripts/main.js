@@ -192,7 +192,8 @@
         /**
          * Tooltip
          */
-        $('.tooltip-toggle').click(function() {
+        $(document).on('click', '.tooltip-toggle', function() {
+          $(this).parent().addClass('is-active');
           $('.overlay').show();
         });
 

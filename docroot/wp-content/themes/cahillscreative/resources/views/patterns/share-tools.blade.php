@@ -3,7 +3,7 @@
     $link = get_the_permalink();
     $title = get_the_title();
     if (get_the_excerpt() != '') {
-      $excerpt = get_the_excerpt('',FALSE,'');
+      $excerpt = wp_trim_excerpt(get_the_excerpt('',FALSE,''));
     } else {
       $excerpt = wp_trim_words(get_the_content('',FALSE,''), 100, '...');
     }
@@ -13,7 +13,7 @@
   <a href="https://facebook.com/sharer/sharer.php?u={{ $link }}" class="article__share-link icon icon--m space--half-right" aria-label="Share on Facebook" target="_blank">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Facebook</title><path d="M10,0A10,10,0,1,0,20,10,10,10,0,0,0,10,0Zm2.86,6.33h-1c-.81,0-1,.39-1,1V8.53h1.94l-.25,2H10.85v5h-2v-5H7.14v-2H8.83V7.08A2.36,2.36,0,0,1,11.35,4.5a13.86,13.86,0,0,1,1.51.08Z" fill="#393939"/></svg>
   </a>
-  <a href="https://twitter.com/intent/tweet/?text={{ $title }}{{ ': ' . $excerpt }}&amp;url={{ $link }}" class="article__share-link icon icon--m space--half-right" aria-label="Share on Twitter" target="_blank">
+  <a href="https://twitter.com/intent/tweet/?text={{ $title . ': ' . $excerpt }}&amp;url={{ $link }}" class="article__share-link icon icon--m space--half-right" aria-label="Share on Twitter" target="_blank">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Twitter</title><path d="M10,0A10,10,0,1,0,20,10,10,10,0,0,0,10,0Zm3.82,8q0,.13,0,.26A5.61,5.61,0,0,1,5.19,13l.47,0a4,4,0,0,0,2.45-.84,2,2,0,0,1-1.84-1.37,2,2,0,0,0,.89,0A2,2,0,0,1,5.58,8.87v0a2,2,0,0,0,.89.25,2,2,0,0,1-.61-2.63A5.6,5.6,0,0,0,9.93,8.52a2,2,0,0,1,3.36-1.8,4,4,0,0,0,1.25-.48,2,2,0,0,1-.87,1.09A3.94,3.94,0,0,0,14.81,7,4,4,0,0,1,13.82,8Z" fill="#393939"/></svg>
   </a>
   <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url={{ $link }}&amp;title={{ $title }}&amp;summary={{ ': ' . $excerpt }}&amp;source={{ $link }}" aria-label="Share on LinkedIn" class="article__share-link icon icon--m space--half-right" target="_blank">

@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "701899f946f30230db20"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "6046e9645d780d3f98c8"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -706,7 +706,7 @@
 /******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return hotCreateRequire(53)(__webpack_require__.s = 53);
+/******/ 	return hotCreateRequire(42)(__webpack_require__.s = 42);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -2230,8 +2230,7 @@ module.exports = function(module) {
 /***/ }),
 /* 17 */,
 /* 18 */,
-/* 19 */,
-/* 20 */
+/* 19 */
 /* no static exports found */
 /* all exports used */
 /*!*******************************!*\
@@ -2251,6 +2250,7 @@ wp.customize('blogname', function (value) {
 
 
 /***/ }),
+/* 20 */,
 /* 21 */,
 /* 22 */,
 /* 23 */,
@@ -2272,18 +2272,7 @@ wp.customize('blogname', function (value) {
 /* 39 */,
 /* 40 */,
 /* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */,
-/* 52 */,
-/* 53 */
+/* 42 */
 /* no static exports found */
 /* all exports used */
 /*!*********************************************************************************************!*\
@@ -2292,7 +2281,7 @@ wp.customize('blogname', function (value) {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! webpack-hot-middleware/client?timeout=20000&reload=true */2);
-module.exports = __webpack_require__(/*! ./scripts/customizer.js */20);
+module.exports = __webpack_require__(/*! ./scripts/customizer.js */19);
 
 
 /***/ })
