@@ -243,6 +243,33 @@ add_filter('upload_mimes', 'cc_mime_types');
 	);
 	register_taxonomy( "project", array( "post" ), $args );
 
+  /**
+	 * Taxonomy: Store.
+	 */
+
+	$labels = array(
+		"name" => __( "Store", "sage" ),
+		"singular_name" => __( "Store", "sage" ),
+	);
+
+	$args = array(
+		"label" => __( "Store", "sage" ),
+		"labels" => $labels,
+		"public" => true,
+		"hierarchical" => false,
+		"label" => "Store",
+		"show_ui" => true,
+		"show_in_menu" => true,
+		"show_in_nav_menus" => true,
+		"query_var" => true,
+		"rewrite" => array( 'slug' => 'store', 'with_front' => true, ),
+		"show_admin_column" => false,
+		"show_in_rest" => false,
+		"rest_base" => "",
+		"show_in_quick_edit" => false,
+	);
+	register_taxonomy( "store", array( "affiliate" ), $args );
+
 	/**
 	 * Taxonomy: Skill Levels.
 	 */

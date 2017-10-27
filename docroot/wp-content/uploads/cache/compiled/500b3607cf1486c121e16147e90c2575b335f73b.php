@@ -12,8 +12,14 @@
       $excerpt = wp_trim_words(get_the_content('',FALSE,''), 100, '...');
     }
     if ($post_type == 'affiliate') {
-      $kicker = 'Shop';
+      if (get_the_terms($post_id, 'store')) {
+        $tags = get_the_terms($post_id, 'store');
+        $kicker = $tags[0]->name;
+      } else {
+        $kicker = NULL;
+      }
       $date = NULL;
+      $tags = NULL;
     } else if ($post_type == 'work') {
       $kicker = NULL;
       $date = NULL;

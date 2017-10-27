@@ -264,6 +264,10 @@ ul {
 article {
   margin-left: auto;
   margin-right: auto;
+
+  p a {
+    text-decoration: underline !important;
+  }
 }
 
 body#tinymce,

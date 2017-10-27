@@ -8,7 +8,7 @@
     <hr class="divider" />
   <?php endif; ?>
   <?php if(get_field('intro')): ?>
-    <div class="page-intro">
+    <div class="page-intro text-align--center">
       <?php echo e(the_field('intro')); ?>
 
     </div>

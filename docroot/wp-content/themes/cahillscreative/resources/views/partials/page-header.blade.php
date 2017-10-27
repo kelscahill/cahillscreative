@@ -8,7 +8,7 @@
     <hr class="divider" />
   @endif
   @if (get_field('intro'))
-    <div class="page-intro">
+    <div class="page-intro text-align--center">
       {{ the_field('intro') }}
     </div>
   @endif
