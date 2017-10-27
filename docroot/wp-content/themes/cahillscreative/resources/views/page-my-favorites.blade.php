@@ -42,9 +42,7 @@
                     $kicker = get_the_category($post_id)[0]->name;
                   }
                 @endphp
-                <div class="grid-item">
-                  @include('patterns.block')
-                </div>
+                @include('patterns.block')
               @endwhile
               @php(wp_reset_query())
             </div>

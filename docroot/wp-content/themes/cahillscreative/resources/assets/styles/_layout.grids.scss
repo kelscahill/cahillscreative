@@ -98,7 +98,10 @@
  * 3 column grid
  */
 .grid--3-col {
-  justify-content: center;
+  display: flex;
+  justify-content: stretch;
+  flex-direction: row;
+  position: relative;
 
   > * {
     width: 100%;
@@ -114,7 +117,6 @@
   @include media ('>large') {
     > * {
       width: 33.3333%;
-      margin-bottom: 0;
     }
   }
 }
@@ -137,7 +139,14 @@
  * 4 column grid
  */
 .grid--4-col {
-  width: 100%;
+  display: flex;
+  justify-content: stretch;
+  flex-direction: row;
+  position: relative;
+
+  > * {
+    margin: $space-half 0;
+  }
 
   @include media ('>medium') {
     > * {

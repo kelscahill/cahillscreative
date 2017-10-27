@@ -72,7 +72,15 @@
     <?php endif; ?>
     <h1 class="section__hero-title font--secondary--xl color--white"><?php echo e($title); ?></h1>
     <?php if(is_front_page()): ?>
-      <h2 class="section__hero-subtitle font--primary--m color--white">Websites that kick ass.</h2>
+      <section class="rw-wrapper">
+				<div class="rw-words">
+					<span class="font--primary--m color--white">websites that kick ass</span>
+					<span class="font--primary--m color--white">logos that mean something</span>
+					<span class="font--primary--m color--white">brands to stand out from the crowd</span>
+					<span class="font--primary--m color--white">messaging that tells a story</span>
+					<span class="font--primary--m color--white">print that makes people take notice</span>
+				</div>
+			</section>
     <?php endif; ?>
     <?php if(!empty($excerpt)): ?>
       <p class="section__hero-excerpt color--white"><?php echo e($excerpt); ?></p>

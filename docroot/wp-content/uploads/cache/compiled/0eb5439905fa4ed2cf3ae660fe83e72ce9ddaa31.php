@@ -42,9 +42,7 @@
                     $kicker = get_the_category($post_id)[0]->name;
                   }
                  ?>
-                <div class="grid-item">
-                  <?php echo $__env->make('patterns.block', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-                </div>
+                <?php echo $__env->make('patterns.block', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
               <?php endwhile; ?>
               <?php (wp_reset_query()); ?>
             </div>

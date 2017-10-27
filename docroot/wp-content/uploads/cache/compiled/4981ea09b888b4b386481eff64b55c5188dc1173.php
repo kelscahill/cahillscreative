@@ -1,8 +1,8 @@
 <section class="section section__main">
   <div class="layout-container section__main--inner">
-    <article <?php (post_class('article spacing--double')); ?>>
+    <article <?php (post_class('article')); ?>>
       <?php echo $__env->make('partials.page-header', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-      <div class="article__body spacing narrow narrow--l">
+      <div class="article__body spacing narrow narrow--m text-align--center">
         <?php 
           $thumb_id = get_post_thumbnail_id();
           $image_small = wp_get_attachment_image_src($thumb_id, 'horiz__16x9--s')[0];
