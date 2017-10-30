@@ -48,7 +48,7 @@
             </div>
             @php echo do_shortcode('[ajax_load_more container_type="div" post_type="affiliate" scroll="true" transition_container="false" button_label="Load More Items" posts_per_page="12" offset="12"]'); @endphp
           @else
-            <p>{{ __('Sorry, no results were found.', 'sage') }}</p>
+            <p>{{ __('Sorry, no posts were found.', 'sage') }}</p>
             {!! get_search_form(false) !!}
           @endif
         </div>

@@ -19,7 +19,7 @@
             <div class="article__category">
               <span class="font--primary--xs">Project</span>
               @foreach ($project as $term)
-                <p>{{ $term->name }}</p>
+                <a href="{{ home_url('/') }}{{ $term->taxonomy }}/{{ $term->slug }}">{{ $term->name }}</a>
               @endforeach
             </div>
           @endif
@@ -28,7 +28,7 @@
             <div class="article__category">
               <span class="font--primary--xs">Room</span>
               @foreach ($room as $term)
-                <p>{{ $term->name }}</p>
+                <a href="{{ home_url('/') }}{{ $term->taxonomy }}/{{ $term->slug }}">{{ $term->name }}</a>
               @endforeach
             </div>
           @endif
@@ -37,7 +37,7 @@
             <div class="article__category">
               <span class="font--primary--xs">Cost</span>
               @foreach ($cost as $term)
-                <p>{{ $term->name }}</p>
+                <a href="{{ home_url('/') }}{{ $term->taxonomy }}/{{ $term->slug }}">{{ $term->name }}</a>
               @endforeach
             </div>
           @endif
@@ -46,7 +46,7 @@
             <div class="article__category">
               <span class="font--primary--xs">Skill Level</span>
               @foreach ($skill as $term)
-                <p>{{ $term->name }}</p>
+                <a href="{{ home_url('/') }}{{ $term->taxonomy }}/{{ $term->slug }}">{{ $term->name }}</a>
               @endforeach
             </div>
           @endif

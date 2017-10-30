@@ -1,6 +1,12 @@
 <?php 
   $id = get_queried_object_id();
-  if (is_tag()) {
+  if (is_tax()) {
+    $term = get_term_by('slug', get_query_var('term'), get_query_var('taxonomy'));
+    $thumb_id = get_field('category_featured_image', 'category_' . get_cat_ID(get_cat_name($id)))['ID'];
+    $title = get_cat_name($id);
+    $excerpt = category_description($id);
+    $category = get_taxonomy($term->taxonomy)->label;
+  } else if (is_tag()) {
     $thumb_id = get_field('category_featured_image', 'category_' . get_cat_ID(get_cat_name($id)))['ID'];
     $title = get_cat_name($id);
     $excerpt = category_description($id);
@@ -16,7 +22,7 @@
     $excerpt = get_field('intro', 36, false);
     $category = get_field('display_title', 36);
   } else if (is_home()) {
-    $thumb_id = get_post_thumbnail_id();
+    $thumb_id = get_post_thumbnail_id(6);
     $title = get_the_title(6);
     $excerpt = get_the_excerpt(6);
     $category = get_cat_name($id);

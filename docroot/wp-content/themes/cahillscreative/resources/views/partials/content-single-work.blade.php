@@ -80,6 +80,9 @@
             </div>
           @endwhile
         @endif
+        <div class="article__share-work">
+          @include('patterns/share-tools')
+        </div>
       </div> <!-- ./article__body -->
     </article>
   </div>

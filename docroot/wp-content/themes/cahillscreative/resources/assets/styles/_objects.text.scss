@@ -203,6 +203,8 @@ h5 {
  * Text Decorations
  */
 .text-decoration--underline {
+  text-decoration: underline;
+
   &:hover {
     text-decoration: underline;
   }

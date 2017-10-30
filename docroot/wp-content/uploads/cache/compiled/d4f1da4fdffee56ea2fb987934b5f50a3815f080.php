@@ -1,6 +1,21 @@
 <?php 
   $id = get_queried_object_id();
-  if (is_tag()) {
+  if (is_tax()) {
+    $term = get_term_by('slug', get_query_var('term'), get_query_var('taxonomy'));
+    $args = array(
+      'post_type' => 'post',
+      'posts_per_page' => 12,
+      'post_status' => 'publish',
+      'order' => 'DESC',
+      'tax_query' => array(
+        array(
+          'taxonomy' => $term->taxonomy,
+          'field' => 'slug',
+          'terms' => $term->slug
+        )
+      )
+    );
+  } elseif (is_tag()) {
     $args = array(
      'post_type' => array(
        'post',
@@ -81,7 +96,7 @@
               }
              ?>
           <?php else: ?>
-            <p><?php echo e(__('Sorry, no results were found.', 'sage')); ?></p>
+            <p><?php echo e(__('Sorry, no posts were found.', 'sage')); ?></p>
             <?php echo get_search_form(false); ?>
 
           <?php endif; ?>

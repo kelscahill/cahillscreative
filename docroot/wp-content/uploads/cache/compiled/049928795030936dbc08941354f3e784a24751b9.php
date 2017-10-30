@@ -19,7 +19,7 @@
             <div class="article__category">
               <span class="font--primary--xs">Project</span>
               <?php $__currentLoopData = $project; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <p><?php echo e($term->name); ?></p>
+                <a href="<?php echo e(home_url('/')); ?><?php echo e($term->taxonomy); ?>/<?php echo e($term->slug); ?>"><?php echo e($term->name); ?></a>
               <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
           <?php endif; ?>
@@ -28,7 +28,7 @@
             <div class="article__category">
               <span class="font--primary--xs">Room</span>
               <?php $__currentLoopData = $room; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <p><?php echo e($term->name); ?></p>
+                <a href="<?php echo e(home_url('/')); ?><?php echo e($term->taxonomy); ?>/<?php echo e($term->slug); ?>"><?php echo e($term->name); ?></a>
               <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
           <?php endif; ?>
@@ -37,7 +37,7 @@
             <div class="article__category">
               <span class="font--primary--xs">Cost</span>
               <?php $__currentLoopData = $cost; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <p><?php echo e($term->name); ?></p>
+                <a href="<?php echo e(home_url('/')); ?><?php echo e($term->taxonomy); ?>/<?php echo e($term->slug); ?>"><?php echo e($term->name); ?></a>
               <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
           <?php endif; ?>
@@ -46,7 +46,7 @@
             <div class="article__category">
               <span class="font--primary--xs">Skill Level</span>
               <?php $__currentLoopData = $skill; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <p><?php echo e($term->name); ?></p>
+                <a href="<?php echo e(home_url('/')); ?><?php echo e($term->taxonomy); ?>/<?php echo e($term->slug); ?>"><?php echo e($term->name); ?></a>
               <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
           <?php endif; ?>

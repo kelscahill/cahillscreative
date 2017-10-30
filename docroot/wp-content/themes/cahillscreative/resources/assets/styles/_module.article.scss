@@ -135,6 +135,18 @@
   }
 }
 
+.article__share-work > div {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  a {
+    margin-top: 0;
+    margin-left: $space-half;
+    margin-right: $space-half;
+  }
+}
+
 .article__nav {
   display: flex;
   flex-direction: row;
@@ -265,8 +277,14 @@ article {
   margin-left: auto;
   margin-right: auto;
 
-  p a {
+  p a,
+  li a {
     text-decoration: underline !important;
+  }
+
+  li p {
+    margin-top: $space;
+    text-indent: 0;
   }
 }
 

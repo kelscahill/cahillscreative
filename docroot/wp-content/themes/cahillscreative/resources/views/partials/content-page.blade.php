@@ -13,7 +13,7 @@
           <source srcset="{{ $image_medium }}" media="(min-width:500px)">
           <img src="{{ $image_small }}" alt="{{ $image_alt }}">
         </picture>
-        <div class="narrow narrow--m">
+        <div class="narrow narrow--m spacing">
           @php(the_content())
         </div>
       </div>

@@ -28,7 +28,7 @@ if (post_password_required()) {
   @endif
 
   @if (!comments_open() && get_comments_number() != '0' && post_type_supports(get_post_type(), 'comments'))
-    <p>{{ __('Sorry, no results were found.', 'sage') }}</p>
+    <p>{{ __('There are no comments at this time.', 'sage') }}</p>
   @endif
 
   @php(comment_form())

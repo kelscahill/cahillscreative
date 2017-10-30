@@ -30,7 +30,7 @@ if (post_password_required()) {
   <?php endif; ?>
 
   <?php if(!comments_open() && get_comments_number() != '0' && post_type_supports(get_post_type(), 'comments')): ?>
-    <p><?php echo e(__('Sorry, no results were found.', 'sage')); ?></p>
+    <p><?php echo e(__('There are no comments at this time.', 'sage')); ?></p>
   <?php endif; ?>
 
   <?php (comment_form()); ?>

@@ -80,6 +80,9 @@
             </div>
           <?php endwhile; ?>
         <?php endif; ?>
+        <div class="article__share-work">
+          <?php echo $__env->make('patterns/share-tools', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+        </div>
       </div> <!-- ./article__body -->
     </article>
   </div>

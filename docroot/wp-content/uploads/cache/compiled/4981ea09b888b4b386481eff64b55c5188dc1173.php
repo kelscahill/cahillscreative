@@ -13,7 +13,7 @@
           <source srcset="<?php echo e($image_medium); ?>" media="(min-width:500px)">
           <img src="<?php echo e($image_small); ?>" alt="<?php echo e($image_alt); ?>">
         </picture>
-        <div class="narrow narrow--m">
+        <div class="narrow narrow--m spacing">
           <?php (the_content()); ?>
         </div>
       </div>
