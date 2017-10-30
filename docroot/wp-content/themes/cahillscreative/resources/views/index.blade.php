@@ -66,7 +66,9 @@
       <article @php(post_class('article spacing--double'))>
         <div class="article__body spacing text-align--center">
           <h2 class="font--primary--s">
-            @if (is_archive('work'))
+            @if (is_tax())
+              Recent Posts
+            @elseif (is_archive('work'))
               Recent Work
             @else
               Recent Posts
