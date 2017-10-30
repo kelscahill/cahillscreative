@@ -60,33 +60,33 @@ add_action('wp_enqueue_scripts', 'enqueue_ajax_load_more');
 function misha_filter_function(){
 
   $args = array(
-  	'post_type' => 'post',
+    'post_type' => 'post',
     'orderby' => 'date',
   );
 
   if( isset( $_POST['projects'] ) )
-		$args['tax_query'] = array(
-			array(
-				'taxonomy' => 'projects',
-				'field' => 'term_id',
-				'terms' => array($_POST['projects']),
+    $args['tax_query'] = array(
+      array(
+        'taxonomy' => 'projects',
+        'field' => 'term_id',
+        'terms' => array($_POST['projects']),
         'operator' => 'IN',
-			)
-		);
+      )
+    );
 
-	$query = new WP_Query( $args );
+  $query = new WP_Query( $args );
 
-	if( $query->have_posts() ) :
-		while( $query->have_posts() ): $query->the_post();
-			echo '<h2>' . $query->post->post_title . '</h2>';
+  if( $query->have_posts() ) :
+    while( $query->have_posts() ): $query->the_post();
+      echo '<h2>' . $query->post->post_title . '</h2>';
       echo $_POST['projects'];
-		endwhile;
-		wp_reset_postdata();
-	else :
-		echo 'No posts found';
-	endif;
+    endwhile;
+    wp_reset_postdata();
+  else :
+    echo 'No posts found';
+  endif;
 
-	die();
+  die();
 }
 
 add_action('wp_ajax_myfilter', 'misha_filter_function');
@@ -162,191 +162,191 @@ add_filter('upload_mimes', 'cc_mime_types');
 
  function cptui_register_my_taxes() {
 
-	/**
-	 * Taxonomy: Room.
-	 */
+  /**
+   * Taxonomy: Room.
+   */
 
-	$labels = array(
-		"name" => __( "Room", "sage" ),
-		"singular_name" => __( "Room", "sage" ),
-	);
+  $labels = array(
+    "name" => __( "Room", "sage" ),
+    "singular_name" => __( "Room", "sage" ),
+  );
 
-	$args = array(
-		"label" => __( "Room", "sage" ),
-		"labels" => $labels,
-		"public" => true,
-		"hierarchical" => false,
-		"label" => "Room",
-		"show_ui" => true,
-		"show_in_menu" => true,
-		"show_in_nav_menus" => true,
-		"query_var" => true,
-		"rewrite" => array( 'slug' => 'room', 'with_front' => true, ),
-		"show_admin_column" => false,
-		"show_in_rest" => false,
-		"rest_base" => "",
-		"show_in_quick_edit" => false,
-	);
-	register_taxonomy( "room", array( "post" ), $args );
-
-	/**
-	 * Taxonomy: Cost.
-	 */
-
-	$labels = array(
-		"name" => __( "Cost", "sage" ),
-		"singular_name" => __( "Cost", "sage" ),
-	);
-
-	$args = array(
-		"label" => __( "Cost", "sage" ),
-		"labels" => $labels,
-		"public" => true,
-		"hierarchical" => false,
-		"label" => "Cost",
-		"show_ui" => true,
-		"show_in_menu" => true,
-		"show_in_nav_menus" => true,
-		"query_var" => true,
-		"rewrite" => array( 'slug' => 'cost', 'with_front' => true, ),
-		"show_admin_column" => false,
-		"show_in_rest" => false,
-		"rest_base" => "",
-		"show_in_quick_edit" => false,
-	);
-	register_taxonomy( "cost", array( "post" ), $args );
-
-	/**
-	 * Taxonomy: Projects.
-	 */
-
-	$labels = array(
-		"name" => __( "Project", "sage" ),
-		"singular_name" => __( "Project", "sage" ),
-	);
-
-	$args = array(
-		"label" => __( "Project", "sage" ),
-		"labels" => $labels,
-		"public" => true,
-		"hierarchical" => false,
-		"label" => "Projects",
-		"show_ui" => true,
-		"show_in_menu" => true,
-		"show_in_nav_menus" => true,
-		"query_var" => true,
-		"rewrite" => array( 'slug' => 'project', 'with_front' => true, ),
-		"show_admin_column" => false,
-		"show_in_rest" => false,
-		"rest_base" => "",
-		"show_in_quick_edit" => false,
-	);
-	register_taxonomy( "project", array( "post" ), $args );
+  $args = array(
+    "label" => __( "Room", "sage" ),
+    "labels" => $labels,
+    "public" => true,
+    "hierarchical" => false,
+    "label" => "Room",
+    "show_ui" => true,
+    "show_in_menu" => true,
+    "show_in_nav_menus" => true,
+    "query_var" => true,
+    "rewrite" => array( 'slug' => 'room', 'with_front' => true, ),
+    "show_admin_column" => false,
+    "show_in_rest" => false,
+    "rest_base" => "",
+    "show_in_quick_edit" => false,
+  );
+  register_taxonomy( "room", array( "post" ), $args );
 
   /**
-	 * Taxonomy: Store.
-	 */
+   * Taxonomy: Cost.
+   */
 
-	$labels = array(
-		"name" => __( "Store", "sage" ),
-		"singular_name" => __( "Store", "sage" ),
-	);
+  $labels = array(
+    "name" => __( "Cost", "sage" ),
+    "singular_name" => __( "Cost", "sage" ),
+  );
 
-	$args = array(
-		"label" => __( "Store", "sage" ),
-		"labels" => $labels,
-		"public" => true,
-		"hierarchical" => false,
-		"label" => "Store",
-		"show_ui" => true,
-		"show_in_menu" => true,
-		"show_in_nav_menus" => true,
-		"query_var" => true,
-		"rewrite" => array( 'slug' => 'store', 'with_front' => true, ),
-		"show_admin_column" => false,
-		"show_in_rest" => false,
-		"rest_base" => "",
-		"show_in_quick_edit" => false,
-	);
-	register_taxonomy( "store", array( "affiliate" ), $args );
+  $args = array(
+    "label" => __( "Cost", "sage" ),
+    "labels" => $labels,
+    "public" => true,
+    "hierarchical" => false,
+    "label" => "Cost",
+    "show_ui" => true,
+    "show_in_menu" => true,
+    "show_in_nav_menus" => true,
+    "query_var" => true,
+    "rewrite" => array( 'slug' => 'cost', 'with_front' => true, ),
+    "show_admin_column" => false,
+    "show_in_rest" => false,
+    "rest_base" => "",
+    "show_in_quick_edit" => false,
+  );
+  register_taxonomy( "cost", array( "post" ), $args );
 
-	/**
-	 * Taxonomy: Skill Levels.
-	 */
+  /**
+   * Taxonomy: Projects.
+   */
 
-	$labels = array(
-		"name" => __( "Skill Level", "sage" ),
-		"singular_name" => __( "Skill Level", "sage" ),
-	);
+  $labels = array(
+    "name" => __( "Project", "sage" ),
+    "singular_name" => __( "Project", "sage" ),
+  );
 
-	$args = array(
-		"label" => __( "Skill Level", "sage" ),
-		"labels" => $labels,
-		"public" => true,
-		"hierarchical" => false,
-		"label" => "Skill Levels",
-		"show_ui" => true,
-		"show_in_menu" => true,
-		"show_in_nav_menus" => true,
-		"query_var" => true,
-		"rewrite" => array( 'slug' => 'skill_level', 'with_front' => true, ),
-		"show_admin_column" => false,
-		"show_in_rest" => false,
-		"rest_base" => "",
-		"show_in_quick_edit" => false,
-	);
-	register_taxonomy( "skill_level", array( "post" ), $args );
+  $args = array(
+    "label" => __( "Project", "sage" ),
+    "labels" => $labels,
+    "public" => true,
+    "hierarchical" => false,
+    "label" => "Projects",
+    "show_ui" => true,
+    "show_in_menu" => true,
+    "show_in_nav_menus" => true,
+    "query_var" => true,
+    "rewrite" => array( 'slug' => 'project', 'with_front' => true, ),
+    "show_admin_column" => false,
+    "show_in_rest" => false,
+    "rest_base" => "",
+    "show_in_quick_edit" => false,
+  );
+  register_taxonomy( "project", array( "post" ), $args );
+
+  /**
+   * Taxonomy: Store.
+   */
+
+  $labels = array(
+    "name" => __( "Store", "sage" ),
+    "singular_name" => __( "Store", "sage" ),
+  );
+
+  $args = array(
+    "label" => __( "Store", "sage" ),
+    "labels" => $labels,
+    "public" => true,
+    "hierarchical" => false,
+    "label" => "Store",
+    "show_ui" => true,
+    "show_in_menu" => true,
+    "show_in_nav_menus" => true,
+    "query_var" => true,
+    "rewrite" => array( 'slug' => 'store', 'with_front' => true, ),
+    "show_admin_column" => false,
+    "show_in_rest" => false,
+    "rest_base" => "",
+    "show_in_quick_edit" => false,
+  );
+  register_taxonomy( "store", array( "affiliate" ), $args );
+
+  /**
+   * Taxonomy: Skill Levels.
+   */
+
+  $labels = array(
+    "name" => __( "Skill Level", "sage" ),
+    "singular_name" => __( "Skill Level", "sage" ),
+  );
+
+  $args = array(
+    "label" => __( "Skill Level", "sage" ),
+    "labels" => $labels,
+    "public" => true,
+    "hierarchical" => false,
+    "label" => "Skill Levels",
+    "show_ui" => true,
+    "show_in_menu" => true,
+    "show_in_nav_menus" => true,
+    "query_var" => true,
+    "rewrite" => array( 'slug' => 'skill_level', 'with_front' => true, ),
+    "show_admin_column" => false,
+    "show_in_rest" => false,
+    "rest_base" => "",
+    "show_in_quick_edit" => false,
+  );
+  register_taxonomy( "skill_level", array( "post" ), $args );
 }
 
 add_action( 'init', 'cptui_register_my_taxes' );
 
 function cptui_register_my_cpts() {
 
-	/**
-	 * Post Type: Affiliates.
-	 */
+  /**
+   * Post Type: Affiliates.
+   */
 
-	$labels = array(
-		"name" => __( "Affiliates", "sage" ),
-		"singular_name" => __( "Affiliates", "sage" ),
-		"menu_name" => __( "Affiliates", "sage" ),
-		"all_items" => __( "All Affiliates", "sage" ),
-		"add_new" => __( "Add New Affiliate", "sage" ),
-		"add_new_item" => __( "Add New Affiliate Item", "sage" ),
-		"edit_item" => __( "Edit Affiliate", "sage" ),
-		"new_item" => __( "New Affiliate", "sage" ),
-		"view_item" => __( "View Affiliate", "sage" ),
-		"view_items" => __( "View Affiliates", "sage" ),
-		"search_items" => __( "Search Affiliates", "sage" ),
-		"not_found" => __( "No Affiliates Found", "sage" ),
-		"not_found_in_trash" => __( "No Affiliates Found in Trash", "sage" ),
-		"parent_item_colon" => __( "Parent Affiliate", "sage" ),
-		"parent_item_colon" => __( "Parent Affiliate", "sage" ),
-	);
+  $labels = array(
+    "name" => __( "Affiliates", "sage" ),
+    "singular_name" => __( "Affiliates", "sage" ),
+    "menu_name" => __( "Affiliates", "sage" ),
+    "all_items" => __( "All Affiliates", "sage" ),
+    "add_new" => __( "Add New Affiliate", "sage" ),
+    "add_new_item" => __( "Add New Affiliate Item", "sage" ),
+    "edit_item" => __( "Edit Affiliate", "sage" ),
+    "new_item" => __( "New Affiliate", "sage" ),
+    "view_item" => __( "View Affiliate", "sage" ),
+    "view_items" => __( "View Affiliates", "sage" ),
+    "search_items" => __( "Search Affiliates", "sage" ),
+    "not_found" => __( "No Affiliates Found", "sage" ),
+    "not_found_in_trash" => __( "No Affiliates Found in Trash", "sage" ),
+    "parent_item_colon" => __( "Parent Affiliate", "sage" ),
+    "parent_item_colon" => __( "Parent Affiliate", "sage" ),
+  );
 
-	$args = array(
-		"label" => __( "Affiliates", "sage" ),
-		"labels" => $labels,
-		"description" => "",
-		"public" => true,
-		"publicly_queryable" => true,
-		"show_ui" => true,
-		"show_in_rest" => false,
-		"rest_base" => "",
-		"has_archive" => false,
-		"show_in_menu" => true,
-		"exclude_from_search" => false,
-		"capability_type" => "post",
-		"map_meta_cap" => true,
-		"hierarchical" => false,
-		"rewrite" => array( "slug" => "affiliate", "with_front" => false ),
-		"query_var" => true,
-		"menu_icon" => "dashicons-cart",
-		"supports" => array( "title", "editor", "thumbnail", "excerpt" ),
-		"taxonomies" => array( "category", "post_tag" ),
-	);
+  $args = array(
+    "label" => __( "Affiliates", "sage" ),
+    "labels" => $labels,
+    "description" => "",
+    "public" => true,
+    "publicly_queryable" => true,
+    "show_ui" => true,
+    "show_in_rest" => false,
+    "rest_base" => "",
+    "has_archive" => false,
+    "show_in_menu" => true,
+    "exclude_from_search" => false,
+    "capability_type" => "post",
+    "map_meta_cap" => true,
+    "hierarchical" => false,
+    "rewrite" => array( "slug" => "affiliate", "with_front" => false ),
+    "query_var" => true,
+    "menu_icon" => "dashicons-cart",
+    "supports" => array( "title", "editor", "thumbnail", "excerpt" ),
+    "taxonomies" => array( "category", "post_tag" ),
+  );
 
-	register_post_type( "affiliate", $args );
+  register_post_type( "affiliate", $args );
 
 /**
  * Post Type: Work.
@@ -396,3 +396,727 @@ function cptui_register_my_cpts() {
 }
 
 add_action( 'init', 'cptui_register_my_cpts' );
+
+if( function_exists('acf_add_local_field_group') ):
+
+acf_add_local_field_group(array (
+  'key' => 'group_59dd4f329ea69',
+  'title' => 'Accordion',
+  'fields' => array (
+    array (
+      'key' => 'field_59dd50d81137f',
+      'label' => 'Accordion',
+      'name' => 'accordion',
+      'type' => 'repeater',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'collapsed' => 'field_59dd510e2ca05',
+      'min' => '',
+      'max' => '',
+      'layout' => 'row',
+      'button_label' => 'Add Row',
+      'sub_fields' => array (
+        array (
+          'key' => 'field_59dd510e2ca05',
+          'label' => 'Accordion Title',
+          'name' => 'accordion_title',
+          'type' => 'text',
+          'instructions' => '',
+          'required' => '',
+          'conditional_logic' => '',
+          'wrapper' => array (
+            'width' => '',
+            'class' => '',
+            'id' => '',
+          ),
+          'default_value' => '',
+          'placeholder' => '',
+          'prepend' => '',
+          'append' => '',
+          'maxlength' => '',
+          'readonly' => 0,
+          'disabled' => 0,
+        ),
+        array (
+          'key' => 'field_59dd51172ca06',
+          'label' => 'Accordion Body',
+          'name' => 'accordion_body',
+          'type' => 'wysiwyg',
+          'instructions' => '',
+          'required' => '',
+          'conditional_logic' => '',
+          'wrapper' => array (
+            'width' => '',
+            'class' => '',
+            'id' => '',
+          ),
+          'default_value' => '',
+          'tabs' => 'all',
+          'toolbar' => 'full',
+          'media_upload' => 1,
+        ),
+      ),
+    ),
+  ),
+  'location' => array (
+    array (
+      array (
+        'param' => 'post_type',
+        'operator' => '==',
+        'value' => 'post',
+      ),
+    ),
+    array (
+      array (
+        'param' => 'page',
+        'operator' => '==',
+        'value' => '15',
+      ),
+    ),
+  ),
+  'menu_order' => 0,
+  'position' => 'normal',
+  'style' => 'default',
+  'label_placement' => 'top',
+  'instruction_placement' => 'label',
+  'hide_on_screen' => '',
+  'active' => 1,
+  'description' => '',
+));
+
+acf_add_local_field_group(array (
+  'key' => 'group_59dd557545e2c',
+  'title' => 'Affiliate Link',
+  'fields' => array (
+    array (
+      'key' => 'field_59dd557a35fa9',
+      'label' => 'Affiliate Link',
+      'name' => 'affiliate_link',
+      'type' => 'url',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'default_value' => '',
+      'placeholder' => '',
+    ),
+  ),
+  'location' => array (
+    array (
+      array (
+        'param' => 'post_type',
+        'operator' => '==',
+        'value' => 'affiliate',
+      ),
+    ),
+  ),
+  'menu_order' => 0,
+  'position' => 'normal',
+  'style' => 'default',
+  'label_placement' => 'top',
+  'instruction_placement' => 'label',
+  'hide_on_screen' => '',
+  'active' => 1,
+  'description' => '',
+));
+
+acf_add_local_field_group(array (
+  'key' => 'group_59ee78d57e05d',
+  'title' => 'Category Featured Image',
+  'fields' => array (
+    array (
+      'key' => 'field_59ee78dbcceb4',
+      'label' => 'Category Featured Image',
+      'name' => 'category_featured_image',
+      'type' => 'image',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'return_format' => 'array',
+      'preview_size' => 'thumbnail',
+      'library' => 'all',
+      'min_width' => '',
+      'min_height' => '',
+      'min_size' => '',
+      'max_width' => '',
+      'max_height' => '',
+      'max_size' => '',
+      'mime_types' => '',
+    ),
+  ),
+  'location' => array (
+    array (
+      array (
+        'param' => 'taxonomy',
+        'operator' => '==',
+        'value' => 'all',
+      ),
+    ),
+  ),
+  'menu_order' => 0,
+  'position' => 'normal',
+  'style' => 'default',
+  'label_placement' => 'top',
+  'instruction_placement' => 'label',
+  'hide_on_screen' => '',
+  'active' => 1,
+  'description' => '',
+));
+
+acf_add_local_field_group(array (
+  'key' => 'group_59dd55e277d9d',
+  'title' => 'Etsy Link',
+  'fields' => array (
+    array (
+      'key' => 'field_59dd563892514',
+      'label' => 'Etsy Link',
+      'name' => 'etsy_link',
+      'type' => 'url',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'default_value' => '',
+      'placeholder' => '',
+    ),
+  ),
+  'location' => array (
+    array (
+      array (
+        'param' => 'post_type',
+        'operator' => '==',
+        'value' => 'post',
+      ),
+      array (
+        'param' => 'post_taxonomy',
+        'operator' => '==',
+        'value' => 'category:diy',
+      ),
+    ),
+  ),
+  'menu_order' => 0,
+  'position' => 'normal',
+  'style' => 'default',
+  'label_placement' => 'top',
+  'instruction_placement' => 'label',
+  'hide_on_screen' => '',
+  'active' => 1,
+  'description' => '',
+));
+
+acf_add_local_field_group(array (
+  'key' => 'group_59f13c8f1a2d4',
+  'title' => 'Featured Affiliates',
+  'fields' => array (
+    array (
+      'key' => 'field_59f13c96b4e6a',
+      'label' => 'Featured Affiliates',
+      'name' => 'featured_affiliates',
+      'type' => 'relationship',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'post_type' => array (
+        0 => 'affiliate',
+      ),
+      'taxonomy' => array (
+      ),
+      'filters' => array (
+        0 => 'search',
+        1 => 'post_type',
+        2 => 'taxonomy',
+      ),
+      'elements' => array (
+        0 => 'featured_image',
+      ),
+      'min' => '',
+      'max' => '',
+      'return_format' => 'object',
+    ),
+  ),
+  'location' => array (
+    array (
+      array (
+        'param' => 'post_type',
+        'operator' => '==',
+        'value' => 'post',
+      ),
+    ),
+  ),
+  'menu_order' => 0,
+  'position' => 'normal',
+  'style' => 'default',
+  'label_placement' => 'top',
+  'instruction_placement' => 'label',
+  'hide_on_screen' => '',
+  'active' => 1,
+  'description' => '',
+));
+
+acf_add_local_field_group(array (
+  'key' => 'group_59dd7371c909e',
+  'title' => 'Gallery',
+  'fields' => array (
+    array (
+      'key' => 'field_59dd73787d380',
+      'label' => 'Gallery',
+      'name' => 'gallery',
+      'type' => 'gallery',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'min' => '',
+      'max' => '',
+      'preview_size' => 'thumbnail',
+      'insert' => 'append',
+      'library' => 'all',
+      'min_width' => '',
+      'min_height' => '',
+      'min_size' => '',
+      'max_width' => '',
+      'max_height' => '',
+      'max_size' => '',
+      'mime_types' => '',
+    ),
+  ),
+  'location' => array (
+    array (
+      array (
+        'param' => 'post_type',
+        'operator' => '==',
+        'value' => 'post',
+      ),
+    ),
+  ),
+  'menu_order' => 0,
+  'position' => 'normal',
+  'style' => 'default',
+  'label_placement' => 'top',
+  'instruction_placement' => 'label',
+  'hide_on_screen' => '',
+  'active' => 1,
+  'description' => '',
+));
+
+acf_add_local_field_group(array (
+  'key' => 'group_59dd4fcd97ca8',
+  'title' => 'Instructions',
+  'fields' => array (
+    array (
+      'key' => 'field_59dd51f142fe1',
+      'label' => 'Instructions',
+      'name' => 'instructions',
+      'type' => 'repeater',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'collapsed' => 'field_59e952492119c',
+      'min' => '',
+      'max' => '',
+      'layout' => 'row',
+      'button_label' => 'Add Step',
+      'sub_fields' => array (
+        array (
+          'key' => 'field_59e952492119c',
+          'label' => 'Instructions Content',
+          'name' => 'instructions_content',
+          'type' => 'wysiwyg',
+          'instructions' => '',
+          'required' => 0,
+          'conditional_logic' => 0,
+          'wrapper' => array (
+            'width' => '',
+            'class' => '',
+            'id' => '',
+          ),
+          'default_value' => '',
+          'tabs' => 'all',
+          'toolbar' => 'full',
+          'media_upload' => 0,
+        ),
+        array (
+          'key' => 'field_59e952732119d',
+          'label' => 'Instructions Image',
+          'name' => 'instructions_image',
+          'type' => 'gallery',
+          'instructions' => '',
+          'required' => 0,
+          'conditional_logic' => 0,
+          'wrapper' => array (
+            'width' => '',
+            'class' => '',
+            'id' => '',
+          ),
+          'min' => '',
+          'max' => '',
+          'preview_size' => 'thumbnail',
+          'insert' => 'append',
+          'library' => 'all',
+          'min_width' => '',
+          'min_height' => '',
+          'min_size' => '',
+          'max_width' => '',
+          'max_height' => '',
+          'max_size' => '',
+          'mime_types' => '',
+        ),
+      ),
+    ),
+  ),
+  'location' => array (
+    array (
+      array (
+        'param' => 'post_type',
+        'operator' => '==',
+        'value' => 'post',
+      ),
+    ),
+  ),
+  'menu_order' => 0,
+  'position' => 'normal',
+  'style' => 'default',
+  'label_placement' => 'top',
+  'instruction_placement' => 'label',
+  'hide_on_screen' => '',
+  'active' => 1,
+  'description' => '',
+));
+
+acf_add_local_field_group(array (
+  'key' => 'group_59df823bcb67c',
+  'title' => 'Page Settings',
+  'fields' => array (
+    array (
+      'key' => 'field_59df8240d11ef',
+      'label' => 'Display Title',
+      'name' => 'display_title',
+      'type' => 'text',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'default_value' => '',
+      'placeholder' => '',
+      'prepend' => '',
+      'append' => '',
+      'maxlength' => '',
+      'readonly' => 0,
+      'disabled' => 0,
+    ),
+    array (
+      'key' => 'field_59e7f09581902',
+      'label' => 'Intro',
+      'name' => 'intro',
+      'type' => 'wysiwyg',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'default_value' => '',
+      'tabs' => 'all',
+      'toolbar' => 'full',
+      'media_upload' => 0,
+    ),
+  ),
+  'location' => array (
+    array (
+      array (
+        'param' => 'post_type',
+        'operator' => '==',
+        'value' => 'page',
+      ),
+    ),
+  ),
+  'menu_order' => 0,
+  'position' => 'normal',
+  'style' => 'default',
+  'label_placement' => 'top',
+  'instruction_placement' => 'label',
+  'hide_on_screen' => '',
+  'active' => 1,
+  'description' => '',
+));
+
+acf_add_local_field_group(array (
+  'key' => 'group_59f39dd845bca',
+  'title' => 'Process',
+  'fields' => array (
+    array (
+      'key' => 'field_59f39de24dde0',
+      'label' => 'Process Steps',
+      'name' => 'process_steps',
+      'type' => 'repeater',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'collapsed' => 'field_59f39df44dde1',
+      'min' => '',
+      'max' => '',
+      'layout' => 'block',
+      'button_label' => 'Add Row',
+      'sub_fields' => array (
+        array (
+          'key' => 'field_59f39e3eb522f',
+          'label' => 'Process Title',
+          'name' => 'process_title',
+          'type' => 'text',
+          'instructions' => '',
+          'required' => '',
+          'conditional_logic' => '',
+          'wrapper' => array (
+            'width' => '',
+            'class' => '',
+            'id' => '',
+          ),
+          'default_value' => '',
+          'placeholder' => '',
+          'prepend' => '',
+          'append' => '',
+          'maxlength' => '',
+          'readonly' => 0,
+          'disabled' => 0,
+        ),
+        array (
+          'key' => 'field_59f39e43b5230',
+          'label' => 'Process Body',
+          'name' => 'process_body',
+          'type' => 'wysiwyg',
+          'instructions' => '',
+          'required' => '',
+          'conditional_logic' => '',
+          'wrapper' => array (
+            'width' => '',
+            'class' => '',
+            'id' => '',
+          ),
+          'default_value' => '',
+          'tabs' => 'all',
+          'toolbar' => 'full',
+          'media_upload' => 0,
+        ),
+      ),
+    ),
+  ),
+  'location' => array (
+    array (
+      array (
+        'param' => 'page',
+        'operator' => '==',
+        'value' => '15',
+      ),
+    ),
+  ),
+  'menu_order' => 0,
+  'position' => 'normal',
+  'style' => 'default',
+  'label_placement' => 'top',
+  'instruction_placement' => 'label',
+  'hide_on_screen' => '',
+  'active' => 1,
+  'description' => '',
+));
+
+acf_add_local_field_group(array (
+  'key' => 'group_59efaac250adc',
+  'title' => 'Work',
+  'fields' => array (
+    array (
+      'key' => 'field_59efadea4970d',
+      'label' => 'Website Url',
+      'name' => 'website_url',
+      'type' => 'url',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'default_value' => '',
+      'placeholder' => '',
+    ),
+    array (
+      'key' => 'field_59efaac5d85fb',
+      'label' => 'Featured Banner Image',
+      'name' => 'featured_banner_image',
+      'type' => 'image',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'return_format' => 'array',
+      'preview_size' => 'thumbnail',
+      'library' => 'all',
+      'min_width' => '',
+      'min_height' => '',
+      'min_size' => '',
+      'max_width' => '',
+      'max_height' => '',
+      'max_size' => '',
+      'mime_types' => '',
+    ),
+    array (
+      'key' => 'field_59efaaf5d85fc',
+      'label' => 'Featured Work Image',
+      'name' => 'featured_work_image',
+      'type' => 'image',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'return_format' => 'array',
+      'preview_size' => 'thumbnail',
+      'library' => 'all',
+      'min_width' => '',
+      'min_height' => '',
+      'min_size' => '',
+      'max_width' => '',
+      'max_height' => '',
+      'max_size' => '',
+      'mime_types' => '',
+    ),
+    array (
+      'key' => 'field_59efab31d85fd',
+      'label' => 'Work',
+      'name' => 'work',
+      'type' => 'repeater',
+      'instructions' => '',
+      'required' => 0,
+      'conditional_logic' => 0,
+      'wrapper' => array (
+        'width' => '',
+        'class' => '',
+        'id' => '',
+      ),
+      'collapsed' => 'field_59efad10128ce',
+      'min' => '',
+      'max' => '',
+      'layout' => 'block',
+      'button_label' => 'Add Work Section',
+      'sub_fields' => array (
+        array (
+          'key' => 'field_59efad10128ce',
+          'label' => 'Work Section Title',
+          'name' => 'work_section_title',
+          'type' => 'text',
+          'instructions' => '',
+          'required' => '',
+          'conditional_logic' => '',
+          'wrapper' => array (
+            'width' => '',
+            'class' => '',
+            'id' => '',
+          ),
+          'default_value' => '',
+          'placeholder' => '',
+          'prepend' => '',
+          'append' => '',
+          'maxlength' => '',
+          'readonly' => 0,
+          'disabled' => 0,
+        ),
+        array (
+          'key' => 'field_59efad18128cf',
+          'label' => 'Work Section Images',
+          'name' => 'work_section_images',
+          'type' => 'gallery',
+          'instructions' => '',
+          'required' => '',
+          'conditional_logic' => '',
+          'wrapper' => array (
+            'width' => '',
+            'class' => '',
+            'id' => '',
+          ),
+          'min' => '',
+          'max' => '',
+          'preview_size' => 'thumbnail',
+          'insert' => 'append',
+          'library' => 'all',
+          'min_width' => '',
+          'min_height' => '',
+          'min_size' => '',
+          'max_width' => '',
+          'max_height' => '',
+          'max_size' => '',
+          'mime_types' => '',
+        ),
+      ),
+    ),
+  ),
+  'location' => array (
+    array (
+      array (
+        'param' => 'post_type',
+        'operator' => '==',
+        'value' => 'work',
+      ),
+    ),
+  ),
+  'menu_order' => 0,
+  'position' => 'normal',
+  'style' => 'default',
+  'label_placement' => 'top',
+  'instruction_placement' => 'label',
+  'hide_on_screen' => '',
+  'active' => 1,
+  'description' => '',
+));
+
+endif;

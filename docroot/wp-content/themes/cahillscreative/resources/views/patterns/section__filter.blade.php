@@ -2,7 +2,7 @@
   <div class="filter-toggle js-toggle-parent">
     <span class="font--primary--xs color--gray filter-label"><span class="icon icon--s space--half-right path-fill--gray">@include('patterns.icon__filter')</span>Filter</span>
   </div>
-  <form class="filter-wrap" action="<?php echo site_url() ?>/wp-admin/admin-ajax.php" method="POST" id="filter">
+  <form class="filter-wrap"  method="POST" id="filter">
     @if (is_category('diy'))
       <div class="filter-item__container filter-item__container-projects">
         <div class="filter-item__toggle filter-item__toggle-projects font--primary--s js-toggle-parent">Project</div>
