@@ -1,4 +1,4 @@
-/*! WP ULike - v2.8.1 (2017-08-24)
+/*! WP ULike - v2.9
  *  http://wp-ulike.alimir.ir/
  *  Alimir 2017;
  */
