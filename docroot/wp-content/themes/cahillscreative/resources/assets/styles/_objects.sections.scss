@@ -22,6 +22,7 @@
   text-align: center;
   display: flex;
   justify-content: center;
+  background-size: cover;
   background-attachment: fixed;
 
   @include media('>large') {
@@ -29,7 +30,15 @@
   }
 
   &.background-image--default {
-    background-image: url('../../assets/images/hero-banner.png');
+    background-image: url('../../assets/images/hero-banner--mobile.jpg');
+
+    @include media('>medium') {
+      background-image: url('../../assets/images/hero-banner--tablet.jpg');
+    }
+
+    @include media('>xlarge') {
+      background-image: url('../../assets/images/hero-banner.jpg');
+    }
   }
 }
 

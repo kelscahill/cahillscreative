@@ -2096,6 +2096,7 @@ button.alm-load-more-btn.more::before {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
+  background-size: cover;
   background-attachment: fixed;
 }
 
@@ -2106,7 +2107,19 @@ button.alm-load-more-btn.more::before {
 }
 
 .section__hero.background-image--default {
-  background-image: url(../images/hero-banner.png);
+  background-image: url(../images/hero-banner--mobile.jpg);
+}
+
+@media (min-width: 701px) {
+  .section__hero.background-image--default {
+    background-image: url(../images/hero-banner--tablet.jpg);
+  }
+}
+
+@media (min-width: 1101px) {
+  .section__hero.background-image--default {
+    background-image: url(../images/hero-banner.jpg);
+  }
 }
 
 .section__hero--inner {
