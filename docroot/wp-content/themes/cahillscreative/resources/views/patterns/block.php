@@ -63,13 +63,13 @@
     </a>
     <div class="block__toolbar">
       <div class="block__toolbar--left">
-        <div class="block__toolbar-item block__toolbar-like space--right">
+        <div class="block__toolbar-item block__toolbar-like space--half-right">
           <?php if(function_exists('wp_ulike')): ?>
             <?php wp_ulike('get'); ?>
           <?php endif; ?>
         </div>
         <?php if (comments_open()): ?>
-          <a href="<?php echo $link; ?>#comments" class="block__toolbar-item block__toolbar-comment space--right">
+          <a href="<?php echo $link; ?>#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
             <span class="icon icon--s space--half-right"><?php include(locate_template('patterns/icon__comment.blade.php')); ?></span>
             <span class="font--sans-serif font--sans-serif--small color--gray">
               <?php echo comments_number('0', '1', '%'); ?>

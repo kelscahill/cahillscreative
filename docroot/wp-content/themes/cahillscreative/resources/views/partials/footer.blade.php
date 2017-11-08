@@ -17,7 +17,7 @@
           <div class="footer__nav-col">
             <span class="color--gray font--primary--xs">Shop</span>
             <a href="https://www.etsy.com/shop/CahillsCreative" target="_blank" class="footer__nav-link">Esty</a>
-            <a href="/my-favorites" class="footer__nav-link">My Favorites</a>
+            <a href="/shop/my-favorites" class="footer__nav-link">My Favorites</a>
           </div>
         </div>
         <div class="footer__mailing">

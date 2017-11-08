@@ -17,7 +17,7 @@
               </div>
             @endforeach
             @if(get_field('etsy_link'))
-              <a href="{{ get_field('etsy_link') }}" class="btn center-block" target="_blank">Download PDF Plans</a>
+              <a href="{{ get_field('etsy_link') }}" class="btn center-block" target="_blank">Get DIY Plans</a>
             @endif
           </div>
           <p class="text-align--center">This is how I do what I do. Now, take a look at some of the end results.</p>

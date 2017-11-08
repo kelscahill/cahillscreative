@@ -109,9 +109,6 @@ h5 {
   letter-spacing: normal;
   text-transform: none;
   line-height: 1.2;
-  // background: -webkit-linear-gradient(#d09377, #89462c);
-  // -webkit-background-clip: text;
-  // -webkit-text-fill-color: transparent;
 
   @include media ('>large') {
     font-size: rem(110);
@@ -132,9 +129,6 @@ h5 {
   letter-spacing: normal;
   text-transform: none;
   line-height: 1.5;
-  // background: -webkit-linear-gradient(#d09377, #89462c);
-  // -webkit-background-clip: text;
-  // -webkit-text-fill-color: transparent;
 
   @include media ('>large') {
     font-size: rem(50);
@@ -182,6 +176,10 @@ h5 {
 .font--sans-serif--small {
   font-size: rem(12);
   font-weight: 400;
+}
+
+small {
+  display: block;
 }
 
 /**

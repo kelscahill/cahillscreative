@@ -2,6 +2,26 @@
     $WRAPPERS & CONTAINERS
 \*------------------------------------ */
 
+.touch {
+  .mobile-only {
+    display: block;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+}
+
+.no-touch {
+  .mobile-only {
+    display: none;
+  }
+
+  .desktop-only {
+    display: block;
+  }
+}
+
 /**
  * Layout containers - keep content centered and within a maximum width. Also
  * adjusts left and right padding as the viewport widens.
@@ -119,5 +139,5 @@
 }
 
 .narrow--xl {
-  max-width: rem(1100);
+  max-width: rem(1250);
 }

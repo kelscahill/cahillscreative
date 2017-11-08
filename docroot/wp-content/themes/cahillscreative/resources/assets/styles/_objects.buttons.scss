@@ -84,20 +84,19 @@ input[type="submit"] {
   left: 0;
   width: 100%;
   border-radius: 0;
-  color: white;
+  color: $black;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   border: none;
   z-index: 9999;
-  background: url('../../assets/images/texture.jpg') center center no-repeat;
-  background-size: cover;
+  background: $mint;
 
   span,
   font {
     font-size: inherit;
-    color: white;
+    color: $black;
     width: auto;
     position: relative;
     top: auto;
@@ -106,6 +105,15 @@ input[type="submit"] {
 
   span {
     padding-right: rem(5);
+  }
+
+  &:hover {
+    background: lighten($mint, 15%);
+
+    span,
+    font {
+      color: $black;
+    }
   }
 }
 

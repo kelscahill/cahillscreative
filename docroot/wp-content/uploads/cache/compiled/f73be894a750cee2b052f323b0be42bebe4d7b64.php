@@ -4,7 +4,7 @@
     <?php ($process = get_field('process_steps')); ?>
     <?php if($process): ?>
       <section class="section section__process padding--double-bottom">
-        <div class="section--inner layout-container narrow narrow--m spacing--double">
+        <div class="section--inner layout-container narrow narrow--l spacing--double">
           <div class="step">
             <?php $__currentLoopData = $process; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
               <div class="step-item sticky-parent">

@@ -66,9 +66,7 @@
       <article <?php (post_class('article spacing--double')); ?>>
         <div class="article__body spacing text-align--center">
           <h2 class="font--primary--s">
-            <?php if(is_tax()): ?>
-              Recent Posts
-            <?php elseif(is_archive('work')): ?>
+            <?php if(is_tax('work')): ?>
               Recent Work
             <?php else: ?>
               Recent Posts

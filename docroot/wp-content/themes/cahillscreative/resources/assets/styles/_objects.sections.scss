@@ -23,7 +23,6 @@
   display: flex;
   justify-content: center;
   background-size: cover;
-  background-attachment: fixed;
 
   @include media('>large') {
     margin-top: rem(-60);
@@ -40,6 +39,10 @@
       background-image: url('../../assets/images/hero-banner.jpg');
     }
   }
+}
+
+.no-touch .section__hero {
+  background-attachment: fixed;
 }
 
 .section__hero--inner {
@@ -121,6 +124,24 @@
   @include media('>medium') {
     flex-direction: row;
   }
+}
+
+.touch .section__favorites--mobile {
+  display: block;
+  margin-left: -$space;
+  margin-right: -$space;
+}
+
+.no-touch .section__favorites--mobile {
+  display: none;
+}
+
+.touch .section__favorites--desktop {
+  display: none;
+}
+
+.no-touch .section__favorites--desktop {
+  display: block;
 }
 
 /**

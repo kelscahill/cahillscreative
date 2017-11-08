@@ -65,13 +65,13 @@
     </a>
     <div class="block__toolbar">
       <div class="block__toolbar--left">
-        <div class="block__toolbar-item block__toolbar-like space--right">
+        <div class="block__toolbar-item block__toolbar-like space--half-right">
           <?php if(function_exists('wp_ulike')): ?>
             <?php  wp_ulike('get');  ?>
           <?php endif; ?>
         </div>
         <?php if(comments_open()): ?>
-          <a href="<?php echo e($link); ?>#comments" class="block__toolbar-item block__toolbar-comment space--right">
+          <a href="<?php echo e($link); ?>#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
             <span class="icon icon--s space--half-right"><?php echo $__env->make('patterns/icon__comment', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
             <span class="font--sans-serif font--sans-serif--small color--gray">
               <?php 

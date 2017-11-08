@@ -1,3 +1,6 @@
+@if (is_home() || in_category('4') || is_page('my-favorites'))
+  @include('patterns.popup')
+@endif
 <header role="banner">
   <div class="header__utility background-color--black">
     <div class="header__utility--left">

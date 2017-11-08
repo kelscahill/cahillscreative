@@ -44,7 +44,24 @@ if (!class_exists('Roots\\Sage\\Container')) {
     require_once $composer;
 }
 
+/**
+ * Async Load
+ */
+function js_async_attr($tag){
+  # Add async to all remaining scripts
+  return str_replace( ' src', ' async="async" src', $tag );
+}
+add_filter( 'script_loader_tag', 'js_async_attr', 10 );
+
+
 remove_filter('term_description','wpautop');
+
+/**
+ * ACF Options Page
+ */
+if( function_exists('acf_add_options_page') ) {
+  acf_add_options_page();
+}
 
 /**
  * Load ajax script on news template
@@ -1106,6 +1123,111 @@ acf_add_local_field_group(array (
         'param' => 'post_type',
         'operator' => '==',
         'value' => 'work',
+      ),
+    ),
+  ),
+  'menu_order' => 0,
+  'position' => 'normal',
+  'style' => 'default',
+  'label_placement' => 'top',
+  'instruction_placement' => 'label',
+  'hide_on_screen' => '',
+  'active' => 1,
+  'description' => '',
+));
+
+acf_add_local_field_group(array (
+  'key' => 'group_59fa31c2b39e6',
+  'title' => 'Subscribe Modal',
+  'fields' => array (
+  array (
+    'key' => 'field_59fa3338fd311',
+    'label' => 'Modal Kicker',
+    'name' => 'modal_kicker',
+    'type' => 'text',
+    'instructions' => '',
+    'required' => 0,
+    'conditional_logic' => 0,
+    'wrapper' => array (
+      'width' => '',
+      'class' => '',
+      'id' => '',
+    ),
+    'default_value' => '',
+    'placeholder' => '',
+    'prepend' => '',
+    'append' => '',
+    'maxlength' => '',
+    'readonly' => 0,
+    'disabled' => 0,
+  ),
+  array (
+    'key' => 'field_59fa31d814228',
+    'label' => 'Modal Title',
+    'name' => 'modal_title',
+    'type' => 'text',
+    'instructions' => '',
+    'required' => 0,
+    'conditional_logic' => 0,
+    'wrapper' => array (
+      'width' => '',
+      'class' => '',
+      'id' => '',
+    ),
+    'default_value' => '',
+    'placeholder' => '',
+    'prepend' => '',
+    'append' => '',
+    'maxlength' => '',
+    'readonly' => 0,
+    'disabled' => 0,
+  ),
+  array (
+    'key' => 'field_59fa320714229',
+    'label' => 'Modal Description',
+    'name' => 'modal_description',
+    'type' => 'textarea',
+    'instructions' => '',
+    'required' => 0,
+    'conditional_logic' => 0,
+    'wrapper' => array (
+      'width' => '',
+      'class' => '',
+      'id' => '',
+    ),
+    'default_value' => '',
+    'placeholder' => '',
+    'maxlength' => '',
+    'rows' => '',
+    'new_lines' => '',
+    'readonly' => 0,
+    'disabled' => 0,
+  ),
+  array (
+    'key' => 'field_59fa325c1422a',
+    'label' => 'Modal Embed Code',
+    'name' => 'modal_embed_code',
+    'type' => 'wysiwyg',
+    'instructions' => '',
+    'required' => '',
+    'conditional_logic' => '',
+    'wrapper' => array (
+      'width' => '',
+      'class' => '',
+      'id' => '',
+    ),
+    'default_value' => '',
+    'tabs' => 'all',
+    'toolbar' => 'full',
+    'media_upload' => 1,
+    ),
+  ),
+  'location' => array (
+    array (
+      array (
+        'param' => 'options_page',
+        'operator' => '==',
+        'value' => 'acf-options',
       ),
     ),
   ),

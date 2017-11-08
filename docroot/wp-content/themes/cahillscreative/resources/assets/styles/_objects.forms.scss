@@ -90,7 +90,7 @@ input[type=checkbox]:checked,
 input[type=radio]:checked {
   border-color: $border-color;
   background: $primary-color url('../../assets/images/icon__check.svg') center center no-repeat;
-  background-size: rem(10);
+  background-size: rem(15);
 }
 
 input[type=checkbox] + label,
@@ -342,6 +342,7 @@ header .form__search {
     border-radius: 0;
     padding: $pad-half;
     margin-top: 0;
+    border: 1px solid transparent;
   }
 }
 
@@ -363,6 +364,10 @@ label {
 
     &:first-child {
       margin-top: 0;
+    }
+
+    &.first {
+      margin-top: $space-half;
     }
   }
 

@@ -44,12 +44,12 @@
           @endif
           <div class="article__toolbar block__toolbar">
             <div class="block__toolbar--left">
-              <div class="block__toolbar-item block__toolbar-like space--right">
+              <div class="block__toolbar-item block__toolbar-like space--half-right">
                 @if(function_exists('wp_ulike'))
                   @php wp_ulike('get'); @endphp
                 @endif
               </div>
-              <a href="{{ $link }}#comments" class="block__toolbar-item block__toolbar-comment space--right">
+              <a href="{{ $link }}#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
                 <span class="icon icon--s space--half-right">@include('patterns/icon__comment')</span>
                 <span class="font--sans-serif font--sans-serif--small color--gray">
                   @php
@@ -68,7 +68,7 @@
               @php $next_post = get_next_post(true, '', 'category'); @endphp
               @if ( !empty($next_post) )
                 @php $link = get_permalink($next_post->ID); @endphp
-                <a href="{{ $link }}" class="font--primary--xs">Next Item<span class="icon icon--xs">@include('patterns/arrow__carousel')</span></a>
+                <a href="{{ $link }}" class="font--primary--xs">Next Item<span class="icon icon--s path-fill--black">@include('patterns/arrow__carousel')</span></a>
               @endif
             </div> <!-- ./block__toolbar--right -->
           </div> <!-- ./block__toolbar -->

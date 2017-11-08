@@ -52,9 +52,6 @@
           <?php endif; ?>
         </div>
       <?php endif; ?>
-      <div class="article__gallery narrow narrow--xl">
-        <?php echo $__env->make('patterns.section__gallery', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-      </div>
       <div class="article__body narrow narrow--xl">
         <div class="wrap--2-col sticky-parent">
           <div class="article__content shift-left wrap--2-col--small">
@@ -72,29 +69,34 @@
               </div>
               <?php echo $__env->make('patterns.share-tools', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
               <?php if(get_field('etsy_link')): ?>
-                <a href="<?php echo e(get_field('etsy_link')); ?>" class="btn btn--outline" target="_blank"><span class="font--primary--xs">Download</span><font>PDF Plans</font></a>
+                <a href="<?php echo e(get_field('etsy_link')); ?>" class="btn btn--outline" target="_blank">Get DIY Plans</a>
+                <small class="space--half-top">*The plans include a material cut list, a list of necessary tools &amp; hardware, assembly directions, and dimensions.</small>
               <?php endif; ?>
             </div>
             <div class="article__content--right spacing--double shift-right--small">
+              <?php echo $__env->make('patterns.section__gallery', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
               <?php (the_content()); ?>
               <?php echo $__env->make('patterns.section__accordion', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
               <?php echo $__env->make('patterns.section__pagination', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+              <div class="section__favorites--mobile">
+                <?php echo $__env->make('patterns.section__favorites', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+              </div>
             </div>
           </div> <!-- ./article__content -->
           <?php echo $__env->make('partials.sidebar', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         </div> <!-- ./wrap--2-col -->
         <div class="aricle__mobile-footer">
           <?php if(get_field('etsy_link')): ?>
-            <a href="<?php echo e(get_field('etsy_link')); ?>" class="btn btn--outline btn--download hide-after--m" target="_blank"><span class="font--primary--xs">Download</span><font>PDF Plans</font></a>
+            <a href="<?php echo e(get_field('etsy_link')); ?>" class="btn btn--outline btn--download hide-after--m" target="_blank">Get DIY Plans</a>
           <?php endif; ?>
           <div class="article__toolbar block__toolbar">
             <div class="block__toolbar--left">
-              <div class="block__toolbar-item block__toolbar-like space--right">
+              <div class="block__toolbar-item block__toolbar-like space--half-right">
                 <?php if(function_exists('wp_ulike')): ?>
                   <?php  wp_ulike('get');  ?>
                 <?php endif; ?>
               </div>
-              <a href="<?php echo e($link); ?>#comments" class="block__toolbar-item block__toolbar-comment space--right">
+              <a href="<?php echo e(the_permalink()); ?>#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
                 <span class="icon icon--s space--half-right"><?php echo $__env->make('patterns/icon__comment', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
                 <span class="font--sans-serif font--sans-serif--small color--gray">
                   <?php 
@@ -113,7 +115,7 @@
               <?php  $next_post = get_next_post(true, '', 'category');  ?>
               <?php if( !empty($next_post) ): ?>
                 <?php  $link = get_permalink($next_post->ID);  ?>
-                <a href="<?php echo e($link); ?>" class="font--primary--xs">Next Post<span class="icon icon--xs"><?php echo $__env->make('patterns/arrow__carousel', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span></a>
+                <a href="<?php echo e($link); ?>" class="font--primary--xs">Next Post<span class="icon icon--s"><?php echo $__env->make('patterns/arrow__carousel', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span></a>
               <?php endif; ?>
             </div> <!-- ./block__toolbar--right -->
           </div> <!-- ./block__toolbar -->
@@ -122,4 +124,6 @@
     </article>
   </div>
 </section>
-<?php echo $__env->make('patterns.section__favorites', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<div class="section__favorites--desktop">
+  <?php echo $__env->make('patterns.section__favorites', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+</div>

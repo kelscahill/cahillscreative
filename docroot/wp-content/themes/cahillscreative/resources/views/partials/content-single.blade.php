@@ -52,9 +52,6 @@
           @endif
         </div>
       @endif
-      <div class="article__gallery narrow narrow--xl">
-        @include('patterns.section__gallery')
-      </div>
       <div class="article__body narrow narrow--xl">
         <div class="wrap--2-col sticky-parent">
           <div class="article__content shift-left wrap--2-col--small">
@@ -71,29 +68,34 @@
               </div>
               @include('patterns.share-tools')
               @if(get_field('etsy_link'))
-                <a href="{{ get_field('etsy_link') }}" class="btn btn--outline" target="_blank"><span class="font--primary--xs">Download</span><font>PDF Plans</font></a>
+                <a href="{{ get_field('etsy_link') }}" class="btn btn--outline" target="_blank">Get DIY Plans</a>
+                <small class="space--half-top">*The plans include a material cut list, a list of necessary tools &amp; hardware, assembly directions, and dimensions.</small>
               @endif
             </div>
             <div class="article__content--right spacing--double shift-right--small">
+              @include('patterns.section__gallery')
               @php(the_content())
               @include('patterns.section__accordion')
               @include('patterns.section__pagination')
+              <div class="section__favorites--mobile">
+                @include('patterns.section__favorites')
+              </div>
             </div>
           </div> <!-- ./article__content -->
           @include('partials.sidebar')
         </div> <!-- ./wrap--2-col -->
         <div class="aricle__mobile-footer">
           @if(get_field('etsy_link'))
-            <a href="{{ get_field('etsy_link') }}" class="btn btn--outline btn--download hide-after--m" target="_blank"><span class="font--primary--xs">Download</span><font>PDF Plans</font></a>
+            <a href="{{ get_field('etsy_link') }}" class="btn btn--outline btn--download hide-after--m" target="_blank">Get DIY Plans</a>
           @endif
           <div class="article__toolbar block__toolbar">
             <div class="block__toolbar--left">
-              <div class="block__toolbar-item block__toolbar-like space--right">
+              <div class="block__toolbar-item block__toolbar-like space--half-right">
                 @if(function_exists('wp_ulike'))
                   @php wp_ulike('get'); @endphp
                 @endif
               </div>
-              <a href="{{ $link }}#comments" class="block__toolbar-item block__toolbar-comment space--right">
+              <a href="{{ the_permalink() }}#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
                 <span class="icon icon--s space--half-right">@include('patterns/icon__comment')</span>
                 <span class="font--sans-serif font--sans-serif--small color--gray">
                   @php
@@ -112,7 +114,7 @@
               @php $next_post = get_next_post(true, '', 'category'); @endphp
               @if ( !empty($next_post) )
                 @php $link = get_permalink($next_post->ID); @endphp
-                <a href="{{ $link }}" class="font--primary--xs">Next Post<span class="icon icon--xs">@include('patterns/arrow__carousel')</span></a>
+                <a href="{{ $link }}" class="font--primary--xs">Next Post<span class="icon icon--s">@include('patterns/arrow__carousel')</span></a>
               @endif
             </div> <!-- ./block__toolbar--right -->
           </div> <!-- ./block__toolbar -->
@@ -121,4 +123,6 @@
     </article>
   </div>
 </section>
-@include('patterns.section__favorites')
+<div class="section__favorites--desktop">
+  @include('patterns.section__favorites')
+</div>

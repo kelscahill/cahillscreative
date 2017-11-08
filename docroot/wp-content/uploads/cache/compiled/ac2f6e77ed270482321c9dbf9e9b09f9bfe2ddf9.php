@@ -68,7 +68,7 @@
               <?php  $next_post = get_next_post(true, '', 'category');  ?>
               <?php if( !empty($next_post) ): ?>
                 <?php  $link = get_permalink($next_post->ID);  ?>
-                <a href="<?php echo e($link); ?>" class="font--primary--xs">Next Item<span class="icon icon--xs"><?php echo $__env->make('patterns/arrow__carousel', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span></a>
+                <a href="<?php echo e($link); ?>" class="font--primary--xs">Next Item<span class="icon icon--s"><?php echo $__env->make('patterns/arrow__carousel', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span></a>
               <?php endif; ?>
             </div> <!-- ./block__toolbar--right -->
           </div> <!-- ./block__toolbar -->

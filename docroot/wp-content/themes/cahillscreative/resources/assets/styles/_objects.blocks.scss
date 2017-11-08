@@ -1,9 +1,13 @@
 /* ------------------------------------*\
     $BLOCKS
 \*------------------------------------ */
+a.block__link {
+  transition: none;
+  width: 100%;
+}
 
 .block__post {
-  padding: $pad;
+  padding: $pad $pad 0 $pad;
   border: 1px solid $gray-light;
   transition: all 0.25s ease;
   display: flex;
@@ -155,8 +159,7 @@
   margin-left: -$space;
   margin-right: -$space;
   margin-top: $space;
-  padding: $pad;
-  padding-bottom: 0;
+  padding: $pad-half $pad;
   display: flex;
   justify-content: space-between;
   flex-direction: row;
@@ -179,6 +182,12 @@
 .block__toolbar-item {
   display: flex;
   align-items: center;
+  height: 100%;
+  padding-right: $pad-half;
+}
+
+.block__toolbar-item.block__toolbar-share {
+  padding-right: 0;
 }
 
 .block__favorite {
@@ -249,12 +258,17 @@
     background: transparent;
     border: none;
     padding: 0;
+    position: relative;
+    left: rem(-10);
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .wp_ulike_btn.wp_ulike_put_image {
-    padding: rem(10) !important;
-    width: rem(20);
-    height: rem(20);
+    padding: rem(0) !important;
+    width: rem(40);
+    height: rem(40);
     border: none;
 
     a {
@@ -281,5 +295,8 @@
     padding: 0;
     margin-left: rem(5);
     color: $gray;
+    position: relative;
+    left: rem(-10);
+    margin-right: rem(-15);
   }
 }

@@ -8,8 +8,14 @@
     flex-wrap: wrap;
     flex-direction: row;
 
+    .tag {
+      white-space: nowrap;
+    }
+
     .tag::before {
-      content: " , ";
+      content: ",";
+      padding-left: rem(1);
+      padding-right: rem(3);
     }
 
     .tag:first-child::before {

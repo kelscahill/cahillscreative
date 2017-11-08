@@ -1,3 +1,6 @@
+<?php if(is_home() || in_category('4') || is_page('my-favorites')): ?>
+  <?php echo $__env->make('patterns.popup', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php endif; ?>
 <header role="banner">
   <div class="header__utility background-color--black">
     <div class="header__utility--left">

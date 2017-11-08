@@ -37,9 +37,15 @@ body#tinymce {
   }
 }
 
-.single:not('single-work') {
+.touch .single {
   .footer {
     margin-bottom: rem(40);
+  }
+
+  &.single-work {
+    .footer {
+      margin-bottom: 0;
+    }
   }
 
   &.margin--80 {

@@ -92,7 +92,7 @@
   width: 100%;
   height: rem(40);
   background: white;
-  padding: 0 $pad-half;
+  padding: 0 $pad;
   z-index: 9999;
 
   @include media('>medium') {
@@ -111,9 +111,13 @@
       width: rem(10);
       height: rem(20);
       position: relative;
-      top: rem(5);
+      top: rem(1);
       margin-left: $space-half;
     }
+  }
+
+  .block__toolbar-item.block__toolbar-share {
+    padding-right: $pad-half;
   }
 }
 
