@@ -178,6 +178,12 @@
 
   .slick-track {
     height: auto;
+
+    img {
+      width: auto;
+      margin: 0 auto;
+      max-height: calc(100vh - 60px);
+    }
   }
 
   .slick-arrow {

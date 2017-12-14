@@ -34,20 +34,15 @@
     <div class="widget sticky-ad">
       <h5 class="font--primary--xs color--black">Advertisements</h5>
       <hr />
-      <script type="text/javascript">
-        amzn_assoc_placement = "adunit0";
-        amzn_assoc_tracking_id = "cahillscreati-20";
-        amzn_assoc_ad_mode = "search";
-        amzn_assoc_ad_type = "smart";
-        amzn_assoc_marketplace = "amazon";
-        amzn_assoc_region = "US";
-        amzn_assoc_title = "";
-        amzn_assoc_default_search_phrase = "farmhouse";
-        amzn_assoc_default_category = "All";
-        amzn_assoc_linkid = "40f320132f46fee72104109bb69529c8";
-        amzn_assoc_search_bar = "false";
+      <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <!-- Sidebar Ad -->
+      <ins class="adsbygoogle"
+           style="display:inline-block;width:300px;height:600px"
+           data-ad-client="ca-pub-3133257559155527"
+           data-ad-slot="5922592630"></ins>
+      <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
       </script>
-      <script src="//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US"></script>
     </div>
   </div>
 </aside>

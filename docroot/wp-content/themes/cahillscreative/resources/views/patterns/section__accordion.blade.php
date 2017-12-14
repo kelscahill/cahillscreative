@@ -51,22 +51,6 @@
             <a href="{{ get_field('etsy_link') }}" class="btn center-block" target="_blank">Get DIY Plans</a>
             <small class="space--half-top text-align--center mobile-only">*The plans include a material cut list, a list of necessary tools &amp; hardware, assembly directions, and dimensions.</small>
           @endif
-          <div class="mobile-only">
-            <script type="text/javascript">
-              amzn_assoc_placement = "adunit0";
-              amzn_assoc_tracking_id = "cahillscreati-20";
-              amzn_assoc_ad_mode = "search";
-              amzn_assoc_ad_type = "smart";
-              amzn_assoc_marketplace = "amazon";
-              amzn_assoc_region = "US";
-              amzn_assoc_title = "";
-              amzn_assoc_default_search_phrase = "farmhouse";
-              amzn_assoc_default_category = "All";
-              amzn_assoc_linkid = "40f320132f46fee72104109bb69529c8";
-              amzn_assoc_search_bar = "false";
-            </script>
-            <script src="//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US"></script>
-          </div>
         </div>
       </div>
     @endif
