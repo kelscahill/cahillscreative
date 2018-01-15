@@ -1,10 +1,10 @@
 === Speed Booster Pack ===
-Contributors: machothemes, silkalns
+Contributors: machothemes
 Donate link:
 Tags: speed, optimization, performance, scripts to the footer, google libraries, font awesome cdn, defer parsing of javascript, remove query strings, lazy load images, gtmetrix, google pageSpeed, yslow, eliminate external render-blocking javascript and css, compression, async, render-blocking css
 Requires at least: 3.6
-Tested up to: 4.8
-Stable tag: 3.6
+Tested up to: 4.9
+Stable tag: 3.6.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,7 +44,7 @@ Speed Booster Pack is a plugin that can help you speed up your website by tweaki
 * **Remove the WordPress Version** this option is added for security reasons and cleaning the header.
 * **Remove all rss feed links** to cleanup your WordPress header.
 
-* For complete usage instructions visit [Plugin Documentation](http://tiguandesign.com/docs/speed-booster/)
+* For complete usage instructions visit [Plugin Documentation](http://docs.machothemes.com/category/118-speed-booster)
 
 A short video about how Speed Booster pack can help actually increase a website's score in Google PageSpeed Insights:
 
@@ -61,6 +61,9 @@ Future Development:
 
 * [Simple Author Box](http://wordpress.org/plugins/simple-author-box/) - A simple but cool author box with social icons.
 
+**About us:**
+We are a young team of WordPress aficionados who love building WordPress plugins & <a href="https://www.machothemes.com/" target="_blank" title="Premium WordPress themes">Premium WordPress themes</a> over on our theme shop. We’re also blogging and wish to help our users find the <a href="https://www.machothemes.com/blog/best-cheap-wordpress-hosting/" target="_blank" title="Best Cheap WordPress Hosting">Best Cheap WordPress Hosting</a> available on the market. Check out our blog. 
+
 
 == Installation ==
 
@@ -72,9 +75,13 @@ Future Development:
 
 == Screenshots ==
 1. Plugin options page, simple view (v2.5)
-2. The Google Page Speed results on our [testing site](http://tiguandesign.com/testing-speed-booster/) (v2.5)
 
 == Changelog ==
+= 3.6.1 =
+ * Added a section for feedback in the plugin's dashboard
+
+= 3.6 =
+* Changed contributors and fixed a few bugs. Plugin is now under new ownership.
 
 = 3.5 =
 * Fix compatibility with the CrazyLazy plugin.

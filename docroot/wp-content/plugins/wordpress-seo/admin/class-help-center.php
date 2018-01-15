@@ -145,7 +145,7 @@ class WPSEO_Help_Center {
 	 * Outputs the help center div.
 	 */
 	public function mount() {
-		echo '<div id="' . esc_attr( $this->identifier ) . '">' . __( 'Loading help center.', 'wordpress-seo' ) . '</div>';
+		echo '<div id="' . esc_attr( $this->identifier ) . '">' . esc_html__( 'Loading help center.', 'wordpress-seo' ) . '</div>';
 	}
 
 	/**
@@ -173,14 +173,14 @@ class WPSEO_Help_Center {
 		$popup_content .= '<li>' . __( 'No ads!', 'wordpress-seo' ) . '</li>';
 		$popup_content .= '</ul>';
 
-		$premium_popup = new WPSEO_Premium_Popup( 'contact-support', 'h2', $popup_title, $popup_content );
-
+		$premium_popup                    = new WPSEO_Premium_Popup( 'contact-support', 'h2', $popup_title, $popup_content, WPSEO_Shortlinker::get( 'https://yoa.st/contact-support' ) );
 		$contact_support_help_center_item = new WPSEO_Help_Center_Item(
 			'contact-support',
 			__( 'Get support', 'wordpress-seo' ),
 			array( 'content' => $premium_popup->get_premium_message( false ) ),
 			'dashicons-email-alt'
 		);
+
 		$this->help_center_items[] = $contact_support_help_center_item;
 	}
 
@@ -192,15 +192,16 @@ class WPSEO_Help_Center {
 	 * @return  array Translated text strings for the help center.
 	 */
 	public static function get_translated_texts() {
+		// Esc_html is not needed because React already handles HTML in the (translations of) these strings.
 		return array(
-			'locale'                             => get_locale(),
+			'locale'                             => WPSEO_Utils::get_user_locale(),
 			'videoTutorial'                      => __( 'Video tutorial', 'wordpress-seo' ),
 			'knowledgeBase'                      => __( 'Knowledge base', 'wordpress-seo' ),
 			'getSupport'                         => __( 'Get support', 'wordpress-seo' ),
 			'algoliaSearcher.loadingPlaceholder' => __( 'Loading...', 'wordpress-seo' ),
 			'algoliaSearcher.errorMessage'       => __( 'Something went wrong. Please try again later.', 'wordpress-seo' ),
-			'searchBar.headingText'              => __( 'Search the Yoast knowledge base', 'wordpress-seo' ),
-			'searchBar.placeholderText'          => __( 'Search the knowledge base', 'wordpress-seo' ),
+			'searchBar.headingText'              => __( 'Search the Yoast Knowledge Base for answers to your questions:', 'wordpress-seo' ),
+			'searchBar.placeholderText'          => __( 'Type here to search...', 'wordpress-seo' ),
 			'searchBar.buttonText'               => __( 'Search', 'wordpress-seo' ),
 			'searchResultDetail.openButton'      => __( 'View in KB', 'wordpress-seo' ),
 			'searchResultDetail.openButtonLabel' => __( 'Open the knowledge base article in a new window or read it in the iframe below', 'wordpress-seo' ),
@@ -208,10 +209,15 @@ class WPSEO_Help_Center {
 			'searchResultDetail.backButtonLabel' => __( 'Go back to the search results', 'wordpress-seo' ),
 			'searchResultDetail.iframeTitle'     => __( 'Knowledge base article', 'wordpress-seo' ),
 			'searchResult.noResultsText'         => __( 'No results found.', 'wordpress-seo' ),
-			'searchResult.foundResultsText'      => __( 'Number of results found: { resultsCount }', 'wordpress-seo' ),
+			'searchResult.foundResultsText'      => sprintf(
+														/* translators: %s expands to the number of results found . */
+														__( 'Number of results found: %s', 'wordpress-seo' ),
+														'{ resultsCount }'
+													),
 			'searchResult.searchResultsHeading'  => __( 'Search results', 'wordpress-seo' ),
 			'a11yNotice.opensInNewTab'           => __( '(Opens in a new browser tab)', 'wordpress-seo' ),
 			'contactSupport.button'              => __( 'Open support form', 'wordpress-seo' ),
+			'helpCenter.buttonText'              => __( 'Need help?', 'wordpress-seo' ),
 		);
 	}
 

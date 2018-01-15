@@ -48,8 +48,16 @@
             </div>
           @endforeach
           @if(get_field('etsy_link'))
-            <a href="{{ get_field('etsy_link') }}" class="btn center-block" target="_blank">Get DIY Plans</a>
-            <small class="space--half-top text-align--center mobile-only">*The plans include a material cut list, a list of necessary tools &amp; hardware, assembly directions, and dimensions.</small>
+            <a href="{{ the_field('etsy_link') }}" class="btn center-block" target="_blank">
+              @if(get_field('etsy_link_text'))
+                {{ the_field('etsy_link_text') }}
+              @else
+                Get DIY Plans
+              @endif
+            </a>
+            @if(get_field('etsy_link_description'))
+              <small class="space--half-top text-align--center mobile-only">{{ the_field('etsy_link_description') }}</small>
+            @endif
           @endif
         </div>
       </div>

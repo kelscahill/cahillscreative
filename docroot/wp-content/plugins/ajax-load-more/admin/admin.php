@@ -1,5 +1,4 @@
 <?php
-
 add_action( 'plugins_loaded', 'alm_core_update' ); // Core Update
 add_action( 'wp_ajax_alm_save_repeater', 'alm_save_repeater' ); // Ajax Save Repeater
 add_action( 'wp_ajax_alm_update_repeater', 'alm_update_repeater' ); // Ajax Update Repeater
@@ -11,7 +10,44 @@ add_action( 'alm_get_layouts', 'alm_get_layouts' ); // Add layout selection
 add_action( 'wp_ajax_alm_get_layout', 'alm_get_layout' ); // Get layout
 add_action( 'wp_ajax_alm_dismiss_sharing', 'alm_dismiss_sharing' ); // Dismiss sharing
 add_filter( 'admin_footer_text', 'alm_filter_admin_footer_text'); // Admin menu text
+add_action( 'admin_notices', 'alm_admin_notice_errors' ); // License notice
 
+
+
+/*
+*  alm_admin_notice_errors
+*  Invalid license notifications
+*
+*  @since 3.3.0
+*/
+function alm_admin_notice_errors() {
+   $screen = get_current_screen();
+   $alm_is_admin_screen = alm_is_admin_screen();
+   // Exit if screen is not dashboard, plugins or ALM admin.
+	if(!$alm_is_admin_screen && $screen->id !== 'dashboard' && $screen->id !== 'plugins'){
+		return;
+	}
+   $class = 'notice error alm-err-notice';
+   $message = '';
+   $count = 0;   
+   $addons = alm_get_addons();   
+    // Loop each addon
+   foreach($addons as $addon){
+      $action = $addon['action']; // Get action    
+      if (has_action($action)){         
+         $key = $addon['key']; // Option key  
+         $status = $addon['status']; // license status
+         $addon_status = get_option( $status );
+         if( !isset($addon_status) || empty($addon_status) || $addon_status !== 'valid' ) {
+            $count++;
+         }        
+      }
+   }      
+	if( $count > 0 ) {
+		$message = __( 'You have invalid <a href="admin.php?page=ajax-load-more"><b>Ajax Load More</b></a> license keys - please visit the <a href="admin.php?page=ajax-load-more-licenses">Licenses</a> section and input your license keys.', 'ajax-load-more' );	
+		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); 
+	}
+}
 
 
 /*
@@ -52,9 +88,7 @@ function alm_license_activation(){
 			'url'       => home_url()
 		);
 
-		// Call the custom API.
-		//$response = wp_remote_get( add_query_arg( $api_params, $url ), array( 'timeout' => 15, 'sslverify' => false ) );
-
+		// Call API
 		// Updated 2.8.7
 		$response = wp_remote_post( ALM_STORE_URL, array( 'timeout' => 15, 'sslverify' => false, 'body' => $api_params ) );
 
@@ -62,11 +96,8 @@ function alm_license_activation(){
 		if ( is_wp_error( $response ) )
 			return false;
 
-
 		$license_data = $response['body'];
 		$license_data = json_decode($license_data); // decode the license data
-
-
 		$return["success"] = $license_data->success;
 
 		$msg = '';
@@ -91,7 +122,7 @@ function alm_license_activation(){
 		die();
 
 	} else {
-      echo __('You don\'t belong here.', ALM_NAME);
+      echo __('You don\'t belong here.', 'ajax-load-more');
    }
 }
 
@@ -150,7 +181,7 @@ function alm_get_layout(){
       $return["value"] = $content;
       echo json_encode($return);
    }else {
-         echo __('You don\'t belong here.', ALM_NAME);
+         echo __('You don\'t belong here.', 'ajax-load-more');
    }
    die();
 }
@@ -962,6 +993,14 @@ function alm_admin_init(){
 		'alm_general_settings'
 	);
 
+	add_settings_field(  // Inline CSS
+		'_alm_inline_css',
+		__('Load CSS Inline', 'ajax-load-more' ),
+		'alm_inline_css_callback',
+		'ajax-load-more',
+		'alm_general_settings'
+	);
+
 	add_settings_field(  // Button classes
 		'_alm_btn_classname',
 		__('Button Classes', 'ajax-load-more' ),
@@ -1313,8 +1352,32 @@ function alm_btn_color_callback() {
 
     $html .= '</select>';
 
-    $html .= '<div class="clear"></div><div class="ajax-load-more-wrap core '.$type.'"><span>'.__('Preview', 'ajax-load-more') .'</span><button class="alm-load-more-btn loading" disabled="disabled">'.apply_filters('alm_button_label', __('Older Posts', 'ajax-load-more')).'</button></div>';
+    $html .= '<div class="clear"></div>';
+	 $html .= '<div class="alm-btn-wrap">';
+	 $html .= '<div class="ajax-load-more-wrap core '.$type.'"><span>'.__('Preview', 'ajax-load-more') .'</span><button class="alm-load-more-btn loading" disabled="disabled">'.apply_filters('alm_button_label', __('Older Posts', 'ajax-load-more')).'</button></div>';
+	 $html .= '</div>';
+	    	
     echo $html;
+}
+
+
+
+/*
+*  alm_inline_css_callback
+*  Load CSS Inline vs the head
+*
+*  @since 3.3.1
+*/
+function alm_inline_css_callback(){
+	$options = get_option( 'alm_settings' );
+	if(!isset($options['_alm_inline_css']))
+	   $options['_alm_inline_css'] = '1';
+
+	$html =  '<input type="hidden" name="alm_settings[_alm_inline_css]" value="0" />';
+	$html .= '<input type="checkbox" name="alm_settings[_alm_inline_css]" id="alm_inline_css" value="1"'. (($options['_alm_inline_css']) ? ' checked="checked"' : '') .' />';
+	$html .= '<label for="alm_inline_css">'.__('Improve site performance by loading Ajax Load More CSS inline', 'ajax-load-more').'.</label>';
+
+	echo $html;
 }
 
 
@@ -1342,16 +1405,16 @@ function alm_btn_class_callback(){
 		// Check if Disable CSS  === true
 		if(jQuery('input#alm_disable_css_input').is(":checked")){
 	      jQuery('select#alm_settings_btn_color').parent().parent().hide(); // Hide button color
-         //jQuery('input.btn-classes').parent().parent().hide(); // Hide Button Classes
+	      jQuery('input#alm_inline_css').parent().parent().hide(); // Hide inline css
     	}
     	jQuery('input#alm_disable_css_input').change(function() {
     		var el = jQuery(this);
 	      if(el.is(":checked")) {
 	      	el.parent().parent('tr').next('tr').hide(); // Hide button color
-	      	//el.parent().parent('tr').next('tr').next('tr').hide(); // Hide Button Classes
+	      	el.parent().parent('tr').next('tr').next('tr').hide(); // Hide inline css
 	      }else{
 	      	el.parent().parent('tr').next('tr').show(); // show button color
-	      	//el.parent().parent('tr').next('tr').next('tr').show(); // show Button Classes
+	      	el.parent().parent('tr').next('tr').next('tr').show(); // show inline css
 	      }
 	   });
 

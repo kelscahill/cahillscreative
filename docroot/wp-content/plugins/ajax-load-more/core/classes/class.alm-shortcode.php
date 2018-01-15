@@ -36,10 +36,10 @@ if( !class_exists('ALM_SHORTCODE') ):
    		self::$counter++;
 
    		// Define page slug
-   		$slug = alm_get_page_slug($post);
+   		$slug = apply_filters('alm_page_slug', alm_get_page_slug($post));
 
-   		// Define Post ID
-   		$post_id = alm_get_page_id($post);
+   		// Define post ID
+   		$post_id = apply_filters('alm_page_id', alm_get_page_id($post));
 
    		// Custom CSS for Layouts - Only run this once.
    		if(has_action('alm_layouts_custom_css')){
@@ -57,6 +57,13 @@ if( !class_exists('ALM_SHORTCODE') ):
    			'restapi_endpoint' => 'posts',
    			'restapi_template_id' => '',
    			'restapi_debug' => false,
+   			'users' => false,
+   			'users_role' => '',
+   			'users_include' => '',
+   			'users_exclude' => '',
+   			'users_per_page' => '5',
+   			'users_order' => 'ASC',
+   			'users_orderby' => 'login',
    			'comments' => false,
    			'comments_per_page' => '5',
    			'comments_type' => 'comment',
@@ -133,7 +140,7 @@ if( !class_exists('ALM_SHORTCODE') ):
    			'transition_container_classes' => '',
    			'masonry_selector' => '',
    			'masonry_animation' => '',
-   			'masonry_horizontalorder' => 'true',
+   			'masonry_horizontalorder' => '',
    			'progress_bar' => 'false',
    			'progress_bar_color' => 'ed7070',
    			'images_loaded' => 'false',
@@ -147,7 +154,13 @@ if( !class_exists('ALM_SHORTCODE') ):
 
 
 			// Start Enqueue Scripts
-
+   		
+   		
+   		// Inline CSS
+   		if( !is_admin() && alm_do_inline_css('_alm_inline_css') && !alm_css_disabled('_alm_disable_css') && self::$counter === 1 ){
+		   	$file = ALM_PATH . '/core/dist/css/'. ALM_SLUG .'.min.css'; // Core Ajax Load More
+	         echo ALM_ENQUEUE::alm_inline_css(ALM_SLUG, $file, ALM_URL);
+   		}
 
 			// Masonry
          if($transition === 'masonry'){
@@ -172,6 +185,14 @@ if( !class_exists('ALM_SHORTCODE') ):
    		// Paging
    		if(has_action('alm_paging_installed') && $paging === 'true'){
       		wp_enqueue_script( 'ajax-load-more-paging' );
+      		
+      		// Inline paging CSS      		
+      		if( !is_admin() && alm_do_inline_css('_alm_inline_css') && !alm_css_disabled('_alm_paging_disable_css') && self::$counter === 1 ){
+	      		if(defined('ALM_PAGING_PATH') && defined('ALM_PAGING_URL')){
+	      			$file = ALM_PAGING_PATH.'/core/css/ajax-load-more-paging.min.css';
+						echo ALM_ENQUEUE::alm_inline_css('ajax-load-more-paging', $file, ALM_PAGING_URL);
+		         }
+	      	}
          }
 
          // Previous Post
@@ -234,6 +255,9 @@ if( !class_exists('ALM_SHORTCODE') ):
       		$posts_per_page = 1;
    			$container_element = 'div';
    		}
+   		
+   		// Users
+   		$users = ($users === 'true') ? true : false;   	
 
    		// Comments
    		if($comments === 'true'){
@@ -268,7 +292,7 @@ if( !class_exists('ALM_SHORTCODE') ):
    		// Get btn classnames
    		$button_classname = '';
    		if(isset($options['_alm_btn_classname'])){
-   			$button_classname = $options['_alm_btn_classname'];
+   			$button_classname = ' '.$options['_alm_btn_classname'];
    		}
 
    		// Language support
@@ -315,7 +339,8 @@ if( !class_exists('ALM_SHORTCODE') ):
 	   	 */
          $ajaxloadmore .= apply_filters('alm_before_container', '');
 
-         $canonicalURL = alm_get_canonical_url(); // Build Canonical URL
+         // Build Canonical URL
+         $canonicalURL = apply_filters('alm_canonical_url', alm_get_canonical_url());
 
 			// Generate ALM ID
          $div_id = (self::$counter > 1) ? 'ajax-load-more-'.self::$counter : 'ajax-load-more';
@@ -378,7 +403,7 @@ if( !class_exists('ALM_SHORTCODE') ):
 	   		   $preload_offset = $offset;
 
 	   		   // If SEO, set $preloaded_amount to $posts_per_page
-	   		   if(has_action('alm_seo_installed') && $seo === 'true'){
+	   		   if(has_action('alm_seo_installed') && $seo === 'true' && !$users){
 	   		      $preloaded_amount = $posts_per_page;
 	            }
 
@@ -401,15 +426,22 @@ if( !class_exists('ALM_SHORTCODE') ):
 						if($cta_pos != 'after'){
 	                  $cta_pos = 'before';
 	               }
-					}
-
-	      		$preloaded_arr = array( // Create preload data array
+					}		
+					
+								
+					// Create preloaded data array
+	      		$preloaded_arr = array( 
 						'post_id'        		=> $post_id,
 						'acf'           		=> $acf,
 						'acf_post_id'   		=> $acf_post_id,
 						'acf_field_type'  	=> $acf_field_type,
 						'acf_field_name'     => $acf_field_name,
-	         		'comments'           => $comments,
+	         		'users' 					=> $users,
+	         		'users_include' 		=> $users_include,
+	         		'users_exclude' 		=> $users_exclude,
+	         		'users_per_page' 		=> $users_per_page,
+	         		'users_order' 			=> $users_order,
+	         		'users_orderby' 		=> $users_orderby,
 	      			'comments_per_page'  => $comments_per_page,
 	      			'comments_type'      => $comments_type,
 	      			'comments_style'     => $comments_style,
@@ -438,7 +470,7 @@ if( !class_exists('ALM_SHORTCODE') ):
 	         		'author'             => $author,
 	         		'post__in'           => $post__in,
 	         		'post__not_in'       => $post__not_in,
-	         		'search'             => $search,
+	         		's'             		=> $search,
 	               'custom_args'        => $custom_args,
 	         		'post_status'        => $post_status,
 	         		'order'              => $order,
@@ -476,6 +508,38 @@ if( !class_exists('ALM_SHORTCODE') ):
 	               }
 
 		         }
+		         
+		         elseif($users){ // Users
+			         
+			         if(has_action('alm_users_preloaded') && $users){		         
+							
+							// Encrypt User Role
+			            if(!empty($users_role) && function_exists('alm_role_encrypt')){
+				            $preloaded_arr['users_role'] = alm_role_encrypt($users_role);
+				         }
+				         
+				         
+				      
+				      	/*
+					   	 *	alm_users_preloaded
+					   	 *
+					   	 * Preloaded Users Filter
+					   	 *
+					   	 * @return $preloaded_users;
+					   	 */
+	         		   $preloaded_users = apply_filters('alm_users_preloaded', $preloaded_arr, $preloaded_amount, $repeater, $theme_repeater); // located in Users add-on
+	                  $preloaded_output .= '<'.$container_element.' class="alm-listing alm-preloaded alm-users-preloaded'. $classname . $css_classes .'">';
+	                  if($seo === "true"){
+		                  $preloaded_output .= '<div class="alm-reveal alm-seo'. $transition_container_classes .'" data-page="1" data-url="'.$canonicalURL.'">';
+		               }
+		               $preloaded_output .= $preloaded_users;
+	                  if($seo === "true"){
+		                  $preloaded_output .= '</div>';
+		               }
+	                  $preloaded_output .= '</'.$container_element.'>';  
+				     
+						}
+			      }
 
 		         elseif($acf && ($acf_field_type !== 'relationship')){ // Advanced Custom Fields
 
@@ -525,6 +589,7 @@ if( !class_exists('ALM_SHORTCODE') ):
 				   	 * ALM Core Filter Hook
 				   	 *
 				   	 * @return $args;
+				   	 * Deprecated 2.10
 				   	 */
 	               $args = apply_filters('alm_modify_query_args', $args, $slug);
 
@@ -537,24 +602,24 @@ if( !class_exists('ALM_SHORTCODE') ):
 	      	   	 *
 	      	   	 * @return $args;
 	      	   	 */
-	               $args = apply_filters('alm_query_args_'.$id, $args);
+	               $args = apply_filters('alm_query_args_'.$id, $args, $post_id);
 
 
 	      			$alm_preload_query = new WP_Query($args);
+	      			
 	      			$alm_total_posts = $alm_preload_query->found_posts - $offset;
 	               $output = '';
 	               $noscript = '';
 
 	      			if ($alm_preload_query->have_posts()) :
-	      				$alm_loop_count = 0; // Count var
+	      				$alm_item = 0; // Count var
 	      				$alm_page = 0; // Set page to 0
 	      				$alm_found_posts = $alm_total_posts;
 	      				$alm_current = 0;
 	      			   while ($alm_preload_query->have_posts()) : $alm_preload_query->the_post();
 
-	      			   	$alm_loop_count++;
+	      			   	$alm_item++;
 	         	         $alm_current++;
-	         	         $alm_item = $alm_loop_count; // Get current item in loop
 
 	         	         // Call to Action [Before]
 			   				if($cta && has_action('alm_cta_inc') && $cta_pos == 'before'){
@@ -755,6 +820,25 @@ if( !class_exists('ALM_SHORTCODE') ):
 	   		   );
 	   			$ajaxloadmore .= $nextpage_return;
 	         }
+	         
+	         
+	         // Users Add-on
+	         if(has_action('alm_users_installed') && $users){   
+   	         	         
+	   			$posts_per_page = $users_per_page; // Update $posts_per_page var to be $users_per_page
+	   			
+	   		   $users_return = apply_filters(
+	   		   	'alm_users_shortcode',
+	   		   	$users_role,
+	   		   	$users_include,
+	   		   	$users_exclude,
+	   		   	$posts_per_page,
+	   		   	$users_order,
+	   		   	$users_orderby,
+	   		   	$options
+	   		   );
+	   			$ajaxloadmore .= $users_return;	   			
+	         }
 
 
 	   		$ajaxloadmore .= ' data-repeater="'.$repeater.'"';
@@ -804,7 +888,6 @@ if( !class_exists('ALM_SHORTCODE') ):
 	   		if(!empty($button_loading_label)){
 	   		   $ajaxloadmore .= ' data-button-loading-label="'.$button_loading_label.'"';
 	   		}
-	         $ajaxloadmore .= ' data-button-class="'.$button_classname.'"';
 	   		$ajaxloadmore .= ' data-destroy-after="'.$destroy_after.'"';
 	   		$ajaxloadmore .= ' data-transition="'.$transition.'"';
 	   		if($transition_speed !== '250'){
@@ -895,6 +978,28 @@ if( !class_exists('ALM_SHORTCODE') ):
 		   	 * @return html;
 		   	 */
 	         $ajaxloadmore .= apply_filters('alm_before_button', '');
+	         
+	         
+	         
+	         // Create Load More button
+	         $ajaxloadmore .= '<div class="alm-btn-wrap">';
+	         
+	         if($paging !== 'true'){
+   	         
+   	         $btn_element = 'button';
+   	         $btn_href = '';
+   	         if($seo === 'true'){
+      	         $btn_element = 'a'; // Convert to link for SEO
+      	         $btn_href = ' href="'.$canonicalURL.'"';
+   	         }
+   	         
+   	         
+   	         $ajaxloadmore .= '<'. $btn_element .' class="alm-load-more-btn more'. $button_classname .'"'. $btn_href .'>'. $button_label .'</'. $btn_element .'>';
+   	         
+	         }	         
+	         
+	         $ajaxloadmore .= '</div>';
+	         
 
 
 			// Close #ajax-load-more

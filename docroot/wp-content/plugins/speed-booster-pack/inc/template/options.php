@@ -397,6 +397,26 @@ var jpegCompression = '<?php echo $this->image_compression; ?>';
 
 </div> <!-- END welcome-panel -->
 
+<div class="col-fulwidth feedback-box">
+  <h3>
+    <?php esc_html_e( 'Lend a hand & share your thoughts', 'saboxplugin' ); ?>
+    <img src="<?php echo $this->plugin_url . "inc/images/handshake.png"; ?>"> 
+  </h3>
+  <p>
+    <?php
+    echo vsprintf(
+      // Translators: 1 is Theme Name, 2 is opening Anchor, 3 is closing.
+      __( 'We\'ve been working hard on making %1$s the best one out there. We\'re interested in hearing your thoughts about %1$s and what we could do to <u>make it even better</u>.<br/> <br/> %2$sHave your say%3$s', 'sb-pack' ),
+      array(
+        'Speed Booster Pack',
+        '<a class="button button-feedback" target="_blank" href="http://bit.ly/feedback-speed-booster-pack">',
+        '</a>',
+      )
+    );
+    ?>
+  </p>
+</div>
+
 <!-- START docs and version areas -->
 
 <div class="sbp-title-div">
@@ -414,34 +434,6 @@ var jpegCompression = '<?php echo $this->image_compression; ?>';
 <p><a href="http://tiguandesign.com/docs/speed-booster/" target="_blank" title="Documentation"><?php _e( 'Read online plugin documentation', 'sb-pack' ); ?></a><?php _e( ' with guidelines to enhance your website performance.', 'sb-pack' ); ?></p>
 
 </div> <!-- end sbp-box div 1-->
-
-<div class="sbp-title-div">
-<div class="sbp-title">
-<?php _e( 'Version Information', 'sb-pack' ); ?>
-</div>
-</div>
-
-<div class="sbp-box"><!-- start sbp-box div 2 -->
-
-<div class="sbp-box-version">
-<i class="sbp-icon-version"></i>
-</div>
-
-<div class="sbp-infos">
-<?php _e( 'Installed Version:', 'sb-pack' ); ?>
-<span>
-<?php echo SPEED_BOOSTER_PACK_VERSION; ?>
-</span>
-</div>
-
-<div class="sbp-infos">
-<?php _e( 'Released date:', 'sb-pack' ); ?>
-<span>
-<?php echo SPEED_BOOSTER_PACK_RELEASE_DATE; ?>
-</span>
-</div>
-
-</div> <!-- end sbp-box div 2 -->
 
 <!-- END docs and version areas -->
           </div>

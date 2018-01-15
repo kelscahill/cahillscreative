@@ -38,8 +38,8 @@
 
   > div {
     @include media('>xlarge') {
-      width: 50%;
       flex-direction: row;
+      padding-right: $pad;
     }
   }
 
@@ -151,6 +151,7 @@
 
 .footer__ads {
   margin-top: $space-double;
+  width: rem(360);
 
   @include media('>medium') {
     display: none;

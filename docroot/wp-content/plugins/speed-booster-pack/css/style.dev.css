@@ -590,3 +590,33 @@ p.description-link {
 				width: 45em;
 			}
 		}
+
+/* Feedback Box */
+.feedback-box {
+    border: 1px dashed #555;
+    background: #fff;
+    width: 100%;
+    padding: 40px;
+    text-align: center;
+    margin-top: 15px;
+    box-sizing: border-box;
+}
+.feedback-box .button.button-feedback {
+    padding: 10px 40px;
+    height: initial;
+}
+
+#sab-current-image img {
+  max-width: 130px;
+  height: auto;
+}
+.feedback-box h3 {
+    font-weight: 700;
+}
+.feedback-box h3 > img {
+  width: 30px;
+}
+.feedback-box > p {
+    max-width: 720px;
+    margin: 0 auto;
+}

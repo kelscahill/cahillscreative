@@ -7,16 +7,15 @@ Text Domain: ajax-load-more
 Author: Darren Cooney
 Twitter: @KaptonKaos
 Author URI: https://connekthq.com
-Version: 3.2.1
+Version: 3.3.1
 License: GPL
 Copyright: Darren Cooney & Connekt Media
-
 */
 
 
 
-define('ALM_VERSION', '3.2.1');
-define('ALM_RELEASE', 'October 5, 2017');
+define('ALM_VERSION', '3.3.1');
+define('ALM_RELEASE', 'December 7, 2017');
 define('ALM_STORE_URL', 'https://connekthq.com');
 
 
@@ -148,6 +147,7 @@ if( !class_exists('AjaxLoadMore') ):
    		define('ALM_ADMIN_URL', plugins_url('admin/', __FILE__));
    		define('ALM_NAME', '_ajax_load_more');
    		define('ALM_TITLE', 'Ajax Load More');
+   		define('ALM_SLUG', 'ajax-load-more');
 
          if (!defined('ALM_CACHE_ITEM_NAME')) define('ALM_CACHE_ITEM_NAME', '4878');
          if (!defined('ALM_CTA_ITEM_NAME')) define('ALM_CTA_ITEM_NAME', '14456');
@@ -161,6 +161,7 @@ if( !class_exists('AjaxLoadMore') ):
          if (!defined('ALM_RESTAPI_ITEM_NAME')) define('ALM_RESTAPI_ITEM_NAME', '17105');
          if (!defined('ALM_SEO_ITEM_NAME')) define('ALM_SEO_ITEM_NAME', '3482');
          if (!defined('ALM_THEME_REPEATERS_ITEM_NAME')) define('ALM_THEME_REPEATERS_ITEM_NAME', '8860');
+         if (!defined('ALM_USERS_ITEM_NAME')) define('ALM_USERS_ITEM_NAME', '32311');
 
       }
 
@@ -173,15 +174,18 @@ if( !class_exists('AjaxLoadMore') ):
    	*/
 
    	public function alm_includes(){
-      	include_once( ALM_PATH . 'core/functions.php'); // Functions
-      	include_once( ALM_PATH . 'core/classes/class.alm-shortcode.php'); // Shortcode
-      	include_once( ALM_PATH . 'core/classes/class.alm-enqueue.php'); // Enqueue
+      	include_once( ALM_PATH . 'core/functions.php'); // Core Functions
+      	include_once( ALM_PATH . 'core/classes/class.alm-shortcode.php'); // Shortcode Class
+      	include_once( ALM_PATH . 'core/classes/class.alm-enqueue.php'); // Enqueue Class
 
    		if( is_admin() ){
    			include_once('admin/editor/editor.php');
    			include_once('admin/admin.php');
    			include_once('admin/admin-functions.php');
             include_once('vendor/connekt-plugin-installer/class-connekt-plugin-installer.php');
+            if( !class_exists( 'EDD_SL_Plugin_Updater' ) ) {
+               include( dirname( __FILE__ ) . '/vendor/EDD_SL_Plugin_Updater.php' );
+            }
    		}
       }
 
@@ -214,10 +218,8 @@ if( !class_exists('AjaxLoadMore') ):
 					'<a href="admin.php?page=ajax-load-more-shortcode-builder">Shortcode  Builder</a>',
 					'<a href="admin.php?page=ajax-load-more-add-ons">Add-ons</a>',
 				);
-
       		$links = array_merge( $links, $new_links );
       	}
-
          return $links;
 	   }
 
@@ -259,16 +261,16 @@ if( !class_exists('AjaxLoadMore') ):
 			$dependencies = apply_filters( 'alm_js_dependencies', array('jquery') );
 
 
-   		// Load Core JS
+   		// Core ALM JS
    		wp_register_script( 'ajax-load-more', plugins_url( '/core/dist/js/ajax-load-more.min.js', __FILE__ ), $dependencies,  ALM_VERSION, true );
 
-   		// Load Progress Bar JS
+   		// Progress Bar JS
    		wp_register_script( 'ajax-load-more-progress', plugins_url( '/core/src/js/vendor/pace/pace.min.js', __FILE__ ), 'ajax-load-more',  ALM_VERSION, true );
 
    		// Load Core CSS
-   		if(!isset($options['_alm_disable_css']) || $options['_alm_disable_css'] != '1'){
-         	$file = plugins_url('/core/dist/css/ajax-load-more.min.css', __FILE__ );
-            ALM_ENQUEUE::alm_enqueue_css('ajax-load-more', $file);
+   		if( !alm_do_inline_css('_alm_inline_css') && !alm_css_disabled('_alm_disable_css')){ // Not inline or disabled
+	         $file = plugins_url('/core/dist/css/'. ALM_SLUG .'.min.css', __FILE__ );
+	         ALM_ENQUEUE::alm_enqueue_css(ALM_SLUG, $file);
    		}
 
    		// Prevent loading of unnessasry posts - move user to top of page
@@ -317,22 +319,10 @@ if( !class_exists('AjaxLoadMore') ):
 
    	public function alm_query_posts() {
 
-   		$nonce = $_GET['nonce'];
    		$options = get_option( 'alm_settings' );
 
-   		// Nonce removed in ALM 3.2.1
-   		/*
-      		if(!is_user_logged_in()){ // Skip nonce verification if user is logged in
-   		   $options = get_option( 'alm_settings' );
-   		   // check alm_settings for _alm_nonce_security
-   		   if(isset($options['_alm_nonce_security']) & $options['_alm_nonce_security'] == '1'){
-      		   if (! wp_verify_nonce( $nonce, 'ajax_load_more_nonce' )) // Check our nonce, if they don't match then bounce!
-      		      die('Error, could not verify WP nonce.');
-            }
-         }
-         */
-
    		$id = (isset($_GET['id'])) ? $_GET['id'] : '';
+   		$post_id = (isset($_GET['post_id'])) ? $_GET['post_id'] : '';
    		$slug = (isset($_GET['slug'])) ? $_GET['slug'] : '';
    		$canonical_url = (isset($_GET['canonical_url'])) ? $_GET['canonical_url'] : $_SERVER['HTTP_REFERER'];
 
@@ -667,12 +657,8 @@ if( !class_exists('AjaxLoadMore') ):
          }
 
 
-   		// Set current page number for determining item number
-   		if($page == 0){
-            $alm_page_count = 1;
-   		}else{
-   		   $alm_page_count = $page + 1;
-   		}
+   		// Get current page number for determining item number
+   		$alm_page_count = ($page == 0) ? 1 : $page + 1;
 
 
 
@@ -696,6 +682,7 @@ if( !class_exists('AjaxLoadMore') ):
 	   	 * ALM Core Filter Hook
 	   	 *
 	   	 * @return $args;
+	   	 * Deprecated 2.10
 	   	 */
          $args = apply_filters('alm_modify_query_args', $args, $slug); // ALM Core Filter Hook
 
@@ -708,7 +695,7 @@ if( !class_exists('AjaxLoadMore') ):
 	   	 *
 	   	 * @return $args;
 	   	 */
-         $args = apply_filters('alm_query_args_'.$id, $args); // ALM Core Filter Hook
+         $args = apply_filters('alm_query_args_'.$id, $args, $post_id); // ALM Core Filter Hook
 
 
 
@@ -773,7 +760,7 @@ if( !class_exists('AjaxLoadMore') ):
 	   			while ($alm_query->have_posts()): $alm_query->the_post();
 
 	   				$alm_loop_count++;
-	   				$alm_current++;
+	   				$alm_current++; // Current item in loop
 	   	         $alm_page = $alm_page_count; // Get page number
 	   	         $alm_item = ($alm_page_count * $posts_per_page) - $posts_per_page + $alm_loop_count; // Get current item
 
@@ -823,7 +810,7 @@ if( !class_exists('AjaxLoadMore') ):
    	         if(!empty($cache_id) && has_action('alm_cache_installed') && $do_create_cache){
       	         if($previous_post){
          	         // Previous Post Cache
-   	               apply_filters('alm_previous_post_cache_file', $cache_id, $previous_post_slug, $data);
+   	               apply_filters('alm_previous_post_cache_file', $cache_id, $previous_post_id, $data);
       	         }else{
          	         // Standard Cache
    	               apply_filters('alm_cache_file', $cache_id, $page, $seo_start_page, $data, $preloaded);

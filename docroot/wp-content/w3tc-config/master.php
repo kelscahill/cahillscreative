@@ -1,5 +1,5 @@
 <?php exit; ?>{
-    "version": "0.9.5.4",
+    "version": "0.9.6",
     "cluster.messagebus.debug": false,
     "cluster.messagebus.enabled": false,
     "cluster.messagebus.sns.region": "",
@@ -155,6 +155,10 @@
         "wp-.*\\.php",
         "index\\.php"
     ],
+    "pgcache.reject.categories": [],
+    "pgcache.reject.tags": [],
+    "pgcache.reject.authors": [],
+    "pgcache.reject.custom": [],
     "pgcache.reject.ua": [],
     "pgcache.reject.cookie": [
         "wptouch_switch_toggle"
@@ -184,6 +188,32 @@
     "pgcache.prime.limit": 10,
     "pgcache.prime.sitemap": "",
     "pgcache.prime.post.enabled": false,
+    "pgcache.cookiegroups.enabled": false,
+    "pgcache.cookiegroups.groups": {
+        "mobile": {
+            "enabled": false,
+            "cache": true,
+            "cookies": [
+                "wptouch-pro-view=mobile",
+                "wptouch-pro-cache-state=mobile"
+            ]
+        },
+        "loggedin": {
+            "enabled": false,
+            "cache": true,
+            "cookies": [
+                "wordpress_logged_in_.*"
+            ]
+        },
+        "subscribers": {
+            "enabled": false,
+            "cache": true,
+            "cookies": [
+                "role=subscriber",
+                "role=member"
+            ]
+        }
+    },
     "stats.enabled": false,
     "minify.configuration_overloaded": false,
     "minify.enabled": false,
@@ -315,6 +345,8 @@
     "cdn.autoupload.enabled": false,
     "cdn.autoupload.interval": 3600,
     "cdn.canonical_header": false,
+    "cdn.admin.media_library": false,
+    "cdn.cors_header": true,
     "cdn.ftp.host": "",
     "cdn.ftp.type": "",
     "cdn.ftp.user": "",
@@ -336,12 +368,14 @@
     "cdn.s3.key": "",
     "cdn.s3.secret": "",
     "cdn.s3.bucket": "",
+    "cdn.s3.bucket.location": "us-east-1",
     "cdn.s3.cname": [],
     "cdn.s3.ssl": "auto",
     "cdn.s3_compatible.api_host": "auto",
     "cdn.cf.key": "",
     "cdn.cf.secret": "",
     "cdn.cf.bucket": "",
+    "cdn.cf.bucket.location": "us-east-1",
     "cdn.cf.id": "",
     "cdn.cf.cname": [],
     "cdn.cf.ssl": "auto",
@@ -371,13 +405,6 @@
     "cdn.azure.ssl": "auto",
     "cdn.mirror.domain": [],
     "cdn.mirror.ssl": "auto",
-    "cdn.netdna.alias": "",
-    "cdn.netdna.consumerkey": "",
-    "cdn.netdna.consumersecret": "",
-    "cdn.netdna.authorization_key": "",
-    "cdn.netdna.domain": [],
-    "cdn.netdna.ssl": "auto",
-    "cdn.netdna.zone_id": 0,
     "cdn.maxcdn.authorization_key": "",
     "cdn.maxcdn.domain": [],
     "cdn.maxcdn.ssl": "auto",
@@ -413,6 +440,9 @@
         "{plugins_dir}\/wp-fb-autoconnect\/facebook-platform\/channel.html"
     ],
     "cdn.reject.ssl": false,
+    "cdnfsd.enabled": false,
+    "cdnfsd.engine": "",
+    "cdnfsd.debug": false,
     "varnish.configuration_overloaded": false,
     "varnish.enabled": false,
     "varnish.debug": false,
@@ -616,7 +646,6 @@
             ]
         }
     },
-    "common.edge": false,
     "common.support": "",
     "common.track_usage": true,
     "common.tweeted": false,
@@ -626,6 +655,7 @@
     "widget.latest_news.items": 5,
     "widget.pagespeed.enabled": true,
     "widget.pagespeed.key": "",
+    "widget.pagespeed.key.restrict.referrer": "",
     "widget.pagespeed.show_in_admin_bar": false,
     "timelimit.email_send": 180,
     "timelimit.varnish_purge": 300,
@@ -648,5 +678,17 @@
     },
     "extensions.active_frontend": [],
     "plugin.license_key": "",
-    "plugin.type": ""
+    "plugin.type": "",
+    "cdn.netdna.alias": "",
+    "cdn.netdna.consumerkey": "",
+    "cdn.netdna.consumersecret": "",
+    "cdn.netdna.authorization_key": "",
+    "cdn.netdna.domain": [],
+    "cdn.netdna.ssl": "auto",
+    "cdn.netdna.zone_id": 0,
+    "common.edge": false,
+    "pgcache.bad_behavior_path": "",
+    "newrelic": {
+        "monitoring_type": "apm"
+    }
 }

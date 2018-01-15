@@ -68,8 +68,16 @@
               </div>
               @include('patterns.share-tools')
               @if(get_field('etsy_link'))
-                <a href="{{ get_field('etsy_link') }}" class="btn btn--outline" target="_blank">Get DIY Plans</a>
-                <small class="space--half-top">*The plans include a material cut list, a list of necessary tools &amp; hardware, assembly directions, and dimensions.</small>
+                <a href="{{ the_field('etsy_link') }}" class="btn center-block" target="_blank">
+                  @if(get_field('etsy_link_text'))
+                    {{ the_field('etsy_link_text') }}
+                  @else
+                    Get DIY Plans
+                  @endif
+                </a>
+                @if(get_field('etsy_link_description'))
+                  <small class="space--half-top">{{ the_field('etsy_link_description') }}</small>
+                @endif
               @endif
             </div>
             <div class="article__content--right spacing--double shift-right--small">
@@ -86,7 +94,13 @@
         </div> <!-- ./wrap--2-col -->
         <div class="aricle__mobile-footer">
           @if(get_field('etsy_link'))
-            <a href="{{ get_field('etsy_link') }}" class="btn btn--outline btn--download hide-after--m" target="_blank">Get DIY Plans</a>
+            <a href="{{ the_field('etsy_link') }}" class="btn btn--outline btn--download hide-after--m" target="_blank">
+              @if(get_field('etsy_link_text'))
+                {{ the_field('etsy_link_text') }}
+              @else
+                Get DIY Plans
+              @endif
+            </a>
           @endif
           <div class="article__toolbar block__toolbar">
             <div class="block__toolbar--left">

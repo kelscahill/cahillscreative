@@ -4340,11 +4340,11 @@ body#tinymce .aligncenter figcaption,
 
 @media (min-width: 1101px) {
   .footer--right > div {
-    width: 50%;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
         -ms-flex-direction: row;
             flex-direction: row;
+    padding-right: 1.25rem;
   }
 }
 
@@ -4524,6 +4524,7 @@ body#tinymce .aligncenter figcaption,
 
 .footer__ads {
   margin-top: 2.5rem;
+  width: 22.5rem;
 }
 
 @media (min-width: 701px) {

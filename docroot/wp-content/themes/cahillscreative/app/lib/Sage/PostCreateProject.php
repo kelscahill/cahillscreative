@@ -132,7 +132,7 @@ class PostCreateProject
 
             $browsersync_settings_default = [
                 'publicPath'  => '/app/themes/'.basename(getcwd()),
-                'devUrl'      => 'http://example.dev'
+                'devUrl'      => 'http://example.test'
             ];
 
             $browsersync_settings = [

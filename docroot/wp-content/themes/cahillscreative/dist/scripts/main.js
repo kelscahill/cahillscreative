@@ -166,7 +166,6 @@ module.exports = jQuery;
           function show_popup(){
             var visits = $.cookie('visits') || 0;
             visits++;
-            console.log(visits);
             $.cookie('visits', visits, { expires: 7, path: '/' });
 
             if ($.cookie('visits') <= 1) {

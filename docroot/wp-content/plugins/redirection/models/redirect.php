@@ -145,6 +145,7 @@ class Red_Item {
 		global $wpdb;
 
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}redirection_items WHERE id=%d", $this->id ) );
+		do_action( 'redirection_redirect_deleted', $this );
 
 		Red_Module::flush( $this->group_id );
 	}
@@ -165,7 +166,11 @@ class Red_Item {
 		// Create
 		if ( $wpdb->insert( $wpdb->prefix.'redirection_items', $data ) !== false ) {
 			Red_Module::flush( $data['group_id'] );
-			return self::get_by_id( $wpdb->insert_id );
+
+			$redirect = self::get_by_id( $wpdb->insert_id );
+			do_action( 'redirection_redirect_updated', $wpdb->insert_id, $redirect );
+
+			return $redirect;
 		}
 
 		return new WP_Error( 'redirect', __( 'Unable to add new redirect' ) );
@@ -187,7 +192,10 @@ class Red_Item {
 		}
 
 		// Save this
+		$data = apply_filters( 'redirection_update_redirect', $data );
+
 		$wpdb->update( $wpdb->prefix.'redirection_items', $data, array( 'id' => $this->id ) );
+		do_action( 'redirection_redirect_updated', $this, self::get_by_id( $this->id) );
 
 		$this->load_from_data( (object) $data );
 
@@ -390,13 +398,24 @@ class Red_Item {
 }
 
 class Red_Item_Sanitize {
+	private function clean_array( $array ) {
+		foreach ( $array as $name => $value ) {
+			if ( is_array( $value ) ) {
+				$array[ $name ] = $this->clean_array( $value );
+			} else {
+				$value = trim( $value );
+				$array[ $name ] = $value;
+			}
+		};
+
+		return $array;
+	}
+
 	public function get( array $details ) {
 		$data = array();
+		$details = $this->clean_array( $details );
 
-		$details = array_map( 'trim', $details );
-		$details = array_map( 'stripslashes', $details );
-
-		$data['regex'] = isset( $details['regex'] ) && ( $details['regex'] === 'true' || $details['regex'] === '1' ) ? 1 : 0;
+		$data['regex'] = isset( $details['regex'] ) && intval( $details['regex'], 10 ) === 1 ? 1 : 0;
 		$data['title'] = isset( $details['title'] ) ? $details['title'] : null;
 		$data['url'] = $this->get_url( empty( $details['url'] ) ? $this->auto_generate() : $details['url'], $data['regex'] );
 		$data['group_id'] = $this->get_group( isset( $details['group_id'] ) ? $details['group_id'] : 0 );
@@ -421,9 +440,10 @@ class Red_Item_Sanitize {
 		$data['action_code'] = $this->get_code( $details['action_type'], $action_code );
 		$data['match_type'] = $details['match_type'];
 
-		$match_data = $matcher->save( $details, ! $this->is_url_type( $data['action_type'] ) );
-
-		$data['action_data'] = is_array( $match_data ) ? serialize( $match_data ) : $match_data;
+		if ( isset( $details['action_data'] ) ) {
+			$match_data = $matcher->save( $details['action_data'] ? $details['action_data'] : array(), ! $this->is_url_type( $data['action_type'] ) );
+			$data['action_data'] = is_array( $match_data ) ? serialize( $match_data ) : $match_data;
+		}
 
 		// Any errors?
 		foreach ( $data as $value ) {
