@@ -22,13 +22,13 @@
         </div>
         <div class="footer__mailing">
           <h3 class="color--gray font--primary--xs">Join the mailing list</h3>
-          @include('patterns/form__newsletter')
+          @include('patterns.form--newsletter')
         </div>
       </div>
       <div class="grid-item footer--right">
         <div class="footer__posts spacing">
           <h3 class="color--gray font--primary--xs">Latest Posts</h3>
-          @include('patterns.feed__latest')
+          @include('patterns.feed--latest')
         </div>
         <div class="footer__ads">
           <h3 class="color--gray font--primary--xs space--half-bottom">Advertisements</h3>
@@ -56,6 +56,6 @@
     </div>
   </div>
   <a href="#top" class="footer__top font--primary--xs">
-    To Top <span class="icon icon--l space--half-left path-fill--white">@include('patterns.arrow__cta--long')</span>
+    To Top <span class="icon icon--l space--half-left path-fill--white">@include('patterns.arrow--cta--long')</span>
   </a>
 </footer>

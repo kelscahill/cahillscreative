@@ -273,19 +273,19 @@ a.block__link {
 
     a {
       padding: 0;
-      background: url('../../assets/images/icon__like.svg') center center no-repeat;
+      background: url('../../assets/images/icon--like.svg') center center no-repeat;
       background-size: rem(20);
     }
   }
 
   .wp_ulike_general_class.wp_ulike_is_unliked a {
-    background: url('../../assets/images/icon__like.svg') center center no-repeat;
+    background: url('../../assets/images/icon--like.svg') center center no-repeat;
     background-size: rem(20);
   }
 
   .wp_ulike_btn.wp_ulike_put_image.image-unlike,
   .wp_ulike_general_class.wp_ulike_is_already_liked a {
-    background: url('../../assets/images/icon__liked.svg') center center no-repeat;
+    background: url('../../assets/images/icon--liked.svg') center center no-repeat;
     background-size: rem(20);
   }
 

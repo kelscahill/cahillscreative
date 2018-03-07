@@ -1,6 +1,6 @@
 <aside class="sidebar shift-right spacing--double">
   <div class="widget widget-search">
-    @include('patterns/form__search')
+    @include('patterns.form--search')
   </div>
   <div class="widget widget-related">
     <h3 class="font--primary--xs">Related Posts</h3>
@@ -9,7 +9,7 @@
   </div>
   <div class="widget widget-mailing">
     <h3 class="font--primary--xs">Join My Mailing List!</h3>
-    @include('patterns/form__newsletter')
+    @include('patterns.form--newsletter')
   </div>
   @php $tags = get_the_tags(); @endphp
   @if ($tags)

@@ -1,9 +1,9 @@
 <a href="https://www.pinterest.com/cahillscreative/" class="social-link icon icon--s" target="_blank">
-  @include('patterns.icon__pinterest')
+  @include('patterns.icon--pinterest')
 </a>
 <a href="https://www.facebook.com/CahillsCreative" class="social-link icon icon--s" target="_blank">
-  @include('patterns.icon__facebook')
+  @include('patterns.icon--facebook')
 </a>
 <a href="https://www.instagram.com/cahillscreative/" class="social-link icon icon--s" target="_blank">
-  @include('patterns.icon__instagram')
+  @include('patterns.icon--instagram')
 </a>

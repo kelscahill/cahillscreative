@@ -43,7 +43,7 @@
 
     .filter-toggle::after {
       content: "close filters";
-      background: url('../../assets/images/icon__close.svg') center right no-repeat;
+      background: url('../../assets/images/icon--close.svg') center right no-repeat;
       background-size: rem(15);
     }
 
@@ -86,7 +86,7 @@
   &::after {
     content: "expand filters";
     display: flex;
-    background: url('../../assets/images/icon__plus.svg') center right no-repeat;
+    background: url('../../assets/images/icon--plus.svg') center right no-repeat;
     background-size: rem(15);
     font-family: $sans-serif;
     text-transform: capitalize;
@@ -135,7 +135,7 @@
 
     .filter-item__toggle {
       &::after {
-        background: url('../../assets/images/arrow__up--small.svg') center right no-repeat;
+        background: url('../../assets/images/arrow--up--small.svg') center right no-repeat;
         background-size: rem(10);
       }
 
@@ -165,7 +165,7 @@
 
   &::after {
     display: flex;
-    background: url('../../assets/images/arrow__down--small.svg') center right no-repeat;
+    background: url('../../assets/images/arrow--down--small.svg') center right no-repeat;
     background-size: rem(10);
     font-family: $sans-serif;
     text-transform: capitalize;

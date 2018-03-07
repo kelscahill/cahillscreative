@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-  @include('patterns.section__hero')
+  @include('patterns.section--hero')
   @while(have_posts()) @php(the_post())
     <section class="section section__main">
       <div class="layout-container section__main--inner">
@@ -18,7 +18,7 @@
                 <div class="grid-item">
                   <a href="/services" class="block block__service spacing">
                     <div class="round">
-                      <span class="icon icon--m">@include('patterns/icon__web')</span>
+                      <span class="icon icon--m">@include('patterns/icon--web')</span>
                     </div>
                     <h2 class="font--primary--s">Web</h2>
                     <hr class="divider" />
@@ -29,7 +29,7 @@
                 <div class="grid-item">
                   <a href="/services" class="block block__service spacing">
                     <div class="round">
-                      <span class="icon icon--m">@include('patterns/icon__print')</span>
+                      <span class="icon icon--m">@include('patterns/icon--print')</span>
                     </div>
                     <h2 class="font--primary--s">Print</h2>
                     <hr class="divider" />
@@ -40,7 +40,7 @@
                 <div class="grid-item">
                   <a href="/blog" class="block block__service spacing">
                     <div class="round">
-                      <span class="icon icon--m">@include('patterns/icon__blog')</span>
+                      <span class="icon icon--m">@include('patterns/icon--blog')</span>
                     </div>
                     <h2 class="font--primary--s">Blog</h2>
                     <hr class="divider" />
@@ -114,7 +114,7 @@
     @if ($featured_work)
       <section class="section section__featured-work">
         @while ($featured_work->have_posts()) @php($featured_work->the_post())
-          @include('patterns.block__featured')
+          @include('patterns.block--featured')
         @endwhile
         @php(wp_reset_query())
       </section>

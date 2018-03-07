@@ -8,7 +8,7 @@
           <div class="grid-item">
             <a href="/contact" class="block block__service spacing">
               <div class="round">
-                <span class="icon icon--m">@include('patterns/icon__web')</span>
+                <span class="icon icon--m">@include('patterns/icon--web')</span>
               </div>
               <h2 class="font--primary--s">Web &amp; Interactive</h2>
               <hr class="divider" />
@@ -26,7 +26,7 @@
           <div class="grid-item">
             <a href="/contact" class="block block__service spacing">
               <div class="round">
-                <span class="icon icon--m">@include('patterns/icon__web')</span>
+                <span class="icon icon--m">@include('patterns/icon--web')</span>
               </div>
               <h2 class="font--primary--s">Web &amp; Interactive</h2>
               <hr class="divider" />
@@ -44,7 +44,7 @@
           <div class="grid-item">
             <a href="/contact" class="block block__service spacing">
               <div class="round">
-                <span class="icon icon--m">@include('patterns/icon__branding')</span>
+                <span class="icon icon--m">@include('patterns/icon--branding')</span>
               </div>
               <h2 class="font--primary--s">Logo &amp; Branding</h2>
               <hr class="divider" />
@@ -62,7 +62,7 @@
           <div class="grid-item">
             <a href="/contact" class="block block__service spacing">
               <div class="round">
-                <span class="icon icon--m">@include('patterns/icon__marketing')</span>
+                <span class="icon icon--m">@include('patterns/icon--marketing')</span>
               </div>
               <h2 class="font--primary--s">Email Marketing</h2>
               <hr class="divider" />
@@ -79,7 +79,7 @@
           <div class="grid-item">
             <a href="/contact" class="block block__service spacing">
               <div class="round">
-                <span class="icon icon--m">@include('patterns/icon__direct-mail')</span>
+                <span class="icon icon--m">@include('patterns/icon--direct-mail')</span>
               </div>
               <h2 class="font--primary--s">Direct Mail</h2>
               <hr class="divider" />
@@ -96,7 +96,7 @@
           <div class="grid-item">
             <a href="/contact" class="block block__service spacing">
               <div class="round">
-                <span class="icon icon--m">@include('patterns/icon__print')</span>
+                <span class="icon icon--m">@include('patterns/icon--print')</span>
               </div>
               <h2 class="font--primary--s">Print</h2>
               <hr class="divider" />

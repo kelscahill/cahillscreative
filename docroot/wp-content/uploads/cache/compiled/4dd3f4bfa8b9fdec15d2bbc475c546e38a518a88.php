@@ -1,6 +1,6 @@
 <aside class="sidebar shift-right spacing--double">
   <div class="widget widget-search">
-    <?php echo $__env->make('patterns/form__search', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+    <?php echo $__env->make('patterns.form--search', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
   </div>
   <div class="widget widget-related">
     <h3 class="font--primary--xs">Related Posts</h3>
@@ -9,7 +9,7 @@
   </div>
   <div class="widget widget-mailing">
     <h3 class="font--primary--xs">Join My Mailing List!</h3>
-    <?php echo $__env->make('patterns/form__newsletter', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+    <?php echo $__env->make('patterns.form--newsletter', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
   </div>
   <?php  $tags = get_the_tags();  ?>
   <?php if($tags): ?>

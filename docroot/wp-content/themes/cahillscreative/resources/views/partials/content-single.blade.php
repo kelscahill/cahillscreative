@@ -81,12 +81,12 @@
               @endif
             </div>
             <div class="article__content--right spacing--double shift-right--small">
-              @include('patterns.section__gallery')
+              @include('patterns.section--gallery')
               @php(the_content())
-              @include('patterns.section__accordion')
-              @include('patterns.section__pagination')
+              @include('patterns.section--accordion')
+              @include('patterns.section--pagination')
               <div class="section__favorites--mobile">
-                @include('patterns.section__favorites')
+                @include('patterns.section--favorites')
               </div>
             </div>
           </div> <!-- ./article__content -->
@@ -110,7 +110,7 @@
                 @endif
               </div>
               <a href="{{ the_permalink() }}#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
-                <span class="icon icon--s space--half-right">@include('patterns/icon__comment')</span>
+                <span class="icon icon--s space--half-right">@include('patterns/icon--comment')</span>
                 <span class="font--sans-serif font--sans-serif--small color--gray">
                   @php
                     comments_number('0', '1', '%');
@@ -119,7 +119,7 @@
               </a>
               <div class="block__toolbar-item block__toolbar-share tooltip">
                 <div class="block__toolbar-item block__toolbar-share tooltip-toggle js-toggle-parent">
-                  <span class="icon icon--s space--half-left">@include('patterns/icon__share')</span>
+                  <span class="icon icon--s space--half-left">@include('patterns/icon--share')</span>
                 </div>
                 @include('patterns/share-tooltip')
               </div>
@@ -128,7 +128,7 @@
               @php $next_post = get_next_post(true, '', 'category'); @endphp
               @if ( !empty($next_post) )
                 @php $link = get_permalink($next_post->ID); @endphp
-                <a href="{{ $link }}" class="font--primary--xs">Next Post<span class="icon icon--s">@include('patterns/arrow__carousel')</span></a>
+                <a href="{{ $link }}" class="font--primary--xs">Next Post<span class="icon icon--s">@include('patterns/arrow--carousel')</span></a>
               @endif
             </div> <!-- ./block__toolbar--right -->
           </div> <!-- ./block__toolbar -->
@@ -138,5 +138,5 @@
   </div>
 </section>
 <div class="section__favorites--desktop">
-  @include('patterns.section__favorites')
+  @include('patterns.section--favorites')
 </div>

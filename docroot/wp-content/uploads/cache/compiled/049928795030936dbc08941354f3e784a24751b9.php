@@ -83,12 +83,12 @@
               <?php endif; ?>
             </div>
             <div class="article__content--right spacing--double shift-right--small">
-              <?php echo $__env->make('patterns.section__gallery', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+              <?php echo $__env->make('patterns.section--gallery', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
               <?php (the_content()); ?>
-              <?php echo $__env->make('patterns.section__accordion', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-              <?php echo $__env->make('patterns.section__pagination', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+              <?php echo $__env->make('patterns.section--accordion', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+              <?php echo $__env->make('patterns.section--pagination', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
               <div class="section__favorites--mobile">
-                <?php echo $__env->make('patterns.section__favorites', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                <?php echo $__env->make('patterns.section--favorites', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
               </div>
             </div>
           </div> <!-- ./article__content -->
@@ -113,7 +113,7 @@
                 <?php endif; ?>
               </div>
               <a href="<?php echo e(the_permalink()); ?>#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
-                <span class="icon icon--s space--half-right"><?php echo $__env->make('patterns/icon__comment', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
+                <span class="icon icon--s space--half-right"><?php echo $__env->make('patterns/icon--comment', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
                 <span class="font--sans-serif font--sans-serif--small color--gray">
                   <?php 
                     comments_number('0', '1', '%');
@@ -122,7 +122,7 @@
               </a>
               <div class="block__toolbar-item block__toolbar-share tooltip">
                 <div class="block__toolbar-item block__toolbar-share tooltip-toggle js-toggle-parent">
-                  <span class="icon icon--s space--half-left"><?php echo $__env->make('patterns/icon__share', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
+                  <span class="icon icon--s space--half-left"><?php echo $__env->make('patterns/icon--share', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
                 </div>
                 <?php echo $__env->make('patterns/share-tooltip', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
               </div>
@@ -131,7 +131,7 @@
               <?php  $next_post = get_next_post(true, '', 'category');  ?>
               <?php if( !empty($next_post) ): ?>
                 <?php  $link = get_permalink($next_post->ID);  ?>
-                <a href="<?php echo e($link); ?>" class="font--primary--xs">Next Post<span class="icon icon--s"><?php echo $__env->make('patterns/arrow__carousel', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span></a>
+                <a href="<?php echo e($link); ?>" class="font--primary--xs">Next Post<span class="icon icon--s"><?php echo $__env->make('patterns/arrow--carousel', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span></a>
               <?php endif; ?>
             </div> <!-- ./block__toolbar--right -->
           </div> <!-- ./block__toolbar -->
@@ -141,5 +141,5 @@
   </div>
 </section>
 <div class="section__favorites--desktop">
-  <?php echo $__env->make('patterns.section__favorites', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+  <?php echo $__env->make('patterns.section--favorites', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 </div>

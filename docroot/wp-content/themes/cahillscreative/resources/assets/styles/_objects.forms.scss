@@ -48,7 +48,7 @@ select {
   -moz-appearance: none;
   appearance: none;
   cursor: pointer;
-  background: url('../../assets/images/arrow__down--small.svg') $white center right rem(10) no-repeat;
+  background: url('../../assets/images/arrow--down--small.svg') $white center right rem(10) no-repeat;
   background-size: rem(10);
 }
 
@@ -89,7 +89,7 @@ input[type=radio] {
 input[type=checkbox]:checked,
 input[type=radio]:checked {
   border-color: $border-color;
-  background: $primary-color url('../../assets/images/icon__check.svg') center center no-repeat;
+  background: $primary-color url('../../assets/images/icon--check.svg') center center no-repeat;
   background-size: rem(15);
 }
 

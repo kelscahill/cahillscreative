@@ -70,7 +70,7 @@
         </div>
         @if (comments_open())
           <a href="{{ $link }}#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
-            <span class="icon icon--s space--half-right">@include('patterns/icon__comment')</span>
+            <span class="icon icon--s space--half-right">@include('patterns/icon--comment')</span>
             <span class="font--sans-serif font--sans-serif--small color--gray">
               @php
                 comments_number('0', '1', '%');
@@ -82,7 +82,7 @@
       <div class="block__toolbar--right tooltip">
         <div class="block__toolbar-item block__toolbar-share tooltip-toggle js-toggle-parent">
           <span class="font--primary--xs color--gray">Share</span>
-          <span class="icon icon--s space--half-left">@include('patterns/icon__share')</span>
+          <span class="icon icon--s space--half-left">@include('patterns/icon--share')</span>
         </div>
         @include('patterns/share-tooltip')
       </div>

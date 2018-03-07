@@ -72,7 +72,7 @@
         </div>
         <?php if(comments_open()): ?>
           <a href="<?php echo e($link); ?>#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
-            <span class="icon icon--s space--half-right"><?php echo $__env->make('patterns/icon__comment', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
+            <span class="icon icon--s space--half-right"><?php echo $__env->make('patterns/icon--comment', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
             <span class="font--sans-serif font--sans-serif--small color--gray">
               <?php 
                 comments_number('0', '1', '%');
@@ -84,7 +84,7 @@
       <div class="block__toolbar--right tooltip">
         <div class="block__toolbar-item block__toolbar-share tooltip-toggle js-toggle-parent">
           <span class="font--primary--xs color--gray">Share</span>
-          <span class="icon icon--s space--half-left"><?php echo $__env->make('patterns/icon__share', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
+          <span class="icon icon--s space--half-left"><?php echo $__env->make('patterns/icon--share', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
         </div>
         <?php echo $__env->make('patterns/share-tooltip', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
       </div>

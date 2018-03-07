@@ -20,11 +20,6 @@ add_action('wp_enqueue_scripts', function () {
       // Load a copy of jQuery from the jquery CDN.
       wp_enqueue_script('jquery', 'https://code.jquery.com/jquery-2.2.4.min.js', false, '2.2.4', true);
     }
-
-    wp_deregister_script('jquery-cookie');
-    // Load a copy of jQuery from the jquery CDN.
-    wp_enqueue_script('jquery-cookie', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js', false, '1.4.1', true);
-
 }, 100);
 
 /**

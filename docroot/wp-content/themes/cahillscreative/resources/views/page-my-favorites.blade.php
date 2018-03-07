@@ -18,7 +18,7 @@
 @endphp
 @extends('layouts.app')
 @section('content')
-  @include('patterns.section__hero')
+  @include('patterns.section--hero')
   <section class="section section__main">
     <div class="layout-container section__main--inner">
       <article @php(post_class('article spacing--double'))>

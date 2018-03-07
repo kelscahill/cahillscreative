@@ -98,21 +98,21 @@
         <div class="pagination-item">
           @if (!empty($prev_post))
             <a href="{{ $prev_post->guid }}" class="prev pagination-link">
-        			<span class="icon icon--l">@include('patterns/arrow__carousel')</span>
+        			<span class="icon icon--l">@include('patterns/arrow--carousel')</span>
               <p class="font--primary--xs">Previous Project</p>
         		</a>
           @endif
         </div>
         <div class="pagination-item">
       		<a href="/work" class="all pagination-link">
-            <span class="icon icon--l">@include('patterns/icon__close--large')</span>
+            <span class="icon icon--l">@include('patterns/icon--close--large')</span>
             <p class="font--primary--xs">All Work</p>
           </a>
         </div>
         <div class="pagination-item">
           @if (!empty($next_post))
         		<a href="{{ $next_post->guid }}" class="next pagination-link">
-        			<span class="icon icon--l">@include('patterns/arrow__carousel')</span>
+        			<span class="icon icon--l">@include('patterns/arrow--carousel')</span>
               <p class="font--primary--xs">Next Project</p>
         		</a>
           @endif

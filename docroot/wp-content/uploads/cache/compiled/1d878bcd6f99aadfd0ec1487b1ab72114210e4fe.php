@@ -1,5 +1,5 @@
 <?php $__env->startSection('content'); ?>
-  <?php echo $__env->make('patterns.section__hero', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+  <?php echo $__env->make('patterns.section--hero', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
   <?php while(have_posts()): ?> <?php (the_post()); ?>
     <section class="section section__main">
       <div class="layout-container section__main--inner">
@@ -17,7 +17,7 @@
                 <div class="grid-item">
                   <a href="/services" class="block block__service spacing">
                     <div class="round">
-                      <span class="icon icon--m"><?php echo $__env->make('patterns/icon__web', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
+                      <span class="icon icon--m"><?php echo $__env->make('patterns/icon--web', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
                     </div>
                     <h2 class="font--primary--s">Web</h2>
                     <hr class="divider" />
@@ -28,7 +28,7 @@
                 <div class="grid-item">
                   <a href="/services" class="block block__service spacing">
                     <div class="round">
-                      <span class="icon icon--m"><?php echo $__env->make('patterns/icon__print', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
+                      <span class="icon icon--m"><?php echo $__env->make('patterns/icon--print', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
                     </div>
                     <h2 class="font--primary--s">Print</h2>
                     <hr class="divider" />
@@ -39,7 +39,7 @@
                 <div class="grid-item">
                   <a href="/blog" class="block block__service spacing">
                     <div class="round">
-                      <span class="icon icon--m"><?php echo $__env->make('patterns/icon__blog', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
+                      <span class="icon icon--m"><?php echo $__env->make('patterns/icon--blog', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
                     </div>
                     <h2 class="font--primary--s">Blog</h2>
                     <hr class="divider" />
@@ -113,7 +113,7 @@
     <?php if($featured_work): ?>
       <section class="section section__featured-work">
         <?php while($featured_work->have_posts()): ?> <?php ($featured_work->the_post()); ?>
-          <?php echo $__env->make('patterns.block__featured', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+          <?php echo $__env->make('patterns.block--featured', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         <?php endwhile; ?>
         <?php (wp_reset_query()); ?>
       </section>

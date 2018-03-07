@@ -59,8 +59,8 @@
 @endphp
 @extends('layouts.app')
 @section('content')
-  @include('patterns.section__hero')
-  <?php /* @include('patterns.section__filter') */ ?>
+  @include('patterns.section--hero')
+  <?php /* @include('patterns.section--filter') */ ?>
   <section class="section section__main">
     <div class="layout-container section__main--inner">
       <article @php(post_class('article spacing--double'))>

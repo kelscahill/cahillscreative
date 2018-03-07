@@ -22,13 +22,13 @@
         </div>
         <div class="footer__mailing">
           <h3 class="color--gray font--primary--xs">Join the mailing list</h3>
-          <?php echo $__env->make('patterns/form__newsletter', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+          <?php echo $__env->make('patterns.form--newsletter', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         </div>
       </div>
       <div class="grid-item footer--right">
         <div class="footer__posts spacing">
           <h3 class="color--gray font--primary--xs">Latest Posts</h3>
-          <?php echo $__env->make('patterns.feed__latest', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+          <?php echo $__env->make('patterns.feed--latest', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         </div>
         <div class="footer__ads">
           <h3 class="color--gray font--primary--xs space--half-bottom">Advertisements</h3>
@@ -56,6 +56,6 @@
     </div>
   </div>
   <a href="#top" class="footer__top font--primary--xs">
-    To Top <span class="icon icon--l space--half-left path-fill--white"><?php echo $__env->make('patterns.arrow__cta--long', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
+    To Top <span class="icon icon--l space--half-left path-fill--white"><?php echo $__env->make('patterns.arrow--cta--long', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
   </a>
 </footer>
