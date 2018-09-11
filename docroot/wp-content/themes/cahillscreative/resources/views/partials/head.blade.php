@@ -13,6 +13,9 @@
     gtag('config', 'UA-31544419-1');
   </script>
 
+  <!-- Birthday Party Fonts -->
+  <link rel="stylesheet" href="https://use.typekit.net/zdy6lab.css">
+
   <!-- Favicon -->
   <link rel="shortcut icon" href="<?php bloginfo('template_directory'); ?>/assets/images/favicon.ico">
   @php(wp_head())
