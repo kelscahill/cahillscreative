@@ -1,4 +1,4 @@
-@php($gallery = get_field('gallery'))
+@php $gallery = get_field('gallery') @endphp
 @if ($gallery)
   <div class="article__gallery gallery slick-gallery">
     @foreach ($gallery as $image)

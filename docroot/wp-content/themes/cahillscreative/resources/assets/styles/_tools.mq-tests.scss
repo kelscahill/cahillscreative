@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 /* ------------------------------------*\
     $MEDIA QUERY TESTS
 \*------------------------------------ */
@@ -14,7 +16,7 @@
       content: 'No Media Query';
       color: transparentize(#fff, 0.25);
       border-top-left-radius: 10px;
-      font-size: (12/16)+em;
+      font-size: 12 / 16 + em;
 
       @media print {
         display: none;
@@ -28,7 +30,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      z-index: (100000);
+      z-index: 100000;
       content: '';
       background: black;
 
@@ -37,7 +39,7 @@
       }
     }
 
-    @include media('>xsmall') {
+    @include media(">xsmall") {
       &::before {
         content: 'xsmall: 350px';
       }
@@ -48,7 +50,8 @@
       }
     }
 
-    @include media('>small') {
+
+    @include media(">small") {
       &::before {
         content: 'small: 500px';
       }
@@ -59,7 +62,8 @@
       }
     }
 
-    @include media('>medium') {
+
+    @include media(">medium") {
       &::before {
         content: 'medium: 700px';
       }
@@ -70,7 +74,8 @@
       }
     }
 
-    @include media('>large') {
+
+    @include media(">large") {
       &::before {
         content: 'large: 900px';
       }
@@ -81,7 +86,8 @@
       }
     }
 
-    @include media('>xlarge') {
+
+    @include media(">xlarge") {
       &::before {
         content: 'xlarge: 1100px';
       }
@@ -92,7 +98,8 @@
       }
     }
 
-    @include media('>xxlarge') {
+
+    @include media(">xxlarge") {
       &::before {
         content: 'xxlarge: 1300px';
       }
@@ -103,7 +110,8 @@
       }
     }
 
-    @include media('>xxxlarge') {
+
+    @include media(">xxxlarge") {
       &::before {
         content: 'xxxlarge: 1400px';
       }

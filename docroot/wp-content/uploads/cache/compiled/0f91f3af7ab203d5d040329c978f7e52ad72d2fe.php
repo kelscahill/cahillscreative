@@ -1,7 +1,7 @@
 <!doctype html>
 <html <?php  language_attributes()  ?>>
   <?php echo $__env->make('partials.head', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-  <body id="top" <?php  body_class('body-party page-birthday-party')  ?>>
+  <body id="top" <?php  body_class('body-party page-birthday-party__decline')  ?>>
     <?php  do_action('get_header')  ?>
     <main class="main" role="document">
       <div class="layout-container">
@@ -9,12 +9,19 @@
           <article <?php  post_class('article spacing--double')  ?>>
             <div class="article__title">
               <?php if(get_field('display_title')): ?>
-                <h1 class="page-title color--white"><?php echo e(get_field('display_title')); ?></h1>
+                <h2 class="page-title color--white"><?php echo e(get_field('display_title')); ?></h2>
               <?php endif; ?>
             </div>
-            <div class="article__buttons spacing">
-              <a href="/birthday-party/invite" class="btn btn--red">Of Course!</a>
-              <a href="/birthday-party/decline" class="btn btn--outline">Nah, secrets don&rsquo;t make friends</a>
+            <div class="article__dot">
+              <h3>You</h3>
+              <span class="dot"></span>
+            </div>
+            <div class="article__body">
+              <?php if(get_field('intro')): ?>
+                <?php echo e(the_field('intro')); ?>
+
+              <?php endif; ?>
+              <?php  the_content()  ?>
             </div>
           </article>
         <?php endwhile; ?>

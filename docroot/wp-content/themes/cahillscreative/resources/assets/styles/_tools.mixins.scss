@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 /* ------------------------------------*\
     $MIXINS
 \*------------------------------------ */
@@ -45,7 +47,7 @@
     display: block;
     content: "";
     width: 100%;
-    padding-top: ($height / $width) * 100%;
+    padding-top: $height / $width * 100%;
   }
 
   > .ratio-content {

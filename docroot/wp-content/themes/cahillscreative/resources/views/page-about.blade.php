@@ -1,8 +1,8 @@
 @extends('layouts.app')
 @section('content')
-  @while(have_posts()) @php(the_post())
+  @while(have_posts()) @php the_post() @endphp
     @include('partials.content-page')
-    @php($process = get_field('process_steps'))
+    @php $process = get_field('process_steps') @endphp
     @if ($process)
       <section class="section section__process padding--double-bottom">
         <div class="section--inner layout-container narrow narrow--m spacing--double">
@@ -29,7 +29,7 @@
           <hr class="divider" />
           <h2 class="font--primary--xl">You have questions. I have answers.</h2>
         </div>
-        @php($accordion = get_field('accordion'))
+        @php $accordion = get_field('accordion') @endphp
         @if ($accordion)
           <div class="accordion spacing">
             <div class="accordion--inner space--half-bottom">

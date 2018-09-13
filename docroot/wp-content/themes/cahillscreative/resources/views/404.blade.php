@@ -2,7 +2,7 @@
 @section('content')
   <section class="section section__main">
     <div class="layout-container section__main--inner">
-      <article @php(post_class('article narrow spacing--double'))>
+      <article @php post_class('article narrow spacing--double') @endphp>
         <div class="page-header spacing text-align--center narrow narrow--m">
           <h2 class="page-kicker font--primary--s">404</h2>
           <hr class="divider">

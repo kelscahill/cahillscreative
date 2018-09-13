@@ -63,7 +63,7 @@
   <?php /* @include('patterns.section--filter') */ ?>
   <section class="section section__main">
     <div class="layout-container section__main--inner">
-      <article @php(post_class('article spacing--double'))>
+      <article @php post_class('article spacing--double') @endphp>
         <div class="article__body spacing text-align--center">
           <h2 class="font--primary--s">
             @if (is_tax('work'))
@@ -79,10 +79,10 @@
           <?php /* <div id="response" class="filter-response"></div> */ ?>
           @if ($posts->have_posts())
             <div class="grid grid--full">
-              @while ($posts->have_posts()) @php($posts->the_post())
+              @while ($posts->have_posts()) @php $posts->the_post() @endphp
                 @include('patterns.block')
               @endwhile
-              @php(wp_reset_query())
+              @php wp_reset_query() @endphp
             </div>
             @php
               if (is_tag()) {

@@ -1,6 +1,6 @@
 <section class="section section__main">
   <div class="layout-container section__main--inner">
-    <article @php(post_class('article spacing--double'))>
+    <article @php post_class('article spacing--double') @endphp>
       <div class="article__header spacing text-align--center narrow">
         <h2 class="article__header-kicker font--primary--s">Blog</h2>
         <hr class="divider" />
@@ -82,7 +82,7 @@
             </div>
             <div class="article__content--right spacing--double shift-right--small">
               @include('patterns.section--gallery')
-              @php(the_content())
+              @php the_content() @endphp
               @include('patterns.section--accordion')
               @include('patterns.section--pagination')
               <div class="section__favorites--mobile">

@@ -24,19 +24,21 @@
   justify-content: center;
   background-size: cover;
 
-  @include media('>large') {
+  @include media(">large") {
     margin-top: rem(-60);
   }
 
-  &.background-image--default {
-    background-image: url('../../assets/images/hero-banner--mobile.jpg');
 
-    @include media('>medium') {
-      background-image: url('../../assets/images/hero-banner--tablet.jpg');
+  &.background-image--default {
+    background-image: url("../../assets/images/hero-banner--mobile.jpg");
+
+    @include media(">medium") {
+      background-image: url("../../assets/images/hero-banner--tablet.jpg");
     }
 
-    @include media('>xlarge') {
-      background-image: url('../../assets/images/hero-banner.jpg');
+
+    @include media(">xlarge") {
+      background-image: url("../../assets/images/hero-banner.jpg");
     }
   }
 }
@@ -68,7 +70,7 @@
 
 .section__featured-about {
   text-align: center;
-  background-image: url('../../assets/images/icon--hi.svg');
+  background-image: url("../../assets/images/icon--hi.svg");
   background-position: top -20px center;
   background-repeat: no-repeat;
   background-size: 80% auto;
@@ -78,7 +80,7 @@
     margin-right: auto;
   }
 
-  @include media('>medium') {
+  @include media(">medium") {
     text-align: left;
     background-size: auto 110%;
     background-position: center left 20px;
@@ -92,6 +94,7 @@
       margin-right: 0;
     }
   }
+
 
   .round {
     width: 100%;
@@ -121,7 +124,7 @@
   flex-direction: column;
   width: 100%;
 
-  @include media('>medium') {
+  @include media(">medium") {
     flex-direction: row;
   }
 }
@@ -153,7 +156,7 @@
 
   &.is-active {
     .accordion-item__toggle {
-      background: url('../../assets/images/icon--minus.svg') no-repeat center center;
+      background: url("../../assets/images/icon--minus.svg") no-repeat center center;
     }
 
     .accordion-item__body {
@@ -190,7 +193,7 @@
   width: rem(20);
   height: rem(20);
   min-width: rem(20);
-  background: url('../../assets/images/icon--plus.svg') no-repeat center center;
+  background: url("../../assets/images/icon--plus.svg") no-repeat center center;
   background-size: rem(20);
   margin: 0 !important;
   position: relative;
@@ -265,7 +268,7 @@
     }
   }
 
-  @include media('>large') {
+  @include media(">large") {
     width: rem(50);
 
     &::before {
@@ -278,7 +281,7 @@
   width: calc(100% - 30px);
   padding-left: $pad-half;
 
-  @include media('>large') {
+  @include media(">large") {
     width: calc(100% - 50px);
     padding-left: $pad;
   }
@@ -303,7 +306,7 @@
       margin-right: $space-half;
       width: rem(50);
 
-      @include media('>medium') {
+      @include media(">medium") {
         width: 100%;
         width: rem(80);
         margin-right: $space;
@@ -341,7 +344,7 @@
     clear: left;
     padding-left: rem(60);
 
-    @include media('>medium') {
+    @include media(">medium") {
       padding-left: rem(100);
       margin-top: $space;
       clear: none;
@@ -355,7 +358,7 @@
 
     @include font--primary--xs;
 
-    @include media('>medium') {
+    @include media(">medium") {
       padding-left: rem(100);
     }
   }
@@ -388,7 +391,7 @@
         padding-bottom: 0;
         margin-bottom: $space;
 
-        @include media('>medium') {
+        @include media(">medium") {
           margin-left: rem(100);
         }
       }
@@ -409,7 +412,7 @@
   background-color: white;
 
   .section__hero {
-    @include media('<=medium') {
+    @include media("<=medium") {
       min-height: rem(300);
       max-height: rem(300);
     }
@@ -420,7 +423,7 @@
     top: rem(-280);
     margin-bottom: rem(-280);
 
-    @include media('>medium') {
+    @include media(">medium") {
       top: rem(-380);
       margin-bottom: rem(-380);
     }
@@ -429,7 +432,7 @@
 
 .work-item__title {
   position: relative;
-  margin-top: $space*3;
+  margin-top: $space * 3;
   margin-bottom: $space;
 
   &::after {

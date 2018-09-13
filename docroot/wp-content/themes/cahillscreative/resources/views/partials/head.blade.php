@@ -18,7 +18,7 @@
 
   <!-- Favicon -->
   <link rel="shortcut icon" href="<?php bloginfo('template_directory'); ?>/assets/images/favicon.ico">
-  @php(wp_head())
+  @php wp_head() @endphp
   <style>
     .no-fouc {display: none;}
   </style>

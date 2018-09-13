@@ -21,5 +21,5 @@
     @endphp
     @include('patterns.block--latest')
   @endforeach
-  @php(wp_reset_postdata())
+  @php wp_reset_postdata() @endphp
 @endif

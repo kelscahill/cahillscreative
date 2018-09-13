@@ -1,6 +1,6 @@
 <section class="section section__main">
   <div class="layout-container section__main--inner">
-    <article @php(post_class('article'))>
+    <article @php post_class('article') @endphp>
       @include('partials.page-header')
       <div class="article__body spacing">
         @php
@@ -14,7 +14,7 @@
           <img src="{{ $image_small }}" alt="{{ $image_alt }}">
         </picture>
         <div class="narrow narrow--m spacing">
-          @php(the_content())
+          @php the_content() @endphp
         </div>
       </div>
     </article>

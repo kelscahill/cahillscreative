@@ -1,6 +1,6 @@
 <section class="section section__main">
   <div class="layout-container section__main--inner">
-    <article @php(post_class('article spacing--double'))>
+    <article @php post_class('article spacing--double') @endphp>
       <div class="article__header spacing text-align--center narrow">
         <h2 class="article__header-kicker font--primary--s">Shop</h2>
         <hr class="divider" />
@@ -32,7 +32,7 @@
                   <img src="{{ $image_small }}" alt="{{ $image_alt }}">
                 </picture>
               </div>
-              @php(the_content())
+              @php the_content() @endphp
               @include('patterns.section--pagination')
             </div> <!-- ./article__content--right -->
           </div> <!-- ./article__content -->

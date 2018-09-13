@@ -21,13 +21,13 @@
   @include('patterns.section--hero')
   <section class="section section__main">
     <div class="layout-container section__main--inner">
-      <article @php(post_class('article spacing--double'))>
+      <article @php post_class('article spacing--double') @endphp>
         <div class="article__body spacing text-align--center">
           <h2 class="font--primary--s">Recent Items</h2>
           <hr class="divider center-block" />
           @if ($posts->have_posts())
             <div class="grid grid--full">
-              @while ($posts->have_posts()) @php($posts->the_post())
+              @while ($posts->have_posts()) @php $posts->the_post() @endphp
                 @php
                   $post_id = get_the_ID();
                   $title = get_the_title($post_id);
@@ -44,7 +44,7 @@
                 @endphp
                 @include('patterns.block')
               @endwhile
-              @php(wp_reset_query())
+              @php wp_reset_query() @endphp
             </div>
             @php echo do_shortcode('[ajax_load_more container_type="div" post_type="affiliate" scroll="true" transition_container="false" button_label="Load More Items" posts_per_page="12" offset="12"]'); @endphp
           @else

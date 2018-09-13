@@ -29,7 +29,7 @@
       <div class="slick-favorites">
         @if ($featured_post)
           @foreach( $featured_post as $post):
-            @php(setup_postdata($post))
+            @php setup_postdata($post) @endphp
             @php
               $post_id = $post->ID;
               $thumb_id = get_post_thumbnail_id($post_id);
@@ -48,9 +48,9 @@
               @endif
             </a>
           @endforeach
-          @php(wp_reset_postdata())
+          @php wp_reset_postdata() @endphp
         @endif
-        @while ($posts->have_posts()) @php($posts->the_post())
+        @while ($posts->have_posts()) @php $posts->the_post() @endphp
           @php
             $post_id = get_the_ID();
             $thumb_id = get_post_thumbnail_id($post_id);
@@ -69,7 +69,7 @@
             @endif
           </a>
         @endwhile
-        @php(wp_reset_query())
+        @php wp_reset_query() @endphp
       </div>
     </div>
   </section>

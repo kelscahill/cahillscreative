@@ -17,10 +17,10 @@ if (post_password_required()) {
       <nav>
         <ul class="pager">
           @if (get_previous_comments_link())
-            <li class="previous">@php(previous_comments_link(__('&larr; Older comments', 'sage')))</li>
+            <li class="previous">@php previous_comments_link(__('&larr; Older comments', 'sage')) @endphp</li>
           @endif
           @if (get_next_comments_link())
-            <li class="next">@php(next_comments_link(__('Newer comments &rarr;', 'sage')))</li>
+            <li class="next">@php next_comments_link(__('Newer comments &rarr;', 'sage')) @endphp</li>
           @endif
         </ul>
       </nav>
@@ -31,5 +31,5 @@ if (post_password_required()) {
     <p>{{ __('There are no comments at this time.', 'sage') }}</p>
   @endif
 
-  @php(comment_form())
+  @php comment_form() @endphp
 </section>

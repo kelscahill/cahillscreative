@@ -1,6 +1,6 @@
 <div class="accordion spacing">
   <div class="accordion--inner">
-    @php($accordion = get_field('accordion'))
+    @php $accordion = get_field('accordion') @endphp
     @if ($accordion)
       @foreach ($accordion as $item)
         <div class="accordion-item is-active">
@@ -14,7 +14,7 @@
         </div>
       @endforeach
     @endif
-    @php($instructions = get_field('instructions'))
+    @php $instructions = get_field('instructions') @endphp
     @if ($instructions)
       <div class="accordion-item is-active">
         <div class="accordion-item__title js-toggle-parent">

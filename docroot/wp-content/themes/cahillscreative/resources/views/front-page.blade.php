@@ -1,17 +1,17 @@
 @extends('layouts.app')
 @section('content')
   @include('patterns.section--hero')
-  @while(have_posts()) @php(the_post())
+  @while(have_posts()) @php the_post() @endphp
     <section class="section section__main">
       <div class="layout-container section__main--inner">
-        <article @php(post_class('article'))>
+        <article @php post_class('article') @endphp>
           <div class="article__header text-align--center">
-            <h1 class="font--primary--xl space--top">Welcome to Cahill's Creative</h1>
+            <h1 class="font--primary--xl space--top">Welcome to Cahill&rsquo;s Creative</h1>
             <hr class="divider" />
           </div>
           <div class="article__body text-align--center">
             <div class="narrow narrow--m spacing text-align--center">
-              @php(the_content())
+              @php the_content() @endphp
             </div>
             <div class="narrow narrow--l">
               <div class="grid grid--3-col">
@@ -88,10 +88,10 @@
     @if ($featured_posts)
       <section class="section section__featured-posts layout-container padding--double-top padding--double-bottom">
         <div class="grid grid--4-col">
-          @while ($featured_posts->have_posts()) @php($featured_posts->the_post())
+          @while ($featured_posts->have_posts()) @php $featured_posts->the_post() @endphp
             @include('patterns.block')
           @endwhile
-          @php(wp_reset_query())
+          @php wp_reset_query() @endphp
         </div>
       </section>
     @endif
@@ -113,10 +113,10 @@
     @endphp
     @if ($featured_work)
       <section class="section section__featured-work">
-        @while ($featured_work->have_posts()) @php($featured_work->the_post())
+        @while ($featured_work->have_posts()) @php $featured_work->the_post() @endphp
           @include('patterns.block--featured')
         @endwhile
-        @php(wp_reset_query())
+        @php wp_reset_query() @endphp
       </section>
     @endif
   @endwhile

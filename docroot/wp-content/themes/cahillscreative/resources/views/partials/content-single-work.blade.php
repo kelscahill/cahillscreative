@@ -33,7 +33,7 @@
 
 <section class="section section__main">
   <div class="layout-container section__main--inner">
-    <article @php(post_class('article spacing--double'))>
+    <article @php post_class('article spacing--double') @endphp>
       <div class="article__header spacing text-align--center narrow narrow--m">
         @if (!empty($category))
           <h2 class="page-kicker font--primary--s color--white">{{ $category }}</h2>

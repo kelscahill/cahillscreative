@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-  @while(have_posts()) @php(the_post())
+  @while(have_posts()) @php the_post() @endphp
     @include('partials.content-page')
     <section class="section section__services">
       <div class="section--inner padding--double-bottom layout-container narrow narrow--l">
