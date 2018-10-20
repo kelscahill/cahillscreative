@@ -152,6 +152,34 @@ module.exports = jQuery;
           $('body').addClass('margin--80');
         }
 
+        // Show or hide the sticky secondary nav bar button
+        var orgTop = 100;
+        $('body').scroll(function() {
+          var currentTop = $(this).scrollTop(),
+              $navBar = $('.header__utility');
+
+          // show/hide nav bar on mobile
+          if (currentTop > orgTop) {
+            $navBar.addClass('hide-nav');
+          } else {
+            $navBar.removeClass('hide-nav');
+          }
+
+          // be sure not to hide it too soon
+          if (currentTop < 100) {
+            $navBar.removeClass('hide-nav');
+          } else {
+            orgTop = currentTop;
+          }
+
+          // Add active class if scrolled past the header
+          if (currentTop >= 50) {
+            $('.header__utility').addClass('is-active');
+          } else {
+            $('.header__utility').removeClass('is-active');
+          }
+        });
+
         // Popup
         $('.popup__close').click(function(e) {
           e.preventDefault();

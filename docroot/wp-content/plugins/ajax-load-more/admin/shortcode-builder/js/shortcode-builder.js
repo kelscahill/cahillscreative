@@ -2,7 +2,7 @@ jQuery(document).ready(function($) {
    "use strict";
 
    var _alm = {},
-       output_div = $('#shortcode_output'),
+       output_div = $('.ajax-load-more.shortcode-builder #shortcode_output'),
        output = '[ajax_load_more]';
 
    output_div.text(output); //Init the shortcode output
@@ -17,7 +17,7 @@ jQuery(document).ready(function($) {
    */
    _alm.select2 = function(){
       // Default Select2
-      $('.row select, .cnkt-main select, select.jump-menu').not('.multiple, .meta-compare, .meta-type').select2({});
+      $('.row select, .cnkt-main select, select.jump-menu').not('.multiple, .meta-compare, .meta-type, .alm-filter-select').select2({});
 
       // multiple
       $('.ajax-load-more .categories select.multiple').select2({
@@ -47,7 +47,7 @@ jQuery(document).ready(function($) {
 
 
 
-   //
+   // Taxonomy Query
    var total_tax_query = 0,
    	 max_tax_query = 2;
    $('#add-tax-query').on('click', function(e){
@@ -203,7 +203,7 @@ jQuery(document).ready(function($) {
          if(acf_field_type !== '' && acf_field_name !== ''){
             output += ' acf="'+acf+'"';
             if(acf_post_id !== ''){
-               output += ' acf_post_id="\'.'+ acf_post_id +'.\'"';
+               output += ' acf_post_id="'+ acf_post_id +'"';
             }
             output += ' acf_field_type="'+ acf_field_type +'"';
             output += ' acf_field_name="'+ acf_field_name +'"';
@@ -307,6 +307,41 @@ jQuery(document).ready(function($) {
          $('.comments_extras').slideDown(150, 'alm_easeInOutQuad');
       }else{
          $('.comments_extras').slideUp(150, 'alm_easeInOutQuad');
+      }
+
+
+
+      // ---------------------------
+      // - Filters
+      // ---------------------------
+
+      var filters = $('.filters input[name=filters]:checked').val();
+      if(filters !== 'false' && filters != undefined){
+
+         $('.filters_options').slideDown(150, 'alm_easeInOutQuad');
+
+         
+			var filters_id = $('#alm-filters select');
+         if(filters_id.length){
+	         if(filters_id.val() !== ''){
+            	output += ' target="'+filters_id.val().trim()+'"';
+            }
+         }
+         
+         output += ' filters="'+filters+'"';         
+         
+			var filters_analytics = $('#alm-filters input[name=filters-analytics]:checked').val().trim();
+         if(filters_analytics !== '' && filters_analytics !== 'true')
+            output += ' filters_analytics="'+filters_analytics+'"';
+         
+			var filters_debug = $('#alm-filters input[name=filters-debug]:checked').val().trim();
+         if(filters_debug !== '' && filters_debug !== 'false')
+            output += ' filters_debug="'+filters_debug+'"';
+
+      }else{
+	      
+         $('.filters_options').slideUp(150, 'alm_easeInOutQuad');
+         
       }
 
 
@@ -976,7 +1011,7 @@ jQuery(document).ready(function($) {
       // ---------------------------
 
       var transition = $('.transition select[name=transition]').val();
-      if(transition !== 'slide')
+      if(transition !== 'fade')
          output += ' transition="'+transition+'"';
 
       if(transition === 'masonry'){
@@ -984,10 +1019,14 @@ jQuery(document).ready(function($) {
 	      $('.masonry-options').slideDown(150, 'alm_easeInOutQuad');
 	      $('.masonry-options-hide').slideUp(150, 'alm_easeInOutQuad');
 			var masonry_selector = $('.transition input#masonry-item').val();
+			var masonry_columnwidth = $('.transition input#masonry-columnwidth').val();
 			var masonry_animation = $('input[name=masonry-animation]:checked').val();
 			var masonry_horizontalorder = $('input[name=masonry-horizontalorder]:checked').val();
 			if(masonry_selector !== ''){
          	output += ' masonry_selector="'+ masonry_selector +'"';
+         }
+			if(masonry_columnwidth !== ''){
+         	output += ' masonry_columnwidth="'+ masonry_columnwidth +'"';
          }
          if(masonry_animation !== '' && masonry_animation !== 'default'){
          	output += ' masonry_animation="'+ masonry_animation +'"';
@@ -1017,10 +1056,6 @@ jQuery(document).ready(function($) {
 	      }
 	         
       }
-      // Speed
-      var transition_speed = $('.transition input[name=transition-speed]').val();
-      if(transition_speed !== '250' && transition !== 'none')
-         output += ' transition_speed="'+ transition_speed +'"';
 
 
       // ---------------------------
@@ -1232,7 +1267,7 @@ jQuery(document).ready(function($) {
 
 	$('.table-of-contents .toc').change(function() {
 	   var pos = $(this).val();
-		if(pos !== 'null'){
+		if(pos !== 'null' && pos !== '#'){
 			$('html,body').animate({
 			   scrollTop: $('#'+pos).offset().top - 46
 			}, 500, 'alm_easeInOutQuad');

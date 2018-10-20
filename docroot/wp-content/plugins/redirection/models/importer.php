@@ -16,7 +16,7 @@ class Red_Plugin_Importer {
 			$results[] = $importer->get_data();
 		}
 
-		return array_filter( $results );
+		return array_values( array_filter( $results ) );
 	}
 
 	public static function get_importer( $id ) {
@@ -121,7 +121,7 @@ class Red_WordPressOldSlug_Importer extends Red_Plugin_Importer {
 		}
 
 		$new = parse_url( $new, PHP_URL_PATH );
-		$old = dirname( $new ).'/'.$redirect->meta_value;
+		$old = rtrim( dirname( $new ), '/' ) . '/' . $redirect->meta_value;
 
 		$data = array(
 			'url'         => $old,

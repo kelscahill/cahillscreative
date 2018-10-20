@@ -18,7 +18,7 @@
   border-bottom: 1px solid $gray;
   padding: $pad;
 
-  @include media('>medium') {
+  @include media(">medium") {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
@@ -35,6 +35,7 @@
 
   > * {
     width: 50%;
+    line-height: 1.6;
   }
 
   span {
@@ -43,7 +44,7 @@
     text-align: right;
   }
 
-  @include media('>medium') {
+  @include media(">medium") {
     flex-direction: column;
     text-align: center;
     width: auto;
@@ -78,7 +79,7 @@
   margin-left: -$space;
   margin-right: -$space;
 
-  @include media('>medium') {
+  @include media(">medium") {
     margin-left: 0;
     margin-right: 0;
   }
@@ -95,9 +96,10 @@
   padding: 0 $pad;
   z-index: 9999;
 
-  @include media('>medium') {
+  @include media(">medium") {
     display: none;
   }
+
 
   .block__toolbar--right {
     display: flex;
@@ -162,7 +164,7 @@
   width: calc(50% - 10px);
   text-align: center;
 
-  @include media('>large') {
+  @include media(">large") {
     width: calc(50% - 20px);
   }
 }
@@ -347,7 +349,7 @@ body#tinymce,
     margin-top: $space-half;
     margin-bottom: $space-half;
 
-    @include media('>large') {
+    @include media(">large") {
       margin-top: $space;
       margin-bottom: $space;
     }
@@ -387,7 +389,7 @@ body#tinymce,
     }
   }
 
-  @include media('>small') {
+  @include media(">small") {
     .alignleft,
     .alignright {
       min-width: 50%;

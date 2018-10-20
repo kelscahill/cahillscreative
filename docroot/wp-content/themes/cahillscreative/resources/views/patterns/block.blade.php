@@ -63,11 +63,6 @@
     </a>
     <div class="block__toolbar">
       <div class="block__toolbar--left">
-        <div class="block__toolbar-item block__toolbar-like space--half-right">
-          @if(function_exists('wp_ulike'))
-            @php wp_ulike('get'); @endphp
-          @endif
-        </div>
         @if (comments_open())
           <a href="{{ $link }}#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
             <span class="icon icon--s space--half-right">@include('patterns/icon--comment')</span>
@@ -78,6 +73,11 @@
             </span>
           </a>
         @endif
+        <div class="block__toolbar-item block__toolbar-like space--half-right">
+          @if(function_exists('wp_ulike'))
+            @php wp_ulike('get'); @endphp
+          @endif
+        </div>
       </div>
       <div class="block__toolbar--right tooltip">
         <div class="block__toolbar-item block__toolbar-share tooltip-toggle js-toggle-parent">

@@ -16,7 +16,7 @@
                <h3 class="popup__title font--primary--xl">{{ $title }}</h3>
              @endif
              @if ($description)
-               <div class="popup__body color--gray">{{ $description }}</div>
+               <div class="popup__body color--gray">{!! $description !!}</div>
              @endif
              <div class="popup__form">@php the_field('modal_embed_code', 'option'); @endphp</div>
              <a href="" class="popup__close" data-dismiss="modal" aria-label="Close"><em>No Thanks</em></a>

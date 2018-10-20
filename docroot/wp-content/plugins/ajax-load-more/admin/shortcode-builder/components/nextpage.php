@@ -1,6 +1,6 @@
 <?php if(has_action('alm_nextpage_installed')){ ?>
 <div class="row input next-page add-on" id="alm-next-page">
-   <h3 class="heading"><?php _e('Next Page', 'ajax-load-more'); ?></h3>
+   <h3 class="heading" tabindex="0"><?php _e('Next Page', 'ajax-load-more'); ?></h3>
    <div class="expand-wrap">
       <div class="section-title">
 		 	<p><?php _e('Enable the infinite scrolling of multipage WordPress content using the', 'ajax-load-more'); ?> <span>< !--nextpage-- ></span> <?php _e('Quicktag', 'ajax-load-more'); ?>.</p>

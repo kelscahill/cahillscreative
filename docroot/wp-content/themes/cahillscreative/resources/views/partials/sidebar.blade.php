@@ -5,7 +5,7 @@
   <div class="widget widget-related">
     <h3 class="font--primary--xs">Related Posts</h3>
     <hr />
-    @php related_posts() @endphp
+    @php  related_posts()  @endphp
   </div>
   <div class="widget widget-mailing">
     <h3 class="font--primary--xs">Join My Mailing List!</h3>

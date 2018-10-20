@@ -4,7 +4,7 @@ let alm_is_filtering = false; // Global Masonry/Filtering var
 
 
 	/* $.fn.almFilter(type, speed, data)
-	 *
+	 * 
 	 *  Filter Ajax Load More
 	 *
 	 *  @param transition string;
@@ -92,9 +92,15 @@ let alm_is_filtering = false; // Global Masonry/Filtering var
 	      key = key.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2'); // Convert camelCase data() object back to dash (-)
 	      $('.alm-listing', el).attr('data-'+key, value);
 	   });
+	   // Regular Filtering
 	   if ($.isFunction($.fn.almFilterComplete)){
 	      $.fn.almFilterComplete();
 	   }
+	   // Filters Add-on
+	   if(typeof almFiltersAddonComplete == "function"){
+	      almFiltersAddonComplete(el);
+	   }
+	   
 	   alm_is_filtering = true;	   
 		el.fadeIn(speed); // Fade ALM back in
 		

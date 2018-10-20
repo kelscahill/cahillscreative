@@ -1,6 +1,6 @@
 <?php if(has_action('alm_comments_installed')){ ?>
 <div class="row input comments add-on" id="alm-comments">
-   <h3 class="heading"><?php _e('Comments', 'ajax-load-more'); ?></h3>
+   <h3 class="heading" tabindex="0"><?php _e('Comments', 'ajax-load-more'); ?></h3>
    <div class="expand-wrap">
       <div class="section-title">
 		 	<p><?php _e('Enable Ajax Load More to display blog comments.', 'ajax-load-more'); ?></p>

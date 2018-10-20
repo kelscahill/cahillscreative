@@ -1,6 +1,6 @@
 <?php if(has_action('alm_cta_installed')){ ?>
 <div class="row cta add-on" id="alm-cta">
-   <h3 class="heading"><?php _e('Call to Actions', 'ajax-load-more'); ?></h3>
+   <h3 class="heading" tabindex="0"><?php _e('Call to Actions', 'ajax-load-more'); ?></h3>
    <div class="expand-wrap">
 
       <div class="section-title">

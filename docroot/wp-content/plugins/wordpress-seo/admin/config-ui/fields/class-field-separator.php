@@ -1,5 +1,7 @@
 <?php
 /**
+ * WPSEO plugin file.
+ *
  * @package WPSEO\Admin\ConfigurationUI
  */
 
@@ -20,6 +22,7 @@ class WPSEO_Config_Field_Separator extends WPSEO_Config_Field_Choice {
 		$this->add_choice( 'sc-dash', '-', __( 'Dash', 'wordpress-seo' ) );
 		$this->add_choice( 'sc-ndash', '&ndash;', __( 'En dash', 'wordpress-seo' ) );
 		$this->add_choice( 'sc-mdash', '&mdash;', __( 'Em dash', 'wordpress-seo' ) );
+		$this->add_choice( 'sc-colon', ':', __( 'Colon', 'wordpress-seo' ) );
 		$this->add_choice( 'sc-middot', '&middot;', __( 'Middle dot', 'wordpress-seo' ) );
 		$this->add_choice( 'sc-bull', '&bull;', __( 'Bullet', 'wordpress-seo' ) );
 		$this->add_choice( 'sc-star', '*', __( 'Asterisk', 'wordpress-seo' ) );
@@ -38,6 +41,6 @@ class WPSEO_Config_Field_Separator extends WPSEO_Config_Field_Choice {
 	 * @param WPSEO_Configuration_Options_Adapter $adapter Adapter to register lookup on.
 	 */
 	public function set_adapter( WPSEO_Configuration_Options_Adapter $adapter ) {
-		$adapter->add_yoast_lookup( $this->get_identifier(), 'wpseo_titles', 'separator' );
+		$adapter->add_option_lookup( $this->get_identifier(), 'separator' );
 	}
 }

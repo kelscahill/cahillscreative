@@ -1305,6 +1305,15 @@ a.block__link {
       flex-direction: row;
 }
 
+.block__latest .block__thumb {
+  display: block;
+  overflow: hidden;
+  width: 5rem;
+  height: 5rem;
+  min-width: 5rem;
+  border: 1px solid #ececec;
+}
+
 .block__service {
   border: 1px solid #9b9b9b;
   padding: 1.25rem;
@@ -1541,6 +1550,10 @@ a.block__link {
   height: auto;
 }
 
+.wpulike {
+  padding: 0;
+}
+
 .wpulike.wpulike-heart .wp_ulike_general_class {
   text-shadow: none;
   background: transparent;
@@ -1563,13 +1576,15 @@ a.block__link {
   border: none;
 }
 
-.wpulike.wpulike-heart .wp_ulike_btn.wp_ulike_put_image a {
+.wpulike.wpulike-heart .wp_ulike_btn.wp_ulike_put_image::after {
   padding: 0;
   background: url(../images/icon--like.svg) center center no-repeat;
   background-size: 1.25rem;
+  -webkit-filter: none;
+          filter: none;
 }
 
-.wpulike.wpulike-heart .wp_ulike_general_class.wp_ulike_is_unliked a {
+.wpulike.wpulike-heart .wp_ulike_general_class.wp_ulike_is_unliked::after {
   background: url(../images/icon--like.svg) center center no-repeat;
   background-size: 1.25rem;
 }
@@ -3571,6 +3586,7 @@ label {
 
 .article__category > * {
   width: 50%;
+  line-height: 1.6;
 }
 
 .article__category span {
@@ -4013,15 +4029,21 @@ body#tinymce .aligncenter figcaption,
 
 .widget-tags .tags .tag {
   white-space: nowrap;
+  line-height: 1.6;
 }
 
 .widget-tags .tags .tag::before {
-  content: ",";
-  padding-left: 0.0625rem;
-  padding-right: 0.1875rem;
+  display: none;
 }
 
-.widget-tags .tags .tag:first-child::before {
+.widget-tags .tags .tag::after {
+  display: inline-block;
+  content: ",";
+  position: relative;
+  left: -2px;
+}
+
+.widget-tags .tags .tag:last-child::after {
   content: "";
 }
 
@@ -4495,6 +4517,19 @@ body#tinymce .aligncenter figcaption,
       align-content: stretch;
 }
 
+.body-party .btn {
+  display: block;
+  letter-spacing: 1px;
+}
+
+@media (min-width: 501px) {
+  .body-party .btn {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 .body-party .btn--red {
   background-color: #fb2640;
 }
@@ -4521,7 +4556,7 @@ body#tinymce .aligncenter figcaption,
 .body-party h2 {
   font-family: "industry", sans-serif;
   font-size: 20px;
-  line-height: 1;
+  line-height: 1.2;
   letter-spacing: 0;
   text-align: center;
 }
@@ -4800,6 +4835,11 @@ body#tinymce .aligncenter figcaption,
     margin-left: auto;
     margin-right: auto;
   }
+}
+
+.page-birthday-party__rsvp .article {
+  -ms-flex-pack: start;
+      justify-content: flex-start;
 }
 
 .page-birthday-party__rsvp input {

@@ -35,7 +35,7 @@
 	         				<p class="small reset-shortcode-builder"><a href="javascript:void(0);"><i class="fa fa-refresh"></i> <?php _e('Reset', 'ajax-load-more'); ?></a></p>
 	      				</div>
 	      				<div class="major-publishing-actions">
-	   	   				<a class="button button-primary copy"><?php _e('Copy Shortcode', 'ajax-load-more'); ?></a>
+	   	   				<a class="button button-primary copy copy-to-clipboard"><?php _e('Copy Shortcode', 'ajax-load-more'); ?></a>
 	      				</div>
 	      	   	</div>
 		   	   </div>

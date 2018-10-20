@@ -32,6 +32,15 @@ a.block__link {
     display: flex;
     flex-direction: row;
   }
+
+  .block__thumb {
+    display: block;
+    overflow: hidden;
+    width: rem(80);
+    height: rem(80);
+    min-width: rem(80);
+    border: 1px solid $gray-light;
+  }
 }
 
 .block__service {
@@ -44,9 +53,10 @@ a.block__link {
   flex-direction: column;
   justify-content: space-between;
 
-  @include media('>large') {
+  @include media(">large") {
     padding: $pad-double;
   }
+
 
   &:hover {
     color: $black;
@@ -149,7 +159,7 @@ a.block__link {
     }
   }
 
-  @include media('>medium') {
+  @include media(">medium") {
     width: 50%;
   }
 }
@@ -252,6 +262,10 @@ a.block__link {
   }
 }
 
+.wpulike {
+  padding: 0;
+}
+
 .wpulike.wpulike-heart {
   .wp_ulike_general_class {
     text-shadow: none;
@@ -271,21 +285,22 @@ a.block__link {
     height: rem(40);
     border: none;
 
-    a {
+    &::after {
       padding: 0;
-      background: url('../../assets/images/icon--like.svg') center center no-repeat;
+      background: url("../../assets/images/icon--like.svg") center center no-repeat;
       background-size: rem(20);
+      filter: none;
     }
   }
 
-  .wp_ulike_general_class.wp_ulike_is_unliked a {
-    background: url('../../assets/images/icon--like.svg') center center no-repeat;
+  .wp_ulike_general_class.wp_ulike_is_unliked::after {
+    background: url("../../assets/images/icon--like.svg") center center no-repeat;
     background-size: rem(20);
   }
 
   .wp_ulike_btn.wp_ulike_put_image.image-unlike,
   .wp_ulike_general_class.wp_ulike_is_already_liked a {
-    background: url('../../assets/images/icon--liked.svg') center center no-repeat;
+    background: url("../../assets/images/icon--liked.svg") center center no-repeat;
     background-size: rem(20);
   }
 

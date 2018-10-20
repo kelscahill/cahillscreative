@@ -1,11 +1,11 @@
-=== WP ULike ===
+﻿=== WP ULike ===
 Contributors: alimir
-Donate link: http://alimir.ir
+Donate link: https://m.do.co/c/13ad5bc24738
 Author: Ali Mirzaei
 Tags: wp ulike, wordpress youlike plugin, like button, rating, vote, voting, most liked posts, wordpress like page, wordpress like post, wordpress vote page, wordpress vote post, wp like page, wp like post, wp like plugin, buddypress like system, buddypress votes, comment like system, voting button, wordpress, buddypress, statistics, stats likes, bbpress, bbPress like, WP-Translations, forums, community, credit, points, mycred, users, ultimate member
-Requires at least: 3.5
-Tested up to: 4.9
-Stable tag: 3.0
+Requires at least: 3.5.1
+Tested up to: 4.9.8
+Stable tag: 3.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,12 +18,13 @@ If you’re looking for one of the best and fastest ways to add like and dislike
 Also WP ULike’s amazing statistics tools help you to track your content effectiveness with a real-time report system and detailed statistics. What’s more, WP ULike have a wide variety of options available to customize your plugin. It will allow you to customize your like button in your favorite style.
 
 = More Information =
-*   Visit Our [Home Page](http://wp-ulike.alimir.ir/).
+*   Visit Our [Home Page](https://wpulike.com/).
+*   Donate Us [By Make a Cloud](https://m.do.co/c/13ad5bc24738).
 *   See Online [Demo](http://preview.alimir.ir/wp-ulike-plugin).
 *   Fork Us In [Github](https://github.com/Alimir/wp-ulike).
 
 = Features =
-*   Clean Design + Pretty styles. 
+*   Clean Design + Pretty styles.
 *   Full myCRED Points Support.
 *   Flexible google rich snippets support. (Microdata)
 *   Full Statistics tools with many widgets.
@@ -57,7 +58,7 @@ WP ULike has been translated into the following languages:
 *   French (France)
 *   Chinese (China)
 *   Chinese (Taiwan)
-*   Dutch (Netherlands) 
+*   Dutch (Netherlands)
 *   Arabic
 *   Portuguese (Brazil)
 *   Turkish (Turkey)
@@ -161,17 +162,70 @@ Documentation : [Github](https://github.com/alimir/wp-ulike#how-to-get-comment-l
 Documentation : [Github](https://github.com/alimir/wp-ulike#how-to-sort-most-liked-posts)
 
 = How Can I Create Custom Template In Users Liked Box?  =
-* We have provided some variables in setting panel. You can use them in textarea and then save the new options. 
+* We have provided some variables in setting panel. You can use them in textarea and then save the new options.
 * Attention: `%START_WHILE%` And `%END_WHILE%` variables are very important and you should use them out of the frequent string. (Such as `<li></li>` tags sample in default template)
 
 = Receive HTTP ERROR 500 on WP ULike > Statistics   =
 * Increasing Your WordPress Memory Limit in wp-config.php to fix this error. It is located in your WordPress site's root folder, and you will need to use an FTP client or file manager in your web hosting control panel.
 * Next, you need to paste this code in wp-config.php file just before the line that says "That's all, stop editing! Happy blogging."
-<code> 
+<code>
 define( 'WP_MEMORY_LIMIT', '256M' );
 </code>
 
 == Changelog ==
+
+= 3.5.1 =
+* Fixed: The buddypress notifications issue.
+* Added: A new option to disable popover on likers box and make it inline display.
+* Added: Some changes to improve statistics page and make it more faster.
+* Added: some improvements on ajax process of logs page.
+* Replaced: The <a> tag with <button> for accessible with the keyboard.
+* Fixed: An issue with button display on buddypress comments.
+* Fixed: Some styling issues.
+
+= 3.5.0 =
+* Added: New statistics system powered by vueJS.
+* Added: Ajax loading for likers box with better optimization.
+* Added: Huge optimization on admin core functionalities with reducing resource consumption.
+* Upgraded: The log pages templates.
+* Fixed: Some issues in button styles.
+* Fixed: Some issues in ulike js functionality.
+* Fixed: An issue with supporting ulike in ultimatememeber.
+* Fixed: Colorpicker issue in admin settings by replacing the wpColorPicker with spectrum plugin. 
+
+= 3.4 =
+* Added: A new style for likers box with pophover effect.
+* Added: New stylesheet for all buttons.
+* Added: a new option for custom button_type.
+* Fixed: All of the reported bugs.
+* Fixed: The issue of IP6 convertion.
+* Upgraded: The database structure.
+* Optimized: The stylesheet issues.
+* Optimized: Some issues with data process.
+
+= 3.3.1 =
+* Fixed: An old issue with database structure.
+* Fixed: An important bug with logging methods.
+
+= 3.3 =
+* Added: AJAX refresh for likers box.
+* Added: Anonymize IP option for GDPR compliance.
+* Updated: Core functionalities.
+* Updated: Settings panel.
+* Fixed: Some important bugs.
+
+= 3.2 =
+* Added: A new lightweight notification system.
+* Added: A better AJAX response in front-end process
+* Fixed: Some important bugs.
+* Fixed: An issue with update_postmeta_cache.
+
+= 3.1 =
+* Added: A huge optimization in all of the core functionalities.
+* Added: A new file structure in plugins assets.
+* Added: wrapper_class attribute in template functions.
+* Fixed: All reported bugs.
+* Fixed: Custom style issues.
 
 = 3.0 =
 * Added: New option to remove the plugin's css and js file on certain pages.
@@ -216,7 +270,7 @@ define( 'WP_MEMORY_LIMIT', '256M' );
 * Added: New response functionality with JSON.
 * Updated: 'wp_ulike' core class functionality.
 * Updated: FAQ documentation.
-* Removed: Old script files and enqueue new wp-ulike script. 
+* Removed: Old script files and enqueue new wp-ulike script.
 * Removed: Old version of 'mysql2date' function.
 
 = 2.7 =
@@ -425,7 +479,7 @@ define( 'WP_MEMORY_LIMIT', '256M' );
 
 = 1.2 =
 * Added: most liked users widget.
-* Added: Chinese (ZH_CN) language. (Thanks to Changmeng Hu) 
+* Added: Chinese (ZH_CN) language. (Thanks to Changmeng Hu)
 
 = 1.1 =
 * Added: loading spinner.
@@ -439,6 +493,21 @@ define( 'WP_MEMORY_LIMIT', '256M' );
 * The initial version
 
 == Upgrade Notice ==
+
+= 3.5.1 =
+Attention Please! In this version, we have made some changes on plugin scripts! So, please clear your server cache after the plugin update.
+
+= 3.4 =
+Attention Please! In this release, many changes have been made to the structure of the styles, and may result in the loss of your past custom styles. These changes are surely designed to improve the performance of the plugin, so it's best to update your system with these changes and then clear your server cache.
+
+= 3.3 =
+Attention Please! In this version, we have made some changes on plugin scripts! So, please clear your server cache after the plugin update.
+
+= 3.2 =
+Attention Please! In this version, we have made some changes on plugin scripts! So, please clear your server cache after the plugin update.
+
+= 3.1 =
+Are you ready for a huge update? WP ULike has become ever more powerful...
 
 = 2.8 =
 Attention Please!! In this version, we have made a new script library (wp-ulike.js), variables, templates, and functionalities. Besides, we have removed old ones, which may destroy your previous changes. That is very important to clear your browser cache and reset your customization with our new class names after updating the plugin. If you have a development version, please take some time to review our new changes.
@@ -465,7 +534,7 @@ In this version, we made some changes in the plugin scripts (wp-ulike-scripts.js
 In this version, we made some changes in the plugin scripts! So, please clear your browser cache after the plugin update.
 
 = 2.0 =
-In this version, we have mixed widgets in one packet. So you should upgrade your last widgets with new one. Have fun :) 
+In this version, we have mixed widgets in one packet. So you should upgrade your last widgets with new one. Have fun :)
 
 = 1.8 =
 In this version, we have made many changes on plugin functions and settings. So if you lose your last settings, try to add them again. :)

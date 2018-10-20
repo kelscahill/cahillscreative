@@ -1,6 +1,6 @@
 <?php if(has_action('alm_users_installed')){ ?>
 <div class="row input users add-on" id="alm-users">
-   <h3 class="heading"><?php _e('Users', 'ajax-load-more'); ?></h3>
+   <h3 class="heading" tabindex="0"><?php _e('Users', 'ajax-load-more'); ?></h3>
    <div class="expand-wrap">
       <div class="section-title">
          <p><?php _e('Infinite scroll WordPress users', 'ajax-load-more'); ?>.</p>

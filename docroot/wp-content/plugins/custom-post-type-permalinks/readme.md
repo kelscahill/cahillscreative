@@ -1,5 +1,4 @@
 # Custom Post Type Permalinks
-Donate link:       https://blockchain.info/ja/address/3HwkojX2pd9wc5kPFdXnDXMTNbgBmPRygX
 
 Edit the permalink of custom post type.
 
@@ -10,8 +9,8 @@ Edit the permalink of custom post type.
 [![Tested up](https://img.shields.io/wordpress/v/custom-post-type-permalinks.svg)](https://wordpress.org/plugins/custom-post-type-permalinks/)
 [![wp.org rating](https://img.shields.io/wordpress/plugin/r/custom-post-type-permalinks.svg)](https://wordpress.org/plugins/custom-post-type-permalinks/)
 [![Build Status](https://travis-ci.org/torounit/custom-post-type-permalinks.svg)](https://travis-ci.org/torounit/custom-post-type-permalinks)
-[![Donation](https://img.shields.io/badge/bitcoin-donate-yellow.svg)](https://blockchain.info/ja/address/3HwkojX2pd9wc5kPFdXnDXMTNbgBmPRygX)
-[![Gratipay](https://img.shields.io/gratipay/team/custom-post-type-permalinks.svg)](https://gratipay.com/Custom-Post-Type-Permalinks/)
+[![Donate](https://img.shields.io/badge/donate-paypal-yellow.svg)](https://www.paypal.me/torounit)
+
 [![](https://ps.w.org/custom-post-type-permalinks/assets/banner-1544x500.png?rev=1044335)](https://wordpress.org/plugins/custom-post-type-permalinks/)
 
 ## Description
@@ -20,11 +19,11 @@ Custom Post Type Permalinks allow you edit the permalink structure of custom pos
 
 Change custom taxonomy archive's permalink to "example.org/post_type/taxonomy_name/term_slug". Can disable this fix.
 
-And support wp_get_archives( "post_type=foo" ).
+And support `wp_get_archives( 'post_type=foo' )`.
 
 [This Plugin published on GitHub.](https://github.com/torounit/custom-post-type-permalinks)
 
-Donation: Please send [bitcoin](https://blockchain.info/ja/address/3HwkojX2pd9wc5kPFdXnDXMTNbgBmPRygX) or [My Wishlist](http://www.amazon.co.jp/registry/wishlist/COKSXS25MVQV)
+Donation: Please send [My Wishlist](http://www.amazon.co.jp/registry/wishlist/COKSXS25MVQV) or [Paypal](https://www.paypal.me/torounit)
 
 
 ### Translators
@@ -42,18 +41,18 @@ Donation: Please send [bitcoin](https://blockchain.info/ja/address/3HwkojX2pd9wc
 
 Example:
 
-`
+```php
 register_post_type( 'foo',
 	array(
-		"public" => true,
+		'public' => true,
 		'has_archive' => true,
-		"rewrite" => [
+		'rewrite' => array(
 			"with_front" => true
-		],
-		"cptp_permalink_structure" => "%post_id%"
+		),
+		'cptp_permalink_structure' => '%post_id%'
 	)
 );
-`
+```
 
 
 ## Installation
@@ -73,6 +72,18 @@ That's it. You can access the permalinks setting by going to *Settings -> Permal
 
 ## Changelog
 
+### 3.2.2
+* Fix readme.txt
+
+### 3.2.0
+* Support only public post type.
+* Add `CPTP_is_rewrite_supported_by_${post_type}` and `CPTP_is_rewrite_supported` filter.
+* Remove post_type query wp_get_archives.
+
+### 3.1.4
+* Test for WordPress 4.9.
+* PHPCS fix.
+
 ### 3.1.3
 
 * Test for WordPress 4.8.
@@ -80,11 +91,11 @@ That's it. You can access the permalinks setting by going to *Settings -> Permal
 
 ### 3.1.1
 
-* Bug fix in CPTP_Module_Setting::upgrader_process_complete.
+* Bug fix in `CPTP_Module_Setting::upgrader_process_complete`.
 
 ### 3.1.0
 
-* Add filter 'CPTP_date_front'.
+* Add filter `CPTP_date_front`.
 * Fix sort term by `wp_list_sort` .
 
 ### 3.0.0
@@ -100,7 +111,7 @@ That's it. You can access the permalinks setting by going to *Settings -> Permal
 
 ### 2.1.3
 
-* Set `no_taxonomy_structure` default true.
+* Set `no_taxonomy_structure` default `true`.
 
 ### 2.1.2
 
@@ -118,9 +129,8 @@ That's it. You can access the permalinks setting by going to *Settings -> Permal
 ### 2.0.0
 
 * `add_rewrite_rules` on `wp_loaded` priority is changed 10 from 100. [fix issue #53](https://github.com/torounit/custom-post-type-permalinks/issues/53)
-* Replace wp_get_post_terms by get_the_terms. [fix issue #55](https://github.com/torounit/custom-post-type-permalinks/issues/55)
-* Fix bug register_uninstall_hook called twice on each page. [fix issue #56](https://github.com/torounit/custom-post-type-permalinks/issues/56)
-
+* Replace `wp_get_post_terms` by `get_the_terms`. [fix issue #55](https://github.com/torounit/custom-post-type-permalinks/issues/55)
+* Fix bug `register_uninstall_hook` called twice on each page. [fix issue #56](https://github.com/torounit/custom-post-type-permalinks/issues/56)
 ### 1.5.4
 
 * Fixed removed parent post problem.
@@ -133,7 +143,7 @@ That's it. You can access the permalinks setting by going to *Settings -> Permal
 ### 1.5.0
 
 * Tested for 4.5.
-* Add filter CPTP_set_{$module_name}_module.
+* Add filter `CPTP_set_{$module_name}_module`.
 
 
 ### 1.4.0
@@ -177,12 +187,12 @@ That's it. You can access the permalinks setting by going to *Settings -> Permal
 
 ### 1.0.0
 
-* Set Permalink enable register_post_type.
+* Set Permalink enable `register_post_type`.
 * Enable add post type query to taxonomy archives.
 * Use Class Autoloader.
 * Create Rewrite Rule on `wp_loaded` action.
 * WordPress Code Format Fix.
-* CPTP_Module_Permalink Bug Fix.
+* `CPTP_Module_Permalink` Bug Fix.
 * Bug Fix.
 * Use Semantic Versioning.
 * Date Structure Fix.
@@ -190,10 +200,9 @@ That's it. You can access the permalinks setting by going to *Settings -> Permal
 
 ### 0.9.7
 
-* Adding date slug only conflicting %post_id%.
-* Change taxonomy link rewrite rule. Use post_type.
+* Adding date slug only conflicting `%post_id%`.
+* Change taxonomy link rewrite rule. Use `post_type`.
 * Can change template include custom taxonomy.
-
 ### 0.9.6
 
 * Category and author.
@@ -225,7 +234,7 @@ That's it. You can access the permalinks setting by going to *Settings -> Permal
 ### 0.9.5
 
 * Big change plugin architecture.
-* Show has_archive, with_front.
+* Show `has_archive`, `with_front`.
 
 ### 0.9.4
 
@@ -233,12 +242,12 @@ That's it. You can access the permalinks setting by going to *Settings -> Permal
 
 ### 0.9.3.3
 
-* has_archive Bug Fix.
+* `has_archive` Bug Fix.
 * Fixed a bug in the link, including the extension.
 
 ### 0.9.3.2
 
-* wp_get_archives Bug Fix.
+* `wp_get_archives` Bug Fix.
 
 ### 0.9.3.1
 
@@ -255,10 +264,11 @@ That's it. You can access the permalinks setting by going to *Settings -> Permal
 
 ### 0.9
 
-* Add custom post type archive only has_archive->true
+
+* Add custom post type archive only `has_archive` is `true`.
 * Change method name.
 * Change hook custom post link.
-* Use Slug in wp_get_archive().
+* Use Slug in `wp_get_archive()`.
 * Fix attachment link.
 
 
@@ -323,14 +333,14 @@ That's it. You can access the permalinks setting by going to *Settings -> Permal
 
 ### 0.7
 
-* Add %{taxonomy}% tag.
+* Add `%{taxonomy}%` tag.
 * A large number of Bug Fix.
 * Change Setting Page. Use Setting API.
 
 
 ### 0.6.2
 
-* Fix %author% tag.
+* Fix `%author%` tag.
 
 ### 0.6
 

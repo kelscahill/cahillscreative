@@ -34,6 +34,17 @@ $bp-ff-secondary: "din-2014", sans-serif;
   }
 
   // Buttonss
+  .btn {
+    display: block;
+    letter-spacing: 1px;
+
+    @include media(">small") {
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
   .btn--red {
     background-color: $bp-red;
 
@@ -61,7 +72,7 @@ $bp-ff-secondary: "din-2014", sans-serif;
   h2 {
     font-family: $bp-ff-primary;
     font-size: 20px;
-    line-height: 1;
+    line-height: 1.2;
     letter-spacing: 0;
     text-align: center;
   }
@@ -335,6 +346,10 @@ $bp-ff-secondary: "din-2014", sans-serif;
 }
 
 .page-birthday-party__rsvp {
+  .article {
+    justify-content: flex-start;
+  }
+
   input {
     border-bottom: 1px solid $bp-gray;
     background-color: transparent;

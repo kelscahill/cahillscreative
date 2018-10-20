@@ -15,7 +15,7 @@
 
 ?>
 <div class="row input rest add-on" id="alm-rest">
-   <h3 class="heading"><?php _e('REST API', 'ajax-load-more'); ?></h3>
+   <h3 class="heading" tabindex="0"><?php _e('REST API', 'ajax-load-more'); ?></h3>
    <div class="expand-wrap">
       <div class="section-title">
 		 	<p><?php _e('Enable the WordPress REST API.', 'ajax-load-more'); ?></p>

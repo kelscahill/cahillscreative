@@ -1,6 +1,6 @@
 <?php if(has_action('alm_prev_post_installed')){ ?>
 <div class="row input previous-post add-on" id="alm-previous-post">
-   <h3 class="heading"><?php _e('Previous Post', 'ajax-load-more'); ?></h3>
+   <h3 class="heading" tabindex="0"><?php _e('Previous Post', 'ajax-load-more'); ?></h3>
    <div class="expand-wrap">
       <div class="section-title">
 		 	<p><?php _e('Enable the infinite scrolling of single posts.', 'ajax-load-more'); ?></p>

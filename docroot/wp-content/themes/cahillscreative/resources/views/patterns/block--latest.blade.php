@@ -1,7 +1,7 @@
 <div class="block block__latest">
   <a href="{{ $link }}" class="block__link">
     @if (!empty($thumb_id))
-      <picture class="block__thumb round space--right">
+      <picture class="block__thumb space--right">
         <img src="{{ $image }}" alt="{{ $alt }}">
       </picture>
     @endif

@@ -17,7 +17,7 @@
             </div>
             <div class="article__body">
               @php the_content() @endphp
-              <p class="space--half-top">Have a question? Email me at <a href="mailto:kelscahill@gmail.com">kelscahill@gmail.com</a></p>
+              <p class="space--half-top">Have a question? Email Kelsey at <a href="mailto:kelscahill@gmail.com">kelscahill@gmail.com</a></p>
             </div>
           </article>
         @endwhile

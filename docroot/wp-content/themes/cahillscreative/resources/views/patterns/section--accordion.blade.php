@@ -62,14 +62,16 @@
         </div>
       </div>
     @endif
-    <div class="accordion-item">
-      <div class="accordion-item__title js-toggle-parent">
-        <h4 class="font--primary--m">Comments</h4>
-        <span class="accordion-item__toggle spacing--zero"></span>
+    @if (comments_open())
+      <div class="accordion-item">
+        <div class="accordion-item__title js-toggle-parent">
+          <h4 class="font--primary--m">Comments</h4>
+          <span class="accordion-item__toggle spacing--zero"></span>
+        </div>
+        <div class="accordion-item__body article__body spacing padding--zero">
+          @php comments_template( '/partials/comments.blade.php', true ); @endphp
+        </div>
       </div>
-      <div class="accordion-item__body article__body spacing padding--zero">
-        @php comments_template( '/partials/comments.blade.php', true ); @endphp
-      </div>
-    </div>
+    @endif
   </div>
 </div>

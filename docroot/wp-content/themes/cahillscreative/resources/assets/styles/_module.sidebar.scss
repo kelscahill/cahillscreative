@@ -10,15 +10,21 @@
 
     .tag {
       white-space: nowrap;
+      line-height: 1.6;
+
+      &::before {
+        display: none;
+      }
     }
 
-    .tag::before {
+    .tag::after {
+      display: inline-block;
       content: ",";
-      padding-left: rem(1);
-      padding-right: rem(3);
+      position: relative;
+      left: -2px;
     }
 
-    .tag:first-child::before {
+    .tag:last-child::after {
       content: "";
     }
   }

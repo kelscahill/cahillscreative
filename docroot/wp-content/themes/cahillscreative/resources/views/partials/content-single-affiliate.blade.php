@@ -44,19 +44,21 @@
           @endif
           <div class="article__toolbar block__toolbar">
             <div class="block__toolbar--left">
+              @if (comments_open())
+                <a href="{{ $link }}#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
+                  <span class="icon icon--s space--half-right">@include('patterns/icon--comment')</span>
+                  <span class="font--sans-serif font--sans-serif--small color--gray">
+                    @php
+                      comments_number('0', '1', '%');
+                    @endphp
+                  </span>
+                </a>
+              @endif
               <div class="block__toolbar-item block__toolbar-like space--half-right">
                 @if(function_exists('wp_ulike'))
                   @php wp_ulike('get'); @endphp
                 @endif
               </div>
-              <a href="{{ $link }}#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
-                <span class="icon icon--s space--half-right">@include('patterns/icon--comment')</span>
-                <span class="font--sans-serif font--sans-serif--small color--gray">
-                  @php
-                    comments_number('0', '1', '%');
-                  @endphp
-                </span>
-              </a>
               <div class="block__toolbar-item block__toolbar-share tooltip">
                 <div class="block__toolbar-item block__toolbar-share tooltip-toggle js-toggle-parent">
                   <span class="icon icon--s space--half-left">@include('patterns/icon--share')</span>
