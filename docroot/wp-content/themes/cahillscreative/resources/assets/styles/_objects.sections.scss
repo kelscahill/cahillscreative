@@ -82,8 +82,8 @@
 
   @include media(">medium") {
     text-align: left;
-    background-size: auto 110%;
-    background-position: center left 20px;
+    background-size: auto 100%;
+    background-position: center center;
 
     .divider {
       margin-left: 0;

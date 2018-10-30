@@ -12,10 +12,12 @@
   max-width: $max-width;
   margin: 0 auto;
   position: relative;
+  border-bottom: 1px solid $gray-light;
 
-  @include media('>large') {
+  @include media(">large") {
     justify-content: space-between;
   }
+
 
   .primary-nav__list {
     display: none;
@@ -24,7 +26,7 @@
     flex-direction: row;
     width: 100%;
 
-    @include media('>large') {
+    @include media(">large") {
       display: flex;
     }
   }
@@ -67,7 +69,7 @@
     color: $primary-color;
   }
 
-  @include media('>large') {
+  @include media(">large") {
     padding: $pad;
     text-align: center;
     border: none;
@@ -78,7 +80,7 @@
   display: none;
   background-color: rgba($gray-light, 0.4);
 
-  @include media('>large') {
+  @include media(">large") {
     position: absolute;
     width: 100%;
     min-width: rem(200);
@@ -86,10 +88,11 @@
     border-bottom: 1px solid $gray-light;
   }
 
+
   .primary-nav__link {
     padding-left: $pad-double;
 
-    @include media('>large') {
+    @include media(">large") {
       padding-left: $pad;
       border-top: 1px solid $gray-light;
       border-left: 1px solid $gray-light;
@@ -105,9 +108,10 @@
 .primary-nav--with-subnav {
   position: relative;
 
-  @include media('>large') {
+  @include media(">large") {
     border: 1px solid transparent;
   }
+
 
   > .primary-nav__link::after {
     content: "";
@@ -115,7 +119,7 @@
     height: rem(10);
     width: rem(10);
     margin-left: rem(5);
-    background: url('../../assets/images/arrow--down--small.svg') center center no-repeat;
+    background: url("../../assets/images/arrow--down--small.svg") center center no-repeat;
   }
 
   &.this-is-active {
@@ -127,7 +131,7 @@
       display: block;
     }
 
-    @include media('>large') {
+    @include media(">large") {
       border: 1px solid $gray-light;
     }
   }
@@ -152,9 +156,10 @@
     margin-bottom: rem(5);
     position: relative;
 
-    @include media('>medium') {
+    @include media(">medium") {
       transition: transform 0.25s ease;
     }
+
 
     &:last-child {
       margin-bottom: 0;
@@ -191,7 +196,7 @@
     color: $primary-color;
   }
 
-  @include media('>large') {
+  @include media(">large") {
     display: none;
   }
 }
