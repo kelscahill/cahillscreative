@@ -28,7 +28,7 @@
        array(
          'taxonomy' => 'post_tag',
          'field' => 'slug',
-         'terms' => get_cat_name($id)
+         'terms' => get_queried_object()->slug
        )
      )
    );
@@ -60,7 +60,7 @@
 
 <?php $__env->startSection('content'); ?>
   <?php echo $__env->make('patterns.section--hero', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-  <?php /* @include('patterns.section--filter') */ ?>
+  <?php  /* <?php echo $__env->make('patterns.section--filter', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?> */  ?>
   <section class="section section__main">
     <div class="layout-container section__main--inner">
       <article <?php  post_class('article spacing--double')  ?>>

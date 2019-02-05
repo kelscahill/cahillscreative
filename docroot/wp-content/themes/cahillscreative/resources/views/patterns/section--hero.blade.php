@@ -8,9 +8,9 @@
     $excerpt = category_description($id);
     $category = get_taxonomy($term->taxonomy)->label;
   } else if (is_tag()) {
-    $thumb_id = get_field('category_featured_image', 'category_' . get_cat_ID(get_cat_name($id)))['ID'];
-    $title = get_cat_name($id);
-    $excerpt = category_description($id);
+    $thumb_id = get_field('category_featured_image', 'category_' . get_queried_object()->term_id);
+    $title = get_queried_object()->slug;
+    $excerpt = get_queried_object()->description;
     $category = 'tag';
   } else if (is_category()) {
     $thumb_id = get_field('category_featured_image', 'category_' . get_cat_ID(get_cat_name($id)))['ID'];

@@ -28,7 +28,7 @@
        array(
          'taxonomy' => 'post_tag',
          'field' => 'slug',
-         'terms' => get_cat_name($id)
+         'terms' => get_queried_object()->slug
        )
      )
    );
@@ -60,7 +60,7 @@
 @extends('layouts.app')
 @section('content')
   @include('patterns.section--hero')
-  <?php /* @include('patterns.section--filter') */ ?>
+  @php /* @include('patterns.section--filter') */ @endphp
   <section class="section section__main">
     <div class="layout-container section__main--inner">
       <article @php post_class('article spacing--double') @endphp>
