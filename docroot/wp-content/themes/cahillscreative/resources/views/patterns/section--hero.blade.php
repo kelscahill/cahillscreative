@@ -1,4 +1,5 @@
 @php
+  global $post;
   $id = get_queried_object_id();
   if (is_tax()) {
     $term = get_term_by('slug', get_query_var('term'), get_query_var('taxonomy'));
@@ -28,6 +29,15 @@
     $thumb_id = get_post_thumbnail_id();
     $title = 'We Create';
     $excerpt = get_the_excerpt();
+  } else if ($post->post_parent == '146') {
+    $thumb_id = get_post_thumbnail_id();
+    $excerpt = get_the_excerpt();
+    if (get_field('display_title')) {
+      $title = get_field('display_title');
+    } else {
+      $title = get_the_title();
+    }
+    $category = 'Shop';
   } else {
     $thumb_id = get_post_thumbnail_id();
     $excerpt = get_the_excerpt();

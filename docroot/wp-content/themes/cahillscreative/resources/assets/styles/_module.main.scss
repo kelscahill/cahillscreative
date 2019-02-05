@@ -319,10 +319,6 @@ $bp-ff-secondary: "din-2014", sans-serif;
         h4 {
           padding-right: $space;
           width: 100px;
-
-          @include media(">small") {
-            width: 50%;
-          }
         }
 
         p {
@@ -365,6 +361,10 @@ $bp-ff-secondary: "din-2014", sans-serif;
     text-align: left;
     top: -4px;
     position: relative;
+  }
+
+  .wpcf7-response-output {
+    color: white;
   }
 
   form {

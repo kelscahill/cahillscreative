@@ -31,7 +31,7 @@
                 <div class="person-row">
                   <span class="kicker">60</span>
                   <h3>George Ploransky</h3>
-                  <p>January 24th 1969</p>
+                  <p>January 24th 1959</p>
                 </div>
                 <div class="person-row">
                   <span class="kicker">30</span>
@@ -55,7 +55,11 @@
               </div>
               <div class="article__details--row">
                 <h4>Time</h4>
-                <p>Please arrive at 5pm</p>
+                <p>Please arrive at 6:30pm</p>
+              </div>
+              <div class="article__details--row">
+                <h4>Details</h4>
+                <p>There will be a cash bar and light fare provided. DJ starts at 9pm.</p>
               </div>
             </div>
             <div class="article__buttons spacing">

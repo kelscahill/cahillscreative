@@ -251,8 +251,8 @@ section {
 /* @import must be at top of file, otherwise CSS will not work */
 
 @font-face {
-  font-family: 'Bromello';
-  src: url(../fonts/bromello-webfont.woff2) format("woff2"), url(../fonts/bromello-webfont.woff) format("woff");
+  font-family: 'Heritage';
+  src: url(../fonts/heritage-font-webfont.woff2) format("woff2"), url(../fonts/heritage-font-webfont.woff) format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -1137,7 +1137,7 @@ h5 {
 
 .font--secondary--xl {
   font-size: 5rem;
-  font-family: "Bromello", Georgia, Times, "Times New Roman", serif;
+  font-family: "Heritage", Georgia, Times, "Times New Roman", serif;
   letter-spacing: normal;
   text-transform: none;
   line-height: 1.2;
@@ -1157,7 +1157,7 @@ h5 {
 
 .font--secondary--l {
   font-size: 2.5rem;
-  font-family: "Bromello", Georgia, Times, "Times New Roman", serif;
+  font-family: "Heritage", Georgia, Times, "Times New Roman", serif;
   letter-spacing: normal;
   text-transform: none;
   line-height: 1.5;
@@ -4812,12 +4812,6 @@ body#tinymce .aligncenter figcaption,
   width: 100px;
 }
 
-@media (min-width: 501px) {
-  .page-birthday-party__invite .article__details--row h4 {
-    width: 50%;
-  }
-}
-
 .page-birthday-party__invite .article__details--row p {
   text-align: left;
 }
@@ -4858,6 +4852,10 @@ body#tinymce .aligncenter figcaption,
   text-align: left;
   top: -4px;
   position: relative;
+}
+
+.page-birthday-party__rsvp .wpcf7-response-output {
+  color: white;
 }
 
 .page-birthday-party__rsvp form {

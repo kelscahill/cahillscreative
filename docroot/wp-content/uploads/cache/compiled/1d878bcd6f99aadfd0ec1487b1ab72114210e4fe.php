@@ -81,6 +81,14 @@
         'posts_per_page' => 4,
         'post_status' => 'publish',
         'order' => 'DESC',
+        'tax_query' => array(
+          array(
+            'taxonomy' => 'category',
+            'field' => 'slug',
+            'terms' => 'health',
+            'operator' => 'NOT IN'
+          )
+        )
       );
       $featured_posts = new WP_Query($args);
      ?>
