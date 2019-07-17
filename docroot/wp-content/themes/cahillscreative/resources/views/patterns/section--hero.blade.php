@@ -46,7 +46,7 @@
     } else {
       $title = get_the_title();
     }
-    if (0 == $post->post_parent) {
+    if ($post->post_parent == '0') {
       $category = get_the_title();
     } else {
       $category = get_the_title($post->post_parent);
