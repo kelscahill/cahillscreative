@@ -33,6 +33,9 @@
                 </picture>
               </div>
               <?php  the_content()  ?>
+              <?php if(get_field('affiliate_link')): ?>
+                <a href="<?php echo e(get_field('affiliate_link')); ?>" class="btn" target="_blank">Buy now</a>
+              <?php endif; ?>
               <?php echo $__env->make('patterns.section--pagination', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
             </div> <!-- ./article__content--right -->
           </div> <!-- ./article__content -->

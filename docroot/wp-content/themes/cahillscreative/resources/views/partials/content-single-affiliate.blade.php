@@ -33,6 +33,9 @@
                 </picture>
               </div>
               @php the_content() @endphp
+              @if(get_field('affiliate_link'))
+                <a href="{{ get_field('affiliate_link') }}" class="btn" target="_blank">Buy now</a>
+              @endif
               @include('patterns.section--pagination')
             </div> <!-- ./article__content--right -->
           </div> <!-- ./article__content -->

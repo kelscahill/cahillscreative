@@ -71,7 +71,6 @@
 
   @include media(">large") {
     padding: $pad;
-    text-align: center;
     border: none;
   }
 }
@@ -83,7 +82,7 @@
   @include media(">large") {
     position: absolute;
     width: 100%;
-    min-width: rem(200);
+    min-width: rem(240);
     background-color: white;
     border-bottom: 1px solid $gray-light;
   }

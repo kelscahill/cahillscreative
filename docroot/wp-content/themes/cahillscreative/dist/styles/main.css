@@ -2047,7 +2047,6 @@ button.alm-load-more-btn.more::before {
 @media (min-width: 901px) {
   .primary-nav__link {
     padding: 1.25rem;
-    text-align: center;
     border: none;
   }
 }
@@ -2061,7 +2060,7 @@ button.alm-load-more-btn.more::before {
   .primary-nav__subnav-list {
     position: absolute;
     width: 100%;
-    min-width: 12.5rem;
+    min-width: 15rem;
     background-color: white;
     border-bottom: 1px solid #ececec;
   }
