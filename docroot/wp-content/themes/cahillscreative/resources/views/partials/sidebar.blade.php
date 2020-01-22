@@ -2,11 +2,13 @@
   <div class="widget widget-search">
     @include('patterns.form--search')
   </div>
-  <div class="widget widget-related">
-    <h3 class="font--primary--xs">Related Posts</h3>
-    <hr />
-    @php  related_posts()  @endphp
-  </div>
+  @if (!is_singular('affiliate'))
+    <div class="widget widget-related">
+      <h3 class="font--primary--xs">Related Posts</h3>
+      <hr />
+      @php  related_posts()  @endphp
+    </div>
+  @endif
   <div class="widget widget-mailing">
     <h3 class="font--primary--xs">Join My Mailing List!</h3>
     @include('patterns.form--newsletter')

@@ -10,14 +10,11 @@
             <a href="/contact" class="footer__nav-link">Contact</a>
           </div>
           <div class="footer__nav-col">
-            <a href="/blog" class=" font--primary--xs"><span class="color--gray">Blog</span></a>
-            <a href="/blog/diy" class="footer__nav-link">DIY</a>
-            <a href="/blog/health" class="footer__nav-link">Health</a>
-          </div>
-          <div class="footer__nav-col">
             <span class="color--gray font--primary--xs">Shop</span>
             <a href="https://www.etsy.com/shop/CahillsCreative" target="_blank" class="footer__nav-link">Etsy</a>
-            <a href="/shop/my-favorites" class="footer__nav-link">My Favorites</a>
+            <a href="/shop/camper" class="footer__nav-link">Camper</a>
+            <a href="/blog/woodworking-plans" class="footer__nav-link">Woodworking Plans</a>
+            <a href="/blog/printables" class="footer__nav-link">Printables</a>
           </div>
         </div>
         <div class="footer__mailing">

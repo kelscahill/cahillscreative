@@ -83,11 +83,13 @@
             <div class="article__content--right spacing--double shift-right--small">
               @include('patterns.section--gallery')
               @php the_content() @endphp
+              <div id="amzn-assoc-ad-60fe5c9c-a247-475f-86a7-aa2f5fb685d0"></div>
+              <script async src="//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=60fe5c9c-a247-475f-86a7-aa2f5fb685d0"></script>
               @include('patterns.section--accordion')
-              @include('patterns.section--pagination')
               <div class="section__favorites--mobile">
                 @include('patterns.section--favorites')
               </div>
+              @include('patterns.section--pagination')
             </div>
           </div> <!-- ./article__content -->
           @include('partials.sidebar')

@@ -1558,6 +1558,8 @@ a.block__link {
   text-shadow: none;
   background: transparent;
   border: none;
+  box-shadow: none;
+  border-radius: 0;
   padding: 0;
   position: relative;
   left: -0.625rem;

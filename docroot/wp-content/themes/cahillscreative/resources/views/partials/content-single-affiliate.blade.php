@@ -36,6 +36,8 @@
               @if(get_field('affiliate_link'))
                 <a href="{{ get_field('affiliate_link') }}" class="btn" target="_blank">Buy now</a>
               @endif
+              <div id="amzn-assoc-ad-60fe5c9c-a247-475f-86a7-aa2f5fb685d0"></div>
+              <script async src="//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=60fe5c9c-a247-475f-86a7-aa2f5fb685d0"></script>
               @include('patterns.section--pagination')
             </div> <!-- ./article__content--right -->
           </div> <!-- ./article__content -->
