@@ -2,8 +2,6 @@
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name='ir-site-verification-token' value='-1272350265' />
-  <meta name="p:domain_verify" content="d64ec032ad75f35fe9696383112adf82"/>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-31544419-1"></script>
   <script>
@@ -12,19 +10,10 @@
     gtag('js', new Date());
     gtag('config', 'UA-31544419-1');
   </script>
-
-  <!-- Birthday Party Fonts -->
-  <link rel="stylesheet" href="https://use.typekit.net/zdy6lab.css">
-
-  <!-- Favicon -->
-  <link rel="shortcut icon" href="<?php bloginfo('template_directory'); ?>/assets/images/favicon.ico">
   @php wp_head() @endphp
   <style>
     .no-fouc {display: none;}
   </style>
-  <noscript id="deferred-styles">
-    <link href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700,900" rel="stylesheet">
-  </noscript>
   <script>
     var loadDeferredStyles = function() {
       var addStylesNode = document.getElementById("deferred-styles");
