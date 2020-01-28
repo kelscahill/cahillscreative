@@ -6,6 +6,71 @@ jQuery(document).ready(function($) {
 	_alm.options = {
 		speed: 200
 	};
+	
+	
+	
+	
+	/*
+	*  Test REST API access
+	*
+	*  @since 5.1.1
+	*/
+	if($('.restapi-access').length){
+      $.ajax({
+   		type: 'GET',
+   		url: alm_admin_localize.restapi.url + alm_admin_localize.restapi.namespace + '/test/',
+   		dataType: 'json',
+   		success: function(data) { 
+      		if(data.success){
+         		console.log('Ajax Load More successfully connected to the WordPress REST API.');
+      		}     		
+   		},
+   		error: function(xhr, status, error) {
+      		console.log(status);
+      		$('.restapi-access').fadeIn();
+   		}
+   	});
+	}
+	
+	
+	
+	/*
+   *  Save Repeater Templates with cmd + s and ctrl + s
+   *  @since 5.1
+   */
+	document.addEventListener("keydown", function(e) {
+		if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)  && e.keyCode == 83) {
+			
+			
+			if(e.target.nodeName === 'TEXTAREA' && $(e.target).closest('.repeater-wrap')){
+				console.log('Saving template...');
+				var btn = $(e.target).closest('.repeater-wrap').find('input.save-repeater');
+				if(btn){
+					btn.click();
+				}
+			}
+			
+			e.preventDefault();
+			
+		}
+	}, false);  
+	 
+   
+   
+   /*
+   *  Set focus in code mirror editor
+   *  @since 5.1
+   */
+   $('label.trigger-codemirror').on('click', function(){
+	   var el = $(this);
+	   var id = el.data('id');
+	   var cm = window['editor_'+id];
+	   if(cm){
+		   cm.focus();
+		   cm.setCursor(cm.lineCount(), 0);
+	   }
+   });
+	
 
 
    /*
@@ -52,7 +117,7 @@ jQuery(document).ready(function($) {
                   settingsTarget.classList.remove('--saved');                  
                }, 2500);
                
-            }, 1000);
+            }, 500); 
             
          },
          
@@ -72,7 +137,7 @@ jQuery(document).ready(function($) {
                   settingsTarget.classList.remove('--error');                  
                }, 2500);
                
-            }, 1000);
+            }, 500);
          }
       });
       return false;
@@ -112,7 +177,6 @@ jQuery(document).ready(function($) {
    *
    *  @since 2.8.4
    */
-	
 	$('body').on('mouseenter', '.tooltip:not(.tooltipstered)', function(){
 		$(this).tooltipster({
 			delay: 100,
@@ -285,9 +349,12 @@ jQuery(document).ready(function($) {
    var almActivating = false;
    $(document).on('click', '.license-btn', function(e){
       e.preventDefault();
+      
       if(!almActivating){
+         
 	      $('.license-btn-wrap .msg').remove();
 	      almActivating = true;
+	      
 	      var el = $(this),
 	      	 wrap = el.closest('.license-btn-wrap'),
 	      	 parent = el.closest('.license'),
@@ -329,13 +396,16 @@ jQuery(document).ready(function($) {
 			   		$('.license-key-field .status', parent).addClass('active').removeClass('inactive').text(alm_admin_localize.active);
 			   		$('.license-title .status', parent).addClass('valid').removeClass('invalid');
 			   		$('.activate.license-btn', parent).addClass('hide');
+			   		$('.check-licence.license-btn', parent).addClass('hide');
 			   		$('.deactivate.license-btn', parent).removeClass('hide');
+			   		$('.renew-btn', parent).addClass('hide');
 			   		$('.no-license', parent).slideUp(200);
 
 		   		}else{
 			   		$('.license-key-field .status', parent).removeClass('active').addClass('inactive').text(alm_admin_localize.inactive);
 			   		$('.license-title .status', parent).removeClass('valid').addClass('invalid');
 			   		$('.activate.license-btn', parent).removeClass('hide');
+			   		$('.check-licence.license-btn', parent).addClass('hide');
 			   		$('.deactivate.license-btn', parent).addClass('hide');
 			   		$('.no-license', parent).slideDown(200);
 		   		}
@@ -344,6 +414,7 @@ jQuery(document).ready(function($) {
 					almActivating = false;
 
 	   		},
+	   		
 	   		error: function(xhr, status, error) {
 	      		console.log(status);
 	      		$('.loading', parent).delay(250).fadeOut(300);
@@ -352,13 +423,14 @@ jQuery(document).ready(function($) {
 	   	});
    	}
    });
-
-
-
-   /*
+   
+   
+   
+	/*
    *  Get layout value Ajax
    *  @since 2.8.7
    */
+   console.log(window.editorDefault);
    $(document).on('click', '.alm-layout-selection li a.layout', function(e){
       e.preventDefault();
       var el = $(this), 
@@ -377,7 +449,7 @@ jQuery(document).ready(function($) {
          var eid = '';
          if(name === 'default'){ 
             // Default Template
-            eid = window.editorDefault;
+            eid = window.editor_default;
    	   }else{ 
       	   // Repeater Templates
             eid = window['editor_'+name];
@@ -428,7 +500,8 @@ jQuery(document).ready(function($) {
    $(document).on('click', '.alm-notification--dismiss', function(e){
       e.preventDefault();
       var el = $(this),
-          container = el.parent('.group');
+          container = el.parent('.cta');
+          
 	   // Get value from Ajax
 	   $.ajax({
    		type: 'POST',
@@ -447,6 +520,38 @@ jQuery(document).ready(function($) {
 
    });
 
+
+
+   /*
+   *  Set Transient (Transient)
+   *  @since 4.0
+   */
+   $(document).on('click', '.alm-transient button.notice-dismiss', function(e){
+      e.preventDefault();
+      var el = $(this),
+          container = el.parent('.alm-transient'),
+          transient_name = container.data('transient'),
+          duration = container.data('duration');
+          
+	   // Get value from Ajax
+	   $.ajax({
+   		type: 'POST',
+   		url: alm_admin_localize.ajax_admin_url,
+   		data: {
+   			action: 'alm_set_transient',
+   			nonce: alm_admin_localize.alm_admin_nonce,
+   			transient_name: transient_name,
+   			duration: duration
+   		},
+   		success: function(data) {
+            container.fadeOut();
+   		},
+   		error: function(xhr, status, error) {
+      		console.log(status);
+   		}
+   	});
+
+   });
 
 
 

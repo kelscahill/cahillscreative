@@ -59,13 +59,13 @@
 		echo '<div class="of-caption">
 				To display Search &amp; Filter all you need to do is a use a shortcode:<br />
 				
-				<pre><code class="string">[searchandfilter taxonomies="category,post_tag"]</code></pre>
+				<pre><code class="string">[searchandfilter fields="search,category,post_tag"]</code></pre>
 				
 				This will display a search box, a category dropdown and a tag dropdown.  You can use the shortcode within posts/pages and widget areas.<br /><br />
 				
 				To use this within a theme file you simple need to call the `do_shorcode` function with the shortcode above within the theme file:<br />
 				
-				<pre><code class="php">&lt;?php echo do_shortcode( \'[searchandfilter taxonomies="category,post_tag"]\' ); ?&gt;</code></pre>
+				<pre><code class="php">&lt;?php echo do_shortcode( \'[searchandfilter fields="search,category,post_tag"]\' ); ?&gt;</code></pre>
 			</div>';
 		
 		

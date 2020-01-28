@@ -190,7 +190,7 @@ class OF_Variable_List_Table extends WP_List_Table {
 			"name"			=> "fields",
 			"defaultval"	=> "&nbsp;",
 			"options"		=> "<em>Comma seperated list of any field names and Public Taxonomies:</em><br /><br />search<br />post_date<br />post_types<br /><em>*public taxonomy names</em>",
-			"info"			=> "Example using all your public taxonomies (copy &amp; paste!):<pre><code class='string'>[searchandfilter taxonomies=\"search,".$fulltaxonomylist."\"]</code></pre>"
+			"info"			=> "Example using all your public taxonomies (copy &amp; paste!):<pre><code class='string'>[searchandfilter fields=\"search,".$fulltaxonomylist."\"]</code></pre>"
 		);
 		$counter++;
 

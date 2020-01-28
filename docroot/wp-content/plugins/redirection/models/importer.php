@@ -8,11 +8,12 @@ class Red_Plugin_Importer {
 			'wp-simple-redirect',
 			'seo-redirection',
 			'safe-redirect-manager',
-			'wordpress-old-slugs'
+			'wordpress-old-slugs',
+			'rank-math',
 		);
 
 		foreach ( $importers as $importer ) {
-			$importer = Red_Plugin_Importer::get_importer( $importer );
+			$importer = self::get_importer( $importer );
 			$results[] = $importer->get_data();
 		}
 
@@ -36,13 +37,87 @@ class Red_Plugin_Importer {
 			return new Red_WordPressOldSlug_Importer();
 		}
 
+		if ( $id === 'rank-math' ) {
+			return new Red_RankMath_Importer();
+		}
+
 		return false;
 	}
 
 	public static function import( $plugin, $group_id ) {
-		$importer = Red_Plugin_Importer::get_importer( $plugin );
+		$importer = self::get_importer( $plugin );
 		if ( $importer ) {
 			return $importer->import_plugin( $group_id );
+		}
+
+		return 0;
+	}
+}
+
+class Red_RankMath_Importer extends Red_Plugin_Importer {
+	public function import_plugin( $group_id ) {
+		global $wpdb;
+
+		$count = 0;
+		$redirects = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}rank_math_redirections" );
+
+		foreach ( $redirects as $redirect ) {
+			$created = $this->create_for_item( $group_id, $redirect );
+			$count += $created;
+		}
+
+		return $count;
+	}
+
+	private function create_for_item( $group_id, $redirect ) {
+		// phpcs:ignore
+		$sources = unserialize( $redirect->sources );
+		$items = [];
+
+		foreach ( $sources as $source ) {
+			$url = $source['pattern'];
+			if ( substr( $url, 0, 1 ) !== '/' ) {
+				$url = '/' . $url;
+			}
+
+			$data = array(
+				'url'         => $url,
+				'action_data' => array( 'url' => $redirect->url_to ),
+				'regex'       => $source['comparison'] === 'regex' ? true : false,
+				'group_id'    => $group_id,
+				'match_type'  => 'url',
+				'action_type' => 'url',
+				'action_code' => $redirect->header_code,
+			);
+
+			$items[] = Red_Item::create( $data );
+		}
+
+		return count( $items );
+	}
+
+	public function get_data() {
+		global $wpdb;
+
+		if ( defined( 'REDIRECTION_TESTS' ) && REDIRECTION_TESTS ) {
+			return 0;
+		}
+
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$total = 0;
+		if ( is_plugin_active( 'seo-by-rank-math/rank-math.php' ) ) {
+			$total = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}rank_math_redirections" );
+		}
+
+		if ( $total ) {
+			return array(
+				'id' => 'rank-math',
+				'name' => 'RankMath',
+				'total' => intval( $total, 10 ),
+			);
 		}
 
 		return 0;
@@ -99,9 +174,10 @@ class Red_WordPressOldSlug_Importer extends Red_Plugin_Importer {
 		global $wpdb;
 
 		$count = 0;
-		$sql = "SELECT wp_postmeta.* FROM wp_postmeta INNER JOIN wp_posts ON wp_posts.ID=wp_postmeta.post_id WHERE wp_postmeta.meta_key = '_wp_old_slug' AND wp_posts.post_status='publish' AND wp_posts.post_type IN ('page', 'post')";
-		$sql = str_replace( 'wp_', $wpdb->prefix, $sql );
-		$redirects = $wpdb->get_results( $sql );
+		$redirects = $wpdb->get_results(
+			"SELECT {$wpdb->prefix}postmeta.* FROM {$wpdb->prefix}postmeta INNER JOIN {$wpdb->prefix}posts ON {$wpdb->prefix}posts.ID={$wpdb->prefix}postmeta.post_id " .
+			"WHERE {$wpdb->prefix}postmeta.meta_key = '_wp_old_slug' AND {$wpdb->prefix}posts.post_status='publish' AND {$wpdb->prefix}posts.post_type IN ('page', 'post')"
+		);
 
 		foreach ( $redirects as $redirect ) {
 			$item = $this->create_for_item( $group_id, $redirect );
@@ -120,8 +196,9 @@ class Red_WordPressOldSlug_Importer extends Red_Plugin_Importer {
 			return false;
 		}
 
-		$new = parse_url( $new, PHP_URL_PATH );
-		$old = rtrim( dirname( $new ), '/' ) . '/' . $redirect->meta_value;
+		$new_path = wp_parse_url( $new, PHP_URL_PATH );
+		$old = rtrim( dirname( $new_path ), '/' ) . '/' . rtrim( $redirect->meta_value, '/' ) . '/';
+		$old = str_replace( '\\', '', $old );
 
 		$data = array(
 			'url'         => $old,
@@ -139,9 +216,9 @@ class Red_WordPressOldSlug_Importer extends Red_Plugin_Importer {
 	public function get_data() {
 		global $wpdb;
 
-		$sql = "SELECT COUNT(*) FROM wp_postmeta INNER JOIN wp_posts ON wp_posts.ID=wp_postmeta.post_id WHERE wp_postmeta.meta_key = '_wp_old_slug' AND wp_posts.post_status='publish' AND wp_posts.post_type IN ('page', 'post')";
-		$sql = str_replace( 'wp_', $wpdb->prefix, $sql );
-		$total = $wpdb->get_var( $sql );
+		$total = $wpdb->get_var(
+			"SELECT COUNT(*) FROM {$wpdb->prefix}postmeta INNER JOIN {$wpdb->prefix}posts ON {$wpdb->prefix}posts.ID={$wpdb->prefix}postmeta.post_id WHERE {$wpdb->prefix}postmeta.meta_key = '_wp_old_slug' AND {$wpdb->prefix}posts.post_status='publish' AND {$wpdb->prefix}posts.post_type IN ('page', 'post')"
+		);
 
 		if ( $total ) {
 			return array(
@@ -158,6 +235,10 @@ class Red_WordPressOldSlug_Importer extends Red_Plugin_Importer {
 class Red_SeoRedirection_Importer extends Red_Plugin_Importer {
 	public function import_plugin( $group_id ) {
 		global $wpdb;
+
+		if ( defined( 'REDIRECTION_TESTS' ) && REDIRECTION_TESTS ) {
+			return 0;
+		}
 
 		$count = 0;
 		$redirects = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}WP_SEO_Redirection" );
@@ -223,9 +304,9 @@ class Red_SafeRedirectManager_Importer extends Red_Plugin_Importer {
 		global $wpdb;
 
 		$count = 0;
-		$sql = "SELECT wp_postmeta.* FROM wp_postmeta INNER JOIN wp_posts ON wp_posts.ID=wp_postmeta.post_id WHERE wp_postmeta.meta_key LIKE '_redirect_rule_%' AND wp_posts.post_status='publish'";
-		$sql = str_replace( 'wp_', $wpdb->prefix, $sql );
-		$redirects = $wpdb->get_results( $sql );
+		$redirects = $wpdb->get_results(
+			"SELECT {$wpdb->prefix}postmeta.* FROM {$wpdb->prefix}postmeta INNER JOIN {$wpdb->prefix}posts ON {$wpdb->prefix}posts.ID={$wpdb->prefix}postmeta.post_id WHERE {$wpdb->prefix}postmeta.meta_key LIKE '_redirect_rule_%' AND {$wpdb->prefix}posts.post_status='publish'"
+		);
 
 		// Group them by post ID
 		$by_post = array();
@@ -256,7 +337,7 @@ class Red_SafeRedirectManager_Importer extends Red_Plugin_Importer {
 		if ( strpos( $post['from'], '*' ) !== false ) {
 			$regex = true;
 			$source = str_replace( '*', '.*', $source );
-		} else if ( isset( $post['from_regex'] ) && $post['from_regex'] === '1' ) {
+		} elseif ( isset( $post['from_regex'] ) && $post['from_regex'] === '1' ) {
 			$regex = true;
 		}
 
@@ -276,10 +357,9 @@ class Red_SafeRedirectManager_Importer extends Red_Plugin_Importer {
 	public function get_data() {
 		global $wpdb;
 
-		$sql = "SELECT COUNT(*) FROM wp_postmeta INNER JOIN wp_posts ON wp_posts.ID=wp_postmeta.post_id WHERE wp_postmeta.meta_key = '_redirect_rule_from' AND wp_posts.post_status='publish'";
-		$sql = str_replace( 'wp_', $wpdb->prefix, $sql );
-
-		$total = $wpdb->get_var( $sql );
+		$total = $wpdb->get_var(
+			"SELECT COUNT(*) FROM {$wpdb->prefix}postmeta INNER JOIN {$wpdb->prefix}posts ON {$wpdb->prefix}posts.ID={$wpdb->prefix}postmeta.post_id WHERE {$wpdb->prefix}postmeta.meta_key = '_redirect_rule_from' AND {$wpdb->prefix}posts.post_status='publish'"
+		);
 
 		if ( $total ) {
 			return array(

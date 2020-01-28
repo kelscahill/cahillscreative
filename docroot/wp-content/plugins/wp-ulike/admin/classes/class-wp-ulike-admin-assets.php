@@ -3,7 +3,7 @@
  * Wp ULike Admin Scripts Class.
  * 
  * @package    wp-ulike
- * @author     Alimir 2018
+ * @author     TechnoWich 2020
  * @link       https://wpulike.com
 */
 
@@ -14,7 +14,7 @@ if ( ! defined('ABSPATH') ) {
 
 if ( ! class_exists( 'wp_ulike_admin_assets' ) ) {
 	/**
-	 *  Class to load and print master slider panel scripts
+	 *  Class to load and print the admin panel scripts
 	 */
 	class wp_ulike_admin_assets {
 
@@ -30,7 +30,7 @@ if ( ! class_exists( 'wp_ulike_admin_assets' ) ) {
 			$this->load_scripts();
 		 }
 
-		
+
 		/**
 		 * Styles for admin
 		 *
@@ -42,7 +42,18 @@ if ( ! class_exists( 'wp_ulike_admin_assets' ) ) {
 				'wp-ulike-admin',
 				WP_ULIKE_ADMIN_URL . '/assets/css/admin.css'
 			);
-		
+
+			// Scripts is only can be load on ulike pages.
+			if ( strpos( $this->hook, WP_ULIKE_SLUG ) === false ) {
+				return;
+			}
+
+			// Enqueue third-party styles
+			wp_enqueue_style(
+				'wp-ulike-admin-plugins',
+				WP_ULIKE_ADMIN_URL . '/assets/css/plugins.css'
+			);
+
 		}
 
 	    /**
@@ -53,14 +64,14 @@ if ( ! class_exists( 'wp_ulike_admin_assets' ) ) {
 		public function load_scripts() {
 
 			// Scripts is only can be load on ulike pages.
-			if ( strpos( $this->hook, 'wp-ulike' ) === false ) {
+			if ( strpos( $this->hook, WP_ULIKE_SLUG ) === false ) {
 				return;
 			}
 
 			// Remove all notices in wp ulike pages.
 			// remove_all_actions( 'admin_notices' );
 
-			// Enqueue vueJS	
+			// Enqueue vueJS
 			wp_enqueue_script(
 				'wp_ulike_vuejs',
 				WP_ULIKE_ADMIN_URL . '/assets/js/solo/vue/vue.min.js',
@@ -79,16 +90,25 @@ if ( ! class_exists( 'wp_ulike_admin_assets' ) ) {
 			);
 
 			// Enqueue admin scripts
+			// wp_enqueue_script(
+			// 	'wp_ulike_admin_scripts',
+			// 	WP_ULIKE_ADMIN_URL . '/assets/js/scripts.js',
+			// 	array( 'wp_ulike_admin_plugins', 'wp_ulike_vuejs'),
+			// 	false,
+			// 	true
+			// );
+
+			// Enqueue statistics script
 			wp_enqueue_script(
-				'wp_ulike_admin_scripts',
-				WP_ULIKE_ADMIN_URL . '/assets/js/scripts.js',
-				array( 'wp_ulike_admin_plugins', 'wp_ulike_vuejs'),
+				'wp_ulike_admin_statistics_scripts',
+				WP_ULIKE_ADMIN_URL . '/assets/js/solo/statistics.js',
+				array( 'wp_ulike_admin_plugins'),
 				false,
 				true
 			);
 
 			// Localize scripts
-			wp_localize_script( 'wp_ulike_admin_scripts', 'wp_ulike_admin', array(
+			wp_localize_script( 'wp_ulike_admin_plugins', 'wp_ulike_admin', array(
 				'hook_address'    => esc_html( $this->hook ),
 				'nonce_field'     => wp_create_nonce( 'wp-ulike-ajax-nonce' ),
 				'logs_notif'      => __('Are you sure to remove this item?!',WP_ULIKE_SLUG),
@@ -99,5 +119,5 @@ if ( ! class_exists( 'wp_ulike_admin_assets' ) ) {
 		}
 
 	}
-	
+
 }

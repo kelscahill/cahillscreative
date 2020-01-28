@@ -1,12 +1,21 @@
 <?php
-/*----------------------------------------------------------------------------------------------------------------------
+/*
 Plugin Name: Yet Another Related Posts Plugin
 Description: Adds related posts to your site and in RSS feeds, based on a powerful, customizable algorithm.
-Version: 4.4
-Author: Adknowledge
+Version: 5.1.2
+Author: YARPP
 Author URI: http://www.yarpp.com/
 Plugin URI: http://www.yarpp.com/
-----------------------------------------------------------------------------------------------------------------------*/
+*/
+
+/**
+ * Make sure we don't expose any info if called directly
+ *
+ */
+if ( !function_exists( 'add_action' ) ) {
+  echo 'Hi there!  I\'m just a plugin, not much I can do when called directly.';
+  exit;
+}
 
 if(!defined('WP_CONTENT_URL')) define('WP_CONTENT_URL', get_option('siteurl').'/wp-content');
 if(!defined('WP_CONTENT_DIR')){
@@ -14,7 +23,7 @@ if(!defined('WP_CONTENT_DIR')){
     define('WP_CONTENT_DIR', substr($tr,0,strrpos($tr,'/')));
 }
 
-define('YARPP_VERSION', '4.4');
+define('YARPP_VERSION', '5.1.2');
 define('YARPP_DIR', dirname(__FILE__));
 define('YARPP_URL', plugins_url('',__FILE__));
 define('YARPP_NO_RELATED', ':(');
@@ -22,10 +31,11 @@ define('YARPP_RELATED', ':)');
 define('YARPP_NOT_CACHED', ':/');
 define('YARPP_DONT_RUN', 'X(');
 
-/*----------------------------------------------------------------------------------------------------------------------
-Sice v3.2: YARPP uses it own cache engine, which uses custom db tables by default.
+/*
+Since v3.2: YARPP uses it own cache engine, which uses custom db tables by default.
 Use postmeta instead to avoid custom tables by un-commenting postmeta line and comment out the tables one.
-----------------------------------------------------------------------------------------------------------------------*/
+*/
+
 /* Enable postmeta cache: */
 //if(!defined('YARPP_CACHE_TYPE')) define('YARPP_CACHE_TYPE', 'postmeta');
 

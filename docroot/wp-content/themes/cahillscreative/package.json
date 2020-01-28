@@ -64,6 +64,7 @@
     "url-loader": "^0.5.8",
     "webpack": "^2.7.0",
     "webpack-assets-manifest": "^0.6.2",
+    "webpack-cli": "^3.3.10",
     "webpack-dev-middleware": "^1.10.1",
     "webpack-hot-middleware": "^2.18.2",
     "webpack-merge": "^4.1.0",

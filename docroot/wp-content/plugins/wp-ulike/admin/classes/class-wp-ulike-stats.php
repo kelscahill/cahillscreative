@@ -3,7 +3,7 @@
  * Class for statistics process
  * 
  * @package    wp-ulike
- * @author     Alimir 2018
+ * @author     TechnoWich 2020
  * @link       https://wpulike.com
  */
 
@@ -94,11 +94,11 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 		}
 
 		/**
-		 * Get posts datasets
+		 * Get posts dataset
 		 *
-		 * @author       	Alimir
-		 * @since           2.0
-		 * @return			JSON Array
+		 * @since 2.0
+		 * @param string $table
+		 * @return void
 		 */
 		public function dataset( $table ){
 			$output  = array();
@@ -106,8 +106,8 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 			$results = $this->select_data( $table );
 			// Create chart dataset
 			foreach( $results as $result ){
-				$output['label'][] = date_i18n( "M j, Y", strtotime( $result->labels ) );
-				$output['data'][]  = $result->counts;
+				$output['label'][] = !empty( $result->labels ) ? date_i18n( "M j, Y", strtotime( $result->labels ) ) : array();
+				$output['data'][]  = !empty( $result->counts ) ? $result->counts : array();
 			}
 			// Add chart options
 			if( ! empty( $output['data'] ) ){
@@ -120,9 +120,10 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 		/**
 		 * Set custom options for charts
 		 *
-		 * @author       	Alimir
-		 * @since           3.5
-		 * @return			Array
+		 * @since 3.5
+		 * @param string $table
+		 * @param array $options
+		 * @return void
 		 */
 		public function charts( $table, $options = array() ){
 
@@ -174,9 +175,10 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 		/**
 		 * Get The Logs Data From Tables
 		 *
-		 * @author       	Alimir
-		 * @since           2.0
-		 * @return			String
+		 * @author Alimir
+		 * @param string $table
+		 * @since 2.0
+		 * @return String
 		 */
 		public function select_data( $table ){
 
@@ -184,8 +186,9 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 					SELECT DATE(date_time) AS labels,
 					count(date_time) AS counts
 					FROM %s
+					WHERE TO_DAYS(NOW()) - TO_DAYS(date_time) <= 30
 					GROUP BY labels
-					DESC LIMIT %d",
+					ASC LIMIT %d",
 					$this->wpdb->prefix . $table,
 					30
 				);
@@ -193,6 +196,7 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 			$result = $this->wpdb->get_results( $query );
 
 			if( empty( $result ) ) {
+				$result =  new stdClass();
 				$result->labels = $result->counts = NULL;
 			}
 
@@ -202,9 +206,9 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 		/**
 		 * Get The Summary Of Like Data
 		 *
-		 * @author       	Alimir
-		 * @since           2.0
-		 * @return			Integer
+		 * @param string $table
+		 * @param string $date
+		 * @return integer
 		 */
 		public function get_data_date( $table, $date ){
 			_deprecated_function( 'get_data_date', '3.5', 'count_logs' );
@@ -214,9 +218,9 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 		/**
 		 * Count all logs from the tables
 		 *
-		 * @author       	Alimir
-		 * @since           3.5
-		 * @return			Integer
+		 * @since 3.5
+		 * @param string $date
+		 * @return integer
 		 */
 		public function count_all_logs( $date = 'all' ){
 			// Result
@@ -232,9 +236,9 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 		/**
 		 * Count logs by table
 		 *
-		 * @author       	Alimir
-		 * @since           3.5
-		 * @return			Integer
+		 * @since 3.5
+		 * @param array $args
+		 * @return void
 		 */
 		public function count_logs( $args = array() ){
 
@@ -249,29 +253,8 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 			// Extract variables
 			extract( $parsed_args );
 
-	        $query = sprintf( "SELECT COUNT(*) FROM %s WHERE 1=1", $this->wpdb->prefix . $table );
-
-	        switch ( $date ) {
-	        	case 'today':
-	        		$query .= ' AND DATE( date_time ) = DATE( NOW() )';
-	        		break;
-
-	        	case 'yesterday':
-	        		$query .= ' AND DATE( date_time ) = DATE( subdate( current_date, 1 ) )';
-	        		break;
-
-	        	case 'week':
-	        		$query .= ' AND WEEK( DATE( date_time ) ) = WEEK( DATE( NOW() ) )';
-	        		break;
-
-	        	case 'month':
-	        		$query .= ' AND MONTH( DATE( date_time ) ) = MONTH( DATE( NOW() ) )';
-	        		break;
-
-	        	case 'year':
-	        		$query .= ' AND YEAR( DATE( date_time ) ) = YEAR( DATE( NOW() ) )';
-	        		break;
-	        }
+			$query = sprintf( "SELECT COUNT(*) FROM %s WHERE 1=1", $this->wpdb->prefix . $table );
+			$query .= wp_ulike_get_period_limit_sql( $date );
 
 	        $result = $this->wpdb->get_var( $query );
 
@@ -279,6 +262,11 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 
 		}
 
+		/**
+		 * Display top likers in html format
+		 *
+		 * @return string
+		 */
 		public function display_top_likers(){
 			$top_likers = $this->get_top_likers();
 			$result     = '';
@@ -292,7 +280,7 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 	            <div class="wp-ulike-flex wp-ulike-users-list">
 	                <div class="wp-ulike-counter">
 	                	<i class="wp-ulike-icons-trophy"></i>
-	                	<span class="aux-wp-ulike-counter">'.$counter++.'th</span>
+	                	<span class="wp-ulike-counter">'.$counter++.'th</span>
 	                </div>
 	                <div class="wp-ulike-info">
 	                	<i class="wp-ulike-icons-profile-male"></i>
@@ -312,55 +300,18 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 		 * Top Likers Summary
 		 *
 		 * @author       	Alimir
-		 * @since           2.3
 		 * @since           3.0
 		 * @return			Array
 		 */
 		public function get_top_likers(){
-
-			if ( false === ( $result = get_transient( 'wp_ulike_get_top_likers' ) ) ) {
-				// Make new sql request
-				$query  = sprintf( '
-					SELECT T.user_id, SUM(T.CountUser) AS SumUser, T.ip
-					FROM(
-					SELECT user_id, count(user_id) AS CountUser, ip
-					FROM `%1$sulike`
-					GROUP BY user_id
-					UNION ALL
-					SELECT user_id, count(user_id) AS CountUser, ip
-					FROM `%1$sulike_activities`
-					GROUP BY user_id
-					UNION ALL
-					SELECT user_id, count(user_id) AS CountUser, ip
-					FROM `%1$sulike_comments`
-					GROUP BY user_id
-					UNION ALL
-					SELECT user_id, count(user_id) AS CountUser, ip
-					FROM `%1$sulike_forums`
-					GROUP BY user_id
-					) AS T
-					GROUP BY T.user_id
-					ORDER BY SumUser DESC LIMIT %2$d',
-					$this->wpdb->prefix,
-					5
-				);
-				$result = $this->wpdb->get_results( $query );
-
-				if( !empty( $result ) ) {
-					// Set transient
-					set_transient( 'wp_ulike_get_top_likers', $result, 24 * HOUR_IN_SECONDS );
-				}
-			}
-
-			return $result;
+			return wp_ulike_get_best_likers_info( 5, NULL );
 		}
 
 		/**
-		 * Tops Summaries
+		 * Deprecated get top likers function
 		 *
-		 * @author       	Alimir
-		 * @since           2.0
-		 * @return			Integer
+		 * @param string $type
+		 * @return void
 		 */
 		public function get_tops( $type ){
 			_deprecated_function( 'get_tops', '3.5', 'get_top' );
@@ -370,9 +321,9 @@ if ( ! class_exists( 'wp_ulike_stats' ) ) {
 		/**
 		 * Tops Summaries
 		 *
-		 * @author       	Alimir
-		 * @since           3.5
-		 * @return			Array
+		 * @param string $type
+		 * @since 3.5
+		 * @return array
 		 */
 		public function get_top( $type ){
 			switch( $type ){

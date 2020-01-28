@@ -1,54 +1,71 @@
-﻿=== WP ULike ===
+=== WP ULike ===
 Contributors: alimir
-Donate link: https://m.do.co/c/13ad5bc24738
+Donate link: https://wpulike.com/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme
 Author: Ali Mirzaei
-Tags: wp ulike, wordpress youlike plugin, like button, rating, vote, voting, most liked posts, wordpress like page, wordpress like post, wordpress vote page, wordpress vote post, wp like page, wp like post, wp like plugin, buddypress like system, buddypress votes, comment like system, voting button, wordpress, buddypress, statistics, stats likes, bbpress, bbPress like, WP-Translations, forums, community, credit, points, mycred, users, ultimate member
-Requires at least: 3.5.1
-Tested up to: 4.9.8
-Stable tag: 3.5.1
+Tags: wp ulike, like button, elementor, like, dislike, wordpress youlike plugin, rating, vote, voting, most liked posts, wordpress like page, wordpress like post, wordpress vote page, wordpress vote post, wp like page, wp like post, wp like plugin, buddypress like system, buddypress votes, comment like system, voting button, wordpress, buddypress, statistics, stats likes, bbpress, bbPress like, WP-Translations, forums, community, credit, points, mycred, users, ultimate member, ranking
+Requires PHP: 5.4
+Requires at least: 3.5.0
+Tested up to: 5.3.2
+Stable tag: 4.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-WP ULike enables you to add Ajax Like button into your WP and allowing your visitors to Like/unLike the posts, comments, activities & topics.
+WP ULike enables you to add Ajax Like button into your WP and allowing your visitors to Like/Dislike the posts, comments, activities & topics.
 
 == Description ==
 
-If you’re looking for one of the best and fastest ways to add like and dislike functionality to your WordPress website, then the WP ULike plugin is for you! WP ULike is a FREE WordPress plugin that will allow your website visitors to engage with your wide range of content types including posts, forum topics and replies, comments and activity updates.
+If you’re looking for one of the best and fastest ways to add like and dislike functionality to your WordPress website, then the WP ULike plugin is for you! WP ULike is our ultimate solution to cast voting to any type of content you may have in your website. With outstanding and eye-catching widgets, you can have Like and Dislike Button on all of your contents would it be a Post, Comment, Activities, Forum Topics, WooCommerce products, you name it. Now you can feel your users Love :heart: for each part of your work.
 
-Also WP ULike’s amazing statistics tools help you to track your content effectiveness with a real-time report system and detailed statistics. What’s more, WP ULike have a wide variety of options available to customize your plugin. It will allow you to customize your like button in your favorite style.
+It's time for **[WP ULike](https://wpulike.com/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme)**.
+
+= Check Votings, Best Likers & Top contents =
+With WP ULike comprehensive Statistics tools, you can track what your users love and what annoys them in an instance. You can extract reports of likes and dislikes in Tables, Charts, Pie Charts or whichever you prefer with some easy steps, no confusing options and coding needed.
+
+= Customize Every Part of Your YouLike Plugin [PRO] =
+Elementor is the #1 WordPress page builder. In the new version of the WP ULike PRO plugin, we fully support this page builder and have a variety of widgets & controllers that make life much easier for you.
+Just drag your desired widget and drop it in your Elementor sections, customize as you go and enjoy your like and dislike buttons on your contents.
+
+= Start Configure your Voting System in a few Steps =
+We revamped our settings panel design and features to be more user-friendly and more straight forward approach. Easy settings, Happy customers. WP ULike plugin has clean coding, resource management and tones of features so you can customize every part of your buttons just by a few clicks.
+
+= Pre-Designed Templates =
+Choose from 10+ of our beautiful [templates](https://wpulike.com/templates/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme) and customize them to make them your own.
+
+= Try WP ULike Pro =
+So let's talk [PROfessional](https://wpulike.com/pricing/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme)! WP ULike Pro has support DisLike button alongside Like button, both of them are completely customizable in our redesigned settings menu with tones of features and more beautiful and stylish templates. the PRO version of the plugin is now compatible with Elementor Page builder and you can easily choose from +7 widgets by simply drag and drop them to your content. as you build your page and content with Elementor, you can add and customize  Like and Dislike button in every part such as Posts, Comments, activities, etc.
+
+Join the elite web professionals who enjoy **[WP ULike PRO](https://wpulike.com/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme)**.
 
 = More Information =
-*   Visit Our [Home Page](https://wpulike.com/).
-*   Donate Us [By Make a Cloud](https://m.do.co/c/13ad5bc24738).
-*   See Online [Demo](http://preview.alimir.ir/wp-ulike-plugin).
+*   Visit Our [Home Page](https://wpulike.com/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme).
+*   See Online [Demo](https://wpulike.com/templates/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme).
+*   For documentation and tutorials go to our [Documentation](https://docs.wpulike.com/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme).
 *   Fork Us In [Github](https://github.com/Alimir/wp-ulike).
 
 = Features =
-*   Clean Design + Pretty styles.
-*   Full myCRED Points Support.
-*   Flexible google rich snippets support. (Microdata)
-*   Full Statistics tools with many widgets.
+
+*   Clean Design + Some standard eye-catching templates.
+*   Professional Schema.org generator for each post type. [PRO]
+*   Full Elementor Page Builder Support. [PRO]
+*   Dislike button support with +8 creative templates. [PRO]
+*   Display the likers of each button in linear or pop-up mode.
+*   Simple, Stylish and user-friendly settings to easily customize your plugin.
+*   Extract detailed reports and beautiful, useful and simple charts in an instant.
+*   Support Custom Post Types, Comments, Activities & Topics.
+*   Using various hooks and functions, you can easily customize this plugin.
+*   We’re light-weight, fast, responsive and compatible with Google Schemas.
+*   Full myCRED (points management system) Points Support.
 *   Supporting UltimateMember & BuddyPress Profiles.
-*  	Likers World Map & Top Likers Widget.
 *   Ajax feature to update the data without reloading.
 *   Visitors do not have to register or log in to use the Like Button.
-*   Compatible with WP version 3.5 & above.
 *   Added automatically with filtering options (no Code required).
-*   Different logging method options.
+*   Different logging method options. (Cookie, IP, Username)
 *   Notifications System. (Custom toast messages after each activity)
-*   Shortcode support.
-*   Support custom templates with separate variables.
-*   Comment likes support.
-*   Supporting the date in localized format. (date_i18n)
-*   Full likes logs support.
-*   BuddyPress add activity & notifications support.
-*   Simple user like box with avatar support.
-*   Custom Like-UnLike Texts fields.
+*   Flexible Shortcode with variable support.
+*   Supporting the date in a localized format. (date_i18n)
+*   BuddyPress adds activity & notifications support.
 *   Simple custom style with color picker settings.
-*   Advanced Widgets With Custom Tools. (Most Liked Posts,Comments,Users,Topics,...)
-*   Powerful configuration panel.
-*   Support RTL & language file.
-*   And so on...
+*   Support RTL & +20 language files.
 
 = Translations =
 WP ULike has been translated into the following languages:
@@ -91,12 +108,6 @@ WP ULike has been translated into the following languages:
 
 Want to add a new language to WP ULike? Well! You can contribute via [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/wp-ulike).
 
-= About Author =
-*   My personal website: [Ali Mirzaei](http://about.alimir.ir)
-*   Follow me on [Facebook](https://www.facebook.com/alimir1993)
-*   Catch me on twitter as @alimirir
-*   And Connect me on [Linkedin](https://ir.linkedin.com/in/alimirir)
-
 == Installation ==
 
 = From your WordPress dashboard =
@@ -119,10 +130,11 @@ Want to add a new language to WP ULike? Well! You can contribute via [translate.
 
 == Screenshots ==
 
-1. Screenshot 1
-2. Screenshot 2
-3. Screenshot 3
-4. Screenshot 4
+1. **Get Ratings From Every Section of Your Website**
+2. **Check Votings, BestLikers & Top contents**
+3. **Start to Configure your Voting Plugin in a few Steps**
+4. **Boost Your SEO by Using Our Professional Schema Generator [PRO]**
+5. **Customize Every Aspect of Your Like Buttons with Elementor Widgets [PRO]**
 
 == Frequently Asked Questions ==
 
@@ -174,6 +186,118 @@ define( 'WP_MEMORY_LIMIT', '256M' );
 
 == Changelog ==
 
+= 4.1.3 =
+* Fixed: Problems with restoring old settings.
+* Fixed: An issue in bbPress option panel.
+* Fixed: A simple issue with custom icons display.
+* Fixed: Some default option values.
+* Fixed: Button display issue in blog page.
+
+= 4.1.2 =
+* Fixed: WPcolor js issue in the setting panel.
+
+= 4.1.1 =
+* Fixed: A JavaScript issue in setting panel.
+* Fixed: Some small issues.
+
+= 4.1.0 =
+* Added: New professional configuration panel.
+* Added: New controller to filter post types.
+* Added: New MetaBox panel with amazing controllers. [PRO]
+* Added: New MusicPlaylist type for the schema. [PRO]
+* Added: New "Backup" section in the settings panel. [PRO]
+* Added: New custom Reviews for all schema types. [PRO]
+* Added: New MusicPlaylist type for schema list. [PRO]
+* Added: More flexible button text/image option for each content type.
+* Added: Simple tool to convert old settings values to new settings values.
+* Updated: Language files.
+* Fixed: Some issues.
+
+= 4.0.5 =
+* Added: Professional Schema.org generator for each post type with supporting Star ratings. [PRO]
+* Added: Display meta options at all post types for better customization.  [PRO]
+* Added: Counter start quantity value for like/dislike. [PRO]
+* Added: improvements in auto display functionality.
+* Added: Some new hooks for better development purposes.
+* Fixed: Fix an issue with likers box wrapper generation.
+* Fixed: Some small issues.
+
+= 4.0.4 =
+* Added: 3 new templates. (Rating Face, Rating Boy, Rating Girl) [PRO]
+* Tweak: Added date range filter for top likers widget. [PRO]
+* Tweak: Date range support in getting counter value function.
+* Tweak: Some improvements in button class names.
+* Tweak: Added some improvements statistics panel.
+* Fixed: Fix an issue with template callback.
+
+= 4.0.3 =
+* Added: A new option for some users who have upgraded to version +4 and deleted their old logs which can add the number of old likes to the new figures.
+* Added: A new condition to hide "leave review" banner.
+* Removed: Pro banner display from the main dashboard.
+* Fixed: Some small issues.
+
+= 4.0.2 =
+* Added: An option to remove plugin admin notices.
+* Added: Professional stats panel with date range + status selector options. [PRO]
+* Added: A new template called "Feedback". [PRO]
+* Fixed: An important issue with only logged in option.
+* Fixed: Schema attributes escape issue.
+* Fixed: Some small issues.
+
+= 4.0.1 =
+* Added: New myCred option for points to be awarded even when item authors Like/Unlike their item.
+* Fixed: Some important issues in the "myCred" functionality.
+* Fixed: An issue with getting counter value.
+* Fixed: Some styling issues.
+
+= 4.0.0 =
+* Added: New structure which switches the number of likes from meta values to the number of database logs.
+* Added: Custom ID support to have multiple buttons on the same page.
+* Added: Dislike support. [PRO]
+* Added: Elementor support + 7 widgets [PRO]
+* Added: Complete list of cache plugins support.
+* Added: Some new hooks to make better control on like processes + PRO version support.
+* Added: Better admin notice system.
+* Added: Some improvements in statistics functionalities and data controllers.
+* Added: Better capability control for stats&logs admin menu pages. [PRO]
+* Added: BuddyPress & bbpress compatible with new improvements.
+* Added: New option to delete orphaned rows.
+* Fixed: An issue with catching of nonce fields problem.
+* Fixed: An issue with display likers in JS functionality.
+* Fixed: Some styling issues.
+* Fixed: bbPress functionality conflict.
+* Fixed: Some reported bugs.
+
+= 3.6.2 =
+* Added: New animated heart template.
+* Fixed: An issue with home page display.
+* Fixed: An issue with user avatar default size.
+* Fixed: Some issues with aggregaterating.
+
+= 3.6.1 =
+* Added: Purge functionality for litespeed & w3 total cache.
+* Added: Better process for database table creation.
+* Added: Better menu labels.
+* Fixed: Some issues in likers box and some other functionalities.
+* Fixed: An issue with myCred points.
+* Fixed: Fix an issue in microdata structure.
+* Fixed: Some reported issues.
+
+= 3.6.0 =
+* Added: Better BuddyPress notifications with some improvements on old functionalities.
+* Added: Simultaneously refresh  for identical buttons.
+* Added: Mark notifications as read when a user visits our notifications.
+* Added: Better admin menu badge counter.
+* Fixed: The "Top Likers" widget issue.
+* Fixed: Fix IPv6 storage issue.
+* Fixed: Fix reverse graph X-axis
+
+= 3.5.2 =
+* Fixed: An important issue with buddypress comments.
+* Added: Class name issue on likers box.
+* Upgraded: "WordpressUlike" js functionality.
+* Added: some improvements on general functions.
+
 = 3.5.1 =
 * Fixed: The buddypress notifications issue.
 * Added: A new option to disable popover on likers box and make it inline display.
@@ -191,7 +315,7 @@ define( 'WP_MEMORY_LIMIT', '256M' );
 * Fixed: Some issues in button styles.
 * Fixed: Some issues in ulike js functionality.
 * Fixed: An issue with supporting ulike in ultimatememeber.
-* Fixed: Colorpicker issue in admin settings by replacing the wpColorPicker with spectrum plugin. 
+* Fixed: Colorpicker issue in admin settings by replacing the wpColorPicker with spectrum plugin.
 
 = 3.4 =
 * Added: A new style for likers box with pophover effect.
@@ -493,6 +617,15 @@ define( 'WP_MEMORY_LIMIT', '256M' );
 * The initial version
 
 == Upgrade Notice ==
+
+= 4.1.3 =
+In this release we have added a new option called  "Enable Deprecated Options" which enables you to restore all the old settings.
+
+= 4.0.0 =
+Attention Please! In this version, we have made a various changes in our data structure which switches the number of likes from meta values to the number of database logs. So If you're a developer, please consider our commits in github repo.
+
+= 3.5.2 =
+Attention Please! In this version, we have made some changes on plugin scripts! So, please clear your server cache after the plugin update.
 
 = 3.5.1 =
 Attention Please! In this version, we have made some changes on plugin scripts! So, please clear your server cache after the plugin update.

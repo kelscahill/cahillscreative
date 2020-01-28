@@ -3,7 +3,7 @@
  * Include Files
  * 
  * @package    wp-ulike
- * @author     Alimir 2018
+ * @author     TechnoWich 2020
  * @link       https://wpulike.com
  */
 

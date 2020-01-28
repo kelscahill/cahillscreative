@@ -3,8 +3,8 @@ Contributors: DesignsAndCode
 Donate link:
 Tags: category, filter, taxonomy, search, wordpress, post type, post date
 Requires at least: 3.5
-Tested up to: 4.9
-Stable tag: 1.2.10
+Tested up to: 5.3
+Stable tag: 1.2.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,9 +34,12 @@ The documentation has been updated to include examples almost all configurable o
 
 == Changelog ==
 
+= 1.2.11 =
+* Fixed - a few typos in the admin screen
+* Tested with WP 5.0 RC2
+
 = 1.2.10 =
 * Fixed - an issue with our syntax highlighting script modifying our shortcodes
-
 
 = 1.2.9 =
 * Fixed - bugs with WP 4.4 compatibility

@@ -18,7 +18,7 @@ if(!class_exists('ALM_LOCALIZE')):
 	   
 	   static $vars = array();
 		
-		/*
+		/**
 		 *  add_localized_var
 		 *  Create <script> variables for use with Preloaded addon
 		 *
@@ -38,7 +38,7 @@ if(!class_exists('ALM_LOCALIZE')):
 		
 		
 		
-		/*
+		/**
 		 *  create_script_vars
 		 *  Create <script> variables for use with Preloaded addon
 		 *
@@ -47,13 +47,11 @@ if(!class_exists('ALM_LOCALIZE')):
 		 *  @since 3.7
 		 */
 		public static function create_script_vars($id){
-			if(!empty(self::$vars) && isset(self::$vars[$id]) && is_array(self::$vars[$id])){   
-				
-				// Add div ID to the start of array
-				self::$vars[$id] = array_merge(array('id' => $id), self::$vars[$id]);
-				
+			if(!empty(self::$vars) && isset(self::$vars[$id]) && is_array(self::$vars[$id])){
+   							
 				// Render wp_localize_script vars with 'ajax-load-more' script handle.
 				wp_localize_script( 'ajax-load-more', alm_convert_dashes_to_underscore($id) .'_vars', self::$vars[$id] );
+				
 			}
 		}
 		
