@@ -19,13 +19,13 @@
         </div>
         <div class="footer__mailing">
           <h3 class="color--gray font--primary--xs">Join the mailing list</h3>
-          <?php echo $__env->make('patterns.form--newsletter', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+          {% include "patterns.form--newsletter" %}
         </div>
       </div>
       <div class="grid-item footer--right">
         <div class="footer__posts spacing">
           <h3 class="color--gray font--primary--xs">Latest Posts</h3>
-          <?php echo $__env->make('patterns.feed--latest', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+          {% include "patterns.feed--latest" %}
         </div>
         <div class="footer__ads">
           <h3 class="color--gray font--primary--xs space--half-bottom">Advertisements</h3>
@@ -44,15 +44,15 @@
     <div class="footer__row footer__row--bottom">
       <div class="footer__copyright">
         <a class="font--primary--xs space--half-right" href="/privacy-policy">Privacy Policy</a>
-        <span class="font--primary--xs font-weight--400">© <?php echo e(date('Y')); ?> <?php echo e(bloginfo()); ?>. All Rights Reserved.</span>
+        <span class="font--primary--xs font-weight--400">© {{ date('Y') }} {{ bloginfo() }}. All Rights Reserved.</span>
       </div>
       <div class="footer__social">
         <span class="color--gray font--primary--xs space--half-right">Follow Me</span>
-        <?php echo $__env->make('patterns.social-links', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+        {% include "patterns.social-links" %}
       </div>
     </div>
   </div>
   <a href="#top" class="footer__top font--primary--xs">
-    To Top <span class="icon icon--l space--half-left path-fill--white"><?php echo $__env->make('patterns.arrow--cta--long', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></span>
+    To Top <span class="icon icon--l space--half-left path-fill--white">{% include "patterns.arrow--cta--long" %}</span>
   </a>
 </footer>

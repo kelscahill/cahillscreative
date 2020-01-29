@@ -1,0 +1,26 @@
+{% extends "03-templates/base.twig" %}
+
+{% block sections_before %}
+  {% include "02-organisms/sections/page-header.twig"
+    with {
+      post: {
+        title: post.title,
+        headline: post.headline,
+        intro: post.intro,
+        thumbnail: post.thumbnail
+      }
+    }
+  %}
+{% endblock %}
+
+{% block content %}
+  <article class="l-container l-article l-article--{{ post.post_type }} u-spacing--double">
+    {% include "02-organisms/content/content.twig" %}
+    {% include "02-organisms/content/content-posts.twig" %}
+  </article>
+{% endblock %}
+
+{% block sections_after %}
+  {% include "02-organisms/sections/page-sections.twig" %}
+  {% include "02-organisms/sections/contact.twig" %}
+{% endblock %}
