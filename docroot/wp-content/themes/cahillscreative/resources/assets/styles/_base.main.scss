@@ -10,7 +10,7 @@ body {
 
 body {
   background: $background-color;
-  font: 400 100%/1.3 $font-primary;
+  font: 400 100% / 1.3 $font-primary;
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -32,7 +32,7 @@ body#tinymce {
 .main {
   padding-top: rem(80);
 
-  @include media('>large') {
+  @include media(">large") {
     padding-top: rem(100);
   }
 }

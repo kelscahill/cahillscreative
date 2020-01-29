@@ -11,8 +11,6 @@ const target = process.env.DEVURL || config.devUrl;
  */
 if (url.parse(target).protocol === 'https:') {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
-
-  config.proxyUrl = config.proxyUrl.replace('http:', 'https:');
 }
 
 module.exports = {

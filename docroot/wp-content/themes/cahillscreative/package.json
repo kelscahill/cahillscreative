@@ -1,6 +1,6 @@
 {
   "name": "sage",
-  "version": "9.0.5",
+  "version": "9.0.9",
   "author": "Roots <team@roots.io>",
   "homepage": "https://roots.io/sage/",
   "private": true,
@@ -22,6 +22,18 @@
     "android 4",
     "opera 12"
   ],
+  "scripts": {
+    "dev": "yarn; npm install; composer install; yarn build; yarn start;",
+    "build": "webpack --progress --config resources/assets/build/webpack.config.js",
+    "build:production": "webpack --env.production --progress --config resources/assets/build/webpack.config.js",
+    "build:profile": "webpack --progress --profile --json --config resources/assets/build/webpack.config.js",
+    "start": "webpack --hide-modules --watch --config resources/assets/build/webpack.config.js",
+    "rmdist": "rimraf dist",
+    "lint": "npm run -s lint:scripts && npm run -s lint:styles",
+    "lint:scripts": "eslint resources/assets/scripts resources/assets/build",
+    "lint:styles": "stylelint \"resources/assets/styles/**/*.{css,sass,scss,sss,less}\"",
+    "test": "npm run -s lint"
+  },
   "stylelint": {
     "extends": "stylelint-config-standard",
     "rules": {
@@ -30,6 +42,7 @@
       "length-zero-no-unit": null,
       "no-descending-specificity": null,
       "no-duplicate-selectors": null,
+      "at-rule-empty-line-before": null,
       "at-rule-no-unknown": [
         true,
         {
@@ -54,19 +67,8 @@
       ]
     }
   },
-  "scripts": {
-    "build": "webpack --progress --config resources/assets/build/webpack.config.js",
-    "build:production": "webpack --env.production --progress --config resources/assets/build/webpack.config.js",
-    "build:profile": "webpack --progress --profile --json --config resources/assets/build/webpack.config.js",
-    "start": "webpack --hide-modules --watch --config resources/assets/build/webpack.config.js",
-    "rmdist": "rimraf dist",
-    "lint": "npm run -s lint:scripts && npm run -s lint:styles",
-    "lint:scripts": "eslint resources/assets/scripts resources/assets/build",
-    "lint:styles": "stylelint \"resources/assets/styles/**/*.{css,sass,scss,sss,less}\"",
-    "test": "npm run -s lint"
-  },
   "engines": {
-    "node": ">= 6.9.4"
+    "node": ">= 8.0.0"
   },
   "devDependencies": {
     "autoprefixer": "~8.2.0",
@@ -102,12 +104,13 @@
     "url-loader": "^0.6.2",
     "webpack": "~3.10.0",
     "webpack-assets-manifest": "^1.0.0",
+    "webpack-cli": "^3.3.10",
     "webpack-dev-middleware": "~2.0.4",
     "webpack-hot-middleware": "~2.22.3",
     "webpack-merge": "~4.1.4",
     "yargs": "~11.0.0"
   },
   "dependencies": {
-    "jquery": "^3.4.1"
+    "jquery": "^3.3.1"
   }
 }

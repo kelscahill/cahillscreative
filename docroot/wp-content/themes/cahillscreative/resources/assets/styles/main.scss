@@ -2,7 +2,6 @@
  * CONTENTS
  *
  * SETTINGS
- * Bourbon..............Simple/lighweight SASS library - http://bourbon.io/
  * Variables............Globally-available variables and config.
  *
  * TOOLS
@@ -69,6 +68,7 @@
 \*------------------------------------ */
 @import "tools.mixins";
 @import "tools.include-media";
+
 $tests: false;
 
 @import "tools.mq-tests";

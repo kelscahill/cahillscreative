@@ -8,7 +8,6 @@ const StyleLintPlugin = require('stylelint-webpack-plugin');
 const CopyGlobsPlugin = require('copy-globs-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 
-const desire = require('./util/desire');
 const config = require('./config');
 
 const assetsFilenames = (config.enabled.cacheBusting) ? config.cacheBusting : '[name]';
@@ -52,7 +51,7 @@ let webpackConfig = {
       },
       {
         test: /\.js$/,
-        exclude: [/node_modules(?![/|\\](bootstrap|foundation-sites))/],
+        exclude: [/(node_modules|bower_components)(?![/|\\](bootstrap|foundation-sites))/],
         use: [
           { loader: 'cache' },
           { loader: 'buble', options: { objectAssign: 'Object.assign' } },
@@ -90,17 +89,12 @@ let webpackConfig = {
               },
             },
             { loader: 'resolve-url', options: { sourceMap: config.enabled.sourceMaps } },
-            {
-              loader: 'sass', options: {
-                sourceMap: config.enabled.sourceMaps,
-                sourceComments: true,
-              },
-            },
+            { loader: 'sass', options: { sourceMap: config.enabled.sourceMaps } },
           ],
         }),
       },
       {
-        test: /\.(ttf|otf|eot|woff2?|png|jpe?g|gif|svg|ico)$/,
+        test: /\.(ttf|eot|woff2?|png|jpe?g|gif|svg|ico)$/,
         include: config.paths.assets,
         loader: 'url',
         options: {
@@ -109,8 +103,8 @@ let webpackConfig = {
         },
       },
       {
-        test: /\.(ttf|otf|eot|woff2?|png|jpe?g|gif|svg|ico)$/,
-        include: /node_modules/,
+        test: /\.(ttf|eot|woff2?|png|jpe?g|gif|svg|ico)$/,
+        include: /node_modules|bower_components/,
         loader: 'url',
         options: {
           limit: 4096,
@@ -124,6 +118,7 @@ let webpackConfig = {
     modules: [
       config.paths.assets,
       'node_modules',
+      'bower_components',
     ],
     enforceExtension: false,
   },
@@ -214,15 +209,4 @@ if (config.enabled.watcher) {
   webpackConfig = merge(webpackConfig, require('./webpack.config.watch'));
 }
 
-/**
- * During installation via sage-installer (i.e. composer create-project) some
- * presets may generate a preset specific config (webpack.config.preset.js) to
- * override some of the default options set here. We use webpack-merge to merge
- * them in. If you need to modify Sage's default webpack config, we recommend
- * that you modify this file directly, instead of creating your own preset
- * file, as there are limitations to using webpack-merge which can hinder your
- * ability to change certain options.
- */
-module.exports = merge.smartStrategy({
-  'module.loaders': 'replace',
-})(webpackConfig, desire(`${__dirname}/webpack.config.preset`));
+module.exports = webpackConfig;
