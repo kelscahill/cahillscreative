@@ -1,0 +1,21 @@
+<div class="header__nav main-nav background-color--white">
+  <div class="nav__toggle toggle js-toggle-parent">
+    <span class="nav__toggle-span nav__toggle-span--1"></span>
+    <span class="nav__toggle-span nav__toggle-span--2"></span>
+    <span class="nav__toggle-span nav__toggle-span--3"></span>
+    <span class="nav__toggle-span nav__toggle-span--4"></span>
+  </div>
+  <nav class="nav__primary-mobile" role="navigation">
+    {{ primary_nav_left_mobile }}
+    {{ primary_nav_right_mobile }}
+  </nav>
+  <nav class="nav__primary background-color--primary" role="navigation">
+    {{ primary_nav_left }}
+    <div class="header__logo-wrap">
+      <a href="{{ home_url('/') }}" class="header__logo-link">
+        <div class="header__logo">{% include "00-atoms/images/logo.twig" %}</div>
+      </a>
+    </div>
+    {{ primary_nav_right }}
+  </nav>
+</div>

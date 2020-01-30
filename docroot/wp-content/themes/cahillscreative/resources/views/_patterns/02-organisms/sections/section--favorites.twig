@@ -1,0 +1,30 @@
+{% if favorites or post.featured_affiliates %}
+  <section class="secton section__favorites background-color--white">
+    <div class="layout-container section__favorites--inner text-align--center section--padding">
+      <h3 class="font--primary--s">Shop My Favorites</h3>
+      <hr class="divider" />
+      <div class="slick-favorites">
+        {% if post.featured_affiliates %}
+          {% for post in post.featured_affiliates %}
+            <a href="{{ post.affiliate_link }}" class="block__favorite block__link spacing" target="_blank">
+              {% if post.thumbnail %}
+                <picture class="block__thumb">
+                  <img src="{{ Image(post.thumbnail).src|resize(600,600) }}" alt="{{ Image(post.thumbnail).alt }}">
+                </picture>
+              {% endif %}
+            </a>
+          {% endfor %}
+        {% endif %}
+        {% for post in favorites %}
+          <a href="{{ post.affiliate_link }}" class="block__favorite block__link spacing" target="_blank">
+            {% if post.thumbnail %}
+              <picture class="block__thumb">
+                <img src="{{ Image(post.thumbnail).src|resize(600,600) }}" alt="{{ Image(post.thumbnail).alt }}">
+              </picture>
+            {% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}

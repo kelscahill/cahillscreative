@@ -20,9 +20,9 @@
  * @subpackage  Timber
  * @since    Timber 0.1
  */
- 
+global $wp_query;
+$total_results = $wp_query->found_posts;
 $context = Timber::get_context();
 $post = new TimberPost();
 $context['post'] = $post;
-$context['is_front_page'] = 'true';
-Timber::render(array('04-pages/page-' . $post->post_name . '.twig', '04-pages/front-page.twig'), $context);
+Timber::render(array('04-pages/search.twig'), $context);

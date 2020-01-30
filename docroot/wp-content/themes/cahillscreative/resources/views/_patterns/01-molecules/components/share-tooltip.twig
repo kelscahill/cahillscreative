@@ -1,0 +1,17 @@
+{% set link = get_the_permalink() %}
+{% set title = get_the_title() %}
+{% if (get_the_excerpt() != '') %}
+  {% set excerpt = wp_trim_excerpt(get_the_excerpt('',FALSE,'')) %}
+{% else %}
+  {% set excerpt = wp_trim_words(get_the_content('',FALSE,''), 100, '...') %}
+{% endif %}
+{% set image = wp_get_attachment_image_src(get_post_thumbnail_id(), 'horiz__4x3--m')[0] %}
+<div class="block__toolbar-share-tooltip tooltip-wrap">
+  <div class="tooltip-item font--primary--xs text-align--center color--gray">Share Post</div>
+  <a aria-label="Share on Facebook" href="https://facebook.com/sharer/sharer.php?u={{ link }}&t={{ excerpt }}" class="tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">{% include "00-atoms/icons/icon--facebook.twig" %}</span>Facebook</a>
+  <a aria-label="Share on Twitter" href="https://twitter.com/intent/tweet/?text={{ title }}{{ ': ' . excerpt . ' ' . link }}&amp;url={{ link }}" class="tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">{% include "00-atoms/icons/icon--twitter.twig" %}</span>Twitter</a>
+  <a aria-label="Share on Pinterest" href="https://pinterest.com/pin/create/button/?url={{ link }}&amp;media={{ image_medium }}&amp;description={{ title }}{{ ': ' . excerpt . ' ' . link }}" class="tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">{% include "00-atoms/icons/icon--pinterest.twig" %}</span>Pinterest</a>
+  <a aria-label="Share on LinkedIn" href="https://www.linkedin.com/shareArticle?mini=true&amp;url={{ link }}&amp;title={{ title }}&amp;summary={{ excerpt . ' ' . link }}&amp;source={{ link }}" class="tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">{% include "00-atoms/icons/icon--linkedin.twig" %}</span>LinkedIn</a>
+  <a aria-label="Share by E-Mail" href="mailto:?subject={{ title }}&amp;body={{ excerpt . ' ' . link }}" target="_self" class="tooltip-item"><span class="icon icon--xs space--half-right path-fill--black">{% include "00-atoms/icons/icon--email.twig" %}</span>Email</a>
+  <div class="tooltip-item tooltip-close font--primary--xs text-align--center background-color--black color--white">Close Share</div>
+</div>

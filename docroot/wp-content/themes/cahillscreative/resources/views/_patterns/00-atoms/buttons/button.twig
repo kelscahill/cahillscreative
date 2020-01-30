@@ -1,7 +1,0 @@
-{% if button.url == false %}
-  <button class="o-button{{ ' ' ~ button.class }}" target="{{ button.target ? button.target : '_self' }}">{{ button.text }}</button>
-{% elseif link %}
-  <a href="{{ link.url }}" class="o-link{{ ' ' ~ link.class }}" target="{{ link.target ? link.target : 'self' }}">{{ link.text }}<span class="o-icon">{% include "00-atoms/icons/arrow-long.twig" %}</span></a>
-{% else %}
-  <a href="{{ button.url }}" class="o-button{{ ' ' ~ button.class }}" target="{{ button.target ? button.target : '_self' }}">{{ button.text }}</a>
-{% endif %}

@@ -42,7 +42,8 @@ add_action('after_setup_theme', function () {
     register_nav_menus([
         'primary_navigation_left' => __('Primary Navigation Left', 'sage'),
         'primary_navigation_right' => __('Primary Navigation Right', 'sage'),
-        'footer_navigation' => __('Footer Navigation', 'sage')
+        'footer_navigation_col_1' => __('Footer Navigation Column 1', 'sage'),
+        'footer_navigation_col_2' => __('Footer Navigation Column 2', 'sage')
     ]);
 
     /**
@@ -128,34 +129,3 @@ add_action('after_setup_theme', function () {
         return "<?= " . __NAMESPACE__ . "\\asset_path({$asset}); ?>";
     });
 });
-
-/**
- * Custom image styles.
- */
-
-// Featured crop.
-add_image_size('featured__hero--s', 500, 400, array('center', 'center'));
-add_image_size('featured__hero--m', 800, 500, array('center', 'center'));
-add_image_size('featured__hero--l', 1100, 500, array('center', 'center'));
-add_image_size('featured__hero--xl', 1600, 600, array('center', 'center'));
-
-// 16:9 crop.
-add_image_size('horiz__16x9--s', 500, 280, array('center', 'center'));
-add_image_size('horiz__16x9--m', 800, 450, array('center', 'center'));
-add_image_size('horiz__16x9--l', 1100, 620, array('center', 'center'));
-add_image_size('horiz__16x9--xl', 1600, 900, array('center', 'center'));
-
-// 4:3 crop.
-add_image_size('horiz__4x3--s', 500, 375, array('center', 'center'));
-add_image_size('horiz__4x3--m', 800, 600, array('center', 'center'));
-add_image_size('horiz__4x3--l', 1100, 825, array('center', 'center'));
-//add_image_size('horiz__4x3--xl', 1600, 1200, array('center', 'center'));
-
-// Flexible height
-add_image_size('flex-height--s', 400, 9999);
-add_image_size('flex-height--m', 650, 9999);
-add_image_size('flex-height--l', 900, 9999);
-
-// Square crop.
-add_image_size('square--s', 500, 500, array('center', 'center'));
-add_image_size('square--m', 650, 650, array('center', 'center'));

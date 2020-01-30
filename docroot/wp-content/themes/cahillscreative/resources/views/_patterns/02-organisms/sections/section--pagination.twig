@@ -1,0 +1,22 @@
+<div class="article__nav">
+  <div class="article__nav--inner">
+    {% if post.previous %}
+      <a href="{{ post.previous.link }}" class="article__nav-item previous">
+        <div class="article__nav-item-label font--primary--xs">
+          <span class="icon icon--xs">{% include "00-atoms/icons/arrow--previous.twig" %}</span><font>Previous</font>
+        </div>
+        <div class="font--primary--s">{{ post.previous.title }}</div>
+      </a>
+    {% endif %}
+  </div>
+  <div class="article__nav--inner">
+    {% if post.next %}
+      <a href="{{ post.next.link }}" class="article__nav-item next">
+        <div class="article__nav-item-label font--primary--xs">
+          <font>Next</font><span class="icon icon--xs">{% include "00-atoms/icons/arrow--next.twig" %}</span>
+        </div>
+        <div class="font--primary--s">{{ post.next.title }}</div>
+      </a>
+    {% endif %}
+  </div>
+</div>

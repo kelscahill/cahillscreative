@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'manifest' => '/wp-content/themes/cahillscreative//dist/assets.json',
+    'manifest' => get_theme_file_path().'/dist/assets.json',
 
     /*
     |--------------------------------------------------------------------------
@@ -27,5 +27,5 @@ return [
     |
     */
 
-    'uri' => '/wp-content/themes/cahillscreative/dist',
+    'uri' => get_theme_file_uri().'/dist',
 ];
