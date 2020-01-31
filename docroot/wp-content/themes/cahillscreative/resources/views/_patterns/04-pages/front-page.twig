@@ -1,6 +1,6 @@
 {% extends "03-templates/base.twig" %}
 {% block content %}
-  {{ include "02-organisms/sections/section--hero.twig" }}
+  {% include "02-organisms/sections/section--hero.twig" %}
   <section class="section section__main">
     <div class="layout-container section__main--inner">
       <article class="article">
@@ -69,7 +69,7 @@
         </div>
         <div class="grid-item">
           <picture class="round">
-            <img src="{{ get_bloginfo('template_url') }}/assets/images/headshot.jpg" alt="Kelsey Cahill" />
+            <img src="" alt="Kelsey Cahill" />
           </picture>
         </div>
       </div>
@@ -90,7 +90,7 @@
         {% include "01-molecules/blocks/block--featured.twig"
           with {
             kicker: "Featured Work",
-            tags: strip_tags(get_the_tag_list('',', ',''))
+            tags: post.tags
           }
         %}
       {% endfor %}

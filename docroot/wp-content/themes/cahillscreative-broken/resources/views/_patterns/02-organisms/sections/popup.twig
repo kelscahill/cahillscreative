@@ -1,0 +1,22 @@
+{% if options.modal_embed_code %}
+  <div id="popup-container" class="popup--overlay popup--hide">
+     <div id="popup-window" class="popup">
+        <div class="modal-content">
+           <div class="popup--inner spacing">
+             {% if options.modal_kicker %}
+               <h4 class="popup__kicker font--primary--xs">{{ options.modal_kicker }}</h4>
+               <hr class="divider background-color--white" />
+             {% endif %}
+             {% if options.modal_title %}
+               <h3 class="popup__title font--primary--xl">{{ options.modal_title }}</h3>
+             {% endif %}
+             {% if options.modal_description %}
+               <div class="popup__body color--gray">{{ options.modal_description }}</div>
+             {% endif %}
+             <div class="popup__form">{{ options.modal_embed_code }}</div>
+             <a href="" class="popup__close" data-dismiss="modal" aria-label="Close"><em>No Thanks</em></a>
+           </div>
+        </div>
+     </div>
+  </div>
+{% endif %}

@@ -33,49 +33,48 @@
     post.alt = get_post_meta(post.thumb_id, '_wp_attachment_image_alt', true);
   @endphp
   #}
-  <div class="block block__post background-color--white">
+  <div class="block block__post block__{{ post.post_type }} background-color--white">
     <a href="{{ post.link }}" class="block__link spacing">
-      {% if post.thumb_id %}
+      {% if post.thumbnail %}
         <picture class="block__thumb">
-          <source srcset="{{ post.image_medium }}" media="(min-width:500px)">
-          <img src="{{ post.image_small }}" alt="{{ post.alt }}">
+          <img src="{{ Image(post.thumbnail).src|resize(600,600) }}" alt="{{ Image(post.thumbnail).alt }}">
         </picture>
       {% endif %}
       <div class="block__content spacing--half">
-        {% if post.kicker %}
+        {% if post.category() %}
           <div class="block__kicker font--primary--xs color--gray">
-            {{ post.kicker }}
+            {{ post.category() }}
           </div>
         {% endif %}
         <div class="block__title font--primary--m color--black">
           {{ post.title }}
         </div>
-        {% if post.tags %}
-          <div class="block__meta color--gray">
-            <span class="color--gray font--s">{{ post.tags }}</span>
+        {% if post.terms('tags') %}
+          <div class="block__tags color--gray">
+            {% for term in post.terms('tags') %}
+              <span class="color--gray font--s">{{ term.name }}{% if not loop.last %}, {% endif %}</span>
+            {% endfor %}
           </div>
         {% endif %}
         {% if post.date %}
           <div class="block__meta color--gray">
-            {{ include "00-atoms/text/entry-meta.twig" }}
+            {% include "00-atoms/text/entry-meta.twig" %}
           </div>
         {% endif %}
       </div>
     </a>
     <div class="block__toolbar">
       <div class="block__toolbar--left">
-        {% if (comments_open()) %}
+        {% if function('comments_open') %}
           <a href="{{ post.link }}#comments" class="block__toolbar-item block__toolbar-comment space--half-right">
             <span class="icon icon--s space--half-right">{% include "00-atoms/icons/icon--comment.twig" %}</span>
             <span class="font--sans-serif font--sans-serif--small color--gray">
-              {{ comments_number('0', '1', '%') }}
+              {{ function('comments_number','0','1','%') }}
             </span>
           </a>
         {% endif %}
         <div class="block__toolbar-item block__toolbar-like space--half-right">
-          {% if function_exists('wp_ulike') %}
-            {{ wp_ulike('get') }}
-          {% endif %}
+          {{ function('wp_ulike','get') }}
         </div>
       </div>
       <div class="block__toolbar--right tooltip">
@@ -83,7 +82,7 @@
           <span class="font--primary--xs color--gray">Share</span>
           <span class="icon icon--s space--half-left">{% include "00-atoms/icons/icon--share.twig" %}</span>
         </div>
-        {% include "01-molecules/components/share-tooltip.twig" %}
+        {% include "01-molecules/components/share--tooltip.twig" %}
       </div>
     </div>
   </div>

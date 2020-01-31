@@ -1,0 +1,165 @@
+/* ------------------------------------*\
+    $BUTTONS
+\*------------------------------------ */
+
+.btn,
+button,
+input[type="submit"] {
+  display: table;
+  padding: rem(13) $pad-and-half rem(12) $pad-and-half;
+  vertical-align: middle;
+  cursor: pointer;
+  color: $white;
+  background-color: $button-color;
+  box-shadow: none;
+  border: none;
+  transition: all 0.3s ease-in-out;
+  border-radius: rem(50);
+  text-align: center;
+
+  @include font--primary--xs;
+
+  &:focus {
+    outline: 0;
+  }
+
+  &:hover {
+    background-color: $button-hover;
+    color: $white;
+  }
+
+  &.center {
+    display: table;
+    width: auto;
+    padding-left: $pad;
+    padding-right: $pad;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.alm-btn-wrap {
+  margin-top: $space-double;
+
+  &::after,
+  &::before {
+    display: none;
+  }
+}
+
+.btn--outline {
+  border: 1px solid $black;
+  color: $black;
+  background: transparent;
+  position: relative;
+  padding-left: 0;
+  padding-right: 0;
+  height: rem(40);
+  width: 100%;
+  display: block;
+
+  font {
+    position: absolute;
+    bottom: rem(5);
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
+  span {
+    font-size: rem(9);
+    display: block;
+    position: absolute;
+    top: rem(5);
+    left: 0;
+    right: 0;
+    color: $gray;
+    width: 100%;
+  }
+}
+
+.btn--download {
+  position: fixed;
+  bottom: rem(40);
+  left: 0;
+  width: 100%;
+  border-radius: 0;
+  color: $black;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  z-index: 9999;
+  background: $mint;
+
+  span,
+  font {
+    font-size: inherit;
+    color: $black;
+    width: auto;
+    position: relative;
+    top: auto;
+    bottom: auto;
+  }
+
+  span {
+    padding-right: rem(5);
+  }
+
+  &:hover {
+    background: lighten($mint, 15%);
+
+    span,
+    font {
+      color: $black;
+    }
+  }
+}
+
+.btn--center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.alm-btn-wrap {
+  margin: 0;
+  padding: 0;
+}
+
+button.alm-load-more-btn.more {
+  width: auto;
+  border-radius: rem(50);
+  background: transparent;
+  border: 1px solid $black;
+  color: $black;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  padding-left: $pad-double;
+  padding-right: $pad-double;
+  margin: 0 auto;
+  height: rem(40);
+
+  @include font--primary--xs;
+
+  &.done {
+    opacity: 0.3;
+    pointer-events: none;
+
+    &:hover {
+      background-color: transparent;
+      color: $body-color;
+    }
+  }
+
+  &:hover {
+    background-color: $button-hover;
+    color: $white;
+  }
+
+  &::after,
+  &::before {
+    display: none !important;
+  }
+}

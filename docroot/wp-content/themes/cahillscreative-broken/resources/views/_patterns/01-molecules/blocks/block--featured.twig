@@ -1,0 +1,28 @@
+{% if post.thumbnail %}
+  {% set img_id = Image(post.thumbnail).id %}
+  {% set image_class = ' background-image--' ~ img_id %}
+  {% set img_src = Image(post.thumbnail).src|resize(650,650) %}
+  <style>
+    .background-image--{{ img_id }} {
+      background-image: url({{ img_src }});
+    }
+  </style>
+{% endif %}
+<a href="{{ post.link }}" class="block block__featured background--cover{{ image_class }}">
+  <div class="block__content spacing--half">
+    {% if post.kicker %}
+      <div class="block__kicker font--primary--xs">
+        {{ post.kicker }}
+      </div>
+    {% endif %}
+    <div class="block__title font--primary--m">
+      {{ post.title }}
+    </div>
+    {% if post.tags %}
+      <div class="block__meta">
+        <span class="font--s">{{ post.tags }}</span>
+      </div>
+    {% endif %}
+    <div class="block__button font--primary--xs">View Project</div>
+  </div>
+</a>

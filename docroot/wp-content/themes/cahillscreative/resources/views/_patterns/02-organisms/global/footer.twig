@@ -2,51 +2,43 @@
   <div class="footer--inner layout-container spacing--double">
     <div class="footer__row footer__row--top grid grid--50-50">
       <div class="grid-item footer--left spacing--double">
-        <div class="footer__nav">
-          {% if footer_nav_col_1 %}
-            <div class="footer__nav-col">
-              {% for item in footer_nav_col_1.items %}
-                <a class="footer__nav-link" target="{{ item.target }}" href="{{ item.link }}">{{ item.title }}</a>
-              {% endfor %}
-            </div>
-          {% endif %}
-          {% if footer_nav_col_2 %}
-            <div class="footer__nav-col">
-              <span class="color--gray font--primary--xs">Shop</span>
-              {% for item in footer_nav_col_2.items %}
-                <a class="footer__nav-link" target="{{ item.target }}" href="{{ item.link }}">{{ item.title }}</a>
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
+        {% if footer_nav_col_1 or footer_nav_col_2 %}
+          <div class="footer__nav">
+            {% if footer_nav_col_1 %}
+              <div class="footer__nav-col">
+                {% for item in footer_nav_col_1.items %}
+                  <a class="footer__nav-link" target="{{ item.target }}" href="{{ item.link }}">{{ item.title }}</a>
+                {% endfor %}
+              </div>
+            {% endif %}
+            {% if footer_nav_col_2 %}
+              <div class="footer__nav-col">
+                <span class="color--gray font--primary--xs">Shop</span>
+                {% for item in footer_nav_col_2.items %}
+                  <a class="footer__nav-link" target="{{ item.target }}" href="{{ item.link }}">{{ item.title }}</a>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
         <div class="footer__mailing">
           <h3 class="color--gray font--primary--xs">Join the mailing list</h3>
           {% include "01-molecules/forms/form--newsletter.twig" %}
         </div>
       </div>
       <div class="grid-item footer--right">
-        <div class="footer__posts spacing">
-          <h3 class="color--gray font--primary--xs">Latest Posts</h3>
+        <div class="footer__posts">
           {% include "01-molecules/components/feed--latest.twig" %}
         </div>
         <div class="footer__ads">
-          <h3 class="color--gray font--primary--xs space--half-bottom">Advertisements</h3>
-          <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-          <!-- Footer Ad (Rectangle) -->
-          <ins class="adsbygoogle"
-               style="display:inline-block;width:336px;height:280px"
-               data-ad-client="ca-pub-3133257559155527"
-               data-ad-slot="9671017956"></ins>
-          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+          {% include "01-molecules/ads/ad--rectangle.twig" %}
         </div>
       </div>
     </div>
     <div class="footer__row footer__row--bottom">
       <div class="footer__copyright">
-        {% if is_page('privacy-policy') %}
-          <a class="font--primary--xs space--half-right" href="/privacy-policy">Privacy Policy</a>
-        {% endif %}
-        <span class="font--primary--xs font-weight--400">© {{ date('Y') }} {{ site.title }}. All Rights Reserved.</span>
+        <a class="font--primary--xs space--half-right" href="/privacy-policy">Privacy Policy</a>
+        <span class="font--primary--xs font-weight--400">© {{"now"|date('Y')}} {{ site.title }} | All Rights Reserved.</span>
       </div>
       <div class="footer__social">
         <span class="color--gray font--primary--xs space--half-right">Follow Me</span>

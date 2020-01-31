@@ -11,9 +11,9 @@
         <div class="wrap--2-col sticky-parent">
           <div class="article__content shift-left wrap--2-col--small">
             <div class="article__content--left spacing--double sticky shift-left--small">
-              {% include "01-molecules/components/share-tools.twig" %}
+              {% include "01-molecules/components/share--tools.twig" %}
               {% if(get_field('affiliate_link'))
-                <a href="{{ get_field('affiliate_link') }}" class="btn btn--outline" target="_blank">Buy now</a>
+                <a href="{{ get_field('affiliate_link') }}" class="btn btn--outline" target="_blank" rel="noopener">Buy now</a>
               {% endif %}
             </div>
             <div class="article__content--right spacing--double shift-right--small">
@@ -35,7 +35,7 @@
               </div>
               @php the_content() @endphp
               {% if(get_field('affiliate_link'))
-                <a href="{{ get_field('affiliate_link') }}" class="btn" target="_blank">Buy now</a>
+                <a href="{{ get_field('affiliate_link') }}" class="btn" target="_blank" rel="noopener">Buy now</a>
               {% endif %}
               <div id="amzn-assoc-ad-60fe5c9c-a247-475f-86a7-aa2f5fb685d0"></div>
               <script async src="//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=60fe5c9c-a247-475f-86a7-aa2f5fb685d0"></script>
@@ -46,7 +46,7 @@
         </div> <!-- ./wrap--2-col -->
         <div class="aricle__mobile-footer">
           {% if(get_field('affiliate_link'))
-            <a href="{{ get_field('affiliate_link') }}" class="btn btn--outline btn--download hide-after--m" target="_blank"><span class="font--primary--xs">Buy now</a>
+            <a href="{{ get_field('affiliate_link') }}" class="btn btn--outline btn--download hide-after--m" target="_blank" rel="noopener"><span class="font--primary--xs">Buy now</a>
           {% endif %}
           <div class="article__toolbar block__toolbar">
             <div class="block__toolbar--left">
@@ -69,7 +69,7 @@
                 <div class="block__toolbar-item block__toolbar-share tooltip-toggle js-toggle-parent">
                   <span class="icon icon--s space--half-left">{% include "00-atoms/icons/icon--share.twig" %}</span>
                 </div>
-                {% include "01-molecules/components/share-tooltip.twig" %}
+                {% include "01-molecules/components/share--tooltip.twig" %}
               </div>
             </div> <!-- ./block__toolbar--left -->
             <div class="block__toolbar--right">

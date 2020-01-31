@@ -1,6 +1,6 @@
 {% extends "03-templates/base.twig" %}
 {% block content %}
-  {{ include "02-organisms/sections/section--hero.twig" }}
+  {% include "02-organisms/sections/section--hero.twig" %}
   {{ include "02-organisms/sections/section--filter.twig" }}
   <section class="section section__main">
     <div class="layout-container section__main--inner">
@@ -38,7 +38,7 @@
             {{ do_shortcode('[ajax_load_more tag="' . category .'" container_type="div" post_type="'. post_type .'" scroll="false" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]') }}
           {% else %}
             <p>Sorry, no posts were found.</p>
-            {{ get_search_form(false) }}
+            {{ function('get_search_form') }}
           {% endif %}
         </div>
       </article>

@@ -1,0 +1,24 @@
+{% include "02-organisms/global/popup.twig" %}
+<header role="banner" class="header">
+  <div class="header__utility background-color--black">
+    <div class="header__utility--left">
+      {% if options.mailing_list_form_url %}
+        <a href="{{ options.mailing_list_form_url }}" target="_blank" class="header__utility-mailing">
+          <span class="icon icon--s space--half-right">
+            {% include "00-atoms/icons/icon--email.twig" %}
+          </span>
+          <span class="color--white font--primary--xs">Join our mailing list!</span>
+        </a>
+      {% endif %}
+    </div>
+    <div class="header__utility--right">
+      <div class="header__utility-search">
+        {% include "01-molecules/forms/search.twig" %}
+      </div>
+      <div class="header__utility-social">
+        {% include "01-molecules/components/social-links.twig" %}
+      </div>
+    </div>
+  </div>
+  {% include "01-molecules/navigation/navigation.twig" %}
+</header>

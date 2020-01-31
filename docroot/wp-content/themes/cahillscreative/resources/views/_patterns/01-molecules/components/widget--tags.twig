@@ -5,7 +5,7 @@
     <div class="tags">
       {% for tags in tag %}
         <div class="tag">
-          <a href="{{ home_url('/') }}tag/{{ tag.slug }}">{{ tag.name }}</a>
+          <a href="{{ site.link }}tag/{{ tag.slug }}">{{ tag.name }}</a>
         </div>
       {% endfor %}
     </div>

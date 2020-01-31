@@ -21,27 +21,28 @@
  * @since    Timber 0.1
  */
 
-/* Template Name: Shop Template */
+/* Template Name: Work Template */
+
+$context = Timber::get_context();
+$post = new TimberPost();
+$context['post'] = $post;
+$context['template'] = 'shop';
+$context['post_type'] = 'affiliate';
+$context['tag'] = $post->post_name;
 
 $args = array(
-  'post_type' => array(
-    'affiliate',
-  ),
+  'post_type' => 'affiliate',
   'posts_per_page' => 12,
   'post_status' => 'publish',
   'order' => 'DESC',
   'tax_query' => array(
-    array(
-      'taxonomy' => 'post_tag',
-      'field' => 'slug',
-      'terms' => 'home-decor'
-    )
-  )
+   	 array(
+   		 'taxonomy' => 'post_tag',
+   		 'field' => 'slug',
+   		 'terms' => $post->post_name,
+   	 )
+   )
 );
+$context['posts'] = Timber::query_posts($args);
 
-$context = Timber::get_context();
-$post = Timber::query_post();
-$context['post'] = $post;
-$context['posts'] = Timber::get_posts($args);
-$context['template'] = 'shop';
-Timber::render('04-pages/index.twig', $context);
+Timber::render('04-pages/page.twig', $context);

@@ -1,19 +1,20 @@
 <section class="section section__main">
   <div class="layout-container">
     <article class="article narrow--xl center-block spacing--double">
-      <div class="page-header spacing text-align--center narrow narrow--m">
-        <h2 class="page-kicker font--primary--s">Search Results for</h2>
-        <hr class="divider">
-        <h1 class="page-title">{{ get_search_query() }}</h1>
-        <div class="page-intro">
-          <p>{{ total_results }} total results found.</p>
-        </div>
-      </div>
+      {% include "02-organisms/sections/page-header.twig"
+        with {
+          post: {
+            display_title: function('get_search_query'),
+            title: "Search Results for",
+            intro: found_posts ~ " total results found."
+          }
+        }
+      %}
       {% if posts %}
-        {{ do_shortcode('[ajax_load_more search="'. get_search_query() .'" orderby="relevance" posts_per_page="12" scroll="true" button_label="Show More Results" transition_container="false"]') }}
+        {{ function('do_shortcode', '[ajax_load_more search="'~ function('get_search_query') ~'" orderby="relevance" posts_per_page="12" scroll="true" button_label="Show More Results" transition_container="false"]') }}
       {% else %}
         <p class="text-align--center space--zero">Sorry, no results were found.</p>
-        {{ get_search_form(false) }}
+        {{ function('get_search_form') }}
       {% endif %}
     </article>
   </div>

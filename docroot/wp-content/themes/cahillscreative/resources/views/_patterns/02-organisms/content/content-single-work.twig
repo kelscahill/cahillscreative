@@ -53,7 +53,7 @@
         <div class="narrow narrow--s spacing text-align--center">
           <p>{{ $body }}</p>
           {% if ($link)
-            <a href="{{ $link }}" class="btn btn--outline center space--top" target="_blank">View Website</a>
+            <a href="{{ $link }}" class="btn btn--outline center space--top" target="_blank" rel="noopener">View Website</a>
           {% endif %}
         </div>
         {% if(have_rows('work'))
@@ -82,7 +82,7 @@
           @endwhile
         {% endif %}
         <div class="article__share-work">
-          {% include "01-molecules/components/share-tools.twig" %}
+          {% include "01-molecules/components/share--tools.twig" %}
         </div>
       </div> <!-- ./article__body -->
     </article>

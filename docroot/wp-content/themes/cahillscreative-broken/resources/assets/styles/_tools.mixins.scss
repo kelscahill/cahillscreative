@@ -1,0 +1,60 @@
+/* eslint-disable */
+
+/* ------------------------------------*\
+    $MIXINS
+\*------------------------------------ */
+
+/**
+ * Convert px to rem.
+ *
+ * @param int $size
+ *   Size in px unit.
+ * @return string
+ *   Returns px unit converted to rem.
+ */
+@function rem($size) {
+  $remSize: $size / $rembase;
+
+  @return #{$remSize}rem;
+}
+
+/**
+ * Center-align a block level element
+ */
+@mixin center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/**
+ * Standard paragraph
+ */
+@mixin p {
+  font-family: $font-primary;
+  font-weight: 400;
+  font-size: rem(16);
+  line-height: rem(26);
+}
+
+/**
+ * Maintain aspect ratio
+ */
+@mixin aspect-ratio($width, $height) {
+  position: relative;
+
+  &::before {
+    display: block;
+    content: "";
+    width: 100%;
+    padding-top: $height / $width * 100%;
+  }
+
+  > .ratio-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}

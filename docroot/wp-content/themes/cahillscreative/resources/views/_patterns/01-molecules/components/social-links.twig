@@ -1,9 +1,16 @@
-<a href="https://www.pinterest.com/cahillscreative/" class="social-link icon icon--s" target="_blank">
-  {% include "00-atoms/icons/icon--pinterest.twig" %}
-</a>
-<a href="https://www.facebook.com/CahillsCreative" class="social-link icon icon--s" target="_blank">
-  {% include "00-atoms/icons/icon--facebook.twig" %}
-</a>
-<a href="https://www.instagram.com/cahillscreative/" class="social-link icon icon--s" target="_blank">
-  {% include "00-atoms/icons/icon--instagram.twig" %}
-</a>
+{% if options.instagram_url %}
+  <a href="{{ options.instagram_url }}" class="social-link icon icon--s" target="_blank" rel="noopener">
+    {% include "00-atoms/icons/icon--instagram.twig" with { fill: "#fff" } %}
+  </a>
+{% endif %}
+{% if options.pinterest_url %}
+  <a href="{{ options.pinterest_url }}" class="social-link icon icon--s" target="_blank" rel="noopener">
+    {% include "00-atoms/icons/icon--pinterest.twig" with { fill: "#fff" } %}
+  </a>
+{% endif %}
+{% if options.facebook_url %}
+  <a href="{{ options.facebook_url }}" class="social-link icon icon--s" target="_blank" rel="noopener">
+    {% include "00-atoms/icons/icon--facebook.twig" with { fill: "#fff" } %}
+  </a>
+{% endif %}
+

@@ -1,0 +1,143 @@
+/* ------------------------------------*\
+    $WRAPPERS & CONTAINERS
+\*------------------------------------ */
+
+.touch {
+  .mobile-only {
+    display: block;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+}
+
+.no-touch {
+  .mobile-only {
+    display: none;
+  }
+
+  .desktop-only {
+    display: block;
+  }
+}
+
+/**
+ * Layout containers - keep content centered and within a maximum width. Also
+ * adjusts left and right padding as the viewport widens.
+ */
+.layout-container {
+  max-width: $max-width;
+  margin: 0 auto;
+  position: relative;
+  padding-left: $pad;
+  padding-right: $pad;
+}
+
+/**
+ * Wrapping element to keep content contained and centered.
+ */
+.wrap {
+  max-width: $max-width;
+  margin: 0 auto;
+}
+
+.wrap--2-col {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+
+  @include media('>xlarge') {
+    flex-direction: row;
+  }
+
+  .shift-left {
+    @include media('>xlarge') {
+      width: calc(100% - 320px);
+      padding-right: $pad;
+    }
+  }
+
+  .shift-right {
+    margin-top: $space-double;
+
+    @include media('>medium') {
+      padding-left: rem(170);
+    }
+
+    @include media('>xlarge') {
+      width: rem(320);
+      padding-left: $pad;
+      margin-top: 0;
+    }
+  }
+}
+
+.wrap--2-col--small {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  position: relative;
+
+  @include media('>medium') {
+    flex-direction: row;
+  }
+
+  .shift-left--small {
+    width: rem(150);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
+    display: none;
+
+    @include media('>medium') {
+      padding-right: $pad;
+      display: flex;
+    }
+  }
+
+  .shift-right--small {
+    width: 100%;
+
+    @include media('>medium') {
+      padding-left: $pad;
+      width: calc(100% - 150px);
+    }
+  }
+}
+
+.shift-left--small.sticky-is-active {
+  max-width: rem(150) !important;
+}
+
+/**
+ * Wrapping element to keep content contained and centered at narrower widths.
+ */
+.narrow {
+  max-width: rem(800);
+
+  @include center-block;
+}
+
+.narrow--xs {
+  max-width: rem(500);
+}
+
+.narrow--s {
+  max-width: rem(600);
+}
+
+.narrow--m {
+  max-width: rem(700);
+}
+
+.narrow--l {
+  max-width: $article-max;
+}
+
+.narrow--xl {
+  max-width: rem(1250);
+}

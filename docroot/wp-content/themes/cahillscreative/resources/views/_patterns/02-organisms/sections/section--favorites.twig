@@ -6,7 +6,7 @@
       <div class="slick-favorites">
         {% if post.featured_affiliates %}
           {% for post in post.featured_affiliates %}
-            <a href="{{ post.affiliate_link }}" class="block__favorite block__link spacing" target="_blank">
+            <a href="{{ post.affiliate_link }}" class="block__favorite block__link spacing" target="_blank" rel="noopener">
               {% if post.thumbnail %}
                 <picture class="block__thumb">
                   <img src="{{ Image(post.thumbnail).src|resize(600,600) }}" alt="{{ Image(post.thumbnail).alt }}">
@@ -16,7 +16,7 @@
           {% endfor %}
         {% endif %}
         {% for post in favorites %}
-          <a href="{{ post.affiliate_link }}" class="block__favorite block__link spacing" target="_blank">
+          <a href="{{ post.affiliate_link }}" class="block__favorite block__link spacing" target="_blank" rel="noopener">
             {% if post.thumbnail %}
               <picture class="block__thumb">
                 <img src="{{ Image(post.thumbnail).src|resize(600,600) }}" alt="{{ Image(post.thumbnail).alt }}">

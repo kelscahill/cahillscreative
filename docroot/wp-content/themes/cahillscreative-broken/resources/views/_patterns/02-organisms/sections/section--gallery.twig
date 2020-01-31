@@ -1,0 +1,26 @@
+{% if post.gallery %}
+  <div class="article__gallery gallery slick-gallery">
+    {% for image in post.gallery %}
+      <div class="gallery__image">
+        <picture class="gallery__picture">
+          <source srcset="{{ Image(image).src|resize(900) }}" media="(min-width:650px)">
+          <source srcset="{{ Image(image).src|resize(650) }}" media="(min-width:400px)">
+          <img src="{{ Image(image).src|resize(400) }}" alt="{{ Image(image).alt }}">
+        </picture>
+        {% if Image(image).caption %}
+          <div class="gallery__caption">
+            {{ Image(image).caption }}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="article__image">
+    <picture class="article__picture">
+      <source srcset="{{ Image(post.thumbnail).src|resize(900) }}" media="(min-width:650px)">
+      <source srcset="{{ Image(post.thumbnail).src|resize(650) }}" media="(min-width:400px)">
+      <img src="{{ Image(post.thumbnail).src|resize(400) }}" alt="{{ Image(post.thumbnail).alt }}">
+    </picture>
+  </div>
+{% endif %}

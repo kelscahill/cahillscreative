@@ -6,16 +6,44 @@
     <span class="nav__toggle-span nav__toggle-span--4"></span>
   </div>
   <nav class="nav__primary-mobile" role="navigation">
-    {{ primary_nav_left_mobile }}
-    {{ primary_nav_right_mobile }}
+    {% if primary_nav_left %}
+      <ul class="primary-nav__list">
+        {% for item in primary_nav_left.items %}
+          {% include "00-atoms/text/navigation-item.twig" %}
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% if primary_nav_right %}
+      <ul class="primary-nav__list">
+        {% for item in primary_nav_right.items %}
+          {% include "00-atoms/text/navigation-item.twig" %}
+        {% endfor %}
+      </ul>
+    {% endif %}
   </nav>
   <nav class="nav__primary background-color--primary" role="navigation">
-    {{ primary_nav_left }}
-    <div class="header__logo-wrap">
-      <a href="{{ home_url('/') }}" class="header__logo-link">
-        <div class="header__logo">{% include "00-atoms/images/logo.twig" %}</div>
-      </a>
-    </div>
-    {{ primary_nav_right }}
+    {% if primary_nav_left %}
+      <ul class="primary-nav__list">
+        {% for item in primary_nav_left.items %}
+          {% include "00-atoms/text/navigation-item.twig" %}
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% if options.logo %}
+      <div class="header__logo-wrap">
+        <a href="{{ site.link }}" class="header__logo-link">
+          <div class="header__logo">
+            <img src="{{ Image(options.logo).src }}" alt="{{ site.name }}"/>
+          </div>
+        </a>
+      </div>
+    {% endif %}
+    {% if primary_nav_right %}
+      <ul class="primary-nav__list">
+        {% for item in primary_nav_right.items %}
+          {% include "00-atoms/text/navigation-item.twig" %}
+        {% endfor %}
+      </ul>
+    {% endif %}
   </nav>
 </div>

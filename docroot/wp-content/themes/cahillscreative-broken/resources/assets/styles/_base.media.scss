@@ -1,0 +1,125 @@
+/* ------------------------------------*\
+    $MEDIA ELEMENTS
+\*------------------------------------ */
+
+/**
+ * Flexible Media
+ */
+iframe,
+img,
+object,
+svg,
+video {
+  max-width: 100%;
+  border: none;
+}
+
+img[src$=".svg"] {
+  width: 100%;
+}
+
+picture {
+  display: block;
+  line-height: 0;
+}
+
+figure {
+  max-width: 100%;
+
+  img {
+    margin-bottom: 0;
+  }
+}
+
+.fc-style,
+figcaption {
+  font-weight: 400;
+  color: $gray;
+  font-size: rem(14);
+  padding-top: rem(3);
+  margin-bottom: rem(5);
+}
+
+.clip-svg {
+  height: 0;
+}
+
+/* ------------------------------------*\
+    $PRINT STYLES
+\*------------------------------------ */
+@media print {
+  *,
+  *::after,
+  *::before,
+  *::first-letter,
+  *::first-line {
+    background: transparent !important;
+    color: $black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+  }
+
+  abbr[title]::after {
+    content: " (" attr(title) ")";
+  }
+
+  /*
+   * Don't show links that are fragment identifiers,
+   * or use the `javascript:` pseudo protocol
+   */
+  a[href^="#"]::after,
+  a[href^="javascript:"]::after {
+    content: "";
+  }
+
+  blockquote,
+  pre {
+    border: 1px solid $border-color;
+    page-break-inside: avoid;
+  }
+
+  /*
+   * Printing Tables:
+   * http://css-discuss.incutio.com/wiki/Printing_Tables
+   */
+  thead {
+    display: table-header-group;
+  }
+
+  img,
+  tr {
+    page-break-inside: avoid;
+  }
+
+  img {
+    max-width: 100% !important;
+  }
+
+  h2,
+  h3,
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+
+  #footer,
+  #header,
+  .ad,
+  .no-print {
+    display: none;
+  }
+}

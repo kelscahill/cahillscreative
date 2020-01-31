@@ -1,0 +1,200 @@
+/* ------------------------------------*\
+    $HELPER/TRUMP CLASSES
+\*------------------------------------ */
+
+.shadow {
+  -webkit-filter: drop-shadow(0 2px 4px rgba(black, 0.5));
+  filter: drop-shadow(0 2px 4px rgba(black, 0.5));
+  -webkit-svg-shadow: 0 2px 4px rgba(black, 0.5);
+}
+
+.overlay {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  z-index: 9999;
+  display: none;
+  background: linear-gradient(to bottom, rgba(black, 0.5) 0%, rgba(black, 0.5) 100%) no-repeat border-box;
+}
+
+.image-overlay {
+  padding: 0;
+
+  &::before {
+    content: "";
+    position: relative;
+    display: block;
+    width: 100%;
+    background: rgba(black, 0.2);
+  }
+}
+
+.round {
+  border-radius: 50%;
+  overflow: hidden;
+  width: rem(80);
+  height: rem(80);
+  min-width: rem(80);
+  border: 1px solid $gray;
+}
+
+.overflow--hidden {
+  overflow: hidden;
+}
+
+/**
+ * Clearfix - extends outer container with floated children.
+ */
+.cf {
+  zoom: 1;
+}
+
+.cf::after,
+.cf::before {
+  content: " ";
+
+  // 1
+  display: table;
+
+  // 2
+}
+
+.cf::after {
+  clear: both;
+}
+
+.float--right {
+  float: right;
+}
+
+/**
+ * Hide elements only present and necessary for js enabled browsers.
+ */
+.no-js .no-js-hide {
+  display: none;
+}
+
+/**
+ * Positioning
+ */
+.position--relative {
+  position: relative;
+}
+
+.position--absolute {
+  position: absolute;
+}
+
+/**
+ * Alignment
+ */
+.text-align--right {
+  text-align: right;
+}
+
+.text-align--center {
+  text-align: center;
+}
+
+.text-align--left {
+  text-align: left;
+}
+
+.center-block {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align--center {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+}
+
+/**
+ * Background Covered
+ */
+.background--cover {
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.background-image {
+  background-size: 100%;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.background-image::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  content: "";
+  display: block;
+  z-index: -2;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.1;
+}
+
+/**
+ * Flexbox
+ */
+.align-items--center {
+  align-items: center;
+}
+
+.align-items--end {
+  align-items: flex-end;
+}
+
+.align-items--start {
+  align-items: flex-start;
+}
+
+.justify-content--center {
+  justify-content: center;
+}
+
+/**
+ * Misc
+ */
+.overflow--hidden {
+  overflow: hidden;
+}
+
+.width--50p {
+  width: 50%;
+}
+
+.width--100p {
+  width: 100%;
+}
+
+.z-index--back {
+  z-index: -1;
+}
+
+.max-width--none {
+  max-width: none;
+}
+
+.height--zero {
+  height: 0;
+}
+
+.height--100vh {
+  height: 100vh;
+  min-height: rem(250);
+}
+
+.height--60vh {
+  height: 60vh;
+  min-height: rem(250);
+}
