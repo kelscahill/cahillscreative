@@ -1,5 +1,5 @@
 {% if item.children %}
-{% set classes = " primary-nav--with-subnav js-hover" %}
+{% set classes = " primary-nav--with-subnav js-toggle" %}
 {% endif %}
 <li class="primary-nav__list-item{{ classes }}{{ item.classes | join(' primary-nav__') }}">
   <a class="primary-nav__link" target="{{ item.target }}" href="{{ item.link }}">{{ item.title }}</a>

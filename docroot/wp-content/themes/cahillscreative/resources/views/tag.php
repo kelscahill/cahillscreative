@@ -13,17 +13,28 @@
  * @since   Timber 0.1
  */
 
+$id = get_queried_object_id();
 $context = Timber::get_context();
-$post = Timber::query_post();
-$context['post'] = new TimberPost();
-$context['post']['title'] = "Recent Posts";
+$context['post']['kicker'] = "Tag";
+$context['post']['title'] = get_term($id)->name;
 $context['post_type'] = 'post';
+$context['tag'] = get_term($id)->name;
 
 $args = array(
-  'post_type' => 'post',
+  'post_type' => array(
+    'post',
+    'affiliate',
+  ),
   'posts_per_page' => 12,
   'post_status' => 'publish',
   'order' => 'DESC',
+  'tax_query' => array(
+    array(
+      'taxonomy' => 'post_tag',
+      'field' => 'slug',
+      'terms' => get_term($id)->name
+    )
+  )
 );
 $context['posts'] = Timber::query_posts($args);
 

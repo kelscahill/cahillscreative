@@ -13,17 +13,19 @@
  * @since   Timber 0.1
  */
 
+$id = get_queried_object_id();
 $context = Timber::get_context();
-$post = Timber::query_post();
-$context['post'] = new TimberPost();
-$context['post']['title'] = "Recent Posts";
+$context['post']['kicker'] = "Blog";
+$context['post']['title'] = get_cat_name($id);
 $context['post_type'] = 'post';
+$context['category'] = get_cat_name($id);
 
 $args = array(
   'post_type' => 'post',
   'posts_per_page' => 12,
   'post_status' => 'publish',
   'order' => 'DESC',
+  'category_name' => get_cat_name($id),
 );
 $context['posts'] = Timber::query_posts($args);
 

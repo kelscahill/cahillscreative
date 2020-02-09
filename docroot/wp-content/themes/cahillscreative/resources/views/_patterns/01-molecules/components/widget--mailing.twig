@@ -1,4 +1,6 @@
-<div class="widget widget-mailing">
-  <h3 class="font--primary--xs">Join My Mailing List!</h3>
-  {% include "01-molecules/forms/form--newsletter.twig" %}
-</div>
+{% if options.mailchimp_url %}
+  <div class="widget widget-mailing">
+    <h3 class="font--primary--xs">Join My Mailing List!</h3>
+    {% include "01-molecules/forms/form--newsletter.twig" %}
+  </div>
+{% endif %}

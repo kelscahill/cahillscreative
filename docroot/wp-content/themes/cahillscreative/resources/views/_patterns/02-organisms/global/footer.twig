@@ -2,16 +2,16 @@
   <div class="footer--inner layout-container spacing--double">
     <div class="footer__row footer__row--top grid grid--50-50">
       <div class="grid-item footer--left spacing--double">
-        {% if footer_nav_col_1 or footer_nav_col_2 %}
+        {% if footer_nav_col_1.theme_location == "footer_nav_col_1" or footer_nav_col_2.theme_location == "footer_nav_col_2" %}
           <div class="footer__nav">
-            {% if footer_nav_col_1 %}
+            {% if footer_nav_col_1.theme_location == "footer_nav_col_1" %}
               <div class="footer__nav-col">
                 {% for item in footer_nav_col_1.items %}
                   <a class="footer__nav-link" target="{{ item.target }}" href="{{ item.link }}">{{ item.title }}</a>
                 {% endfor %}
               </div>
             {% endif %}
-            {% if footer_nav_col_2 %}
+            {% if footer_nav_col_2.theme_location == "footer_nav_col_2" %}
               <div class="footer__nav-col">
                 <span class="color--gray font--primary--xs">Shop</span>
                 {% for item in footer_nav_col_2.items %}
@@ -21,10 +21,12 @@
             {% endif %}
           </div>
         {% endif %}
-        <div class="footer__mailing">
-          <h3 class="color--gray font--primary--xs">Join the mailing list</h3>
-          {% include "01-molecules/forms/form--newsletter.twig" %}
-        </div>
+        {% if options.mailchimp_url %}
+          <div class="footer__mailing">
+            <h3 class="color--gray font--primary--xs">Join the mailing list</h3>
+            {% include "01-molecules/forms/form--newsletter.twig" %}
+          </div>
+        {% endif %}
       </div>
       <div class="grid-item footer--right">
         <div class="footer__posts">

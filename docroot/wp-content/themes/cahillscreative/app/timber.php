@@ -48,6 +48,14 @@ class SageTimberTheme extends TimberSite {
 		/* Site info */
 		$context['sidebar_primary'] = Timber::get_widgets('sidebar-primary');
 
+		$args = array(
+		  'post_type' => 'post',
+		  'posts_per_page' => 2,
+		  'post_status' => 'publish',
+		  'order' => 'DESC',
+		);
+		$context['latest_posts'] = Timber::query_posts($args);
+
 		return $context;
 	}
 }

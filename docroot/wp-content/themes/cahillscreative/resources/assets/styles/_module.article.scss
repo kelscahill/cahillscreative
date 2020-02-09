@@ -134,7 +134,8 @@
 .article__share-link {
   transition: all 0.25s ease;
   margin-left: auto;
-  margin-right: auto;
+  margin-right: auto !important;
+  margin-bottom: 5px;
 
   &:hover {
     transform: scale(1.1);

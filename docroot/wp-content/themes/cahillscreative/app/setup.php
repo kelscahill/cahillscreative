@@ -129,19 +129,3 @@ add_action('after_setup_theme', function () {
         return "<?= " . __NAMESPACE__ . "\\asset_path({$asset}); ?>";
     });
 });
-
-/**
- * Custom image styles.
- */
-
-// 16:9 crop.
-add_image_size('horiz__16x9--s', 500, 280, array('center', 'center'));
-add_image_size('horiz__16x9--m', 800, 450, array('center', 'center'));
-add_image_size('horiz__16x9--l', 1100, 620, array('center', 'center'));
-//add_image_size('horiz__16x9--xl', 1600, 900, array('center', 'center'));
-
-// 4:3 crop.
-add_image_size('horiz__4x3--s', 500, 375, array('center', 'center'));
-add_image_size('horiz__4x3--m', 800, 600, array('center', 'center'));
-add_image_size('horiz__4x3--l', 1100, 825, array('center', 'center'));
-//add_image_size('horiz__4x3--xl', 1600, 1200, array('center', 'center'));

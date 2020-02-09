@@ -1,7 +1,7 @@
 {% if post.thumbnail %}
   {% set img_id = Image(post.thumbnail).id %}
   {% set image_class = ' background-image--' ~ img_id %}
-  {% set img_src = Image(post.thumbnail).src|resize(650,650) %}
+  {% set img_src = Image(post.thumbnail).src|resize(900,900) %}
   <style>
     .background-image--{{ img_id }} {
       background-image: url({{ img_src }});
@@ -20,7 +20,7 @@
     </div>
     {% if post.tags %}
       <div class="block__meta">
-        <span class="font--s">{{ post.tags }}</span>
+        {% include "00-atoms/text/tags.twig" %}
       </div>
     {% endif %}
     <div class="block__button font--primary--xs">View Project</div>

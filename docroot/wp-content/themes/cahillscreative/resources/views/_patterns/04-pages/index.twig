@@ -1,47 +1,6 @@
 {% extends "03-templates/base.twig" %}
 {% block content %}
-  {% include "02-organisms/sections/section--hero.twig" %}
-  {{ include "02-organisms/sections/section--filter.twig" }}
-  <section class="section section__main">
-    <div class="layout-container section__main--inner">
-      <article class="article spacing--double">
-        <div class="article__body spacing text-align--center">
-          <h2 class="font--primary--s">
-            {% if is_tax('work') %}
-              Recent Work
-            {% else %}
-              Recent Posts
-            {% endif %}
-          </h2>
-          <hr class="divider center-block" />
-          {% if post.intro %}
-            <p class="page-intro">{{ post.intro }}</p>
-          {% endif %}
-            <div id="response" class="filter-response"></div>
-          {% if posts %}
-            <div class="grid grid--full">
-              {% include "01-molecules/blocks/block.twig" %}
-            </div>
-            {% if (is_tag() %}
-              {% set category = get_the_category()[0]->slug %}
-              {% set post_type = "post, affiliate" %}
-            {% elseif (is_category()) %}
-              {% set category = get_the_category()[0]->slug %}
-              {% set post_type = "post" %}
-            {% elseif (is_archive('work') %}
-              {% set category = "" %}
-              {% set post_type = "work" %}
-            {% else %}
-              {% set category = "" %}
-              {% set post_type = "post" %}
-            {% endif %}
-            {{ do_shortcode('[ajax_load_more tag="' . category .'" container_type="div" post_type="'. post_type .'" scroll="false" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]') }}
-          {% else %}
-            <p>Sorry, no posts were found.</p>
-            {{ function('get_search_form') }}
-          {% endif %}
-        </div>
-      </article>
-    </div>
-  </section>
+  {% include "02-organisms/content/content--page.twig" %}
+  {% include "02-organisms/content/content--posts.twig" %}
 {% endblock %}
+

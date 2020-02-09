@@ -1,15 +1,22 @@
 <div class="page-header spacing text-align--center narrow narrow--m">
-  {% if post.display_title %}
-    <h2 class="page-kicker font--primary--s">{{ post.title }}</h2>
+  {% if post.kicker %}
+    <h2 class="page-kicker font--primary--s">{{ post.kicker }}</h2>
     <hr class="divider" />
-    <h1 class="page-title">{{ post.display_title }}</h1>
-  {% else %}
-    <h1 class="page-title">{{ post.title }}</h1>
+  {% endif %}
+  <h1 class="page-title">
+    {% if post.display_title %}
+      {{ post.display_title }}
+    {% else %}
+      {{ post.title }}
+    {% endif %}
+  </h1>
+  {% if not post.kicker %}
     <hr class="divider" />
   {% endif %}
   {% if post.intro %}
-    <div class="page-intro text-align--center">
-      <p>{{ post.intro }}</p>
+    <div class="page-intro">
+      {{ post.intro }}
     </div>
   {% endif %}
+  <div id="response" class="filter-response"></div>
 </div>

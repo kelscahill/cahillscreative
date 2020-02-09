@@ -1,0 +1,5 @@
+{% if post.terms('tags') %}
+  {% for term in post.terms('tags') %}
+    <span class="color--gray font--s">{{ term.name }}{% if not loop.last %}, {% endif %}</span>
+  {% endfor %}
+{% endif %}

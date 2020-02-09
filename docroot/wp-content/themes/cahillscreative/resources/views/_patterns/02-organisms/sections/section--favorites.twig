@@ -8,8 +8,9 @@
           {% for post in post.featured_affiliates %}
             <a href="{{ post.affiliate_link }}" class="block__favorite block__link spacing" target="_blank" rel="noopener">
               {% if post.thumbnail %}
+                {% set image = Image(post.thumbnail) %}
                 <picture class="block__thumb">
-                  <img src="{{ Image(post.thumbnail).src|resize(600,600) }}" alt="{{ Image(post.thumbnail).alt }}">
+                  <img src="{{ image.src|resize(600,600) }}" alt="{{ image.alt }}">
                 </picture>
               {% endif %}
             </a>
@@ -18,8 +19,9 @@
         {% for post in favorites %}
           <a href="{{ post.affiliate_link }}" class="block__favorite block__link spacing" target="_blank" rel="noopener">
             {% if post.thumbnail %}
+              {% set image = Image(post.thumbnail) %}
               <picture class="block__thumb">
-                <img src="{{ Image(post.thumbnail).src|resize(600,600) }}" alt="{{ Image(post.thumbnail).alt }}">
+                <img src="{{ image.src|resize(600,600) }}" alt="{{ image.alt }}">
               </picture>
             {% endif %}
           </a>

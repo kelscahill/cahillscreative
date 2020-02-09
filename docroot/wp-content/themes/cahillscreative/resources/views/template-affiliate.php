@@ -21,14 +21,13 @@
  * @since    Timber 0.1
  */
 
-/* Template Name: Work Template */
+/* Template Name: Affiliate Template */
 
 $context = Timber::get_context();
 $post = new TimberPost();
 $context['post'] = $post;
-$context['template'] = 'shop';
 $context['post_type'] = 'affiliate';
-$context['tag'] = $post->post_name;
+$context['category'] = $post->post_name;
 
 $args = array(
   'post_type' => 'affiliate',
@@ -36,12 +35,12 @@ $args = array(
   'post_status' => 'publish',
   'order' => 'DESC',
   'tax_query' => array(
-   	 array(
-   		 'taxonomy' => 'post_tag',
-   		 'field' => 'slug',
-   		 'terms' => $post->post_name,
-   	 )
-   )
+    array(
+      'taxonomy' => 'category',
+      'field' => 'slug',
+      'terms' => $post->post_name,
+    )
+  )
 );
 $context['posts'] = Timber::query_posts($args);
 

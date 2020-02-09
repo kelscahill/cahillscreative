@@ -1,4 +1,4 @@
 {% extends "03-templates/base.twig" %}
 {% block content %}
-  {% include "02-organisms/content/content-single-" . post.post_type . ".twig" %}
+  {% include ['02-organisms/content/content--single--' ~ post.post_type ~ '.twig', '02-organisms/content/content--single.twig'] %}
 {% endblock %}

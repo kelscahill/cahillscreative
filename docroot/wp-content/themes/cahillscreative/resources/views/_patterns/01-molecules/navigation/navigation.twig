@@ -6,14 +6,14 @@
     <span class="nav__toggle-span nav__toggle-span--4"></span>
   </div>
   <nav class="nav__primary-mobile" role="navigation">
-    {% if primary_nav_left %}
+    {% if primary_nav_left.theme_location == "primary_nav_left" %}
       <ul class="primary-nav__list">
         {% for item in primary_nav_left.items %}
           {% include "00-atoms/text/navigation-item.twig" %}
         {% endfor %}
       </ul>
     {% endif %}
-    {% if primary_nav_right %}
+    {% if primary_nav_right.theme_location == "primary_nav_right" %}
       <ul class="primary-nav__list">
         {% for item in primary_nav_right.items %}
           {% include "00-atoms/text/navigation-item.twig" %}
@@ -22,7 +22,7 @@
     {% endif %}
   </nav>
   <nav class="nav__primary background-color--primary" role="navigation">
-    {% if primary_nav_left %}
+    {% if primary_nav_left.theme_location == "primary_nav_left" %}
       <ul class="primary-nav__list">
         {% for item in primary_nav_left.items %}
           {% include "00-atoms/text/navigation-item.twig" %}
@@ -38,7 +38,7 @@
         </a>
       </div>
     {% endif %}
-    {% if primary_nav_right %}
+    {% if primary_nav_right.theme_location == "primary_nav_right" %}
       <ul class="primary-nav__list">
         {% for item in primary_nav_right.items %}
           {% include "00-atoms/text/navigation-item.twig" %}

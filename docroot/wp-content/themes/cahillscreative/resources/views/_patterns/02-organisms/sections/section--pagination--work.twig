@@ -1,0 +1,30 @@
+{% if post.prev('category') or post.next('category') %}
+  <section class="section section__pagination background-color--off-white">
+    <div class="narrow narrow--xl">
+      <div class="pagination">
+        <div class="pagination-item">
+          {% if post.prev('category') %}
+            <a href="{{ post.prev('category').link }}" class="prev pagination-link">
+              <span class="icon icon--l">{% include "00-atoms/icons/arrow--carousel.twig" %}</span>
+              <p class="font--primary--xs">Previous Project</p>
+            </a>
+          {% endif %}
+        </div>
+        <div class="pagination-item">
+          <a href="/work" class="all pagination-link">
+            <span class="icon icon--l">{% include "00-atoms/icons/icon--close--large.twig" %}</span>
+            <p class="font--primary--xs">All Work</p>
+          </a>
+        </div>
+        <div class="pagination-item">
+          {% if post.next('category') %}
+            <a href="{{ post.next('category').link }}" class="next pagination-link">
+              <span class="icon icon--l">{% include "00-atoms/icons/arrow--carousel.twig" %}</span>
+              <p class="font--primary--xs">Next Project</p>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+{% endif %}

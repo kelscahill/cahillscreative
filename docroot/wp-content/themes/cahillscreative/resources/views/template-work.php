@@ -26,8 +26,8 @@
 $context = Timber::get_context();
 $post = new TimberPost();
 $context['post'] = $post;
-$context['template'] = 'work';
 $context['post_type'] = 'work';
+$context['category'] = 'Work';
 
 $args = array(
   'post_type' => 'work',
