@@ -38,15 +38,6 @@ input[type="submit"] {
   }
 }
 
-.alm-btn-wrap {
-  margin-top: $space-double;
-
-  &::after,
-  &::before {
-    display: none;
-  }
-}
-
 .btn--outline {
   border: 1px solid $black;
   color: $black;
@@ -117,44 +108,53 @@ input[type="submit"] {
   margin-right: auto;
 }
 
-.alm-btn-wrap {
-  margin: 0;
-  padding: 0;
-}
+#ajax-load-more {
+  .alm-btn-wrap {
+    margin: 0;
+    padding: 0;
+    margin-top: $space;
 
-button.alm-load-more-btn.more {
-  width: auto;
-  border-radius: rem(50);
-  background: transparent;
-  border: 1px solid $black;
-  color: $black;
-  position: relative;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  padding-left: $pad-double;
-  padding-right: $pad-double;
-  margin: 0 auto;
-  height: rem(40);
-
-  @include font--primary--xs;
-
-  &.done {
-    opacity: 0.3;
-    pointer-events: none;
-
-    &:hover {
-      background-color: transparent;
-      color: $body-color;
+    &::after,
+    &::before {
+      display: none;
     }
   }
 
-  &:hover {
-    background-color: $button-hover;
-    color: $white;
-  }
+  .alm-load-more-btn {
+    width: auto;
+    border-radius: rem(50);
+    background: transparent;
+    border: 1px solid $black;
+    color: $black;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    padding-left: $pad-double;
+    padding-right: $pad-double;
+    margin: 0 auto;
+    height: rem(40);
 
-  &::after,
-  &::before {
-    display: none !important;
+    @include font--primary--xs;
+
+    &.done {
+      opacity: 0.3;
+      pointer-events: none;
+      background-color: transparent;
+
+      &:hover {
+        background-color: transparent;
+        color: $body-color;
+      }
+    }
+
+    &:hover {
+      background-color: $button-hover;
+      color: $white;
+    }
+
+    &::after,
+    &::before {
+      display: none !important;
+    }
   }
 }

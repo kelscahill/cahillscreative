@@ -10,19 +10,11 @@
 {% endif %}
 <a href="{{ post.link }}" class="block block__featured background--cover{{ image_class }}">
   <div class="block__content spacing--half">
-    {% if post.kicker %}
-      <div class="block__kicker font--primary--xs">
-        {{ post.kicker }}
-      </div>
-    {% endif %}
+    <div class="block__kicker font--primary--xs">Featured</div>
     <div class="block__title font--primary--m">
       {{ post.title }}
     </div>
-    {% if post.tags %}
-      <div class="block__meta">
-        {% include "00-atoms/text/tags.twig" %}
-      </div>
-    {% endif %}
+    {% include "00-atoms/text/tags.twig" %}
     <div class="block__button font--primary--xs">View Project</div>
   </div>
 </a>

@@ -1,0 +1,7 @@
+{% if featured_work %}
+  <section class="section section__featured-work">
+    {% for post in featured_work %}
+      {% include "01-molecules/blocks/block--featured.twig" %}
+    {% endfor %}
+  </section>
+{% endif %}

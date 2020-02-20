@@ -1,18 +1,27 @@
-<section class="section section__main">
-  <div class="layout-container section__main--inner">
-    <article class="article">
-      {% include "02-organisms/sections/page-header.twig" %}
-      <div class="article__body spacing">
-        {% if post.thumbnail %}
-          <picture class="block__thumb narrow narrow--l">
-            <source srcset="{{ post.thumbnail.src|resize(800,450) }}" media="(min-width:500px)">
-            <img src="{{ post.thumbnail.src|resize(500,280) }}" alt="{{ post.thumbnail.alt }}" />
-          </picture>
-        {% endif %}
-        <div class="narrow narrow--m spacing">
-          {{ post.content }}
-        </div>
+{% if post.hero %}
+  {% include "02-organisms/sections/section--hero.twig" %}
+{% else %}
+  {% include "02-organisms/sections/page-header.twig" %}
+{% endif %}
+<div class="page-content space--double-top spacing--quad">
+  {% if post.content or post.thumbnail %}
+    <section class="section section__main">
+      <div class="layout-container section__main--inner">
+        <article class="article">
+          <div class="article__body spacing">
+            {% if post.thumbnail %}
+              <picture class="block__thumb narrow narrow--l">
+                <source srcset="{{ post.thumbnail.src|resize(800,450) }}" media="(min-width:500px)">
+                <img src="{{ post.thumbnail.src|resize(500,280) }}" alt="{{ post.thumbnail.alt }}" />
+              </picture>
+            {% endif %}
+            <div class="narrow narrow--m spacing">
+              {{ post.content }}
+            </div>
+          </div>
+        </article>
       </div>
-    </article>
-  </div>
-</section>
+    </section>
+  {% endif %}
+  {% include "02-organisms/sections/page-sections.twig" %}
+</div>

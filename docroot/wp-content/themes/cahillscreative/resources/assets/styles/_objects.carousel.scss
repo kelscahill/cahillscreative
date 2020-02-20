@@ -157,7 +157,7 @@
 .slick-arrow {
   padding: $pad-and-half;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: $transition;
 
   &:hover {
     opacity: 1;

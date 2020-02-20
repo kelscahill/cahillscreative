@@ -1,0 +1,9 @@
+{% if featured_posts %}
+  <section class="section section__featured-posts layout-container">
+    <div class="grid grid--4-col">
+      {% for post in featured_posts %}
+        {% include "01-molecules/blocks/block.twig" %}
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}

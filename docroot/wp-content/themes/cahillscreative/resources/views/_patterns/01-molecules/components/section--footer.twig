@@ -1,0 +1,16 @@
+{% if section_footer.description or section_footer.button %}
+  <div class="section__footer spacing text-align--center rich-text">
+    {{ section_footer.description }}
+    {% if section_footer.button %}
+      {% set section_footer = {
+        "button": {
+          "url": section_footer.button.url,
+          "title": section_footer.button.title,
+          "target": section_footer.button.target,
+          "class": "btn--center"
+        }
+      } %}
+      {% include "00-atoms/buttons/button.twig" with { button: section_footer.button } %}
+    {% endif %}
+  </div>
+{% endif %}

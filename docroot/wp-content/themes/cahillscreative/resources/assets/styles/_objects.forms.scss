@@ -239,7 +239,7 @@ input[type=submit] {
     }
 
     span {
-      transition: all 0.25s ease;
+      transition: $transition;
       margin: 0 auto;
 
       svg path {

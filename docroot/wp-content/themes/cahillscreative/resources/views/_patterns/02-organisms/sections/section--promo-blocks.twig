@@ -1,0 +1,46 @@
+{% if section.promo_blocks %}
+  <section class="section section__promo-blocks layout-container narrow narrow--l spacing--double">
+    {% include "01-molecules/components/section--header.twig"
+      with {
+        section_header: {
+          kicker: section.promo_blocks_kicker,
+          title: section.promo_blocks_title
+        }
+      }
+    %}
+    <div class="grid grid--3-col">
+      {% for item in section.promo_blocks %}
+        <div class="grid-item">
+          <a href="{{ item.promo_link.url }}" class="block block__service spacing">
+            {% if item.promo_icon %}
+              <div class="round">
+                <span class="icon icon--m"><img src="{{ Image(item.promo_icon).src }}" alt="{{ Image(item.promo_icon).alt }}" /></span>
+              </div>
+            {% endif %}
+            <h2 class="font--primary--s">{{ item.promo_title }}</h2>
+            <hr class="divider" />
+            {{ item.promo_description }}
+            {% include "00-atoms/buttons/button.twig"
+              with {
+                button: {
+                  url: false,
+                  title: item.promo_link.title,
+                  target: item.promo_link.target,
+                  class: "btn--outline",
+                }
+              }
+            %}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+    {% include "01-molecules/components/section--footer.twig"
+      with {
+        section_footer: {
+          description: section.promo_blocks_description,
+          button: section.promo_blocks_cta
+        }
+      }
+    %}
+  </section>
+{% endif %}

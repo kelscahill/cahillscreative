@@ -20,9 +20,37 @@
  * @subpackage  Timber
  * @since    Timber 0.1
  */
- 
+
 $context = Timber::get_context();
 $post = new TimberPost();
 $context['post'] = $post;
 $context['is_front_page'] = 'true';
+
+if (is_main_site()) {
+  $context['is_main_site'] = true;
+}
+
+$featured_posts_args = array(
+  'post_type' => 'post',
+  'posts_per_page' => 4,
+  'post_status' => 'publish',
+  'order' => 'DESC',
+);
+$context['featured_posts'] = Timber::query_posts($featured_posts_args);
+
+$featured_work_args = array(
+  'post_type' => 'work',
+  'posts_per_page' => 2,
+  'post_status' => 'publish',
+  'order' => 'DESC',
+  'tax_query' => array(
+    array(
+      'taxonomy' => 'post_tag',
+      'field' => 'slug',
+      'terms' => 'featured',
+    )
+  )
+);
+$context['featured_work'] = Timber::query_posts($featured_work_args);
+
 Timber::render(array('04-pages/page-' . $post->post_name . '.twig', '04-pages/front-page.twig'), $context);

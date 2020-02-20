@@ -1,38 +1,4 @@
 <div class="grid-item">
-  {#@php
-    post.post_id = get_the_ID();
-    post.title = get_the_title(post.post_id);
-    post.thumb_id = get_post_thumbnail_id(post.post_id);
-    post.thumb_size = 'square';
-    post.link = get_permalink(post.post_id);
-    post.post_type = get_post_type(post.post_id);
-    if (get_the_excerpt() != '') {
-      post.excerpt = get_the_excerpt('',FALSE,'');
-    } else {
-      post.excerpt = wp_trim_words(get_the_content('',FALSE,''), 100, '...');
-    }
-    if (post.post_type == 'affiliate') {
-      if (get_the_terms(post.post_id, 'store')) {
-        post.tags = get_the_terms(post.post_id, 'store');
-        post.kicker = post.tags[0]->name;
-      } else {
-        post.kicker = NULL;
-      }
-      post.date = NULL;
-      post.tags = NULL;
-    } else if (post.post_type == 'work') {
-      post.kicker = NULL;
-      post.date = NULL;
-      post.tags = strip_tags(get_the_tag_list('',', ',''));
-    } else {
-      post.kicker = get_the_category(post.post_id)[0]->name;
-      post.date = date('F j, Y', strtotime(get_the_date()));
-    }
-    post.image_small = wp_get_attachment_image_src(post.thumb_id, post.thumb_size . '--s')[0];
-    post.image_medium = wp_get_attachment_image_src(post.thumb_id, post.thumb_size . '--m')[0];
-    post.alt = get_post_meta(post.thumb_id, '_wp_attachment_image_alt', true);
-  @endphp
-  #}
   <div class="block block__post block__{{ post.post_type }} background-color--white">
     <a href="{{ post.link }}" class="block__link spacing">
       {% if post.thumbnail %}

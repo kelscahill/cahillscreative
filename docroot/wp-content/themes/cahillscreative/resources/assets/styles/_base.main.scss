@@ -31,6 +31,7 @@ body#tinymce {
 
 .main {
   padding-top: rem(80);
+  padding-bottom: $space-double;
 
   @include media(">large") {
     padding-top: rem(100);

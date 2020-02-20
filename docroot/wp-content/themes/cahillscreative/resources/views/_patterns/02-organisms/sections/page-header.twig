@@ -4,11 +4,7 @@
     <hr class="divider" />
   {% endif %}
   <h1 class="page-title">
-    {% if post.display_title %}
-      {{ post.display_title }}
-    {% else %}
-      {{ post.title }}
-    {% endif %}
+    {% include "00-atoms/text/title.twig" %}
   </h1>
   {% if not post.kicker %}
     <hr class="divider" />
