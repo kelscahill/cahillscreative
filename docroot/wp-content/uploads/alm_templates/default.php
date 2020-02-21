@@ -1,4 +1,1 @@
-<?php
-$context['post'] = new Timber\Post();
-Timber::render('01-molecules/blocks/block.twig', $context);
-?>
+<?php include(locate_template('views/block.php')); ?>

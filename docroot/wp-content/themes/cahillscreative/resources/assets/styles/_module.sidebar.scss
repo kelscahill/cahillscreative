@@ -2,6 +2,13 @@
     $SIDEBAR
 \*------------------------------------ */
 
+.widget {
+  hr {
+    width: 100%;
+    margin: $space-half 0;
+  }
+}
+
 .widget-mailing {
   form {
     input {

@@ -18,7 +18,7 @@ $context = Timber::get_context();
 $context['post']['kicker'] = "Blog";
 $context['post']['title'] = get_cat_name($id);
 $context['post_type'] = 'post';
-$context['category'] = get_cat_name($id);
+$context['category'] = get_queried_object()->slug;
 
 $args = array(
   'post_type' => 'post',

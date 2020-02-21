@@ -5,5 +5,5 @@
       {% include ['01-molecules/blocks/block--' ~ post.post_type ~ '.twig', '01-molecules/blocks/block.twig'] %}
     {% endfor %}
   </div>
-  {{ function('do_shortcode', '[ajax_load_more container_type="div" category="'~ category ~'" post_type="'~ post_type ~'" scroll="true" transition_container="false" button_label="Load More" posts_per_page="12" offset="12"]') }}
+  {{ function('do_shortcode', '[ajax_load_more category="'~ category ~'" post_type="'~ post_type ~'" tag="'~ tag ~'" container_type="div" transition_container_classes="grid grid--full" transition="fade" scroll="true" button_label="Load More" posts_per_page="12" offset="12"]') }}
 {% endif %}

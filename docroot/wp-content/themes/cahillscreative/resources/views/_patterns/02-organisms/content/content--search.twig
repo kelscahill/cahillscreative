@@ -11,7 +11,7 @@
         }
       %}
       {% if posts %}
-        {{ function('do_shortcode', '[ajax_load_more search="'~ function('get_search_query') ~'" orderby="relevance" posts_per_page="12" scroll="true" button_label="Show More Results" transition_container="false"]') }}
+        {{ function('do_shortcode', '[ajax_load_more search="'~ function('get_search_query') ~'" orderby="relevance" post_type="post, work, affiliate" container_type="div" transition_container_classes="grid grid--full" transition="fade" scroll="true" button_label="Show More Results" posts_per_page="12"]') }}
       {% else %}
         <p class="text-align--center space--zero">Sorry, no results were found.</p>
         {{ function('get_search_form') }}

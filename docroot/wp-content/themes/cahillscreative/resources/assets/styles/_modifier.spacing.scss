@@ -113,6 +113,18 @@
   margin-top: $space * 3;
 }
 
+.space--triple-bottom {
+  margin-bottom: $space * 3;
+}
+
+.space--quad-top {
+  margin-top: $space * 4;
+}
+
+.space--quad-bottom {
+  margin-bottom: $space * 4;
+}
+
 .space--zero {
   margin: 0;
 }

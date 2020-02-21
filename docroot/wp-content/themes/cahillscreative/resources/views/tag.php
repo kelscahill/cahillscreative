@@ -17,7 +17,6 @@ $id = get_queried_object_id();
 $context = Timber::get_context();
 $context['post']['kicker'] = "Tag";
 $context['post']['title'] = get_term($id)->name;
-$context['post_type'] = 'post';
 $context['tag'] = get_term($id)->name;
 
 $args = array(

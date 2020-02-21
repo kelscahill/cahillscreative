@@ -7,7 +7,7 @@
 }
 
 .section__main {
-  padding-top: $space-double;
+  padding-top: 0;
   padding-bottom: $space-double;
 }
 
@@ -434,6 +434,7 @@
     position: relative;
     top: rem(-280);
     margin-bottom: rem(-280);
+    padding-top: $space-double;
     padding-bottom: $space-double;
 
     @include media(">medium") {

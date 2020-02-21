@@ -1,5 +1,12 @@
 {% if featured_posts %}
   <section class="section section__featured-posts layout-container">
+    {% include "01-molecules/components/section--header.twig"
+      with {
+        section_header: {
+          kicker: "Recent Posts"
+        }
+      }
+    %}
     <div class="grid grid--4-col">
       {% for post in featured_posts %}
         {% include "01-molecules/blocks/block.twig" %}
