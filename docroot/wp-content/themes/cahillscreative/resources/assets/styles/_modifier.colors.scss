@@ -46,6 +46,18 @@
   background-color: $gray;
 }
 
+.background-color--primary {
+  background-color: $primary-background-color;
+}
+
+.background-color--secondary {
+  background-color: $secondary-background-color;
+}
+
+.background-color--tertiary {
+  background-color: $tertiary-background-color;
+}
+
 /**
  * Path Fills
  */

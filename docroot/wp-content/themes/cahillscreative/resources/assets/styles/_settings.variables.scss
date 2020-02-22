@@ -29,7 +29,7 @@ $gray: #979797;
 $gray-light: #ececec;
 $gray-med: #9b9b9b;
 $bronze: #cd7232;
-$mint: #24e0b0;
+$tertiary-color: #24e0b0;
 $error: #f00;
 $valid: #089e00;
 $warning: #fff664;
@@ -40,6 +40,9 @@ $information: #000db5;
  */
 $primary-color: $black;
 $secondary-color: $white;
+$primary-background-color: var(--c-primary, $black);
+$secondary-background-color: var(--c-secondary, $black);
+$tertiary-background-color: var(--c-tertiary, $black);
 $background-color: $white;
 $link-color: $primary-color;
 $link-hover: $gray;

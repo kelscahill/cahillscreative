@@ -9,9 +9,10 @@
   overflow: hidden;
   padding: $pad-double 0 $pad 0;
 
-  @include media('>medium') {
+  @include media(">medium") {
     margin-bottom: 0;
   }
+
 
   a {
     color: $white;
@@ -23,11 +24,12 @@
 }
 
 .footer--left {
-  @include media('>medium') {
+  @include media(">medium") {
     width: 50%;
   }
 
-  @include media('>xlarge') {
+
+  @include media(">xlarge") {
     width: 33.33%;
   }
 }
@@ -37,18 +39,19 @@
   flex-direction: column;
 
   > div {
-    @include media('>xlarge') {
+    @include media(">xlarge") {
       flex-direction: row;
       padding-right: $pad;
     }
   }
 
-  @include media('>medium') {
+  @include media(">medium") {
     width: 50%;
     flex-direction: row;
   }
 
-  @include media('>xlarge') {
+
+  @include media(">xlarge") {
     width: 66.67%;
   }
 }
@@ -63,13 +66,14 @@
     padding-right: $pad-double;
   }
 
-  @include media('>medium') {
+  @include media(">medium") {
     &--top {
       flex-direction: row;
     }
   }
 
-  @include media('>large') {
+
+  @include media(">large") {
     flex-direction: row;
     justify-content: space-between;
   }
@@ -87,9 +91,10 @@
   flex-direction: column;
   padding-right: $pad;
 
-  @include media('>large') {
+  @include media(">large") {
     padding-right: $pad-double;
   }
+
 
   > * {
     margin-bottom: rem(15);
@@ -118,7 +123,7 @@
   text-align: left;
   order: 1;
 
-  @include media('>large') {
+  @include media(">large") {
     order: 0;
   }
 }
@@ -144,7 +149,7 @@
 .footer__posts {
   margin-top: $space;
 
-  @include media('>medium') {
+  @include media(">medium") {
     margin-top: 0;
   }
 }
@@ -153,11 +158,12 @@
   margin-top: $space-double;
   width: rem(360);
 
-  @include media('>medium') {
+  @include media(">medium") {
     display: none;
   }
 
-  @include media('>xlarge') {
+
+  @include media(">xlarge") {
     display: block;
     margin-top: 0;
   }
@@ -184,7 +190,7 @@
     }
   }
 
-  @include media('>large') {
+  @include media(">large") {
     bottom: rem(70);
   }
 }

@@ -44,7 +44,7 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                 'show_bar_menu'      => false,
                 'show_sub_menu'      => false,
                 'show_network_menu'  => false,
-                'show_search'        => false,
+                'show_search'        => true,
                 'show_reset_all'     => true,
                 'show_reset_section' => true,
                 'show_footer'        => true,
@@ -378,6 +378,7 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                 'text_group' => array(
                     'id'            => 'text_group',
                     'type'          => 'tabbed',
+                    'desc'          => __( 'Enter your custom button text in the fields above. You can also use HTML tags in these fields.', WP_ULIKE_SLUG),
                     'title'         => __( 'Button Text', WP_ULIKE_SLUG),
                     'tabs'          => array(
                         array(
@@ -385,7 +386,10 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                             'fields'    => array(
                                 array(
                                     'id'      => 'like',
-                                    'type'    => 'text',
+                                    'type'    => 'code_editor',
+                                    'settings' => array(
+                                        'mode'    => 'htmlmixed',
+                                    ),
                                     'title'   => __('Button Text',WP_ULIKE_SLUG),
                                     'default' => 'Like'
                                 ),
@@ -396,7 +400,10 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                             'fields'    => array(
                                 array(
                                     'id'      => 'unlike',
-                                    'type'    => 'text',
+                                    'type'    => 'code_editor',
+                                    'settings' => array(
+                                        'mode'    => 'htmlmixed',
+                                    ),
                                     'title'   => __('Button Text',WP_ULIKE_SLUG),
                                     'default' => 'Liked'
                                 ),
@@ -462,7 +469,7 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                     'desc'        => __('With this option, you can disable automatic display on these pages.', WP_ULIKE_SLUG),
                     'chosen'      => true,
                     'multiple'    => true,
-                    'default'     => 'single',
+                    'default'     => array( 'single', 'home' ),
                     'options'     => array(
                         'home'     => __('Home', WP_ULIKE_SLUG),
                         'single'   => __('Singular', WP_ULIKE_SLUG),

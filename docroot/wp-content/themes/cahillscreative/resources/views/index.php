@@ -15,7 +15,7 @@
 
 $context = Timber::get_context();
 $post = Timber::query_post();
-$context['post'] = new TimberPost();
+$context['post']['kicker'] = 'Blog';
 $context['post']['title'] = 'Recent Posts';
 $context['post_type'] = 'post';
 

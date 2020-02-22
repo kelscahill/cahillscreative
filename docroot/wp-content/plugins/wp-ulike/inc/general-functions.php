@@ -227,37 +227,53 @@ if( ! function_exists( 'wp_ulike_get_counter_value_info' ) ){
 			return new WP_Error( 'broke', __( "Please enter some value for required variables.", WP_ULIKE_SLUG ) );
 		}
 
-		// Peroid limit SQL
-		$period_limit = wp_ulike_get_period_limit_sql( $date_range );
+		$cache_key     = sanitize_key( sprintf( 'counter-query-for-%s-%s-status', $type, $status ) );
+		$counter_query = wp_cache_get( $cache_key, WP_ULIKE_SLUG );
 
-		// get table info
-		$table_info   = wp_ulike_get_table_info( $type );
-		if( empty( $table_info ) ){
-			return new WP_Error( 'broke', __( "Table info is empty.", WP_ULIKE_SLUG ) );
+		// Make a general query to get info from target table.
+		if( false === $counter_query ){
+			// Peroid limit SQL
+			$period_limit = wp_ulike_get_period_limit_sql( $date_range );
+
+			// get table info
+			$table_info   = wp_ulike_get_table_info( $type );
+			if( empty( $table_info ) ){
+				return new WP_Error( 'broke', __( "Table info is empty.", WP_ULIKE_SLUG ) );
+			}
+
+			$query = sprintf(
+				'SELECT `%1$s` AS col_id, COUNT(%2$s) AS col_val FROM %3$s WHERE %4$s %5$s GROUP BY `%1$s`',
+				esc_sql( $table_info['column'] ),
+				esc_sql( $is_distinct ? "DISTINCT `user_id`" : "*" ),
+				esc_sql( $wpdb->prefix . $table_info['table'] ),
+				esc_sql( $status !== 'all' ? "`status` = '$status'" : "`status` NOT LIKE 'un%'" ),
+				esc_sql( $period_limit )
+			);
+
+			$counter_query = $wpdb->get_results( stripslashes( $query ) );
+
+			wp_cache_set( $cache_key, $counter_query, WP_ULIKE_SLUG );
 		}
 
-		$query = sprintf(
-			"SELECT COUNT(%s) FROM %s WHERE %s AND `%s` = '%s' %s",
-			esc_sql( $is_distinct ? "DISTINCT `user_id`" : "*" ),
-			esc_sql( $wpdb->prefix . $table_info['table'] ),
-			esc_sql( $status !== 'all' ? "`status` = '$status'" : "`status` NOT LIKE 'un%'" ),
-			esc_sql( $table_info['column'] ),
-			esc_sql( $ID ),
-			esc_sql( $period_limit )
-		);
-
-		$result = $wpdb->get_var( stripslashes( $query ) );
+		// Find current ID counter value from cached query.
+		$counter_value = 0;
+		foreach ( $counter_query as $key => $row ) {
+			if( $row->col_id == $ID ){
+				$counter_value = $row->col_val ? $row->col_val : 0;
+				break;
+			}
+		}
 
 		// By checking this option, users who have upgraded to version +4 and deleted their old logs can add the number of old likes to the new figures.
 		$enable_meta_values = wp_ulike_get_option( 'enable_meta_values', false );
 		if( wp_ulike_is_true( $enable_meta_values ) && in_array( $status, array( 'like', 'all' ) ) ){
-			$result += wp_ulike_get_old_meta_value( $ID, $type );
+			$counter_value += wp_ulike_get_old_meta_value( $ID, $type );
 		}
 
 		// Create an action when counter value is ready.
 		do_action('wp_ulike_counter_value_generated');
 
-		return apply_filters( 'wp_ulike_counter_value' , empty( $result ) ? 0 : $result, $ID, $type, $status );
+		return apply_filters( 'wp_ulike_counter_value' , $counter_value, $ID, $type, $status );
 	}
 }
 
@@ -996,27 +1012,47 @@ if( ! function_exists( 'wp_ulike_get_post_settings_by_type' ) ){
 
 if( ! function_exists( 'wp_ulike_get_likers_list_per_post' ) ){
 	/**
-	 * Get template between
+	 * Get likers list
 	 *
-	 * @author       	Alimir
-	 * @param           String $string
-	 * @param           String $start
-	 * @param           String $end
-	 * @since           2.0
-	 * @return			String
+	 * @param string $table_name
+	 * @param string $column_name
+	 * @param integer $item_ID
+	 * @param integer $limit
+	 * @return array
 	 */
-	function wp_ulike_get_likers_list_per_post( $table_name, $column_name, $post_ID, $limit_num = 10 ){
+	function wp_ulike_get_likers_list_per_post( $table_name, $column_name, $item_ID, $limit = 10 ){
 		// Global wordpress database object
 		global $wpdb;
-		// Get likers list
-		return $wpdb->get_results( "SELECT user_id
-						FROM   ".$wpdb->prefix."$table_name
-						WHERE  $column_name = '$post_ID'
-						       AND status in ('like', 'dislike')
-						       AND user_id BETWEEN 1 AND 999999
-						GROUP  BY user_id
-						LIMIT  $limit_num"
-					);
+
+		$cache_key    = sanitize_key( sprintf( 'likers-query-for-%s-table', $table_name ) );
+		$likers_query = wp_cache_get( $cache_key, WP_ULIKE_SLUG );
+
+		// Make a general query to get info from target table.
+		if( false === $likers_query ){
+			// Create query string
+			$query = sprintf(
+				'SELECT `%1$s` AS col_id,
+				 GROUP_CONCAT(DISTINCT(`user_id`) SEPARATOR ",") AS col_val
+				 FROM %2$s WHERE `status` in ( "like", "dislike" ) AND `user_id` BETWEEN 1 AND 999999 GROUP BY `%1$s`',
+				esc_sql( $column_name ),
+				esc_sql( $wpdb->prefix . $table_name )
+			);
+
+			// Get results
+			$likers_query = $wpdb->get_results( stripslashes( $query ) );
+			wp_cache_set( $cache_key, $likers_query, WP_ULIKE_SLUG );
+		}
+
+		// Find current ID value from cached query.
+		$likers_list = array();
+		foreach ( $likers_query as $key => $row ) {
+			if( $row->col_id == $item_ID ){
+				$likers_list = explode( ',', $row->col_val );
+				break;
+			}
+		}
+
+		return ! empty( $likers_list ) ? array_slice( $likers_list, 0, $limit ) : array();
 	}
 }
 
@@ -1150,8 +1186,8 @@ if( ! function_exists( 'wp_ulike_get_likers_template' ) ){
 
 			$inner_template = wp_ulike_get_template_between( $get_template, "%START_WHILE%", "%END_WHILE%" );
 
-			foreach ( $get_users as $get_user ) {
-				$user_info 		= get_userdata( $get_user->user_id );
+			foreach ( $get_users as $user ) {
+				$user_info 		= get_userdata( $user );
 				$out_template 	= $inner_template;
 				if ( $user_info ):
 					if( strpos( $out_template, '%USER_AVATAR%' ) !== false ) {
@@ -1380,6 +1416,38 @@ if( ! function_exists( 'wp_ulike_date_i18n' ) ){
 	}
 }
 
+if( ! function_exists( 'wp_ulike_get_user_ip' ) ){
+	/**
+	 * Get user IP
+	 *
+	 * @return string
+	 */
+	function wp_ulike_get_user_ip(){
+		$ip = '';
+
+		if ( getenv( 'HTTP_CLIENT_IP' ) ) {
+			$ip = getenv( 'HTTP_CLIENT_IP' );
+		} elseif ( getenv( 'HTTP_X_FORWARDED_FOR' ) ) {
+			$ip = getenv( 'HTTP_X_FORWARDED_FOR' );
+		} elseif ( getenv( 'HTTP_X_FORWARDED' ) ) {
+			$ip = getenv( 'HTTP_X_FORWARDED' );
+		} elseif ( getenv( 'HTTP_FORWARDED_FOR' ) ) {
+			$ip = getenv( 'HTTP_FORWARDED_FOR' );
+		} elseif ( getenv( 'HTTP_FORWARDED' ) ) {
+			$ip = getenv( 'HTTP_FORWARDED' );
+		} else {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+
+		if ( ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+			// Return local ip address
+			return '127.0.0.1';
+		}
+
+		return $ip;
+	}
+}
+
 if( ! function_exists( 'wp_ulike_generate_user_id' ) ){
 	/**
 	 * Convert IP to a integer value
@@ -1394,7 +1462,9 @@ if( ! function_exists( 'wp_ulike_generate_user_id' ) ){
 		if( filter_var( $user_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
 		    return ip2long( $user_ip );
 		} else {
-		    $binary_val = '';
+			// Get non-anonymise IP address
+			$user_ip    = wp_ulike_get_user_ip();
+			$binary_val = '';
 		    foreach ( unpack( 'C*', inet_pton( $user_ip ) ) as $byte ) {
 		        $binary_val .= decbin( $byte );
 		    }
@@ -1682,6 +1752,7 @@ if( ! function_exists( 'wp_ulike_set_default_template' ) ){
 					data-ulike-id="<?php echo $ID; ?>"
 					data-ulike-nonce="<?php echo wp_create_nonce( $type . $ID ); ?>"
 					data-ulike-type="<?php echo $type; ?>"
+					data-ulike-template="<?php echo $style; ?>"
 					data-ulike-display-likers="<?php echo $display_likers; ?>"
 					data-ulike-disable-pophover="<?php echo $disable_pophover; ?>"
 					class="<?php echo $button_class; ?>">
@@ -1725,6 +1796,7 @@ if( ! function_exists( 'wp_ulike_set_simple_heart_template' ) ){
 					data-ulike-id="<?php echo $ID; ?>"
 					data-ulike-nonce="<?php echo wp_create_nonce( $type  . $ID ); ?>"
 					data-ulike-type="<?php echo $type; ?>"
+					data-ulike-template="<?php echo $style; ?>"
 					data-ulike-display-likers="<?php echo $display_likers; ?>"
 					data-ulike-disable-pophover="<?php echo $disable_pophover; ?>"
 					class="<?php echo $button_class; ?>">
@@ -1764,15 +1836,16 @@ if( ! function_exists( 'wp_ulike_set_robeen_template' ) ){
 	?>
 		<div class="wpulike wpulike-robeen <?php echo $wrapper_class; ?>" <?php echo $attributes; ?>>
 			<div class="<?php echo $general_class; ?>">
-					<label title="<?php echo esc_attr( 'like this' . $type ); ?>">
+					<label title="<?php _e( 'Like This', WP_ULIKE_SLUG ); ?>">
 					<input 	type="checkbox"
 							data-ulike-id="<?php echo $ID; ?>"
 							data-ulike-nonce="<?php echo wp_create_nonce( $type . $ID ); ?>"
 							data-ulike-type="<?php echo $type; ?>"
+							data-ulike-template="<?php echo $style; ?>"
 							data-ulike-display-likers="<?php echo $display_likers; ?>"
 							data-ulike-disable-pophover="<?php echo $disable_pophover; ?>"
 							class="<?php echo $button_class; ?>"
-							<?php echo  $status == 2  ? 'checked="checked"' : ''; ?> />
+							<?php echo in_array( $status, array( 2, 4 ) )  ? 'checked="checked"' : ''; ?> />
 					<?php do_action( 'wp_ulike_inside_like_button', $wp_ulike_template ); ?>
 					<svg class="heart-svg" viewBox="467 392 58 57" xmlns="http://www.w3.org/2000/svg">
 					    <g class="Group" fill="none" fill-rule="evenodd" transform="translate(467 392)">
@@ -1843,6 +1916,7 @@ if( ! function_exists( 'wp_ulike_set_animated_heart_template' ) ){
 					data-ulike-id="<?php echo $ID; ?>"
 					data-ulike-nonce="<?php echo wp_create_nonce( $type  . $ID ); ?>"
 					data-ulike-type="<?php echo $type; ?>"
+					data-ulike-template="<?php echo $style; ?>"
 					data-ulike-display-likers="<?php echo $display_likers; ?>"
 					data-ulike-disable-pophover="<?php echo $disable_pophover; ?>"
 					data-ulike-append="<?php echo htmlspecialchars( '<svg class="wpulike-svg-heart wpulike-svg-heart-pop one" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg><svg class="wpulike-svg-heart wpulike-svg-heart-pop two" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg><svg class="wpulike-svg-heart wpulike-svg-heart-pop three" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg><svg class="wpulike-svg-heart wpulike-svg-heart-pop four" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg><svg class="wpulike-svg-heart wpulike-svg-heart-pop five" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg><svg class="wpulike-svg-heart wpulike-svg-heart-pop six" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg><svg class="wpulike-svg-heart wpulike-svg-heart-pop seven" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg><svg class="wpulike-svg-heart wpulike-svg-heart-pop eight" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg><svg class="wpulike-svg-heart wpulike-svg-heart-pop nine" viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg>' ); ?>"

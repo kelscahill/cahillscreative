@@ -428,18 +428,31 @@
       min-height: rem(300);
       max-height: rem(300);
     }
-  }
 
-  .section__main {
-    position: relative;
-    top: rem(-280);
-    margin-bottom: rem(-280);
-    padding-top: $space-double;
-    padding-bottom: $space-double;
 
-    @include media(">medium") {
-      top: rem(-380);
-      margin-bottom: rem(-380);
+    + .section__main {
+      position: relative;
+      top: rem(-280);
+      margin-bottom: rem(-280);
+      padding-top: $space-double;
+      padding-bottom: $space-double;
+
+      @include media(">medium") {
+        top: rem(-380);
+        margin-bottom: rem(-380);
+      }
+
+
+      .article__header {
+        h1,
+        h2 {
+          color: $white;
+        }
+
+        .divider {
+          background-color: $white;
+        }
+      }
     }
   }
 }

@@ -6,11 +6,14 @@
  */
 
 /**
- * WPSEO_Custom_Taxonomies
+ * WPSEO_Custom_Taxonomies.
  */
 class WPSEO_Custom_Taxonomies {
+
 	/**
-	 * @var array Cache the custom taxonomies.
+	 * Custom taxonomies cache.
+	 *
+	 * @var array
 	 */
 	protected static $custom_taxonomies = null;
 
@@ -25,12 +28,12 @@ class WPSEO_Custom_Taxonomies {
 			return self::$custom_taxonomies;
 		}
 
-		self::$custom_taxonomies = array();
-		$args = array(
+		self::$custom_taxonomies = [];
+		$args                    = [
 			'public'   => true,
 			'_builtin' => false,
-		);
-		$custom_taxonomies = get_taxonomies( $args, 'names', 'and' );
+		];
+		$custom_taxonomies       = get_taxonomies( $args, 'names', 'and' );
 
 		if ( is_array( $custom_taxonomies ) ) {
 			foreach ( $custom_taxonomies as $custom_taxonomy ) {

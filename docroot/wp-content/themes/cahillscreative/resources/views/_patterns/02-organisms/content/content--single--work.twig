@@ -1,7 +1,7 @@
 {% set featured_banner_image = Image(post.featured_banner_image) %}
 {% set featured_work_image = Image(post.featured_work_image) %}
-<section class="section section__hero background--cover background-image--{{ featured_banner_image.id }} image-overlay">
-  {% if featured_banner_image %}
+{% if post.featured_banner_image %}
+  <section class="section section__hero background--cover background-image--{{ featured_banner_image.id }} image-overlay">
     <style>
       .background-image--{{ featured_banner_image.id }} {
         background-image: url({{ featured_banner_image.src|resize('800') }});
@@ -17,22 +17,22 @@
         }
       }
     </style>
-  {% endif %}
-</section>
+  </section>
+{% endif %}
 <section class="section section__main">
   <div class="layout-container section__main--inner">
     <article class="article spacing--double">
       <div class="article__header spacing text-align--center narrow narrow--m">
         {% if post.terms('tags') %}
-          <h2 class="page-kicker font--primary--s color--white">
+          <h2 class="page-kicker font--primary--s">
             {% for term in post.terms('tags') %}
               <span>{{ term.name }}{% if not loop.last %}, {% endif %}</span>
             {% endfor %}
           </h2>
-          <hr class="divider background-color--white">
+          <hr class="divider">
         {% endif %}
-        <h1 class="page-title color--white">{{ post.title }}</h1>
-        {% if featured_work_image %}
+        <h1 class="page-title">{{ post.title }}</h1>
+        {% if post.featured_work_image %}
           <picture class="block__thumb">
             <source srcset="{{ featured_work_image.src|resize(900) }}" media="(min-width:650px)">
             <source srcset="{{ featured_work_image.src|resize(650) }}" media="(min-width:400px)">
@@ -44,7 +44,13 @@
         <div class="narrow narrow--s spacing text-align--center">
           <p>{{ post.content }}</p>
           {% if post.website_url %}
-            <a href="{{ post.website_url }}" class="btn btn--outline center space--top" target="_blank" rel="noopener">View Website</a>
+            <a href="{{ post.website_url }}" class="btn btn--outline center space--top" target="_blank" rel="noopener">
+              {% if is_main_site %}
+                View Website
+              {% else %}
+                Book Now
+              {% endif %}
+            </a>
           {% endif %}
         </div>
         {% if post.meta('work') %}

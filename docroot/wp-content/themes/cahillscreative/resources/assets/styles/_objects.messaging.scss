@@ -57,9 +57,10 @@
     margin-left: -$space;
     margin-right: -$space;
 
-    @include media('>large') {
+    @include media(">large") {
       margin: 0;
     }
+
 
     input[type=email] {
       background: white;
@@ -77,7 +78,7 @@
     }
 
     .btn {
-      background: $mint;
+      background: $tertiary-color;
       width: auto;
       padding-left: $pad;
       padding-right: $pad;
@@ -86,7 +87,7 @@
       border-bottom-right-radius: rem(50);
 
       &:hover {
-        background: lighten($mint, 15%);
+        background: lighten($tertiary-color, 15%);
       }
     }
   }
@@ -97,14 +98,14 @@
 }
 
 .popup__kicker {
-  color: $mint;
+  color: $tertiary-color;
 }
 
 .popup__title {
   font-size: rem(40);
   line-height: rem(40);
 
-  @include media('>large') {
+  @include media(">large") {
     font-size: rem(60);
     line-height: rem(60);
   }

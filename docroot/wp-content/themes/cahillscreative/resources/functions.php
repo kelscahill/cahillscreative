@@ -377,6 +377,12 @@ function cptui_register_my_cpts() {
 
   register_post_type( "affiliate", $args );
 
+if (is_main_site()) {
+  $work_slug = 'work';
+} else {
+  $work_slug = 'rentals';
+}
+
 /**
  * Post Type: Work.
  */
@@ -414,7 +420,7 @@ function cptui_register_my_cpts() {
     "capability_type" => "post",
     "map_meta_cap" => true,
     "hierarchical" => false,
-    "rewrite" => array( "slug" => "work", "with_front" => true ),
+    "rewrite" => array( "slug" => $work_slug, "with_front" => true ),
     "query_var" => true,
     "menu_icon" => "dashicons-format-gallery",
     "supports" => array( "title", "editor", "thumbnail", "excerpt" ),
@@ -506,11 +512,11 @@ if( function_exists('acf_add_local_field_group') ):
   			'required' => 0,
   			'conditional_logic' => 0,
   			'wrapper' => array(
-  				'width' => '50',
+  				'width' => '33',
   				'class' => '',
   				'id' => '',
   			),
-  			'default_value' => '',
+  			'default_value' => '#393939',
   		),
   		array(
   			'key' => 'field_5e336946f671c',
@@ -521,11 +527,26 @@ if( function_exists('acf_add_local_field_group') ):
   			'required' => 0,
   			'conditional_logic' => 0,
   			'wrapper' => array(
-  				'width' => '50',
+  				'width' => '33',
   				'class' => '',
   				'id' => '',
   			),
-  			'default_value' => '',
+  			'default_value' => '#393939',
+  		),
+      array(
+  			'key' => 'field_5e336945g671c',
+  			'label' => 'Tertiary Color',
+  			'name' => 'tertiary_color',
+  			'type' => 'color_picker',
+  			'instructions' => '',
+  			'required' => 0,
+  			'conditional_logic' => 0,
+  			'wrapper' => array(
+  				'width' => '33',
+  				'class' => '',
+  				'id' => '',
+  			),
+  			'default_value' => '#393939',
   		),
   		array(
   			'key' => 'social_links_tab',

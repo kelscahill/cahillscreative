@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Redirection - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2019-12-23 10:57:39+0000\n"
+"PO-Revision-Date: 2020-01-27 16:58:34+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -29,7 +29,7 @@ msgstr ""
 
 #: redirection-strings.php:573
 msgid "No headers"
-msgstr ""
+msgstr "Inga sidhuvuden"
 
 #: redirection-strings.php:572
 msgid "Header"
@@ -45,11 +45,11 @@ msgstr ""
 
 #: redirection-strings.php:569
 msgid "HTTP Headers"
-msgstr ""
+msgstr "HTTP-sidhuvuden"
 
 #: redirection-strings.php:568
 msgid "If your site stops working you will need to {{link}}disable the plugin{{/link}} and make changes."
-msgstr ""
+msgstr "Om din webbplats slutar fungera måste du {{link}}inaktivera tillägget{{/link}} och göra ändringar."
 
 #: redirection-strings.php:567
 msgid "Ensure that you update your site URL settings."
@@ -57,7 +57,7 @@ msgstr ""
 
 #: redirection-strings.php:566
 msgid "{{strong}}Warning{{/strong}}: ensure your HTTPS is working otherwise you can break your site."
-msgstr ""
+msgstr "{{strong}}Varning{{/strong}}: se till att din HTTPS fungerar annars kan du krascha din webbplats."
 
 #: redirection-strings.php:565
 msgid "Force a redirect from HTTP to HTTPS"
@@ -301,7 +301,7 @@ msgstr "Din mål-URL innehåller det ogiltiga tecknet {{code}}%(invalid)s{{/code
 
 #: redirection-strings.php:52
 msgid "If you are using WordPress 5.2 or newer then look at your {{link}}Site Health{{/link}} and resolve any issues."
-msgstr ""
+msgstr "Om du använder WordPress 5.2 eller nyare, titta på din {{link}}Hälsokontroll för webbplatser{{/ link}} och lös eventuella problem."
 
 #: redirection-strings.php:17
 msgid "If you do not complete the manual install you will be returned here."
@@ -337,7 +337,7 @@ msgstr "Redirection kommunicerar med WordPress via WordPress REST API. Detta är
 
 #: redirection-strings.php:579
 msgid "IP Headers"
-msgstr ""
+msgstr "IP-sidhuvuden"
 
 #: redirection-strings.php:577
 msgid "Do not change unless advised to do so!"
@@ -465,7 +465,7 @@ msgstr ""
 
 #: redirection-strings.php:151
 msgid "Your source is the same as a target and this will create a loop. Leave a target blank if you do not want to take action."
-msgstr ""
+msgstr "Din källa är densamma som ett mål och det skapar en loop. Lämna ett mål tomt om du inte vill vidta åtgärder."
 
 #: redirection-strings.php:141
 msgid "The target URL you want to redirect, or auto-complete on post name or permalink."

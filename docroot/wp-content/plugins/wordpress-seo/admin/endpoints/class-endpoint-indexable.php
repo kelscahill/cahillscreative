@@ -10,13 +10,39 @@
  */
 class WPSEO_Endpoint_Indexable implements WPSEO_Endpoint, WPSEO_Endpoint_Storable {
 
+	/**
+	 * The namespace of the REST route.
+	 *
+	 * @var string
+	 */
 	const REST_NAMESPACE = 'yoast/v1';
-	const ENDPOINT_SINGULAR = 'indexables/(?P<object_type>.*)/(?P<object_id>\d+)';
 
+	/**
+	 * The route of the endpoint to retrieve or patch the indexable.
+	 *
+	 * @var string
+	 */
+	const ENDPOINT_SINGULAR = 'indexables/(?P<object_type>\w+)/(?P<object_id>\d+)';
+
+	/**
+	 * The name of the capability needed to retrieve data using the endpoints.
+	 *
+	 * @var string
+	 */
 	const CAPABILITY_RETRIEVE = 'manage_options';
+
+	/**
+	 * The name of the capability needed to store data using the endpoints.
+	 *
+	 * @var string
+	 */
 	const CAPABILITY_STORE = 'manage_options';
 
-	/** @var WPSEO_Indexable_Service */
+	/**
+	 * The indexable service.
+	 *
+	 * @var WPSEO_Indexable_Service
+	 */
 	private $service;
 
 	/**
@@ -34,18 +60,26 @@ class WPSEO_Endpoint_Indexable implements WPSEO_Endpoint, WPSEO_Endpoint_Storabl
 	 * @return void
 	 */
 	public function register() {
-		// Register fetch config.
-		register_rest_route( self::REST_NAMESPACE, self::ENDPOINT_SINGULAR, array(
-			'methods'             => 'GET',
-			'callback'            => array(
-				$this->service,
-				'get_indexable',
-			),
-			'permission_callback' => array(
-				$this,
-				'can_retrieve_data',
-			),
-		) );
+		$endpoints = [];
+
+		$endpoints[] = new WPSEO_Endpoint_Factory(
+			self::REST_NAMESPACE,
+			self::ENDPOINT_SINGULAR,
+			[ $this->service, 'get_indexable' ],
+			[ $this, 'can_retrieve_data' ]
+		);
+
+		$endpoints[] = new WPSEO_Endpoint_Factory(
+			self::REST_NAMESPACE,
+			self::ENDPOINT_SINGULAR,
+			[ $this->service, 'patch_indexable' ],
+			[ $this, 'can_store_data' ],
+			'PATCH'
+		);
+
+		foreach ( $endpoints as $endpoint ) {
+			$endpoint->register();
+		}
 	}
 
 	/**

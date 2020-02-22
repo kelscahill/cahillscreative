@@ -56,6 +56,10 @@ class SageTimberTheme extends TimberSite {
 		);
 		$context['latest_posts'] = Timber::query_posts($args);
 
+		$context['related_posts'] = TimberHelper::ob_function('related_posts');
+
+		$context['is_main_site'] = TimberHelper::ob_function('is_main_site');
+
 		return $context;
 	}
 }

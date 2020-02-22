@@ -77,7 +77,7 @@ input[type="submit"] {
   justify-content: center;
   border: none;
   z-index: 9999;
-  background: $mint;
+  background: $tertiary-color;
 
   span,
   font {
@@ -94,7 +94,7 @@ input[type="submit"] {
   }
 
   &:hover {
-    background: lighten($mint, 15%);
+    background: lighten($tertiary-color, 15%);
 
     span,
     font {
