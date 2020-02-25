@@ -1,1 +1,0 @@
-<?php include(locate_template('views/block.php')); ?>
