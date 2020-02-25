@@ -27,5 +27,5 @@ return [
     |
     */
 
-    'uri' => get_theme_file_uri().'/dist',
+    'uri' => '/wp-content/themes/cahillscreative/dist',
 ];
