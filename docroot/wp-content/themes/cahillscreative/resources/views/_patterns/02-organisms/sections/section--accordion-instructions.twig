@@ -22,8 +22,8 @@
           </div>
           <div class="accordion-item__body article__body spacing padding--zero step">
             {% for item in post.meta('instructions') %}
-              <div class="step-item sticky-parent">
-                <div class="step-item__number sticky"><span class="font--primary--xs color--gray">Step</span></div>
+              <div class="step-item">
+                <div class="step-item__number is-sticky"><span class="font--primary--xs color--gray">Step</span></div>
                 <div class="step-item__content spacing">
                   {{ item.instructions_content }}
                   {% if item.instructions_image %}

@@ -15,6 +15,6 @@
       {{ post.title }}
     </div>
     {% include "00-atoms/text/tags.twig" %}
-    <div class="block__button font--primary--xs">View Project</div>
+    <div class="block__button font--primary--xs">View {{ is_main_site ? 'Project' : 'Camper' }}</div>
   </div>
 </a>

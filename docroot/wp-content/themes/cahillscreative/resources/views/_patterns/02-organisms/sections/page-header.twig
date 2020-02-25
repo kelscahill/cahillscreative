@@ -9,10 +9,15 @@
   {% if not post.kicker %}
     <hr class="divider" />
   {% endif %}
-  {% if post.intro %}
+  {% if post.meta('intro') %}
     <div class="page-intro">
-      {{ post.intro }}
+      {{ post.meta('intro') }}
+    </div>
+  {% elseif post.intro %}
+    <div class="page-intro">
+      {% filter shortcodes %}
+        {{ post.intro }}
+      {% endfilter %}
     </div>
   {% endif %}
-  <div id="response" class="filter-response"></div>
 </div>

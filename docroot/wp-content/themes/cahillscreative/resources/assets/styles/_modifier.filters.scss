@@ -3,31 +3,22 @@
 \*------------------------------------ */
 
 .filter {
-  width: 100% !important;
+  width: 100%;
   z-index: 98;
   margin: 0;
 
   &.is-active {
     height: 100%;
     overflow: scroll;
-    position: fixed;
-    top: 0;
-    display: block;
     z-index: 999;
-
-    @include media('>large') {
-      position: relative;
-      top: 0 !important;
-      z-index: 98;
-    }
 
     .filter-toggle {
       position: fixed;
-      top: 0 !important;
+      top: 0;
       z-index: 1;
       box-shadow: 0 2px 3px rgba(black, 0.1);
 
-      @include media('>large') {
+      @include media(">large") {
         position: relative;
       }
     }
@@ -36,14 +27,14 @@
       display: flex;
       padding-bottom: rem(140);
 
-      @include media('>large') {
+      @include media(">large") {
         padding-bottom: 0;
       }
     }
 
     .filter-toggle::after {
       content: "close filters";
-      background: url('../../assets/images/icon--close.svg') center right no-repeat;
+      background: url("../../assets/images/icon--close.svg") center right no-repeat;
       background-size: rem(15);
     }
 
@@ -51,15 +42,9 @@
       position: fixed;
       bottom: 0;
 
-      @include media('>large') {
+      @include media(">large") {
         position: relative;
       }
-    }
-  }
-
-  &.sticky-is-active.is-active {
-    @include media('>large') {
-      top: rem(40) !important;
     }
   }
 }
@@ -67,7 +52,7 @@
 .filter-is-active {
   overflow: hidden;
 
-  @include media('>large') {
+  @include media(">large") {
     overflow: visible;
   }
 }
@@ -86,7 +71,7 @@
   &::after {
     content: "expand filters";
     display: flex;
-    background: url('../../assets/images/icon--plus.svg') center right no-repeat;
+    background: url("../../assets/images/icon--plus.svg") center right no-repeat;
     background-size: rem(15);
     font-family: $sans-serif;
     text-transform: capitalize;
@@ -110,7 +95,7 @@
   height: 100%;
   overflow: scroll;
 
-  @include media('>large') {
+  @include media(">large") {
     flex-direction: row;
     flex-wrap: wrap;
     height: auto;
@@ -124,9 +109,10 @@
   padding: $pad;
   background-position: center right $pad;
 
-  @include media('>large') {
+  @include media(">large") {
     width: 25%;
   }
+
 
   &.is-active {
     .filter-items {
@@ -135,7 +121,7 @@
 
     .filter-item__toggle {
       &::after {
-        background: url('../../assets/images/arrow--up--small.svg') center right no-repeat;
+        background: url("../../assets/images/arrow--up--small.svg") center right no-repeat;
         background-size: rem(10);
       }
 
@@ -165,7 +151,7 @@
 
   &::after {
     display: flex;
-    background: url('../../assets/images/arrow--down--small.svg') center right no-repeat;
+    background: url("../../assets/images/arrow--down--small.svg") center right no-repeat;
     background-size: rem(10);
     font-family: $sans-serif;
     text-transform: capitalize;
@@ -174,7 +160,7 @@
     text-align: right;
     padding-right: rem(15);
 
-    @include media('>large') {
+    @include media(">large") {
       display: none;
     }
   }
@@ -200,7 +186,7 @@
   display: none;
   margin-top: $space;
 
-  @include media('>large') {
+  @include media(">large") {
     display: flex;
     flex-direction: column;
     margin-bottom: rem(15);
@@ -226,7 +212,7 @@
   background: $white;
   box-shadow: 0 -0.5px 2px rgba(black, 0.1);
 
-  @include media('>large') {
+  @include media(">large") {
     flex-direction: row;
     box-shadow: none;
     padding-bottom: $pad;
@@ -237,7 +223,7 @@
   width: 100%;
   text-align: center;
 
-  @include media('>large') {
+  @include media(">large") {
     min-width: rem(250);
     width: auto;
   }

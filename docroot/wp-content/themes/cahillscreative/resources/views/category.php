@@ -17,16 +17,9 @@ $id = get_queried_object_id();
 $context = Timber::get_context();
 $context['post']['kicker'] = "Blog";
 $context['post']['title'] = get_cat_name($id);
+$context['post']['intro'] = get_queried_object()->description;
 $context['post_type'] = 'post';
 $context['category'] = get_queried_object()->slug;
-
-$args = array(
-  'post_type' => 'post',
-  'posts_per_page' => 12,
-  'post_status' => 'publish',
-  'order' => 'DESC',
-  'category_name' => get_cat_name($id),
-);
-$context['posts'] = Timber::query_posts($args);
+$context['posts'] = Timber::query_posts();
 
 Timber::render('04-pages/index.twig', $context);

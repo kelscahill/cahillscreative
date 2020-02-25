@@ -20,6 +20,7 @@
   display: flex;
   justify-content: center;
   background-size: cover;
+  margin-bottom: $space-quad;
 
   @include media(">large") {
     margin-top: rem(-60);
@@ -135,6 +136,22 @@
   @include media(">medium") {
     flex-direction: row;
   }
+
+
+  &--full-width {
+    .block {
+      width: 100%;
+
+      @include media(">medium") {
+        height: 400px;
+      }
+
+
+      @include media(">large") {
+        height: 600px;
+      }
+    }
+  }
 }
 
 .touch .section__favorites--mobile {
@@ -156,6 +173,25 @@
 }
 
 /**
+ * Section Body
+ */
+.section__body {
+  > * {
+    max-width: rem(700);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.body {
+  .section__body {
+    > #sb_instagram {
+      max-width: 100%;
+    }
+  }
+}
+
+/**
  * Accordion
  */
 
@@ -174,11 +210,6 @@
       padding-top: $pad;
       padding-bottom: $pad-double;
     }
-
-    // .accordion-item__toggle::before {
-    //   left: rem(-80);
-    //   content: "collapse";
-    // }
 
     &:last-child {
       .accordion-item__body {
@@ -205,17 +236,6 @@
   background-size: rem(20);
   margin: 0 !important;
   position: relative;
-
-  // &::before {
-  //   display: flex;
-  //   position: absolute;
-  //   left: rem(-65);
-  //   top: rem(4);
-  //   content: "expand";
-  //   color: $gray;
-  //
-  //   @include font--primary--xs;
-  // }
 }
 
 .accordion-item__body {
@@ -223,7 +243,7 @@
   opacity: 0;
   visibility: hidden;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /**
@@ -424,6 +444,8 @@
   }
 
   .section__hero {
+    margin-bottom: 0;
+
     @include media("<=medium") {
       min-height: rem(300);
       max-height: rem(300);

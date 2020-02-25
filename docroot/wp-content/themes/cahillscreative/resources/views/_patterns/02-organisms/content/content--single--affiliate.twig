@@ -3,15 +3,17 @@
     <article class="article spacing--double">
       {% include "02-organisms/sections/article--header.twig" with { kicker: "Shop" } %}
       <div class="article__body narrow narrow--xl">
-        <div class="wrap--2-col sticky-parent">
+        <div class="wrap--2-col">
           <div class="article__content shift-left wrap--2-col--small">
-            <div class="article__content--left spacing--double sticky shift-left--small">
-              {% include "01-molecules/components/share--tools.twig" %}
-              {% include "00-atoms/buttons/affiliate-link.twig"
-                with {
-                  classes: "btn--outline"
-                }
-              %}
+            <div class="article__content--left shift-left--small">
+              <div class="is-sticky spacing--double">
+                {% include "01-molecules/components/share--tools.twig" %}
+                {% include "00-atoms/buttons/affiliate-link.twig"
+                  with {
+                    classes: "btn--outline"
+                  }
+                %}
+              </div>
             </div>
             <div class="article__content--right spacing--double shift-right--small">
               {% include "02-organisms/sections/article--image.twig" %}

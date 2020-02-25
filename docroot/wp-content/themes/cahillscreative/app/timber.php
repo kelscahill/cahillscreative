@@ -48,6 +48,11 @@ class SageTimberTheme extends TimberSite {
 		/* Site info */
 		$context['sidebar_primary'] = Timber::get_widgets('sidebar-primary');
 
+		/* Functions */
+		$context['is_main_site'] = TimberHelper::ob_function('is_main_site');
+		$context['related_posts'] = TimberHelper::ob_function('related_posts');
+
+		/* Get Posts */
 		$args = array(
 		  'post_type' => 'post',
 		  'posts_per_page' => 2,
@@ -56,9 +61,10 @@ class SageTimberTheme extends TimberSite {
 		);
 		$context['latest_posts'] = Timber::query_posts($args);
 
-		$context['related_posts'] = TimberHelper::ob_function('related_posts');
-
-		$context['is_main_site'] = TimberHelper::ob_function('is_main_site');
+		/* Get Terms */
+		// $context['term_projects'] = Timber::get_terms('project');
+		// $context['term_room'] = Timber::get_terms('room');
+		// $context['term_cost'] = Timber::get_terms('cost');
 
 		return $context;
 	}

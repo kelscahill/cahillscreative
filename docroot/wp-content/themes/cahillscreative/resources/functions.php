@@ -119,16 +119,6 @@ function acf_timber_context( $context ) {
 add_filter('timber_context', 'acf_timber_context');
 
 /**
- * Save ACF's to acf_json folder in /resources
- */
-// function my_acf_json_save_point( $path ) {
-//   $path = get_stylesheet_directory() . '/acf-json';
-//   // return
-//   return $path;
-// }
-// add_filter('acf/settings/save_json', 'my_acf_json_save_point');
-
-/**
  * Change Term Description
  */
 remove_filter('term_description','wpautop');
@@ -137,53 +127,6 @@ remove_filter('term_description','wpautop');
  * Add excerpt to pages
  */
 add_post_type_support( 'page', 'excerpt' );
-
-/**
- * Load ajax script on news template
- */
-// function enqueue_ajax_load_more() {
-//    wp_enqueue_script('ajax-load-more'); // Already registered, just needs to be enqueued
-// }
-// add_action('wp_enqueue_scripts', 'enqueue_ajax_load_more');
-
-/**
- * Blog Filter
- */
-function misha_filter_function(){
-
-  $args = array(
-    'post_type' => 'post',
-    'orderby' => 'date',
-  );
-
-  if( isset( $_POST['projects'] ) )
-    $args['tax_query'] = array(
-      array(
-        'taxonomy' => 'projects',
-        'field' => 'term_id',
-        'terms' => array($_POST['projects']),
-        'operator' => 'IN',
-      )
-    );
-
-  $query = new WP_Query( $args );
-
-  if( $query->have_posts() ) :
-    while( $query->have_posts() ): $query->the_post();
-      echo '<h2>' . $query->post->post_title . '</h2>';
-      echo $_POST['projects'];
-    endwhile;
-    wp_reset_postdata();
-  else :
-    echo 'No posts found';
-  endif;
-
-  die();
-}
-
-add_action('wp_ajax_myfilter', 'misha_filter_function');
-add_action('wp_ajax_nopriv_myfilter', 'misha_filter_function');
-
 
 /**
  * Post Types
@@ -373,6 +316,7 @@ function cptui_register_my_cpts() {
     "menu_icon" => "dashicons-cart",
     "supports" => array( "title", "editor", "thumbnail", "excerpt" ),
     "taxonomies" => array( "category", "post_tag" ),
+    "yarpp_support" => true,
   );
 
   register_post_type( "affiliate", $args );
@@ -870,7 +814,7 @@ if( function_exists('acf_add_local_field_group') ):
   				'id' => '',
   			),
   			'layouts' => array(
-  				'5e472df81e3d7' => array(
+  				'layout_5e472df81e3d7' => array(
   					'key' => '5e472df81e3d7',
   					'name' => 'promo_blocks_section',
   					'label' => 'Promo Blocks',
@@ -1342,6 +1286,88 @@ if( function_exists('acf_add_local_field_group') ):
   							'key' => 'field_5e4c7bba4e652',
   							'label' => 'Steps Section CTA',
   							'name' => 'steps_section_cta',
+  							'type' => 'link',
+  							'instructions' => '',
+  							'required' => 0,
+  							'conditional_logic' => 0,
+  							'wrapper' => array(
+  								'width' => '',
+  								'class' => '',
+  								'id' => '',
+  							),
+  							'return_format' => 'array',
+  						),
+  					),
+  					'min' => '',
+  					'max' => '',
+  				),
+          'layout_5e4c78f09db0g' => array(
+  					'key' => 'layout_5e4c78f09db0g',
+  					'name' => 'body_section',
+  					'label' => 'Body',
+  					'display' => 'row',
+  					'sub_fields' => array(
+  						array(
+  							'key' => 'field_5e4c7abeab4da',
+  							'label' => 'Body Section Kicker',
+  							'name' => 'body_section_kicker',
+  							'type' => 'text',
+  							'instructions' => '',
+  							'required' => 0,
+  							'conditional_logic' => 0,
+  							'wrapper' => array(
+  								'width' => '',
+  								'class' => '',
+  								'id' => '',
+  							),
+  							'default_value' => '',
+  							'placeholder' => '',
+  							'prepend' => '',
+  							'append' => '',
+  							'maxlength' => '',
+  						),
+  						array(
+  							'key' => 'field_4e4c7abcab5dc',
+  							'label' => 'Body Section Title',
+  							'name' => 'body_section_title',
+                'type' => 'text',
+                'instructions' => '',
+                'required' => 0,
+                'conditional_logic' => 0,
+                'wrapper' => array(
+                  'width' => '',
+                  'class' => '',
+                  'id' => '',
+                ),
+                'default_value' => '',
+                'placeholder' => '',
+                'prepend' => '',
+                'append' => '',
+                'maxlength' => '',
+  						),
+              array(
+  							'key' => 'field_5e4c8accdd5dc',
+  							'label' => 'Body Section Description',
+  							'name' => 'body_section_description',
+  							'type' => 'wysiwyg',
+  							'instructions' => '',
+  							'required' => 0,
+  							'conditional_logic' => 0,
+  							'wrapper' => array(
+  								'width' => '',
+  								'class' => '',
+  								'id' => '',
+  							),
+  							'default_value' => '',
+  							'tabs' => 'all',
+  							'toolbar' => 'full',
+  							'media_upload' => 0,
+  							'delay' => 0,
+  						),
+  						array(
+  							'key' => 'field_5e4c4bba6e652',
+  							'label' => 'Body Section CTA',
+  							'name' => 'body_section_cta',
   							'type' => 'link',
   							'instructions' => '',
   							'required' => 0,

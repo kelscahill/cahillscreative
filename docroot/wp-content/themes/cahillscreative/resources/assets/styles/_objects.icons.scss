@@ -15,7 +15,8 @@
   height: $icon-small;
 }
 
-.icon--m {
+.icon--m,
+.icon--m > * {
   width: $icon-medium;
   height: $icon-medium;
 }

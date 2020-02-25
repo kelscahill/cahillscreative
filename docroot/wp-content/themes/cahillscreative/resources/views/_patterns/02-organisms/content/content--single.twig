@@ -4,25 +4,27 @@
       {% include "02-organisms/sections/article--header.twig" with { kicker: "Blog" } %}
       {% include "02-organisms/sections/article--tags.twig" %}
       <div class="article__body narrow narrow--xl">
-        <div class="wrap--2-col sticky-parent">
+        <div class="wrap--2-col">
           <div class="article__content shift-left wrap--2-col--small">
-            <div class="article__content--left spacing--double sticky shift-left--small">
-              <div class="author-meta spacing--half">
-                <div class="author-meta__image round center-block">
-                  <img src="{{ post.author.avatar({ size: 150 }) }}" alt="{{ post.author.first_name }} {{ post.author.last_name }}" />
+            <div class="article__content--left shift-left--small">
+              <div class="spacing--double is-sticky">
+                <div class="author-meta spacing--half">
+                  <div class="author-meta__image round center-block">
+                    <img src="{{ post.author.avatar({ size: 150 }) }}" alt="{{ post.author.first_name }} {{ post.author.last_name }}" />
+                  </div>
+                  <div class="author-meta__name font--primary--xs">
+                    {{ post.author.first_name }} {{ post.author.last_name }}
+                  </div>
+                  <hr class="divider" />
+                  {% include "00-atoms/text/entry-meta.twig" %}
                 </div>
-                <div class="author-meta__name font--primary--xs">
-                  {{ post.author.first_name }} {{ post.author.last_name }}
-                </div>
-                <hr class="divider" />
-                {% include "00-atoms/text/entry-meta.twig" %}
+                {% include "01-molecules/components/share--tools.twig" %}
+                {% include "00-atoms/buttons/etsy-link.twig"
+                  with {
+                    classes: "btn--outline"
+                  }
+                %}
               </div>
-              {% include "01-molecules/components/share--tools.twig" %}
-              {% include "00-atoms/buttons/etsy-link.twig"
-                with {
-                  classes: "btn--outline"
-                }
-              %}
             </div>
             <div class="article__content--right spacing--double shift-right--small">
               {% include "02-organisms/sections/section--gallery.twig" %}

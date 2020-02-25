@@ -1,5 +1,8 @@
 {% if featured_work %}
-  <section class="section section__featured-work">
+  {% if featured_work|length %}
+    {% set classes = " section__featured-work--full-width" %}
+  {% endif %}
+  <section class="section section__featured-work{{ classes }}">
     {% for post in featured_work %}
       {% include "01-molecules/blocks/block--featured.twig" %}
     {% endfor %}

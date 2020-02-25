@@ -14,17 +14,8 @@
  */
 
 $context = Timber::get_context();
-$post = Timber::query_post();
-$context['post']['kicker'] = 'Blog';
-$context['post']['title'] = 'Recent Posts';
-$context['post_type'] = 'post';
-
-$args = array(
-  'post_type' => 'post',
-  'posts_per_page' => 12,
-  'post_status' => 'publish',
-  'order' => 'DESC',
-);
-$context['posts'] = Timber::query_posts($args);
+$post = new TimberPost();
+$context['post'] = $post;
+$context['posts'] = Timber::query_posts();
 
 Timber::render('04-pages/index.twig', $context);

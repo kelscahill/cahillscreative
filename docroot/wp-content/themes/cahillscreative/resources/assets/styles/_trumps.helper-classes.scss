@@ -2,6 +2,11 @@
     $HELPER/TRUMP CLASSES
 \*------------------------------------ */
 
+.is-sticky {
+  position: sticky;
+  top: 50px;
+}
+
 .shadow {
   -webkit-filter: drop-shadow(0 2px 4px rgba(black, 0.5));
   filter: drop-shadow(0 2px 4px rgba(black, 0.5));

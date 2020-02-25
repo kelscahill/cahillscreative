@@ -43,8 +43,8 @@
         </div>
       </section>
     {% endif %}
-    {% if post.intro %}
-      <div class="section__hero-excerpt color--white">{{ post.intro }}</div>
+    {% if post.meta('intro') %}
+      <div class="section__hero-excerpt color--white">{{ post.meta('intro') }}</div>
     {% endif %}
   </div>
 </section>

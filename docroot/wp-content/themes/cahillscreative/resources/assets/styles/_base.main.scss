@@ -2,6 +2,24 @@
     $SITE MAIN
 \*------------------------------------ */
 
+body.admin-bar {
+  .is-fixed {
+    top: 46px;
+
+    @include media(">=782px") {
+      top: 32px;
+    }
+  }
+
+  .is-sticky {
+    top: 86px;
+
+    @include media(">=782px") {
+      top: 72px;
+    }
+  }
+}
+
 html,
 body {
   width: 100%;
@@ -18,17 +36,6 @@ body {
   overflow-x: hidden;
 }
 
-body#tinymce {
-  & > * + * {
-    margin-top: $space;
-  }
-
-  ul {
-    list-style-type: disc;
-    margin-left: $space;
-  }
-}
-
 .main {
   padding-top: rem(80);
   padding-bottom: $space * 4;
@@ -38,20 +45,22 @@ body#tinymce {
   }
 }
 
-.touch .single {
-  .footer {
-    margin-bottom: rem(40);
-  }
-
-  &.single-work {
+.single {
+  @include media("<=medium") {
     .footer {
-      margin-bottom: 0;
+      margin-bottom: rem(40);
     }
-  }
 
-  &.margin--80 {
-    .footer {
-      margin-bottom: rem(80);
+    &.single-work {
+      .footer {
+        margin-bottom: 0;
+      }
+    }
+
+    &.margin--80 {
+      .footer {
+        margin-bottom: rem(80);
+      }
     }
   }
 }

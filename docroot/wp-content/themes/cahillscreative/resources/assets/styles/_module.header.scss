@@ -22,7 +22,7 @@
 .header__utility--left {
   display: none;
 
-  @include media('>large') {
+  @include media(">large") {
     display: flex;
   }
 }
@@ -32,7 +32,7 @@
   justify-content: space-between;
   width: 100%;
 
-  @include media('>large') {
+  @include media(">large") {
     justify-content: flex-end;
     width: auto;
   }
@@ -76,10 +76,11 @@
   background: $white;
   height: rem($small-header-height);
 
-  @include media('>large') {
+  @include media(">large") {
     height: rem($large-header-height);
     position: relative;
   }
+
 
   &.is-active {
     .nav__primary-mobile {
@@ -123,7 +124,7 @@
   margin: auto;
   transition: none;
 
-  @include media('>large') {
+  @include media(">large") {
     width: rem(200);
     height: rem(200);
   }
@@ -140,8 +141,13 @@
   margin: auto;
   display: block;
 
-  @include media('>large') {
+  @include media(">large") {
     width: rem(170);
     height: rem(170);
   }
+}
+
+.page-header {
+  padding: 0 $space;
+  margin-bottom: $space-double;
 }

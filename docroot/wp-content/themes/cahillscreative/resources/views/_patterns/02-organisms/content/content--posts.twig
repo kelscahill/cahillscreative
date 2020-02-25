@@ -1,11 +1,17 @@
 {% if posts %}
-  {% include "02-organisms/sections/section--filter.twig" %}
-  <div class="grid grid--full">
-    {% for post in posts %}
-      {% include ['01-molecules/blocks/block--' ~ post.post_type ~ '.twig', '01-molecules/blocks/block.twig'] %}
-    {% endfor %}
+<section class="section section__filter filter sticky-filter is-sticky">
+  <div class="layout-container narrow narrow--l">
+  {{ function('do_shortcode', '[searchandfilter id="142"]') }}
+</div>
+</section>
+  <div class="posts layout-container narrow narrow--xl">
+    <div class="grid grid--full">
+      {% for post in posts %}
+        {% include ['01-molecules/blocks/block--' ~ post.post_type ~ '.twig', '01-molecules/blocks/block.twig'] %}
+      {% endfor %}
+    </div>
+    {% if posts|length >= 12 %}
+      {{ function('do_shortcode', '[ajax_load_more category="'~ category ~'" post_type="'~ post_type ~'" tag="'~ tag ~'" container_type="div" transition_container_classes="grid grid--full" transition="fade" scroll="true" button_label="Load More" posts_per_page="12" offset="12"]') }}
+    {% endif %}
   </div>
-  {% if posts|length >= 12 %}
-    {{ function('do_shortcode', '[ajax_load_more category="'~ category ~'" post_type="'~ post_type ~'" tag="'~ tag ~'" container_type="div" transition_container_classes="grid grid--full" transition="fade" scroll="true" button_label="Load More" posts_per_page="12" offset="12"]') }}
-  {% endif %}
 {% endif %}
