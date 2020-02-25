@@ -1,0 +1,1 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 61.91 12.77"><title>Long CTA Arrow</title><polygon points="61.91 6.36 55.54 0 54.84 0.71 60.03 5.91 0 5.91 0 6.91 59.95 6.91 54.79 12.06 55.5 12.77 61.2 7.07 61.2 7.07 61.91 6.36" fill="#fff"/></svg>
