@@ -4595,9 +4595,9 @@ article li p {
 }
 
 .footer__row--bottom {
-  -webkit-box-align: start;
-      -ms-flex-align: start;
-          align-items: flex-start;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   padding-right: 2.5rem;
 }
 
