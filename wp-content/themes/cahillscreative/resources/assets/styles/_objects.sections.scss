@@ -259,6 +259,7 @@
   align-items: flex-start;
   counter-increment: item;
   margin-bottom: $space-double;
+  position: relative;
 
   &:last-child {
     margin-bottom: 0;
