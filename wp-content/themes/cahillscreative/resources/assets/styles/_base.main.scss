@@ -46,13 +46,15 @@ body {
 }
 
 .has-sticky-button {
-  &::after {
-    content: "";
-    height: 80px;
-    width: 100%;
-    position: relative;
-    display: block;
-    z-index: 0;
-    pointer-events: none;
+  @include media("<=medium") {
+    &::after {
+      content: "";
+      height: 80px;
+      width: 100%;
+      position: relative;
+      display: block;
+      z-index: 0;
+      pointer-events: none;
+    }
   }
 }
