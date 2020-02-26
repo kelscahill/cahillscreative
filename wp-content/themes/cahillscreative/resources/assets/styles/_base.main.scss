@@ -56,11 +56,13 @@ body {
         margin-bottom: 0;
       }
     }
+  }
+}
 
-    &.margin--80 {
-      .footer {
-        margin-bottom: rem(80);
-      }
+.has-sticky-button {
+  .footer {
+    @include media("<=medium") {
+      margin-bottom: rem(80);
     }
   }
 }

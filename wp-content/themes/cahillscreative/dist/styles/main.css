@@ -455,8 +455,10 @@ body {
   .single.single-work .footer {
     margin-bottom: 0;
   }
+}
 
-  .single.margin--80 .footer {
+@media (max-width: 700px) {
+  .has-sticky-button .footer {
     margin-bottom: 5rem;
   }
 }
@@ -2422,6 +2424,10 @@ input[type="submit"].center {
   .section__hero.background-image--default {
     background-image: url(/wp-content/themes/cahillscreative/dist/images/hero-banner.jpg);
   }
+}
+
+.no-touch .section__hero {
+  background-attachment: fixed;
 }
 
 .section__featured-about {

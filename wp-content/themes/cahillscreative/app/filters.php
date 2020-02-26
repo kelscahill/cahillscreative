@@ -18,6 +18,10 @@ add_filter('body_class', function (array $classes) {
         $classes[] = 'sidebar-primary';
     }
 
+    if (get_field('affiliate_link') || get_field('etsy_link')) {
+        $classes[] = 'has-sticky-button';
+    }
+
     /** Clean up class names for custom templates */
     $classes = array_map(function ($class) {
         return preg_replace(['/-blade(-php)?$/', '/^page-template-views/'], '', $class);

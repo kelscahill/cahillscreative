@@ -297,10 +297,6 @@ Router.prototype.loadEvents = function loadEvents () {
       e.preventDefault();
     });
 
-    if ($('.btn--download').length) {
-      $('body').addClass('margin--80');
-    }
-
     // Popup
     $('.popup__close').click(function(e) {
       e.preventDefault();
