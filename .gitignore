@@ -9,13 +9,13 @@
 **/wp-content/blogs.dir/
 **/wp-content/cache/
 **/wp-content/upgrade/
-
+**/wp-content/uploads/
 **/wp-content/wp-cache-config.php
 **/wp-content/mu-plugins/
 
 **/wp-content/themes/**/.cache-loader/
 **/wp-content/themes/**/node_modules/
-
+**/wp-content/themes/**/vendor/
 **/wp-content/themes/**/config-local.json
 **/wp-content/themes/**/package-lock.json
 **/wp-content/ewww/
