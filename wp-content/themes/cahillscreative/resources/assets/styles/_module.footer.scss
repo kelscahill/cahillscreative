@@ -62,8 +62,12 @@
   justify-content: flex-start;
 
   &--bottom {
-    align-items: center;
+    align-items: flex-start;
     padding-right: $pad-double;
+
+    @include media(">large") {
+      align-items: center;
+    }
   }
 
   @include media(">medium") {

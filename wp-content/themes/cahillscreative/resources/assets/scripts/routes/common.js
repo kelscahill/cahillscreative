@@ -41,11 +41,6 @@ export default {
       getWidth();
     };
 
-    // Prevent flash of unstyled content
-    $(document).ready(function() {
-      $('.no-fouc').removeClass('no-fouc');
-    });
-
     $('.primary-nav--with-subnav.js-toggle > a').click(function(e) {
       e.preventDefault();
     });
