@@ -2369,7 +2369,6 @@ input[type="submit"].center {
       -ms-flex-pack: center;
           justify-content: center;
   background-size: cover;
-  background-attachment: fixed;
   margin-bottom: 5rem;
 }
 
