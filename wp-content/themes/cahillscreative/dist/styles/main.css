@@ -3977,7 +3977,7 @@ label {
   line-height: 1.6;
 }
 
-.article__category span {
+.article__category > span {
   padding-right: 1.25rem;
   min-width: 7.5rem;
   text-align: right;

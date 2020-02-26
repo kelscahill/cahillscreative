@@ -4,7 +4,7 @@
       <div class="article__category">
         <span class="font--primary--xs">Project</span>
         {% for term in post.terms('project') %}
-          <a href="{{ term.link }}">{{ term.name }}{% if not loop.last %}, {% endif %}</span>
+          <a href="{{ term.link }}">{{ term.name }}{% if not loop.last %}, {% endif %}</a>
         {% endfor %}
       </div>
     {% endif %}
@@ -12,7 +12,7 @@
       <div class="article__category">
         <span class="font--primary--xs">Room</span>
         {% for term in post.terms('room') %}
-          <a href="{{ term.link }}">{{ term.name }}{% if not loop.last %}, {% endif %}</span>
+          <a href="{{ term.link }}">{{ term.name }}{% if not loop.last %}, {% endif %}</a>
         {% endfor %}
       </div>
     {% endif %}
@@ -20,7 +20,7 @@
       <div class="article__category">
         <span class="font--primary--xs">Cost</span>
         {% for term in post.terms('cost') %}
-          <a href="{{ term.link }}">{{ term.name }}{% if not loop.last %}, {% endif %}</span>
+          <a href="{{ term.link }}">{{ term.name }}{% if not loop.last %}, {% endif %}</a>
         {% endfor %}
       </div>
     {% endif %}
@@ -28,7 +28,7 @@
       <div class="article__category">
         <span class="font--primary--xs">Skill Level</span>
         {% for term in post.terms('skill_level') %}
-          <a href="{{ term.link }}">{{ term.name }}{% if not loop.last %}, {% endif %}</span>
+          <a href="{{ term.link }}">{{ term.name }}{% if not loop.last %}, {% endif %}</a>
         {% endfor %}
       </div>
     {% endif %}

@@ -38,7 +38,7 @@
     line-height: 1.6;
   }
 
-  span {
+  > span {
     padding-right: $pad;
     min-width: rem(120);
     text-align: right;
