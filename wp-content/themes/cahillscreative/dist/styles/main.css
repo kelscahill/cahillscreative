@@ -447,20 +447,14 @@ body {
   }
 }
 
-@media (max-width: 700px) {
-  .single .footer {
-    margin-bottom: 2.5rem;
-  }
-
-  .single.single-work .footer {
-    margin-bottom: 0;
-  }
-}
-
-@media (max-width: 700px) {
-  .has-sticky-button .footer {
-    margin-bottom: 5rem;
-  }
+.has-sticky-button::after {
+  content: "";
+  height: 80px;
+  width: 100%;
+  position: relative;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
 }
 
 /* ------------------------------------*\

@@ -45,24 +45,14 @@ body {
   }
 }
 
-.single {
-  @include media("<=medium") {
-    .footer {
-      margin-bottom: rem(40);
-    }
-
-    &.single-work {
-      .footer {
-        margin-bottom: 0;
-      }
-    }
-  }
-}
-
 .has-sticky-button {
-  .footer {
-    @include media("<=medium") {
-      margin-bottom: rem(80);
-    }
+  &::after {
+    content: "";
+    height: 80px;
+    width: 100%;
+    position: relative;
+    display: block;
+    z-index: 0;
+    pointer-events: none;
   }
 }
