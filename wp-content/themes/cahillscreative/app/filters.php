@@ -18,7 +18,7 @@ add_filter('body_class', function (array $classes) {
         $classes[] = 'sidebar-primary';
     }
 
-    if (get_field('affiliate_link') || get_field('etsy_link')) {
+    if (!is_home() && get_field('affiliate_link') || get_field('etsy_link')) {
         $classes[] = 'has-sticky-button';
     }
 
