@@ -4403,6 +4403,51 @@ article li p {
   width: auto !important;
 }
 
+.article__body .wp-block-button a,
+.rich-text .wp-block-button a {
+  display: table;
+  padding: 0.8125rem 1.875rem 0.75rem 1.875rem;
+  vertical-align: middle;
+  cursor: pointer;
+  color: #fff;
+  background-color: #393939;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  border: none;
+  -webkit-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  border-radius: 3.125rem;
+  text-align: center;
+  font-size: 0.6875rem;
+  line-height: 0.9375rem;
+  font-family: "Raleway", sans-serif;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.article__body .wp-block-button a:focus,
+.rich-text .wp-block-button a:focus {
+  outline: 0;
+}
+
+.article__body .wp-block-button a:hover,
+.rich-text .wp-block-button a:hover {
+  background-color: black;
+  color: #fff;
+}
+
+.article__body .wp-block-button a.center,
+.rich-text .wp-block-button a.center {
+  display: table;
+  width: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .article__body .wp-caption-text,
 .rich-text .wp-caption-text {
   display: block;
