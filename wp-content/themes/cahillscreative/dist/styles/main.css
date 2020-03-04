@@ -4216,13 +4216,19 @@ label {
 }
 
 .article__body ol,
+.rich-text ol,
 .article__body
+ul,
+.rich-text
 ul {
   margin-left: 0;
 }
 
 .article__body ol li,
+.rich-text ol li,
 .article__body
+  ul li,
+.rich-text
   ul li {
   list-style: none;
   padding-left: 1.25rem;
@@ -4230,7 +4236,10 @@ ul {
 }
 
 .article__body ol li::before,
+.rich-text ol li::before,
 .article__body
+    ul li::before,
+.rich-text
     ul li::before {
   color: #393939;
   width: 0.625rem;
@@ -4238,33 +4247,42 @@ ul {
 }
 
 .article__body ol li li,
+.rich-text ol li li,
 .article__body
+    ul li li,
+.rich-text
     ul li li {
   list-style: none;
 }
 
-.article__body ol {
+.article__body ol,
+.rich-text ol {
   counter-reset: item;
 }
 
-.article__body ol li::before {
+.article__body ol li::before,
+.rich-text ol li::before {
   content: counter(item) ". ";
   counter-increment: item;
 }
 
-.article__body ol li li {
+.article__body ol li li,
+.rich-text ol li li {
   counter-reset: item;
 }
 
-.article__body ol li li::before {
+.article__body ol li li::before,
+.rich-text ol li li::before {
   content: "\2010";
 }
 
-.article__body ul li::before {
+.article__body ul li::before,
+.rich-text ul li::before {
   content: "\2022";
 }
 
-.article__body ul li li::before {
+.article__body ul li li::before,
+.rich-text ul li li::before {
   content: "\25E6";
 }
 

@@ -236,7 +236,8 @@
 
 ol,
 ul {
-  .article__body & {
+  .article__body &,
+  .rich-text & {
     margin-left: 0;
 
     li {
@@ -258,7 +259,8 @@ ul {
 }
 
 ol {
-  .article__body & {
+  .article__body &,
+  .rich-text & {
     counter-reset: item;
 
     li {
@@ -279,7 +281,8 @@ ol {
 }
 
 ul {
-  .article__body & {
+  .article__body &,
+  .rich-text & {
     li {
       &::before {
         content: "\002022";
