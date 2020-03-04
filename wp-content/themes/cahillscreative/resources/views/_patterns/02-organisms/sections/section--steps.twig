@@ -14,7 +14,7 @@
           <div class="step-item__number is-sticky"><span class="font--primary--xs color--gray">Step</span></div>
           <div class="step-item__content spacing">
             <h2 class="font--primary--s">{{ item.steps_title }}</h2>
-            {{ item.steps_description }}
+            <div class="rich-text spacing">{{ item.steps_description }}</div>
           </div>
         </div>
       {% endfor %}
