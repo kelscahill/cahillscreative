@@ -13,8 +13,10 @@ Author: mitcho (Michael Yoshitaka Erlewine)
     if (get_post_thumbnail_id()) {
       $thumb_id = get_post_thumbnail_id();
     }
-    else {
+    else (get_fallback_attachment_image()) {
       $thumb_id = get_fallback_attachment_image();
+    } else {
+      $thumb_id = '';
     }
     $image = wp_get_attachment_image_src($thumb_id, 'thumbnail')[0];
     $alt = get_post_meta($thumb_id, '_wp_attachment_image_alt', true);
