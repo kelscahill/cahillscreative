@@ -20,10 +20,6 @@ $context['post']['title'] = get_term($id)->name;
 $context['tag'] = get_term($id)->name;
 
 $args = array(
-  'post_type' => array(
-    'post',
-    'affiliate',
-  ),
   'posts_per_page' => 12,
   'post_status' => 'publish',
   'order' => 'DESC',
