@@ -383,6 +383,10 @@ article {
     width: auto !important;
   }
 
+  .wp-block-button a {
+    @include btn;
+  }
+
   .wp-caption-text {
     display: block;
     line-height: 1.3;
