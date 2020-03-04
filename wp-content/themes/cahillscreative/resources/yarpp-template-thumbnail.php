@@ -12,8 +12,7 @@ Author: mitcho (Michael Yoshitaka Erlewine)
     // one of the attached images.
     if (get_post_thumbnail_id()) {
       $thumb_id = get_post_thumbnail_id();
-    }
-    else (get_fallback_attachment_image()) {
+    } elseif (get_fallback_attachment_image()) {
       $thumb_id = get_fallback_attachment_image();
     } else {
       $thumb_id = '';
