@@ -2,9 +2,7 @@
     $BUTTONS
 \*------------------------------------ */
 
-.btn,
-button,
-input[type="submit"] {
+@mixin btn {
   display: table;
   padding: rem(13) $pad-and-half rem(12) $pad-and-half;
   vertical-align: middle;
@@ -36,6 +34,12 @@ input[type="submit"] {
     margin-left: auto;
     margin-right: auto;
   }
+}
+
+.btn,
+button,
+input[type="submit"] {
+  @include btn;
 }
 
 .btn--outline {
