@@ -4478,6 +4478,12 @@ article li p {
   text-align: center;
 }
 
+.article__body .aligncenter > *,
+.rich-text .aligncenter > * {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 @media (min-width: 501px) {
   .article__body .alignleft,
   .article__body .alignright,
