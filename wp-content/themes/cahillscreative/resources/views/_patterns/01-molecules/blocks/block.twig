@@ -1,11 +1,13 @@
 {% if post.affiliate_link %}
   {% set link = post.affiliate_link %}
+  {% set target = '_blank' %}
 {% else %}
   {% set link = post.link %}
+  {% set target = '_self' %}
 {% endif %}
 <div class="grid-item">
   <div class="block block__post block__{{ post.post_type }} background-color--white">
-    <a href="{{ link }}" class="block__link spacing">
+    <a href="{{ link }}" class="block__link spacing" target="{{ target }}">
       {% if post.thumbnail %}
         {% set image = Image(post.thumbnail) %}
         <picture class="block__thumb">
