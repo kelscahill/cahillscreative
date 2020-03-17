@@ -154,10 +154,10 @@ add_post_type_support( 'page', 'excerpt' );
     "show_in_nav_menus" => true,
     "query_var" => true,
     "rewrite" => array( 'slug' => 'room', 'with_front' => true, ),
-    "show_admin_column" => false,
-    "show_in_rest" => false,
+    "show_admin_column" => true,
+    "show_in_rest" => true,
     "rest_base" => "",
-    "show_in_quick_edit" => false,
+    "show_in_quick_edit" => true,
   );
   register_taxonomy( "room", array( "post" ), $args );
 
@@ -181,10 +181,10 @@ add_post_type_support( 'page', 'excerpt' );
     "show_in_nav_menus" => true,
     "query_var" => true,
     "rewrite" => array( 'slug' => 'cost', 'with_front' => true, ),
-    "show_admin_column" => false,
-    "show_in_rest" => false,
+    "show_admin_column" => true,
+    "show_in_rest" => true,
     "rest_base" => "",
-    "show_in_quick_edit" => false,
+    "show_in_quick_edit" => true,
   );
   register_taxonomy( "cost", array( "post" ), $args );
 
@@ -208,10 +208,10 @@ add_post_type_support( 'page', 'excerpt' );
     "show_in_nav_menus" => true,
     "query_var" => true,
     "rewrite" => array( 'slug' => 'project', 'with_front' => true, ),
-    "show_admin_column" => false,
-    "show_in_rest" => false,
+    "show_admin_column" => true,
+    "show_in_rest" => true,
     "rest_base" => "",
-    "show_in_quick_edit" => false,
+    "show_in_quick_edit" => true,
   );
   register_taxonomy( "project", array( "post" ), $args );
 
@@ -235,10 +235,10 @@ add_post_type_support( 'page', 'excerpt' );
     "show_in_nav_menus" => true,
     "query_var" => true,
     "rewrite" => array( 'slug' => 'store', 'with_front' => true, ),
-    "show_admin_column" => false,
-    "show_in_rest" => false,
+    "show_admin_column" => true,
+    "show_in_rest" => true,
     "rest_base" => "",
-    "show_in_quick_edit" => false,
+    "show_in_quick_edit" => true,
   );
   register_taxonomy( "store", array( "affiliate" ), $args );
 
@@ -262,10 +262,10 @@ add_post_type_support( 'page', 'excerpt' );
     "show_in_nav_menus" => true,
     "query_var" => true,
     "rewrite" => array( 'slug' => 'skill_level', 'with_front' => true, ),
-    "show_admin_column" => false,
-    "show_in_rest" => false,
+    "show_admin_column" => true,
+    "show_in_rest" => true,
     "rest_base" => "",
-    "show_in_quick_edit" => false,
+    "show_in_quick_edit" => true,
   );
   register_taxonomy( "skill_level", array( "post" ), $args );
 }
