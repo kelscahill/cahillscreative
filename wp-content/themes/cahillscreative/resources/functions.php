@@ -315,7 +315,7 @@ function cptui_register_my_cpts() {
     "query_var" => true,
     "menu_icon" => "dashicons-cart",
     "supports" => array( "title", "editor", "thumbnail", "excerpt" ),
-    "taxonomies" => array( "category", "post_tag" ),
+    "taxonomies" => array( "category", "post_tag", "store" ),
     "yarpp_support" => true,
   );
 

@@ -65,6 +65,7 @@ class SageTimberTheme extends TimberSite {
 		// $context['term_projects'] = Timber::get_terms('project');
 		// $context['term_room'] = Timber::get_terms('room');
 		// $context['term_cost'] = Timber::get_terms('cost');
+		// $context['test'] = Timber::get_terms('category');
 
 		return $context;
 	}
