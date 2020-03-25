@@ -9,6 +9,10 @@
  * @since    Timber 0.1
  */
 
+if (is_main_site()) {
+  $context['is_main_site'] = true;
+}
+
 $context = Timber::get_context();
 $post = Timber::query_post();
 $context['post'] = $post;
