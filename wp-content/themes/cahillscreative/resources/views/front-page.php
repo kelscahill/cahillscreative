@@ -26,10 +26,6 @@ $post = new TimberPost();
 $context['post'] = $post;
 $context['is_front_page'] = 'true';
 
-if (is_main_site()) {
-  $context['is_main_site'] = true;
-}
-
 $featured_posts_args = array(
   'post_type' => 'post',
   'posts_per_page' => 4,
