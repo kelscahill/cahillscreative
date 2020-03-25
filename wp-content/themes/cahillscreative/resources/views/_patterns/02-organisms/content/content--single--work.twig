@@ -45,11 +45,7 @@
           <p>{{ post.content }}</p>
           {% if post.website_url %}
             <a href="{{ post.website_url }}" class="btn btn--outline center space--top" target="_blank" rel="noopener">
-              {% if is_main_site %}
-                View Website
-              {% else %}
-                Book Now
-              {% endif %}
+              View Website
             </a>
           {% endif %}
         </div>
