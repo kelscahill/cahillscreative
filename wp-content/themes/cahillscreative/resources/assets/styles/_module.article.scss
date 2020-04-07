@@ -326,6 +326,14 @@ article {
     font-weight: bold;
   }
 
+  td p {
+    line-height: 1.4;
+  }
+
+  th p {
+    @include font--primary--xs;
+  }
+
   > p:empty,
   > h2:empty,
   > h3:empty {
