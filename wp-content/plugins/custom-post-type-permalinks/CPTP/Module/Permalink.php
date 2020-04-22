@@ -48,9 +48,8 @@ class CPTP_Module_Permalink extends CPTP_Module {
 	 * @param WP_Post $post post object.
 	 * @param String  $leavename for edit.php.
 	 *
-	 * @version 2.0
-	 *
 	 * @return string
+	 * @version 2.0
 	 */
 	public function post_type_link( $post_link, $post, $leavename ) {
 		/**
@@ -113,17 +112,19 @@ class CPTP_Module_Permalink extends CPTP_Module {
 
 		// %post_id%/attachment/%attachement_name%;
 		$id = filter_input( INPUT_GET, 'post' );
-		if ( null !== $id && intval( $id ) !== $post->ID ) {
-			$parent_structure = trim( CPTP_Util::get_permalink_structure( $post->post_type ), '/' );
-			$parent_dirs      = explode( '/', $parent_structure );
-			if ( is_array( $parent_dirs ) ) {
-				$last_dir = array_pop( $parent_dirs );
-			} else {
-				$last_dir = $parent_dirs;
-			}
+		if ( 'attachment' === $post->post_type ) {
+			if ( null !== $id && intval( $id ) !== $post->ID ) {
+				$parent_structure = trim( CPTP_Util::get_permalink_structure( $post->post_type ), '/' );
+				$parent_dirs      = explode( '/', $parent_structure );
+				if ( is_array( $parent_dirs ) ) {
+					$last_dir = array_pop( $parent_dirs );
+				} else {
+					$last_dir = $parent_dirs;
+				}
 
-			if ( '%post_id%' === $parent_structure || '%post_id%' === $last_dir ) {
-				$permalink = $permalink . '/attachment/';
+				if ( '%post_id%' === $parent_structure || '%post_id%' === $last_dir ) {
+					$permalink = untrailingslashit( $permalink ) . '/attachment/';
+				}
 			}
 		}
 
@@ -145,7 +146,7 @@ class CPTP_Module_Permalink extends CPTP_Module {
 				$category_object = get_term( $category_object, 'category' );
 				$category        = $category_object->slug;
 				if ( $category_object->parent ) {
-					$parent = $category_object->parent;
+					$parent   = $category_object->parent;
 					$category = get_category_parents( $parent, false, '/', true ) . $category;
 				}
 			}
@@ -176,12 +177,12 @@ class CPTP_Module_Permalink extends CPTP_Module {
 				'%author%',
 			),
 			array(
-				date( 'Y', $post_date ),
-				date( 'm', $post_date ),
-				date( 'd', $post_date ),
-				date( 'H', $post_date ),
-				date( 'i', $post_date ),
-				date( 's', $post_date ),
+				gmdate( 'Y', $post_date ),
+				gmdate( 'm', $post_date ),
+				gmdate( 'd', $post_date ),
+				gmdate( 'H', $post_date ),
+				gmdate( 'i', $post_date ),
+				gmdate( 's', $post_date ),
 				$category,
 				$author,
 			),
@@ -189,6 +190,7 @@ class CPTP_Module_Permalink extends CPTP_Module {
 		);
 		$permalink = str_replace( $search, $replace, $permalink );
 		$permalink = home_url( $permalink );
+
 		return $permalink;
 	}
 
@@ -196,7 +198,7 @@ class CPTP_Module_Permalink extends CPTP_Module {
 	/**
 	 * Create %tax% -> term
 	 *
-	 * @param int    $post_id  post id.
+	 * @param int    $post_id post id.
 	 * @param string $permalink permalink uri.
 	 *
 	 * @return array
@@ -237,7 +239,7 @@ class CPTP_Module_Permalink extends CPTP_Module {
 		}
 
 		return array(
-			'search' => $search,
+			'search'  => $search,
 			'replace' => $replace,
 		);
 	}
@@ -259,13 +261,13 @@ class CPTP_Module_Permalink extends CPTP_Module {
 	/**
 	 * Fix attachment output
 	 *
-	 * @version 1.0
-	 * @since 0.8.2
-	 *
 	 * @param string $link permalink URI.
 	 * @param int    $post_id Post ID.
 	 *
 	 * @return string
+	 * @since 0.8.2
+	 *
+	 * @version 1.0
 	 */
 	public function attachment_link( $link, $post_id ) {
 		/**
@@ -299,8 +301,8 @@ class CPTP_Module_Permalink extends CPTP_Module {
 			return $link;
 		}
 
-		$permalink   = CPTP_Util::get_permalink_structure( $post_parent->post_type );
-		$post_type   = get_post_type_object( $post_parent->post_type );
+		$permalink = CPTP_Util::get_permalink_structure( $post_parent->post_type );
+		$post_type = get_post_type_object( $post_parent->post_type );
 
 		if ( empty( $post_type->_builtin ) ) {
 			if ( strpos( $permalink, '%postname%' ) < strrpos( $permalink, '%post_id%' ) && false === strrpos( $link, 'attachment/' ) ) {
@@ -314,14 +316,13 @@ class CPTP_Module_Permalink extends CPTP_Module {
 	/**
 	 * Fix taxonomy link outputs.
 	 *
-	 * @since 0.6
-	 * @version 1.0
-	 *
 	 * @param string $termlink link URI.
 	 * @param Object $term Term Object.
 	 * @param Object $taxonomy Taxonomy Object.
 	 *
 	 * @return string
+	 * @since 0.6
+	 * @version 1.0
 	 */
 	public function term_link( $termlink, $term, $taxonomy ) {
 		/**
@@ -361,8 +362,8 @@ class CPTP_Module_Permalink extends CPTP_Module {
 			$post_type = $taxonomy->object_type[0];
 		}
 
-		$front         = substr( $wp_rewrite->front, 1 );
-		$termlink      = str_replace( $front, '', $termlink );// remove front.
+		$front    = substr( $wp_rewrite->front, 1 );
+		$termlink = str_replace( $front, '', $termlink );// remove front.
 
 		$post_type_obj = get_post_type_object( $post_type );
 
@@ -370,8 +371,8 @@ class CPTP_Module_Permalink extends CPTP_Module {
 			return $termlink;
 		}
 
-		$slug          = $post_type_obj->rewrite['slug'];
-		$with_front    = $post_type_obj->rewrite['with_front'];
+		$slug       = $post_type_obj->rewrite['slug'];
+		$with_front = $post_type_obj->rewrite['with_front'];
 
 		if ( $with_front ) {
 			$slug = $front . $slug;

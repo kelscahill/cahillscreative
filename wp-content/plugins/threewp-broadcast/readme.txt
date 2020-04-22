@@ -4,9 +4,9 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 5.4
-Stable tag: 46.04
+Stable tag: 46.06
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
-Tested up to: 5.3
+Tested up to: 5.4
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -113,6 +113,7 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/tao-schedule-update/">Tao Schedule Update</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/the-events-calendar/">The Events Calendar</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/toolset/">Toolset</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/translatepress/">TranslatePress</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/ubermenu/">UberMenu</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/ultimate-member/">Ultimate Member</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/unyson/">Unyson</a>
@@ -145,6 +146,7 @@ These add-ons give you extra control of what you broadcast and how.
 * <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-attachments/">Gutenberg Attachments</a>: Modify attachment IDs found in Gutenberg blocks to match their equivalent attachments on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-menus/">Gutenberg Menus</a>: Modify menu IDs found in Gutenberg blocks to match their equivalent attachments on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-posts/">Gutenberg Posts</a>: Modify post IDs found in Gutenberg blocks to match their equivalent attachments on each blog.
+* <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-protect/">Gutenberg Protect</a>: Protects specific Gutenberg blocks from being overwritten during broadcasting.
 * <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-terms/">Gutenberg Terms</a>: Modify taxonomy term IDs found in Gutenberg blocks to match their equivalent attachments on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/hreflang/">Hreflang</a> adds support for <a href="https://en.wikipedia.org/wiki/Hreflang">SEO-friendly hreflang html tags</a>.
 * <a href="https://broadcast.plainviewplugins.com/addon/keep-child-status/">Keep Child Status</a> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
@@ -212,6 +214,8 @@ Although Broadcast is relatively easy to understand by itself, for extra documen
 * <a href="https://broadcast.plainviewplugins.com/doc/linking/">Linking</a>
 * <a href="https://broadcast.plainviewplugins.com/doc/post-actions/">Post actions and the bulk action dropdown</a>
 * <a href="https://broadcast.plainviewplugins.com/doc/taxonomy-handling/">Taxonomy handling</a>
+
+Here are instructions for <a href="https://broadcast.plainviewplugins.com/merging-single-wordpress-installs-into-a-wordpress-network/">merging existing single installs into a Wordpress network</a>.
 
 For developers: the code should be well-commented and easily legible for the most part. Extra developer documentation covers:
 
@@ -337,6 +341,20 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 46.06 2020411 =
+
+* Fix: Allow multiple term meta values per key.
+* Fix: Better finding of unlinked children. Removed the post hierarchical check that was previously required.
+* New doc: <a href="https://broadcast.plainviewplugins.com/snippet/network-media-library-fixing-broken-thumbnails/">Network Media Library: Fixing broken thumbnails</a>
+
+= 46.05 2020325 =
+
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-protect/">Gutenberg Protect</a>: Protects specific Gutenberg blocks from being overwritten during broadcasting.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/translatepress/">TranslatePress</a>: Adds support for the <a href="https://wordpress.org/plugins/translatepress-multilingual/">TranslatePress</a> plugin.
+* New doc: <a href="https://broadcast.plainviewplugins.com/merging-single-wordpress-installs-into-a-wordpress-network/">Merging single WordPress installs into a WordPress network</a>
+* Fix: Decrease broadcasting counter when aborting broadcasting.
+* Fix: Better parent post link override when working with TranslatePress links.
 
 = 46.04 2020310 =
 

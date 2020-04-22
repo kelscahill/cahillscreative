@@ -145,14 +145,10 @@ class api
 
 			$args = [
 				'cache_results' => false,
+				'name' => $post->post_name,
 				'post_type' => $post->post_type,
 				'post_status' => $post->post_status,
 			];
-
-			if ( is_post_type_hierarchical( $post->post_type ) )
-				$args[ 'pagename' ] = get_page_uri( $post );
-			else
-				$args[ 'name' ] = $post->post_name;
 
 			$posts = get_posts( $args );
 			$post_ids = [];

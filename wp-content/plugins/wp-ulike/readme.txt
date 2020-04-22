@@ -5,8 +5,8 @@ Author: Ali Mirzaei
 Tags: wp ulike, like button, elementor, like, dislike, wordpress youlike plugin, rating, vote, voting, most liked posts, wordpress like page, wordpress like post, wordpress vote page, wordpress vote post, wp like page, wp like post, wp like plugin, buddypress like system, buddypress votes, comment like system, voting button, wordpress, buddypress, statistics, stats likes, bbpress, bbPress like, WP-Translations, forums, community, credit, points, mycred, users, ultimate member, ranking
 Requires PHP: 5.4
 Requires at least: 3.5.0
-Tested up to: 5.3.2
-Stable tag: 4.1.7
+Tested up to: 5.4
+Stable tag: 4.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -185,6 +185,38 @@ define( 'WP_MEMORY_LIMIT', '256M' );
 </code>
 
 == Changelog ==
+
+= 4.2.1 =
+* Fixed: An issue in database tables.
+* Fixed: An issue with user IP method.
+
+= 4.2.0 =
+* Added: New algorithms to make essential queries more faster and flexible. (New Metadata Table)
+* Added: 2 new templates. (Arrow Votings, Minimal Votings) [PRO]
+* Added: New routes to Rest API to get top users list and single user details for each table. [PRO]
+* Added: New options to the elementor top posts widget. (Enable normal query, Status selector) [PRO]
+* Added: Improvements on database design.
+* Fixed: An issue in getting user IP functionality.
+* Fixed: Subtotal issues in JS functionality.
+* Fixed: Display like button issue on BuddyPress activity loadmore.
+* Fixed: Reported bugs.
+* Updated: Language files.
+
+= 4.1.9 =
+* Added: Improvements on getting likers data from database.
+* Added: Aria-label option for buttons to make more accessibility support.
+* Added: Database structure upgrade to fix IPv6 issues.
+* Fixed: Auto display issue in BuddyPress comments content.
+* Fixed: An issue with author points in mycred integration.
+* Fixed: PopHover display issues.
+* Fixed: An issue with CSS validation.
+* Fixed: Some small issues.
+
+= 4.1.8 =
+* Added: New REST API Routes. [PRO]
+* Added: New option to customize user login template.
+* Fixed: Conflicts in setting panel framework.
+* Fixed: Some small issues.
 
 = 4.1.7 =
 * Added: New caching methods to increase the performance of admin pages.

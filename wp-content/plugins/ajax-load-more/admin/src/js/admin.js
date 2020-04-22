@@ -213,13 +213,11 @@ jQuery(document).ready(function($) {
 		$('.ajax-load-more-wrap.core').removeClass('fading-circles');
 		$('.ajax-load-more-wrap.core').removeClass('chasing-arrows');
 		$('.ajax-load-more-wrap.core').addClass(color);
-
 	});
+	
 	$("select#alm_settings_btn_color").click(function(e){
 		e.preventDefault();
 	});
-
-
 
 
 	$('.alm-template-listing li a').click(function(e){
@@ -228,6 +226,7 @@ jQuery(document).ready(function($) {
    	    val = el.data('path');
    	el.parent().parent().next('.template-selection').val(val);
 	});
+	
 
 	$('.alm-template-section-nav li a').click(function(e){
    	e.preventDefault();
@@ -430,7 +429,6 @@ jQuery(document).ready(function($) {
    *  Get layout value Ajax
    *  @since 2.8.7
    */
-   console.log(window.editorDefault);
    $(document).on('click', '.alm-layout-selection li a.layout', function(e){
       e.preventDefault();
       var el = $(this), 

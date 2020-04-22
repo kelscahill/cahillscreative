@@ -26,7 +26,7 @@ $bio_class       = ! $should_show_bio ? ' sbi_no_bio' : '';
 $avatar_class = $avatar !== '' ? '' : ' sbi_no_avatar';
 ?>
 <div class="sb_instagram_header <?php echo esc_attr( $size_class ) . esc_attr( $avatar_class ); ?>" style="<?php echo $header_padding . $header_margin; ?>padding-bottom: 0;">
-    <a href="https://www.instagram.com/<?php echo urlencode( $username ); ?>" target="_blank" rel="noopener" title="@<?php echo esc_attr( $username ); ?>" class="sbi_header_link">
+    <a href="https://www.instagram.com/<?php echo urlencode( $username ) ; ?>/" target="_blank" rel="noopener" title="@<?php echo esc_attr( $username ); ?>" class="sbi_header_link">
         <div class="sbi_header_text<?php echo esc_attr( $bio_class ); ?>">
             <h3 <?php echo $header_text_color_style; ?>><?php echo esc_html( $username ); ?></h3>
 	        <?php if ( $should_show_bio ) : ?>

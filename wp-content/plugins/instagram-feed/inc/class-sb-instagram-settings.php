@@ -149,6 +149,12 @@ class SB_Instagram_Settings {
 		if ( $sb_instagram_posts_manager->are_current_api_request_delays() ) {
 			$this->settings['alwaysUseBackup'] = true;
 		}
+
+		$this->settings['isgutenberg'] = SB_Instagram_Blocks::is_gb_editor();
+		if ( $this->settings['isgutenberg'] ) {
+			$this->settings['ajax_post_load'] = false;
+			$this->settings['disable_js_image_loading'] = true;
+		}
 	}
 
 	/**
@@ -355,7 +361,7 @@ class SB_Instagram_Settings {
 		}
 
 		if ( ! $is_after_deprecation_deadline && $is_using_access_token_in_shortcode ) {
-			$error = '<p><b>' . __( 'Warning: Cannot add access token directly to the shortcode.', 'instagram-feed' ) . '</b><br>' . sprintf( __( 'Due to upcoming Instagram platform changes on March 2, 2020, it will no longer be possible for feeds to use access tokens directly in the shortcode. Remove the access token from the shortcode and connect an account on the %s instead.', 'instagram-feed' ), $settings_link );
+			$error = '<p><b>' . __( 'Warning: Cannot add access token directly to the shortcode.', 'instagram-feed' ) . '</b><br>' . sprintf( __( 'Due to upcoming Instagram platform changes on March 31, 2020, it will no longer be possible for feeds to use access tokens directly in the shortcode. Remove the access token from the shortcode and connect an account on the %s instead.', 'instagram-feed' ), $settings_link );
 
 			$sb_instagram_posts_manager->add_frontend_error( 'deprecation_warning', $error );
 			$access_tokens = explode( ',', str_replace( ' ', '', $this->atts['accesstoken'] ) );
@@ -564,7 +570,7 @@ class SB_Instagram_Settings {
 			if ( $is_after_deprecation_deadline ) {
 				$error = '<p><b>' . sprintf( __( 'Error: The account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to recent Instagram platform changes this Instagram account needs to be reconnected in order to continue updating.', 'instagram-feed' ) . '<a href="'.get_admin_url().'?page=sb-instagram-feed" class="sb_frontend_btn"><i class="fa fa-cog" aria-hidden="true"></i> ' . __( 'Reconnect on plugin Settings page', 'instagram-feed' ) . '</a>';
 			} else {
-				$error = '<p><b>' . sprintf( __( 'Warning: The account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to Instagram platform changes on March 2, 2020, this Instagram account needs to be reconnected to allow the feed to continue updating.', 'instagram-feed' ) . '<a href="'.get_admin_url().'?page=sb-instagram-feed" class="sb_frontend_btn"><i class="fa fa-cog" aria-hidden="true"></i> ' . __( 'Reconnect on plugin Settings page', 'instagram-feed' ) . '</a>';
+				$error = '<p><b>' . sprintf( __( 'Warning: The account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to Instagram platform changes on March 31, 2020, this Instagram account needs to be reconnected to allow the feed to continue updating.', 'instagram-feed' ) . '<a href="'.get_admin_url().'?page=sb-instagram-feed" class="sb_frontend_btn"><i class="fa fa-cog" aria-hidden="true"></i> ' . __( 'Reconnect on plugin Settings page', 'instagram-feed' ) . '</a>';
 			}
 
 			$sb_instagram_posts_manager->add_frontend_error( 'deprecation_warning', $error );

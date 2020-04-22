@@ -541,8 +541,6 @@ trait terms_and_taxonomies
 			{
 				foreach( $old_meta as $key => $values )
 				{
-					$value = reset( $values );		// Wordpress likes reporting back values in an array, even though I've never seen anyone store several values under one key.
-
 					// Is this term protected?
 					if ( $bcd->taxonomies()->protectlist_has( $action->taxonomy, $action->new_term->slug, $key ) )
 					{
@@ -554,8 +552,20 @@ trait terms_and_taxonomies
 						}
 					}
 
-					$this->debug( 'Updating taxonomy term %s with key %s and value %s', $new_term_id, $key, $value );
-					update_term_meta( $new_term_id, $key, $value );
+					delete_term_meta( $new_term_id, $key );
+
+					if ( count( $values ) > 1 )
+					{
+						$this->debug( 'Updating taxonomy term %s with key %s and value(s) %s', $new_term_id, $key, $values );
+						foreach( $values as $value )
+							add_term_meta( $new_term_id, $key, $value );
+					}
+					else
+					{
+						$value = reset( $values );
+						$this->debug( 'Updating taxonomy term %s with key %s and value %s', $new_term_id, $key, $value );
+						update_term_meta( $new_term_id, $key, maybe_unserialize( $value ) );
+					}
 				}
 			}
 		}

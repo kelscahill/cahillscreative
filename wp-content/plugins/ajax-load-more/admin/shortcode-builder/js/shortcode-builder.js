@@ -39,6 +39,8 @@ jQuery(document).ready(function($) {
       $('.ajax-load-more .categories select.multiple').select2();
       $('.ajax-load-more .tags select.multiple').select2();
       $('.ajax-load-more .authors select.multiple').select2();
+      $('.ajax-load-more .term_query select.multiple').select2();
+      $('.ajax-load-more .users select.multiple').select2();
    };
 
 
@@ -523,6 +525,31 @@ jQuery(document).ready(function($) {
       }
 
 
+
+      // ---------------------------
+      // - TERMS
+      // ---------------------------
+
+      var term_query = $('#alm-term_query input[name=term_query]:checked').val();
+      if(term_query !== 'false' && term_query != undefined){
+	      $('.term_query-options').slideDown(250, 'alm_easeInOutQuad');
+	      
+	      var term_query_taxonomy = $('#alm-term_query select#term_query-taxonomy-select').val();
+	      var term_query_number = $('#alm-term_query #term_query-number').val();
+	      var term_query_hide_empty = $('#alm-term_query #term_query-hide-empty').val();
+	      if(term_query_taxonomy){
+	         output += ' term_query="true"';
+	         output += ' term_query_taxonomy="'+ term_query_taxonomy +'"';
+	         output += ' term_query_number="'+ term_query_number +'"';
+	         output += ' term_query_hide_empty="'+ term_query_hide_empty +'"';
+         }
+
+
+      }else{
+         $('.term_query-options').slideUp(250, 'alm_easeInOutQuad')
+      }
+
+
       // ---------------------------
       // - SEO
       // ---------------------------
@@ -547,7 +574,9 @@ jQuery(document).ready(function($) {
              pp_post__in_order = $('#pp_post__in_input').val(),
              pp_taxonomy = $('#pp-taxonomy-select').val(),
              pp_excluded_terms = $('#pp-term-exclude').val(),
-             pp_progress_bar = $('.previous-post input[name=prev-post-progress]:checked').val();
+             pp_elementor = $('.previous-post input[name=elementor-single]:checked').val(),
+             pp_progress_bar = $('.previous-post input[name=prev-post-progress]:checked').val(),
+             pp_target = $('.previous-post input#pp-target').val();
              
              
          $('.prev_post_options').slideDown(250, 'alm_easeInOutQuad');
@@ -578,8 +607,11 @@ jQuery(document).ready(function($) {
 	         }	         
          }
 
-			output += (pp_taxonomy !== '' ) ? ' single_post_taxonomy="'+pp_taxonomy+'"' : '';
-			output += (pp_excluded_terms !== '' ) ? ' single_post_excluded_terms="'+pp_excluded_terms+'"' : '';
+			output += (pp_taxonomy !== '' ) ? ' single_post_taxonomy="'+ pp_taxonomy +'"' : '';
+			output += (pp_excluded_terms !== '' ) ? ' single_post_excluded_terms="'+ pp_excluded_terms +'"' : '';
+			output += (pp_target !== '' ) ? ' single_post_target="'+ pp_target +'"' : '';
+         output += (pp_elementor === 't' ) ? ' elementor="true"' : '';
+         
          
          // Reading Progress Bar
          if(pp_progress_bar === 'true'){       
@@ -1346,6 +1378,21 @@ jQuery(document).ready(function($) {
          
 
       // ---------------------------
+      // - Integrations
+      // ---------------------------
+
+      var archive = $('.alm-archive input[name=archive]:checked').val();
+      if(archive === 't'){
+         output += ' archive="true"';
+      }
+
+      var woocommerce = $('.alm-woocommerce input[name=woocommerce]:checked').val();
+      if(woocommerce === 't'){
+         output += ' woocommerce="true"';
+      }
+         
+
+      // ---------------------------
       // - No Results Text
       // ---------------------------
 
@@ -1384,8 +1431,30 @@ jQuery(document).ready(function($) {
    $(document).on('change keyup', '.alm_element', function() {
 	   var el = $(this);
       el.addClass('changed');
+      
+      // WooCommerce
+      if( el.attr('name') === 'woocommerce'){
+	      var postTypeCheckboxes = $('ul.alm-post-type-list input[type=checkbox]');
+	      // Check 'product'
+	      $('ul.alm-post-type-list input[type=checkbox]#chk-product').prop('checked', true).addClass('changed');
+	      
+	      if(postTypeCheckboxes){
+		      postTypeCheckboxes.each(function(index, item){
+			      if(item.dataset.type !== 'product'){
+			      	item.checked = false;
+			      }
+		      });
+	      }
+	      
+	      $('.alm-archive input#archive_f').prop('checked', true);
+	   }
+	   
+	   // Archives
+      if( el.attr('name') === 'archive'){
+	      $('.alm-woocommerce input#woocommerce_f').prop('checked', true);
+	   }
 
-      // reset repeater templates
+      // Reset Repeater Templates
 		if(el.attr('name') === 'repeater-select'){
 			$('.select-theme-repeater select[name=theme-repeater-select]').select2('val','');
 		}
@@ -1394,7 +1463,8 @@ jQuery(document).ready(function($) {
 				$('.repeater select[name=repeater-select]').select2('val','default');
 			}
 		}
-
+		
+		// Comments
 		if(el.attr('id') === 'comments_template'){
 			$('#comments_callback').val('');
 		}

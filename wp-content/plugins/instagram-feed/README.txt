@@ -2,8 +2,8 @@
 Contributors: smashballoon, craig-at-smash-balloon
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 3.4
-Tested up to: 5.3
-Stable tag: 2.2
+Tested up to: 5.4
+Stable tag: 2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,7 @@ Display Instagram posts from your Instagram accounts, either in the same single 
 * Display a **beautiful header** at the top of your feed
 * Display your Instagram photos chronologically or in random order
 * Add your own Custom CSS and JavaScript for even deeper customizations
+* Handy block for easily adding your feed to posts and pages using the block editor
 
 = Benefits =
 * **Increase Social Engagement** - Increase engagement between you and your Instagram followers. Increase your number of followers by displaying your Instagram content directly on your site.
@@ -324,8 +325,30 @@ We understand that sometimes you need help, have issues or just have questions. 
 * Plus more customization options added all the time!
 
 == Changelog ==
+= 2.4 =
+* New: Email alerts for critical issues. If there's an issue with an Instagram feed on your website which hasn't been resolved yet then you'll receive an email notification to let you know. This is sent once per week until the issue is resolved. These emails can be disabled by using the following setting: Instagram Feed > Customize > Advanced > Misc > Feed Issue Email Report.
+* New: Admin notifications for critical issues. If there is an error with the feed, admins will see notices in the dashboard and on the front-end of the site along with instructions on how to resolve the issue. Front-end admin notifications can be disabled by using the following setting: Instagram Feed > Customize > Advanced > Misc > Disable Admin Error Notice.
+* New: Added a WordPress 'Site Health' integration. If there is a critical error with your feeds, it will now be flagged in the site health page.
+* New: Added "About Us" page for those who would like to learn more about Smash Balloon and our other products. Go to Instagram Feed -> About Us in the dashboard.
+* New: Added support for an Instagram Feed widget. When on the widgets menu, look for the widget "Instagram Feed" to add your feed to a widget area.
+
+= 2.3.1 =
+* Fix: Added workaround for personal account connection error and header display issue due to an Instagram API bug. After updating, click "Save Changes" on the Instagram Feed settings page, "Configure" tab to clear your cache.
+
+= 2.3 =
+* New: Added an "Instagram Feed" Gutenberg block to use in the block editor, allowing you to easily add a feed to posts and pages.
+
+= 2.2.2 =
+* Tested with upcoming WordPress 5.4 update.
+* Tweak: Language files updated to account for all new strings.
+
+= 2.2.1 =
+* Important: March 2 deadline for migrating to the new Instagram API pushed back to March 31.
+* Fix: Some links to Instagram were missing a backslash at the end of the URL causing a 301 redirect.
+* Fix: Error saving updated account information caused by emoji in account bio or in account names and MySQL tables that didn't have a UTF8mb4 character set.
+
 = 2.2 =
-* Important: On March 2, Instagram will stop supporting its old API which will disrupt feeds created from personal connected accounts. If you are using a personal account, you will need to reconnect the account on the Instagram Feed Settings page. Please [see here](https://smashballoon.com/instagram-api-changes-march-2-2020/) for more information.
+* Important: On March 31, Instagram will stop supporting its old API which will disrupt feeds created from personal connected accounts. If you are using a personal account, you will need to reconnect the account on the Instagram Feed Settings page. Please [see here](https://smashballoon.com/instagram-api-changes-march-2-2020/) for more information.
 * New: Support added for the new Instagram Basic Display API.
 * New: Added PHP hooks 'sbi_before_feed' and 'sbi_after_feed' for displaying HTML before and after the main Instagram feed HTML.
 * New: Added settings for adding a custom header avatar and custom header bio text. Go to the "Customize" tab "Header" area to set these or use customavatar="AVATAR URL" or custombio="BIO TEXT" in the shortcode.

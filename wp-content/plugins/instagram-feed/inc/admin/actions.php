@@ -27,6 +27,34 @@ function sb_instagram_admin_scripts() {
 			'sbi_nonce' => wp_create_nonce( 'sbi_nonce' )
 		)
 	);
+	$strings = array(
+		'addon_activate'                  => esc_html__( 'Activate', 'instagram-feed' ),
+		'addon_activated'                 => esc_html__( 'Activated', 'instagram-feed' ),
+		'addon_active'                    => esc_html__( 'Active', 'instagram-feed' ),
+		'addon_deactivate'                => esc_html__( 'Deactivate', 'instagram-feed' ),
+		'addon_inactive'                  => esc_html__( 'Inactive', 'instagram-feed' ),
+		'addon_install'                   => esc_html__( 'Install Addon', 'instagram-feed' ),
+		'addon_error'                     => esc_html__( 'Could not install addon. Please download from wpforms.com and install manually.', 'instagram-feed' ),
+		'plugin_error'                    => esc_html__( 'Could not install a plugin. Please download from WordPress.org and install manually.', 'instagram-feed' ),
+		'addon_search'                    => esc_html__( 'Searching Addons', 'instagram-feed' ),
+		'ajax_url'                        => admin_url( 'admin-ajax.php' ),
+		'cancel'                          => esc_html__( 'Cancel', 'instagram-feed' ),
+		'close'                           => esc_html__( 'Close', 'instagram-feed' ),
+		'nonce'                           => wp_create_nonce( 'sbi-admin' ),
+		'almost_done'                     => esc_html__( 'Almost Done', 'instagram-feed' ),
+		'oops'                            => esc_html__( 'Oops!', 'instagram-feed' ),
+		'ok'                              => esc_html__( 'OK', 'instagram-feed' ),
+		'plugin_install_activate_btn'     => esc_html__( 'Install and Activate', 'instagram-feed' ),
+		'plugin_install_activate_confirm' => esc_html__( 'needs to be installed and activated to import its forms. Would you like us to install and activate it for you?', 'instagram-feed' ),
+		'plugin_activate_btn'             => esc_html__( 'Activate', 'instagram-feed' ),
+	);
+	$strings = apply_filters( 'sbi_admin_strings', $strings );
+
+	wp_localize_script(
+		'sb_instagram_admin_js',
+		'sbi_admin',
+		$strings
+	);
 	if( !wp_script_is('jquery-ui-draggable') ) {
 		wp_enqueue_script(
 			array(
@@ -180,7 +208,7 @@ function sbi_connect_business_accounts() {
 			'is_valid' => true,
 			'last_checked' => time(),
 			'profile_picture' => $profile_picture,
-			'name' => $name,
+			'name' => sbi_sanitize_emoji( $name ),
 			'type' => $type,
 			'use_tagged' => '1'
 		);
@@ -192,7 +220,9 @@ function sbi_connect_business_accounts() {
 		} else {
 			$connected_accounts[ $user_id ]['local_avatar'] = false;
 		}
+		global $sb_instagram_posts_manager;
 
+		$sb_instagram_posts_manager->remove_error( 'at_' . $username );
 		delete_transient( SBI_USE_BACKUP_PREFIX . 'sbi_'  . $user_id );
 	}
 
@@ -340,7 +370,9 @@ function sbi_test_token() {
 			}
 
 
+			global $sb_instagram_posts_manager;
 
+			$sb_instagram_posts_manager->remove_error( 'at_' . $json['username'] );
 			delete_transient( SBI_USE_BACKUP_PREFIX . 'sbi_'  . $json['id'] );
 
 		}
@@ -388,7 +420,9 @@ function sbi_test_token() {
 			}
 
 			delete_transient( SBI_USE_BACKUP_PREFIX . 'sbi_'  . $user_id );
+			global $sb_instagram_posts_manager;
 
+			$sb_instagram_posts_manager->remove_error( 'at_' . $username );
 			$options['connected_accounts'] = $connected_accounts;
 
 			update_option( 'sb_instagram_settings', $options );
@@ -585,7 +619,7 @@ function sbi_connect_basic_account( $new_account_details ) {
 		if ( ! empty( $fuzzy_matches[0] ) ) {
 			$header_data = sbi_find_matching_data_from_results( $fuzzy_matches, $old_account_user_id );
 			$bio = SB_Instagram_Parse::get_bio( $header_data );
-			$accounts_to_save[ $new_account_details['user_id'] ]['bio'] = $bio;
+			$accounts_to_save[ $new_account_details['user_id'] ]['bio'] = sbi_sanitize_emoji( $bio );
 		}
 
 	}
@@ -599,7 +633,9 @@ function sbi_connect_basic_account( $new_account_details ) {
 	}
 
 	delete_transient( SBI_USE_BACKUP_PREFIX . 'sbi_'  . $new_account_details['user_id'] );
+	global $sb_instagram_posts_manager;
 
+	$sb_instagram_posts_manager->remove_error( 'at_' . $new_account_details['username'] );
 	$options['connected_accounts'] = $accounts_to_save;
 	$options['sb_instagram_user_id'] = $ids_to_save;
 
@@ -747,9 +783,23 @@ function sbi_reset_resized() {
 }
 add_action( 'wp_ajax_sbi_reset_resized', 'sbi_reset_resized' );
 
-function sbi_reset_log() {
+function sbi_lite_dismiss() {
+	$nonce = isset( $_POST['sbi_nonce'] ) ? sanitize_text_field( $_POST['sbi_nonce'] ) : '';
 
-	delete_option( 'sb_instagram_errors' );
+	if ( ! wp_verify_nonce( $nonce, 'sbi_nonce' ) ) {
+		die ( 'You did not do this the right way!' );
+	}
+
+	set_transient( 'instagram_feed_dismiss_lite', 'dismiss', 1 * WEEK_IN_SECONDS );
+
+	die();
+}
+add_action( 'wp_ajax_sbi_lite_dismiss', 'sbi_lite_dismiss' );
+
+function sbi_reset_log() {
+	global $sb_instagram_posts_manager;
+
+	$sb_instagram_posts_manager->remove_all_errors();
 
 	echo "1";
 
@@ -759,12 +809,11 @@ add_action( 'wp_ajax_sbi_reset_log', 'sbi_reset_log' );
 
 add_action('admin_notices', 'sbi_admin_error_notices');
 function sbi_admin_error_notices() {
-	//Only display notice to admins
-	if( !current_user_can( 'manage_options' ) ) return;
 
-	global $sb_instagram_posts_manager;
 
 	if ( isset( $_GET['page'] ) && in_array( $_GET['page'], array( 'sb-instagram-feed' )) ) {
+		global $sb_instagram_posts_manager;
+
 		$errors = $sb_instagram_posts_manager->get_errors();
 		if ( ! empty( $errors ) && ( isset( $errors['database_create_posts'] ) || isset( $errors['database_create_posts_feeds'] ) || isset( $errors['upload_dir'] ) || isset( $errors['ajax'] )  ) ) : ?>
             <div class="notice notice-warning is-dismissible sbi-admin-notice">
@@ -788,6 +837,21 @@ function sbi_admin_error_notices() {
 
             </div>
 
+		<?php endif;
+		$errors = $sb_instagram_posts_manager->get_critical_errors();
+		if ( $sb_instagram_posts_manager->are_critical_errors() && ! empty( $errors ) ) : ?>
+            <div class="notice notice-warning is-dismissible sbi-admin-notice">
+                <p><strong><?php echo esc_html__( 'Instagram Feed is encountering an error and your feeds may not be updating due to the following reasons:', 'instagram-feed') ; ?></strong></p>
+
+                <?php echo $errors; ?>
+
+                <?php
+                $error_page = $sb_instagram_posts_manager->get_error_page();
+                if ( $error_page ) {
+                     echo '<a href="' . get_the_permalink( $error_page ) . '" class="sbi-clear-errors-visit-page sbi-space-left button button-secondary">' . __( 'View Feed and Retry', 'instagram-feed' ) . '</a>';
+                }
+                ?>
+            </div>
 		<?php endif;
 	}
 
@@ -877,7 +941,7 @@ function sbi_reconnect_accounts_notice() {
 			$error = '<p><b>' . sprintf( __( 'Error: Instagram Feed plugin - account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to recent Instagram platform changes some Instagram accounts will need to be reconnected in the plugin in order for them to continue updating.', 'instagram-feed' );
 		} else {
 			$notice_class = 'notice-warning';
-			$error = '<p><b>' . sprintf( __( 'Warning: Instagram Feed plugin - account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to Instagram platform changes on March 2, 2020, some Instagram accounts will need to be reconnected in the plugin to avoid disruption to your feeds.', 'instagram-feed' );
+			$error = '<p><b>' . sprintf( __( 'Warning: Instagram Feed plugin - account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to Instagram platform changes on March 31, 2020, some Instagram accounts will need to be reconnected in the plugin to avoid disruption to your feeds.', 'instagram-feed' );
 		}
 		if( !$should_show_link ) $error .= __( ' Use the big blue button below to reconnect your account.', 'instagram-feed' );
 	}
@@ -1025,7 +1089,7 @@ function sbi_notices_html() {
 		$dismiss_url = add_query_arg( 'sbi_ignore_rating_notice_nag', '1' );
 		$later_url = add_query_arg( 'sbi_ignore_rating_notice_nag', 'later' );
 		if ( $should_show_bfcm_discount ) {
-			$other_notice_html = '<p class="sbi_other_notice">' .  __( 'PS. We currently have a <a href="https://smashballoon.com/instagram-feed/?utm_source=plugin-free&utm_campaign=sbi&discount='.$sbi_bfcm_discount_code.'" target="_blank"><b style="font-weight: 700;">Black Friday deal</b></a> for 20% off the Pro version!', 'instagram-feed' ) . '</a></p>';
+			$other_notice_html = '<p class="sbi_other_notice">' .  __( 'PS. We currently have a <a href="https://smashballoon.com/instagram-feed/?utm_source=plugin-free&utm_campaign=sbi&discount='.$sbi_bfcm_discount_code.'" target="_blank"><b style="font-weight: 700;">Black Friday deal</b></a> for 60% off the Pro version!', 'instagram-feed' ) . '</a></p>';
 
 			$dismiss_url = add_query_arg( array(
 					'sbi_ignore_rating_notice_nag' => '1',
@@ -1070,7 +1134,7 @@ function sbi_notices_html() {
         <div class='sbi_notice sbi_review_notice sbi_new_user_sale_notice'>
             <img src='" . SBI_PLUGIN_URL . 'img/sbi-icon-offer.png' . "' alt='Instagram Feed'>
             <div class='sbi-notice-text'>
-                <p>" . __( '<b style="font-weight: 700;">Exclusive offer!</b>  We don\'t run promotions very often, but for a limited time we\'re offering <b style="font-weight: 700;">20% off</b> our Pro version to all users of our free Instagram Feed plugin.', 'instagram-feed' ) . "</p>
+                <p>" . __( '<b style="font-weight: 700;">Exclusive offer!</b>  We don\'t run promotions very often, but for a limited time we\'re offering <b style="font-weight: 700;">60% off</b> our Pro version to all users of our free Instagram Feed plugin.', 'instagram-feed' ) . "</p>
                 <p class='sbi-links'>
                     <a class='sbi_notice_dismiss sbi_offer_btn' href='https://smashballoon.com/instagram-feed/?utm_source=plugin-free&utm_campaign=sbi&discount=instagramthankyou' target='_blank'><b>" . __( 'Get this offer', 'instagram-feed' ) . "</b></a>
                     <a class='sbi_notice_dismiss' style='margin-left: 5px;' href='" . esc_url( add_query_arg( 'sbi_ignore_new_user_sale_notice', 'always' ) ) . "'>" . __( 'I\'m not interested', 'instagram-feed' ) . "</a>
@@ -1088,7 +1152,7 @@ function sbi_notices_html() {
         <div class='sbi_notice sbi_review_notice sbi_bfcm_sale_notice'>
             <img src='". SBI_PLUGIN_URL . 'img/sbi-icon-offer.png' ."' alt='Instagram Feed'>
             <div class='sbi-notice-text'>
-                <p>" . __( '<b style="font-weight: 700;">Black Friday/Cyber Monday Deal!</b> Thank you for using our free Instagram Feed plugin. For a limited time, we\'re offering <b style="font-weight: 700;">20% off</b> the Pro version for all of our users.', 'instagram-feed' ) . "</p>
+                <p>" . __( '<b style="font-weight: 700;">Black Friday/Cyber Monday Deal!</b> Thank you for using our free Instagram Feed plugin. For a limited time, we\'re offering <b style="font-weight: 700;">60% off</b> the Pro version for all of our users.', 'instagram-feed' ) . "</p>
                 <p class='sbi-links'>
                     <a class='sbi_notice_dismiss sbi_offer_btn' href='https://smashballoon.com/instagram-feed/?utm_source=plugin-free&utm_campaign=sbi&discount=".$sbi_bfcm_discount_code."' target='_blank'>" . __( 'Get this offer!', 'instagram-feed' ) . "</a>
                     <a class='sbi_notice_dismiss' style='margin-left: 5px;' href='" .esc_url( add_query_arg( 'sbi_ignore_bfcm_sale_notice', date( 'Y', $current_time ) ) ). "'>" . __( 'I\'m not interested', 'instagram-feed' ) . "</a>
@@ -1167,3 +1231,53 @@ function sbi_get_future_date( $month, $year, $week, $day, $direction ) {
 	$offset += $direction * ($week * 7) + ($day - $weekday);
 	return mktime( 0, 0, 0, $month, $startday + $offset, $year );
 }
+
+function sbi_admin_hide_unrelated_notices() {
+
+	// Bail if we're not on a sbi screen or page.
+	if ( ! isset( $_GET['page'] ) || strpos( $_GET['page'], 'sb-instagram-feed') === false ) {
+		return;
+	}
+
+	// Extra banned classes and callbacks from third-party plugins.
+	$blacklist = array(
+		'classes'   => array(),
+		'callbacks' => array(
+			'sbidb_admin_notice', // 'Database for sbi' plugin.
+		),
+	);
+
+	global $wp_filter;
+
+	foreach ( array( 'user_admin_notices', 'admin_notices', 'all_admin_notices' ) as $notices_type ) {
+		if ( empty( $wp_filter[ $notices_type ]->callbacks ) || ! is_array( $wp_filter[ $notices_type ]->callbacks ) ) {
+			continue;
+		}
+		foreach ( $wp_filter[ $notices_type ]->callbacks as $priority => $hooks ) {
+			foreach ( $hooks as $name => $arr ) {
+				if ( is_object( $arr['function'] ) && $arr['function'] instanceof Closure ) {
+					unset( $wp_filter[ $notices_type ]->callbacks[ $priority ][ $name ] );
+					continue;
+				}
+				$class = ! empty( $arr['function'][0] ) && is_object( $arr['function'][0] ) ? strtolower( get_class( $arr['function'][0] ) ) : '';
+				if (
+					! empty( $class ) &&
+					strpos( $class, 'sbi' ) !== false &&
+					! in_array( $class, $blacklist['classes'], true )
+				) {
+					continue;
+				}
+				if (
+					! empty( $name ) && (
+						strpos( $name, 'sbi' ) === false ||
+						in_array( $class, $blacklist['classes'], true ) ||
+						in_array( $name, $blacklist['callbacks'], true )
+					)
+				) {
+					unset( $wp_filter[ $notices_type ]->callbacks[ $priority ][ $name ] );
+				}
+			}
+		}
+	}
+}
+add_action( 'admin_print_scripts', 'sbi_admin_hide_unrelated_notices' );
