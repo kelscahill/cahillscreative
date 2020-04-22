@@ -1,4 +1,4 @@
-/*! WP ULike - v4.2.1
+/*! WP ULike - v4.1.7
  *  https://wpulike.com
  *  TechnoWich 2020;
  */
@@ -138,7 +138,6 @@
       appendTimeout: 2000,
       displayLikers: false,
       disablePophover: true,
-      isTotal: false,
       factor: '',
       template: '',
       counterSelector: ".count-box",
@@ -151,7 +150,6 @@
       "ulike-nonce": "nonce",
       "ulike-type": "type",
       "ulike-append": "append",
-      "ulike-is-total": "isTotal",
       "ulike-display-likers": "displayLikers",
       "ulike-disable-pophover": "disablePophover",
       "ulike-append-timeout": "appendTimeout",
@@ -189,21 +187,10 @@
   // Avoid Plugin.prototype conflicts
   $.extend(Plugin.prototype, {
     init: function () {
-      // Call _ajaxify function on click button
+      //Call _ajaxify function on click button
       this.buttonElement.click(this._initLike.bind(this));
-      // Call likers box generator
-      this.generalElement.one("mouseenter", this._updateLikers.bind(this));
-      // Fix PopHover Appearance
-      // if( !this.settings.disablePophover && this.settings.displayLikers ){
-      //   var self = this;
-      //   this.generalElement.hover(
-      //     function() {
-      //       self.$element.addClass( "wp_ulike_display_pophover" );
-      //     }, function() {
-      //       self.$element.removeClass( "wp_ulike_display_pophover" );
-      //     }
-      //   );
-      // }
+      //Call _ajaxify function on click button
+      this.buttonElement.one("mouseenter", this._updateLikers.bind(this));
     },
 
     /**
@@ -358,9 +345,14 @@
           break;
 
         default:
-          this.generalElement.addClass(classNameObj.disable);
+          this.generalElement
+            .children()
+            .first()
+            .addClass(classNameObj.disable);
           if (this.siblingElement.length) {
-            this.siblingElement.addClass(classNameObj.disable);
+            this.siblingElement.children()
+              .first()
+              .addClass(classNameObj.disable);
           }
           break;
       }
@@ -382,19 +374,15 @@
       if (typeof counterValue !== "object") {
         this.counterElement.text(counterValue);
       } else {
-        if( this.settings.isTotal && typeof counterValue.sub !== "undefined" ){
-          this.counterElement.text(counterValue.sub);
+        if (this.settings.factor === 'down') {
+          this.counterElement.text(counterValue.down);
+          if (this.siblingElement.length) {
+            this.siblingElement.find(this.settings.counterSelector).text(counterValue.up);
+          }
         } else {
-          if (this.settings.factor === 'down') {
-            this.counterElement.text(counterValue.down);
-            if (this.siblingElement.length) {
-              this.siblingElement.find(this.settings.counterSelector).text(counterValue.up);
-            }
-          } else {
-            this.counterElement.text(counterValue.up);
-            if (this.siblingElement.length) {
-              this.siblingElement.find(this.settings.counterSelector).text(counterValue.down);
-            }
+          this.counterElement.text(counterValue.up);
+          if (this.siblingElement.length) {
+            this.siblingElement.find(this.settings.counterSelector).text(counterValue.down);
           }
         }
       }

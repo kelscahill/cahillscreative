@@ -1,11 +1,11 @@
 (function(window, factory) {
-	var lazySizes = factory(window, window.document, Date);
+	var lazySizes = factory(window, window.document);
 	window.lazySizes = lazySizes;
 	if(typeof module == 'object' && module.exports){
 		module.exports = lazySizes;
 	}
 }(typeof window != 'undefined' ?
-      window : {}, function l(window, document, Date) { // Pass in the windoe Date function also for SSR because the Date class can be lost
+      window : {}, function l(window, document) {
 	'use strict';
 	/*jshint eqnull:true */
 
@@ -56,17 +56,15 @@
 
 	var docElem = document.documentElement;
 
+	var Date = window.Date;
+
 	var supportPicture = window.HTMLPictureElement;
 
 	var _addEventListener = 'addEventListener';
 
 	var _getAttribute = 'getAttribute';
 
-	/**
-	 * Update to bind to window because 'this' becomes null during SSR
-	 * builds.
-	 */
-	var addEventListener = window[_addEventListener].bind(window);
+	var addEventListener = window[_addEventListener];
 
 	var setTimeout = window.setTimeout;
 
@@ -604,22 +602,6 @@
 				addEventListener('scroll', throttledCheckElements, true);
 
 				addEventListener('resize', throttledCheckElements, true);
-
-				addEventListener('pageshow', function (e) {
-					if (e.persisted) {
-						var loadingElements = document.querySelectorAll('.' + lazySizesCfg.loadingClass);
-
-						if (loadingElements.length && loadingElements.forEach) {
-							requestAnimationFrame(function () {
-								loadingElements.forEach( function (img) {
-									if (img.complete) {
-										unveilElement(img);
-									}
-								});
-							});
-						}
-					}
-				});
 
 				if(window.MutationObserver){
 					new MutationObserver( throttledCheckElements ).observe( docElem, {childList: true, subtree: true, attributes: true} );

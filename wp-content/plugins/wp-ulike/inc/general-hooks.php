@@ -332,6 +332,16 @@ if( defined( 'BP_VERSION' ) ) {
 						}
 						break;
 
+					case 'bp_before_activity_comment':
+						if( isset( $options['enable_comments'] ) && wp_ulike_is_true( $options['enable_comments'] ) ) {
+							if ( isset( $options['auto_display_position'] ) && $options['auto_display_position'] === 'content' ){
+								add_filter( 'bp_activity_comment_content', function( $content ) use( $button ) {
+									return $content . $button;
+								});
+							}
+						}
+						break;
+
 					case 'bp_activity_entry_meta':
 						if ( isset( $options['auto_display_position'] ) && $options['auto_display_position'] === 'meta' ){
 							echo $button;
@@ -348,56 +358,8 @@ if( defined( 'BP_VERSION' ) ) {
 		}
 		add_action( 'bp_activity_entry_meta', 'wp_ulike_put_buddypress' );
 		add_action( 'bp_activity_comment_options', 'wp_ulike_put_buddypress' );
+		add_action( 'bp_before_activity_comment', 'wp_ulike_put_buddypress' );
 		add_action( 'bp_activity_entry_content', 'wp_ulike_put_buddypress' );
-	}
-
-
-	if( ! function_exists( 'wp_ulike_buddypress_activity_content_ajax_display' ) ){
-		/**
-		 * BuddyPress activity content display for ajax load more
-		 *
-		 * @param string $content
-		 * @return string
-		 */
-		function wp_ulike_buddypress_activity_content_ajax_display( &$activity ) {
-			$activityID = $activity->id;
-
-			add_filter( 'bp_get_activity_content_body', function( $content ) use ( $activityID ){
-				$options = wp_ulike_get_option( 'buddypress_group' );
-				if ( isset( $options['enable_auto_display'] ) && wp_ulike_is_true( $options['enable_auto_display'] ) ) {
-					if ( isset( $options['auto_display_position'] ) && $options['auto_display_position'] === 'content' ){
-							return $content . wp_ulike_buddypress( 'put', array( 'id' => $activityID  ) );
-					}
-				}
-				return $content;
-			} );
-
-		}
-		add_action( 'bp_nouveau_get_single_activity_content', 'wp_ulike_buddypress_activity_content_ajax_display', 10, 1 );
-	}
-
-	if( ! function_exists( 'wp_ulike_buddypress_comment_content_display' ) ){
-		/**
-		 * BuddyPress Comment Content auto display hook
-		 *
-		 * @param string $content
-		 * @return string
-		 */
-		function wp_ulike_buddypress_comment_content_display( $content, $context ) {
-			$options = wp_ulike_get_option( 'buddypress_group' );
-
-			if ( isset( $options['enable_auto_display'] ) && wp_ulike_is_true( $options['enable_auto_display'] ) && $context === 'get' ) {
-
-				if( isset( $options['enable_comments'] ) && wp_ulike_is_true( $options['enable_comments'] ) ) {
-					if ( isset( $options['auto_display_position'] ) && $options['auto_display_position'] === 'content' ){
-							return $content . wp_ulike_buddypress('put');
-					}
-				}
-			}
-
-			return $content;
-		}
-		add_filter( 'bp_activity_comment_content', 'wp_ulike_buddypress_comment_content_display', 10, 2 );
 	}
 
 	if( ! function_exists( 'wp_ulike_register_activity_actions' ) ){
@@ -470,7 +432,7 @@ if( defined( 'BP_VERSION' ) ) {
 		function wp_ulike_add_bp_notifications( $cp_ID, $type, $user_ID, $status, $has_log  ){
 
 			// Return if user not logged in or an older data log exist
-			if( ! is_user_logged_in() || $has_log > 0 || ! function_exists( 'bp_is_active' ) ){
+			if( ! is_user_logged_in() || $has_log > 1 || ! function_exists( 'bp_is_active' ) ){
 				return;
 			}
 
@@ -929,65 +891,6 @@ if ( defined( 'ultimatemember_version' ) ) {
 	}
 }
 
-if( ! function_exists( 'wp_ulike_update_meta_data_info' ) ){
-	/**
-	 * Upgrade meta data
-	 *
-	 * @param integer $ID
-	 * @param string $type
-	 * @param integer $user_ID
-	 * @param string $status
-	 * @param boolean $has_log
-	 * @param string $slug
-	 * @param string $table
-	 * @return void
-	 */
-	function wp_ulike_update_meta_data_info( $ID, $type, $user_ID, $status, $has_log, $slug, $table, $is_distinct ){
-
-		// Update total stats
-		if( ( ! $has_log || ! $is_distinct ) && strpos( $status, 'un') === false ){
-			global $wpdb;
-			// update all logs period
-			$wpdb->query( "
-					UPDATE `{$wpdb->prefix}ulike_meta`
-					SET `meta_value` = (`meta_value` + 1)
-					WHERE `meta_group` = 'statistics' AND `meta_key` = 'count_logs_period_all'
-			" );
-			$wpdb->query( "
-					UPDATE `{$wpdb->prefix}ulike_meta`
-					SET `meta_value` = (`meta_value` + 1)
-					WHERE `meta_group` = 'statistics' AND `meta_key` = 'count_logs_for_{$table}_table_in_all_daterange'
-			" );
-		}
-
-		// Update likers list
-		$get_likers = wp_ulike_get_meta_data( $ID, $slug, 'likers_list', true );
-		if( ! empty( $get_likers ) ){
-			$get_user   = get_userdata( $user_ID );
-			$is_updated = false;
-			if( $get_user ){
-				if( in_array( $get_user->ID, $get_likers ) ){
-					if( strpos( $status, 'un') !== false ){
-						$get_likers = array_diff( $get_likers, array( $get_user->ID ) );
-						$is_updated = true;
-					}
-				} else {
-					if( strpos( $status, 'un') === false ){
-						array_push( $get_likers, $get_user->ID );
-						$is_updated = true;
-					}
-				}
-				// If array list has been changed, then update meta data.
-				if( $is_updated ){
-					wp_ulike_update_meta_data( $ID, $slug, 'likers_list', $get_likers );
-				}
-			}
-		}
-
-	}
-	add_action( 'wp_ulike_after_process', 'wp_ulike_update_meta_data_info'	, 10, 8 );
-}
-
 // Litespeed cache plugin
 if( ! function_exists( 'wp_ulike_purge_litespeed_cache' ) && method_exists( 'LiteSpeed_Cache_API', 'purge_post' ) ){
 	/**
@@ -1132,4 +1035,3 @@ if( ! function_exists( 'wp_ulike_purge_rocket_cache' ) && function_exists( 'rock
 	}
 	add_action( 'wp_ulike_after_process', 'wp_ulike_purge_rocket_cache'	, 10, 2 );
 }
-

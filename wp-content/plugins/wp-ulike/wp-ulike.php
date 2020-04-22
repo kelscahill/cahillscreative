@@ -10,13 +10,13 @@
  * Plugin Name:       WP ULike
  * Plugin URI:        https://wpulike.com/?utm_source=wp-plugins&utm_campaign=plugin-uri&utm_medium=wp-dash
  * Description:       WP ULike plugin allows to integrate a beautiful Ajax Like Button into your wordPress website to allow your visitors to like and unlike pages, posts, comments AND buddypress activities. Its very simple to use and supports many options.
- * Version:           4.2.1
+ * Version:           4.1.7
  * Author:            Ali Mirzaei
  * Author URI:        https://wpulike.com/?utm_source=wp-plugins&utm_campaign=author-uri&utm_medium=wp-dash
  * Text Domain:       wp-ulike
  * License:           GPL2
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Domain Path:       languages
+ * Domain Path:       /lang
  * Tested up to: 	  5.3.1
 
  /------------------------------------------\
@@ -46,8 +46,7 @@ if ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) {
 
 // Do not change these values
 define( 'WP_ULIKE_PLUGIN_URI'   , 'https://wpulike.com/' 		 );
-define( 'WP_ULIKE_VERSION'      , '4.2.1' 					 	 );
-define( 'WP_ULIKE_DB_VERSION'   , '2.1' 					 	 );
+define( 'WP_ULIKE_VERSION'      , '4.1.7' 					 	 );
 define( 'WP_ULIKE_SLUG'         , 'wp-ulike' 					 );
 define( 'WP_ULIKE_NAME'         , __( 'WP ULike', WP_ULIKE_SLUG ));
 
@@ -126,18 +125,15 @@ if ( ! class_exists( 'WpUlikeInit' ) ) :
 	    * @return void
 	    */
 	    public function init(){
-			// Check database upgrade if needed
-			if ( version_compare( get_option( 'wp_ulike_dbVersion', '1.6' ), WP_ULIKE_DB_VERSION, '<' ) ) {
-				$this->single_activate();
-			}
-
 	    	// Include Files
 	    	$this->includes();
 
 	        // @deprecate version 5.0
 	        global $wp_version;
-			// Load plugin text domain
-			$this->load_plugin_textdomain();
+	        if ( version_compare( $wp_version, '4.6', '<' ) ) {
+	            // Load plugin text domain
+	            $this->load_plugin_textdomain();
+	        }
 
 			// Loaded action
 			do_action( 'wp_ulike_loaded' );
@@ -377,8 +373,6 @@ if ( ! class_exists( 'WpUlikeInit' ) ) :
 
 			global $wpdb;
 
-			$max_index_length = 191;
-
 			if ( ! empty( $wpdb->charset ) ) {
 				$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
 			}
@@ -400,11 +394,7 @@ if ( ! class_exists( 'WpUlikeInit' ) ) :
 				`ip` varchar(100) NOT NULL,
 				`user_id` varchar(100) NOT NULL,
 				`status` varchar(30) NOT NULL,
-				PRIMARY KEY (`id`),
-				KEY `post_id` (`post_id`),
-				KEY `date_time` (`date_time`),
-				KEY `user_id` (`user_id`),
-				KEY `status` (`status`)
+				PRIMARY KEY (`id`)
 			) $charset_collate AUTO_INCREMENT=1;" );
 
 			// Comments table
@@ -416,11 +406,7 @@ if ( ! class_exists( 'WpUlikeInit' ) ) :
 				`ip` varchar(100) NOT NULL,
 				`user_id` varchar(100) NOT NULL,
 				`status` varchar(30) NOT NULL,
-				PRIMARY KEY (`id`),
-				KEY `comment_id` (`comment_id`),
-				KEY `date_time` (`date_time`),
-				KEY `user_id` (`user_id`),
-				KEY `status` (`status`)
+				PRIMARY KEY (`id`)
 			) $charset_collate AUTO_INCREMENT=1;" );
 
 			// Activities table
@@ -432,11 +418,7 @@ if ( ! class_exists( 'WpUlikeInit' ) ) :
 				`ip` varchar(100) NOT NULL,
 				`user_id` varchar(100) NOT NULL,
 				`status` varchar(30) NOT NULL,
-				PRIMARY KEY (`id`),
-				KEY `activity_id` (`activity_id`),
-				KEY `date_time` (`date_time`),
-				KEY `user_id` (`user_id`),
-				KEY `status` (`status`)
+				PRIMARY KEY (`id`)
 			) $charset_collate AUTO_INCREMENT=1;" );
 
 			// Forums table
@@ -448,60 +430,8 @@ if ( ! class_exists( 'WpUlikeInit' ) ) :
 				`ip` varchar(100) NOT NULL,
 				`user_id` varchar(100) NOT NULL,
 				`status` varchar(30) NOT NULL,
-				PRIMARY KEY (`id`),
-				KEY `topic_id` (`topic_id`),
-				KEY `date_time` (`date_time`),
-				KEY `user_id` (`user_id`),
-				KEY `status` (`status`)
+				PRIMARY KEY (`id`)
 			) $charset_collate AUTO_INCREMENT=1;" );
-
-			// Meta values table
-			$meta_table = $wpdb->prefix . "ulike_meta";
-			maybe_create_table( $meta_table, "CREATE TABLE IF NOT EXISTS `{$meta_table}` (
-				`meta_id` bigint(20) unsigned NOT NULL auto_increment,
-				`item_id` bigint(20) unsigned NOT NULL default '0',
-				`meta_group` varchar(100) default NULL,
-				`meta_key` varchar(255) default NULL,
-				`meta_value` longtext,
-				PRIMARY KEY  (`meta_id`),
-				KEY `item_id` (`item_id`),
-				KEY `meta_group` (`meta_group`),
-				KEY `meta_key` (`meta_key`($max_index_length))
-			) $charset_collate AUTO_INCREMENT=1;" );
-
-			// Upgrade Tables
-			if ( version_compare( get_option( 'wp_ulike_dbVersion', '1.6' ), WP_ULIKE_DB_VERSION, '<' ) ) {
-				// Posts ugrades
-				$wpdb->query( "
-					ALTER TABLE $posts_table
-					ADD INDEX( `post_id`, `date_time`, `user_id`, `status`),
-					CHANGE `user_id` `user_id` VARCHAR(100) NOT NULL,
-					CHANGE `ip` `ip` VARCHAR(100) NOT NULL;
-				" );
-				// Comments ugrades
-				$wpdb->query( "
-					ALTER TABLE $comments_table
-					ADD INDEX( `comment_id`, `date_time`, `user_id`, `status`),
-					CHANGE `user_id` `user_id` VARCHAR(100) NOT NULL,
-					CHANGE `ip` `ip` VARCHAR(100) NOT NULL;
-				" );
-				// BuddyPress ugrades
-				$wpdb->query( "
-					ALTER TABLE $activities_table
-					ADD INDEX( `activity_id`, `date_time`, `user_id`, `status`),
-					CHANGE `user_id` `user_id` VARCHAR(100) NOT NULL,
-					CHANGE `ip` `ip` VARCHAR(100) NOT NULL;
-				" );
-				// bbPress upgrades
-				$wpdb->query( "
-					ALTER TABLE $forums_table
-					ADD INDEX( `topic_id`, `date_time`, `user_id`, `status`),
-					CHANGE `user_id` `user_id` VARCHAR(100) NOT NULL,
-					CHANGE `ip` `ip` VARCHAR(100) NOT NULL;
-				" );
-				// Update db version
-				update_option( 'wp_ulike_dbVersion', WP_ULIKE_DB_VERSION );
-			}
 
 	        do_action( 'wp_ulike_activated', get_current_blog_id() );
 	    }
@@ -563,7 +493,7 @@ if ( ! class_exists( 'WpUlikeInit' ) ) :
 	    public function load_plugin_textdomain() {
 	        $locale = apply_filters( 'plugin_locale', get_locale(), WP_ULIKE_SLUG );
 	        load_textdomain( WP_ULIKE_SLUG, trailingslashit( WP_LANG_DIR ) . WP_ULIKE_SLUG . '/' . WP_ULIKE_SLUG . '-' . $locale . '.mo' );
-	        load_plugin_textdomain( WP_ULIKE_SLUG, FALSE, dirname( WP_ULIKE_BASENAME ) . '/languages' );
+	        load_plugin_textdomain( WP_ULIKE_SLUG, FALSE, dirname( WP_ULIKE_BASENAME ) . '/lang/' );
 	    }
 
 	}

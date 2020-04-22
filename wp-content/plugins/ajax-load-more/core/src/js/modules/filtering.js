@@ -1,6 +1,5 @@
 import almFadeIn from './fadeIn';
 import almFadeOut from './fadeOut';
-import { clearTOC } from './tableofcontents';
 
 /**
  * almFilter(type, speed, data)
@@ -13,7 +12,7 @@ import { clearTOC } from './tableofcontents';
  * @since 2.6.1
  */
  
-let almFilter = function(transition, speed, data, type = "filter") {   
+let almFilter = function(transition, speed, data, type = "filter") {
    if(data.target){ // if a target has been specified
 	   let target = document.querySelectorAll('.ajax-load-more-wrap[data-id="'+ data.target + '"]');
 		target.forEach(function(element){
@@ -25,10 +24,6 @@ let almFilter = function(transition, speed, data, type = "filter") {
 			almFilterTransition(transition, speed, data, element, type);	      
 		});
    }
-   
-   // Clear table of contents if required
-   clearTOC();
-    
 }; 
 export default almFilter;
 
@@ -116,8 +111,6 @@ let almCompleteFilterTransition = (speed, data, el, type) => {
       paging.style.opacity = 0;
    }
 	
-	// Reset Preloaded Amount
-	data.preloadedAmount = 0;
 	// Dispatch Filters
 	almSetFilters(speed, data, el, type);
 	
@@ -184,7 +177,6 @@ let almSetFilters = function(speed = 250, data, el, type){
    
    switch (type){	   
 	   
-      /*
 	   case 'filter' : 
 		   // Filters Complete            
 		   if (typeof almFilterComplete === 'function') { // Standard Filtering
@@ -195,7 +187,6 @@ let almSetFilters = function(speed = 250, data, el, type){
 		      almFiltersAddonComplete(el);
 		   }
 		break;
-      */
 		
 		case 'tab' :
 			// Tabs Complete            

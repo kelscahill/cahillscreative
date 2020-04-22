@@ -43,13 +43,13 @@ trait broadcasting
 	{
 		$bcd = $broadcasting_data;
 
-		if ( ! $bcd->post )
-			return $this->debug( 'Warning! Refusing to broadcast non-existent post %s on %s.', $bcd->post, get_current_blog_id() );
-
 		// To prevent recursion
 		array_push( $this->broadcasting, $bcd );
 
 		$this->debug( 'System info: %s', $this->get_system_info_table() . '' );
+
+		if ( ! $bcd->post )
+			return $this->debug( 'Warning! Refusing to broadcast non-existent post.' );
 
 		$this->debug( 'Broadcasting the post %s <pre>%s</pre>', $bcd->post->ID, $bcd->post );
 
@@ -704,17 +704,14 @@ trait broadcasting
 		{
 			if ( ! $this->is_broadcasting() )
 			{
-				if ( isset( $bcd->stop_after_broadcast ) )
+				if ( isset( $bcd->stop_after_broadcast ) && ! $bcd->stop_after_broadcast )
 				{
-					if ( $bcd->stop_after_broadcast )
-					{
-						$this->debug( 'Finished broadcasting. Now stopping Wordpress.' );
-						exit;
-					}
-					else
-					{
-						$this->debug( 'Finished broadcasting.' );
-					}
+					$this->debug( 'Finished broadcasting.' );
+				}
+				else
+				{
+					$this->debug( 'Finished broadcasting. Now stopping Wordpress.' );
+					exit;
 				}
 			}
 			else
@@ -722,8 +719,6 @@ trait broadcasting
 				$this->debug( 'Still broadcasting.' );
 			}
 		}
-
-		$this->debug( "Broadcasting finished. On blog %s.", get_current_blog_id() );
 
 		return $bcd;
 	}
@@ -782,7 +777,7 @@ trait broadcasting
 
 		// No post?
 		if ( count( $_POST ) < 1 )
-			return;
+			return $this->debug( 'No _POST available. Not broadcasting.' );
 
 		// Does this post_id match up with the one in the post?
 		if ( isset( $_POST[ 'ID' ] ) )

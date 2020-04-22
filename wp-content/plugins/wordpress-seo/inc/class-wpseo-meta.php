@@ -178,13 +178,13 @@ class WPSEO_Meta {
 				'description'   => '', // Translation added later.
 			],
 			'canonical'            => [
-				'type'          => 'url',
+				'type'          => 'text',
 				'title'         => '', // Translation added later.
 				'default_value' => '',
 				'description'   => '', // Translation added later.
 			],
 			'redirect'             => [
-				'type'          => 'url',
+				'type'          => 'text',
 				'title'         => '', // Translation added later.
 				'default_value' => '',
 				'description'   => '', // Translation added later.
@@ -416,7 +416,8 @@ class WPSEO_Meta {
 				break;
 
 
-			case ( $field_def['type'] === 'url' ):
+			case ( $field_def['type'] === 'text' && $meta_key === self::$meta_prefix . 'canonical' ):
+			case ( $field_def['type'] === 'text' && $meta_key === self::$meta_prefix . 'redirect' ):
 				// Validate as url(-part).
 				$url = WPSEO_Utils::sanitize_url( $meta_value );
 				if ( $url !== '' ) {

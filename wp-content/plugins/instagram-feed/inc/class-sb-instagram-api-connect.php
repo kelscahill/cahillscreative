@@ -30,7 +30,7 @@ class SB_Instagram_API_Connect
 	/**
 	 * @var object
 	 */
-	protected $response;
+	private $response;
 
 	/**
 	 * SB_Instagram_API_Connect constructor.
@@ -86,39 +86,18 @@ class SB_Instagram_API_Connect
 	}
 
 	/**
-	 * Certain endpoints don't include the "next" URL so
-	 * this method allows using the "cursors->after" data instead
-	 *
-	 * @param $type
-	 *
-	 * @return bool
-	 *
-	 * @since 2.2.2/5.3.3
-	 */
-	public function type_allows_after_paging( $type ) {
-		return false;
-	}
-
-	/**
 	 * Returns the full url for the next page of the API request
-	 *
-	 * @param $type
 	 *
 	 * @return string
 	 *
 	 * @since 2.0/5.0
 	 */
-	public function get_next_page( $type = '' ) {
+	public function get_next_page() {
 		if ( ! empty( $this->response['pagination']['next_url'] ) ) {
 			return $this->response['pagination']['next_url'];
 		} elseif ( ! empty( $this->response['paging']['next'] ) ) {
 			return $this->response['paging']['next'];
 		} else {
-			if ( $this->type_allows_after_paging( $type ) ) {
-				if ( isset( $this->response['paging']['cursors']['after'] ) ) {
-					return $this->response['paging']['cursors']['after'];
-				}
-			}
 			return '';
 		}
 	}
@@ -174,7 +153,6 @@ class SB_Instagram_API_Connect
 			'timeout' => 60,
 			'sslverify' => false
 		);
-		// $response = wp_remote_get( $this->url, $args );
 		$response = wp_remote_get( $this->url, $args );
 
 		if ( ! is_wp_error( $response ) ) {
@@ -197,14 +175,14 @@ class SB_Instagram_API_Connect
 	 */
 	public static function handle_instagram_error( $response, $error_connected_account, $request_type ) {
 		global $sb_instagram_posts_manager;
-		delete_option( 'sbi_dismiss_critical_notice' );
-
-		$sb_instagram_posts_manager->update_error_page( get_the_ID() );
 
 		$error_time = 300;
 		if ( isset( $response['meta']['error_type'] ) ) {
+			$sb_instagram_posts_manager->add_error( 'api', array( 'Error connecting', sprintf( __( 'API error %s:', 'instagram-feed'), $response['meta']['code'] ) . ' ' . $response['meta']['error_message'] ) );
+
 			if ( $response['meta']['error_type'] === 'OAuthAccessTokenException' ) {
 				$options = get_option( 'sb_instagram_settings', array() );
+
 				$connected_accounts =  isset( $options['connected_accounts'] ) ? $options['connected_accounts'] : array();
 				$user_name = '';
 				foreach ( $connected_accounts as $connected_account ) {
@@ -223,8 +201,8 @@ class SB_Instagram_API_Connect
 
 				update_option( 'sb_instagram_settings', $options );
 
-				$error = '<p><b>' . sprintf( __( 'Error: Access Token for %s is not valid or has expired.', 'instagram-feed' ), $user_name ) . ' ' . __( 'Feed will not update.', 'instagram-feed' ) . '</b></p>';
-				$error .= '<p>' . __( 'There\'s an issue with the Instagram Access Token that you are using. Please obtain a new Access Token on the plugin\'s Settings page.', 'instagram-feed' ) . '</p>';
+				$error = '<p><b>' . sprintf( __( 'Error: Access Token for %s is not valid or has expired.', 'instagram-feed' ), $user_name ) . ' ' . __( 'Feed will not update.', 'instagram-feed' ) . '</b>';
+				$error .= '<p>' . __( 'There\'s an issue with the Instagram Access Token that you are using. Please obtain a new Access Token on the plugin\'s Settings page.<br />If you continue to have an issue with your Access Token then please see <a href="https://smashballoon.com/my-instagram-access-token-keep-expiring/" target="_blank" rel="noopener">this FAQ</a> for more information.', 'instagram-feed' );
 
 				$sb_instagram_posts_manager->add_frontend_error( 'at_' . $user_name, $error );
 
@@ -232,10 +210,12 @@ class SB_Instagram_API_Connect
 				$account_id = $error_connected_account['user_id'];
 			} else {
 				$error = $response['meta']['error_message'];
-				$sb_instagram_posts_manager->add_error( 'api', array( 'Error connecting', sprintf( __( 'API error %s:', 'instagram-feed'), $response['meta']['code'] ) . ' ' . $response['meta']['error_message'], $response['meta']['code'] ) );
+
 				$sb_instagram_posts_manager->add_frontend_error( $response['meta']['error_type'], $error );
 			}
 		} elseif ( isset( $response['error']['message'] ) ) {
+			$sb_instagram_posts_manager->add_error( 'api', array( 'Error connecting', sprintf( __( 'API error %s:', 'instagram-feed'), $response['error']['code'] ) . ' ' . $response['error']['message'] ) );
+
 			if ( (int)$response['error']['code'] === 18 ) {
 				$options = get_option( 'sb_instagram_settings', array() );
 
@@ -267,21 +247,15 @@ class SB_Instagram_API_Connect
 			} elseif ( (int)$response['error']['code'] === 10 ) {
 				$user_name = $error_connected_account['username'];
 
-				$error = '<p><b>' . sprintf( __( 'Error: Connected account for the user %s does not have permission to use this feed type.', 'instagram-feed' ), $user_name ) .'</b></p>';
-				$error .= '<p>' . __( 'Try using the big blue button on the "Configure" tab to reconnect the account and update its permissions.', 'instagram-feed' ) . '</p>';
+				$error = '<p><b>' . sprintf( __( 'Error: Connected account for the user %s does not have permission to use this feed type.', 'instagram-feed' ), $user_name ) .'</b>';
+				$error .= '<p>' . __( 'Try using the big blue button on the "Configure" tab to reconnect the account and update its permissions.', 'instagram-feed' );
 
 				$sb_instagram_posts_manager->add_frontend_error( 'hashtag_limit_reached', $error );
 
-			} else if ( $response['error']['type'] === 'OAuthException'
-				|| (int)$response['error']['code'] === 100 ) {
-				if ( $response['error']['code'] === 803 ) {
-					$error = sprintf( __( 'API error %s:', 'instagram-feed' ), $response['error']['code'] ) . ' ' . $response['error']['message'];
-
-					$sb_instagram_posts_manager->add_frontend_error( $response['error']['type'], $error );
-					$sb_instagram_posts_manager->add_error( 'api', array( 'Api Error', $error, $response['error']['code'] ) );
-				} elseif ( $response['error']['code'] === 24 ) {
-					$error = '<p><b>' . __( 'Error: Cannot retrieve posts for this hashtag.', 'instagram-feed' ) .'</b></p>';
-					$error .= '<p>' . $response['error']['error_user_msg'] . '</p>';
+			} else if ( $response['error']['type'] === 'OAuthException' ) {
+				if ( $response['error']['code'] === 24 ) {
+					$error = '<p><b>' . __( 'Error: Cannot retrieve posts for this hashtag.', 'instagram-feed' ) .'</b>';
+					$error .= '<p>' . $response['error']['error_user_msg'];
 
 					$sb_instagram_posts_manager->add_frontend_error( 'hashtag_error', $error );
 				} else {
@@ -304,40 +278,20 @@ class SB_Instagram_API_Connect
 					$options['connected_accounts'] = $connected_accounts;
 
 					update_option( 'sb_instagram_settings', $options );
-					$cap = current_user_can( 'manage_instagram_feed_options' ) ? 'manage_instagram_feed_options' : 'manage_options';
-					$cap = apply_filters( 'sbi_settings_pages_capability', $cap );
-					if ( (int)$response['error']['code'] === 100 && $error_connected_account['type'] === 'business' ) {
-						$error = '<p><b>' . sprintf( __( 'Error: Access Token for %s is not valid or has expired.', 'instagram-feed' ), $user_name ) . ' ' . __( 'Feed will not update.', 'instagram-feed' ) . '</b></p>';
-						$error .= '<p>' . sprintf( __( 'API error %s:', 'instagram-feed' ), $response['error']['code'] ) . ' ' . $response['error']['message'] . '</p>';
-						$sb_instagram_posts_manager->add_error( 'at_100_' . $user_name, array( 'Business 100 Error', $error, $response['error']['code'] ) );
-						if ( current_user_can( $cap ) ) {
-							$error .= '<p class="sbi-error-directions"><a href="https://smashballoon.com/instagram-feed/docs/errors/" target="_blank" rel="noopener">' . __( 'Directions on how to resolve this issue', 'instagram-feed' ) . '</a></p>';
-						}
-						$sb_instagram_posts_manager->add_frontend_error( 'at_100_' . $user_name, $error );
 
-					} else {
-						//set here
-						$error = '<p><b>' . sprintf( __( 'Error: Access Token for %s is not valid or has expired.', 'instagram-feed' ), $user_name ) . ' ' . __( 'Feed will not update.', 'instagram-feed' ) . '</b></p>';
-						$error .= '<p>' . __( 'There\'s an issue with the Instagram Access Token that you are using. Please obtain a new Access Token on the plugin\'s Settings page.', 'instagram-feed' );
-						$error .= '<p>' . sprintf( __( 'API error %s:', 'instagram-feed' ), $response['error']['code'] ) . ' ' . $response['error']['message'] . '</p>';
-						$sb_instagram_posts_manager->add_error( 'at_' . $user_name, array( 'Access Token Error', $error, $response['error']['code'] ) );
-						$link = admin_url( '?page=sb-instagram-feed' );
-						if ( current_user_can( $cap ) ) {
-							$error .= '<p class="sbi-error-directions sbi-reconnect"><a href="' . esc_url( $link ) . '" target="_blank" rel="noopener">' . __( 'Reconnect your account in the admin area', 'instagram-feed' ) . '</a></p>';
-						}
-						$sb_instagram_posts_manager->add_frontend_error( 'at_' . $user_name, $error );
-					}
+					$error = '<p><b>' . sprintf( __( 'Error: Access Token for %s is not valid or has expired.', 'instagram-feed' ), $user_name ) . ' ' . __( 'Feed will not update.', 'instagram-feed' ) . '</b>';
+					$error .= '<p>' . __( 'There\'s an issue with the Instagram Access Token that you are using. Please obtain a new Access Token on the plugin\'s Settings page.', 'instagram-feed' );
+
+					$sb_instagram_posts_manager->add_frontend_error( 'at_' . $user_name, $error );
 
 					$error_time = 3600;
 					$account_id = $error_connected_account['user_id'];
 				}
 
 			} else {
-				$error = '<p>' .sprintf( __( 'API error %s:', 'instagram-feed' ), $response['error']['code'] ) . ' ' . $response['error']['message'] . '</p>';
+				$error = $response['error']['message'];
 
 				$sb_instagram_posts_manager->add_frontend_error( $response['error']['type'], $error );
-				$sb_instagram_posts_manager->add_error( 'api', array( 'Api Error', $error, $response['error']['code'] ) );
-
 			}
 
 		}
@@ -359,8 +313,6 @@ class SB_Instagram_API_Connect
 	 */
 	public static function handle_wp_remote_get_error( $response ) {
 		global $sb_instagram_posts_manager;
-		delete_option( 'sbi_dismiss_critical_notice' );
-		$sb_instagram_posts_manager->update_error_page( get_the_ID() );
 
 		$message = sprintf( __( 'Error connecting to %s.', 'instagram-feed' ), $response['url'] ). ' ';
 		if ( isset( $response['response'] ) && isset( $response['response']->errors ) ) {
@@ -395,10 +347,10 @@ class SB_Instagram_API_Connect
 			if ( $endpoint_slug === 'access_token' ) {
 				$url = 'https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
 			} elseif ( $endpoint_slug === 'header' ) {
-				$url = 'https://graph.instagram.com/me?fields=id,username,media_count&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
+				$url = 'https://graph.instagram.com/me?fields=id,username,media_count,account_type&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
 			} else {
 				$num = min( $num, 200 );
-				$url = 'https://graph.instagram.com/' . sbi_maybe_clean( $connected_account['user_id'] ) . '/media?fields=media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children{media_url,id,media_type,timestamp,permalink,thumbnail_url}&limit='.$num.'&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
+				$url = 'https://graph.instagram.com/' . $connected_account['user_id'] . '/media?fields=media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children{media_url,id,media_type,timestamp,permalink,thumbnail_url}&limit='.$num.'&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
 			}
 		} elseif ( $account_type === 'personal' ) {
 			if ( $endpoint_slug === 'header' ) {

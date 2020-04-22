@@ -8,11 +8,7 @@
  
 let almDebug = function(alm){  
 	if(alm && alm.debug){
-		let obj = {
-			'query' : alm.debug,
-			'localize' : alm.localize
-		}
-		console.log('ALM Debug:', obj); 
+		console.log('alm_debug info:', alm.debug); 
 	}    
 }
 

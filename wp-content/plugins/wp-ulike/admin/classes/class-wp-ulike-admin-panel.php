@@ -316,12 +316,6 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                         'default' => __('Sorry! You unliked this.',WP_ULIKE_SLUG),
                         'title'   => __( 'Unliked Notice Message', WP_ULIKE_SLUG)
                     ),
-                    array(
-                        'id'      => 'like_button_aria_label',
-                        'type'    => 'text',
-                        'default' => __( 'Like Button',WP_ULIKE_SLUG),
-                        'title'   => __( 'Like Button Aria Label', WP_ULIKE_SLUG)
-                    )
                 ) )
             ) );
 
@@ -329,14 +323,8 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
              * Customization Section
              */
             CSF::createSection( $this->option_domain, array(
-                'id'    => 'customization',
-                'title' => __( 'Developer Tools',WP_ULIKE_SLUG),
-                'icon'  => 'fa fa-code',
-            ) );
-
-            CSF::createSection( $this->option_domain, array(
-                'parent' => 'customization',
-                'title'  => __( 'Custom Style',WP_ULIKE_SLUG),
+                'title'  => __( 'Customization',WP_ULIKE_SLUG),
+                'icon'   => 'fa fa-code',
                 'fields' => apply_filters( 'wp_ulike_panel_customization', array(
                     array(
                         'id'    => 'custom_css',
@@ -528,26 +516,11 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                     'type'       => 'button_set',
                     'title'      => __( 'Display Type', WP_ULIKE_SLUG),
                     'options'    => array(
-                        'alert'  => __('Template', WP_ULIKE_SLUG),
+                        'alert'  => __('Alert', WP_ULIKE_SLUG),
                         'button' => __('Button', WP_ULIKE_SLUG)
                     ),
                     'default'    => 'button',
                     'dependency' => array( 'enable_only_logged_in_users', '==', 'true' ),
-                ),
-                'login_template' => array(
-                    'id'       => 'login_template',
-                    'type'     => 'code_editor',
-                    'settings' => array(
-                        'theme' => 'shadowfox',
-                        'mode'  => 'htmlmixed',
-                    ),
-                    'default'  => sprintf( '<p class="alert alert-info fade in" role="alert">%s<a href="%s">%s</a></p>',
-                        __('You need to login in order to like this post: ',WP_ULIKE_SLUG),
-                        wp_login_url( get_permalink() ),
-                        __('click here',WP_ULIKE_SLUG)
-                    ),
-                    'title'    => __('Custom HTML Template', WP_ULIKE_SLUG),
-                    'dependency'=> array( 'logged_out_display_type', '==', 'alert' ),
                 ),
                 'enable_likers_box' => array(
                     'id'    => 'enable_likers_box',

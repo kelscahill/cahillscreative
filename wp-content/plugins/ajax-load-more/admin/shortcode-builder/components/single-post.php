@@ -35,25 +35,11 @@
    	               <input type="text" value="get_the_ID()" id="pp_id"  class="alm_element disabled-input" disabled="disabled">
    	            </div>
    	         </div>
-		      </section>	         
-		      
-		      <section>
-   	         <div class="shortcode-builder--label">
-   	            <h4><?php _e('Target', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Repeater Templates are not required when using the Target implementation.', 'ajax-load-more'); ?>"></a></h4>
-   	   		 	<p><?php _e('Enter the ID or classname of HTML element that wraps your single post content.', 'ajax-load-more'); ?>
-   	   		 	<small>e.g. #container or .post-wrapper</small></p>
-   	   		 	<p><a class="button-small" href="https://connekthq.com/plugins/ajax-load-more/add-ons/single-posts/#implementation" target="_blank"><?php _e('View Guide', 'ajax-load-more'); ?></a></p>
-   	   		 </div>
-   	         <div class="shortcode-builder--fields">
-   		         <div class="inner">
-		               <input type="text" id="pp-target" class="alm_element" value="" placeholder="#container">
-		            </div>
-		         </div>
 		      </section>
 		      
 		      <section>
    	         <div class="shortcode-builder--label">
-   	            <h4><?php _e('Post Ordering', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('By default, the Single Posts add-on will use the core WordPress `get_previous_post` function, but you can over ride that here.', 'ajax-load-more'); ?>"></a></h4>
+   	            <h4><?php _e('Post Ordering', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('By default, the Single Posts add-on will use the core WordPress `get_previous_post` function, but you can over ride that here.', 'ajax-load-more'); ?>."></a></h4>
    	   		 	<p><?php _e('Select the load order of posts while infinite scrolling.', 'ajax-load-more'); ?></p>
    	   		 	<p><a class="button-small" href="https://connekthq.com/plugins/ajax-load-more/add-ons/single-post/#ordering" target="_blank"><?php _e('View Docs', 'ajax-load-more'); ?></a></p>
    	   		 </div>
@@ -86,7 +72,7 @@
 		      <div id="pp_extras">
 		         <section>
    		         <div class="shortcode-builder--label">
-   		            <h4><?php _e('Taxonomy', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Selecting a taxonomy means only previous posts from the same taxonomy term will be returned. If a post has multiple terms attached, each term will be considered using an OR relationship query.','ajax-load-more'); ?>"></a></h4>
+   		            <h4><?php _e('Taxonomy', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('Selecting a taxonomy means only previous posts from the same taxonomy term will be returned. If a post has multiple terms attached, each term will be considered using an OR relationship query','ajax-load-more'); ?>."></a></h4>
    		   		 	<p><?php _e('Query previous posts from the same taxonomy term(s).', 'ajax-load-more'); ?></p>
    		   		 </div>
    		         <div class="shortcode-builder--fields">
@@ -118,7 +104,7 @@
 		         
 		         <section>
    		         <div class="shortcode-builder--label">
-   		            <h4><?php _e('Excluded Terms ', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('A comma-separated list of excluded terms by ID.','ajax-load-more'); ?>"></a></h4>
+   		            <h4><?php _e('Excluded Terms ', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('A comma-separated list of excluded terms by ID','ajax-load-more'); ?>."></a></h4>
    		   		 	<p><?php _e('Exclude posts by term ID from the previous post query.', 'ajax-load-more'); ?></p>
    		   		 </div>
    		         <div class="shortcode-builder--fields">
@@ -127,34 +113,8 @@
    		            </div>
    		         </div> 
 		         </section>
-		         
 	         </div> 
 	         
-	         <?php if( is_plugin_active( 'elementor-pro/elementor-pro.php' ) ) { ?>
-				<!-- Elementor -->
-				<section>
-		         <div class="shortcode-builder--label">
-			         <h4><?php _e('Elementor', 'ajax-load-more'); ?></h4>
-		   		 	<p><?php _e('Set Elementor <b>true</b> if you are using Elementor templates to build single posts.', 'ajax-load-more'); ?></p>
-		   		 	<p><a class="button-small" href="https://connekthq.com/elementor-infinite-scrolling/" target="_blank"><?php _e('View Blog Post', 'ajax-load-more'); ?></a></p>
-		   		</div>
-		         <div class="shortcode-builder--fields">
-			         <div class="inner">
-		               <ul>
-		                  <li>
-		                     <input class="alm_element" type="radio" name="elementor-single" value="t" id="elementor_t">
-		                     <label for="elementor_t"><?php _e('True', 'ajax-load-more'); ?></label>
-		                  </li>
-		                  <li>
-		                     <input class="alm_element" type="radio" name="elementor-single" value="f" id="elementor_f" checked="checked">
-		                     <label for="elementor_f"><?php _e('False', 'ajax-load-more'); ?></label>
-		                  </li>
-		               </ul>
-			         </div>
-		         </div>
-				</section>
-			   <?php } ?>
-		      
 	         <section>
    	         <div class="shortcode-builder--label">
    		         <h4><?php _e('Reading Progress Bar ', 'ajax-load-more'); ?></h4>
@@ -254,6 +214,7 @@
 	         <!-- END Reading Progress Bar -->	         
 	         
 	         <div class="clear"></div>
+	         <hr>
 	         
 	         <p class="warning-callout">
 	            <?php _e('You must add the Single Post shortcode directly to your single template file using the <a href="https://developer.wordpress.org/reference/functions/do_shortcode/" target="_blank">do_shortcode</a> method.', 'ajax-load-more'); ?> <a class="button-small" href="https://connekthq.com/plugins/ajax-load-more/add-ons/single-post/" target="_blank"><?php _e('View Docs', 'ajax-load-more'); ?></a>

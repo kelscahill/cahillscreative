@@ -11,15 +11,9 @@ function sb_instagram_menu() {
 
 	$cap = apply_filters( 'sbi_settings_pages_capability', $cap );
 
-	global $sb_instagram_posts_manager;
-	$notice = '';
-	if ( $sb_instagram_posts_manager->are_critical_errors() ) {
-		$notice = ' <span class="update-plugins sbi-error-alert"><span>!</span></span>';
-	}
-
 	add_menu_page(
 		__( 'Instagram Feed', 'instagram-feed' ),
-		__( 'Instagram Feed', 'instagram-feed' ) . $notice,
+		__( 'Instagram Feed', 'instagram-feed' ),
 		$cap,
 		'sb-instagram-feed',
 		'sb_instagram_settings_page'
@@ -27,25 +21,13 @@ function sb_instagram_menu() {
 	add_submenu_page(
 		'sb-instagram-feed',
 		__( 'Settings', 'instagram-feed' ),
-		__( 'Settings', 'instagram-feed' ) . $notice,
+		__( 'Settings', 'instagram-feed' ),
 		$cap,
 		'sb-instagram-feed',
 		'sb_instagram_settings_page'
 	);
-	add_submenu_page(
-		'sb-instagram-feed',
-		__( 'About Us', 'instagram-feed' ),
-		__( 'About Us', 'instagram-feed' ),
-		$cap,
-		'sb-instagram-feed-about',
-		'sb_instagram_about_page'
-	);
 }
 add_action('admin_menu', 'sb_instagram_menu');
-
-function sb_instagram_about_page() {
-    do_action('sbi_admin_page' );
-}
 
 function sb_instagram_settings_page() {
 
@@ -109,11 +91,7 @@ function sb_instagram_settings_page() {
 		'sb_instagram_disable_mob_swipe' => false,
 		'sbi_font_method' => 'svg',
 		'sb_instagram_disable_awesome'      => false,
-        'custom_template' => false,
-        'disable_admin_notice' => false,
-		'enable_email_report' => 'on',
-		'email_notification' => 'monday',
-		'email_notification_addresses' => get_option( 'admin_email' ),
+        'custom_template' => false
 	);
 	//Save defaults in an array
 	$options = wp_parse_args(get_option('sb_instagram_settings'), $sb_instagram_settings_defaults);
@@ -177,10 +155,9 @@ function sb_instagram_settings_page() {
 	$sbi_font_method = $options[ 'sbi_font_method' ];
 	$sb_instagram_disable_awesome = $options[ 'sb_instagram_disable_awesome' ];
 	$sb_instagram_custom_template = $options[ 'custom_template' ];
-	$sb_instagram_disable_admin_notice = $options[ 'disable_admin_notice' ];
-	$sb_instagram_enable_email_report = $options[ 'enable_email_report' ];
-	$sb_instagram_email_notification = $options[ 'email_notification' ];
-	$sb_instagram_email_notification_addresses = $options[ 'email_notification_addresses' ];
+
+
+
 	//Check nonce before saving data
 	if ( ! isset( $_POST['sb_instagram_settings_nonce'] ) || ! wp_verify_nonce( $_POST['sb_instagram_settings_nonce'], 'sb_instagram_saving_settings' ) ) {
 		//Nonce did not verify
@@ -377,31 +354,9 @@ function sb_instagram_settings_page() {
 
 				isset($_POST[ 'sb_instagram_custom_template' ]) ? $sb_instagram_custom_template = $_POST[ 'sb_instagram_custom_template' ] : $sb_instagram_custom_template = '';
 				$options['custom_template'] = $sb_instagram_custom_template;
-				isset($_POST[ 'sb_instagram_disable_admin_notice' ]) ? $sb_instagram_disable_admin_notice = $_POST[ 'sb_instagram_disable_admin_notice' ] : $sb_instagram_disable_admin_notice = '';
-				$options['disable_admin_notice'] = $sb_instagram_disable_admin_notice;
-				isset($_POST[ 'sb_instagram_enable_email_report' ]) ? $sb_instagram_enable_email_report = $_POST[ 'sb_instagram_enable_email_report' ] : $sb_instagram_enable_email_report = '';
-				$options['enable_email_report'] = $sb_instagram_enable_email_report;
-				isset($_POST[ 'sb_instagram_email_notification' ]) ? $sb_instagram_email_notification = $_POST[ 'sb_instagram_email_notification' ] : $sb_instagram_email_notification = '';
-				$original = $options['email_notification'];
-				$options['email_notification'] = $sb_instagram_email_notification;
-				isset($_POST[ 'sb_instagram_email_notification_addresses' ]) ? $sb_instagram_email_notification_addresses = $_POST[ 'sb_instagram_email_notification_addresses' ] : $sb_instagram_email_notification_addresses = get_option( 'admin_email' );
-				$options['email_notification_addresses'] = $sb_instagram_email_notification_addresses;
 
-				if ( $original !== $sb_instagram_email_notification && $sb_instagram_enable_email_report === 'on' ){
-					//Clear the existing cron event
-					wp_clear_scheduled_hook('sb_instagram_feed_issue_email');
-
-					$input = sanitize_text_field($_POST[ 'sb_instagram_email_notification' ] );
-					$timestamp = strtotime( 'next ' . $input );
-
-					if ( $timestamp - (3600 * 1) < time() ) {
-						$timestamp = $timestamp + (3600 * 24 * 7);
-					}
-					$six_am_local = $timestamp + sbi_get_utc_offset() + (6*60*60);
-
-					wp_schedule_event( $six_am_local, 'sbiweekly', 'sb_instagram_feed_issue_email' );
-				}
-
+				//clear expired tokens
+				delete_option( 'sb_expired_tokens' );
 
 				//Delete all SBI transients
 				global $wpdb;
@@ -460,17 +415,7 @@ function sb_instagram_settings_page() {
 
 
 	<div id="sbi_admin" class="wrap">
-        <?php
-        $lite_notice_dismissed = get_transient( 'instagram_feed_dismiss_lite' );
 
-        if ( ! $lite_notice_dismissed ) :
-        ?>
-        <div id="sbi-notice-bar" style="display:none">
-            <span class="sbi-notice-bar-message"><?php _e( 'You\'re using Instagram Feed Lite. To unlock more features consider <a href="https://smashballoon.com/instagram-feed/?utm_source=WordPress&utm_campaign=instagramliteplugin&utm_medium=notice-bar" target="_blank" rel="noopener noreferrer">upgrading to Pro</a>.', 'instagram-feed'); ?></span>
-            <button type="button" class="dismiss" title="<?php _e( 'Dismiss this message.', 'instagram-feed'); ?>" data-page="overview">
-            </button>
-        </div>
-        <?php endif; ?>
 		<div id="header">
 			<h1><?php _e( 'Instagram Feed', 'instagram-feed' ); ?></h1>
 		</div>
@@ -719,7 +664,7 @@ function sb_instagram_settings_page() {
 							if ( sbi_is_after_deprecation_deadline() ) {
 								$deprecated_connected_account_message = __( '<b>Action Needed:</b> Reconnect this account to allow feed to update.', 'instagram-feed' );
 							} else {
-								$deprecated_connected_account_message = __( '<b>Action Needed:</b> Reconnect this account before March 31, 2020 to avoid disruption with this feed.', 'instagram-feed' );
+								$deprecated_connected_account_message = __( '<b>Action Needed:</b> Reconnect this account before March 2, 2020 to avoid disruption with this feed.', 'instagram-feed' );
 							}
 
 							$accounts_that_need_updating = sbi_get_user_names_of_personal_accounts_not_also_already_updated();
@@ -1493,7 +1438,7 @@ function sb_instagram_settings_page() {
 
                                 <textarea type="text" name="sb_instagram_custom_bio" id="sb_instagram_custom_bio" ><?php echo esc_textarea( stripslashes( $sb_instagram_custom_bio ) ); ?></textarea>
                                 &nbsp;<a class="sbi_tooltip_link sbi_tooltip_under" href="JavaScript:void(0);"><?php _e("Why is my bio not displaying automatically?", 'instagram-feed'); ?></a>
-                                <p class="sbi_tooltip" style="padding: 10px 0 0 0; width: 99%;"><?php echo sprintf( __("Instagram is deprecating their old API for Personal accounts on March 31, 2020. The plugin supports their new API, however, their new API does not yet include the bio text for Personal accounts. If you require this feature then it is available if you convert your Instagram account from a Personal to a Business account by following %s. Note: If you previously had a Personal account connected then the plugin has saved the avatar for that feed and will continue to use it automatically.", 'instagram-feed'), '<a href="https://smashballoon.com/instagram-business-profiles/" target="_blank">these directions</a>' ); ?></p>
+                                <p class="sbi_tooltip" style="padding: 10px 0 0 0; width: 99%;"><?php echo sprintf( __("Instagram is deprecating their old API for Personal accounts on March 2, 2020. The plugin supports their new API, however, their new API does not yet include the bio text for Personal accounts. If you require this feature then it is available if you convert your Instagram account from a Personal to a Business account by following %s. Note: If you previously had a Personal account connected then the plugin has saved the avatar for that feed and will continue to use it automatically.", 'instagram-feed'), '<a href="https://smashballoon.com/instagram-business-profiles/" target="_blank">these directions</a>' ); ?></p>
                             </div>
                         </div>
 
@@ -1509,7 +1454,7 @@ function sb_instagram_settings_page() {
                         <br>
                         <a class="sbi_tooltip_link sbi_tooltip_under" href="JavaScript:void(0);"><?php _e("Why is my avatar not displaying automatically?", 'instagram-feed'); ?></a>
 
-                        <p class="sbi_tooltip sbi_tooltip_under_text" style="padding: 10px 0 0 0;"><?php echo sprintf( __("Instagram is deprecating their old API for Personal accounts on March 31, 2020. The plugin supports their new API, however, their new API does not yet include the avatar image for Personal accounts. If you require this feature then it is available if you convert your Instagram account from a Personal to a Business account by following %s. Note: If you previously had a Personal account connected then the plugin has saved the bio text for that feed and will continue to use it automatically.", 'instagram-feed'), '<a href="https://smashballoon.com/instagram-business-profiles/" target="_blank">these directions</a>' ); ?></p>
+                        <p class="sbi_tooltip sbi_tooltip_under_text" style="padding: 10px 0 0 0;"><?php echo sprintf( __("Instagram is deprecating their old API for Personal accounts on March 2, 2020. The plugin supports their new API, however, their new API does not yet include the avatar image for Personal accounts. If you require this feature then it is available if you convert your Instagram account from a Personal to a Business account by following %s. Note: If you previously had a Personal account connected then the plugin has saved the bio text for that feed and will continue to use it automatically.", 'instagram-feed'), '<a href="https://smashballoon.com/instagram-business-profiles/" target="_blank">these directions</a>' ); ?></p>
 
                     </td>
                 </tr>
@@ -2025,76 +1970,6 @@ function sb_instagram_settings_page() {
                         <label for="sb_instagram_custom_template"><?php _e('Yes', 'instagram-feed'); ?></label>
                         <a class="sbi_tooltip_link" href="JavaScript:void(0);"><?php _e('What does this mean?', 'instagram-feed'); ?></a>
                         <p class="sbi_tooltip"><?php _e("The default HTML for the feed can be replaced with custom templates added to your theme's folder. Enable this setting to use these templates. See <a href=\"https://smashballoon.com/guide-to-creating-custom-templates/\" target=\"_blank\">this guide</a>", 'instagram-feed'); ?></p>
-                    </td>
-                </tr>
-                <tr>
-                    <th class="bump-left"><label class="bump-left"><?php _e("Disable Admin Error Notice", 'instagram-feed'); ?></label></th>
-                    <td>
-                        <input name="sb_instagram_disable_admin_notice" type="checkbox" id="sb_instagram_disable_admin_notice" <?php if($sb_instagram_disable_admin_notice == true) echo "checked"; ?> />
-                        <label for="sb_instagram_disable_admin_notice"><?php _e('Yes', 'instagram-feed'); ?></label>
-                        <a class="sbi_tooltip_link" href="JavaScript:void(0);"><?php _e('What does this mean?', 'instagram-feed'); ?></a>
-                        <p class="sbi_tooltip"><?php _e("This will permanently disable the feed error notice that displays in the bottom right corner for admins on the front end of your site.", 'instagram-feed'); ?></p>
-                    </td>
-                </tr>
-                <tr>
-                    <th class="bump-left"><label class="bump-left"><?php _e("Feed Issue Email Report", 'instagram-feed'); ?></label></th>
-                    <td>
-                        <input name="sb_instagram_enable_email_report" type="checkbox" id="sb_instagram_enable_email_report" <?php if($sb_instagram_enable_email_report == 'on') echo "checked"; ?> />
-                        <label for="sb_instagram_enable_email_report"><?php _e('Yes', 'instagram-feed'); ?></label>
-                        <a class="sbi_tooltip_link" href="JavaScript:void(0);"><?php _e('What does this mean?', 'instagram-feed'); ?></a>
-                        <p class="sbi_tooltip"><?php _e("Instagram Feed will send a weekly notification email using your site's wp_mail() function if one or more of your feeds is not updating or is not displaying. If you're not receiving the emails in your inbox, you may need to configure an SMTP service using another plugin like WP Mail SMTP.", 'instagram-feed'); ?></p>
-
-                        <div class="sb_instagram_box" style="display: block;">
-                            <div class="sb_instagram_box_setting">
-                                <label><?php _e('Schedule Weekly on', 'instagram-feed'); ?></label><br>
-								<?php
-								$schedule_options = array(
-									array(
-										'val' => 'monday',
-										'label' => __( 'Monday', 'instagram-feed' )
-									),
-									array(
-										'val' => 'tuesday',
-										'label' => __( 'Tuesday', 'instagram-feed' )
-									),
-									array(
-										'val' => 'wednesday',
-										'label' => __( 'Wednesday', 'instagram-feed' )
-									),
-									array(
-										'val' => 'thursday',
-										'label' => __( 'Thursday', 'instagram-feed' )
-									),
-									array(
-										'val' => 'friday',
-										'label' => __( 'Friday', 'instagram-feed' )
-									),
-									array(
-										'val' => 'saturday',
-										'label' => __( 'Saturday', 'instagram-feed' )
-									),
-									array(
-										'val' => 'sunday',
-										'label' => __( 'Sunday', 'instagram-feed' )
-									),
-								);
-
-								if ( isset( $_GET['flag'] ) ){
-									echo '<span id="sbi-goto"></span>';
-								}
-								?>
-                                <select name="sb_instagram_email_notification" id="sb_instagram_email_notification">
-									<?php foreach ( $schedule_options as $schedule_option ) : ?>
-                                        <option value="<?php echo esc_attr( $schedule_option['val'] ) ; ?>" <?php if ( $schedule_option['val'] === $sb_instagram_email_notification ) { echo 'selected';} ?>><?php echo esc_html( $schedule_option['label'] ) ; ?></option>
-									<?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="sb_instagram_box_setting">
-                                <label><?php _e('Email Recipients', 'instagram-feed'); ?></label><br><input class="regular-text" type="text" name="sb_instagram_email_notification_addresses" value="<?php echo esc_attr( $sb_instagram_email_notification_addresses ); ?>"><span class="sbi_note"><?php _e('separate multiple emails with commas', 'instagram-feed'); ?></span>
-                                <br><br><?php _e( 'Emails not working?', 'instagram-feed' ) ?> <a href="https://smashballoon.com/email-report-is-not-in-my-inbox/" target="_blank"><?php _e( 'See our related FAQ', 'instagram-feed' ) ?></a>
-                            </div>
-                        </div>
-
                     </td>
                 </tr>
                 </tbody>

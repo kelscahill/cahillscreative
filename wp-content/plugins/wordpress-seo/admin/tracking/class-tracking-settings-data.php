@@ -57,7 +57,7 @@ class WPSEO_Tracking_Settings_Data implements WPSEO_Collection {
 		'ms_defaults_set',
 		'version',
 		'disableadvanced_meta',
-		'ryte_indexability',
+		'onpage_indexability',
 		'baiduverify',
 		'googleverify',
 		'msverify',

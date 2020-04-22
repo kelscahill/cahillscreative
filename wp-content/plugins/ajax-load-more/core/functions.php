@@ -70,7 +70,7 @@ function alm_get_addons(){
          'status' => 'alm_cta_license_status',
          'settings_field' => 'alm_cta_license',
          'img' => 'img/add-ons/cta-add-on.jpg',
-         'url' => $url_prefix .'call-to-actions/',
+         'url' => $url_prefix .'/call-to-actions/',
          'item_id' => ALM_CTA_ITEM_NAME,
          'version' => 'ALM_CTA_VERSION',
 	   	'path' => $path_prefix .'call-to-actions',
@@ -301,7 +301,7 @@ add_filter('alm_progress_css', 'alm_progress_css', 10, 3);
 
 /*
 *  alm_css_disabled
-*  Is ALM CSS disabled?
+*  Has core ALM CSS disabled?
 *
 *  @param $setting name of the setting field
 *  @return boolean
@@ -311,7 +311,7 @@ add_filter('alm_progress_css', 'alm_progress_css', 10, 3);
 function alm_css_disabled($setting) {
 	$options = get_option( 'alm_settings' );
 	$disabled = true;
-	if(!isset($options[$setting]) || $options[$setting] !== '1'){
+	if(!isset($options[$setting]) || $options[$setting] != '1'){
 		$disabled = false;
 	}
 	return $disabled;
