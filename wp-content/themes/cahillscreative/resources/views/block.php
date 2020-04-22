@@ -10,5 +10,6 @@
  */
 
 $context = Timber::get_context();
-$context['post'] = new Timber\Post();
+$post = new TimberPost($query->post);
+$context['post'] = $post;
 Timber::render('01-molecules/blocks/block.twig', $context);
