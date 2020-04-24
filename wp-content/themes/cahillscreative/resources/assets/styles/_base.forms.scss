@@ -1,6 +1,7 @@
 /* ------------------------------------*\
     $FORMS
 \*------------------------------------ */
+
 form ol,
 form ul {
   list-style: none;
@@ -29,7 +30,7 @@ input,
 select,
 textarea {
   font-family: inherit;
-  font-size: 100%;
+  font-size: small;
 }
 
 textarea {

@@ -1,79 +1,8 @@
-{% if category %}
-  <section class="section section__filter filter sticky-filter is-sticky">
-    <div class="filter-toggle js-toggle-parent">
-      <span class="font--primary--xs color--gray filter-label"><span class="icon icon--s space--half-right path-fill--gray">{% include "00-atoms/icons/icon--filter.twig" %}</span>Filter</span>
+{% if post.filter_id %}
+  <section class="section section__filter spacing--double">
+    <div class="layout-container narrow narrow--xl">
+      {{ function('do_shortcode', '[searchandfilter slug="'~ post.filter_id ~'"]') }}
+      {{ function('do_shortcode', '[searchandfilter slug="'~ post.filter_id ~'" show="results"]') }}
     </div>
-    <form class="filter-wrap" action="{{ site.link }}/wp-admin/admin-ajax.php" method="POST" id="filter">
-      {% if category == 'woodworking-plans' %}
-        <div class="filter-item__container filter-item__container-projects">
-          <div class="filter-item__toggle filter-item__toggle-projects font--primary--s js-toggle-parent">Project</div>
-          {% if term_projects %}
-            <div class="filter-items">
-              {% for term in term_projects %}
-                <div class="filter-item">
-                  <input type="checkbox" value="{{ term.term_id }}, " id="{{ term.slug }}" name="projects">
-                  <label for="{{ term.slug }}">{{ term.name }}</label>
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
-        <div class="filter-item__container filter-item__container-room">
-          <div class="filter-item__toggle filter-item__toggle-room font--primary--s js-toggle-parent">Room</div>
-          {% if term_room %}
-            <div class="filter-items">
-              {% for term in term_room %}
-                <div class="filter-item">
-                  <input type="checkbox" value="{{ term.term_id }}, " id="{{ term.slug }}" name="room">
-                  <label for="{{ term.slug }}">{{ term.name }}</label>
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
-        <div class="filter-item__container filter-item__container-cost">
-          <div class="filter-item__toggle filter-item__toggle-cost font--primary--s js-toggle-parent">Cost</div>
-          {% if term_cost %}
-            <div class="filter-items">
-              {% for term in term_cost %}
-                <div class="filter-item" name="categoryfilter">
-                  <input type="checkbox" value="{{ term.term_id }}, " id="{{ term.slug }}" name="cost">
-                  <label for="{{ term.slug }}">{{ term.name }}</label>
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
-        <div class="filter-item__container filter-item__container-skill">
-          <div class="filter-item__toggle filter-item__toggle-skill font--primary--s js-toggle-parent">Skill Level</div>
-          <div class="filter-items" data-type="checkbox" data-parameter="category">
-            <div class="filter-item">
-              <input type="checkbox" value="beginner" id="beginner" name="skill_level">
-              <label for="beginner">Beginner</label>
-            </div>
-            <div class="filter-item">
-              <input type="checkbox" value="intermediate" id="intermediate" name="skill_level">
-              <label for="intermediate">Intermediate</label>
-            </div>
-            <div class="filter-item">
-              <input type="checkbox" value="advanced" id="advanced" name="skill_level">
-              <label for="advanced">Advanced</label>
-            </div>
-          </div>
-        </div>
-        <div class="filter-footer">
-          <button type="submit" class="filter-apply">Apply Filters</button>
-          <button type="submit" class="filter-clear">Clear Filter</button>
-          <input type="hidden" name="action" value="myfilter">
-        </div>
-      {% else %}
-        <select class="filter-item">
-          <option selected>Category</option>
-          {% for term in categories %}
-            <option>{{ term.name }}</option>
-          {% endfor %}
-        </select>
-      {% endif %}
-    </form>
   </section>
 {% endif %}

@@ -268,6 +268,60 @@ add_post_type_support( 'page', 'excerpt' );
     "show_in_quick_edit" => true,
   );
   register_taxonomy( "skill_level", array( "post" ), $args );
+
+  /**
+   * Taxonomy: Affiliate Tags.
+   */
+
+  $labels = array(
+    "name" => __( "Affiliate Tags", "sage" ),
+    "singular_name" => __( "Affiliate Tag", "sage" ),
+  );
+
+  $args = array(
+    "label" => __( "Affiliate Tags", "sage" ),
+    "labels" => $labels,
+    "public" => true,
+    "hierarchical" => false,
+    "label" => "Affiliate Tags",
+    "show_ui" => true,
+    "show_in_menu" => true,
+    "show_in_nav_menus" => true,
+    "query_var" => true,
+    "rewrite" => array( 'slug' => 'affiliate_tag', 'with_front' => true, ),
+    "show_admin_column" => true,
+    "show_in_rest" => true,
+    "rest_base" => "",
+    "show_in_quick_edit" => true,
+  );
+  register_taxonomy( "affiliate_tag", array( "affiliate" ), $args );
+
+  /**
+   * Taxonomy: Work Tags.
+   */
+
+  $labels = array(
+    "name" => __( "Work Tags", "sage" ),
+    "singular_name" => __( "Work Tag", "sage" ),
+  );
+
+  $args = array(
+    "label" => __( "Work Tags", "sage" ),
+    "labels" => $labels,
+    "public" => true,
+    "hierarchical" => false,
+    "label" => "Work Tags",
+    "show_ui" => true,
+    "show_in_menu" => true,
+    "show_in_nav_menus" => true,
+    "query_var" => true,
+    "rewrite" => array( 'slug' => 'work_tag', 'with_front' => true, ),
+    "show_admin_column" => true,
+    "show_in_rest" => true,
+    "rest_base" => "",
+    "show_in_quick_edit" => true,
+  );
+  register_taxonomy( "work_tag", array( "work" ), $args );
 }
 
 add_action( 'init', 'cptui_register_my_taxes' );
@@ -315,7 +369,7 @@ function cptui_register_my_cpts() {
     "query_var" => true,
     "menu_icon" => "dashicons-cart",
     "supports" => array( "title", "editor", "thumbnail", "excerpt" ),
-    "taxonomies" => array( "category", "post_tag", "store" ),
+    "taxonomies" => array( "category", "post_tag", "affiliate_tag", "store" ),
     "yarpp_support" => true,
   );
 
@@ -368,7 +422,7 @@ if (is_main_site()) {
     "query_var" => true,
     "menu_icon" => "dashicons-format-gallery",
     "supports" => array( "title", "editor", "thumbnail", "excerpt" ),
-    "taxonomies" => array( "post_tag", "category" ),
+    "taxonomies" => array( "work_tag", "post_tag", "category" ),
   );
 
   register_post_type( "work", $args );
@@ -774,6 +828,27 @@ if( function_exists('acf_add_local_field_group') ):
   			'ui' => 0,
   			'ui_on_text' => '',
   			'ui_off_text' => '',
+  		),
+      array(
+  			'key' => 'field_59f7f19581902',
+  			'label' => 'Filter ID',
+  			'name' => 'filter_id',
+  			'type' => 'text',
+        'instructions' => '',
+  			'required' => 0,
+  			'conditional_logic' => 0,
+  			'wrapper' => array(
+  				'width' => '',
+  				'class' => '',
+  				'id' => '',
+  			),
+  			'default_value' => '',
+  			'placeholder' => '',
+  			'prepend' => '',
+  			'append' => '',
+  			'maxlength' => '',
+  			'readonly' => 0,
+  			'disabled' => 0,
   		),
   	),
   	'location' => array(
