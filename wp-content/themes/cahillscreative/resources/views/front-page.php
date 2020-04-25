@@ -41,7 +41,7 @@ $featured_work_args = array(
   'order' => 'DESC',
   'tax_query' => array(
     array(
-      'taxonomy' => 'post_tag',
+      'taxonomy' => 'work_tag',
       'field' => 'slug',
       'terms' => 'featured',
     )

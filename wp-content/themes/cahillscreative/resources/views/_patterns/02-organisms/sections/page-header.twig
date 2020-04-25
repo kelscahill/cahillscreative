@@ -1,6 +1,6 @@
 <div class="page-header spacing text-align--center narrow narrow--m">
   {% if post.kicker %}
-    <h2 class="page-kicker font--primary--s">{{ post.kicker }}</h2>
+    <h2 class="page-kicker font--primary--s">{{ post.kicker|replace({'_': ' '}) }}</h2>
     <hr class="divider" />
   {% endif %}
   <h1 class="page-title">

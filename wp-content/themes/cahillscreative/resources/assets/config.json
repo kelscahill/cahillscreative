@@ -10,7 +10,7 @@
     ]
   },
   "publicPath": "/wp-content/themes/cahillscreative",
-  "devUrl": "https://thehappyglamper.cahillscreative.test",
+  "devUrl": "https://cahillscreative.test",
   "proxyUrl": "http://localhost:3000",
   "cacheBusting": "[name]_[hash:8]",
   "watch": [

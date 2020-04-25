@@ -288,7 +288,7 @@ add_post_type_support( 'page', 'excerpt' );
     "show_in_menu" => true,
     "show_in_nav_menus" => true,
     "query_var" => true,
-    "rewrite" => array( 'slug' => 'affiliate_tag', 'with_front' => true, ),
+    "rewrite" => array( 'slug' => 'affiliate-tag', 'with_front' => true, ),
     "show_admin_column" => true,
     "show_in_rest" => true,
     "rest_base" => "",
@@ -315,7 +315,7 @@ add_post_type_support( 'page', 'excerpt' );
     "show_in_menu" => true,
     "show_in_nav_menus" => true,
     "query_var" => true,
-    "rewrite" => array( 'slug' => 'work_tag', 'with_front' => true, ),
+    "rewrite" => array( 'slug' => 'work-tag', 'with_front' => true, ),
     "show_admin_column" => true,
     "show_in_rest" => true,
     "rest_base" => "",
@@ -369,7 +369,7 @@ function cptui_register_my_cpts() {
     "query_var" => true,
     "menu_icon" => "dashicons-cart",
     "supports" => array( "title", "editor", "thumbnail", "excerpt" ),
-    "taxonomies" => array( "category", "post_tag", "affiliate_tag", "store", "room" ),
+    "taxonomies" => array( "category", "affiliate_tag", "store", "room" ),
     "yarpp_support" => true,
   );
 
@@ -422,7 +422,7 @@ if (is_main_site()) {
     "query_var" => true,
     "menu_icon" => "dashicons-format-gallery",
     "supports" => array( "title", "editor", "thumbnail", "excerpt" ),
-    "taxonomies" => array( "work_tag", "post_tag", "category" ),
+    "taxonomies" => array( "work_tag" ),
   );
 
   register_post_type( "work", $args );

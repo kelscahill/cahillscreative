@@ -15,7 +15,7 @@
 
 $context = Timber::get_context();
 $post = Timber::query_post();
-$context['post']['kicker'] = get_query_var('taxonomy');
+$context['post']['kicker'] = "Tag";
 $context['post']['title'] = get_queried_object()->name;
 $context['tag'] = get_queried_object()->slug;
 $context['category'] = get_query_var('taxonomy');
