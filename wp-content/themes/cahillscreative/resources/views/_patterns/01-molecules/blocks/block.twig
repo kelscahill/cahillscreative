@@ -17,7 +17,7 @@
       <div class="block__content spacing--half">
         <div class="block__kicker">
           {% if post.post_type == 'work' %}
-            {% include "00-atoms/text/kicker.twig" with { kicker: "Work" } %}
+            {% include "00-atoms/text/kicker.twig" with { kicker: work_category} %}
           {% elseif post.post_type == 'affiliate' %}
             {% if post.terms('store') %}
               <div class="tags">

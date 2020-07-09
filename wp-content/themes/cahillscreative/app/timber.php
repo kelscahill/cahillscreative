@@ -52,6 +52,12 @@ class SageTimberTheme extends TimberSite {
 		$context['is_main_site'] = TimberHelper::ob_function('is_main_site');
 		$context['related_posts'] = TimberHelper::ob_function('related_posts');
 
+		if (is_main_site()) {
+			$context['work_category'] = "Work";
+		} else {
+			$context['work_category'] = "Rental";
+		}
+
 		/* Get Posts */
 		$args = array(
 		  'post_type' => 'post',
