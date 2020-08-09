@@ -1911,6 +1911,27 @@ if( function_exists('acf_add_local_field_group') ):
         'readonly' => 0,
         'disabled' => 0,
       ),
+      array(
+        'key' => 'field_59egaf15129xa',
+        'label' => 'Affiliate Link Description',
+        'name' => 'affiliate_link_description',
+        'type' => 'text',
+        'instructions' => '',
+        'required' => '',
+        'conditional_logic' => '',
+        'wrapper' => array(
+          'width' => '100',
+          'class' => '',
+          'id' => '',
+        ),
+        'default_value' => '',
+        'placeholder' => '',
+        'prepend' => '',
+        'append' => '',
+        'maxlength' => '',
+        'readonly' => 0,
+        'disabled' => 0,
+      ),
   	),
   	'location' => array(
   		array(

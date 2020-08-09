@@ -21,6 +21,14 @@ a.block__link {
     border-color: $black;
     color: $black;
   }
+
+  .block__title {
+    @include media("<=small") {
+      text-transform: capitalize;
+      letter-spacing: normal;
+      font-size: rem(14);
+    }
+  }
 }
 
 .block__latest {

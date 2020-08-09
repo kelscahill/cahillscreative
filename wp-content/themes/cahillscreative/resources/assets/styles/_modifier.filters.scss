@@ -256,7 +256,7 @@
     align-items: flex-end;
     margin-bottom: $space-double;
 
-    @include media(">medium") {
+    @include media(">large") {
       flex-direction: row;
     }
 
@@ -266,7 +266,7 @@
       width: 100%;
       padding: 0;
 
-      @include media(">medium") {
+      @include media(">large") {
         flex: auto;
       }
 
@@ -279,7 +279,7 @@
     & > * + * {
       margin-top: $space;
 
-      @include media(">medium") {
+      @include media(">large") {
         margin-left: $space;
         margin-top: 0;
       }
@@ -293,4 +293,14 @@
   .search-filter-reset {
     margin-top: 0;
   }
+}
+
+.search-filter-scroll-loading {
+  position: absolute;
+  bottom: -$space-double;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  margin: 0 auto;
+  display: block;
 }

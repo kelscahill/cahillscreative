@@ -166,32 +166,20 @@
  */
 .grid--full {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: stretch;
   position: relative;
 
-  > * {
+  .grid-item {
     margin: $space-half 0;
-  }
+    width: 50%;
 
-  @include media(">small") {
-    flex-direction: row;
-    justify-content: stretch;
-
-    > * {
-      width: 50%;
-    }
-  }
-
-
-  @include media(">large") {
-    > * {
+    @include media(">medium") {
       width: 33.33%;
     }
-  }
 
 
-  @include media(">xlarge") {
-    > * {
+    @include media(">xlarge") {
       width: 25%;
     }
   }

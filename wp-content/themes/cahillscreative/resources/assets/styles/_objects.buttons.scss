@@ -3,7 +3,8 @@
 \*------------------------------------ */
 
 @mixin btn {
-  display: table;
+  display: inline-flex;
+  align-items: center;
   padding: rem(13) $pad-and-half rem(12) $pad-and-half;
   vertical-align: middle;
   cursor: pointer;
