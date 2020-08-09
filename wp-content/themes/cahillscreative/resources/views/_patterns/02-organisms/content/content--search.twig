@@ -18,7 +18,7 @@
         </div>
       </div> -->
       {% if posts %}
-        {{ function('do_shortcode', '[ajax_load_more search="'~ function('get_search_query') ~'" orderby="relevance" post_type="post, work, affiliate" container_type="div" transition_container_classes="grid grid--full" transition="fade" scroll="true" button_label="Show More Results" posts_per_page="12"]') }}
+        {{ function('do_shortcode', '[ajax_load_more search="'~ function('get_search_query') ~'" orderby="relevance" post_type="post, work, affiliate, page" container_type="div" transition_container_classes="grid grid--full" transition="fade" scroll="true" button_label="Show More Results" posts_per_page="12"]') }}
       {% else %}
         <p class="text-align--center space--zero">Sorry, no results were found.</p>
         {{ function('get_search_form') }}
