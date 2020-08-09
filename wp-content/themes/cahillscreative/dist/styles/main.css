@@ -5653,10 +5653,8 @@ article li p {
 .search-filter-scroll-loading {
   position: absolute;
   bottom: -2.5rem;
-  left: 50%;
-  -webkit-transform: translateX(-50%);
-       -o-transform: translateX(-50%);
-          transform: translateX(-50%);
+  left: 0;
+  right: 0;
   width: 30px;
   margin: 0 auto;
   display: block;
