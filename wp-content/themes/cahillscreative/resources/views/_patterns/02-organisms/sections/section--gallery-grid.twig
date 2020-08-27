@@ -1,0 +1,57 @@
+{% if section.gallery %}
+  <div class="gallery-section layout-container narrow narrow--xl spacing--double">
+    {% include "01-molecules/components/section--header.twig"
+      with {
+        section_header: {
+          kicker: section.gallery_section_kicker,
+          title: section.gallery_section_title
+        }
+      }
+    %}
+    <div class="gallery js-gallery">
+      {% for row in section.gallery|batch(2)  %}
+        {% if loop.index0 is odd %}
+          {% set class = 'is-odd' %}
+        {% else %}
+          {% set class = 'is-even' %}
+        {% endif %}
+        <div class="gallery__row {{ class }}">
+          {% for image in row %}
+            {% set img_id = Image(image).id %}
+            {% set img_caption = Image(image).caption %}
+            {% set img_src_full = Image(image).src|resize(1200) %}
+            {% if loop.index0 is odd %}
+              {% set img_src_s = Image(image).src|resize(300, 400) %}
+            {% else %}
+              {% set img_src_s = Image(image).src|resize(600, 400) %}
+            {% endif %}
+            {% set img_src_m = Image(image).src|resize(600) %}
+            <a class="gallery__item {{ 'o-gallery-image--' ~ img_id }}" href="{{ img_src_full }}" title="{{ img_caption }}" aria-label="{{ img_caption }}">
+              <style>
+                @media(min-width: 700px) {
+                  {{ '.o-gallery-image--' ~ img_id }} {
+                    background-image: url('{{ img_src_m }}');
+                  }
+                }
+              </style>
+              <picture>
+                <img src="{{ img_src_s }}" alt="{{ img_alt }}">
+                {% if img_caption %}
+                  <div class="gallery__item-caption"><p>{{ img_caption }}</p></div>
+                {% endif %}
+              </picture>
+            </a>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+    {% include "01-molecules/components/section--footer.twig"
+      with {
+        section_footer: {
+          description: section.gallery_section_description,
+          button: section.gallery_section_cta
+        }
+      }
+    %}
+  </div>
+{% endif %}

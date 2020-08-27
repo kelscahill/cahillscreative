@@ -151,6 +151,21 @@ export default {
     });
 
     /**
+    * Magnigic Popup
+    */
+    if ($('.js-gallery').length) {
+      $('.js-gallery').each(function() {
+       $(this).magnificPopup({
+         delegate: 'a',
+         type: 'image',
+         gallery: {
+           enabled: true
+         }
+       });
+      });
+    }
+
+    /**
      * Share Tooltip
      */
     $(document).on('click', '.tooltip-toggle', function() {

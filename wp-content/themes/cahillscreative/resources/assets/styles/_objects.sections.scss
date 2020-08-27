@@ -532,3 +532,148 @@
     }
   }
 }
+
+/**
+ * Gallery
+ */
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  margin-left: -$space-half;
+  margin-right: -$space-half;
+
+  @include media("<=medium") {
+    padding-left: $space-half;
+    padding-right: $space-half;
+  }
+
+
+  @include media(">medium") {
+    flex-direction: row;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+
+  &__row {
+    display: flex;
+    flex-wrap: nowrap;
+
+    @include media(">medium") {
+      flex-wrap: wrap;
+    }
+
+
+    &.is-odd {
+      flex-direction: row;
+
+      @include media(">medium") {
+        width: 50%;
+      }
+    }
+
+    &.is-even {
+      flex-direction: row-reverse;
+
+      @include media(">medium") {
+        flex-direction: row;
+        width: 50%;
+      }
+    }
+
+    @include media(">medium") {
+      &:nth-child(4n),
+      &:nth-child(4n - 1) {
+        flex-direction: row-reverse;
+      }
+    }
+
+
+    *:first-child {
+      @include media("<=medium") {
+        flex-basis: 66.66%;
+      }
+    }
+
+    *:last-child {
+      @include media("<=medium") {
+        flex-basis: 33.33%;
+      }
+    }
+
+    *:nth-child(even) {
+      @include media(">medium") {
+        flex-basis: 33.33%;
+      }
+    }
+
+    *:nth-child(odd) {
+      @include media(">medium") {
+        flex-basis: 16.66%;
+      }
+    }
+  }
+
+  &__item {
+    overflow: hidden;
+    outline: $space-quarter solid $white;
+    outline-offset: -$space-quarter;
+    transition: 0.25s all ease;
+    transform: scale(1);
+    z-index: 1;
+    position: relative;
+    max-height: 600px;
+
+    @include media(">medium") {
+      height: 300px;
+      max-height: 300px;
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      outline: $space-half solid $white;
+      outline-offset: -$space-half;
+      flex: 1;
+    }
+
+
+    img {
+      width: 100%;
+
+      @include media(">medium") {
+        display: none;
+      }
+    }
+
+    &:hover {
+      outline: $space-half solid $black;
+      z-index: 2;
+
+      .gallery__item-caption {
+        bottom: $space-half;
+      }
+    }
+
+    &-caption {
+      position: absolute;
+      bottom: -50px;
+      left: 0;
+      width: calc(100% - #{$space});
+      height: auto;
+      padding: $space-quarter;
+      background-color: rgba($black, 0.8);
+      transition: bottom 0.25s $cubic-bezier;
+      color: $white;
+      margin: 0 $space-half;
+
+      p {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        font-size: 12px;
+        letter-spacing: normal;
+      }
+    }
+  }
+}

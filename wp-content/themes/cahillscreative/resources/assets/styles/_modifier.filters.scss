@@ -248,6 +248,9 @@
 //     color: $black;
 //   }
 // }
+.page-sections + .section__filter {
+  margin-bottom: $space-quad;
+}
 
 .section__filter .searchandfilter {
   ul {

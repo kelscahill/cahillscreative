@@ -136,6 +136,11 @@ $tests: false;
 @import "modifier.spacing";
 
 /* ------------------------------------*\
+    $VENDOR
+\*------------------------------------ */
+@import "vendor.magnific-popup";
+
+/* ------------------------------------*\
     $TRUMPS
 \*------------------------------------ */
 @import "trumps.helper-classes";
