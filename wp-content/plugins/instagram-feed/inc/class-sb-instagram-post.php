@@ -150,7 +150,8 @@ class SB_Instagram_Post
 			"'" . date( 'Y-m-d H:i:s' ) . "'",
 			"'" . esc_sql( $parsed_data['id'] ) . "'",
 			"'" . esc_sql( $timestamp ) . "'",
-			"'" . esc_sql( wp_json_encode( $this->instagram_api_data ) ) . "'",
+			"'" . esc_sql( $timestamp ) . "'",
+			"'" . esc_sql( sbi_json_encode( $this->instagram_api_data ) ) . "'",
 			"'pending'",
 			"'pending'",
 			0,
@@ -166,7 +167,7 @@ class SB_Instagram_Post
 		}
 
 		$error = $wpdb->query( "INSERT INTO $table_name
-      	(created_on,instagram_id,$timestamp_column,json_data,media_id,sizes,images_done,last_requested) VALUES ($entry_string);" );
+      	(created_on,instagram_id,time_stamp,top_time_stamp,json_data,media_id,sizes,images_done,last_requested) VALUES ($entry_string);" );
 
 		if ( $error !== false ) {
 			$this->db_id = $wpdb->insert_id;
@@ -345,7 +346,7 @@ class SB_Instagram_Post
 		}
 
 		$to_update = array(
-			'json_data' => wp_json_encode( $this->instagram_api_data )
+			'json_data' => sbi_json_encode( $this->instagram_api_data )
 		);
 
 		if ( $update_last_requested ) {
@@ -496,7 +497,7 @@ class SB_Instagram_Post
 
 			$username = isset( $this->instagram_api_data['username'] ) ? $this->instagram_api_data['username'] : '';
 			$permalink = isset( $this->instagram_api_data['permalink'] ) ? $this->instagram_api_data['permalink'] : '';
-			$children = isset( $this->instagram_api_data['children'] ) ? wp_json_encode( $this->instagram_api_data['children'] ) : '';
+			$children = isset( $this->instagram_api_data['children'] ) ? sbi_json_encode( $this->instagram_api_data['children'] ) : '';
 
 			$parsed_data['caption'] = $caption;
 			$parsed_data['media_url'] = $media_url;
@@ -529,7 +530,7 @@ class SB_Instagram_Post
 		$table_name = $wpdb->prefix . SBI_INSTAGRAM_FEEDS_POSTS;
 		// the number is removed from the transient name for backwards compatibilty.
 		$feed_id_array = explode( '#', $feed_id );
-		$feed_id = $feed_id_array[0];
+		$feed_id = str_replace( '+', '', $feed_id_array[0] );
 
 		$feed_id_match = $wpdb->get_col( $wpdb->prepare( "SELECT feed_id FROM $table_name WHERE feed_id = %s AND instagram_id = %s", $feed_id, $this->instagram_post_id ) );
 

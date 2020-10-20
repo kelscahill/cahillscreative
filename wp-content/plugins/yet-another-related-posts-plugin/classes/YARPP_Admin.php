@@ -1,6 +1,10 @@
 <?php
 
 class YARPP_Admin {
+
+	/**
+	 * @var YARPP
+	 */
   public $core;
   public $hook;
   
@@ -16,15 +20,15 @@ class YARPP_Admin {
     /* If action = flush and the nonce is correct, reset the cache */
     if (isset($_GET['action']) && $_GET['action'] === 'flush' && check_ajax_referer('yarpp_cache_flush', false, false) !== false) {
       $this->core->cache->flush();
-      wp_redirect(admin_url('/options-general.php?page=yarpp'));
-      die();
+      wp_safe_redirect(admin_url('/options-general.php?page=yarpp'));
+      exit;
     }
 
     /* If action = copy_templates and the nonce is correct, copy templates */
     if (isset($_GET['action']) && $_GET['action'] === 'copy_templates' && check_ajax_referer('yarpp_copy_templates', false, false) !== false) {
       $this->copy_templates();
-      wp_redirect(admin_url('/options-general.php?page=yarpp'));
-      die();
+      wp_safe_redirect(admin_url('/options-general.php?page=yarpp'));
+      exit;
     }
 
     add_action('admin_init', array($this, 'ajax_register'));
@@ -34,6 +38,7 @@ class YARPP_Admin {
     add_filter('current_screen', array($this, 'settings_screen'));
     add_filter('screen_settings', array($this, 'render_screen_settings'), 10, 2);
     add_filter('default_hidden_meta_boxes', array($this, 'default_hidden_meta_boxes'), 10, 2);
+    add_filter('shareaholic_deactivate_feedback_form_plugins', array($this,'deactivation_survey_data'));
   }
 
   /**
@@ -78,7 +83,6 @@ class YARPP_Admin {
     $user_id = $current_user->ID;
     
     if (!is_admin() ||
-        !current_user_can('publish_posts') ||
         !isset($_GET['_wpnonce']) ||
         !wp_verify_nonce($_GET['_wpnonce'], 'review-nonce') ||
         !isset($_GET['yarpp_defer_t']) ||
@@ -103,7 +107,11 @@ class YARPP_Admin {
     
   	global $current_user;
   	$user_id = $current_user->ID;
-    
+
+		if (!current_user_can('publish_posts')) {
+			return;
+		}
+
     $show_review_notice = false;
     $activation_timestamp = get_site_option(self::ACTIVATE_TIMESTAMP_OPTION);
     $review_dismissal_array = get_user_meta($user_id, self::REVIEW_DISMISS_OPTION, true);
@@ -189,19 +197,19 @@ class YARPP_Admin {
   function ui_register() {
     global $wp_version;
 
-    if (get_option('yarpp_activated')) {
+    if ($this->core->db_options->after_activation()) {
 
-      delete_option('yarpp_activated');
-      delete_option('yarpp_upgraded');
+	  $this->core->db_options->delete_activation_flag();
+	  $this->core->db_options->delete_upgrade_flag();
 
       /* Optin/Pro message */
       add_action('admin_notices', array($this, 'install_notice'));
 
-    } elseif (get_option('yarpp_upgraded') && current_user_can('manage_options') && $this->core->get_option('optin')) {
+    } elseif ( $this->core->db_options->after_upgrade() && current_user_can('manage_options') && $this->core->get_option('optin')) {
       add_action('admin_notices', array($this, 'upgrade_notice'));
     }
     
-    if ($this->core->get_option('optin')) delete_option('yarpp_upgraded');
+    if ($this->core->get_option('optin')) $this->core->db_options->delete_upgrade_flag();
     
     /*
      * Setup Admin
@@ -399,7 +407,7 @@ class YARPP_Admin {
 
     switch($type) {
       case 'upgrade':
-        delete_option('yarpp_upgraded');
+        $this->core->db_options->delete_upgrade_flag();
         break;
       case 'install':
       default:
@@ -534,7 +542,7 @@ class YARPP_Admin {
         margin: 10px 0;
       }
        #yarpp-related-posts .spinner {
-        float: none; visibility: hidden; opacity: 1; margin: 5px 0 0 7px;
+        float: none; visibility: hidden; opacity: 1; margin: 5px 7px 0 7px;
       }
     </style>
     <?php
@@ -760,4 +768,83 @@ class YARPP_Admin {
     echo 'ok';
     die();
   }
+
+	/**
+	 * Registers YARPP plugin for the deactivation survey library code.
+	 *
+	 * @param array $plugins
+	 *
+	 * @return array
+	 */
+	public function deactivation_survey_data( $plugins ) {
+
+		global $yarpp;
+		if ( $yarpp instanceof YARPP && isset( $yarpp->cloud ) && $yarpp->cloud instanceof YARPP_Cloud ) {
+			$api_key          = $yarpp->cloud->get_api_key();
+			$verification_key = $yarpp->cloud->get_option( 'verification_key' );
+			if ( empty( $verification_key ) ) {
+				$verification_key = '';
+			}
+		} else {
+			$api_key          = '';
+			$verification_key = '';
+		}
+		$plugin_data = get_plugin_data(YARPP_MAIN_FILE, false, false);
+		$plugins[] = (object) array(
+			'title_slugged' => sanitize_title($plugin_data['Name']),
+			'basename'    => plugin_basename(YARPP_MAIN_FILE),
+			'logo'    => plugins_url('/images/icon-256x256.png', YARPP_MAIN_FILE),
+			'api_server' => 'yarpp.com',
+			'script_cache_ver'    => YARPP_VERSION,
+			'bgcolor' => '#fff',
+			'send' => array(
+				'plugin_name'      => 'yarpp',
+				'plugin_version'   => YARPP_VERSION,
+				'api_key'          => $api_key,
+				'verification_key' => $verification_key,
+				'platform'         => 'wordpress',
+				'domain'           => site_url(),
+				'language'         => strtolower( get_bloginfo( 'language' ) ),
+			),
+            'reasons' => array(
+	            'error'                  => esc_html__( 'I think I found a bug', 'yarpp' ),
+	            'feature-missing'        => esc_html__( 'It\'s missing a feature I need', 'yarpp' ),
+	            'too-hard'               => esc_html__( 'I couldn\'t figure out how to do something', 'yarpp' ),
+	            'inefficient'            => esc_html__( 'It\'s too slow or inefficient', 'yarpp' ),
+	            'no-signup'              => esc_html__( 'I don\'t want to signup', 'yarpp' ),
+	            'temporary-deactivation' => esc_html__( 'Temporarily deactivating or troubleshooting', 'yarpp' ),
+	            'other'                  => esc_html__( 'Other', 'yarpp' )
+            ),
+            'reasons_needing_comment' => array(
+	            'error',
+	            'feature-missing',
+	            'too-hard',
+	            'other'
+            ),
+            'translations' => array(
+	            'quick_feedback'        => esc_html__( 'Quick Feedback', 'yarpp' ),
+	            'foreword'              => esc_html__( 'If you would be kind enough, please tell us why you are deactivating the plugin:',
+	                                                   'yarpp' ),
+	            'please_tell_us'        => esc_html__( 'Please share anything you think might be helpful. The more we know about your problem, the faster we\'ll be able to fix it.',
+	                                                   'yarpp' ),
+	            'cancel'                => esc_html__( 'Cancel', 'yarpp' ),
+	            'skip_and_deactivate'   => esc_html__( 'Skip &amp; Deactivate', 'yarpp' ),
+	            'submit_and_deactivate' => esc_html__( 'Submit &amp; Deactivate', 'yarpp' ),
+	            'please_wait'           => esc_html__( 'Please wait...', 'yarpp' ),
+	            'thank_you'             => esc_html__( 'Thank you!', 'yarpp' ),
+	            'ask_for_support'       => sprintf(
+		            esc_html__( 'Have you visited %1$sthe support forum%2$s and %3$sread the FAQs%2$s for help?',
+		                        'yarpp' ),
+		            '<a href="https://wordpress.org/support/plugin/yet-another-related-posts-plugin/" target="_blank" >',
+		            '</a>',
+		            '<a href="https://wordpress.org/plugins/yet-another-related-posts-plugin/#faq" target="_blank" >'
+	            ),
+	            'email_request'         => esc_html__( 'If you would like to tell us more, please leave your email here. We will be in touch (only for product feedback, nothing else).',
+	                                                   'yarpp' ),
+            )
+
+		);
+
+		return $plugins;
+	}
 }

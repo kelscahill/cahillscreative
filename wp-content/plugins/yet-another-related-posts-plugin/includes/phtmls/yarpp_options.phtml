@@ -9,9 +9,7 @@
         </ul>
 
         <div class="yarpp_switch_content">
-            <p>
-                The settings bellow allow you to configure the Basic version of Yet Another Related Post Plugin (YARPP).
-            </p>
+            <p><?php _e('The settings below allow you to configure the basic settings for YARPP', 'yarpp') ?></p>
         </div>
     </div>
 
@@ -44,11 +42,12 @@
             </script>
 
             <div>
-                <input type="submit" class='button-primary' name="update_yarpp" value="<?php _e('Save Changes')?>" />
+                <input type="submit" class='button-primary yarpp_spin_on_click' name="update_yarpp" value="<?php _e('Save Changes')?>" />
+								<span class="spinner yarpp-no-float"></span>
                 <?php wp_nonce_field( 'update_yarpp', 'update_yarpp-nonce' ); ?>
             </div>
 
-        </div><!--#poststuff-->
+        </div>
 
     </form>
 

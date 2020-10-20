@@ -226,7 +226,7 @@ trait terms_and_taxonomies
 		// These sources were not found. Add them.
 		if ( isset( $bcd->add_new_taxonomies ) && $bcd->add_new_taxonomies )
 		{
-			$this->debug( '%s taxonomies are missing on this blog.', count( $unfound_sources ) );
+			$this->debug( '%s terms are missing on this blog: %s', count( $unfound_sources ), array_keys( $unfound_sources ) );
 			foreach( $unfound_sources as $unfound_source_id => $unfound_source )
 			{
 				// We need to clone because we will be modifying the source.
@@ -439,6 +439,7 @@ trait terms_and_taxonomies
 					->set( $term->term_id, $meta );
 			}
 		}
+		$this->debug( 'Taxonomy term meta: %s', $bcd->taxonomy_term_meta->collection( $bcd->parent_blog_id )->collection( 'terms' ) );
 	}
 
 	/**
@@ -484,7 +485,7 @@ trait terms_and_taxonomies
 		$term = (object)$term;
 		$term_taxonomy_id = $term->term_taxonomy_id;
 
-		$this->debug( 'Created the new term %s with the term taxonomy ID of %s.', $action->term->name, $term_taxonomy_id );
+		$this->debug( 'Created the new term %s (%s) with the term taxonomy ID of %s.', $action->term->name, $action->term->slug, $term_taxonomy_id );
 
 		$action->new_term = get_term_by( 'term_taxonomy_id', $term_taxonomy_id, $action->taxonomy );
 
@@ -514,6 +515,8 @@ trait terms_and_taxonomies
 					$update = true;
 				}
 		}
+		/// DEBUG
+		$update = true;
 
 		if ( $update )
 		{
@@ -541,8 +544,6 @@ trait terms_and_taxonomies
 			{
 				foreach( $old_meta as $key => $values )
 				{
-					$value = reset( $values );		// Wordpress likes reporting back values in an array, even though I've never seen anyone store several values under one key.
-
 					// Is this term protected?
 					if ( $bcd->taxonomies()->protectlist_has( $action->taxonomy, $action->new_term->slug, $key ) )
 					{
@@ -554,8 +555,20 @@ trait terms_and_taxonomies
 						}
 					}
 
-					$this->debug( 'Updating taxonomy term %s with key %s and value %s', $new_term_id, $key, $value );
-					update_term_meta( $new_term_id, $key, $value );
+					delete_term_meta( $new_term_id, $key );
+
+					if ( count( $values ) > 1 )
+					{
+						$this->debug( 'Updating taxonomy term %s with key %s and value(s) %s', $new_term_id, $key, $values );
+						foreach( $values as $value )
+							add_term_meta( $new_term_id, $key, $value );
+					}
+					else
+					{
+						$value = reset( $values );
+						$this->debug( 'Updating taxonomy term %s with key %s and value %s', $new_term_id, $key, $value );
+						update_term_meta( $new_term_id, $key, maybe_unserialize( $value ) );
+					}
 				}
 			}
 		}

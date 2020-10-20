@@ -159,6 +159,8 @@ trait misc
 	public function get_hooks( $hook )
 	{
 		global $wp_filter;
+		if ( ! isset( $wp_filter[ $hook ] ) )
+			return [];
 		$filters = $wp_filter[ $hook ];
 		if ( is_object( $filters ) )
 			$filters = $filters->callbacks;

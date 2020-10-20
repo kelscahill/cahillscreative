@@ -21,9 +21,16 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
 		 * __construct
 		 */
 		function __construct() {
-            add_action( 'csf_loaded', array( $this, 'register_panel' ) );
+            add_action( 'ulf_loaded', array( $this, 'register_panel' ) );
             add_action( 'wp_ulike_settings_loaded', array( $this, 'register_sections' ) );
             add_action( 'wp_ulike_settings_loaded', array( $this, 'register_pages' ) );
+
+            add_action( 'ulf_'.$this->option_domain.'_saved', array( $this, 'options_saved' ) );
+        }
+
+        public function options_saved(){
+            // Update custom css
+            wp_ulike_save_custom_css();
         }
 
         /**
@@ -33,7 +40,7 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
          */
         public function register_panel(){
             // Create options
-            CSF::createOptions( $this->option_domain, array(
+            ULF::createOptions( $this->option_domain, array(
                 'framework_title'    => apply_filters( 'wp_ulike_plugin_name', WP_ULIKE_NAME ),
                 'menu_title'         => apply_filters( 'wp_ulike_plugin_name', WP_ULIKE_NAME ),
                 'sub_menu_title'     => __( 'Settings', WP_ULIKE_SLUG ),
@@ -42,8 +49,7 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                 'menu_icon'          => 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMjUgMjUiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDI1IDI1OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggY2xhc3M9InN0MCIgZD0iTTIzLjksNy4xTDIzLjksNy4xYy0xLjUtMS41LTMuOS0xLjUtNS40LDBsLTEuNSwxLjVsMS40LDEuNGwxLjUtMS41YzAuNC0wLjQsMC44LTAuNiwxLjMtMC42YzAuNSwwLDEuMSwwLjIsMS40LDAuNmMwLjcsMC44LDAuNywyLTAuMSwyLjdsLTEsMWMtMC41LDAuNS0xLjIsMC41LTEuNiwwYy0wLjktMC45LTUuMS01LjEtNS4xLTUuMWMtMC43LTAuNy0xLjctMS4xLTIuNy0xLjFsMCwwYy0xLDAtMiwwLjQtMi43LDEuMUM5LDcuNCw4LjgsNy43LDguNiw4LjFMOC41LDguM2wxLjYsMS42bDAuMS0wLjVjMC4yLTEsMS4yLTEuNywyLjMtMS41YzAuNCwwLjEsMC43LDAuMiwxLDAuNWw1LjksNS45TDE2LjYsMTdMMTIuNywxM2wwLDBjLTAuMS0wLjEtMC40LTAuNC0yLjEtMi4xbC00LTRDNSw1LjQsMi42LDUuNCwxLjEsNi45Yy0xLjUsMS41LTEuNSwzLjksMCw1LjRsNiw2YzAuMywwLjMsMC44LDAuNSwxLjIsMC41bDAsMGMwLjUsMCwwLjktMC4yLDEuMi0wLjVsMi41LTIuNWwtMS40LTEuNGwtMi40LDIuNGwtNS45LTUuOWMtMC43LTAuOC0wLjctMiwwLjEtMi43YzAuNy0wLjcsMS45LTAuNywyLjYsMGw0LDRjMC4xLDAuMSwwLjEsMC4yLDAuMiwwLjJsNiw2YzAuMywwLjMsMC44LDAuNSwxLjMsMC41YzAsMCwwLDAsMCwwYzAuNSwwLDAuOS0wLjIsMS4yLTAuNWw2LTZDMjUuNCwxMSwyNS40LDguNiwyMy45LDcuMXoiLz48L3N2Zz4=',
                 'menu_position'      => 313,
                 'show_bar_menu'      => false,
-                'show_sub_menu'      => false,
-                'show_network_menu'  => false,
+                'show_sub_menu'      => true,
                 'show_search'        => true,
                 'show_reset_all'     => true,
                 'show_reset_section' => true,
@@ -53,7 +59,12 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                 'sticky_header'      => true,
                 'save_defaults'      => true,
                 'ajax_save'          => true,
-                'footer_credit'      => 'Thank you for choosing <a href="https://wpulike.com/?utm_source=footer-link&amp;utm_campaign=plugin-uri&amp;utm_medium=wp-dash" title="Wordpress ULike" target="_blank">WP ULike</a>.',
+                'footer_credit'      => sprintf(
+                    '%s <a href="%s" title="TechnoWich" target="_blank">%s</a>',
+                    __( 'Proudly Powered By', WP_ULIKE_SLUG ),
+                    'https://technowich.com/?utm_source=footer-link&utm_campaign=wp-ulike&utm_medium=wp-dash',
+                    __( 'TechnoWich', WP_ULIKE_SLUG )
+                ),
                 'footer_after'       => '',
                 'enqueue_webfont'    => true,
                 'async_webfont'      => false,
@@ -85,13 +96,13 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
             /**
              * Configuration Section
              */
-            CSF::createSection( $this->option_domain, array(
+            ULF::createSection( $this->option_domain, array(
                 'id'    => 'configuration',
                 'title' => __( 'Configuration',WP_ULIKE_SLUG),
                 'icon'  => 'fa fa-home',
             ) );
             // General
-            CSF::createSection( $this->option_domain, array(
+            ULF::createSection( $this->option_domain, array(
                 'parent' => 'configuration',
                 'title'  => __( 'General',WP_ULIKE_SLUG),
                 'fields' => apply_filters( 'wp_ulike_panel_general', array(
@@ -140,6 +151,15 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                             'woocommerce' => __('WooCommerce Pages', WP_ULIKE_SLUG)
                         )
                     ),
+                    array(
+                        'id'          => 'enable_admin_posts_columns',
+                        'type'        => 'select',
+                        'title'       => __( 'Enable Admin Columns',WP_ULIKE_SLUG ),
+                        'desc'        => __('Add counter stats column to the selected post types', WP_ULIKE_SLUG),
+                        'chosen'      => true,
+                        'multiple'    => true,
+                        'options'     => 'post_types'
+                    )
                 ) )
             ) );
 
@@ -229,16 +249,17 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
             }
 
             // Content Groups
-            CSF::createSection( $this->option_domain, array(
+            ULF::createSection( $this->option_domain, array(
                 'parent' => 'configuration',
                 'title'  => __( 'Content Types',WP_ULIKE_SLUG),
                 'fields' => array(
                     // Posts
                     array(
-                        'id'     => 'posts_group',
-                        'type'   => 'fieldset',
-                        'title'  => __('Posts'),
-                        'fields' => array_values( apply_filters( 'wp_ulike_panel_post_type_options', $get_content_fields['posts'] ) )
+                        'id'       => 'posts_group',
+                        'type'     => 'fieldset',
+                        'title'    => __('Posts'),
+                        'fields'   => array_values( apply_filters( 'wp_ulike_panel_post_type_options', $get_content_fields['posts'] ) ),
+                        'sanitize' => 'wp_ulike_sanitize_multiple_select'
                     ),
                     // Comments
                     array(
@@ -265,7 +286,7 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                 )
             ) );
             // Integrations
-            CSF::createSection( $this->option_domain, array(
+            ULF::createSection( $this->option_domain, array(
                 'parent' => 'configuration',
                 'title'  => __( 'Integrations',WP_ULIKE_SLUG),
                 'fields' => apply_filters( 'wp_ulike_panel_integrations', array(
@@ -280,17 +301,87 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                         'type'  => 'switcher',
                         'title' => __('Enable Deprecated Options', WP_ULIKE_SLUG),
                         'desc'  => sprintf( '%s<br><strong>* %s</strong>', __('By activating this option, users who have upgraded to version +4.1 and lost their old options can restore and enable previous settings.', WP_ULIKE_SLUG), __('Attention: If you have been using WP ULike +v4.1 from the beginning, do not enable this option.', WP_ULIKE_SLUG) )
-                    ),
+                    )
                 ) )
+            ) );
+
+            // Profiles
+            ULF::createSection( $this->option_domain, array(
+                'parent' => 'configuration',
+                'title'  => __( 'Profiles',WP_ULIKE_SLUG),
+                'fields' => apply_filters( 'wp_ulike_panel_profiles', array(
+                    array(
+                        'type'     => 'callback',
+                        'function' => 'wp_ulike_get_notice_render',
+                        'args'     => array(
+                            'id'          => 'wp_ulike_pro_user_profiles_banner',
+                            'title'       => __( 'How to Create Ultimate User Profiles with WP ULike?', WP_ULIKE_SLUG ),
+                            'description' => __( "The simplest way to create your own WordPress user profile page is by using the WP ULike Profile builder. This way, you can create professional profiles and display it on the front-end of your website without the need for coding knowledge or the use of advanced functions." , WP_ULIKE_SLUG ),
+                            'skin'        => 'info',
+                            'has_close'   => false,
+                            'buttons'     => array(
+                                array(
+                                    'label'      => __( "Get More Information", WP_ULIKE_SLUG ),
+                                    'color_name' => 'info',
+                                    'link'       => WP_ULIKE_PLUGIN_URI . 'blog/wordpress-ultimate-profile-builder/?utm_source=settings-page-banner&utm_campaign=gopro&utm_medium=wp-dash'
+                                )
+                            ),
+                            'image'     => array(
+                                'width' => '200',
+                                'src'   => WP_ULIKE_ASSETS_URL . '/img/svg/profiles.svg'
+                            )
+                        )
+                    )
+                ) )
+            ) );
+
+            // Profiles
+            ULF::createSection( $this->option_domain, array(
+                'parent' => 'configuration',
+                'title'  => __( 'Login & Signup',WP_ULIKE_SLUG),
+                'fields' => apply_filters( 'wp_ulike_panel_forms', array(
+                    array(
+                        'type'     => 'callback',
+                        'function' => 'wp_ulike_get_notice_render',
+                        'args'     => array(
+                            'id'          => 'wp_ulike_pro_user_login_register_banner',
+                            'title'       => __( 'How to make AJAX Based Login/Registration system?', WP_ULIKE_SLUG ),
+                            'description' => __( "Transform your default WordPress login, registration, and reset password forms with the new WP ULike Pro features. In this section, we provide you with tools that you can use to make modern & ajax based forms on your pages with just a few simple clicks." , WP_ULIKE_SLUG ),
+                            'skin'        => 'info',
+                            'has_close'   => false,
+                            'buttons'     => array(
+                                array(
+                                    'label'      => __( "Get More Information", WP_ULIKE_SLUG ),
+                                    'color_name' => 'info',
+                                    'link'       => WP_ULIKE_PLUGIN_URI . 'blog/wordpress-ajax-login-registration-plugin/?utm_source=settings-page-banner&utm_campaign=gopro&utm_medium=wp-dash'
+                                )
+                            ),
+                            'image'     => array(
+                                'width' => '200',
+                                'src'   => WP_ULIKE_ASSETS_URL . '/img/svg/login.svg'
+                            )
+                        )
+                    )
+                ) )
+            ) );
+
+
+            /**
+             * Customization Section
+             */
+            ULF::createSection( $this->option_domain, array(
+                'id'    => 'translations',
+                'title' => __( 'Translations',WP_ULIKE_SLUG),
+                'icon'  => 'fa fa-language',
             ) );
 
 
             /**
              * Translations Section
              */
-            CSF::createSection( $this->option_domain, array(
-                'title'  => __( 'Translations',WP_ULIKE_SLUG),
-                'icon'   => 'fa fa-language',
+            ULF::createSection( $this->option_domain, array(
+                'title'  => __( 'Strings',WP_ULIKE_SLUG),
+                'parent' => 'translations',
                 'fields' => apply_filters( 'wp_ulike_panel_translations', array(
                     array(
                         'id'      => 'already_registered_notice',
@@ -316,15 +407,27 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                         'default' => __('Sorry! You unliked this.',WP_ULIKE_SLUG),
                         'title'   => __( 'Unliked Notice Message', WP_ULIKE_SLUG)
                     ),
+                    array(
+                        'id'      => 'like_button_aria_label',
+                        'type'    => 'text',
+                        'default' => __( 'Like Button',WP_ULIKE_SLUG),
+                        'title'   => __( 'Like Button Aria Label', WP_ULIKE_SLUG)
+                    )
                 ) )
             ) );
 
             /**
              * Customization Section
              */
-            CSF::createSection( $this->option_domain, array(
-                'title'  => __( 'Customization',WP_ULIKE_SLUG),
-                'icon'   => 'fa fa-code',
+            ULF::createSection( $this->option_domain, array(
+                'id'    => 'customization',
+                'title' => __( 'Developer Tools',WP_ULIKE_SLUG),
+                'icon'  => 'fa fa-code',
+            ) );
+
+            ULF::createSection( $this->option_domain, array(
+                'parent' => 'customization',
+                'title'  => __( 'Custom Style',WP_ULIKE_SLUG),
                 'fields' => apply_filters( 'wp_ulike_panel_customization', array(
                     array(
                         'id'    => 'custom_css',
@@ -341,6 +444,70 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                         'title'        => __('Custom Spinner',WP_ULIKE_SLUG),
                         'library'      => 'image',
                         'placeholder'  => 'http://'
+                    ),
+                    array(
+                        'id'    => 'enable_inline_custom_css',
+                        'type'  => 'switcher',
+                        'title' => __('Enable Inline Custom CSS', WP_ULIKE_SLUG),
+                        'desc'  => __('If you don\'t want to use "custom.css" file for any reason, by activating this option, the styles will be added to the page as inline.', WP_ULIKE_SLUG)
+                    )
+                ) )
+            ) );
+
+            ULF::createSection( $this->option_domain, array(
+                'parent' => 'customization',
+                'title'  => __( 'REST API',WP_ULIKE_SLUG ),
+                'fields' => apply_filters( 'wp_ulike_panel_rest_api', array(
+                    array(
+                        'type'     => 'callback',
+                        'function' => 'wp_ulike_get_notice_render',
+                        'args'     => array(
+                            'id'          => 'wp_ulike_pro_rest_api_banner',
+                            'title'       => __( 'How to Get Started with WP ULike REST API?', WP_ULIKE_SLUG ),
+                            'description' => __( "Have you ever tried to get data from online sources like WP ULike logs and use them in your Application or website? the solution is Rest API!" , WP_ULIKE_SLUG ),
+                            'skin'        => 'info',
+                            'has_close'   => false,
+                            'buttons'     => array(
+                                array(
+                                    'label'      => __( "Get More Information", WP_ULIKE_SLUG ),
+                                    'color_name' => 'info',
+                                    'link'       => WP_ULIKE_PLUGIN_URI . 'blog/how-to-get-started-with-wp-ulike-rest-api/?utm_source=settings-page-banner&utm_campaign=gopro&utm_medium=wp-dash'
+                                )
+                            ),
+                            'image'     => array(
+                                'width' => '200',
+                                'src'   => WP_ULIKE_ASSETS_URL . '/img/svg/api.svg'
+                            )
+                        )
+                    )
+                ) )
+            ) );
+
+            ULF::createSection( $this->option_domain, array(
+                'parent' => 'customization',
+                'title'  => __( 'Optimization',WP_ULIKE_SLUG ),
+                'fields' => apply_filters( 'wp_ulike_panel_optimization', array(
+                    array(
+                        'type'     => 'callback',
+                        'function' => 'wp_ulike_get_notice_render',
+                        'args'     => array(
+                            'id'          => 'wp_ulike_pro_optimization_banner',
+                            'title'       => __( 'How to Optimize or Repair WP ULike Database Tables?', WP_ULIKE_SLUG ),
+                            'description' => __( "Have you ever optimized your WP ULike database? Optimizing your database cleans up unwanted data which reduces database size and improves performance." , WP_ULIKE_SLUG ),
+                            'skin'        => 'info',
+                            'has_close'   => false,
+                            'buttons'     => array(
+                                array(
+                                    'label'      => __( "Get More Information", WP_ULIKE_SLUG ),
+                                    'color_name' => 'info',
+                                    'link'       => WP_ULIKE_PLUGIN_URI . 'blog/database-optimization/?utm_source=settings-page-banner&utm_campaign=gopro&utm_medium=wp-dash'
+                                )
+                            ),
+                            'image'     => array(
+                                'width' => '200',
+                                'src'   => WP_ULIKE_ASSETS_URL . '/img/svg/database.svg'
+                            )
+                        )
                     )
                 ) )
             ) );
@@ -493,6 +660,17 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                     'options'     => 'post_types',
                     'dependency'  => array( 'auto_display_filter|enable_auto_display', 'any|==', 'single|true' ),
                 ),
+                'counter_display_condition' => array(
+                    'id'         => 'counter_display_condition',
+                    'type'       => 'button_set',
+                    'title'      => __( 'Display Counter Value Condition', WP_ULIKE_SLUG),
+                    'default'    => 'visible',
+                    'options'    => array(
+                        'visible'         => __('Visible', WP_ULIKE_SLUG),
+                        'hidden'          => __('Hidden', WP_ULIKE_SLUG),
+                        'logged_in_users' => __('Only Logged In Users', WP_ULIKE_SLUG)
+                    )
+                ),
                 'logging_method' => array(
                     'id'          => 'logging_method',
                     'type'        => 'select',
@@ -500,7 +678,6 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                     'options'     => array(
                         'do_not_log'  => __('Do Not Log', WP_ULIKE_SLUG),
                         'by_cookie'   => __('Logged By Cookie', WP_ULIKE_SLUG),
-                        'by_ip'       => __('Logged By IP', WP_ULIKE_SLUG),
                         'by_username' => __('Logged By Username', WP_ULIKE_SLUG)
                     ),
                     'default'     => 'by_username',
@@ -516,16 +693,49 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                     'type'       => 'button_set',
                     'title'      => __( 'Display Type', WP_ULIKE_SLUG),
                     'options'    => array(
-                        'alert'  => __('Alert', WP_ULIKE_SLUG),
+                        'alert'  => __('Template', WP_ULIKE_SLUG),
                         'button' => __('Button', WP_ULIKE_SLUG)
                     ),
                     'default'    => 'button',
                     'dependency' => array( 'enable_only_logged_in_users', '==', 'true' ),
                 ),
+                'login_template' => array(
+                    'id'       => 'login_template',
+                    'type'     => 'code_editor',
+                    'settings' => array(
+                        'theme' => 'shadowfox',
+                        'mode'  => 'htmlmixed',
+                    ),
+                    'default'  => sprintf( '<p class="alert alert-info fade in" role="alert">%s<a href="%s">%s</a></p>',
+                        __('You need to login in order to like this post: ',WP_ULIKE_SLUG),
+                        wp_login_url( get_permalink() ),
+                        __('click here',WP_ULIKE_SLUG)
+                    ),
+                    'title'    => __('Custom HTML Template', WP_ULIKE_SLUG),
+                    'dependency'=> array( 'logged_out_display_type|enable_only_logged_in_users', '==|==', 'alert|true' ),
+                ),
                 'enable_likers_box' => array(
                     'id'    => 'enable_likers_box',
                     'type'  => 'switcher',
                     'title' => __('Display Likers Box', WP_ULIKE_SLUG),
+                ),
+                'likers_order' => array(
+                    'id'         => 'likers_order',
+                    'type'       => 'button_set',
+                    'title'      => __( 'User List Arrange', WP_ULIKE_SLUG),
+                    'default'    => 'desc',
+                    'options'    => array(
+                        'asc'  => __('Ascending', WP_ULIKE_SLUG),
+                        'desc' => __('Descending', WP_ULIKE_SLUG)
+                    ),
+                    'dependency' => array( 'enable_likers_box', '==', 'true' ),
+                ),
+                'hide_likers_for_anonymous_users' => array(
+                    'id'    => 'hide_likers_for_anonymous_users',
+                    'type'  => 'switcher',
+                    'default' => false,
+                    'title' => __('Hide For Anonymous Users', WP_ULIKE_SLUG),
+                    'dependency' => array( 'enable_likers_box', '==', 'true' ),
                 ),
                 'disable_likers_pophover' => array(
                     'id'         => 'disable_likers_pophover',

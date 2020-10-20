@@ -123,8 +123,8 @@ class SB_Instagram_Settings {
 			$this->settings['showheader'] = false;
 		}
 		$this->settings['disable_resize'] = isset( $db['sb_instagram_disable_resize'] ) && ($db['sb_instagram_disable_resize'] === 'on');
-		$this->settings['favor_local'] = isset( $db['sb_instagram_favor_local'] ) && ($db['sb_instagram_favor_local'] === 'on');
-		$this->settings['backup_cache_enabled'] = ! isset( $db['sb_instagram_backup'] ) || ($db['sb_instagram_backup'] === 'on');
+		$this->settings['favor_local'] = ! isset( $db['sb_instagram_favor_local'] ) || ($db['sb_instagram_favor_local'] === 'on') || ($db['sb_instagram_favor_local'] === true);
+		$this->settings['backup_cache_enabled'] = ! isset( $db['sb_instagram_backup'] ) || ($db['sb_instagram_backup'] === 'on') || $db['sb_instagram_backup'] === true;
 		$this->settings['font_method'] = isset( $db['sbi_font_method'] ) ? $db['sbi_font_method'] : 'svg';
 		$this->settings['headeroutside'] = ($this->settings['headeroutside'] === true || $this->settings['headeroutside'] === 'on' || $this->settings['headeroutside'] === 'true');
 		$this->settings['disable_js_image_loading'] = isset( $db['disable_js_image_loading'] ) && ($db['disable_js_image_loading'] === 'on');
@@ -148,6 +148,12 @@ class SB_Instagram_Settings {
 
 		if ( $sb_instagram_posts_manager->are_current_api_request_delays() ) {
 			$this->settings['alwaysUseBackup'] = true;
+		}
+
+		$this->settings['isgutenberg'] = SB_Instagram_Blocks::is_gb_editor();
+		if ( $this->settings['isgutenberg'] ) {
+			$this->settings['ajax_post_load'] = false;
+			$this->settings['disable_js_image_loading'] = true;
 		}
 	}
 
@@ -354,8 +360,20 @@ class SB_Instagram_Settings {
 			}
 		}
 
+		if ( empty( $this->settings['id'] )
+		     && empty( $this->settings['user'] )
+		     && ! empty ( $this->connected_accounts ) ) {
+			$set = false;
+			foreach ( $this->connected_accounts as $connected_account ) {
+				if ( ! $set ) {
+					$set = true;
+					$this->settings['user'] = $connected_account['username'];
+				}
+			}
+		}
+
 		if ( ! $is_after_deprecation_deadline && $is_using_access_token_in_shortcode ) {
-			$error = '<p><b>' . __( 'Warning: Cannot add access token directly to the shortcode.', 'instagram-feed' ) . '</b><br>' . sprintf( __( 'Due to upcoming Instagram platform changes on March 2, 2020, it will no longer be possible for feeds to use access tokens directly in the shortcode. Remove the access token from the shortcode and connect an account on the %s instead.', 'instagram-feed' ), $settings_link );
+			$error = '<p><b>' . __( 'Warning: Cannot add access token directly to the shortcode.', 'instagram-feed' ) . '</b><br>' . sprintf( __( 'Due to upcoming Instagram platform changes on June 1, 2020, it will no longer be possible for feeds to use access tokens directly in the shortcode. Remove the access token from the shortcode and connect an account on the %s instead.', 'instagram-feed' ), $settings_link );
 
 			$sb_instagram_posts_manager->add_frontend_error( 'deprecation_warning', $error );
 			$access_tokens = explode( ',', str_replace( ' ', '', $this->atts['accesstoken'] ) );
@@ -393,21 +411,67 @@ class SB_Instagram_Settings {
 						if ( ! isset( $this->connected_accounts[ $user ]['type'] ) || $this->connected_accounts[ $user ]['type'] === 'personal' ) {
 							$user_for_deprecated_personal_account_only_found = true;
 						}
+
+						if ( isset( $this->connected_accounts[ $user ]['private'] ) && sbi_private_account_near_expiration( $this->connected_accounts[ $user ] ) ) {
+							$link_1 = '<a href="https://help.instagram.com/116024195217477/In">';
+							$link_2 = '</a>';
+							$sb_instagram_posts_manager->add_error( 'expiration_' . $this->connected_accounts[ $user ]['user_id'], array( 'Private Instagram Account Needs Reauthentication', sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ), 10 ) );
+
+							$error = '<p><b>' . __( 'Error: Private Instagram Account.', 'instagram-feed' ) . '</b>';
+							$cap = current_user_can( 'manage_instagram_feed_options' ) ? 'manage_instagram_feed_options' : 'manage_options';
+							$cap = apply_filters( 'sbi_settings_pages_capability', $cap );
+							if ( current_user_can( $cap ) ) {
+								$error_link = '<p><a href="https://smashballoon.com/instagram-feed/docs/errors/#10">' . __( 'Click here to troubleshoot', 'instagram-feed' ) . '</a></p>';
+
+							} else {
+								$error_link = '';
+								$link_1 = '';
+								$link_2 = '';
+							}
+							$error .= '<p>' . sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ) . '</p>';
+
+							$error .= $error_link;
+							$sb_instagram_posts_manager->add_frontend_error( 'noposts', $error );
+						}
 					}
 				}
 
 				if ( ! $user_found || $user_for_deprecated_personal_account_only_found ) {
+
 					foreach ( $this->connected_accounts as $connected_account ) {
 						$account_type = isset( $connected_account['type'] ) ? $connected_account['type'] : 'personal';
 						if ( strtolower( $username_to_match ) === strtolower( $connected_account['username'] ) ) {
+
 							if ( $user_for_deprecated_personal_account_only_found || ! in_array( $connected_account['username'], $usernames_included, true ) ) {
 								if ( $account_type !== 'personal' ) {
+
 									$term_for_this_user      = array(
 										'term' => $user,
 										'params' => array()
 									);
 									$connected_accounts_in_feed[ $user ] = $connected_account;
 									$user_for_deprecated_personal_account_only_found = false;
+									if ( isset( $this->connected_accounts[ $connected_account['user_id'] ]['private'] ) && sbi_private_account_near_expiration( $this->connected_accounts[ $connected_account['user_id'] ] ) ) {
+										$link_1 = '<a href="https://help.instagram.com/116024195217477/In">';
+										$link_2 = '</a>';
+										$sb_instagram_posts_manager->add_error( 'expiration_' . $this->connected_accounts[ $connected_account['user_id'] ]['user_id'], array( 'Private Instagram Account Needs Reauthentication', sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ), 10 ) );
+
+										$error = '<p><b>' . __( 'Error: Private Instagram Account.', 'instagram-feed' ) . '</b>';
+										$cap = current_user_can( 'manage_instagram_feed_options' ) ? 'manage_instagram_feed_options' : 'manage_options';
+										$cap = apply_filters( 'sbi_settings_pages_capability', $cap );
+										if ( current_user_can( $cap ) ) {
+											$error_link = '<p><a href="https://smashballoon.com/instagram-feed/docs/errors/#10">' . __( 'Click here to troubleshoot', 'instagram-feed' ) . '</a></p>';
+
+										} else {
+											$error_link = '';
+											$link_1 = '';
+											$link_2 = '';
+										}
+										$error .= '<p>' . sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ) . '</p>';
+
+										$error .= $error_link;
+										$sb_instagram_posts_manager->add_frontend_error( 'noposts', $error );
+									}
 								} else {
 									$term_for_this_user                              = array(
 										'term' => $connected_account['user_id'],
@@ -458,6 +522,28 @@ class SB_Instagram_Settings {
 						if ( ! in_array( $this->connected_accounts[ $user ]['username'], $usernames_included, true ) ) {
 							$usernames_included[] = $this->connected_accounts[ $user ]['username'];
 						}
+
+						if ( isset( $this->connected_accounts[ $user ]['private'] ) && sbi_private_account_near_expiration( $this->connected_accounts[ $user ] ) ) {
+							$link_1 = '<a href="https://help.instagram.com/116024195217477/In">';
+							$link_2 = '</a>';
+							$sb_instagram_posts_manager->add_error( 'expiration_' . $this->connected_accounts[ $user ]['user_id'], array( 'Private Instagram Account Needs Reauthentication', sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ), 10 ) );
+
+							$error = '<p><b>' . __( 'Error: Private Instagram Account.', 'instagram-feed' ) . '</b>';
+							$cap = current_user_can( 'manage_instagram_feed_options' ) ? 'manage_instagram_feed_options' : 'manage_options';
+							$cap = apply_filters( 'sbi_settings_pages_capability', $cap );
+							if ( current_user_can( $cap ) ) {
+								$error_link = '<p><a href="https://smashballoon.com/instagram-feed/docs/errors/#10">' . __( 'Click here to troubleshoot', 'instagram-feed' ) . '</a></p>';
+
+							} else {
+								$error_link = '';
+								$link_1 = '';
+								$link_2 = '';
+							}
+							$error .= '<p>' . sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ) . '</p>';
+
+							$error .= $error_link;
+							$sb_instagram_posts_manager->add_frontend_error( 'noposts', $error );
+						}
 						$username_to_match = $this->connected_accounts[ $user ]['username'];
 						$user_found = true;
 						if ( ! isset( $this->connected_accounts[ $user ]['type'] ) || $this->connected_accounts[ $user ]['type'] === 'personal' ) {
@@ -488,6 +574,7 @@ class SB_Instagram_Settings {
 										'params' => array()
 									);
 									$connected_accounts_in_feed[ $connected_account['user_id'] ] = $connected_account;
+
 								}
 								if ( ! in_array( $connected_account['username'], $usernames_included, true ) ) {
 									$usernames_included[] = $connected_account['username'];
@@ -533,6 +620,27 @@ class SB_Instagram_Settings {
 							'params' => array()
 						);
 						$connected_accounts_in_feed[ $connected_account['user_id'] ] = $connected_account;
+						if ( isset( $this->connected_accounts[ $connected_account['user_id'] ]['private'] ) && sbi_private_account_near_expiration( $this->connected_accounts[ $connected_account['user_id'] ] ) ) {
+							$link_1 = '<a href="https://help.instagram.com/116024195217477/In">';
+							$link_2 = '</a>';
+							$sb_instagram_posts_manager->add_error( 'expiration_' . $this->connected_accounts[ $connected_account['user_id'] ]['user_id'], array( 'Private Instagram Account Needs Reauthentication', sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ), 10 ) );
+
+							$error = '<p><b>' . __( 'Error: Private Instagram Account.', 'instagram-feed' ) . '</b>';
+							$cap = current_user_can( 'manage_instagram_feed_options' ) ? 'manage_instagram_feed_options' : 'manage_options';
+							$cap = apply_filters( 'sbi_settings_pages_capability', $cap );
+							if ( current_user_can( $cap ) ) {
+								$error_link = '<p><a href="https://smashballoon.com/instagram-feed/docs/errors/#10">' . __( 'Click here to troubleshoot', 'instagram-feed' ) . '</a></p>';
+
+							} else {
+								$error_link = '';
+								$link_1 = '';
+								$link_2 = '';
+							}
+							$error .= '<p>' . sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ) . '</p>';
+
+							$error .= $error_link;
+							$sb_instagram_posts_manager->add_frontend_error( 'noposts', $error );
+						}
 					}
 				}
 
@@ -564,7 +672,7 @@ class SB_Instagram_Settings {
 			if ( $is_after_deprecation_deadline ) {
 				$error = '<p><b>' . sprintf( __( 'Error: The account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to recent Instagram platform changes this Instagram account needs to be reconnected in order to continue updating.', 'instagram-feed' ) . '<a href="'.get_admin_url().'?page=sb-instagram-feed" class="sb_frontend_btn"><i class="fa fa-cog" aria-hidden="true"></i> ' . __( 'Reconnect on plugin Settings page', 'instagram-feed' ) . '</a>';
 			} else {
-				$error = '<p><b>' . sprintf( __( 'Warning: The account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to Instagram platform changes on March 2, 2020, this Instagram account needs to be reconnected to allow the feed to continue updating.', 'instagram-feed' ) . '<a href="'.get_admin_url().'?page=sb-instagram-feed" class="sb_frontend_btn"><i class="fa fa-cog" aria-hidden="true"></i> ' . __( 'Reconnect on plugin Settings page', 'instagram-feed' ) . '</a>';
+				$error = '<p><b>' . sprintf( __( 'Warning: The account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to Instagram platform changes on June 1, 2020, this Instagram account needs to be reconnected to allow the feed to continue updating.', 'instagram-feed' ) . '<a href="'.get_admin_url().'?page=sb-instagram-feed" class="sb_frontend_btn"><i class="fa fa-cog" aria-hidden="true"></i> ' . __( 'Reconnect on plugin Settings page', 'instagram-feed' ) . '</a>';
 			}
 
 			$sb_instagram_posts_manager->add_frontend_error( 'deprecation_warning', $error );
@@ -594,5 +702,153 @@ class SB_Instagram_Settings {
 
 			return $cache_time * $cache_time_unit;
 		}
+	}
+
+	public static function default_settings() {
+		$defaults = array(
+			'sb_instagram_at'                   => '',
+			'sb_instagram_type'                 => 'user',
+			'sb_instagram_order'                => 'top',
+			'sb_instagram_user_id'              => '',
+			'sb_instagram_tagged_ids' => '',
+			'sb_instagram_hashtag'              => '',
+			'sb_instagram_type_self_likes'      => '',
+			'sb_instagram_location'             => '',
+			'sb_instagram_coordinates'          => '',
+			'sb_instagram_preserve_settings'    => '',
+			'sb_instagram_ajax_theme'           => false,
+			'enqueue_js_in_head'                => false,
+			'disable_js_image_loading'          => false,
+			'sb_instagram_disable_resize'       => false,
+			'sb_instagram_favor_local'          => true,
+			'sb_instagram_cache_time'           => '1',
+			'sb_instagram_cache_time_unit'      => 'hours',
+			'sbi_caching_type'                  => 'background',
+			'sbi_cache_cron_interval'           => '12hours',
+			'sbi_cache_cron_time'               => '1',
+			'sbi_cache_cron_am_pm'              => 'am',
+
+			'sb_instagram_width'                => '100',
+			'sb_instagram_width_unit'           => '%',
+			'sb_instagram_feed_width_resp'      => false,
+			'sb_instagram_height'               => '',
+			'sb_instagram_num'                  => '20',
+			'sb_instagram_nummobile'            => '',
+			'sb_instagram_height_unit'          => '',
+			'sb_instagram_cols'                 => '4',
+			'sb_instagram_colsmobile'           => 'auto',
+			'sb_instagram_image_padding'        => '5',
+			'sb_instagram_image_padding_unit'   => 'px',
+
+			//Layout Type
+			'sb_instagram_layout_type'          => 'grid',
+			'sb_instagram_highlight_type'       => 'pattern',
+			'sb_instagram_highlight_offset'     => 0,
+			'sb_instagram_highlight_factor'     => 6,
+			'sb_instagram_highlight_ids'        => '',
+			'sb_instagram_highlight_hashtag'    => '',
+
+			//Hover style
+			'sb_hover_background'               => '',
+			'sb_hover_text'                     => '',
+			'sbi_hover_inc_username'            => true,
+			'sbi_hover_inc_icon'                => true,
+			'sbi_hover_inc_date'                => true,
+			'sbi_hover_inc_instagram'           => true,
+			'sbi_hover_inc_location'            => false,
+			'sbi_hover_inc_caption'             => false,
+			'sbi_hover_inc_likes'               => false,
+			// 'sb_instagram_hover_text_size'      => '',
+
+			'sb_instagram_sort'                 => 'none',
+			'sb_instagram_disable_lightbox'     => false,
+			'sb_instagram_captionlinks'         => false,
+			'sb_instagram_background'           => '',
+			'sb_instagram_show_btn'             => true,
+			'sb_instagram_btn_background'       => '',
+			'sb_instagram_btn_text_color'       => '',
+			'sb_instagram_btn_text'             => __( 'Load More', 'instagram-feed' ),
+			'sb_instagram_image_res'            => 'auto',
+			'sb_instagram_media_type'           => 'all',
+			'sb_instagram_moderation_mode'      => 'manual',
+			'sb_instagram_hide_photos'          => '',
+			'sb_instagram_block_users'          => '',
+			'sb_instagram_ex_apply_to'          => 'all',
+			'sb_instagram_inc_apply_to'         => 'all',
+			'sb_instagram_show_users'           => '',
+			'sb_instagram_exclude_words'        => '',
+			'sb_instagram_include_words'        => '',
+
+			//Text
+			'sb_instagram_show_caption'         => true,
+			'sb_instagram_caption_length'       => '50',
+			'sb_instagram_caption_color'        => '',
+			'sb_instagram_caption_size'         => '13',
+
+			//lightbox comments
+			'sb_instagram_lightbox_comments'    => true,
+			'sb_instagram_num_comments'         => '20',
+
+			//Meta
+			'sb_instagram_show_meta'            => true,
+			'sb_instagram_meta_color'           => '',
+			'sb_instagram_meta_size'            => '13',
+			//Header
+			'sb_instagram_show_header'          => true,
+			'sb_instagram_header_color'         => '',
+			'sb_instagram_header_style'         => 'standard',
+			'sb_instagram_show_followers'       => true,
+			'sb_instagram_show_bio'             => true,
+			'sb_instagram_custom_bio' => '',
+			'sb_instagram_custom_avatar' => '',
+			'sb_instagram_header_primary_color'  => '517fa4',
+			'sb_instagram_header_secondary_color'  => 'eeeeee',
+			'sb_instagram_header_size'  => 'small',
+			'sb_instagram_outside_scrollable' => false,
+			'sb_instagram_stories' => true,
+			'sb_instagram_stories_time' => 5000,
+
+			//Follow button
+			'sb_instagram_show_follow_btn'      => true,
+			'sb_instagram_folow_btn_background' => '',
+			'sb_instagram_follow_btn_text_color' => '',
+			'sb_instagram_follow_btn_text'      => __( 'Follow on Instagram', 'instagram-feed' ),
+
+			//Autoscroll
+			'sb_instagram_autoscroll' => false,
+			'sb_instagram_autoscrolldistance' => 200,
+
+			//Misc
+			'sb_instagram_custom_css'           => '',
+			'sb_instagram_custom_js'            => '',
+			'sb_instagram_requests_max'         => '5',
+			'sb_instagram_minnum' => '0',
+			'sb_instagram_cron'                 => 'unset',
+			'sb_instagram_disable_font'         => false,
+			'sb_instagram_backup' => true,
+			'sb_ajax_initial' => false,
+			'enqueue_css_in_shortcode' => false,
+			'sb_instagram_disable_mob_swipe' => false,
+			'sbi_font_method' => 'svg',
+			'sbi_br_adjust' => true,
+			'sb_instagram_media_vine' => false,
+			'custom_template' => false,
+			'disable_admin_notice' => false,
+			'enable_email_report' => 'on',
+			'email_notification' => 'monday',
+			'email_notification_addresses' => get_option( 'admin_email' ),
+
+			//Carousel
+			'sb_instagram_carousel'             => false,
+			'sb_instagram_carousel_rows'        => 1,
+			'sb_instagram_carousel_loop'        => 'rewind',
+			'sb_instagram_carousel_arrows'      => false,
+			'sb_instagram_carousel_pag'         => true,
+			'sb_instagram_carousel_autoplay'    => false,
+			'sb_instagram_carousel_interval'    => '5000'
+
+		);
+
+		return $defaults;
 	}
 }

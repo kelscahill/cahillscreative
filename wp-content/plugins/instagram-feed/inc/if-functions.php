@@ -181,7 +181,7 @@ function sbi_add_resized_image_data( $instagram_feed, $feed_id ) {
 		SB_Instagram_Feed::update_last_requested( $instagram_feed->get_image_ids_post_set() );
 	}
 	?>
-    <span class="sbi_resized_image_data" data-feed-id="<?php echo esc_attr( $feed_id ); ?>" data-resized="<?php echo esc_attr( wp_json_encode( SB_Instagram_Feed::get_resized_images_source_set( $instagram_feed->get_image_ids_post_set(), 0, $feed_id ) ) ); ?>">
+    <span class="sbi_resized_image_data" data-feed-id="<?php echo esc_attr( $feed_id ); ?>" data-resized="<?php echo esc_attr( sbi_json_encode( SB_Instagram_Feed::get_resized_images_source_set( $instagram_feed->get_image_ids_post_set(), 0, $feed_id ) ) ); ?>">
 	</span>
 	<?php
 }
@@ -325,7 +325,7 @@ function sbi_get_next_post_set() {
         'resizedImages' => SB_Instagram_Feed::get_resized_images_source_set( $instagram_feed->get_image_ids_post_set(), 0, $feed_id )
 	);
 
-	echo wp_json_encode( $return );
+	echo sbi_json_encode( $return );
 
 	global $sb_instagram_posts_manager;
 
@@ -733,7 +733,16 @@ function sbi_rand_sort( $a, $b ) {
 function sbi_get_resized_uploads_url() {
 	$upload = wp_upload_dir();
 
-	return trailingslashit( $upload['baseurl'] ) . trailingslashit( SBI_UPLOADS_NAME );
+	$base_url = $upload['baseurl'];
+	$home_url = home_url();
+
+	if ( strpos( $home_url, 'https:' ) !== false ) {
+		str_replace( 'http:', 'https:', $base_url );
+	}
+
+	$resize_url = apply_filters( 'sbi_resize_url', trailingslashit( $base_url ) . trailingslashit( SBI_UPLOADS_NAME ) );
+
+	return $resize_url;
 }
 
 /**
@@ -766,6 +775,32 @@ function sbi_hextorgb( $hex ) {
 	return implode( ',', $rgb ); // returns the rgb values separated by commas
 }
 
+
+/**
+ * Added to workaround MySQL tables that don't use utf8mb4 character sets
+ *
+ * @since 2.2.1/5.3.1
+ */
+function sbi_sanitize_emoji( $string ) {
+	$encoded = array(
+		'jsonencoded' => $string
+	);
+	return sbi_json_encode( $encoded );
+}
+
+/**
+ * Added to workaround MySQL tables that don't use utf8mb4 character sets
+ *
+ * @since 2.2.1/5.3.1
+ */
+function sbi_decode_emoji( $string ) {
+	if ( strpos( $string, '{"' ) !== false ) {
+		$decoded = json_decode( $string, true );
+		return $decoded['jsonencoded'];
+	}
+	return $string;
+}
+
 /**
  * @return int
  */
@@ -782,9 +817,37 @@ function sbi_get_current_timestamp() {
 }
 
 function sbi_is_after_deprecation_deadline() {
-	$current_time = sbi_get_current_timestamp();
+	return true;
+}
 
-	return $current_time > strtotime( 'March 3, 2020' );
+function sbi_json_encode( $thing ) {
+    if ( function_exists( 'wp_json_encode' ) ) {
+        return wp_json_encode( $thing );
+    } else {
+        return json_encode( $thing );
+    }
+}
+
+function sbi_private_account_near_expiration( $connected_account ) {
+	$expires_in = max( 0, floor( ($connected_account['expires_timestamp'] - time()) / DAY_IN_SECONDS ) );
+	return $expires_in < 10;
+}
+
+function sbi_update_connected_account( $account_id, $to_update ) {
+	$if_database_settings = sbi_get_database_settings();
+
+	$connected_accounts = $if_database_settings['connected_accounts'];
+
+	if ( isset( $connected_accounts[ $account_id ] ) ) {
+
+		foreach ( $to_update as $key => $value ) {
+			$connected_accounts[ $account_id ][ $key ] = $value;
+		}
+
+		$if_database_settings['connected_accounts'] = $connected_accounts;
+
+		update_option( 'sb_instagram_settings', $if_database_settings );
+	}
 }
 
 /**
@@ -834,6 +897,12 @@ function sb_instagram_cron_clear_cache() {
  * clear or errors occur or changes will not be seen
  */
 function sb_instagram_clear_page_caches() {
+
+    $clear_page_caches = apply_filters( 'sbi_clear_page_caches', true );
+    if ( ! $clear_page_caches ) {
+        return;
+    }
+
 	if ( isset( $GLOBALS['wp_fastest_cache'] ) && method_exists( $GLOBALS['wp_fastest_cache'], 'deleteCache' ) ){
 		/* Clear WP fastest cache*/
 		$GLOBALS['wp_fastest_cache']->deleteCache();
@@ -874,9 +943,9 @@ function sb_instagram_scripts_enqueue() {
 	//Options to pass to JS file
 	$sb_instagram_settings = get_option( 'sb_instagram_settings' );
 
-	$js_file = 'js/sb-instagram-2-2.min.js';
+	$js_file = 'js/sbi-scripts.min.js';
 	if ( isset( $_GET['sbi_debug'] ) ) {
-		$js_file = 'js/sb-instagram.js';
+		$js_file = 'js/sbi-scripts.js';
 	}
 
 	if ( isset( $sb_instagram_settings['enqueue_js_in_head'] ) && $sb_instagram_settings['enqueue_js_in_head'] ) {
@@ -886,9 +955,9 @@ function sb_instagram_scripts_enqueue() {
 	}
 
 	if ( isset( $sb_instagram_settings['enqueue_css_in_shortcode'] ) && $sb_instagram_settings['enqueue_css_in_shortcode'] ) {
-		wp_register_style( 'sb_instagram_styles', trailingslashit( SBI_PLUGIN_URL ) . 'css/sb-instagram-2-2.min.css', array(), SBIVER );
+		wp_register_style( 'sb_instagram_styles', trailingslashit( SBI_PLUGIN_URL ) . 'css/sbi-styles.min.css', array(), SBIVER );
 	} else {
-		wp_enqueue_style( 'sb_instagram_styles', trailingslashit( SBI_PLUGIN_URL ) . 'css/sb-instagram-2-2.min.css', array(), SBIVER );
+		wp_enqueue_style( 'sb_instagram_styles', trailingslashit( SBI_PLUGIN_URL ) . 'css/sbi-styles.min.css', array(), SBIVER );
 	}
 
 	$font_method = isset( $sb_instagram_settings['sbi_font_method'] ) ? $sb_instagram_settings['sbi_font_method'] : 'svg';
@@ -910,6 +979,11 @@ function sb_instagram_scripts_enqueue() {
     );
 	//Pass option to JS file
 	wp_localize_script('sb_instagram_scripts', 'sb_instagram_js_options', $data );
+
+	if ( SB_Instagram_Blocks::is_gb_editor() ) {
+		wp_enqueue_style( 'sb_instagram_styles' );
+		wp_enqueue_script( 'sb_instagram_scripts' );
+	}
 }
 add_action( 'wp_enqueue_scripts', 'sb_instagram_scripts_enqueue', 2 );
 
@@ -994,3 +1068,291 @@ function sbi_raise_num_in_request( $num, $settings ) {
     return $num;
 }
 add_filter( 'sbi_num_in_request', 'sbi_raise_num_in_request', 5, 2 );
+
+/**
+ * Load the critical notice for logged in users.
+ */
+function sbi_critical_error_notice() {
+	// Don't do anything for guests.
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
+
+	// Only show this to users who are not tracked.
+	if ( ! current_user_can( 'manage_instagram_feed_options' ) ) {
+		return;
+	}
+
+	global $sb_instagram_posts_manager;
+    if ( ! $sb_instagram_posts_manager->are_critical_errors() ) {
+        return;
+    }
+
+
+	// Don't show if already dismissed.
+	if ( get_option( 'sbi_dismiss_critical_notice', false ) ) {
+		return;
+	}
+
+	$db_settings = sbi_get_database_settings();
+	if ( isset( $db_settings['disable_admin_notice'] ) && $db_settings['disable_admin_notice'] === 'on' ) {
+		return;
+	}
+
+	?>
+    <div class="sbi-critical-notice sbi-critical-notice-hide">
+        <div class="sbi-critical-notice-icon">
+            <img src="<?php echo SBI_PLUGIN_URL . 'img/insta-logo.png'; ?>" width="45" alt="Instagram Feed icon" />
+        </div>
+        <div class="sbi-critical-notice-text">
+            <h3><?php esc_html_e( 'Instagram Feed Critical Issue', 'instagram-feed' ); ?></h3>
+            <p>
+				<?php
+				$doc_url = admin_url() . '?page=sb-instagram-feed&amp;tab=configure';
+				// Translators: %s is the link to the article where more details about critical are listed.
+				printf( esc_html__( 'An issue is preventing your Instagram Feeds from updating. %1$sResolve this issue%2$s.', 'instagram-feed' ), '<a href="' . esc_url( $doc_url ) . '" target="_blank">', '</a>' );
+				?>
+            </p>
+        </div>
+        <div class="sbi-critical-notice-close">&times;</div>
+    </div>
+    <style type="text/css">
+        .sbi-critical-notice {
+            position: fixed;
+            bottom: 20px;
+            right: 15px;
+            font-family: Arial, Helvetica, "Trebuchet MS", sans-serif;
+            background: #fff;
+            box-shadow: 0 0 10px 0 #dedede;
+            padding: 10px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 325px;
+            max-width: calc( 100% - 30px );
+            border-radius: 6px;
+            transition: bottom 700ms ease;
+            z-index: 10000;
+        }
+
+        .sbi-critical-notice h3 {
+            font-size: 13px;
+            color: #222;
+            font-weight: 700;
+            margin: 0 0 4px;
+            padding: 0;
+            line-height: 1;
+            border: none;
+        }
+
+        .sbi-critical-notice p {
+            font-size: 12px;
+            color: #7f7f7f;
+            font-weight: 400;
+            margin: 0;
+            padding: 0;
+            line-height: 1.2;
+            border: none;
+        }
+
+        .sbi-critical-notice p a {
+            color: #7f7f7f;
+            font-size: 12px;
+            line-height: 1.2;
+            margin: 0;
+            padding: 0;
+            text-decoration: underline;
+            font-weight: 400;
+        }
+
+        .sbi-critical-notice p a:hover {
+            color: #666;
+        }
+
+        .sbi-critical-notice-icon img {
+            height: auto;
+            display: block;
+            margin: 0;
+        }
+
+        .sbi-critical-notice-icon {
+            padding: 0;
+            border-radius: 4px;
+            flex-grow: 0;
+            flex-shrink: 0;
+            margin-right: 12px;
+            overflow: hidden;
+        }
+
+        .sbi-critical-notice-close {
+            padding: 10px;
+    		margin: -12px -9px 0 0;
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+            color: #7f7f7f;
+            background: transparent;
+            line-height: 1;
+            align-self: flex-start;
+            cursor: pointer;
+            font-weight: 400;
+        }
+        .sbi-critical-notice-close:hover,
+        .sbi-critical-notice-close:focus{
+        	color: #111;
+        }
+
+        .sbi-critical-notice.sbi-critical-notice-hide {
+            bottom: -200px;
+        }
+    </style>
+	<?php
+
+	if ( ! wp_script_is( 'jquery', 'queue' ) ) {
+		wp_enqueue_script( 'jquery' );
+	}
+	?>
+    <script>
+        if ( 'undefined' !== typeof jQuery ) {
+            jQuery( document ).ready( function ( $ ) {
+                /* Don't show the notice if we don't have a way to hide it (no js, no jQuery). */
+                $( document.querySelector( '.sbi-critical-notice' ) ).removeClass( 'sbi-critical-notice-hide' );
+                $( document.querySelector( '.sbi-critical-notice-close' ) ).on( 'click', function ( e ) {
+                    e.preventDefault();
+                    $( this ).closest( '.sbi-critical-notice' ).addClass( 'sbi-critical-notice-hide' );
+                    $.ajax( {
+                        url: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
+                        method: 'POST',
+                        data: {
+                            action: 'sbi_dismiss_critical_notice',
+                            nonce: '<?php echo esc_js( wp_create_nonce( 'sbi-critical-notice' ) ); ?>',
+                        }
+                    } );
+                } );
+            } );
+        }
+    </script>
+	<?php
+}
+
+add_action( 'wp_footer', 'sbi_critical_error_notice', 300 );
+
+/**
+ * Ajax handler to hide the critical notice.
+ */
+function sbi_dismiss_critical_notice() {
+
+	check_ajax_referer( 'sbi-critical-notice', 'nonce' );
+
+	update_option( 'sbi_dismiss_critical_notice', 1, false );
+
+	wp_die();
+
+}
+
+add_action( 'wp_ajax_sbi_dismiss_critical_notice', 'sbi_dismiss_critical_notice' );
+
+function sbi_schedule_report_email() {
+	$options = get_option( 'sb_instagram_settings', array() );
+
+	$input = isset( $options[ 'email_notification' ] ) ? $options[ 'email_notification' ] : 'monday';
+	$timestamp = strtotime( 'next ' . $input );
+	$timestamp = $timestamp + (3600 * 24 * 7);
+
+	$six_am_local = $timestamp + sbi_get_utc_offset() + (6*60*60);
+
+	wp_schedule_event( $six_am_local, 'sbiweekly', 'sb_instagram_feed_issue_email' );
+}
+
+function sbi_send_report_email() {
+	$options = get_option('sb_instagram_settings' );
+
+	$to_string = ! empty( $options['email_notification_addresses'] ) ? str_replace( ' ', '', $options['email_notification_addresses'] ) : get_option( 'admin_email', '' );
+
+	$to_array_raw = explode( ',', $to_string );
+	$to_array = array();
+
+	foreach ( $to_array_raw as $email ) {
+		if ( is_email( $email ) ) {
+			$to_array[] = $email;
+		}
+	}
+
+	if ( empty( $to_array ) ) {
+		return false;
+	}
+	$from_name = esc_html( wp_specialchars_decode( get_bloginfo( 'name' ) ) );
+	$email_from = $from_name . ' <' . get_option( 'admin_email', $to_array[0] ) . '>';
+	$header_from  = "From: " . $email_from;
+
+	$headers = array( 'Content-Type: text/html; charset=utf-8', $header_from );
+
+	$header_image = SBI_PLUGIN_URL . 'img/balloon-120.png';
+
+	$link = admin_url( '?page=sb-instagram-feed');
+	//&tab=customize-advanced
+	$footer_link = admin_url('admin.php?page=sb-instagram-feed&tab=customize-advanced&flag=emails');
+
+	$is_expiration_notice = false;
+
+	if ( isset( $options['connected_accounts'] ) ) {
+		foreach ( $options['connected_accounts'] as $account ) {
+			if ( $account['type'] === 'basic'
+			     && isset( $account['private'] )
+			     && sbi_private_account_near_expiration( $account ) ) {
+				$is_expiration_notice = true;
+			}
+		}
+	}
+
+	if ( ! $is_expiration_notice ) {
+		$title = sprintf( __( 'Instagram Feed Report for %s', 'instagram-feed' ), str_replace( array( 'http://', 'https://' ), '', home_url() ) );
+		$bold = __( 'There\'s an Issue with an Instagram Feed on Your Website', 'instagram-feed' );
+		$details = '<p>' . __( 'An Instagram feed on your website is currently unable to connect to Instagram to retrieve new posts. Don\'t worry, your feed is still being displayed using a cached version, but is no longer able to display new posts.', 'instagram-feed' ) . '</p>';
+		$details .= '<p>' . sprintf( __( 'This is caused by an issue with your Instagram account connecting to the Instagram API. For information on the exact issue and directions on how to resolve it, please visit the %sInstagram Feed settings page%s on your website.', 'instagram-feed' ), '<a href="' . esc_url( $link ) . '">', '</a>' ). '</p>';
+	} else {
+		$title = __( 'Your Private Instagram Feed Account Needs to be Reauthenticated', 'instagram-feed' );
+		$bold = __( 'Access Token Refresh Needed', 'instagram-feed' );
+		$details = '<p>' . __( 'As your Instagram account is set to be "Private", Instagram requires that you reauthenticate your account every 60 days. This a courtesy email to let you know that you need to take action to allow the Instagram feed on your website to continue updating. If you don\'t refresh your account, then a backup cache will be displayed instead.', 'instagram-feed' ) . '</p>';
+		$details .= '<p>' . sprintf( __( 'To prevent your account expiring every 60 days %sswitch your account to be public%s. For more information and to refresh your account, click here to visit the %sInstagram Feed settings page%s on your website.', 'instagram-feed' ), '<a href="https://help.instagram.com/116024195217477/In">', '</a>', '<a href="' . esc_url( $link ) . '">', '</a>' ). '</p>';
+	}
+	$message_content = '<h6 style="padding:0;word-wrap:normal;font-family:\'Helvetica Neue\',Helvetica,Arial,sans-serif;font-weight:bold;line-height:130%;font-size: 16px;color:#444444;text-align:inherit;margin:0 0 20px 0;Margin:0 0 20px 0;">' . $bold . '</h6>' . $details;
+	include_once SBI_PLUGIN_DIR . 'inc/class-sb-instagram-education.php';
+	$educator = new SB_Instagram_Education();
+	$dyk_message = $educator->dyk_display();
+	ob_start();
+	include SBI_PLUGIN_DIR . 'inc/email.php';
+	$email_body = ob_get_contents();
+	ob_get_clean();
+
+	$sent = wp_mail( $to_array, $title, $email_body, $headers );
+
+	return $sent;
+}
+
+function sbi_maybe_send_feed_issue_email() {
+	global $sb_instagram_posts_manager;
+	if ( ! $sb_instagram_posts_manager->are_critical_errors() ) {
+		return;
+	}
+	$options = get_option('sb_instagram_settings' );
+
+	if ( isset( $options['enable_email_report'] ) && empty( $options['enable_email_report'] ) ) {
+		return;
+	}
+
+	sbi_send_report_email();
+}
+add_action( 'sb_instagram_feed_issue_email', 'sbi_maybe_send_feed_issue_email' );
+
+function sbi_update_option( $option_name, $option_value, $autoload = true ) {
+	return update_option( $option_name, $option_value, $autoload = true );
+}
+
+function sbi_get_option( $option_name, $default ) {
+	return get_option( $option_name, $default );
+}
+
+function sbi_is_pro_version() {
+	return defined( 'SBI_STORE_URL' );
+}

@@ -10,6 +10,14 @@ jQuery(function($) {
     
     metabox.find('.yarpp_subbox').hide();
     metabox.find('.template_options_' + value).show();
+
+    var no_results_area = metabox.find('.yarpp_no_results');
+    // The "no_results" input is special. Its used by the non-custom templates.
+    if(value === 'custom'){
+      no_results_area.hide();
+    } else {
+      no_results_area.show();
+    }
     excerpt.apply(metabox);
   }
   $('.use_template').each(template).change(template);
@@ -75,6 +83,29 @@ jQuery(function($) {
   $('#yarpp-rss_display, #yarpp_display_rss .handlediv, #yarpp_display_rss-hide').click(rss_display);
   rss_display();
 
+
+  function yarpp_rest_display() {
+    if ( !$('#yarpp_display_api .inside').is(':visible') )
+      return;
+    if ( $('#yarpp-rest_api_display').is(':checked') ) {
+      $('.yarpp_rest_displayed').show();
+    } else {
+      $('.yarpp_rest_displayed').hide();
+    }
+  }
+  $('#yarpp-rest_api_display').click(yarpp_rest_display);
+  yarpp_rest_display();
+
+  function yarpp_rest_cache_display() {
+    if ( $('#yarpp-rest_api_client_side_caching').is(':checked') ) {
+      $('.yarpp_rest_browser_cache_displayed').show();
+    } else {
+      $('.yarpp_rest_browser_cache_displayed').hide();
+    }
+  }
+  $('#yarpp-rest_api_client_side_caching').click(yarpp_rest_cache_display);
+  yarpp_rest_cache_display();
+
   var loaded_disallows = false;
   function load_disallows() {
     if ( loaded_disallows || !$('#yarpp_pool .inside').is(':visible') )
@@ -110,6 +141,7 @@ jQuery(function($) {
             display.find('.loading').remove();
             if (':(' == html) { // no more :(
               finished_taxonomies[taxonomy] = true;
+              display.append("-");
               return;
             }
             display.append(html);
@@ -183,17 +215,33 @@ jQuery(function($) {
     that.mouseleave(function () {
       pointer.pointer('close');
     });
+
+    // Only setup the copy templates button once it exists.
+    $('.yarpp_copy_templates_button').on('click', function() {
+      $copy_templates_button = $(this);
+      $spinner = $copy_templates_button.siblings('.spinner');
+
+      $copy_templates_button.addClass( 'disabled' );
+      $spinner.addClass('is-active');
+
+      window.location = window.location + (window.location.search.length ? '&' : '?') + 'action=copy_templates&_ajax_nonce=' + $('#yarpp_copy_templates-nonce').val();
+    });
   });
+  
+  $('.yarpp_spin_on_click').on('click', function() {
+    $button = $(this);
+    $spinner = $button.siblings('.spinner');
+
+    $button.addClass( 'disabled' );
+    $spinner.addClass( 'is-active' );
+  });
+  
   $('.yarpp_template_button:not(.disabled)').click(function() {
     $(this).siblings('input')
       .val($(this).attr('data-value'))
       .change();
     $(this).siblings().removeClass('active');
     $(this).addClass('active');
-  });
-
-  $('.yarpp_copy_templates_button').live('click', function() {
-    window.location = window.location + (window.location.search.length ? '&' : '?') + 'action=copy_templates&_ajax_nonce=' + $('#yarpp_copy_templates-nonce').val();
   });
   
   function template_info() {

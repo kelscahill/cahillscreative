@@ -52,6 +52,15 @@ class equivalent_posts
 		$child_post = $this->get( $parent_blog, $parent_post, $child_blog );
 		if ( ! $child_post )
 		{
+			$action = ThreeWP_Broadcast()->new_action( 'get_or_broadcast' );
+			$action->parent_blog_id = $parent_blog;
+			$action->parent_post_id = $parent_post;
+			$action->child_blog_id = $child_blog;
+			$action->execute();
+
+			if ( ! $action->broadcast_child_post )
+				return $action->child_post_id;
+
 			$this->broadcast()->debug( 'Equivalent child of %s / %s on %s not found. Broadcasting.', $parent_blog, $parent_post, $child_blog );
 			switch_to_blog( $parent_blog );
 			$new_bcd = ThreeWP_Broadcast()->api()

@@ -135,17 +135,23 @@ class SB_Instagram_Display_Elements
 				}
 
 				if ( ($post['media_type'] === 'CAROUSEL_ALBUM' || $post['media_type'] === 'VIDEO') && ($optimum_res === 'lightbox' || $optimum_res === 'full')) {
-					$media_url = $permalink . 'media?size=l';
+					$media_url = $permalink . 'media/?size=l';
 				} else {
 					switch ($optimum_res) {
 						case 'thumb' :
-							$media_url = $permalink . 'media?size=t';
+							$media_url = $permalink . 'media/?size=t';
 							break;
 						case 'medium' :
-							$media_url = $permalink . 'media?size=m';
+							$media_url = $permalink . 'media/?size=m';
 							break;
 						default :
-							$media_url = $post['media_url'];
+							if ( isset( $post['media_url'] ) ) {
+								$media_url = $post['media_url'];
+							} else {
+								$permalink = SB_Instagram_Parse::fix_permalink( SB_Instagram_Parse::get_permalink( $post ) );
+
+								$media_url = $permalink . 'media/?size=l';
+							}
 					}
 				}
 			}

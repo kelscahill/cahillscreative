@@ -4,9 +4,9 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 5.4
-Stable tag: 46.04
+Stable tag: 46.14
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
-Tested up to: 5.3
+Tested up to: 5.5
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -31,6 +31,7 @@ Here are some use cases for Broadcast:
 
 * <a href="https://broadcast.plainviewplugins.com/2017/04/02/broadcast-in-the-school-classroom/">Broadcast in the school classroom</a>
 * <a href="https://broadcast.plainviewplugins.com/2017/04/02/franchising-with-wordpress-and-broadcast/">Franchising with WordPress and Broadcast</a>
+* <a href="https://broadcast.plainviewplugins.com/2020/07/12/on-demand-content-syndication-with-broadcast-parent-pull/">On-Demand Content Syndication with Broadcast Parent Pull</a>
 * <a href="https://broadcast.plainviewplugins.com/2017/06/28/sharing-forms-on-a-wordpress-network/">Sharing forms on a Wordpress network</a>
 * <a href="https://broadcast.plainviewplugins.com/2017/03/28/wholesale-with-woocommerce-and-broadcast/">Wholesale with WooCommerce and Broadcast</a>
 
@@ -70,8 +71,10 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/beaver-builder/">Beaver Builder</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/caldera-forms/">Caldera Forms</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/calendarize-it/">Calendarize It</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/category-order-and-taxonomy-terms-order/">Category Order and Taxonomy Terms Order</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/cm-tooltip-glossary/">CM Tooltip Glossary</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/contact-form-7/">Contact Form 7</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/create/">Create</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/divi-builder/">Divi Builder</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/download-manager/">Download Manager</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/download-monitor/">Download Monitor</a>
@@ -97,6 +100,7 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/mailster/">Mailster</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/metaslider/">Metaslider</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/modern-events/">Modern Events</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/ninja-forms/">Ninja Forms</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/ns-cloner/">NS Cloner</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/onesignal/">OneSignal</a>
@@ -108,11 +112,12 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/siteorigin-page-builder/">SiteOrigin Page Builder</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/slider-revolution/">Slider Revolution</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/smart-slider-3/">Smart Slider 3</a>
-* <a href="https://broadcast.plainviewplugins.com/addon/social-networks-auto-poster/">Social Networks Auto Poster</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/soliloquy/">Soliloquy</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/tablepress/">TablePress</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/tao-schedule-update/">Tao Schedule Update</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/the-events-calendar/">The Events Calendar</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/toolset/">Toolset</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/translatepress/">TranslatePress</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/ubermenu/">UberMenu</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/ultimate-member/">Ultimate Member</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/unyson/">Unyson</a>
@@ -124,9 +129,12 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/wpforms/">WPForms</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/wplms/">WPLMS</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/wpml/">WPML</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/wp-rocket/">WP Rocket</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/wp-ultimate-recipe/">WP Ultimate Recipe</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/wp-ultimo/">WP Ultimo</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/yoast-seo/">Yoast SEO</a>
+
+If you don't see your plugin in this list, it <a href="https://broadcast.plainviewplugins.com/doc/plugins-that-dont-require-special-add-ons/">might not need a specialized add-on</a>.
 
 Control pack
 ------------
@@ -145,6 +153,7 @@ These add-ons give you extra control of what you broadcast and how.
 * <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-attachments/">Gutenberg Attachments</a>: Modify attachment IDs found in Gutenberg blocks to match their equivalent attachments on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-menus/">Gutenberg Menus</a>: Modify menu IDs found in Gutenberg blocks to match their equivalent attachments on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-posts/">Gutenberg Posts</a>: Modify post IDs found in Gutenberg blocks to match their equivalent attachments on each blog.
+* <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-protect/">Gutenberg Protect</a>: Protects specific Gutenberg blocks from being overwritten during broadcasting.
 * <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-terms/">Gutenberg Terms</a>: Modify taxonomy term IDs found in Gutenberg blocks to match their equivalent attachments on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/hreflang/">Hreflang</a> adds support for <a href="https://en.wikipedia.org/wiki/Hreflang">SEO-friendly hreflang html tags</a>.
 * <a href="https://broadcast.plainviewplugins.com/addon/keep-child-status/">Keep Child Status</a> keeps the status of post children to private, pending, published, draft, no matter the status of the parent.
@@ -152,6 +161,7 @@ These add-ons give you extra control of what you broadcast and how.
 * <a href="https://broadcast.plainviewplugins.com/addon/local-files/">Local Files</a> automatically copies local files to each blog and updates the links in the content.
 * <a href="https://broadcast.plainviewplugins.com/addon/local-links/">Local Links</a> automatically updates links to local posts on each child blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/no-new-terms/">No New Terms</a> prevents taxonomy terms from being created on child blogs.
+* <a href="https://broadcast.plainviewplugins.com/addon/parent-pull/">Parent Pull</a> allows content to be pulled from (parent) blogs.
 * <a href="https://broadcast.plainviewplugins.com/addon/per-blog-taxonomies/">Per Blog Taxonomies</a> allows individual control of specific taxonomies for each child post.
 * <a href="https://broadcast.plainviewplugins.com/addon/permalinks/">Permalinks</a> provides more precise control of permalinks for both parents and children.
 * <a href="https://broadcast.plainviewplugins.com/addon/protect-child-properties/">Protect Child Properties</a> prevents various properties of child posts from being overwritten.
@@ -212,6 +222,8 @@ Although Broadcast is relatively easy to understand by itself, for extra documen
 * <a href="https://broadcast.plainviewplugins.com/doc/linking/">Linking</a>
 * <a href="https://broadcast.plainviewplugins.com/doc/post-actions/">Post actions and the bulk action dropdown</a>
 * <a href="https://broadcast.plainviewplugins.com/doc/taxonomy-handling/">Taxonomy handling</a>
+
+Here are instructions for <a href="https://broadcast.plainviewplugins.com/merging-single-wordpress-installs-into-a-wordpress-network/">merging existing single installs into a Wordpress network</a>.
 
 For developers: the code should be well-commented and easily legible for the most part. Extra developer documentation covers:
 
@@ -290,7 +302,8 @@ Below is a list of plugins that just will not work properly with Broadcast and /
 
 * <a href="https://wordpress.org/plugins/intuitive-custom-post-order/">Intuitive Custom Post Order</a> - Prevents broadcasting due to switch_to_blog() mismatch.
 * Post Type Switcher - Turns post types into attachments and vice versa.
-* Taxonomy Terms Order - prevents terms from being seen.
+* <a href="https://wordpress.org/plugins/query-monitor/">Query Monitor</a> causes the queue data to increase exponentially.
+* Theia Smart Thumbnails Premium
 * <a href="http://intellywp.com/tracking-code-manager/">Tracking Code Manager</a> - prevents User & Blog Settings from working by inserting data into the _POST variable during a normal page GET. Very non-standard behavior.
 
 = Orphans? =
@@ -338,7 +351,56 @@ If your products have variations, a product image gallery, you want to sync stoc
 
 == Changelog ==
 
-= 46.04 2020310 =
+= 46.14 20201002 =
+
+* Fix: Allow cron (user 0) to use Broadcast.
+* New: Add get_or_broadcast action for use with <a href="https://broadcast.plainviewplugins.com/snippet/do-not-broadcast-equivalent-posts/">this snippet</a>.
+
+= 46.13 20200922 =
+
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/modern-events/">Modern Events</a> adds support for the <a href="https://wordpress.org/plugins/modern-events-calendar-lite/">Modern Events plugin</a>.
+* Fix: Scheduling for future posts.
+
+= 46.12 20200810 =
+
+* Version bump for upcoming WP v5.5
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/create/">Create</a> adds support for the <a href="https://wordpress.org/plugins/mediavine-create/">Create</a> plugin from Mediavine.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/soliloquy/">Soliloquy</a> adds support for the <a href="https://soliloquywp.com/">Soliloquy plugin</a>.
+
+= 46.10 20200714 =
+
+* Fix: Escape image URLs when replacing them in the content.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/parent-pull/">Parent Pull</a> allows content to be pulled from (parent) blogs.
+* New use-case: <a href="https://broadcast.plainviewplugins.com/2020/07/12/on-demand-content-syndication-with-broadcast-parent-pull/">On-Demand Content Syndication with Broadcast Parent Pull</a>
+
+= 46.09 20200708 =
+
+* Fix: Use the same mime type for attachments when copying them.
+* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/category-order-and-taxonomy-terms-order/">Category Order and Taxonomy Terms Order</a>: Adds support for the <a href="https://wordpress.org/plugins/taxonomy-terms-order/">Category Order and Taxonomy Terms Order plugin</a>.
+* Tweak: Added Query Monitor to the list of incompatible plugins.
+* Tweak: Removed Category Order and Taxonomy Terms Order plugin from list of incompatible plugins.
+
+= 46.07 20200605 =
+
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/wp-rocket/">WP Rocket</a>: Adds support for the <a href="https://wp-rocket.me/">WP Rocket</a> plugin.
+* New documentation: <a href="https://broadcast.plainviewplugins.com/doc/plugins-that-dont-require-special-add-ons/">Plugins that don't require special add-ons</a>, such as <a href="https://broadcast.plainviewplugins.com/2020/05/19/broadcasting-gutenberg-reusable-blocks/">Gutenberg Reusable Blocks</a> and Visual Composer / WP Bakery.
+* Fix: Removed warning "Undefined index: save_post" in misc trait.
+
+= 46.06 20200411 =
+
+* Fix: Allow multiple term meta values per key.
+* Fix: Better finding of unlinked children. Removed the post hierarchical check that was previously required.
+* New doc: <a href="https://broadcast.plainviewplugins.com/snippet/network-media-library-fixing-broken-thumbnails/">Network Media Library: Fixing broken thumbnails</a>
+
+= 46.05 20200325 =
+
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-protect/">Gutenberg Protect</a>: Protects specific Gutenberg blocks from being overwritten during broadcasting.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/translatepress/">TranslatePress</a>: Adds support for the <a href="https://wordpress.org/plugins/translatepress-multilingual/">TranslatePress</a> plugin.
+* New doc: <a href="https://broadcast.plainviewplugins.com/merging-single-wordpress-installs-into-a-wordpress-network/">Merging single WordPress installs into a WordPress network</a>
+* Fix: Decrease broadcasting counter when aborting broadcasting.
+* Fix: Better parent post link override when working with TranslatePress links.
+
+= 46.04 20200310 =
 
 * Fix: Force Wordpress to set the date of scheduled posts.
 

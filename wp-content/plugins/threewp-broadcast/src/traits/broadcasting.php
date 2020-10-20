@@ -43,13 +43,13 @@ trait broadcasting
 	{
 		$bcd = $broadcasting_data;
 
+		if ( ! $bcd->post )
+			return $this->debug( 'Warning! Refusing to broadcast non-existent post %s on %s.', $bcd->post, get_current_blog_id() );
+
 		// To prevent recursion
 		array_push( $this->broadcasting, $bcd );
 
 		$this->debug( 'System info: %s', $this->get_system_info_table() . '' );
-
-		if ( ! $bcd->post )
-			return $this->debug( 'Warning! Refusing to broadcast non-existent post.' );
 
 		$this->debug( 'Broadcasting the post %s <pre>%s</pre>', $bcd->post->ID, $bcd->post );
 
@@ -460,6 +460,8 @@ trait broadcasting
 
 			// Force setting of the correct post dates.
 			$this->set_post_date( $dated_post );
+			// Ask WP to schedule a publish transient.
+			check_and_publish_future_post( $dated_post->ID );
 
 			$bcd->equivalent_posts()->set( $bcd->parent_blog_id, $bcd->post->ID, $bcd->current_child_blog_id, $bcd->new_post( 'ID' ) );
 			$this->debug( 'Equivalent of %s/%s is %s/%s', $bcd->parent_blog_id, $bcd->post->ID, $bcd->current_child_blog_id, $bcd->new_post( 'ID' )  );
@@ -704,14 +706,17 @@ trait broadcasting
 		{
 			if ( ! $this->is_broadcasting() )
 			{
-				if ( isset( $bcd->stop_after_broadcast ) && ! $bcd->stop_after_broadcast )
+				if ( isset( $bcd->stop_after_broadcast ) )
 				{
-					$this->debug( 'Finished broadcasting.' );
-				}
-				else
-				{
-					$this->debug( 'Finished broadcasting. Now stopping Wordpress.' );
-					exit;
+					if ( $bcd->stop_after_broadcast )
+					{
+						$this->debug( 'Finished broadcasting. Now stopping Wordpress.' );
+						exit;
+					}
+					else
+					{
+						$this->debug( 'Finished broadcasting.' );
+					}
 				}
 			}
 			else
@@ -719,6 +724,8 @@ trait broadcasting
 				$this->debug( 'Still broadcasting.' );
 			}
 		}
+
+		$this->debug( "Broadcasting finished. On blog %s.", get_current_blog_id() );
 
 		return $bcd;
 	}
@@ -777,7 +784,7 @@ trait broadcasting
 
 		// No post?
 		if ( count( $_POST ) < 1 )
-			return $this->debug( 'No _POST available. Not broadcasting.' );
+			return;
 
 		// Does this post_id match up with the one in the post?
 		if ( isset( $_POST[ 'ID' ] ) )
@@ -790,11 +797,12 @@ trait broadcasting
 		// Is this post a child?
 		$broadcast_data = $this->get_post_broadcast_data( get_current_blog_id(), $post_id );
 		if ( $broadcast_data->get_linked_parent() !== false )
-			return $this->debug( 'Post is a child. Not broadcasting.' );
+			return;
 
 		// No permission.
-		if ( ! static::user_has_roles( $this->get_site_option( 'role_broadcast' ) ) )
-			return $this->debug( 'User does not have permission to use Broadcast. Not broadcasting.' );
+		if ( get_current_user_id() > 0 )		// Cron is 0.
+			if ( ! static::user_has_roles( $this->get_site_option( 'role_broadcast' ) ) )
+				return $this->debug( 'User does not have permission to use Broadcast. Not broadcasting.' );
 
 		// Save the user's last settings.
 		if ( isset( $_POST[ 'broadcast' ] ) )

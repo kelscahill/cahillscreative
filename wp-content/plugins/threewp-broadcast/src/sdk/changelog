@@ -1,3 +1,6 @@
+20200617		Wordpress: Use wp_salt().
+20200608		Wordpress: Allow form display_form_table() function to accept inputs.
+20200402		Wordpress: Update EDD updater.
 20200223		Wordpress: Assume empty group slug for plugin pack.
 20190812		Base: Fix extra :80 for https/http current_url when using internal proxies.
 20190716		Wordpress: Added code for Option (local) storage.

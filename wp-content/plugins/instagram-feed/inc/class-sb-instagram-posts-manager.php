@@ -298,6 +298,22 @@ class SB_Instagram_Posts_Manager
 		sbi_create_database_table();
 	}
 
+	public static function top_post_request_already_made( $hashtag ) {
+		$list_of_top_hashtags = get_option( 'sbi_top_api_calls', array() );
+
+		return in_array( $hashtag, $list_of_top_hashtags, true );
+	}
+
+	public static function maybe_update_list_of_top_hashtags( $hashtag ) {
+		$list_of_top_hashtags = get_option( 'sbi_top_api_calls', array() );
+
+		if ( ! in_array( $hashtag, $list_of_top_hashtags, true ) ) {
+			$list_of_top_hashtags[] = $hashtag;
+			update_option( 'sbi_top_api_calls', $list_of_top_hashtags );
+		}
+
+	}
+
 	/**
 	 * @return array
 	 *
@@ -329,7 +345,41 @@ class SB_Instagram_Posts_Manager
 			unset( $this->errors[ $type ] );
 
 			update_option( 'sb_instagram_errors', $this->errors, false );
+		} else {
+
+			foreach ( $this->errors as $type => $error ) {
+				if ( strpos( $type, 'expiration_' ) !== false ) {
+					unset( $this->errors[ $type ] );
+				}
+			}
+
+			delete_option( 'sb_instagram_error_page' );
+			update_option( 'sb_instagram_errors', $this->errors, false );
 		}
+	}
+
+	public function remove_all_errors() {
+		if ( empty( $this->errors ) ) {
+			return;
+		}
+		foreach ( $this->errors as $type => $error ) {
+			if ( strpos( $type, 'expiration_' ) === false ) {
+				unset( $this->errors[ $type ] );
+			}
+		}
+		delete_option( 'sb_instagram_error_page' );
+		update_option( 'sb_instagram_errors', $this->errors, false );
+		sb_instagram_cron_clear_cache();
+	}
+
+	public function update_error_page( $id ) {
+		if ( $id !== 0 ) {
+			update_option( 'sb_instagram_error_page', $id, false );
+		}
+	}
+
+	public function get_error_page() {
+		return get_option( 'sb_instagram_error_page', false );
 	}
 
 	/**
@@ -339,6 +389,7 @@ class SB_Instagram_Posts_Manager
 	 * @since 2.0/5.0
 	 */
 	public function add_frontend_error( $type, $message ) {
+		$this->frontend_errors = array();
 		$this->frontend_errors[ $type ] = $message;
 	}
 
@@ -360,6 +411,85 @@ class SB_Instagram_Posts_Manager
 		return $this->frontend_errors;
 	}
 
+	public function get_critical_errors() {
+		$errors = $this->get_errors();
+		$error = '';
+		$error_100_found = false;
+		$reconnect_instructions_needed = false;
+		$cap = current_user_can( 'manage_instagram_feed_options' ) ? 'manage_instagram_feed_options' : 'manage_options';
+		$cap = apply_filters( 'sbi_settings_pages_capability', $cap );
+		$hash = '';
+		if ( ! empty( $errors ) && current_user_can( $cap ) ) {
+			if ( isset( $errors['api'] ) ) {
+				$error .= '<p>' . $errors['api'][1] . '</p>';
+				if ( isset( $errors['api'][2] ) ) {
+					$hash = '#' . $errors['api'][2];
+				}
+			} elseif ( isset( $errors['connection'] ) ) {
+				$error .= '<p>' . $errors['connection'][1] . '</p>';
+				if ( isset( $errors['connection'][2] ) ) {
+					$hash = '#' . $errors['connection'][2];
+				}
+			} else {
+				foreach ( $errors as $key => $value ) {
+					if ( strpos( $key, 'at_' ) !== false ) {
+						$reconnect_instructions_needed = true;
+
+						$error = '<p>' . $value[1] . '</p>';
+						if ( strpos( $key, 'at_100' ) !== false ) {
+							$error_100_found = true;
+						}
+					} elseif ( strpos( $key, 'expiration_' ) !== false ) {
+						$reconnect_instructions_needed = true;
+
+						$error = '<p>' . $value[1] . '</p>';
+					}
+					if ( isset( $value[2] ) ) {
+						$hash = '#' . $value[2];
+					}
+				}
+			}
+		} else {
+			return '';
+		}
+
+		foreach ( $errors as $error_key => $message ) {
+			if ( strpos( $error_key, 'ig_no_posts_for_' ) !== false ) {
+				if ( (int)$message[0] < (time() - 12 * 60 * 60) ) {
+					$this->remove_error( $error_key );
+				} else {
+					$error .= '<p>' . $message[1] . '</p>';
+				}
+			} elseif ( strpos( $error_key, 'error_18' ) !== false ) {
+				if ( (int)$message[0] < (time() - 24 * 60 * 60) ) {
+					$this->remove_error( $error_key );
+				} else {
+					$error .= '<p>' . $message[1] . '</p>';
+				}
+			}
+		}
+
+
+		if ( current_user_can( $cap ) ) {
+			if ( $reconnect_instructions_needed && ! $error_100_found ) {
+				$on_configure_page = (is_admin() && (! isset( $_GET['tab']) || $_GET['tab'] === 'configure'));
+				if ( $on_configure_page ) {
+					$error .= '<p class="sbi-error-directions sbi-reconnect"><a href="https://smashballoon.com/instagram-feed/docs/errors/' . $hash . '" target="_blank" rel="noopener">' . __( 'Reconnect Account and Refresh Token', 'instagram-feed' )  . '</a></p>';
+				} else {
+					$link = admin_url( '?page=sb-instagram-feed' );
+					$error .= '<p class="sbi-error-directions sbi-reconnect"><a href="'. esc_url( $link ).'" target="_blank" rel="noopener">' . __( 'Reconnect Your Account in the Admin Area', 'instagram-feed' )  . '</a></p>';
+				}
+			} else {
+				$error .= '<p class="sbi-error-directions"><a href="https://smashballoon.com/instagram-feed/docs/errors/' . $hash . '" target="_blank" rel="noopener">' . __( 'Directions on How to Resolve This Issue', 'instagram-feed' )  . '</a></p>';
+			}
+		}
+
+		// remove link to FB docs
+		$error = str_replace( 'Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api', '', $error );
+
+		return $error;
+	}
+
 	/**
 	 * @return array
 	 *
@@ -369,9 +499,6 @@ class SB_Instagram_Posts_Manager
 		return $this->frontend_errors = array();
 	}
 
-	public function set_status() {
-
-	}
 
 	public function clear_hashtag_errors() {
 		$errors = $this->get_errors();
@@ -403,34 +530,7 @@ class SB_Instagram_Posts_Manager
 		if ( $is_delay ) {
 			$this->reset_frontend_errors();
 			$error = '<p><b>' . sprintf( __( 'Error: API requests are being delayed.', 'instagram-feed' ) ) . ' ' . __( 'New posts will not be retrieved for at least 5 minutes.', 'instagram-feed' ) . '</b></p>';
-			$errors = $this->get_errors();
-			if ( ! empty( $errors )  && current_user_can( 'manage_options' ) ) {
-				if ( isset( $errors['api'] ) ) {
-					$error .= '<p>' . $errors['api'][1] . '</p>';
-				} elseif ( isset( $errors['connection'] ) ) {
-					$error .= '<p>' . $errors['connection'][1] . '</p>';
-				}
-			} else {
-				$error .= '<p>' . __( 'There may be an issue with the Instagram access token that you are using. Your server might also be unable to connect to Instagram at this time.', 'instagram-feed' ) . '</p>';
-			}
-
-			foreach ( $errors as $error_key => $message ) {
-				if ( strpos( $error_key, 'ig_no_posts_for_' ) !== false ) {
-					if ( (int)$message[0] < (time() - 12 * 60 * 60) ) {
-						$this->remove_error( $error_key );
-					} else {
-						$error .= '<p>' . $message[1] . '</p>';
-					}
-				} elseif ( strpos( $error_key, 'error_18' ) !== false ) {
-					if ( (int)$message[0] < (time() - 24 * 60 * 60) ) {
-						$this->remove_error( $error_key );
-					} else {
-						$error .= '<p>' . $message[1] . '</p>';
-					}
-				}
-			}
-
-			$error .= '<p>' . __( 'Click <a href="https://smashballoon.com/instagram-feed/docs/errors/">here</a> to troubleshoot.', 'instagram-feed' )  . '</p>';
+			$error .= $this->get_critical_errors();
 
 			$this->add_frontend_error( 'api_delay', $error );
 
@@ -440,6 +540,34 @@ class SB_Instagram_Posts_Manager
 			$is_delay = (get_transient( SBI_USE_BACKUP_PREFIX . 'sbi_'  . $account_id ) !== false);
 		}
 
+		$is_delay = apply_filters( 'sbi_is_api_delay', $is_delay );
+
 		return $is_delay;
+	}
+
+	public function are_critical_errors() {
+
+		$critical_error_numbers = array( 100, 400, 24, 18 );
+		$errors = $this->get_errors();
+
+		$are_errors = false;
+
+		foreach ( $errors as $error_key => $message ) {
+			if ( strpos( $error_key, 'connection' ) !== false ) {
+				$are_errors = true;
+			} elseif ( strpos( $error_key, 'api' ) !== false ) {
+
+				if ( in_array( (int)$errors['api'][2], $critical_error_numbers, true ) ) {
+					$are_errors = true;
+
+				}
+			} elseif ( strpos( $error_key, 'at_' ) !== false ) {
+				$are_errors = true;
+			} elseif ( strpos( $error_key, 'expiration_' ) !== false ) {
+				$are_errors = true;
+			}
+		}
+
+		return $are_errors;
 	}
 }

@@ -7,8 +7,8 @@
  * @version 1.0.0
  *
  */
-if( ! class_exists( 'CSF_Field_number' ) ) {
-  class CSF_Field_number extends CSF_Fields {
+if ( ! class_exists( 'ULF_Field_number' ) ) {
+  class ULF_Field_number extends ULF_Fields {
 
     public function __construct( $field, $value = '', $unique = '', $where = '', $parent = '' ) {
       parent::__construct( $field, $value, $unique, $where, $parent );
@@ -21,11 +21,10 @@ if( ! class_exists( 'CSF_Field_number' ) ) {
       ) );
 
       echo $this->field_before();
-      echo '<div class="csf--wrap">';
-      echo '<input type="number" name="'. $this->field_name() .'" value="'. $this->value .'"'. $this->field_attributes( array( 'class' => 'csf-input-number' ) ) .'/>';
-      echo ( ! empty( $args['unit'] ) ) ? '<span class="csf--unit">'. $args['unit'] .'</span>' : '';
+      echo '<div class="ulf--wrap">';
+      echo '<input type="number" name="'. esc_attr( $this->field_name() ) .'" value="'. esc_attr( $this->value ) .'"'. $this->field_attributes( array( 'class' => 'ulf-input-number' ) ) .'/>';
+      echo ( ! empty( $args['unit'] ) ) ? '<span class="ulf--unit">'. esc_attr( $args['unit'] ) .'</span>' : '';
       echo '</div>';
-      echo '<div class="clear"></div>';
       echo $this->field_after();
 
     }
@@ -38,10 +37,10 @@ if( ! class_exists( 'CSF_Field_number' ) ) {
       $mode      = ( ! empty( $this->field['output_mode'] ) ) ? $this->field['output_mode'] : 'width';
       $unit      = ( ! empty( $this->field['unit'] ) ) ? $this->field['unit'] : 'px';
 
-      if( ! empty( $elements ) && isset( $this->value ) && $this->value !== '' ) {
-        foreach( $elements as $key_property => $element ) {
-          if( is_numeric( $key_property ) ) {
-            if( $mode ) {
+      if ( ! empty( $elements ) && isset( $this->value ) && $this->value !== '' ) {
+        foreach ( $elements as $key_property => $element ) {
+          if ( is_numeric( $key_property ) ) {
+            if ( $mode ) {
               $output = implode( ',', $elements ) .'{'. $mode .':'. $this->value . $unit . $important .';}';
             }
             break;

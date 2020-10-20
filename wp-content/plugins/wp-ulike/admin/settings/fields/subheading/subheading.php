@@ -7,8 +7,8 @@
  * @version 1.0.0
  *
  */
-if( ! class_exists( 'CSF_Field_subheading' ) ) {
-  class CSF_Field_subheading extends CSF_Fields {
+if ( ! class_exists( 'ULF_Field_subheading' ) ) {
+  class ULF_Field_subheading extends ULF_Fields {
 
     public function __construct( $field, $value = '', $unique = '', $where = '', $parent = '' ) {
       parent::__construct( $field, $value, $unique, $where, $parent );
@@ -16,7 +16,7 @@ if( ! class_exists( 'CSF_Field_subheading' ) ) {
 
     public function render() {
 
-      echo ( ! empty( $this->field['content'] ) ) ? $this->field['content'] : '';
+      echo ( ! empty( $this->field['content'] ) ) ? wp_kses_post( $this->field['content'] ) : '';
 
     }
 

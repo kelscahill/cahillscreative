@@ -84,7 +84,12 @@ class ThreeWP_Broadcast
 	public static $incompatible_plugins = [
 		'intuitive-custom-post-order/intuitive-custom-post-order.php',
 		'post-type-switcher/post-type-switcher.php',
-		'taxonomy-terms-order/taxonomy-terms-order.php',
+		/**
+			@brief		Causes Queue data to expand exponentially.
+			@since		2020-07-02 08:28:38
+		**/
+		'query-monitor/query-monitor.php',
+		'theia-smart-thumbnails-premium/main.php',
 		/**
 			@brief		Breaks UBS by inserting things into the _POST during normal getting.
 			@since		2018-01-22 16:02:22
@@ -358,7 +363,8 @@ class ThreeWP_Broadcast
 		$child_post = $post;
 
 		// Have we already checked this post ID for a link?
-		$key = 'b' . $blog_id . '_p' . $post->ID;
+		// The $link is to ensure uniqueness, since TranslatePress uses the same blog + post ID, but different /fr/ /de/ links.
+		$key = 'b' . $blog_id . '_p' . $post->ID . $link;
 		if ( property_exists( $this->permalink_cache, $key ) )
 		{
 			unset( $this->_is_getting_permalink );

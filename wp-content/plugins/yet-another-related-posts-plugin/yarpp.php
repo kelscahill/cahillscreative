@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Yet Another Related Posts Plugin
+Plugin Name: Yet Another Related Posts Plugin (YARPP)
 Description: Adds related posts to your site and in RSS feeds, based on a powerful, customizable algorithm.
-Version: 5.1.2
+Version: 5.9.0
 Author: YARPP
-Author URI: http://www.yarpp.com/
-Plugin URI: http://www.yarpp.com/
+Author URI: https://yarpp.com/
+Plugin URI: https://yarpp.com/
 */
 
 /**
@@ -23,9 +23,16 @@ if(!defined('WP_CONTENT_DIR')){
     define('WP_CONTENT_DIR', substr($tr,0,strrpos($tr,'/')));
 }
 
-define('YARPP_VERSION', '5.1.2');
+define('YARPP_VERSION', '5.9.0');
+
 define('YARPP_DIR', dirname(__FILE__));
+/**
+ * @deprecated Instead use plugins_url(...,YARPP_MAIN_FILE);. See https://wordpress.org/support/topic/support-for-multilingual-2/
+ * This may be removed after October 2020.
+ */
 define('YARPP_URL', plugins_url('',__FILE__));
+define('YARPP_MAIN_FILE',__FILE__);
+
 define('YARPP_NO_RELATED', ':(');
 define('YARPP_RELATED', ':)');
 define('YARPP_NOT_CACHED', ':/');
@@ -66,6 +73,10 @@ include_once(YARPP_DIR.'/classes/YARPP_Widget.php');
 include_once(YARPP_DIR.'/classes/YARPP_Cache.php');
 include_once(YARPP_DIR.'/classes/YARPP_Cache_Bypass.php');
 include_once(YARPP_DIR.'/classes/YARPP_Cache_'.ucfirst(YARPP_CACHE_TYPE).'.php');
+include_once( YARPP_DIR . '/lib/plugin-deactivation-survey/deactivate-feedback-form.php' );
+include_once(YARPP_DIR.'/classes/YARPP_DB_Schema.php');
+include_once(YARPP_DIR.'/classes/YARPP_DB_Options.php');
+include_once(YARPP_DIR.'/classes/YARPP_Shortcode.php');
 
 /* WP hooks ----------------------------------------------------------------------------------------------------------*/
 add_action('init', 'yarpp_init');

@@ -12,10 +12,7 @@
 // Exit if accessed directly.
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) exit;
 
-
 include_once( 'ajax-load-more.php' );
-
-
 
 global $wpdb;
 
@@ -58,6 +55,12 @@ if(is_multisite()){ // Multisite
  *  Delete all ALM tables
  */
 function alm_delete_templates(){
+
+	// Exit if `alm_repeater_path` has been modified outside of the plugin
+	// We don't want to delete a directory in a theme so let's skip this
+	if(has_filter('alm_repeater_path')){
+		return false;
+	}
 
 	$dir = AjaxLoadMore::alm_get_repeater_path(); // /alm_templates directory
 

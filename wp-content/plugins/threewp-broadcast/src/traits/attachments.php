@@ -167,13 +167,12 @@ trait attachments
 		// And now create the attachment stuff.
 		// This is taken almost directly from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
 		$this->debug( 'Copy attachment: Checking filetype.' );
-		$wp_filetype = wp_check_filetype( $target, null );
 		$attachment = [
 			'guid' => $new_guid,
 			'menu_order' => $attachment_data->post->menu_order,
 			'post_author' => $attachment_data->post->post_author,
 			'post_excerpt' => $attachment_data->post->post_excerpt,
-			'post_mime_type' => $wp_filetype[ 'type' ],
+			'post_mime_type' => $attachment_data->post->post_mime_type,
 			'post_name' => $attachment_data->post->post_name,
 			'post_title' => $attachment_data->post->post_title,
 			'post_content' => $attachment_data->post->post_content,
@@ -464,7 +463,14 @@ trait attachments
 				// Replace escaped URL
 				$content = str_replace( addslashes( $old_guid ), addslashes( $new_guid ), $content, $count );
 				if ( $count > 0 )
-					$this->debug( 'slashes: Modified attachment guid in link: %s times', $count );
+					$this->debug( 'slashes: Modified slashed attachment guid in link: %s times', $count );
+
+				// Alternative escapes.
+				$slashed_old_guid = str_replace( '/', '\\/', $old_guid );
+				$slashed_new_guid = str_replace( '/', '\\/', $new_guid );
+				$content = str_replace( $slashed_old_guid, $slashed_new_guid, $content, $count );
+				if ( $count > 0 )
+					$this->debug( 'slashes: Modified alt-slashed attachment guid in link: %s times', $count );
 
 				// Replace whatever is left.
 				$content = str_replace( $old_guid, $new_guid, $content, $count );

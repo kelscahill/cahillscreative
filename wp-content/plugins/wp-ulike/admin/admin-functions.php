@@ -94,13 +94,22 @@ function wp_ulike_get_paginated_logs( $table, $type ){
  * @return			string
  */
 function wp_ulike_get_number_of_new_likes() {
-	global $wpdb;
+    global $wpdb;
+
+    // Get cache key
+    $cache_key = sanitize_key( 'calculate_new_votes' );
 
 	if( isset( $_GET["page"] ) && stripos( $_GET["page"], "wp-ulike-statistics" ) !== false && is_super_admin() ) {
-		update_option( 'wpulike_lastvisit', current_time( 'mysql' ) );
-	}
+        update_option( 'wp_ulike_admin_count_visit', current_time( 'mysql' ) );
+        // Fix object cache issue
+        if ( ! get_transient( 'wp_ulike_calculate_new_votes_cache' ) ) {
+            wp_cache_delete( $cache_key, WP_ULIKE_SLUG );
+            set_transient( 'wp_ulike_calculate_new_votes_cache', true, 300 );
+        }
 
-	$cache_key     = sanitize_key( 'calculate-new-votes' );
+    }
+
+    // Get cached counter value
 	$counter_value = wp_cache_get( $cache_key, WP_ULIKE_SLUG );
 
 	// Make a cachable query to get new like count from all tables
@@ -113,11 +122,11 @@ function wp_ulike_get_number_of_new_likes() {
 			( SELECT COUNT(*) FROM `%1$sulike_forums` WHERE ( date_time <= NOW() AND date_time >= "%2$s" ) )
 			',
 			$wpdb->prefix,
-			get_option( 'wpulike_lastvisit')
+			get_option( 'wp_ulike_admin_count_visit', current_time( 'mysql' ) )
 		);
 
 		$counter_value = $wpdb->get_var( $query );
-		wp_cache_set( $cache_key, $counter_value, WP_ULIKE_SLUG );
+        wp_cache_add( $cache_key, $counter_value, WP_ULIKE_SLUG, 300 );
 	}
 
 	return empty( $counter_value ) ? 0 : $counter_value;
@@ -331,4 +340,203 @@ function wp_ulike_convert_old_options_array( $data ){
 		}
 	}
 	return $output;
+}
+
+/**
+ * Check plugin admin pages
+ *
+ * @return bool
+ */
+function wp_ulike_is_plugin_screen(){
+    $screen = get_current_screen();
+
+	if( strpos( $screen->base, WP_ULIKE_SLUG ) === false ){
+        if( defined( 'WP_ULIKE_PRO_DOMAIN' ) && in_array( $screen->base, array( 'post' ) ) ){
+            return true;
+        }
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Create stylish admin notices
+ *
+ * @param array $args
+ * @return void
+ */
+function wp_ulike_get_notice_render( $args = array() ){
+    $defaults   = array(
+        'id'             => NULL,
+        'title'          => '',
+        'skin'           => 'default',
+        'image'          => '',
+        'screen_filter'  => array(),
+        'description'    => '',
+        'initial_snooze' => '',          // snooze time in milliseconds
+        'has_close'      => false,       // Whether it has close button or not
+        'buttons'        => array()
+    );
+    $parsed_args = wp_parse_args( $args, $defaults );
+
+    // Create notice instance
+    $notice_instance = new wp_ulike_notices($parsed_args);
+	$notice_instance->render();
+}
+
+/**
+ * Creates and stores content in a file (#admin)
+ *
+ * @param  string $content    The content for writing in the file
+ * @param  string $file_location  The address that we plan to create the file in.
+ *
+ * @return boolean            Returns true if the file is created and updated successfully, false on failure
+ */
+function wp_ulike_put_contents( $content, $file_location = '', $chmode = 0644 ){
+
+    if( empty( $file_location ) ){
+        return false;
+    }
+
+    /**
+     * Initialize the WP_Filesystem
+     */
+    global $wp_filesystem;
+    if ( empty( $wp_filesystem ) ) {
+        require_once ( ABSPATH.'/wp-admin/includes/file.php' );
+        WP_Filesystem();
+    }
+
+    // Write the content, if possible
+    if ( wp_mkdir_p( dirname( $file_location ) ) && ! $wp_filesystem->put_contents( $file_location, $content, $chmode ) ) {
+        // If writing the content in the file was not successful
+        return false;
+    } else {
+        return true;
+    }
+
+}
+
+/**
+ * Creates and stores content in a file (#admin)
+ *
+ * @param  string $content    The content for writing in the file
+ * @param  string $file_name  The name of the file that we plan to store the content in. Default value is 'customfile'
+ * @param  string $file_dir   The directory that we plan to store the file in. Default dir is wp-contents/uploads/{THEME_ID}
+ *
+ * @return boolean            Returns true if the file is created and updated successfully, false on failure
+ */
+function wp_ulike_put_contents_dir( $content, $file_name = '', $file_dir = null, $chmode = 0644 ){
+
+    // Check if the fucntion for writing the files is enabled
+    if( ! function_exists('wp_ulike_put_contents') ){
+        return false;
+    }
+
+    if( is_null( $file_dir ) ){
+        $file_dir  = WP_ULIKE_CUSTOM_DIR;
+    }
+    $file_dir = trailingslashit( $file_dir );
+
+
+    if( empty( $file_name ) ){
+        $file_name = 'customfile';
+    }
+
+    $file_location = $file_dir . $file_name;
+
+    return wp_ulike_put_contents( $content, $file_location, $chmode );
+}
+
+/**
+ * Stores css content in custom css file (#admin)
+ *
+ * @return boolean            Returns true if the file is created and updated successfully, false on failure
+ */
+function wp_ulike_save_custom_css(){
+    $css_string = wp_ulike_get_custom_style();
+    $css_string = wp_ulike_minify_css( $css_string );
+
+    if ( ! empty( $css_string ) && wp_ulike_put_contents_dir( $css_string, 'custom.css' ) ) {
+        update_option( 'wp_ulike_use_inline_custom_css' , 0 ); // disable inline css output
+        return true;
+    // if the directory is not writable, try inline css fallback
+    } else {
+        update_option( 'wp_ulike_use_inline_custom_css' , 1 ); // save css rules as option to print as inline css
+        return false;
+    }
+}
+
+/**
+ * Minify CSS
+ *
+ * @param string $input
+ * @return string
+ */
+function wp_ulike_minify_css( $input ) {
+    if( trim( $input ) === "" ){
+        return $input;
+    }
+
+    return preg_replace(
+        array(
+            // Remove comment(s)
+            '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\/\*(?!\!)(?>.*?\*\/)|^\s*|\s*$#s',
+            // Remove unused white-space(s)
+            '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'|\/\*(?>.*?\*\/))|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~]|\s(?![0-9\.])|!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
+            // Replace `0(cm|em|ex|in|mm|pc|pt|px|vh|vw|%)` with `0`
+            '#(?<=[\s:])(0)(cm|em|ex|in|mm|pc|pt|px|vh|vw|%)#si',
+            // Replace `:0 0 0 0` with `:0`
+            '#:(0\s+0|0\s+0\s+0\s+0)(?=[;\}]|\!important)#i',
+            // Replace `background-position:0` with `background-position:0 0`
+            '#(background-position):0(?=[;\}])#si',
+            // Replace `0.6` with `.6`, but only when preceded by `:`, `,`, `-` or a white-space
+            '#(?<=[\s:,\-])0+\.(\d+)#s',
+            // Minify string value
+            '#(\/\*(?>.*?\*\/))|(?<!content\:)([\'"])([a-z_][a-z0-9\-_]*?)\2(?=[\s\{\}\];,])#si',
+            '#(\/\*(?>.*?\*\/))|(\burl\()([\'"])([^\s]+?)\3(\))#si',
+            // Minify HEX color code
+            '#(?<=[\s:,\-]\#)([a-f0-6]+)\1([a-f0-6]+)\2([a-f0-6]+)\3#i',
+            // Replace `(border|outline):none` with `(border|outline):0`
+            '#(?<=[\{;])(border|outline):none(?=[;\}\!])#',
+            // Remove empty selector(s)
+            '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s'
+        ),
+        array(
+            '$1',
+            '$1$2$3$4$5$6$7',
+            '$1',
+            ':0',
+            '$1:0 0',
+            '.$1',
+            '$1$3',
+            '$1$2$4$5',
+            '$1$2$3',
+            '$1:0',
+            '$1$2'
+        ),
+    $input);
+}
+
+/**
+ * Fix multiple select issue
+ *
+ * @param   array  $value
+ *
+ * @return  array
+ */
+function wp_ulike_sanitize_multiple_select( $value ) {
+    $multiple_selects = array(
+        'auto_display_filter',
+        'auto_display_filter_post_types',
+    );
+
+    foreach ( $multiple_selects as $id ) {
+        if ( ! isset( $value[$id] ) ) {
+            $value[$id] = array();
+        }
+    }
+
+    return $value;
 }

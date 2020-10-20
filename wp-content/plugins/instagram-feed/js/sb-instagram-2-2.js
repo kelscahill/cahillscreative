@@ -545,7 +545,7 @@ if(!sbi_js_exists) {
                 if (newRes > currentRes || currentUrl === window.sbi.options.placeholder || forceChange) {
                     if (feed.settings.debugEnabled) {
                         var reason = currentUrl === window.sbi.options.placeholder ? 'was placeholder' : 'too small';
-                        console.log('rais res for ' + currentUrl, reason);
+                        console.log('raise res for ' + currentUrl, reason);
                     }
                     var newUrl = imgSrcSet[newRes].split("?ig_cache_key")[0];
                     $item.find('.sbi_photo img').attr('src', newUrl);
@@ -561,7 +561,7 @@ if(!sbi_js_exists) {
 
                             if ($this_image.get(0).naturalWidth !== 1000 && newAspectRatio > aspectRatio && !checked) {
                                 if (feed.settings.debugEnabled) {
-                                    console.log('rais res again for aspect ratio change ' + currentUrl);
+                                    console.log('raise res again for aspect ratio change ' + currentUrl);
                                 }
                                 checked = true;
                                 minImageWidth = $item.find('.sbi_photo').innerWidth();
@@ -603,7 +603,7 @@ if(!sbi_js_exists) {
                 $item.find('img').on('error', function () {
                     if (!$(this).hasClass('sbi_img_error')) {
                         $(this).addClass('sbi_img_error');
-                        var sourceFromAPI = ($(this).attr('src').indexOf('media?size=') > -1 || $(this).attr('src').indexOf('cdninstagram') > -1 || $(this).attr('src').indexOf('fbcdn') > -1)
+                        var sourceFromAPI = ($(this).attr('src').indexOf('media/?size=') > -1 || $(this).attr('src').indexOf('cdninstagram') > -1 || $(this).attr('src').indexOf('fbcdn') > -1)
 
                         if (!sourceFromAPI) {
 

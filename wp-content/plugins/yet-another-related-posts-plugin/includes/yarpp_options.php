@@ -72,7 +72,7 @@ if (current_user_can('update_plugins')) {
 /* MyISAM Check */
 include 'yarpp_myisam_notice.php';
 
-/* This is not a yarpp pluging update, it is an yarpp option update */
+/* This is not a yarpp plugin update, it is an yarpp option update */
 if (isset($_POST['update_yarpp']) && check_admin_referer('update_yarpp', 'update_yarpp-nonce')) {
     $new_options = array();
     foreach ($yarpp->default_options as $option => $default) {
@@ -114,8 +114,21 @@ if (isset($_POST['update_yarpp']) && check_admin_referer('update_yarpp', 'update
         $new_options['auto_display_post_types'] = array();
     }
 
-    $new_options['recent'] = isset($_POST['recent_only']) ?
-        $_POST['recent_number'] . ' ' . $_POST['recent_units'] : false;
+    // The new value for "recent only" will be used directly in MySQL query, so make sure its sanitized.
+    if ( isset($_POST['recent_only'] ) ) {
+    	if(in_array(
+    		$_POST['recent_units'],
+	        array_keys($yarpp->recent_units())
+	    )){
+			$unit = $_POST['recent_units'];
+	    } else {
+    		$unit = 'day';
+	    }
+    	$recent = ((int)$_POST['recent_number']) . ' ' . $unit;
+	} else {
+    	$recent = false;
+    }
+	$new_options['recent'] = $recent;
 
     if ( isset($_POST['exclude']) )
         $new_options['exclude'] = implode(',',array_keys($_POST['exclude']));

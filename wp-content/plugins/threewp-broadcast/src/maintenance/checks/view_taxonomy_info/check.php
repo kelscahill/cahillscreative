@@ -62,6 +62,8 @@ class check
 			'hide_empty' => false,
 		) );
 
+		$o->r .= $this->broadcast()->message( sprintf( '%d terms found.', count( $terms ) ) );
+
 		foreach( $terms as $term )
 		{
 			$text = sprintf( '<pre>%s%s</pre>',

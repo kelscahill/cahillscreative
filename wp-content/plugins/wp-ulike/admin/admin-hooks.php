@@ -23,8 +23,10 @@ if ( ! defined( 'WPINC' ) ) {
 function wp_ulike_copyright( $text ) {
 	if( isset($_GET["page"]) && stripos( $_GET["page"], "wp-ulike") !== false ) {
 		return sprintf(
-			__( ' Thank you for choosing <a href="%s" title="Wordpress ULike" target="_blank">WP ULike</a>.', WP_ULIKE_SLUG ),
-			WP_ULIKE_PLUGIN_URI . '?utm_source=footer-link&utm_campaign=plugin-uri&utm_medium=wp-dash'
+			'%s <a href="%s" title="TechnoWich" target="_blank">%s</a>',
+			__( 'Proudly Powered By', WP_ULIKE_SLUG ),
+			'https://technowich.com/?utm_source=footer-link&utm_campaign=wp-ulike&utm_medium=wp-dash',
+			__( 'TechnoWich', WP_ULIKE_SLUG )
 		);
 	}
 
@@ -74,7 +76,7 @@ function wp_ulike_set_lastvisit() {
 	if ( ! is_super_admin() ) {
 		return;
 	}
-	update_option( 'wpulike_lastvisit', current_time( 'mysql' ) );
+	update_option( 'wp_ulike_admin_count_visit', current_time( 'mysql' ) );
 }
 add_action('wp_logout', 'wp_ulike_set_lastvisit');
 
@@ -159,16 +161,41 @@ function wp_ulike_notice_manager(){
 	}
 
 	if( ! defined( 'WP_ULIKE_PRO_VERSION' ) && strpos( $screen->base, WP_ULIKE_SLUG ) !== false ){
-		$notice_list[ 'wp_ulike_logs_page_banner' ] = new wp_ulike_notices([
-			'id'          => 'wp_ulike_logs_page_banner',
-			'title'       => __( 'How to Create Detailed Log Reports in WP ULike PRO?', WP_ULIKE_SLUG ),
-			'description' => __( "Having votes for your content without a tool for measuring the results is meaningless, isn't it? for that reason, we gave you full access to your log data in the WP ULike professional Logs panel." , WP_ULIKE_SLUG ),
+		if( get_locale() === 'fa_IR' ){
+			$notice_list[ 'wp_ulike_fa_IR_banner' ] = new wp_ulike_notices([
+				'id'          => 'wp_ulike_fa_IR_banner',
+				'title'       => __( 'Good news for Persian WordPress users. :)', WP_ULIKE_SLUG ),
+				'description' => __( "Following the request of our friends in Persian WordPress to access the premium version in Iran, we made the necessary arrangements and our new website has become available. From now on, you can use our new articles and premium service by visiting this website." , WP_ULIKE_SLUG ),
+				'skin'        => 'default',
+				'has_close'   => true,
+				'buttons'     => array(
+					array(
+						'label'      => __( "Get More Information", WP_ULIKE_SLUG ),
+						'link'       => 'https://wpulike.ir/?utm_source=fa-IR-banner&utm_campaign=gopro&utm_medium=wp-dash'
+					),
+					array(
+						'label'      => __('No thanks and never ask me again', WP_ULIKE_SLUG),
+						'type'       => 'skip',
+						'color_name' => 'error',
+						'expiration' => YEAR_IN_SECONDS * 10
+					)
+				),
+				'image'     => array(
+					'width' => '140',
+					'src'   => WP_ULIKE_ASSETS_URL . '/img/svg/news.svg'
+				)
+			]);
+		}
+		$notice_list[ 'wp_ulike_pro_user_profiles_banner' ] = new wp_ulike_notices([
+			'id'          => 'wp_ulike_pro_user_profiles_banner',
+			'title'       => __( 'How to Create Ultimate User Profiles with WP ULike?', WP_ULIKE_SLUG ),
+			'description' => __( "The simplest way to create your own WordPress user profile page is by using the WP ULike Profile builder. This way, you can create professional profiles and display it on the front-end of your website without the need for coding knowledge or the use of advanced functions." , WP_ULIKE_SLUG ),
 			'skin'        => 'default',
 			'has_close'   => true,
 			'buttons'     => array(
 				array(
 					'label'      => __( "Get More Information", WP_ULIKE_SLUG ),
-					'link'       => WP_ULIKE_PLUGIN_URI . 'blog/log-reports-in-wp-ulike-pro/?utm_source=logs-page-banner&utm_campaign=gopro&utm_medium=wp-dash'
+					'link'       => WP_ULIKE_PLUGIN_URI . 'blog/wordpress-ultimate-profile-builder/?utm_source=settings-page-banner&utm_campaign=gopro&utm_medium=wp-dash'
 				),
 				array(
 					'label'      => __('No thanks and never ask me again', WP_ULIKE_SLUG),
@@ -179,7 +206,7 @@ function wp_ulike_notice_manager(){
 			),
 			'image'     => array(
 				'width' => '140',
-				'src'   => WP_ULIKE_ASSETS_URL . '/img/svg/table.svg'
+				'src'   => WP_ULIKE_ASSETS_URL . '/img/svg/profiles.svg'
 			)
 		]);
 		$notice_list[ 'wp_ulike_seo_tools_banner' ] = new wp_ulike_notices([
@@ -191,7 +218,7 @@ function wp_ulike_notice_manager(){
 			'buttons'     => array(
 				array(
 					'label'      => __( "Get More Information", WP_ULIKE_SLUG ),
-					'link'       => WP_ULIKE_PLUGIN_URI . '?utm_source=seo-tools-banner&utm_campaign=gopro&utm_medium=wp-dash'
+					'link'       => WP_ULIKE_PLUGIN_URI . 'blog/wordpress-rich-snippets-generator/?utm_source=seo-tools-banner&utm_campaign=gopro&utm_medium=wp-dash'
 				),
 				array(
 					'label'      => __('No thanks and never ask me again', WP_ULIKE_SLUG),
@@ -205,40 +232,7 @@ function wp_ulike_notice_manager(){
 				'src'   => WP_ULIKE_ASSETS_URL . '/img/svg/seo.svg'
 			)
 		]);
-		$notice_list[ 'wp_ulike_go_pro' ] = new wp_ulike_notices([
-			'id'          => 'wp_ulike_go_pro',
-			'title'       => __( 'WP Ulike Pro is Ready :))', WP_ULIKE_SLUG ),
-			   'description' => __( "Finally, after a long time, the Premium version of the WP Ulike plugin has been released with some new features such as support for Dislike button, Professional stats, Elementor (Page Builder) Widgets, and some new templates. We intend to add more features to this extension every day and provide a full support for our users." , WP_ULIKE_SLUG ),
-			'skin'        => 'default',
-			'wrapper_extra_styles' => [
-				'background-image'  => 'url(' . WP_ULIKE_ASSETS_URL . '/img/svg/banner-pro.svg)',
-				'background-color'  => '#e1f5fe',
-				'background-size'   => 'contain',
-				'background-repeat' => 'no-repeat',
-				'padding'           => '80px 180px 80px 340px',
-			],
-			'has_close'   => true,
-			'buttons'     => array(
-				array(
-					'label'      => __( "Get More Information", WP_ULIKE_SLUG ),
-					'link'       => WP_ULIKE_PLUGIN_URI . '?utm_source=banner&utm_campaign=gopro&utm_medium=wp-dash'
-				),
-				array(
-					'label'      => __('Not Now', WP_ULIKE_SLUG),
-					'type'       => 'skip',
-					'color_name' => 'info',
-					'expiration' => WEEK_IN_SECONDS * 2
-				),
-				array(
-					'label'      => __('No thanks and never ask me again', WP_ULIKE_SLUG),
-					'type'       => 'skip',
-					'color_name' => 'error',
-					'expiration' => YEAR_IN_SECONDS * 10
-				)
-			)
-		]);
 	}
-
 
     $notice_list = apply_filters( 'wp_ulike_admin_notices_instances', $notice_list );
 
@@ -455,4 +449,99 @@ function wp_ulike_upgrade_deprecated_options_value(){
 	// Update option values
 	update_option( 'wp_ulike_settings', $final_options_stack  );
 }
-add_filter( 'admin_init', 'wp_ulike_upgrade_deprecated_options_value' );
+// add_action( 'admin_init', 'wp_ulike_upgrade_deprecated_options_value' );
+
+
+/**
+ * Display custom column
+ *
+ * @param   array  		$column
+ * @param   integer  	$post_id
+ *
+ * @return  void
+ */
+function wp_ulike_manage_posts_custom_column( $column, $post_id ) {
+    if ( $column === 'wp-ulike-thumbs-up' ){
+		$is_distinct = wp_ulike_setting_repo::isDistinct('post');
+        echo sprintf( '<span class="wp-ulike-counter-box">%d</span>',  wp_ulike_get_counter_value( $post_id, 'post', 'like', $is_distinct ) );
+    }
+}
+add_action( 'manage_posts_custom_column' , 'wp_ulike_manage_posts_custom_column', 10, 2 );
+add_action( 'manage_pages_custom_column' , 'wp_ulike_manage_posts_custom_column', 10, 2 );
+
+/**
+ * Add custom column to post list
+ *
+ * @param   array  $columns
+ *
+ * @return  array
+ */
+function wp_ulike_manage_posts_columns( $columns ) {
+	// Get settings list
+	$post_types = wp_ulike_get_option( 'enable_admin_posts_columns', array() );
+	// Get current post type
+	$current_post_type = isset( $_GET['post_type'] ) && $_GET['post_type'] === 'page' ? 'page' : get_post_type( get_the_ID() );
+
+	if( ! empty( $post_types ) && false !== $current_post_type ){
+		if( in_array( $current_post_type, $post_types ) ){
+			$columns = apply_filters( 'wp_ulike_manage_posts_columns', array_merge( $columns,
+			array( 'wp-ulike-thumbs-up' => '<i class="dashicons dashicons-thumbs-up"></i> ' . __('Like',WP_ULIKE_SLUG) ) ), $current_post_type );
+			// add sortable columns
+			add_filter( 'manage_edit-' . $current_post_type . '_sortable_columns', function( $columns ){
+				$columns['wp-ulike-thumbs-up'] = 'likes';
+				return $columns;
+			} );
+		}
+    }
+
+    return $columns;
+}
+add_filter( 'manage_posts_columns' , 'wp_ulike_manage_posts_columns', 10 );
+add_filter( 'manage_pages_columns' , 'wp_ulike_manage_posts_columns', 10 );
+
+
+/**
+ * Manage the query of sortable columns
+ *
+ * @param object $query
+ * @return void
+ */
+function wp_ulike_manage_sortable_columns_order( $query ) {
+	if ( ! is_admin() ){
+		return;
+	}
+
+	if ( ! empty( $query->query['orderby'] ) && 'likes' == $query->query['orderby'] ) {
+		$post__in = wp_ulike_get_popular_items_ids(array(
+			'rel_type' => $query->get('post_type'),
+			'status'   => 'like',
+			"order"    => $query->get('order'),
+			"offset"   => $query->get('paged'),
+			"limit"    => $query->get('posts_per_page')
+		));
+
+		$query->set( 'offset', 0 );
+		$query->set( 'post__in', $post__in );
+		$query->set( 'orderby', 'post__in' );
+	}
+
+	do_action( 'wp_ulike_manage_sortable_columns_order', $query );
+}
+add_action( 'pre_get_posts', 'wp_ulike_manage_sortable_columns_order', 10, 1 );
+
+
+function wp_ulike_manage_columns_found_posts( $found_posts, $query ){
+	if ( ! is_admin() ){
+		return $found_posts;
+	}
+
+	if ( ! empty( $query->query['orderby'] ) && 'likes' == $query->query['orderby'] ) {
+		$found_posts = wp_ulike_get_popular_items_total_number(array(
+			"rel_type" => $query->get('post_type'),
+			"status"   => 'like'
+		));
+	}
+
+	return $found_posts;
+}
+add_filter( 'found_posts', 'wp_ulike_manage_columns_found_posts', 10, 2 );

@@ -1,15 +1,22 @@
 jQuery(document).ready(function($) {
 
+    //Close the modal if clicking anywhere outside it
+    jQuery('body').on('click', '.sb_cross_install_modal', function(e){
+        if (e.target !== this) return;
+        jQuery('.sb_cross_install_modal').remove();
+    });
+
+    jQuery('#sbi_no_js_warning').remove();
     /* NEW API CODE */
     $('.sbi_admin_btn, .sbi_reconnect').click(function(event) {
         event.preventDefault();
 
         var today = new Date(),
-            march = new Date('March 3, 2020 00:00:00'),
+            march = new Date('June 1, 2020 00:00:00'),
             oldApiURL = $(this).attr('data-old-api'),
             oldApiLink = '';
         if (today.getTime() < march.getTime()) {
-            oldApiLink = 'To connect using the legacy API, <a href="'+oldApiURL+'">click here</a> (expires on March 2, 2020).';
+            oldApiLink = 'To connect using the legacy API, <a href="'+oldApiURL+'">click here</a> (expires on June 1, 2020).';
         }
 
         var personalBasicApiURL = $('#sbi_config .sbi_admin_btn').attr('data-personal-basic-api'),
@@ -36,7 +43,11 @@ jQuery(document).ready(function($) {
             '</div>');
 
         $('.sbi_modal_close').on('click', function(){
-            $('#sbi_config_info').remove();
+            if (jQuery('.sbi-need-to-connect').length) {
+                $('#sbi_config_info').hide();
+            } else {
+                $('#sbi_config_info').remove();
+            }
         });
 
         $('input[name=sbi_login_type]').change(function() {
@@ -113,7 +124,11 @@ jQuery(document).ready(function($) {
     });
 
     $('.sbi_modal_close').on('click', function(){
-        $('#sbi_config_info').remove();
+        if (jQuery('.sbi-need-to-connect').length) {
+            $('#sbi_config_info').hide();
+        } else {
+            $('#sbi_config_info').remove();
+        }
     });
     /* NEW API CODE */
     //Autofill the token and id
@@ -225,6 +240,7 @@ jQuery(document).ready(function($) {
     }
 
     function sbiAfterUpdateToken(savedToken,saveID){
+        $('.sbi_no_accounts').remove();
         if (saveID) {
             sbSaveID(savedToken.user_id);
             $('.sbi_user_feed_ids_wrap').prepend(
@@ -267,7 +283,7 @@ jQuery(document).ready(function($) {
                     $('#sbi_connected_account_'+savedToken.user_id + ' .sbi_ca_username').prepend('<img class="sbi_ca_avatar" src="'+savedToken.profile_picture+'">');
                 }
             }
-            $('#sbi_connected_account_'+savedToken.user_id + ' .sbi_ca_username').find('span').text(sbiAccountType(savedToken.type));
+            $('#sbi_connected_account_'+savedToken.user_id + ' .sbi_ca_username').find('span').text(sbiAccountType(savedToken.type,false));
 
             $('#sbi_connected_account_'+savedToken.user_id).find('.sbi_ca_accesstoken .sbi_ca_token').text(savedToken.access_token);
             $('#sbi_connected_account_'+savedToken.user_id).find('.sbi_tooltip code').text('[instagram-feed accesstoken="'+savedToken.access_token+'"]');
@@ -280,6 +296,7 @@ jQuery(document).ready(function($) {
             } else {
                 var accountType = 'personal';
             }
+            var isPrivate = (typeof savedToken.private !== 'undefined');
 
             var avatarHTML = '';
             if (savedToken.profile_picture !== '') {
@@ -298,7 +315,7 @@ jQuery(document).ready(function($) {
 
                     '<div class="sbi_ca_username">'+
                     avatarHTML+
-                    '<strong>'+savedToken.username+'<span>'+sbiAccountType(accountType)+'</span></strong>'+
+                    '<strong>'+savedToken.username+'<span>'+sbiAccountType(accountType,isPrivate)+'</span></strong>'+
                     '</div>'+
 
                     '<div class="sbi_ca_actions">'+
@@ -357,9 +374,13 @@ jQuery(document).ready(function($) {
         });
     }
 
-    function sbiAccountType(accountType) {
+    function sbiAccountType(accountType,isPrivate) {
         if (accountType === 'basic') {
-            return 'personal (new API)';
+            var returnText = 'personal';
+            if (isPrivate) {
+                returnText += ' (private)'
+            }
+            return returnText;
         }
         return accountType;
     }
@@ -438,7 +459,8 @@ jQuery(document).ready(function($) {
     });
 
     function sbiInitClickRemove(el) {
-        el.click(function() {
+        el.click(function(event) {
+            event.preventDefault();
             if (!$(this).closest('.sbi_connected_accounts_wrap').hasClass('sbi-waiting')) {
                 $(this).closest('.sbi_connected_accounts_wrap').addClass('sbi-waiting');
                 var accessToken = $(this).closest('.sbi_connected_account').attr('data-accesstoken'),
@@ -757,13 +779,64 @@ jQuery(document).ready(function($) {
             }
         }); // ajax call
     }); // clear_comment_cache click
+
+    $('.sb-opt-in').click(function(event) {
+        event.preventDefault();
+
+        var $btn = jQuery(this);
+        $btn.prop( 'disabled', true ).addClass( 'loading' ).html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>');
+
+        sbiSubmitOptIn(true);
+    }); // clear_comment_cache click
+
+    jQuery('#sbi-oembed-disable').click(function(e) {
+        e.preventDefault();
+        jQuery(this).addClass( 'loading' ).html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>');
+        jQuery.ajax({
+            url : sbiA.ajax_url,
+            type: 'post',
+            data: {
+                action : 'sbi_oembed_disable',
+                sbi_nonce : sbiA.sbi_nonce,
+            },
+            success: function (data) {
+                jQuery('#sbi-oembed-disable').closest('p').html(data);
+            }
+        });
+    });
+
+    $('.sb-no-usage-opt-out').click(function(event) {
+        event.preventDefault();
+
+        var $btn = jQuery(this);
+        $btn.prop( 'disabled', true ).addClass( 'loading' ).html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>');
+
+        sbiSubmitOptIn(false);
+    }); // clear_comment_cache click
+
+    function sbiSubmitOptIn(choice) {
+        $.ajax({
+            url : sbiA.ajax_url,
+            type : 'post',
+            data : {
+                action : 'sbi_usage_opt_in_or_out',
+                opted_in: choice,
+                sbi_nonce : sbiA.sbi_nonce,
+            },
+            success : function(data) {
+                $('.sb-no-usage-opt-out').closest('.sbi-admin-notice').fadeOut();
+            }
+        }); // ajax call
+    }
 	
 	//Tooltips
     jQuery('#sbi_admin').on('click', '.sbi_tooltip_link, .sbi_type_tooltip_link', function(){
         if( jQuery(this).hasClass('sbi_type_tooltip_link') ){
             jQuery(this).closest('.sbi_row').children('.sbi_tooltip').slideToggle();
         } else {
-            jQuery(this).siblings('.sbi_tooltip').slideToggle();
+            $el = jQuery(this);
+            if( jQuery(this).hasClass('sbi_tooltip_outside') ) $el = jQuery(this).parent();
+            $el.siblings('.sbi_tooltip').slideToggle();
         }
     });
 
@@ -850,18 +923,18 @@ jQuery(document).ready(function($) {
 	}
 
 	//Scroll to hash for quick links
-  jQuery('#sbi_admin a').click(function() {
-    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-      var target = jQuery(this.hash);
-      target = target.length ? target : this.hash.slice(1);
-      if (target.length) {
-        jQuery('html,body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
+    jQuery('#sbi_admin a').click(function() {
+        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+          var target = jQuery(this.hash);
+          target = target.length ? target : this.hash.slice(1);
+          if (target.length) {
+            jQuery('html,body').animate({
+              scrollTop: target.offset().top
+            }, 500);
+            return false;
+          }
+        }
+    });
 
 	//Support tab show video
 	jQuery('#sbi-play-support-video').on('click', function(e){
@@ -901,6 +974,22 @@ jQuery(document).ready(function($) {
     }
     sbiUpdateHighlightOptionsDisplay();
     jQuery('#sb_instagram_highlight_type').change(sbiUpdateHighlightOptionsDisplay);
+
+    //sb_instagram_enable_email_report
+    function sbiToggleEmail() {
+        if (jQuery('#sb_instagram_enable_email_report').is(':checked')) {
+            jQuery('#sb_instagram_enable_email_report').closest('td').find('.sb_instagram_box').slideDown();
+        } else {
+            jQuery('#sb_instagram_enable_email_report').closest('td').find('.sb_instagram_box').slideUp();
+        }
+    }sbiToggleEmail();
+    jQuery('#sb_instagram_enable_email_report').change(sbiToggleEmail);
+    if (jQuery('#sbi-goto').length) {
+        jQuery('#sbi-goto').closest('tr').addClass('sbi-goto');
+        $('html, body').animate({
+            scrollTop: $('#sbi-goto').offset().top - 200
+        }, 500);
+    }
 
     //Open/close the expandable option sections
     jQuery('.sbi-expandable-options').hide();
@@ -958,4 +1047,338 @@ jQuery(document).ready(function($) {
         }, 500);
     });
 
+    // notices
+
+    if (jQuery('#sbi-notice-bar').length) {
+        jQuery('#wpadminbar').after(jQuery('#sbi-notice-bar'));
+        jQuery('#wpcontent').css('padding-left', 0);
+        jQuery('#wpbody').css('padding-left', '20px');
+        jQuery('#sbi-notice-bar').show();
+    }
+
+    jQuery('#sbi-notice-bar .dismiss').click(function(e) {
+        e.preventDefault();
+        jQuery('#sbi-notice-bar').remove();
+        jQuery.ajax({
+            url: sbiA.ajax_url,
+            type: 'post',
+            data: {
+                action : 'sbi_lite_dismiss',
+                sbi_nonce: sbiA.sbi_nonce
+            },
+            success: function (data) {
+            }
+        });
+    });
+    /* removing padding */
+    if (jQuery('#sbi-admin-about').length && ! jQuery('.sbi_more_plugins').length) {
+        jQuery('#wpcontent').css('padding', 0);
+    }
+
+    /* Clear errors visit page */
+    jQuery('.sbi-error-directions a').addClass('button button-primary');
+    jQuery('.sbi-error-directions.sbi-reconnect a').click(function(){
+        event.preventDefault();
+        jQuery('.sbi_admin_btn').trigger('click');
+    });
+    jQuery('.sbi-clear-errors-visit-page').appendTo('.sbi-error-directions');
+    jQuery('.sbi-clear-errors-visit-page').click(function(event) {
+        event.preventDefault();
+        var $btn = jQuery(this);
+        $btn.prop( 'disabled', true ).addClass( 'loading' ).html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>');
+        $.ajax({
+            url : sbiA.ajax_url,
+            type : 'post',
+            data : {
+                action : 'sbi_reset_log'
+            },
+            success : function(data) {
+                window.location.href = $btn.attr('href');
+            },
+            error : function(data)  {
+                window.location.href = $btn.attr('href');
+            }
+        }); // ajax call
+    })
+
+    //Click event for other plugins in menu
+    $('.sbi_get_cff, .sbi_get_sbi, .sbi_get_ctf, .sbi_get_yt').parent().on('click', function(e){
+        e.preventDefault();
+
+        jQuery('.sb_cross_install_modal').remove();
+
+        $('#wpbody-content').prepend('<div class="sb_cross_install_modal"><div class="sb_cross_install_inner" id="sbi-admin-about"><div id="sbi-admin-addons"><div class="addons-container"><i class="fa fa-spinner fa-spin sbi-loader" aria-hidden="true"></i></div></div></div></div>');
+
+        var $self = $(this).find('span'),
+            sb_get_plugin = 'custom_twitter_feeds';
+
+        if( $self.hasClass('sbi_get_cff') ){
+            sb_get_plugin = 'custom_facebook_feed';
+        } else if( $self.hasClass('sbi_get_sbi') ){
+            sb_get_plugin = 'instagram_feed';
+        } else if( $self.hasClass('sbi_get_yt') ){
+            sb_get_plugin = 'feeds_for_youtube';
+        }
+
+        $get_plugins_url = sbiA.ajax_url.replace('admin-ajax.php', '');
+
+        //Get the quick install box from the about page
+        $('.sb_cross_install_modal .addons-container').load($get_plugins_url+'admin.php?page=sb-instagram-feed&tab=more #install_'+sb_get_plugin);
+    });
+
+    jQuery('.sbi-need-to-connect').click(function(e) {
+        e.preventDefault();
+
+        jQuery('#sbi_config_info').show();
+    });
+    
 });
+
+
+/* global smash_admin, jconfirm, wpCookies, Choices, List */
+
+(function($) {
+
+    'use strict';
+
+    // Global settings access.
+    var s;
+
+    // Admin object.
+    var SmashAdmin = {
+
+        // Settings.
+        settings: {
+            iconActivate: '<i class="fa fa-toggle-on fa-flip-horizontal" aria-hidden="true"></i>',
+            iconDeactivate: '<i class="fa fa-toggle-on" aria-hidden="true"></i>',
+            iconInstall: '<i class="fa fa-cloud-download" aria-hidden="true"></i>',
+            iconSpinner: '<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>',
+            mediaFrame: false
+        },
+
+        /**
+         * Start the engine.
+         *
+         * @since 1.3.9
+         */
+        init: function() {
+
+            // Settings shortcut.
+            s = this.settings;
+
+            // Document ready.
+            $( document ).ready( SmashAdmin.ready );
+
+            // Addons List.
+            SmashAdmin.initAddons();
+        },
+
+        /**
+         * Document ready.
+         *
+         * @since 1.3.9
+         */
+        ready: function() {
+
+            // Action available for each binding.
+            $( document ).trigger( 'smashReady' );
+        },
+
+        //--------------------------------------------------------------------//
+        // Addons List.
+        //--------------------------------------------------------------------//
+
+        /**
+         * Element bindings for Addons List page.
+         *
+         * @since 1.3.9
+         */
+        initAddons: function() {
+
+            // Some actions have to be delayed to document.ready.
+            $( document ).on( 'smashReady', function() {
+
+                // Only run on the addons page.
+                if ( ! $( '#sbi-admin-addons' ).length ) {
+                    return;
+                }
+
+                // Display all addon boxes as the same height.
+                if( $( '#sbi-admin-about.sbi-admin-wrap').length ){
+                    $( '#sbi-admin-about .addon-item .details' ).matchHeight( { byrow: false, property: 'height' } );
+                }
+
+                // Addons searching.
+                if ( $('#sbi-admin-addons-list').length ) {
+                    var addonSearch = new List( 'sbi-admin-addons-list', {
+                        valueNames: [ 'addon-name' ]
+                    } );
+
+                    $( '#sbi-admin-addons-search' ).on( 'keyup', function () {
+                        var searchTerm = $( this ).val(),
+                            $heading = $( '#addons-heading' );
+
+                        if ( searchTerm ) {
+                            $heading.text( sbi_admin.addon_search );
+                        }
+                        else {
+                            $heading.text( $heading.data( 'text' ) );
+                        }
+
+                        addonSearch.search( searchTerm );
+                    } );
+                }
+            });
+
+            // Toggle an addon state.
+            $( document ).on( 'click', '#sbi-admin-addons .addon-item button', function( event ) {
+
+                event.preventDefault();
+
+                if ( $( this ).hasClass( 'disabled' ) ) {
+                    return false;
+                }
+
+                SmashAdmin.addonToggle( $( this ) );
+            });
+        },
+
+        /**
+         * Toggle addon state.
+         *
+         * @since 1.3.9
+         */
+        addonToggle: function( $btn ) {
+
+            var $addon = $btn.closest( '.addon-item' ),
+                plugin = $btn.attr( 'data-plugin' ),
+                plugin_type = $btn.attr( 'data-type' ),
+                action,
+                cssClass,
+                statusText,
+                buttonText,
+                errorText,
+                successText;
+
+            if ( $btn.hasClass( 'status-go-to-url' ) ) {
+                // Open url in new tab.
+                window.open( $btn.attr('data-plugin'), '_blank' );
+                return;
+            }
+
+            $btn.prop( 'disabled', true ).addClass( 'loading' );
+            $btn.html( s.iconSpinner );
+
+            if ( $btn.hasClass( 'status-active' ) ) {
+                // Deactivate.
+                action     = 'sbi_deactivate_addon';
+                cssClass   = 'status-inactive';
+                if ( plugin_type === 'plugin' ) {
+                    cssClass += ' button button-secondary';
+                }
+                statusText = sbi_admin.addon_inactive;
+                buttonText = sbi_admin.addon_activate;
+                if ( plugin_type === 'addon' ) {
+                    buttonText = s.iconActivate + buttonText;
+                }
+                errorText  = s.iconDeactivate + sbi_admin.addon_deactivate;
+
+            } else if ( $btn.hasClass( 'status-inactive' ) ) {
+                // Activate.
+                action     = 'sbi_activate_addon';
+                cssClass   = 'status-active';
+                if ( plugin_type === 'plugin' ) {
+                    cssClass += ' button button-secondary disabled';
+                }
+                statusText = sbi_admin.addon_active;
+                buttonText = sbi_admin.addon_deactivate;
+                if ( plugin_type === 'addon' ) {
+                    buttonText = s.iconDeactivate + buttonText;
+                } else if ( plugin_type === 'plugin' ) {
+                    buttonText = sbi_admin.addon_activated;
+                }
+                errorText  = s.iconActivate + sbi_admin.addon_activate;
+
+            } else if ( $btn.hasClass( 'status-download' ) ) {
+                // Install & Activate.
+                action   = 'sbi_install_addon';
+                cssClass = 'status-active';
+                if ( plugin_type === 'plugin' ) {
+                    cssClass += ' button disabled';
+                }
+                statusText = sbi_admin.addon_active;
+                buttonText = sbi_admin.addon_activated;
+                if ( plugin_type === 'addon' ) {
+                    buttonText = s.iconActivate + sbi_admin.addon_deactivate;
+                }
+                errorText = s.iconInstall + sbi_admin.addon_activate;
+
+            } else {
+                return;
+            }
+
+            var data = {
+                action: action,
+                nonce : sbi_admin.nonce,
+                plugin: plugin,
+                type  : plugin_type
+            };
+            $.post( sbi_admin.ajax_url, data, function( res ) {
+
+                if ( res.success ) {
+                    if ( 'sbi_install_addon' === action ) {
+                        $btn.attr( 'data-plugin', res.data.basename );
+                        successText = res.data.msg;
+                        if ( ! res.data.is_activated ) {
+                            cssClass = 'status-inactive';
+                            if ( plugin_type === 'plugin' ) {
+                                cssClass = 'button';
+                            }
+                            statusText = sbi_admin.addon_inactive;
+                            buttonText = s.iconActivate + sbi_admin.addon_activate;
+                        }
+                    } else {
+                        successText = res.data;
+                    }
+                    $addon.find( '.actions' ).append( '<div class="msg success">'+successText+'</div>' );
+                    $addon.find( 'span.status-label' )
+                        .removeClass( 'status-active status-inactive status-download' )
+                        .addClass( cssClass )
+                        .removeClass( 'button button-primary button-secondary disabled' )
+                        .text( statusText );
+                    $btn
+                        .removeClass( 'status-active status-inactive status-download' )
+                        .removeClass( 'button button-primary button-secondary disabled' )
+                        .addClass( cssClass ).html( buttonText );
+                } else {
+                    if ( 'download_failed' === res.data[0].code ) {
+                        if ( plugin_type === 'addon' ) {
+                            $addon.find( '.actions' ).append( '<div class="msg error">'+sbi_admin.addon_error+'</div>' );
+                        } else {
+                            $addon.find( '.actions' ).append( '<div class="msg error">'+sbi_admin.plugin_error+'</div>' );
+                        }
+                    } else {
+                        $addon.find( '.actions' ).append( '<div class="msg error">'+res.data+'</div>' );
+                    }
+                    $btn.html( errorText );
+                }
+
+                $btn.prop( 'disabled', false ).removeClass( 'loading' );
+
+                // Automatically clear addon messages after 3 seconds.
+                setTimeout( function() {
+                    $( '.addon-item .msg' ).remove();
+                }, 3000 );
+
+            }).fail( function( xhr ) {
+                console.log( xhr.responseText );
+            });
+        },
+
+    };
+
+    SmashAdmin.init();
+
+    window.SmashAdmin = SmashAdmin;
+
+})( jQuery );

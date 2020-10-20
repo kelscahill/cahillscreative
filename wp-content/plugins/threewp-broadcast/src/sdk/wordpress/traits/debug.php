@@ -216,7 +216,7 @@ trait debug
 	**/
 	public function get_debug_filename()
 	{
-		$hash = md5( $this->paths( '__FILE__' ) . AUTH_KEY );
+		$hash = md5( $this->paths( '__FILE__' ) . wp_salt( 'auth' ) );
 		$hash = substr( $hash, 0, 8 );
 		$filename = $this->paths( '__FILE__' ) . ".$hash.debug.html";
 		$filter = __NAMESPACE__ . '_debug_file';

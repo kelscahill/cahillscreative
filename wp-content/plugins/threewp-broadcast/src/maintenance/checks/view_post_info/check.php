@@ -71,7 +71,6 @@ class check
 		$metas = get_post_meta( $post_id );
 		foreach( $metas as $key => $value )
 		{
-			$value = reset( $value );
 			$value = maybe_unserialize( $value );
 			if ( ! is_string( $value ) )
 				$value = var_export( $value, true );

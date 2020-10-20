@@ -1,5 +1,6 @@
 <?php
 add_action( 'init', 'alm_core_update' ); // Core Update
+add_action( 'admin_init', 'alm_admin_hooks' );
 add_action( 'wp_ajax_alm_save_repeater', 'alm_save_repeater' ); // Ajax Save Repeater
 add_action( 'wp_ajax_alm_update_repeater', 'alm_update_repeater' ); // Ajax Update Repeater
 add_action( 'wp_ajax_alm_get_tax_terms', 'alm_get_tax_terms' ); // Ajax Get Taxonomy Terms
@@ -11,15 +12,26 @@ add_action( 'wp_ajax_alm_get_layout', 'alm_get_layout' ); // Get layout
 add_action( 'wp_ajax_alm_dismiss_sharing', 'alm_dismiss_sharing' ); // Dismiss sharing
 add_action( 'wp_ajax_alm_set_transient', 'alm_set_transient' ); // Set transient
 add_filter( 'admin_footer_text', 'alm_filter_admin_footer_text'); // Admin menu text
+add_action( 'after_plugin_row', 'alm_plugin_row' );
 
 
 
-/*
-*  almCreatePluginUpdateNotifications
-*  Create custom update notifications
-*
-*  @since 5.2
-*/
+/**
+ * Setup the admin hooks
+ *
+ * @return void
+ */
+function alm_admin_hooks() {
+	require_once( plugin_dir_path( __FILE__ ) . '/classes/class-nag.php' );
+}
+
+
+/**
+ *  almCreatePluginUpdateNotifications
+ *  Create custom update notifications
+ *
+ *  @since 5.2
+ */
 function alm_plugin_update_messages(){
 	$addons = alm_get_addons();
 	foreach($addons as $addon){
@@ -42,21 +54,21 @@ function alm_prefix_plugin_update_message( $data, $response ) {
 	$addons = alm_get_addons();
 	$slug = $response->slug;
 	$version = $response->new_version;
-	
+
 	foreach($addons as $key=>$addon){
 		if($addon['path'] === $slug){
 			$index = $key;
 		}
 	}
-	
+
 	if(isset($index)){
 		$style = 'display: block; padding: 10px 5px 2px;';
 		$addon = $addons[$index];
-		
+
 		if(isset($addon)){
 			$name = '<strong>'. $addon['name'] .'</strong>';
 			$status = get_option($addon['status']);
-			
+
 			// Expired
 			if($status === 'expired'){
 				printf('<span style="'. $style .'">%s %s</span>',
@@ -64,7 +76,7 @@ function alm_prefix_plugin_update_message( $data, $response ) {
 					__( 'Please login to your <a href="https://connekthq.com/account/" target="_blank">Account</a> to renew the license.', 'ajax-load-more' )
 				);
 			}
-			
+
 			// Invalid/Inactive
 			if($status === 'invalid' || $status === 'disabled'){
 				printf('<span style="'. $style .'">%s %s</span>',
@@ -72,7 +84,7 @@ function alm_prefix_plugin_update_message( $data, $response ) {
 					__( 'Please activate the <a href="admin.php?page=ajax-load-more-licenses" target="_blank">license</a> or login to your <a href="https://connekthq.com/account/" target="_blank">Account</a> to renew the license.', 'ajax-load-more' )
 				);
 			}
-			
+
 			// Deactivated
 			if($status === 'deactivated'){
 				printf('<span style="'. $style .'">%s %s</span>',
@@ -80,7 +92,41 @@ function alm_prefix_plugin_update_message( $data, $response ) {
 					__( 'Please activate the <a href="admin.php?page=ajax-load-more-licenses" target="_blank">license</a> to update.', 'ajax-load-more' )
 				);
 			}
-			
+
+		}
+	}
+}
+
+
+
+/*
+*  alm_plugin_row
+*  Create a notification in the plugin row
+*
+*  @since 5.2
+*/
+function alm_plugin_row( $plugin_name ) {
+
+	$addons = alm_get_addons();
+	$pro_addons = alm_get_pro_addon();
+
+	$addons = array_merge(alm_get_addons(), alm_get_pro_addon());
+	foreach($addons as $addon){
+		if ( $plugin_name == $addon['path'].'/'.$addon['path'].'.php' ) {
+
+			$status = get_option($addon['status']);
+			$style = 'margin: 5px 20px 6px 40px;';
+
+			// !valid
+			if($status !== 'valid'){
+				$name = ($addon['name'] === 'Ajax Load More Pro') ? '<strong>'. $addon['name'] .'</strong>' : '<strong>'. 'Ajax Load More: '. $addon['name'] .'</strong>';
+
+				$row = '</tr><tr class="plugin-update-tr"><td colspan="3" class="plugin-update"><div class="update-message" style="'. $style .'">';
+				$row .= sprintf(__('%sRegister%s your copy of %s to receive access to automatic upgrades and support. Need a license key? %sPurchase one now%s.'), '<a href="admin.php?page=ajax-load-more-licenses">', '</a>', $name, '<a href="'. $addon['url'] .'" target="blank">', '</a>');
+				$row .= '</div></td>';
+				echo $row;
+			}
+
 		}
 	}
 }
@@ -210,7 +256,7 @@ function alm_license_activation(){
 		}else{
 			$action = 'deactivate_license';
 		}
-      
+
       // Create the params for the request
 		$api_params = array(
 			'edd_action'=> $action,
@@ -225,7 +271,7 @@ function alm_license_activation(){
 		// make sure the response came back okay
 		if ( is_wp_error($response) ){
 			return false;
-		}		
+		}
 
 		$license_data = $response['body'];
 		$license_data = json_decode($license_data); // decode the license data
@@ -238,26 +284,26 @@ function alm_license_activation(){
 			$return["site_count"] = $license_data->site_count;
 			$return["activations_left"] = $license_data->activations_left;
 			$return["item_name"] = $license_data->item_name;
-			
+
 			if($license_data->activations_left === 0 && $license_data->success === false){
 				$msg = '<strong>You\'re out of available licenses <em>('. $license_data->license_limit .' / '. $license_data->site_count .')</em></strong>. Please visit the <a href="'.$upgrade.'" target="_blank">'.$license_data->item_name.'</a> website to add additional licenses.';
 			}
 		}
 		$return["msg"] = $msg;
-		
-			
+
+
 		// If error, make error the status of the license
 		$license_status = (isset($license_data->error)) ? $license_data->error : $license_data->license;
-		
+
 		$return["license"] = $license_status;
 
 		// Update the options table
 		update_option( $option_status, $license_status);
 		update_option( $option_key, $license );
-		
+
 		// Set transient value to store license status
 		set_transient( "alm_{$item_id}_{$license}", $license_status, 96 * HOUR_IN_SECONDS ); // 4 days
-		
+
 		// Send the response
 	   wp_send_json($return);
 
@@ -280,12 +326,12 @@ function alm_admin_notice_errors() {
 
    $screen = get_current_screen();
    $alm_is_admin_screen = alm_is_admin_screen();
-   
+
    // Exit if screen is not dashboard, plugins, settings or ALM admin.
 	if(!$alm_is_admin_screen && $screen->id !== 'dashboard' && $screen->id !== 'plugins' && $screen->id !== 'options-general' && $screen->id !== 'options'){
 		return;
 	}
-	
+
    $class = 'notice error alm-err-notice';
    $message = '';
    $count = 0;
@@ -301,14 +347,14 @@ function alm_admin_notice_errors() {
 
 	 // Loop each addon
    foreach($addons as $addon){
-	   
-      if (has_action($addon['action'])){	      
+
+      if (has_action($addon['action'])){
          $key = $addon['key']; // Option key
          $status = get_option($addon['status']); // license status
-         
+
          // Check license
          $license_status = alm_license_check($addon['item_id'], get_option($key), $status);
-         
+
          if( !isset($status) || empty($status) || $license_status !== 'valid' ) {
             $count++;
          }
@@ -339,15 +385,15 @@ function alm_license_check($item_id = null, $license = null, $option_status = nu
 	if(!$item_id || !$license || !$option_status){
 		return false;
 	}
-	
+
 	// Get plugin transient for license status
 	if(get_transient( "alm_{$item_id}_{$license}")){
-		
+
 		// Transient exists
 		return get_transient( "alm_{$item_id}_{$license}");
-		
+
 	} else {
-	
+
 		$api_params = array(
 			'edd_action' => 'check_license',
 			'license' => $license,
@@ -358,21 +404,21 @@ function alm_license_check($item_id = null, $license = null, $option_status = nu
 		if ( is_wp_error( $response ) ) {
 			return false;
 		}
-		
+
 		// Get Data
 		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
-		
+
 		// Update the options table
 		update_option( $option_status, $license_data->license);
-		
+
 		// Set transient value to store license status
 		set_transient( "alm_{$item_id}_{$license}", $license_data->license, 168 * HOUR_IN_SECONDS ); // 7 days
-		
+
 		// Return the status
 		return $license_data->license;
-		
+
 	}
-	
+
 }
 
 
@@ -510,7 +556,7 @@ function alm_set_admin_nonce(){
 */
 
 function alm_core_update() {
-	
+
 	// Exit if Repeater Templates are disbaled
 	if(defined('ALM_DISABLE_REPEATER_TEMPLATES') && ALM_DISABLE_REPEATER_TEMPLATES){
 		return false;
@@ -759,6 +805,27 @@ function alm_admin_menu() {
       add_action( 'load-' . $alm_filters_page, 'alm_set_admin_nonce' );
    }
 
+
+	// WooCommerce
+   if(has_action('alm_woocommerce_installed') && in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option('active_plugins')))){
+
+	   if(has_action('alm_cache_installed') || has_action('alm_filters_installed')){
+		   $before_link = '<span style="display:block;">';
+		}
+		$wooIcon = '<style>.dashicons.alm-woo:before{font-family: WooCommerce!important; content: "\e03d"; font-size: 16px; margin-top: 2px;}</style>';
+
+      $alm_woocommerce_page = add_submenu_page(
+         'ajax-load-more',
+         __('WooCommerce', 'ajax-load-more'),
+         $before_link . $wooIcon . '<span class="dashicons dashicons-before dashicons-admin-generic alm-woo" '.$style_link_icon.'></span> '. __('WooCommerce', 'ajax-load-more') . $after_link,
+         'edit_theme_options',
+         'ajax-load-more-woocommerce',
+         'alm_woocommerce_page'
+      );
+      add_action( 'load-' . $alm_woocommerce_page, 'alm_load_admin_js' );
+      add_action( 'load-' . $alm_woocommerce_page, 'alm_set_admin_nonce' );
+   }
+
    //Add our admin scripts
    add_action( 'load-' . $alm_settings_page, 'alm_load_admin_js' );
    add_action( 'load-' . $alm_settings_page, 'alm_set_admin_nonce' );
@@ -941,6 +1008,18 @@ function alm_cache_page(){
 function alm_filters_page(){
    include_once( ALM_FILTERS_PATH . 'admin/functions.php');
    include_once( ALM_FILTERS_PATH . 'admin/views/filters.php');
+}
+
+
+/*
+*  alm_woocommerce_page
+*  WooCommerce Add-on page
+*
+*  @since 5.3.0
+*/
+
+function alm_woocommerce_page(){
+   include_once( ALM_WOO_PATH. 'admin/views/woocommerce.php');
 }
 
 
@@ -1173,7 +1252,8 @@ function alm_update_repeater(){
 		if($t === 'default')	$n = 'default';
 	   if($t === 'unlimited') $table_name = $wpdb->prefix . "alm_unlimited";
 
-	   $the_repeater = $wpdb->get_var("SELECT repeaterDefault FROM " . $table_name . " WHERE name = '$n'");
+	   //$the_repeater = $wpdb->get_var("SELECT repeaterDefault FROM " . $table_name . " WHERE name = '$n'");
+	   $the_repeater = $wpdb->get_var("SELECT repeaterDefault FROM " . $table_name . " WHERE name = '".esc_sql($n)."'");
 
 	   echo $the_repeater; // Return repeater value
 
@@ -1403,6 +1483,7 @@ function alm_admin_init(){
 		'alm_general_settings'
 	);
 
+	/*
 	add_settings_field(  // Scroll to top on load
 		'_alm_scroll_top',
 		__('Top of Page', 'ajax-load-more' ),
@@ -1410,6 +1491,7 @@ function alm_admin_init(){
 		'ajax-load-more',
 		'alm_general_settings'
 	);
+	*/
 
 	add_settings_field(  // Uninstall
 		'_alm_uninstall',
@@ -1714,6 +1796,9 @@ function alm_btn_color_callback() {
 	 $selected6 = '';
 	 if($type == 'white') $selected6 = 'selected="selected"';
 
+	 $selected13 = '';
+	 if($type == 'light-grey') $selected13 = 'selected="selected"';
+
 	 $selected7 = '';
 	 if($type == 'infinite classic') $selected7 = 'selected="selected"';
 
@@ -1737,31 +1822,42 @@ function alm_btn_color_callback() {
     $html .= '</label>';
     $html .= '<select id="alm_settings_btn_color" name="alm_settings[_alm_btn_color]">';
 
-    $html .= '<optgroup label="'. __('Button', 'ajax-load-more') .'">';
-    $html .= '<option value="default" class="alm-color default" ' . $selected0 .'>Default</option>';
-    $html .= '<option value="blue" class="alm-color blue" ' . $selected1 .'>Blue</option>';
-    $html .= '<option value="green" class="alm-color green" ' . $selected2 .'>Green</option>';
-    $html .= '<option value="purple" class="alm-color purple" ' . $selected4 .'>Purple</option>';
-    $html .= '<option value="grey" class="alm-color grey" ' . $selected5 .'>Grey</option>';
-    $html .= '</optgroup>';
+	    $html .= '<optgroup label="'. __('Button Style (Dark)', 'ajax-load-more') .'">';
+		    $html .= '<option value="default" class="alm-color default" ' . $selected0 .'>Default</option>';
+		    $html .= '<option value="blue" class="alm-color blue" ' . $selected1 .'>Blue</option>';
+		    $html .= '<option value="green" class="alm-color green" ' . $selected2 .'>Green</option>';
+		    $html .= '<option value="purple" class="alm-color purple" ' . $selected4 .'>Purple</option>';
+		    $html .= '<option value="grey" class="alm-color grey" ' . $selected5 .'>Grey</option>';
+		 $html .= '</optgroup>';
+		 $html .= '<optgroup label="'. __('Button Style (Light)', 'ajax-load-more') .'">';
+		    $html .= '<option value="white" class="alm-color white" ' . $selected6 .'>White</option>';
+		    $html .= '<option value="light-grey" class="alm-color light-grey" ' . $selected13 .'>Light Grey</option>';
+	    $html .= '</optgroup>';
 
-    $html .= '<optgroup label="'. __('Infinite Scroll (No Button)', 'ajax-load-more') .'">';
-    $html .= '<option value="infinite classic" class="infinite classic" ' . $selected7 .'>Classic</option>';
-    $html .= '<option value="infinite skype" class="infinite skype" ' . $selected8 .'>Skype</option>';
-    $html .= '<option value="infinite ring" class="infinite ring" ' . $selected9 .'>Circle Fill</option>';
-    $html .= '<option value="infinite fading-blocks" class="infinite fading-blocks" ' . $selected10 .'>Fading Blocks</option>';
-    $html .= '<option value="infinite fading-circles" class="infinite fading-circles" ' . $selected11 .'>Fading Circles</option>';
-    $html .= '<option value="infinite chasing-arrows" class="infinite chasing-arrows" ' . $selected12 .'>Chasing Arrows</option>';
-    $html .= '</optgroup>';
+	    $html .= '<optgroup label="'. __('Infinite Scroll (No Button)', 'ajax-load-more') .'">';
+		    $html .= '<option value="infinite classic" class="infinite classic" ' . $selected7 .'>Classic</option>';
+		    $html .= '<option value="infinite skype" class="infinite skype" ' . $selected8 .'>Skype</option>';
+		    $html .= '<option value="infinite ring" class="infinite ring" ' . $selected9 .'>Circle Fill</option>';
+		    $html .= '<option value="infinite fading-blocks" class="infinite fading-blocks" ' . $selected10 .'>Fading Blocks</option>';
+		    $html .= '<option value="infinite fading-circles" class="infinite fading-circles" ' . $selected11 .'>Fading Circles</option>';
+		    $html .= '<option value="infinite chasing-arrows" class="infinite chasing-arrows" ' . $selected12 .'>Chasing Arrows</option>';
+	    $html .= '</optgroup>';
 
-    $html .= '</select>';
+   $html .= '</select>';
+
+   // Set loading class for infinite type only
+	$loadingClass = (strpos($type, 'infinite') !== false) ? ' loading' : '';
 
     $html .= '<div class="clear"></div>';
 	 $html .= '<div class="alm-btn-wrap">';
-	 $html .= '<div class="ajax-load-more-wrap core '.$type.'"><span>'.__('Preview', 'ajax-load-more') .'</span><button class="alm-load-more-btn loading" disabled="disabled">'.apply_filters('alm_button_label', __('Older Posts', 'ajax-load-more')).'</button></div>';
-	 $html .= '</div>';
+		 $html .= '<div class="ajax-load-more-wrap core '.$type.'">';
+		 	$html .='<span>'.__('Click to Preview', 'ajax-load-more') .'</span>';
+			$html .= '<button style="cursor: pointer;" type="button" class="alm-load-more-btn'. $loadingClass .'" id="test-alm-button">'.apply_filters('alm_button_label', __('Older Posts', 'ajax-load-more')).'</button>';
 
-    echo $html;
+		 $html .= '</div>';
+	$html .= '</div>';
+
+   echo $html;
 }
 
 
@@ -1814,13 +1910,11 @@ function alm_btn_class_callback(){
     	jQuery('input#alm_disable_css_input').change(function() {
     		var el = jQuery(this);
 	      if(el.is(":checked")) {
-	      	el.parent().parent('tr').next('tr').hide(); // Hide button
-	      	el.parent().parent('tr').next('tr').next('tr').hide(); // Hide button color
-	      	el.parent().parent('tr').next('tr').next('tr').next('tr').hide(); // Hide inline css
+	      	el.parent().parent('tr').next('tr').hide(); // Hide button color
+	      	el.parent().parent('tr').next('tr').next('tr').hide(); // Hide inline css
 	      }else{
-	      	el.parent().parent('tr').next('tr').show(); // show button
-	      	el.parent().parent('tr').next('tr').next('tr').show(); // show button color
-	      	el.parent().parent('tr').next('tr').next('tr').next('tr').show(); // show inline css
+	      	el.parent().parent('tr').next('tr').show(); // show button color
+	      	el.parent().parent('tr').next('tr').next('tr').show(); // show inline css
 	      }
 	   });
 
