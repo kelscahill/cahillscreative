@@ -6,8 +6,10 @@ function perfmatters_lazy_load_init() {
 
 	if(!empty($perfmatters_options['lazy_loading']) || !empty($perfmatters_options['lazy_loading_iframes'])) {
 
+		$exclude_lazy_loading = perfmatters_get_post_meta('perfmatters_exclude_lazy_loading');
+
 		//check if its ok to lazy load
-		if(!is_admin() && !wp_doing_ajax() && !isset($_GET['fl_builder']) && !isset($_GET['et_fb']) && !isset($_GET['ct_builder'])) {
+		if(!$exclude_lazy_loading && !is_admin() && !wp_doing_ajax() && !isset($_GET['fl_builder']) && !isset($_GET['et_fb']) && !isset($_GET['ct_builder']) && !is_embed() && !is_feed()) {
 
 			//actions + filters
 			add_filter('template_redirect', 'perfmatters_lazy_load', 2);
@@ -20,7 +22,7 @@ function perfmatters_lazy_load_init() {
 		}
 	}
 }
-add_action('init', 'perfmatters_lazy_load_init');
+add_action('wp', 'perfmatters_lazy_load_init');
 
 //enqueue lazy load scripts
 function perfmatters_enqueue_lazy_load() {
@@ -55,12 +57,6 @@ function perfmatters_lazy_load_exclude_autoptimize($exclude) {
 
 //initialize lazy loading
 function perfmatters_lazy_load() {
-
-	//don't proceed if we are inside an embed
-	if(is_embed() || is_feed()) {
-		return;
-	}
-
 	ob_start('perfmatters_lazy_load_buffer');
 }
 
