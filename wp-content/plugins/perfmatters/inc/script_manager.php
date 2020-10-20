@@ -4,6 +4,15 @@ if(!current_user_can('manage_options') || is_admin() || !isset($_GET['perfmatter
 	return;
 }
 
+global $pmsm_print_flag;
+
+//script manager already printed
+if($pmsm_print_flag) {
+	return;
+}
+
+$pmsm_print_flag = true;
+
 //Set Variables
 global $perfmatters_extras;
 global $wp;

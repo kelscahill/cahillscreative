@@ -25,6 +25,9 @@ html, body {
 	color: #4a545a;
 	min-height: 100%;
 }
+#perfmatters-script-manager * {
+	font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+}
 #perfmatters-script-manager a {
 	color: #4A89DD;
 	text-decoration: none;
@@ -160,6 +163,7 @@ html, body {
 	margin: 0px;
 	padding: 10px;
 	background: #edf3f9;
+	color: #282E34;
 	font-weight: 700;
 }
 .perfmatters-script-manager-section {
@@ -294,6 +298,9 @@ html, body {
 	width: auto;
 	font-size: 16px;
 }
+#perfmatters-script-manager input[type='radio']:after {
+	display: none;
+}
 #perfmatters-script-manager .pmsm-checkbox-container {
 	display: inline-block;
 }
@@ -311,6 +318,9 @@ html, body {
 	height: auto;
 	width: auto;
 	font-size: 16px;
+}
+#perfmatters-script-manager input[type='checkbox']:after {
+	display: none;
 }
 #perfmatters-script-manager .perfmatters-script-manager-controls {
 	text-align: left;
@@ -495,6 +505,7 @@ html, body {
 #script-manager-settings table th {
 	width: 200px;
 	vertical-align: top;
+	padding: 8px 5px;
 	border: none;
 }
 #script-manager-settings .switch {

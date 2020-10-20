@@ -53,9 +53,30 @@ echo "<div id='perfmatters-admin' class='wrap'>";
 		//main options tab
 		if($tab == 'options') {
 
+			//options subnav
+			echo "<input type='hidden' name='section' id='subnav-section' />";
+			echo "<div class='perfmatters-subnav'>";
+				echo "<a href='#options-general' id='general-section' rel='general' class='active'><span class='dashicons dashicons-dashboard'></span>" . __('General', 'perfmatters') . "</a>";
+				echo "<a href='#options-lazyloading' id='lazyloading-section' rel='lazyloading'><span class='dashicons dashicons-images-alt2'></span>" . __('Lazy Loading', 'perfmatters') . "</a>";
+				echo "<a href='#options-woocommerce' id='woocommerce-section' rel='woocommerce'><span class='dashicons dashicons-cart'></span>" . __('WooCommerce', 'perfmatters') . "</a>";
+			echo "</div>";
+
 			settings_fields('perfmatters_options');
-			do_settings_sections('perfmatters_options');
-			submit_button();
+
+			echo "<section id='options-general' class='section-content active'>";
+		    	perfmatters_settings_section('perfmatters_options', 'perfmatters_options');
+		    	submit_button();
+		    echo "</section>";
+
+		    echo "<section id='options-lazyloading' class='section-content hide'>";
+		    	perfmatters_settings_section('perfmatters_options', 'perfmatters_lazy_loading');
+		    	submit_button();
+		    echo "</section>";
+
+		    echo "<section id='options-woocommerce' class='section-content hide'>";
+		    	perfmatters_settings_section('perfmatters_options', 'perfmatters_woocommerce');
+		    	submit_button();
+		    echo "</section>";
 
 		//cdn tab
 		} elseif($tab == 'cdn') {
@@ -78,6 +99,7 @@ echo "<div id='perfmatters-admin' class='wrap'>";
 			echo "<input type='hidden' name='section' id='subnav-section' />";
 			echo "<div class='perfmatters-subnav'>";
 				echo "<a href='#extras-general' id='general-section' rel='general' class='active'><span class='dashicons dashicons-dashboard'></span>" . __('General', 'perfmatters') . "</a>";
+				echo "<a href='#extras-assets' id='assets-section' rel='assets'><span class='dashicons dashicons-editor-code'></span>" . __('Assets', 'perfmatters') . "</a>";
 				echo "<a href='#extras-preloading' id='preloading-section' rel='preloading'><span class='dashicons dashicons-clock'></span>" . __('Preloading', 'perfmatters') . "</a>";
 				echo "<a href='#extras-database' id='database-section' rel='database'><span class='dashicons dashicons-networking'></span>" . __('Database', 'perfmatters') . "</a>";
 				echo "<a href='#extras-tools' id='tools-section' rel='tools'><span class='dashicons dashicons-admin-tools'></span>" . __('Tools', 'perfmatters') . "</a>";
@@ -87,6 +109,12 @@ echo "<div id='perfmatters-admin' class='wrap'>";
 
 			echo "<section id='extras-general' class='section-content active'>";
 		    	perfmatters_settings_section('perfmatters_extras', 'general');
+		    	submit_button();
+		    echo "</section>";
+
+		    echo "<section id='extras-assets' class='section-content hide'>";
+		    	perfmatters_settings_section('perfmatters_extras', 'assets');
+		    	perfmatters_settings_section('perfmatters_extras', 'assets_js');
 		    	submit_button();
 		    echo "</section>";
 

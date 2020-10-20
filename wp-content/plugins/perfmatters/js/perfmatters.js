@@ -68,17 +68,18 @@ jQuery(document).ready(function($) {
 
 		var rowCount = $(this).prop('rel');
 
+		rowCount++;
+
 		var $container = $(this).closest('.perfmatters-input-row-wrapper').find('.perfmatters-input-row-container');
 
 		var $clonedRow = $container.find('.perfmatters-input-row').last().clone();
 
-		$clonedRow.find('input').attr('value', '');
+		$clonedRow.find(':text, select').val('');
+		$clonedRow.find(':checkbox').prop('checked', false);
 
 		perfmattersUpdateRowCount($clonedRow, rowCount);
 
 		$container.append($clonedRow);
-
-		rowCount++;
 		
 		$(this).prop('rel', rowCount);
 	});
@@ -92,9 +93,8 @@ jQuery(document).ready(function($) {
 
 		if($addButton.prop('rel') == 0) {
 			$row = $(this).closest('.perfmatters-input-row');
-			$row.find('input').val('');
-			$row.find('input:checkbox').prop("checked", false);
-			$row.find("option:selected").removeAttr("selected");
+			$row.find(':text, select').val('');
+			$row.find(':checkbox').prop("checked", false);
 		}
 		else {
 			$(this).closest('div').remove();
@@ -104,6 +104,61 @@ jQuery(document).ready(function($) {
 		siblings.each(function(i) {
 
 			perfmattersUpdateRowCount(this, i);
+		});
+	});
+
+	//input display control
+	$('.perfmatters-input-controller input, .perfmatters-input-controller select').change(function() {
+
+		var controller = $(this);
+
+		var inputID = $(this).attr('id');
+
+		var nestedControllers = [];
+
+		$('.' + inputID).each(function() {
+
+			var skipFlag = true;
+			var forceHide = false;
+			var forceShow = false;
+
+			if($(this).hasClass('perfmatters-input-controller')) {
+				nestedControllers.push($(this).find('input').attr('id'));
+			}
+
+			var currentInputContainer = this;
+
+			$.each(nestedControllers, function(index, value) {
+
+				var controlChecked = $('#' + value).is(':checked');
+				var controlReverse = $('#' + value).closest('.perfmatters-input-controller').hasClass('perfmatters-input-controller-reverse');
+
+	  			if($(currentInputContainer).hasClass(value) && (controlChecked == controlReverse)) {
+	  				skipFlag = false;
+	  				return false;
+	  			}
+			});
+
+			if(controller.is('select')) {
+				var className = this.className.match(/perfmatters-select-control-([^\s]*)/);
+
+				if(className && className[1] == controller.val()) {
+					forceShow = true;
+				}
+				else {
+					forceHide = true;
+				}
+			}
+
+			if(skipFlag) {
+				if(($(this).hasClass('hidden') || forceShow) && !forceHide) {
+					$(this).removeClass('hidden');
+				}
+				else {
+					$(this).addClass('hidden');
+				}
+			}
+
 		});
 	});
 
