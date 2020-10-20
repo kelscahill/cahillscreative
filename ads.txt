@@ -1,5 +1,0 @@
-# blog_id: 1
-google.com, pub-3133257559155527, DIRECT, f08c47fec0942fa0
-
-# blog_id: 2
-# google.com, pub-3133257559155527, DIRECT, f08c47fec0942fa0
