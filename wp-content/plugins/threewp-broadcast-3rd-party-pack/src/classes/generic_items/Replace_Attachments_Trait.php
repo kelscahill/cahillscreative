@@ -22,11 +22,11 @@ trait Replace_Attachments_Trait
 		}
 
 		foreach( $find->values as $attribute => $array )
-				foreach( $array as $id )
+				foreach( $array as $ids )
 				{
-					$id = intval( $id );
-					if ( $bcd->try_add_attachment( $id ) )
-						$this->debug( 'Adding one of several attachments %s', $id );
+					foreach( $ids as $id )
+						if ( $bcd->try_add_attachment( intval( $id ) ) )
+							$this->debug( 'Adding one of several attachments %s', $id );
 				}
 	}
 

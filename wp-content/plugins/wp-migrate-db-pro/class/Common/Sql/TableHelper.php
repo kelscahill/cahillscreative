@@ -3,6 +3,9 @@
 namespace DeliciousBrains\WPMDB\Common\Sql;
 
 use DeliciousBrains\WPMDB\Common\FormData\FormData;
+use DeliciousBrains\WPMDB\Common\Http\Http;
+use DeliciousBrains\WPMDB\Common\Migration\MigrationManager;
+use DeliciousBrains\WPMDB\Common\MigrationState\MigrationStateManager;
 use DeliciousBrains\WPMDB\Common\MigrationState\StateDataContainer;
 use DeliciousBrains\WPMDB\Common\Util\Util;
 use DeliciousBrains\WPMDB\Container;
@@ -14,21 +17,22 @@ class TableHelper {
 	 */
 	private $form_data;
 	/**
-	 * @var StateDataContainer
+	 * @var MigrationStateManager
 	 */
-	public $state_container;
+	private $migration_state_manager;
 	/**
-	 * @var \DeliciousBrains\WPMDB\League\Container\Container|null
+	 * @var Http
 	 */
-	public $container;
+	private $http;
 
 	public function __construct(
 		FormData $form_data,
-		StateDataContainer $state_data_container
+		MigrationStateManager $migration_state_manager,
+		Http $http
 	) {
-		$this->form_data       = $form_data;
-		$this->state_container = $state_data_container;
-		$this->container       = Container::getInstance();
+		$this->form_data               = $form_data;
+		$this->migration_state_manager = $migration_state_manager;
+		$this->http                    = $http;
 	}
 
 
@@ -129,9 +133,9 @@ class TableHelper {
 			}
 
 			if ( true === $abort_utf8mb4 && 0 !== $replace_count ) {
-				$return = sprintf( __( 'The source site supports utf8mb4 data but the target does not, aborting migration to avoid possible data corruption. Please see %1$s for more information. (#148)', 'wp-migrate-db-pro' ), sprintf( '<a href="https://deliciousbrains.com/wp-migrate-db-pro/doc/source-site-supports-utf8mb4/?utm_campaign=error%2Bmessages&utm_source=MDB%2BPaid&utm_medium=insideplugin">%1$s</a>', __( 'our documentation', 'wp-migrate-db-pro' ) ) );
+				$return = sprintf( __( 'The source site supports utf8mb4 data but the target does not, aborting migration to avoid possible data corruption. Please see %1$s for more information. (#148)', 'wp-migrate-db-pro' ), sprintf( '<a href="%s">%s</a>', 'https://deliciousbrains.com/wp-migrate-db-pro/doc/source-site-supports-utf8mb4/?utm_campaign=error%2Bmessages&utm_source=MDB%2BPaid&utm_medium=insideplugin', __( 'our documentation', 'wp-migrate-db-pro' ) ) );
 				$return = array( 'wpmdb_error' => 1, 'body' => $return );
-				$result = $this->end_ajax( json_encode( $return ) );
+				$result = $this->http->end_ajax( json_encode( $return ) );
 
 				return $result;
 			}
@@ -141,7 +145,7 @@ class TableHelper {
 	}
 
 	function format_dump_name( $dump_name ) {
-		$state_data = $this->state_container->getData();
+		$state_data = $this->migration_state_manager->set_post_data();
 		$form_data  = $this->form_data->getFormData();
 		$extension  = '.sql';
 

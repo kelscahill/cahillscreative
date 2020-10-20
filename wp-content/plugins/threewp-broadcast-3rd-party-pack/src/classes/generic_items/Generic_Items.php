@@ -46,6 +46,7 @@ abstract class Generic_Items
 			->label( $generic_data->Singular . ' ' . 'name' )
 			->trim()
 			->required()
+			->size( 30 )
 			->value( $item->get_slug() );
 
 		$form->textarea( 'value' )
@@ -56,8 +57,9 @@ abstract class Generic_Items
 			->value( $item->get_value_text() );
 
 		$text = 'One attribute per line that contains multiple attachment IDs.';
-		if ( $generic_data->delimiters )
-			$text .= ' Delimiters are written separated by spaces after the attribute.';
+		if ( isset( $generic_data->delimiters ) )
+			if ( $generic_data->delimiters )
+				$text .= ' Delimiters are written separated by spaces after the attribute.';
 		$form->textarea( 'values' )
 			->description( $text )
 			->label( 'Multiple ID attributes' )
@@ -65,9 +67,10 @@ abstract class Generic_Items
 			->trim()
 			->value( $item->get_values_text() );
 
-		if ( $generic_data->delimiters )
-			$form->markup( 'values_info' )
-				->markup( 'Delimiters can be mixed within the same attribute, meaning that if you have specified commas and semicolons as delimiters, <em>ids="123,234;345"</em> will work.' );
+		if ( isset( $generic_data->delimiters ) )
+			if ( $generic_data->delimiters )
+				$form->markup( 'values_info' )
+					->markup( 'Delimiters can be mixed within the same attribute, meaning that if you have specified commas and semicolons as delimiters, <em>ids="123,234;345"</em> will work.' );
 
 		$form->create = $form->primary_button( 'save' )
 			->value( __( 'Save', 'threewp_broadcast' ) );

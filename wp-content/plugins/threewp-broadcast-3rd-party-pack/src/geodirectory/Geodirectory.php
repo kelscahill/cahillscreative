@@ -14,21 +14,12 @@ class Geodirectory
 {
 	use \threewp_broadcast\premium_pack\classes\database_trait;
 
-	/**
-		@brief		Are we ready to broadcast the place?
-		@details	This is used in conjunction with threewp_broadcast_broadcast_post and geodir_after_save_listing. Only after the geodir is executed is this set to true, therefore allowing Broadcast to send out the post.
-		@since		2015-07-29 21:35:55
-	**/
-	public $ready_for_place = false;
-
 	public function _construct()
 	{
 		$this->add_action( 'broadcast_comments_sync_comments', 1000 );
 		$this->add_action( 'geodir_after_save_comment' );
-		$this->add_action( 'geodir_after_save_listing' );
 		$this->add_action( 'geodir_after_add_from_favorite' );
 		$this->add_action( 'geodir_after_remove_from_favorite' );
-		$this->add_action( 'threewp_broadcast_broadcast_post', 5 );
 		$this->add_action( 'threewp_broadcast_broadcasting_after_switch_to_blog' );
 		$this->add_action( 'threewp_broadcast_broadcasting_started' );
 		$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
@@ -212,20 +203,6 @@ class Geodirectory
 		] );
 	}
 
-	/**
-		@brief		geodir_after_save_listing
-		@since		2015-07-29 21:17:28
-	**/
-	public function geodir_after_save_listing( $post_id )
-	{
-		$this->debug( 'GeoDirectory is finished with place #%s. Now it is our turn to broadcast it.', $post_id );
-
-		$this->ready_for_place = true;
-
-		ThreeWP_Broadcast()->save_post( $post_id );
-		$this->ready_for_place = false;
-	}
-
 	public function geodir_after_remove_from_favorite( $post_id )
 	{
 		// Are we supposed to sync favorites?
@@ -246,27 +223,6 @@ class Geodirectory
 		$action->execute();
 
 		unset( $this->__syncing_favorites );
-	}
-
-	/**
-		@brief		threewp_broadcast_broadcast_post
-		@since		2015-07-29 21:20:59
-	**/
-	public function threewp_broadcast_broadcast_post( $broadcasting_data )
-	{
-		// We only want to block places.
-		if ( ! in_array( $broadcasting_data->post->post_type, $this->get_post_types() ) )
-			return $broadcasting_data;
-
-		// And we only block places if we are not yet allowed to broadcast.
-		if ( ! $this->ready_for_place )
-		{
-			$this->debug( 'Not ready for place broadcast.' );
-			return false;
-		}
-
-		// We are ready.
-		return $broadcasting_data;
 	}
 
 	/**
@@ -405,21 +361,13 @@ class Geodirectory
 	{
 		global $wpdb;
 
-		// GeoDirectory has a nice function that retrieves the images of a place.
-		$images = geodir_get_images( $bcd->post->ID );
-		$this->debug( 'Images are: %s', $images );
-
-		// But it does not contain the necessary attachment ID, so we have to find each attachment separately.
-		foreach( (array)$images as $image )
-			$bcd->geodirectory->collection( 'images' )->append( $image );
-
 		// The attachment order is specified in the attachments table.
 		$query = sprintf( "SELECT * FROM `%s` WHERE `post_id` = '%s'", $this->gd_table( 'attachments' ), $bcd->post->ID );
 		$this->debug( 'Retrieving attachments: %s', $query );
 		$results = $this->query( $query );
-		$results = $this->delete_array_key( $results, 'ID' );
 		$this->debug( 'Found attachments: %s', $results );
 		$bcd->geodirectory->set( 'attachments', $results );
+		$bcd->geodirectory->set( 'wp_upload_dir', wp_upload_dir() );
 	}
 
 	/**
@@ -491,9 +439,9 @@ class Geodirectory
 			return;
 		$results = $this->delete_array_key( $results, 'id' );
 		$this->save_location_id( $bcd, $results );
-		$result = reset( $results );
-		$this->debug( 'Found place detail: %s', $result );
-		$bcd->geodirectory->set( 'place_detail', $result );
+		$place_detail = reset( $results );
+		$this->debug( 'Found place detail: %s', $place_detail );
+		$bcd->geodirectory->set( 'place_detail', $place_detail );
 		// We will need the table name for later syncing.
 		$bcd->geodirectory->set( 'place_detail_source_table', $this->gd_table( $bcd->post->post_type . '_detail' ) );
 	}
@@ -567,15 +515,16 @@ class Geodirectory
 		global $wpdb;
 		$new_post_id = $bcd->new_post( 'ID' );
 		$wp_upload_dir = wp_upload_dir();
+		$parent_wp_upload_dir = $bcd->geodirectory->get( 'wp_upload_dir' );
 
 		$table = $this->gd_table( 'attachments' );
 		$this->database_table_must_exist( $table );
 
-		// Delete the current images from disk. Unfortunately, we cannot use geodir_get_images because it just don't work when switching blogs.
+		// Delete the current attachments from disk. Unfortunately, we cannot use geodir_get_images because it just don't work when switching blogs.
 		$query = sprintf( "SELECT * FROM `%s` WHERE `post_id` = '%s'", $table, $new_post_id );
-		$this->debug( 'Retrieving current images: %s', $query );
+		$this->debug( 'Retrieving current attachments: %s', $query );
 		$results = $this->query( $query );
-		$this->debug( 'Current images: %s', $results );
+		$this->debug( 'Current attachments: %s', $results );
 		foreach( $results as $result )
 		{
 			$file = $wp_upload_dir[ 'basedir' ] . $result[ 'file' ];
@@ -588,37 +537,34 @@ class Geodirectory
 		$this->debug( 'Deleting current attachments: %s', $query );
 		$this->query( $query );
 
-		$images = $bcd->geodirectory->collection( 'images' );
-
 		// And put the new images in.
 		$attachments = $bcd->geodirectory->get( 'attachments' );
 		foreach( $attachments as $attachment )
 		{
-			$file = $attachment[ 'file' ];
-			// Find the corresponding image
-			foreach( $images as $image )
-			{
-				if ( strpos( $image->src, $file ) === false )
-					continue;
+			$new_filename = basename( $attachment[ 'file' ] );
+			$source = $parent_wp_upload_dir[ 'basedir' ] . $attachment[ 'file' ];
+			$target = $wp_upload_dir[ 'path' ] . '/' . $new_filename;
+			copy( $source, $target );
+			$this->debug( 'Filesizes after copy - %s: %s  %s : %s',
+				$source,
+				filesize( $source ),
+				$target,
+				filesize( $target )
+			);
 
-				// We have found the image. Get the new path.
-				$new_filename = $image->file;
-				$new_filename = str_replace( $bcd->post->ID . '_', $new_post_id . '_', $new_filename );
-				$target = $wp_upload_dir[ 'path' ] . '/' . $new_filename;
-				copy( $image->path, $target );
-				$this->debug( 'Filesizes after copy - %s: %s  %s : %s',
-					$image->path,
-					filesize( $image->path ),
-					$target,
-					filesize( $target )
-				);
+			// Update the attachment data with the new path.
+			$new_attachment = $attachment;
+			unset( $new_attachment[ 'ID' ] );
+			$new_attachment[ 'post_id' ] = $new_post_id;
+			$new_attachment[ 'file' ] = $wp_upload_dir[ 'subdir' ] . '/' . $new_filename;
+			$this->debug( 'Inserting attachment %s', $new_attachment );
+			$wpdb->insert( $table, $new_attachment );
 
-				// Update the attachment data with the new path.
-				$attachment[ 'post_id' ] = $new_post_id;
-				$attachment[ 'file' ] = $wp_upload_dir[ 'subdir' ] . '/' . $new_filename;
-				$this->debug( 'Inserting attachment %s', $attachment );
-				$wpdb->insert( $table, $attachment );
-			}
+			$new_attachment[ 'ID' ] = $wpdb->insert_id;
+			$new_attachment[ 'path' ] = $target;
+			$new_attachment[ 'url' ] = $wp_upload_dir[ 'url' ] . '/' . $new_filename;
+
+			$bcd->geodirectory->collection( 'copied_attachments' )->set( $attachment[ 'ID' ], $new_attachment );
 		}
 	}
 
@@ -698,6 +644,17 @@ class Geodirectory
 		if ( isset( $place_detail[ 'post_id' ] ) )
 			$place_detail[ 'post_id' ] = $new_post_id;
 
+		if ( isset( $place_detail[ 'logo' ] ) )
+		{
+			$logo_parts = explode( '|', $place_detail[ 'logo' ] );
+			$old_image_id =  $logo_parts[ 1 ];
+			$new_image = $bcd->geodirectory->collection( 'copied_attachments' )->get( $old_image_id );
+			$new_image_id = $new_image[ 'ID' ];
+			$logo_parts[ 0 ] = $new_image[ 'url' ];
+			$logo_parts[ 1 ] = $new_image_id;
+			$this->debug( 'Replacing logo with %s', $logo_parts );
+			$place_detail[ 'logo' ] = implode( '|', $logo_parts );
+		}
 
 		if ( isset( $place_detail[ 'marker_json' ] ) )
 			// Data duplication: Each post icon has its own marker also.
@@ -706,14 +663,17 @@ class Geodirectory
 		if ( isset( $place_detail[ 'default_category' ] ) )
 			$place_detail[ 'default_category' ] = $bcd->terms()->get( $place_detail[ 'default_category' ] );
 
-		$key = sprintf( '%scategory', $bcd->post->post_type );
-
+		// Old db structure.
+		// $key = sprintf( '%scategory', $bcd->post->post_type );
+		// New db structure.
+		$key = 'post_category';
 		if ( isset( $place_detail[ $key ] ) )
 		{
 			// Data duplication. They are normal taxonomies also.
 			$categories = explode( ',', $place_detail[ $key ] );
 			foreach( $categories as $index => $category )
 				$categories[ $index ] = $bcd->terms()->get( $category );
+			$this->debug( 'Setting new %s to %s', $key, $categories );
 			$place_detail[ $key ] = implode( ',', $categories );
 		}
 
@@ -794,7 +754,9 @@ class Geodirectory
 	public function restore_post_icons( $bcd )
 	{
 		$table = $this->gd_table( 'post_icon' );
-		$this->database_table_must_exist( $table );
+
+		if ( ! $this->database_table_exists( $table ) )
+			return;
 
 		global $wpdb;
 		$new_post_id = $bcd->new_post( 'ID' );

@@ -28,7 +28,9 @@ class ACF
 		$this->add_action( 'threewp_broadcast_broadcasting_started' );
 		$this->add_action( 'threewp_broadcast_collect_post_type_taxonomies' );
 		$this->add_action( 'threewp_broadcast_get_post_types' );
+		$this->add_action( 'threewp_broadcast_menu' );
 		$this->add_action( 'threewp_broadcast_wp_update_term' );
+		$this->add_filter( 'threewp_broadcast_allowed_post_statuses' );
 
 		$bc = ThreeWP_Broadcast();
 		{
@@ -155,6 +157,7 @@ class ACF
 
 					// Make a temp field and recurse.
 					$tempfield = (object) $subfield;
+					$tempfield->key = $tempfield->__key;
 					$tempfield->name = $name;
 					$tempfield->value = $action->field->value[ $subfield[ 'key' ] ];
 
@@ -216,7 +219,13 @@ class ACF
 					$tempfield = (object) $subfield;
 					$tempfield->name = sprintf( '%s_%s', $action->field->name, $subfield[ 'name' ] );
 
-					$tempfield->value = $action->field->value[ $subfield[ 'key' ] ];
+					if ( ! $this->has_acf_pro() )
+					{
+						$unformatted_field = get_field_object( $action->field->key, $action->get_post_id() );
+						$action->field->value = $unformatted_field[ 'value' ];
+					}
+					else
+						$tempfield->value = $action->field->value[ $subfield[ 'key' ] ];
 
 					$tempfield->flexible_content = true;
 					$tempfield->field_index = $sub_index;
@@ -663,8 +672,20 @@ class ACF
 
 	public function threewp_broadcast_get_post_types( $action )
 	{
-		$action->post_types[ 'acf' ] = 'acf';
-		$action->post_types[ 'acf-field-group' ] = 'acf-field-group';
+		$action->add_types( 'acf', 'acf-field-group' );
+	}
+
+	/**
+		@brief		threewp_broadcast_menu
+		@since		2020-05-13 22:00:22
+	**/
+	public function threewp_broadcast_menu( $action )
+	{
+		$action->menu_page
+			->submenu( 'broadcast_acf' )
+			->callback_this( 'admin_tabs' )
+			->menu_title( 'ACF' )
+			->page_title( 'Broadcast ACF' );
 	}
 
 	/**
@@ -947,6 +968,164 @@ class ACF
 		$preparse_action->content = $field->value;
 		$preparse_action->id = $field->name;
 		$preparse_action->execute();
+	}
+
+	/**
+		@brief		Add our tabs to the menu.
+		@since		2020-05-13 22:01:21
+	**/
+	public function admin_tabs( $action )
+	{
+		$tabs = $this->tabs();
+
+		$tabs->tab( 'bc_options_pages' )
+			->callback_this( 'bc_options_pages' )
+			->heading( __( 'Broadcast Options Pages', 'threewp_broadcast' ) )
+			->name( __( 'Options Pages', 'threewp_broadcast' ) );
+
+		echo $tabs->render();
+	}
+
+	/**
+		@brief		bc_options_pages
+		@since		2020-05-13 22:02:12
+	**/
+	public function bc_options_pages()
+	{
+		$form = $this->form();
+		$form->css_class( 'plainview_form_auto_tabs' );
+		$r = '';
+
+		$fs = $form->fieldset( 'fs_options_pages' )
+			// Fieldset label
+			->label( __( 'Options pages', 'threewp_broadcast' ) );
+
+		$pages = acf_get_options_pages();
+		$acf_options_pages = [];
+		$acf_options_page_field_groups = [];
+		foreach( $pages as $page_id => $page )
+		{
+			// Allow broadcast of all of the field groups in a page.
+			$acf_options_pages[ $page_id . ';' ] = sprintf( "%s - All field groups", $page[ 'page_title' ] );
+
+			// And for each field group individually.
+			$acf_options_page_field_groups[ $page_id ] = acf_get_field_groups(array(
+				'options_page' => $page_id
+			) );
+			foreach( $acf_options_page_field_groups[ $page_id ] as $page_field_group )
+				$acf_options_pages[ $page_id . ';' . $page_field_group[ 'ID' ] ] = sprintf( "%s - %s", $page[ 'page_title' ], $page_field_group[ 'title' ] );
+		}
+
+		$options_pages = $fs->select( 'options_pages' )
+			->description( __( 'Select which options pages to broadcast.', 'threewp_broadcast' ) )
+			->label( __( 'Options pages to broadcast', 'threewp_broadcast' ) )
+			->multiple()
+			->opts( $acf_options_pages )
+			->autosize()
+			->required();
+
+		$fs = $form->fieldset( 'fs_blogs' )
+			// Fieldset label
+			->label( __( 'Blogs', 'threewp_broadcast' ) );
+
+		$blogs_select = $this->add_blog_list_input( [
+			// Blog selection input description
+			'description' => __( 'Select one or more blogs to which to broadcast the course.', 'threewp_broadcast' ),
+			'form' => $fs,
+			// Blog selection input label
+			'label' => __( 'Blogs', 'threewp_broadcast' ),
+			'multiple' => true,
+			'name' => 'blogs',
+			'required' => false,
+		] );
+
+		$fs = $form->fieldset( 'fs_start' )
+			// Fieldset label
+			->label( __( 'Go', 'threewp_broadcast' ) );
+
+		$broadcast_options = $fs->primary_button( 'broadcast_options' )
+			// Button
+			->value( __( 'Broadcast selected options', 'threewp_broadcast' ) );
+
+		if ( $form->is_posting() )
+		{
+			$form->post();
+			$form->use_post_values();
+			$messages = [];
+
+			$field_groups_to_broadcast = [];
+			foreach( $options_pages->get_post_value() as $ids )
+			{
+				$ids = explode( ';', $ids );
+
+				$options_page_id = $ids[ 0 ];
+				$field_group_id = $ids[ 1 ];
+				if ( $field_group_id > 0 )
+					foreach( $acf_options_page_field_groups[ $options_page_id ] as $a_field_group )
+						if ( $a_field_group[ 'ID' ] == $field_group_id )
+							$field_groups_to_broadcast = array_merge( $field_groups_to_broadcast, acf_get_fields( $field_group_id ) );
+			}
+
+			// Create a fake BCD to store any image and tax data.
+			$bcd = new \threewp_broadcast\broadcasting_data( [
+				'parent_post_id' => -1,
+				'post' => new \WP_Post( (object)[] ),
+			] );
+			$bcd->prepare_custom_fields();
+
+			// Strip the fields we aren't interested in.
+			if ( count( $field_groups_to_broadcast ) > 0 )
+			{
+				$fields_to_broadcast = $this->get_field_keys( $field_groups_to_broadcast );
+				$used_fields = $this->get_field_keys( $this->get_field_objects( 'option' ) );
+				$this->debug( 'Requesting to use only fields %s', $fields_to_broadcast );
+				$this->debug( 'Options use fields %s', $used_fields );
+				foreach( $used_fields as $used_field_key )
+					if ( ! isset( $fields_to_broadcast[ $used_field_key ] ) )
+					{
+						// Add the non-requested fields to the blacklist.
+						$this->debug( 'Ignoring field %s', $used_field_key );
+						$bcd->custom_fields->blacklist []= $used_field_key;
+					}
+			}
+
+			// Preparse the fields.
+			$this->save_post_fields( $bcd, 'option' );
+
+			// And parse them into each blog.
+			foreach( $blogs_select->get_post_value() as $blog_id )
+			{
+				switch_to_blog( $blog_id );
+				$messages []= sprintf( 'Broadcasting options to %s', $blog_id );
+				ThreeWP_Broadcast()->copy_attachments_to_child( $bcd );
+				$this->restore_post_fields( $bcd, 'options' );
+				restore_current_blog();
+			}
+
+			$messages = implode( "\n", $messages );
+			$r .= $this->info_message_box()->_( $messages );
+		}
+
+		$r .= $form->open_tag();
+		$r .= $form->display_form_table();
+		$r .= $form->close_tag();
+
+		echo $r;
+	}
+
+	/**
+		@brief		Return an array of all of the field keys.
+		@since		2020-05-15 21:32:08
+	**/
+	public function get_field_keys( $array )
+	{
+		$r = [];
+		foreach( $array as $item )
+		{
+			$key = $item[ 'key' ];
+			$r[ $key ] = $key;
+		}
+		return $r;
 	}
 
 	/**
@@ -1381,6 +1560,16 @@ class ACF
 		$this->save_post_fields( $bcd );
 		if ( $this->has_acf_pro() )
 			$this->save_taxonomy_fields( $bcd );
+	}
+
+	/**
+		@brief		Allow disabled field groups.
+		@since		2020-05-12 14:36:22
+	**/
+	public function threewp_broadcast_allowed_post_statuses( $post_statuses )
+	{
+		$post_statuses []= 'acf-disabled';
+		return $post_statuses;
 	}
 }
 

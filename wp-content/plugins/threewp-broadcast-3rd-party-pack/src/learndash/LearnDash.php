@@ -10,6 +10,8 @@ namespace threewp_broadcast\premium_pack\learndash;
 class LearnDash
 	extends \threewp_broadcast\premium_pack\base
 {
+	use \threewp_broadcast\premium_pack\classes\database_trait;
+
 	/**
 		@brief		When broadcasting courses, keep the existing course access list.
 		@since		2019-02-09 19:35:23
@@ -414,6 +416,7 @@ class LearnDash
 
 		// Save the quiz.
 		$quiz = $this->get_quiz( $bcd->post->ID );
+		$this->debug( 'Saved quiz: %s', $quiz );
 		$bcd->learndash->set( 'quiz', $quiz );
 
 		// Save the questions.
@@ -615,7 +618,7 @@ class LearnDash
 
 		$quiz = $bcd->learndash->get( 'quiz' );
 		if ( ! $quiz )
-			return;
+			return $this->debug( 'No quiz found.' );
 
 		$child_quiz_post_id = $bcd->new_post( 'ID' );
 		$this->debug( 'Child quiz post ID is %s', $child_quiz_post_id );
@@ -857,12 +860,14 @@ class LearnDash
 			'meta_values' => [ 'sfwd-quiz_course', 'sfwd-quiz_lesson', 'sfwd-quiz_certificate' ],
 		] );
 
-		$this->update_equivalent_post_id( $bcd, 'course_id' );
-		$this->update_equivalent_post_id( $bcd, 'lesson_id' );
+		if ( $bcd->custom_fields()->has( 'course_id' ) )
+			$this->update_equivalent_post_id( $bcd, 'course_id' );
+		if ( $bcd->custom_fields()->has( 'lesson_id' ) )
+			$this->update_equivalent_post_id( $bcd, 'lesson_id' );
 
 		$quiz = $bcd->learndash->get( 'quiz' );
 		if ( ! $quiz )
-			return;
+			return $this->debug( 'No quiz found.' );
 
 		global $wpdb;
 		$table = $this->get_table( 'wp_pro_quiz_master' );
@@ -1011,17 +1016,20 @@ class LearnDash
 
 		foreach( $post_ids as $index => $post_id )
 		{
+			$this->debug( 'Broadcasting course part %d on blog %s.', $post_id, get_current_blog_id() );
 			// This is a workaround for the queue. As of 2019-02-13 there is a "bug" that makes the queue handle all instances of a post at the time.
 			// This makes it impossible to correctly broadcast a course: course, then lessons + topics etc, then the course again.
 			// Only the "first" course is high priority.
 			if ( $index < 1 )
 			{
 				ThreeWP_Broadcast()->api()->broadcast_children( $post_id, $blogs );
+				$this->debug( 'Finished broadcasting course %d on blog %d.', $post_id, get_current_blog_id() );
 				continue;
 			}
 			$bcd = \threewp_broadcast\broadcasting_data::make( $post_id, $blogs );
 			$bcd->high_priority = false;
 			apply_filters( 'threewp_broadcast_broadcast_post', $bcd );
+			$this->debug( 'Finished broadcasting course part %d on blog %d.', $post_id, get_current_blog_id() );
 		}
 	}
 
@@ -1268,14 +1276,24 @@ class LearnDash
 	{
 		// First, in the course custom field.
 		$course_id = $bcd->custom_fields()->get_single( 'course_id' );
+		$course_id = intval( $course_id );
 
+		$course_ids = [];
 		// Second, sometimes course info is stored in ld_course_xxx custom fields.
 		foreach( $bcd->custom_fields() as $key => $data )
+		{
 			if ( strpos( $key, 'ld_course_' ) === 0 )
-				$course_id = max( $course_id, reset( $data ) );
+			{
+				$value = reset( $data );
+				$value = intval( $value );
+				if ( $value > 0 )
+					$course_ids[] = reset( $data );
+			}
+		}
 
-		$this->debug( 'Saved course_id as %s', $course_id );
+		$this->debug( 'Saved course_id as %s, and ids as %s', $course_id, $course_ids );
 		$bcd->learndash->set( 'course_id', $course_id );
+		$bcd->learndash->set( 'course_ids', $course_ids );
 	}
 
 	/**
@@ -1432,6 +1450,21 @@ class LearnDash
 	public function get_table( $name )
 	{
 		global $wpdb;
+
+		// If this is a pro quiz table, see if the new tables exist.
+		if ( strpos( $name, 'wp_pro_quiz' ) !== false )
+		{
+			// First, look for the old tables.
+			$table = sprintf( '%s%s', $wpdb->prefix, $name );
+			if ( $this->database_table_exists( $table ) )
+				return $table;
+
+			// If they don't exist, hope that LD have only renamed the tables once, to ld_pro_quiz.
+			$name = str_replace( 'wp_pro_quiz', 'learndash_pro_quiz', $name );
+			$table = sprintf( '%s%s', $wpdb->prefix, $name );
+			return $table;
+		}
+
 		return sprintf( '%s%s', $wpdb->prefix, $name );
 	}
 
@@ -1535,6 +1568,13 @@ class LearnDash
 	**/
 	public function update_ld_course( $bcd )
 	{
+		$course_id = $bcd->learndash->get( 'course_id' );
+		if ( $course_id > 0 )
+		{
+			$new_course_id = $bcd->equivalent_posts()->get( $bcd->parent_blog_id, $course_id, get_current_blog_id() );
+			$bcd->custom_fields()->child_fields()->update_meta( 'course_id', $new_course_id );
+		}
+
 		// Delete all course keys.
 		foreach( $bcd->custom_fields()->child_fields() as $key => $ignore )
 			if ( strpos( $key, 'ld_course_' ) === 0 )
@@ -1542,16 +1582,22 @@ class LearnDash
 				$this->debug( 'Deleting key %s', $key );
 				$bcd->custom_fields()->child_fields()->delete_meta( $key );
 			}
-		$course_id = $bcd->learndash->get( 'course_id' );
-		if ( $course_id > 0 )
+
+		$old_course_ids = $bcd->learndash->get( 'course_ids' );
+		if ( $old_course_ids )
 		{
-			$new_course_id = $bcd->equivalent_posts()->get( $bcd->parent_blog_id, $course_id, get_current_blog_id() );
-			$bcd->custom_fields()->child_fields()->update_meta( 'course_id', $new_course_id );
-			$key = 'ld_course_' . $new_course_id;
-			$this->debug( 'Updating %s', $key );
-			$bcd->custom_fields()
-				->child_fields()
-				->update_meta( $key, $new_course_id );
+			foreach( $old_course_ids as $old_course_id )
+			{
+				$new_course_id = $bcd->equivalent_posts()->get( $bcd->parent_blog_id, $old_course_id, get_current_blog_id() );
+				if ( $new_course_id > 0 )
+				{
+					$key = 'ld_course_' . $new_course_id;
+					$this->debug( 'Updating %s', $key );
+					$bcd->custom_fields()
+						->child_fields()
+						->update_meta( $key, $new_course_id );
+				}
+			}
 		}
 	}
 

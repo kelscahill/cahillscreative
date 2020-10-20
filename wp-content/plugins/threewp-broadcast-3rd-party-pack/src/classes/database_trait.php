@@ -81,4 +81,104 @@ trait database_trait
 		global $wpdb;
 		return sprintf( "%s%s", $wpdb->prefix, $table_name );
 	}
+
+	/**
+		@brief		Sync the rows of two tables.
+		@since		2019-12-11 17:47:42
+	**/
+	public function sync_database_rows( $options )
+	{
+		$options = array_merge( [
+			/**
+				@brief		Ignore these columns.
+				@since		2019-12-11 18:36:27
+			**/
+			'debug_class' => $this,
+			'except' => [ 'id' ],
+			'source' => 'source',
+			'source_value' => '123',
+			'target' => 'target',
+			'target_value' => '234',
+			'unique_column' => 'field_key',
+			'value_column' => 'form_id',
+		], $options );
+
+		// Objects are easier to work with.
+		$options = (object) $options;
+
+		// Conv.
+		$debug_class = $options->debug_class;
+
+		global $wpdb;
+
+		$columns = $this->get_database_table_columns( $options->source, (array)$options );
+		$columns_string = '`' . implode( "`,`", $columns ) . '`';
+
+		// Delete rows that no longer exist on the target.
+		$query = sprintf( "DELETE FROM `%s` WHERE `%s` = '%s' AND `%s` NOT IN ( SELECT `%s` FROM `%s` WHERE `%s` = '%s' )",
+			$options->target,
+			$options->value_column,
+			$options->target_value,
+			$options->unique_column,
+			$options->unique_column,
+			$options->source,
+			$options->value_column,
+			$options->source_value
+		);
+		$debug_class->debug( $query );
+		$wpdb->get_results( $query );
+
+		// Find existing rows, so we can update them.
+		$query = sprintf( "
+			( SELECT %s FROM `%s` WHERE `%s` = '%s' AND `%s` IN
+			  ( SELECT `%s` FROM `%s` WHERE `%s` = '%s' )
+			)"
+			,
+			$columns_string,
+			$options->source,
+			$options->value_column,
+			$options->source_value,
+			$options->unique_column,
+			$options->unique_column,
+			$options->target,
+			$options->value_column,
+			$options->target_value
+		);
+		$debug_class->debug( $query );
+		$existing_rows = $wpdb->get_results( $query );
+
+		$debug_class->debug( '%s existing rows found.', count( $existing_rows ) );
+
+		// Insert new rows.
+		$query = sprintf( "
+			INSERT INTO `%s` ( `%s`, %s )
+			( SELECT '%s',%s FROM `%s` WHERE `%s` = '%s' AND `%s` NOT IN
+			  ( SELECT `%s` FROM `%s` WHERE `%s` = '%s' )
+			)"
+			,
+			$options->target,
+			$options->value_column,
+			$columns_string,
+			$options->target_value,
+			$columns_string,
+			$options->source,
+			$options->value_column,
+			$options->source_value,
+			$options->unique_column,
+			$options->unique_column,
+			$options->target,
+			$options->value_column,
+			$options->target_value
+		);
+		$debug_class->debug( $query );
+		$wpdb->get_results( $query );
+
+		// Update existing rows.
+		$uc = $options->unique_column;
+		foreach( $existing_rows as $existing_row )
+		{
+			$debug_class->debug( 'Updating existing row %s', $existing_row->$uc );
+			$wpdb->update( $options->target, (array) $existing_row, [ $options->unique_column => $existing_row->$uc ] );
+		}
+	}
 }

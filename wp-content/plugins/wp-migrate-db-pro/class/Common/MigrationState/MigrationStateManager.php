@@ -8,6 +8,7 @@ use DeliciousBrains\WPMDB\Common\Properties\Properties;
 use DeliciousBrains\WPMDB\Common\Sanitize;
 use DeliciousBrains\WPMDB\Common\Util\Util;
 use DeliciousBrains\WPMDB\Common\Http\Http;
+use DeliciousBrains\WPMDB\Container;
 
 class MigrationStateManager {
 
@@ -39,13 +40,20 @@ class MigrationStateManager {
 	 * @var Http
 	 */
 	private $http;
+	/**
+	 * @var DynamicProperties
+	 */
+	private $dynamic_props;
+	/**
+	 * @var MigrationState
+	 */
+	private $migration_state_class;
 
 	public function __construct(
 		ErrorLog $error_log,
 		Util $util,
 		MigrationState $migration_state,
 		Http $http,
-		DynamicProperties $dynamic_properties,
 		Properties $properties,
 		StateDataContainer $state_data_container
 	) {
@@ -54,10 +62,8 @@ class MigrationStateManager {
 		$this->props           = $properties;
 		$this->util            = $util;
 		$this->state_container = $state_data_container;
-		$this->dynamic_props   = $dynamic_properties;
+		$this->dynamic_props   = DynamicProperties::getInstance();
 
-		// @TODO needs testing
-		// Use the StateDataContainer to hold state
 		$this->state_data            = $this->state_container->state_data;
 		$this->migration_state_class = $migration_state;
 		$this->http                  = $http;
@@ -120,15 +126,19 @@ class MigrationStateManager {
 	}
 
 	/**
-	 * Sets $this->state_data from $_POST, potentially un-slashed and sanitized.
+	 * Sets $this->state_data from $_POST, potentially un-slashed and un-sanitized.
 	 *
 	 * @param array  $key_rules An optional associative array of expected keys and their sanitization rule(s).
 	 * @param string $state_key The key in $_POST that contains the migration state id (defaults to 'migration_state_id').
 	 * @param string $context   The method that is specifying the sanitization rules. Defaults to calling method.
 	 *
-	 * @return array
+	 * @return array|bool
 	 */
 	public function set_post_data( $key_rules = array(), $state_key = 'migration_state_id', $context = '' ) {
+		if ( ( empty( $key_rules ) && ! empty( $this->state_data ) ) && ! defined( 'DOING_WPMDB_TESTS' ) ) {
+			return $this->state_data;
+		}
+
 		if ( defined( 'DOING_WPMDB_TESTS' ) || $this->dynamic_props->doing_cli_migration ) {
 			$this->state_data = $_POST;
 		} elseif ( empty( $this->state_data ) || null === $this->state_data ) {
@@ -145,11 +155,18 @@ class MigrationStateManager {
 		}
 
 		// Sanitize the new state data.
-		if ( ! empty( $key_rules ) ) {
+		if ( !empty( $key_rules ) ) {
 			$wpmdb_key_rules = $key_rules;
+			$context         = empty( $context ) ? $this->util->get_caller_function() : trim( $context );
+			$sanitized       = Sanitize::sanitize_data( $this->state_data, $key_rules, $context );
 
-			$context          = empty( $context ) ? $this->util->get_caller_function() : trim( $context );
-			$this->state_data = Sanitize::sanitize_data( $this->state_data, $key_rules, $context );
+			if ( is_wp_error( $sanitized ) ) {
+				$this->error_log->log_error( $sanitized->get_error_message() );
+				error_log($sanitized->get_error_message());
+				return $this->http->end_ajax( json_encode( array('wpmdb_error' => 1, 'body' => $sanitized->get_error_message()) ) );
+			}
+
+			$this->state_data = $sanitized;
 
 			if ( false === $this->state_data ) {
 				exit;
@@ -166,7 +183,7 @@ class MigrationStateManager {
 			exit;
 		}
 
-		$this->state_container->setData( $this->state_data );
+		Container::getInstance()->get( 'state_data_container' )->setData( $this->state_data );
 
 		return $this->state_data;
 	}

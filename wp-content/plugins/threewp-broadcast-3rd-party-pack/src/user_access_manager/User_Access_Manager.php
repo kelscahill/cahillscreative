@@ -19,6 +19,17 @@ class User_Access_Manager
 	}
 
 	/**
+		@brief		Is UAM activated on this blog?
+		@since		2020-06-30 09:27:12
+	**/
+	public function has_uam()
+	{
+		global $wpdb;
+		$table = sprintf( "%suam_accessgroup_to_object", $wpdb->prefix );
+		return $this->database_table_exists( $table );
+	}
+
+	/**
 		@brief		threewp_broadcast_broadcasting_before_restore_current_blog
 		@since		2018-08-08 22:09:20
 	**/
@@ -29,12 +40,15 @@ class User_Access_Manager
 		if ( ! isset( $bcd->user_access_manager ) )
 			return;
 
+		$apply = apply_filters( 'broadcast_user_access_mananger_apply_on_this_blog', true );
+		if ( ! $apply )
+			return;
+
+		if ( ! $this->has_uam() )
+			return;
+
 		global $wpdb;
 		$uam = $bcd->user_access_manager;
-
-		// Sanity checking.
-		$table = sprintf( "%suam_accessgroup_to_object", $wpdb->prefix );
-		$this->database_table_must_exist( $table );
 
 		// Sync the groups, if any.
 		$groups = [];
@@ -80,6 +94,19 @@ class User_Access_Manager
 			$row = clone( $row );		// Work with a copy, since we might be broadcasting to other blogs.
 			// Update the ID.
 			$row->object_id = $bcd->new_post( 'ID' );
+			if ( $row->group_id > 0 )
+				$row->group_id = $groups[ $row->group_id ];
+			$this->debug( 'Inserting %s', $row );
+			$wpdb->insert( $wpdb->prefix . $table, (array) $row );
+		}
+
+		// Insert the new rows for the attachments.
+		foreach( $uam->collection( 'attachment' ) as $row )
+		{
+			$row = clone( $row );		// Work with a copy, since we might be broadcasting to other blogs.
+			$old_attachment_id = $row->object_id;
+			// Update the ID.
+			$row->object_id = $bcd->copied_attachments()->get( $old_attachment_id );
 			if ( $row->group_id > 0 )
 				$row->group_id = $groups[ $row->group_id ];
 			$this->debug( 'Inserting %s', $row );
@@ -139,6 +166,9 @@ class User_Access_Manager
 	{
 		$bcd = $action->broadcasting_data;		// Convenience
 
+		if ( ! $this->has_uam() )
+			return;
+
 		$uam = ThreeWP_Broadcast()->collection();
 		$bcd->user_access_manager = $uam;
 
@@ -156,6 +186,30 @@ class User_Access_Manager
 		if ( count( $results ) > 0 )
 		{
 			$uam->collection( 'post' )->import_array( $results );
+
+			// Fetch any groups.
+			foreach( $results as $row )
+			{
+				if ( $row->group_id < 1 )
+					continue;
+				$group_ids []= $row->group_id;
+			}
+		}
+
+		// How about any attachments we know of?
+		$attachment_ids = array_keys( $bcd->attachment_data );
+		$query = sprintf( "SELECT * FROM `%suam_accessgroup_to_object` WHERE `object_id` IN ('%s') AND `object_type` = 'attachment'",
+			$wpdb->prefix,
+			implode( ",", $attachment_ids )
+		);
+		$this->debug( $query );
+		$results = $wpdb->get_results( $query );
+
+		if ( count( $results ) > 0 )
+		{
+			$uam->collection( 'attachment' )->import_array( $results );
+
+			$this->debug( 'Saved UAM data for %d attachments.', count( $results ) );
 
 			// Fetch any groups.
 			foreach( $results as $row )

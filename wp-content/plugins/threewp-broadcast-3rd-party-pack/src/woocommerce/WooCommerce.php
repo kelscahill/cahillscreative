@@ -1425,7 +1425,7 @@ extends \threewp_broadcast\premium_pack\base
 				$found = true;
 				$updated_attribute = clone( $at );
 				unset( $updated_attribute->attribute_id );
-				$this->debug( 'Updating attribute taxonomy %s', $updated_attribute->attribute_name );
+				$this->debug( 'Updating attribute taxonomy %s (%s)', $updated_attribute->attribute_name, $existing_at->attribute_id );
 				$updated_attribute = (array)$updated_attribute;
 				$wpdb->update( $wpdb->prefix . 'woocommerce_attribute_taxonomies',
 					$updated_attribute,

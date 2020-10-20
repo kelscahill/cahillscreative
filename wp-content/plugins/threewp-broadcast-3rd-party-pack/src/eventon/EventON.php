@@ -35,6 +35,7 @@ class EventON
 		$this->add_action( 'threewp_broadcast_broadcasting_started' );
 		$this->add_action( 'threewp_broadcast_get_post_types' );
 		$this->add_action( 'threewp_broadcast_menu' );
+		$this->add_action( 'threewp_broadcast_wp_update_term' );
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -242,6 +243,9 @@ class EventON
 
 		$bcd->eventon = ThreeWP_Broadcast()->collection();
 
+		$this->save_evo_tax_meta( $bcd );
+		$this->save_event_speakers( $bcd );
+
 		if ( $this->post_is_event( $bcd->post ) )
 		{
 			$this->save_event_location( $bcd );
@@ -286,6 +290,56 @@ class EventON
 			->page_title( 'EventON' );
 	}
 
+	/**
+		@brief		Restore the "term meta" of an event speaker term.
+		@since		2020-10-01 11:46:17
+	**/
+	public function maybe_restore_event_speaker( $action )
+	{
+		if ( $action->taxonomy != 'event_speaker' )
+			return;
+
+		$bcd = $action->broadcasting_data;
+		$old_evo_tax_meta = $bcd->eventon->get( 'evo_tax_meta' );
+
+		if ( ! isset( $old_evo_tax_meta[ 'event_speaker' ] ) )
+			return;
+		if ( ! isset( $old_evo_tax_meta[ 'event_speaker' ][ $action->old_term->term_id ] ) )
+			return;
+
+		$speaker = $old_evo_tax_meta[ 'event_speaker' ][ $action->old_term->term_id ];
+
+		// No image? Do nothing.
+		if ( ! isset( $speaker[ 'evo_spk_img' ] ) )
+			return;
+
+		$speaker[ 'evo_spk_img' ] = $bcd->copied_attachments()->get( $speaker[ 'evo_spk_img' ] );
+
+		// Retrieve, modify and save the evo_tax_meta.
+		$new_evo_tax_meta = get_option( 'evo_tax_meta' );
+
+		if ( ! isset( $new_evo_tax_meta[ 'event_speaker' ] ) )
+			$new_evo_tax_meta[ 'event_speaker' ] = [];
+		$new_evo_tax_meta[ 'event_speaker' ][ $action->new_term->term_id ] = $speaker;
+
+		$this->debug( 'Updating speaker with: %s', $speaker );
+
+		update_option( 'evo_tax_meta', $new_evo_tax_meta );
+	}
+
+	/**
+		@brief		Maybe handle term meta.
+		@since		2020-10-01 11:41:06
+	**/
+	public function threewp_broadcast_wp_update_term( $action )
+	{
+		$bcd = $action->broadcasting_data;
+		if ( ! isset( $bcd->eventon ) )
+			return;
+
+		$this->maybe_restore_event_speaker( $action );
+	}
+
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Save
 	// --------------------------------------------------------------------------------------------
@@ -306,6 +360,29 @@ class EventON
 	public function save_event_organizer( $bcd )
 	{
 		$this->remember_taxonomy_meta( $bcd, 'event_organizer' );
+	}
+
+	/**
+		@brief		Remember any speaker images.
+		@since		2020-10-01 11:52:09
+	**/
+	public function save_event_speakers( $bcd )
+	{
+		$etm = $bcd->eventon->get( 'evo_tax_meta' );
+		if ( ! isset( $etm[ 'event_speaker' ] ) )
+			return;
+		foreach( $etm[ 'event_speaker' ] as $speaker )
+			if ( isset( $speaker[ 'evo_spk_img' ] ) )
+				$bcd->try_add_attachment(  $speaker[ 'evo_spk_img' ] );
+	}
+
+	/**
+		@brief		Save the tax meta.
+		@since		2020-10-01 11:39:42
+	**/
+	public function save_evo_tax_meta( $bcd )
+	{
+		$bcd->eventon->set( 'evo_tax_meta', get_option( 'evo_tax_meta' ) );
 	}
 
 	/**

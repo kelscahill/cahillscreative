@@ -27,13 +27,12 @@ class Multisite {
 
 	public function __construct(
 		MigrationStateManager $migration_state_manager,
-		DynamicProperties $dynamic_properties,
 		Properties $properties,
 		Util $util
 	) {
 		$this->props                   = $properties;
 		$this->migration_state_manager = $migration_state_manager;
-		$this->dynamic_props           = $dynamic_properties;
+		$this->dynamic_props           = DynamicProperties::getInstance();
 		$this->util                    = $util;
 	}
 
@@ -54,7 +53,7 @@ class Multisite {
 					$domain_find_keys = array_keys( $grep );
 					$url              = Util::parse_url( $this->dynamic_props->find_replace_pairs['replace_new'][ $domain_find_keys[0] ] );
 					if ( isset( $url['host'] ) ) {
-						$this->domain_replace = $url['host'];
+						$this->domain_replace = $url['host'] . ( isset( $url['port'] ) ? ':' . $url['port'] : '' );
 					} elseif ( ! empty( $state_data['domain_current_site'] ) ) {
 						$this->domain_replace = $state_data['domain_current_site'];
 					}

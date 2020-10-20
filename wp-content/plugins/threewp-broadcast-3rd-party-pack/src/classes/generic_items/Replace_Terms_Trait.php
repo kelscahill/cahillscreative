@@ -37,6 +37,7 @@ trait Replace_Terms_Trait
 			$taxonomy = $term->taxonomy;
 			$this->debug( 'Term %s belongs to taxonomy %s', $id, $taxonomy );
 			$find->collection( 'taxonomies' )->set( $id, $taxonomy );
+			$bcd->taxonomies()->also_sync( $bcd->post->post_type, $taxonomy );
 			$taxonomies->set( $taxonomy, true );
 		}
 

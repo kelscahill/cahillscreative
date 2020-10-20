@@ -95,6 +95,24 @@ class Yoast_SEO
 				->child_fields()
 				->update_meta( $key, $new_term_id );
 		}
+
+		$key = '_yoast_wpseo_opengraph-image-id';
+		$old_image_id = $bcd->custom_fields()->get_single( $key );
+		if ( $old_image_id > 0 )
+		{
+			$new_image_id = $bcd->copied_attachments()->get( $old_image_id );
+			$this->debug( 'Replacing %s with %s', $key, $new_image_id );
+			$bcd->custom_fields()
+				->child_fields()
+				->update_meta( $key, $new_image_id );
+
+			$key = '_yoast_wpseo_opengraph-image';
+			$new_url = wp_get_attachment_url( $new_image_id );
+			$this->debug( 'Replacing %s with %s', $key, $new_url );
+			$bcd->custom_fields()
+				->child_fields()
+				->update_meta( $key, $new_url );
+		}
 	}
 
 	/**
@@ -103,28 +121,17 @@ class Yoast_SEO
 	**/
 	public function threewp_broadcast_broadcasting_started( $action )
 	{
-		// Remove Canonical Link Added By Yoast WordPress SEO Plugin
-		if ( ! class_exists( '\\WPSEO_Link_Watcher' ) )
-			return;
-		// Go through everything hooked into save_post to find the link watcher.
-		global $wp_filter;
-		$filters = $wp_filter[ 'save_post' ];
-		foreach( $filters->callbacks as $callbacks )
-			foreach( $callbacks as $callback )
-			{
-				$function = $callback[ 'function' ];
-				if ( ! is_array( $function ) )
-					continue;
-				$class = $function[ 0 ];
-				if ( ! is_object( $class ) )
-					continue;
-				$classname = get_class( $class );
-				if ( $classname != 'WPSEO_Link_Watcher' )
-					continue;
-				// We've found it! Nuke it from orbit.
-				$this->debug( 'Disabling %s', $classname );
-				remove_action( 'save_post', [ $class, 'save_post' ], 10, 2 );
-			}
+		$this->maybe_disable_link_watcher();
+
+		$bcd = $action->broadcasting_data;
+
+		$key = '_yoast_wpseo_opengraph-image-id';
+		$image_id = $bcd->custom_fields()->get_single( $key );
+		if ( $image_id > 0 )
+		{
+			$this->debug( 'Found %s image: %s', $key, $image_id );
+			$bcd->try_add_attachment( $image_id );
+		}
 	}
 
 	/**
@@ -232,6 +239,42 @@ class Yoast_SEO
 
 		$this->debug( 'Saving new meta for term %s', $action->old_term->slug );
 		update_option( 'wpseo_taxonomy_meta', $meta );
+	}
+
+	// -------------------------------------------------------------------------------------------------------------------
+	// --- MISC
+	// -------------------------------------------------------------------------------------------------------------------
+
+	/**
+		@brief		Disable the Link Watcher, if possible.
+		@since		2020-05-07 19:17:05
+	**/
+	public function maybe_disable_link_watcher()
+	{
+		// Remove Canonical Link Added By Yoast WordPress SEO Plugin
+		if ( ! class_exists( '\\WPSEO_Link_Watcher' ) )
+			return;
+		// Go through everything hooked into save_post to find the link watcher.
+		global $wp_filter;
+		if ( ! isset( $wp_filter[ 'save_post' ] ) )
+			return;
+		$filters = $wp_filter[ 'save_post' ];
+		foreach( $filters->callbacks as $callbacks )
+			foreach( $callbacks as $callback )
+			{
+				$function = $callback[ 'function' ];
+				if ( ! is_array( $function ) )
+					continue;
+				$class = $function[ 0 ];
+				if ( ! is_object( $class ) )
+					continue;
+				$classname = get_class( $class );
+				if ( $classname != 'WPSEO_Link_Watcher' )
+					continue;
+				// We've found it! Nuke it from orbit.
+				$this->debug( 'Disabling %s', $classname );
+				remove_action( 'save_post', [ $class, 'save_post' ], 10, 2 );
+			}
 	}
 
 	/**

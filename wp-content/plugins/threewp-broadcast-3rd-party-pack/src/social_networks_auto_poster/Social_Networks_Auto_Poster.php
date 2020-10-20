@@ -3,7 +3,7 @@
 namespace threewp_broadcast\premium_pack\social_networks_auto_poster;
 
 /**
-	@brief				Adds support for <a href="https://wordpress.org/plugins/social-networks-auto-poster-facebook-twitter-g/">NextScripts' Social Networks Auto Poster</a> plugin.
+	@brief				OBSOLETE: Adds support for <a href="https://wordpress.org/plugins/social-networks-auto-poster-facebook-twitter-g/">NextScripts' Social Networks Auto Poster</a> plugin.
 	@plugin_group		3rd party compatability
 	@since				2015-01-19 21:29:34
 **/

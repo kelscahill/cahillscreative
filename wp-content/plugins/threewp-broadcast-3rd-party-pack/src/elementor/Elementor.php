@@ -27,10 +27,38 @@ class Elementor
 
 	public function _construct()
 	{
+		$this->add_action( 'elementor/editor/after_save', 'elementor_editor_after_save' );
+		$this->add_action( 'broadcast_php_code_load_wizards' );
 		$this->add_action( 'threewp_broadcast_broadcasting_started' );
 		$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
 		$this->add_action( 'threewp_broadcast_get_post_types' );
 		new Elementor_Template_Shortcode();
+	}
+
+	/**
+		@brief		elementor_editor_after_save
+		@since		2018-12-26 13:04:37
+	**/
+	public function elementor_editor_after_save( $post_id )
+	{
+		if ( defined( 'BROADCAST_ELEMENTOR_NO_UPDATE_ON_SAVE' ) )
+			return;
+		$this->debug( 'elementor_editor_after_save: %s', $post_id );
+		ThreeWP_Broadcast()->api()->update_children( $post_id );
+	}
+
+	/**
+		@brief		Add the wizard for JetEngine.
+		@since		2020-05-09 21:42:58
+	**/
+	public function broadcast_php_code_load_wizards( $action )
+	{
+		$wizard = $action->new_wizard();
+		$wizard->set( 'group', '3rdparty' );
+		$wizard->set( 'id', 'elementor_jetengine_copy_tables' );
+		$wizard->set( 'label', __( "Elementor: Copy Jet Engine custom post table and taxonomies database tables", 'threewp_broadcast' ) );
+		$wizard->load_code_from_disk( __DIR__ . '/php_code/' );
+		$action->add_wizard( $wizard );
 	}
 
 	/**
@@ -96,6 +124,14 @@ class Elementor
 					$image_id = $element->settings->image->id;
 					if ( $bcd->try_add_attachment( $image_id ) )
 						$this->debug( 'Found image widget. Adding attachment %s', $image_id );
+					break;
+				case 'image-carousel':
+					foreach( $element->settings->carousel as $carousel_index => $carousel_item )
+					{
+						$image_id = $carousel_item->id;
+						if ( $bcd->try_add_attachment( $image_id ) )
+								$this->debug( 'Found image-carousel widget. Adding attachment %s', $image_id );
+					}
 					break;
 				case 'image-gallery':
 					foreach( $element->settings->wp_gallery as $gallery_index => $gallery_item )
@@ -238,7 +274,7 @@ class Elementor
 	}
 
 	/**
-		@brief		Add foogallery types.
+		@brief		Add post types.
 		@since		2015-10-02 12:47:49
 	**/
 	public function threewp_broadcast_get_post_types( $action )
@@ -280,6 +316,12 @@ class Elementor
 		{
 			switch( $element->widgetType )
 			{
+				case 'ae-post-blocks':
+					$template_id = $element->settings->template;
+					$new_template_id = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $template_id, get_current_blog_id() );
+					$this->debug( 'New ae-post-blocks ID %s is %s', $template_id, $new_template_id );
+					$element->settings->template = $new_template_id;
+				break;
 				case 'devices-extended':
 					$image_id = $element->settings->video_cover->id;
 					$new_image_id = $bcd->copied_attachments()->get( $image_id );
@@ -311,6 +353,16 @@ class Elementor
 					$this->debug( 'Found image widget. Replacing %s with %s.', $image_id, $new_image_id );
 					$element->settings->image->id = $new_image_id;
 					$element->settings->image->url = ThreeWP_Broadcast()->update_attachment_ids( $bcd, $element->settings->image->url );
+					break;
+				case 'image-carousel':
+					foreach( $element->settings->carousel as $carousel_index => $carousel_item )
+					{
+						$image_id = $carousel_item->id;
+						$new_image_id = $bcd->copied_attachments()->get( $image_id );
+						$this->debug( 'Found carousel widget. Replacing %s with %s', $image_id, $new_image_id );
+						$element->settings->carousel[ $carousel_index ]->id = $new_image_id;
+						$element->settings->carousel[ $carousel_index ]->url = ThreeWP_Broadcast()->update_attachment_ids( $bcd, $element->settings->carousel[ $carousel_index ]->url );
+					}
 					break;
 				case 'image-gallery':
 					foreach( $element->settings->wp_gallery as $gallery_index => $gallery_item )

@@ -24,8 +24,14 @@ class WPSEO_Image_Utils {
 		 */
 		$url = preg_replace( '/(.*)-\d+x\d+\.(jpg|png|gif)$/', '$1.$2', $url );
 
+		static $uploads;
+
+		if ( $uploads === null ) {
+			$uploads = wp_get_upload_dir();
+		}
+
 		// Don't try to do this for external URLs.
-		if ( strpos( $url, get_site_url() ) !== 0 ) {
+		if ( strpos( $url, $uploads['baseurl'] ) !== 0 ) {
 			return 0;
 		}
 
@@ -60,7 +66,7 @@ class WPSEO_Image_Utils {
 			return $id;
 		}
 
-		// phpcs:ignore WordPress.VIP.RestrictedFunctions -- We use the WP COM version if we can, see above.
+		// Note: We use the WP COM version if we can, see above.
 		$id = attachment_url_to_postid( $url );
 
 		if ( empty( $id ) ) {
@@ -243,7 +249,7 @@ class WPSEO_Image_Utils {
 
 		// If the file size for the file is over our limit, we're going to go for a smaller version.
 		// @todo Save the filesize to the image metadata.
-		// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged -- If file size doesn't properly return, we'll not fail.
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- If file size doesn't properly return, we'll not fail.
 		return @filesize( self::get_absolute_path( $image['path'] ) );
 	}
 

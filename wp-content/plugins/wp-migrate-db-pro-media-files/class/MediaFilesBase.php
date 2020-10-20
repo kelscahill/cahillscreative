@@ -429,11 +429,16 @@ class MediaFilesBase {
 	 *
 	 * @return array Data to return to AJAX response
 	 */
-	function compare_remote_attachments( $blogs, $all_attachments, $progress ) {
+	function compare_remote_attachments( $blogs, $all_attachments, $progress, $intent ) {
 		if ( ! is_array( $blogs ) ) {
 			$blogs = unserialize( stripslashes( $blogs ) );
 		}
+
 		if ( ! is_array( $all_attachments ) ) {
+			if ( 'push' === $intent ) {
+				$all_attachments = gzdecode( base64_decode( $all_attachments ) );
+			}
+
 			$all_attachments = unserialize( stripslashes( $all_attachments ) );
 		}
 
@@ -552,6 +557,12 @@ class MediaFilesBase {
 					$attachment['sizes'][] = $size_data;
 				}
 			}
+
+            if ( ! empty( $attachment['metadata']['original_image'] )){
+                $size_data = array( 'file' => $upload_dir . $attachment['metadata']['original_image'] );
+                $size_data = $this->apply_file_size( $size_data );
+                $attachment['sizes'][] = $size_data;
+            }
 		}
 		unset( $attachment['metadata'] );
 
@@ -831,7 +842,7 @@ class MediaFilesBase {
 	 */
 	public function include_subsite( $value, $blog_id ) {
 		$state_data = $this->migration_state_manager->set_post_data();
-		$form_data = $this->form_data->getFormData();
+		$form_data  = $this->form_data->getFormData();
 		if ( empty( $form_data ) && ! empty( $state_data['form_data'] ) ) {
 			$form_data = $this->parse_migration_form_data( $state_data['form_data'] );
 		}

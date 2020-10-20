@@ -1,3 +1,58 @@
+<strong>46.14</strong> 20201002
+
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for AE Post Blocks relationships.
+<a href="https://broadcast.plainviewplugins.com/addon/eventon/">EventON</a>: Add support for event speakers.
+<a href="https://broadcast.plainviewplugins.com/addon/geodirectory/">GeoDirectory</a>: Fix support for v2.0.0.101 - images, logos and categories broadcast correctly again.
+<a href="https://broadcast.plainviewplugins.com/addon/ninja-forms/">Ninja Forms</a>: Clear form cache after broadcasting. Tested with 3.4.30
+
+<strong>46.13</strong> 20200922
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/modern-events/">Modern Events</a> adds support for the <a href="https://wordpress.org/plugins/modern-events-calendar-lite/">Modern Events plugin</a>.
+<a href="https://broadcast.plainviewplugins.com/addon/formidable-forms/">Formidable Forms</a>: Add support for broadcasting entries via the Broadcast > Formidable menu item.
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Add support for Gravityflow workflows.
+
+<strong>46.12</strong> 20200810
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/create/">Create</a> adds support for the <a href="https://wordpress.org/plugins/mediavine-create/">Create</a> plugin from Mediavine.
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/soliloquy/">Soliloquy</a> adds support for the <a href="https://soliloquywp.com/">Soliloquy plugin</a>.
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Add ability to copy option field groups.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for updating the linked children when the parent post is saved in Elementor (not just the normal editor).
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Fix field ID in view not matching.
+
+<strong>46.11</strong> 20200715
+
+Version bump, because Wordpress doesn't understand that .10 is bigger than .1
+
+<strong>46.10</strong> 20200714
+
+<a href="https://broadcast.plainviewplugins.com/addon/formidable-forms/">Formidable Forms</a>: Add support for repeaters and conditionals.
+
+<strong>46.09</strong> 20200708
+
+New add-on. <a href="https://broadcast.plainviewplugins.com/addon/category-order-and-taxonomy-terms-order/">Category Order and Taxonomy Terms Order</a>: Adds support for the <a href="https://wordpress.org/plugins/taxonomy-terms-order/">Category Order and Taxonomy Terms Order plugin</a>.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for Image Carousels.
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Allow support for Gravity Views.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Add support for lessons that can be assigned to multiple courses.
+<a href="https://broadcast.plainviewplugins.com/addon/pods/">Pods</a>: Add support for taxonomies.
+<a href="https://broadcast.plainviewplugins.com/addon/pods/">Pods</a>: Automatically broadcast related posts if necessary.
+<a href="https://broadcast.plainviewplugins.com/addon/user-access-manager/">User Access Manager</a>: Add support for restricting attachments.
+<a href="https://broadcast.plainviewplugins.com/addon/wpml/">WPML</a>: Fix term languages being set in wrong language.
+
+<strong>46.08</strong> 20200608
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/wp-rocket/">WP Rocket</a>: Adds support for the <a href="https://wp-rocket.me/">WP Rocket</a> plugin.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Fix quizzes not being properly broadcasted due to new database table names.
+<a href="https://broadcast.plainviewplugins.com/addon/pods/">Pods</a>: Add support for multiple post selections.
+<a href="https://broadcast.plainviewplugins.com/addon/wpml/">WPML</a>: Fix the blog name being incorrectly displayed when using post actions together with the String Translation plugin.
+
+<strong>46.07</strong> 20200512
+
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Fix cloned fields.
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Fix group fields for non-pro users.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Added wizard for the <a href="<a href="https://broadcast.plainviewplugins.com/addon/php-code/">">PHP Code add-on</a> that copies Jet Engine custom post types and taxonomies.
+<a href="https://broadcast.plainviewplugins.com/addon/social-networks-auto-poster/">SNAP</a>: Add-on is now obsolete. This is due to changes in the plugin and the most <a href="https://wordpress.org/support/plugin/social-networks-auto-poster-facebook-twitter-g/reviews/">recent reviews</a>.
+<a href="https://broadcast.plainviewplugins.com/addon/yoast-seo/">Yoast SEO</a>: Added support OpenGraph / Facebook image and URL custom field.
+
 <strong>46.04</strong> 20200323
 
 New add-on: <a href="https://broadcast.plainviewplugins.com/addon/translatepress/">TranslatePress</a>: Adds support for the <a href="https://wordpress.org/plugins/translatepress-multilingual/">TranslatePress</a> plugin.

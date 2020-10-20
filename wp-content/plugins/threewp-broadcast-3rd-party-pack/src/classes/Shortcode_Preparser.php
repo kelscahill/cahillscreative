@@ -61,7 +61,7 @@ class Shortcode_Preparser
 				if ( ! isset( $item->new_shortcode ) )
 				{
 					// use the xxx as a placeholder so that the number doesn't confuse the backlinks.
-					$new_shortcode = preg_replace( '/=(["]?)' . $item->id . '(["]?)/', '=\1xxxxx\2', $item->shortcode );
+					$new_shortcode = preg_replace( '/=([\'"]?)' . $item->id . '([\'"]?)/', '=\1xxxxx\2', $item->shortcode );
 					$new_shortcode = str_replace( 'xxxxx', $new_item_id, $new_shortcode );
 				}
 				else
@@ -144,10 +144,20 @@ class Shortcode_Preparser
 		if ( ! isset( $item->id ) )
 			throw new Exception( $this->debug( 'Unable to copy the item since it has no ID.' ) );
 
-		switch_to_blog( $bcd->parent_blog_id );
-		$item_bcd = ThreeWP_Broadcast()->api()->broadcast_children( $item->id, [ $bcd->current_child_blog_id ] );
-		restore_current_blog();
-		return $item_bcd->new_post( 'ID' );
+		// Allow plugins to override the forced broadcasting of new items, or to use get_or_broadcast and then not broadcast anything.
+		$broadcast_children = apply_filters( 'shortcode_preparser_broadcast_children', true, $bcd, $item );
+		if ( $broadcast_children )
+		{
+			switch_to_blog( $bcd->parent_blog_id );
+			$item_bcd = ThreeWP_Broadcast()->api()->broadcast_children( $item->id, [ $bcd->current_child_blog_id ] );
+			$new_id = $item_bcd->new_post( 'ID' );
+			restore_current_blog();
+		}
+		else
+		{
+			$new_id = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $item->id, get_current_blog_id() );
+		}
+		return $new_id;
 	}
 
 	/**

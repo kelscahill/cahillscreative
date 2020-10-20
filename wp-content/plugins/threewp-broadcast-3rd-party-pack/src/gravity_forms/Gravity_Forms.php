@@ -1,7 +1,6 @@
 <?php
 
 namespace threewp_broadcast\premium_pack\gravity_forms
-
 {
 
 /**
@@ -27,6 +26,7 @@ class Gravity_Forms
 		parent::_construct();
 		$this->add_action( 'threewp_broadcast_menu' );
 		$this->add_action( 'broadcast_gf_modify_form_meta' );
+		$this->gravity_views = new Gravity_Views();
 	}
 
 	public function copy_item( $bcd, $item )
@@ -40,9 +40,18 @@ class Gravity_Forms
 		$table = $this->rg_gf_table( 'form', $source_prefix );
 		$this->database_table_must_exist( $table );
 		// Retrieve the form.
-		$query = sprintf( "SELECT * FROM `%s` WHERE `id` = '%s'", $table, $item->id );
+		$query = sprintf( "SELECT * FROM `%s`", $table );
 		$this->debug( $query );
-		$form = $wpdb->get_row( $query );
+		$results = $wpdb->get_results( $query );
+		$source_forms = [];
+		foreach( $results as $result )
+			$source_forms[ $result->id ] = $result;
+		$form = $source_forms[ $item->id ];
+
+		// Gravityflow stores the feed order in an OPTION! Why not use the order column in the feeds table?
+		$gravityflow_feed_order = get_option( 'gravityflow_feed_order_' . $item->id, true );
+		if ( $gravityflow_feed_order )
+			$this->debug( 'Current gravityflow feed order: %s', $gravityflow_feed_order );
 
 		restore_current_blog();
 
@@ -55,17 +64,26 @@ class Gravity_Forms
 		$table = $this->rg_gf_table( 'form', $target_prefix );
 		$this->database_table_must_exist( $table );
 
+		$query = sprintf( "SELECT * FROM `%s`", $table );
+		$this->debug( $query );
+		$results = $wpdb->get_results( $query );
+		$target_forms = [];
+		foreach( $results as $result )
+			$target_forms[ $result->id ] = $result;
+
 		if ( defined( 'BROADCAST_GRAVITY_FORMS_USE_ID' ) )
 			// Find a form with the same ID.
-			$query = sprintf( "SELECT * FROM `%s` WHERE `id` = '%s'", $table, $form->id );
+			$result = $target_forms[ $item->id ];
 		else
-			// Find a form with the same name.
-			$query = sprintf( "SELECT * FROM `%s` WHERE `title` = '%s'", $table, addslashes( $form->title ) );
-		$this->debug( $query );
-		$result = $wpdb->get_row( $query );
+			$result = $this->find_equivalent_form( [
+				'source_forms' => $source_forms,
+				'target_forms' => $target_forms,
+				'key' => 'id',
+				'value' => $item->id,
+			] );
 
 		$new_form = false;
-		if ( count( $result ) < 1 )
+		if ( ! $result )
 		{
 			$columns = '`title`, `date_created`, `is_active`, `is_trash`';
 			// Force a specific ID?
@@ -121,7 +139,7 @@ class Gravity_Forms
 
 		// And reinsert the fresh data.
 		$table = $this->rg_gf_table( 'form_meta' );
-		$columns = $this->get_database_table_columns_string( $this->rg_gf_table( 'form_meta' ), [ 'except' => [ 'form_id' ] ] );
+		$columns = $this->get_database_table_columns_string( $table, [ 'except' => [ 'form_id' ] ] );
 		$query = sprintf( "INSERT INTO `%s` ( `form_id`, %s ) ( SELECT %d, %s FROM `%s` WHERE `form_id` ='%s' )",
 			$this->rg_gf_table( 'form_meta' , $target_prefix ),
 			$columns,
@@ -134,31 +152,56 @@ class Gravity_Forms
 		$wpdb->get_results( $query );
 
 		// Form feeds
-		$table = 'gf_addon_feed';
-		if ( $this->database_table_exists( $target_prefix . $table ) )
+		$table = $this->rg_gf_table( 'addon_feed' );
+		$columns = $this->get_database_table_columns_string( $table, [ 'except' => [ 'form_id' ] ] );
+		// Old => New
+		$feed_ids = [];
+		if ( $this->database_table_exists( $table ) )
 		{
 			// Delete the old ones
-			$query = sprintf( "DELETE FROM `%s%s` WHERE `form_id` = '%s'",
-				$target_prefix,
-				$table,
+			$query = sprintf( "DELETE FROM `%s` WHERE `form_id` = '%s'",
+				$this->rg_gf_table( 'addon_feed', $target_prefix ),
 				$new_form_id
 			);
-			$this->debug( $query );
 			$wpdb->query( $query );
-			// Insert the new ones.
-			$columns = $this->get_database_table_columns_string( $target_prefix . $table, [ 'except' => [ 'form_id', 'id' ] ] );
-			$query = sprintf( "INSERT INTO `%s%s` ( `form_id`, %s ) ( SELECT %d, %s FROM `%s%s` WHERE `form_id` ='%s' )",
-				$target_prefix,
-				$table,
-				$columns,
-				$new_form_id,
-				$columns,
-				$source_prefix,
-				$table,
+
+			$query = sprintf( "SELECT * FROM `%s` WHERE `form_id` ='%s'",
+				$this->rg_gf_table( 'addon_feed', $source_prefix ),
 				$form->id
 			);
 			$this->debug( $query );
-			$wpdb->get_results( $query );
+			$results = $wpdb->get_results( $query );
+
+			foreach( $results as $result )
+			{
+				$result_meta = json_decode( $result->meta );
+				if ( $result_meta )
+				{
+					if ( isset( $result_meta->target_form_id ) )
+						$result_meta->target_form_id = $this->find_equivalent_form( [
+							'source_forms' => $source_forms,
+							'target_forms' => $target_forms,
+							'key' => 'id',
+							'value' => $result_meta->target_form_id,
+						] )->id;
+					$result->meta = json_encode( $result_meta );
+				}
+				$result_id = $result->id;
+				unset( $result->id );
+				$result->form_id = $new_form_id;
+				$this->debug( 'Inserting meta %s', $result );
+				$wpdb->insert( $table, (array)$result );
+				$feed_ids[ $result_id ] = $wpdb->insert_id;
+			}
+		}
+
+		if ( $gravityflow_feed_order )
+		{
+			$new_feed_order = [];
+			foreach( $gravityflow_feed_order as $old_feed_id )
+				$new_feed_order []= $feed_ids[ $old_feed_id ];
+			$this->debug( 'Updating gravityflow feed order: %s', $new_feed_order );
+			update_option( 'gravityflow_feed_order_' . $new_form_id, $new_feed_order );
 		}
 
 		// START: modify form meta.
@@ -175,6 +218,8 @@ class Gravity_Forms
 		$action->broadcasting_data = $bcd;
 		$action->meta = $meta;
 		$action->form_id = $new_form_id;
+		$action->source_forms = $source_forms;
+		$action->target_forms = $target_forms;
 		$action->execute();
 		$this->debug( 'Updating form meta to %s', $action->meta );
 		$wpdb->update( $table, (array)$action->meta, [ 'form_id' => $new_form_id ] );
@@ -276,6 +321,33 @@ class Gravity_Forms
 			$display_meta->id = $action->form_id;
 			$action->meta->display_meta = json_encode( $display_meta );
 		}
+	}
+
+	/**
+		@brief		Find the equivalent form given a key+value pair from the original form.
+		@since		2020-09-01 22:22:27
+	**/
+	public function find_equivalent_form( $options )
+	{
+		$options = (object) $options;
+
+		$key = $options->key; // We can't use a double reference, so we extract the key here.
+
+		$found = false;
+		foreach( $options->source_forms as $source_form )
+			if ( $source_form->$key == $options->value )
+				$found = $source_form;
+		if ( ! $found )
+			return false;
+
+		// We use the title to find the equivalent form.
+		$title = $found->title;
+		foreach( $options->target_forms as $target_form )
+		{
+			if ( $target_form->title == $title )
+				return $target_form;
+		}
+		return false;
 	}
 
 	/**

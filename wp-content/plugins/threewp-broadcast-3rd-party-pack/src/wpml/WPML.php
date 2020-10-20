@@ -8,6 +8,8 @@ namespace threewp_broadcast\premium_pack\wpml;
 class WPML
 extends \threewp_broadcast\premium_pack\base
 {
+	use \threewp_broadcast\premium_pack\classes\database_trait;
+
 	public function _construct()
 	{
 		if ( ! $this->has_wpml() )
@@ -21,12 +23,16 @@ extends \threewp_broadcast\premium_pack\base
 		$this->add_action( 'threewp_broadcast_broadcasting_started' );
 		$this->add_action( 'threewp_broadcast_collect_post_type_taxonomies' );
 		$this->add_action( 'threewp_broadcast_wp_insert_term' );
+		$this->add_action( 'threewp_broadcast_wp_update_term', 'threewp_broadcast_wp_update_term_1', 1 );
+		$this->add_action( 'threewp_broadcast_wp_update_term', 'threewp_broadcast_wp_update_term_100', 100 );
 
 		$this->add_action( 'icl_make_duplicate', 10, 4 );
 		$this->add_action( 'icl_pro_translation_completed' );
 		$this->add_action( 'edit_form_advanced', 'wp_ml_translation_editor_form' );
 		$this->add_action( 'wpml_after_sync_with_duplicates' );
 		$this->add_action( 'wp_ml_translation_editor_form' );
+
+		$this->add_action( 'wp_loaded', 'maybe_disable_option_blogname' );
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -69,6 +75,137 @@ extends \threewp_broadcast\premium_pack\base
 		}
 
 		unset( $this->__broadcast_hreflang_add_links );
+	}
+
+	/**
+		@brief		Function that copies translated strings.
+		@since		2020-04-24 20:34:57
+	**/
+	public function copy_strings()
+	{
+		$form = $this->form2();
+		$r = '';
+
+		$r .= wpautop( 'This utility will copy all of the translated source strings in the specified language to other blogs. All of the existing translated strings in the selected language on the target blogs are removed and overwritten with the strings from this blog.' );
+
+		// Find the available languages.
+		global $wpdb;
+		$query = sprintf( "SELECT distinct (`language`) FROM `%s%s` WHERE `status` > 0 ORDER BY `language`",
+			$wpdb->prefix,
+			'icl_strings'
+		);
+		$this->debug( $query );
+		$results = $wpdb->get_col( $query );
+		$available_languages = array_combine( array_values( $results ), array_values( $results ) );
+		$languages = $form->select( 'languages' )
+			->label( __( 'These languages have been translated into other languages. All translations will be copied.', 'threewp_broadcast' ) )
+			->label( __( 'Languages', 'threewp_broadcast' ) )
+			->multiple()
+			->opts( $available_languages )
+			;
+
+		$blogs_select = $this->add_blog_list_input( [
+			// Blog selection input description
+			'description' => __( 'Select one or more blogs to which to copy the straings.', 'threewp_broadcast' ),
+			'form' => $form,
+			// Blog selection input label
+			'label' => __( 'Blogs', 'threewp_broadcast' ),
+			'multiple' => true,
+			'name' => 'blogs',
+			'required' => false,
+		] );
+
+		$save = $form->primary_button( 'copy' )
+			// Button
+			->value( __( 'Copy', 'threewp_broadcast' ) );
+
+		if ( $form->is_posting() )
+		{
+			$form->post();
+			$form->use_post_values();
+
+			$languages_to_copy = $languages->get_post_value();
+			$blogs = $blogs_select->get_post_value();
+			$original_prefix = $wpdb->prefix;
+
+			$table = sprintf( '%sicl_string_translations', $wpdb->prefix );
+			$icl_string_translations_columns = $this->get_database_table_columns_string( $table, [ 'except' => [ 'id', 'string_id' ] ] );
+
+			foreach( $languages_to_copy as $language_id )
+			{
+				$query = sprintf( "SELECT * FROM `%sicl_strings` WHERE `language` = '%s' AND `status` > 0",
+					$wpdb->prefix,
+					$language_id
+				);
+				$this->debug( $query );
+				$strings = $wpdb->get_results( $query );
+				$this->debug( '%d strings found.', count( $strings ) );
+
+				foreach( $blogs as $blog_id )
+				{
+					// Don't copy to ourself.
+					if ( $blog_id == get_current_blog_id() )
+						continue;
+					switch_to_blog( $blog_id );
+
+					// Delete all existing translations in this language.
+					$query = sprintf( "DELETE FROM `%sicl_string_translations` WHERE `string_id` IN
+						( SELECT `id` FROM `%sicl_strings` WHERE `language` = '%s' )",
+						$wpdb->prefix,
+						$wpdb->prefix,
+						$language_id
+					);
+					$this->debug( $query );
+					$this->query( $query );
+
+					// Delete all existing strings in this language.
+					$query = sprintf( "DELETE FROM `%sicl_strings` WHERE `language` = '%s'",
+						$wpdb->prefix,
+						$language_id
+					);
+					$this->debug( $query );
+					$this->query( $query );
+
+					// Copy each the strings.
+					foreach( $strings as $string )
+					{
+						$string_to_import = clone( $string );
+						unset( $string_to_import->id );
+						$this->debug( 'String is %s', $string_to_import );
+
+						// Insert the string.
+						$table = sprintf( '%sicl_strings', $wpdb->prefix );
+						$wpdb->insert( $table, (array)$string_to_import );
+						$string_id = $wpdb->insert_id;
+						$this->debug( 'Inserted string %d', $string_id );
+
+						// Insert all translations.
+						$table = sprintf( '%sicl_string_translations', $wpdb->prefix );
+						$query = sprintf( "INSERT INTO `%sicl_string_translations` ( `string_id`, %s )
+							( SELECT '%s', %s FROM `%sicl_string_translations` WHERE `string_id` = '%s' )",
+							$wpdb->prefix,
+							$icl_string_translations_columns,
+							$string_id,
+							$icl_string_translations_columns,
+							$original_prefix,
+							$string->id
+						);
+						$this->debug( $query );
+						$this->query( $query );
+					}
+
+					restore_current_blog();
+				}
+			}
+
+			$r .= $this->info_message_box()->_( 'Strings copied!' );
+		}
+
+		$r .= $form->open_tag();
+		$r .= $form->display_form_table();
+		$r .= $form->close_tag();
+
+		echo $r;
 	}
 
 	/**
@@ -140,6 +277,33 @@ extends \threewp_broadcast\premium_pack\base
 	}
 
 	/**
+		@brief		Create the tabs for the menu.
+		@since		2020-04-24 20:33:44
+	**/
+	public function menu_tabs()
+	{
+		$tabs = $this->tabs();
+
+		$tabs->tab( 'copy_strings' )
+			->callback_this( 'copy_strings' )
+			// Tab heading
+			->heading( __( 'Broadcast WPML Copy Strings', 'threewp_broadcast' ) )
+			// Tab name
+			->name( __( 'Copy Strings', 'threewp_broadcast' ) );
+
+		$tabs->tab( 'settings' )
+			->callback_this( 'settings' )
+			// Tab heading
+			->heading( __( 'Broadcast WPML Settings', 'threewp_broadcast' ) )
+			// Tab name
+			->name( __( 'Settings', 'threewp_broadcast' ) );
+
+		$tabs->default_tab( 'settings' );
+
+		echo $tabs->render();
+	}
+
+	/**
 		@brief		Settings.
 		@since		2017-03-31 21:24:13
 	**/
@@ -174,8 +338,7 @@ extends \threewp_broadcast\premium_pack\base
 		$r .= $form->display_form_table();
 		$r .= $form->close_tag();
 
-		// Page title for the settings page
-		echo $this->wrap( $r, __( 'Settings', 'threewp_broadcast' ) );
+		echo $r;
 	}
 
 	/**
@@ -200,7 +363,7 @@ extends \threewp_broadcast\premium_pack\base
 
 		$action->menu_page
 			->submenu( 'threewp_broadcast_wpml' )
-			->callback_this( 'settings' )
+			->callback_this( 'menu_tabs' )
 			->menu_title( 'WPML' )
 			->page_title( 'WPML' );
 	}
@@ -377,11 +540,19 @@ extends \threewp_broadcast\premium_pack\base
 		// For convenience
 		$td = $bcd->wpml->collection( 'taxonomy_data' );
 
+		// We have to temporarily remove this filter so that it does get the "original" term instead of each individual term.
+		global $sitepress;
+		remove_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1, 1 );
+
 		foreach( $bcd->parent_blog_taxonomies as $taxonomy => $data )
 		{
 			foreach( $data[ 'terms' ] as $term )
 				$this->save_term_translations( $td, $term );
 		}
+
+		add_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1, 1 );
+
+		$this->debug( 'Saved term translations: %s', $td );
 
 		// Why are we saving this here? Because (1) the wp_insert_term action does not supply a bcd, and (2) we might not be broadcasting at all.
 		$this->__wpml_data = $bcd->wpml;
@@ -471,6 +642,12 @@ extends \threewp_broadcast\premium_pack\base
 		if ( ! $translations->has( $action->new_term->slug ) )
 			return;
 
+		if ( ! isset( $this->__wpml_data_displayed ) )
+		{
+			$this->debug( 'Term translations: %s', $translations );
+			$this->__wpml_data_displayed = true;
+		}
+
 		global $wpdb;
 		$original_language = $this->sitepress()->get_current_language();
 		$term = $action->new_term;
@@ -506,6 +683,29 @@ extends \threewp_broadcast\premium_pack\base
 
 		$this->debug( 'set_element_language_details %s %s %s %s', $action->new_term->term_id, $content_type, $trid, $term_language );
 		$this->sitepress()->set_element_language_details( $action->new_term->term_id, $content_type, $trid, $term_language );
+	}
+
+	/**
+		@brief		Save the term's current language.
+		@since		2020-06-19 11:17:09
+	**/
+	public function threewp_broadcast_wp_update_term_1( $action )
+	{
+		$content_type = 'tax_' . $action->new_term->taxonomy;
+		$action->wpml_element_language_details = $this->sitepress()->get_element_language_details( $action->new_term->term_id, $content_type );
+		$this->debug( 'Saved term language as: %s', $action->wpml_element_language_details );
+	}
+
+	/**
+		@brief		Update the term's language back to what it was.
+		@since		2020-06-19 11:17:09
+	**/
+	public function threewp_broadcast_wp_update_term_100( $action )
+	{
+		$content_type = 'tax_' . $action->new_term->taxonomy;
+		$details = $action->wpml_element_language_details;
+		$this->debug( 'Resetting term language to: %s', $details );
+		$this->sitepress()->set_element_language_details( $action->new_term->term_id, $content_type, $details->trid, $details->language_code );
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -592,6 +792,18 @@ extends \threewp_broadcast\premium_pack\base
 	public function has_wpml_tm()
 	{
 		return defined( 'WPML_TM_VERSION' );
+	}
+
+	/**
+		@brief		Disable the option_blogname filter for WPML String Translation.
+		@details	The ST plugin prevents the blog names from being correct in the post actions popup box, since it caches the blog name.
+		@since		2020-05-14 08:22:17
+	**/
+	public function maybe_disable_option_blogname()
+	{
+		if ( ! defined( 'WPML_ST_VERSION' ) )
+			return;
+		remove_all_filters( 'option_blogname' );
 	}
 
 	/**

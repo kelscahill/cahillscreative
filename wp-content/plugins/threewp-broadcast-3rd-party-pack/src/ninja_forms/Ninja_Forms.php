@@ -58,9 +58,6 @@ class Ninja_Forms
 		$query = sprintf( "SELECT * FROM `%snf3_forms` WHERE `id` = '%s'", $source_prefix, $item->id );
 		$form = $wpdb->get_row( $query );
 
-		// And the form option.
-		$form_option = get_option( 'nf_form_' . $item->id, true );
-
 		restore_current_blog();
 
 		// No form? Invalid shortcode. Too bad.
@@ -71,9 +68,9 @@ class Ninja_Forms
 
 		// Find a form with the same name.
 		$query = sprintf( "SELECT * FROM `%snf3_forms` WHERE `title` = '%s'", $target_prefix, $form->title );
-		$result = $wpdb->get_row( $query );
+		$results = $wpdb->get_results( $query );
 
-		if ( count( $result ) < 1 )
+		if ( count( $results ) < 1 )
 		{
 			$columns = '`title`, `key`, `created_at`, `updated_at`, `views`, `subs`';
 			$query = sprintf( "INSERT INTO `%snf3_forms` ( %s ) ( SELECT %s FROM `%snf3_forms` WHERE `title` ='%s' )",
@@ -83,17 +80,16 @@ class Ninja_Forms
 				$source_prefix,
 				$form->title
 			);
-			$wpdb->get_results( $query );
+			$wpdb->query( $query );
 			$new_form_id = $wpdb->insert_id;
 			$this->debug( 'Using new form %s', $new_form_id );
 		}
 		else
 		{
+			$result = reset( $results );
 			$new_form_id = $result->id;
 			$this->debug( 'Using existing form %s', $new_form_id );
 		}
-
-		$form_option[ 'id' ] = $new_form_id;
 
 		// Update the form data.
 		$new_form_data = (array)$form;
@@ -105,6 +101,7 @@ class Ninja_Forms
 			$target_prefix,
 			$new_form_id
 		);
+		$this->debug( $query );
 		$wpdb->query( $query );
 
 		// And reinsert the fresh data.
@@ -117,6 +114,7 @@ class Ninja_Forms
 			$source_prefix,
 			$form->id
 		);
+		$this->debug( $query );
 		$wpdb->get_results( $query );
 
 		// Field meta must be deleted before the fields, because of their IDs.
@@ -125,6 +123,7 @@ class Ninja_Forms
 			$target_prefix,
 			$new_form_id
 		);
+		$this->debug( $query );
 		$wpdb->query( $query );
 
 		// Now we can delete the old fields.
@@ -132,6 +131,7 @@ class Ninja_Forms
 			$target_prefix,
 			$new_form_id
 		);
+		$this->debug( $query );
 		$wpdb->query( $query );
 
 		$o = (object)[];
@@ -140,7 +140,6 @@ class Ninja_Forms
 		$o->item_table = 'fields';
 		$o->item_meta_table = 'field_meta';
 		$o->new_form_id = $new_form_id;
-		$o->option = & $form_option;	// The array data is being replace inline.
 		$o->source_prefix = $source_prefix;
 		$o->target_prefix = $target_prefix;
 		$this->replace_item_with_meta( $o );
@@ -154,7 +153,7 @@ class Ninja_Forms
 		$o->new_form_id = $new_form_id;
 		$this->replace_item_with_meta( $o );
 
-		update_option( 'nf_form_' . $new_form_id, $form_option );
+		\WPN_Helper::delete_nf_cache( $new_form_id );
 
 		return $new_form_id;
 	}
@@ -200,6 +199,7 @@ class Ninja_Forms
 			$options->item_table,
 			$options->new_form_id
 		);
+		$this->debug( $query );
 		$wpdb->query( $query );
 
 		// Items. Delete all existing values.
@@ -208,6 +208,7 @@ class Ninja_Forms
 			$options->item_table,
 			$options->new_form_id
 		);
+		$this->debug( $query );
 		$wpdb->query( $query );
 
 		// Each item will have to be copied individually so that we can keep track of the IDs.
@@ -234,6 +235,7 @@ class Ninja_Forms
 				$options->item_table,
 				$item_id
 			);
+			$this->debug( $query );
 			$wpdb->get_results( $query );
 			$new_item_id = $wpdb->insert_id;
 
@@ -248,14 +250,8 @@ class Ninja_Forms
 				$options->item_meta_table,
 				$item_id
 			);
+			$this->debug( $query );
 			$wpdb->get_results( $query );
-
-			foreach( $options->option[ $options->option_key ] as $item_index => $data )
-			{
-				if ( $data[ 'id' ] != $item_id )
-					continue;
-				$options->option[ $options->option_key ][ $item_index ][ 'id' ] = $new_item_id;
-			}
 		}
 	}
 

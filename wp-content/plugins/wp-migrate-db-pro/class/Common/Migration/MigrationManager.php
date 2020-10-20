@@ -112,7 +112,6 @@ class MigrationManager {
 		Multisite $multisite,
 		InitiateMigration $initiate_migration,
 		FinalizeMigration $finalize_migration,
-		DynamicProperties $dynamic_properties,
 		Properties $properties
 	) {
 
@@ -129,7 +128,7 @@ class MigrationManager {
 		$this->migration_state         = $migration_state;
 		$this->backup_export           = $backup_export;
 		$this->multisite               = $multisite;
-		$this->dynamic_props           = $dynamic_properties;
+		$this->dynamic_props           = DynamicProperties::getInstance();
 		$this->form_data               = $form_data;
 		$this->form_data_arr           = $form_data->getFormData();
 		$this->initiate_migration      = $initiate_migration;
@@ -528,7 +527,6 @@ class MigrationManager {
 			'migration_state_id' => 'key',
 		);
 		$state_data = $this->migration_state_manager->set_post_data( $key_rules );
-
 
 		if ( 'push' === $state_data['intent'] ) {
 			$data           = array();
