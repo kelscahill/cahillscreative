@@ -1,12 +1,12 @@
-{% if post.prev('category') or post.next('category') %}
+{% if post.prev or post.next %}
   <section class="section section__pagination background-color--off-white">
     <div class="narrow narrow--xl">
       <div class="pagination">
         <div class="pagination-item">
-          {% if post.prev('category') %}
-            <a href="{{ post.prev('category').link }}" class="prev pagination-link">
+          {% if post.next %}
+            <a href="{{ post.next.link }}" class="next pagination-link">
               <span class="icon icon--l">{% include "00-atoms/icons/arrow--carousel.twig" %}</span>
-              <p class="font--primary--xs">Previous Project</p>
+              <p class="font--primary--xs">Next Project</p>
             </a>
           {% endif %}
         </div>
@@ -17,10 +17,10 @@
           </a>
         </div>
         <div class="pagination-item">
-          {% if post.next('category') %}
-            <a href="{{ post.next('category').link }}" class="next pagination-link">
+          {% if post.prev %}
+            <a href="{{ post.prev.link }}" class="prev pagination-link">
               <span class="icon icon--l">{% include "00-atoms/icons/arrow--carousel.twig" %}</span>
-              <p class="font--primary--xs">Next Project</p>
+              <p class="font--primary--xs">Previous Project</p>
             </a>
           {% endif %}
         </div>

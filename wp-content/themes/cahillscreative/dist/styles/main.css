@@ -3166,7 +3166,7 @@ input[type="submit"].center {
   border-right: 1px solid #ececec;
 }
 
-.pagination-link.prev .icon {
+.pagination-link.next .icon {
   -webkit-transform: rotate(180deg);
        -o-transform: rotate(180deg);
           transform: rotate(180deg);
