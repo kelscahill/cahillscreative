@@ -327,7 +327,7 @@ input[type=text],
 input[type=url],
 textarea,
 select {
-  border: 1px solid #ececec;
+  border: 1px solid #9b9b9b;
   background-color: #fff;
   width: 100%;
   outline: 0;
@@ -3466,16 +3466,16 @@ input[type=checkbox],
 input[type=radio] {
   border-width: 1px;
   border-style: solid;
-  border-color: #ececec;
+  border-color: #9b9b9b;
   cursor: pointer;
   border-radius: 50%;
 }
 
 input[type=checkbox]:checked,
 input[type=radio]:checked {
-  border-color: #ececec;
+  border-color: #9b9b9b;
   background: #393939 url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5LjYxIDkuNjEiPjx0aXRsZT5pY29uLS1jaGVjazwvdGl0bGU+PHBhdGggZD0iTS42OSw1LjMxQS40NC40NCwwLDEsMCwuMTgsNkwzLjk0LDguNzFsNS41OC03LjFhLjQ0LjQ0LDAsMCwwLS42OS0uNTNMMy43Niw3LjUxWiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==) center center no-repeat;
-  background-size: 0.9375rem;
+  background-size: 0.625rem 0.625rem;
 }
 
 input[type=checkbox] + label,

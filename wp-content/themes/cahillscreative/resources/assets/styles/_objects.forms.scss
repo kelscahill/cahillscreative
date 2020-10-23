@@ -86,16 +86,16 @@ input[type=checkbox],
 input[type=radio] {
   border-width: 1px;
   border-style: solid;
-  border-color: $border-color;
+  border-color: $gray-med;
   cursor: pointer;
   border-radius: 50%;
 }
 
 input[type=checkbox]:checked,
 input[type=radio]:checked {
-  border-color: $border-color;
+  border-color: $gray-med;
   background: $primary-color url("../../assets/images/icon--check.svg") center center no-repeat;
-  background-size: rem(15);
+  background-size: rem(10) rem(10);
 }
 
 input[type=checkbox] + label,
