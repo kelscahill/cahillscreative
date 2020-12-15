@@ -54,8 +54,10 @@ class SageTimberTheme extends TimberSite {
 
 		if (is_main_site()) {
 			$context['work_category'] = "Work";
+			$context['gtm_id'] = "GTM-KX6K5Q";
 		} else {
 			$context['work_category'] = "Rental";
+			$context['gtm_id'] = "GTM-MM3WF6J";
 		}
 
 		/* Get Posts */

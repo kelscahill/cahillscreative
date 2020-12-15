@@ -2,6 +2,10 @@
 <html class="no-js" lang="en">
   {% include "02-organisms/global/head.twig" %}
   <body id="top" class="l-body{{ ' ' ~ body_class }}" data-template="base.twig">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="'https://www.googletagmanager.com/ns.html?id=' ~ {{ gtm_id }}"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     {% include "02-organisms/global/header.twig" %}
     <main class="main" role="document">
       {% block content %}{% endblock %}
