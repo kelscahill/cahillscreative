@@ -1,5 +1,5 @@
 {% if post.meta('accordion') or post.meta('instructions') %}
-  {% include "01-molecules/ads/ad--accordion-instructions--in-article.twig" %}
+  {% include "01-molecules/ads/ad--in-article--accordion-instructions.twig" %}
   <div class="accordion spacing">
     <div class="accordion--inner">
       {% if post.meta('accordion') %}
@@ -27,6 +27,9 @@
                 <div class="step-item__number is-sticky"><span class="font--primary--xs color--gray">Step</span></div>
                 <div class="step-item__content spacing">
                   {{ item.instructions_content }}
+                  {% if loop.index % 3 == 0 %}
+                    {% include "01-molecules/ads/ad--display--article.twig" %}
+                  {% endif %}
                   {% if item.instructions_image %}
                     {% for image in item.instructions_image %}
                       {% set image = Image(image) %}

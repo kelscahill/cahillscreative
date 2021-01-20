@@ -2,6 +2,7 @@
   <div class="feed--latest spacing">
     <h3 class="color--gray font--primary--xs">Latest Posts</h3>
     {% for post in latest_posts %}
+      {% include "01-molecules/ads/ad--in-feed.twig" %}
       {% include "01-molecules/blocks/block--latest.twig"
         with {
           id: post.id,

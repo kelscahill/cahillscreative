@@ -2,6 +2,7 @@
   <div class="posts layout-container narrow narrow--xl">
     <div class="grid grid--full">
       {% for post in posts %}
+        {% include "01-molecules/ads/ad--in-feed.twig" %}
         {% include ['01-molecules/blocks/block--' ~ post.post_type ~ '.twig', '01-molecules/blocks/block.twig'] %}
       {% endfor %}
     </div>
