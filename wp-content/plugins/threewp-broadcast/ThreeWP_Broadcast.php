@@ -7,10 +7,10 @@ Description:	Broadcast / multipost posts, with attachments, custom fields and ta
 Domain Path:	/lang
 Plugin Name:	Broadcast
 Plugin URI:		https://broadcast.plainviewplugins.com/
-Version:		46.14
+Version:		46.18
 */
 
-DEFINE( 'THREEWP_BROADCAST_VERSION', 46.14 );
+DEFINE( 'THREEWP_BROADCAST_VERSION', 46.18 );
 
 require_once( __DIR__ . '/vendor/autoload.php' );
 

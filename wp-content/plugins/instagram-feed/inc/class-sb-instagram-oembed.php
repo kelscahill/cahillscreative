@@ -113,6 +113,8 @@ class SB_Instagram_Oembed
 		$oembed_url = SB_Instagram_Oembed::oembed_url();
 		if ( $oembed_url ) {
 			$providers['#https?://(www\.)?instagr(\.am|am\.com)/(p|tv)/.*#i'] = array( $oembed_url, true );
+			// for WP 4.9
+			$providers['#https?://(www\.)?instagr(\.am|am\.com)/p/.*#i'] = array( $oembed_url, true );
 		}
 
 		return $providers;

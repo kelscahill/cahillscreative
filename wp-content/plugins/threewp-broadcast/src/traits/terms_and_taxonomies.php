@@ -321,7 +321,10 @@ trait terms_and_taxonomies
 		// wp_update_category alone won't work. The "cache" needs to be cleared.
 		// see: http://wordpress.org/support/topic/category_children-how-to-recalculate?replies=4
 		if ( $refresh_cache )
-			delete_option( 'category_children' );
+		{
+			delete_option( $taxonomy . '_children' );
+			clean_term_cache( '', $taxonomy );
+		}
 
 		$bcd->synced_taxonomies()->add( $taxonomy );
 

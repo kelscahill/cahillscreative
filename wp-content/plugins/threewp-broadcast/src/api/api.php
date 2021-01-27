@@ -59,6 +59,12 @@ Unlink it. This will unlink the child(ren) also.
 class api
 {
 	/**
+		@brief		High priority for broadcasts? Or allow the queue to intervene and broadcast them later?
+		@since		2020-12-15 16:14:18
+	**/
+	public $high_priority = true;
+
+	/**
 		@brief		API version, as the date.
 		@since		2015-06-25 16:41:57
 	**/
@@ -74,7 +80,7 @@ class api
 	public function broadcast_children( $post_id, $blogs )
 	{
 		$bcd = \threewp_broadcast\broadcasting_data::make( $post_id, $blogs );
-		$bcd->high_priority = true;
+		$bcd->high_priority = $this->high_priority;
 		apply_filters( 'threewp_broadcast_broadcast_post', $bcd );
 		return $bcd;
 	}
@@ -107,81 +113,22 @@ class api
 	**/
 	public function find_unlinked_children( $post_id, $requested_blogs = null )
 	{
-		$blog_id = get_current_blog_id();
-		$broadcast_data = ThreeWP_Broadcast()->get_post_broadcast_data( $blog_id, $post_id );
+		$action = new \threewp_broadcast\actions\post_action();
+		$action->action = 'find_unlinked';
+		$action->blogs = $requested_blogs;
+		$action->high_priority = $this->high_priority;
+		$action->post_id = $post_id;
+		$action->execute();
+	}
 
-		if ( $requested_blogs === null )
-		{
-			// Get a list of blogs that this user can link to.
-			$filter = ThreeWP_Broadcast()->new_action( 'get_user_writable_blogs' );
-			$filter->user_id = ThreeWP_Broadcast()->user_id();
-			$blogs = $filter->execute()->blogs;
-
-			$filter = ThreeWP_Broadcast()->new_action( 'find_unlinked_posts_blogs' );
-			$filter->blogs = $blogs;
-			$blogs = $filter->execute()->blogs;
-		}
-		else
-		{
-			// Create real blog objects from the requested blog IDs.
-			$blogs = [];
-			foreach( $requested_blogs as $requested_blog_id )
-				$blogs []= \threewp_broadcast\broadcast_data\blog::from_blog_id( $requested_blog_id );
-		}
-
-		ThreeWP_Broadcast()->debug( 'Finding unlinked children for post %s on blogs %s', $post_id, $blogs );
-
-		$post = get_post( $post_id );
-
-		foreach( $blogs as $blog )
-		{
-			if ( $blog->id == $blog_id )
-				continue;
-
-			if ( $broadcast_data->has_linked_child_on_this_blog( $blog->id ) )
-				continue;
-
-			switch_to_blog( $blog->id );
-
-			$args = [
-				'cache_results' => false,
-				'name' => $post->post_name,
-				'post_type' => $post->post_type,
-				'post_status' => $post->post_status,
-			];
-
-			$posts = get_posts( $args );
-			$post_ids = [];
-			foreach( $posts as $post )
-				$post_ids []= $post->ID;
-			ThreeWP_Broadcast()->debug( 'Found %d posts (%s) on blog %s: %s',
-				count( $post_ids ),
-				implode( ",", $post_ids ),
-				$blog->id,
-				$args
-			);
-
-			// An exact match was found.
-			if ( count( $posts ) == 1 )
-			{
-				$unlinked = reset( $posts );
-
-				$child_broadcast_data = ThreeWP_Broadcast()->get_post_broadcast_data( $blog->id, $unlinked->ID );
-				if ( $child_broadcast_data->get_linked_parent() === false )
-					if ( ! $child_broadcast_data->has_linked_children() )
-					{
-						ThreeWP_Broadcast()->debug( 'Adding linked child %s on blog %s', $unlinked->ID, $blog->id );
-						$broadcast_data->add_linked_child( $blog->id, $unlinked->ID );
-
-						// Add link info for the new child.
-						$child_broadcast_data->set_linked_parent( $blog_id, $post_id );
-						ThreeWP_Broadcast()->set_post_broadcast_data( $blog->id, $unlinked->ID, $child_broadcast_data );
-					}
-			}
-
-			restore_current_blog();
-		}
-		$broadcast_data = ThreeWP_Broadcast()->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data );
+	/**
+		@brief		Set the broadcasting to high priority.
+		@since		2020-12-15 16:15:20
+	**/
+	public function high_priority()
+	{
+		$this->high_priority = true;
+		return $this;
 	}
 
 	/**
@@ -196,6 +143,17 @@ class api
 			$blog_or_post_id = get_current_blog_id();
 		}
 		return new linking\Controller( $blog_or_post_id, $post_id );
+	}
+
+	/**
+		@brief		Set the broadcasting to low priority.
+		@since		2020-12-15 16:15:20
+	**/
+	public function low_priority()
+	{
+		$this->high_priority = false;
+		ThreeWP_Broadcast()->debug( 'API: Setting low priority.' );
+		return $this;
 	}
 
 	/**
@@ -290,7 +248,7 @@ class api
 	public function update_children( $post_id, $new_blogs = [] )
 	{
 		$bcd = \threewp_broadcast\broadcasting_data::make( $post_id );
-		$bcd->high_priority = true;
+		$bcd->high_priority = $this->high_priority;
 		foreach( $this->_get_post_children( $post_id ) as $blog_id )
 			$bcd->broadcast_to( $blog_id );
 

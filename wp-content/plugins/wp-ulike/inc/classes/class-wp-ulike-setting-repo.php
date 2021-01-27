@@ -4,7 +4,7 @@ class wp_ulike_setting_repo {
 
 	protected static function getOption( $key, $default = NULL ){
 		$option = wp_ulike_get_option( $key );
-		return ! empty( $option ) ? $option : $default;
+		return $option != '' ? $option : $default;
 	}
 
 	protected static function getSettingKey( $type ){
@@ -92,7 +92,8 @@ class wp_ulike_setting_repo {
 	 * @return string
 	 */
 	public static function restrictLikersBox( $typeName ){
-		return wp_ulike_is_true(  self::getOption( self::getSettingKey( $typeName ) . '|hide_likers_for_anonymous_users', false ) );
+		$hide_anonymous_users = self::getOption( self::getSettingKey( $typeName ) . '|hide_likers_for_anonymous_users', false );
+		return wp_ulike_is_true( $hide_anonymous_users ) && ! is_user_logged_in();
 	}
 
 	/**
@@ -114,6 +115,132 @@ class wp_ulike_setting_repo {
 		}
 	}
 
+	/**
+	 * Check toast display condition
+	 *
+	 * @return boolean
+	 */
+	public static function hasToast( $typeName ){
+		$enable_toast = self::getOption( 'enable_toast_notice', true );
+		$filter_toast = self::getOption( 'filter_toast_types', array() );
+		return $enable_toast && ! in_array( $typeName, $filter_toast );
+	}
+
+	/**
+	 * Get require login template
+	 *
+	 * @return boolean
+	 */
+	public static function getRequireLoginTemplate( $typeName ){
+		global $wp;
+		$current_url = home_url( add_query_arg( array(), $wp->request ) );
+		// Default template
+		$default = sprintf( '<p class="alert alert-info fade in" role="alert">%s<a href="%s">%s</a></p>', __('You need to login in order to like this post: ',WP_ULIKE_SLUG),
+		wp_login_url( $current_url ),
+		__('click here',WP_ULIKE_SLUG)
+		);
+		// Setting template
+		$template = self::getOption( self::getSettingKey( $typeName ) . '|login_template', $default );
+
+		$template = str_replace( "%CURRENT_PAGE_URL%", $current_url, $template );
+
+		return $template;
+	}
+
+	/**
+	 * Deprecated function
+	 *
+	 * @return boolean
+	 */
+	public static function isCounterZeroVisible( $typeName ){
+		return self::isCounterZeroHidden( $typeName );
+	}
+
+	/**
+	 * Check counter zero visibility
+	 *
+	 * @return boolean
+	 */
+	public static function isCounterZeroHidden( $typeName ){
+		return self::getOption( self::getSettingKey( $typeName ) . '|hide_zero_counter', false );
+	}
+
+
+	/**
+	 * Check counter zero visibility
+	 *
+	 * @return boolean
+	 */
+	public static function maybeHasUnitFormat( $number, $precision = 1 ){
+		// Check for option enable
+		if( self::getOption( 'enable_kilobyte_format', false ) && ( ! empty( $number ) || is_numeric( $number ) ) ){
+			// Setup default $divisors if not provided
+			$divisors = array(
+				pow(1000, 0) => '', // 1000^0 == 1
+				pow(1000, 1) => 'K', // Thousand
+				pow(1000, 2) => 'M', // Million
+				pow(1000, 3) => 'B'
+			);
+
+			// Loop through each $divisor and find the
+			// lowest amount that matches
+			foreach ($divisors as $divisor => $shorthand) {
+				if (abs($number) < ($divisor * 1000)) {
+					// We found a match!
+					break;
+				}
+			}
+
+			// We found our match, or there were no matches.
+			// Either way, use the last defined value for $divisor.
+			$number = round( $number / $divisor, $precision ) . $shorthand;
+		}
+
+		return $number;
+	}
+
+
+	/**
+	 * Check distinct status by logging method
+	 *
+	 * @return boolean
+	 */
+	public static function maybeFilterCounterValue( $number, $status ){
+		// retund if empty or not number
+		if( empty( $number ) || ! is_numeric( $number ) ){
+			return $number;
+		}
+
+		// Create filter args
+		$filter_args = self::getOption( 'filter_counter_value', array(
+			'like_prefix'       => '+',
+			'dislike_prefix'    => '-',
+			'undislike_prefix'  => '-',
+			'like_postfix'      => '',
+			'unlike_postfix'    => '',
+			'dislike_postfix'   => '',
+			'undislike_postfix' => ''
+		) );
+
+		// Maybe convert to unit format
+		$number = self::maybeHasUnitFormat( $number );
+
+		// If has no unit, format integer number
+		if( is_numeric( $number ) ){
+			$number = number_format_i18n( $number );
+		}
+
+		// Add prefix
+		if( ! empty( $filter_args[ $status . '_prefix' ] ) ){
+			$number = $filter_args[ $status . '_prefix' ] . $number;
+		}
+		// Add postfix
+		if( ! empty( $filter_args[ $status . '_postfix' ] ) ){
+			$number =  $number . $filter_args[ $status . '_postfix' ];
+		}
+
+		return $number;
+	}
 
 	/**
 	 * Check distinct status by logging method

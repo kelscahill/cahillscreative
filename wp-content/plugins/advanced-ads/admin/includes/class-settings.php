@@ -244,15 +244,6 @@ class Advanced_Ads_Admin_Settings {
 			);
 		}
 
-		// allow to disable shortcode button in TinyMCE.
-		add_settings_field(
-			'disable-shortcode-button',
-			__( 'Disable shortcode button', 'advanced-ads' ),
-			array( $this, 'render_settings_disable_shortcode_button' ),
-			$hook,
-			'advanced_ads_setting_section'
-		);
-
 		// hook for additional settings from add-ons.
 		do_action( 'advanced-ads-settings-init', $hook );
 	}
@@ -440,7 +431,7 @@ class Advanced_Ads_Admin_Settings {
 	 */
 	public function render_settings_content_injection_priority() {
 		$options  = Advanced_Ads::get_instance()->options();
-		$priority = ( isset( $options['content-injection-priority'] ) ) ? intval( $options['content-injection-priority'] ) : 100;
+		$priority = ( isset( $options['content-injection-priority'] ) ) ? (int) $options['content-injection-priority'] : 100;
 
 		include ADVADS_BASE_PATH . 'admin/views/settings/general/content-injection-priority.php';
 	}
@@ -561,17 +552,6 @@ class Advanced_Ads_Admin_Settings {
 		$enabled = ! empty( $options['uninstall-delete-data'] );
 
 		include ADVADS_BASE_PATH . 'admin/views/settings/general/uninstall-delete-data.php';
-	}
-
-	/**
-	 * Render setting to disable shortcode button.
-	 */
-	public function render_settings_disable_shortcode_button() {
-		$options = Advanced_Ads::get_instance()->options();
-
-		$checked = ! empty( $options['disable-shortcode-button'] );
-
-		include ADVADS_BASE_PATH . 'admin/views/settings/general/disable-shortcode-button.php';
 	}
 
 	/**

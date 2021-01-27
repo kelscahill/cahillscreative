@@ -226,6 +226,14 @@ trait meta_boxes
 			$meta_box_data->convert_form_input_later( 'taxonomies' );
 		}
 
+		if ( ! $this->get_site_option( 'show_custom_fields_taxonomies' ) )
+			if ( isset( $custom_fields_input ) )
+			{
+				// If we don't hidden them, then their "settings" will not be remembered.
+				$custom_fields_input->hidden()->checked( true );
+				$taxonomies_input->hidden()->checked( true );
+			}
+
 		$filter = $this->new_action( 'get_user_writable_blogs' );
 		$filter->user_id = $this->user_id();
 		$blogs = $filter->execute()->blogs;

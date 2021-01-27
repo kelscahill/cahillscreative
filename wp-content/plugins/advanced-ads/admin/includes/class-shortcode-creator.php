@@ -40,34 +40,112 @@ class Advanced_Ads_Shortcode_Creator {
 		if ( 'true' !== get_user_option( 'rich_editing' )
 			|| ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_place_ads' ) )
 			|| defined( 'ADVANCED_ADS_DISABLE_SHORTCODE_BUTTON' )
-			|| ! empty( $options['disable-shortcode-button'] )
+			|| apply_filters( 'advanced-ads-disable-shortcode-button', false )
 		) {
 			return;
 		}
 
-		add_filter( 'mce_external_plugins', array( $this, 'add_plugin' ) );
-
-		add_filter( 'mce_buttons', array( $this, 'register_buttons' ) );
-		add_filter( 'mce_external_languages', array( $this, 'add_l10n' ) );
 		add_action( 'wp_ajax_advads_content_for_shortcode_creator', array( $this, 'get_content_for_shortcode_creator' ) );
 
-		add_filter( 'the_editor', array( $this, 'add_addblocker_warning' ) );
-		add_action( 'admin_footer', array( $this, 'maybe_show_adblocker_warning' ) );
+		// @see self::hooks_exist
+		add_filter( 'mce_buttons', array( $this, 'register_buttons' ) );
+		add_filter( 'tiny_mce_plugins', array( $this, 'tiny_mce_plugins' ) );
+		add_action( 'wp_tiny_mce_init', array( $this, 'print_shortcode_plugin' ) );
+		add_action( 'print_default_editor_scripts', array( $this, 'print_shortcode_plugin' ) );
 	}
 
 	/**
-	 * Add the plugin to array of external TinyMCE plugins
-	 *
-	 * @param array $plugin_array array with TinyMCE plugins.
+	 * Check if needed actions and filters have not been removed by a plugin.
 	 *
 	 * @return array
 	 */
-	public function add_plugin( $plugin_array ) {
-		if ( ! is_array( $plugin_array ) ) {
-			$plugin_array = array();
+	private function hooks_exist() {
+		if (
+			(
+				has_action( 'wp_tiny_mce_init', array( $this, 'print_shortcode_plugin' ) )
+				|| has_action( 'print_default_editor_scripts', array( $this, 'print_shortcode_plugin' ) )
+			)
+			&& has_filter( 'mce_buttons', array( $this, 'register_buttons' ) )
+			&& has_filter( 'tiny_mce_plugins', array( $this, 'tiny_mce_plugins' ) ) ) {
+			return true;
 		}
-		$plugin_array['advads_shortcode'] = ADVADS_BASE_URL . 'admin/assets/js/shortcode.js';
-		return $plugin_array;
+		return false;
+	}
+
+	/**
+	 * Print shortcode plugin inline.
+	 */
+	public function print_shortcode_plugin() {
+		static $printed = null;
+
+		if ( $printed !== null ) {
+			return;
+		}
+
+		$printed = true;
+
+		// the `tinymce` argument of the `wp_editor()` function is set  to `false`.
+		if ( ! wp_script_is( 'wp-tinymce', 'done' ) ) {
+			return;
+		}
+
+		if ( ! $this->hooks_exist() ) {
+			return;
+		}
+
+		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo "<script>\n"
+			. $this->get_l10n() . "\n"
+			. file_get_contents( ADVADS_BASE_PATH . 'admin/assets/js/shortcode.js' ) . "\n"
+			. "</script>\n";
+		// phpcs:enable
+	}
+
+	/**
+	 * Get localization strings.
+	 *
+	 * @return string
+	 */
+	private function get_l10n() {
+		static $script = null;
+
+		if ( null === $script ) {
+			include_once ADVADS_BASE_PATH . 'admin/includes/shortcode-creator-l10n.php';
+			$script = $strings;
+		}
+
+		return $script;
+	}
+
+	/**
+	 * Add the plugin to the array of default TinyMCE plugins.
+	 * We do not use the array of external TinyMCE plugins because we print the plugin file inline.
+	 *
+	 * @see self::admin_enqueue_scripts
+	 *
+	 * @param array $plugins An array of default TinyMCE plugins.
+	 * @return array $plugins An array of default TinyMCE plugins.
+	 */
+	public function tiny_mce_plugins( $plugins ) {
+		if ( ! $this->hooks_exist() ) {
+			return $plugins;
+		}
+
+		$plugins[] = 'advads_shortcode';
+		return $plugins;
+	}
+
+	/**
+	 * Include the shortcode plugin inline to prevent it from being blocked by ad blockers.
+	 */
+	public function admin_enqueue_scripts() {
+		// Add the localization.
+		include_once ADVADS_BASE_PATH . 'admin/includes/shortcode-creator-l10n.php';
+		$script = $strings . "\n";
+		// Add the plugin.
+		$script .= file_get_contents( ADVADS_BASE_PATH . 'admin/assets/js/shortcode.js' );
+
+		wp_add_inline_script( 'wp-tinymce', $script );
 	}
 
 	/**
@@ -78,6 +156,9 @@ class Advanced_Ads_Shortcode_Creator {
 	 * @return array
 	 */
 	public function register_buttons( $buttons ) {
+		if ( ! $this->hooks_exist() ) {
+			return $buttons;
+		}
 		if ( ! is_array( $buttons ) ) {
 			$buttons = array();
 		}
@@ -158,71 +239,4 @@ class Advanced_Ads_Shortcode_Creator {
 
 		return $select;
 	}
-
-	/**
-	 * Add localisation
-	 *
-	 * @param array $mce_external_languages localization template.
-	 *
-	 * @return array
-	 */
-	public function add_l10n( $mce_external_languages ) {
-		if ( ! is_array( $mce_external_languages ) ) {
-			$mce_external_languages = array();
-		}
-		$mce_external_languages['advads_shortcode'] = ADVADS_BASE_PATH . 'admin/includes/shortcode-creator-l10n.php';
-		return $mce_external_languages;
-	}
-
-	/**
-	 * Add a warning above TinyMCE editor.
-	 *
-	 * @param string $output editor's HTML markup.
-	 *
-	 * @return string
-	 */
-	public function add_addblocker_warning( $output ) {
-		ob_start();
-		?>
-		<div style="display: none; margin: 10px 8px; color: red;" class="advanced-ads-shortcode-button-warning">
-		<?php
-		printf(
-			wp_kses(
-				// translators: %s is a URL.
-				__( 'Please, either switch off your ad blocker or disable the shortcode button in the <a href="%s" target="_blank">settings</a>.', 'advanced-ads' ),
-				array(
-					'a' => array(
-						'href'   => array(),
-						'target' => array(),
-					),
-				)
-			),
-			esc_url( admin_url( 'admin.php?page=advanced-ads-settings' ) )
-		);
-		?>
-		</div>
-		<?php
-		return ob_get_clean() . $output;
-	}
-
-	/**
-	 * Show a warning above TinyMCE editor when an adblock is enabled.
-	 */
-	public function maybe_show_adblocker_warning() {
-		?>
-		<script>
-		(function(){
-			if ( 'undefined' === typeof advanced_ads_adblocker_test ) {
-				try {
-					var messages = document.querySelectorAll( '.advanced-ads-shortcode-button-warning' )
-				} catch ( e ) { return; }
-				for ( var i = 0; i < messages.length; i++ ) {
-					messages[ i ].style.display = 'block';
-				}
-			}
-		})();
-		</script>
-		<?php
-	}
-
 }

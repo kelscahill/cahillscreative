@@ -46,7 +46,7 @@ import { showPlaceholder, hidePlaceholder } from './modules/placeholder';
 import { singlePostHTML } from './addons/singleposts';
 import { createCacheFile } from './addons/cache';
 import { wooInit, woocommerce, wooGetContent, wooReset } from './addons/woocommerce';
-import { elementorGetContent, elementorInit, elementor, elementorGetPages } from './addons/elementor';
+import { elementorCreateParams, elementorGetContent, elementorInit, elementor } from './addons/elementor';
 import { buildFilterURL } from './addons/filters';
 import { createSEOAttributes } from './addons/seo';
 
@@ -91,7 +91,6 @@ let alm_is_filtering = false;
 		alm.vendor = window.navigator.vendor ? window.navigator.vendor : ''; // Browser Vendor
 		alm.isSafari = /Safari/i.test(alm.ua) && /Apple Computer/.test(alm.vendor) && !/Mobi|Android/i.test(alm.ua);
 
-		alm.main = el;
 		alm.master_id = el.dataset.id ? `ajax-load-more-${el.dataset.id}` : el.id; // The defined or generated ID of the ALM instance
 		el.classList.add('alm-' + e); // Add unique classname
 		el.setAttribute('data-alm-id', e); // Add unique data id
@@ -100,7 +99,7 @@ let alm_is_filtering = false;
 		alm.master_id = alm.master_id.replace(/-/g, '_'); // Convert dashes to underscores for the var name
 		alm.localize = window[alm.master_id + '_vars']; // Get localize vars
 
-		// Main ALM Containers
+		// ALM Element Containers
 		alm.main = el; // Top level DOM element
 		alm.listing = el.querySelector('.alm-listing') || el.querySelector('.alm-comments');
 		alm.content = alm.listing;
@@ -160,28 +159,12 @@ let alm_is_filtering = false;
 		alm.is_search = alm.is_search === undefined ? false : alm.is_search;
 		alm.search_value = alm.is_search === 'true' ? alm.slug : ''; // Convert to value of slug for appending to seo url
 
-		// Addon Shortcode Params
+		// Add-on Shortcode Params
 
 		// Elementor add-on
-		alm.addons.elementor = alm.localize && alm.localize.elementor ? true : false;
+		alm.addons.elementor = alm.listing.dataset.elementor === 'posts' && alm.listing.dataset.elementorSettings ? true : false;
 		if (alm.addons.elementor) {
-			alm.addons.elementor = {};
-			alm.addons.elementor_type = 'posts';
-			alm.addons.elementor_target = alm.localize.elementor.target;
-			alm.addons.elementor_target_element = alm.addons.elementor_target
-				? document.querySelector(`.elementor-widget-wrap ${alm.addons.elementor_target}`)
-				: '';
-			alm.addons.elementor_paged = alm.localize.elementor.paged ? parseInt(alm.localize.elementor.paged) : 1;
-			alm.addons.elementor_container_class = alm.localize.elementor.container_class;
-			alm.addons.elementor_item_class = alm.localize.elementor.item_class;
-			alm.addons.elementor_pagination_class = alm.localize.elementor.pagination_class;
-			alm.addons.elementor_pagination_item = alm.localize.elementor.pagination_item;
-			alm.addons.elementor_pages = elementorGetPages(
-				alm.addons.elementor_pagination_class,
-				alm.addons.elementor_pagination_item,
-				alm.addons.elementor_target_element
-			);
-			alm.page = parseInt(alm.page) + alm.addons.elementor_paged;
+			alm = elementorCreateParams(alm);
 		}
 
 		// WooCommerce add-on
@@ -224,6 +207,7 @@ let alm_is_filtering = false;
 		alm.addons.single_post = alm.listing.dataset.singlePost;
 		if (alm.addons.single_post === 'true') {
 			alm.addons.single_post_id = alm.listing.dataset.singlePostId;
+			alm.addons.single_post_query = alm.listing.dataset.singlePostQuery;
 			alm.addons.single_post_order = alm.listing.dataset.singlePostOrder;
 			alm.addons.single_post_init_id = alm.listing.dataset.singlePostId;
 			alm.addons.single_post_taxonomy = alm.listing.dataset.singlePostTaxonomy;
@@ -560,7 +544,7 @@ let alm_is_filtering = false;
 		alm.transition_container = alm.transition_container === undefined || alm.transition_container === 'true' ? true : false;
 
 		/* Button Labels */
-		alm.button_label = alm.button_label === undefined ? 'Older Posts' : alm.button_label;
+		alm.button_label = alm.button_label === undefined ? 'Load More' : alm.button_label;
 		alm.button_loading_label = alm.button_loading_label === undefined ? false : alm.button_loading_label;
 		alm.button_done_label = alm.button_done_label === undefined ? false : alm.button_done_label;
 
@@ -1136,7 +1120,11 @@ let alm_is_filtering = false;
 						// Single Posts
 						reveal.setAttribute('class', 'alm-reveal alm-single-post post-' + alm.addons.single_post_id + alm.tcc);
 						reveal.dataset.url = alm.addons.single_post_permalink;
-						reveal.dataset.page = alm.page;
+						if (alm.addons.single_post_target) {
+							reveal.dataset.page = parseInt(alm.page) + 1;
+						} else {
+							reveal.dataset.page = alm.page;
+						}
 						reveal.dataset.id = alm.addons.single_post_id;
 						reveal.dataset.title = alm.addons.single_post_title;
 						reveal.innerHTML = alm.html;
@@ -1316,7 +1304,7 @@ let alm_is_filtering = false;
 
 							// Set button data attributes
 							alm.button.dataset.page = nextPageNum; // Page
-							let nextPage = alm.addons.elementor_pages[nextPageNum - 1]; // URL
+							let nextPage = alm.addons.elementor_next_page_url; // URL
 							alm.button.dataset.url = nextPage ? nextPage : '';
 
 							alm.AjaxLoadMore.transitionEnd();
@@ -1327,7 +1315,7 @@ let alm_is_filtering = false;
 							}
 
 							// ALM Done
-							if (nextPageNum > parseInt(alm.addons.elementor_pages.length)) {
+							if (!nextPage) {
 								alm.AjaxLoadMore.triggerDone();
 							}
 						})().catch((e) => {
@@ -1603,6 +1591,11 @@ let alm_is_filtering = false;
 				}
 			}
 
+			// Masonry, clear `alm-listing` height
+			if (alm.transition === 'masonry') {
+				alm.content.style.height = 'auto';
+			}
+
 			alm.AjaxLoadMore.triggerDone(); // ALM Done
 		};
 
@@ -1730,12 +1723,10 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 *  fetchingPreviousPost
-		 *  Get the previous post ID via ajax
+		 *  Get the Single Posts post ID via ajax.
 		 *
 		 *  @since 2.7.4
 		 */
-
 		if (alm.addons.single_post_id) {
 			alm.fetchingPreviousPost = false;
 			alm.addons.single_post_init = true;
@@ -1770,7 +1761,6 @@ let alm_is_filtering = false;
 				.get(ajaxURL, { params })
 				.then(function (response) {
 					// Success
-
 					let data = response.data; // Get data from response
 
 					if (data.has_previous_post) {
@@ -1792,16 +1782,14 @@ let alm_is_filtering = false;
 				})
 				.catch(function (error) {
 					// Error
-
 					alm.AjaxLoadMore.error(error, 'getSinglePost');
 					alm.fetchingPreviousPost = false;
 				});
 		};
 
 		/**
-		 * triggerAddons
-		 *
 		 * Triggers various add-on functions (if available) after load complete.
+		 *
 		 * @since 2.14.0
 		 */
 		alm.AjaxLoadMore.triggerAddons = function (alm) {
@@ -1817,12 +1805,15 @@ let alm_is_filtering = false;
 				// WooCommerce
 				window.almWooCommerce(alm);
 			}
+			if (typeof almElementor === 'function') {
+				// Elementor
+				window.almElementor(alm);
+			}
 		};
 
 		/**
-		 * ALM Done
+		 * Fires a set of actions and functions when ALM has no other posts to load.
 		 *
-		 * Fires the almDone() function (if available).
 		 * @since 2.11.3
 		 */
 		alm.AjaxLoadMore.triggerDone = function () {
@@ -1852,8 +1843,7 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * resetBtnText
-		 * Resets the loading button text after loading has completed
+		 * Resets the loading button text after loading has completed.
 		 *
 		 * @since 2.8.4
 		 */
@@ -1865,8 +1855,7 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * Ajax Error
-		 * Error function after failed data
+		 * Error function after failed data attempt.
 		 *
 		 * @since 2.6.0
 		 */
@@ -1905,8 +1894,7 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * click
-		 * Button click handler to load posts
+		 * Button click handler to load posts.
 		 *
 		 * @since 4.2.0
 		 */
@@ -1926,18 +1914,17 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * Button Click Event
-		 * Load more button click event
+		 * Load More button click event handler.
 		 *
 		 * @since 1.0.0
 		 */
-
 		if (!alm.addons.paging && !alm.fetchingPreviousPost) {
 			alm.button.onclick = alm.AjaxLoadMore.click;
 		}
 
 		/**
 		 * Window resize functions for Paging, Scroll Distance Percentage, Tabs etc.
+		 *
 		 * @since 2.1.2
 		 * @updated 5.2
 		 */
@@ -1969,7 +1956,8 @@ let alm_is_filtering = false;
 		}
 
 		/**
-		 * Check to see if element is visible before loading posts
+		 * Check to see if element is visible before loading posts.
+		 *
 		 * @since 2.1.2
 		 */
 		alm.AjaxLoadMore.isVisible = function () {
@@ -1979,7 +1967,8 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * Trigger a window resize browser function
+		 * Trigger a window resize browser function.
+		 *
 		 * @since 5.3.1
 		 */
 		alm.AjaxLoadMore.triggerWindowResize = function () {
@@ -1995,11 +1984,11 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * Load posts as user scrolls the page
+		 * Load posts as user scrolls the page.
+		 *
 		 * @since 1.0
 		 * @updated 4.2.0
 		 */
-
 		alm.AjaxLoadMore.scroll = function () {
 			if (alm.timer) {
 				clearTimeout(alm.timer);
@@ -2053,7 +2042,8 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * Add scroll eventlisteners, only when needed
+		 * Add scroll eventlisteners, only when needed.
+		 *
 		 * @since 5.2.0
 		 */
 		alm.AjaxLoadMore.scrollSetup = function () {
@@ -2061,7 +2051,10 @@ let alm_is_filtering = false;
 				if (alm.scroll_container !== '') {
 					// Scroll Container
 					alm.window = document.querySelector(alm.scroll_container) ? document.querySelector(alm.scroll_container) : alm.window;
-					alm.AjaxLoadMore.horizontal();
+					setTimeout(function () {
+						// Delay to allow for ALM container to resize on load.
+						alm.AjaxLoadMore.horizontal();
+					}, 500);
 				}
 				alm.window.addEventListener('scroll', alm.AjaxLoadMore.scroll); // Scroll
 				alm.window.addEventListener('touchstart', alm.AjaxLoadMore.scroll); // Touch Devices
@@ -2086,7 +2079,8 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * Configure horizontal scroll settings
+		 * Configure horizontal scroll settings.
+		 *
 		 * @since 5.3.6
 		 */
 		alm.AjaxLoadMore.horizontal = function () {
@@ -2096,7 +2090,8 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * Destroy Ajax Load More functionality
+		 * Destroy Ajax Load More functionality.
+		 *
 		 * @since 3.4.2
 		 */
 		alm.AjaxLoadMore.destroyed = function () {
@@ -2111,7 +2106,8 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * Set variables after loading transiton completes
+		 * Set variables after loading transiton completes.
+		 *
 		 * @since 3.5
 		 */
 		alm.AjaxLoadMore.transitionEnd = function () {
@@ -2130,7 +2126,8 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * Set induvidual localized variable
+		 * Set individual localized variable.
+		 *
 		 * @param {string} name
 		 * @param {string} value
 		 * @since 4.1
@@ -2143,8 +2140,7 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * Init Ajax load More
-		 * Load posts as user scrolls the page
+		 * Init Ajax load More functionality and add-ons.
 		 *
 		 * @since 2.0
 		 */
@@ -2168,10 +2164,15 @@ let alm_is_filtering = false;
 				}
 			}
 
-			// Previous Post Add-on
+			// Single Post Add-on
 			if (alm.addons.single_post) {
 				alm.AjaxLoadMore.getSinglePost(); // Set next post on load
 				alm.loading = false;
+
+				// Trigger done if custom query and no posts to render
+				if (alm.addons.single_post_query && alm.addons.single_post_order === '') {
+					alm.AjaxLoadMore.triggerDone();
+				}
 
 				/*
 				 *  Display tableOfContents
@@ -2267,8 +2268,8 @@ let alm_is_filtering = false;
 				// Initiate Elementor
 				elementorInit(alm);
 
-				// Trigger `Done` if `paged is less than `pages`
-				if (alm.addons.elementor_paged > parseInt(alm.addons.elementor_pages.length)) {
+				// Trigger `Done` if `elementor_next_page_url` is empty
+				if (alm.addons.elementor_next_page_url === '') {
 					alm.AjaxLoadMore.triggerDone();
 				}
 			}
@@ -2290,18 +2291,8 @@ let alm_is_filtering = false;
 			});
 		};
 
-		// Flag to prevent loading of posts on initial page load.
-		setTimeout(function () {
-			alm.proceed = true;
-			alm.AjaxLoadMore.scrollSetup();
-		}, 500);
-
-		// Init Ajax Load More
-		alm.AjaxLoadMore.init();
-
 		/**
-		 * almUpdateCurrentPage
-		 * Update current page - triggered from paging add-on
+		 * Update current page - triggered from paging add-on.
 		 *
 		 * @since 2.7.0
 		 */
@@ -2340,8 +2331,7 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * almGetParentContainer
-		 * return the parent ALM container
+		 * Get the parent ALM container.
 		 *
 		 * @since 2.7.0
 		 * @return element
@@ -2351,8 +2341,7 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * almGetObj
-		 * Returns the current ALM obj
+		 * Returns the current ALM obj.
 		 *
 		 * @param {string} specific obj
 		 * @since 2.7.0
@@ -2367,20 +2356,27 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * almTriggerClick
-		 * Trigger ajaxloadmore from any element on page
+		 * Trigger ajaxloadmore from any element on page.
 		 *
 		 * @since 2.12.0
 		 */
 		window.almTriggerClick = function () {
 			alm.button.click();
 		};
+
+		// Flag to prevent loading of posts on initial page load.
+		setTimeout(function () {
+			alm.proceed = true;
+			alm.AjaxLoadMore.scrollSetup();
+		}, 500);
+
+		// Init Ajax Load More
+		alm.AjaxLoadMore.init();
 	};
 
 	// End ajaxloadmore
 
 	/**
-	 *  almInit
 	 *  Initiate instance of Ajax load More
 	 *
 	 *  @since 5.0
@@ -2391,9 +2387,9 @@ let alm_is_filtering = false;
 
 	/**
 	 * Initiate Ajax load More if div is present on screen
+	 *
 	 * @since 2.1.2
 	 */
-
 	let alm_instances = document.querySelectorAll('.ajax-load-more-wrap');
 	if (alm_instances.length) {
 		[...alm_instances].forEach((alm, e) => {
@@ -2403,7 +2399,7 @@ let alm_is_filtering = false;
 })();
 
 /**
- * Filter an Ajax Load More instance
+ * Filter an Ajax Load More instance.
  *
  * @since 5.0
  * @param {*} transition
@@ -2420,7 +2416,7 @@ let filter = function (transition = 'fade', speed = '200', data = '') {
 export { filter };
 
 /**
- * Reset an Ajax Load More instance
+ * Reset an Ajax Load More instance.
  *
  * @since 5.3.8
  * @param {*} target
@@ -2455,7 +2451,7 @@ let reset = function (props = {}) {
 export { reset };
 
 /**
- * Tabbed content for Ajax Load More instance
+ * Tabbed content for Ajax Load More instance.
  *
  * @since 5.2
  * @param {*} data
@@ -2475,12 +2471,11 @@ let tab = function (data = '', url = false) {
 export { tab };
 
 /**
- * Track Page Views in Google Analytics
+ * Track Page Views in Google Analytics.
  *
  * @since 5.0
  * @param {*} path
  */
-
 let tracking = function (path) {
 	if (typeof gtag === 'function') {
 		// Gtag GA Tracking
@@ -2514,8 +2509,7 @@ let tracking = function (path) {
 export { tracking };
 
 /**
- * start
- * Trigger Ajax Load More from other events
+ * Trigger Ajax Load More from other events.
  *
  * @since 5.0
  * @param {*} el
@@ -2529,8 +2523,7 @@ let start = function (el) {
 export { start };
 
 /**
- *  almScroll
- *  Scroll window to position (global function)
+ *  Scroll window to position (global function).
  *
  *  @since 5.0
  *  @param {*} position
@@ -2547,7 +2540,6 @@ let almScroll = function (position) {
 export { almScroll };
 
 /**
- *  getOffset
  *  Get the current top/left coordinates of an element relative to the document.
  *
  *  @since 5.0
@@ -2565,10 +2557,9 @@ let getOffset = function (el = null) {
 export { getOffset };
 
 /**
- *  render
+ *  ALM Render (in progress)
  *
  *  @since 5.0
- *  @param {*} position
  */
 let render = function (el, options = null) {
 	if (!el) {

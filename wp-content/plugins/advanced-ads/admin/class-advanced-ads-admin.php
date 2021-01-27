@@ -181,11 +181,8 @@ class Advanced_Ads_Admin {
 	 * Register and enqueue admin-specific style sheet.
 	 */
 	public function enqueue_admin_styles() {
+		wp_enqueue_style( $this->plugin_slug . '-ui-styles', plugins_url( 'assets/css/ui.css', __FILE__ ), array(), ADVADS_VERSION );
 		wp_enqueue_style( $this->plugin_slug . '-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), ADVADS_VERSION );
-		if ( self::screen_belongs_to_advanced_ads() ) {
-			// jQuery ui smoothness style 1.11.4.
-			wp_enqueue_style( $this->plugin_slug . '-jquery-ui-styles', plugins_url( 'assets/jquery-ui/jquery-ui.min.css', __FILE__ ), array(), '1.11.4' );
-		}
 	}
 
 	/**
@@ -204,14 +201,10 @@ class Advanced_Ads_Admin {
 		wp_localize_script( $this->plugin_slug . '-admin-global-script', 'advadsglobal', $params );
 
 		if ( self::screen_belongs_to_advanced_ads() ) {
-			wp_register_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'jquery-ui-autocomplete', 'jquery-ui-button' ), ADVADS_VERSION, false );
-			wp_register_script( $this->plugin_slug . '-conditions-script', plugins_url( 'assets/js/conditions.js', __FILE__ ), array( 'jquery', 'jquery-ui-autocomplete', 'jquery-ui-button' ), ADVADS_VERSION, false );
+			wp_register_script( $this->plugin_slug . '-ui-scripts', plugins_url( 'assets/js/ui.js', __FILE__ ), array( 'jquery' ), ADVADS_VERSION, false );
+			wp_register_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', $this->plugin_slug . '-ui-scripts', 'jquery-ui-autocomplete' ), ADVADS_VERSION, false );
+			wp_register_script( $this->plugin_slug . '-conditions-script', plugins_url( 'assets/js/conditions.js', __FILE__ ), array( 'jquery', $this->plugin_slug . '-ui-scripts' ), ADVADS_VERSION, false );
 			wp_register_script( $this->plugin_slug . '-wizard-script', plugins_url( 'assets/js/wizard.js', __FILE__ ), array( 'jquery' ), ADVADS_VERSION, false );
-
-			// jquery ui.
-			wp_enqueue_script( 'jquery-ui-accordion' );
-			wp_enqueue_script( 'jquery-ui-button' );
-			wp_enqueue_script( 'jquery-ui-tooltip' );
 
 			// just register this script for later inclusion on ad group list page.
 			wp_register_script( 'inline-edit-group-ads', plugins_url( 'assets/js/inline-edit-group-ads.js', __FILE__ ), array( 'jquery' ), ADVADS_VERSION, false );
@@ -359,7 +352,6 @@ class Advanced_Ads_Admin {
 		if ( current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads' ) ) ) {
 			if ( $this->screen_belongs_to_advanced_ads() ) {
 				include ADVADS_BASE_PATH . 'admin/views/notices/adblock.php';
-				include ADVADS_BASE_PATH . 'admin/views/notices/jqueryui_error.php';
 			}
 		}
 

@@ -725,8 +725,12 @@ class Advanced_Ads_Admin_Ad_Type {
 				return;
 			}
 		}
-		// Display ad injection information after ad is created.
-		if ( isset( $_GET['message'] ) && 6 === $_GET['message'] ) {
+		/**
+		 * Display ad injection information after ad is created.
+		 *
+		 * Set `advanced-ads-ad-edit-show-placement-injection` to false if you want to prevent the box from appearing
+		 */
+		if ( isset( $_GET['message'] ) && 6 === $_GET['message'] && apply_filters( 'advanced-ads-ad-edit-show-placement-injection', true ) ) {
 			include ADVADS_BASE_PATH . 'admin/views/placement-injection-top.php';
 		}
 	}

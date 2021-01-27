@@ -2,11 +2,11 @@
 Contributors: alimir
 Donate link: https://wpulike.com/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme
 Author: TechnoWich
-Tags: like, marketing, elementor, favorite, statistics, multisite, rating, voting, dislike, gamification, bookmark, member
+Tags: like, marketing, elementor, user profile, statistics, favorite, rating, button, dislike, gamification, bookmark, member
 Requires PHP: 5.6
 Requires at least: 5.0
-Tested up to: 5.5.1
-Stable tag: 4.4.0
+Tested up to: 5.6
+Stable tag: 4.4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,9 @@ The [WP ULike profile builder](https://wpulike.com/blog/wordpress-ultimate-profi
 Elementor is the #1 WordPress page builder. In the new version of the WP ULike PRO plugin, we fully support this page builder and have a variety of widgets & controllers that make life much easier for you.
 Just drag your desired widget and drop it in your Elementor sections, customize as you go and enjoy your like and dislike buttons on your contents.
 
+= Easy WordPress login and registration forms [PRO] =
+Not happy with the default WordPress login and registration pages? In WP ULike Pro, We provide you with more control and flexibility over your WordPress default forms. It redefines what a login and registration plugin be able to do with fast AJAX requests & easy made templates.
+
 = Boost Your SEO by Using Our Schema Markup Generator [PRO] =
 Schema markup is a form of data structure and helps Search Engine to have a better understanding of content. The Process for adding these schemas to your webpage is quite messy and confusing. Because of that, WP ULike Pro adds a Metabox to your posts so you can easily generate your custom rich snippets.
 
@@ -47,20 +50,24 @@ So let's talk [PROfessional](https://wpulike.com/pricing/?utm_source=wp-repo&utm
 There are many other [features](https://wpulike.com/blog/wp-ulike-pro-vs-free/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme) to help you build better websites:
 
 * Like, Dislike and Subtotal Votings support
+* Simple and effective options to customize every aspect of plugin styles
 * Supports Rest APIs with a Variety of Routes for Use in Apps
 * Advanced Settings Panel With Easy Backup and Flexible Customization Options
 * Professional Schema.org Generator + Start Ratings
+* AJAX Based Login, Registration, Reset Password and Edit Profile forms
+* Easy local avatar upload inside front-end and dashboard area
 * Progressive Log Management Panel, with advanced search capabilities
 * Database optimization panel with various options
 * +20 Carefully Designed Premium Templates
 * Anonymize IP option for GDPR compliance
 * Flexible Metabox Options with More Customization Settings For Each Post
-* Full myCred (Points, Rewards, Gamification, Ranks, Badges & Loyalty Plugin) Support.
+* Full myCred (Points, Rewards, Gamification, Ranks, Badges & Loyalty Plugin) Support
 * Professional Statistics Panel With Date Range & Status Controllers
-* Notifications System. (Custom toast messages after each activity)
+* Notifications System (Custom toast messages after each activity)
 * Applied Shortcodes with Easy Shortcode Generator Button
 * Full Support for Elementor Page Builder With Functional Widgets
-* And much more.
+* Support Cache Plugins: WP Rocket, LiteSpeed, W3 Total Cache, Fastest Cache, Super Cache, etc.
+* And much more...
 
 Join the elite web professionals who enjoy **[WP ULike PRO](https://wpulike.com/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme)**.
 
@@ -96,61 +103,84 @@ You can also add a new language via [translate.wordpress.org](https://translate.
 
 == Screenshots ==
 
-1. **Get Ratings From Every Section of Your Website**
-2. **Check Votings, BestLikers & Top contents**
-3. **Start to Configure your Voting Plugin in a few Steps**
-4. **Boost Your SEO by Using Our Professional Schema Generator [PRO]**
-5. **Customize Every Aspect of Your Like Buttons with Elementor Widgets [PRO]**
+1. **Carefully designed templates**
+2. **Professional statistics panel**
+3. **Simple and user-friendly settings panel**
+4. **Progressive log management panel**
+5. **Complete customizer options**
+6. **Full support for elementor with +7 functional widgets [PRO]**
+7. **Easy wordPress login and registration forms [PRO]**
+8. **Flexible metabox panel [PRO]**
 
 == Frequently Asked Questions ==
 
-= How To Use this plugin? =
-Just install the plugin and activate "automatic display" in the plugin configuration panel. (WP ULike has four auto options for posts, comments, BuddyPress activities & bbPress Topics.)
-Also you can use of the following function and shortcode for your posts:
-*   Function:
-`if(function_exists('wp_ulike')) wp_ulike('get');`
-*   Shortcode:
-`[wp_ulike]`
+=  Does WP ULike work with all the themes? =
+It works with all the themes which respect the coding standards of WordPress set by its Codex.
 
-= How To Change The Counter Format? =
-Documentation : [Github](https://github.com/alimir/wp-ulike#how-to-change-the-counter-format)
+=  Does it work with other WordPress plugins? =
+It works with almost all the plugins especially with Elementor, BuddyPress, bbPress, WooCommerce, GamiPress, myCRED, etc. If you experience an incompatibility issue, please report it to us and to the plugin which conflicts with WP ULike.
 
-= How To Change Schema Type? =
-Documentation : [Github](https://github.com/alimir/wp-ulike#how-to-change-schema-type)
+=  What's the difference between WP ULike Pro vs Free? =
+WP ULike’s Free version offers limitless possibilities. WP ULike Pro, however, empowers you with more professional tools, up/down vote support and provide you a professional stats panel.
+See full comparison [Here](https://wpulike.com/blog/wp-ulike-pro-vs-free/).
 
-= How To Add Extra Microdata? =
-Documentation : [Github](https://github.com/alimir/wp-ulike#how-to-add-extra-microdata)
+= Is WP ULike compatible with multisite? =
+Yes.
 
-= How To Remove All Schema Data Except Of aggregateRating? =
-Documentation : [Github](https://github.com/alimir/wp-ulike#how-to-remove-all-schema-data-except-of-aggregaterating)
+=  Is WP ULike safe? =
+We are a professional and international team called TechnoWich that uses the latest coding and design methods in projects.
 
-= How To Remove "0" Count If There Are No Likes? =
-Documentation : [Github](https://github.com/alimir/wp-ulike#how-to-remove-0-count-if-there-are-no-likes)
+Our WP ULike project has been able to attract more than 50,000 active users in the last few years and has a high score in the WordPress repository. All functions of this plugin are documented and you can follow its development process on Github.
 
-= How To Change The Login Alert Template? =
-Documentation : [Github](https://github.com/alimir/wp-ulike#how-to-change-the-login-alert-template)
-
-= How To Get Post Likes Number? =
-Documentation : [Github](https://github.com/alimir/wp-ulike#how-to-get-post-likes-number)
-
-= How To Get Comment Likes Number? =
-Documentation : [Github](https://github.com/alimir/wp-ulike#how-to-get-comment-likes-number)
-
-= How To Sort Most Liked Posts?  =
-Documentation : [Github](https://github.com/alimir/wp-ulike#how-to-sort-most-liked-posts)
-
-= How Can I Create Custom Template In Users Liked Box?  =
-* We have provided some variables in setting panel. You can use them in textarea and then save the new options.
-* Attention: `%START_WHILE%` And `%END_WHILE%` variables are very important and you should use them out of the frequent string. (Such as `<li></li>` tags sample in default template)
-
-= Receive HTTP ERROR 500 on WP ULike > Statistics   =
-* Increasing Your WordPress Memory Limit in wp-config.php to fix this error. It is located in your WordPress site's root folder, and you will need to use an FTP client or file manager in your web hosting control panel.
-* Next, you need to paste this code in wp-config.php file just before the line that says "That's all, stop editing! Happy blogging."
-<code>
-define( 'WP_MEMORY_LIMIT', '256M' );
-</code>
+=  Does WP ULike run on Apache, Nginx, LiteSpeed, etc? =
+Yes, WP ULike is compatible with Apache, Nginx, Microsoft IIS et LiteSpeed web servers.
 
 == Changelog ==
+
+= 4.4.5 =
+* Added: New popover template for likers box.
+* Added: New customizer options for popover.
+* Updated: Options panel framework.
+* Fixed: Format number issues.
+* Fixed: An issue with fastest cache plugin.
+* Fixed: Some other small issues.
+
+= 4.4.4 =
+* Added: New option to set prefix/postfix on counter values.
+* Added: New option to support storing data in wp postmeta table. (+ Migrate option) [PRO]
+* Improved: Unit convertor functionality. (Shorten long numbers to K/M/B)
+* Updated: All js/css libraries.
+* Fixed: Update status issue for hidden counters.
+* Fixed: Notification display issue.
+* Fixed: Some other small issues.
+
+= 4.4.3 =
+* Added: New logging method option. (Username/IP + Cookie)
+* Added: Option to filter toast messages on content types.
+* Added: Flexible modal preview option for require login mode. [PRO]
+* Added: New percentage counter option. [PRO]
+* Added: Variable support in require login template.
+* Improved: Plugin security to avoid duplicate votes.
+* Fixed: bbPress permalink issues.
+* Fixed: Some major issues.
+
+= 4.4.2.1 =
+* Fixed: An issue with WordPress 5.5 functions.
+
+= 4.4.2 =
+* Added: "SG Optimiser" plugin cache support.
+* Added: New option to hide counter box when no votes have been cast.
+* Added: User (profile) edit forms. (Using a new shortcode) [PRO]
+* Added: Local avatar upload option inside front-end and dashboard area. [PRO]
+* Added: Export CSV logs button on admin column filters. [PRO]
+* Updated: Meta query functions.
+* Fixed: Purge cache referrer url issue.
+* Fixed: Attachment post type issue on top items.
+* Fixed: Some major issues.
+
+= 4.4.1 =
+* Updated: Options panel framework.
+* Fixed: Some major issues.
 
 = 4.4.0 =
 * Added: Customizer panel with complete options for customizing templates and styles.

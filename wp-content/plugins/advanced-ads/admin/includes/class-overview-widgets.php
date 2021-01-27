@@ -639,7 +639,7 @@ endif;
 			if ( 'ga' !== Advanced_Ads_Tracking_Plugin::get_instance()->get_tracking_method() ) {
 
 				// don’t show Tracking link if Analytics method is enabled.
-				$add_ons['tracking']['desc'] = '<a href="' . admin_url( '/admin.php?page=advanced-ads-stats' ) . '">' . __( 'Visit your ad stats', 'advanced-ads' ) . '</a>';
+				$add_ons['tracking']['desc'] = '<a href="' . admin_url( '/admin.php?page=advanced-ads-stats' ) . '">' . __( 'Visit your ad statistics', 'advanced-ads' ) . '</a>';
 			} else {
 				$add_ons['tracking']['desc'] = '';
 			}

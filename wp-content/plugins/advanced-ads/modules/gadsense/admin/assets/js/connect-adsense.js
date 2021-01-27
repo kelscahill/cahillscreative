@@ -5,7 +5,6 @@
     
     var advadsMapiConnectClass = function( content, options ) {
         this.options = {};
-        this.AUTH_WINDOW = null;
         this.modal = $( '#gadsense-modal' );
         this.frame = null;
         if ( 'undefined' == typeof content || ! content ) {
@@ -43,10 +42,49 @@
                     this.options.onSuccess( this );
                 }
             } else {
-                window.location.reload();
+                this.hide();
             }
         },
         
+		// Submit OAuth2 code for account connection.
+		submitOAuthCode: function( code ) {
+		
+			var that = this;
+			if ( '' == code ) return;
+			$( '.gadsense-overlay' ).css( 'display', 'block' );
+			$( '#gadsense-modal-error' ).hide();
+			var data = {
+				action: 'advads_gadsense_mapi_confirm_code',
+				code: code,
+				nonce: AdsenseMAPI.nonce,
+			};
+			
+			$.ajax({
+				url: ajaxurl,
+				type: 'post',
+				data: data,
+				success:function(response, status, XHR){
+					$( '#mapi-code' ).val( '' );
+					if ( response.status && true === response.status && response['token_data'] ) {
+						that.getAccountDetails( response['token_data'] );
+					} else {
+						/**
+						 * Connection error handling.
+						 */
+						console.log( response );
+						$( '.gadsense-overlay' ).css( 'display', 'none' );
+						$( '#mapi-code' ).val( '' );
+						$( '#mapi-autoads' ).prop( 'checked', false );
+						$( '#gadsense-modal-content-inner .dashicons-dismiss' ).trigger( 'click' );
+					}
+				},
+				error:function(request, status, error){
+					$( '#gadsense-loading-overlay' ).css( 'display', 'none' );
+				},
+			});
+			
+		},
+		
         // Initialization - mostly binding events.
         init: function(){
             
@@ -54,59 +92,7 @@
             
             // Close the modal and hide errors.
             $( document ).on( 'click', '#gadsense-modal .dashicons-dismiss', function(){
-                $( '#mapi-code' ).val( '' );
-                $( '#gadsense-modal, #gadsense-modal-error' ).css( 'display', 'none' );
-            } );
-            
-            // Confirm code for account connection.
-            $( document ).on( 'click', '#mapi-confirm-code', function(){
-                
-                var code = $( '#mapi-code' ).val();
-                if ( '' == code ) return;
-                $( '.gadsense-overlay' ).css( 'display', 'block' );
-                $( '#gadsense-modal-error' ).hide();
-                var data = {
-                    action: 'advads_gadsense_mapi_confirm_code',
-                    code: code,
-                    nonce: AdsenseMAPI.nonce,
-                };
-                
-                $.ajax({
-                    url: ajaxurl,
-                    type: 'post',
-                    data: data,
-                    success:function(response, status, XHR){
-                        if ( null !== that.AUTH_WINDOW ) {
-                            that.AUTH_WINDOW.close();
-                        }
-                        $( '#mapi-code' ).val( '' );
-                        if ( response.status && true === response.status && response['token_data'] ) {
-                            that.getAccountDetails( response['token_data'] );
-                        } else {
-                            /**
-                             * Connection error handling.
-                             */
-                            console.log( response );
-                            $( '.gadsense-overlay' ).css( 'display', 'none' );
-                            $( '#mapi-code' ).val( '' );
-                            $( '#mapi-autoads' ).prop( 'checked', false );
-                            $( '#gadsense-modal-content-inner .dashicons-dismiss' ).trigger( 'click' );
-                            if ($.parseJSON(response.response_body).error === 'invalid_grant') {
-                                $('#gadsense-modal-error').show();
-
-                                $('#gadsense-reopen-connect').one('click', function (event) {
-                                    event.preventDefault();
-                                    $('#gadsense-modal-error').hide();
-                                    that.show();
-                                });
-                            }
-                        }
-                    },
-                    error:function(request, status, error){
-                        $( '#gadsense-loading-overlay' ).css( 'display', 'none' );
-                    },
-                });
-                
+				that.hide();
             } );
             
             // Account selection
@@ -227,28 +213,16 @@
             }
             this.switchContent( content );
             
-            if ( 'confirm-code' == content ) {
-                
-                // Open Google authentication in a child window.
-                this.modal.css( 'display', 'block' );
-                
-                var oW = $( window ).width(),
-                oH = $( window ).height(),
-                w = Math.min( oW, oH ) * 0.8,
-                h = Math.min( oW, oH ) * 0.8,
-                l = (oW - w) / 2,
-                t = (oH - h) / 2,
-                
-                args = 'resize=1,titlebar=1,width=' + w + ',height=' + h + ',left=' + l + ',top=' + t;
-                this.AUTH_WINDOW = window.open( AdsenseMAPI.oAuth2, 'advadsOAuth2', args );
-                
-            }
+            if ( 'open-google' == content ) {
+				window.location.href = AdsenseMAPI.oAuth2;
+            } else {
+				this.modal.css( 'display', 'block' );
+			}
         },
         
         // Hide the modal frame
         hide: function(){
-            this.switchContent( 'confirm-code' );
-            this.modal.css( 'display', 'none' );
+			window.location.href = this.modal.attr( 'data-return' );
         },
         
     };
@@ -273,6 +247,11 @@
     $(function(){
         // Move the the pop-up outside of any form.
         $( '#wpwrap' ).append( $( '#gadsense-modal' ) );
+		
+		if ( $( '#advads-adsense-oauth-code' ).length ) {
+			INSTANCE = new advadsMapiConnectClass( 'confirm-code', {} );
+			INSTANCE.submitOAuthCode( $( '#advads-adsense-oauth-code' ).val() );
+		}
     });
     
 })(window.jQuery);

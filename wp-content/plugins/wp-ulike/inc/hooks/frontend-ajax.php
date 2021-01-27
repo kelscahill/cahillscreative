@@ -3,7 +3,7 @@
  * Front-end AJAX Hooks
  * 
  * @package    wp-ulike
- * @author     TechnoWich 2020
+ * @author     TechnoWich 2021
  * @link       https://wpulike.com
  */
 
@@ -17,11 +17,9 @@ if ( ! defined( 'WPINC' ) ) {
 *******************************************************/
 
 /**
- * AJAX function for all like/unlike process
+ * AJAX function for all votings process
  *
- * @author       	Alimir
- * @since           1.0
- * @return			String
+ * @return void
  */
 function wp_ulike_process(){
 	new wp_ulike_cta_listener;
@@ -30,13 +28,8 @@ function wp_ulike_process(){
 add_action( 'wp_ajax_wp_ulike_process'			, 'wp_ulike_process' );
 add_action( 'wp_ajax_nopriv_wp_ulike_process'	, 'wp_ulike_process' );
 
-
 /**
- * AJAX function for all like/unlike process
- *
- * @author       	Alimir
- * @since           1.0
- * @return			String
+ * AJAX function for voters process
  */
 function wp_ulike_get_likers(){
 	new wp_ulike_voters_listener;

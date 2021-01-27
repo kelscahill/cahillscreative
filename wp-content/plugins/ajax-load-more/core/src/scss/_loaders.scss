@@ -1,7 +1,8 @@
 .alm-btn-wrap {
 	display: block;
 	text-align: center;
-	padding: 10px 0 25px;
+	padding: 10px 0;
+	margin: 0 0 15px;
 	position: relative;
 	&:after {
 		display: table;
@@ -81,6 +82,19 @@
 			top: 0;
 			overflow: hidden;
 			transition: width 0.5s ease-in-out;
+		}
+	}
+
+	.alm-elementor-link {
+		display: block;
+		font-size: 13px;
+		margin: 0 0 15px;
+		@media screen and (min-width: $md) {
+			position: absolute;
+			left: 0;
+			top: 50%;
+			transform: translateY(-50%);
+			margin: 0;
 		}
 	}
 }

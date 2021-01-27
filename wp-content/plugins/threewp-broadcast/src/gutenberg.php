@@ -74,8 +74,13 @@ class gutenberg
 		@details	Since the render_block doesn't actually do what it says, I have to do it myself.
 		@since		2019-06-25 21:30:15
 	**/
-	public static function render_block( $block )
+	public static function render_block( $block, $options = [] )
 	{
+		$options = array_merge( [
+			'json_options' => JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT,
+		], $options );
+		$options = ( object ) $options;
+
 		switch( $block[ 'blockName' ] )
 		{
 			case 'core/gallery':
@@ -89,7 +94,7 @@ class gutenberg
 		// Fancy encode?
 		$json_options = 0;
 		if ( static::string_has_unicode( $block[ 'original' ] ) )
-			$json_options = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+			$json_options = $options->json_options;
 
 		return sprintf( "<!-- wp:%s %s -->",
 			$block_name,
@@ -101,15 +106,16 @@ class gutenberg
 		@brief		Replace a text string with a rendered block.
 		@since		2019-07-22 18:01:48
 	**/
-	public static function replace_text_with_block( $string, $block, $text )
+	public static function replace_text_with_block( $string, $block, $text, $options = [] )
 	{
-		$block_text = static::render_block( $block );
+		$block_text = static::render_block( $block, $options );
 
 		// If the original block ends with /-->, make sure the new block also does so.
 		if ( strpos( $string, "/-->" ) !== false )
 			$block_text = str_replace( "-->", "/-->", $block_text );
 
 		$text = str_replace( $string, $block_text, $text );
+
 		return $text;
 	}
 

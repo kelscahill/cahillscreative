@@ -508,6 +508,7 @@ jQuery(document).ready(function ($) {
 		if (previous !== 'false' && previous != undefined) {
 			var pp_id = $('#pp_id').val(),
 				pp_order = $('#pp-order').val(),
+				pp_query_order = $('#pp-custom-query').val(),
 				pp_post__in_order = $('#pp_post__in_input').val(),
 				pp_taxonomy = $('#pp-taxonomy-select').val(),
 				pp_excluded_terms = $('#pp-term-exclude').val(),
@@ -529,6 +530,7 @@ jQuery(document).ready(function ($) {
 				$('#pp_extras').slideDown(250, 'alm_easeInOutQuad');
 			} else {
 				if (pp_order === 'post__in') {
+					// Post IN
 					pp_taxonomy = '';
 					pp_excluded_terms = '';
 					output += ' single_post_order="' + pp_post__in_order + '"';
@@ -536,15 +538,24 @@ jQuery(document).ready(function ($) {
 					$('#pp-term-exclude').attr('disabled', true);
 					$('#pp_post__in').slideDown(250, 'alm_easeInOutQuad');
 					$('#pp_extras').slideUp(250, 'alm_easeInOutQuad');
+				} else if (pp_order === 'custom_query') {
+					// Custom Query
+					output += ' single_post_order="query"';
+					output += ' single_post_query_order="' + pp_query_order + '"';
+					$('#pp_post__in').slideUp(250, 'alm_easeInOutQuad');
+					$('#pp_extras').slideUp(250, 'alm_easeInOutQuad');
+					$('#pp_custom_query').slideDown(250, 'alm_easeInOutQuad');
 				} else {
+					// Normal
 					output += ' single_post_order="' + pp_order + '"';
+					output += pp_taxonomy !== '' ? ' single_post_taxonomy="' + pp_taxonomy + '"' : '';
+					output += pp_excluded_terms !== '' ? ' single_post_excluded_terms="' + pp_excluded_terms + '"' : '';
+					$('#pp_custom_query').slideUp(250, 'alm_easeInOutQuad');
 					$('#pp_post__in').slideUp(250, 'alm_easeInOutQuad');
 					$('#pp_extras').slideDown(250, 'alm_easeInOutQuad');
 				}
 			}
 
-			output += pp_taxonomy !== '' ? ' single_post_taxonomy="' + pp_taxonomy + '"' : '';
-			output += pp_excluded_terms !== '' ? ' single_post_excluded_terms="' + pp_excluded_terms + '"' : '';
 			output += pp_target !== '' ? ' single_post_target="' + pp_target + '"' : '';
 			output += pp_elementor === 't' ? ' elementor="true"' : '';
 
@@ -743,19 +754,19 @@ jQuery(document).ready(function ($) {
 
 		// IN
 		var cat = $('.categories #category-select').val();
-		if (cat !== '' && cat !== undefined && cat !== null) {
+		if (cat !== '' && cat !== undefined && cat !== null && cat.length > 0) {
 			output += ' category="' + cat + '"';
 		}
 
 		// AND
 		var cat__and = $('.categories #category--and-select').val();
-		if (cat__and !== '' && cat__and !== undefined && cat__and !== null) {
+		if (cat__and !== '' && cat__and !== undefined && cat__and !== null && cat__and.length > 0) {
 			output += ' category__and="' + cat__and + '"';
 		}
 
 		// NOT_IN
 		var cat_not_in = $('.categories #category-exclude-select').val();
-		if (cat_not_in !== '' && cat_not_in !== undefined && cat_not_in !== null) output += ' category__not_in="' + cat_not_in + '"';
+		if (cat_not_in !== '' && cat_not_in !== undefined && cat_not_in !== null && cat_not_in.length > 0) output += ' category__not_in="' + cat_not_in + '"';
 
 		// ---------------------------
 		// - Tags
@@ -784,19 +795,19 @@ jQuery(document).ready(function ($) {
 
 		// IN
 		var tag = $('.tags #tag-select').val();
-		if (tag !== '' && tag !== undefined && tag !== null) {
+		if (tag !== '' && tag !== undefined && tag !== null && tag.length > 0) {
 			output += ' tag="' + tag + '"';
 		}
 
 		// AND
 		var tag__and = $('.tags #tag--and-select').val();
-		if (tag__and !== '' && tag__and !== undefined && tag__and !== null) {
+		if (tag__and !== '' && tag__and !== undefined && tag__and !== null && tag__and.length > 0) {
 			output += ' tag__and="' + tag__and + '"';
 		}
 
 		// NOT_IN
 		var tag_not_in = $('.tags #tag-exclude-select').val();
-		if (tag_not_in !== '' && tag_not_in !== undefined && tag_not_in !== null) output += ' tag__not_in="' + tag_not_in + '"';
+		if (tag_not_in !== '' && tag_not_in !== undefined && tag_not_in !== null && tag_not_in.length > 0) output += ' tag__not_in="' + tag_not_in + '"';
 
 		// ---------------------------
 		// - Taxonomy Query
@@ -1002,7 +1013,7 @@ jQuery(document).ready(function ($) {
 		// ---------------------------
 
 		var author = $('.authors #author-select').val();
-		if (author !== '' && author !== undefined && author !== null) output += ' author="' + author + '"';
+		if (author !== '' && author !== undefined && author !== null && author.length > 0) output += ' author="' + author + '"';
 
 		// ---------------------------
 		// - Posts
@@ -1241,7 +1252,7 @@ jQuery(document).ready(function ($) {
 			button_loading_label = $('.btn-label input#button-loading-label').val().trim(),
 			button_done_label = $('.btn-label input#button-done-label').val().trim();
 
-		if (button_label !== '' && button_label !== 'Older Posts') {
+		if (button_label !== '' && button_label !== 'Load More') {
 			output += ' button_label="' + button_label + '"';
 		}
 		// Loading Label

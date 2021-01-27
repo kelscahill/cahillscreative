@@ -3,7 +3,7 @@
  * Shortcodes
  * 
  * @package    wp-ulike
- * @author     TechnoWich 2020
+ * @author     TechnoWich 2021
  * @link       https://wpulike.com
  */
 

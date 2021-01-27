@@ -581,7 +581,7 @@ class Advanced_Ads_Display_Conditions {
 					?>
 					<div class="advads-conditions-terms-buttons dynamic-search"><?php
 					foreach ( $checked_terms as $_checked_term ) :
-						?><label class="button ui-state-active"><?php echo $_checked_term->name;
+						?><label class="button advads-ui-state-active"><?php echo $_checked_term->name;
 						?><input type="hidden" name="<?php echo $inputname; ?>"
 						value="<?php echo $_checked_term->term_id; ?>"></label><?php
 					endforeach;
@@ -657,7 +657,7 @@ class Advanced_Ads_Display_Conditions {
 			while ( $the_query->have_posts() ) {
 				$the_query->next_post();
 				?><label
-						class="button ui-state-active"><?php echo get_the_title( $the_query->post->ID ) . ' (' . $the_query->post->post_type . ')';
+						class="button advads-ui-state-active"><?php echo get_the_title( $the_query->post->ID ) . ' (' . $the_query->post->post_type . ')';
 				?><input type="hidden" name="<?php echo $name; ?>[value][]" value="<?php echo $the_query->post->ID; ?>">
 				</label><?php
 			}
@@ -795,7 +795,7 @@ class Advanced_Ads_Display_Conditions {
 		$name = self::get_form_name_with_index( $form_name, $index );
 
 		$operator = isset( $options['operator'] ) ? $options['operator'] : 'older_than';
-		$value    = ( isset( $options['value'] ) && is_numeric( $options['value'] ) ) ? floatval( $options['value'] ) : 0;
+		$value    = ( isset( $options['value'] ) && is_numeric( $options['value'] ) ) ? (float) $options['value'] : 0;
 
 		self::render_type_field( $options['type'], $name );
 

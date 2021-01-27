@@ -60,6 +60,9 @@ class SB_Instagram_Settings {
 	 * @param array $db settings from the wp_options table
 	 */
 	public function __construct( $atts, $db ) {
+		$this->feed_type_and_terms = array();
+		$this->connected_accounts_in_feed = array();
+
 		$this->atts = $atts;
 		$this->db   = $db;
 
@@ -107,7 +110,7 @@ class SB_Instagram_Settings {
 				'feedid'           => isset( $db['sb_instagram_feed_id'] ) ? $db['sb_instagram_feed_id'] : false,
 				'resizeprocess'    => isset( $db['sb_instagram_resizeprocess'] ) ? $db['sb_instagram_resizeprocess'] : 'background',
 				'customtemplates'    => isset( $db['custom_template'] ) ? $db['custom_template'] : '',
-
+				'gdpr'    => isset( $db['gdpr'] ) ? $db['gdpr'] : 'auto',
 			), $atts );
 
 		$this->settings['customtemplates'] = $this->settings['customtemplates'] === 'true' || $this->settings['customtemplates'] === 'on';
@@ -125,7 +128,6 @@ class SB_Instagram_Settings {
 		$this->settings['disable_resize'] = isset( $db['sb_instagram_disable_resize'] ) && ($db['sb_instagram_disable_resize'] === 'on');
 		$this->settings['favor_local'] = ! isset( $db['sb_instagram_favor_local'] ) || ($db['sb_instagram_favor_local'] === 'on') || ($db['sb_instagram_favor_local'] === true);
 		$this->settings['backup_cache_enabled'] = ! isset( $db['sb_instagram_backup'] ) || ($db['sb_instagram_backup'] === 'on') || $db['sb_instagram_backup'] === true;
-		$this->settings['font_method'] = isset( $db['sbi_font_method'] ) ? $db['sbi_font_method'] : 'svg';
 		$this->settings['headeroutside'] = ($this->settings['headeroutside'] === true || $this->settings['headeroutside'] === 'on' || $this->settings['headeroutside'] === 'true');
 		$this->settings['disable_js_image_loading'] = isset( $db['disable_js_image_loading'] ) && ($db['disable_js_image_loading'] === 'on');
 		$this->settings['ajax_post_load'] = isset( $db['sb_ajax_initial'] ) && ($db['sb_ajax_initial'] === 'on');
@@ -144,16 +146,20 @@ class SB_Instagram_Settings {
 		$this->settings['sb_instagram_cache_time'] = isset( $this->db['sb_instagram_cache_time'] ) ? $this->db['sb_instagram_cache_time'] : 1;
 		$this->settings['sb_instagram_cache_time_unit'] = isset( $this->db['sb_instagram_cache_time_unit'] ) ? $this->db['sb_instagram_cache_time_unit'] : 'hours';
 
-		global $sb_instagram_posts_manager;
+		/*global $sb_instagram_posts_manager;
 
 		if ( $sb_instagram_posts_manager->are_current_api_request_delays() ) {
 			$this->settings['alwaysUseBackup'] = true;
-		}
+		}*/
 
 		$this->settings['isgutenberg'] = SB_Instagram_Blocks::is_gb_editor();
 		if ( $this->settings['isgutenberg'] ) {
 			$this->settings['ajax_post_load'] = false;
 			$this->settings['disable_js_image_loading'] = true;
+		}
+
+		if ( SB_Instagram_GDPR_Integrations::doing_gdpr( $this->settings ) ) {
+			SB_Instagram_GDPR_Integrations::init();
 		}
 	}
 
@@ -218,7 +224,6 @@ class SB_Instagram_Settings {
 			'sb_instagram_disable_resize',
 			'disable_js_image_loading',
 			'enqueue_js_in_head',
-			'sbi_font_method',
 			'sb_instagram_disable_awesome',
 			'sb_ajax_initial',
 			'use_custom'
@@ -287,7 +292,7 @@ class SB_Instagram_Settings {
 			if ( isset( $feed_type_and_terms['users'] ) ) {
 				foreach ( $feed_type_and_terms['users'] as $term_and_params ) {
 					$user = $term_and_params['term'];
-					$connected_account = $this->connected_accounts_in_feed[ $user ];
+					$connected_account = isset( $this->connected_accounts_in_feed[ $user ] ) ? $this->connected_accounts_in_feed[ $user ] : array();
 					if ( isset( $connected_account['type'] ) && $connected_account['type'] === 'business' ) {
 						$sbi_transient_name .= $connected_account['username'];
 					} else {
@@ -323,6 +328,106 @@ class SB_Instagram_Settings {
 		}
 	}
 
+	private function add_connected_accounts_in_feed( $connected_accounts ) {
+		foreach ( $connected_accounts as $key => $connected_account ) {
+			$this->connected_accounts_in_feed[ $key ] = $connected_account;
+		}
+	}
+
+	private function add_feed_type_and_terms( $feed_type_and_terms ) {
+		$this->feed_type_and_terms = array_merge( $this->feed_type_and_terms, $feed_type_and_terms );
+	}
+
+	private function set_user_feed( $users = false ) {
+		global $sb_instagram_posts_manager;
+
+		if ( ! $users ) {
+			$set = false;
+			foreach ( $this->connected_accounts as $connected_account ) {
+				if ( ! $set ) {
+					$set = true;
+					$this->settings['user'] = $connected_account['username'];
+					$this->connected_accounts_in_feed = array( $connected_account['user_id'] => $connected_account );
+					$feed_type_and_terms = array(
+						'users'=> array(
+							array(
+								'term' => $connected_account['user_id'],
+								'params' => array()
+							)
+						)
+					);
+					if ( $sb_instagram_posts_manager->are_current_api_request_delays( $connected_account ) ) {
+						$feed_type_and_terms['users'][0]['error'] = true;
+					}
+					$this->feed_type_and_terms = $feed_type_and_terms;
+				}
+			}
+			return;
+		} else {
+			$connected_accounts_in_feed = array();
+			$feed_type_and_terms = array(
+				'users' => array()
+			);
+			$usernames_included = array();
+			$usernames_not_connected = array();
+			foreach ( $users as $user_id_or_name ) {
+				$connected_account = SB_Instagram_Connected_Account::lookup( $user_id_or_name );
+
+				if ( $connected_account ) {
+					if ( ! in_array( $connected_account['username'], $usernames_included, true ) ) {
+						if ( ! $sb_instagram_posts_manager->are_current_api_request_delays( $connected_account ) ) {
+							$feed_type_and_terms['users'][] = array(
+								'term'   => $connected_account['user_id'],
+								'params' => array()
+							);
+						} else {
+							$feed_type_and_terms['users'][] = array(
+								'term'   => $connected_account['user_id'],
+								'params' => array(),
+								'error' => true
+							);
+						}
+						$connected_accounts_in_feed[ $connected_account['user_id'] ] = $connected_account;
+						$usernames_included[] = $connected_account['username'];
+					}
+				} else {
+					$feed_type_and_terms['users'][] = array(
+						'term'   => $user_id_or_name,
+						'params' => array(),
+						'error' => true
+					);
+					$usernames_not_connected[] = $user_id_or_name;
+				}
+
+			}
+
+			if ( ! empty( $usernames_not_connected ) ) {
+				global $sb_instagram_posts_manager;
+				if ( count( $usernames_not_connected ) === 1 ) {
+					$user = $usernames_not_connected[0];
+				} else {
+					$user = implode( ', ', $usernames_not_connected );
+				}
+
+				$settings_link = '<a href="'.get_admin_url().'?page=sb-instagram-feed" target="_blank">' . __( 'plugin Settings page', 'instagram-feed' ) . '</a>';
+
+				$error_message_return = array(
+					'error_message' => sprintf( __( 'Error: There is no connected account for the user %s.', 'instagram-feed' ), $user ),
+					'admin_only' => sprintf( __( 'A connected account related to the user is required to display user feeds. Please connect an account for this user on the %s.', 'instagram-feed' ), $settings_link ),
+					'frontend_directions' => '',
+					'backend_directions' => ''
+				);
+				$sb_instagram_posts_manager->maybe_set_display_error( 'configuration', $error_message_return );
+			}
+
+			$this->add_feed_type_and_terms( $feed_type_and_terms );
+
+			$this->add_connected_accounts_in_feed( $connected_accounts_in_feed );
+
+		}
+
+	}
+
 	/**
 	 * Based on the settings related to retrieving post data from the API,
 	 * this setting is used to make sure all endpoints needed for the feed are
@@ -335,351 +440,64 @@ class SB_Instagram_Settings {
 	public function set_feed_type_and_terms() {
 		global $sb_instagram_posts_manager;
 
-		$connected_accounts_in_feed = array();
-		$feed_type_and_terms = array(
-			'users' => array()
-		);
-		$usernames_included = array();
-		$is_after_deprecation_deadline = sbi_is_after_deprecation_deadline();
-		$is_using_access_token_in_shortcode = ! empty( $this->atts['accesstoken'] ) && strpos( $this->atts['accesstoken'], '.' ) !== false;
-		$users_connected_to_old_api_only = array();
+		$is_using_access_token_in_shortcode = ! empty( $this->atts['accesstoken'] );
 		$settings_link = '<a href="'.get_admin_url().'?page=sb-instagram-feed" target="_blank">' . __( 'plugin Settings page', 'instagram-feed' ) . '</a>';
+		if ( $is_using_access_token_in_shortcode ) {
+			$error_message_return = array(
+				'error_message' => __( 'Error: Cannot add access token directly to the shortcode.', 'instagram-feed' ),
+				'admin_only' => sprintf( __( 'Due to recent Instagram platform changes, it\'s no longer possible to create a feed by adding the access token to the shortcode. Remove the access token from the shortcode and connect an account on the %s instead.', 'instagram-feed' ), $settings_link ),
+				'frontend_directions' => '',
+				'backend_directions' => ''
+			);
 
-		// if using an access token in the shortcode and after the deadline, try to use a connected account by collecting the user IDs
-		if ( $is_after_deprecation_deadline && $is_using_access_token_in_shortcode ) {
-			$error = '<p><b>' . __( 'Error: Cannot add access token directly to the shortcode.', 'instagram-feed' ) . '</b><br>' . sprintf( __( 'Due to recent Instagram platform changes, it\'s no longer possible to create a feed by adding the access token to the shortcode. Remove the access token from the shortcode and connect an account on the %s instead.', 'instagram-feed' ), $settings_link );
+			$sb_instagram_posts_manager->maybe_set_display_error( 'configuration', $error_message_return );
 
-			$sb_instagram_posts_manager->add_frontend_error( 'deprecation_warning', $error );
 
-			$this->settings['id'] = array();
-			$access_tokens = explode( ',', str_replace( ' ', '', $this->atts['accesstoken'] ) );
-
-			foreach ( $access_tokens as $access_token ) {
-				$split_token = explode( '.', $access_token );
-				$this->settings['id'][] = $split_token[0];
-			}
+			$this->atts['accesstoken'] = '';
 		}
 
 		if ( empty( $this->settings['id'] )
 		     && empty( $this->settings['user'] )
 		     && ! empty ( $this->connected_accounts ) ) {
-			$set = false;
-			foreach ( $this->connected_accounts as $connected_account ) {
-				if ( ! $set ) {
-					$set = true;
-					$this->settings['user'] = $connected_account['username'];
-				}
-			}
-		}
 
-		if ( ! $is_after_deprecation_deadline && $is_using_access_token_in_shortcode ) {
-			$error = '<p><b>' . __( 'Warning: Cannot add access token directly to the shortcode.', 'instagram-feed' ) . '</b><br>' . sprintf( __( 'Due to upcoming Instagram platform changes on June 1, 2020, it will no longer be possible for feeds to use access tokens directly in the shortcode. Remove the access token from the shortcode and connect an account on the %s instead.', 'instagram-feed' ), $settings_link );
-
-			$sb_instagram_posts_manager->add_frontend_error( 'deprecation_warning', $error );
-			$access_tokens = explode( ',', str_replace( ' ', '', $this->atts['accesstoken'] ) );
-
-			foreach ( $access_tokens as $access_token ) {
-				$split_token = explode( '.', $access_token );
-				$connected_accounts_in_feed[ $split_token[0] ] = array(
-					'access_token' => $access_token,
-					'user_id' => $split_token[0]
-				);
-				$feed_type_and_terms['users'][] = array(
-					'term' => $split_token[0],
-					'params' => array()
-				);
-			}
-
-		} elseif ( ! empty( $this->settings['user'] ) ) {
-			$user_array = is_array( $this->settings['user'] ) ? $this->settings['user'] : explode( ',', str_replace( ' ', '',  $this->settings['user'] ) );
-			foreach ( $user_array as $user ) {
-				$user_found = false;
-				$user_for_deprecated_personal_account_only_found = false;
-				$term_for_this_user = array();
-				$username_to_match = $user;
-
-				if ( isset( $this->connected_accounts[ $user ] ) ) {
-					if ( ! in_array( $this->connected_accounts[ $user ]['username'], $usernames_included, true ) ) {
-						$term_for_this_user = array(
-							'term' => $this->connected_accounts[ $user ]['user_id'],
-							'params' => array()
-						);
-						$connected_accounts_in_feed[ $this->connected_accounts[ $user ]['user_id'] ] = $this->connected_accounts[ $user ];
-						$usernames_included[] = $this->connected_accounts[ $user ]['username'];
-						$username_to_match = $this->connected_accounts[ $user ]['username'];
-						$user_found = true;
-						if ( ! isset( $this->connected_accounts[ $user ]['type'] ) || $this->connected_accounts[ $user ]['type'] === 'personal' ) {
-							$user_for_deprecated_personal_account_only_found = true;
-						}
-
-						if ( isset( $this->connected_accounts[ $user ]['private'] ) && sbi_private_account_near_expiration( $this->connected_accounts[ $user ] ) ) {
-							$link_1 = '<a href="https://help.instagram.com/116024195217477/In">';
-							$link_2 = '</a>';
-							$sb_instagram_posts_manager->add_error( 'expiration_' . $this->connected_accounts[ $user ]['user_id'], array( 'Private Instagram Account Needs Reauthentication', sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ), 10 ) );
-
-							$error = '<p><b>' . __( 'Error: Private Instagram Account.', 'instagram-feed' ) . '</b>';
-							$cap = current_user_can( 'manage_instagram_feed_options' ) ? 'manage_instagram_feed_options' : 'manage_options';
-							$cap = apply_filters( 'sbi_settings_pages_capability', $cap );
-							if ( current_user_can( $cap ) ) {
-								$error_link = '<p><a href="https://smashballoon.com/instagram-feed/docs/errors/#10">' . __( 'Click here to troubleshoot', 'instagram-feed' ) . '</a></p>';
-
-							} else {
-								$error_link = '';
-								$link_1 = '';
-								$link_2 = '';
-							}
-							$error .= '<p>' . sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ) . '</p>';
-
-							$error .= $error_link;
-							$sb_instagram_posts_manager->add_frontend_error( 'noposts', $error );
-						}
-					}
-				}
-
-				if ( ! $user_found || $user_for_deprecated_personal_account_only_found ) {
-
-					foreach ( $this->connected_accounts as $connected_account ) {
-						$account_type = isset( $connected_account['type'] ) ? $connected_account['type'] : 'personal';
-						if ( strtolower( $username_to_match ) === strtolower( $connected_account['username'] ) ) {
-
-							if ( $user_for_deprecated_personal_account_only_found || ! in_array( $connected_account['username'], $usernames_included, true ) ) {
-								if ( $account_type !== 'personal' ) {
-
-									$term_for_this_user      = array(
-										'term' => $user,
-										'params' => array()
-									);
-									$connected_accounts_in_feed[ $user ] = $connected_account;
-									$user_for_deprecated_personal_account_only_found = false;
-									if ( isset( $this->connected_accounts[ $connected_account['user_id'] ]['private'] ) && sbi_private_account_near_expiration( $this->connected_accounts[ $connected_account['user_id'] ] ) ) {
-										$link_1 = '<a href="https://help.instagram.com/116024195217477/In">';
-										$link_2 = '</a>';
-										$sb_instagram_posts_manager->add_error( 'expiration_' . $this->connected_accounts[ $connected_account['user_id'] ]['user_id'], array( 'Private Instagram Account Needs Reauthentication', sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ), 10 ) );
-
-										$error = '<p><b>' . __( 'Error: Private Instagram Account.', 'instagram-feed' ) . '</b>';
-										$cap = current_user_can( 'manage_instagram_feed_options' ) ? 'manage_instagram_feed_options' : 'manage_options';
-										$cap = apply_filters( 'sbi_settings_pages_capability', $cap );
-										if ( current_user_can( $cap ) ) {
-											$error_link = '<p><a href="https://smashballoon.com/instagram-feed/docs/errors/#10">' . __( 'Click here to troubleshoot', 'instagram-feed' ) . '</a></p>';
-
-										} else {
-											$error_link = '';
-											$link_1 = '';
-											$link_2 = '';
-										}
-										$error .= '<p>' . sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ) . '</p>';
-
-										$error .= $error_link;
-										$sb_instagram_posts_manager->add_frontend_error( 'noposts', $error );
-									}
-								} else {
-									$term_for_this_user                              = array(
-										'term' => $connected_account['user_id'],
-										'params' => array()
-									);
-									$connected_accounts_in_feed[ $connected_account['user_id'] ] = $connected_account;
-								}
-								$usernames_included[] = $connected_account['username'];
-								$user_found = true;
-							}
-						}
-					}
-				}
-
-				if ( ! empty( $term_for_this_user ) ) {
-					$feed_type_and_terms['users'][] = $term_for_this_user;
-				}
-
-				if ( ! $user_found ) {
-					$error = '<p><b>' . sprintf( __( 'Error: There is no connected account for the user %s.', 'instagram-feed' ), $user ) . ' ' . __( 'Feed will not update.', 'instagram-feed' ) . '</b>';
-
-					$sb_instagram_posts_manager->add_frontend_error( 'no_connection_' . $user, $error );
-				}
-
-				if ( $user_for_deprecated_personal_account_only_found
-				     && ! in_array( $user, $users_connected_to_old_api_only,  true ) ) {
-					$users_connected_to_old_api_only[] = $connected_accounts_in_feed[ $user ]['username'];
-				}
-
-			}
-
-		} elseif ( ! empty( $this->settings['id'] ) ) {
-			$user_id_array = is_array( $this->settings['id'] ) ? $this->settings['id'] : explode( ',', str_replace( ' ', '',  $this->settings['id'] ) );
-
-			foreach ( $user_id_array as $user ) {
-				$user_found = false;
-				$user_for_deprecated_personal_account_only_found = false;
-				$term_for_this_user = array();
-				$username_to_match = '';
-
-				if ( isset( $this->connected_accounts[ $user ] ) ) {
-					if ( ! in_array( $this->connected_accounts[ $user ]['username'], $usernames_included, true ) ) {
-						$term_for_this_user                                              = array(
-							'term' => $this->connected_accounts[ $user ]['user_id'],
-							'params' => array()
-						);
-						$connected_accounts_in_feed[ $this->connected_accounts[ $user ]['user_id'] ] = $this->connected_accounts[ $user ];
-						if ( ! in_array( $this->connected_accounts[ $user ]['username'], $usernames_included, true ) ) {
-							$usernames_included[] = $this->connected_accounts[ $user ]['username'];
-						}
-
-						if ( isset( $this->connected_accounts[ $user ]['private'] ) && sbi_private_account_near_expiration( $this->connected_accounts[ $user ] ) ) {
-							$link_1 = '<a href="https://help.instagram.com/116024195217477/In">';
-							$link_2 = '</a>';
-							$sb_instagram_posts_manager->add_error( 'expiration_' . $this->connected_accounts[ $user ]['user_id'], array( 'Private Instagram Account Needs Reauthentication', sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ), 10 ) );
-
-							$error = '<p><b>' . __( 'Error: Private Instagram Account.', 'instagram-feed' ) . '</b>';
-							$cap = current_user_can( 'manage_instagram_feed_options' ) ? 'manage_instagram_feed_options' : 'manage_options';
-							$cap = apply_filters( 'sbi_settings_pages_capability', $cap );
-							if ( current_user_can( $cap ) ) {
-								$error_link = '<p><a href="https://smashballoon.com/instagram-feed/docs/errors/#10">' . __( 'Click here to troubleshoot', 'instagram-feed' ) . '</a></p>';
-
-							} else {
-								$error_link = '';
-								$link_1 = '';
-								$link_2 = '';
-							}
-							$error .= '<p>' . sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ) . '</p>';
-
-							$error .= $error_link;
-							$sb_instagram_posts_manager->add_frontend_error( 'noposts', $error );
-						}
-						$username_to_match = $this->connected_accounts[ $user ]['username'];
-						$user_found = true;
-						if ( ! isset( $this->connected_accounts[ $user ]['type'] ) || $this->connected_accounts[ $user ]['type'] === 'personal' ) {
-							$user_for_deprecated_personal_account_only_found = true;
-						}
-					}
-
-				}
-
-				if ( ! $user_found || $user_for_deprecated_personal_account_only_found ) {
-
-					foreach ( $this->connected_accounts as $connected_account ) {
-						$account_type = isset( $connected_account['type'] ) ? $connected_account['type'] : 'personal';
-						$old_id_matches = ($account_type === 'basic' && isset( $connected_account['old_user_id'] ) && (string)$connected_account['old_user_id'] === (string)$user);
-						if ( $old_id_matches
-						     || (strtolower( $username_to_match ) === strtolower( $connected_account['username'] )) ) {
-							if ( $user_for_deprecated_personal_account_only_found || ! in_array( $connected_account['username'], $usernames_included, true ) ) {
-								if ( $account_type !== 'personal' ) {
-									$term_for_this_user      = array(
-										'term' => $user,
-										'params' => array()
-									);
-									$connected_accounts_in_feed[ $user ] = $connected_account;
-									$user_for_deprecated_personal_account_only_found = false;
-								} else {
-									$term_for_this_user                              = array(
-										'term' => $connected_account['user_id'],
-										'params' => array()
-									);
-									$connected_accounts_in_feed[ $connected_account['user_id'] ] = $connected_account;
-
-								}
-								if ( ! in_array( $connected_account['username'], $usernames_included, true ) ) {
-									$usernames_included[] = $connected_account['username'];
-								}
-								$user_found = true;
-							}
-						}
-					}
-
-				}
-
-				if ( ! empty( $term_for_this_user ) ) {
-					$feed_type_and_terms['users'][] = $term_for_this_user;
-				}
-
-				if ( ! $user_found ) {
-					$error = '<p><b>' . sprintf( __( 'Error: There is no connected account for the user %s', 'instagram-feed' ), $user ) . ' ' . __( 'Feed will not update.', 'instagram-feed' ) . '</b>';
-
-					$sb_instagram_posts_manager->add_frontend_error( 'no_connection_' . $user, $error );
-				}
-
-				if ( $user_for_deprecated_personal_account_only_found
-				     && ! in_array( $user, $users_connected_to_old_api_only,  true ) ) {
-					$users_connected_to_old_api_only[] = $connected_accounts_in_feed[ $user ]['username'];
-				}
-
-			}
-
+			$this->set_user_feed();
 		} else {
-			foreach ( $this->connected_accounts as $connected_account ) {
-				$account_type = isset( $connected_account['type'] ) ? $connected_account['type'] : 'personal';
+			$user_array = array();
+			if ( ! empty( $this->settings['user'] ) ) {
+				$user_array = is_array( $this->settings['user'] ) ? $this->settings['user'] : explode( ',', str_replace( ' ', '',  $this->settings['user'] ) );
+			} elseif ( ! empty( $this->settings['id'] ) ) {
+				$user_array = is_array( $this->settings['id'] ) ? $this->settings['id'] : explode( ',', str_replace( ' ', '',  $this->settings['id'] ) );
+			}
 
-				if ( empty( $feed_type_and_terms['users'] ) ) {
-					if ( $account_type !== 'personal' ) {
-						$feed_type_and_terms['users'][]      = array(
-							'term' => $connected_account['username'],
-							'params' => array()
-						);
-						$connected_accounts_in_feed[ $connected_account['username'] ] = $connected_account;
-					} elseif ( ! $is_after_deprecation_deadline ) {
-						$feed_type_and_terms['users'][]                              = array(
-							'term' => $connected_account['user_id'],
-							'params' => array()
-						);
-						$connected_accounts_in_feed[ $connected_account['user_id'] ] = $connected_account;
-						if ( isset( $this->connected_accounts[ $connected_account['user_id'] ]['private'] ) && sbi_private_account_near_expiration( $this->connected_accounts[ $connected_account['user_id'] ] ) ) {
-							$link_1 = '<a href="https://help.instagram.com/116024195217477/In">';
-							$link_2 = '</a>';
-							$sb_instagram_posts_manager->add_error( 'expiration_' . $this->connected_accounts[ $connected_account['user_id'] ]['user_id'], array( 'Private Instagram Account Needs Reauthentication', sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ), 10 ) );
+			$this->set_user_feed( $user_array );
+		}
+		if ( empty( $this->feed_type_and_terms['users'] ) ) {
+			$error_message_return = array(
+				'error_message' => __( 'Error: No users set.', 'instagram-feed' ),
+				'admin_only' => __( 'Please visit the plugin\'s settings page to select a user account or add one to the shortcode - user="username".', 'instagram-feed' ),
+				'frontend_directions' => '',
+				'backend_directions' => ''
+			);
+			$sb_instagram_posts_manager->maybe_set_display_error( 'configuration', $error_message_return );
+		}
 
-							$error = '<p><b>' . __( 'Error: Private Instagram Account.', 'instagram-feed' ) . '</b>';
-							$cap = current_user_can( 'manage_instagram_feed_options' ) ? 'manage_instagram_feed_options' : 'manage_options';
-							$cap = apply_filters( 'sbi_settings_pages_capability', $cap );
-							if ( current_user_can( $cap ) ) {
-								$error_link = '<p><a href="https://smashballoon.com/instagram-feed/docs/errors/#10">' . __( 'Click here to troubleshoot', 'instagram-feed' ) . '</a></p>';
 
-							} else {
-								$error_link = '';
-								$link_1 = '';
-								$link_2 = '';
-							}
-							$error .= '<p>' . sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ) . '</p>';
+		foreach ( $this->connected_accounts_in_feed as $connected_account_in_feed ) {
+			if ( isset( $connected_account_in_feed['private'] )
+			     && sbi_private_account_near_expiration( $connected_account_in_feed ) ) {
+				$link_1 = '<a href="https://help.instagram.com/116024195217477/In">';
+				$link_2 = '</a>';
+				$error_message_return = array(
+					'error_message' => __( 'Error: Private Instagram Account.', 'instagram-feed' ),
+					'admin_only' => sprintf( __( 'It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed' ), $link_1, $link_2 ),
+					'frontend_directions' => '<a href="https://smashballoon.com/instagram-feed/docs/errors/#10">' . __( 'Click here to troubleshoot', 'instagram-feed' ) . '</a>',
+					'backend_directions' => ''
+				);
 
-							$error .= $error_link;
-							$sb_instagram_posts_manager->add_frontend_error( 'noposts', $error );
-						}
-					}
-				}
+				$sb_instagram_posts_manager->maybe_set_display_error( 'configuration', $error_message_return );
 
 			}
 		}
-
-		if ( ! empty( $users_connected_to_old_api_only ) ) {
-			$total = count( $users_connected_to_old_api_only );
-			if ( $total > 1 ) {
-				$user_string = '';
-				$i = 0;
-
-				foreach ( $users_connected_to_old_api_only as $username ) {
-					if ( ($i + 1) === $total ) {
-						$user_string .= ' and ' . $username;
-					} else {
-						if ( $i !== 0 ) {
-							$user_string .= ', ' . $username;
-						} else {
-							$user_string .= $username;
-						}
-					}
-					$i++;
-				}
-			} else {
-				$user_string = $users_connected_to_old_api_only[0];
-			}
-
-			if ( $is_after_deprecation_deadline ) {
-				$error = '<p><b>' . sprintf( __( 'Error: The account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to recent Instagram platform changes this Instagram account needs to be reconnected in order to continue updating.', 'instagram-feed' ) . '<a href="'.get_admin_url().'?page=sb-instagram-feed" class="sb_frontend_btn"><i class="fa fa-cog" aria-hidden="true"></i> ' . __( 'Reconnect on plugin Settings page', 'instagram-feed' ) . '</a>';
-			} else {
-				$error = '<p><b>' . sprintf( __( 'Warning: The account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to Instagram platform changes on June 1, 2020, this Instagram account needs to be reconnected to allow the feed to continue updating.', 'instagram-feed' ) . '<a href="'.get_admin_url().'?page=sb-instagram-feed" class="sb_frontend_btn"><i class="fa fa-cog" aria-hidden="true"></i> ' . __( 'Reconnect on plugin Settings page', 'instagram-feed' ) . '</a>';
-			}
-
-			$sb_instagram_posts_manager->add_frontend_error( 'deprecation_warning', $error );
-		}
-
-		$this->connected_accounts_in_feed = $connected_accounts_in_feed;
-		$this->feed_type_and_terms = $feed_type_and_terms;
 	}
 
 	/**
@@ -829,7 +647,6 @@ class SB_Instagram_Settings {
 			'sb_ajax_initial' => false,
 			'enqueue_css_in_shortcode' => false,
 			'sb_instagram_disable_mob_swipe' => false,
-			'sbi_font_method' => 'svg',
 			'sbi_br_adjust' => true,
 			'sb_instagram_media_vine' => false,
 			'custom_template' => false,

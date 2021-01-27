@@ -203,7 +203,6 @@ class Advanced_Ads_Checks {
 	 * @return array $plugins names of conflicting plugins
 	 */
 	public static function conflicting_plugins() {
-
 		$conflicting_plugins = array();
 
 		if ( defined( 'Publicize_Base' ) ) { // JetPack Publicize module.
@@ -214,9 +213,6 @@ class Advanced_Ads_Checks {
 		}
 		if ( defined( 'GT_VERSION' ) ) { // GT ShortCodes.
 			$conflicting_plugins[] = 'GT ShortCodes';
-		}
-		if ( class_exists( 'ITSEC_Core', false ) && defined( 'AAP_VERSION' ) ) { // iThemes Security, but only if Pro is enabled.
-			$conflicting_plugins[] = 'iThemes Security';
 		}
 		if ( class_exists( 'SimilarPosts', false ) ) { // Similar Posts, https://de.wordpress.org/plugins/similar-posts/.
 			$conflicting_plugins[] = 'Similar Posts';
@@ -328,23 +324,6 @@ class Advanced_Ads_Checks {
 		$adblocker_options = Advanced_Ads_Ad_Blocker::get_instance()->options();
 
 		return ( ! empty( $plugin_options['use-adblocker'] ) && empty( $adblocker_options['module_can_work'] ) );
-	}
-
-	/**
-	 * Check for potential jQuery errors
-	 * only script, so no return, but direct output
-	 */
-	public static function jquery_ui_conflict() {
-		?>
-		<script>
-		jQuery(document).ready(function(){
-			var needle = 'prior to initialization;' // A string from jquery-ui source code.
-			if ( jQuery.fn.button.toString().indexOf( needle ) === -1 || jQuery.fn.tooltip.toString().indexOf( needle ) === -1 ) {
-				advads_push_notice( 'jquery_ui_conflict' );
-			}
-		});
-		</script>
-		<?php
 	}
 
 	/**

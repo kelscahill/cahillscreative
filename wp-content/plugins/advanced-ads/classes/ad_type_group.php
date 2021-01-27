@@ -11,7 +11,7 @@
  * Class containing information about the plain text/code ad type
  *
  * see ad-type-content.php for a better sample on ad type
- * 
+ *
  * @since 1.7.1.1
  *
  */
@@ -32,32 +32,36 @@ class Advanced_Ads_Ad_Type_Group extends Advanced_Ads_Ad_Type_Abstract{
 		$this->parameters = array(
 		    'group_id' => 0
 		);
-		
+
 		// on save, remove the group in which the ad is itself to prevent infinite loops
 		add_action( 'save_post_advanced_ads', array($this, 'remove_from_ad_group'), 1 );
 	}
-	
+
 	/**
 	 * When saving the ad, remove it from the ad group, if this is the group assigned as ad content
 	 * see also: /admin/includes/class-ad-groups-list.php::update_groups()
+	 *
+	 * @param integer $post_id ID of the post.
 	 */
 	public function remove_from_ad_group( $post_id ){
-	    
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce is verified before calling the hook
 	    if( ! isset( $_POST['post_type'] ) || $_POST['post_type'] !== Advanced_Ads::POST_TYPE_SLUG ){
 		return;
 	    }
-	    
+
 	    if( isset( $_POST[ 'advanced_ad' ]['output']['group_id'] ) ){
-		$group_id = intval( $_POST[ 'advanced_ad' ]['output']['group_id'] );
+			$group_id = (int) $_POST['advanced_ad']['output']['group_id'];
 		if( isset( $_POST['tax_input']['advanced_ads_groups'] ) ){
 		    if(( $key = array_search( $group_id, $_POST['tax_input']['advanced_ads_groups'])) !== false ) {
 			$res = wp_remove_object_terms( $post_id, $group_id, Advanced_Ads::AD_GROUP_TAXONOMY );
 			unset( $_POST['tax_input']['advanced_ads_groups'][$key] );
 		    }
 		}
-	    }	    
+	    }
+	    // phpcs:enable
 	}
-	
+
 
 	/**
 	 * Output for the ad parameters metabox
@@ -69,29 +73,29 @@ class Advanced_Ads_Ad_Type_Group extends Advanced_Ads_Ad_Type_Abstract{
 	 * @param obj $ad ad object
 	 */
 	public function render_parameters($ad){
-	    
+
 		$group_id = ( isset( $ad->output['group_id'] ) ) ? $ad->output['group_id'] : '';
-	    
+
 		$select = array();
 		$model = Advanced_Ads::get_instance()->get_model();
 
 		// load all ad groups
 		$groups = $model->get_ad_groups();
-		
+
 		if( ! is_array( $groups ) || ! count( $groups )  ){
 		    return;
 		}
-		
+
 		?><label for="advads-group-id" class="label"><?php _e('ad group', 'advanced-ads'); ?></label><div><select name="advanced_ad[output][group_id]" id="advads-group-id"><?php
 
 		foreach ( $groups as $_group ) {
 		    ?><option value="<?php echo $_group->term_id; ?>" <?php selected( $_group->term_id, $group_id ); ?>><?php echo $_group->name; ?></option><?php
 		}
-		
+
 		?></select></div><hr/><?php
 
 	}
-	
+
 	/**
 	 * Prepare the ads frontend output
 	 *

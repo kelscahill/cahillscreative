@@ -201,6 +201,12 @@ trait admin_menu
 			->label( __( 'Keep attachments', 'threewp-broadcast' ) )
 			->checked( $this->get_site_option( 'keep_attachments' ) );
 
+		$show_custom_fields_taxonomies = $fs->checkbox( 'show_custom_fields_taxonomies' )
+			->description( __( 'Show the Custom Field and Taxonomies checkboxes in the meta box. If not shown, it will be assumed that custom fields and taxonomies will always be broadcasted.', 'threewp-broadcast' ) )
+			// Input label.
+			->label( __( 'Show extra checkboxes', 'threewp-broadcast' ) )
+			->checked( $this->get_site_option( 'show_custom_fields_taxonomies' ) );
+
 		$save_post_decoys = $fs->number( 'save_post_decoys' )
 			->description( __( "How many save_post hook decoys to insert before the real Broadcast save_post hook. This value should be raised if you notice that Broadcast isn't doing anything. This is due to a bug in Wordpress when other plugins call remove_action on the save_post hook.", 'threewp-broadcast' ) )
 			// Input label.
@@ -419,6 +425,7 @@ trait admin_menu
 			$this->update_site_option( 'all_networks', $all_networks->is_checked() );
 			$this->update_site_option( 'clear_post', $clear_post->is_checked() );
 			$this->update_site_option( 'keep_attachments', $keep_attachments->is_checked() );
+			$this->update_site_option( 'show_custom_fields_taxonomies', $show_custom_fields_taxonomies->is_checked() );
 			$this->update_site_option( 'save_post_priority', $save_post_priority->get_post_value() );
 			$this->update_site_option( 'save_post_decoys', $save_post_decoys->get_post_value() );
 			$this->update_site_option( 'blogs_to_hide', $blogs_to_hide->get_post_value() );

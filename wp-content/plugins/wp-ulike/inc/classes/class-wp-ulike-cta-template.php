@@ -3,7 +3,7 @@
  * WP ULike Process Class
  * 
  * @package    wp-ulike
- * @author     TechnoWich 2020
+ * @author     TechnoWich 2021
  * @link       https://wpulike.com
  */
 
@@ -48,15 +48,21 @@ if ( ! class_exists( 'wp_ulike_cta_template' ) ) {
 		 * @return integer
 		 */
 		public function get_method_id(){
+			if( ! $this->hasPermission( array(
+				'item_id'      => $this->args['id'],
+				'type'         => $this->args['slug'],
+				'current_user' => $this->getCurrentUser(),
+				'prev_status'  => $this->getPrevStatus(),
+				'method'       => 'lookup'
+			), $this->settings ) ){
+				return 4;
+			}
+
 			switch( wp_ulike_setting_repo::getMethod( $this->args['slug'] ) ){
 				case 'do_not_log':
-					return 1;
 				case 'by_cookie':
-					return $this->hasPermission( array(
-						'method' => wp_ulike_setting_repo::getMethod( $this->args['slug'] ),
-						'type'   => $this->settings->getCookieName(),
-						'id'     => $this->args['id']
-					) ) ? 1 : 4;
+					return 1;
+
 				default:
 					if( ! $this->getPrevStatus() ){
 						return 1;
@@ -100,8 +106,15 @@ if ( ! class_exists( 'wp_ulike_cta_template' ) ) {
 			// Add unique class name for each button
 			$button_class_name .= strtolower( ' wp_' . $this->args['slug'] . '_btn_' . $this->args['id'] );
 
-			$total_likes   = wp_ulike_get_counter_value( $this->args['id'], $this->args['slug'], 'like', $this->isDistinct() );
-			$formatted_val = apply_filters( 'wp_ulike_count_box_template', '<span class="count-box">'. wp_ulike_format_number( $total_likes ) .'</span>' , $total_likes );
+			$total_likes = wp_ulike_get_counter_value( $this->args['id'], $this->args['slug'], 'like', $this->isDistinct() );
+
+			// Hide on zero value
+			if( wp_ulike_setting_repo::isCounterZeroHidden( $this->args['slug'] ) && $total_likes == 0 ){
+				$total_likes = '';
+			}
+
+			// Deprecated formatted_val, Don't use it
+			$formatted_val = apply_filters( 'wp_ulike_count_box_template', '<span class="count-box">'. wp_ulike_format_number( $total_likes ) .'</span>' , $total_likes, $this->args['slug'] );
 			$this->args['is_distinct'] = $this->isDistinct();
 
 			$wp_ulike_template 	= apply_filters( 'wp_ulike_add_templates_args', array(
@@ -119,9 +132,10 @@ if ( ! class_exists( 'wp_ulike_cta_template' ) ) {
 					"down_vote_inner_text" => $this->args['down_vote_inner_text'],
 					"style"                => esc_html( $this->args['style'] ),
 					"button_type"          => esc_html( $this->args['button_type'] ),
-					"display_likers"       => esc_attr( $this->args['display_likers'] ),
+					"display_likers"       => $this->args['display_likers'],
 					"display_counters"     => wp_ulike_setting_repo::isCounterBoxVisible( $this->args['slug'] ),
 					"disable_pophover"     => esc_attr( $this->args['disable_pophover'] ),
+					"likers_style"         => esc_attr( $this->args['likers_style'] ),
 					"button_text"          => $button_text,
 					"general_class"        => $this->get_general_selectors( $method_id ),
 					"button_class"         => esc_attr( $button_class_name )

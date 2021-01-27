@@ -1,15 +1,15 @@
-# Copyright (C) 2020 Thomas Maier, Advanced Ads GmbH
+# Copyright (C) 2021 Thomas Maier, Advanced Ads GmbH
 # This file is distributed under the same license as the Advanced Ads plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Advanced Ads 1.20.2\n"
+"Project-Id-Version: Advanced Ads 1.23.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/advanced-ads/\n"
 "Last-Translator: Thomas Maier <post@webzunft.de>\n"
 "Language-Team: webgilde <support@wpadvancedads.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-10-01T09:48:50+00:00\n"
+"POT-Creation-Date: 2021-01-13T16:41:23+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: advanced-ads\n"
@@ -32,7 +32,7 @@ msgstr ""
 msgid "Thomas Maier, Advanced Ads GmbH"
 msgstr ""
 
-#: admin/class-advanced-ads-admin.php:223
+#: admin/class-advanced-ads-admin.php:216
 #: classes/display-conditions.php:290
 #: classes/visitor-conditions.php:311
 #: modules/gadsense/admin/views/external-ads-links.php:17
@@ -41,65 +41,65 @@ msgstr ""
 msgid "or"
 msgstr ""
 
-#: admin/class-advanced-ads-admin.php:224
+#: admin/class-advanced-ads-admin.php:217
 #: classes/display-conditions.php:290
 #: classes/visitor-conditions.php:311
 msgid "and"
 msgstr ""
 
-#: admin/class-advanced-ads-admin.php:225
+#: admin/class-advanced-ads-admin.php:218
 msgid "After which paragraph?"
 msgstr ""
 
-#: admin/class-advanced-ads-admin.php:227
+#: admin/class-advanced-ads-admin.php:220
 msgid "Today"
 msgstr ""
 
-#: admin/class-advanced-ads-admin.php:228
+#: admin/class-advanced-ads-admin.php:221
 msgid "Yesterday"
 msgstr ""
 
-#: admin/class-advanced-ads-admin.php:229
+#: admin/class-advanced-ads-admin.php:222
 msgid "This Month"
 msgstr ""
 
 #. translators: 1: The number of days.
-#: admin/class-advanced-ads-admin.php:231
+#: admin/class-advanced-ads-admin.php:224
 msgid "Last %1$d days"
 msgstr ""
 
-#: admin/class-advanced-ads-admin.php:234
+#: admin/class-advanced-ads-admin.php:227
 msgid "All"
 msgstr ""
 
-#: admin/class-advanced-ads-admin.php:235
+#: admin/class-advanced-ads-admin.php:228
 msgid "There were no results returned for this ad. Please make sure it is active, generating impressions and double check your ad parameters."
 msgstr ""
 
-#: admin/class-advanced-ads-admin.php:236
-#: modules/gadsense/admin/views/external-ads-list.php:33
+#: admin/class-advanced-ads-admin.php:229
+#: modules/gadsense/admin/views/external-ads-list.php:29
 msgid "Show inactive ads"
 msgstr ""
 
-#: admin/class-advanced-ads-admin.php:237
+#: admin/class-advanced-ads-admin.php:230
 msgid "Hide inactive ads"
 msgstr ""
 
-#: admin/class-advanced-ads-admin.php:398
+#: admin/class-advanced-ads-admin.php:390
 #: admin/includes/class-menu.php:156
 #: admin/includes/class-menu.php:159
 #: admin/views/settings.php:29
 msgid "Support"
 msgstr ""
 
-#: admin/class-advanced-ads-admin.php:402
+#: admin/class-advanced-ads-admin.php:394
 #: admin/includes/class-overview-widgets.php:71
 msgid "Add-Ons"
 msgstr ""
 
 #. translators: %s is the URL to add a new review, https://wordpress.org/support/plugin/advanced-ads/reviews/#new-post
 #. translators: %s is a URL.
-#: admin/class-advanced-ads-admin.php:673
+#: admin/class-advanced-ads-admin.php:665
 #: admin/includes/class-overview-widgets.php:194
 msgid "Thank the developer with a &#9733;&#9733;&#9733;&#9733;&#9733; review on <a href=\"%s\" target=\"_blank\">wordpress.org</a>"
 msgstr ""
@@ -127,123 +127,126 @@ msgid "Ads are disabled for all or some pages. See \"disabled ads\" in <a href=\
 msgstr ""
 
 #: admin/includes/ad-health-notices.php:72
-#: admin/views/support.php:57
+#: admin/views/support.php:58
 msgid "Advanced Ads related constants enabled"
 msgstr ""
 
 #. translators: %s is a target URL.
 #: admin/includes/ad-health-notices.php:80
-msgid "Possible conflict between jQueryUI library, used by Advanced Ads and other libraries (probably <a href=\"%s\">Twitter Bootstrap</a>). This might lead to misfortunate formats in forms, but should not damage features."
-msgstr ""
-
-#. translators: %s is a target URL.
-#: admin/includes/ad-health-notices.php:90
 msgid "Some assets were changed. Please <strong>rebuild the asset folder</strong> in the <a href=\"%s\">Advanced Ads settings</a> to update the ad blocker disguise."
 msgstr ""
 
-#: admin/includes/ad-health-notices.php:99
+#: admin/includes/ad-health-notices.php:89
 #: admin/includes/notices.php:38
 msgid "One or more license keys for <strong>Advanced Ads add-ons are invalid or missing</strong>."
 msgstr ""
 
 #. translators: %s is a target URL.
 #. translators: %s is a URL.
-#: admin/includes/ad-health-notices.php:102
+#: admin/includes/ad-health-notices.php:92
 #: admin/includes/notices.php:40
 msgid "Please add valid license keys <a href=\"%s\">here</a>."
 msgstr ""
 
-#: admin/includes/ad-health-notices.php:111
+#: admin/includes/ad-health-notices.php:101
 msgid "Ad expired"
 msgstr ""
 
 #. translators: %s is empty here, but the string will be followed by a name of an ad unit.
-#: admin/includes/ad-health-notices.php:121
-#: classes/frontend_checks.php:247
+#: admin/includes/ad-health-notices.php:111
+#: classes/frontend_checks.php:265
 msgid "Visible ads should not use the Header placement: %s"
 msgstr ""
 
-#: admin/includes/ad-health-notices.php:135
-#: classes/frontend_checks.php:261
+#: admin/includes/ad-health-notices.php:125
+#: classes/frontend_checks.php:279
 msgid "AdSense violation"
 msgstr ""
 
-#: admin/includes/ad-health-notices.php:136
-#: classes/frontend_checks.php:262
+#: admin/includes/ad-health-notices.php:126
+#: classes/frontend_checks.php:280
 msgid "Ad is hidden"
 msgstr ""
 
-#: admin/includes/ad-health-notices.php:145
+#: admin/includes/ad-health-notices.php:135
 #: classes/ad-debug.php:272
-#: classes/frontend_checks.php:234
+#: classes/frontend_checks.php:252
 msgid "Your website is using HTTPS, but the ad code contains HTTP and might not work."
 msgstr ""
 
-#: admin/includes/ad-health-notices.php:158
-#: admin/includes/ad-health-notices.php:165
-#: modules/gadsense/includes/class-mapi.php:89
+#: admin/includes/ad-health-notices.php:148
+#: admin/includes/ad-health-notices.php:155
+#: modules/gadsense/includes/class-mapi.php:95
 msgid "Last AdSense account connection attempt failed."
 msgstr ""
 
 #. translators: %1$s is the opening a tag and %2$s the closing one.
-#: admin/includes/ad-health-notices.php:167
+#: admin/includes/ad-health-notices.php:157
 msgid "Create a new AdSense account %1$shere%2$s."
 msgstr ""
 
+#: admin/includes/ad-health-notices.php:167
 #: admin/includes/ad-health-notices.php:177
 #: admin/includes/ad-health-notices.php:187
-#: admin/includes/ad-health-notices.php:197
 msgid "One of your sites is missing the AdSense publisher ID in the ads.txt file."
 msgstr ""
 
+#: admin/includes/ad-health-notices.php:169
 #: admin/includes/ad-health-notices.php:179
 #: admin/includes/ad-health-notices.php:189
-#: admin/includes/ad-health-notices.php:199
 msgctxt "related to ads.txt file"
 msgid "Create one now."
 msgstr ""
 
 #. translators: %s is a filter hook, here `the_content`.
-#: admin/includes/ad-health-notices.php:207
+#: admin/includes/ad-health-notices.php:197
 msgid "<strong>%s</strong> filter found multiple times."
 msgstr ""
 
-#: admin/includes/ad-health-notices.php:209
+#: admin/includes/ad-health-notices.php:199
 msgid "Advanced Ads uses the outermost of them."
 msgstr ""
 
 #. translators: %1$s is a plugin name, %2$s is the opening a tag and %3$s the closing one.
-#: admin/includes/ad-health-notices.php:218
-#: admin/includes/ad-health-notices.php:229
-#: admin/includes/ad-health-notices.php:240
-#: admin/includes/ad-health-notices.php:253
+#: admin/includes/ad-health-notices.php:208
+#: admin/includes/ad-health-notices.php:219
+#: admin/includes/ad-health-notices.php:230
+#: admin/includes/ad-health-notices.php:243
 msgid "Learn how to integrate %1$s with Advanced Ads %2$shere%3$s."
 msgstr ""
 
 #. translators: %s is a service or plugin name.
-#: admin/includes/ad-health-notices.php:267
+#: admin/includes/ad-health-notices.php:257
 msgid "%s detected."
 msgstr ""
 
 #. translators: %s is a service or plugin name.
-#: admin/includes/ad-health-notices.php:268
+#: admin/includes/ad-health-notices.php:258
 msgid "Learn how this might impact your ad setup."
 msgstr ""
 
-#: admin/includes/ad-health-notices.php:279
+#: admin/includes/ad-health-notices.php:269
 msgid "Advanced Ads handles your ads.txt file automatically. You might be able to <strong>remove %1$s</strong>."
 msgstr ""
 
-#: admin/includes/ad-health-notices.php:290
+#: admin/includes/ad-health-notices.php:280
 msgid "Advanced Ads handles header and footer codes."
 msgstr ""
 
-#: admin/includes/ad-health-notices.php:291
+#: admin/includes/ad-health-notices.php:281
 msgid "You might be able to <strong>remove %1$s</strong>."
 msgstr ""
 
-#: admin/includes/ad-health-notices.php:294
+#: admin/includes/ad-health-notices.php:284
 msgid "Learn how."
+msgstr ""
+
+#: admin/includes/ad-health-notices.php:293
+msgid "MailPoet is going to deprecate custom shortcodes. This might remove ads from your newsletters."
+msgstr ""
+
+#: admin/includes/ad-health-notices.php:294
+msgid "Learn more"
 msgstr ""
 
 #: admin/includes/class-ad-groups-list.php:172
@@ -309,10 +312,10 @@ msgid "Display ads with the highest ad weight first"
 msgstr ""
 
 #: admin/includes/class-ad-groups-list.php:339
-#: modules/import-export/classes/import.php:146
-#: modules/import-export/classes/import.php:186
-#: modules/import-export/classes/import.php:564
-#: public/class-advanced-ads.php:755
+#: modules/import-export/classes/import.php:150
+#: modules/import-export/classes/import.php:190
+#: modules/import-export/classes/import.php:579
+#: public/class-advanced-ads.php:791
 msgid "Edit"
 msgstr ""
 
@@ -393,45 +396,45 @@ msgstr[1] ""
 msgid "Ad created on %s"
 msgstr ""
 
-#: admin/includes/class-ad-type.php:848
-#: admin/includes/class-ad-type.php:849
+#: admin/includes/class-ad-type.php:852
+#: admin/includes/class-ad-type.php:853
 msgid "Ad updated."
 msgstr ""
 
 #. translators: %s: date and time of the revision
-#: admin/includes/class-ad-type.php:850
+#: admin/includes/class-ad-type.php:854
 msgid "Ad restored to revision from %s"
 msgstr ""
 
-#: admin/includes/class-ad-type.php:851
-#: admin/includes/class-ad-type.php:852
+#: admin/includes/class-ad-type.php:855
+#: admin/includes/class-ad-type.php:856
 msgid "Ad saved."
 msgstr ""
 
-#: admin/includes/class-ad-type.php:853
+#: admin/includes/class-ad-type.php:857
 msgid "Ad submitted."
 msgstr ""
 
 #. translators: %1$s is a date.
-#: admin/includes/class-ad-type.php:856
+#: admin/includes/class-ad-type.php:860
 msgid "Ad scheduled for: <strong>%1$s</strong>."
 msgstr ""
 
 #. translators: Publish box date format, see http://php.net/date.
-#: admin/includes/class-ad-type.php:858
+#: admin/includes/class-ad-type.php:862
 msgid "M j, Y @ G:i"
 msgstr ""
 
-#: admin/includes/class-ad-type.php:860
+#: admin/includes/class-ad-type.php:864
 msgid "Ad draft updated."
 msgstr ""
 
-#: admin/includes/class-ad-type.php:916
+#: admin/includes/class-ad-type.php:920
 msgid "You don’t have access to ads. Please deactivate and re-enable Advanced Ads again to fix this."
 msgstr ""
 
-#: admin/includes/class-ad-type.php:917
-#: classes/frontend_checks.php:451
+#: admin/includes/class-ad-type.php:921
+#: classes/frontend_checks.php:509
 msgid "Get help"
 msgstr ""
 
@@ -518,17 +521,17 @@ msgstr ""
 msgid "Download failed. <a href=\"%s\" target=\"_blank\">Click here to learn why</a>."
 msgstr ""
 
-#: admin/includes/class-list-filters.php:142
+#: admin/includes/class-list-filters.php:143
 #: modules/gadsense/admin/admin.php:73
 #: modules/gadsense/admin/views/adsense-ad-parameters.php:109
 msgid "Responsive"
 msgstr ""
 
-#: admin/includes/class-list-filters.php:151
+#: admin/includes/class-list-filters.php:152
 msgid "expired"
 msgstr ""
 
-#: admin/includes/class-list-filters.php:155
+#: admin/includes/class-list-filters.php:156
 msgid "any expiry date"
 msgstr ""
 
@@ -541,7 +544,7 @@ msgstr ""
 
 #: admin/includes/class-menu.php:80
 #: admin/includes/class-menu.php:81
-#: admin/includes/class-shortcode-creator.php:101
+#: admin/includes/class-shortcode-creator.php:182
 #: admin/views/ad-group-list-form-row.php:91
 #: admin/views/ad-group-list-header.php:16
 #: admin/views/placement-form.php:88
@@ -549,19 +552,19 @@ msgstr ""
 #: classes/widget.php:129
 #: modules/gutenberg/includes/class-gutenberg.php:79
 #: modules/import-export/views/page.php:23
-#: public/class-advanced-ads.php:751
+#: public/class-advanced-ads.php:787
 msgid "Ads"
 msgstr ""
 
 #: admin/includes/class-menu.php:112
-#: public/class-advanced-ads.php:754
+#: public/class-advanced-ads.php:790
 msgid "Add New Ad"
 msgstr ""
 
 #: admin/includes/class-menu.php:113
 #: admin/views/ad-group-list-ads.php:36
-#: public/class-advanced-ads.php:753
-#: public/class-advanced-ads.php:757
+#: public/class-advanced-ads.php:789
+#: public/class-advanced-ads.php:793
 msgid "New Ad"
 msgstr ""
 
@@ -578,7 +581,7 @@ msgid "Ad Placements"
 msgstr ""
 
 #: admin/includes/class-menu.php:132
-#: admin/includes/class-shortcode-creator.php:115
+#: admin/includes/class-shortcode-creator.php:196
 #: admin/views/placements.php:54
 #: classes/widget.php:115
 #: modules/gutenberg/includes/class-gutenberg.php:81
@@ -596,7 +599,7 @@ msgstr ""
 
 #: admin/includes/class-menu.php:176
 #: admin/includes/class-menu.php:180
-#: admin/includes/class-settings.php:272
+#: admin/includes/class-settings.php:263
 msgid "Licenses"
 msgstr ""
 
@@ -644,58 +647,58 @@ msgid "Increase your ad revenue"
 msgstr ""
 
 #: admin/includes/class-meta-box.php:131
-msgid "Ad Stats"
+msgid "Statistics"
 msgstr ""
 
-#: admin/includes/class-meta-box.php:199
-#: admin/includes/class-meta-box.php:218
-#: admin/includes/class-meta-box.php:223
+#: admin/includes/class-meta-box.php:201
+#: admin/includes/class-meta-box.php:220
+#: admin/includes/class-meta-box.php:225
 #: admin/includes/class-overview-widgets.php:182
 #: admin/views/ad-main-metabox.php:25
 #: admin/views/ad-output-metabox.php:61
-#: admin/views/settings/general/custom-label.php:9
+#: admin/views/settings/general/custom-label.php:10
 #: modules/ads-txt/admin/views/setting-create.php:11
 #: modules/privacy/admin/views/setting-general.php:34
 msgid "Manual"
 msgstr ""
 
-#: admin/includes/class-meta-box.php:217
+#: admin/includes/class-meta-box.php:219
 msgid "Video"
 msgstr ""
 
-#: admin/includes/class-meta-box.php:254
+#: admin/includes/class-meta-box.php:256
 #: admin/includes/class-overview-widgets.php:60
 msgid "Disable"
 msgstr ""
 
-#: admin/includes/class-meta-box.php:402
+#: admin/includes/class-meta-box.php:426
 msgid "Ad Settings"
 msgstr ""
 
-#: admin/includes/class-meta-box.php:501
+#: admin/includes/class-meta-box.php:525
 #: admin/views/overview.php:8
 msgid "Ads Dashboard"
 msgstr ""
 
 #. translators: %1$d is the number of ads, %2$s and %3$s are URLs.
-#: admin/includes/class-meta-box.php:517
+#: admin/includes/class-meta-box.php:541
 msgid "%1$d ads – <a href=\"%2$s\">manage</a> - <a href=\"%3$s\">new</a>"
 msgstr ""
 
-#: admin/includes/class-meta-box.php:530
+#: admin/includes/class-meta-box.php:554
 msgid "Get the tutorial via email"
 msgstr ""
 
-#: admin/includes/class-meta-box.php:539
+#: admin/includes/class-meta-box.php:563
 msgid "Get AdSense tips via email"
 msgstr ""
 
-#: admin/includes/class-meta-box.php:548
+#: admin/includes/class-meta-box.php:572
 msgid "Visit our blog for more articles about ad optimization"
 msgstr ""
 
 #. translators: %s is our URL.
-#: admin/includes/class-meta-box.php:602
+#: admin/includes/class-meta-box.php:626
 msgid "Latest posts on wpadvancedads.com"
 msgstr ""
 
@@ -879,7 +882,7 @@ msgid "Activate now"
 msgstr ""
 
 #: admin/includes/class-overview-widgets.php:642
-msgid "Visit your ad stats"
+msgid "Visit your ad statistics"
 msgstr ""
 
 #: admin/includes/class-overview-widgets.php:784
@@ -934,7 +937,7 @@ msgid "Priority of content injection filter"
 msgstr ""
 
 #: admin/includes/class-settings.php:163
-#: classes/ad_placements.php:1017
+#: classes/ad_placements.php:1018
 msgid "Disable level limitation"
 msgstr ""
 
@@ -974,45 +977,36 @@ msgstr ""
 msgid "Delete data on uninstall"
 msgstr ""
 
-#: admin/includes/class-settings.php:250
-msgid "Disable shortcode button"
-msgstr ""
-
-#: admin/includes/class-settings.php:291
+#: admin/includes/class-settings.php:282
 msgid "Pro"
 msgstr ""
 
-#: admin/includes/class-settings.php:309
+#: admin/includes/class-settings.php:300
 #: admin/views/upgrades/tracking.php:2
 msgid "Tracking"
 msgstr ""
 
-#: admin/includes/class-settings.php:355
+#: admin/includes/class-settings.php:346
 msgid "Are you missing something?"
 msgstr ""
 
-#: admin/includes/class-settings.php:531
+#: admin/includes/class-settings.php:522
 msgctxt "label before ads"
 msgid "Advertisements"
 msgstr ""
 
-#: admin/includes/class-shortcode-creator.php:99
+#: admin/includes/class-shortcode-creator.php:180
 #: classes/widget.php:113
 #: modules/gutenberg/includes/class-gutenberg.php:77
 msgid "--empty--"
 msgstr ""
 
-#: admin/includes/class-shortcode-creator.php:108
+#: admin/includes/class-shortcode-creator.php:189
 #: admin/views/placement-form.php:81
 #: admin/views/placements-item.php:14
 #: classes/widget.php:122
 #: modules/gutenberg/includes/class-gutenberg.php:80
 msgid "Ad Groups"
-msgstr ""
-
-#. translators: %s is a URL.
-#: admin/includes/class-shortcode-creator.php:192
-msgid "Please, either switch off your ad blocker or disable the shortcode button in the <a href=\"%s\" target=\"_blank\">settings</a>."
 msgstr ""
 
 #: admin/includes/notices.php:17
@@ -1159,7 +1153,7 @@ msgstr ""
 #: classes/ad-debug.php:118
 #: classes/ad-debug.php:167
 #: classes/ad-debug.php:169
-#: public/class-advanced-ads.php:752
+#: public/class-advanced-ads.php:788
 msgid "Ad"
 msgstr ""
 
@@ -1174,8 +1168,8 @@ msgstr ""
 
 #: admin/views/ad-group-list-form-row.php:31
 #: admin/views/placements.php:66
-#: modules/gadsense/admin/views/external-ads-list.php:45
-#: modules/gadsense/admin/views/external-ads-list.php:55
+#: modules/gadsense/admin/views/external-ads-list.php:41
+#: modules/gadsense/admin/views/external-ads-list.php:51
 #: modules/privacy/admin/views/setting-general.php:44
 msgid "Name"
 msgstr ""
@@ -1372,7 +1366,7 @@ msgstr ""
 #: admin/views/placements-ad-label.php:9
 #: admin/views/placements-ad-label.php:11
 #: admin/views/placements.php:150
-#: modules/gadsense/includes/class-network-adsense.php:324
+#: modules/gadsense/includes/class-network-adsense.php:318
 msgid "default"
 msgstr ""
 
@@ -1511,7 +1505,7 @@ msgid "%1$s %2$s, %3$s @ %4$s %5$s"
 msgstr ""
 
 #. translators: %1$s is a starting link tag, %2$s is closing the link tag.
-#: admin/views/checks.php:16
+#: admin/views/checks.php:13
 msgid "Advanced Ads detected potential problems with your ad setup. %1$sShow me these errors%2$s"
 msgstr ""
 
@@ -1527,13 +1521,7 @@ msgstr ""
 msgid "Watch video"
 msgstr ""
 
-#. translators: %s is a link to a tutorial.
-#: admin/views/conditions/ad-display-metabox.php:47
-#: admin/views/notices/jqueryui_error.php:2
-msgid "There might be a problem with layouts and scripts in your dashboard. Please check <a href=\"%s\" target=\"_blank\">this article to learn more</a>."
-msgstr ""
-
-#: admin/views/conditions/ad-display-metabox.php:58
+#: admin/views/conditions/ad-display-metabox.php:43
 msgid "A page with this ad on it must match all of the following conditions."
 msgstr ""
 
@@ -1628,7 +1616,7 @@ msgid "Visitor conditions limit the number of users who can see your ad. There i
 msgstr ""
 
 #: admin/views/conditions/visitor-conditions-form-top.php:9
-#: modules/privacy/admin/views/setting-general.php:59
+#: modules/privacy/admin/views/setting-general.php:64
 msgid "It seems that a caching plugin is activated."
 msgstr ""
 
@@ -2153,7 +2141,7 @@ msgid "Enable advanced JavaScript functions (<a href=\"%s\" target=\"_blank\">he
 msgstr ""
 
 #: admin/views/settings/general/block-bots.php:5
-#: classes/frontend_checks.php:114
+#: classes/frontend_checks.php:123
 msgid "You look like a bot"
 msgstr ""
 
@@ -2230,10 +2218,6 @@ msgstr ""
 msgid "The free version provides the post type display condition on the ad edit page."
 msgstr ""
 
-#: admin/views/settings/general/disable-shortcode-button.php:2
-msgid "Disable shortcode button in visual editor."
-msgstr ""
-
 #: admin/views/settings/general/editors-manage-ads.php:2
 msgid "Allow editors to also manage and publish ads."
 msgstr ""
@@ -2298,28 +2282,32 @@ msgid "Purchase & Licenses"
 msgstr ""
 
 #: admin/views/support.php:11
-msgid "General Issues"
+msgid "Issues after updating"
 msgstr ""
 
 #: admin/views/support.php:12
+msgid "General Issues"
+msgstr ""
+
+#: admin/views/support.php:13
 msgid "Issues with Add-Ons"
 msgstr ""
 
-#: admin/views/support.php:14
+#: admin/views/support.php:15
 msgid "Use the following form to search for solutions in the manual on wpadvancedads.com"
 msgstr ""
 
-#: admin/views/support.php:17
+#: admin/views/support.php:18
 msgid "search"
 msgstr ""
 
 #. translators: %s is a URL.
-#: admin/views/support.php:25
+#: admin/views/support.php:26
 msgid "Take a look at more common issues or contact us directly through the <a href=\"%s\" target=\"_blank\">support page</a>."
 msgstr ""
 
 #. translators: %s is a URL.
-#: admin/views/support.php:43
+#: admin/views/support.php:44
 msgid "Upgrade to any premium add-on and get <strong>priority email support</strong> or reach out through the <a href=\"%s\" target=\"_blank\">support forum</a> for individual help."
 msgstr ""
 
@@ -2485,7 +2473,7 @@ msgid "main query"
 msgstr ""
 
 #: classes/ad-debug.php:121
-#: public/class-advanced-ads.php:716
+#: public/class-advanced-ads.php:752
 msgctxt "ad group singular name"
 msgid "Ad Group"
 msgstr ""
@@ -2496,7 +2484,7 @@ msgstr ""
 
 #. translators: %1$s is an anchor (link) opening tag, %2$s is the closing tag.
 #: classes/ad-health-notices.php:865
-#: modules/gadsense/includes/class-mapi.php:1513
+#: modules/gadsense/includes/class-mapi.php:1688
 msgid "Learn more about AdSense account issues %1$shere%2$s."
 msgstr ""
 
@@ -2550,76 +2538,76 @@ msgid "Create a sidebar widget with an ad. Can be placed and used like any other
 msgstr ""
 
 #. translators: %s is an html tag.
-#: classes/ad_placements.php:299
+#: classes/ad_placements.php:300
 msgid "paragraph (%s)"
 msgstr ""
 
 #. translators: %s is an html tag.
-#: classes/ad_placements.php:301
+#: classes/ad_placements.php:302
 msgid "paragraph without image (%s)"
 msgstr ""
 
 #. translators: %s is an html tag.
-#: classes/ad_placements.php:303
+#: classes/ad_placements.php:304
 msgid "headline 2 (%s)"
 msgstr ""
 
 #. translators: %s is an html tag.
-#: classes/ad_placements.php:305
+#: classes/ad_placements.php:306
 msgid "headline 3 (%s)"
 msgstr ""
 
 #. translators: %s is an html tag.
-#: classes/ad_placements.php:307
+#: classes/ad_placements.php:308
 msgid "headline 4 (%s)"
 msgstr ""
 
 #. translators: %s is an html tag.
-#: classes/ad_placements.php:309
+#: classes/ad_placements.php:310
 msgid "any headline (%s)"
 msgstr ""
 
 #. translators: %s is an html tag.
-#: classes/ad_placements.php:311
+#: classes/ad_placements.php:312
 msgid "image (%s)"
 msgstr ""
 
 #. translators: %s is an html tag.
-#: classes/ad_placements.php:313
+#: classes/ad_placements.php:314
 msgid "table (%s)"
 msgstr ""
 
 #. translators: %s is an html tag.
-#: classes/ad_placements.php:315
+#: classes/ad_placements.php:316
 msgid "list item (%s)"
 msgstr ""
 
 #. translators: %s is an html tag.
-#: classes/ad_placements.php:317
+#: classes/ad_placements.php:318
 msgid "quote (%s)"
 msgstr ""
 
 #. translators: %s is an html tag.
-#: classes/ad_placements.php:319
+#: classes/ad_placements.php:320
 msgid "iframe (%s)"
 msgstr ""
 
 #. translators: %s is an html tag.
-#: classes/ad_placements.php:321
+#: classes/ad_placements.php:322
 msgid "container (%s)"
 msgstr ""
 
-#: classes/ad_placements.php:323
+#: classes/ad_placements.php:324
 msgid "any element"
 msgstr ""
 
-#: classes/ad_placements.php:325
+#: classes/ad_placements.php:326
 msgctxt "for the \"custom\" content placement option"
 msgid "custom"
 msgstr ""
 
 #. translators: %s stands for the name of the "Disable level limitation" option and automatically translated as well
-#: classes/ad_placements.php:1016
+#: classes/ad_placements.php:1017
 msgid "Set <em>%s</em> to show more ads"
 msgstr ""
 
@@ -2648,7 +2636,7 @@ msgstr ""
 msgid "Choose an existing ad group. Use this type when you want to assign the same display and visitor conditions to all ads in that group."
 msgstr ""
 
-#: classes/ad_type_group.php:85
+#: classes/ad_type_group.php:89
 msgid "ad group"
 msgstr ""
 
@@ -2904,19 +2892,19 @@ msgstr ""
 msgid "days"
 msgstr ""
 
-#: classes/EDD_SL_Plugin_Updater.php:262
+#: classes/EDD_SL_Plugin_Updater.php:250
 msgid "There is a new version of %1$s available. %2$sView version %3$s details%4$s."
 msgstr ""
 
-#: classes/EDD_SL_Plugin_Updater.php:270
+#: classes/EDD_SL_Plugin_Updater.php:258
 msgid "There is a new version of %1$s available. %2$sView version %3$s details%4$s or %5$supdate now%6$s."
 msgstr ""
 
-#: classes/EDD_SL_Plugin_Updater.php:514
+#: classes/EDD_SL_Plugin_Updater.php:502
 msgid "You do not have permission to install plugin updates"
 msgstr ""
 
-#: classes/EDD_SL_Plugin_Updater.php:514
+#: classes/EDD_SL_Plugin_Updater.php:502
 msgid "Error"
 msgstr ""
 
@@ -2940,165 +2928,165 @@ msgstr ""
 msgid "Unable to locate needed folder (%s)."
 msgstr ""
 
-#: classes/frontend_checks.php:100
+#: classes/frontend_checks.php:109
 msgid "Random AdSense ads"
 msgstr ""
 
-#: classes/frontend_checks.php:128
+#: classes/frontend_checks.php:137
 msgid "Ad blocker enabled"
 msgstr ""
 
-#: classes/frontend_checks.php:140
+#: classes/frontend_checks.php:149
 msgid "<em>%s</em> filter does not exist"
 msgstr ""
 
-#: classes/frontend_checks.php:156
-msgid "Ads are disabled on this page"
-msgstr ""
-
-#: classes/frontend_checks.php:169
+#: classes/frontend_checks.php:165
 msgid "Ads are disabled in the content of this page"
 msgstr ""
 
-#: classes/frontend_checks.php:181
+#: classes/frontend_checks.php:177
 msgid "the current post ID is 0 "
 msgstr ""
 
-#: classes/frontend_checks.php:195
+#: classes/frontend_checks.php:196
+msgid "Ads are disabled on this page"
+msgstr ""
+
+#: classes/frontend_checks.php:210
 msgid "Ads are disabled on all pages"
 msgstr ""
 
-#: classes/frontend_checks.php:208
+#: classes/frontend_checks.php:225
 msgid "Ads are disabled on 404 pages"
 msgstr ""
 
-#: classes/frontend_checks.php:221
+#: classes/frontend_checks.php:239
 msgid "Ads are disabled on non singular pages"
 msgstr ""
 
-#: classes/frontend_checks.php:235
+#: classes/frontend_checks.php:253
 msgid "Ad IDs: %s"
 msgstr ""
 
-#: classes/frontend_checks.php:263
+#: classes/frontend_checks.php:281
 msgid "IDs: %s"
 msgstr ""
 
-#: classes/frontend_checks.php:276
+#: classes/frontend_checks.php:294
 msgid "The following responsive AdSense ads are not showing up: %s"
 msgstr ""
 
-#: classes/frontend_checks.php:290
+#: classes/frontend_checks.php:308
 msgid "Consent not given"
 msgstr ""
 
-#: classes/frontend_checks.php:306
+#: classes/frontend_checks.php:324
 msgid "Enable TCF integration"
 msgstr ""
 
-#: classes/frontend_checks.php:319
+#: classes/frontend_checks.php:337
 msgid "Debug Google Ad Manager"
 msgstr ""
 
-#: classes/frontend_checks.php:330
+#: classes/frontend_checks.php:348
 msgid "Auto ads code found"
 msgstr ""
 
-#: classes/frontend_checks.php:342
+#: classes/frontend_checks.php:360
 msgid "highlight ads"
 msgstr ""
 
-#: classes/frontend_checks.php:409
+#: classes/frontend_checks.php:467
 msgid "Ad Health"
 msgstr ""
 
-#: classes/frontend_checks.php:423
+#: classes/frontend_checks.php:481
 msgid "Show %d more notifications"
 msgstr ""
 
-#: classes/frontend_checks.php:440
+#: classes/frontend_checks.php:498
 msgid "Everything is fine"
 msgstr ""
 
-#: classes/frontend_checks.php:508
+#: classes/frontend_checks.php:566
 msgid "the following code is used for automatic error detection and only visible to admins"
 msgstr ""
 
-#: classes/frontend_checks.php:826
-#: classes/frontend_checks.php:841
+#: classes/frontend_checks.php:884
+#: classes/frontend_checks.php:899
 msgid "Hi %s"
 msgstr ""
 
-#: classes/frontend_checks.php:826
+#: classes/frontend_checks.php:884
 msgid "Advanced Ads detected AdSense Auto ads (%sx) on this page."
 msgstr ""
 
-#: classes/frontend_checks.php:826
-#: classes/frontend_checks.php:841
+#: classes/frontend_checks.php:884
+#: classes/frontend_checks.php:899
 msgid "Is that correct?"
 msgstr ""
 
-#: classes/frontend_checks.php:828
+#: classes/frontend_checks.php:886
 msgid "All is fine"
 msgstr ""
 
-#: classes/frontend_checks.php:829
+#: classes/frontend_checks.php:887
 msgid "Something is off"
 msgstr ""
 
-#: classes/frontend_checks.php:831
-#: classes/frontend_checks.php:846
+#: classes/frontend_checks.php:889
+#: classes/frontend_checks.php:904
 msgid "PS: This is a one-time check from your friendly Advanced Ads plugin. It is only visible to you."
 msgstr ""
 
-#: classes/frontend_checks.php:841
+#: classes/frontend_checks.php:899
 msgid "Advanced Ads detected the AdSense Auto ads code and <strong>no ads on this page</strong>."
 msgstr ""
 
-#: classes/frontend_checks.php:843
+#: classes/frontend_checks.php:901
 msgid "This is fine"
 msgstr ""
 
-#: classes/frontend_checks.php:844
+#: classes/frontend_checks.php:902
 msgid "I expected something else"
 msgstr ""
 
-#: classes/frontend_checks.php:849
-#: classes/frontend_checks.php:857
+#: classes/frontend_checks.php:907
+#: classes/frontend_checks.php:915
 msgid "Just click on your problem to learn more from our knowledge base."
 msgstr ""
 
-#: classes/frontend_checks.php:850
+#: classes/frontend_checks.php:908
 msgid "I want to disable AdSense Auto ads"
 msgstr ""
 
-#: classes/frontend_checks.php:851
-#: classes/frontend_checks.php:858
+#: classes/frontend_checks.php:909
+#: classes/frontend_checks.php:916
 msgid "I don’t see any Auto ads"
 msgstr ""
 
-#: classes/frontend_checks.php:852
+#: classes/frontend_checks.php:910
 msgid "I only see blank space"
 msgstr ""
 
-#: classes/frontend_checks.php:853
+#: classes/frontend_checks.php:911
 msgid "I want to change the position of the ads"
 msgstr ""
 
-#: classes/frontend_checks.php:854
-#: modules/gadsense/includes/class-network-adsense.php:256
+#: classes/frontend_checks.php:912
+#: modules/gadsense/includes/class-network-adsense.php:228
 msgid "Display Auto ads only on specific pages"
 msgstr ""
 
-#: classes/frontend_checks.php:859
+#: classes/frontend_checks.php:917
 msgid "How to look for the Auto ads code"
 msgstr ""
 
-#: classes/frontend_checks.php:860
+#: classes/frontend_checks.php:918
 msgid "I have another question or problem"
 msgstr ""
 
-#: classes/frontend_checks.php:863
+#: classes/frontend_checks.php:921
 msgid "Closing the message"
 msgstr ""
 
@@ -3213,7 +3201,7 @@ msgid "Ad blocker fix"
 msgstr ""
 
 #: modules/ad-blocker/admin/admin.php:150
-#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:365
+#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:382
 msgid "Unable to connect to the filesystem. Please confirm your credentials."
 msgstr ""
 
@@ -3300,49 +3288,49 @@ msgstr ""
 msgid "Want to know how many of your visitors are using an ad blocker? Enter your Google Analytics property ID above to count them."
 msgstr ""
 
-#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:179
+#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:192
 msgid "The ads.txt file cannot be placed because the URL contains a subdirectory. You need to make the file available at %s"
 msgstr ""
 
-#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:190
+#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:204
 msgid "The file is available on %s."
 msgstr ""
 
-#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:194
+#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:208
 msgid "The file was not created."
 msgstr ""
 
-#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:201
+#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:215
 msgid "Import & Replace"
 msgstr ""
 
-#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:203
+#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:217
 msgid "Move the content of the existing ads.txt file into Advanced Ads and remove it."
 msgstr ""
 
-#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:210
+#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:224
 #: modules/ads-txt/admin/views/setting-additional-content.php:29
 msgid "An error occured: %s."
 msgstr ""
 
 #. translators: %s the line that may need to be added manually
-#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:223
+#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:238
 msgid "If your site is located on a subdomain, you need to add the following line to the ads.txt file of the root domain: %s"
 msgstr ""
 
-#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:338
+#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:355
 msgid "The ads.txt is now managed with Advanced Ads."
 msgstr ""
 
-#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:383
+#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:400
 msgid "Not the main blog"
 msgstr ""
 
-#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:412
+#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:429
 msgid "Could not delete the existing ads.txt file"
 msgstr ""
 
-#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:415
+#: modules/ads-txt/admin/class-advanced-ads-ads-txt-admin.php:432
 msgid "Could not find the existing ads.txt file"
 msgstr ""
 
@@ -3544,33 +3532,20 @@ msgstr ""
 msgid "How to enable Auto ads in 30 seconds (video tutorial)"
 msgstr ""
 
-#: modules/gadsense/admin/views/connect-adsense.php:35
-msgid "Please enter the confirmation code."
+#. translators: 1: the plugin name that is managing the Auto ads code.
+#: modules/gadsense/admin/views/borlabs-cookie-auto-ads-warning.php:4
+msgid "Advanced Ads detected that <strong>%s</strong> is managing the Auto ads code and will therefore not add it."
 msgstr ""
 
-#. Translators: 1: opening a tag to open Google Adsense modal 2: closing a tag
-#: modules/gadsense/admin/views/connect-adsense.php:39
-msgid "This is not the correct confirmation code. %1$sPlease try again%2$s."
-msgstr ""
-
-#: modules/gadsense/admin/views/connect-adsense.php:43
-#: modules/gadsense/includes/class-network-adsense.php:224
-msgid "Insert the AdSense header code used for verification and the Auto Ads feature."
-msgstr ""
-
-#: modules/gadsense/admin/views/connect-adsense.php:45
-msgid "Submit code"
-msgstr ""
-
-#: modules/gadsense/admin/views/connect-adsense.php:53
+#: modules/gadsense/admin/views/connect-adsense.php:57
 msgid "Cannot access your account information."
 msgstr ""
 
-#: modules/gadsense/admin/views/connect-adsense.php:59
+#: modules/gadsense/admin/views/connect-adsense.php:63
 msgid "Please select an account"
 msgstr ""
 
-#: modules/gadsense/admin/views/connect-adsense.php:64
+#: modules/gadsense/admin/views/connect-adsense.php:68
 msgid "Use this account"
 msgstr ""
 
@@ -3593,71 +3568,71 @@ msgstr ""
 msgid "Connect to %1$s"
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:34
-#: modules/gadsense/admin/views/external-ads-list.php:78
+#: modules/gadsense/admin/views/external-ads-list.php:30
+#: modules/gadsense/admin/views/external-ads-list.php:74
 msgid "Update the ad units list"
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:46
-#: modules/gadsense/admin/views/external-ads-list.php:56
+#: modules/gadsense/admin/views/external-ads-list.php:42
+#: modules/gadsense/admin/views/external-ads-list.php:52
 msgctxt "AdSense ad"
 msgid "Slot ID"
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:47
-#: modules/gadsense/admin/views/external-ads-list.php:57
+#: modules/gadsense/admin/views/external-ads-list.php:43
+#: modules/gadsense/admin/views/external-ads-list.php:53
 msgctxt "AdSense ad"
 msgid "Type"
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:48
-#: modules/gadsense/admin/views/external-ads-list.php:58
+#: modules/gadsense/admin/views/external-ads-list.php:44
+#: modules/gadsense/admin/views/external-ads-list.php:54
 msgid "Size"
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:65
+#: modules/gadsense/admin/views/external-ads-list.php:61
 msgid "No active ad units found"
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:67
+#: modules/gadsense/admin/views/external-ads-list.php:63
 msgid "Show all ad units"
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:76
+#: modules/gadsense/admin/views/external-ads-list.php:72
 msgid "No ad units found"
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:102
+#: modules/gadsense/admin/views/external-ads-list.php:98
 msgid "Get the code for this ad"
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:107
+#: modules/gadsense/admin/views/external-ads-list.php:103
 msgid "Ad can't be imported, click for details"
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:119
+#: modules/gadsense/admin/views/external-ads-list.php:116
 msgid "Unrecognized ad code"
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:125
+#: modules/gadsense/admin/views/external-ads-list.php:122
 msgid "This ad type can currently not be imported from AdSense."
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:128
+#: modules/gadsense/admin/views/external-ads-list.php:125
 msgid "You can proceed with one of the following solutions"
 msgstr ""
 
 #. Translators: 1: opening tag for AdSense account link 2: opening tag for a link to insert ad code 3: closing a tag
-#: modules/gadsense/admin/views/external-ads-list.php:134
+#: modules/gadsense/admin/views/external-ads-list.php:131
 msgid "%1$sCopy the code from your AdSense account%3$s and %2$sinsert a new AdSense code here%3$s."
 msgstr ""
 
 #. Translators: 1: opening tag for a link to create an ad manually 2: closing a tag
-#: modules/gadsense/admin/views/external-ads-list.php:140
+#: modules/gadsense/admin/views/external-ads-list.php:137
 msgid "%1$sCreate an AdSense code manually%2$s: Select the <em>Normal</em> or <em>Responsive</em> type and the size."
 msgstr ""
 
-#: modules/gadsense/admin/views/external-ads-list.php:147
+#: modules/gadsense/admin/views/external-ads-list.php:144
 msgid "Choose a different ad from your AdSense account above."
 msgstr ""
 
@@ -3673,8 +3648,18 @@ msgstr ""
 msgid "Your AdSense Publisher ID is missing."
 msgstr ""
 
-#: modules/gadsense/includes/class-adsense-report.php:472
-#: modules/gadsense/includes/class-adsense-report.php:498
+#: modules/gadsense/includes/class-adsense-report.php:311
+#: modules/gadsense/includes/class-adsense-report.php:336
+msgid "Invalid response from AdSense."
+msgstr ""
+
+#: modules/gadsense/includes/class-adsense-report.php:311
+#: modules/gadsense/includes/class-adsense-report.php:336
+msgid "You could try to re-connect under Advanced Ads > Settings > AdSense."
+msgstr ""
+
+#: modules/gadsense/includes/class-adsense-report.php:499
+#: modules/gadsense/includes/class-adsense-report.php:525
 msgid "Never"
 msgstr ""
 
@@ -3682,107 +3667,115 @@ msgstr ""
 msgid "Auto"
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:338
+#: modules/gadsense/includes/class-mapi.php:344
 msgid "Error while retrieving ad code for \"%s\"."
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:365
+#: modules/gadsense/includes/class-mapi.php:371
 msgid "Invalid response while retrieving ad code for \"%s\"."
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:406
+#. translators: the publisher ID.
+#: modules/gadsense/includes/class-mapi.php:426
+#: modules/gadsense/includes/class-mapi.php:518
 msgid "Error while retrieving adUnits list for \"%s\"."
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:413
+#. translators: %s is the publisher ID.
+#: modules/gadsense/includes/class-mapi.php:437
 msgid "Invalid response while retrieving adUnits list for \"%s\"."
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:421
+#: modules/gadsense/includes/class-mapi.php:445
 msgid "Reason:"
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:422
+#: modules/gadsense/includes/class-mapi.php:446
 msgid "Message:"
 msgstr ""
 
 #. translators: %1$s is the AdSense publisher ID; %2$s a starting a tag to the AdSense ad unit list and %3$s the closing link.
-#: modules/gadsense/includes/class-mapi.php:437
+#: modules/gadsense/includes/class-mapi.php:468
 msgid "The account \"%1$s\" does not seem to have any ad units. Please create some %2$shere%3$s."
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:499
+#: modules/gadsense/includes/class-mapi.php:609
 msgid "It seems that some changes have been made in the Advanced Ads settings. Please refresh this page."
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:506
+#: modules/gadsense/includes/class-mapi.php:616
 msgid "Advanced Ads does not have access to your account (<code>%s</code>) anymore."
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:548
+#: modules/gadsense/includes/class-mapi.php:660
 msgid "error while renewing access token for \"%s\""
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:573
+#. translators: %s AdSense account ID
+#: modules/gadsense/includes/class-mapi.php:687
 msgid "invalid response received while renewing access token for \"%s\""
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:642
+#: modules/gadsense/includes/class-mapi.php:689
+msgid "You could try to connect again under Advanced Ads > Settings > AdSense."
+msgstr ""
+
+#: modules/gadsense/includes/class-mapi.php:758
 msgid "This ad code is from a different AdSense Account"
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:867
+#: modules/gadsense/includes/class-mapi.php:987
 msgid "Invalid response body while retrieving account alerts"
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:876
+#: modules/gadsense/includes/class-mapi.php:996
 msgid "error while retrieving account alerts"
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:1031
+#: modules/gadsense/includes/class-mapi.php:1167
 msgid "No token provided. Token data needed to get account details."
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:1095
+#: modules/gadsense/includes/class-mapi.php:1231
 msgid "An error occurred while requesting account details."
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:1320
-#: modules/gadsense/includes/class-network-adsense.php:515
+#: modules/gadsense/includes/class-mapi.php:1456
+#: modules/gadsense/includes/class-network-adsense.php:509
 msgctxt "AdSense ad type"
 msgid "Matched Content"
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:1323
-#: modules/gadsense/includes/class-network-adsense.php:516
+#: modules/gadsense/includes/class-mapi.php:1459
+#: modules/gadsense/includes/class-network-adsense.php:510
 msgctxt "AdSense ad type"
 msgid "In-article"
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:1325
-#: modules/gadsense/includes/class-network-adsense.php:517
+#: modules/gadsense/includes/class-mapi.php:1461
+#: modules/gadsense/includes/class-network-adsense.php:511
 msgctxt "AdSense ad type"
 msgid "In-feed"
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:1330
-#: modules/gadsense/includes/class-network-adsense.php:518
+#: modules/gadsense/includes/class-mapi.php:1466
+#: modules/gadsense/includes/class-network-adsense.php:512
 msgctxt "AdSense ad type"
 msgid "Display"
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:1332
-#: modules/gadsense/includes/class-network-adsense.php:519
+#: modules/gadsense/includes/class-mapi.php:1468
+#: modules/gadsense/includes/class-network-adsense.php:513
 msgctxt "AdSense ad type"
 msgid "Link"
 msgstr ""
 
-#: modules/gadsense/includes/class-mapi.php:1480
+#: modules/gadsense/includes/class-mapi.php:1655
 msgid "There are one or more warnings about the currently linked AdSense account. You can view them <a href=\"%s\">here</a>"
 msgstr ""
 
 #. translators: 1:A link to the settings page translators: 2:The name of an ad network
-#: modules/gadsense/includes/class-mapi.php:1567
+#: modules/gadsense/includes/class-mapi.php:1742
 msgid "Please try to <a href=\"%1$s\" target=\"_blank\">reconnect to your %2$s account</a>."
 msgstr ""
 
@@ -3791,9 +3784,6 @@ msgid "AdSense account"
 msgstr ""
 
 #: modules/gadsense/includes/class-network-adsense.php:63
-msgid "Verification code & Auto ads"
-msgstr ""
-
 #: modules/gadsense/includes/class-network-adsense.php:74
 msgid "Auto ads"
 msgstr ""
@@ -3843,122 +3833,125 @@ msgstr ""
 msgid "Enable this option to stop loading stats from AdSense into your WordPress backend."
 msgstr ""
 
-#: modules/gadsense/includes/class-network-adsense.php:232
+#: modules/gadsense/includes/class-network-adsense.php:224
+msgid "Insert the AdSense header code to enable Auto ads and verify your website."
+msgstr ""
+
+#: modules/gadsense/includes/class-network-adsense.php:229
+msgid "Why are ads appearing in random positions?"
+msgstr ""
+
+#: modules/gadsense/includes/class-network-adsense.php:238
 msgid "Adjust Auto ads options"
 msgstr ""
 
-#. Translators: %s is a URL.
-#: modules/gadsense/includes/class-network-adsense.php:243
-msgid "Please read <a href=\"%s\" target=\"_blank\">this article</a> if <strong>ads appear in random places</strong>."
-msgstr ""
-
-#: modules/gadsense/includes/class-network-adsense.php:261
+#: modules/gadsense/includes/class-network-adsense.php:255
 msgid "Enable AMP Auto ads"
 msgstr ""
 
-#: modules/gadsense/includes/class-network-adsense.php:282
+#: modules/gadsense/includes/class-network-adsense.php:276
 msgid "Disable warnings about potential violations of the AdSense terms."
 msgstr ""
 
 #. Translators: %s is a URL.
-#: modules/gadsense/includes/class-network-adsense.php:288
+#: modules/gadsense/includes/class-network-adsense.php:282
 msgid "Our <a href=\"%s\" target=\"_blank\">Ad Health</a> feature monitors if AdSense is implemented correctly on your site. It also considers ads not managed with Advanced Ads. Enable this option to remove these checks"
 msgstr ""
 
-#: modules/gadsense/includes/class-network-adsense.php:312
+#: modules/gadsense/includes/class-network-adsense.php:306
 msgid "Enable this option in case your theme adds an unfortunate background color to AdSense ads."
 msgstr ""
 
-#: modules/gadsense/includes/class-network-adsense.php:325
+#: modules/gadsense/includes/class-network-adsense.php:319
 msgid "enable"
 msgstr ""
 
-#: modules/gadsense/includes/class-network-adsense.php:326
+#: modules/gadsense/includes/class-network-adsense.php:320
 msgid "disable"
 msgstr ""
 
 #. Translators: %s is a URL.
-#: modules/gadsense/includes/class-network-adsense.php:333
+#: modules/gadsense/includes/class-network-adsense.php:327
 msgid "Whether your responsive ad unit may expand to <a href='%s' target='blank'>use the full width</a> of your visitor's mobile device screen"
 msgstr ""
 
-#: modules/import-export/classes/import.php:66
+#: modules/import-export/classes/import.php:70
 msgid "Please enter XML content"
 msgstr ""
 
-#: modules/import-export/classes/import.php:147
-#: modules/import-export/classes/import.php:565
+#: modules/import-export/classes/import.php:151
+#: modules/import-export/classes/import.php:580
 msgid "New attachment created <em>%s</em> %s"
 msgstr ""
 
-#: modules/import-export/classes/import.php:179
+#: modules/import-export/classes/import.php:183
 msgid "Failed to import <em>%s</em>"
 msgstr ""
 
-#: modules/import-export/classes/import.php:187
+#: modules/import-export/classes/import.php:191
 msgid "New ad created: <em>%s</em> %s"
 msgstr ""
 
-#: modules/import-export/classes/import.php:230
+#: modules/import-export/classes/import.php:234
 msgid "Assigned terms: <em>%s</em>, to post: <em>%s</em>"
 msgstr ""
 
-#: modules/import-export/classes/import.php:292
+#: modules/import-export/classes/import.php:296
 msgid "New group created, id: <em>%s</em>, name: <em>%s</em>"
 msgstr ""
 
-#: modules/import-export/classes/import.php:294
+#: modules/import-export/classes/import.php:298
 msgid "Failed to import taxonomy: <em>%s</em>, term: <em>%s</em>"
 msgstr ""
 
-#: modules/import-export/classes/import.php:359
+#: modules/import-export/classes/import.php:363
 msgid "Placement <em>%s</em> created"
 msgstr ""
 
-#: modules/import-export/classes/import.php:476
+#: modules/import-export/classes/import.php:491
 msgid "Option was updated: <em>%s</em>"
 msgstr ""
 
-#: modules/import-export/classes/import.php:479
+#: modules/import-export/classes/import.php:494
 msgid "Option already exists: <em>%s</em>"
 msgstr ""
 
-#: modules/import-export/classes/import.php:501
+#: modules/import-export/classes/import.php:516
 msgid "Failed to create import directory <em>%s</em>"
 msgstr ""
 
-#: modules/import-export/classes/import.php:506
+#: modules/import-export/classes/import.php:521
 msgid "Import directory is not writable: <em>%s</em>"
 msgstr ""
 
-#: modules/import-export/classes/import.php:514
+#: modules/import-export/classes/import.php:529
 msgid "File is empty, uploads are disabled or post_max_size is smaller than upload_max_filesize in php.ini"
 msgstr ""
 
-#: modules/import-export/classes/import.php:524
+#: modules/import-export/classes/import.php:539
 msgid "Failed to upload file, error: <em>%s</em>"
 msgstr ""
 
-#: modules/import-export/classes/import.php:529
+#: modules/import-export/classes/import.php:544
 msgid "File is empty."
 msgstr ""
 
-#: modules/import-export/classes/import.php:534
+#: modules/import-export/classes/import.php:549
 msgid "The file could not be created: <em>%s</em>. This is probably a permissions problem"
 msgstr ""
 
-#: modules/import-export/classes/import.php:607
+#: modules/import-export/classes/import.php:622
 msgid "Invalid filetype <em>%s</em>"
 msgstr ""
 
-#: modules/import-export/classes/import.php:612
-#: modules/import-export/classes/import.php:619
 #: modules/import-export/classes/import.php:627
+#: modules/import-export/classes/import.php:634
 #: modules/import-export/classes/import.php:642
+#: modules/import-export/classes/import.php:657
 msgid "Error getting remote image <em>%s</em>"
 msgstr ""
 
-#: modules/import-export/classes/import.php:636
+#: modules/import-export/classes/import.php:651
 msgid "Zero size file downloaded <em>%s</em>"
 msgstr ""
 
@@ -4003,7 +3996,7 @@ msgid "When you click the button below Advanced Ads will create an XML file for 
 msgstr ""
 
 #: modules/import-export/views/page.php:24
-#: public/class-advanced-ads.php:725
+#: public/class-advanced-ads.php:761
 msgid "Groups"
 msgstr ""
 
@@ -4089,102 +4082,102 @@ msgstr ""
 msgid "Show non-personalized AdSense ads until consent is given."
 msgstr ""
 
-#: modules/privacy/admin/views/setting-general.php:62
+#: modules/privacy/admin/views/setting-general.php:67
 msgid "Your users’ consent might get cached and show ads to users who didn’t give their consent yet. "
 msgstr ""
 
-#: modules/privacy/admin/views/setting-general.php:65
+#: modules/privacy/admin/views/setting-general.php:70
 msgid "Cache-busting in Advanced Ads Pro solves that."
 msgstr ""
 
-#: modules/privacy/admin/views/setting-general.php:74
+#: modules/privacy/admin/views/setting-general.php:79
 msgid "Ads are loaded after the user gives their consent and reloads the page."
 msgstr ""
 
 #. Translators: 1: opening link tag with link to Advanced Ads Pro 2: closing link tag
-#: modules/privacy/admin/views/setting-general.php:78
+#: modules/privacy/admin/views/setting-general.php:83
 msgid "Install %1$sAdvanced Ads Pro%2$s to reload the ads instantly without an additional page request."
 msgstr ""
 
-#: public/class-advanced-ads.php:381
+#: public/class-advanced-ads.php:417
 msgid "Advanced Ads Error following:"
 msgstr ""
 
 #. translators: %s is an error message generated by the plugin.
-#: public/class-advanced-ads.php:385
+#: public/class-advanced-ads.php:421
 msgid "Advanced Ads Error: %s"
 msgstr ""
 
-#: public/class-advanced-ads.php:715
+#: public/class-advanced-ads.php:751
 msgctxt "ad group general name"
 msgid "Ad Groups & Rotations"
 msgstr ""
 
-#: public/class-advanced-ads.php:717
+#: public/class-advanced-ads.php:753
 msgid "Search Ad Groups"
 msgstr ""
 
-#: public/class-advanced-ads.php:718
+#: public/class-advanced-ads.php:754
 msgid "All Ad Groups"
 msgstr ""
 
-#: public/class-advanced-ads.php:719
+#: public/class-advanced-ads.php:755
 msgid "Parent Ad Groups"
 msgstr ""
 
-#: public/class-advanced-ads.php:720
+#: public/class-advanced-ads.php:756
 msgid "Parent Ad Groups:"
 msgstr ""
 
-#: public/class-advanced-ads.php:721
+#: public/class-advanced-ads.php:757
 msgid "Edit Ad Group"
 msgstr ""
 
-#: public/class-advanced-ads.php:722
+#: public/class-advanced-ads.php:758
 msgid "Update Ad Group"
 msgstr ""
 
-#: public/class-advanced-ads.php:723
+#: public/class-advanced-ads.php:759
 msgid "Add New Ad Group"
 msgstr ""
 
-#: public/class-advanced-ads.php:724
+#: public/class-advanced-ads.php:760
 msgid "New Ad Groups Name"
 msgstr ""
 
-#: public/class-advanced-ads.php:726
+#: public/class-advanced-ads.php:762
 msgid "No Ad Group found"
 msgstr ""
 
-#: public/class-advanced-ads.php:756
+#: public/class-advanced-ads.php:792
 msgid "Edit Ad"
 msgstr ""
 
-#: public/class-advanced-ads.php:758
+#: public/class-advanced-ads.php:794
 msgid "View"
 msgstr ""
 
-#: public/class-advanced-ads.php:759
+#: public/class-advanced-ads.php:795
 msgid "View the Ad"
 msgstr ""
 
-#: public/class-advanced-ads.php:760
+#: public/class-advanced-ads.php:796
 msgid "Search Ads"
 msgstr ""
 
-#: public/class-advanced-ads.php:761
+#: public/class-advanced-ads.php:797
 msgid "No Ads found"
 msgstr ""
 
-#: public/class-advanced-ads.php:762
+#: public/class-advanced-ads.php:798
 msgid "No Ads found in Trash"
 msgstr ""
 
-#: public/class-advanced-ads.php:763
+#: public/class-advanced-ads.php:799
 msgid "Parent Ad"
 msgstr ""
 
-#: public/class-advanced-ads.php:932
+#: public/class-advanced-ads.php:969
 msgctxt "label above ads"
 msgid "Advertisements"
 msgstr ""

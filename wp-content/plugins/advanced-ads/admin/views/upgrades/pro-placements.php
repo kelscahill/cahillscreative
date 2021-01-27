@@ -70,7 +70,7 @@ if ( class_exists( 'bbPress', false ) ) {
 																$image = '<strong>' . $_place['title'] . '</strong><br/><p class="description">' . $_place['description'] . '</p>';
 															endif;
 															?>
-		<div class="advads-placement-type"><label class="ui-button advads-pro-link"><span class="ui-button-text">
+		<div class="advads-placement-type"><label class="advads-button advads-pro-link"><span class="advads-button-text">
 																				<?php
 																				// phpcs:ignore
 																				echo $image;

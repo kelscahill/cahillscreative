@@ -11,6 +11,13 @@ class Advanced_Ads_Ads_Txt_Admin {
 	const ACTION = 'wp_ajax_advads-ads-txt';
 
 	/**
+	 * Whether the notices should be updated via AJAX because no cached data exists.
+	 *
+	 * @var bool
+	 */
+	private $notices_are_stale = false;
+
+	/**
 	 * Constructor
 	 *
 	 * @param obj $strategy Advanced_Ads_Ads_Txt_Strategy.
@@ -33,9 +40,11 @@ class Advanced_Ads_Ads_Txt_Admin {
 	 * @return array $options Options.
 	 */
 	public function toggle( $options ) {
-		$create = ! empty( $_POST['advads-ads-txt-create'] );
-		$all_network = ! empty( $_POST['advads-ads-txt-all-network'] );
-		$additional_content = ! empty( $_POST['advads-ads-txt-additional-content'] ) ? $_POST['advads-ads-txt-additional-content'] : '';
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		$create             = ! empty( $_POST['advads-ads-txt-create'] );
+		$all_network        = ! empty( $_POST['advads-ads-txt-all-network'] );
+		$additional_content = ! empty( $_POST['advads-ads-txt-additional-content'] ) ? trim( wp_unslash( $_POST['advads-ads-txt-additional-content'] ) ) : '';
+		// phpcs:enable
 
 		$this->strategy->toggle( $create, $all_network, $additional_content );
 		$content = $this->get_adsense_blog_data();
@@ -160,28 +169,33 @@ class Advanced_Ads_Ads_Txt_Admin {
 	/**
 	 * Get notices.
 	 *
-	 * @return string/bool Html markup on success or false if no cached data exists.
-	 *                     In the latter case, an ajax request will fetch the data.
+	 * @return array Array of notices.
 	 */
 	public function get_notices() {
 		$url = home_url( '/' );
 		$parsed_url = wp_parse_url( $url );
+		$notices = array();
+
 		if ( ! isset( $parsed_url['scheme'] ) || ! isset ( $parsed_url['host'] ) ) {
-			return;
+			return $notices;
 		}
 
-		$notices = array();
 		$link = sprintf( '<a href="%1$s" target="_blank">%1$s</a>', esc_url( $url . 'ads.txt' ) );
 		$button = ' <button type="button" class="advads-ads-txt-action button" style="vertical-align: middle;" id="%s">%s</button>';
+
+		if ( ! $this->strategy->is_enabled() ) {
+			return $notices;
+		}
 
 		if ( Advanced_Ads_Ads_Txt_Utils::is_subdir() ) {
 			$notices[] = array( 'advads-error-message', sprintf(
 				esc_html__( 'The ads.txt file cannot be placed because the URL contains a subdirectory. You need to make the file available at %s', 'advanced-ads' ),
 				sprintf( '<a href="%1$s" target="_blank">%1$s</a>', esc_url( $parsed_url['scheme'] . '://' . $parsed_url['host'] ) )
 			) );
-		} elseif ( $this->strategy->is_enabled() ) {
+		} else {
 			if ( null === ( $file = $this->get_notice( 'get_file_info', $url ) ) ) {
-				return false;
+				$this->notices_are_stale = true;
+				return $notices;
 			}
 
 			if ( ! is_wp_error( $file )) {
@@ -214,7 +228,8 @@ class Advanced_Ads_Ads_Txt_Admin {
 
 
 			if ( null === ( $need_file_on_root_domain = $this->get_notice( 'need_file_on_root_domain', $url ) ) ) {
-				return false;
+				$this->notices_are_stale = true;
+				return $notices;
 			}
 
 			if ( $need_file_on_root_domain ) {
@@ -237,9 +252,11 @@ class Advanced_Ads_Ads_Txt_Admin {
 	 * @return string $r HTML markup.
 	 */
 	private function get_notices_markup( $notices ) {
-		if ( ! $notices ) {
-			return;
+		if ( $this->notices_are_stale ) {
+			// Do not print `ul` to fetch notices via AJAX.
+			return '';
 		}
+
 		$r = '<ul id="advads-ads-txt-notices">';
 		foreach( $notices as $notice ) {
 			$r .= sprintf( '<li class="%s">%s</li>', $notice[0], $notice[1] );

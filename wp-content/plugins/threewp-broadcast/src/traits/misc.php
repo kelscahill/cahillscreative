@@ -519,6 +519,12 @@ trait misc
 			'role_custom_fields' => [ 'super_admin' ],				// Role required to broadcast the custom fields
 			'savings_calculator_data' => '',						// Data for the savings calculator.
 			/**
+				@brief		Show the Custom Field and Taxonomies checkboxes.
+				@details	The default is to keep them hidden.
+				@since		2020-11-25 16:02:14
+			**/
+			'show_custom_fields_taxonomies' => false,
+			/**
 				@brief		List of taxonomy + term slugs to not broadcast.
 				@since		2017-07-10 16:16:28
 			**/
@@ -529,5 +535,32 @@ trait misc
 			**/
 			'taxonomy_term_protectlist' => '',
 		], parent::site_options() );
+	}
+
+	/**
+		@brief		Remove links to the site that is going to be deleted.
+		@since		2020-11-09 20:24:14
+	**/
+	public function wp_uninitialize_site( $site )
+	{
+		global $wpdb;
+		$site_id = $site->id;
+
+		$this->debug( 'wp_uninitialize_site %s', $site );
+
+		$query = sprintf( "SELECT `post_id` FROM `%s` WHERE `blog_id` = '%s'",
+			$this->broadcast_data_table(),
+			$site_id
+		);
+		$this->debug( $query );
+		$post_ids = $wpdb->get_col( $query );
+
+		// For each post, unlink it.
+		switch_to_blog( $site_id );
+
+		foreach( $post_ids as $post_id )
+			ThreeWP_Broadcast()->api()->unlink( $post_id );
+
+		restore_current_blog();
 	}
 }

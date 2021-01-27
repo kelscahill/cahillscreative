@@ -1,7 +1,10 @@
+<?php
+	// @codingStandardsIgnoreStart
+?>
 <span class="toggle-all" role="button" tabindex="0" data-id="shortcode-builder-state">
 	<span class="inner-wrap">
-		<em class="collapse"><?php _e('Collapse All', 'ajax-load-more'); ?></em>
-		<em class="expand"><?php _e('Expand All', 'ajax-load-more'); ?></em>
+		<em class="collapse"><?php _e( 'Collapse All', 'ajax-load-more' ); ?></em>
+		<em class="expand"><?php _e( 'Expand All', 'ajax-load-more' ); ?></em>
 	</span>
 </span>
 
@@ -109,7 +112,7 @@
 								<div class="ajax-load-more-wrap core target <?php echo $loading_style; ?>" data-base="ajax-load-more-wrap core ">
 									<span><?php _e('CLICK TO PREVIEW', 'ajax-load-more'); ?></span>
 									<button class="alm-load-more-btn" type="button">
-										<?php echo apply_filters('alm_button_label', __('Older Posts', 'ajax-load-more')) ;?>
+										<?php echo apply_filters( 'alm_button_label', __('Load More', 'ajax-load-more' )) ;?>
 									</button>
 								</div>
 							</div>
@@ -347,7 +350,7 @@
 		   		 </div>
 		         <div class="shortcode-builder--fields">
 		            <div class="inner">
-		               <input class="alm_element" name="button-label" type="text" id="button-label" value="<?php _e('Older Posts', 'ajax-load-more'); ?>">
+		               <input class="alm_element" name="button-label" type="text" id="button-label" value="<?php _e('Load More', 'ajax-load-more'); ?>">
 		            </div>
 		         </div>
 				</section>
@@ -868,7 +871,7 @@
 		   		echo '<div class="expand-wrap">';
 			   		echo '<section class="first">';
 				   		echo '<div class="shortcode-builder--label">';
-				   		echo '<p>'.__('Select a <a href="http://codex.wordpress.org/Post_Formats" target="_blank">Post Format</a> to query.', 'ajax-load-more'). '</p>';
+				   		echo '<p>'.__('Select a Post Format to query.', 'ajax-load-more'). '</p>';
 				   		echo '</div>';
 				   		echo '<div class="shortcode-builder--fields"><div class="inner"><select class="alm_element" name="post-format-select" id="post-format-select">';
 				   		echo '<option value="" selected="selected">-- ' . __('Select Post Format', 'ajax-load-more') . ' --</option>';
@@ -892,7 +895,7 @@
 		   $cats = 'null';
 	   }else{
 		   $cats = get_categories();
-		   if(count($cats) > $show_max){
+		   if($cats && count($cats) > $show_max){
 			   $disable_dynamic_content = true;
 		   }
 	   }
@@ -985,12 +988,12 @@
 		   $tags = 'null';
 	   }else{
 		   $tags = get_tags();
-		   if(count($tags) > 3){
+		   if($tags && count($tags) > $show_max){
 			   $disable_dynamic_content = true;
 		   }
 	   }
 		if($tags){
-			$tag_link = 'https://codex.wordpress.org/Class_Reference/WP_Query#Tag_Parameters';
+			$tag_link = 'https://developer.wordpress.org/reference/classes/wp_query/#tag-parameters';
 		?>
 		<div class="row checkboxes tags" id="alm-tags">
 			<h3 class="heading" tabindex="0"><?php _e('Tag', 'ajax-load-more'); ?></h3>
@@ -1108,7 +1111,7 @@
 	      <div class="expand-wrap">
 		      <section class="first full">
 		         <div class="shortcode-builder--label">
-		            <p><?php _e('Query for <a href="http://codex.wordpress.org/Class_Reference/WP_Meta_Query" target="_blank">custom field</a> by entering a custom field key, value and operator.', 'ajax-load-more'); ?></p>
+		            <p><?php _e('Query for <a href="https://developer.wordpress.org/reference/classes/wp_query/#custom-field-post-meta-parameters" target="_blank">custom field</a> by entering a custom field key, value and operator.', 'ajax-load-more'); ?></p>
 		         </div>
 		         <div class="shortcode-builder--fields">
 		            <div class="meta-query-wrap-first">
@@ -1172,7 +1175,10 @@
 		if($disable_dynamic_content){
 		   $authors = 'null';
 	   }else{
-		   $authors = get_users();
+			$authors = get_users();
+			if($authors && count($authors) > $show_max){
+			   $disable_dynamic_content = true;
+		   }
 	   }
 		if($authors){
 			echo '<div class="row select authors" id="alm-authors">';

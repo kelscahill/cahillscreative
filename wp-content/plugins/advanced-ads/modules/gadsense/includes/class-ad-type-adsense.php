@@ -241,7 +241,6 @@ class Advanced_Ads_Ad_Type_Adsense extends Advanced_Ads_Ad_Type_Abstract {
 			$output .= '<script> ' . "\n";
 			$output .= '(adsbygoogle = window.adsbygoogle || []).push({}); ' . "\n";
 			$output .= '</script>' . "\n";
-			unset( $ad->wrapper['style']['height'] );
 		} else {
 			/**
 			 * The value of $ad->content->resize should be tested to format the output correctly

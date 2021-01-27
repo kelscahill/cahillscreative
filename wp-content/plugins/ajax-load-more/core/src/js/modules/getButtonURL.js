@@ -1,5 +1,4 @@
 /**
- * wooGetURL
  * Get the next URL for Load More button
  *
  * @param {object} alm

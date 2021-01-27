@@ -108,6 +108,7 @@ class Advanced_Ads_Placements {
 				'image'       => ADVADS_BASE_URL . 'admin/assets/img/placements/widget.png',
 				'order'       => 50,
 				'options'     => array(
+					'show_position'  => true,
 					'show_lazy_load' => true,
 					'amp'            => true,
 				),

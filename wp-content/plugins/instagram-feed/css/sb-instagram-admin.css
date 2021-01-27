@@ -354,14 +354,14 @@
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
 }
-#sbi_admin .sbi_notice a{
+#sbi_admin .sbi_nojs_notice a{
 	color: #d85600;
 }
-#sbi_admin .sbi_notice a:hover,
-#sbi_admin .sbi_notice a:focus{
+#sbi_admin .sbi_nojs_notice a:hover,
+#sbi_admin .sbi_nojs_notice a:focus{
 	color: #a34100;
 }
-#sbi_admin .sbi_notice p{
+#sbi_admin .sbi_nojs_notice p{
 	margin: 0;
 	padding: 5px 0;
 	font-size: 13px;
@@ -426,72 +426,122 @@
 }
 
 /* Review notice */
-.sbi_review_notice{
-    position: relative;
-    overflow: hidden;
-    max-width: 870px;
-    margin-top: 10px;
-    padding: 10px 10px 7px 10px;
+.sbi_notice{
+	position: relative;
+	overflow: hidden;
+	max-width: 865px;
+	margin-top: 10px;
+	padding: 10px 10px 7px 10px;
 
-    background: #E6F0E8;
-    border: 1px solid #6AB074;
-    color: #214F28;
+	background: #E6F0E8;
+	border: 1px solid #6AB074;
+	color: #214F28;
 }
-.sbi_bfcm_sale_notice,
-.sbi_new_user_sale_notice{
-	max-width: 672px;
-}
-.sbi_review_notice img{
+.sbi_notice .sbi_thumb{
+	position: relative;
+	display: inline-block;
 	width: 74px;
-    margin: 0 0 0 -100% !important;
+	margin: 0 0 0 -100% !important;
 
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
 }
-.sbi_review_notice .sbi-notice-text{
-    float: left;
-    clear: none;
-    width: 100%;
-    padding: 0;
+.sbi_notice .sbi_thumb .img-overlay {
+	position: absolute;
+	bottom: 4px;
+	padding: 6px 7px 6px 5px;
+	font-size: 13px;
+	font-weight: bold;
+	background: #fff;
+	background: rgba(255,255,255,0.85);
+	line-height: 1;
+	color: #333;
+	box-shadow: 1px -1px 3px 0 rgba(0,0,0,0.15);
 }
-.sbi_review_notice .sbi-links{
+.sbi_notice .sbi_thumb img {
+	max-width: 100%;
+}
+.sbi_notice .sbi-notice-text{
+	float: left;
+	clear: none;
+	width: 100%;
+	padding: 0;
+}
+.sbi_notice .sbi-links{
 	margin-top: 4px !important;
 }
-.sbi_review_notice p{
-    float: left;
-    clear: both;
-    width: auto;
+.sbi_notice p{
+	float: left;
+	clear: both;
+	width: auto;
 	margin: 0 0 0 90px !important;
 	padding: 2px 40px 2px 0;
 	line-height: 1.4;
 }
-.sbi_review_notice a{
-    display: inline-block;
-    padding: 0 8px;
-    color: #178529;
+.sbi_notice a{
+	display: inline-block;
+	padding: 0 8px;
+	color: #178529;
 }
-.sbi_review_notice a:hover,
-.sbi_review_notice a:focus{
-    color: #0c7abf;
+.sbi_notice a:hover,
+.sbi_notice a:focus{
+	color: #0c7abf;
+}
+.sbi_notice .links{
+	margin: 0 0 0 90px !important;
+	padding: 4px 0 0 0;
+	margin-top: 1px !important;
 }
 .sbi_review_notice .links{
-	margin: 0 0 0 82px !important;
-    padding: 4px 0 0 0;
-    margin-top: 6px !important;
+	margin-left: 82px !important;
+	margin-top: 0 !important;
 }
-.sbi_review_notice .sbi_notice_close,
-.sbi_review_notice .sbi_bfcm_sale_notice_close,
-.sbi_review_notice .sbi_new_user_sale_notice_close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 10px;
-    line-height: 1;
+.sbi_notice .sbi_notice_close,
+.sbi_notice .sbi_bfcm_sale_notice_close,
+.sbi_notice .sbi_new_user_sale_notice_close {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 10px;
+	line-height: 1;
 }
-.sbi_review_notice .sbi_notice_close:hover,
-.sbi_review_notice .sbi_notice_close:focus{
-    color: #a34100;
+.sbi_notice .sbi_notice_close:hover,
+.sbi_notice .sbi_notice_close:focus{
+	color: #a34100;
+}
+.sbi_notice strong span {
+	font-weight: 900;
+}
+/* Notice CTA btn */
+.sbi_notice .sbi_offer_btn,
+.sbi_notice .sbi_main_cta{
+	padding: 4px 12px 6px 12px;
+	background: green;
+	color: #fff;
+	border-radius: 4px;
+	display: inline-block;
+	text-decoration: none;
+	margin-left: 0;
+	margin-right: 4px;
+}
+.sbi_notice .sbi_offer_btn:hover,
+.sbi_notice .sbi_offer_btn:focus,
+.sbi_notice .sbi_main_cta:hover,
+.sbi_notice .sbi_main_cta:focus{
+	background: #049404;
+	color: #fff;
+}
+.sbi_notice .sbi_other_notice{
+	padding-top: 10px;
+	font-style: italic;
+	font-size: 12px;
+}
+.sbi_notice .sbi_other_notice a{
+	padding: 0;
+}
+.sbi_notice .links > .sbi_main_cta:first-child {
+	margin-left: 8px;
 }
 
 /* Support page */
@@ -1420,30 +1470,16 @@
 	margin-top: -10px;
 }
 
-.sbi_review_notice .sbi_offer_btn{
-	padding: 4px 12px 6px 12px;
-    background: green;
-    color: #fff;
-    border-radius: 4px;
-    display: inline-block;
-    text-decoration: none;
-    margin-left: 9px;
-}
-.sbi_review_notice .sbi_offer_btn:hover,
-.sbi_review_notice .sbi_offer_btn:focus{
-	background: #049404;
-	color: #fff;
-}
-.sbi_review_notice .sbi_other_notice{
+.sbi_notice .sbi_other_notice{
 	padding-top: 10px;
     font-style: italic;
     font-size: 12px;
 }
-.sbi_review_notice .sbi_other_notice a {
+.sbi_notice .sbi_other_notice a {
     padding: 0;
 }
 
-.sbi_review_notice .sbi_offer_btn {
+.sbi_notice .sbi_offer_btn {
 	padding: 4px 12px 6px 12px;
 	background: green;
 	color: #fff;
@@ -1451,8 +1487,9 @@
 	display: inline-block;
 	text-decoration: none;
 	margin-left: 0;
+	margin-right: 8px;
 }
-.sbi_review_notice .sbi_offer_btn:hover, .sbi_review_notice .sbi_offer_btn:focus {
+.sbi_notice .sbi_offer_btn:hover, .sbi_notice .sbi_offer_btn:focus {
 	background: #049404;
 	color: #fff;
 }
@@ -2408,6 +2445,57 @@
 	margin-top: 20px;
 }
 
+
+/* GDPR Settings */
+.gdpr_tooltip p{
+	padding: 0 0 10px 0;
+}
+.gdpr_tooltip span{
+	display: inline-block;
+	margin: 0;
+	font-weight: bold;
+	font-size: 14px;
+}
+.gdpr_tooltip .sbi-list{
+	padding: 0 0 10px 0;
+}
+.gdpr_tooltip li{
+	padding: 0;
+}
+.sbi_gdpr_plugin_active .sbi_active{
+	display: inline-block;
+	padding: 10px 20px 15px 20px;
+	border-radius: 5px;
+	background: #edf4f0;
+	border: 1px solid #2c8649;
+	color: #2c8649;
+	margin: 8px 0 0 0;
+}
+.sbi_gdpr_plugin_active svg{
+	width: 16px;
+	height: 16px;
+	position: relative;
+	top: 3px;
+	margin-right: 2px;
+}
+.sbi_gdpr_plugin_active path{
+	fill: green;
+}
+.sbi_gdpr_list,
+.sbi_gdpr_yes,
+.sbi_gdpr_no{
+	display: none;
+}
+#sbi_admin .sbi_gdpr_error {
+	padding: 10px 20px 15px 20px;
+	border-radius: 5px;
+	background: #F7E6E6;
+	border: 1px solid #BA7B7B;
+	color: #592626;
+}
+#sbi_admin .sbi-list {
+	list-style: inside disc;
+}
 /* Clear */
 .sbi-clear:before {
 	content: " ";

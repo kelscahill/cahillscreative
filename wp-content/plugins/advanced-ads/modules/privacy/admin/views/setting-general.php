@@ -52,6 +52,11 @@
 							<input type="checkbox" name="<?php echo esc_attr( Advanced_Ads_Privacy::OPTION_KEY ); ?>[show-non-personalized-adsense]" <?php checked( $show_non_personalized_adsense ); ?> />
 							<?php esc_html_e( 'Show non-personalized AdSense ads until consent is given.', 'advanced-ads' ); ?>
 						</label>
+						<?php if ( Advanced_Ads_Compatibility::borlabs_cookie_adsense_auto_ads_code_exists() ) : ?>
+							<p class="description">
+								<?php require GADSENSE_BASE_PATH . 'admin/views/borlabs-cookie-auto-ads-warning.php'; ?>
+							</p>
+						<?php endif; ?>
 					</div>
 
 					<?php if ( apply_filters( 'advanced-ads-privacy-custom-show-warning', ! empty( $checked ) && Advanced_Ads_Checks::cache() ) ) : ?>

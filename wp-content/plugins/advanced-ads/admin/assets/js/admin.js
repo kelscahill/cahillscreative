@@ -92,9 +92,7 @@ jQuery( document ).ready( function ( $ ) {
 	} )
 
 	// activate general buttons
-	if ( $.fn.advads_buttonset ) {
-		$( '.advads-buttonset' ).advads_buttonset()
-	}
+	$( '.advads-buttonset' ).advads_buttonset()
 	// activate accordions
 	if ( $.fn.accordion ) {
 		$( '.advads-accordion' ).accordion( {
@@ -395,14 +393,11 @@ jQuery( document ).ready( function ( $ ) {
 	 * PLACEMENTS
 	 */
 	// show image tooltips
-	if ( $.fn.advads_tooltip ) {
-		$( '.advads-placements-new-form .advads-placement-type' ).advads_tooltip( {
-			items: 'label',
-			content: function () {
-				return $( this ).parents( '.advads-placement-type' ).find( '.advads-placement-description' ).html()
-			}
-		} )
-	}
+	$( '.advads-placements-new-form .advads-placement-type' ).advads_tooltip( {
+		content: function () {
+			return jQuery( this ).find( '.advads-placement-description' ).html()
+		}
+	} )
 
 	//  keep track of placements that were changed
 	$( 'form#advanced-ads-placements-form input, #advanced-ads-placements-form select' ).on( 'change', function () {
@@ -562,9 +557,10 @@ jQuery( document ).ready( function ( $ ) {
 
 	// process "reserve this space" checkbox
 	$( '#advanced-ads-ad-parameters' ).on( 'change', '#advanced-ads-ad-parameters-size input[type=number]', function () {
+		// Check if width and/or height is set.
 		if ( $( '#advanced-ads-ad-parameters-size input[type=number]' ).filter( function () {
 			return parseInt( this.value, 10 ) > 0
-		} ).length === 2 ) {
+		} ).length >= 1 ) {
 			$( '#advads-wrapper-add-sizes' ).prop( 'disabled', false )
 		} else {
 			$( '#advads-wrapper-add-sizes' ).prop( 'disabled', true ).prop( 'checked', false )
@@ -875,62 +871,6 @@ function advads_ads_txt_find_issues () {
 
 }
 
-jQuery.fn.advads_tooltip = function () {
-	return _advads_apply_jqueryui_widget.call( this, 'tooltip', [ 'tooltip' ], arguments )
-}
-
-jQuery.fn.advads_button = function () {
-	return _advads_apply_jqueryui_widget.call( this, 'button', [ 'button' ], arguments )
-}
-
-jQuery.fn.advads_buttonset = function () {
-	return _advads_apply_jqueryui_widget.call( this, 'buttonset', [ 'button', 'buttonset' ], arguments )
-}
-
-/**
- * Apply jQueryUI widget.
- *
- * @param str name Widget name.
- * @param arr revoke Names of Twitter Bootstrap widgets to revoke.
- * @param arguments_ mixed Widget arguments.
- */
-function _advads_apply_jqueryui_widget ( name, revoke, args ) {
-	var can_apply = true
-
-	jQuery.each( revoke, function ( _index, _name ) {
-		if ( jQuery.fn[ _name ].noConflict ) {
-			// Revoke Twitter Bootstrap, assign jQuery UI.
-			jQuery.fn[ _name ].noConflict()
-		}
-		can_apply = _advads_can_apply_jqueryui_widget( _name )
-	} )
-
-	if ( ! can_apply ) {
-		// The culprit is not Bootstrap, we haven't been able to assign jQuery UI.
-		jQuery( '.advads-jqueryui-error' ).show()
-		return
-	}
-
-	var r = this[ name ].apply( this, args )
-	return r
-}
-
-/**
- * Check whether jQueryUI widget was overridden by another library.
- *
- * @param name Widget name.
- * @return bool
- */
-var _advads_can_apply_jqueryui_widget = (function ( name ) {
-	var r = {}
-	return function ( name ) {
-		if ( ! r.hasOwnProperty( name ) ) {
-			var needle = 'prior to initialization;' // A string from jquery-ui source code.
-			r[ name ]  = jQuery.fn[ name ].toString().indexOf( needle ) !== -1
-		}
-		return r[ name ]
-	}
-})()
 
 window.advanced_ads_admin     = window.advanced_ads_admin || {}
 advanced_ads_admin.filesystem = {
@@ -1267,6 +1207,7 @@ if ( ! window.AdvancedAdsAdmin.AdImporter ) window.AdvancedAdsAdmin.AdImporter =
 				AdvancedAdsAdmin.AdImporter.refreshAds()
 			}
 		}
+		jQuery( '#wpwrap' ).trigger( 'advads-mapi-adlist-opened' );
 		AdvancedAdsAdmin.AdImporter.resizeAdListHeader()
 	},
 	/**
@@ -1333,13 +1274,17 @@ if ( ! window.AdvancedAdsAdmin.AdImporter ) window.AdvancedAdsAdmin.AdImporter =
 					AdvancedAdsAdmin.AdImporter.adNetwork.updateAdFromList( slotId )
 					break
 				case 'toggleidle':
-					AdvancedAdsAdmin.AdImporter.adNetwork.hideIdle = ! AdvancedAdsAdmin.AdImporter.adNetwork.hideIdle
-					AdvancedAdsAdmin.AdImporter.toggleIdleAds( AdvancedAdsAdmin.AdImporter.adNetwork.hideIdle )
-					const $inactiveNotice = jQuery('#mapi-notice-inactive');
-					if ($inactiveNotice.length) {
-						$inactiveNotice.toggle(AdvancedAdsAdmin.AdImporter.adNetwork.hideIdle);
+					if ( 'undefined' != typeof AdvancedAdsAdmin.AdImporter.adNetwork.getMapiAction && 'function' == typeof AdvancedAdsAdmin.AdImporter.adNetwork.getMapiAction( 'toggleidle' ) ) {
+						AdvancedAdsAdmin.AdImporter.adNetwork.getMapiAction( 'toggleidle' )( ev, this );
+					} else {
+						AdvancedAdsAdmin.AdImporter.adNetwork.hideIdle = ! AdvancedAdsAdmin.AdImporter.adNetwork.hideIdle
+						AdvancedAdsAdmin.AdImporter.toggleIdleAds( AdvancedAdsAdmin.AdImporter.adNetwork.hideIdle )
+						const $inactiveNotice = jQuery( '#mapi-notice-inactive' );
+						if ( $inactiveNotice.length ) {
+							$inactiveNotice.toggle( AdvancedAdsAdmin.AdImporter.adNetwork.hideIdle );
+						}
+						break;
 					}
-					break;
 				default:
 			}
 		} )
@@ -1468,7 +1413,7 @@ if ( ! window.AdvancedAdsAdmin.AdImporter ) window.AdvancedAdsAdmin.AdImporter =
 	 */
 	refreshAds: function () {
 		const adNetwork = AdvancedAdsAdmin.AdImporter.adNetwork
-		jQuery( '#mapi-loading-overlay' ).css( 'display', 'block' )
+		jQuery( '#mapi-loading-overlay' ).css( 'display', 'block' );
 		jQuery.ajax( {
 			type: 'post',
 			url: ajaxurl,

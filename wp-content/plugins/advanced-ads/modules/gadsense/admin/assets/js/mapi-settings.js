@@ -86,7 +86,7 @@
 	$( document ).on( 'click', '#connect-adsense', function(){
 		if ( $( this ).hasClass( 'disabled' ) ) return;
         if ( 'undefined' != typeof window.advadsMapiConnect ) {
-            window.advadsMapiConnect();
+            window.advadsMapiConnect( 'open-google' );
         }
 	} );
 

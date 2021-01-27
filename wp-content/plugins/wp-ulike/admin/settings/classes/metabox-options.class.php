@@ -25,10 +25,12 @@ if ( ! class_exists( 'ULF_Metabox' ) ) {
       'exclude_post_types' => array(),
       'page_templates'     => '',
       'post_formats'       => '',
+      'show_reset'         => false,
       'show_restore'       => false,
       'enqueue_webfont'    => true,
       'async_webfont'      => false,
       'output_css'         => true,
+      'nav'                => 'normal',
       'theme'              => 'dark',
       'class'              => '',
       'defaults'           => array(),
@@ -139,7 +141,7 @@ if ( ! class_exists( 'ULF_Metabox' ) ) {
     public function add_meta_box( $post_type ) {
 
       if ( ! in_array( $post_type, $this->args['exclude_post_types'] ) ) {
-        add_meta_box( $this->unique, wp_kses_post( $this->args['title'] ), array( &$this, 'add_meta_box_content' ), $this->post_type, $this->args['context'], $this->args['priority'], $this->args );
+        add_meta_box( $this->unique, $this->args['title'], array( &$this, 'add_meta_box_content' ), $this->post_type, $this->args['context'], $this->args['priority'], $this->args );
       }
 
     }
@@ -185,11 +187,13 @@ if ( ! class_exists( 'ULF_Metabox' ) ) {
 
       global $post;
 
-      $has_nav  = ( count( $this->sections ) > 1 && $this->args['context'] !== 'side' ) ? true : false;
-      $show_all = ( ! $has_nav ) ? ' ulf-show-all' : '';
-      $errors   = ( is_object ( $post ) ) ? get_post_meta( $post->ID, '_ulf_errors_'. $this->unique, true ) : array();
-      $errors   = ( ! empty( $errors ) ) ? $errors : array();
-      $theme    = ( $this->args['theme'] ) ? ' ulf-theme-'. $this->args['theme'] : '';
+      $has_nav   = ( count( $this->sections ) > 1 && $this->args['context'] !== 'side' ) ? true : false;
+      $show_all  = ( ! $has_nav ) ? ' ulf-show-all' : '';
+      $post_type = ( is_object ( $post ) ) ? $post->post_type : '';
+      $errors    = ( is_object ( $post ) ) ? get_post_meta( $post->ID, '_ulf_errors_'. $this->unique, true ) : array();
+      $errors    = ( ! empty( $errors ) ) ? $errors : array();
+      $theme     = ( $this->args['theme'] ) ? ' ulf-theme-'. $this->args['theme'] : '';
+      $nav_type  = ( $this->args['nav'] === 'inline' ) ? 'inline' : 'normal';
 
       if ( is_object ( $post ) && ! empty( $errors ) ) {
         delete_post_meta( $post->ID, '_ulf_errors_'. $this->unique );
@@ -203,7 +207,7 @@ if ( ! class_exists( 'ULF_Metabox' ) ) {
 
           if ( $has_nav ) {
 
-            echo '<div class="ulf-nav ulf-nav-metabox">';
+            echo '<div class="ulf-nav ulf-nav-'. esc_attr( $nav_type ) .' ulf-nav-metabox">';
 
               echo '<ul>';
 
@@ -211,10 +215,14 @@ if ( ! class_exists( 'ULF_Metabox' ) ) {
 
               foreach ( $this->sections as $section ) {
 
+                if ( ! empty( $section['post_type'] ) && ! in_array( $post_type, array_filter( (array) $section['post_type'] ) ) ) {
+                  continue;
+                }
+
                 $tab_error = ( ! empty( $errors['sections'][$tab_key] ) ) ? '<i class="ulf-label-error ulf-error">!</i>' : '';
                 $tab_icon  = ( ! empty( $section['icon'] ) ) ? '<i class="ulf-tab-icon '. esc_attr( $section['icon'] ) .'"></i>' : '';
 
-                echo '<li><a href="#">'. wp_kses_post( $tab_icon . $section['title'] . $tab_error ) .'</a></li>';
+                echo '<li><a href="#">'. $tab_icon . $section['title'] . $tab_error .'</a></li>';
 
                 $tab_key++;
 
@@ -234,14 +242,18 @@ if ( ! class_exists( 'ULF_Metabox' ) ) {
 
             foreach ( $this->sections as $section ) {
 
+              if ( ! empty( $section['post_type'] ) && ! in_array( $post_type, array_filter( (array) $section['post_type'] ) ) ) {
+                continue;
+              }
+
               $section_onload = ( ! $has_nav ) ? ' ulf-onload' : '';
               $section_class  = ( ! empty( $section['class'] ) ) ? ' '. $section['class'] : '';
               $section_title  = ( ! empty( $section['title'] ) ) ? $section['title'] : '';
               $section_icon   = ( ! empty( $section['icon'] ) ) ? '<i class="ulf-section-icon '. esc_attr( $section['icon'] ) .'"></i>' : '';
 
-              echo '<div class="ulf-section'. esc_attr( $section_onload . $section_class ) .'">';
+              echo '<div class="ulf-section hidden'. esc_attr( $section_onload . $section_class ) .'">';
 
-              echo ( $section_title || $section_icon ) ? '<div class="ulf-section-title"><h3>'. wp_kses_post( $section_icon . $section_title ) .'</h3></div>' : '';
+              echo ( $section_title || $section_icon ) ? '<div class="ulf-section-title"><h3>'. $section_icon . $section_title .'</h3></div>' : '';
 
               if ( ! empty( $section['fields'] ) ) {
 
@@ -261,7 +273,7 @@ if ( ! class_exists( 'ULF_Metabox' ) ) {
 
               } else {
 
-                echo '<div class="ulf-no-option">'. esc_html__( 'No option provided by developer.', 'ulf' ) .'</div>';
+                echo '<div class="ulf-no-option">'. esc_html__( 'No data available.', 'ulf' ) .'</div>';
 
               }
 
@@ -273,13 +285,13 @@ if ( ! class_exists( 'ULF_Metabox' ) ) {
 
             echo '</div>';
 
-            if ( ! empty( $this->args['show_restore'] ) ) {
+            if ( ! empty( $this->args['show_restore'] ) || ! empty( $this->args['show_reset'] ) ) {
 
-              echo '<div class="ulf-sections-restore">';
+              echo '<div class="ulf-sections-reset">';
               echo '<label>';
-              echo '<input type="checkbox" name="'. esc_attr( $this->unique ) .'[_restore]" />';
-              echo '<span class="button ulf-button-restore">'. esc_html__( 'Restore', 'ulf' ) .'</span>';
-              echo '<span class="button ulf-button-cancel">'. sprintf( '<small>( %s )</small> %s', esc_html__( 'update post for restore ', 'ulf' ), esc_html__( 'Cancel', 'ulf' ) ) .'</span>';
+              echo '<input type="checkbox" name="'. esc_attr( $this->unique ) .'[_reset]" />';
+              echo '<span class="button ulf-button-reset">'. esc_html__( 'Reset', 'ulf' ) .'</span>';
+              echo '<span class="button ulf-button-cancel">'. sprintf( '<small>( %s )</small> %s', esc_html__( 'update post', 'ulf' ), esc_html__( 'Cancel', 'ulf' ) ) .'</span>';
               echo '</label>';
               echo '</div>';
 
@@ -287,7 +299,7 @@ if ( ! class_exists( 'ULF_Metabox' ) ) {
 
           echo '</div>';
 
-          echo ( $has_nav ) ? '<div class="ulf-nav-background"></div>' : '';
+          echo ( $has_nav && $nav_type === 'normal' ) ? '<div class="ulf-nav-background"></div>' : '';
 
           echo '<div class="clear"></div>';
 
@@ -377,7 +389,7 @@ if ( ! class_exists( 'ULF_Metabox' ) ) {
 
       do_action( "ulf_{$this->unique}_save_before", $data, $post_id, $this );
 
-      if ( empty( $data ) || ! empty( $request['_restore'] ) ) {
+      if ( empty( $data ) || ! empty( $request['_reset'] ) ) {
 
         if ( $this->args['data_type'] !== 'serialize' ) {
           foreach ( $data as $key => $value ) {

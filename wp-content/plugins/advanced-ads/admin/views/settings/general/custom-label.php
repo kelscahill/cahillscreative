@@ -4,9 +4,10 @@
 	<input id="advads-custom-label" type="text" value="<?php echo esc_html( $label ); ?>"
 		   name="<?php echo esc_attr( ADVADS_SLUG ); ?>[custom-label][text]"/>
 </fieldset>
-<p class="description"><?php esc_html_e( 'Displayed above ads.', 'advanced-ads' ); ?>&nbsp;<a target="_blank" href="<?php echo esc_url( ADVADS_URL . 'manual/advertisement-label/#utm_source=advanced-ads&utm_medium=link&utm_campaign=settings-advertisement-label' ); ?>">
-										 <?php
-											esc_html_e( 'Manual', 'advanced-ads' );
-											?>
-		</a>
+<p class="description"><?php esc_html_e( 'Displayed above ads.', 'advanced-ads' ); ?>&nbsp;
+	<a target="_blank" href="<?php echo esc_url( ADVADS_URL . 'manual/advertisement-label/#utm_source=advanced-ads&utm_medium=link&utm_campaign=settings-advertisement-label' ); ?>">
+										<?php
+										esc_html_e( 'Manual', 'advanced-ads' );
+										?>
+	</a>
 </p>

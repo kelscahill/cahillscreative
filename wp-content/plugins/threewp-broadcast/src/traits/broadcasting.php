@@ -586,6 +586,12 @@ trait broadcasting
 			else
 				$this->debug( 'No need to modify the post.' );
 
+			$bcd->modified_post = $modified_post;
+			$action = $this->new_action( 'broadcasting_after_modify_post' );
+			$action->broadcasting_data = $bcd;
+			$action->post_modified = $post_modified;
+			$action->execute();
+
 			if ( $bcd->custom_fields )
 			{
 				$this->debug( 'Custom fields: Started.' );
@@ -918,16 +924,26 @@ trait broadcasting
 		// Remove the parent blog
 		$bcd->blogs->forget( $bcd->parent_blog_id );
 
-		$bcd->custom_fields = $form->checkbox( 'custom_fields' )->get_post_value()
-			&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_custom_fields' ) ) );
-		if ( $bcd->custom_fields )
-			$bcd->custom_fields = (object)[];
-
 		$bcd->link = $form->checkbox( 'link' )->get_post_value()
 			&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_link' ) ) );
 
-		$bcd->taxonomies = $form->checkbox( 'taxonomies' )->get_post_value()
-			&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_taxonomies' ) ) );
+		if ( $this->get_site_option( 'show_custom_fields_taxonomies' ) )
+		{
+			$this->debug( 'show_custom_fields_taxonomies is false.' );
+			$bcd->custom_fields = $form->checkbox( 'custom_fields' )->get_post_value()
+				&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_custom_fields' ) ) );
+			if ( $bcd->custom_fields )
+				$bcd->custom_fields = (object)[];
+
+			$bcd->taxonomies = $form->checkbox( 'taxonomies' )->get_post_value()
+				&& ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_taxonomies' ) ) );
+		}
+		else
+		{
+			$this->debug( 'Assuming custom fields and taxonomies are to be broadcasted.' );
+			$bcd->custom_fields = true;
+			$bcd->taxonomies = true;
+		}
 
 		$keep_attachments = $this->get_site_option( 'keep_attachments' );
 		if ( $keep_attachments )

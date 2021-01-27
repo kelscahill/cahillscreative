@@ -20,10 +20,6 @@ if ( ! isset( $hide_idle_ads ) ) {
 if ( ! isset( $ad_units ) ) {
 	$ad_units = array();
 }
-$only_inactive_units = ! empty( $ad_units ) && empty( array_filter( $ad_units,
-		function ( Advanced_Ads_Ad_Network_Ad_Unit $ad ) {
-			return $ad->active;
-		} ) );
 
 ?>
 <div id="mapi-wrap" class="aa-select-list">
@@ -59,7 +55,7 @@ $only_inactive_units = ! empty( $ad_units ) && empty( array_filter( $ad_units,
             </tr>
             </thead>
             <tbody>
-			<?php if ( $only_inactive_units ) : ?>
+			<?php if ( $load_inactive_button ) : ?>
 			<tr id="mapi-notice-inactive">
 				<td colspan="5" style="text-align:center;">
 					<?php esc_attr_e( 'No active ad units found', 'advanced-ads' ); ?>
@@ -69,7 +65,7 @@ $only_inactive_units = ! empty( $ad_units ) && empty( array_filter( $ad_units,
 					</button>
 				</td>
 			</tr>
-			<?php endif; ?>
+			<?php else : ?>
 			<?php if ( empty( $ad_units ) ) : ?>
 				<tr id="mapi-notice-noads">
 					<td colspan="5" style="text-align:center;">
@@ -112,6 +108,7 @@ $only_inactive_units = ! empty( $ad_units ) && empty( array_filter( $ad_units,
 					</td>
 				</tr>
 			<?php endforeach; ?>
+            <?php endif; ?>
             <?php endif; ?>
             </tbody>
         </table>

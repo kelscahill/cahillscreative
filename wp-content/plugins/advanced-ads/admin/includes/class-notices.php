@@ -322,14 +322,14 @@ class Advanced_Ads_Admin_Notices {
 			return;
 		}
 
-		// register Black Friday 2019 deals.
-		if ( time() > 1574985600 &&
-			time() <= 1575374400 && Advanced_Ads_Admin::get_instance()->screen_belongs_to_advanced_ads() ) {
+		// register Black Friday 2020 deals.
+		if ( time() > 1606392000 &&
+			time() <= 1606824000 && Advanced_Ads_Admin::get_instance()->screen_belongs_to_advanced_ads() ) {
 			$options = $this->options();
 			$closed  = isset( $options['closed'] ) ? $options['closed'] : array();
 
-			if ( ! isset( $closed['bf2019'] ) ) {
-				$this->notices[] = 'bf2019';
+			if ( ! isset( $closed['bf2020'] ) ) {
+				$this->notices[] = 'bf2020';
 			}
 		}
 

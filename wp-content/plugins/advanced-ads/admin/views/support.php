@@ -8,6 +8,7 @@
 	<ul>
 	<li><a href="<?php echo esc_url( ADVADS_URL ); ?>manual/ads-not-showing-up/#utm_source=advanced-ads&utm_medium=link&utm_campaign=support"><?php esc_html_e( 'Ads not showing up', 'advanced-ads' ); ?></a></li>
 	<li><a href="<?php echo esc_url( ADVADS_URL ); ?>manual/purchase-licenses/#utm_source=advanced-ads&utm_medium=link&utm_campaign=support"><?php esc_html_e( 'Purchase & Licenses', 'advanced-ads' ); ?></a></li>
+	<li><a href="<?php echo esc_url( ADVADS_URL ); ?>manual/issues-after-updates/#utm_source=advanced-ads&utm_medium=link&utm_campaign=support"><?php esc_html_e( 'Issues after updating', 'advanced-ads' ); ?></a></li>
 	<li><a href="<?php echo esc_url( ADVADS_URL ); ?>manual-category/troubleshooting/#utm_source=advanced-ads&utm_medium=link&utm_campaign=support"><?php esc_html_e( 'General Issues', 'advanced-ads' ); ?></a></li>
 	<li><a href="<?php echo esc_url( ADVADS_URL ); ?>manual-category/add-on-issues/#utm_source=advanced-ads&utm_medium=link&utm_campaign=support"><?php esc_html_e( 'Issues with Add-Ons', 'advanced-ads' ); ?></a></li>
 	</ul>

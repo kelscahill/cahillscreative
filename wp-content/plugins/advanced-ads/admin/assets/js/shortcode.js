@@ -9,10 +9,10 @@
 		init : function( ed, url ) {
 			ed.addButton( 'advads_shortcode_button', {
 				title: ed.getLang( 'advads_shortcode.title', 'Advanced ads shortcodes' ),
-				image : url + '/../img/tinymce-icon.png',
+				image: ed.getLang( 'advads_shortcode.image' ),
 				cmd: 'advads_shortcode_command'
 			});
-			
+
 			ed.addCommand( 'advads_shortcode_command', function() {
 					ed.windowManager.open({
 						title: ed.getLang( 'advads_shortcode.title', 'Advanced Ads shortcodes' ),
@@ -26,7 +26,7 @@
 						buttons: [{
 							text: ed.getLang( 'advads_shortcode.ok', 'Add shortcode' ),
 							id: 'advads-shortcode-button-insert-wrap',
-							
+
 							onclick: function( e ) {
 								if ( jQuery( '#advads-shortcode-modal-container-body #advads-select-for-shortcode' ).length > 0 ) {
 									var item = jQuery( '#advads-select-for-shortcode option:selected' ).val();
@@ -51,15 +51,15 @@
 							text: ed.getLang( 'advads_shortcode.cancel', 'Cancel' ),
 							onclick: 'close'
 						}],
-						
+
 					});
 
 				append_select_field();
 
 			});
-		},         
+		},
 	});
- 
+
 	// Register the plugin
 	tinymce.PluginManager.add( 'advads_shortcode', tinymce.plugins.advads_shortcode );
 
@@ -80,14 +80,14 @@
 		})
 		.done( function( data, textStatus, jqXHR ) {
 			container_body.html( data );
-  
+
 			jQuery( '#advads-select-for-shortcode' ).on( 'change', function() {
 				if ( jQuery( this ).prop( 'selectedIndex' ) === 0 ) {
 					insert_button_wrap.addClass( 'mce-disabled' );
 					insert_button.prop( 'disabled', true );
 				} else {
 					insert_button_wrap.removeClass( 'mce-disabled' );
-					insert_button.prop( 'disabled', false );					
+					insert_button.prop( 'disabled', false );
 				}
 			});
 

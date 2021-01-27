@@ -17,33 +17,37 @@ if ( $use_user_app ) {
 	$CID = ADVANCED_ADS_MAPI_CID;
 }
 
+$state = [
+	'api' => 'adsense',
+	'nonce' => $nonce,
+	'return_url' => admin_url( 'admin.php?page=advanced-ads-settings&oauth=1#top#adsense' ),
+];
+
 $connection_error_messages = Advanced_Ads_AdSense_MAPI::get_connect_error_messages();
 
 $auth_url = 'https://accounts.google.com/o/oauth2/v2/auth?scope=' .
 			urlencode( 'https://www.googleapis.com/auth/adsense.readonly' ) .
 			'&client_id=' . $CID .
-			'&redirect_uri=' . urlencode( 'urn:ietf:wg:oauth:2.0:oob' ) .
-			'&access_type=offline&include_granted_scopes=true&prompt=select_account&response_type=code';
+			'&redirect_uri=' . urlencode( Advanced_Ads_AdSense_MAPI::REDIRECT_URI ) .
+			'&state=' . urlencode( base64_encode( wp_json_encode( $state ) ) ) .
+			'&access_type=offline&include_granted_scopes=true&prompt=consent&response_type=code';
 
-?>
-<div id="gadsense-modal">
+$_get = wp_unslash( $_GET );
+
+if ( isset( $_get['oauth'] ) && '1' == $_get['oauth'] && isset( $_get['api'] ) && 'adsense' == $_get['api'] ) : ?>
+	<?php if ( isset( $_get['nonce'] ) && false !== wp_verify_nonce( $_get['nonce'], 'advads-mapi' ) ) : ?>
+		<?php if ( isset( $_get['code'] ) && current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options' ) ) ) : ?>
+		<input type="hidden" id="advads-adsense-oauth-code" value="<?php echo esc_attr( urldecode( $_get['code'] ) ); ?>" />
+		<?php endif; ?>
+	<?php endif; ?>
+<?php endif; ?>
+<div id="gadsense-modal" data-return="<?php echo ESC_ATTR( admin_url( 'admin.php?page=advanced-ads-settings&oauth=1#top#adsense' ) ); ?>">
 	<div id="gadsense-modal-outer">
 		<div id="gadsense-modal-inner">
 			<div id="gadsense-modal-content">
 				<div class="gadsense-modal-content-inner" data-content="confirm-code">
 					<i class="dashicons dashicons-dismiss"></i>
-					<label style="font-size:1.1em;font-weight:600;margin-bottom:.3em;display:block;"><?php _e( 'Please enter the confirmation code.', 'advanced-ads' ); ?></label>
-					<div class="gadsense-modal-error" id="gadsense-modal-error">
-						<?php
-						/* Translators: 1: opening a tag to open Google Adsense modal 2: closing a tag */
-						printf( esc_attr__( 'This is not the correct confirmation code. %1$sPlease try again%2$s.', 'advanced-ads' ), '<a href="#" id="gadsense-reopen-connect">', '</a>' );
-						?>
-					</div>
-					<input type="text" class="widefat" id="mapi-code" value="" />
-					<p><label><input type="checkbox" value="1" id="mapi-autoads"<?php echo ( $options['page-level-enabled'] ) ? ' checked="checked"' : ''; ?> />&nbsp;<?php _e( 'Insert the AdSense header code used for verification and the Auto Ads feature.', 'advanced-ads' ); ?></label></p>
-					<p class="submit">
-						<button id="mapi-confirm-code" class="button-primary preventDefault"><?php _e( 'Submit code', 'advanced-ads' ); ?></button>
-					</p>
+					<h2><?php esc_html_e( 'Processing authorization', 'advanced-ads-gam' );?></h2>
 					<div class="gadsense-overlay">
 						<img alt="..." src="<?php echo ADVADS_BASE_URL . 'admin/assets/img/loader.gif'; ?>" style="margin-top:3em" />
 					</div>

@@ -53,7 +53,7 @@ class Advanced_Ads_Admin_Menu {
 	public function add_plugin_admin_menu() {
 
 		// get number of ads including those in trash.
-		$has_ads = Advanced_Ads::get_number_of_ads();
+		$has_ads = Advanced_Ads::get_number_of_ads( array( 'any', 'trash' ) );
 
 		// get number of Ad Health notices.
 		$notices = Advanced_Ads_Ad_Health_Notices::get_number_of_notices();
@@ -91,7 +91,7 @@ class Advanced_Ads_Admin_Menu {
 				Advanced_Ads_Plugin::user_cap( 'advanced_ads_see_interface' ),
 				$this->plugin_slug,
 				array( $this, 'display_overview_page' ),
-				'dashicons-chart-line',
+				Advanced_Ads_Plugin::get_icon_svg(),
 				'58.74'
 			);
 

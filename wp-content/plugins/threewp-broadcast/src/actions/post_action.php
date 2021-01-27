@@ -24,6 +24,13 @@ class post_action
 	public $blogs = [];
 
 	/**
+		@brief		Run this post action with high priority?
+		@details	Mostly affects the find_unlinked_children subaction.
+		@since		2020-12-16 13:22:33
+	**/
+	public $high_priority = true;
+
+	/**
 		@brief		IN: The ID of the post on which to execute this action.
 		@since		2014-11-02 16:28:00
 	**/

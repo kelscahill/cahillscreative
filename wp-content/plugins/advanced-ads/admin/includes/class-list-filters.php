@@ -62,6 +62,7 @@ class Advanced_Ads_Ad_List_Filters {
 		if ( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 			add_filter( 'posts_results', array( $this, 'post_results' ), 10, 2 );
 			add_filter( 'posts_orderby', array( $this, 'orderby_filter' ), 10, 2 );
+			add_filter( 'post_limits', array( $this, 'limit_filter' ), 10, 2 );
 		}
 	}
 
@@ -268,23 +269,48 @@ class Advanced_Ads_Ad_List_Filters {
 	 * @return mixed
 	 */
 	public function orderby_filter( $orderby, $the_query ) {
+		// Execute only in the main query.
+		if ( ! $the_query->is_main_query() ) {
+			return $orderby;
+		}
+
 		if ( ! function_exists( 'get_current_screen' ) ) {
-			return;
+			return $orderby;
 		}
+
 		$scr = get_current_screen();
-		global $wpdb;
-
-		// execute only on the first query.
-		if ( ! $scr ) {
-			// and only on the ad list page.
-			$request = wp_unslash( $_REQUEST );
-			$server  = wp_unslash( $_SERVER );
-			if ( false !== strpos( $server['PHP_SELF'], 'edit.php' ) && isset( $request['post_type'] ) && Advanced_Ads::POST_TYPE_SLUG === $request['post_type'] ) {
-				$orderby = 'post_title ASC';
-			}
+		// Execute only in the ad list page.
+		if ( ! $scr || 'edit-advanced_ads' !== $scr->id ) {
+			return $orderby;
 		}
 
-		return $orderby;
+		return 'post_title ASC';
+	}
+
+	/**
+	 * Remove limits because we need to get all ads.
+	 *
+	 * @param string   $limits The LIMIT clause of the query.
+	 * @param WP_Query $the_query the current WP_Query object.
+	 * @return string $limits The LIMIT clause of the query.
+	 */
+	public function limit_filter( $limits, $the_query ) {
+		// Execute only in the main query.
+		if ( ! $the_query->is_main_query() ) {
+			return $limits;
+		}
+
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return $limits;
+		}
+
+		$scr = get_current_screen();
+		// Execute only in the ad list page.
+		if ( ! $scr || 'edit-advanced_ads' !== $scr->id ) {
+			return $limits;
+		}
+
+		return '';
 	}
 
 	/**
@@ -296,40 +322,22 @@ class Advanced_Ads_Ad_List_Filters {
 	 * @return array with posts
 	 */
 	public function post_results( $posts, $the_query ) {
+		// Execute only in the main query.
+		if ( ! $the_query->is_main_query() ) {
+			return $posts;
+		}
+
 		if ( ! function_exists( 'get_current_screen' ) ) {
 			return $posts;
 		}
 
-		// If for some reason, requested posts are not ads, abort everything.
-		if ( count( $posts ) && isset( $_REQUEST['post_type'] ) && Advanced_Ads::POST_TYPE_SLUG === $_REQUEST['post_type'] ) {
-			if ( Advanced_Ads::POST_TYPE_SLUG !== $posts[0]->post_type ) {
-				return $posts;
-			}
-		}
-
-		$new_posts = $posts;
-		$scr       = get_current_screen();
-
-		// execute only on the first query.
-		if ( ! $scr ) {
-			// if there are already some records, don't re-execute. Prevents bug with plugins making early extra query.
-			if ( count( $this->all_ads ) ) {
-				return $posts;
-			}
-			// and only on the ad list page.
-			$request = wp_unslash( $_REQUEST );
-			$server  = wp_unslash( $_SERVER );
-			if ( false !== strpos( $server['PHP_SELF'], 'edit.php' ) && isset( $request['post_type'] ) && Advanced_Ads::POST_TYPE_SLUG === $request['post_type'] ) {
-				$this->collect_all_ads( $posts );
-			}
-
+		$scr = get_current_screen();
+		// Execute only in the ad list page.
+		if ( ! $scr || 'edit-advanced_ads' !== $scr->id ) {
 			return $posts;
 		}
 
-		// edit only on ad list page.
-		if ( 'edit-advanced_ads' !== $scr->id ) {
-			return $posts;
-		}
+		$this->collect_all_ads( $posts );
 
 		// the new post list.
 		if ( isset( $_REQUEST['post_status'] ) && 'trash' === $_REQUEST['post_status'] ) {
@@ -337,12 +345,6 @@ class Advanced_Ads_Ad_List_Filters {
 			$new_posts = $posts;
 		} else {
 			// in other cases, apply our custom filters.
-			$new_posts = $this->ad_filters( $this->all_ads, $the_query );
-		}
-
-		// re-collect data from the search results.
-		if ( isset( $_REQUEST['s'] ) && '' !== $_REQUEST['s'] ) {
-			$this->collect_all_ads( $posts );
 			$new_posts = $this->ad_filters( $this->all_ads, $the_query );
 		}
 

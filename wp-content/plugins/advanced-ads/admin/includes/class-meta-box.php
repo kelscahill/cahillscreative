@@ -128,7 +128,7 @@ class Advanced_Ads_Admin_Meta_Boxes {
 		if ( ! defined( 'AAT_VERSION' ) ) {
 			add_meta_box(
 				'advads-tracking-pitch',
-				__( 'Ad Stats', 'advanced-ads' ),
+				__( 'Statistics', 'advanced-ads' ),
 				array( $this, 'markup_meta_boxes' ),
 				$post_type,
 				'normal',
@@ -152,6 +152,8 @@ class Advanced_Ads_Admin_Meta_Boxes {
 
 		// force AA meta boxes to never be completely hidden by screen options.
 		add_filter( 'hidden_meta_boxes', array( $this, 'unhide_meta_boxes' ), 10, 2 );
+		// hide the checkboxes for "unhideable" meta boxes within screen options via CSS.
+		add_action( 'admin_head', array( $this, 'unhide_meta_boxes_style' ) );
 
 		$whitelist = apply_filters(
 			'advanced-ads-ad-edit-allowed-metaboxes',
@@ -209,7 +211,7 @@ class Advanced_Ads_Admin_Meta_Boxes {
 				$margin = isset( $ad_options['margin'] ) ? $ad_options['margin'] : array();
 				$wrapper_id = isset( $ad_options['wrapper-id'] ) ? $ad_options['wrapper-id'] : '';
 				$wrapper_class = isset( $ad_options['wrapper-class'] ) ? $ad_options['wrapper-class'] : '';
-				$debug_mode_enabled = isset( $ad_options['debugmode'] ) ? true : false;
+				$debug_mode_enabled = (bool) $ad->options( 'output.debugmode' );
 				$view = 'ad-output-metabox.php';
 				break;
 			case 'ad-display-box':
@@ -371,7 +373,29 @@ class Advanced_Ads_Admin_Meta_Boxes {
 		}
 
 		// return only hidden elements which are not among the Advanced Ads meta box ids.
-		return array_diff( $hidden, $this->meta_box_ids );
+		return array_diff( $hidden, (array) apply_filters( 'advanced-ads-unhide-meta-boxes', $this->meta_box_ids ) );
+	}
+
+	/**
+	 * Add dynamic CSS for un-hideable meta boxes.
+	 */
+	public function unhide_meta_boxes_style() {
+		$screen = get_current_screen();
+		if ( empty( $screen ) || ! isset( $screen->id ) || 'advanced_ads' !== $screen->id ) {
+			return;
+		}
+
+		$meta_boxes = (array) apply_filters( 'advanced-ads-unhide-meta-boxes', $this->meta_box_ids );
+		if ( empty( $meta_boxes ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- we don't need to escape the string we just concatenated.
+		printf( '<style>%s {display: none;}</style>', implode( ', ', array_reduce( $meta_boxes, function( $styles, $box_id ) {
+			$styles[] = sprintf( 'label[for="%s-hide"]', $box_id );
+
+			return $styles;
+		}, array() ) ) );
 	}
 
 	/**

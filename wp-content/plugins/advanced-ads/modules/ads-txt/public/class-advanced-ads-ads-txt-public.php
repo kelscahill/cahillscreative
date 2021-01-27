@@ -21,7 +21,9 @@ class Advanced_Ads_Ads_Txt_Public {
 			$content = $this->prepare_frontend_output();
 			if ( $content ) {
 				header( 'Content-Type: text/plain; charset=utf-8' );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo $content;
+
 				exit;
 			}
 		}
@@ -44,7 +46,6 @@ class Advanced_Ads_Ads_Txt_Public {
 
 		if ( $content ) {
 			$content = self::TOP . "\n" . $content;
-			$content = esc_html( $content );
 			return $content;
 		}
 

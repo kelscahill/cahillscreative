@@ -551,7 +551,7 @@ class Advanced_Ads_Admin_Licenses {
 						'version'   => $_add_on['version'],
 						'license'   => $license_key,
 						'item_name' => $_add_on['name'],
-						'author'    => 'Thomas Maier',
+						'author'    => 'Advanced Ads',
 					)
 				);
 			}

@@ -47,7 +47,7 @@ class SB_Instagram_API_Connect
 	public function __construct( $connected_account_or_url, $endpoint = '', $params = array() ) {
 		if ( is_array( $connected_account_or_url ) && isset( $connected_account_or_url['access_token'] ) ) {
 			$this->set_url( $connected_account_or_url, $endpoint, $params );
-		} elseif ( strpos( $connected_account_or_url, 'https' ) !== false ) {
+		} elseif ( ! is_array( $connected_account_or_url ) && strpos( $connected_account_or_url, 'https' ) !== false ) {
 			$this->url = $connected_account_or_url;
 		} else {
 			$this->url = '';
@@ -160,8 +160,13 @@ class SB_Instagram_API_Connect
 	 *
 	 * @since 2.0/5.0
 	 */
-	public function is_instagram_error() {
-		return (isset( $this->response['meta']['error_type'] ) || isset( $this->response['error']['message'] ));
+	public function is_instagram_error( $response = false ) {
+
+		if ( ! $response ) {
+			$response = $this->response;
+		}
+
+		return (isset( $response['error'] ));
 	}
 
 	/**
@@ -182,6 +187,7 @@ class SB_Instagram_API_Connect
 		}
 
 		$this->response = $response;
+
 	}
 
 	/**
@@ -198,112 +204,13 @@ class SB_Instagram_API_Connect
 		global $sb_instagram_posts_manager;
 		delete_option( 'sbi_dismiss_critical_notice' );
 
-		$sb_instagram_posts_manager->update_error_page( get_the_ID() );
+		$type = isset( $response['error']['code'] ) && (int)$response['error']['code'] === 18 ? 'hashtag_limit' : 'api';
 
-		$error_time = 300;
-		if ( isset( $response['error']['message'] ) ) {
-			if ( (int)$response['error']['code'] === 100 ) {
-				$options = get_option( 'sb_instagram_settings', array() );
+		$sb_instagram_posts_manager->add_error( $type, $response, $error_connected_account );
 
-				$connected_accounts =  isset( $options['connected_accounts'] ) ? $options['connected_accounts'] : array();
-				$user_name = '';
-				foreach ( $connected_accounts as $connected_account ) {
-					if ( $connected_account['access_token'] === $error_connected_account['access_token'] ) {
-						$connected_accounts[ $connected_account['user_id'] ]['is_valid'] = false;
-						$connected_accounts[ $connected_account['user_id'] ]['last_checked'] = time();
-						if ( isset( $connected_account['username'] ) ) {
-							$user_name = $connected_account['username'];
-						} else {
-							$user_name = $connected_account['user_id'];
-						}
-					}
-				}
-
-				$options['connected_accounts'] = $connected_accounts;
-
-				update_option( 'sb_instagram_settings', $options );
-				$cap = current_user_can( 'manage_instagram_feed_options' ) ? 'manage_instagram_feed_options' : 'manage_options';
-				$cap = apply_filters( 'sbi_settings_pages_capability', $cap );
-				if ( (int)$response['error']['code'] === 100 && $error_connected_account['type'] === 'business' ) {
-					$error = '<p><b>' . sprintf( __( 'Error: Permission for the Smash Balloon App is not valid or has expired.', 'instagram-feed' ), $user_name ) . ' ' . __( 'Feed will not update.', 'instagram-feed' ) . '</b></p>';
-					$error .= '<p>' . sprintf( __( 'API error %s:', 'instagram-feed' ), $response['error']['code'] ) . ' ' . $response['error']['message'] . '</p>';
-					$sb_instagram_posts_manager->add_error( 'at_100_' . $user_name, array( 'Business 100 Error', $error, $response['error']['code'] ) );
-					$sb_instagram_posts_manager->add_frontend_error( 'at_100_' . $user_name, $error );
-
-				} else {
-					//set here
-					$error = '<p><b>' . sprintf( __( 'Error: Access Token for %s is not valid or has expired.', 'instagram-feed' ), $user_name ) . ' ' . __( 'Feed will not update.', 'instagram-feed' ) . '</b></p>';
-					$error .= '<p>' . __( 'There\'s an issue with the Instagram Access Token that you are using. Please obtain a new Access Token on the plugin\'s Settings page.', 'instagram-feed' );
-					$error .= '<p>' . sprintf( __( 'API error %s:', 'instagram-feed' ), $response['error']['code'] ) . ' ' . $response['error']['message'] . '</p>';
-					$sb_instagram_posts_manager->add_error( 'at_' . $user_name, array( 'Access Token Error', $error, $response['error']['code'] ) );
-					$link = admin_url( '?page=sb-instagram-feed' );
-					if ( current_user_can( $cap ) ) {
-						$error .= '<p class="sbi-error-directions sbi-reconnect"><a href="' . esc_url( $link ) . '" target="_blank" rel="noopener">' . __( 'Reconnect your account in the admin area', 'instagram-feed' ) . '</a></p>';
-					}
-					$sb_instagram_posts_manager->add_frontend_error( 'at_' . $user_name, $error );
-				}
-
-				$error_time = 3600;
-				$account_id = $error_connected_account['user_id'];
-			} elseif ( (int)$response['error']['code'] === 18 ) {
-				$options = get_option( 'sb_instagram_settings', array() );
-
-				$connected_accounts =  isset( $options['connected_accounts'] ) ? $options['connected_accounts'] : array();
-				$user_name = '';
-				$hashtag_refresh_time = time() + (7*24*60*60);
-				foreach ( $connected_accounts as $connected_account ) {
-					if ( $connected_account['access_token'] === $error_connected_account['access_token'] ) {
-						if ( ! isset( $connected_accounts[ $connected_account['user_id'] ]['hashtag_limit_reached'] ) ) {
-							$connected_accounts[ $connected_account['user_id'] ]['hashtag_limit_reached'] = time();
-						} else {
-							$hashtag_refresh_time = $connected_accounts[ $connected_account['user_id'] ]['hashtag_limit_reached'];
-						}
-						if ( isset( $connected_account['username'] ) ) {
-							$user_name = $connected_account['username'];
-						} else {
-							$user_name = $connected_account['user_id'];
-						}
-					}
-				}
-
-				$options['connected_accounts'] = $connected_accounts;
-
-				update_option( 'sb_instagram_settings', $options );
-
-				global $sb_instagram_posts_manager;
-				$sb_instagram_posts_manager->add_error( 'error_18', array( 'Too many hashtags', $response['error']['error_user_msg'] ) );
-
-			} elseif ( (int)$response['error']['code'] === 10 ) {
-				$user_name = $error_connected_account['username'];
-
-				$error = '<p><b>' . sprintf( __( 'Error: Connected account for the user %s does not have permission to use this feed type.', 'instagram-feed' ), $user_name ) .'</b></p>';
-				$error .= '<p>' . __( 'Try using the big blue button on the "Configure" tab to reconnect the account and update its permissions.', 'instagram-feed' ) . '</p>';
-
-				$sb_instagram_posts_manager->add_frontend_error( 'hashtag_limit_reached', $error );
-
-			} elseif ( (int)$response['error']['code'] === 24 ) {
-				$error = '<p><b>' . __( 'Error: Cannot retrieve posts for this hashtag.', 'instagram-feed' ) .'</b></p>';
-				$error .= '<p>' . $response['error']['error_user_msg'] . '</p>';
-
-				$sb_instagram_posts_manager->add_frontend_error( 'hashtag_error', $error );
-			} else {
-
-				$error = '<p>' .sprintf( __( 'API error %s:', 'instagram-feed' ), $response['error']['code'] ) . ' ' . $response['error']['message'] . '</p>';
-
-				$sb_instagram_posts_manager->add_frontend_error( $response['error']['type'], $error );
-				$sb_instagram_posts_manager->add_error( 'api', array( 'Api Error', $error, $response['error']['code'] ) );
-			}
-
-			if ( ! empty( $account_id ) ) {
-				$sb_instagram_posts_manager->add_api_request_delay( $error_time, $account_id );
-			} else {
-				$sb_instagram_posts_manager->add_api_request_delay( $error_time );
-			}
-
+		if ( $type === 'hashtag_limit' ) {
+			$sb_instagram_posts_manager->maybe_set_display_error( $type, $response );
 		}
-
-
-
 	}
 
 	/**
@@ -316,18 +223,8 @@ class SB_Instagram_API_Connect
 	public static function handle_wp_remote_get_error( $response ) {
 		global $sb_instagram_posts_manager;
 		delete_option( 'sbi_dismiss_critical_notice' );
-		$sb_instagram_posts_manager->update_error_page( get_the_ID() );
 
-		$message = sprintf( __( 'Error connecting to %s.', 'instagram-feed' ), $response['url'] ). ' ';
-		if ( isset( $response['response'] ) && isset( $response['response']->errors ) ) {
-			foreach ( $response['response']->errors as $key => $item ) {
-				$message .= ' '.$key . ' - ' . $item[0] . ' |';
-			}
-		}
-
-		$sb_instagram_posts_manager->add_api_request_delay( 300 );
-
-		$sb_instagram_posts_manager->add_error( 'connection', array( 'Error connecting', $message ) );
+		$sb_instagram_posts_manager->add_error( 'wp_remote_get', $response );
 	}
 
 	/**
@@ -354,7 +251,7 @@ class SB_Instagram_API_Connect
 				$url = 'https://graph.instagram.com/me?fields=id,username,media_count&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
 			} else {
 				$num = min( $num, 200 );
-				$url = 'https://graph.instagram.com/' . sbi_maybe_clean( $connected_account['user_id'] ) . '/media?fields=media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children{media_url,id,media_type,timestamp,permalink,thumbnail_url}&limit='.$num.'&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
+				$url = 'https://graph.instagram.com/' . sbi_maybe_clean( $connected_account['user_id'] ) . '/media?fields=media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D&limit='.$num.'&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
 			}
 		} elseif ( $account_type === 'personal' ) {
 			if ( $endpoint_slug === 'header' ) {
@@ -368,7 +265,7 @@ class SB_Instagram_API_Connect
 				$url = 'https://graph.facebook.com/' . $connected_account['user_id'] . '?fields=biography,id,username,website,followers_count,media_count,profile_picture_url,name&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
 			} else {
 				$num = min( $num, 200 );
-				$url = 'https://graph.facebook.com/' . $connected_account['user_id'] . '/media?fields=media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children{media_url,id,media_type,timestamp,permalink,thumbnail_url}&limit='.$num.'&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
+				$url = 'https://graph.facebook.com/' . $connected_account['user_id'] . '/media?fields=media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D&limit='.$num.'&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
 			}
 		}
 

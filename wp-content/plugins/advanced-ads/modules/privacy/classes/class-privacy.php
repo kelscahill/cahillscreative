@@ -73,11 +73,32 @@ class Advanced_Ads_Privacy {
 	 * @return string
 	 */
 	public function encode_ad( $output, Advanced_Ads_Ad $ad ) {
+		$data_attributes = array(
+			'id'  => $ad->id,
+			'bid' => get_current_blog_id(),
+		);
+		if ( ! empty( $ad->output['placement_id'] ) ) {
+			$data_attributes['placement'] = $ad->output['placement_id'];
+		}
+
+		/**
+		 * Filter the data attributes and allow removing/adding attributes.
+		 * All attributes will be prefix with `data-` on output.
+		 *
+		 * @param array           $data_attributes The default data attributes.
+		 * @param Advanced_Ads_Ad $ad              The current ad.
+		 */
+		$data_attributes = (array) apply_filters( 'advanced-ads-privacy-output-attributes', $data_attributes, $ad );
+
+		// convert the data-attributes array into a string.
+		$attributes_string = '';
+		array_walk( $data_attributes, function( $value, $key ) use ( &$attributes_string ) {
+			$attributes_string .= sprintf( 'data-%s="%s"', sanitize_key( $key ), esc_attr( $value ) );
+		} );
+
 		return sprintf(
-			'<script type="text/plain" data-tcf="waiting-for-consent" data-id="%d" data-bid="%s" %s>%s</script>',
-			$ad->id,
-			get_current_blog_id(),
-			( ! empty( $ad->output['placement_id'] ) ? 'data-placement="' . $ad->output['placement_id'] . '"' : '' ),
+			'<script type="text/plain" data-tcf="waiting-for-consent" %s>%s</script>',
+			$attributes_string,
 			// phpcs:ignore  WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- we need to obfuscate the html (and maybe decode it in JS).
 			base64_encode( $output )
 		);

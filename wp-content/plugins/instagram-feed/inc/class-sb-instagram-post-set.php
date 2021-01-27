@@ -120,12 +120,12 @@ class SB_Instagram_Post_Set {
 		$number_resized = 0;
 		$number_updated = 0;
 		$resized_image_data_for_set = array();
-		$resizing_disabled = $sb_instagram_posts_manager->image_resizing_disabled() || $sb_instagram_posts_manager->max_resizing_per_time_period_reached();
+		$resizing_disabled = $sb_instagram_posts_manager->image_resizing_disabled( $this->transient_name ) || $sb_instagram_posts_manager->max_resizing_per_time_period_reached();
 		$is_top_post_feed = (substr( $this->transient_name, 4, 1 ) === '+');
 
 		foreach ( $this->post_data as $single_instagram_post_data ) {
 
-			if ( $posts_iterated_through < 60 ) {
+			if ( isset( $single_instagram_post_data['id'] ) && $posts_iterated_through < 100 ) {
 				$single_post = new SB_Instagram_Post( $single_instagram_post_data['id'] );
 				$single_post->set_instagram_api_data( $single_instagram_post_data );
 				$resized_image_data_for_set[ $single_instagram_post_data['id'] ] = array();

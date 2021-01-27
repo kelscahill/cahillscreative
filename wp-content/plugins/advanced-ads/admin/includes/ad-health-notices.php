@@ -72,16 +72,6 @@ $advanced_ads_ad_health_notices = apply_filters(
 			'text' => '<a href="' . admin_url( 'admin.php?page=advanced-ads-settings#top#support' ) . '">' . esc_html__( 'Advanced Ads related constants enabled', 'advanced-ads' ) . '</a>',
 			'type' => 'notice',
 		),
-		// possible JavaScript conflicts
-		// Advanced_Ads_Checks::jquery_ui_conflict().
-		'jquery_ui_conflict'                            => array(
-			'text' => sprintf(
-			// translators: %s is a target URL.
-				__( 'Possible conflict between jQueryUI library, used by Advanced Ads and other libraries (probably <a href="%s">Twitter Bootstrap</a>). This might lead to misfortunate formats in forms, but should not damage features.', 'advanced-ads' ),
-				'http://getbootstrap.com/javascript/#js-noconflict'
-			),
-			'type' => 'problem',
-		),
 		// adblocker assets expired
 		// Advanced_Ads_Checks::assets_expired().
 		'assets_expired'                                => array(
@@ -293,6 +283,16 @@ $advanced_ads_ad_health_notices = apply_filters(
 				) . '&nbsp;' .
 				'<a href="' . ADVADS_URL . 'add-header-and-footer-code-wordpress/#utm_source=advanced-ads&utm_medium=link&utm_campaign=notice-header-footer' . '" target="_blank">' . __( 'Learn how.', 'advanced-ads' ) . '</a>',
 			'type'    => 'notice',
+			'hide'    => false,
+			'timeout' => YEAR_IN_SECONDS,
+		),
+		// MailPoet changed how they are using custom shortcodes
+		// Advanced_Ads_Compatibility::mailpoet_ad_shortcode().
+		'mailpoet-deprecated-custom-shortcodes'         => array(
+			'text' =>
+				__( 'MailPoet is going to deprecate custom shortcodes. This might remove ads from your newsletters.', 'advanced-ads' )
+				. ' <a href="' . ADVADS_URL . 'mailpoet-newsletters/?utm_source=advanced-ads&utm_medium=link&utm_campaign=notice-mailpoet-shortcodes#Enable_MailPoet_support_in_Advanced_Ads">' . __( 'Learn more', 'advanced-ads' ) . '</a>',
+			'type' => 'problem',
 			'hide'    => false,
 			'timeout' => YEAR_IN_SECONDS,
 		),

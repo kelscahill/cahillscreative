@@ -124,6 +124,7 @@ class ThreeWP_Broadcast
 		}
 
 		$this->add_action( 'add_meta_boxes', 100 );
+		$this->add_action( 'wp_uninitialize_site' );
 
 		if ( $this->get_site_option( 'override_child_permalinks' ) )
 		{
@@ -157,7 +158,6 @@ class ThreeWP_Broadcast
 		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 5 );
 		$this->add_filter( 'threewp_broadcast_prepare_meta_box', 'threewp_broadcast_prepared_meta_box', 100 );
 		$this->add_filter( 'threewp_broadcast_preparse_content' );
-
 
 		if ( $this->get_site_option( 'canonical_url' ) )
 			$this->add_action( 'wp_head', 1 );
@@ -359,6 +359,9 @@ class ThreeWP_Broadcast
 		// Pages return just the ID. Posts return a proper page object.
 		if ( ! is_object( $post ) )
 			$post = get_post( $post );
+
+		if ( ! $post )
+			return $link;
 
 		$child_post = $post;
 

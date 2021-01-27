@@ -1,7 +1,3 @@
-$sm: 480px;
-$md: 768px;
-$lg: 1024px;
-
 /**
  *  Generic alm-listing Styles
  *  @since 1.0.0
@@ -143,14 +139,19 @@ $lg: 1024px;
 				padding: 0;
 				text-align: center;
 				margin: 0 2px;
-				padding: 15px;
+				padding: 20px 20px 30px;
 				height: auto;
 				background-color: #fff;
-				border-radius: 3px;
+				border: 1px solid #efefef;
+				border-radius: 4px;
+				width: 300px;
 				img {
 					position: static;
 					border-radius: 100%;
-					max-width: none;
+					max-width: 125px;
+					margin: 0 auto 15px;
+					border-radius: 4px;
+					box-shadow: 0 2px 10px rgba(0, 0, 0, 0.075);
 				}
 			}
 		}

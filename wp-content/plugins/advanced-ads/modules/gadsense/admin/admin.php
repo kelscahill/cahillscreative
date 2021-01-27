@@ -255,7 +255,7 @@ class Advanced_Ads_AdSense_Admin {
 	 *
 	 * @param bool $hide_idle_ads Whether to hide idle ads.
 	 */
-	public static function get_mapi_ad_selector( $hide_idle_ads = true ) {
+	public static function get_mapi_ad_selector( $hide_idle_ads = true, $load_inactive_button = false ) {
 		global $closeable, $use_dashicons, $network, $ad_units, $display_slot_id;
 		$closeable       = true;
 		$use_dashicons   = false;
@@ -265,6 +265,5 @@ class Advanced_Ads_AdSense_Admin {
 		$pub_id          = Advanced_Ads_AdSense_Data::get_instance()->get_adsense_id();
 
 		require_once GADSENSE_BASE_PATH . 'admin/views/external-ads-list.php';
-		// Require_once GADSENSE_BASE_PATH . 'admin/views/external-ads-adsense.php';.
 	}
 }

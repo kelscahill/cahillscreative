@@ -161,8 +161,10 @@ class SB_Instagram_Token_Refresher
 	 */
 	public function get_last_error_code() {
 		if ( isset( $this->report['error_log'] ) ) {
-			$error = $this->report['error_log']->get_data();
-			return $error['error']['code'];
+			if ( ! is_wp_error( $this->report['error_log'] ) ) {
+				$error = $this->report['error_log']->get_data();
+				return $error['error']['code'];
+			}
 		}
 		return false;
 	}

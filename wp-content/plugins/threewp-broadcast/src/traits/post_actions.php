@@ -65,6 +65,103 @@ trait post_actions
 		$this->trash_untrash_delete_post( 'wp_delete_post', $post_id );
 	}
 
+	/**
+		@brief		Find unlinked children of the post on the specified blogs.
+		@since		2020-12-17 11:03:02
+	**/
+	public function find_unlinked_children_post_action( $post_id, $requested_blogs = null )
+	{
+		$blog_id = get_current_blog_id();
+		$broadcast_data = ThreeWP_Broadcast()->get_post_broadcast_data( $blog_id, $post_id );
+
+		// If this is a child, find the parent and find it's children on the blogs.
+		$linked_parent = $broadcast_data->get_linked_parent();
+		if ( $linked_parent )
+		{
+			ThreeWP_Broadcast()->debug( 'Post %s has a linked parent on %s (%s)', $post_id, $linked_parent[ 'blog_id' ], $linked_parent[ 'post_id' ] );
+			switch_to_blog( $linked_parent[ 'blog_id' ] );
+			$this->find_unlinked_children_post_action( $linked_parent[ 'post_id' ], $requested_blogs );
+			restore_current_blog();
+			return;
+		}
+
+		if ( ! $requested_blogs )
+			$requested_blogs = [];
+
+		if ( count( $requested_blogs ) < 1 )
+		{
+			// Get a list of blogs that this user can link to.
+			$filter = ThreeWP_Broadcast()->new_action( 'get_user_writable_blogs' );
+			$filter->user_id = ThreeWP_Broadcast()->user_id();
+			$blogs = $filter->execute()->blogs;
+
+			$filter = ThreeWP_Broadcast()->new_action( 'find_unlinked_posts_blogs' );
+			$filter->blogs = $blogs;
+			$blogs = $filter->execute()->blogs;
+		}
+		else
+		{
+			// Create real blog objects from the requested blog IDs.
+			$blogs = [];
+			foreach( $requested_blogs as $requested_blog_id )
+				$blogs []= \threewp_broadcast\broadcast_data\blog::from_blog_id( $requested_blog_id );
+		}
+
+		ThreeWP_Broadcast()->debug( 'Finding unlinked children for post %s on blogs %s', $post_id, $blogs );
+
+		$post = get_post( $post_id );
+
+		foreach( $blogs as $blog )
+		{
+			if ( $blog->id == $blog_id )
+				continue;
+
+			if ( $broadcast_data->has_linked_child_on_this_blog( $blog->id ) )
+				continue;
+
+			switch_to_blog( $blog->id );
+
+			$args = [
+				'cache_results' => false,
+				'name' => $post->post_name,
+				'post_type' => $post->post_type,
+				'post_status' => $post->post_status,
+			];
+
+			$posts = get_posts( $args );
+			$post_ids = [];
+			foreach( $posts as $post )
+				$post_ids []= $post->ID;
+			ThreeWP_Broadcast()->debug( 'Found %d posts (%s) on blog %s: %s',
+				count( $post_ids ),
+				implode( ",", $post_ids ),
+				$blog->id,
+				$args
+			);
+
+			// An exact match was found.
+			if ( count( $posts ) == 1 )
+			{
+				$unlinked = reset( $posts );
+
+				$child_broadcast_data = ThreeWP_Broadcast()->get_post_broadcast_data( $blog->id, $unlinked->ID );
+				if ( $child_broadcast_data->get_linked_parent() === false )
+					if ( ! $child_broadcast_data->has_linked_children() )
+					{
+						ThreeWP_Broadcast()->debug( 'Adding linked child %s on blog %s', $unlinked->ID, $blog->id );
+						$broadcast_data->add_linked_child( $blog->id, $unlinked->ID );
+
+						// Add link info for the new child.
+						$child_broadcast_data->set_linked_parent( $blog_id, $post_id );
+						ThreeWP_Broadcast()->set_post_broadcast_data( $blog->id, $unlinked->ID, $child_broadcast_data );
+					}
+			}
+
+			restore_current_blog();
+		}
+		$broadcast_data = ThreeWP_Broadcast()->set_post_broadcast_data( $blog_id, $post_id, $broadcast_data );
+	}
+
 	public function manage_posts_columns( $defaults )
 	{
 		if ( isset( $_GET[ 'post_type' ] ) )
@@ -250,6 +347,9 @@ trait post_actions
 	**/
 	public function threewp_broadcast_post_action( $action )
 	{
+		if ( $action->is_finished() )
+			return;
+
 		$blog_id = get_current_blog_id();
 		$post_id = $action->post_id;
 
@@ -268,26 +368,31 @@ trait post_actions
 			return;
 		}
 
+		$api = ThreeWP_Broadcast()->api();
+
+		if ( ! $action->high_priority )
+			$api->low_priority();
+
 		switch( $action->action )
 		{
 			// Delete all children
 			case 'delete':
-				ThreeWP_Broadcast()->api()->delete_children( $post_id, $action->blogs );
+				$api->delete_children( $post_id, $action->blogs );
 			break;
 			case 'find_unlinked':
-				ThreeWP_Broadcast()->api()->find_unlinked_children( $post_id );
+				$this->find_unlinked_children_post_action( $post_id, $action->blogs );
 			break;
 			// Restore children
 			case 'restore':
-				ThreeWP_Broadcast()->api()->restore_children( $post_id, $action->blogs );
+				$api->restore_children( $post_id, $action->blogs );
 			break;
 			// Trash children
 			case 'trash':
-				ThreeWP_Broadcast()->api()->trash_children( $post_id, $action->blogs );
+				$api->trash_children( $post_id, $action->blogs );
 			break;
 			// Unlink children
 			case 'unlink':
-				ThreeWP_Broadcast()->api()->unlink( $post_id, $action->blogs );
+				$api->unlink( $post_id, $action->blogs );
 			break;
 		}
 	}

@@ -122,9 +122,23 @@ class Advanced_Ads {
 	/**
 	 * Save number of ads
 	 *
-	 * @var int
+	 * @var array
 	 */
-	private $number_of_ads = false;
+	private $number_of_ads = array();
+
+	/**
+	 * Reason why are disabled.
+	 *
+	 * @var string
+	 */
+	public $disabled_reason = null;
+
+	/**
+	 * Identifier that supplement the disabled reason.
+	 *
+	 * @var int|string
+	 */
+	public $disabled_id = null;
 
 	/**
 	 * Initialize frontend features
@@ -272,33 +286,33 @@ class Advanced_Ads {
 
 		// check if ads are disabled completely.
 		if ( ! empty( $options['disabled-ads']['all'] ) ) {
-			define( 'ADVADS_ADS_DISABLED', true );
+			$this->disable_ads( 'all' );
 			return;
 		}
 
 		// Check if ads are disabled in REST API.
 		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
 			if ( ! empty( $options['disabled-ads']['rest-api'] ) ) {
-				define( 'ADVADS_ADS_DISABLED', true );
+				$this->disable_ads();
 			}
 			return;
 		}
 
 		// check if ads are disabled from 404 pages.
 		if ( $wp_the_query->is_404() && ! empty( $options['disabled-ads']['404'] ) ) {
-			define( 'ADVADS_ADS_DISABLED', true );
+			$this->disable_ads( '404' );
 			return;
 		}
 
 		// check if ads are disabled from non singular pages (often = archives).
 		if ( ! $wp_the_query->is_singular() && ! empty( $options['disabled-ads']['archives'] ) ) {
-			define( 'ADVADS_ADS_DISABLED', true );
+			$this->disable_ads( 'archive' );
 			return;
 		}
 
 		// check if ads are disabled in Feed.
 		if ( $wp_the_query->is_feed() && ( ! isset( $options['disabled-ads']['feed'] ) || $options['disabled-ads']['feed'] ) ) {
-			define( 'ADVADS_ADS_DISABLED', true );
+			$this->disable_ads();
 			return;
 		}
 
@@ -307,7 +321,17 @@ class Advanced_Ads {
 			$post_ad_options = get_post_meta( $post->ID, '_advads_ad_settings', true );
 
 			if ( ! empty( $post_ad_options['disable_ads'] ) ) {
-				define( 'ADVADS_ADS_DISABLED', true );
+				$this->disable_ads( 'page', $post->ID );
+				return;
+			}
+		};
+
+		// "Posts page" set on the WordPress Reading settings page.
+		if ( $wp_the_query->is_posts_page ) {
+			$post_ad_options = get_post_meta( $wp_the_query->queried_object_id, '_advads_ad_settings', true );
+
+			if ( ! empty( $post_ad_options['disable_ads'] ) ) {
+				$this->disable_ads( 'page', $wp_the_query->queried_object_id );
 				return;
 			}
 		};
@@ -320,7 +344,7 @@ class Advanced_Ads {
 			$shop_id         = get_option( 'woocommerce_shop_page_id' );
 			$shop_ad_options = get_post_meta( absint( $shop_id ), '_advads_ad_settings', true );
 			if ( ! empty( $shop_ad_options['disable_ads'] ) ) {
-				define( 'ADVADS_ADS_DISABLED', true );
+				$this->disable_ads( 'page', $shop_id );
 				return;
 			}
 		}
@@ -333,16 +357,28 @@ class Advanced_Ads {
 		$user = wp_get_current_user();
 
 		if ( $hide_for_roles && is_user_logged_in() && is_array( $user->roles ) && array_intersect( $hide_for_roles, $user->roles ) ) {
-			define( 'ADVADS_ADS_DISABLED', true );
+			$this->disable_ads();
 			return;
 		}
 
 		// check bots if option is enabled.
 		if ( ( isset( $options['block-bots'] ) && $options['block-bots']
 			&& ! $this->is_cache_bot() && $this->is_bot() ) ) {
-			define( 'ADVADS_ADS_DISABLED', true );
+			$this->disable_ads();
 			return;
 		}
+	}
+
+	/**
+	 * Disable ads.
+	 *
+	 * @param string     $reason Reason why are disabled.
+	 * @param int|string $id Identifier that supplement the disabled reason.
+	 */
+	private function disable_ads( $reason = null, $id = null ) {
+		define( 'ADVADS_ADS_DISABLED', true );
+		$this->disabled_reason = $reason;
+		$this->disabled_id = $id;
 	}
 
 	/**
@@ -798,7 +834,8 @@ class Advanced_Ads {
 				'create_posts'           => 'advanced_ads_edit_ads',
 			),
 			'has_archive'  => false,
-			'query_var'    => true,
+			'query_var'    => false, // set to true and refresh your permalink settings to query ads under a public URL
+			'rewrite'      => false, // defaults to true and so needs to be set to false to prevent any public URL
 			'supports'     => $supports,
 			'taxonomies'   => array( self::AD_GROUP_TAXONOMY ),
 		);
@@ -944,14 +981,15 @@ class Advanced_Ads {
 	 * @return int number of ads.
 	 */
 	public static function get_number_of_ads( $post_status = 'any' ) {
+		$key = md5( serialize( $post_status ) );
 		// query number of ads only, if not retrieved, yet.
-		if ( self::get_instance()->number_of_ads === false ) {
+		if ( ! isset( self::get_instance()->number_of_ads[ $key ] ) ) {
 			$args                               = array( 'post_status' => $post_status );
 			$recent_ads                         = self::get_instance()->get_model()->get_ads( $args );
-			self::get_instance()->number_of_ads = count( $recent_ads );
+			self::get_instance()->number_of_ads[ $key ] = count( $recent_ads );
 		}
 
-		return self::get_instance()->number_of_ads;
+		return self::get_instance()->number_of_ads[ $key ];
 	}
 
 	/**

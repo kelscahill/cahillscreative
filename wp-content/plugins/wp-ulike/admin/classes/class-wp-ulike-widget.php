@@ -3,7 +3,7 @@
  * Class for our widget support
  * 
  * @package    wp-ulike
- * @author     TechnoWich 2020
+ * @author     TechnoWich 2021
  * @link       https://wpulike.com
  */
 
@@ -77,7 +77,7 @@ if ( ! class_exists( 'wp_ulike_widget' ) ) {
 					$show_thumb ? $this->get_post_thumbnail( $post->ID, $sizeOf ) : '',
 					$permalink,
 					wp_trim_words( $post_title, $num_words = $trim, $more = null ),
-					$show_count ? '<span class="wp_counter_span">' . wp_ulike_format_number($post_count) . '</span>' : '',
+					$show_count ? '<span class="wp_counter_span">' . wp_ulike_format_number( $post_count, 'like' ) . '</span>' : '',
 					$after_item
 				);
 			}
@@ -133,7 +133,7 @@ if ( ! class_exists( 'wp_ulike_widget' ) ) {
 					__('on',WP_ULIKE_SLUG),
 					$comment_permalink,
 					wp_trim_words( $post_title, $num_words = $trim, $more = null ),
-					$show_count ? '<span class="wp_counter_span">' . wp_ulike_format_number($comment_likes_count) . '</span>' : '',
+					$show_count ? '<span class="wp_counter_span">' . wp_ulike_format_number( $comment_likes_count, 'like' ) . '</span>' : '',
 					$after_item
 				);
 			}
@@ -187,7 +187,7 @@ if ( ! class_exists( 'wp_ulike_widget' ) ) {
 					$result .= $before_item;
 					$result .= $show_thumb ? $this->get_post_thumbnail( $like->post_id, $sizeOf ) : '';
 					$result .= '<a href="' . $permalink . '" title="' . $post_title.'" rel="nofollow">' . wp_trim_words( $post_title, $num_words = $trim, $more = null ) . '</a>';
-					$result .= $show_count ? ' <span class="wp_counter_span">'.wp_ulike_format_number( $post_count ).'</span>' : '';
+					$result .= $show_count ? ' <span class="wp_counter_span">'.wp_ulike_format_number( $post_count, 'like' ).'</span>' : '';
 					$result .= $after_item;
 				}
 			}
@@ -239,7 +239,7 @@ if ( ! class_exists( 'wp_ulike_widget' ) ) {
 
 			foreach ($posts as $post) {
 				$post_title = function_exists('bbp_get_forum_title') ? bbp_get_forum_title( $post->ID ) : $post->post_title;
-				$permalink  = get_permalink( $post->ID );
+				$permalink  = 'topic' === get_post_type( $post->ID ) ? bbp_get_topic_permalink( $post->ID ) : bbp_get_reply_url( $post->ID );
 				$post_count = $this->get_counter_value($post->ID, 'topic', 'like', $period);
 
 				$result .= sprintf(
@@ -247,7 +247,7 @@ if ( ! class_exists( 'wp_ulike_widget' ) ) {
 					$before_item,
 					$permalink,
 					wp_trim_words( $post_title, $num_words = $trim, $more = null ),
-					$show_count ? '<span class="wp_counter_span">' . wp_ulike_format_number($post_count) . '</span>' : '',
+					$show_count ? '<span class="wp_counter_span">' . wp_ulike_format_number( $post_count, 'like' ) . '</span>' : '',
 					$after_item
 				);
 			}
@@ -314,7 +314,7 @@ if ( ! class_exists( 'wp_ulike_widget' ) ) {
 					$before_item,
 					esc_url( $activity_permalink ),
 					wp_trim_words( $activity_action, $num_words = $trim, $more = null ),
-					$show_count ? '<span class="wp_counter_span">'.wp_ulike_format_number($post_count).'</span>' : '',
+					$show_count ? '<span class="wp_counter_span">'.wp_ulike_format_number( $post_count, 'like' ).'</span>' : '',
 					$after_item
 				);
 			}

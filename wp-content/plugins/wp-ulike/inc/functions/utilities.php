@@ -3,7 +3,7 @@
  * Utilities
  * 
  * @package    wp-ulike
- * @author     TechnoWich 2020
+ * @author     TechnoWich 2021
  * @link       https://wpulike.com
  */
 
@@ -116,7 +116,8 @@ if( ! function_exists('wp_ulike_is_cache_exist') ){
 	 * @return void
 	 */
 	function wp_ulike_is_cache_exist(){
-		return defined( 'WP_CACHE' ) && WP_CACHE === true;
+		$cache_exist = wp_ulike_get_option( 'cache_exist', false );
+		return $cache_exist || ( defined( 'WP_CACHE' ) && WP_CACHE === true );
 	}
 }
 
@@ -192,11 +193,10 @@ if( ! function_exists( 'wp_ulike_generate_user_id' ) ){
 			$user_ip    = wp_ulike_get_user_ip();
 			$binary_val = '';
 		    foreach ( unpack( 'C*', inet_pton( $user_ip ) ) as $byte ) {
-		        $binary_val .= decbin( $byte );
+		        $binary_val .= str_pad( decbin( $byte ), 8, "0", STR_PAD_LEFT );
 		    }
 		    return base_convert( ltrim( $binary_val, '0' ), 2, 10 );
 		}
-
 	}
 }
 

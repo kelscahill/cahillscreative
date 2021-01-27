@@ -45,7 +45,7 @@ class Advanced_Ads_AdSense_Public {
 		$privacy         = Advanced_Ads_Privacy::get_instance();
 		$privacy_options = $privacy->options();
 		$privacy_enabled = $privacy->get_state() !== 'not_needed';
-		$npa_enabled     = ( isset( $privacy_options['method'] ) && $privacy_options['method'] === 'custom' ) && ! empty( $privacy_options['show-non-personalized-adsense'] );
+		$npa_enabled     = ( ! empty( $privacy_options['enabled'] ) && $privacy_options['consent-method'] === 'custom' ) && ! empty( $privacy_options['show-non-personalized-adsense'] );
 
 		// Show non-personalized Adsense ads if non-personalized ads are enabled and consent was not given.
 		if ( $privacy_enabled && $npa_enabled ) {

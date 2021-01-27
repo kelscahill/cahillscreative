@@ -14,13 +14,22 @@ class Advanced_Ads_Frontend_Checks {
 	private $did_the_content = false;
 	private $has_many_the_content = false;
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'init' ) );
+		// Wait until other plugins (for example Elementor) have disabled admin bar using `show_admin_bar` filter.
+		add_action( 'template_redirect', array( $this, 'init' ), 11 );
+
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			add_filter( 'advanced-ads-ad-output', array( $this, 'after_ad_output' ), 10, 2 );
+		}
 	}
 
+	/**
+	 * Ad Health init.
+	 */
 	public function init() {
-		$enabled = false;
-
 		if ( ! is_admin()
 			&& is_admin_bar_showing()
             && current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads' ) )
@@ -28,14 +37,14 @@ class Advanced_Ads_Frontend_Checks {
 		) {
 			add_action( 'admin_bar_menu', array( $this, 'add_admin_bar_menu' ), 1000 );
 			add_filter( 'the_content', array( $this, 'set_did_the_content' ) );
-			add_filter( 'wp_footer', array( $this, 'footer_checks' ), -101 );
+			add_action( 'wp_footer', array( $this, 'footer_checks' ), -101 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 			add_filter( 'advanced-ads-ad-select-args', array( $this, 'ad_select_args_callback' ) );
-			$enabled = true;
+			add_filter( 'advanced-ads-ad-output', array( $this, 'after_ad_output' ), 10, 2 );
 		}
 
-		if ( $enabled || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
-			add_filter( 'advanced-ads-ad-output', array( $this, 'after_ad_output' ), 10, 2 );
+		if ( Advanced_Ads_Ad_Health_Notices::notices_enabled() ) {
+			add_action( 'body_class', array( $this, 'body_class' ) );
 		}
 	}
 
@@ -149,19 +158,6 @@ class Advanced_Ads_Frontend_Checks {
 			if ( ! empty( $post->ID ) ) {
 				$ad_settings = get_post_meta( $post->ID, '_advads_ad_settings', true );
 
-				if ( ! empty( $ad_settings['disable_ads'] ) ) {
-					$nodes[] = array( 'type' => 1, 'data' => array(
-						'parent' => 'advanced_ads_ad_health',
-						'id'    => 'advanced_ads_ad_health_disabled_on_page',
-						'title' => __( 'Ads are disabled on this page', 'advanced-ads' ),
-						'href'  => get_edit_post_link( $post->ID ) . '#advads-ad-settings',
-						'meta'   => array(
-							'class' => 'advanced_ads_ad_health_warning',
-							'target' => '_blank'
-						)
-					) );
-				}
-
 				if ( ! empty( $ad_settings['disable_the_content'] ) ) {
 					$nodes[] = array( 'type' => 1, 'data' => array(
 						'parent' => 'advanced_ads_ad_health',
@@ -188,7 +184,26 @@ class Advanced_Ads_Frontend_Checks {
 			}
 		}
 
-		if ( ! empty( $options['disabled-ads']['all'] ) ) {
+		$disabled_reason = Advanced_Ads::get_instance()->disabled_reason;
+		$disabled_id = Advanced_Ads::get_instance()->disabled_id;
+
+		if ( 'page' === $disabled_reason && $disabled_id ) {
+			$nodes[] = array(
+				'type' => 1,
+				'data' => array(
+					'parent' => 'advanced_ads_ad_health',
+					'id'     => 'advanced_ads_ad_health_disabled_on_page',
+					'title'  => __( 'Ads are disabled on this page', 'advanced-ads' ),
+					'href'   => get_edit_post_link( $disabled_id ) . '#advads-ad-settings',
+					'meta'   => array(
+						'class'  => 'advanced_ads_ad_health_warning',
+						'target' => '_blank',
+					),
+				),
+			);
+		}
+
+		if ( 'all' === $disabled_reason ) {
 			$nodes[] = array( 'type' => 1, 'data' => array(
 				'parent' => 'advanced_ads_ad_health',
 				'id'    => 'advanced_ads_ad_health_no_all',
@@ -201,20 +216,23 @@ class Advanced_Ads_Frontend_Checks {
 			) );
 		}
 
-		if ( $wp_the_query->is_404() && ! empty( $options['disabled-ads']['404'] ) ) {
-			$nodes[] = array( 1, array(
-				'parent' => 'advanced_ads_ad_health',
-				'id'     => 'advanced_ads_ad_health_no_404',
-				'title'  => __( 'Ads are disabled on 404 pages', 'advanced-ads' ),
-				'href'   => admin_url( 'admin.php?page=advanced-ads-settings' ),
-				'meta'   => array(
-					'class'  => 'advanced_ads_ad_health_warning',
-					'target' => '_blank'
-				)
-			) );
+		if ( '404' === $disabled_reason ) {
+			$nodes[] = array(
+				'type' => 1,
+				'data' => array(
+					'parent' => 'advanced_ads_ad_health',
+					'id'     => 'advanced_ads_ad_health_no_404',
+					'title'  => __( 'Ads are disabled on 404 pages', 'advanced-ads' ),
+					'href'   => admin_url( 'admin.php?page=advanced-ads-settings' ),
+					'meta'   => array(
+						'class'  => 'advanced_ads_ad_health_warning',
+						'target' => '_blank',
+					),
+				),
+			);
 		}
 
-		if ( ! $wp_the_query->is_singular() && ! empty( $options['disabled-ads']['archives'] ) ){
+		if ( 'archive' === $disabled_reason ) {
 			$nodes[] = array( 'type' => 1, 'data' => array(
 				'parent' => 'advanced_ads_ad_health',
 				'id'     => 'advanced_ads_ad_health_no_archive',
@@ -378,6 +396,46 @@ class Advanced_Ads_Frontend_Checks {
 
 		$this->add_footer_nodes( $wp_admin_bar, $issues );
 	}
+
+
+	/**
+	 * Add classes to the `body` tag.
+	 *
+	 * @param string[] $classes Array of existing class names.
+	 * @return string[] $classes Array of existing and new class names.
+	 */
+	public function body_class( $classes ) {
+		$aa_classes = array(
+			'aa-prefix-' . Advanced_Ads_Plugin::get_instance()->get_frontend_prefix(),
+		);
+
+		$disabled_reason = Advanced_Ads::get_instance()->disabled_reason;
+		if ( $disabled_reason ) {
+			$aa_classes[] = 'aa-disabled-' . esc_attr( $disabled_reason );
+		}
+
+		global $post;
+		if ( ! empty( $post->ID ) ) {
+			$ad_settings = get_post_meta( $post->ID, '_advads_ad_settings', true );
+			if ( ! empty( $ad_settings['disable_the_content'] ) ) {
+				$aa_classes[] = 'aa-disabled-content';
+			}
+		}
+
+		$aa_classes = apply_filters( 'advanced-ads-body-classes', $aa_classes );
+
+		if ( ! is_array( $classes ) ) {
+			$classes = array();
+		}
+		if ( ! is_array( $aa_classes ) ) {
+			$aa_classes = array();
+		}
+
+		return array_merge( $classes, $aa_classes );
+	}
+
+
+
 
 	/**
 	 * Count visible notices and warnings.

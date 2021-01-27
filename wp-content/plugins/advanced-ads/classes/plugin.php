@@ -111,6 +111,17 @@ class Advanced_Ads_Plugin {
 		// load widgets.
 		add_action( 'widgets_init', array( $this, 'widget_init' ) );
 
+		// Call action hooks for ad status changes.
+		add_action(
+			'transition_post_status',
+			array(
+				$this,
+				'transition_ad_status',
+			),
+			10,
+			3
+		);
+
 		// load display conditions.
 		Advanced_Ads_Display_Conditions::get_instance();
 		new Advanced_Ads_Frontend_Checks();
@@ -165,7 +176,7 @@ class Advanced_Ads_Plugin {
 		if ( $activated_js || ! empty( $_COOKIE['advads_frontend_picker'] ) ) {
 			wp_enqueue_script(
 				$this->get_plugin_slug() . '-advanced-js',
-				sprintf( '%spublic/assets/js/advanced%s.js', ADVADS_BASE_URL, defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.orig' : '' ),
+				sprintf( '%spublic/assets/js/advanced%s.js', ADVADS_BASE_URL, defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min' ),
 				array( 'jquery' ),
 				ADVADS_VERSION,
 				false
@@ -460,14 +471,6 @@ class Advanced_Ads_Plugin {
 			$this->options = get_option( ADVADS_SLUG, array() );
 		}
 
-		// default options for new users
-		if ( array() === $this->options ) {
-			// disable the shortcode button by default for users who never stored the settings.
-			if ( ! isset( $this->options['disable-shortcode-button'] ) ) {
-				$this->options['disable-shortcode-button'] = true;
-			}
-		}
-
 		// allow to change options dynamically
 		$this->options = apply_filters( 'advanced-ads-options', $this->options );
 
@@ -570,7 +573,7 @@ class Advanced_Ads_Plugin {
 	public function get_content_injection_priority() {
 		$options = $this->options();
 
-		return isset( $options['content-injection-priority'] ) ? intval( $options['content-injection-priority'] ) : 100;
+		return isset( $options['content-injection-priority'] ) ? (int) $options['content-injection-priority'] : 100;
 	}
 
 	/**
@@ -836,6 +839,48 @@ class Advanced_Ads_Plugin {
 	 */
 	public static function get_icon_svg() {
 		return 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE4LjEuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJFYmVuZV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDY0Ljk5MyA2NS4wMjQiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDY0Ljk5MyA2NS4wMjQ7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIHN0eWxlPSJmaWxsOiNFNEU0RTQ7IiBkPSJNNDYuNTcxLDI3LjY0MXYyMy4xMzNIMTQuMjVWMTguNDUzaDIzLjExOGMtMC45NTYtMi4xODMtMS40OTQtNC41OS0xLjQ5NC03LjEyNg0KCWMwLTIuNTM1LDAuNTM4LTQuOTQyLDEuNDk0LTcuMTI0aC02Ljk1N0gwdjQ5LjQ5M2wxLjYxOCwxLjYxOEwwLDUzLjY5NmMwLDYuMjU2LDUuMDY4LDExLjMyNiwxMS4zMjQsMTEuMzI4djBoMTkuMDg3aDMwLjQxMlYyNy42MTENCgljLTIuMTkxLDAuOTY0LTQuNjA5LDEuNTA5LTcuMTU3LDEuNTA5QzUxLjE0MiwyOS4xMiw0OC43NDYsMjguNTg4LDQ2LjU3MSwyNy42NDF6Ii8+DQo8Y2lyY2xlIHN0eWxlPSJmaWxsOiM5ODk4OTg7IiBjeD0iNTMuNjY2IiBjeT0iMTEuMzI4IiByPSIxMS4zMjgiLz4NCjwvc3ZnPg0K';
+	}
+
+	/**
+	 * Fires when a post is transitioned from one status to another.
+	 *
+	 * @param string  $new_status New post status.
+	 * @param string  $old_status Old post status.
+	 * @param WP_Post $post       Post object.
+	 */
+	public function transition_ad_status( $new_status, $old_status, $post ) {
+		if ( ! isset( $post->post_type ) || Advanced_Ads::POST_TYPE_SLUG !== $post->post_type || ! isset( $post->ID ) ) {
+			return;
+		}
+
+		$ad = new Advanced_Ads_Ad( $post->ID );
+
+		if ( $old_status !== $new_status ) {
+			/**
+			 * Fires when an ad has transitioned from one status to another.
+			 *
+			 * @param Advanced_Ads_Ad $ad Ad object.
+			 */
+			do_action( "advanced-ads-ad-status-{$old_status}-to-{$new_status}", $ad );
+		}
+
+		if ( 'publish' === $new_status && 'publish' !== $old_status ) {
+			/**
+			 * Fires when an ad has transitioned from any other status to `publish`.
+			 *
+			 * @param Advanced_Ads_Ad $ad Ad object.
+			 */
+			do_action( 'advanced-ads-ad-status-published', $ad );
+		}
+
+		if ( 'publish' === $old_status && 'publish' !== $new_status ) {
+			/**
+			 * Fires when an ad has transitioned from `publish` to any other status.
+			 *
+			 * @param Advanced_Ads_Ad $ad Ad object.
+			 */
+			do_action( 'advanced-ads-ad-status-unpublished', $ad );
+		}
 	}
 
 }

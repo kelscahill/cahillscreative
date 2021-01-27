@@ -4,9 +4,9 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 5.4
-Stable tag: 46.14
+Stable tag: 46.18
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
-Tested up to: 5.5
+Tested up to: 5.6
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -350,6 +350,31 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 46.18 20201229 =
+
+* Fix: Clear taxonomy cache for all taxonomies, not just categories.
+* Code: Update API to allow for low_priority() calls.
+* Code: Added broadcasting_after_modify_post action.
+
+= 46.17 20201209 =
+
+* Fix: Prevent fatal error when programmatically broadcasting and the user does not have enough broadcasting permission.
+
+= 46.16 20201203 =
+
+* Tweak: The custom field and taxonomies checkboxes in the Broadcast meta box in the editor are now selected by default and hidden.
+
+So by default the custom fields and taxonomies are now automatically broadcasted. This should be fine for 99% of users.
+
+If your users need the checkboxes visible so that your users can uncheck the boxes, there's a setting for that: Admin > Broadcast > Settings tab > Misc subtab > Show extra checkboxes
+
+See image here: <a href="https://broadcast.plainviewplugins.com/wp-content/uploads/2020/12/show-extra-checkboxes.png">https://broadcast.plainviewplugins.com/wp-content/uploads/2020/12/show-extra-checkboxes.png</a>
+
+= 46.15 20201111 =
+
+* New: Unlink posts on blogs that are being deleted.
+* Fix: Warning when overriding a link to a post that doesn't exist.
 
 = 46.14 20201002 =
 

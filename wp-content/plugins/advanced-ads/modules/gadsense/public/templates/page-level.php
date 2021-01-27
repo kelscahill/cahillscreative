@@ -52,7 +52,8 @@ if ( $top_anchor ) {
 	printf(
 		'<script async src="%s"></script><script>%s</script>',
 		esc_attr( $script_src ),
-		esc_attr( $top_anchor_code )
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the snippet has already been escaped.
+		$top_anchor_code
 	);
 } else {
 	printf(

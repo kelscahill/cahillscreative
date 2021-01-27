@@ -8,6 +8,8 @@ use WPSEO_Admin_Asset_Manager;
 use Yoast\WP\SEO\Conditionals\Web_Stories_Conditional;
 use Yoast\WP\SEO\Integrations\Front_End_Integration;
 use Yoast\WP\SEO\Integrations\Integration_Interface;
+use Yoast\WP\SEO\Models\Indexable;
+use Yoast\WP\SEO\Presentations\Indexable_Presentation;
 
 /**
  * Web Stories integration.
@@ -47,24 +49,16 @@ class Web_Stories implements Integration_Interface {
 	 * @return void
 	 */
 	public function register_hooks() {
-		\add_action( 'web_stories_story_head', [ $this, 'remove_web_stories_meta_output' ], 0 );
+		\add_action( 'web_stories_enable_metadata', '__return_false' );
+		\add_action( 'web_stories_enable_schemaorg_metadata', '__return_false' );
+		\add_action( 'web_stories_enable_open_graph_metadata', '__return_false' );
+		\add_action( 'web_stories_enable_twitter_metadata', '__return_false' );
+		\remove_action( 'web_stories_story_head', 'rel_canonical' );
 		\add_action( 'web_stories_story_head', [ $this->front_end, 'call_wpseo_head' ], 9 );
 		\add_filter( 'wpseo_schema_article_post_types', [ $this, 'filter_schema_article_post_types' ] );
+		\add_filter( 'wpseo_schema_article_type', [ $this, 'filter_schema_article_type' ], 10, 2 );
 		\add_action( 'admin_enqueue_scripts', [ $this, 'dequeue_admin_assets' ] );
-	}
-
-	/**
-	 * Removes Web Stories meta output.
-	 *
-	 * @return void
-	 */
-	public function remove_web_stories_meta_output() {
-		$instance = Google_Web_Stories\get_plugin_instance()->discovery;
-		\remove_action( 'web_stories_story_head', [ $instance, 'print_metadata' ] );
-		\remove_action( 'web_stories_story_head', [ $instance, 'print_schemaorg_metadata' ] );
-		\remove_action( 'web_stories_story_head', [ $instance, 'print_open_graph_metadata' ] );
-		\remove_action( 'web_stories_story_head', [ $instance, 'print_twitter_metadata' ] );
-		\remove_action( 'web_stories_story_head', 'rel_canonical' );
+		\add_filter( 'wpseo_metadesc', [ $this, 'filter_meta_description' ], 10, 2 );
 	}
 
 	/**
@@ -104,5 +98,39 @@ class Web_Stories implements Integration_Interface {
 	public function filter_schema_article_post_types( $post_types ) {
 		$post_types[] = Google_Web_Stories\Story_Post_Type::POST_TYPE_SLUG;
 		return $post_types;
+	}
+
+	/**
+	 * Filters the meta description for stories.
+	 *
+	 * @param string                 $description The description sentence.
+	 * @param Indexable_Presentation $presentation The presentation of an indexable.
+	 * @return string The description sentence.
+	 */
+	public function filter_meta_description( $description, $presentation ) {
+		if ( $description || $presentation->model->object_sub_type !== Google_Web_Stories\Story_Post_Type::POST_TYPE_SLUG ) {
+			return $description;
+		}
+
+		return \get_the_excerpt( $presentation->model->object_id );
+	}
+
+	/**
+	 * Filters Article type for Web Stories.
+	 *
+	 * @param string|string[] $type      The Article type.
+	 * @param Indexable       $indexable The indexable.
+	 * @return string|string[] Article type.
+	 */
+	public function filter_schema_article_type( $type, $indexable ) {
+		if ( Google_Web_Stories\Story_Post_Type::POST_TYPE_SLUG !== $indexable->object_sub_type ) {
+			return $type;
+		}
+
+		if ( \is_string( $type ) && $type === 'None' ) {
+			return 'Article';
+		}
+
+		return $type;
 	}
 }

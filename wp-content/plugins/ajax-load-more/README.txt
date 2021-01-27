@@ -3,8 +3,8 @@ Contributors: dcooney, connekthq
 Donate link: https://connekthq.com/donate/
 Tags: infinite scroll, load more, scroll, infinite, lazy load, lazy loading, endless scroll, pagination, ajax pagination, ajax, ajax posts, woocommerce, ajax load more, masonry
 Requires at least: 4.0
-Tested up to: 5.5
-Stable tag: 5.3.8
+Tested up to: 5.6
+Stable tag: 5.4.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,7 @@ Check out the **[demo site](https://connekthq.com/plugins/ajax-load-more/)** for
 
 #### What's New
 
+-  **[Elementor](https://connekthq.com/plugins/ajax-load-more/add-ons/elementor/)** - Infinite scroll Elementor Posts Widget content with Ajax Load More.
 -  **[WooCommerce](https://connekthq.com/plugins/ajax-load-more/add-ons/woocommerce/)** - Infinite scroll WooCommerce products without updating a line of template code.
 -  **[Pro](https://connekthq.com/plugins/ajax-load-more/pro/)** - Access to all premium add-ons in a single installation.
 -  **[Filters](https://connekthq.com/plugins/ajax-load-more/add-ons/filters/)** - The Filters add-on provides front-end and admin functionality for building and managing Ajax filters.
@@ -112,7 +113,7 @@ Ajax Load More accepts a number of parameters that are passed to the WordPress q
 -  **destroy_after** - Remove ajax load more functionality after 'n' number of pages have been loaded. Default = null
 -  **progress_bar** - Display progress bar indicator at the top of the window while loading Ajax content. Default = 'false'
 -  **progress_bar_color** - Enter the hex color of the progress bar. Default = 'ed7070'
--  **button_label** - The label text for Load More button. Default = 'Older Posts'
+-  **button_label** - The label text for Load More button. Default = 'Load More'
 -  **button_loading_label** - Update the text of the Load More button while content is loading. Default = null
 -  **loading_style** - Select an Ajax loading style - you can choose between a Button or Infinite Scroll. Default = null
 -  **container_type** - Override the global Container Type that was set on ALM Settings page. Default = null
@@ -126,7 +127,7 @@ Ajax Load More accepts a number of parameters that are passed to the WordPress q
 
 #### Example Ajax Load More Shortcode
 
-    [ajax_load_more post_type="post, portfolio" repeater="default" posts_per_page="5" transition="fade" button_label="Older Posts"]
+    [ajax_load_more post_type="post, portfolio" repeater="default" posts_per_page="5" transition="fade" button_label="Load More"]
 
 #### Example Demos
 
@@ -346,15 +347,53 @@ How to install Ajax Load More.
 
 == Changelog ==
 
+= 5.4.2.1 - January 3, 2020 =
+* HOTFIX - Fixed issue with non-functioning Shortcode Builder on sites without `tags` or `categories` present.
+
+= 5.4.2 - January 3, 2020 =
+* NEW - Added new `vars` parameter that allows for passing data into Hooks and Repeater Templates. 
+Variables can accessed in Repeater Templates by accessing the `$args` array. This will pull in all query and variable parameters into an array.
+`[ajax_load_more vars="var1:The value of var1 value;var2:The value for #2"]`
+`echo $args['alm_vars'];` // Prints an array of key value pairs. See docs for more info.
+* UPDATE - Various admin UI/UX updates and layout improvements.
+* FIX - Fixed issue with Single Posts add-on custom query returning all posts if the query was empty.
+* FIX - Fixed issue with height of Ajax Load More when filtering with Masonry and zero results are returned.
+* FIX - Fixed issue in Shortcode builder caused by updated Select2 JS.
+
+= 5.4.1 - November 25, 2020 =
+
+** UPGRADE NOTICE for Elementor Add-on Users**
+We have updated the Elementor add-on settings for how Ajax Load More determines the next page of content during infinite scroll.
+Ajax Load More no longer uses the `Numbers` pagination type, please follow the steps below to update your widget after update.
+
+1. Visit your page in Elementor.
+2. Locate the Posts Widget.
+3. Update the `Pagination` type in the Posts Widget from `Numbers` to `Numbers + Previous/Next` or just `Previous/Next`.
+4. View the [Guide](https://connekthq.com/plugins/ajax-load-more/add-ons/elementor/#configuration) if you require addtional information.
+
+** OTHER UPDATES **
+
+-  NEW - Added new `scroll_direction` parameter that allows for horizontal scrolling of Ajax Load More by setting `scroll_direction="horizontal"` in your shortcode or `alm_render` method.
+   -  To horizontal scroll ALM you MUST use a `scroll_container` as seen in the [Scroll Direction example](https://connekthq.com/plugins/ajax-load-more/examples/scroll-direction/).
+   -  Horizontal scroll uses a custom Flexbox layout for aligning items.
+   -  RTL support will be coming soon.
+-  FIX - Fixed issue with Single Posts and the Table of Contents functionality duplicating the first post entry in the list.
+-  FIX - Added fix for Fatal Error that may appear in the Shortcode class on WooCommerce Product Attribute archive pages.
+
+= 5.4.0 - November 11, 2020 =
+
+-  NEW - Added required functionality for new [Elementor add-on](https://connekthq.com/plugins/ajax-load-more/add-ons/elementor/).
+-  NEW - Added new `alm_disable_noscript` filter to disable all `<noscript/>` tags generated by ALM. `add_filter( 'alm_disable_noscript', '__return_true' );`
+-  UPDATE - Updated [Pace.js](https://github.com/CodeByZach/pace) library that is used for progress bar functionality.
+
 = 5.3.8 - September 10, 2020 =
 
 ** UPGRADE NOTICE **
 ALM users with the WooCommerce add-on activated MUST update the add-on to version `1.0.2` when prompted.
 
-* NEW - Added [Cache](https://connekthq.com/plugins/ajax-load-more/add-ons/cache/) support for the [Comments Add-on](https://connekthq.com/plugins/ajax-load-more/add-ons/comments/)
-* NEW - Adding querystring variables to [Single Post add-on](https://connekthq.com/plugins/ajax-load-more/add-ons/single-posts/) URLs that allows users to perform tasks based on these values. Much like you can do with [ALM Variables](https://connekthq.com/plugins/ajax-load-more/docs/variables/). e.g. http://website.com/post-title/?id=469&alm_page=2
-* NEW - Added new `ajaxloadmore.reset` public JavaScript function that will reset Ajax Load More back to it's original state (page 1).
-
+-  NEW - Added [Cache](https://connekthq.com/plugins/ajax-load-more/add-ons/cache/) support for the [Comments Add-on](https://connekthq.com/plugins/ajax-load-more/add-ons/comments/)
+-  NEW - Adding querystring variables to [Single Post add-on](https://connekthq.com/plugins/ajax-load-more/add-ons/single-posts/) URLs that allows users to perform tasks based on these values. Much like you can do with [ALM Variables](https://connekthq.com/plugins/ajax-load-more/docs/variables/). e.g. http://website.com/post-title/?id=469&alm_page=2
+-  NEW - Added new `ajaxloadmore.reset` public JavaScript function that will reset Ajax Load More back to it's original state (page 1).
 
 = 5.3.7 - July 31, 2020 =
 

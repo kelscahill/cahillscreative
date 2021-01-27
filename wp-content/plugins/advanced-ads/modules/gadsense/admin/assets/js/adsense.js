@@ -71,6 +71,7 @@ class AdvancedAdsNetworkAdsense extends AdvancedAdsAdNetwork{
             nonce: AdsenseMAPI.nonce,
             action: 'advanced_ads_get_ad_units_adsense',
             account: gadsenseData.pubId,
+			inactive: ! this.hideIdle,
         };
     }
 
@@ -671,6 +672,23 @@ class AdvancedAdsNetworkAdsense extends AdvancedAdsAdNetwork{
             } catch (ex) {}
         }
 
+		jQuery( '#wpwrap' ).on(
+			'advads-mapi-adlist-opened',
+			function (ev) {
+				if ( jQuery( '#mapi-table-wrap tbody tr' ).length != jQuery( '#mapi-table-wrap tbody tr[data-active="1"]' ).length) {
+					if ( jQuery( '#mapi-table-wrap tbody tr#mapi-notice-inactive' ).length || jQuery( '#mapi-table-wrap tbody tr#mapi-notice-noads' ).length ) {
+						// No active ads found.
+						that.hideIdle = true;
+						window.AdvancedAdsAdmin.AdImporter.toggleIdleAds( true );
+					} else {
+						// Idle ads are present in the table. Adjust AdNetwork and AdImporter default values accordingly.
+						that.hideIdle = false;
+						window.AdvancedAdsAdmin.AdImporter.toggleIdleAds( false );
+					}
+				}
+			}
+		);
+
         this.onSelected();
     }
 
@@ -818,6 +836,16 @@ class AdvancedAdsNetworkAdsense extends AdvancedAdsAdNetwork{
 
     }
 
+	getMapiAction(action) {
+		var that = this;
+		if ('toggleidle' == action) {
+			return function(ev, el){
+				that.hideIdle = ! that.hideIdle;
+				AdvancedAdsAdmin.AdImporter.refreshAds();
+			}
+		}
+		return null;
+	}
 }
 
 window.Advanced_Ads_Adsense_Helper = window.Advanced_Ads_Adsense_Helper || {

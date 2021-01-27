@@ -145,41 +145,6 @@ function sbi_delete_local_avatar( $username ) {
 	}
 }
 
-function sbi_create_local_avatar( $username, $file_name ) {
-	$image_editor = wp_get_image_editor( $file_name );
-
-	if ( ! is_wp_error( $image_editor ) ) {
-		$upload = wp_upload_dir();
-
-		$full_file_name = trailingslashit( $upload['basedir'] ) . trailingslashit( SBI_UPLOADS_NAME ) . $username  . '.jpg';
-
-		$saved_image = $image_editor->save( $full_file_name );
-
-		if ( ! $saved_image ) {
-			global $sb_instagram_posts_manager;
-
-			$sb_instagram_posts_manager->add_error( 'image_editor_save', array(
-				__( 'Error saving edited image.', 'instagram-feed' ),
-				$full_file_name
-			) );
-		} else {
-		    return true;
-        }
-	} else {
-		global $sb_instagram_posts_manager;
-
-		$message = __( 'Error editing image.', 'instagram-feed' );
-		if ( isset( $image_editor ) && isset( $image_editor->errors ) ) {
-			foreach ( $image_editor->errors as $key => $item ) {
-				$message .= ' ' . $key . '- ' . $item[0] . ' |';
-			}
-		}
-
-		$sb_instagram_posts_manager->add_error( 'image_editor', array( $file_name, $message ) );
-	}
-	return false;
-}
-
 function sbi_connect_business_accounts() {
 	$nonce = $_POST['sbi_nonce'];
 
@@ -188,59 +153,22 @@ function sbi_connect_business_accounts() {
 	}
 
 	$accounts = isset( $_POST['accounts'] ) ? json_decode( stripslashes( $_POST['accounts'] ), true ) : false;
-	$options = sbi_get_database_settings();
-	$connected_accounts =  isset( $options['connected_accounts'] ) ? $options['connected_accounts'] : array();
-	$new_user_names = array();
 
+	$return = array();
 	foreach ( $accounts as $account ) {
-		$access_token = isset( $account['access_token'] ) ? $account['access_token'] : '';
-		$page_access_token = isset( $account['page_access_token'] ) ? $account['page_access_token'] : '';
-		$username = isset( $account['username'] ) ? $account['username'] : '';
-		$name = isset( $account['name'] ) ? $account['name'] : '';
-		$profile_picture = isset( $account['profile_picture_url'] ) ? $account['profile_picture_url'] : '';
-		$user_id = isset( $account['id'] ) ? $account['id'] : '';
-		$type = 'business';
+		$account['type'] = 'business';
 
-		$connected_accounts[ $user_id ] = array(
-			'access_token' => $access_token,
-			'page_access_token' => $page_access_token,
-			'user_id' => $user_id,
-			'username' => $username,
-			'is_valid' => true,
-			'last_checked' => time(),
-			'profile_picture' => $profile_picture,
-			'name' => sbi_sanitize_emoji( $name ),
-			'type' => $type,
-			'use_tagged' => '1'
-		);
-		$new_user_names[] = $username;
+		$connector = new SBI_Account_Connector();
 
-		if ( !$options['sb_instagram_disable_resize'] ) {
-			if ( sbi_create_local_avatar( $username, $profile_picture ) ) {
-				$connected_accounts[ $user_id ]['local_avatar'] = true;
-			}
-		} else {
-			$connected_accounts[ $user_id ]['local_avatar'] = false;
-		}
-		global $sb_instagram_posts_manager;
+		$connector->add_account_data( $account );
+		if ( $connector->update_stored_account() ) {
+			$connector->after_update();
 
-		$sb_instagram_posts_manager->remove_error( 'at_' . $username );
-		delete_transient( SBI_USE_BACKUP_PREFIX . 'sbi_'  . $user_id );
-	}
-
-	$accounts_to_save = array();
-	foreach ( $connected_accounts as $account ) {
-		$account_type = isset( $account['type'] ) ? $account['type'] : 'personal';
-		if ( $account_type !== 'personal' || ! in_array( $account['username'], $new_user_names, true ) ) {
-			$accounts_to_save[ $account['user_id'] ] = $account;
+			$return[ $connector->get_id() ] = $connector->get_account_data();
 		}
 	}
 
-	$options['connected_accounts'] = $accounts_to_save;
-
-	update_option( 'sb_instagram_settings', $options );
-
-	echo sbi_json_encode( $accounts_to_save );
+	echo sbi_json_encode( $return );
 
 	die();
 }
@@ -349,9 +277,11 @@ function sbi_account_data_for_token( $access_token ) {
 function sbi_do_account_delete( $account_id ) {
 	$options = get_option( 'sb_instagram_settings', array() );
 	$connected_accounts =  isset( $options['connected_accounts'] ) ? $options['connected_accounts'] : array();
-
+	global $sb_instagram_posts_manager;
+	$sb_instagram_posts_manager->remove_connected_account_error( $connected_accounts[ $account_id ] );
 	wp_cache_delete ( 'alloptions', 'options' );
 	$username = $connected_accounts[ $account_id ]['username'];
+	$sb_instagram_posts_manager->add_action_log( 'Deleting account ' . $username );
 
 	$num_times_used = 0;
 
@@ -371,14 +301,9 @@ function sbi_do_account_delete( $account_id ) {
 		sbi_delete_local_avatar( $username );
 	}
 
-
 	$options['connected_accounts'] = $new_con_accounts;
 
 	update_option( 'sb_instagram_settings', $options );
-	global $sb_instagram_posts_manager;
-
-	$sb_instagram_posts_manager->remove_error( 'at_' . $username );
-	$sb_instagram_posts_manager->remove_error( 'api' );
 }
 
 function sbi_connect_new_account( $access_token, $account_id ) {
@@ -389,226 +314,28 @@ function sbi_connect_new_account( $access_token, $account_id ) {
 		$access_token = preg_replace("/[^A-Za-z0-9 ]/", '', $split_token[0] );
 	}
 
+	$account = array(
+		'access_token' => $access_token,
+		'user_id' => $account_id,
+		'type' => 'business'
+	);
 
-	$options = sbi_get_database_settings();
-	$connected_accounts =  isset( $options['connected_accounts'] ) ? $options['connected_accounts'] : array();
-
-	if ( $access_token ) {
-		wp_cache_delete ( 'alloptions', 'options' );
-
-		$number_dots = substr_count ( $access_token , '.' );
-		$test_connection_data = array( 'error_message' => 'A successful connection could not be made. Please make sure your Access Token is valid.');
-
-		if ( $number_dots > 1 ) {
-			$split_token = explode( '.', $access_token );
-			$new_user_id = isset( $split_token[0] ) ? $split_token[0] : '';
-
-			$test_connection_data = sbi_account_data_for_token( $access_token );
-		} else if (! empty( $account_id ) ) {
-
-			if ( sbi_code_check( $access_token ) ) {
-				$data = array(
-					'access_token' => $access_token,
-					'user_id' => $account_id,
-					'type' => 'basic'
-				);
-				$basic_account_attempt = new SB_Instagram_API_Connect( $data, 'header', array() );
-				$basic_account_attempt->connect();
-
-				if ( !$basic_account_attempt->is_wp_error() && ! $basic_account_attempt->is_instagram_error() ) {
-					$new_data = $basic_account_attempt->get_data();
-
-					$basic_account_access_token_connect = new SB_Instagram_API_Connect( $data, 'access_token', array() );
-					$basic_account_access_token_connect->connect();
-					if ( !$basic_account_access_token_connect->is_wp_error() && ! $basic_account_access_token_connect->is_instagram_error() ) {
-
-						$token_data = $basic_account_access_token_connect->get_data();
-						$expires_in = $token_data['expires_in'];
-						$expires_timestamp = time() + $expires_in;
-						$account_type = isset( $new_data['account_type'] ) ? $new_data['account_type'] : 'personal';
-
-						$new_connected_account = array(
-							'access_token' => $access_token,
-							'account_type' => $account_type,
-							'user_id' => $new_data['id'],
-							'username' => $new_data['username'],
-							'expires_timestamp' => $expires_timestamp,
-							'type' => 'basic'
-						);
-
-						$updated_options = sbi_connect_basic_account( $new_connected_account );
-
-						return sbi_json_encode( $updated_options['connected_accounts'][ $new_data['id'] ] );
-
-					} else {
-
-						$token_data = $basic_account_access_token_connect->get_data();
-						$expires_timestamp = time() + 60 * DAY_IN_SECONDS;
-						$account_type = isset( $new_data['account_type'] ) ? $new_data['account_type'] : 'personal';
-
-						$new_connected_account = array(
-							'access_token' => $access_token,
-							'account_type' => $account_type,
-							'user_id' => $new_data['id'],
-							'username' => $new_data['username'],
-							'expires_timestamp' => $expires_timestamp,
-							'type' => 'basic',
-                            'private' => true
-						);
-
-						$updated_options = sbi_connect_basic_account( $new_connected_account );
-
-						return sbi_json_encode( $updated_options['connected_accounts'][ $new_data['id'] ] );
-					}
-
-				} else {
-
-					if ( $basic_account_attempt->is_wp_error() ) {
-						$error = $basic_account_attempt->get_wp_error();
-					} else {
-						$error = $basic_account_attempt->get_data();
-					}
-					return sbi_formatted_error( $error );
-				}
-			}
-
-			$url = 'https://graph.facebook.com/'.$account_id.'?fields=biography,id,username,website,followers_count,media_count,profile_picture_url,name&access_token='.sbi_maybe_clean( $access_token );
-			$json = json_decode( sbi_business_account_request( $url, array( 'access_token' => $access_token ) ), true );
-
-			if ( isset( $json['error'] ) && $json['error']['type'] === 'OAuthException' ) {
-				$data = array(
-					'access_token' => $access_token,
-					'user_id' => $account_id,
-					'type' => 'basic'
-				);
-				$basic_account_attempt = new SB_Instagram_API_Connect( $data, 'header', array() );
-				$basic_account_attempt->connect();
-
-				if ( !$basic_account_attempt->is_wp_error() && ! $basic_account_attempt->is_instagram_error() ) {
-					$new_data = $basic_account_attempt->get_data();
-
-					$basic_account_access_token_connect = new SB_Instagram_API_Connect( $data, 'access_token', array() );
-					$basic_account_access_token_connect->connect();
-					if ( !$basic_account_access_token_connect->is_wp_error() && ! $basic_account_access_token_connect->is_instagram_error() ) {
-
-						$token_data = $basic_account_access_token_connect->get_data();
-						$expires_in = $token_data['expires_in'];
-						$expires_timestamp = time() + $expires_in;
-
-						$new_connected_account = array(
-							'access_token' => $access_token,
-							'account_type' => $new_data['account_type'],
-							'user_id' => $new_data['id'],
-							'username' => $new_data['username'],
-							'expires_timestamp' => $expires_timestamp,
-							'type' => 'basic'
-						);
-
-						$updated_options = sbi_connect_basic_account( $new_connected_account );
-
-						return sbi_json_encode( $updated_options['connected_accounts'][ $new_data['id'] ] );
-
-					} else {
-						if ( $basic_account_access_token_connect->is_wp_error() ) {
-							$error = $basic_account_access_token_connect->get_wp_error();
-						} else {
-							$error = $basic_account_access_token_connect->get_data();
-						}
-						return sbi_formatted_error( $error );
-					}
-
-				} else {
-					if ( $basic_account_attempt->is_wp_error() ) {
-						$error = $basic_account_attempt->get_wp_error();
-					} else {
-						$error = $basic_account_attempt->get_data();
-					}
-					return sbi_formatted_error( $error );
-				}
-
-			} else {
-				if ( isset( $json['id'] ) ) {
-					$new_user_id = $json['id'];
-					$test_connection_data = array(
-						'access_token' => $access_token,
-						'id' => $json['id'],
-						'username' => $json['username'],
-						'type' => 'business',
-						'is_valid' => true,
-						'last_checked' => time(),
-						'profile_picture' => $json['profile_picture_url']
-					);
-				}
-			}
-
-
-			global $sb_instagram_posts_manager;
-
-			$sb_instagram_posts_manager->remove_error( 'at_' . $json['username'] );
-			delete_transient( SBI_USE_BACKUP_PREFIX . 'sbi_'  . $json['id'] );
-
-		}
-
-		if ( isset( $test_connection_data['error_message'] ) ) {
-			return $test_connection_data['error_message'];
-		} elseif ( $test_connection_data !== false && ! empty( $new_user_id ) ) {
-			$username = $test_connection_data['username'] ? $test_connection_data['username'] : $connected_accounts[ $new_user_id ]['username'];
-			$user_id = $test_connection_data['id'] ? $test_connection_data['id'] : $connected_accounts[ $new_user_id ]['user_id'];
-			$profile_picture = $test_connection_data['profile_picture'] ? $test_connection_data['profile_picture'] : $connected_accounts[ $new_user_id ]['profile_picture'];
-			$type = isset( $test_connection_data['type'] ) ? $test_connection_data['type'] : 'personal';
-			$connected_accounts[ $new_user_id ] = array(
-				'access_token' => sbi_get_parts( $access_token ),
-				'user_id' => $user_id,
-				'username' => $username,
-				'type' => $type,
-				'is_valid' => true,
-				'last_checked' => $test_connection_data['last_checked'],
-				'profile_picture' => $profile_picture
-			);
-
-			if ( !$options['sb_instagram_disable_resize'] ) {
-				if ( sbi_create_local_avatar( $username, $profile_picture ) ) {
-					$connected_accounts[ $new_user_id ]['local_avatar'] = true;
-				}
-			} else {
-				$connected_accounts[ $new_user_id ]['local_avatar'] = false;
-			}
-
-			if ( $type === 'business' ) {
-				$url = 'https://graph.facebook.com/'.$user_id.'/tags?user_id='.$user_id.'&fields=id&limit=1&access_token='.sbi_maybe_clean( $access_token );
-				$args = array(
-					'timeout' => 60,
-					'sslverify' => false
-				);
-				$response = wp_remote_get( $url, $args );
-
-				if ( ! is_wp_error( $response ) ) {
-					// certain ways of representing the html for double quotes causes errors so replaced here.
-					$response = json_decode( str_replace( '%22', '&rdquo;', $response['body'] ), true );
-					if ( isset( $response['data'] ) ) {
-						$connected_accounts[ $new_user_id ]['use_tagged'] = '1';
-					}
-				} else {
-					return sbi_formatted_error( $response );
-				}
-			}
-
-			delete_transient( SBI_USE_BACKUP_PREFIX . 'sbi_'  . $user_id );
-			global $sb_instagram_posts_manager;
-
-			$sb_instagram_posts_manager->remove_error( 'at_' . $username );
-			$options['connected_accounts'] = $connected_accounts;
-
-			update_option( 'sb_instagram_settings', $options );
-
-			return sbi_json_encode( $connected_accounts[ $new_user_id ] );
-		} else {
-			return 'A successful connection could not be made. Please make sure your Access Token is valid.';
-		}
-
+	if ( sbi_code_check( $access_token ) ) {
+		$account['type'] = 'basic';
 	}
 
-	return '';
+	$connector = new SBI_Account_Connector();
+
+	$response = $connector->fetch( $account );
+
+	if ( isset( $response['access_token'] ) ) {
+		$connector->add_account_data( $response );
+		$connector->update_stored_account();
+		$connector->after_update();
+		return sbi_json_encode( $connector->get_account_data() );
+	} else {
+		return $response['error'];
+	}
 }
 
 function sbi_no_js_connected_account_management() {
@@ -757,11 +484,9 @@ function sbi_connect_basic_account( $new_account_details ) {
 	$options['sb_instagram_user_id'] = $ids_to_save;
 
 	update_option( 'sb_instagram_settings', $options );
-	global $sb_instagram_posts_manager;
+	//global $sb_instagram_posts_manager;
 
-	$sb_instagram_posts_manager->remove_error( 'at_' . $new_account_details['username'] );
-	$sb_instagram_posts_manager->remove_error( 'api' );
-	$sb_instagram_posts_manager->remove_error( 'expiration_' . $new_account_details['user_id'] );
+	//$sb_instagram_posts_manager->remove_all_errors();
 	return $options;
 }
 
@@ -854,6 +579,170 @@ function sbi_after_connection() {
 }
 add_action( 'wp_ajax_sbi_after_connection', 'sbi_after_connection' );
 
+function sbi_get_business_account_connection_modal($sb_instagram_user_id) {
+	$access_token = sbi_maybe_clean(urldecode($_GET['access_token']));
+	//
+	$url = 'https://graph.facebook.com/me/accounts?fields=instagram_business_account,access_token&limit=500&access_token='.$access_token;
+	$args = array(
+		'timeout' => 60,
+		'sslverify' => false
+	);
+	$result = wp_remote_get( $url, $args );
+	$pages_data = '{}';
+	if ( ! is_wp_error( $result ) ) {
+		$pages_data = $result['body'];
+	} else {
+		$page_error = $result;
+	}
+
+	$pages_data_arr = json_decode($pages_data);
+	$num_accounts = 0;
+	if(isset($pages_data_arr)){
+		$num_accounts = is_array( $pages_data_arr->data ) ? count( $pages_data_arr->data ) : 0;
+	}
+	?>
+<div id="sbi_config_info" class="sb_list_businesses sbi_num_businesses_<?php echo $num_accounts; ?>">
+    <div class="sbi_config_modal">
+        <div class="sbi-managed-pages">
+			<?php if ( isset( $page_error ) && isset( $page_error->errors ) ) {
+				foreach ($page_error->errors as $key => $item) {
+					echo '<div class="sbi_user_id_error" style="display:block;"><strong>Connection Error: </strong>' . $key . ': ' . $item[0] . '</div>';
+				}
+			}
+			?>
+			<?php if( empty($pages_data_arr->data) ) : ?>
+                <span id="sbi-bus-account-error">
+                            <p style="margin-top: 5px;"><b style="font-size: 16px">Couldn't find Business Profile</b><br />
+                            Uh oh. It looks like this Facebook account is not currently connected to an Instagram Business profile. Please check that you are logged into the <a href="https://www.facebook.com/" target="_blank">Facebook account</a> in this browser which is associated with your Instagram Business Profile.</p>
+                            <p><b style="font-size: 16px">Why do I need a Business Profile?</b><br />
+                            A Business Profile is only required if you are displaying a Hashtag feed. If you want to display a regular User feed then you can do this by selecting to connect a Personal account instead. For directions on how to convert your Personal profile into a Business profile please <a href="https://smashballoon.com/instagram-business-profiles" target="_blank">see here</a>.</p>
+                            </span>
+
+			<?php elseif ( $num_accounts === 0 ): ?>
+                <span id="sbi-bus-account-error">
+                            <p style="margin-top: 5px;"><b style="font-size: 16px">Couldn't find Business Profile</b><br />
+                            Uh oh. It looks like this Facebook account is not currently connected to an Instagram Business profile. Please check that you are logged into the <a href="https://www.facebook.com/" target="_blank">Facebook account</a> in this browser which is associated with your Instagram Business Profile.</p>
+                            <p>If you are, in fact, logged-in to the correct account please make sure you have Instagram accounts connected with your Facebook account by following <a href="https://smashballoon.com/reconnecting-an-instagram-business-profile/" target="_blank">this FAQ</a></p>
+                            </span>
+			<?php else: ?>
+                <p class="sbi-managed-page-intro"><b style="font-size: 16px;">Instagram Business profiles for this account</b><br /><i style="color: #666;">Note: In order to display a Hashtag feed you first need to select a Business profile below.</i></p>
+				<?php if ( $num_accounts > 1 ) : ?>
+                    <div class="sbi-managed-page-select-all"><input type="checkbox" id="sbi-select-all" class="sbi-select-all"><label for="sbi-select-all">Select All</label></div>
+				<?php endif; ?>
+                <div class="sbi-scrollable-accounts">
+
+					<?php foreach ( $pages_data_arr->data as $page => $page_data ) : ?>
+
+						<?php if( isset( $page_data->instagram_business_account ) ) :
+
+							$instagram_business_id = $page_data->instagram_business_account->id;
+
+							$page_access_token = isset( $page_data->access_token ) ? $page_data->access_token : '';
+
+							//Make another request to get page info
+							$instagram_account_url = 'https://graph.facebook.com/'.$instagram_business_id.'?fields=name,username,profile_picture_url&access_token='.$access_token;
+
+							$args = array(
+								'timeout' => 60,
+								'sslverify' => false
+							);
+							$result = wp_remote_get( $instagram_account_url, $args );
+							$instagram_account_info = '{}';
+							if ( ! is_wp_error( $result ) ) {
+								$instagram_account_info = $result['body'];
+							} else {
+								$page_error = $result;
+							}
+
+							$instagram_account_data = json_decode($instagram_account_info);
+
+							$instagram_biz_img = isset( $instagram_account_data->profile_picture_url ) ? $instagram_account_data->profile_picture_url : false;
+							$selected_class = $instagram_business_id == $sb_instagram_user_id ? ' sbi-page-selected' : '';
+
+							?>
+							<?php if ( isset( $page_error ) && isset( $page_error->errors ) ) :
+							foreach ($page_error->errors as $key => $item) {
+								echo '<div class="sbi_user_id_error" style="display:block;"><strong>Connection Error: </strong>' . $key . ': ' . $item[0] . '</div>';
+							}
+						else : ?>
+                            <div class="sbi-managed-page<?php echo $selected_class; ?>" data-page-token="<?php echo esc_attr( $page_access_token ); ?>" data-token="<?php echo esc_attr( $access_token ); ?>" data-page-id="<?php echo esc_attr( $instagram_business_id ); ?>">
+                                <div class="sbi-add-checkbox">
+                                    <input id="sbi-<?php echo esc_attr( $instagram_business_id ); ?>" type="checkbox" name="sbi_managed_pages[]" value="<?php echo esc_attr( $instagram_account_info ); ?>">
+                                </div>
+                                <div class="sbi-managed-page-details">
+                                    <label for="sbi-<?php echo esc_attr( $instagram_business_id ); ?>"><img class="sbi-page-avatar" border="0" height="50" width="50" src="<?php echo esc_url( $instagram_biz_img ); ?>"><b style="font-size: 16px;"><?php echo esc_html( $instagram_account_data->name ); ?></b>
+                                        <br />@<?php echo esc_html( $instagram_account_data->username); ?><span style="font-size: 11px; margin-left: 5px;">(<?php echo esc_html( $instagram_business_id ); ?>)</span></label>
+                                </div>
+                            </div>
+						<?php endif; ?>
+
+						<?php endif; ?>
+
+					<?php endforeach; ?>
+
+                </div> <!-- end scrollable -->
+                <p style="font-size: 11px; line-height: 1.5; margin-bottom: 0;"><i style="color: #666;">*<?php echo sprintf( __( 'Changing the password, updating privacy settings, or removing page admins for the related Facebook page may require %smanually reauthorizing our app%s to reconnect an account.', 'instagram-feed' ), '<a href="https://smashballoon.com/reauthorizing-our-instagram-facebook-app/" target="_blank" rel="noopener noreferrer">', '</a>' ); ?></i></p>
+
+                <a href="JavaScript:void(0);" id="sbi-connect-business-accounts" class="button button-primary" disabled="disabled" style="margin-top: 20px;">Connect Accounts</a>
+
+			<?php endif; ?>
+
+            <a href="JavaScript:void(0);" class="sbi_modal_close"><i class="fa fa-times"></i></a>
+        </div>
+    </div>
+    </div><?php
+}
+
+function sbi_get_personal_connection_modal( $connected_accounts, $action_url = 'admin.php?page=sb-instagram-feed' ) {
+	$access_token = sanitize_text_field( $_GET['access_token'] );
+	$account_type = sanitize_text_field( $_GET['account_type'] );
+	$user_id = sanitize_text_field( $_GET['id'] );
+	$user_name = sanitize_text_field( $_GET['username'] );
+	$expires_in = (int)$_GET['expires_in'];
+	$expires_timestamp = time() + $expires_in;
+
+	$new_account_details = array(
+		'access_token' => $access_token,
+		'account_type' => $account_type,
+		'user_id' => $user_id,
+		'username' => $user_name,
+		'expires_timestamp' => $expires_timestamp,
+		'profile_picture' => '',
+		'type' => 'basic'
+	);
+
+
+	$matches_existing_personal = sbi_matches_existing_personal( $new_account_details );
+	$button_text = $matches_existing_personal ? __( 'Update This Account', 'instagram-feed' ) : __( 'Connect This Account', 'instagram-feed' );
+
+	$account_json = sbi_json_encode( $new_account_details );
+
+	$already_connected_as_business_account = (isset( $connected_accounts[ $user_id ] ) && $connected_accounts[ $user_id ]['type'] === 'business');
+
+	?>
+
+    <div id="sbi_config_info" class="sb_get_token">
+        <div class="sbi_config_modal">
+            <div class="sbi_ca_username"><strong><?php echo esc_html( $user_name ); ?></strong></div>
+            <form action="<?php echo admin_url( $action_url ); ?>" method="post">
+                <p class="sbi_submit">
+					<?php if ( $already_connected_as_business_account ) :
+						_e( 'The Instagram account you are logged into is already connected as a "business" account. Remove the business account if you\'d like to connect as a basic account instead (not recommended).', 'instagram-feed' );
+						?>
+					<?php else : ?>
+                        <input type="submit" name="sbi_submit" id="sbi_connect_account" class="button button-primary" value="<?php echo esc_html( $button_text ); ?>">
+					<?php  endif; ?>
+                    <input type="hidden" name="sbi_account_json" value="<?php echo esc_attr( $account_json ) ; ?>">
+                    <input type="hidden" name="sbi_connect_username" value="<?php echo esc_attr( $user_name ); ?>">
+                    <a href="JavaScript:void(0);" class="button button-secondary" id="sbi_switch_accounts"><?php esc_html_e( 'Switch Accounts', 'instagram-feed' ); ?></a>
+                </p>
+            </form>
+            <a href="JavaScript:void(0);"><i class="sbi_modal_close fa fa-times"></i></a>
+        </div>
+    </div>
+	<?php
+}
+
 function sbi_account_type_display( $type, $private = false ) {
 	if ( $type === 'basic' ) {
 		$type = 'personal';
@@ -898,12 +787,38 @@ function sbi_reset_resized() {
 
 	global $sb_instagram_posts_manager;
 	$sb_instagram_posts_manager->delete_all_sbi_instagram_posts();
+	delete_option( 'sbi_top_api_calls' );
+
+	$sb_instagram_posts_manager->add_action_log( 'Reset resizing tables.' );
 
 	echo "1";
 
 	die();
 }
 add_action( 'wp_ajax_sbi_reset_resized', 'sbi_reset_resized' );
+
+function sbi_reset_log() {
+	global $sb_instagram_posts_manager;
+
+	$sb_instagram_posts_manager->remove_all_errors();
+
+	echo "1";
+
+	die();
+}
+add_action( 'wp_ajax_sbi_reset_log', 'sbi_reset_log' );
+
+function sbi_reset_api_errors() {
+	global $sb_instagram_posts_manager;
+	$sb_instagram_posts_manager->add_action_log( 'View feed and retry button clicked.' );
+
+	$sb_instagram_posts_manager->reset_api_errors();
+
+	echo "1";
+
+	die();
+}
+add_action( 'wp_ajax_sbi_reset_api_errors', 'sbi_reset_api_errors' );
 
 function sbi_lite_dismiss() {
 	$nonce = isset( $_POST['sbi_nonce'] ) ? sanitize_text_field( $_POST['sbi_nonce'] ) : '';
@@ -918,45 +833,20 @@ function sbi_lite_dismiss() {
 }
 add_action( 'wp_ajax_sbi_lite_dismiss', 'sbi_lite_dismiss' );
 
-function sbi_reset_log() {
-	global $sb_instagram_posts_manager;
-
-	$sb_instagram_posts_manager->remove_all_errors();
-
-	echo "1";
-
-	die();
-}
-add_action( 'wp_ajax_sbi_reset_log', 'sbi_reset_log' );
-
 add_action('admin_notices', 'sbi_admin_error_notices');
 function sbi_admin_error_notices() {
 
-	$is_reconnecting = ! empty( $_POST['sbi_account_json'] );
-	if ( ! $is_reconnecting && isset( $_GET['page'] ) && in_array( $_GET['page'], array( 'sb-instagram-feed' )) ) {
+	if ( isset( $_GET['page'] ) && in_array( $_GET['page'], array( 'sb-instagram-feed' )) ) {
+
 		global $sb_instagram_posts_manager;
 
 		$errors = $sb_instagram_posts_manager->get_errors();
-
-		if ( ! empty( $errors ) && ( isset( $errors['database_create_posts'] ) || isset( $errors['database_create_posts_feeds'] ) || isset( $errors['upload_dir'] ) || isset( $errors['ajax'] )  ) ) : ?>
+		if ( ! empty( $errors ) && (! empty( $errors['database_create'] ) || ! empty( $errors['upload_dir'] )) ) : ?>
             <div class="notice notice-warning is-dismissible sbi-admin-notice">
+				<?php if ( ! empty( $errors['database_create'] ) ) echo '<p>' . $errors['database_create'] . '</p>'; ?>
 
-				<?php foreach ( $sb_instagram_posts_manager->get_errors() as $type => $error ) : ?>
-					<?php if ( (in_array( $type, array( 'database_create_posts', 'database_create_posts_feeds', 'upload_dir' ) ) && !$sb_instagram_posts_manager->image_resizing_disabled() ) ) : ?>
-                        <p><strong><?php echo $error[0]; ?></strong></p>
-                        <p><?php _e( 'Note for support', 'instagram-feed' ); ?>: <?php echo $error[1]; ?></p>
-					<?php endif; ?>
-				<?php endforeach; ?>
-				<?php if ( ( isset( $errors['database_create_posts'] ) || isset( $errors['database_create_posts_feeds'] ) || isset( $errors['upload_dir'] ) ) && !$sb_instagram_posts_manager->image_resizing_disabled() ) : ?>
-                    <p><?php _e( sprintf( 'Visit our %s page for help', '<a href="https://smashballoon.com/instagram-feed/support/faq/" target="_blank">FAQ</a>' ), 'instagram-feed' ); ?></p>
-				<?php endif; ?>
-
-				<?php foreach ( $sb_instagram_posts_manager->get_errors() as $type => $error ) : ?>
-					<?php if (in_array( $type, array( 'ajax' ) )) : ?>
-                        <p class="sbi-admin-error" data-sbi-type="ajax"><strong><?php echo $error[0]; ?></strong></p>
-                        <p><?php echo $error[1]; ?></p>
-					<?php endif; ?>
-				<?php endforeach; ?>
+				<?php if ( ! empty( $errors['upload_dir'] ) ) echo '<p>' . $errors['upload_dir'] . '</p>'; ?>
+                <p><?php _e( sprintf( 'Visit our %s page for help', '<a href="https://smashballoon.com/instagram-feed/support/faq/" target="_blank">FAQ</a>' ), 'instagram-feed' ); ?></p>
 
             </div>
 
@@ -966,14 +856,14 @@ function sbi_admin_error_notices() {
             <div class="notice notice-warning is-dismissible sbi-admin-notice">
                 <p><strong><?php echo esc_html__( 'Instagram Feed is encountering an error and your feeds may not be updating due to the following reasons:', 'instagram-feed') ; ?></strong></p>
 
-                <?php echo $errors; ?>
+				<?php echo $errors; ?>
 
-                <?php
-                $error_page = $sb_instagram_posts_manager->get_error_page();
-                if ( $error_page ) {
-                     echo '<a href="' . get_the_permalink( $error_page ) . '" class="sbi-clear-errors-visit-page sbi-space-left button button-secondary">' . __( 'View Feed and Retry', 'instagram-feed' ) . '</a>';
-                }
-                ?>
+				<?php
+				$error_page = $sb_instagram_posts_manager->get_error_page();
+				if ( $error_page ) {
+					echo '<a href="' . get_the_permalink( $error_page ) . '" class="sbi-clear-errors-visit-page sbi-space-left button button-secondary">' . __( 'View Feed and Retry', 'instagram-feed' ) . '</a>';
+				}
+				?>
             </div>
 		<?php endif;
 	}
@@ -1017,67 +907,11 @@ function sbi_get_user_names_of_personal_accounts_not_also_already_updated() {
 	return array();
 }
 
-function sbi_reconnect_accounts_notice() {
-	if( ! current_user_can( 'manage_options' ) ) return;
-
-	$should_show_link = ! isset( $_GET['page'] ) || $_GET['page'] !== 'sb-instagram-feed';
-	$personal_accounts_that_need_updating = sbi_get_user_names_of_personal_accounts_not_also_already_updated();
-	if ( empty( $personal_accounts_that_need_updating ) ) {
-		return;
-	} else {
-		$total = count( $personal_accounts_that_need_updating );
-		if ( $total > 1 ) {
-			$user_string = '';
-			$i = 0;
-
-			foreach ( $personal_accounts_that_need_updating as $username ) {
-				if ( ($i + 1) === $total ) {
-					$user_string .= ' and ' . $username;
-				} else {
-					if ( $i !== 0 ) {
-						$user_string .= ', ' . $username;
-					} else {
-						$user_string .= $username;
-					}
-				}
-				$i++;
-			}
-		} else {
-			$user_string = $personal_accounts_that_need_updating[0];
-		}
-
-		if ( sbi_is_after_deprecation_deadline() ) {
-			$notice_class = 'notice-error';
-			$error = '<p><b>' . sprintf( __( 'Error: Instagram Feed plugin - account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to recent Instagram platform changes some Instagram accounts will need to be reconnected in the plugin in order for them to continue updating.', 'instagram-feed' );
-		} else {
-			$notice_class = 'notice-warning';
-			$error = '<p><b>' . sprintf( __( 'Warning: Instagram Feed plugin - account for %s needs to be reconnected.', 'instagram-feed' ), '<em>'.$user_string.'</em>' ) . '</b><br>' . __( 'Due to Instagram platform changes on June 1, 2020, some Instagram accounts will need to be reconnected in the plugin to avoid disruption to your feeds.', 'instagram-feed' );
-		}
-		if( !$should_show_link ) $error .= __( ' Use the big blue button below to reconnect your account.', 'instagram-feed' );
-	}
-	$url = admin_url( '?page=sb-instagram-feed' );
-
-	?>
-    <div class="notice <?php echo $notice_class; ?> is-dismissible">
-		<?php echo $error; ?>
-        <p>
-			<?php if ( $should_show_link ) : ?>
-                <a href="<?php echo $url; ?>" class="button-primary" style="margin-right:10px;"><i class="fa fa-instagram" aria-hidden="true"></i> &nbsp;Reconnect on Settings Page</a>
-			<?php endif; ?>
-            <a href="https://smashballoon.com/instagram-api-changes-march-2-2020/" target="_blank" rel="noopener">See more details</a>
-        </p>
-    </div>
-
-	<?php
-
-}
-add_action( 'admin_notices', 'sbi_reconnect_accounts_notice' );
-
 function sbi_get_current_time() {
 	$current_time = time();
 
 	// where to do tests
-	// $current_time = strtotime( 'November 25, 2022' ) + 1;
+	// $current_time = strtotime( 'November 25, 2020' ) + 1;
 
 	return $current_time;
 }
@@ -1085,197 +919,9 @@ function sbi_get_current_time() {
 // generates the html for the admin notices
 function sbi_notices_html() {
 
-	//Only show to admins
-	$current_screen = get_current_screen();
-	$is_plugins_page = isset( $current_screen->id ) && $current_screen->id === 'plugins';
-	$page = isset( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : '';
-	//Only show to admins
-	if ( ! current_user_can( 'manage_options' ) ) {
-		return;
-	}
-
-	$sbi_statuses_option = get_option( 'sbi_statuses', array() );
-	$current_time = sbi_get_current_time();
-	$sbi_bfcm_discount_code = 'happysmashgiving' . date('Y', $current_time );
-
-	// rating notice logic
-	$sbi_rating_notice_option = get_option( 'sbi_rating_notice', false );
-	$sbi_rating_notice_waiting = get_transient( 'instagram_feed_rating_notice_waiting' );
-	$should_show_rating_notice = ($sbi_rating_notice_waiting !== 'waiting' && $sbi_rating_notice_option !== 'dismissed');
-
-	// black friday cyber monday logic
-	$thanksgiving_this_year = sbi_get_future_date( 11, date('Y', $current_time ), 4, 4, 1 );
-	$one_week_before_black_friday_this_year = $thanksgiving_this_year - 7*24*60*60;
-	$one_day_after_cyber_monday_this_year = $thanksgiving_this_year + 5*24*60*60;
-	$has_been_two_days_since_rating_dismissal = isset( $sbi_statuses_option['rating_notice_dismissed'] ) ? ((int)$sbi_statuses_option['rating_notice_dismissed'] + 2*24*60*60) < $current_time : true;
-
-	$could_show_bfcm_discount = ($current_time > $one_week_before_black_friday_this_year && $current_time < $one_day_after_cyber_monday_this_year);
-	$should_show_bfcm_discount = false;
-	if ( $could_show_bfcm_discount && $has_been_two_days_since_rating_dismissal ) {
-		global $current_user;
-		$user_id = $current_user->ID;
-
-		$ignore_bfcm_sale_notice_meta = get_user_meta( $user_id, 'sbi_ignore_bfcm_sale_notice' );
-		$ignore_bfcm_sale_notice_meta = isset( $ignore_bfcm_sale_notice_meta[0] ) ? $ignore_bfcm_sale_notice_meta[0] : '';
-
-		/* Check that the user hasn't already clicked to ignore the message */
-		$should_show_bfcm_discount = ($ignore_bfcm_sale_notice_meta !== 'always' && $ignore_bfcm_sale_notice_meta !== date( 'Y', $current_time ));
-	}
-
-	// new user discount logic
-	$in_new_user_month_range = true;
-	$should_show_new_user_discount = false;
-	$has_been_one_month_since_rating_dismissal = isset( $sbi_statuses_option['rating_notice_dismissed'] ) ? ((int)$sbi_statuses_option['rating_notice_dismissed'] + 30*24*60*60) < $current_time + 1: true;
-
-	if ( isset( $sbi_statuses_option['first_install'] ) && $sbi_statuses_option['first_install'] === 'from_update' ) {
-		global $current_user;
-		$user_id = $current_user->ID;
-		$ignore_new_user_sale_notice_meta = get_user_meta( $user_id, 'sbi_ignore_new_user_sale_notice' );
-		$ignore_new_user_sale_notice_meta = isset( $ignore_new_user_sale_notice_meta[0] ) ? $ignore_new_user_sale_notice_meta[0] : '';
-		if ( $ignore_new_user_sale_notice_meta !== 'always' ) {
-			$should_show_new_user_discount = true;
-		}
-	} elseif ( $in_new_user_month_range && $has_been_one_month_since_rating_dismissal ) {
-		global $current_user;
-		$user_id = $current_user->ID;
-		$ignore_new_user_sale_notice_meta = get_user_meta( $user_id, 'sbi_ignore_new_user_sale_notice' );
-		$ignore_new_user_sale_notice_meta = isset( $ignore_new_user_sale_notice_meta[0] ) ? $ignore_new_user_sale_notice_meta[0] : '';
-
-		if ( $ignore_new_user_sale_notice_meta !== 'always'
-		     && isset( $sbi_statuses_option['first_install'] )
-		     && $current_time > (int)$sbi_statuses_option['first_install'] + 60*60*24*30 ) {
-			$should_show_new_user_discount = true;
-		}
-	}
-
-	if ( $should_show_rating_notice ) {
-		$other_notice_html = '';
-		$dismiss_url = add_query_arg( 'sbi_ignore_rating_notice_nag', '1' );
-		$later_url = add_query_arg( 'sbi_ignore_rating_notice_nag', 'later' );
-		if ( $should_show_bfcm_discount ) {
-			$other_notice_html = '<p class="sbi_other_notice">' . sprintf( __( 'PS. We currently have a %sBlack Friday deal%s for 60%% off the Pro version!', 'instagram-feed' ), '<a href="https://smashballoon.com/instagram-feed/?utm_campaign=instagram-free&utm_source=notices&utm_medium=rating&discount='.$sbi_bfcm_discount_code.'" target="_blank"><b style="font-weight: 700;">', '</b></a>' ) . '</a></p>';
-
-			$dismiss_url = add_query_arg( array(
-					'sbi_ignore_rating_notice_nag' => '1',
-					'sbi_ignore_bfcm_sale_notice' => date( 'Y', $current_time )
-				)
-			);
-			$later_url = add_query_arg( array(
-					'sbi_ignore_rating_notice_nag' => 'later',
-					'sbi_ignore_bfcm_sale_notice' => date( 'Y', $current_time )
-				)
-			);
-		}
-
-		echo "
-            <div class='sbi_notice sbi_review_notice'>
-                <img src='". SBI_PLUGIN_URL . 'img/sbi-icon.png' ."' alt='" . __( 'Instagram Feed', 'instagram-feed' ) . "'>
-                <div class='sbi-notice-text'>
-                    <p style='padding-top: 4px;'>" . sprintf( __( "It's great to see that you've been using the %1sInstagram Feed%2s plugin for a while now. Hopefully you're happy with it!&nbsp; If so, would you consider leaving a positive review? It really helps to support the plugin and helps others to discover it too!", 'instagram-feed' ), '<strong style=\'font-weight: 700;\'>', '</strong>' ) . "</p>
-                    <p class='links'";
-                    if( $should_show_bfcm_discount ) echo " style='margin-top: 0 !important;'";
-                    echo ">
-                        <a class='sbi_notice_dismiss' href='https://wordpress.org/support/plugin/instagram-feed/reviews/' target='_blank'>" . __( 'Sure, I\'d love to!', 'instagram-feed' ) . "</a>
-                        &middot;
-                        <a class='sbi_notice_dismiss' href='" .esc_url( $dismiss_url ). "'>" . __( 'No thanks', 'instagram-feed' ) . "</a>
-                        &middot;
-                        <a class='sbi_notice_dismiss' href='" .esc_url( $dismiss_url ). "'>" . __( 'I\'ve already given a review', 'instagram-feed' ) . "</a>
-                        &middot;
-                        <a class='sbi_notice_dismiss' href='" .esc_url( $later_url ). "'>" . __( 'Ask Me Later', 'instagram-feed' ) . "</a>
-                    </p>"
-		    . $other_notice_html .
-		    "</div>
-                <a class='sbi_notice_close' href='" .esc_url( $dismiss_url ). "'><i class='fa fa-close'></i></a>
-            </div>";
-
-	} elseif ( $should_show_new_user_discount ) {
-		global $current_user;
-		$user_id = $current_user->ID;
-		$ignore_new_user_sale_notice_meta = get_user_meta( $user_id, 'sbi_ignore_new_user_sale_notice' );
-		if ( $ignore_new_user_sale_notice_meta !== 'always' ) {
-
-			echo "
-        <div class='sbi_notice sbi_review_notice sbi_new_user_sale_notice'>
-            <img src='" . SBI_PLUGIN_URL . 'img/sbi-icon-offer.png' . "' alt='Instagram Feed'>
-            <div class='sbi-notice-text'>
-                <p><b style'font-weight: 700;'>" . sprintf( __( 'Exclusive offer!%1s We don\'t run promotions very often, but for a limited time we\'re offering %2s60%% off%3s our Pro version to all users of our free Instagram Feed plugin.', 'instagram-feed' ), '</b> ', '<b style="font-weight: 700;">', '</b>' ) . "</p>
-                <p class='sbi-links'>
-                    <a class='sbi_notice_dismiss sbi_offer_btn' href='https://smashballoon.com/instagram-feed/?utm_campaign=instagram-free&utm_source=notices&utm_medium=newuser&discount=instagramthankyou' target='_blank'><b>" . __( 'Get this offer', 'instagram-feed' ) . "</b></a>
-                    <a class='sbi_notice_dismiss' style='margin-left: 5px;' href='" . esc_url( add_query_arg( 'sbi_ignore_new_user_sale_notice', 'always' ) ) . "'>" . __( 'I\'m not interested', 'instagram-feed' ) . "</a>
-
-                </p>
-            </div>
-            <a class='sbi_new_user_sale_notice_close' href='" . esc_url( add_query_arg( 'sbi_ignore_new_user_sale_notice', 'always' ) ) . "'><i class='fa fa-close'></i></a>
-        </div>
-        ";
-		}
-
-	} elseif ( $should_show_bfcm_discount ) {
-
-		echo "
-        <div class='sbi_notice sbi_review_notice sbi_bfcm_sale_notice'>
-            <img src='". SBI_PLUGIN_URL . 'img/sbi-icon-offer.png' ."' alt='Instagram Feed'>
-            <div class='sbi-notice-text'>
-                <p>" . sprintf( __( '%sBlack Friday/Cyber Monday Deal!%s Thank you for using our free Instagram Feed plugin. For a limited time, we\'re offering %s60%% off%s the Pro version for all of our users.', 'instagram-feed' ), '<b style="font-weight: 700;">', '</b>', '<b style="font-weight: 700;">', '</b>' ) . "</p>
-                <p class='sbi-links'>
-                    <a class='sbi_notice_dismiss sbi_offer_btn' href='https://smashballoon.com/instagram-feed/?utm_campaign=instagram-free&utm_source=notices&utm_medium=bfcm&discount=".$sbi_bfcm_discount_code."' target='_blank'>" . __( 'Get this offer!', 'instagram-feed' ) . "</a>
-                    <a class='sbi_notice_dismiss' style='margin-left: 5px;' href='" .esc_url( add_query_arg( 'sbi_ignore_bfcm_sale_notice', date( 'Y', $current_time ) ) ). "'>" . __( 'I\'m not interested', 'instagram-feed' ) . "</a>
-                </p>
-            </div>
-            <a class='sbi_bfcm_sale_notice_close' href='" .esc_url( add_query_arg( 'sbi_ignore_bfcm_sale_notice', date( 'Y', $current_time ) ) ). "'><i class='fa fa-close'></i></a>
-        </div>
-        ";
-
-	}
-
 }
-add_action( 'admin_notices', 'sbi_notices_html', 8 ); // priority 12 for Twitter, priority 10 for Facebook
+//add_action( 'admin_notices', 'sbi_notices_html', 8 ); // priority 12 for Twitter, priority 10 for Facebook
 
-function sbi_process_nags() {
-
-	global $current_user;
-	$user_id = $current_user->ID;
-	$sbi_statuses_option = get_option( 'sbi_statuses', array() );
-
-	if ( isset( $_GET['sbi_ignore_rating_notice_nag'] ) ) {
-		if ( (int)$_GET['sbi_ignore_rating_notice_nag'] === 1 ) {
-			update_option( 'sbi_rating_notice', 'dismissed', false );
-			$sbi_statuses_option['rating_notice_dismissed'] = sbi_get_current_time();
-			update_option( 'sbi_statuses', $sbi_statuses_option, false );
-
-		} elseif ( $_GET['sbi_ignore_rating_notice_nag'] === 'later' ) {
-			set_transient( 'instagram_feed_rating_notice_waiting', 'waiting', 2 * WEEK_IN_SECONDS );
-			update_option( 'sbi_rating_notice', 'pending', false );
-		}
-	}
-
-	if ( isset( $_GET['sbi_ignore_new_user_sale_notice'] ) ) {
-		$response = sanitize_text_field( $_GET['sbi_ignore_new_user_sale_notice'] );
-		if ( $response === 'always' ) {
-			update_user_meta( $user_id, 'sbi_ignore_new_user_sale_notice', 'always' );
-
-			$current_month_number = (int)date('n', sbi_get_current_time() );
-			$not_early_in_the_year = ($current_month_number > 5);
-
-			if ( $not_early_in_the_year ) {
-				update_user_meta( $user_id, 'sbi_ignore_bfcm_sale_notice', date( 'Y', sbi_get_current_time() ) );
-			}
-
-		}
-	}
-
-	if ( isset( $_GET['sbi_ignore_bfcm_sale_notice'] ) ) {
-		$response = sanitize_text_field( $_GET['sbi_ignore_bfcm_sale_notice'] );
-		if ( $response === 'always' ) {
-			update_user_meta( $user_id, 'sbi_ignore_bfcm_sale_notice', 'always' );
-		} elseif ( $response === date( 'Y', sbi_get_current_time() ) ) {
-			update_user_meta( $user_id, 'sbi_ignore_bfcm_sale_notice', date( 'Y', sbi_get_current_time() ) );
-		}
-		update_user_meta( $user_id, 'sbi_ignore_new_user_sale_notice', 'always' );
-	}
-
-}
-add_action( 'admin_init', 'sbi_process_nags' );
 
 function sbi_get_future_date( $month, $year, $week, $day, $direction ) {
 	if ( $direction > 0 ) {

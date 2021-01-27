@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * Class Advanced_Ads_Import
+ */
 class Advanced_Ads_Import {
 	/**
 	 * @var Advanced_Ads_Export
@@ -50,12 +54,12 @@ class Advanced_Ads_Import {
 	 * Manages stages of the XML import process
 	 */
 	public function dispatch() {
-		if ( ! isset( $_POST['_wpnonce'] ) 
+		if ( ! isset( $_POST['_wpnonce'] )
 			|| ! wp_verify_nonce( $_POST['_wpnonce'], 'advads-import' )
 			|| ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) ) {
 			return;
 		}
-		
+
 		if ( ! isset( $_POST['import_type'] ) ) {
 			return;
 		}
@@ -119,7 +123,7 @@ class Advanced_Ads_Import {
 	/**
 	 * Create new ads and groups based on import information
 	 *
-	 * @param array $decoded decoded XML
+	 * @param array $decoded decoded XML.
 	 */
 	private function import_ads_and_groups( &$decoded ) {
 		if ( isset( $decoded['ads'] ) && is_array( $decoded['ads'] ) ) {
@@ -208,7 +212,7 @@ class Advanced_Ads_Import {
 
 						// do not save the ad group, if this is the group assigned as ad content
 						if ( $ad_group_id !== $group_id ) {
-							$groups_to_set[] = intval( $group_id );
+							$groups_to_set[] = (int) $group_id;
 						}
 
 						if ( ! isset( $advads_ad_groups[ $group_id ] ) ) {
@@ -308,7 +312,7 @@ class Advanced_Ads_Import {
 	/**
 	 * Create new placements based on import information
 	 *
-	 * @param array $decoded decoded XML
+	 * @param array $decoded decoded XML.
 	 */
 	private function import_placements( &$decoded ) {
 		if ( isset( $decoded['placements'] ) && is_array( $decoded['placements'] ) ) {
@@ -388,7 +392,18 @@ class Advanced_Ads_Import {
 
 											if ( term_exists( absint( $_item_existing[1] ), Advanced_Ads::AD_GROUP_TAXONOMY ) ) {
 												wp_set_post_terms( $found, $_item_existing[1], Advanced_Ads::AD_GROUP_TAXONOMY, true );
-												$advads_ad_weights[ $_item_existing[1] ][ $found ] = 1;
+
+												/**
+												 * By default, a new add added to a group receives the weight of 5
+												 * so that users could set the weight of existing ads either higher or lower
+												 * depending on whether they want to show the new ad with a higher weight or not.
+												 * This is especially useful with Selling Ads to replace an existing ad in a group
+												 * with a newly sold one
+												 *
+												 * Advanced users could use the `advanced-ads-import-default-group-weight` filter
+												 * to manipulate the value
+												 */
+												$advads_ad_weights[ $_item_existing[1] ][ $found ] = apply_filters( 'advanced-ads-import-default-group-weight', 5 );
 												update_option( 'advads-ad-weights', $advads_ad_weights );
 												// new placement key => old placement key
 												$this->imported_data['placements'][ $placement_key_uniq ] = $placement_key_uniq;

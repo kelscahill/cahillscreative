@@ -1,10 +1,10 @@
 === Jetpack - WP Security, Backup, Speed, & Growth ===
 Contributors: automattic, adamkheckler, aduth, akirk, allendav, alternatekev, andy, annezazu, apeatling, azaozz, batmoo, barry, beaulebens, biskobe, blobaugh, brbrr, cainm, cena, cfinke, chaselivingston, chellycat, clickysteve, csonnek, danielbachhuber, davoraltman, daniloercoli, delawski, designsimply, dllh, drawmyface, dsmart, dzver, ebinnion, egregor, eliorivero, enej, eoigal, erania-pinnera, ethitter, fgiannar, gcorne, georgestephanis, gibrown, goldsounds, hew, hugobaeta, hypertextranch, iammattthomas, iandunn, jblz, jasmussen, jeffgolenski, jeherve, jenhooks, jenia, jessefriedman, jgs, jkudish, jmdodd, joanrho, johnjamesjacoby, jshreve, kbrownkd, keoshi, koke, kraftbj, lancewillett, leogermani, lschuyler, macmanx, martinremy, matt, matveb, mattwiebe, maverick3x6, mcsf, mdawaffe, mdbitz, MichaelArestad, migueluy, mikeyarce, mkaz, nancythanki, nickmomrik, obenland, oskosk, pento, professor44, rachelsquirrel, rdcoll, ryancowles, richardmuscat, richardmtl, robertbpugh, roccotripaldi, samhotchkiss, scarstocea, scottsweb, sdquirk, sermitr, simison, stephdau, tmoorewp, tyxla, Viper007Bond, westi, yoavf, zinigor
 Tags: WP, backup, social, AMP, WooCommerce, malware, scan, spam, CDN, social
-Stable tag: 9.0.2
-Requires at least: 5.4
+Stable tag: 9.3.1
+Requires at least: 5.5
 Requires PHP: 5.6
-Tested up to: 5.5
+Tested up to: 5.6
 
 The best WP plugin for backup, anti spam, malware scan, CDN, AMP, social, search, contact form, and integrations with Woo, Facebook, Instagram, Google
 
@@ -47,7 +47,7 @@ Create and customize your WordPress site, optimize it for visitors and revenue, 
 * Grow traffic with SEO tools for Google, Bing, Twitter, Facebook, and WordPress.com. XML sitemap created automatically.
 * Advertise on your site to generate revenue. The Jetpack ad network automatically does the work for you to find high-quality ads that are placed on your site.
 * Manage Jetpack features from anywhere with the official WordPress mobile app, available for Apple iOS (iPhone or iPad) and Google Android.
-* Looking for a CRM? Check out the Jetpack CRM plugin which works alongside Jetpack to give you a simple and practical way to build relationships with your customers and leads.
+* Looking for Customer Relationship Management? Check out the [Jetpack CRM plugin](https://jetpackcrm.com) which works alongside Jetpack to give you a simple and practical way to build relationships with your customers and leads.
 
 = EASY DESIGN TOOLS =
 Quickly customize your site to make it stand out — no coding needed.
@@ -118,10 +118,6 @@ Once you’ve installed Jetpack, your stats will be available on your Jetpack da
 = How do I contribute to Jetpack? =
 
 There are opportunities for developers at all levels to contribute. [Learn more about contributing to Jetpack](https://jetpack.com/contribute) or consider [joining our beta program](https://jetpack.com/beta).
-
-= Is Jetpack CRM included in the Jetpack plugin? =
-
-No, please download the separate Jetpack CRM plugin to use Jetpack CRM.
 
 = What else does Jetpack include? =
 
@@ -243,98 +239,54 @@ Our Cookie and Consent Banner can help you comply with GDPR. The European Union�
 
 == Changelog ==
 
-= 9.0.2 =
+= 9.3.1 =
 
-* Release date: October 9, 2020
-
-**Enhancements**
-
-* Publicize: improve handling of URLs when generating Twitter threads.
+* Release date: January 14, 2021
 
 **Bug fixes**
 
-* Instagram Embeds: ensure that Instagram URLs with additional URL parameters can be embedded as well.
-* Media Extractor: prevent PHP notice for some URLs.
-* Publicize: avoid block editor errors when no Publicize connections are available.
-* Synchronization flow: avoid potential fatal errors when updating the plugin from the Dashboard > Updates screen.
-* Sharing: avoid PHP notices when a post object is invalid.
-* WordPress.com REST API: avoid errors when uploading images from a URL.
+* Multisite: avoid Fatals on sites using the WPMUDEV domain mapping plugin.
+* SEO Tools: prevent a PHP notice in some situations involving taxonomy or author pages.
 
-= 9.0.1 =
+= 9.3 =
 
-* Release date: October 6, 2020
-
-**Bug fixes**
-
-* General: remove a database optimization task that could potentially cause database issues.
-
-= 9.0 =
-
-* Release date: October 6, 2020
-* Release post: https://wp.me/p1moTy-rLy
-
-**Major Enhancements**
-
-* Publicize: add the ability to publish the entire content of posts to Twitter as threads.
+* Release date: January 12, 2021
+* Release post: https://wp.me/p1moTy-sgZ
 
 **Enhancements**
 
-* Blocks: update icon color for all blocks provided by Jetpack.
-* Custom CSS: add support for the `clip-path` property.
-* Custom CSS: add rebeccapurple color to the list of colors that can be processed by the SCSS and LESS preprocessors.
-* Dashboard: clarify Backup & Scan settings and alerts.
-* Dashboard: improve the reconnecting process for site owners willing to disconnect and then reconnect Jetpack to WordPress.com.
-* Dashboard: do not display option to purchase a plan when in Offline mode.
-* Embeds: add Loom.com as a new embed option.
-* Embeds: update song.link oEmbed to support more formats.
-* Embeds: allow Instagram embeds to keep working via the WordPress.com REST API.
-* Google Analytics: move the legacy variant from the HTML body to head.
-* Instant Search: optimize images displayed in Search results thanks to Jetpack's Image CDN.
-* Instant Search: improve layout of search results on mobile devices.
-* Instant Search: trigger the search overlay upon typing into the search input.
-* Pay with PayPal Block: display more helpful content in subscription emails.
-* OpenTable Block: display wide style widget as standard on mobile.
-* Site Health: add new test for testing blog and current user's token health.
-* Site Health: refine information shared when using the "Copy site info to clipboard" button.
-* Site Health: offer more information and help in failing tests.
-* Slideshow Block: remove the default background color.
-* Synchronization: improve performance of synchronization of term changes.
+* Autoloader: improve performance by caching known plugins.
+* Instant Search: improve compatibility with IE11.
+* Related Posts: use the semantic time element when displaying dates.
+* Sharing: defer loading of the reCAPTCHA library by default.
 
 **Improved compatibility**
 
-* Autoloader: add support for non-optimized PSR-4 namespace loading.
-* Autoloader: add PSR-0 support.
-* Autoloader: add handling for filtered `active_plugins` options that would otherwise have left classes out.
-* Contact Form: add more integration settings for a better compatibility with Jetpack CRM.
-* Contact Form: ensure that forms are displayed correctly in legacy AMP Reader views.
-* Dashboard: remove plugin autoupdate settings from the dashboard now that WordPress itself handles this feature.
-* Embeds: ensure that Instagram and Facebook embeds are always available, to avoid breaking embeds on existing posts.
-* Embeds: solve PHP 8 compatibility issues with Crowdsignal embeds.
-* EventBrite Block: ensure full compatibility with the AMP plugin.
-* Google Calendar Block: ensure full compatibility with the AMP plugin.
-* Image Compare Block: improve display on AMP views.
-* Infinite Scroll: ensure Infinite Scroll works on AMP views as well for the Twenty Nineteen and Twenty Twenty themes.
-* Infinite Scroll: add tools allowing theme authors to implement Infinite Scroll on AMP views in their own theme.
-* Pinterest Block: ensure full compatibility with the AMP plugin.
-* Security Scanning: avoid validation issues when using the AMP plugin and when notified of a security threat on your site.
-* Slideshow Block: ensure images are displayed properly when using the Swell theme.
-* Synchronization: ensure review comments are properly synchronized with WordPress.com.
-* Twitter Threads Block: add support for unrolling threads when Gutenberg 8.8+ is activated.
-* WordPress.com REST API: improved PHP 8.0 support.
+* AMP: avoid PHP notice on sites using legacy versions of the AMP plugin.
+* Dashboard: avoid errors on sites using PHP 8.
+* General: use modern JavaScript best practices for loading scripts.
+* Infinite Scroll: add compatibility for the TwentyTwentyOne theme.
+* Search: improve styling for the TwentyTwenty theme.
+* Synchronization: improve integrity of synchronization between your site and WordPress.com.
+* WordPress.com Toolbar: iterate on the design and functionality of the toolbar to match the toolbar in use on WordPress.com.
 
 **Bug fixes**
 
-* Activity Log: avoid potential duplicate entries.
-* Beautiful Math: resolve incorrectly rendered LaTeX images cached during a server migration.
-* Connection Flow: resolve conflicts where "staging" connection errors were wrongly detected for some sites.
-* Copy Post: ensure categories can be copied properly on sites using an old database schema.
-* Donations / Payments: fix link to WordPress.com on sites where WordPress is installed in a subdirectory.
-* Image CDN: ensure Wikimedia-hosted images are correctly handled by the CDN.
-* Infinity Scroll: remove the loading spinner when loading an extra set of posts and receiving an empty response.
-* Stats: do not track visits when site is in staging mode.
-* Synchronization: ensure theme information is correctly synchronized with WordPress.com.
-* WordPress.com Block Editor: ensure that "Code Editor" menu item is available on mobile devices.
-* WordPress.com REST API: improve messaging when uploading a media file via the API fails.
+* Autoloader: resolve symbolic links in active plugin paths.
+* Autoloader: ensure deactivating plugins aren't cached.
+* Blocks: improve sidebar display in non-fullscreen mode.
+* Content Options: do not output CSS when it is not needed.
+* Instant Search: improve display of tags and categories in search results.
+* Lazy Images: attempt to load all images when printing a post, and inform the user when printing if images haven't been loaded.
+* Podcast Player Block: avoid PHP notices in some scenarios.
+* Search: limit number of filters automatically set up.
+* Slideshow Block: ensure that image captions are always shown, regardless of the theme you're using.
+* Subscription Block: display the correct default placeholder and button text strings in the post editor.
+* Subscriptions: fix the behavior of the toggle switches for the comment subscription settings.
+* Twitter Threads: improve how Twitter Cards are generated for embeds in the thread preview.
+* VideoPress: detect aspect ratios rounding to both 1.77 and 1.78 as 16:9.
+* Widgets: avoid JavaScript errors when displaying the Cookies & Consent Widget.
+* WordPress.com REST API: avoid fatal errors in some scenarios, when updating a post's metadata.
 
 --------
 

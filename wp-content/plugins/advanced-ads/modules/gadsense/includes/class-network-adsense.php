@@ -60,7 +60,7 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 		// Activate AdSense verification code and Auto ads (previously Page-Level ads).
 		add_settings_field(
 			'adsense-page-level',
-			__( 'Verification code & Auto ads', 'advanced-ads' ),
+			__( 'Auto ads', 'advanced-ads' ),
 			array( $this, 'render_settings_adsense_page_level' ),
 			$hook,
 			$section_id
@@ -221,39 +221,33 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 		?>
 		<label><input type="checkbox" name="<?php echo esc_attr( GADSENSE_OPT_NAME ); ?>[page-level-enabled]" value="1" <?php checked( $page_level ); ?> />
 		<?php
-		esc_attr_e( 'Insert the AdSense header code used for verification and the Auto Ads feature.', 'advanced-ads' );
-		if ( ! empty( $options['adsense-id'] ) ) :
-			?>
-			&nbsp<a href="https://www.google.com/adsense/new/u/0/<?php echo esc_attr( $options['adsense-id'] ); ?>/myads/auto-ads" target="_blank">
+		esc_attr_e( 'Insert the AdSense header code to enable Auto ads and verify your website.', 'advanced-ads' );
+		?>
+		</label>
+		<ul>
+			<li><a href="<?php echo esc_url( ADVADS_URL ) . 'adsense-auto-ads-wordpress/#Display_Auto_Ads_only_on_specific_pages'; ?>" target="_blank"><?php esc_attr_e( 'Display Auto ads only on specific pages', 'advanced-ads' ); ?></a></li>
+			<li><a href="<?php echo esc_url( ADVADS_URL ) . 'adsense-in-random-positions-auto-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=backend-autoads-ads'; ?>" target="_blank"><?php esc_attr_e( 'Why are ads appearing in random positions?', 'advanced-ads' ); ?></a></li>
 			<?php
+			if ( ! empty( $options['adsense-id'] ) ) :
+				?>
+			<li><a href="https://www.google.com/adsense/new/u/0/<?php echo esc_attr( $options['adsense-id'] ); ?>/myads/auto-ads" target="_blank">
+				<?php
 					/**
 					 * Translators: this is the text for a link to a sub-page in an AdSense account
 					 */
 					esc_attr_e( 'Adjust Auto ads options', 'advanced-ads' );
-			?>
-			</a>
-			<?php
+				?>
+			</a></li>
+				<?php
 		endif;
-		?>
-		</label><p class="description">
-		<?php
-		printf(
-			wp_kses(
-				// Translators: %s is a URL.
-				__( 'Please read <a href="%s" target="_blank">this article</a> if <strong>ads appear in random places</strong>.', 'advanced-ads' ),
-				array(
-					'a'      => array(
-						'href'   => array(),
-						'target' => array(),
-					),
-					'strong' => array(),
-				)
-			),
-			esc_url( ADVADS_URL ) . 'adsense-in-random-positions-auto-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=backend-autoads-ads'
-		);
-		?>
-				</p>
-		<p class="description"><a href="<?php echo esc_url( ADVADS_URL ) . 'adsense-auto-ads-wordpress/#Display_Auto_Ads_only_on_specific_pages'; ?>" target="_blank"><?php esc_attr_e( 'Display Auto ads only on specific pages', 'advanced-ads' ); ?></a></p>
+			?>
+		</ul>
+		<?php if ( Advanced_Ads_Compatibility::borlabs_cookie_adsense_auto_ads_code_exists() ) : ?>
+			<p class="advads-error-message">
+				<?php require GADSENSE_BASE_PATH . 'admin/views/borlabs-cookie-auto-ads-warning.php'; ?>
+			</p>
+		<?php endif; ?>
+
 		<?php
 		// Show information about AMP Auto ads when an AMP plugin is installed and Responsive Ads is missing.
 		if ( ! defined( 'AAR_VERSION' ) && Advanced_Ads_Checks::active_amp_plugin() ) :

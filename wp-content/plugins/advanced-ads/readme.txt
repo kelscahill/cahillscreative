@@ -2,9 +2,9 @@
 Contributors: webzunft, advancedads
 Tags: ads, ad manager, ad rotation, adsense, banner
 Requires at least: 4.6
-Tested up to: 5.5
+Tested up to: 5.6
 Requires PHP: 5.6
-Stable tag: 1.20.2
+Stable tag: 1.23.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -153,7 +153,7 @@ Learn more on the [plugin homepage](https://wpadvancedads.com).
 
 Thank you for motivating us with your [positive review](https://wordpress.org/support/plugin/advanced-ads/reviews/?rate=5#new-post).
 
-Localizations: Czech, Dutch, English, French, German, Italian, Japanese, Norwegian, Portuguese, Slovak, Spanish, Turkish, Vietnamese, Polish, Chinese (Taiwan)
+Localizations: Arabic, Chinese, Czech, Dutch, English, French, German, Hungarian, Italian, Japanese, Norwegian, Polish, Portuguese, Russian, Slovak, Spanish, Turkish, Vietnamese
 
 > <strong>Add-Ons</strong>
 >
@@ -317,6 +317,73 @@ Yes. You can use plenty of [hooks](https://wpadvancedads.com/codex/) to customiz
 
 == Changelog ==
 
+= 1.23.2 =
+
+- reverted erroneously removing plugin author index
+
+= 1.23.1 =
+
+- removed warning about iThemes Security since it is no longer causing the reported issue
+- added correct icon to Advanced Ads block
+- fixed escaping for AdSense Auto ads codes that use the deprecated "Disable Top Level" option
+- fixed TinyMCE warning in dev console
+- replaced `intval()` and `floatval()` with type-casting
+
+= 1.23.0 =
+
+- MailPoet is going to deprecate custom shortcodes. See [this section](https://wpadvancedads.com/mailpoet-newsletters/#Enable_MailPoet_support_in_Advanced_Ads) in case you are using Advanced Ads ads in your newsletters
+- updated Google AdSense API to use web application verification
+- prevent accidental public ad URLs. See [Making the Ads post type public](https://wpadvancedads.com/manual/making-the-ad-post-type-public/) if you want to query ads via a dedicated URL
+- allow to reserve only width or height for plain, rich content and group ad types
+
+= 1.22.2 =
+
+- fix shortcode button within Classic editor and Classic editor block
+
+= 1.22.1 =
+
+- removed "Disable shortcode button" setting after it became obsolete in 1.22.0
+- added the `advanced-ads-disable-shortcode-button` filter to disable the shortcode button
+- removed ads.txt-related warnings when the option is disabled
+- fixed issue with loading of shortcode button in editors that disabled custom buttons, e.g., Elementor
+- fixed JavaScript warnings in Elementor editor
+
+= 1.22.0 =
+
+- made dashboard layout compatible with WordPress 5.6
+- removed irrelevant AdSense warnings
+- allow filtering of data-attributes for encoded ads if privacy module is enabled
+- added `advanced-ads-ad-edit-show-placement-injection` filter to allow removing the placement-injection box on the ad edit screen
+- added `advanced-ads-unhide-meta-boxes` filter to allow adding of meta box ids that should always be visible on ad edit pages
+- added `advanced-ads-ad-option-{$field}` filter for ad options
+- added action hooks for ad status changes: `advanced-ads-ad-status-published`, `advanced-ads-ad-status-unpublished`, `advanced-ads-ad-status-{$old_status}-to-{$new_status}`
+- removed public URLs for single ads on some installations
+- fixed old icon in the menu
+- fixed Internet Explorer 11 incompatibility
+- fixed possible error in TinyMCE editor caused by ad blockers
+
+= 1.21.1 =
+
+- fixed pagination on the ad list page
+- fix Google AdSense non-personalized ads
+
+= 1.21.0 =
+
+- enable Position options for Sidebar placements
+- increased default weight for ads imported to a group from 1 to 5 which is mostly relevant when selling ads to existing placements
+- Ad Health: added body classes that explain plugin behavior at given moment
+- ads.txt: prevented converting special characters into HTML entities
+- show ad overview list even if all ads were moved to trash
+- fixed error when specific ACF function does not exist
+- fixed option to disable ads also on the "Posts page" as set in the WordPress Reading settings
+
+= 1.20.3 =
+
+- whitelist field groups created by Advanced Custom Fields on the ad edit page
+- prevent including AdSense Auto ads code when the Borlabs Cookie is already adding it
+- prevented adding unneeded escape characters to ads.txt file
+- added compatibility with Funding Choices when consent is not needed
+
 = 1.20.2 =
 
 - fixed displaying image ads if privacy method is set to custom cookie
@@ -335,9 +402,6 @@ Yes. You can use plenty of [hooks](https://wpadvancedads.com/codex/) to customiz
 - added missing spaces to image ad tags to fix Cache-Busting issue
 - made ad centering work when right and left margin are set
 - add ad health check if __tcfapi responds but the privacy module is either not enabled or not set to TCF 2.0
-
-= 1.19.1 =
-
 - remove duplicate lines from the ads.txt file
 - fixed layout issues that happens due to the JNews theme
 

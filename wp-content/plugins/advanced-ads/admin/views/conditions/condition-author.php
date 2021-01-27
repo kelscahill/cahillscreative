@@ -18,7 +18,7 @@
 			$author_name = $_author->display_name;
 			$field_id    = 'advads-conditions-' . absint( $_author->ID ) . $rand;
 			?>
-			<label class="button ui-button"
+			<label class="button advads-button"
 				   for="<?php echo esc_attr( $field_id ); ?>">
 				<?php echo esc_attr( $author_name ); ?>
 			</label><input type="checkbox"

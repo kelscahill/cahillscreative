@@ -1,22 +1,38 @@
 <?php
+
+/**
+ * Class Advanced_Ads_Adsense_Report_Column
+ */
 class Advanced_Ads_Adsense_Report_Column{
 	public $name;
 	public function __construct($name){
 		$this->name = $name;
 	}
 }
+
+/**
+ * Class Advanced_Ads_AdSense_Report_Dimension
+ */
 class Advanced_Ads_AdSense_Report_Dimension extends Advanced_Ads_Adsense_Report_Column{
 	public function __construct($name){
 		parent::__construct($name);
 	}
 }
+
+/**
+ * Class Advanced_Ads_AdSense_Report_Metric
+ */
 class Advanced_Ads_AdSense_Report_Metric extends Advanced_Ads_Adsense_Report_Column{
 	public function __construct($name){
 		parent::__construct($name);
 	}
 }
+
+/**
+ * Class Advanced_Ads_Adsense_Dimensional_Data
+ */
 class Advanced_Ads_Adsense_Dimensional_Data{
-	
+
 }
 /**
  * Represents the response that will be sent to the javascript frontend
@@ -27,9 +43,12 @@ class Advanced_Ads_Adsense_Report_Response{
 	public $plots = array();
 }
 
+/**
+ * Class Advanced_Ads_AdSense_Report_Builder
+ */
 class Advanced_Ads_AdSense_Report_Builder{
 	/**
-	 * This determines the time in seconds a transient or option representing the response 
+	 * This determines the time in seconds a transient or option representing the response
 	 * of the adsense server will be valid.
 	 */
 	const TRANSIENT_VALIDITY = HOUR_IN_SECONDS;
@@ -39,7 +58,7 @@ class Advanced_Ads_AdSense_Report_Builder{
 	private $dt_end;
 	private $overwrite_dt_identifier;
 	private $store_as_transient = false;
-	
+
 	public function addDimension($name){
 		$dim = new Advanced_Ads_AdSense_Report_Dimension($name);
 		$this->dimensions[] = $dim;
@@ -64,7 +83,7 @@ class Advanced_Ads_AdSense_Report_Builder{
 		$dt->sub(new DateInterval("P" . $nbDays . "D"));
 		$this->setDaterange($dt->format("Y-m-d"), $dt_end);
 	}
-	
+
 	public function getUrl($pubId){
 		$url  = 'https://www.googleapis.com/adsense/v1.4/accounts/' . $pubId . '/reports';
 		$url .= "?startDate=$this->dt_start&endDate=$this->dt_end";
@@ -96,7 +115,7 @@ class Advanced_Ads_AdSense_Report_Builder{
 		}
 		return $id;
 	}
-	
+
 	public function request_raw(){
 		//gather the data for the request
 		$gadsense_data = Advanced_Ads_AdSense_Data::get_instance();
@@ -106,7 +125,7 @@ class Advanced_Ads_AdSense_Report_Builder{
 		$url = $this->getUrl($pub_id);
 		return $this->process_request($url, $access_token);
 	}
-	
+
 	public static function get_age_in_seconds($updated_at){
 		//  when upgrading from a previous version of AA to V1.14.2+ a refresh of the adsense dashboard
 		//  within one hour, might raise a notice when users are running their site in dev mode
@@ -118,7 +137,7 @@ class Advanced_Ads_AdSense_Report_Builder{
 		}
 		return (new DateTime())->getTimestamp() - $updated_at;
 	}
-	
+
 	public function build($plotter, $type, $forceRefresh = false, $allowRefresh = true){
 		$transient_id = $this->getIdentifier();
 		$response = $this->get_option($transient_id);
@@ -127,7 +146,7 @@ class Advanced_Ads_AdSense_Report_Builder{
 		if ($response){
 			$age_in_seconds = self::get_age_in_seconds($response['updatedAt']);
 			if ($age_in_seconds >= self::TRANSIENT_VALIDITY) $wants_refresh = true;
-			
+
 		}
 		if ($wants_refresh){
 			if ($allowRefresh){
@@ -155,7 +174,7 @@ class Advanced_Ads_AdSense_Report_Builder{
 		}
 		return null;
 	}
-	
+
 	public function request_report($plotter, $type){
 		$response = $this->request_raw();
 		try{
@@ -168,7 +187,7 @@ class Advanced_Ads_AdSense_Report_Builder{
 		catch(Exception $ex){}
 		return null;
 	}
-	
+
 	private function get_option($id){
 		if ($this->store_as_transient) {
 			return get_transient($id);
@@ -185,7 +204,7 @@ class Advanced_Ads_AdSense_Report_Builder{
 			update_option($id, $value);
 		}
 	}
-	
+
 	private function process_request($url, $access_token){
 		if ( ! isset( $access_token['msg'] ) ) {
 			$headers  = array(
@@ -198,7 +217,7 @@ class Advanced_Ads_AdSense_Report_Builder{
 			return -1;
 		}
 	}
-	
+
 	/**
 	 * A quick way to create a dashboard summary.
 	 */
@@ -216,6 +235,9 @@ class Advanced_Ads_AdSense_Report_Builder{
 	}
 }
 
+/**
+ * Class Advanced_Ads_AdSense_Report
+ */
 class Advanced_Ads_AdSense_Report{
 	public $valid;
 	public $errors;
@@ -225,7 +247,7 @@ class Advanced_Ads_AdSense_Report{
 	public $columns;
 	public $plotGenerator;
 	public $secondaryDimension;
-	
+
 	function __construct($json_response, $plotter='jqplot', $type='lines'){
 		$this->plotter = $plotter;
 		$this->type = $type;
@@ -234,7 +256,13 @@ class Advanced_Ads_AdSense_Report{
 // 			? new Advanced_Ads_AdSense_Plot_Generator_Jqplot($this)
 // 			: new Advanced_Ads_AdSense_Plot_Generator_Plotly($this);
 	}
-	
+
+	/**
+	 * Process AdSense JSON response
+	 *
+	 * @param array $json_response response array.
+	 * @throws RuntimeException If response is invalid.
+	 */
 	private function process_json_response($json_response){
 		$valid = false;
 		$errors = array();
@@ -270,7 +298,7 @@ class Advanced_Ads_AdSense_Report{
 						}
 						$columns[] = $object;
 					}
-					
+
 					$valid = count($dimensions) > 0 && count($dimensions) < 3 && count($metrics) > 0;
 					if ($valid){
 						$this->body = $body;
@@ -279,9 +307,8 @@ class Advanced_Ads_AdSense_Report{
 						$this->columns = $columns;
 						$this->secondaryDimension = count($dimensions) > 1 ? $dimensions[1] : null;
 						$this->updatedAt = isset($json_response['updatedAt']) ? $json_response['updatedAt'] : null;
-					}
-					else{
-						throw new RuntimeException(__("Invalid response from AdSense."));
+					} else {
+						throw new RuntimeException( __( 'Invalid response from AdSense.', 'advanced-ads' ) . ' ' . __( 'You could try to re-connect under Advanced Ads > Settings > AdSense.', 'advanced-ads' ) );
 					}
 				}
 				catch (Exception $ex){
@@ -306,7 +333,7 @@ class Advanced_Ads_AdSense_Report{
 		$this->valid = $valid;
 		if (! $valid && count($errors) == 0){
 		    // Display a default error message.
-		    $errors[] = __("Invalid response from AdSense.");
+			$errors[] = __( 'Invalid response from AdSense.', 'advanced-ads' ) . ' ' . __( 'You could try to re-connect under Advanced Ads > Settings > AdSense.', 'advanced-ads' );
         }
 		$this->errors = $errors;
 	}
@@ -322,7 +349,7 @@ class Advanced_Ads_AdSense_Report{
             $this->body->rows = $filtered;
         }
 	}
-	
+
 	public function getRowsByDimensionValues($dimension_values, $dimension_index){
 		$filtered = array();
 		if ($this->body && isset($this->body->rows) && is_array($this->body->rows)) {
@@ -343,7 +370,7 @@ class Advanced_Ads_AdSense_Report{
 		}
 		return $dict;
 	}
-	
+
 	public function getDistinctValuesByDimension($dimension_index){
 		$map = array();
 		$vals = array();
@@ -358,7 +385,7 @@ class Advanced_Ads_AdSense_Report{
         }
 		return $vals;
 	}
-	
+
 	public function generateResponse(){
 		$response = new Advanced_Ads_Adsense_Report_Response();
 		$response->plots = $this->generatePlots();
@@ -366,7 +393,7 @@ class Advanced_Ads_AdSense_Report{
 		$response->errors = $this->errors;
 		return $response;
 	}
-	
+
 	private function createDimensionalData(){
 		$data = array();
 		if ($this->secondaryDimension != null){
@@ -386,20 +413,20 @@ class Advanced_Ads_AdSense_Report{
 		}
 		return $data;
 	}
-	
-	
+
+
 	private function generatePlots(){
 		$this->dimensionalData = $this->createDimensionalData();
 		$plots = array();
 		$plots[] = $this->generatePlot();
 // 		$plots = $this->plotGenerator->generatePlots($this);
 // 		foreach ($this->dimensionalData as $dimdata){
-			
+
 // 		}
 		//$plots[] = $this->generatePlot();
 		return $plots;
 	}
-	
+
 	private function generatePlot(){
 		return $this->plotGenerator->generatePlot($this);
 	}
@@ -459,16 +486,16 @@ class Advanced_Ads_AdSense_Dashboard_Summary{
 					$report->filterRowsByPattern($colDimension, '/' . $filter_value . '$/');
 				}
 			}
-			
+
 			$summary->earningsToday = self::sum($report, $colEarnings, 1);
 			$summary->earningsYesterday = self::sum($report, $colEarnings, 1, 1);
 			$summary->earnings7Days = self::sum($report, $colEarnings, 7, 1);
 			$summary->earnings28Days = self::sum($report, $colEarnings, 28, 1);
 			$summary->earningsThisMonth = self::sumDim($report, $colEarnings, self::createDateDimensionValuesCurrentMonth());
-			
+
 			$age_in_seconds = Advanced_Ads_AdSense_Report_Builder::get_age_in_seconds($report->updatedAt);
 			$summary->requires_refresh = $age_in_seconds > Advanced_Ads_AdSense_Report_Builder::TRANSIENT_VALIDITY;
-			
+
 			if (! $report->updatedAt) $summary->age = __("Never", "advanced-ads");
 			else{
                 $tz = self::get_timezone();

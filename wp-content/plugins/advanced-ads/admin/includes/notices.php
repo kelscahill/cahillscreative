@@ -56,13 +56,13 @@ $advanced_ads_admin_notices = apply_filters(
 						. '</p></div>',
 			'global' => false,
 		),
-		// Black Friday 2019 promotion.
-		'bf2019'          => array(
+		// Black Friday 2020 promotion.
+		'bf2020'          => array(
 			'type'   => 'info',
 			'text'   => sprintf(
 				// translators: %s is a link. `30%%` is correct, please use exactly that value so that it shows "30%".
 				__( 'Our Black Friday / Cyber Monday Offer: <span style="font-weight: bold; font-size: 1.4em; color: green;">-30%%</span> on all add-ons and All Access.<a class="button button-primary" target="_blank" href="%s">Get All Access</a>', 'advanced-ads' ),
-				ADVADS_URL . 'checkout/?edd_action=add_to_cart&download_id=95170&edd_options[price_id]=1&discount=BFCM2019#utm_source=advanced-ads&utm_medium=link&utm_campaign=bfcm-2019'
+				ADVADS_URL . 'checkout/?edd_action=add_to_cart&download_id=95170&edd_options[price_id]=1&discount=BFCM2020#utm_source=advanced-ads&utm_medium=link&utm_campaign=bfcm-2020'
 			),
 			'global' => true,
 		),

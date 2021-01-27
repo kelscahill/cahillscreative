@@ -189,7 +189,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.elementorInit = elementorInit;
 exports.elementor = elementor;
 exports.elementorGetContent = elementorGetContent;
-exports.elementorGetPages = elementorGetPages;
+exports.elementorCreateParams = elementorCreateParams;
 
 var _loadItems = __webpack_require__(/*! ../modules/loadItems */ "./core/src/js/modules/loadItems.js");
 
@@ -222,7 +222,7 @@ function _asyncToGenerator(fn) {
 }
 
 /**
- * Set up the instance
+ * Set up the instance on Elementor
  *
  * @param {object} alm
  * @since 5.3.0
@@ -232,13 +232,14 @@ function elementorInit(alm) {
 	if (!alm.addons.elementor || !alm.addons.elementor_type || !alm.addons.elementor_type === 'posts') {
 		return false;
 	}
-	var target = alm.addons.elementor_target_element;
+	var target = alm.addons.elementor_element;
+
 	if (target) {
 		// Set button data attributes
 		alm.button.dataset.page = alm.addons.elementor_paged;
 
-		// BSet button URL
-		var nextPage = alm.addons.elementor_pages[alm.addons.elementor_paged - 1];
+		// Set button URL
+		var nextPage = alm.addons.elementor_next_page_url;
 		alm.button.dataset.url = nextPage ? nextPage : '';
 
 		// Set a11y attributes
@@ -257,16 +258,28 @@ function elementorInit(alm) {
 			item.dataset.pageTitle = document.title;
 		}
 
-		if (alm.addons.elementor_paged > 1) {
-			// maybe soon
-			//almElementorResultsTextInit(alm);
+		if (alm.addons.elementor_paged > 1) {}
+		// maybe soon
+		//almElementorResultsTextInit(alm);
+
+
+		// Masonry Window Resize. Delay for masonry to be added via Elementor.
+		if (alm.addons.elementor_masonry) {
+			var resizeTimeout = void 0;
+			setTimeout(function () {
+				window.addEventListener('resize', function () {
+					clearTimeout(resizeTimeout);
+					resizeTimeout = setTimeout(function () {
+						positionMasonryItems(alm, '.' + alm.addons.elementor_container_class, '.' + alm.addons.elementor_item_class);
+					}, 100);
+				});
+			}, 250);
 		}
 	}
 }
 
 /**
- * elementor
- * Core ALM Elementor loader
+ * Core ALM Elementor loader.
  *
  * @param {HTMLElement} content
  * @param {object} alm
@@ -282,9 +295,9 @@ function elementor(content, alm) {
 	}
 
 	return new Promise(function (resolve) {
-		var container = alm.addons.elementor_target_element.querySelector('.' + alm.addons.elementor_container_class); // Get post container
+		var container = alm.addons.elementor_element.querySelector('.' + alm.addons.elementor_container_class); // Get post container
 		var items = content.querySelectorAll('.' + alm.addons.elementor_item_class); // Get all items in container
-		var url = alm.addons.elementor_pages[alm.page - 1];
+		var url = alm.addons.elementor_current_url; // Current Page URL
 
 		if (container && items && url) {
 			// Convert NodeList to Array
@@ -300,9 +313,15 @@ function elementor(content, alm) {
 								return (0, _loadItems2.default)(container, items, alm, pageTitle, url, 'alm-elementor');
 
 							case 2:
+								if (alm.addons.elementor_masonry) {
+									setTimeout(function () {
+										positionMasonryItems(alm, '.' + alm.addons.elementor_container_class, '.' + alm.addons.elementor_item_class);
+									}, 125);
+								}
+
 								resolve(true);
 
-							case 3:
+							case 4:
 							case 'end':
 								return _context.stop();
 						}
@@ -311,18 +330,19 @@ function elementor(content, alm) {
 			}))().catch(function (e) {
 				console.log(e, 'There was an error with Elementor');
 			});
+		} else {
+			resolve(false);
 		}
 	});
 }
 
 /**
- * elementorGetContent
- * Get the content, title and results text from the Ajax response
+ * Get the content, title and results text from the Ajax response.
  *
+ * @param {*} response
  * @param {object} alm
  * @since 5.4.0
  */
-
 function elementorGetContent(response, alm) {
 	var data = {
 		html: '',
@@ -344,6 +364,10 @@ function elementorGetContent(response, alm) {
 		var items = div.querySelector(alm.addons.elementor_target + ' .' + alm.addons.elementor_container_class);
 		data.html = items ? items.innerHTML : '';
 
+		// Set Page URL Params
+		alm.addons.elementor_current_url = alm.addons.elementor_next_page_url; // Set current to previous page URL
+		alm.addons.elementor_next_page_url = elementorGetNextPage(div, alm.addons.elementor_pagination_class);
+
 		// Results Text
 		//almElementorResultsText(div, alm);
 	}
@@ -352,21 +376,198 @@ function elementorGetContent(response, alm) {
 }
 
 /**
- * Return the paging URLs from `.elementor-pagination`
+ * Create Elementor Params for ALM.
+ *
+ * @param Object alm
+ * @return alm
+ */
+function elementorCreateParams(alm) {
+	// Get Settings
+	alm.addons.elementor_type = 'posts';
+	alm.addons.elementor_settings = JSON.parse(alm.listing.dataset.elementorSettings);
+
+	// Parse Container Settings
+	alm.addons.elementor_target = alm.addons.elementor_settings.target;
+	alm.addons.elementor_element = alm.addons.elementor_settings.target ? document.querySelector('.elementor-widget-wrap ' + alm.addons.elementor_settings.target) : '';
+	alm.addons.elementor_widget = elementorGetWidgetType(alm.addons.elementor_element);
+
+	// Masonry
+	alm = setElementorClasses(alm, alm.addons.elementor_widget);
+
+	// Pagination Element
+	alm.addons.elementor_pagination = alm.addons.elementor_element.querySelector(alm.addons.elementor_pagination_class) || alm.addons.elementor_element.querySelector('.' + alm.addons.elementor_settings.pagination_class);
+	alm.addons.elementor_pagination = alm.addons.elementor_pagination ? alm.addons.elementor_pagination : false;
+
+	alm.addons.elementor_controls = alm.addons.elementor_settings.controls;
+	alm.addons.elementor_controls = alm.addons.elementor_controls === 'true' ? true : false;
+	alm.addons.elementor_scrolltop = parseInt(alm.addons.elementor_settings.scrolltop);
+
+	// Set Page & URL params
+	alm.addons.elementor_current_url = window.location.href;
+	alm.addons.elementor_next_page_url = elementorGetNextUrl(alm.addons.elementor_pagination);
+	alm.addons.elementor_paged = alm.addons.elementor_settings.paged ? parseInt(alm.addons.elementor_settings.paged) : 1;
+	alm.page = parseInt(alm.page) + alm.addons.elementor_paged;
+
+	// Masonry
+	alm = parseMasonryConfig(alm);
+
+	if (!alm.addons.elementor_element) {
+		console.warn("Ajax Load More: Unable to locate Elementor Widget. Are you sure you've set up your target parameter correctly?");
+	}
+	if (!alm.addons.elementor_pagination) {
+		console.warn('Ajax Load More: Unable to locate Elementor pagination. There are either no results or p Ajax Load More is unable to locate the pagination widget?');
+	}
+	return alm;
+}
+
+/**
+ * Set the required classnames for parsing data and injecting content into the Elementor listing
+ *
+ * @param {*} alm
+ * @param {*} type
+ */
+function setElementorClasses(alm) {
+	var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'posts';
+
+	// Container Class
+	alm.addons.elementor_container_class = type === 'woocommerce' ? alm.addons.elementor_settings.woo_container_class : alm.addons.elementor_settings.posts_container_class;
+
+	// Item Class
+	alm.addons.elementor_item_class = type === 'woocommerce' ? alm.addons.elementor_settings.woo_item_class : alm.addons.elementor_settings.posts_item_class;
+
+	// Pagination Class
+	alm.addons.elementor_pagination_class = type === 'woocommerce' ? '.' + alm.addons.elementor_settings.woo_pagination_class : '.' + alm.addons.elementor_settings.posts_pagination_class;
+
+	return alm;
+}
+
+/**
+ * Parse Masonry Settings from Elementor Data atts
+ *
+ * @param {*} alm
+ */
+function parseMasonryConfig(alm) {
+	if (!alm.addons.elementor_element) {
+		return alm; // Exit if not found.
+	}
+
+	var target = alm.addons.elementor_element;
+
+	var settings = target.dataset.settings ? JSON.parse(target.dataset.settings) : '';
+	if (!settings) {
+		return alm; // Exit if not found.
+	}
+
+	alm.addons.elementor_masonry = settings.hasOwnProperty('cards_masonry') || settings.hasOwnProperty('classic_masonry');
+	if (alm.addons.elementor_masonry) {
+		alm.addons.elementor_masonry_columns = parseInt(settings.cards_columns) || parseInt(settings.classic_columns);
+		alm.addons.elementor_masonry_columns_mobile = parseInt(settings.cards_columns_mobile) || parseInt(settings.classic_columns_mobile);
+		alm.addons.elementor_masonry_columns_tablet = parseInt(settings.cards_columns_tablet) || parseInt(settings.classic_columns_tablet);
+		alm.addons.elementor_masonry_gap = parseInt(settings.cards_row_gap.size);
+	}
+
+	return alm;
+}
+
+/**
+ * Position Elementor Masonry Items
+ *
+ * @param {*} alm
+ * @param {*} container_class
+ * @param {*} item_class
+ */
+function positionMasonryItems(alm, container_class, item_class) {
+	var heights = [];
+
+	// Get Elementor Settings
+	var columnsCount = alm.addons.elementor_masonry_columns;
+	var columnsCountTablet = alm.addons.elementor_masonry_columns_tablet;
+	var columnsCountMobile = alm.addons.elementor_masonry_columns_mobile;
+	var verticalSpaceBetween = alm.addons.elementor_masonry_gap;
+	var columns = columnsCount;
+
+	// Get Elementor Breakpoints
+	var breakpoints = window.elementorFrontendConfig && window.elementorFrontendConfig.breakpoints ? window.elementorFrontendConfig.breakpoints : 0;
+	var windowW = window.innerWidth;
+
+	// Set Columns
+	if (windowW > breakpoints.lg) {
+		columns = columnsCount;
+	} else if (windowW > breakpoints.md) {
+		columns = columnsCountTablet;
+	} else {
+		columns = columnsCountMobile;
+	}
+
+	// Get Containers
+	var container = document.querySelector(container_class);
+	if (!container) {
+		return false;
+	}
+	var items = container.querySelectorAll(item_class);
+	if (!items) {
+		return false;
+	}
+
+	// Loop items
+	items.forEach(function (item, index) {
+		var row = Math.floor(index / columns);
+		var itemHeight = item.getBoundingClientRect().height + verticalSpaceBetween;
+
+		if (row) {
+			var itemPosition = jQuery(item).position();
+			var indexAtRow = index % columns;
+			var pullHeight = Math.round(itemPosition.top) - heights[indexAtRow];
+
+			pullHeight *= -1;
+			item.style.marginTop = Math.round(pullHeight) + 'px';
+			heights[indexAtRow] += itemHeight;
+		} else {
+			heights.push(itemHeight);
+		}
+	});
+}
+
+/**
+ * Determine the type of elementor widget (woocommerce || posts)
  *
  * @param {*} target
- * @return {NodeList} pages
+ * @param {*} classname
  */
-function elementorGetPages(pagination_class, pagination_item, target) {
+function elementorGetWidgetType(target) {
 	if (!target) {
 		return false;
 	}
-	var pagination = target.querySelector('.' + pagination_class);
-	if (!pagination) {
-		return 1;
+	// If container contains the woocommerce elementor class
+	var type = target.classList.contains('elementor-wc-products') ? 'woocommerce' : 'posts';
+	return type;
+}
+
+/**
+ * Get the upcoming URL from the a.next link from the HTML
+ *
+ * @param {HTMLElement} element
+ * @param {String} classname
+ * @return {string} href
+ */
+function elementorGetNextPage(element, classname) {
+	var pagination = element.querySelector(classname);
+	var href = pagination ? elementorGetNextUrl(pagination) : '';
+
+	return href;
+}
+
+/**
+ * Get the URL of the next page to load from the a.next href
+ *
+ * @param {HTMLElement} element
+ * @return {String} url
+ */
+function elementorGetNextUrl(element) {
+	if (!element) {
+		return '';
 	}
-	var pages = pagination.querySelectorAll(pagination_item);
-	return pages;
+	return element.querySelector('a.next') ? element.querySelector('a.next').href : '';
 }
 
 /***/ }),
@@ -539,7 +740,9 @@ function createMasonryFiltersPages(alm, elements) {
 		}
 	} else {
 		pagenum = page;
-		elements[0] = masonryFiltersAtts(alm, elements[0], querystring, pagenum);
+		if (elements && elements[0]) {
+			elements[0] = masonryFiltersAtts(alm, elements[0], querystring, pagenum);
+		}
 	}
 
 	return elements;
@@ -1251,7 +1454,6 @@ var alm_is_filtering = false;
 		alm.vendor = window.navigator.vendor ? window.navigator.vendor : ''; // Browser Vendor
 		alm.isSafari = /Safari/i.test(alm.ua) && /Apple Computer/.test(alm.vendor) && !/Mobi|Android/i.test(alm.ua);
 
-		alm.main = el;
 		alm.master_id = el.dataset.id ? 'ajax-load-more-' + el.dataset.id : el.id; // The defined or generated ID of the ALM instance
 		el.classList.add('alm-' + e); // Add unique classname
 		el.setAttribute('data-alm-id', e); // Add unique data id
@@ -1260,7 +1462,7 @@ var alm_is_filtering = false;
 		alm.master_id = alm.master_id.replace(/-/g, '_'); // Convert dashes to underscores for the var name
 		alm.localize = window[alm.master_id + '_vars']; // Get localize vars
 
-		// Main ALM Containers
+		// ALM Element Containers
 		alm.main = el; // Top level DOM element
 		alm.listing = el.querySelector('.alm-listing') || el.querySelector('.alm-comments');
 		alm.content = alm.listing;
@@ -1320,22 +1522,12 @@ var alm_is_filtering = false;
 		alm.is_search = alm.is_search === undefined ? false : alm.is_search;
 		alm.search_value = alm.is_search === 'true' ? alm.slug : ''; // Convert to value of slug for appending to seo url
 
-		// Addon Shortcode Params
+		// Add-on Shortcode Params
 
 		// Elementor add-on
-		alm.addons.elementor = alm.localize && alm.localize.elementor ? true : false;
+		alm.addons.elementor = alm.listing.dataset.elementor === 'posts' && alm.listing.dataset.elementorSettings ? true : false;
 		if (alm.addons.elementor) {
-			alm.addons.elementor = {};
-			alm.addons.elementor_type = 'posts';
-			alm.addons.elementor_target = alm.localize.elementor.target;
-			alm.addons.elementor_target_element = alm.addons.elementor_target ? document.querySelector('.elementor-widget-wrap ' + alm.addons.elementor_target) : '';
-			alm.addons.elementor_paged = alm.localize.elementor.paged ? parseInt(alm.localize.elementor.paged) : 1;
-			alm.addons.elementor_container_class = alm.localize.elementor.container_class;
-			alm.addons.elementor_item_class = alm.localize.elementor.item_class;
-			alm.addons.elementor_pagination_class = alm.localize.elementor.pagination_class;
-			alm.addons.elementor_pagination_item = alm.localize.elementor.pagination_item;
-			alm.addons.elementor_pages = (0, _elementor.elementorGetPages)(alm.addons.elementor_pagination_class, alm.addons.elementor_pagination_item, alm.addons.elementor_target_element);
-			alm.page = parseInt(alm.page) + alm.addons.elementor_paged;
+			alm = (0, _elementor.elementorCreateParams)(alm);
 		}
 
 		// WooCommerce add-on
@@ -1378,6 +1570,7 @@ var alm_is_filtering = false;
 		alm.addons.single_post = alm.listing.dataset.singlePost;
 		if (alm.addons.single_post === 'true') {
 			alm.addons.single_post_id = alm.listing.dataset.singlePostId;
+			alm.addons.single_post_query = alm.listing.dataset.singlePostQuery;
 			alm.addons.single_post_order = alm.listing.dataset.singlePostOrder;
 			alm.addons.single_post_init_id = alm.listing.dataset.singlePostId;
 			alm.addons.single_post_taxonomy = alm.listing.dataset.singlePostTaxonomy;
@@ -1714,7 +1907,7 @@ var alm_is_filtering = false;
 		alm.transition_container = alm.transition_container === undefined || alm.transition_container === 'true' ? true : false;
 
 		/* Button Labels */
-		alm.button_label = alm.button_label === undefined ? 'Older Posts' : alm.button_label;
+		alm.button_label = alm.button_label === undefined ? 'Load More' : alm.button_label;
 		alm.button_loading_label = alm.button_loading_label === undefined ? false : alm.button_loading_label;
 		alm.button_done_label = alm.button_done_label === undefined ? false : alm.button_done_label;
 
@@ -2292,7 +2485,11 @@ var alm_is_filtering = false;
 						// Single Posts
 						reveal.setAttribute('class', 'alm-reveal alm-single-post post-' + alm.addons.single_post_id + alm.tcc);
 						reveal.dataset.url = alm.addons.single_post_permalink;
-						reveal.dataset.page = alm.page;
+						if (alm.addons.single_post_target) {
+							reveal.dataset.page = parseInt(alm.page) + 1;
+						} else {
+							reveal.dataset.page = alm.page;
+						}
 						reveal.dataset.id = alm.addons.single_post_id;
 						reveal.dataset.title = alm.addons.single_post_title;
 						reveal.innerHTML = alm.html;
@@ -2496,7 +2693,7 @@ var alm_is_filtering = false;
 											// Set button data attributes
 
 											alm.button.dataset.page = nextPageNum; // Page
-											nextPage = alm.addons.elementor_pages[nextPageNum - 1]; // URL
+											nextPage = alm.addons.elementor_next_page_url; // URL
 
 											alm.button.dataset.url = nextPage ? nextPage : '';
 
@@ -2508,7 +2705,7 @@ var alm_is_filtering = false;
 											}
 
 											// ALM Done
-											if (nextPageNum > parseInt(alm.addons.elementor_pages.length)) {
+											if (!nextPage) {
 												alm.AjaxLoadMore.triggerDone();
 											}
 
@@ -2805,6 +3002,11 @@ var alm_is_filtering = false;
 				}
 			}
 
+			// Masonry, clear `alm-listing` height
+			if (alm.transition === 'masonry') {
+				alm.content.style.height = 'auto';
+			}
+
 			alm.AjaxLoadMore.triggerDone(); // ALM Done
 		};
 
@@ -2934,12 +3136,10 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   *  fetchingPreviousPost
-   *  Get the previous post ID via ajax
+   *  Get the Single Posts post ID via ajax.
    *
    *  @since 2.7.4
    */
-
 		if (alm.addons.single_post_id) {
 			alm.fetchingPreviousPost = false;
 			alm.addons.single_post_init = true;
@@ -2972,7 +3172,6 @@ var alm_is_filtering = false;
 			// Send HTTP request via Axios
 			_axios2.default.get(ajaxURL, { params: params }).then(function (response) {
 				// Success
-
 				var data = response.data; // Get data from response
 
 				if (data.has_previous_post) {
@@ -2993,16 +3192,14 @@ var alm_is_filtering = false;
 				alm.addons.single_post_init = false;
 			}).catch(function (error) {
 				// Error
-
 				alm.AjaxLoadMore.error(error, 'getSinglePost');
 				alm.fetchingPreviousPost = false;
 			});
 		};
 
 		/**
-   * triggerAddons
-   *
    * Triggers various add-on functions (if available) after load complete.
+   *
    * @since 2.14.0
    */
 		alm.AjaxLoadMore.triggerAddons = function (alm) {
@@ -3018,12 +3215,15 @@ var alm_is_filtering = false;
 				// WooCommerce
 				window.almWooCommerce(alm);
 			}
+			if (typeof almElementor === 'function') {
+				// Elementor
+				window.almElementor(alm);
+			}
 		};
 
 		/**
-   * ALM Done
+   * Fires a set of actions and functions when ALM has no other posts to load.
    *
-   * Fires the almDone() function (if available).
    * @since 2.11.3
    */
 		alm.AjaxLoadMore.triggerDone = function () {
@@ -3053,8 +3253,7 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * resetBtnText
-   * Resets the loading button text after loading has completed
+   * Resets the loading button text after loading has completed.
    *
    * @since 2.8.4
    */
@@ -3066,8 +3265,7 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * Ajax Error
-   * Error function after failed data
+   * Error function after failed data attempt.
    *
    * @since 2.6.0
    */
@@ -3108,8 +3306,7 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * click
-   * Button click handler to load posts
+   * Button click handler to load posts.
    *
    * @since 4.2.0
    */
@@ -3129,18 +3326,17 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * Button Click Event
-   * Load more button click event
+   * Load More button click event handler.
    *
    * @since 1.0.0
    */
-
 		if (!alm.addons.paging && !alm.fetchingPreviousPost) {
 			alm.button.onclick = alm.AjaxLoadMore.click;
 		}
 
 		/**
    * Window resize functions for Paging, Scroll Distance Percentage, Tabs etc.
+   *
    * @since 2.1.2
    * @updated 5.2
    */
@@ -3172,7 +3368,8 @@ var alm_is_filtering = false;
 		}
 
 		/**
-   * Check to see if element is visible before loading posts
+   * Check to see if element is visible before loading posts.
+   *
    * @since 2.1.2
    */
 		alm.AjaxLoadMore.isVisible = function () {
@@ -3182,7 +3379,8 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * Trigger a window resize browser function
+   * Trigger a window resize browser function.
+   *
    * @since 5.3.1
    */
 		alm.AjaxLoadMore.triggerWindowResize = function () {
@@ -3198,11 +3396,11 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * Load posts as user scrolls the page
+   * Load posts as user scrolls the page.
+   *
    * @since 1.0
    * @updated 4.2.0
    */
-
 		alm.AjaxLoadMore.scroll = function () {
 			if (alm.timer) {
 				clearTimeout(alm.timer);
@@ -3248,7 +3446,8 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * Add scroll eventlisteners, only when needed
+   * Add scroll eventlisteners, only when needed.
+   *
    * @since 5.2.0
    */
 		alm.AjaxLoadMore.scrollSetup = function () {
@@ -3256,7 +3455,10 @@ var alm_is_filtering = false;
 				if (alm.scroll_container !== '') {
 					// Scroll Container
 					alm.window = document.querySelector(alm.scroll_container) ? document.querySelector(alm.scroll_container) : alm.window;
-					alm.AjaxLoadMore.horizontal();
+					setTimeout(function () {
+						// Delay to allow for ALM container to resize on load.
+						alm.AjaxLoadMore.horizontal();
+					}, 500);
 				}
 				alm.window.addEventListener('scroll', alm.AjaxLoadMore.scroll); // Scroll
 				alm.window.addEventListener('touchstart', alm.AjaxLoadMore.scroll); // Touch Devices
@@ -3281,7 +3483,8 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * Configure horizontal scroll settings
+   * Configure horizontal scroll settings.
+   *
    * @since 5.3.6
    */
 		alm.AjaxLoadMore.horizontal = function () {
@@ -3291,7 +3494,8 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * Destroy Ajax Load More functionality
+   * Destroy Ajax Load More functionality.
+   *
    * @since 3.4.2
    */
 		alm.AjaxLoadMore.destroyed = function () {
@@ -3306,7 +3510,8 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * Set variables after loading transiton completes
+   * Set variables after loading transiton completes.
+   *
    * @since 3.5
    */
 		alm.AjaxLoadMore.transitionEnd = function () {
@@ -3325,7 +3530,8 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * Set induvidual localized variable
+   * Set individual localized variable.
+   *
    * @param {string} name
    * @param {string} value
    * @since 4.1
@@ -3341,8 +3547,7 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * Init Ajax load More
-   * Load posts as user scrolls the page
+   * Init Ajax load More functionality and add-ons.
    *
    * @since 2.0
    */
@@ -3366,10 +3571,15 @@ var alm_is_filtering = false;
 				}
 			}
 
-			// Previous Post Add-on
+			// Single Post Add-on
 			if (alm.addons.single_post) {
 				alm.AjaxLoadMore.getSinglePost(); // Set next post on load
 				alm.loading = false;
+
+				// Trigger done if custom query and no posts to render
+				if (alm.addons.single_post_query && alm.addons.single_post_order === '') {
+					alm.AjaxLoadMore.triggerDone();
+				}
 
 				/*
      *  Display tableOfContents
@@ -3465,8 +3675,8 @@ var alm_is_filtering = false;
 				// Initiate Elementor
 				(0, _elementor.elementorInit)(alm);
 
-				// Trigger `Done` if `paged is less than `pages`
-				if (alm.addons.elementor_paged > parseInt(alm.addons.elementor_pages.length)) {
+				// Trigger `Done` if `elementor_next_page_url` is empty
+				if (alm.addons.elementor_next_page_url === '') {
 					alm.AjaxLoadMore.triggerDone();
 				}
 			}
@@ -3502,18 +3712,8 @@ var alm_is_filtering = false;
 			});
 		};
 
-		// Flag to prevent loading of posts on initial page load.
-		setTimeout(function () {
-			alm.proceed = true;
-			alm.AjaxLoadMore.scrollSetup();
-		}, 500);
-
-		// Init Ajax Load More
-		alm.AjaxLoadMore.init();
-
 		/**
-   * almUpdateCurrentPage
-   * Update current page - triggered from paging add-on
+   * Update current page - triggered from paging add-on.
    *
    * @since 2.7.0
    */
@@ -3552,8 +3752,7 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * almGetParentContainer
-   * return the parent ALM container
+   * Get the parent ALM container.
    *
    * @since 2.7.0
    * @return element
@@ -3563,8 +3762,7 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * almGetObj
-   * Returns the current ALM obj
+   * Returns the current ALM obj.
    *
    * @param {string} specific obj
    * @since 2.7.0
@@ -3581,20 +3779,27 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * almTriggerClick
-   * Trigger ajaxloadmore from any element on page
+   * Trigger ajaxloadmore from any element on page.
    *
    * @since 2.12.0
    */
 		window.almTriggerClick = function () {
 			alm.button.click();
 		};
+
+		// Flag to prevent loading of posts on initial page load.
+		setTimeout(function () {
+			alm.proceed = true;
+			alm.AjaxLoadMore.scrollSetup();
+		}, 500);
+
+		// Init Ajax Load More
+		alm.AjaxLoadMore.init();
 	};
 
 	// End ajaxloadmore
 
 	/**
-  *  almInit
   *  Initiate instance of Ajax load More
   *
   *  @since 5.0
@@ -3607,9 +3812,9 @@ var alm_is_filtering = false;
 
 	/**
   * Initiate Ajax load More if div is present on screen
+  *
   * @since 2.1.2
   */
-
 	var alm_instances = document.querySelectorAll('.ajax-load-more-wrap');
 	if (alm_instances.length) {
 		[].concat(_toConsumableArray(alm_instances)).forEach(function (alm, e) {
@@ -3619,7 +3824,7 @@ var alm_is_filtering = false;
 })();
 
 /**
- * Filter an Ajax Load More instance
+ * Filter an Ajax Load More instance.
  *
  * @since 5.0
  * @param {*} transition
@@ -3640,7 +3845,7 @@ var filter = function filter() {
 exports.filter = filter;
 
 /**
- * Reset an Ajax Load More instance
+ * Reset an Ajax Load More instance.
  *
  * @since 5.3.8
  * @param {*} target
@@ -3696,7 +3901,7 @@ var reset = function reset() {
 exports.reset = reset;
 
 /**
- * Tabbed content for Ajax Load More instance
+ * Tabbed content for Ajax Load More instance.
  *
  * @since 5.2
  * @param {*} data
@@ -3720,7 +3925,7 @@ var tab = function tab() {
 exports.tab = tab;
 
 /**
- * Track Page Views in Google Analytics
+ * Track Page Views in Google Analytics.
  *
  * @since 5.0
  * @param {*} path
@@ -3759,8 +3964,7 @@ var tracking = function tracking(path) {
 exports.tracking = tracking;
 
 /**
- * start
- * Trigger Ajax Load More from other events
+ * Trigger Ajax Load More from other events.
  *
  * @since 5.0
  * @param {*} el
@@ -3775,8 +3979,7 @@ var start = function start(el) {
 exports.start = start;
 
 /**
- *  almScroll
- *  Scroll window to position (global function)
+ *  Scroll window to position (global function).
  *
  *  @since 5.0
  *  @param {*} position
@@ -3794,7 +3997,6 @@ var almScroll = function almScroll(position) {
 exports.almScroll = almScroll;
 
 /**
- *  getOffset
  *  Get the current top/left coordinates of an element relative to the document.
  *
  *  @since 5.0
@@ -3815,10 +4017,9 @@ var getOffset = function getOffset() {
 exports.getOffset = getOffset;
 
 /**
- *  render
+ *  ALM Render (in progress)
  *
  *  @since 5.0
- *  @param {*} position
  */
 
 var render = function render(el) {
@@ -4521,229 +4722,232 @@ if (!document.documentElement.dataset && (
 
 
 Object.defineProperty(exports, "__esModule", {
-   value: true
+	value: true
 });
 exports.almGetAjaxParams = almGetAjaxParams;
 exports.almGetRestParams = almGetRestParams;
 /**
  * almGetAjaxParams
  * Build the data object to send with the Ajax request
- * 
+ *
  * @param alm            object
  * @param action         string
- * @param queryType      string  
+ * @param queryType      string
  * @since 3.6
  */
 
 function almGetAjaxParams(alm, action, queryType) {
+	// Defaults
+	var data = {
+		id: alm.id,
+		post_id: alm.post_id,
+		slug: alm.slug,
+		canonical_url: encodeURIComponent(alm.canonical_url),
+		posts_per_page: alm.posts_per_page,
+		page: alm.page,
+		offset: alm.offset,
+		post_type: alm.post_type,
+		repeater: alm.repeater,
+		seo_start_page: alm.start_page
+	};
 
-   // Defaults
-   var data = {
-      id: alm.id,
-      post_id: alm.post_id,
-      slug: alm.slug,
-      canonical_url: encodeURIComponent(alm.canonical_url),
-      posts_per_page: alm.posts_per_page,
-      page: alm.page,
-      offset: alm.offset,
-      post_type: alm.post_type,
-      repeater: alm.repeater,
-      seo_start_page: alm.start_page
-   };
+	// Addons & Extensions
 
-   // Addons & Extensions
+	if (alm.theme_repeater) {
+		data.theme_repeater = alm.theme_repeater;
+	}
+	if (alm.addons.filters) {
+		data.filters = alm.addons.filters;
+		data.filters_startpage = alm.addons.filters_startpage;
+	}
+	if (alm.addons.paging) {
+		data.paging = alm.addons.paging;
+	}
+	if (alm.addons.preloaded) {
+		data.preloaded = alm.addons.preloaded;
+		data.preloaded_amount = alm.addons.preloaded_amount;
+	}
+	if (alm.addons.cache === 'true') {
+		data.cache_id = alm.addons.cache_id;
+		data.cache_logged_in = alm.addons.cache_logged_in;
+	}
+	if (alm.acf_array) {
+		data.acf = alm.acf_array;
+	}
+	if (alm.term_query_array) {
+		data.term_query = alm.term_query_array;
+	}
+	if (alm.cta_array) {
+		data.cta = alm.cta_array;
+	}
+	if (alm.comments_array) {
+		data.comments = alm.comments_array;
+	}
+	if (alm.nextpage_array) {
+		data.nextpage = alm.nextpage_array;
+	}
+	if (alm.single_post_array) {
+		data.single_post = alm.single_post_array;
+	}
+	if (alm.users_array) {
+		data.users = alm.users_array;
+	}
 
-   if (alm.theme_repeater) {
-      data.theme_repeater = alm.theme_repeater;
-   }
-   if (alm.addons.filters) {
-      data.filters = alm.addons.filters;
-      data.filters_startpage = alm.addons.filters_startpage;
-   }
-   if (alm.addons.paging) {
-      data.paging = alm.addons.paging;
-   }
-   if (alm.addons.preloaded) {
-      data.preloaded = alm.addons.preloaded;
-      data.preloaded_amount = alm.addons.preloaded_amount;
-   }
-   if (alm.addons.cache === 'true') {
-      data.cache_id = alm.addons.cache_id;
-      data.cache_logged_in = alm.addons.cache_logged_in;
-   }
-   if (alm.acf_array) {
-      data.acf = alm.acf_array;
-   }
-   if (alm.term_query_array) {
-      data.term_query = alm.term_query_array;
-   }
-   if (alm.cta_array) {
-      data.cta = alm.cta_array;
-   }
-   if (alm.comments_array) {
-      data.comments = alm.comments_array;
-   }
-   if (alm.nextpage_array) {
-      data.nextpage = alm.nextpage_array;
-   }
-   if (alm.single_post_array) {
-      data.single_post = alm.single_post_array;
-   }
-   if (alm.users_array) {
-      data.users = alm.users_array;
-   }
+	// Query data
+	if (alm.listing.dataset.lang) {
+		data.lang = alm.listing.dataset.lang;
+	}
+	if (alm.listing.dataset.stickyPosts) {
+		data.sticky_posts = alm.listing.dataset.stickyPosts;
+	}
+	if (alm.listing.dataset.postFormat) {
+		data.post_format = alm.listing.dataset.postFormat;
+	}
+	if (alm.listing.dataset.category) {
+		data.category = alm.listing.dataset.category;
+	}
+	if (alm.listing.dataset.categoryAnd) {
+		data.category__and = alm.listing.dataset.categoryAnd;
+	}
+	if (alm.listing.dataset.categoryNotIn) {
+		data.category__not_in = alm.listing.dataset.categoryNotIn;
+	}
+	if (alm.listing.dataset.tag) {
+		data.tag = alm.listing.dataset.tag;
+	}
+	if (alm.listing.dataset.tagAnd) {
+		data.tag__and = alm.listing.dataset.tagAnd;
+	}
+	if (alm.listing.dataset.tagNotIn) {
+		data.tag__not_in = alm.listing.dataset.tagNotIn;
+	}
+	if (alm.listing.dataset.taxonomy) {
+		data.taxonomy = alm.listing.dataset.taxonomy;
+	}
+	if (alm.listing.dataset.taxonomyTerms) {
+		data.taxonomy_terms = alm.listing.dataset.taxonomyTerms;
+	}
+	if (alm.listing.dataset.taxonomyOperator) {
+		data.taxonomy_operator = alm.listing.dataset.taxonomyOperator;
+	}
+	if (alm.listing.dataset.taxonomyRelation) {
+		data.taxonomy_relation = alm.listing.dataset.taxonomyRelation;
+	}
+	if (alm.listing.dataset.metaKey) {
+		data.meta_key = alm.listing.dataset.metaKey;
+	}
+	if (alm.listing.dataset.metaValue) {
+		data.meta_value = alm.listing.dataset.metaValue;
+	}
+	if (alm.listing.dataset.metaCompare) {
+		data.meta_compare = alm.listing.dataset.metaCompare;
+	}
+	if (alm.listing.dataset.metaRelation) {
+		data.meta_relation = alm.listing.dataset.metaRelation;
+	}
+	if (alm.listing.dataset.metaType) {
+		data.meta_type = alm.listing.dataset.metaType;
+	}
+	if (alm.listing.dataset.author) {
+		data.author = alm.listing.dataset.author;
+	}
+	if (alm.listing.dataset.year) {
+		data.year = alm.listing.dataset.year;
+	}
+	if (alm.listing.dataset.month) {
+		data.month = alm.listing.dataset.month;
+	}
+	if (alm.listing.dataset.day) {
+		data.day = alm.listing.dataset.day;
+	}
+	if (alm.listing.dataset.order) {
+		data.order = alm.listing.dataset.order;
+	}
+	if (alm.listing.dataset.orderby) {
+		data.orderby = alm.listing.dataset.orderby;
+	}
+	if (alm.listing.dataset.postStatus) {
+		data.post_status = alm.listing.dataset.postStatus;
+	}
+	if (alm.listing.dataset.postIn) {
+		data.post__in = alm.listing.dataset.postIn;
+	}
+	if (alm.listing.dataset.postNotIn) {
+		data.post__not_in = alm.listing.dataset.postNotIn;
+	}
+	if (alm.listing.dataset.exclude) {
+		data.exclude = alm.listing.dataset.exclude;
+	}
+	if (alm.listing.dataset.search) {
+		data.search = alm.listing.dataset.search;
+	}
+	if (alm.listing.dataset.s) {
+		data.search = alm.listing.dataset.s;
+	}
+	if (alm.listing.dataset.customArgs) {
+		data.custom_args = escape(alm.listing.dataset.customArgs);
+	}
+	if (alm.listing.dataset.vars) {
+		data.vars = escape(alm.listing.dataset.vars);
+	}
 
-   // Query data   
-   if (alm.listing.dataset.lang) {
-      data.lang = alm.listing.dataset.lang;
-   }
-   if (alm.listing.dataset.stickyPosts) {
-      data.sticky_posts = alm.listing.dataset.stickyPosts;
-   }
-   if (alm.listing.dataset.postFormat) {
-      data.post_format = alm.listing.dataset.postFormat;
-   }
-   if (alm.listing.dataset.category) {
-      data.category = alm.listing.dataset.category;
-   }
-   if (alm.listing.dataset.categoryAnd) {
-      data.category__and = alm.listing.dataset.categoryAnd;
-   }
-   if (alm.listing.dataset.categoryNotIn) {
-      data.category__not_in = alm.listing.dataset.categoryNotIn;
-   }
-   if (alm.listing.dataset.tag) {
-      data.tag = alm.listing.dataset.tag;
-   }
-   if (alm.listing.dataset.tagAnd) {
-      data.tag__and = alm.listing.dataset.tagAnd;
-   }
-   if (alm.listing.dataset.tagNotIn) {
-      data.tag__not_in = alm.listing.dataset.tagNotIn;
-   }
-   if (alm.listing.dataset.taxonomy) {
-      data.taxonomy = alm.listing.dataset.taxonomy;
-   }
-   if (alm.listing.dataset.taxonomyTerms) {
-      data.taxonomy_terms = alm.listing.dataset.taxonomyTerms;
-   }
-   if (alm.listing.dataset.taxonomyOperator) {
-      data.taxonomy_operator = alm.listing.dataset.taxonomyOperator;
-   }
-   if (alm.listing.dataset.taxonomyRelation) {
-      data.taxonomy_relation = alm.listing.dataset.taxonomyRelation;
-   }
-   if (alm.listing.dataset.metaKey) {
-      data.meta_key = alm.listing.dataset.metaKey;
-   }
-   if (alm.listing.dataset.metaValue) {
-      data.meta_value = alm.listing.dataset.metaValue;
-   }
-   if (alm.listing.dataset.metaCompare) {
-      data.meta_compare = alm.listing.dataset.metaCompare;
-   }
-   if (alm.listing.dataset.metaRelation) {
-      data.meta_relation = alm.listing.dataset.metaRelation;
-   }
-   if (alm.listing.dataset.metaType) {
-      data.meta_type = alm.listing.dataset.metaType;
-   }
-   if (alm.listing.dataset.author) {
-      data.author = alm.listing.dataset.author;
-   }
-   if (alm.listing.dataset.year) {
-      data.year = alm.listing.dataset.year;
-   }
-   if (alm.listing.dataset.month) {
-      data.month = alm.listing.dataset.month;
-   }
-   if (alm.listing.dataset.day) {
-      data.day = alm.listing.dataset.day;
-   }
-   if (alm.listing.dataset.order) {
-      data.order = alm.listing.dataset.order;
-   }
-   if (alm.listing.dataset.orderby) {
-      data.orderby = alm.listing.dataset.orderby;
-   }
-   if (alm.listing.dataset.postStatus) {
-      data.post_status = alm.listing.dataset.postStatus;
-   }
-   if (alm.listing.dataset.postIn) {
-      data.post__in = alm.listing.dataset.postIn;
-   }
-   if (alm.listing.dataset.postNotIn) {
-      data.post__not_in = alm.listing.dataset.postNotIn;
-   }
-   if (alm.listing.dataset.exclude) {
-      data.exclude = alm.listing.dataset.exclude;
-   }
-   if (alm.listing.dataset.search) {
-      data.search = alm.listing.dataset.search;
-   }
-   if (alm.listing.dataset.s) {
-      data.search = alm.listing.dataset.s;
-   }
-   if (alm.listing.dataset.customArgs) {
-      data.custom_args = alm.listing.dataset.customArgs;
-   }
+	data.action = action;
+	data.query_type = queryType;
 
-   data.action = action;
-   data.query_type = queryType;
-
-   return data;
+	return data;
 }
 
 /**
  * almGetRestParams
  * Build the REST API data object to send with REST API request
- * 
+ *
  * @param alm            object
  * @since 3.6
  */
 function almGetRestParams(alm) {
-   var data = {
-      id: alm.id,
-      post_id: alm.post_id,
-      posts_per_page: alm.posts_per_page,
-      page: alm.page,
-      offset: alm.offset,
-      slug: alm.slug,
-      canonical_url: encodeURIComponent(alm.canonical_url),
-      post_type: alm.post_type,
-      post_format: alm.listing.dataset.postFormat,
-      category: alm.listing.dataset.category,
-      category__not_in: alm.listing.dataset.categoryNotIn,
-      tag: alm.listing.dataset.tag,
-      tag__not_in: alm.listing.dataset.tagNotIn,
-      taxonomy: alm.listing.dataset.taxonomy,
-      taxonomy_terms: alm.listing.dataset.taxonomyTerms,
-      taxonomy_operator: alm.listing.dataset.taxonomyOperator,
-      taxonomy_relation: alm.listing.dataset.taxonomyRelation,
-      meta_key: alm.listing.dataset.metaKey,
-      meta_value: alm.listing.dataset.metaValue,
-      meta_compare: alm.listing.dataset.metaCompare,
-      meta_relation: alm.listing.dataset.metaRelation,
-      meta_type: alm.listing.dataset.metaType,
-      author: alm.listing.dataset.author,
-      year: alm.listing.dataset.year,
-      month: alm.listing.dataset.month,
-      day: alm.listing.dataset.day,
-      post_status: alm.listing.dataset.postStatus,
-      order: alm.listing.dataset.order,
-      orderby: alm.listing.dataset.orderby,
-      post__in: alm.listing.dataset.postIn,
-      post__not_in: alm.listing.dataset.postNotIn,
-      search: alm.listing.dataset.search,
-      s: alm.listing.dataset.s,
-      custom_args: alm.listing.dataset.customArgs,
-      lang: alm.lang,
-      preloaded: alm.addons.preloaded,
-      preloaded_amount: alm.addons.preloaded_amount,
-      seo_start_page: alm.start_page
-   };
+	var data = {
+		id: alm.id,
+		post_id: alm.post_id,
+		posts_per_page: alm.posts_per_page,
+		page: alm.page,
+		offset: alm.offset,
+		slug: alm.slug,
+		canonical_url: encodeURIComponent(alm.canonical_url),
+		post_type: alm.post_type,
+		post_format: alm.listing.dataset.postFormat,
+		category: alm.listing.dataset.category,
+		category__not_in: alm.listing.dataset.categoryNotIn,
+		tag: alm.listing.dataset.tag,
+		tag__not_in: alm.listing.dataset.tagNotIn,
+		taxonomy: alm.listing.dataset.taxonomy,
+		taxonomy_terms: alm.listing.dataset.taxonomyTerms,
+		taxonomy_operator: alm.listing.dataset.taxonomyOperator,
+		taxonomy_relation: alm.listing.dataset.taxonomyRelation,
+		meta_key: alm.listing.dataset.metaKey,
+		meta_value: alm.listing.dataset.metaValue,
+		meta_compare: alm.listing.dataset.metaCompare,
+		meta_relation: alm.listing.dataset.metaRelation,
+		meta_type: alm.listing.dataset.metaType,
+		author: alm.listing.dataset.author,
+		year: alm.listing.dataset.year,
+		month: alm.listing.dataset.month,
+		day: alm.listing.dataset.day,
+		post_status: alm.listing.dataset.postStatus,
+		order: alm.listing.dataset.order,
+		orderby: alm.listing.dataset.orderby,
+		post__in: alm.listing.dataset.postIn,
+		post__not_in: alm.listing.dataset.postNotIn,
+		search: alm.listing.dataset.search,
+		s: alm.listing.dataset.s,
+		custom_args: alm.listing.dataset.customArgs,
+		vars: alm.listing.dataset.vars,
+		lang: alm.lang,
+		preloaded: alm.addons.preloaded,
+		preloaded_amount: alm.addons.preloaded_amount,
+		seo_start_page: alm.start_page
+	};
 
-   return data;
+	return data;
 }
 
 /***/ }),
@@ -5282,10 +5486,9 @@ var almSetFilters = function almSetFilters() {
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+	value: true
 });
 /**
- * wooGetURL
  * Get the next URL for Load More button
  *
  * @param {object} alm
@@ -5293,13 +5496,13 @@ Object.defineProperty(exports, "__esModule", {
  */
 
 var getButtonURL = function getButtonURL(alm) {
-  if (!alm || !alm.trigger) {
-    return false;
-  }
-  var button = alm.trigger.querySelector('button');
-  var url = button ? button.dataset.url : '';
+	if (!alm || !alm.trigger) {
+		return false;
+	}
+	var button = alm.trigger.querySelector('button');
+	var url = button ? button.dataset.url : '';
 
-  return url ? url : '';
+	return url ? url : '';
 };
 exports.default = getButtonURL;
 
@@ -6338,25 +6541,24 @@ function _interopRequireDefault(obj) {
 	return obj && obj.__esModule ? obj : { default: obj };
 }
 
-/**  
+/**
  * Create a numbered table of contents navigation
  *
  * @param {object} alm
  * @param {boolean} init
- * @since 5.2 
+ * @since 5.2
  */
 function tableOfContents(alm) {
 	var init = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 	var from_preloaded = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-	var totalPosts = alm.localize.post_count ? parseInt(alm.localize.post_count) : 0;
+	var totalPosts = alm.localize && alm.localize.post_count ? parseInt(alm.localize.post_count) : 0;
 	if (totalPosts == 0 && !alm.addons.single_post) {
 		// Exit if zero posts and not single posts
 		return false;
 	}
 
 	if (alm && alm.tableofcontents && alm.transition_container && alm.transition !== 'masonry') {
-
 		var offset = alm.tableofcontents.dataset.offset ? parseInt(alm.tableofcontents.dataset.offset) : 30;
 		var startPage = alm.start_page ? parseInt(alm.start_page) : 0;
 		var filterStartPage = alm.addons.filters_startpage ? parseInt(alm.addons.filters_startpage) : 0;
@@ -6401,7 +6603,6 @@ function tableOfContents(alm) {
 				}
 			}, 100);
 		} else {
-
 			// Preloaded
 			if (preloaded) {
 				if (alm.addons.seo && startPage > 0) {
@@ -6428,22 +6629,27 @@ function clearTOC() {
 
 // Create Standard Page Button
 function createTOCButton(alm, page, offset) {
-
 	if (!alm.tableofcontents) {
 		return false;
 	}
 
 	var button = document.createElement('button');
-	button.type = "button";
+	button.type = 'button';
 
 	page = parseInt(page) + 1;
 	button.innerHTML = getTOCLabel(alm, page);
-	button.dataset.page = page;
+	button.dataset.page = alm.addons.single_post_target && alm.init ? page - 1 : page;
 	alm.tableofcontents.appendChild(button);
 
 	button.addEventListener('click', function (e) {
 		var page = this.dataset.page;
 		var target = document.querySelector('.alm-reveal:nth-child(' + page + ')') || document.querySelector('.alm-nextpage:nth-child(' + page + ')');
+
+		// Single Posts
+		if (alm.addons.single_post_target) {
+			target = document.querySelector('.alm-reveal.alm-single-post[data-page="' + page + '"]');
+		}
+
 		if (!target) {
 			return false;
 		}
@@ -6459,12 +6665,26 @@ function createTOCButton(alm, page, offset) {
 
 // Get Button Label
 function getTOCLabel(alm, page) {
-
 	var label = page;
 
 	// Single Posts
 	if (alm.addons.single_post) {
-		var element = document.querySelector('.alm-reveal.alm-single-post[data-page="' + (page - 1) + '"]');
+		var thePage = page - 1;
+		var element = void 0;
+		if (alm.addons.single_post_target) {
+			// Special functionality for Single Post with a loading target type
+			if (alm.init) {
+				thePage = thePage;
+			} else {
+				thePage = thePage + 1;
+			}
+			var posts = document.querySelectorAll('.alm-reveal.alm-single-post');
+			if (posts) {
+				element = posts[thePage];
+			}
+		} else {
+			element = document.querySelector('.alm-reveal.alm-single-post[data-page=' + (page - 1) + ']');
+		}
 		label = element ? element.dataset.title : label;
 	}
 
@@ -17270,6 +17490,15 @@ return EvEmitter;
     focusElem.focus(
       Object.defineProperty({}, "preventScroll", {
         get: function() {
+          // Edge v18 gives a false positive for supporting inputs
+          if (
+            navigator &&
+            typeof navigator.userAgent !== 'undefined' &&
+            navigator.userAgent &&
+            navigator.userAgent.match(/Edge\/1[7-8]/)) {
+              return supportsPreventScrollOption = false
+          }
+
           supportsPreventScrollOption = true;
         }
       })
@@ -17318,13 +17547,15 @@ return EvEmitter;
     var patchedFocus = function(args) {
       if (args && args.preventScroll) {
         var evScrollableElements = calcScrollableElements(this);
-        this.nativeFocus();
         if (typeof setTimeout === 'function') {
+          var thisElem = this;
           setTimeout(function () {
+            thisElem.nativeFocus();
             restoreScrollPosition(evScrollableElements);
           }, 0);
         } else {
-          restoreScrollPosition(evScrollableElements);          
+          this.nativeFocus();
+          restoreScrollPosition(evScrollableElements);
         }
       }
       else {
@@ -18831,6 +19062,24 @@ var runtime = (function (exports) {
   var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
   var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
 
+  function define(obj, key, value) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+    return obj[key];
+  }
+  try {
+    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
+    define({}, "");
+  } catch (err) {
+    define = function(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
+
   function wrap(innerFn, outerFn, self, tryLocsList) {
     // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
     var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
@@ -18901,16 +19150,19 @@ var runtime = (function (exports) {
     Generator.prototype = Object.create(IteratorPrototype);
   GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
   GeneratorFunctionPrototype.constructor = GeneratorFunction;
-  GeneratorFunctionPrototype[toStringTagSymbol] =
-    GeneratorFunction.displayName = "GeneratorFunction";
+  GeneratorFunction.displayName = define(
+    GeneratorFunctionPrototype,
+    toStringTagSymbol,
+    "GeneratorFunction"
+  );
 
   // Helper for defining the .next, .throw, and .return methods of the
   // Iterator interface in terms of a single ._invoke method.
   function defineIteratorMethods(prototype) {
     ["next", "throw", "return"].forEach(function(method) {
-      prototype[method] = function(arg) {
+      define(prototype, method, function(arg) {
         return this._invoke(method, arg);
-      };
+      });
     });
   }
 
@@ -18929,9 +19181,7 @@ var runtime = (function (exports) {
       Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
     } else {
       genFun.__proto__ = GeneratorFunctionPrototype;
-      if (!(toStringTagSymbol in genFun)) {
-        genFun[toStringTagSymbol] = "GeneratorFunction";
-      }
+      define(genFun, toStringTagSymbol, "GeneratorFunction");
     }
     genFun.prototype = Object.create(Gp);
     return genFun;
@@ -19201,7 +19451,7 @@ var runtime = (function (exports) {
   // unified ._invoke helper method.
   defineIteratorMethods(Gp);
 
-  Gp[toStringTagSymbol] = "Generator";
+  define(Gp, toStringTagSymbol, "Generator");
 
   // A Generator should always return itself as the iterator object when the
   // @@iterator function is called on it. Some browsers' implementations of the

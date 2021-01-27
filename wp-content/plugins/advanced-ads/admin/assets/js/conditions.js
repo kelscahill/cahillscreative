@@ -48,12 +48,8 @@ jQuery( document ).ready(
 									var newline   = '<tr class="advads-conditions-connector advads-conditions-connector-and"><td colspan="3">' + connector + '</td></tr><tr><td class="advads-conditions-type" data-condition-type="' + condition_type + '">' + condition_title + '</td><td>' + r + '</td><td><button type="button" class="advads-conditions-remove button">x</button></td></tr>'
 								}
 								condition_list_target.find( 'tbody' ).append( newline )
-								if ( jQuery.fn.advads_buttonset ) {
-									condition_list_target.find( 'tbody .advads-conditions-single.advads-buttonset' ).advads_buttonset()
-								}
-								if ( jQuery.fn.advads_button ) {
-									condition_list_target.find( 'tbody .advads-conditions-connector input' ).advads_button()
-								}
+								condition_list_target.find( 'tbody .advads-conditions-single.advads-buttonset' ).advads_buttonset()
+								condition_list_target.find( 'tbody .advads-conditions-connector input' ).advads_button()
 								// increase count.
 								condition_index++
 								condition_form_container.find( '.advads-conditions-index' ).val( condition_index )
@@ -100,7 +96,7 @@ jQuery( document ).ready(
 					minLength: 1,
 					select: function ( event, ui ) {
 						// append new line with input fields.
-						$( '<label class="button ui-state-active">' + ui.item.label + '<input type="hidden" name="' + self.data( 'inputName' ) + '" value="' + ui.item.value + '"></label>' ).appendTo( self.siblings( '.advads-conditions-terms-buttons' ) )
+						$( '<label class="button advads-ui-state-active">' + ui.item.label + '<input type="hidden" name="' + self.data( 'inputName' ) + '" value="' + ui.item.value + '"></label>' ).appendTo( self.siblings( '.advads-conditions-terms-buttons' ) )
 
 						// show / hide other elements
 						// $( '.advads-display-conditions-individual-post' ).hide();
@@ -135,7 +131,7 @@ jQuery( document ).ready(
 							minLength: 1,
 							select: function ( event, ui ) {
 								// append new line with input fields
-								var newline = $( '<label class="button ui-state-active">' + ui.item.label + '</label>' )
+								var newline = $( '<label class="button advads-ui-state-active">' + ui.item.label + '</label>' )
 								$( '<input type="hidden" name="' + self.dataset.fieldName + '[value][]" value="' + ui.item.value + '"/>' ).appendTo( newline )
 								newline.insertBefore( $( self ).parent( '.advads-conditions-postids-search-line' ) )
 							},
@@ -180,19 +176,18 @@ jQuery( document ).ready(
 			}
 		)
 		// activate and toggle conditions connector option.
-		$( '.advads-conditions-connector input' ).advads_button()
+		$( '.advads-conditions-connector input' ).advads_button();
 
 		// dynamically change label.
-		$( document ).on( 'click', '.advads-conditions-connector input', function () {
-				if ( $( this ).is( ':checked' ) ) {
-					$( this ).advads_button( 'option', 'label', advadstxt.condition_or )
-					$( this ).parents( '.advads-conditions-connector' ).addClass( 'advads-conditions-connector-or' ).removeClass( 'advads-conditions-connector-and' )
-				} else {
-					$( this ).advads_button( 'option', 'label', advadstxt.condition_and )
-					$( this ).parents( '.advads-conditions-connector' ).addClass( 'advads-conditions-connector-and' ).removeClass( 'advads-conditions-connector-or' )
-				}
+		jQuery( document ).on( 'click', '.advads-conditions-connector input', function () {
+			if ( jQuery( this ).is( ':checked' ) ) {
+				jQuery( this ).next( 'label' ).find( 'span' ).html( advadstxt.condition_or );
+				jQuery( this ).parents( '.advads-conditions-connector' ).addClass( 'advads-conditions-connector-or' ).removeClass( 'advads-conditions-connector-and' )
+			} else {
+				jQuery( this ).next( 'label' ).find( 'span' ).html( advadstxt.condition_and );
+				jQuery( this ).parents( '.advads-conditions-connector' ).addClass( 'advads-conditions-connector-and' ).removeClass( 'advads-conditions-connector-or' )
 			}
-		)
+		} );
 		// remove a line with a display or visitor condition.
 		$( document ).on( 'click', '.advads-conditions-remove', function () {
 				$( this ).parents( '.advads-conditions-table tr' ).prev( 'tr' ).remove()

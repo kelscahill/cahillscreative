@@ -187,7 +187,7 @@ class Advanced_Ads_Group {
 	 * Control the output of the group by type and amount of ads
 	 *
 	 * @since 1.4.8
-	 * @param array/null ordered_ad_ids ordered ids of the ads that belong to the group
+	 * @param array/null $ordered_ad_ids Ordered ids of the ads that belong to the group.
 	 * @return str $output output of ad(s) by ad
 	 */
 	public function output( $ordered_ad_ids = false ) {
@@ -237,23 +237,24 @@ class Advanced_Ads_Group {
 			$advads->current_ads[] = array('type' => 'group', 'id' => $this->id, 'title' => $this->name);
 		}
 
-		if ( $output === array() || ! is_array( $output ) ){ 
+		if ( $output === array() || ! is_array( $output ) ) {
 			return '';
 		}
-		
+
 		// filter grouped ads output
 		$output_array = apply_filters( 'advanced-ads-group-output-array', $output, $this );
-		
+
 		// make sure the right format comes through the filter
-		if ( $output_array === array() || ! is_array( $output_array ) ){ 
+		if ( $output_array === array() || ! is_array( $output_array ) ) {
 			return '';
 		}
-		
+
 		$output_string = implode( '', $output_array );
 
 		if ( ! $this->is_head_placement && $this->wrapper !== array() ) {
 			$output_string = '<div' . Advanced_Ads_Utils::build_html_attributes( $this->wrapper ) . '>'
 			. $this->label
+			. apply_filters( 'advanced-ads-output-wrapper-before-content-group', '', $this )
 			. $output_string
 			. apply_filters( 'advanced-ads-output-wrapper-after-content-group', '', $this )
 			. '</div>';
@@ -311,7 +312,7 @@ class Advanced_Ads_Group {
 		}
 
 		return apply_filters( 'advanced-ads-group-output-ad-ids', $ordered_ad_ids, $this->type, $ads, $weights, $this );
-	}	
+	}
 
 	/**
 	 * Return all ads from this group
@@ -545,7 +546,7 @@ class Advanced_Ads_Group {
 	private function update_ad_weights(){
 		$ads = $this->get_all_ads();
 		$weights = $this->get_ad_weights();
-		
+
 		$new_weights = array();
 		// use only ads assigned to the group
 		foreach ( $ads as $_ad ){
@@ -580,7 +581,7 @@ class Advanced_Ads_Group {
 
 		return $sanitized_weights;
 	}
-	
+
 	/**
 	 * Delete all the ad weights for a group by id
 	 *
@@ -621,7 +622,7 @@ class Advanced_Ads_Group {
 						$this->wrapper['style']['float'] = 'right';
 						break;
 					case 'center' :
-						// We don't know whether the 'add_wrapper_sizes' option exists.
+						// We don't know whether the 'add_wrapper_sizes' option exists and width is set.
 						$this->wrapper['style']['text-align'] = 'center';
 						break;
 				}
@@ -635,18 +636,18 @@ class Advanced_Ads_Group {
 			$this->wrapper['id'] = $prefix . mt_rand();
 		}
 	}
-	
+
 	/**
-	 * Calculate the number of available weights for a group depending on 
-	 * number of ads and default value
-	 * 
-	 * @param   int	$num_ads    number of ads in the group
-	 * @since   1.8.22
+	 * Calculate the number of available weights for a group depending on
+	 * number of ads and default value.
+	 *
+	 * @param int $num_ads Number of ads in the group.
+	 * @since 1.8.22
 	 *
 	 * @return  max weight used in group settings
 	 */
 	public static function get_max_ad_weight( $num_ads = 1 ){
-	    
+
 		// use default if lower than default.
 		$num_ads = absint( $num_ads );
 
@@ -656,6 +657,6 @@ class Advanced_Ads_Group {
 		// allow users to manipulate max ad weight
 		return apply_filters( 'advanced-ads-max-ad-weight', $max_weight, $num_ads );
 	}
-	
+
 
 }

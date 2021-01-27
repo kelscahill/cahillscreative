@@ -1131,8 +1131,32 @@ jQuery(document).ready(function($) {
 
         jQuery('#sbi_config_info').show();
     });
-    
+
+    jQuery('.sbi_show_gdpr_list').on('click', function(){
+        jQuery(this).closest('div').find('.sbi_gdpr_list').slideToggle();
+    });
+
+//Selecting a post style
+    jQuery('#sbi_gdpr_setting').on('change', function(){
+        sbiCheckGdprSetting( jQuery(this).val() );
+    });
+    function sbiCheckGdprSetting(option) {
+        if( option == 'yes' ){
+            jQuery('.sbi_gdpr_yes').show();
+            jQuery('.sbi_gdpr_no, .sbi_gdpr_auto').hide();
+        }
+        if( option == 'no' ){
+            jQuery('.sbi_gdpr_no').show();
+            jQuery('.sbi_gdpr_yes, .sbi_gdpr_auto').hide();
+        }
+        if( option == 'auto' ){
+            jQuery('.sbi_gdpr_auto').show();
+            jQuery('.sbi_gdpr_yes, .sbi_gdpr_no').hide();
+        }
+    }
+    sbiCheckGdprSetting();
 });
+
 
 
 /* global smash_admin, jconfirm, wpCookies, Choices, List */

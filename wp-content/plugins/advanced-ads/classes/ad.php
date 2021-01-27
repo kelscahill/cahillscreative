@@ -108,7 +108,7 @@ class Advanced_Ads_Ad {
 	 *
 	 * @var array $options ad options.
 	 */
-	protected $options = array();
+	protected $options;
 
 	/**
 	 * Name of the meta field to save options to
@@ -255,19 +255,17 @@ class Advanced_Ads_Ad {
 	/**
 	 * Get options from meta field and return specific field
 	 *
-	 * @param string $field post meta key to be returned.
+	 * @param string $field post meta key to be returned. Can be passed as array keys separated with `.`, i.e. 'parent.child' to retrieve multidimensional array values.
 	 * @param array  $default default options.
 	 *
 	 * @return mixed meta field content
-	 * @todo check against default values
 	 */
 	public function options( $field = '', $default = null ) {
 		// retrieve options, if not given yet
-		// -TODO may execute multiple times (if empty); bad design and risk to access unintialised data with direct access to $this->options property.
-		if ( array() === $this->options ) {
+		if ( is_null( $this->options ) ) {
 			// may return false.
 			$meta = get_post_meta( $this->id, self::$options_meta_field, true );
-			if ( $meta ) {
+			if ( $meta && is_array( $meta ) ) {
 				// merge meta with arguments given on ad load.
 				$this->options = Advanced_Ads_Utils::merge_deep_array( array( $meta, $this->args ) );
 			} else {
@@ -286,18 +284,33 @@ class Advanced_Ads_Ad {
 			}
 		}
 
-		// return specific option.
-		if ( '' !== $field ) {
-			if ( isset( $this->options[ $field ] ) ) {
-				return $this->options[ $field ];
-			}
-		} else { // return all options.
-			if ( ! empty( $this->options ) ) {
-				return $this->options;
-			}
+		// return all options if no field given.
+		if ( empty( $field ) ) {
+			return $this->options;
 		}
 
-		return $default;
+		$field = preg_replace( '/\s/', '', $field );
+		$value = $this->options;
+		foreach ( explode( '.', $field ) as $key ) {
+			if ( ! isset( $value[ $key ] ) ) {
+				$value = $default;
+				break;
+			}
+			$value = $value[ $key ];
+		}
+
+		if ( is_null( $value ) ) {
+			$value = $default;
+		}
+
+		/**
+		 * Filter the option value retrieved for $field.
+		 * `$field` parameter makes dynamic hook portion.
+		 *
+		 * @var mixed           $value The option value (may be set to default).
+		 * @var Advanced_Ads_Ad $this  The current Advanced_Ads_Ad instance.
+		 */
+		return apply_filters( "advanced-ads-ad-option-{$field}", $value, $this );
 	}
 
 	/**
@@ -344,7 +357,7 @@ class Advanced_Ads_Ad {
 		// switch between normal and debug mode.
 		// check if debug output should only be displayed to admins.
 		$user_can_manage_ads = current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options' ) );
-		if ( isset( $this->output['debugmode'] )
+		if ( $this->options( 'output.debugmode' )
 			 && ( $user_can_manage_ads || ( ! $user_can_manage_ads && ! defined( 'ADVANCED_ADS_AD_DEBUG_FOR_ADMIN_ONLY' ) ) ) ) {
 			$debug = new Advanced_Ads_Ad_Debug();
 
@@ -839,7 +852,11 @@ class Advanced_Ads_Ad {
 				$wrapper['style']['margin-left']  = 'auto';
 				$wrapper['style']['margin-right'] = 'auto';
 
-				if ( empty( $this->output['add_wrapper_sizes'] ) || $use_placement_pos ) {
+				$width = (int) $this->width;
+				if (
+					( ! $width || empty( $this->output['add_wrapper_sizes'] ) )
+					|| $use_placement_pos
+				) {
 					$wrapper['style']['text-align'] = 'center';
 				}
 
@@ -860,21 +877,28 @@ class Advanced_Ads_Ad {
 		}
 
 		if ( ! empty( $this->output['margin']['top'] ) ) {
-			$wrapper['style']['margin-top'] = intval( $this->output['margin']['top'] ) . 'px';
+			$wrapper['style']['margin-top'] = (int) $this->output['margin']['top'] . 'px';
 		}
 		if ( empty( $wrapper['style']['margin-right'] ) && ! empty( $this->output['margin']['right'] ) ) {
-			$wrapper['style']['margin-right'] = intval( $this->output['margin']['right'] ) . 'px';
+			$wrapper['style']['margin-right'] = (int) $this->output['margin']['right'] . 'px';
 		}
 		if ( ! empty( $this->output['margin']['bottom'] ) ) {
-			$wrapper['style']['margin-bottom'] = intval( $this->output['margin']['bottom'] ) . 'px';
+			$wrapper['style']['margin-bottom'] = (int) $this->output['margin']['bottom'] . 'px';
 		}
 		if ( empty( $wrapper['style']['margin-left'] ) && ! empty( $this->output['margin']['left'] ) ) {
-			$wrapper['style']['margin-left'] = intval( $this->output['margin']['left'] ) . 'px';
+			$wrapper['style']['margin-left'] = (int) $this->output['margin']['left'] . 'px';
 		}
 
 		if ( ! empty( $this->output['add_wrapper_sizes'] ) ) {
-			$wrapper['style']['width']  = intval( $this->width ) . 'px';
-			$wrapper['style']['height'] = intval( $this->height ) . 'px';
+			$width = (int) $this->width;
+			$height = (int) $this->height;
+
+			if ( $width ) {
+				$wrapper['style']['width']  = $width . 'px';
+			}
+			if ( $height ) {
+				$wrapper['style']['height'] = $height . 'px';
+			}
 		}
 
 		if ( ! empty( $this->output['clearfix_before'] ) ) {
@@ -910,12 +934,9 @@ class Advanced_Ads_Ad {
 			// Create another wrapper so that the label does not reduce the height of the ad wrapper.
 			$height = array( 'style' => array( 'height' => $wrapper_options['style']['height'] ) );
 			unset( $wrapper_options['style']['height'] );
-			$ad_content = $this->label
-				. '<div' . Advanced_Ads_Utils::build_html_attributes( $height ) . '>'
+			$ad_content = '<div' . Advanced_Ads_Utils::build_html_attributes( $height ) . '>'
 				. $ad_content
 				. '</div>';
-		} else {
-			$ad_content = $this->label . $ad_content;
 		}
 
 		// add edit button for users with the appropriate rights.
@@ -929,6 +950,7 @@ class Advanced_Ads_Ad {
 
 		// build the box
 		$wrapper  = '<div' . Advanced_Ads_Utils::build_html_attributes( $wrapper_options ) . '>';
+		$wrapper .= $this->label;
 		$wrapper .= apply_filters( 'advanced-ads-output-wrapper-before-content', '', $this );
 		$wrapper .= $ad_content;
 		$wrapper .= apply_filters( 'advanced-ads-output-wrapper-after-content', '', $this );

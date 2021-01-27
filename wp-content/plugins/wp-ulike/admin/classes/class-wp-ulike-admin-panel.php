@@ -3,7 +3,7 @@
  * Wp ULike Admin Panel
  * 
  * @package    wp-ulike
- * @author     TechnoWich 2020
+ * @author     TechnoWich 2021
  * @link       https://wpulike.com
 */
 
@@ -107,10 +107,51 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                 'title'  => __( 'General',WP_ULIKE_SLUG),
                 'fields' => apply_filters( 'wp_ulike_panel_general', array(
                     array(
-                        'id'    => 'enable_kilobyte_format',
-                        'type'  => 'switcher',
-                        'title' => __('Enable Convertor', WP_ULIKE_SLUG),
-                        'desc'  => __('Convert numbers of Likes with string (kilobyte) format.', WP_ULIKE_SLUG) . '<strong> (WHEN? likes>=1000)</strong>'
+                        'id'      => 'enable_kilobyte_format',
+                        'type'    => 'switcher',
+                        'title'   => __('Enable Convertor', WP_ULIKE_SLUG),
+                        'default' => false,
+                        'desc'    => __('Convert numbers of Likes with string (kilobyte) format.', WP_ULIKE_SLUG) . '<strong> (WHEN? likes>=1000)</strong>'
+                    ),
+                    array(
+                        'id'            => 'filter_counter_value',
+                        'type'          => 'tabbed',
+                        'desc'          => __( 'Set your custom prefix/postfix on counter value', WP_ULIKE_SLUG),
+                        'title'         => __( 'Filter Counter Value', WP_ULIKE_SLUG),
+                        'tabs'          => array(
+                            array(
+                                'title'     => __('Prefix',WP_ULIKE_SLUG),
+                                'fields'    => apply_filters( 'wp_ulike_filter_counter_options', array(
+                                    array(
+                                        'id'      => 'like_prefix',
+                                        'type'    => 'text',
+                                        'title'   => __('Like',WP_ULIKE_SLUG),
+                                        'default' => '+'
+                                    ),
+                                    array(
+                                        'id'      => 'unlike_prefix',
+                                        'type'    => 'text',
+                                        'title'   => __('Unlike',WP_ULIKE_SLUG),
+                                        'default' => '+'
+                                    ),
+                                ), 'prefix' )
+                            ),
+                            array(
+                                'title'     => __('Postfix',WP_ULIKE_SLUG),
+                                'fields'    => apply_filters( 'wp_ulike_filter_counter_options', array(
+                                    array(
+                                        'id'      => 'like_postfix',
+                                        'type'    => 'text',
+                                        'title'   => __('Like',WP_ULIKE_SLUG)
+                                    ),
+                                    array(
+                                        'id'      => 'unlike_postfix',
+                                        'type'    => 'text',
+                                        'title'   => __('Unlike',WP_ULIKE_SLUG)
+                                    ),
+                                ), 'postfix' )
+                            ),
+                        )
                     ),
                     array(
                         'id'      => 'enable_toast_notice',
@@ -120,10 +161,31 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                         'desc'    => __('Custom toast messages after each activity', WP_ULIKE_SLUG)
                     ),
                     array(
+                        'id'          => 'filter_toast_types',
+                        'type'        => 'select',
+                        'title'       => __( 'Disable Toast Types',WP_ULIKE_SLUG ),
+                        'desc'        => __('With this option, you can disable toasts messages on content types.', WP_ULIKE_SLUG),
+                        'chosen'      => true,
+                        'multiple'    => true,
+                        'options'     => array(
+                            'post'     => __('Posts', WP_ULIKE_SLUG),
+                            'comment'  => __('Comments', WP_ULIKE_SLUG),
+                            'activity' => __('Activities', WP_ULIKE_SLUG),
+                            'topic'    => __('Topics', WP_ULIKE_SLUG)
+                        ),
+                        'dependency'=> array( 'enable_toast_notice', '==', 'true' ),
+                    ),
+                    array(
                         'id'    => 'enable_anonymise_ip',
                         'type'  => 'switcher',
                         'title' => __('Enable Anonymize IP', WP_ULIKE_SLUG),
                         'desc'  => __('Anonymize the IP address for GDPR Compliance', WP_ULIKE_SLUG)
+                    ),
+                    array(
+                        'id'    => 'cache_exist',
+                        'type'  => 'switcher',
+                        'title' => __('Enable Cache Exist', WP_ULIKE_SLUG),
+                        'desc'  => __('Please enable this option, If you have any cache service on your website.', WP_ULIKE_SLUG)
                     ),
                     array(
                         'id'    => 'disable_admin_notice',
@@ -553,10 +615,7 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                             'fields'    => array(
                                 array(
                                     'id'      => 'like',
-                                    'type'    => 'code_editor',
-                                    'settings' => array(
-                                        'mode'    => 'htmlmixed',
-                                    ),
+                                    'type'    => 'text',
                                     'title'   => __('Button Text',WP_ULIKE_SLUG),
                                     'default' => 'Like'
                                 ),
@@ -567,10 +626,7 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                             'fields'    => array(
                                 array(
                                     'id'      => 'unlike',
-                                    'type'    => 'code_editor',
-                                    'settings' => array(
-                                        'mode'    => 'htmlmixed',
-                                    ),
+                                    'type'    => 'text',
                                     'title'   => __('Button Text',WP_ULIKE_SLUG),
                                     'default' => 'Liked'
                                 ),
@@ -671,17 +727,24 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                         'logged_in_users' => __('Only Logged In Users', WP_ULIKE_SLUG)
                     )
                 ),
+                'hide_zero_counter' => array(
+                    'id'         => 'hide_zero_counter',
+                    'type'       => 'switcher',
+                    'title'      => __('Hide Zero Counter Box', WP_ULIKE_SLUG),
+                    'dependency' => array( 'counter_display_condition', '!=', 'hidden' )
+                ),
                 'logging_method' => array(
                     'id'          => 'logging_method',
                     'type'        => 'select',
                     'title'       => __( 'Logging Method',WP_ULIKE_SLUG),
                     'options'     => array(
-                        'do_not_log'  => __('Do Not Log', WP_ULIKE_SLUG),
-                        'by_cookie'   => __('Logged By Cookie', WP_ULIKE_SLUG),
-                        'by_username' => __('Logged By Username', WP_ULIKE_SLUG)
+                        'do_not_log'        => __('No Limit', WP_ULIKE_SLUG),
+                        'by_cookie'         => __('Cookie', WP_ULIKE_SLUG),
+                        'by_username'       => __('Username/IP', WP_ULIKE_SLUG),
+                        'by_user_ip_cookie' => __('Username/IP + Cookie', WP_ULIKE_SLUG)
                     ),
                     'default'     => 'by_username',
-                    'help'        => sprintf( '<p>%s</p><p>%s</p><p>%s</p><p>%s</p>', __( 'If you select <strong>"Do Not Log"</strong> method: Any data logs can\'t save, There is no limitation in the like/dislike, unlike/undislike capacity do not work', WP_ULIKE_SLUG ), __( 'If you select <strong>"Logged By Cookie"</strong> method: Any data logs can\'t save, The like/dislike condition will be limited by SetCookie, unlike/undislike capacity do not work', WP_ULIKE_SLUG ), __( 'If you select <strong>"Logged By IP"</strong> method: Data logs will save for all users, the convey of like/dislike condition will check by user IP', WP_ULIKE_SLUG ), __( 'If you select <strong>"Logged By Username"</strong> method: data logs only is saved for registered users, the convey of like/dislike condition will check by username, There is no permission for guest users to unlike/undislike', WP_ULIKE_SLUG ) )
+                    'help'        => sprintf( '<p>%s</p><p>%s</p><p>%s</p>', __( '"No Limit": There will be no restrictions and users can submit their points each time they refresh the page. In this option, it will not be possible to resubmit reverse points (un-like/un-dislike).', WP_ULIKE_SLUG ), __( '"Cookie": By saving users\' cookies, it is possible to submit points only once per user and in case of re-clicking, the appropriate message will be displayed.', WP_ULIKE_SLUG ), __( 'Username/IP: By saving the username/IP of users, It supports the reverse feature  (un-like and un-dislike) and users can change their reactions and are only allowed to have a specific point type.', WP_ULIKE_SLUG ) )
                 ),
                 'enable_only_logged_in_users' => array(
                     'id'    => 'enable_only_logged_in_users',
@@ -702,13 +765,14 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                 'login_template' => array(
                     'id'       => 'login_template',
                     'type'     => 'code_editor',
+                    'desc'     => __('Allowed Variables:', WP_ULIKE_SLUG) . ' <code>%CURRENT_PAGE_URL%</code>',
                     'settings' => array(
                         'theme' => 'shadowfox',
                         'mode'  => 'htmlmixed',
                     ),
                     'default'  => sprintf( '<p class="alert alert-info fade in" role="alert">%s<a href="%s">%s</a></p>',
                         __('You need to login in order to like this post: ',WP_ULIKE_SLUG),
-                        wp_login_url( get_permalink() ),
+                        wp_login_url(),
                         __('click here',WP_ULIKE_SLUG)
                     ),
                     'title'    => __('Custom HTML Template', WP_ULIKE_SLUG),
@@ -737,13 +801,36 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                     'title' => __('Hide For Anonymous Users', WP_ULIKE_SLUG),
                     'dependency' => array( 'enable_likers_box', '==', 'true' ),
                 ),
-                'disable_likers_pophover' => array(
-                    'id'         => 'disable_likers_pophover',
-                    'type'       => 'switcher',
-                    'title'      => __('Disable Pophover', WP_ULIKE_SLUG),
+                'likers_style' => array(
+                    'id'         => 'likers_style',
+                    'type'       => 'button_set',
+                    'title'      => __( 'Likers Box Display', WP_ULIKE_SLUG),
+                    'default'    => 'popover',
+                    'options'    => array(
+                        'default' => __('Inline', WP_ULIKE_SLUG),
+                        'popover' => __('Popover', WP_ULIKE_SLUG)
+                    ),
                     'dependency' => array( 'enable_likers_box', '==', 'true' ),
-                    'desc'       => __('Active this option to show liked users avatars in the bottom of button like.', WP_ULIKE_SLUG)
                 ),
+                'likers_template' => array(
+                    'id'       => 'likers_template',
+                    'type'     => 'code_editor',
+                    'settings' => array(
+                        'theme' => 'shadowfox',
+                        'mode'  => 'htmlmixed',
+                    ),
+                    'default'  => '<div class="wp-ulike-likers-list">%START_WHILE%<span class="wp-ulike-liker"><a href="#" title="%USER_NAME%">%USER_AVATAR%</a></span>%END_WHILE%</div>',
+                    'title'    => __('Custom HTML Template', WP_ULIKE_SLUG),
+                    'desc'     => __('Allowed Variables:', WP_ULIKE_SLUG) . ' <code>%USER_AVATAR%</code> , <code>%BP_PROFILE_URL%</code> , <code>%UM_PROFILE_URL%</code> , <code>%USER_NAME%</code> , <code>%START_WHILE%</code> , <code>%END_WHILE%</code>',
+                    'dependency'=> array( 'enable_likers_box|likers_style', '==|any', 'true|default,popover'  ),
+                ),
+                // 'disable_likers_pophover' => array(
+                //     'id'         => 'disable_likers_pophover',
+                //     'type'       => 'switcher',
+                //     'title'      => __('Disable Pophover', WP_ULIKE_SLUG),
+                //     'dependency' => array( 'enable_likers_box', '==', 'true' ),
+                //     'desc'       => __('Active this option to show liked users avatars in the bottom of button like.', WP_ULIKE_SLUG)
+                // ),
                 'likers_gravatar_size' => array(
                     'id'         => 'likers_gravatar_size',
                     'type'       => 'number',
@@ -760,18 +847,6 @@ if ( ! class_exists( 'wp_ulike_admin_panel' ) ) {
                     'default'    => 10,
                     'unit'       => 'users',
                     'dependency' => array( 'enable_likers_box', '==', 'true' ),
-                ),
-                'likers_template' => array(
-                    'id'       => 'likers_template',
-                    'type'     => 'code_editor',
-                    'settings' => array(
-                        'theme' => 'shadowfox',
-                        'mode'  => 'htmlmixed',
-                    ),
-                    'default'  => '<div class="wp-ulike-likers-list">%START_WHILE%<span class="wp-ulike-liker"><a href="#" title="%USER_NAME%">%USER_AVATAR%</a></span>%END_WHILE%</div>',
-                    'title'    => __('Custom HTML Template', WP_ULIKE_SLUG),
-                    'desc'     => __('Allowed Variables:', WP_ULIKE_SLUG) . ' <code>%USER_AVATAR%</code> , <code>%BP_PROFILE_URL%</code> , <code>%UM_PROFILE_URL%</code> , <code>%USER_NAME%</code> , <code>%START_WHILE%</code> , <code>%END_WHILE%</code>',
-                    'dependency'=> array( 'enable_likers_box', '==', 'true' ),
                 )
             );
         }

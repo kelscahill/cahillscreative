@@ -39,22 +39,7 @@ if ( $empty_options ) :
 <?php
 endif;
 ?>
-	<p class="advads-jqueryui-error advads-error-message hidden">
-		<?php
-		printf(
-			wp_kses(
-			// translators: %s is a link to a tutorial.
-				__( 'There might be a problem with layouts and scripts in your dashboard. Please check <a href="%s" target="_blank">this article to learn more</a>.', 'advanced-ads' ),
-				array(
-					'a' => array(
-						'href'   => array(),
-						'target' => array(),
-					),
-				)
-			),
-			esc_url( ADVADS_URL ) . 'manual/jquery-problem-in-dashboard/#utm_source=advanced-ads&utm_medium=link&utm_campaign=notice-jquery-error'
-		);
-		?></p>
+
 	<p><?php esc_attr_e( 'A page with this ad on it must match all of the following conditions.', 'advanced-ads' ); ?></p>
 <?php
 $conditions_list_target = 'advads-ad-display-conditions';
