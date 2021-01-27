@@ -6,21 +6,21 @@
           {% if post.next %}
             <a href="{{ post.next.link }}" class="next pagination-link">
               <span class="icon icon--l">{% include "00-atoms/icons/arrow--carousel.twig" %}</span>
-              <p class="font--primary--xs">Next Project</p>
+              <p class="font--primary--xs">Next {{ work_category == 'Work' ? 'Project' : 'Rental' }}</p>
             </a>
           {% endif %}
         </div>
         <div class="pagination-item">
           <a href="/work" class="all pagination-link">
             <span class="icon icon--l">{% include "00-atoms/icons/icon--close--large.twig" %}</span>
-            <p class="font--primary--xs">All Work</p>
+            <p class="font--primary--xs">All {{ work_category == 'Work' ? work_category : work_category ~ "s" }}</p>
           </a>
         </div>
         <div class="pagination-item">
           {% if post.prev %}
             <a href="{{ post.prev.link }}" class="prev pagination-link">
               <span class="icon icon--l">{% include "00-atoms/icons/arrow--carousel.twig" %}</span>
-              <p class="font--primary--xs">Previous Project</p>
+              <p class="font--primary--xs">Previous {{ work_category == 'Work' ? 'Project' : 'Rental' }}</p>
             </a>
           {% endif %}
         </div>
