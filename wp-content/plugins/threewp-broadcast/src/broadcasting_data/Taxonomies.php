@@ -90,6 +90,7 @@ class Taxonomies
 			'broadcasting_data' => null,
 			'blog_id' => 0,
 			'post' => null,
+			'post_type' => false,
 			'post_id' => 0,
 			'taxonomy' => '',
 		], $options );
@@ -98,8 +99,9 @@ class Taxonomies
 		$options = (object) $options;
 
 		// Nothing set? Try to resync.
-		if ( count ( $this->broadcasting_data->parent_blog_taxonomies[ $options->taxonomy ][ 'terms' ] ) < 1 )
-			unset( $this->broadcasting_data->parent_blog_taxonomies[ $options->taxonomy ] );
+		if ( isset( $this->broadcasting_data->parent_blog_taxonomies[ $options->taxonomy ] ) )
+			if ( count ( $this->broadcasting_data->parent_blog_taxonomies[ $options->taxonomy ][ 'terms' ] ) < 1 )
+				unset( $this->broadcasting_data->parent_blog_taxonomies[ $options->taxonomy ] );
 
 		if ( isset( $this->broadcasting_data->parent_blog_taxonomies[ $options->taxonomy ] ) )
 			return ThreeWP_Broadcast()->debug( 'Not bothering to sync taxonomy <em>%s</em> for post type <em>%s</em> because it is already being synced.', $options->taxonomy, $options->post_type );
@@ -117,6 +119,19 @@ class Taxonomies
 		// Fetch the post type.
 		if ( $options->post !== null )
 			$options->post_type = $options->post->post_type;
+
+		if ( ! $options->post_type )
+		{
+			// Find a post type that uses this taxonomy.
+			$taxonomies = get_taxonomies( [], 'objects' );
+			foreach( $taxonomies as $taxonomy_name => $taxonomy_data )
+			{
+				if ( $taxonomy_name != $options->taxonomy )
+					continue;
+				$options->post_type = reset( $taxonomy_data->object_type );
+				break;
+			}
+		}
 
 		ThreeWP_Broadcast()->debug( 'Also syncing taxonomy <em>%s</em> for post type <em>%s</em>.', $options->taxonomy, $options->post_type );
 

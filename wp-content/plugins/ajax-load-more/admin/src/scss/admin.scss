@@ -11,6 +11,7 @@
 @import 'partials/shortcode-builder';
 @import 'partials/woocommerce';
 @import 'partials/builder-option-toggle';
+@import 'partials/template-tags';
 
 body.toplevel_page_ajax-load-more,
 body.ajax-load-more_page_ajax-load-more-repeaters,
@@ -24,7 +25,7 @@ body.ajax-load-more_page_ajax-load-more-filters,
 body.ajax-load-more_page_ajax-load-more-pro,
 body.ajax-load-more_page_ajax-load-more-go-pro,
 body.ajax-load-more_page_ajax-load-more-woocommerce {
-	//background-color: $light_grey;
+	height: auto !important;
 	#wpcontent {
 		padding-left: 0;
 		padding-bottom: 20px;
@@ -417,10 +418,6 @@ a.layout-hover:hover img {
 	display: none;
 }
 
-#alm-builder {
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-}
-
 a.button-small {
 	text-decoration: none;
 	font-size: 12px;
@@ -801,6 +798,13 @@ a.button-small {
 	height: auto;
 }
 
+.admin.ajax-load-more .form-table textarea {
+	clear: both;
+	display: inline-block;
+	float: none;
+	width: 100%;
+}
+.admin.ajax-load-more textarea.disabled,
 .ajax-load-more input.disabled-input {
 	opacity: 0.5;
 	filter: alpha(opacity=50);
@@ -1223,41 +1227,6 @@ hr.indented {
 	padding-bottom: 5px;
 }
 
-.form-table .template-tags {
-	overflow: hidden;
-	border-left: 6px solid #dfd8c2;
-	padding: 15px;
-	background: #fff9ea;
-	margin: 20px 0 0;
-	border-radius: 3px;
-}
-.form-table .template-tags h4,
-.form-table .template-tags li {
-	margin: 0 0 8px;
-	padding: 0;
-	font-size: 13px;
-}
-.form-table .template-tags li {
-	margin: 2px 0;
-}
-.form-table .template-tags ul {
-	margin: 0;
-	padding: 0;
-}
-.form-table .template-tags pre {
-	display: inline-block;
-	min-width: 120px;
-	padding: 0;
-	margin: 0;
-	color: #888;
-}
-
-.admin.ajax-load-more .form-table textarea {
-	clear: both;
-	display: inline-block;
-	float: none;
-	width: 100%;
-}
 .admin.ajax-load-more textarea.disabled,
 .admin.ajax-load-more input.disabled {
 	opacity: 0.9;

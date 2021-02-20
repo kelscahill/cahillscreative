@@ -208,6 +208,7 @@ function sbi_get_next_post_set() {
 	$atts = $atts_raw; // now sanitized
 
 	$offset = isset( $_POST['offset'] ) ? (int)$_POST['offset'] : 0;
+	$page = isset( $_POST['page'] ) ? (int)$_POST['page'] : 1;
 
 	$database_settings = sbi_get_database_settings();
 	$instagram_feed_settings = new SB_Instagram_Settings( $atts, $database_settings );
@@ -226,6 +227,19 @@ function sbi_get_next_post_set() {
 
 	$settings = $instagram_feed_settings->get_settings();
 
+	$location = isset( $_POST['location'] ) && in_array( $_POST['location'], array( 'header', 'footer', 'sidebar', 'content' ), true ) ? sanitize_text_field( $_POST['location'] ) : 'unknown';
+	$post_id = isset( $_POST['post_id'] ) && $_POST['post_id'] !== 'unknown' ? (int)$_POST['post_id'] : 'unknown';
+	$feed_details = array(
+		'feed_id' => $transient_name,
+		'atts' => $atts,
+		'location' => array(
+			'post_id' => $post_id,
+			'html' => $location
+		)
+	);
+
+	sbi_do_background_tasks( $feed_details );
+
 	$feed_type_and_terms = $instagram_feed_settings->get_feed_type_and_terms();
 
 	$instagram_feed = new SB_Instagram_Feed( $transient_name );
@@ -236,8 +250,8 @@ function sbi_get_next_post_set() {
 			$instagram_feed->set_post_data_from_cache();
 		}
 
-		if ( $instagram_feed->need_posts( $settings['num'], $offset ) && $instagram_feed->can_get_more_posts() ) {
-			while ( $instagram_feed->need_posts( $settings['num'], $offset ) && $instagram_feed->can_get_more_posts() ) {
+		if ( $instagram_feed->need_posts( $settings['minnum'], $offset, $page ) && $instagram_feed->can_get_more_posts() ) {
+			while ( $instagram_feed->need_posts( $settings['minnum'], $offset, $page ) && $instagram_feed->can_get_more_posts() ) {
 				$instagram_feed->add_remote_posts( $settings, $feed_type_and_terms, $instagram_feed_settings->get_connected_accounts_in_feed() );
 			}
 
@@ -268,8 +282,8 @@ function sbi_get_next_post_set() {
 		$instagram_feed->add_report( 'regular cache exists' );
 		$instagram_feed->set_post_data_from_cache();
 
-		if ( $instagram_feed->need_posts( $settings['num'], $offset ) && $instagram_feed->can_get_more_posts() ) {
-			while ( $instagram_feed->need_posts( $settings['num'], $offset ) && $instagram_feed->can_get_more_posts() ) {
+        if ( $instagram_feed->need_posts( $settings['minnum'], $offset, $page ) && $instagram_feed->can_get_more_posts() ) {
+	        while ( $instagram_feed->need_posts( $settings['minnum'], $offset, $page ) && $instagram_feed->can_get_more_posts() ) {
 				$instagram_feed->add_remote_posts( $settings, $feed_type_and_terms, $instagram_feed_settings->get_connected_accounts_in_feed() );
 			}
 
@@ -369,6 +383,19 @@ function sbi_process_submitted_resize_ids() {
 	$transient_name = $instagram_feed_settings->get_transient_name();
 	$settings = $instagram_feed_settings->get_settings();
 
+	$location = isset( $_POST['location'] ) && in_array( $_POST['location'], array( 'header', 'footer', 'sidebar', 'content' ), true ) ? sanitize_text_field( $_POST['location'] ) : 'unknown';
+	$post_id = isset( $_POST['post_id'] ) && $_POST['post_id'] !== 'unknown' ? (int)$_POST['post_id'] : 'unknown';
+	$feed_details = array(
+		'feed_id' => $transient_name,
+		'atts' => $atts,
+		'location' => array(
+			'post_id' => $post_id,
+			'html' => $location
+		)
+	);
+
+	sbi_do_background_tasks( $feed_details );
+
 	if ( $cache_all ) {
 		$settings['cache_all'] = true;
 	}
@@ -392,6 +419,48 @@ function sbi_process_submitted_resize_ids() {
 }
 add_action( 'wp_ajax_sbi_resized_images_submit', 'sbi_process_submitted_resize_ids' );
 add_action( 'wp_ajax_nopriv_sbi_resized_images_submit', 'sbi_process_submitted_resize_ids' );
+
+function sbi_do_locator() {
+	if ( ! isset( $_POST['feed_id'] ) || strpos( $_POST['feed_id'], 'sbi' ) === false ) {
+		die( 'invalid feed ID');
+	}
+
+	$feed_id = sanitize_text_field( $_POST['feed_id'] );
+
+
+	$atts_raw = isset( $_POST['atts'] ) ? json_decode( stripslashes( $_POST['atts'] ), true ) : array();
+	if ( is_array( $atts_raw ) ) {
+		array_map( 'sanitize_text_field', $atts_raw );
+	} else {
+		$atts_raw = array();
+	}
+	$atts = $atts_raw; // now sanitized
+
+	$location = isset( $_POST['location'] ) && in_array( $_POST['location'], array( 'header', 'footer', 'sidebar', 'content' ), true ) ? sanitize_text_field( $_POST['location'] ) : 'unknown';
+	$post_id = isset( $_POST['post_id'] ) && $_POST['post_id'] !== 'unknown' ? (int)$_POST['post_id'] : 'unknown';
+	$feed_details = array(
+		'feed_id' => $feed_id,
+		'atts' => $atts,
+		'location' => array(
+			'post_id' => $post_id,
+			'html' => $location
+		)
+	);
+
+	sbi_do_background_tasks( $feed_details );
+
+	wp_die( 'locating success' );
+}
+add_action( 'wp_ajax_sbi_do_locator', 'sbi_do_locator' );
+add_action( 'wp_ajax_nopriv_sbi_do_locator', 'sbi_do_locator' );
+
+function sbi_do_background_tasks( $feed_details ) {
+	$locator = new SB_Instagram_Feed_Locator( $feed_details );
+	$locator->add_or_update_entry();
+	if ( $locator->should_clear_old_locations() ) {
+		$locator->delete_old_locations();
+	}
+}
 
 /**
  * Outputs an organized error report for the front end.

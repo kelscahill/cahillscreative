@@ -134,7 +134,7 @@ function alm_plugin_row( $plugin_name ) {
  */
 function alm_render_transient_notification() {
 	if ( ! has_action( 'alm_pro_installed' ) ) {
-		$msg = '🔥 Introducing <strong><a href="https://connekthq.com/plugins/ajax-load-more/pro/" target="_blank">Ajax Load More Pro</a></strong> -  get instant access to all 13 add-ons in a single installation! &nbsp; <strong><a href="https://connekthq.com/plugins/ajax-load-more/pro/" target="_blank" class="button button-primary">Upgrade Now</a></strong>';
+		$msg = '🔥&nbsp; <strong><a href="https://connekthq.com/plugins/ajax-load-more/pro/" target="_blank">Ajax Load More Pro</a></strong>: Get instant access to all 15 add-ons in a single installation! &nbsp; <strong><a href="https://connekthq.com/plugins/ajax-load-more/pro/" target="_blank" class="button button-primary">Upgrade Now</a></strong>';
 		alm_transient_notification( $msg, 'alm_pro_upgrade', 'YEAR_IN_SECONDS', true );
 	}
 }
@@ -727,11 +727,9 @@ function alm_admin_menu() {
       'alm_licenses_page'
    );
 
-
    $before_link = '<span style="display:block; border-top: 1px solid #555; padding-top: 8px;">';
 	$after_link = '</span>';
 	$style_link_icon = 'style="opacity: 0.6; font-size: 18px; height: 18px; width: 18px; position: relative; left: -2px;"';
-
 
 	// Pro
 	if(has_action('alm_pro_installed')){
@@ -754,7 +752,6 @@ function alm_admin_menu() {
 	   );
    }
 
-
 	// Cache
    if(has_action('alm_cache_installed')){
       $alm_cache_page = add_submenu_page(
@@ -769,7 +766,6 @@ function alm_admin_menu() {
       add_action( 'load-' . $alm_cache_page, 'alm_load_cache_admin_js' );
       add_action( 'load-' . $alm_cache_page, 'alm_set_admin_nonce' );
    }
-
 
 	// Filters
    if(has_action('alm_filters_installed')){
@@ -790,7 +786,6 @@ function alm_admin_menu() {
       add_action( 'load-' . $alm_filters_page, 'alm_load_filters_admin_scripts' );
       add_action( 'load-' . $alm_filters_page, 'alm_set_admin_nonce' );
    }
-
 
 	// WooCommerce
    if(has_action('alm_woocommerce_installed') && in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option('active_plugins')))){
@@ -841,12 +836,8 @@ function alm_admin_menu() {
 
 }
 
-
-
-
 /*
-*  alm_settings_page
-*  Settings page
+*  Settings page.
 *
 *  @since 2.0.0
 */
@@ -855,10 +846,7 @@ function alm_settings_page(){
    include_once( ALM_PATH . 'admin/views/settings.php');
 }
 
-
-
 /*
-*  alm_repeater_page
 *  Custom Repeaters
 *
 *  @since 2.0.0
@@ -1301,8 +1289,6 @@ function alm_get_tax_terms(){
 	}
 }
 
-
-
 /*
 *  alm_layouts_dismiss
 *  Dismiss Add Layouts CTA in repeater templates.
@@ -1323,8 +1309,6 @@ function alm_layouts_dismiss(){
       die();
    }
 }
-
-
 
 /*
 *  alm_dismiss_sharing
@@ -1349,8 +1333,6 @@ function alm_dismiss_sharing(){
    }
 }
 
-
-
 /*
 *  alm_filter_admin_footer_text
 *  Filter the WP Admin footer text only on ALM pages
@@ -1370,8 +1352,6 @@ function alm_filter_admin_footer_text( $text ) {
 		echo ' | <a href="https://connekthq.com/plugins/ajax-load-more/pro/" target="_blank" style="font-weight: 500;">Go Pro</a>';
 	}
 }
-
-
 
 /*
 *  admin_init
@@ -1495,14 +1475,6 @@ function alm_admin_init(){
 		'alm_admin_settings'
 	);
 
-	// add_settings_field(  // Hide btn
-	// 	'_alm_hide_btn',
-	// 	__('Editor Button', 'ajax-load-more' ),
-	// 	'alm_hide_btn_callback',
-	// 	'ajax-load-more',
-	// 	'alm_admin_settings'
-	// );
-
 	add_settings_field(  // Display error notices
 		'_alm_error_notices',
 		__('Error Notices', 'ajax-load-more' ),
@@ -1511,79 +1483,67 @@ function alm_admin_init(){
 		'alm_admin_settings'
 	);
 
-
 	// CACHE
 	if(has_action('alm_cache_settings')){
    	do_action('alm_cache_settings');
    }
-
 
 	// CUSTOM REPEATERS
 	if(has_action('alm_unlimited_settings')){
    	do_action('alm_unlimited_settings');
    }
 
-
 	// FILTERS
 	if(has_action('alm_filters_settings')){
    	do_action('alm_filters_settings');
    }
-
 
 	// LAYOUTS
 	if(has_action('alm_layouts_settings')){
    	do_action('alm_layouts_settings');
    }
 
-
 	// PAGINATION
 	if(has_action('alm_paging_settings')){
    	do_action('alm_paging_settings');
    }
-
 
 	// PRELOADED
 	if(has_action('alm_preloaded_settings')){
    	do_action('alm_preloaded_settings');
    }
 
-
 	// REST API
 	if(has_action('alm_rest_api_settings')){
    	do_action('alm_rest_api_settings');
    }
-
 
 	// SEO
 	if(has_action('alm_seo_settings')){
 		do_action('alm_seo_settings');
 	}
 
-
 	// SINGLE POST
 	if(has_action('alm_prev_post_settings')){
    	do_action('alm_prev_post_settings');
-   }
-
+	}
 
 	// TABS
 	if(has_action('alm_tabs_settings')){
    	do_action('alm_tabs_settings');
    }
 
-
-
 	// THEME REPEATERS
 	if(has_action('alm_theme_repeaters_settings')){
    	do_action('alm_theme_repeaters_settings');
-   }
+	}
+
 }
 
 
 
 /*
-*  alm_general_settings_callback
-*  Some general settings text
+*  Some general settings text.
 *
 *  @since 2.0.0
 */

@@ -828,8 +828,8 @@ jQuery(document).ready(function($) {
             }
         }); // ajax call
     }
-	
-	//Tooltips
+
+    //Tooltips
     jQuery('#sbi_admin').on('click', '.sbi_tooltip_link, .sbi_type_tooltip_link', function(){
         if( jQuery(this).hasClass('sbi_type_tooltip_link') ){
             jQuery(this).closest('.sbi_row').children('.sbi_tooltip').slideToggle();
@@ -840,113 +840,117 @@ jQuery(document).ready(function($) {
         }
     });
 
-	//Shortcode labels
-	jQuery('#sbi_admin label').click(function(){
-    var $sbi_shortcode = jQuery(this).siblings('.sbi_shortcode');
-    if($sbi_shortcode.is(':visible')){
-      jQuery(this).siblings('.sbi_shortcode').css('display','none');
-    } else {
-      jQuery(this).siblings('.sbi_shortcode').css('display','block');
-    }  
-  });
-  jQuery('#sbi_admin label').hover(function(){
-    if( jQuery(this).siblings('.sbi_shortcode').length > 0 ){
-      jQuery(this).attr('title', 'Click for shortcode option').append('<code class="sbi_shortcode_symbol">[]</code>');
-    }
-  }, function(){
-    jQuery(this).find('.sbi_shortcode_symbol').remove();
-  });
+    //Shortcode labels
+    jQuery('#sbi_admin label').click(function(){
+        var $sbi_shortcode = jQuery(this).siblings('.sbi_shortcode');
+        var $el = jQuery(this).parent();
+
+        if($sbi_shortcode.is(':visible')){
+            $el.removeClass('sbi_shortcode_visible');
+            $el.find('.sbi_shortcode').css('display','none');
+        } else {
+            $el.addClass('sbi_shortcode_visible');
+            $el.find('.sbi_shortcode').css('display','block');
+        }
+    });
+    jQuery('#sbi_admin label').hover(function(){
+        if( jQuery(this).siblings('.sbi_shortcode').length > 0 ){
+            jQuery(this).attr('title', 'Click for shortcode option').append('<code class="sbi_shortcode_symbol">[]</code>');
+        }
+    }, function(){
+        jQuery(this).find('.sbi_shortcode_symbol').remove();
+    });
 
 
-  jQuery('#sbi_admin .sbi_lock').hover(function(){
-    jQuery(this).siblings('.sbi_pro_tooltip').show();
-  }, function(){
-    jQuery('.sbi_pro_tooltip').hide();
-  });
-
-  
+    jQuery('#sbi_admin .sbi_lock').hover(function(){
+        jQuery(this).siblings('.sbi_pro_tooltip').show();
+    }, function(){
+        jQuery('.sbi_pro_tooltip').hide();
+    });
 
 
-  //Add the color picker
-	if( jQuery('.sbi_colorpick').length > 0 ) jQuery('.sbi_colorpick').wpColorPicker();
 
-	//Check User ID is numeric
-	jQuery("#sb_instagram_user_id").change(function() {
 
-		var sbi_user_id = jQuery('#sb_instagram_user_id').val(),
-			$sbi_user_id_error = $(this).closest('td').find('.sbi_user_id_error'),
-			$sbi_other_user_error = $(this).closest('td').find('.sbi_other_user_error');
+    //Add the color picker
+    if( jQuery('.sbi_colorpick').length > 0 ) jQuery('.sbi_colorpick').wpColorPicker();
 
-		if (sbi_user_id.match(/[^0-9, _.-]/)) {
-  			$sbi_user_id_error.fadeIn();
-  		} else {
-  			$sbi_user_id_error.fadeOut();
-  		}
+    //Check User ID is numeric
+    jQuery("#sb_instagram_user_id").change(function() {
 
-  		//Check whether an ID from another account is being used
-  		sbi_check_other_user_id(sbi_user_id, $sbi_other_user_error);
+        var sbi_user_id = jQuery('#sb_instagram_user_id').val(),
+            $sbi_user_id_error = $(this).closest('td').find('.sbi_user_id_error'),
+            $sbi_other_user_error = $(this).closest('td').find('.sbi_other_user_error');
 
-	});
-	function sbi_check_other_user_id(sbi_user_id, $sbi_other_user_error){
-		if (jQuery('#sb_instagram_at').length && jQuery('#sb_instagram_at').val() !== '' && sbi_user_id.length) {
+        if (sbi_user_id.match(/[^0-9, _.-]/)) {
+            $sbi_user_id_error.fadeIn();
+        } else {
+            $sbi_user_id_error.fadeOut();
+        }
+
+        //Check whether an ID from another account is being used
+        sbi_check_other_user_id(sbi_user_id, $sbi_other_user_error);
+
+    });
+    function sbi_check_other_user_id(sbi_user_id, $sbi_other_user_error){
+        if (jQuery('#sb_instagram_at').length && jQuery('#sb_instagram_at').val() !== '' && sbi_user_id.length) {
             if(jQuery('#sb_instagram_at').val().indexOf(sbi_user_id) == -1 ){
                 $sbi_other_user_error.fadeIn();
             } else {
                 $sbi_other_user_error.fadeOut();
             }
-		}
-	}
-	//Check initially when settings load
-	sbi_check_other_user_id( jQuery('#sb_instagram_user_id').val(), $('td').find('.sbi_other_user_error') );
+        }
+    }
+    //Check initially when settings load
+    sbi_check_other_user_id( jQuery('#sb_instagram_user_id').val(), $('td').find('.sbi_other_user_error') );
 
-	//Mobile width
-	var sb_instagram_feed_width = jQuery('#sbi_admin #sb_instagram_width').val(),
-			sb_instagram_width_unit = jQuery('#sbi_admin #sb_instagram_width_unit').val(),
-			$sb_instagram_width_options = jQuery('#sbi_admin #sb_instagram_width_options');
+    //Mobile width
+    var sb_instagram_feed_width = jQuery('#sbi_admin #sb_instagram_width').val(),
+        sb_instagram_width_unit = jQuery('#sbi_admin #sb_instagram_width_unit').val(),
+        $sb_instagram_width_options = jQuery('#sbi_admin #sb_instagram_width_options');
 
-	if (typeof sb_instagram_feed_width !== 'undefined') {
+    if (typeof sb_instagram_feed_width !== 'undefined') {
 
-		//Show initially if a width is set
-		if( (sb_instagram_feed_width.length > 1 && sb_instagram_width_unit == 'px') || (sb_instagram_feed_width !== '100' && sb_instagram_width_unit == '%') ) $sb_instagram_width_options.show();
+        //Show initially if a width is set
+        if( (sb_instagram_feed_width.length > 1 && sb_instagram_width_unit == 'px') || (sb_instagram_feed_width !== '100' && sb_instagram_width_unit == '%') ) $sb_instagram_width_options.show();
 
-		jQuery('#sbi_admin #sb_instagram_width, #sbi_admin #sb_instagram_width_unit').change(function(){
-			sb_instagram_feed_width = jQuery('#sbi_admin #sb_instagram_width').val();
-			sb_instagram_width_unit = jQuery('#sbi_admin #sb_instagram_width_unit').val();
+        jQuery('#sbi_admin #sb_instagram_width, #sbi_admin #sb_instagram_width_unit').change(function(){
+            sb_instagram_feed_width = jQuery('#sbi_admin #sb_instagram_width').val();
+            sb_instagram_width_unit = jQuery('#sbi_admin #sb_instagram_width_unit').val();
 
-			if( sb_instagram_feed_width.length < 2 || (sb_instagram_feed_width == '100' && sb_instagram_width_unit == '%') ) {
-				$sb_instagram_width_options.slideUp();			
-			} else {
-				$sb_instagram_width_options.slideDown();
-			}
-		});
+            if( sb_instagram_feed_width.length < 2 || (sb_instagram_feed_width == '100' && sb_instagram_width_unit == '%') ) {
+                $sb_instagram_width_options.slideUp();
+            } else {
+                $sb_instagram_width_options.slideDown();
+            }
+        });
 
-	}
+    }
 
-	//Scroll to hash for quick links
+    //Scroll to hash for quick links
     jQuery('#sbi_admin a').click(function() {
         if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-          var target = jQuery(this.hash);
-          target = target.length ? target : this.hash.slice(1);
-          if (target.length) {
-            jQuery('html,body').animate({
-              scrollTop: target.offset().top
-            }, 500);
-            return false;
-          }
+            var target = jQuery(this.hash);
+            target = target.length ? target : this.hash.slice(1);
+            if (target.length) {
+                jQuery('html,body').animate({
+                    scrollTop: target.offset().top
+                }, 500);
+                return false;
+            }
         }
     });
 
-	//Support tab show video
-	jQuery('#sbi-play-support-video').on('click', function(e){
-		e.preventDefault();
-		jQuery('#sbi-support-video').show().attr('src', jQuery('#sbi-support-video').attr('src')+'&amp;autoplay=1' );
-	});
+    //Support tab show video
+    jQuery('#sbi-play-support-video').on('click', function(e){
+        e.preventDefault();
+        jQuery('#sbi-support-video').show().attr('src', jQuery('#sbi-support-video').attr('src')+'&amp;autoplay=1' );
+    });
 
-	jQuery('#sbi_admin .sbi-show-pro').on('click', function(){
-		jQuery(this).parent().next('.sbi-pro-options').toggle();
-	});
+    jQuery('#sbi_admin .sbi-show-pro').on('click', function(){
+        jQuery(this).parent().next('.sbi-pro-options').toggle();
+    });
 
-	/* Pro 3.0 JS */
+    /* Pro 3.0 JS */
     function sbiUpdateLayoutTypeOptionsDisplay() {
         setTimeout(function(){
             jQuery('.sb_instagram_layout_settings').hide();
@@ -1155,6 +1159,14 @@ jQuery(document).ready(function($) {
         }
     }
     sbiCheckGdprSetting();
+
+    // Locator
+    jQuery('.sbi-locator-more').click(function(e) {
+        e.preventDefault();
+        jQuery(this).closest('td').find('.sbi-full-wrap').show();
+        jQuery(this).closest('td').find('.sbi-condensed-wrap').hide();
+        jQuery(this).remove();
+    });
 });
 
 

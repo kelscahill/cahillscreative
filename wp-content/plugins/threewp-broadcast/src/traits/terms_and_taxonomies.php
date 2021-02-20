@@ -167,6 +167,12 @@ trait terms_and_taxonomies
 		if ( ! isset( $bcd->parent_blog_taxonomies[ $taxonomy ] ) )
 			return;
 
+		// Tell everyone we're about to sync a taxonomy.
+		$action = $this->new_action( 'sync_taxonomy_start' );
+		$action->broadcasting_data = $bcd;
+		$action->taxonomy = $taxonomy;
+		$action->execute();
+
 		// Clean up the terms.
 		foreach( $bcd->parent_blog_taxonomies[ $taxonomy ][ 'terms' ] as $index => $term )
 			if ( ! $term )
@@ -518,8 +524,6 @@ trait terms_and_taxonomies
 					$update = true;
 				}
 		}
-		/// DEBUG
-		$update = true;
 
 		if ( $update )
 		{

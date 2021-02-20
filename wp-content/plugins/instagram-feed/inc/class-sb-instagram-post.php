@@ -241,6 +241,8 @@ class SB_Instagram_Post
 
 					// not uncommon for the image editor to not work using it this way
 					if ( ! is_wp_error( $image_editor ) ) {
+						$image_editor->set_quality(80);
+
 						$sizes = $image_editor->get_size();
 
 						$image_editor->resize( $image_size, null );

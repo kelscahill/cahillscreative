@@ -100,6 +100,13 @@ class SB_Instagram_Feed
 	private $cached_feed_error;
 
 	/**
+	 * @var int
+	 *
+	 * @since 5.10.1
+	 */
+	protected $pages_created;
+
+	/**
 	 * @var array
 	 *
 	 * @since 2.1.3/5.2.3
@@ -124,6 +131,7 @@ class SB_Instagram_Feed
 		$this->post_data = array();
 		$this->next_pages = array();
 		$this->cached_feed_error = array();
+		$this->pages_created = 0;
 		$this->should_paginate = true;
 
 		// this is a count of how many api calls have been made for each feed
@@ -189,6 +197,10 @@ class SB_Instagram_Feed
 	 */
 	public function set_resized_images( $resized_image_data ) {
 		$this->resized_images = $resized_image_data;
+	}
+
+	public function set_pages_created( $num ) {
+		$this->pages_created = $num;
 	}
 
 	/**
@@ -304,6 +316,7 @@ class SB_Instagram_Feed
 			$post_data = isset( $transient_data['data'] ) ? $transient_data['data'] : array();
 			$this->post_data = $post_data;
 			$this->next_pages = isset( $transient_data['pagination'] ) ? $transient_data['pagination'] : array();
+			$this->pages_created = isset( $transient_data['pages_created'] ) ? $transient_data['pages_created'] : 0;
 
 			if ( isset( $transient_data['atts'] ) ) {
 				$this->transient_atts = $transient_data['atts'];
@@ -313,6 +326,8 @@ class SB_Instagram_Feed
 			if ( isset( $transient_data['errors'] ) ) {
 				$this->cached_feed_error = $transient_data['errors'];
 			}
+
+			$this->add_report( 'pages created: ' . $this->pages_created .', next pages exist: ' . ! empty( $this->next_pages ) );
 		}
 	}
 
@@ -536,9 +551,15 @@ class SB_Instagram_Feed
 	 *
 	 * @since 2.0/5.0
 	 */
-	public function need_posts( $num, $offset = 0 ) {
+	public function need_posts( $num, $offset = 0, $page = 0 ) {
 		$num_existing_posts = is_array( $this->post_data ) ? count( $this->post_data ) : 0;
 		$num_needed_for_page = (int)$num + (int)$offset;
+		$this->add_report( 'pages created ' .$this->pages_created . ' page on' . $page );
+
+		if ( $this->pages_created < $page ) {
+			$this->add_report( 'need another page' );
+			return true;
+		}
 
 		($num_existing_posts < $num_needed_for_page) ? $this->add_report( 'need more posts ' . $num_existing_posts . ' ' . $num_needed_for_page ) : $this->add_report( 'have enough posts' );
 
@@ -580,6 +601,8 @@ class SB_Instagram_Feed
 	 *  accounts if needed before using it in an API request
 	 */
 	public function add_remote_posts( $settings, $feed_types_and_terms, $connected_accounts_for_feed ) {
+		$this->pages_created ++;
+
 		$new_post_sets = array();
 		$next_pages = $this->next_pages;
 		global $sb_instagram_posts_manager;
@@ -770,18 +793,26 @@ class SB_Instagram_Feed
 			}
 		}
 
-
 		if ( ! $one_successful_connection || ($one_api_request_delayed && empty( $new_post_sets )) ) {
 			$this->should_use_backup = true;
 		}
 		$posts = $this->merge_posts( $new_post_sets, $settings );
 
+		if ( ! $this->should_merge_after( $settings ) ) {
+			if ( ! empty( $this->post_data ) && is_array( $this->post_data ) ) {
+				$posts = array_merge( $this->post_data, $posts );
+			}
+		}
+
 		$posts = $this->sort_posts( $posts, $settings );
 
+		if ( $this->should_merge_after( $settings ) ) {
+			if ( ! empty( $this->post_data ) && is_array( $this->post_data ) ) {
+				$posts = array_merge( $this->post_data, $posts );
+			}
+		}
 
-		if ( ! empty( $this->post_data ) && is_array( $this->post_data ) ) {
-			$posts = array_merge( $this->post_data, $posts );
-		} elseif ( $one_post_found ) {
+		if ( $one_post_found ) {
 			$this->one_post_found = true;
 		}
 
@@ -874,7 +905,8 @@ class SB_Instagram_Feed
 
 			$to_cache = array(
 				'data' => $this->post_data,
-				'pagination' => $this->next_pages
+				'pagination' => $this->next_pages,
+				'pages_created' => $this->pages_created
 			);
 
 			global $sb_instagram_posts_manager;
@@ -1103,6 +1135,8 @@ class SB_Instagram_Feed
 			$additional_classes = ' ' . implode( ' ', $classes );
 		}
 
+		$other_atts .= ' data-postid="' . esc_attr( get_the_ID() ) . '"';
+
 		$other_atts = $this->add_other_atts( $other_atts, $settings );
 
 		$flags = array();
@@ -1124,6 +1158,11 @@ class SB_Instagram_Feed
 			if ( ! SB_Instagram_GDPR_Integrations::blocking_cdn( $settings ) ) {
 				$flags[] = 'overrideBlockCDN';
 			}
+		}
+		if ( ! $settings['isgutenberg']
+		     && SB_Instagram_Feed_Locator::should_do_ajax_locating( $this->regular_feed_transient_name, get_the_ID() ) ) {
+			$this->add_report( 'doing feed locating' );
+			$flags[] = 'locator';
 		}
 		if ( isset( $_GET['sbi_debug'] ) ) {
 			$flags[] = 'debug';
@@ -1277,7 +1316,7 @@ class SB_Instagram_Feed
 	 * @return string
 	 */
 	protected function add_other_atts( $other_atts, $settings ) {
-		return '';
+		return $other_atts;
 	}
 
 	/**
@@ -1558,6 +1597,35 @@ class SB_Instagram_Feed
 		}
 
 		return $merged_posts;
+	}
+
+	/**
+	 * Sorting by date will be more accurate for multi-term
+	 * feeds if posts are merged before sorting.
+	 *
+	 * @param array $settings
+	 *
+	 * @return bool
+	 *
+	 * @since 5.10.1
+	 */
+	protected function should_merge_after( $settings ) {
+		if ( ! isset( $settings['sortby'] ) ) {
+			return false;
+		}
+
+		$merge_befores = array(
+			'alternate',
+			'api',
+			'random',
+			'likes'
+		);
+
+		if ( ! in_array( $settings['sortby'], $merge_befores, true ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

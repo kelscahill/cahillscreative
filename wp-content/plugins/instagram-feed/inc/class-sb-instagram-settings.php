@@ -163,6 +163,31 @@ class SB_Instagram_Settings {
 		}
 	}
 
+	public function feed_type_and_terms_display() {
+
+		if ( ! isset( $this->feed_type_and_terms ) ) {
+			return array();
+		}
+		$return = array();
+		foreach ( $this->feed_type_and_terms as $feed_type => $type_terms ) {
+			foreach ( $type_terms as $term ) {
+				if ( $feed_type === 'users'
+				     || $feed_type === 'tagged' ) {
+					if ( ! in_array( $this->connected_accounts_in_feed[ $term['term'] ]['username'], $return, true ) ) {
+						$return[] = $this->connected_accounts_in_feed[ $term['term'] ]['username'];
+					}
+				} elseif ( $feed_type === 'hashtags_recent'
+				           || $feed_type === 'hashtags_top' ) {
+					if ( ! in_array( $term['hashtag_name'], $return, true ) ) {
+						$return[] = $term['hashtag_name'];
+					}
+				}
+			}
+		}
+		return $return;
+
+	}
+
 	/**
 	 * @return array
 	 *
@@ -344,7 +369,7 @@ class SB_Instagram_Settings {
 		if ( ! $users ) {
 			$set = false;
 			foreach ( $this->connected_accounts as $connected_account ) {
-				if ( ! $set ) {
+				if ( ! $set && strpos( $connected_account['accesstoken'], '.' ) === false ) {
 					$set = true;
 					$this->settings['user'] = $connected_account['username'];
 					$this->connected_accounts_in_feed = array( $connected_account['user_id'] => $connected_account );
@@ -452,7 +477,6 @@ class SB_Instagram_Settings {
 
 			$sb_instagram_posts_manager->maybe_set_display_error( 'configuration', $error_message_return );
 
-
 			$this->atts['accesstoken'] = '';
 		}
 
@@ -481,7 +505,6 @@ class SB_Instagram_Settings {
 			$sb_instagram_posts_manager->maybe_set_display_error( 'configuration', $error_message_return );
 		}
 
-
 		foreach ( $this->connected_accounts_in_feed as $connected_account_in_feed ) {
 			if ( isset( $connected_account_in_feed['private'] )
 			     && sbi_private_account_near_expiration( $connected_account_in_feed ) ) {
@@ -495,7 +518,6 @@ class SB_Instagram_Settings {
 				);
 
 				$sb_instagram_posts_manager->maybe_set_display_error( 'configuration', $error_message_return );
-
 			}
 		}
 	}

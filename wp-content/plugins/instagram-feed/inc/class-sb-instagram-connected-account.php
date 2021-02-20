@@ -86,10 +86,12 @@ class SB_Instagram_Connected_Account {
 				return $connected_accounts[ $search_term ];
 			} else {
 				foreach ( $connected_accounts as $connected_account ) {
-					if ( strtolower( $connected_account['username'] ) === trim( strtolower( $search_term ) ) ) {
-						return $connected_account;
-					} elseif ( $connected_account['access_token'] === trim( strtolower( $search_term ) )  ) {
-						return $connected_account;
+					if ( strpos( $connected_account['access_token'], '.' ) === false ) {
+						if ( strtolower( $connected_account['username'] ) === trim( strtolower( $search_term ) ) ) {
+							return $connected_account;
+						} elseif ( $connected_account['access_token'] === trim( strtolower( $search_term ) )  ) {
+							return $connected_account;
+						}
 					}
 				}
 			}

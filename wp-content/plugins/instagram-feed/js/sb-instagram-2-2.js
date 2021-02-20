@@ -190,6 +190,7 @@ if(!sbi_js_exists) {
                             num : $self.attr('data-num'),
                             imgRes : $self.attr('data-res'),
                             feedID : $self.attr('data-feedid'),
+                            postID : typeof $self.attr( 'data-postid' ) !== 'undefind' ? $self.attr( 'data-postid' ) : 'unknown',
                             shortCodeAtts : $self.attr('data-shortcode-atts'),
                             resizingEnabled : (flags.indexOf('resizeDisable') === -1),
                             imageLoadEnabled : (flags.indexOf('imageLoadDisable') === -1),
@@ -199,6 +200,7 @@ if(!sbi_js_exists) {
                             gdpr : (flags.indexOf('gdpr') > -1),
                             overrideBlockCDN : (flags.indexOf('overrideBlockCDN') > -1),
                             consentGiven : false,
+                            locator : (flags.indexOf('locator') > -1),
                             autoMinRes : 1,
                             general : general
                         };
@@ -254,6 +256,7 @@ if(!sbi_js_exists) {
             this.resizedImages = {};
             this.needsResizing = [];
             this.outOfPages = false;
+            this.page = 1;
             this.isInitialized = false;
         }
 
@@ -434,6 +437,8 @@ if(!sbi_js_exists) {
                         offset: itemOffset,
                         feed_id: feed.settings.feedID,
                         atts: feed.settings.shortCodeAtts,
+                        location: feed.locationGuess(),
+                        post_id: feed.settings.postID,
                         cache_all: cacheAll
                     };
                     var onSuccess = function(data) {
@@ -455,6 +460,18 @@ if(!sbi_js_exists) {
                         }
                     };
                     sbiAjax(submitData,onSuccess);
+                } else if (feed.settings.locator) {
+                    var submitData = {
+                        action: 'sbi_do_locator',
+                        feed_id: feed.settings.feedID,
+                        atts: feed.settings.shortCodeAtts,
+                        location: feed.locationGuess(),
+                        post_id: feed.settings.postID
+                    };
+                    var onSuccess = function(data) {
+
+                    };
+                    sbiAjax(submitData,onSuccess);
                 }
             },
             loadMoreButtonInit: function () {
@@ -470,12 +487,17 @@ if(!sbi_js_exists) {
             getNewPostSet: function () {
                 var $self = $(this.el),
                     feed = this;
+                feed.page ++;
+
                 var itemOffset = $self.find('.sbi_item').length,
                     submitData = {
                         action: 'sbi_load_more_clicked',
                         offset: itemOffset,
+                        page: feed.page,
                         feed_id: feed.settings.feedID,
                         atts: feed.settings.shortCodeAtts,
+                        location: feed.locationGuess(),
+                        post_id: feed.settings.postID,
                         current_resolution: feed.imageResolution
                     };
                 var onSuccess = function (data) {
@@ -963,7 +985,23 @@ if(!sbi_js_exists) {
                         feed.afterResize();
                     },500);
                 }
-            }
+            },
+            locationGuess: function() {
+                var $feed = $(this.el),
+                    location = 'content';
+
+                if ($feed.closest('footer').length) {
+                    location = 'footer';
+                } else if ($feed.closest('.header').length
+                    || $feed.closest('header').length) {
+                    location = 'header';
+                } else if ($feed.closest('.sidebar').length
+                    || $feed.closest('aside').length) {
+                    location = 'sidebar';
+                }
+
+                return location;
+            },
         };
 
         window.sbi_init = function() {

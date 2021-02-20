@@ -3,7 +3,7 @@ Contributors: smashballoon, craig-at-smash-balloon
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 3.4
 Tested up to: 5.6
-Stable tag: 2.7
+Stable tag: 2.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -332,6 +332,13 @@ We understand that sometimes you need help, have issues or just have questions. 
 * Plus more customization options added all the time!
 
 == Changelog ==
+= 2.8 =
+* New: The locations of the Instagram feeds on your site will now be logged and listed on a single page for easier management. After this feature has been active for awhile, a "Feed Finder" link will appear next to the Feed Type setting on the plugin Settings page which allows you to see a list of all feeds on your site along with their locations.
+* New: Local resized images will now include a 150x150 resolution version for each post.
+* Tweak: Locally saved image quality set to 80% to increase feed performance without a noticeable visual difference.
+* Tweak: Improved how posts are sorted by date when there are more than one user accounts in a feed.
+* Fix: Old accounts from Instagram's deprecated, non-functioning API are ignored if still connected.
+
 = 2.7 =
 * Tweak: Several performance improvements have been made in this update such as improved caching and fewer database queries when displaying feeds.
 * Tweak: The limit of resized, local images created and stored were raised for the overall number and the rate at which they could be created.

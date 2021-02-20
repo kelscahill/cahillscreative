@@ -1423,7 +1423,7 @@ jQuery(document).ready(function ($) {
   *
   *  @since 2.8.4
   */
-	$('body').on('mouseenter', '.tooltip:not(.tooltipstered)', function () {
+	$('.ajax-load-more-inner-wrapper').on('mouseenter', '.tooltip:not(.tooltipstered)', function () {
 		$(this).tooltipster({
 			delay: 100,
 			speed: 150,
@@ -1437,7 +1437,6 @@ jQuery(document).ready(function ($) {
   *
   *  @since 2.8.4
   */
-
 	$('select#alm_settings_btn_color').change(function () {
 		var color = jQuery(this).val();
 		// Remove other colors

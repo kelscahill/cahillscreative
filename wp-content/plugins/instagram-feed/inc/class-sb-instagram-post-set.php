@@ -62,7 +62,7 @@ class SB_Instagram_Post_Set {
 	 *
 	 * @since 2.0/4.0
 	 */
-	public function __construct( $post_data, $transient_name = false, $fill_in_timestamp = NULL, $image_sizes = array( 'personal' => array( 'low' => 320 ), 'business' => array( 'full' => 640, 'low' => 320 ) ), $upload_dir = NULL, $upload_url = NULL ) {
+	public function __construct( $post_data, $transient_name = false, $fill_in_timestamp = NULL, $image_sizes = array( 'personal' => array( 'full' => 640, 'low' => 320, 'thumb' => 150 ), 'business' => array( 'full' => 640, 'low' => 320, 'thumb' => 150 ) ), $upload_dir = NULL, $upload_url = NULL ) {
 		$this->post_data = $post_data;
 
 		$this->image_sizes = $image_sizes;

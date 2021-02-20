@@ -1017,9 +1017,16 @@ function sb_instagram_settings_page() {
                 </tr>
 
 				<tr valign="top" class="sbi_feed_type">
-					<th scope="row"><label><?php _e('Show Photos From:', 'instagram-feed'); ?></label><code class="sbi_shortcode"> type
-							Eg: type=user id=12986477
-						</code></th>
+                    <th scope="row"><label><?php _e('Select a Feed Type', 'instagram-feed'); ?>:</label><code class="sbi_shortcode"> type
+							Eg: type=user user=smashballoon
+						</code>
+						<?php if ( SB_Instagram_Feed_Locator::count_unique() > 1 ) : ?>
+                        <div class="sbi_locations_link">
+                            <a href="?page=sb-instagram-feed&amp;tab=allfeeds"><svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="search" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-search fa-w-16 fa-2x"><path fill="currentColor" d="M508.5 468.9L387.1 347.5c-2.3-2.3-5.3-3.5-8.5-3.5h-13.2c31.5-36.5 50.6-84 50.6-136C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c52 0 99.5-19.1 136-50.6v13.2c0 3.2 1.3 6.2 3.5 8.5l121.4 121.4c4.7 4.7 12.3 4.7 17 0l22.6-22.6c4.7-4.7 4.7-12.3 0-17zM208 368c-88.4 0-160-71.6-160-160S119.6 48 208 48s160 71.6 160 160-71.6 160-160 160z" class=""></path></svg> <?php _e('Feed Finder', 'instagram-feed'); ?></a>
+                        </div>
+						<?php endif; ?>
+
+                    </th>
 					<td>
 						<div class="sbi_row">
 							<div class="sbi_col sbi_one">
@@ -1222,6 +1229,10 @@ function sb_instagram_settings_page() {
 
 		<?php } // End Configure tab ?>
 
+		<?php if ( $sbi_active_tab == 'allfeeds' ) {
+			$locator_summary = SB_Instagram_Feed_Locator::summary();
+			include_once trailingslashit( SBI_PLUGIN_DIR ) . 'inc/admin/templates/locator-summary.php';
+		} ?>
 
 
 		<?php if( $sbi_active_tab == 'customize' ) { //Start Configure tab ?>
@@ -3170,6 +3181,33 @@ $error_page = $sb_instagram_posts_manager->get_error_page();
 if ( $error_page ) {
 	echo 'Feed with error: ' . esc_url( get_the_permalink( $error_page ) ). "\n";
 }*/?>
+
+## Location Summary: ##
+<?php
+$locator_summary = SB_Instagram_Feed_Locator::summary();
+$condensed_shortcode_atts = array( 'type', 'user', 'hashtag', 'tagged', 'num', 'cols', 'layout', 'whitelist', 'includewords' );
+
+if ( ! empty( $locator_summary) ) {
+
+	foreach ( $locator_summary as $locator_section ) {
+		if ( ! empty( $locator_section['results'] ) ) {
+			$first_five = array_slice( $locator_section['results'], 0, 5 );
+			foreach ( $first_five as $result ) {
+				$condensed_shortcode_string = '[instagram-feed';
+				$shortcode_atts             = json_decode( $result['shortcode_atts'], true );
+				$shortcode_atts             = is_array( $shortcode_atts ) ? $shortcode_atts : array();
+				foreach ( $shortcode_atts as $key => $value ) {
+					if ( in_array( $key, $condensed_shortcode_atts, true ) ) {
+						$condensed_shortcode_string .= ' ' . esc_html( $key ). '="' . esc_html( $value ) . '"';
+					}
+				}
+				$condensed_shortcode_string .= ']';
+				echo esc_url( get_the_permalink( $result['post_id'] ) ) . ' ' . $condensed_shortcode_string . "\n";
+			}
+
+		}
+	}
+}?>
 
 ## GDPR: ##
 <?php

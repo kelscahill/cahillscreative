@@ -299,6 +299,7 @@ else {
 		}
 
 		while ( $alm_preload_query->have_posts() ) :
+
 			$alm_preload_query->the_post();
 
 			$alm_item++;
@@ -306,7 +307,7 @@ else {
 
 			// Call to Action [Before].
 			if( $cta === 'true' && has_action( 'alm_cta_inc' ) && $cta_pos === 'before' ) {
-				$output .= ( $alm_current == $cta_val ) ? apply_filters( 'alm_cta_inc', $cta_repeater, $cta_theme_repeater, $alm_found_posts, $alm_page, $alm_item, $alm_current, true ) : '';
+				$output .= ( $alm_current == $cta_val ) ? apply_filters( 'alm_cta_inc', $cta_repeater, $cta_theme_repeater, $alm_found_posts, $alm_page, $alm_item, $alm_current, true, $args ) : '';
 			}
 
 			// Repeater Template.
@@ -314,7 +315,7 @@ else {
 
 			// Call to Action [After].
 			if ( $cta === 'true' && has_action( 'alm_cta_inc' ) && $cta_pos === 'after' ) {
-				$output .= ( $alm_current == $cta_val ) ? apply_filters( 'alm_cta_inc', $cta_repeater, $cta_theme_repeater, $alm_found_posts, $alm_page, $alm_item, $alm_current, true ) : '';
+				$output .= ( $alm_current == $cta_val ) ? apply_filters( 'alm_cta_inc', $cta_repeater, $cta_theme_repeater, $alm_found_posts, $alm_page, $alm_item, $alm_current, true, $args ) : '';
 			}
 
 		endwhile;

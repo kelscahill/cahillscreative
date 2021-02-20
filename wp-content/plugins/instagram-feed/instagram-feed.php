@@ -3,7 +3,7 @@
 Plugin Name: Smash Balloon Instagram Feed
 Plugin URI: https://smashballoon.com/instagram-feed
 Description: Display beautifully clean, customizable, and responsive Instagram feeds.
-Version: 2.7
+Version: 2.8
 Author: Smash Balloon
 Author URI: https://smashballoon.com/
 License: GPLv2 or later
@@ -23,11 +23,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 if ( ! defined( 'SBIVER' ) ) {
-	define( 'SBIVER', '2.7' );
+	define( 'SBIVER', '2.8' );
 }
 // Db version.
 if ( ! defined( 'SBI_DBVERSION' ) ) {
-	define( 'SBI_DBVERSION', '1.8' );
+	define( 'SBI_DBVERSION', '1.9' );
 }
 
 // Upload folder name for local image files for posts
@@ -41,6 +41,9 @@ if ( ! defined( 'SBI_INSTAGRAM_POSTS_TYPE' ) ) {
 // Name of the database table that contains feed ids and the ids of posts
 if ( ! defined( 'SBI_INSTAGRAM_FEEDS_POSTS' ) ) {
 	define( 'SBI_INSTAGRAM_FEEDS_POSTS', 'sbi_instagram_feeds_posts' );
+}
+if ( ! defined( 'SBI_INSTAGRAM_FEED_LOCATOR' ) ) {
+	define( 'SBI_INSTAGRAM_FEED_LOCATOR', 'sbi_instagram_feed_locator' );
 }
 if ( ! defined( 'SBI_REFRESH_THRESHOLD_OFFSET' ) ) {
 	define( 'SBI_REFRESH_THRESHOLD_OFFSET', 40 * 86400 );
@@ -98,6 +101,7 @@ if ( function_exists( 'sb_instagram_feed_init' ) ) {
 		require_once trailingslashit( SBI_PLUGIN_DIR ) . 'inc/class-sb-instagram-cron-updater.php';
 		require_once trailingslashit( SBI_PLUGIN_DIR ) . 'inc/class-sb-instagram-display-elements.php';
 		require_once trailingslashit( SBI_PLUGIN_DIR ) . 'inc/class-sb-instagram-feed.php';
+		include_once trailingslashit( SBI_PLUGIN_DIR ) . 'inc/class-sb-instagram-feed-locator.php';
 		include_once trailingslashit( SBI_PLUGIN_DIR ) . 'inc/class-sb-instagram-gdpr-integrations.php';
 		require_once trailingslashit( SBI_PLUGIN_DIR ) . 'inc/class-sb-instagram-oembed.php';
 		require_once trailingslashit( SBI_PLUGIN_DIR ) . 'inc/class-sb-instagram-parse.php';
@@ -396,6 +400,11 @@ if ( function_exists( 'sb_instagram_feed_init' ) ) {
                 INDEX feed_id (feed_id(100))
             ) $charset_collate;";
 				$wpdb->query( $sql );
+				$sbi_statuses_option = get_option( 'sbi_statuses', array() );
+
+				$sbi_statuses_option['database']['hashtag_column'] = true;
+
+				update_option( 'sbi_statuses', $sbi_statuses_option );
 			}
 			$error = $wpdb->last_error;
 			$query = $wpdb->last_query;
@@ -563,17 +572,32 @@ if ( function_exists( 'sb_instagram_feed_init' ) ) {
 		}
 
 		if ( (float) $db_ver < 1.8 ) {
-			global $wpdb;
+			$sbi_statuses_option = get_option( 'sbi_statuses', array() );
 
-			$table_name = $wpdb->prefix . SBI_INSTAGRAM_FEEDS_POSTS;
-			$wpdb->query( "ALTER TABLE $table_name ADD hashtag VARCHAR(1000) NOT NULL;" );
+			if ( empty( $sbi_statuses_option['database']['hashtag_column'] ) ) {
+				global $wpdb;
 
-			$wpdb->query( "ALTER TABLE $table_name ADD INDEX hashtag (hashtag(100))" );
+				$table_name = $wpdb->prefix . SBI_INSTAGRAM_FEEDS_POSTS;
+				$wpdb->query( "ALTER TABLE $table_name ADD hashtag VARCHAR(1000) NOT NULL;" );
+
+				$wpdb->query( "ALTER TABLE $table_name ADD INDEX hashtag (hashtag(100))" );
+
+				$sbi_statuses_option['database']['hashtag_column'] = true;
+				update_option( 'sbi_statuses', $sbi_statuses_option );
+
+			}
 
 			update_option( 'sbi_db_version', SBI_DBVERSION );
-
 		}
 
+		if ( (float) $db_ver < 1.9 ) {
+			include_once trailingslashit( SBI_PLUGIN_DIR ) . 'inc/class-sb-instagram-posts-manager.php';
+			include_once trailingslashit( SBI_PLUGIN_DIR ) . 'inc/class-sb-instagram-feed-locator.php';
+
+			SB_Instagram_Feed_Locator::create_table();
+
+			update_option( 'sbi_db_version', SBI_DBVERSION );
+		}
 	}
 
 	add_action( 'wp_loaded', 'sbi_check_for_db_updates' );
@@ -649,6 +673,8 @@ if ( function_exists( 'sb_instagram_feed_init' ) ) {
 		//Delete tables
 		$wpdb->query( "DROP TABLE IF EXISTS $posts_table_name" );
 		$wpdb->query( "DROP TABLE IF EXISTS $feeds_posts_table_name" );
+		$locator_table_name = $wpdb->prefix . SBI_INSTAGRAM_FEED_LOCATOR;
+		$wpdb->query( "DROP TABLE IF EXISTS $locator_table_name" );
 
 		$table_name = $wpdb->prefix . "options";
 		$wpdb->query( "

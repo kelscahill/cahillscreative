@@ -269,28 +269,6 @@
 		         </div>
 	         </section>
 
-	         <!-- Nested ALM -->
-	         <section>
-		         <div class="shortcode-builder--label">
-		            <h4><?php _e('Nested Instance', 'ajax-load-more'); ?> <a href="javascript:void(0)" class="fa fa-question-circle tooltip" title="<?php _e('When nesting ALM instances it\'s important to set this to true as it removes any problematic JavaScript functionality.','ajax-load-more'); ?>"></a></h4>
-		   		 	<p><?php _e('Is this instance of Ajax Load More nested inside another instance of Ajax Load More?', 'ajax-load-more'); ?></p>
-		   		 </div>
-		         <div class="shortcode-builder--fields">
-		            <div class="inner">
-		               <ul>
-		                  <li>
-		                     <input class="alm_element" type="radio" name="nested" value="t" id="nested_t">
-		                     <label for="nested_t"><?php _e('True', 'ajax-load-more'); ?></label>
-		                  </li>
-		                  <li>
-		                     <input class="alm_element" type="radio" name="nested" value="f" id="nested_f" checked="checked">
-		                     <label for="nested_f"><?php _e('False', 'ajax-load-more'); ?></label>
-		                  </li>
-		               </ul>
-		            </div>
-		         </div>
-	         </section>
-
 	      </div>
 	   </div>
 	   <!-- End Options -->

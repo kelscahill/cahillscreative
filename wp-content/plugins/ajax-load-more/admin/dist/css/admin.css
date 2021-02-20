@@ -520,7 +520,7 @@ disabled look for disabled choices in the results dropdown
   position: relative;
   z-index: 1; }
   .ajax-load-more .header-wrap h1 {
-    padding: 15px 15px 15px 80px;
+    padding: 15px 15px 15px 75px;
     margin: 0;
     min-height: 48px;
     background: #fff url("../../img/alm-logo-48x48.png") no-repeat 15px 15px;
@@ -894,8 +894,8 @@ disabled look for disabled choices in the results dropdown
 
 .alm-settings-feedback {
   position: fixed;
-  bottom: 20px;
-  right: 25px;
+  top: 50px;
+  right: 10px;
   width: auto;
   height: auto;
   background: #fff;
@@ -907,8 +907,8 @@ disabled look for disabled choices in the results dropdown
   border-radius: 2px;
   opacity: 0;
   visibility: hidden;
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
+  -webkit-transition: all 0.25s ease-in-out;
+  transition: all 0.25s ease-in-out;
   -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
           box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   font-size: 13px; }
@@ -916,16 +916,22 @@ disabled look for disabled choices in the results dropdown
     border-color: #e0bd5e;
     opacity: 1;
     visibility: visible;
-    bottom: 25px; }
+    top: 50px;
+    right: 25px; }
   .alm-settings-feedback.--saved {
     opacity: 1;
     visibility: visible;
-    bottom: 25px; }
+    top: 50px;
+    right: 25px; }
+    .alm-settings-feedback.--saved i {
+      opacity: 1;
+      color: #5cc583; }
   .alm-settings-feedback.--error {
     border-color: #e03e3e;
     opacity: 1;
     visibility: visible;
-    bottom: 25px; }
+    top: 25px;
+    right: 25px; }
   .alm-settings-feedback i {
     opacity: 0.6;
     margin: 0 3px 0 0; }
@@ -1050,9 +1056,9 @@ disabled look for disabled choices in the results dropdown
       width: 100%; }
     .shortcode-builder section.full .shortcode-builder--label {
       border-bottom: 1px solid #f1f1f1; }
-  .shortcode-builder section input[type=text],
-  .shortcode-builder section input[type=email],
-  .shortcode-builder section input[type=number],
+  .shortcode-builder section input[type='text'],
+  .shortcode-builder section input[type='email'],
+  .shortcode-builder section input[type='number'],
   .shortcode-builder section textarea {
     width: 100%; }
   .shortcode-builder section .select2-container {
@@ -1086,7 +1092,9 @@ disabled look for disabled choices in the results dropdown
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1; }
-  .shortcode-builder--fields input, .shortcode-builder--fields textarea, .shortcode-builder--fields select {
+  .shortcode-builder--fields input,
+  .shortcode-builder--fields textarea,
+  .shortcode-builder--fields select {
     width: 100%; }
   .shortcode-builder--fields section {
     width: 104%;
@@ -1157,7 +1165,7 @@ disabled look for disabled choices in the results dropdown
     top: 0;
     left: 35px;
     border: solid transparent;
-    content: " ";
+    content: ' ';
     height: 0;
     width: 0;
     position: absolute;
@@ -1181,6 +1189,8 @@ disabled look for disabled choices in the results dropdown
       clear: both;
       display: table;
       content: ''; }
+  .shortcode-builder .nested-component .nested-component .shortcode-builder--label {
+    border-left: 6px solid #f1f1f1; }
 
 .shortcode-builder .section-intro {
   font-size: 13px;
@@ -1274,34 +1284,76 @@ disabled look for disabled choices in the results dropdown
         color: #fff;
         cursor: default; }
 
-body.toplevel_page_ajax-load-more #wpcontent,
-body.ajax-load-more_page_ajax-load-more-repeaters #wpcontent,
-body.ajax-load-more_page_ajax-load-more-shortcode-builder #wpcontent,
-body.ajax-load-more_page_ajax-load-more-add-ons #wpcontent,
-body.ajax-load-more_page_ajax-load-more-extensions #wpcontent,
-body.ajax-load-more_page_ajax-load-more-help #wpcontent,
-body.ajax-load-more_page_ajax-load-more-licenses #wpcontent,
-body.ajax-load-more_page_ajax-load-more-cache #wpcontent,
-body.ajax-load-more_page_ajax-load-more-filters #wpcontent,
-body.ajax-load-more_page_ajax-load-more-pro #wpcontent,
-body.ajax-load-more_page_ajax-load-more-go-pro #wpcontent,
-body.ajax-load-more_page_ajax-load-more-woocommerce #wpcontent {
-  padding-left: 0;
-  padding-bottom: 20px; }
+/* Template Tags */
+.ajax-load-more .template-tags {
+  overflow: hidden;
+  border-left: 5px solid #dfd8c2;
+  padding: 15px;
+  background: #fff9ea;
+  margin: 20px 0 0;
+  border-radius: 3px; }
+  .ajax-load-more .template-tags h4,
+  .ajax-load-more .template-tags li {
+    margin: 0 0 8px;
+    padding: 0;
+    font-size: 13px;
+    text-decoration: none !important; }
+  .ajax-load-more .template-tags li {
+    margin: 5px 0 !important;
+    width: 100% !important;
+    padding: 0 !important;
+    border-radius: 3px;
+    line-height: 1.25; }
+  .ajax-load-more .template-tags ul {
+    margin: 0;
+    padding: 0; }
+  .ajax-load-more .template-tags pre {
+    display: inline-block;
+    min-width: 120px;
+    padding: 0;
+    margin: 0;
+    color: #888; }
 
-body.toplevel_page_ajax-load-more #wpbody-content,
-body.ajax-load-more_page_ajax-load-more-repeaters #wpbody-content,
-body.ajax-load-more_page_ajax-load-more-shortcode-builder #wpbody-content,
-body.ajax-load-more_page_ajax-load-more-add-ons #wpbody-content,
-body.ajax-load-more_page_ajax-load-more-extensions #wpbody-content,
-body.ajax-load-more_page_ajax-load-more-help #wpbody-content,
-body.ajax-load-more_page_ajax-load-more-licenses #wpbody-content,
-body.ajax-load-more_page_ajax-load-more-cache #wpbody-content,
-body.ajax-load-more_page_ajax-load-more-filters #wpbody-content,
-body.ajax-load-more_page_ajax-load-more-pro #wpbody-content,
-body.ajax-load-more_page_ajax-load-more-go-pro #wpbody-content,
-body.ajax-load-more_page_ajax-load-more-woocommerce #wpbody-content {
-  padding-bottom: 0; }
+body.toplevel_page_ajax-load-more,
+body.ajax-load-more_page_ajax-load-more-repeaters,
+body.ajax-load-more_page_ajax-load-more-shortcode-builder,
+body.ajax-load-more_page_ajax-load-more-add-ons,
+body.ajax-load-more_page_ajax-load-more-extensions,
+body.ajax-load-more_page_ajax-load-more-help,
+body.ajax-load-more_page_ajax-load-more-licenses,
+body.ajax-load-more_page_ajax-load-more-cache,
+body.ajax-load-more_page_ajax-load-more-filters,
+body.ajax-load-more_page_ajax-load-more-pro,
+body.ajax-load-more_page_ajax-load-more-go-pro,
+body.ajax-load-more_page_ajax-load-more-woocommerce {
+  height: auto !important; }
+  body.toplevel_page_ajax-load-more #wpcontent,
+  body.ajax-load-more_page_ajax-load-more-repeaters #wpcontent,
+  body.ajax-load-more_page_ajax-load-more-shortcode-builder #wpcontent,
+  body.ajax-load-more_page_ajax-load-more-add-ons #wpcontent,
+  body.ajax-load-more_page_ajax-load-more-extensions #wpcontent,
+  body.ajax-load-more_page_ajax-load-more-help #wpcontent,
+  body.ajax-load-more_page_ajax-load-more-licenses #wpcontent,
+  body.ajax-load-more_page_ajax-load-more-cache #wpcontent,
+  body.ajax-load-more_page_ajax-load-more-filters #wpcontent,
+  body.ajax-load-more_page_ajax-load-more-pro #wpcontent,
+  body.ajax-load-more_page_ajax-load-more-go-pro #wpcontent,
+  body.ajax-load-more_page_ajax-load-more-woocommerce #wpcontent {
+    padding-left: 0;
+    padding-bottom: 20px; }
+  body.toplevel_page_ajax-load-more #wpbody-content,
+  body.ajax-load-more_page_ajax-load-more-repeaters #wpbody-content,
+  body.ajax-load-more_page_ajax-load-more-shortcode-builder #wpbody-content,
+  body.ajax-load-more_page_ajax-load-more-add-ons #wpbody-content,
+  body.ajax-load-more_page_ajax-load-more-extensions #wpbody-content,
+  body.ajax-load-more_page_ajax-load-more-help #wpbody-content,
+  body.ajax-load-more_page_ajax-load-more-licenses #wpbody-content,
+  body.ajax-load-more_page_ajax-load-more-cache #wpbody-content,
+  body.ajax-load-more_page_ajax-load-more-filters #wpbody-content,
+  body.ajax-load-more_page_ajax-load-more-pro #wpbody-content,
+  body.ajax-load-more_page_ajax-load-more-go-pro #wpbody-content,
+  body.ajax-load-more_page_ajax-load-more-woocommerce #wpbody-content {
+    padding-bottom: 0; }
 
 body.toplevel_page_ajax-load-more #wpfooter,
 body.ajax-load-more_page_ajax-load-more-repeaters #wpfooter,
@@ -1670,9 +1722,6 @@ a.layout-hover:hover img {
 #alm-container.ajax-load-more .toggle-all {
   display: none; }
 
-#alm-builder {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif; }
-
 a.button-small {
   text-decoration: none;
   font-size: 12px;
@@ -2021,6 +2070,13 @@ a.button-small {
 .ajax-load-more input[type='number'] {
   height: auto; }
 
+.admin.ajax-load-more .form-table textarea {
+  clear: both;
+  display: inline-block;
+  float: none;
+  width: 100%; }
+
+.admin.ajax-load-more textarea.disabled,
 .ajax-load-more input.disabled-input {
   opacity: 0.5;
   filter: alpha(opacity=50);
@@ -2402,40 +2458,6 @@ hr.indented {
   display: block;
   padding-top: 1px;
   padding-bottom: 5px; }
-
-.form-table .template-tags {
-  overflow: hidden;
-  border-left: 6px solid #dfd8c2;
-  padding: 15px;
-  background: #fff9ea;
-  margin: 20px 0 0;
-  border-radius: 3px; }
-
-.form-table .template-tags h4,
-.form-table .template-tags li {
-  margin: 0 0 8px;
-  padding: 0;
-  font-size: 13px; }
-
-.form-table .template-tags li {
-  margin: 2px 0; }
-
-.form-table .template-tags ul {
-  margin: 0;
-  padding: 0; }
-
-.form-table .template-tags pre {
-  display: inline-block;
-  min-width: 120px;
-  padding: 0;
-  margin: 0;
-  color: #888; }
-
-.admin.ajax-load-more .form-table textarea {
-  clear: both;
-  display: inline-block;
-  float: none;
-  width: 100%; }
 
 .admin.ajax-load-more textarea.disabled,
 .admin.ajax-load-more input.disabled {

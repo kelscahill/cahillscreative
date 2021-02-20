@@ -17,9 +17,7 @@ if( !class_exists('ALM_ENQUEUE') ):
    class ALM_ENQUEUE {
 
       /**
-   	 * alm_enqueue_css
-   	 *
-   	 * Load ALM CSS
+   	 * Load ALM CSS.
    	 *
    	 * @since 2.10.1
    	 * @return wp_enqueue_style

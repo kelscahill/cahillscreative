@@ -4,7 +4,7 @@ Donate link: https://connekthq.com/donate/
 Tags: infinite scroll, load more, scroll, infinite, lazy load, lazy loading, endless scroll, pagination, ajax pagination, ajax, ajax posts, woocommerce, ajax load more, masonry
 Requires at least: 4.0
 Tested up to: 5.6
-Stable tag: 5.4.2.1
+Stable tag: 5.4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -347,11 +347,21 @@ How to install Ajax Load More.
 
 == Changelog ==
 
-= 5.4.2.1 - January 3, 2020 =
+= 5.4.3 - February 11, 2021 =
+* FIX - Fixed JS error in shortcode builder when a site was missing tags or categories.
+* FIX - Various admin UX/UX updates.
+* UPDATE - Various fixes and updates to support PHP 8+.
+* UPDATE - Added `['X-Requested-With'] = 'XMLHttpRequest'` headers to each Ajax request so the server side functions can determine the type of request.
+* UPDATE - Updated `axios` library to latest version.
+* UPDATE - Varius admin updates.
+
+
+= 5.4.2.1 - January 3, 2021 =
 * HOTFIX - Fixed issue with non-functioning Shortcode Builder on sites without `tags` or `categories` present.
 
-= 5.4.2 - January 3, 2020 =
-* NEW - Added new `vars` parameter that allows for passing data into Hooks and Repeater Templates. 
+
+= 5.4.2 - January 3, 2021 =
+* NEW - Added new `vars` parameter that allows for passing data into Hooks and Repeater Templates.
 Variables can accessed in Repeater Templates by accessing the `$args` array. This will pull in all query and variable parameters into an array.
 `[ajax_load_more vars="var1:The value of var1 value;var2:The value for #2"]`
 `echo $args['alm_vars'];` // Prints an array of key value pairs. See docs for more info.

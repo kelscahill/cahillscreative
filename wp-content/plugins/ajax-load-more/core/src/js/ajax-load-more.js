@@ -15,6 +15,7 @@ require('./helpers/polyfills.js');
 let qs = require('qs');
 let imagesLoaded = require('imagesloaded');
 import axios from 'axios';
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 import smoothscroll from 'smoothscroll-polyfill'; // Smooth scrolling polyfill
 smoothscroll.polyfill();
 
@@ -201,6 +202,7 @@ let alm_is_filtering = false;
 			alm.addons.nextpage_pageviews = alm.listing.dataset.nextpagePageviews;
 			alm.addons.nextpage_post_id = alm.listing.dataset.nextpagePostId;
 			alm.addons.nextpage_startpage = alm.listing.dataset.nextpageStartpage;
+			alm.addons.nextpage_title_template = alm.listing.dataset.nextpageTitleTemplate;
 		}
 
 		// Single Posts add-on
@@ -208,12 +210,22 @@ let alm_is_filtering = false;
 		if (alm.addons.single_post === 'true') {
 			alm.addons.single_post_id = alm.listing.dataset.singlePostId;
 			alm.addons.single_post_query = alm.listing.dataset.singlePostQuery;
-			alm.addons.single_post_order = alm.listing.dataset.singlePostOrder;
+			alm.addons.single_post_order = alm.listing.dataset.singlePostOrder === undefined ? 'previous' : alm.listing.dataset.singlePostOrder;
 			alm.addons.single_post_init_id = alm.listing.dataset.singlePostId;
-			alm.addons.single_post_taxonomy = alm.listing.dataset.singlePostTaxonomy;
-			alm.addons.single_post_excluded_terms = alm.listing.dataset.singlePostExcludedTerms;
-			alm.addons.single_post_progress_bar = alm.listing.dataset.singlePostProgressBar;
-			alm.addons.single_post_target = alm.listing.dataset.singlePostTarget;
+			alm.addons.single_post_taxonomy = alm.listing.dataset.singlePostTaxonomy === undefined ? '' : alm.listing.dataset.singlePostTaxonomy;
+			alm.addons.single_post_excluded_terms = alm.listing.dataset.singlePostExcludedTerms === undefined ? '' : alm.listing.dataset.singlePostExcludedTerms;
+			alm.addons.single_post_progress_bar = alm.listing.dataset.singlePostProgressBar === undefined ? '' : alm.listing.dataset.singlePostProgressBar;
+			alm.addons.single_post_target = alm.listing.dataset.singlePostTarget === undefined ? '' : alm.listing.dataset.singlePostTarget;
+			alm.addons.single_post_preview = alm.listing.dataset.singlePostPreview === undefined ? false : true;
+			if (alm.addons.single_post_preview) {
+				const singlePostPreviewData = alm.listing.dataset.singlePostPreview.split(':');
+				alm.addons.single_post_preview_data = {
+					button_label: singlePostPreviewData[0] ? singlePostPreviewData[0] : 'Continue Reading',
+					height: singlePostPreviewData[1] ? singlePostPreviewData[1] : 500,
+					element: singlePostPreviewData[2] ? singlePostPreviewData[2] : 'default',
+					className: 'alm-single-post--preview',
+				};
+			}
 		}
 
 		// Comments add-on
@@ -429,6 +441,7 @@ let alm_is_filtering = false;
 			if (alm.addons.nextpage_startpage > 1) {
 				alm.isPaged = true;
 			}
+			alm.addons.nextpage_postTitle = alm.listing.dataset.nextpagePostTitle;
 		} else {
 			alm.addons.nextpage = false;
 		}
@@ -440,11 +453,6 @@ let alm_is_filtering = false;
 			alm.addons.single_post_permalink = '';
 			alm.addons.single_post_title = '';
 			alm.addons.single_post_slug = '';
-			alm.addons.single_post_order = alm.addons.single_post_order === undefined ? 'previous' : alm.addons.single_post_order;
-			alm.addons.single_post_taxonomy = alm.addons.single_post_taxonomy === undefined ? '' : alm.addons.single_post_taxonomy;
-			alm.addons.single_post_excluded_terms = alm.addons.single_post_excluded_terms === undefined ? '' : alm.addons.single_post_excluded_terms;
-			alm.addons.single_post_progress_bar = alm.addons.single_post_progress_bar === undefined ? '' : alm.addons.single_post_progress_bar;
-			alm.addons.single_post_target = alm.addons.single_post_target === undefined ? '' : alm.addons.single_post_target;
 			alm.addons.single_post_title_template = alm.listing.dataset.singlePostTitleTemplate;
 			alm.addons.single_post_siteTitle = alm.listing.dataset.singlePostSiteTitle;
 			alm.addons.single_post_siteTagline = alm.listing.dataset.singlePostSiteTagline;
@@ -605,11 +613,10 @@ let alm_is_filtering = false;
 		}
 
 		/**
-		 *  LoadPosts()
 		 *  The function to get posts via Ajax
+		 *
 		 *  @since 2.0.0
 		 */
-
 		alm.AjaxLoadMore.loadPosts = function () {
 			if (typeof almOnChange === 'function') {
 				window.almOnChange(alm);
@@ -654,13 +661,12 @@ let alm_is_filtering = false;
 			}
 		};
 
-		/*  ajax()
-		 *  Ajax Load Moe Ajax function
+		/**
+		 * Ajax Load Moe Ajax function
 		 *
-		 *  @param queryType The type of Ajax request (standard/totalposts)
-		 *  @since 2.6.0
+		 * @param {string} queryType The type of Ajax request (standard/totalposts).
+		 * @since 2.6.0
 		 */
-
 		alm.AjaxLoadMore.ajax = function (queryType) {
 			// Default ALM action
 			let action = 'alm_get_posts';
@@ -704,6 +710,7 @@ let alm_is_filtering = false;
 					pageviews: alm.addons.nextpage_pageviews,
 					post_id: alm.addons.nextpage_post_id,
 					startpage: alm.addons.nextpage_startpage,
+					nested: alm.nested,
 				};
 			}
 
@@ -774,7 +781,6 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * adminajax
 		 * Send request to the admin-ajax.php
 		 *
 		 * @param {*} alm | ALm object
@@ -855,6 +861,7 @@ let alm_is_filtering = false;
 						// Next Page and Paging
 						if (typeof almBuildPagination === 'function') {
 							window.almBuildPagination(data.totalpages, alm);
+							alm.totalpages = data.totalpages;
 						}
 					} else if (queryType === 'totalposts' && alm.addons.paging) {
 						// Paging
@@ -870,8 +877,7 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * tabs
-		 * Send request to the WP REST API
+		 * Send request to the WP REST API.
 		 *
 		 * @param {*} alm | ALm object
 		 * @since 5.2.0
@@ -926,7 +932,6 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * restapi
 		 * Send request to the WP REST API
 		 *
 		 * @param {*} alm | ALm object
@@ -999,11 +1004,10 @@ let alm_is_filtering = false;
 		}
 
 		/**
-		 * success
-		 * Success function after loading data
+		 * Success function after loading data.
 		 *
-		 * @param data     The results of the Ajax request
-		 * @param is_cache Are results of the Ajax request coming from cache
+		 * @param {object} data      The results of the Ajax request
+		 * @param {boolean} is_cache Are results of the Ajax request coming from cache
 		 * @since 2.6.0
 		 */
 		alm.AjaxLoadMore.success = function (data, is_cache) {
@@ -1116,9 +1120,9 @@ let alm_is_filtering = false;
 				// We have results!
 
 				if (!alm.addons.paging) {
+					// Single Posts.
 					if (alm.addons.single_post) {
-						// Single Posts
-						reveal.setAttribute('class', 'alm-reveal alm-single-post post-' + alm.addons.single_post_id + alm.tcc);
+						reveal.setAttribute('class', `alm-reveal alm-single-post post-${alm.addons.single_post_id}${alm.tcc ? ` ${alm.tcc}` : ''}`);
 						reveal.dataset.url = alm.addons.single_post_permalink;
 						if (alm.addons.single_post_target) {
 							reveal.dataset.page = parseInt(alm.page) + 1;
@@ -1128,6 +1132,12 @@ let alm_is_filtering = false;
 						reveal.dataset.id = alm.addons.single_post_id;
 						reveal.dataset.title = alm.addons.single_post_title;
 						reveal.innerHTML = alm.html;
+
+						// Single Post Preview
+						if (alm.addons.single_post_preview && alm.addons.single_post_preview_data && typeof almSinglePostCreatePreview === 'function') {
+							const singlePreview = window.almSinglePostCreatePreview(reveal, alm.addons.single_post_id, alm.addons.single_post_preview_data);
+							reveal.replaceChildren(singlePreview ? singlePreview : reveal);
+						}
 					} else {
 						if (!alm.transition_container) {
 							// No transition container
@@ -1714,7 +1724,7 @@ let alm_is_filtering = false;
 			if (!reveal || !alm.transition_container) {
 				return false; // Exit if not `transition_container`
 			}
-			let nested = reveal.querySelectorAll('.ajax-load-more-wrap'); // Get all instances from jQuery obj
+			let nested = reveal.querySelectorAll('.ajax-load-more-wrap'); // Get all instances
 			if (nested) {
 				nested.forEach(function (element) {
 					window.almInit(element);
@@ -1738,10 +1748,9 @@ let alm_is_filtering = false;
 			if (alm.fetchingPreviousPost) {
 				return false;
 			}
-
 			alm.fetchingPreviousPost = true;
 
-			// Get admin-ajax.php URL
+			// Get Ajax URL.
 			let ajaxURL = alm_localize.ajaxurl;
 
 			// Get data params
@@ -1793,19 +1802,19 @@ let alm_is_filtering = false;
 		 * @since 2.14.0
 		 */
 		alm.AjaxLoadMore.triggerAddons = function (alm) {
-			if (typeof almSetNextPage === 'function') {
+			if (typeof almSetNextPage === 'function' && alm.addons.nextpage) {
 				// Next Page
 				window.almSetNextPage(alm);
 			}
-			if (typeof almSEO === 'function') {
+			if (typeof almSEO === 'function' && alm.addons.seo) {
 				// SEO
 				window.almSEO(alm, false);
 			}
-			if (typeof almWooCommerce === 'function') {
+			if (typeof almWooCommerce === 'function' && alm.addons.woocommerce) {
 				// WooCommerce
 				window.almWooCommerce(alm);
 			}
-			if (typeof almElementor === 'function') {
+			if (typeof almElementor === 'function' && alm.addons.elementor) {
 				// Elementor
 				window.almElementor(alm);
 			}
@@ -2232,7 +2241,7 @@ let alm_is_filtering = false;
 
 					if (nextpage_pages) {
 						let nextpage_first = nextpage_pages[0];
-						let nextpage_total = alm.localize.total_posts ? parseInt(alm.localize.total_posts) : nextpage_first.dataset.totalPosts;
+						let nextpage_total = nextpage_first.dataset.totalPosts ? parseInt(nextpage_first.dataset.totalPosts) : alm.localize.total_posts;
 
 						// Disable if last page loaded
 						if (nextpage_pages.length === nextpage_total || parseInt(nextpage_first.dataset.id) === nextpage_total) {
@@ -2254,7 +2263,6 @@ let alm_is_filtering = false;
 
 			// WooCommerce Add-on
 			if (alm.addons.woocommerce) {
-				// Initiate WooCommerce
 				wooInit(alm);
 
 				// Trigger `Done` if `paged is less than `pages`
@@ -2265,7 +2273,6 @@ let alm_is_filtering = false;
 
 			// Elementor Add-on
 			if (alm.addons.elementor && alm.addons.elementor_type && alm.addons.elementor_type === 'posts') {
-				// Initiate Elementor
 				elementorInit(alm);
 
 				// Trigger `Done` if `elementor_next_page_url` is empty

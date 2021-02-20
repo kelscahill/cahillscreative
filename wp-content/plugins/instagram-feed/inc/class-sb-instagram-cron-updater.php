@@ -136,8 +136,8 @@ class SB_Instagram_Cron_Updater
 			$post_data = array_slice( $post_data, 0, $settings['num'] );
 
 			$image_sizes = array(
-				'personal' => array( 'full' => 640, 'low' => 320 ),
-				'business' => array( 'full' => 640, 'low' => 320 )
+				'personal' => array( 'full' => 640, 'low' => 320, 'thumb' => 150 ),
+				'business' => array( 'full' => 640, 'low' => 320, 'thumb' => 150 )
 			);
 
 			$post_set = new SB_Instagram_Post_Set( $post_data, $transient_name, NULL, $image_sizes );

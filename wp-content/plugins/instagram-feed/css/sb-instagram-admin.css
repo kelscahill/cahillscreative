@@ -2778,3 +2778,33 @@
 		width: 100%;
 	}
 }
+
+/* Locator Summary */
+.sbi-feed-locator-summary-wrap {
+	max-width: 1100px;
+	margin-bottom: 40px;
+}
+.sbi-full-wrap {
+	display: none;
+}
+.sbi-locator-more {
+	display: inline-block;
+	margin: 0 0 0 1px;
+	padding: 0 5px;
+	border: 1px solid rgba(0,0,0,0.1);
+	border-radius: 3px;
+	line-height: 1.6;
+}
+
+.sbi_shortcode_visible .sbi_locations_link {
+	display: none;
+}
+.sbi_locations_link a {
+	font-weight: normal;
+	text-decoration: none;
+}
+.sbi_locations_link svg {
+	width: 11px;
+	position: relative;
+	top: 1px;
+}

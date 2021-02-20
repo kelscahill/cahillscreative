@@ -4,7 +4,7 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 5.4
-Stable tag: 46.18
+Stable tag: 47.02
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
 Tested up to: 5.6
 
@@ -98,12 +98,14 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/intagrate/">Intagrate</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/jetpack/">Jetpack</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/litespeed-cache/">LiteSpeed Cache</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/mailster/">Mailster</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/metaslider/">Metaslider</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/modern-events/">Modern Events</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/ninja-forms/">Ninja Forms</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/ns-cloner/">NS Cloner</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/onesignal/">OneSignal</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/permalink-manager/">Permalink Manager</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/pods/">Pods</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/polylang/">Polylang</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/post-expirator/">Post Expirator</a>
@@ -350,6 +352,22 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 47.02 20210216 =
+
+* Code: SDK update to fix checkbox values not correctly reported when saving. Fix mainly for code that uses get_post_value() instead of is_checked().
+
+= 47.01 20210210 =
+
+* <a href="https://broadcast.plainviewplugins.com/addon/permalink-manager/">Permalink Manager</a>: Adds support for the <a href="https://wordpress.org/plugins/permalink-manager/">Permalink Manager</a> plugin.
+* Code: SDK update.
+
+= 46.19 20210127 =
+
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/litespeed-cache/">LiteSpeed Cache</a>: Adds support for the <a href="https://wordpress.org/plugins/litespeed-cache/">LiteSpeed Cache</a> plugin.</li>
+* Fix: Broken time savings data.
+* Code: Add sync_taxonomy_start action.
+* Code: SDK update.
 
 = 46.18 20201229 =
 

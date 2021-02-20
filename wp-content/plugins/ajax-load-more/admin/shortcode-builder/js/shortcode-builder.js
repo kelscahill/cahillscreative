@@ -354,7 +354,8 @@ jQuery(document).ready(function ($) {
 				nextpage_url = $('input#next-page-url:checked').val(),
 				nextpage_pageviews = $('input#next-page-pageviews:checked').val(),
 				nextpage_scroll = $('select#next-page-scroll').val(),
-				nextpage_scrolltop = $('input#next-page-scroll-top').val();
+				nextpage_scrolltop = $('input#next-page-scroll-top').val(),
+				nextpage_title_template = $('input#next-page-title-template').val();
 
 			$('.next-page-content').slideDown(250, 'alm_easeInOutQuad');
 
@@ -366,6 +367,9 @@ jQuery(document).ready(function ($) {
 			}
 			if (nextpage_pageviews !== 'true') {
 				output += ' nextpage_pageviews="false"';
+			}
+			if (nextpage_title_template) {
+				output += ' nextpage_title_template="' + nextpage_title_template + '"';
 			}
 
 			output += ' nextpage_scroll="' + nextpage_scroll + ':' + nextpage_scrolltop + '"';
@@ -505,7 +509,7 @@ jQuery(document).ready(function ($) {
 		// ---------------------------
 
 		var previous = $('.previous-post input[name=prev-post]:checked').val();
-		if (previous !== 'false' && previous != undefined) {
+		if (previous !== 'false' && previous !== undefined) {
 			var pp_id = $('#pp_id').val(),
 				pp_order = $('#pp-order').val(),
 				pp_query_order = $('#pp-custom-query').val(),
@@ -514,6 +518,7 @@ jQuery(document).ready(function ($) {
 				pp_excluded_terms = $('#pp-term-exclude').val(),
 				pp_elementor = $('.previous-post input[name=elementor-single]:checked').val(),
 				pp_progress_bar = $('.previous-post input[name=prev-post-progress]:checked').val(),
+				pp_preview = $('.previous-post input[name=prev-post-preview]:checked').val(),
 				pp_target = $('.previous-post input#pp-target').val();
 
 			$('.prev_post_options').slideDown(250, 'alm_easeInOutQuad');
@@ -558,6 +563,18 @@ jQuery(document).ready(function ($) {
 
 			output += pp_target !== '' ? ' single_post_target="' + pp_target + '"' : '';
 			output += pp_elementor === 't' ? ' elementor="true"' : '';
+
+			// Post Preview
+			if (pp_preview === 'true') {
+				$('#pp_preview_options').slideDown(250, 'alm_easeInOutQuad');
+				var pp_preview_label = $('#pp-preview-label').val();
+				var pp_preview_height = $('#pp-preview-height').val();
+				var pp_preview_element = $('#pp-preview-element').val();
+				pp_preview_element = !pp_preview_element || pp_preview_element === 'default' ? '' : ':' + pp_preview_element;
+				output += ' single_post_preview="' + pp_preview_label + ':' + pp_preview_height + pp_preview_element + '"';
+			} else {
+				$('#pp_preview_options').slideUp(250, 'alm_easeInOutQuad');
+			}
 
 			// Reading Progress Bar
 			if (pp_progress_bar === 'true') {
