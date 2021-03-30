@@ -161,7 +161,7 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 		?><label><input type="checkbox" name="<?php echo esc_attr( GADSENSE_OPT_NAME ); ?>[limit-per-page]" value="1" <?php checked( $limit_per_page ); ?> />
 		<?php
 		printf(
-				// Translators: $d a number of ads.
+		// Translators: $d a number of ads.
 			esc_html( __( 'Limit to %d AdSense ads', 'advanced-ads' ) ),
 			3
 		);
@@ -169,9 +169,9 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 		</label>
 		<p class="description">
 			<?php
-					esc_html_e( 'There is no explicit limit for AdSense ads anymore, but you can still use this setting to prevent too many AdSense ads to show accidentally on your site.', 'advanced-ads' );
+			esc_html_e( 'There is no explicit limit for AdSense ads anymore, but you can still use this setting to prevent too many AdSense ads to show accidentally on your site.', 'advanced-ads' );
 			?>
-			</p>
+		</p>
 		<?php
 		if ( defined( 'AAP_VERSION' ) ) :
 			// Give warning when cache-busting in Pro is active.
@@ -220,9 +220,7 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 
 		?>
 		<label><input type="checkbox" name="<?php echo esc_attr( GADSENSE_OPT_NAME ); ?>[page-level-enabled]" value="1" <?php checked( $page_level ); ?> />
-		<?php
-		esc_attr_e( 'Insert the AdSense header code to enable Auto ads and verify your website.', 'advanced-ads' );
-		?>
+			<?php esc_attr_e( 'Insert the AdSense header code to enable Auto ads and verify your website.', 'advanced-ads' ); ?>
 		</label>
 		<ul>
 			<li><a href="<?php echo esc_url( ADVADS_URL ) . 'adsense-auto-ads-wordpress/#Display_Auto_Ads_only_on_specific_pages'; ?>" target="_blank"><?php esc_attr_e( 'Display Auto ads only on specific pages', 'advanced-ads' ); ?></a></li>
@@ -230,16 +228,14 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 			<?php
 			if ( ! empty( $options['adsense-id'] ) ) :
 				?>
-			<li><a href="https://www.google.com/adsense/new/u/0/<?php echo esc_attr( $options['adsense-id'] ); ?>/myads/auto-ads" target="_blank">
+				<li><a href="https://www.google.com/adsense/new/u/0/<?php echo esc_attr( $options['adsense-id'] ); ?>/myads/auto-ads" target="_blank">
+						<?php
+						 /* translators: this is the text for a link to a sub-page in an AdSense account */
+						esc_attr_e( 'Adjust Auto ads options', 'advanced-ads' );
+						?>
+					</a></li>
 				<?php
-					/**
-					 * Translators: this is the text for a link to a sub-page in an AdSense account
-					 */
-					esc_attr_e( 'Adjust Auto ads options', 'advanced-ads' );
-				?>
-			</a></li>
-				<?php
-		endif;
+			endif;
 			?>
 		</ul>
 		<?php if ( Advanced_Ads_Compatibility::borlabs_cookie_adsense_auto_ads_code_exists() ) : ?>
@@ -249,17 +245,24 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 		<?php endif; ?>
 
 		<?php
-		// Show information about AMP Auto ads when an AMP plugin is installed and Responsive Ads is missing.
-		if ( ! defined( 'AAR_VERSION' ) && Advanced_Ads_Checks::active_amp_plugin() ) :
-			?>
-			<p><label><input type="checkbox" disabled="disabled"/><?php esc_html_e( 'Enable AMP Auto ads', 'advanced-ads' ); ?></label>
-			<?php
-			Advanced_Ads_Admin_Upgrades::upgrade_link( null, ADVADS_URL . 'add-ons/responsive-ads/', 'upgrade-settings-adsense-amp-auto-ads' );
-			?>
-			</p>
-			<?php
-		endif;
+		self::render_settings_adsense_amp();
+
 		do_action( 'advanced-ads-settings-adsense-below-auto-ads-option' );
+	}
+
+	/**
+	 * Render Adsense AMP setting fields.
+	 */
+	public function render_settings_adsense_amp() {
+		// AMP Auto ads was removed from Responsive add-on version 1.10.0
+		if ( defined( 'AAR_VERSION' ) && 1 === version_compare( '1.10.0', AAR_VERSION ) ) {
+			return;
+		}
+
+		$adsense_options  = Advanced_Ads_AdSense_Data::get_instance()->get_options();
+		$auto_ads_enabled = ! empty( $adsense_options['amp']['auto_ads_enabled'] );
+		$option_name      = GADSENSE_OPT_NAME . '[amp]';
+		include GADSENSE_BASE_PATH . 'admin/views/settings/amp-auto-ads.php';
 	}
 
 	/**
@@ -273,12 +276,12 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 
 		?>
 		<label><input type="checkbox" name="<?php echo esc_attr( GADSENSE_OPT_NAME ); ?>[violation-warnings-disable]" value="1" <?php checked( 1, $disable_violation_warnings ); ?> />
-		<?php esc_html_e( 'Disable warnings about potential violations of the AdSense terms.', 'advanced-ads' ); ?></label>
+			<?php esc_html_e( 'Disable warnings about potential violations of the AdSense terms.', 'advanced-ads' ); ?></label>
 		<p class="description">
-		<?php
+			<?php
 			printf(
 				wp_kses(
-					// Translators: %s is a URL.
+				/* translators: %s is a URL. */
 					__( 'Our <a href="%s" target="_blank">Ad Health</a> feature monitors if AdSense is implemented correctly on your site. It also considers ads not managed with Advanced Ads. Enable this option to remove these checks', 'advanced-ads' ),
 					array(
 						'a' => array(
@@ -289,9 +292,9 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 				),
 				esc_url( ADVADS_URL ) . 'manual/ad-health/#utm_source=advanced-ads&utm_medium=link&utm_campaign=backend-autoads-ads'
 			);
-		?>
-				</p>
-												<?php
+			?>
+		</p>
+		<?php
 	}
 
 	/**
@@ -302,9 +305,11 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 		$background = $options['background'];
 
 		?>
-		<label><input type="checkbox" name="<?php echo esc_attr( GADSENSE_OPT_NAME ); ?>[background]" value="1" <?php checked( $background ); ?> />
-		<?php esc_html_e( 'Enable this option in case your theme adds an unfortunate background color to AdSense ads.', 'advanced-ads' ); ?></label>
-				  <?php
+		<label>
+			<input type="checkbox" name="<?php echo esc_attr( GADSENSE_OPT_NAME ); ?>[background]" value="1" <?php checked( $background ); ?> />
+			<?php esc_html_e( 'Enable this option in case your theme adds an unfortunate background color to AdSense ads.', 'advanced-ads' ); ?>
+		</label>
+		<?php
 	}
 
 	/**
@@ -320,10 +325,10 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 			<option value="disable" <?php selected( $fw, 'disable' ); ?>><?php esc_html_e( 'disable', 'advanced-ads' ); ?></option>
 		</select>
 		<p class="description">
-		<?php
+			<?php
 			echo wp_kses(
 				sprintf(
-						// Translators: %s is a URL.
+				/* translators: %s is a URL. */
 					__( "Whether your responsive ad unit may expand to <a href='%s' target='blank'>use the full width</a> of your visitor's mobile device screen", 'advanced-ads' ),
 					esc_url( 'https://support.google.com/adsense/answer/7445870' )
 				),
@@ -334,8 +339,8 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 					),
 				)
 			);
-		?>
-			</p>
+			?>
+		</p>
 		<?php
 	}
 
@@ -406,10 +411,12 @@ class Advanced_Ads_Network_Adsense extends Advanced_Ads_Ad_Network {
 		$units        = array();
 		$mapi_options = Advanced_Ads_AdSense_MAPI::get_option();
 
-		if ( isset( $mapi_options['ad_codes'] )
-				&& isset( $mapi_options['accounts'] )
-				&& isset( $mapi_options['accounts'][ $adsense_id ] )
-				&& isset( $mapi_options['accounts'][ $adsense_id ]['ad_units'] ) ) {
+		if (
+			isset( $mapi_options['ad_codes'] )
+			 && isset( $mapi_options['accounts'] )
+			 && isset( $mapi_options['accounts'][ $adsense_id ] )
+			 && isset( $mapi_options['accounts'][ $adsense_id ]['ad_units'] )
+		) {
 			$ad_codes = $mapi_options['ad_codes'];
 			foreach ( $mapi_options['accounts'][ $adsense_id ]['ad_units'] as $id => $raw ) {
 				$ad_unit          = new Advanced_Ads_Ad_Network_Ad_Unit( $raw );

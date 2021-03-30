@@ -2,10 +2,17 @@
 //add meta box
 function perfmatters_add_meta_box() {
 
-	//get public post types
-	$post_types = get_post_types(array('public' => true));
+	//get plugin options
+	$perfmatters_options = get_option('perfmatters_options');
+	$perfmatters_extras = get_option('perfmatters_extras');
 
-    add_meta_box('perfmatters', 'Perfmatters', 'perfmatters_load_meta_box', $post_types, 'side', 'high');
+	if(!empty($perfmatters_extras['defer_js']) || !empty($perfmatters_options['lazy_loading']) || !empty($perfmatters_options['lazy_loading_iframes']) || !empty($perfmatters_extras['instant_page'])) {
+
+		//get public post types
+		$post_types = get_post_types(array('public' => true));
+
+	    add_meta_box('perfmatters', 'Perfmatters', 'perfmatters_load_meta_box', $post_types, 'side', 'high');
+	}
 }
 add_action('add_meta_boxes', 'perfmatters_add_meta_box', 1);
 
@@ -27,35 +34,33 @@ function perfmatters_load_meta_box() {
 
 	//noncename needed to verify where the data originated
 	echo '<input type="hidden" name="perfmatters_meta_noncename" id="perfmatters_meta_noncename" value="' . wp_create_nonce(plugin_basename(__FILE__)) . '" />';
-
-	//get existing data
-	$exclude_defer_js = get_post_meta($post->ID, 'perfmatters_exclude_defer_js', true);
-	$exclude_instant_page = get_post_meta($post->ID, 'perfmatters_exclude_instant_page', true);
-	$exclude_lazy_loading = get_post_meta($post->ID, 'perfmatters_exclude_lazy_loading', true);
 	
 	//exclude defer js
-	echo "<div>";
+	$exclude_defer_js = get_post_meta($post->ID, 'perfmatters_exclude_defer_js', true);
+	echo "<div" . (empty($perfmatters_extras['defer_js']) ? " class='hidden'" : "") . ">";
 		echo "<label for='perfmatters_exclude_defer_js'>";
 			echo "<input type='hidden' name='perfmatters_exclude_defer_js' value='1' />";
-			echo "<input type='checkbox' name='perfmatters_exclude_defer_js' id='perfmatters_exclude_defer_js'" . (empty($exclude_defer_js) ? " checked" : "") . " value='' class='widefat'" . (empty($perfmatters_extras['defer_js']) ? " disabled" : "") . " />";
+			echo "<input type='checkbox' name='perfmatters_exclude_defer_js' id='perfmatters_exclude_defer_js'" . (empty($exclude_defer_js) ? " checked" : "") . " value='' class='widefat' />";
 			_e('Defer JavaScript', 'perfmatters');
 		echo "</label>";
 	echo "</div>";
 
 	//exclude lazy loading
-	echo "<div>";
+	$exclude_lazy_loading = get_post_meta($post->ID, 'perfmatters_exclude_lazy_loading', true);
+	echo "<div" . (empty($perfmatters_options['lazy_loading']) && empty($perfmatters_options['lazy_loading_iframes']) ? " class='hidden'" : "") . ">";
 		echo "<label for='perfmatters_exclude_lazy_loading'>";
 			echo "<input type='hidden' name='perfmatters_exclude_lazy_loading' value='1' />";
-			echo "<input type='checkbox' name='perfmatters_exclude_lazy_loading' id='perfmatters_exclude_lazy_loading'" . (empty($exclude_lazy_loading) ? " checked" : "") . " value='' class='widefat'" . (empty($perfmatters_options['lazy_loading']) && empty($perfmatters_options['lazy_loading_iframes']) ? " disabled" : "") . " />";
+			echo "<input type='checkbox' name='perfmatters_exclude_lazy_loading' id='perfmatters_exclude_lazy_loading'" . (empty($exclude_lazy_loading) ? " checked" : "") . " value='' class='widefat' />";
 			_e('Lazy Loading', 'perfmatters');
 		echo "</label>";
 	echo "</div>";
 
 	//exclude instant page
-	echo "<div>";
+	$exclude_instant_page = get_post_meta($post->ID, 'perfmatters_exclude_instant_page', true);
+	echo "<div" . (empty($perfmatters_extras['instant_page']) ? " class='hidden'" : "") . ">";
 		echo "<label for='perfmatters_exclude_instant_page'>";
 			echo "<input type='hidden' name='perfmatters_exclude_instant_page' value='1' />";
-			echo "<input type='checkbox' name='perfmatters_exclude_instant_page' id='perfmatters_exclude_instant_page'" . (empty($exclude_instant_page) ? " checked" : "") . " value='' class='widefat'" . (empty($perfmatters_extras['instant_page']) ? " disabled" : "") . " />";
+			echo "<input type='checkbox' name='perfmatters_exclude_instant_page' id='perfmatters_exclude_instant_page'" . (empty($exclude_instant_page) ? " checked" : "") . " value='' class='widefat' />";
 			_e('Instant Page', 'perfmatters');
 		echo "</label>";
 	echo "</div>";

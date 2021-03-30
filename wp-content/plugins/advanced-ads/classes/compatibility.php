@@ -143,10 +143,6 @@ class Advanced_Ads_Compatibility {
 	 * e.g., [custom:ad:123] to display ad with the ID 123
 	 * [custom:ad_group:345] to display ad group with the ID 345
 	 *
-	 * DECEMBER 2020: MailPoet deprecated support for custom shortcodes in December 2020
-	 * right now, it is not clear if and how this will work in the future
-	 * we add an Ad Health notice to users who use one of our custom shortcodes
-	 *
 	 * @param string $shortcode shortcode that placed the ad.
 	 * @param mixed  $newsletter unused.
 	 * @param mixed  $subscriber unused.
@@ -168,11 +164,6 @@ class Advanced_Ads_Compatibility {
 				return '';
 			}
 
-			// see function comment above
-			if ( class_exists( 'Advanced_Ads_Ad_Health_Notices', false ) ) {
-				Advanced_Ads_Ad_Health_Notices::get_instance()->add( 'mailpoet-deprecated-custom-shortcodes' );
-			}
-
 			// only display if the ad group type could work, i.e. default (random) and ordered.
 			$ad_group = new Advanced_Ads_Group( $group_id );
 			if ( isset( $ad_group->type ) && in_array( $ad_group->type, array( 'default', 'ordered' ), true ) ) {
@@ -190,11 +181,6 @@ class Advanced_Ads_Compatibility {
 			// is returning an empty string when the ad is not found good UI?
 			if ( empty( $ad_id ) ) {
 				return '';
-			}
-
-			// see function comment above
-			if ( class_exists( 'Advanced_Ads_Ad_Health_Notices', false ) ) {
-				Advanced_Ads_Ad_Health_Notices::get_instance()->add( 'mailpoet-deprecated-custom-shortcodes' );
 			}
 
 			$ad = new Advanced_Ads_Ad( $ad_id );

@@ -84,7 +84,7 @@
 				// Append "Select all / none" text.
 				$this.$select_all = $( '<span />' )
 					.addClass( 'selection_change select_deselect_all' )
-					.click(function()
+					.on( 'click', function()
 					{
 						var checkedStatus = ! $this.$blog_inputs.first().prop( 'checked' );
 						$this.$blog_inputs.each( function(index, item)
@@ -101,7 +101,7 @@
 				$this.$selection_change_container.append( '&emsp;' );
 
 				$this.$invert_selection = $( '<span />' )
-					.click( function()
+					.on( 'click', function()
 					{
 						$this.$blog_inputs.each( function(index, item)
 						{
@@ -130,7 +130,7 @@
 					$this.$show_hide = $( '<div />' )
 						.addClass( 'show_hide howto' )
 						.prependTo( $this.$blogs_container )
-						.click( function()
+						.on( 'click', function()
 						{
 							if ( $this.$blogs_container.hasClass( 'opened' ) )
 								$this.hide_blogs();
@@ -143,7 +143,7 @@
 
 				// GROUP functionality: Allow blogs to be mass selected, unselected.
 				var $parent = $this;
-				$( ".blog_groups select", $this ).change(function()
+				$( ".blog_groups select", $this ).on( 'change', function()
 				{
 					var $groups = $( this );
 					var blogs = $groups.val().split(' ');
@@ -159,14 +159,14 @@
 
 					// If the blog list is closed, then expand and then close again to show the newly selected blogs.
 					if ( $this.$blogs_container.hasClass( 'closed' ) )
-						$this.$show_hide.click().click();
+						$this.$show_hide.trigger( 'click' ).trigger( 'click' );
 				} ).change();
 
 				// Unchecked child blogs
 				var $unchecked_child_blogs_div = $( ".form_item_plainview_sdk_broadcast_form2_inputs_select_unchecked_child_blogs", $this ).hide();
 				var $unchecked_child_blogs = $( "select", $unchecked_child_blogs );
 
-				$( ".blogs.checkboxes .linked input", $this ).change( function()
+				$( ".blogs.checkboxes .linked input", $this ).on( 'change',  function()
 				{
 					var $this = $( this );
 					var checked = $this.is( ':checked' );

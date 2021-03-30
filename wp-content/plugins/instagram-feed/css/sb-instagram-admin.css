@@ -429,6 +429,7 @@
 .sbi_notice{
 	position: relative;
 	overflow: hidden;
+	clear: both;
 	max-width: 865px;
 	margin-top: 10px;
 	padding: 10px 10px 7px 10px;

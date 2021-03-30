@@ -57,11 +57,14 @@ class SB_Instagram_API_Connect
 	/**
 	 * Returns the response from Instagram
 	 *
-	 * @return object
+	 * @return array|object
 	 *
 	 * @since 2.0/5.0
 	 */
 	public function get_data() {
+		if ( $this->is_wp_error() ) {
+			return array();
+		}
 		if (!empty($this->response['data'])) {
 			return $this->response['data'];
 		} else {
@@ -265,7 +268,7 @@ class SB_Instagram_API_Connect
 				$url = 'https://graph.facebook.com/' . $connected_account['user_id'] . '?fields=biography,id,username,website,followers_count,media_count,profile_picture_url,name&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
 			} else {
 				$num = min( $num, 200 );
-				$url = 'https://graph.facebook.com/' . $connected_account['user_id'] . '/media?fields=media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D&limit='.$num.'&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
+				$url = 'https://graph.facebook.com/v10.0/' . $connected_account['user_id'] . '/media?fields=media_url,media_product_type,video_title,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D&limit='.$num.'&access_token=' . sbi_maybe_clean( $connected_account['access_token'] );
 			}
 		}
 

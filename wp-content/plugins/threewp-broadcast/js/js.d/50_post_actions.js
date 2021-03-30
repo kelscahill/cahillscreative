@@ -21,7 +21,7 @@
 
                 $this.unbind( 'click' );
 
-                $this.click( function()
+                $this.on( 'click', function()
                 {
                 	// Get the post ID.
                 	$tr = $this.parentsUntil( 'tbody#the-list' ).last();
@@ -34,7 +34,7 @@
                 					if ( ! $this.submitted )
                 						return;
                 					// Reload the page by submitting the filter.
-									$( '#post-query-submit' ).click();
+									$( '#post-query-submit' ).trigger( 'click' );
                 				}
                 			},
                 		})
@@ -54,7 +54,7 @@
 
 					// Take over the submit button.
 					var $form = $( '#broadcast_post_action_form' );
-					$( 'input.submit', $form ).click( function()
+					$( 'input.submit', $form ).on( 'click', function()
  					{
  						$this.submitted = true;
 						// Assemble the form.

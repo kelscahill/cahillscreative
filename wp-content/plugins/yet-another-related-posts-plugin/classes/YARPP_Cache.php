@@ -1,5 +1,8 @@
 <?php
 abstract class YARPP_Cache {
+	/**
+	 * @var YARPP
+	 */
 	protected $core;
 	/**
 	 * During "YARPP Time", we add a bunch of filters to modify WP_Query
@@ -62,7 +65,9 @@ abstract class YARPP_Cache {
 		if ($status === YARPP_DONT_RUN) return YARPP_DONT_RUN;
 	
 		// If not cached, process now:
-		if ($status === YARPP_NOT_CACHED || $force) $status = $this->update((int) $reference_ID); // status now will be YARPP_NO_RELATED | YARPP_RELATED
+		if ($status === YARPP_NOT_CACHED || $force) $status = $this->update((int) $reference_ID);
+		// Despite our earlier check, somehow the database doesn't seem to be setup properly
+		if ($status === YARPP_DONT_RUN) return YARPP_DONT_RUN;
 		// There are no related posts
 		if ($status === YARPP_NO_RELATED) return YARPP_NO_RELATED;
 	
@@ -253,16 +258,8 @@ abstract class YARPP_Cache {
 
 		}
 
-		if (isset($args['post_type'])) {
-			$post_types = (array) $args['post_type'];
-		} else {
-			if ($this->core->get_option('cross_relate')) {
-				$post_types = $this->core->get_post_types();
-			} else {
-				$post_types = array(get_post_type($reference_post));
-			}
-		}
-		$sanitized_post_types = array_map(
+		$post_types = $this->core->get_query_post_types($reference_post, $args);
+		$sanitized_post_types = (array)array_map(
 			function($item){
 				global $wpdb;
 				return $wpdb->prepare('%s', $item);
@@ -307,16 +304,6 @@ abstract class YARPP_Cache {
 			$limit
 		);
 
-		if (isset($args['post_type'])) {
-			$post_types = (array) $args['post_type'];
-        } else {
-			if ($this->core->get_option('cross_relate')) {
-				$post_types = $this->core->get_post_types();
-			} else {
-				$post_types = array(get_post_type($reference_post));
-			}
-        }
-
 		if ($this->core->debug) echo "<!-- $newsql -->";
 		
 		$this->last_sql = $newsql;
@@ -328,8 +315,10 @@ abstract class YARPP_Cache {
 		$terms = get_the_terms($reference_ID, $taxonomy);
 		// if there are no terms of that tax
 		if (false === $terms) return '(1 = 0)';
-		
-		$tt_ids = array_map(
+
+		// somehow this was returning something other than an array for
+		// https://wordpress.org/support/topic/warning-message-yarpp_cache-php/
+		$tt_ids = (array)array_map(
 			function($item){
 				return (int)$item->term_taxonomy_id;
 			},
@@ -466,6 +455,29 @@ abstract class YARPP_Cache {
 	}
 
 	/**
+	 * Does a database query without emitting any warnings if there's an SQL error. (Although they will still show up
+	 * in the Query Monitor plugin, which is a feature.)
+	 * Throws an exception if there is an error.
+	 * @param string $wpdb_method method on WPDB to call
+	 * @param array $args array of arguments to pass it.
+	 *
+	 * @return mixed
+	 * @throws Exception
+	 */
+	protected function query_safely($wpdb_method, $args) {
+		global $wpdb;
+		$value = call_user_func_array(
+			array( $wpdb, $wpdb_method ),
+			$args
+		);
+		if ( $wpdb->last_error ) {
+			return new WP_Error( 'yarpp_bad_db', $wpdb->last_error );
+		}
+
+		return $value;
+	}
+	
+	/*
 	 * Returns whether or not we're currently discovering the keywords on a reference post.
 	 * (This is a very bad time to start looking for related posts! So YARPP core should be able to detect this.)
 	 * @return bool

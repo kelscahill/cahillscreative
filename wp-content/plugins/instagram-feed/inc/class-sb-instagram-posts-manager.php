@@ -663,34 +663,38 @@ class SB_Instagram_Posts_Manager
 
 			foreach ( $this->errors['accounts'] as $account_id => $error_types ) {
 
-				foreach ( $error_types as $error_type => $details ) {
-					if ( (string)$account_id === (string)$clearing_account_id ) {
-						if ( $error_type === $clearing_error_type || $clearing_error_type === 'all' ) {
-							unset( $this->errors['accounts'][ $account_id ][ $error_type ] );
-							$cleared = true;
-						}
-					} else {
-						if ( isset( $details['username'] ) ) {
-							if ( $details['username'] === $clearing_account['username'] ) {
-								if ( $error_type === $clearing_error_type || $clearing_error_type === 'all' ) {
-									unset( $this->errors['accounts'][ $account_id ][ $error_type ] );
-									$cleared = true;
+				if ( ! SB_Instagram_Connected_Account::lookup( $account_id ) ) {
+					unset( $this->errors['accounts'][ $account_id ] );
+				} else {
+					foreach ( $error_types as $error_type => $details ) {
+						if ( (string)$account_id === (string)$clearing_account_id ) {
+							if ( $error_type === $clearing_error_type || $clearing_error_type === 'all' ) {
+								unset( $this->errors['accounts'][ $account_id ][ $error_type ] );
+								$cleared = true;
+							}
+						} else {
+							if ( isset( $details['username'] ) ) {
+								if ( $details['username'] === $clearing_account['username'] ) {
+									if ( $error_type === $clearing_error_type || $clearing_error_type === 'all' ) {
+										unset( $this->errors['accounts'][ $account_id ][ $error_type ] );
+										$cleared = true;
+									}
 								}
 							}
-						}
-						if ( isset( $this->errors['accounts'][ $account_id ] ) && isset( $details['access_token'] ) ) {
-							if ( $details['access_token'] === $clearing_account['access_token'] ) {
-								if ( $error_type === $clearing_error_type || $clearing_error_type === 'all' ) {
-									unset( $this->errors['accounts'][ $account_id ][ $error_type ] );
-									$cleared = true;
+							if ( isset( $this->errors['accounts'][ $account_id ] ) && isset( $details['access_token'] ) ) {
+								if ( $details['access_token'] === $clearing_account['access_token'] ) {
+									if ( $error_type === $clearing_error_type || $clearing_error_type === 'all' ) {
+										unset( $this->errors['accounts'][ $account_id ][ $error_type ] );
+										$cleared = true;
+									}
 								}
 							}
 						}
 					}
-				}
 
-				if ( empty( $this->errors['accounts'][ $account_id ] ) ) {
-					unset( $this->errors['accounts'][ $account_id ] );
+					if ( empty( $this->errors['accounts'][ $account_id ] ) ) {
+						unset( $this->errors['accounts'][ $account_id ] );
+					}
 				}
 
 			}

@@ -106,13 +106,13 @@ jQuery( document ).ready( function ( $ ) {
 	 */
 
 	// display new ad group form
-	$( '#advads-new-ad-group-link' ).click( function ( e ) {
+	$( '#advads-new-ad-group-link' ).on( 'click', function ( e ) {
 		e.preventDefault()
 		$( '#advads-new-group-form' ).show().find( 'input[type="text"]' ).focus()
 	} )
 
     // display ad groups form
-    $('#advads-ad-group-list a.edit, #advads-ad-group-list a.row-title').click(function (e) {
+	$( '#advads-ad-group-list a.edit, #advads-ad-group-list a.row-title' ).on( 'click', function ( e ) {
         e.preventDefault();
         var advadsgroupformrow = $(this).parents('.advads-group-row').next('.advads-ad-group-form');
         if (advadsgroupformrow.is(':visible')) {
@@ -128,7 +128,7 @@ jQuery( document ).ready( function ( $ ) {
         }
     });
     // display ad groups usage
-    $('#advads-ad-group-list a.usage').click(function (e) {
+	$( '#advads-ad-group-list a.usage' ).on( 'click', function ( e ) {
         e.preventDefault();
         var usagediv = $(this).parents('.advads-group-row').find('.advads-usage');
         if (usagediv.is(':visible')) {
@@ -138,8 +138,7 @@ jQuery( document ).ready( function ( $ ) {
         }
     });
 	// handle the submission of the groups form
-	$( 'form#advads-form-groups' ).submit( function () {
-		var grouprows = jQuery( 'tr.advads-ad-group-form' )
+	$( 'form#advads-form-groups' ).on( 'submit', function () {
 		jQuery( 'tr.advads-ad-group-form' ).each( function ( k, v ) {
 			v = jQuery( v )
 			if ( ! v.data( 'touched' ) ) {
@@ -148,12 +147,12 @@ jQuery( document ).ready( function ( $ ) {
 		} )
 	} )
 	// display placement settings form
-	$( '.advads-placements-table a.advads-placement-options-link' ).click( function ( e ) {
+	$( '.advads-placements-table a.advads-placement-options-link' ).on( 'click', function ( e ) {
 		e.preventDefault()
 		Advanced_Ads_Admin.toggle_placements_visibility( this )
 	} )
 	// display manual placement usage
-	$( '.advads-placements-table .usage-link' ).click( function ( e ) {
+	$( '.advads-placements-table .usage-link' ).on( 'click', function ( e ) {
 		e.preventDefault()
 		var usagediv = $( this ).parents( 'tr' ).find( '.advads-usage' )
 		if ( usagediv.is( ':visible' ) ) {
@@ -163,7 +162,7 @@ jQuery( document ).ready( function ( $ ) {
 		}
 	} )
 	// show warning if Container ID option contains invalid characters
-	$( '#advads-output-wrapper-id' ).keyup( function () {
+	$( '#advads-output-wrapper-id' ).on( 'keyup', function () {
 		var id_value = $( this ).val()
 		if ( /^[a-z-0-9]*$/.test( id_value ) ) {
 			$( '.advads-output-wrapper-id-error' ).removeClass( 'advads-error-message' )
@@ -183,7 +182,7 @@ jQuery( document ).ready( function ( $ ) {
 	}
 
 	// group page: add ad to group
-	$( '.advads-group-add-ad button' ).click( function () {
+	$( '.advads-group-add-ad button' ).on( 'click', function () {
 		var $settings_row = $( this ).closest( '.advads-ad-group-form' ),
 				$ad           = $settings_row.find( '.advads-group-add-ad-list-ads option:selected' )
 		$weight_selector = $settings_row.find( '.advads-group-add-ad-list-weights' ).last(),
@@ -213,7 +212,7 @@ jQuery( document ).ready( function ( $ ) {
 		$ad_row.remove()
 	} )
 	// group page: handle switching of group types based on a class derrived from that type
-	$( '.advads-ad-group-type input' ).click( function () {
+	$( '.advads-ad-group-type input' ).on( 'click', function () {
 		advads_show_group_options( $( this ) )
 	} )
 
@@ -241,7 +240,7 @@ jQuery( document ).ready( function ( $ ) {
 
 	} )
 	// show more than 3 ads when clicked on a link
-	$( '.advads-group-ads-list-show-more' ).click( function () {
+	$( '.advads-group-ads-list-show-more' ).on( 'click', function () {
 		jQuery( this ).hide().parents( '.advads-ad-group-list-ads' ).find( 'li' ).show()
 	} )
 
@@ -250,7 +249,7 @@ jQuery( document ).ready( function ( $ ) {
 	 */
 
 	// automatically copy the first entered license key into all other empty fields
-	$( '.advads-settings-tab-main-form .advads-license-key' ).blur( function () {
+	$( '.advads-settings-tab-main-form .advads-license-key' ).on( 'blur', function () {
 		// get number of license fields
 
 		var license_key = $( this ).val()
@@ -279,7 +278,7 @@ jQuery( document ).ready( function ( $ ) {
 	} )
 
 	// activate licenses
-	$( '.advads-license-activate' ).click( function () {
+	$( '.advads-license-activate' ).on( 'click', function () {
 
 		var button = $( this )
 
@@ -331,7 +330,7 @@ jQuery( document ).ready( function ( $ ) {
 	} )
 
 	// deactivate licenses
-	$( '.advads-license-deactivate' ).click( function () {
+	$( '.advads-license-deactivate' ).on( 'click', function () {
 
 		var button = $( this )
 
@@ -418,7 +417,7 @@ jQuery( document ).ready( function ( $ ) {
 	} )
 
 	//  on submit remove placements that were untouched
-	$( 'form#advanced-ads-placements-form' ).submit( function () {
+	$( 'form#advanced-ads-placements-form' ).on( 'submit', function () {
 		var grouprows = jQuery( 'form#advanced-ads-placements-form tr.advanced-ads-placement-row' )
 		jQuery( 'form#advanced-ads-placements-form tr.advanced-ads-placement-row' ).each( function ( k, v ) {
 			v = jQuery( v )
@@ -437,7 +436,7 @@ jQuery( document ).ready( function ( $ ) {
 		advads_show_placement_content_xpath_field( this );
 	})
 	// update xpath field when tag option changes
-	$( '.advads-placements-content-tag' ).change( function () {
+	$( '.advads-placements-content-tag' ).on( 'change', function () {
 		advads_show_placement_content_xpath_field( this );
 	} )
 	/**
@@ -502,7 +501,7 @@ jQuery( document ).ready( function ( $ ) {
 					$( '#advads-image-preview' ).html( new_image )
 					$( '#advads-image-edit-link' ).attr( 'href', attachment.editLink )
 					// process "reserve this space" checkbox
-					$( '#advanced-ads-ad-parameters-size input[type=number]:first' ).change()
+					$( '#advanced-ads-ad-parameters-size input[type=number]:first' ).trigger( 'change' );
 				}
 			} )
 		} )
@@ -516,7 +515,7 @@ jQuery( document ).ready( function ( $ ) {
 	window.formfield = ''
 
 	// adblocker related code
-	$( '#advanced-ads-use-adblocker' ).change( function () {
+	$( '#advanced-ads-use-adblocker' ).on( 'change', function () {
 		advads_toggle_box( this, '#advads-adblocker-wrapper' )
 	} )
 
@@ -568,30 +567,30 @@ jQuery( document ).ready( function ( $ ) {
 	} )
 	// process "reserve this space" checkbox - ad type changed
 	$( '#advanced-ads-ad-parameters' ).on( 'paramloaded', function () {
-		$( '#advanced-ads-ad-parameters-size input[type=number]:first' ).change()
-	} )
+		$( '#advanced-ads-ad-parameters-size input[type=number]:first' ).trigger( 'change' );
+	} );
 	// process "reserve this space" checkbox - on load
-	$( '#advanced-ads-ad-parameters-size input[type=number]:first' ).change()
+	$( '#advanced-ads-ad-parameters-size input[type=number]:first' ).trigger( 'change' );
 
 	// move meta box markup to hndle headline
 	$( '.advads-hndlelinks' ).each( function () {
 		$( this ).appendTo( $( this ).parents('.postbox').find( 'h2.hndle' ) )
 		$( this ).removeClass( 'hidden' )
-	} )
+	} );
 	// open tutorial link when clicked on it
-	$( '.advads-video-link' ).click( function ( el ) {
+	$( '.advads-video-link' ).on( 'click', function ( el ) {
 		el.preventDefault()
 		var video_container = $( this ).parents( 'h2' ).siblings( '.inside' ).find( '.advads-video-link-container' )
 		video_container.html( video_container.data( 'videolink' ) )
-	} )
+	} );
 	// open inline tutorial link when clicked on it
-	$( '.advads-video-link-inline' ).click( function ( el ) {
+	$( '.advads-video-link-inline' ).on( 'click', function ( el ) {
 		el.preventDefault()
 		var video_container = $( this ).parents( 'div' ).siblings( '.advads-video-link-container' )
 		video_container.html( video_container.data( 'videolink' ) )
-	} )
+	} );
 	// switch import type
-	jQuery( '.advads_import_type' ).change( function () {
+	jQuery( '.advads_import_type' ).on( 'change', function () {
 		if ( this.value === 'xml_content' ) {
 			jQuery( '#advads_xml_file' ).hide()
 			jQuery( '#advads_xml_content' ).show()
@@ -599,7 +598,7 @@ jQuery( document ).ready( function ( $ ) {
 			jQuery( '#advads_xml_file' ).show()
 			jQuery( '#advads_xml_content' ).hide()
 		}
-	} )
+	} );
 
 	// Find Adsense Auto Ads inside ad content.
 	var ad_content = jQuery( 'textarea[name=advanced_ad\\[content\\]]' ).html()
@@ -795,7 +794,7 @@ function advads_ads_txt_find_issues () {
 		load( 'get_notices' )
 	}
 
-	$refresh.click( function () {
+	$refresh.on('click', function () {
 		load( 'get_notices' )
 	} )
 

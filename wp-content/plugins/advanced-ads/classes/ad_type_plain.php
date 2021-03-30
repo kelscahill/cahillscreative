@@ -159,6 +159,14 @@ class Advanced_Ads_Ad_Type_Plain extends Advanced_Ads_Ad_Type_Abstract {
 			return '';
 		}
 
+		/**
+		 * Apply do_blocks if the content has block code
+		 * works with WP 5.0.0 and later
+		 */
+		if ( function_exists( 'has_blocks' ) && has_blocks( $content ) ) {
+			$content = do_blocks( $content );
+		}
+
 		if ( ! empty( $ad->output['allow_shortcodes'] ) ) {
 			$content = $this->do_shortcode( $content, $ad );
 		}

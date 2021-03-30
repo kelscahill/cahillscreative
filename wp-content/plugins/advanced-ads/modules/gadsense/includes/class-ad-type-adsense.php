@@ -214,7 +214,9 @@ class Advanced_Ads_Ad_Type_Adsense extends Advanced_Ads_Ad_Type_Abstract {
 			return '';
 		}
 
-		$is_static_normal_content = ! in_array( $content->unitType, array( 'responsive', 'link-responsive', 'matched-content', 'in-article', 'in-feed' ) );
+		// "link" was a static format until AdSense stopped filling them in March 2021. Their responsive format serves as a fallback recommended by AdSense
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		$is_static_normal_content = ! in_array( $content->unitType, array( 'responsive', 'link', 'link-responsive', 'matched-content', 'in-article', 'in-feed' ), true );
 
 		$output = apply_filters( 'advanced-ads-gadsense-output', false, $ad, $pub_id, $content );
 		if ( false !== $output ) {
@@ -225,6 +227,12 @@ class Advanced_Ads_Ad_Type_Adsense extends Advanced_Ads_Ad_Type_Abstract {
 		}
 
 		$output = '';
+
+		// add notice when a link unit is used
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		if ( in_array( $content->unitType, array( 'link', 'link-responsive' ), true ) ) {
+			Advanced_Ads_Ad_Health_Notices::get_instance()->add( 'adsense_link_units_deprecated' );
+		}
 
 		// build static normal content ads first.
 		if ( $is_static_normal_content ) {
@@ -275,9 +283,9 @@ class Advanced_Ads_Ad_Type_Adsense extends Advanced_Ads_Ad_Type_Abstract {
 	}
 
 	/**
-	 * @param $output
-	 * @param $pub_id
-	 * @param $content
+	 * @param string $output Current ad unit code.
+	 * @param string $pub_id AdSense publisher ID.
+	 * @param object $content Ad unit content with all parameters.
 	 */
 	protected function append_defaut_responsive_content( &$output, $pub_id, $content ) {
 		$format = '';
@@ -287,6 +295,7 @@ class Advanced_Ads_Ad_Type_Adsense extends Advanced_Ads_Ad_Type_Abstract {
 				$format = 'autorelaxed';
 				break;
 			case 'link-responsive':
+			case 'link':
 				$format = 'link';
 				break;
 			case 'in-feed':

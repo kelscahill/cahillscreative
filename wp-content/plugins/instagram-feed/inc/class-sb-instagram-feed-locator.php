@@ -132,8 +132,12 @@ class SB_Instagram_Feed_Locator
 			$unknown_match = false;
 
 			foreach ( $this->matching_entries as $index => $matching_entry ) {
-				$atts = is_array( $this->feed_details['atts'] ) ? $this->feed_details['atts'] : array();
-				$atts_diff = array_diff( json_decode( $matching_entry['shortcode_atts'], true ), $atts ); // determines if the shortcode settings match the shortcode settings of an existing feed
+				$details_atts = is_array( $this->feed_details['atts'] ) ? $this->feed_details['atts'] : array();
+				$matching_atts = json_decode( $matching_entry['shortcode_atts'], true );
+				if ( ! is_array( $matching_atts ) ) {
+					$matching_atts = array();
+				}
+				$atts_diff = array_diff( $matching_atts, $details_atts ); // determines if the shortcode settings match the shortcode settings of an existing feed
 				if ( empty( $atts_diff ) ) {
 					$matching_indices[] = $matching_entry['id'];
 					if ( $matching_entry['html_location'] === $this->feed_details['location']['html'] ) {

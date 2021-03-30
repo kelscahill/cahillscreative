@@ -22,15 +22,18 @@ function perfmatters_assets_js_init() {
 
 	$perfmatters_extras = get_option('perfmatters_extras');
 
-	if(!empty($perfmatters_extras['defer_js'])) {
+	$defer_check = !empty($perfmatters_extras['defer_js']) && !perfmatters_get_post_meta('perfmatters_exclude_defer_js');
 
-		$exclude_defer_js = perfmatters_get_post_meta('perfmatters_exclude_defer_js');
+	$delay_check = !empty($perfmatters_extras['delay_js']);
+
+	if($defer_check || $delay_check) {
 
 		//check if its ok to continue
-		if(!$exclude_defer_js && !is_admin() && !wp_doing_ajax() && !isset($_GET['fl_builder']) && !isset($_GET['et_fb']) && !isset($_GET['ct_builder']) && !is_embed() && !is_feed()) {
+		if(!is_admin() && !wp_doing_ajax() && !isset($_GET['perfmatters']) && !perfmatters_is_page_builder() && !is_embed() && !is_feed()) {
 
 			//actions + filters
 			add_filter('perfmatters_output_buffer', 'perfmatters_defer_js', 2);
+			add_action('wp_footer', 'perfmatters_print_delay_js', PHP_INT_MAX);
 		}
 	}
 }
@@ -38,13 +41,6 @@ add_action('wp', 'perfmatters_assets_js_init');
 
 //add defer tag to js files in html
 function perfmatters_defer_js($html) {
-
-	global $post;
-
-	//stop if defer js is disabled for post
-	if(perfmatters_get_post_meta('perfmatters_exclude_defer_js')) {
-		return $html;
-	}
 
 	//strip comments before search
 	$html_no_comments = preg_replace('/<!--(.*)-->/Uis', '', $html);
@@ -62,78 +58,91 @@ function perfmatters_defer_js($html) {
 	//build js exlusions array
 	$js_exclusions = array();
 
-	//add jquery if needed
-	if(empty($perfmatters_extras['defer_jquery'])) {
-		array_push($js_exclusions, 'jquery(?:\.min)?.js');
-	}
+	if(!empty($perfmatters_extras['defer_js'])) {
 
-	//add extra user exclusions
-	if(!empty($perfmatters_extras['js_exclusions']) && is_array($perfmatters_extras['js_exclusions'])) {
-		foreach($perfmatters_extras['js_exclusions'] as $line) {
-			array_push($js_exclusions, preg_quote($line));
+		//add jquery if needed
+		if(empty($perfmatters_extras['defer_jquery'])) {
+			array_push($js_exclusions, 'jquery(?:\.min)?.js');
 		}
+
+		//add extra user exclusions
+		if(!empty($perfmatters_extras['js_exclusions']) && is_array($perfmatters_extras['js_exclusions'])) {
+			foreach($perfmatters_extras['js_exclusions'] as $line) {
+				array_push($js_exclusions, preg_quote($line));
+			}
+		}
+
+		//convert exlusions to string for regex
+		$js_exclusions = implode('|', $js_exclusions);
 	}
 
-	//convert exlusions to string for regex
-	$js_exclusions = implode('|', $js_exclusions);
-
+	//loop through scripts
 	foreach($matches[0] as $i => $tag) {
 
-		if(!empty($matches[2][$i])) {
-			$atts_array = perfmatters_lazyload_get_atts_array($matches[2][$i]);
-		}
+		$atts_array = !empty($matches[2][$i]) ? perfmatters_lazyload_get_atts_array($matches[2][$i]) : array();
 		
 		//skip if type is not javascript
 		if(isset($atts_array['type']) && stripos($atts_array['type'], 'javascript') == false) {
 			continue;
 		}
 
-		//src file is set
-		if(!empty($atts_array['src'])) {
+		//delay javascript
+		if(!empty($perfmatters_extras['delay_js'])) {
+	 		foreach($perfmatters_extras['delay_js'] as $delayed_script) {
 
-			//check src for exclusions
+        		if(strpos($tag, $delayed_script) !== false) {
+
+        			if(!empty($atts_array['src'])) {
+                    	$atts_array['data-pmdelayedscript'] = $atts_array['src'];
+                    	unset($atts_array['src']);
+        			}
+        			else {
+        				$atts_array['data-pmdelayedscript'] = "data:text/javascript;base64," . base64_encode($matches[3][$i]);
+        			}
+
+        			$delayed_atts_string = perfmatters_lazyload_get_atts_string($atts_array);
+                    $delayed_tag = sprintf('<script %1$s></script>', $delayed_atts_string);
+
+        			//replace new full tag in html
+					$html = str_replace($tag, $delayed_tag, $html);
+
+					continue 2;
+		        }
+		    }
+		}
+
+		//defer javascript
+		if(!empty($perfmatters_extras['defer_js'])) {
+
+			//src is not set
+			if(empty($atts_array['src'])) {
+				continue;
+			}
+
+			//check if src is excluded
 			if(!empty($js_exclusions) && preg_match('#(' . $js_exclusions . ')#i', $atts_array['src'])) {
 				continue;
 			}
 
-		}
-
-		//inline script
-		else {
-
-			//make sure its ok to defer inline
-			if(!empty($perfmatters_extras['defer_inline_js'])) {
-
-				//check inline script content for exlusions
-				if(!empty($js_exclusions) && preg_match('#(' . $js_exclusions . ')#i', $matches[3][$i])) {
-					continue;
-				}
-
-			}
-			else {
+			//skip if there is already an async
+			if(stripos($matches[2][$i], 'async') !== false) {
 				continue;
 			}
 
+			//skip if there is already a defer
+			if(stripos($matches[2][$i], 'defer' ) !== false ) {
+				continue;
+			}
+
+			//add defer to opening tag
+			$deferred_tag_open = str_replace('>', ' defer>', $matches[1][$i]);
+
+			//replace new open tag in original full tag
+			$deferred_tag = str_replace($matches[1][$i], $deferred_tag_open, $tag);
+
+			//replace new full tag in html
+			$html = str_replace($tag, $deferred_tag, $html);
 		}
-
-		//skip if there is already an async
-		if(stripos($matches[2][$i], 'async') !== false) {
-			continue;
-		}
-
-		//skip if there is already a defer
-		if (stripos($matches[2][ $i ], 'defer' ) !== false ) {
-			continue;
-		}
-
-		//add defer to opening tag
-		$deferred_tag_open = str_replace('>', ' defer>', $matches[1][$i]);
-
-		//replace new open tag in original full tag
-		$deferred_tag = str_replace($matches[1][$i], $deferred_tag_open, $tag);
-
-		//replace new full tag in html
-		$html = str_replace($tag, $deferred_tag, $html);
 	}
 
 	return $html;
@@ -157,4 +166,17 @@ function perfmatters_get_post_meta($option) {
 	}
 
 	return (isset($post_id)) ? get_post_meta($post_id, $option, true) : false;
+}
+
+//print inline delay js
+function perfmatters_print_delay_js() {
+
+	$extras = get_option('perfmatters_extras');
+
+  	if(!empty($extras['delay_js'])) {
+
+  		echo '<script type="text/javascript" id="perfmatters-delayed-scripts-js">const perfmattersUserInteractions=["keydown","mouseover","touchmove","touchstart"];perfmattersUserInteractions.forEach(function(event){window.addEventListener(event,pmTriggerDelayedScripts,{passive:!0})});function pmTriggerDelayedScripts(){pmLoadDelayedScripts();perfmattersUserInteractions.forEach(function(event){window.removeEventListener(event,pmTriggerDelayedScripts,{passive:!0})})}
+function pmLoadDelayedScripts(){document.querySelectorAll("script[data-pmdelayedscript]").forEach(function(elem){elem.setAttribute("src",elem.getAttribute("data-pmdelayedscript"))})}</script>';
+
+  	}
 }

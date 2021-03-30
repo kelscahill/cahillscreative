@@ -70,7 +70,7 @@ echo "<form method='post' action=''>";
 				echo "<th>" . perfmatters_title(__('License Key', 'perfmatters'), (empty($license) ? 'perfmatters_edd_license_key' : false), 'https://perfmatters.io/docs/troubleshooting-license-key-activation/') . "</th>";
 				echo "<td>";
 
-					echo "<input id='perfmatters_edd_license_key' name='perfmatters_edd_license_key' type='password' class='regular-text' value='" . $license . "' />";
+					echo "<input id='perfmatters_edd_license_key' name='perfmatters_edd_license_key' type='password' class='regular-text' value='" . (!empty($license) ? 'yourawizardharry' : '') . "' />";
 
 					if(empty($license)) {
 						//save license button

@@ -42,7 +42,7 @@
 						$li.append( '<span class="sep">&emsp;|&emsp;</span>' );
 
 					// When clicking on a tab, show it
-					$a.click( function()
+					$a.on( 'click', function()
 					{
 						$( 'li a', $subsubsub ).removeClass( 'current' );
 						$(this).addClass( 'current' );
@@ -52,7 +52,7 @@
 
 				} );
 
-				$( 'li a', $subsubsub ).first().click();
+				$( 'li a', $subsubsub ).first().trigger( 'click' );
             } ); // return this.each( function()
         } // plugin: function()
     } ); // $.fn.extend({

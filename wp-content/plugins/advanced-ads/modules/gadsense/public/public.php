@@ -5,13 +5,28 @@
  */
 class Advanced_Ads_AdSense_Public {
 
-	private $data; // options
+	/**
+	 * AdSense account related data
+	 *
+	 * @var Advanced_Ads_AdSense_Data
+	 */
+	private $data;
 
-	private static $instance = null;
+	/**
+	 * Instance of Advanced_Ads_AdSense_Public
+	 *
+	 * @var Advanced_Ads_AdSense_Public
+	 */
+	private static $instance;
 
+	/**
+	 * Advanced_Ads_AdSense_Public constructor.
+	 */
 	private function __construct() {
 		$this->data = Advanced_Ads_AdSense_Data::get_instance();
 		add_action( 'wp_head', array( $this, 'inject_header' ), 20 );
+		// Fires before cache-busting frontend is initialized and tracking method is set
+		add_action( 'wp', array( $this, 'inject_amp_code' ), 20 );
 	}
 
 	/**
@@ -85,6 +100,68 @@ class Advanced_Ads_AdSense_Public {
 
 			// inject page-level header code.
 			include GADSENSE_BASE_PATH . 'public/templates/page-level.php';
+		}
+	}
+
+	/**
+	 * Handle AdSense AMP code
+	 */
+	public function inject_amp_code() {
+
+		// The is_amp_endpoint function is used for multiple plugins.
+		if ( function_exists( 'is_amp_endpoint' ) ) {
+			$adsense_data    = Advanced_Ads_AdSense_Data::get_instance();
+			$adsense_options = $adsense_data->get_options();
+
+			// AMP Auto ads was removed from Responsive add-on version 1.10.0
+			if ( defined( 'AAR_VERSION' ) && 1 === version_compare( '1.10.0', AAR_VERSION )
+				|| empty( $adsense_options['amp']['auto_ads_enabled'] ) ) {
+				return;
+			}
+
+			// Adds the AdSense Auto ads AMP code to the page (head) in "Reader" mode.
+			add_action( 'amp_post_template_data', array( $this, 'add_auto_ads_amp_head_script' ) );
+
+			// SmartMag theme (http://theme-sphere.com/smart-mag/documentation/).
+			add_action( 'bunyad_amp_pre_main', array( $this, 'add_auto_ads_amp_body_script' ) );
+
+			/**
+			 * Add AMP Auto ads body code to footer for `AMP` plugin ( https://wordpress.org/plugins/amp/ )
+			 *
+			 * Adds the Auto ads `body` tag to `wp_footer` because there is no WordPress right hook after `body`
+			 * The AdSense Auto ads code is added automatically to the `head` section using the amp_post_template_data hook above.
+			 *
+			 * use `wp_footer` in Transition and Standard mode
+			 * use `amp_post_template_footer` in Reader mode
+			 */
+			add_action( 'wp_footer', array( $this, 'add_auto_ads_amp_body_script' ) );
+			add_action( 'amp_post_template_footer', array( $this, 'add_auto_ads_amp_body_script' ) );
+
+			// Other AMP plugins.
+		} elseif ( function_exists( 'is_wp_amp' ) ) {
+			// WP AMP — Accelerated Mobile Pages for WordPress and WooCommerce (https://codecanyon.net/item/wp-amp-accelerated-mobile-pages-for-wordpress-and-woocommerce/16278608).
+			add_action( 'amphtml_after_footer', array( $this, 'add_adsense_auto_ads' ) );
+		}
+	}
+
+	/**
+	 * Add AdSense AMP Auto ads code to the header.
+	 *
+	 * @param array $data AMP components.
+	 */
+	public function add_auto_ads_amp_head_script( $data ) {
+		$data['amp_component_scripts']['amp-auto-ads'] = 'https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js';
+
+		return $data;
+	}
+
+	/**
+	 * Add Adsense Auto Ads body script.
+	 */
+	public function add_auto_ads_amp_body_script() {
+		$pub_id = $this->data->get_adsense_id();
+		if ( $pub_id ) {
+			printf( '<amp-auto-ads type="adsense" data-ad-client="ca-%s"></amp-auto-ads>', esc_attr( $pub_id ) );
 		}
 	}
 }

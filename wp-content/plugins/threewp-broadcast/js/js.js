@@ -149,7 +149,7 @@ broadcast_popup = function( options )
 						$li.append( '<span class="sep">&emsp;|&emsp;</span>' );
 
 					// When clicking on a tab, show it
-					$a.click( function()
+					$a.on( 'click', function()
 					{
 						$( 'li a', $subsubsub ).removeClass( 'current' );
 						$(this).addClass( 'current' );
@@ -159,7 +159,7 @@ broadcast_popup = function( options )
 
 				} );
 
-				$( 'li a', $subsubsub ).first().click();
+				$( 'li a', $subsubsub ).first().trigger( 'click' );
             } ); // return this.each( function()
         } // plugin: function()
     } ); // $.fn.extend({
@@ -188,7 +188,7 @@ broadcast_popup = function( options )
 
                 $this.unbind( 'click' );
 
-                $this.click( function()
+                $this.on( 'click', function()
                 {
                 	// Get the post ID.
                 	$tr = $this.parentsUntil( 'tbody#the-list' ).last();
@@ -201,7 +201,7 @@ broadcast_popup = function( options )
                 					if ( ! $this.submitted )
                 						return;
                 					// Reload the page by submitting the filter.
-									$( '#post-query-submit' ).click();
+									$( '#post-query-submit' ).trigger( 'click' );
                 				}
                 			},
                 		})
@@ -221,7 +221,7 @@ broadcast_popup = function( options )
 
 					// Take over the submit button.
 					var $form = $( '#broadcast_post_action_form' );
-					$( 'input.submit', $form ).click( function()
+					$( 'input.submit', $form ).on( 'click', function()
  					{
  						$this.submitted = true;
 						// Assemble the form.
@@ -347,7 +347,7 @@ broadcast_popup = function( options )
 				// Append "Select all / none" text.
 				$this.$select_all = $( '<span />' )
 					.addClass( 'selection_change select_deselect_all' )
-					.click(function()
+					.on( 'click', function()
 					{
 						var checkedStatus = ! $this.$blog_inputs.first().prop( 'checked' );
 						$this.$blog_inputs.each( function(index, item)
@@ -364,7 +364,7 @@ broadcast_popup = function( options )
 				$this.$selection_change_container.append( '&emsp;' );
 
 				$this.$invert_selection = $( '<span />' )
-					.click( function()
+					.on( 'click', function()
 					{
 						$this.$blog_inputs.each( function(index, item)
 						{
@@ -393,7 +393,7 @@ broadcast_popup = function( options )
 					$this.$show_hide = $( '<div />' )
 						.addClass( 'show_hide howto' )
 						.prependTo( $this.$blogs_container )
-						.click( function()
+						.on( 'click', function()
 						{
 							if ( $this.$blogs_container.hasClass( 'opened' ) )
 								$this.hide_blogs();
@@ -406,7 +406,7 @@ broadcast_popup = function( options )
 
 				// GROUP functionality: Allow blogs to be mass selected, unselected.
 				var $parent = $this;
-				$( ".blog_groups select", $this ).change(function()
+				$( ".blog_groups select", $this ).on( 'change', function()
 				{
 					var $groups = $( this );
 					var blogs = $groups.val().split(' ');
@@ -422,14 +422,14 @@ broadcast_popup = function( options )
 
 					// If the blog list is closed, then expand and then close again to show the newly selected blogs.
 					if ( $this.$blogs_container.hasClass( 'closed' ) )
-						$this.$show_hide.click().click();
+						$this.$show_hide.trigger( 'click' ).trigger( 'click' );
 				} ).change();
 
 				// Unchecked child blogs
 				var $unchecked_child_blogs_div = $( ".form_item_plainview_sdk_broadcast_form2_inputs_select_unchecked_child_blogs", $this ).hide();
 				var $unchecked_child_blogs = $( "select", $unchecked_child_blogs );
 
-				$( ".blogs.checkboxes .linked input", $this ).change( function()
+				$( ".blogs.checkboxes .linked input", $this ).on( 'change',  function()
 				{
 					var $this = $( this );
 					var checked = $this.is( ':checked' );
@@ -527,7 +527,7 @@ broadcast_popup = function( options )
 
 				// Take over the apply buttons
 				$( '.button.action' )
-				.click( function()
+				.on( 'click', function()
 				{
 					// What is the current selection?
 					var $container = $( this ).parent();

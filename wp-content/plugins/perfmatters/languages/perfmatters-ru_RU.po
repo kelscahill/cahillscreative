@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Perfmatters\n"
-"POT-Creation-Date: 2020-09-23 13:03-0700\n"
-"PO-Revision-Date: 2020-09-24 17:59+0300\n"
+"POT-Creation-Date: 2021-03-02 17:41-0800\n"
+"PO-Revision-Date: 2021-03-05 12:14+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.4.2\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
@@ -23,13 +23,13 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 "X-Poedit-SearchPathExcluded-1: vendor\n"
 
-#: inc/EDD_SL_Plugin_Updater.php:262
+#: inc/Perfmatters_Plugin_Updater.php:250
 #, php-format
 msgid ""
 "There is a new version of %1$s available. %2$sView version %3$s details%4$s."
 msgstr "Доступна новая версия %1$s. %2$s Просмотр версии%3$s детали%4$s."
 
-#: inc/EDD_SL_Plugin_Updater.php:270
+#: inc/Perfmatters_Plugin_Updater.php:258
 #, php-format
 msgid ""
 "There is a new version of %1$s available. %2$sView version %3$s details%4$s "
@@ -38,15 +38,15 @@ msgstr ""
 "Доступна новая версия %1$s. %2$s Посмотреть версию%3$s детали%4$s или "
 "%5$sобновлены сейчас%6$s."
 
-#: inc/EDD_SL_Plugin_Updater.php:514
+#: inc/Perfmatters_Plugin_Updater.php:502
 msgid "You do not have permission to install plugin updates"
 msgstr "У Вас нет прав на установку обновлений плагина"
 
-#: inc/EDD_SL_Plugin_Updater.php:514
+#: inc/Perfmatters_Plugin_Updater.php:502
 msgid "Error"
 msgstr "Ошибка"
 
-#: inc/admin.php:41 inc/settings.php:10
+#: inc/admin.php:41 inc/settings.php:12
 msgid "Options"
 msgstr "Настройки"
 
@@ -54,7 +54,7 @@ msgstr "Настройки"
 msgid "CDN"
 msgstr "CDN"
 
-#: inc/admin.php:43 inc/settings.php:573
+#: inc/admin.php:43 inc/settings.php:595
 msgid "Google Analytics"
 msgstr "Google Analytics"
 
@@ -66,11 +66,11 @@ msgstr "Дополнительно"
 msgid "License"
 msgstr "Лицензия"
 
-#: inc/admin.php:59 inc/admin.php:101 inc/settings.php:724
+#: inc/admin.php:59 inc/admin.php:101 inc/settings.php:781
 msgid "General"
 msgstr "Общие"
 
-#: inc/admin.php:60 inc/meta.php:50 inc/settings.php:279
+#: inc/admin.php:60 inc/meta.php:54 inc/settings.php:285
 msgid "Lazy Loading"
 msgstr "\"Ленивая\" загрузка"
 
@@ -78,19 +78,19 @@ msgstr "\"Ленивая\" загрузка"
 msgid "WooCommerce"
 msgstr "WooCommerce"
 
-#: inc/admin.php:102 inc/settings.php:789
+#: inc/admin.php:102 inc/settings.php:846
 msgid "Assets"
-msgstr "Скрипты"
+msgstr "Активы"
 
-#: inc/admin.php:103 inc/settings.php:866
+#: inc/admin.php:103 inc/settings.php:929
 msgid "Preloading"
 msgstr "Предзагрузка"
 
-#: inc/admin.php:104 inc/settings.php:989
+#: inc/admin.php:104 inc/settings.php:1072
 msgid "Database"
 msgstr "База данных"
 
-#: inc/admin.php:105 inc/settings.php:925
+#: inc/admin.php:105 inc/settings.php:991
 msgid "Tools"
 msgstr "Инструменты"
 
@@ -134,15 +134,15 @@ msgstr "Редакции"
 msgid "Auto Drafts"
 msgstr "Автоматические черновики"
 
-#: inc/classes/database-optimizer.php:208 inc/settings.php:1022
+#: inc/classes/database-optimizer.php:208 inc/settings.php:1105
 msgid "Trashed Posts"
 msgstr "Удалённые записи"
 
-#: inc/classes/database-optimizer.php:209 inc/settings.php:1036
+#: inc/classes/database-optimizer.php:209 inc/settings.php:1119
 msgid "Spam Comments"
 msgstr "Спам комментарии"
 
-#: inc/classes/database-optimizer.php:210 inc/settings.php:1050
+#: inc/classes/database-optimizer.php:210 inc/settings.php:1133
 msgid "Trashed Comments"
 msgstr "Удалённые комментарии"
 
@@ -154,30 +154,30 @@ msgstr "Просроченные переходные процессы"
 msgid "Transients"
 msgstr "Переходные процессы"
 
-#: inc/classes/database-optimizer.php:213 inc/settings.php:1092
+#: inc/classes/database-optimizer.php:213 inc/settings.php:1175
 msgid "Tables"
 msgstr "Таблицы"
 
-#: inc/functions.php:82
+#: inc/functions.php:79
 #, php-format
 msgid "No feed available, please visit the <a href='%s'>homepage</a>!"
 msgstr ""
 "Нет доступных feed, пожалуйста, посетите <a href='%s'>Главная страница</a>!"
 
-#: inc/functions.php:138
+#: inc/functions.php:135
 msgid "Sorry, you do not have permission to make REST API requests."
 msgstr "К сожалению, у вас нет разрешения на запросы REST API."
 
-#: inc/functions.php:243 inc/functions.php:336 inc/functions.php:341
+#: inc/functions.php:271 inc/functions.php:364 inc/functions.php:369
 msgid "Comments are disabled."
 msgstr "Комментарии отключены."
 
-#: inc/functions.php:521 inc/functions.php:539
-#: inc/functions_script_manager.php:1100 inc/functions_script_manager.php:1108
+#: inc/functions.php:549 inc/functions.php:567
+#: inc/functions_script_manager.php:1216 inc/functions_script_manager.php:1224
 msgid "Perfmatters Warning"
 msgstr "Предупреждение Perfmatters"
 
-#: inc/functions.php:522
+#: inc/functions.php:550
 msgid ""
 "WP_POST_REVISIONS is already enabled somewhere else on your site. We suggest "
 "only enabling this feature in one place."
@@ -185,7 +185,7 @@ msgstr ""
 "WP-POST-REVISIONS уже включен где-то еще на вашем сайте. Мы предлагаем "
 "включить эту функцию только в одном месте."
 
-#: inc/functions.php:540
+#: inc/functions.php:568
 msgid ""
 "AUTOSAVE_INTERVAL is already enabled somewhere else on your site. We suggest "
 "only enabling this feature in one place."
@@ -193,70 +193,85 @@ msgstr ""
 "AUTOSAVE-INTERVAL уже включен где-то еще на вашем сайте. Мы предлагаем "
 "включить эту функцию только в одном месте."
 
-#: inc/functions.php:829 inc/functions.php:842 inc/functions.php:869
+#: inc/functions.php:845 inc/functions.php:858 inc/functions.php:885
 msgid "This has been disabled."
 msgstr "Это было отключено."
 
-#: inc/functions.php:1305
+#: inc/functions.php:1358
+msgid "No meta options selected."
+msgstr "Не выбраны мета-параметры."
+
+#: inc/functions.php:1378
+msgid "Meta options purged."
+msgstr "Мета-параметры удалены."
+
+#: inc/functions.php:1381
+msgid "Meta options not purged."
+msgstr "Мета-параметры не очищены."
+
+#: inc/functions.php:1417
 msgid "No import file given."
 msgstr "Файл импорта не указан."
 
-#: inc/functions.php:1313
+#: inc/functions.php:1425
 msgid "Please upload a valid .json file."
 msgstr "Пожалуйста, загрузите действительный .json файл."
 
-#: inc/functions.php:1337
+#: inc/functions.php:1449
 msgid "Successfully imported Perfmatters settings."
-msgstr "Настройки успешно импортированы."
+msgstr "Настройки Perfmatters успешно импортированы."
 
-#: inc/functions_script_manager.php:42 inc/functions_script_manager.php:63
-#: inc/functions_script_manager.php:104 inc/script_manager.php:98
-#: inc/script_manager.php:124 inc/settings.php:794
+#: inc/functions_script_manager.php:43 inc/functions_script_manager.php:64
+#: inc/functions_script_manager.php:105 inc/script_manager.php:114
+#: inc/script_manager.php:156 inc/settings.php:851
 msgid "Script Manager"
 msgstr "Менеджер скриптов"
 
-#: inc/functions_script_manager.php:66
+#: inc/functions_script_manager.php:67
 msgid "Close Script Manager"
-msgstr "Закрытие менеджера скриптов"
+msgstr "Закрыть менеджер скриптов"
 
-#: inc/functions_script_manager.php:139 inc/script_manager.php:177
-#: inc/script_manager.php:405
+#: inc/functions_script_manager.php:140 inc/script_manager.php:428
 msgid "Save"
 msgstr "Сохранить"
 
-#: inc/functions_script_manager.php:140
+#: inc/functions_script_manager.php:141
 msgid "Saving"
 msgstr "Сохранение"
 
-#: inc/functions_script_manager.php:141 inc/functions_script_manager.php:873
+#: inc/functions_script_manager.php:142 inc/functions_script_manager.php:982
 msgid "Settings saved successfully!"
 msgstr "Настройки успешно сохранены!"
 
-#: inc/functions_script_manager.php:142
+#: inc/functions_script_manager.php:143
 msgid "Settings failed to update."
 msgstr "Не удалось обновить настройки."
 
-#: inc/functions_script_manager.php:143
+#: inc/functions_script_manager.php:144
+msgid "No disabled location selected."
+msgstr "Не выбрано отключенное местоположение."
+
+#: inc/functions_script_manager.php:145
 msgid "No options were changed."
 msgstr "Параметры не были изменены."
 
-#: inc/functions_script_manager.php:272
+#: inc/functions_script_manager.php:299
 msgid "Status"
 msgstr "Состояние"
 
-#: inc/functions_script_manager.php:273 inc/script_manager.php:219
+#: inc/functions_script_manager.php:300 inc/script_manager.php:231
 msgid "Script"
 msgstr "Скрипт"
 
-#: inc/functions_script_manager.php:274 inc/script_manager.php:218
+#: inc/functions_script_manager.php:301 inc/script_manager.php:230
 msgid "Type"
 msgstr "Тип"
 
-#: inc/functions_script_manager.php:275
+#: inc/functions_script_manager.php:302
 msgid "Size"
 msgstr "Размер"
 
-#: inc/functions_script_manager.php:301
+#: inc/functions_script_manager.php:328
 msgid ""
 "MU Mode is currently enabled, the above settings will apply to the entire "
 "plugin."
@@ -264,58 +279,84 @@ msgstr ""
 "Режим MU в настоящее время включен, вышеуказанные настройки будут "
 "применяться ко всему плагину."
 
-#: inc/functions_script_manager.php:304
+#: inc/functions_script_manager.php:331
 msgid "The above settings will apply to all assets in this group."
 msgstr ""
-"Вышеуказанные настройки будут применяться ко всем скиптам в этой группе."
+"Вышеуказанные настройки будут применяться ко всем активам в этой группе."
 
-#: inc/functions_script_manager.php:414
+#: inc/functions_script_manager.php:397
+msgid "Depends on"
+msgstr "Зависит от"
+
+#: inc/functions_script_manager.php:410
+msgid "Required by"
+msgstr "Требуется"
+
+#: inc/functions_script_manager.php:475 inc/script_manager.php:344
 msgid "MU Mode"
 msgstr "Режим MU"
 
-#: inc/functions_script_manager.php:420 inc/script_manager_css.php:480
+#: inc/functions_script_manager.php:481 inc/script_manager_css.php:590
 msgid "ON"
 msgstr "ВКЛ"
 
-#: inc/functions_script_manager.php:421 inc/script_manager_css.php:494
+#: inc/functions_script_manager.php:482 inc/script_manager_css.php:604
 msgid "OFF"
 msgstr "ВЫКЛ"
 
-#: inc/functions_script_manager.php:443 inc/settings.php:1131
+#: inc/functions_script_manager.php:504 inc/settings.php:1214
 msgid "Disabled"
 msgstr "Отключено"
 
-#: inc/functions_script_manager.php:448
+#: inc/functions_script_manager.php:513
 msgid "Everywhere"
 msgstr "Везде"
 
-#: inc/functions_script_manager.php:461 inc/functions_script_manager.php:519
+#: inc/functions_script_manager.php:526 inc/functions_script_manager.php:591
 msgid "404 Template"
 msgstr "404 шаблон"
 
-#: inc/functions_script_manager.php:471 inc/functions_script_manager.php:536
+#: inc/functions_script_manager.php:536 inc/functions_script_manager.php:605
 msgid "Current URL"
 msgstr "Текущий URL"
 
-#: inc/functions_script_manager.php:480 inc/functions_script_manager.php:485
-#: inc/functions_script_manager.php:623
+#: inc/functions_script_manager.php:545 inc/functions_script_manager.php:552
+#: inc/functions_script_manager.php:705
 msgid "Regex"
 msgstr "Regex (регулярные выражения)"
 
-#: inc/functions_script_manager.php:502
+#: inc/functions_script_manager.php:570
 msgid "Exceptions"
 msgstr "Исключения"
 
-#: inc/functions_script_manager.php:1101 inc/script_manager.php:362
+#: inc/functions_script_manager.php:693
+msgid "Users"
+msgstr "Пользователи"
+
+#: inc/functions_script_manager.php:695 inc/settings.php:366
+#: inc/settings.php:385 inc/settings.php:405 inc/settings.php:433
+#: inc/settings.php:638 inc/settings.php:657
+msgid "Default"
+msgstr "По умолчанию"
+
+#: inc/functions_script_manager.php:696
+msgid "Logged In"
+msgstr "Авторизирован"
+
+#: inc/functions_script_manager.php:697
+msgid "Logged Out"
+msgstr "Выход выполнен"
+
+#: inc/functions_script_manager.php:1217 inc/script_manager.php:369
 msgid "MU plugin version mismatch."
 msgstr "Несоответствие версии плагина MU."
 
-#: inc/functions_script_manager.php:1101 inc/functions_script_manager.php:1109
-#: inc/script_manager.php:345 inc/settings.php:1674
+#: inc/functions_script_manager.php:1217 inc/functions_script_manager.php:1225
+#: inc/script_manager.php:340 inc/script_manager.php:352 inc/settings.php:1775
 msgid "View Documentation"
 msgstr "Посмотреть документацию"
 
-#: inc/functions_script_manager.php:1109 inc/script_manager.php:371
+#: inc/functions_script_manager.php:1225 inc/script_manager.php:378
 msgid "MU plugin file not found."
 msgstr "Файл плагина MU не найден."
 
@@ -339,7 +380,7 @@ msgstr "Удалить лицензию"
 msgid "Save or remove your license key."
 msgstr "Сохраните или удалите свой лицензионный ключ."
 
-#: inc/license.php:110 inc/license.php:117 perfmatters.php:127
+#: inc/license.php:110 inc/license.php:117 perfmatters.php:135
 msgid "Activate License"
 msgstr "Активировать лицензию"
 
@@ -375,11 +416,11 @@ msgstr "Продлить лицензию на обновления + подде
 msgid "Licenses Used"
 msgstr "Используемые лицензии"
 
-#: inc/meta.php:41
+#: inc/meta.php:44
 msgid "Defer JavaScript"
 msgstr "Отложить JavaScript"
 
-#: inc/meta.php:59
+#: inc/meta.php:64
 msgid "Instant Page"
 msgstr "Мгновенная страница"
 
@@ -401,11 +442,11 @@ msgid "Choose a subsite that you want to pull default settings from."
 msgstr ""
 "Выберите дочерний сайт, с которого вы хотите получить настройки по умолчанию."
 
-#: inc/network.php:44 inc/settings.php:932
+#: inc/network.php:44 inc/settings.php:998
 msgid "Clean Uninstall"
 msgstr "Полное удаление"
 
-#: inc/network.php:51 inc/settings.php:939
+#: inc/network.php:51 inc/settings.php:1005
 msgid ""
 "When enabled, this will cause all Perfmatters options data to be removed "
 "from your database when the plugin is uninstalled."
@@ -453,7 +494,7 @@ msgstr "Настройки сохранены."
 msgid "Network"
 msgstr "Сеть"
 
-#: inc/network.php:180 perfmatters.php:115 perfmatters.php:153
+#: inc/network.php:180 perfmatters.php:123 perfmatters.php:161
 msgid "Support"
 msgstr "Поддержка"
 
@@ -477,97 +518,102 @@ msgstr ""
 msgid "Select a Site"
 msgstr "Выберите сайт"
 
-#: inc/script_manager.php:99 inc/script_manager.php:207
+#: inc/script_manager.php:115 inc/script_manager.php:217
 msgid "Global View"
 msgstr "Глобальное представление"
 
-#: inc/script_manager.php:100 inc/script_manager.php:300 perfmatters.php:179
+#: inc/script_manager.php:116 inc/script_manager.php:299 perfmatters.php:187
 msgid "Settings"
 msgstr "Настройки"
 
-#: inc/script_manager.php:110
+#: inc/script_manager.php:137
 msgid ""
-"Below you can disable/enable CSS and JS files on a per page/post basis, as "
-"well as by custom post types. We recommend testing this locally or on a "
-"staging site first, as you could break the appearance of your live site. If "
-"you aren't sure about a certain script, you can try clicking on it, as a lot "
-"of authors will mention their plugin or theme in the header of the source "
-"code."
+"The Script Manager lets you disable CSS and JS files on a per post basis, by "
+"custom post types, and regex. We recommend testing this locally or on a "
+"staging site first, as you could break your site's appearance. You can also "
+"use Testing Mode to preview your configuration as an admin."
 msgstr ""
-"Ниже вы можете включить/отключить использование CSS и JS файлов в записях, "
-"произвольных типах записей или страницах. Мы рекомендуем сначала "
-"протестировать это локально или на промежуточном сайте, так как вы можете "
-"испортить внешний вид вашего живого сайта. Если вы не уверены в том или ином "
-"сценарии, вы можете попробовать нажать на него, так как многие авторы "
-"упоминают свой плагин или тему в заголовке исходного кода."
+"Менеджер скриптов позволяет отключать файлы CSS и JS для каждой публикации, "
+"по настраиваемым типам сообщений и регулярному выражению. Мы рекомендуем "
+"сначала протестировать это локально или на промежуточном сайте, поскольку вы "
+"можете нарушить внешний вид своего сайта. Вы также можете использовать режим "
+"тестирования для предварительного просмотра своей конфигурации в качестве "
+"администратора."
 
-#: inc/script_manager.php:113
+#: inc/script_manager.php:140
 msgid ""
-"If for some reason you run into trouble, you can always enable everything "
-"again to reset the settings. Make sure to check out the <a href='https://"
-"perfmatters.io/docs/' target='_blank' title='Perfmatters Knowledge "
-"Base'>Perfmatters knowledge base</a> for more information."
-msgstr ""
-"Если по какой-то причине вы столкнетесь с проблемами, вы всегда можете "
-"включить все снова, чтобы сбросить настройки. Обязательно ознакомьтесь с <a "
+"If you run into trouble, you can reset your entire Script Manager "
+"configuration from the settings tab. For more information, see the <a "
 "href='https://perfmatters.io/docs/' target='_blank' title='Perfmatters "
-"Knowledge Base'>База знаний Perfmatters</a> для получения дополнительной "
-"информации."
+"Documentation'>Perfmatters documentation</a>."
+msgstr ""
+"Если у вас возникнут проблемы, вы можете сбросить всю конфигурацию Менеджера "
+"скриптов (Script Manager) на вкладке настроек. Для получения дополнительной "
+"информации см. <a href='https://perfmatters.io/docs/' target='_blank' "
+"title='Perfmatters Documentation'> документацию Perfmatters </a>."
 
-#: inc/script_manager.php:125
+#: inc/script_manager.php:157
 msgid "Manage scripts loading on the current page."
 msgstr "Управление загрузкой скриптов на текущей странице."
 
-#: inc/script_manager.php:196
+#: inc/script_manager.php:181
+msgid "Total size"
+msgstr "Общий размер"
+
+#: inc/script_manager.php:208
 msgid "Loading Scripts"
 msgstr "Загрузка скриптов"
 
-#: inc/script_manager.php:208
+#: inc/script_manager.php:218
 msgid ""
 "This is a visual representation of the Script Manager configuration across "
 "your entire site."
 msgstr ""
-"Визуальное представление конфигурации менеджера скриптов на всем сайте."
+"Визуальное представление конфигурации Менеджера скриптов на всем сайте."
 
-#: inc/script_manager.php:220
+#: inc/script_manager.php:232
 msgid "Setting"
 msgstr "Настройка"
 
-#: inc/script_manager.php:274
+#: inc/script_manager.php:290
 msgid "You don't have any scripts disabled yet."
 msgstr "У вас еще нет отключенных скриптов."
 
-#: inc/script_manager.php:301
+#: inc/script_manager.php:300
 msgid "View and manage all of your Script Manager settings."
-msgstr "Просмотр и управление всеми настройками менеджера скриптов."
+msgstr "Просмотр и управление всеми настройками Менеджера скриптов."
 
-#: inc/script_manager.php:314
-msgid "Hide Disclaimer"
-msgstr "Скрыть отказ от ответственности"
-
-#: inc/script_manager.php:322
-msgid "Hide the disclaimer message box across all Script Manager views."
-msgstr ""
-"Скрыть окно сообщения об отказе от ответственности во всех представлениях "
-"менеджера скриптов."
-
-#: inc/script_manager.php:326
+#: inc/script_manager.php:311
 msgid "Display Archives"
 msgstr "Показать архивы"
 
-#: inc/script_manager.php:333
+#: inc/script_manager.php:318
 msgid ""
 "Add WordPress archives to your Script Manager selection options. Archive "
 "posts will no longer be grouped with their post type."
 msgstr ""
-"Добавьте архивы WordPress в варианты выбора менеджера скриптов. Архивные "
+"Добавьте архивы WordPress в варианты выбора Менеджера скриптов. Архивные "
 "сообщения больше не будут сгруппироваться с типом сообщения."
 
-#: inc/script_manager.php:337
-msgid "Enable MU Mode"
-msgstr "Включить режим MU"
+#: inc/script_manager.php:322
+msgid "Display Dependencies"
+msgstr "Отображение зависимостей"
 
-#: inc/script_manager.php:345
+#: inc/script_manager.php:329
+msgid "Show dependencies for each script."
+msgstr "Показать зависимости для каждого скрипта."
+
+#: inc/script_manager.php:333
+msgid "Testing Mode"
+msgstr "Режим тестирования"
+
+#: inc/script_manager.php:340
+msgid "Restrict your Script Manager configuration to logged-in admins only."
+msgstr ""
+"Ограничьте конфигурацию Менеджера скриптов только администраторами, "
+"вошедшими в систему."
+
+#: inc/script_manager.php:352
 msgid ""
 "Must-use (MU) mode requires elevated permissions and a file to be copied "
 "into the mu-plugins directory. This gives you more control and the ability "
@@ -577,136 +623,137 @@ msgstr ""
 "каталог mu-plugins. Это дает вам больше контроля и возможность отключить "
 "запросы плагинов, inline CSS и т. д."
 
-#: inc/script_manager.php:347
+#: inc/script_manager.php:354
 msgid "Warning"
 msgstr "Предупреждение"
 
-#: inc/script_manager.php:347
+#: inc/script_manager.php:354
 msgid ""
-"Any previous plugin-level script disables will now disable the entire "
-"plugin. Please review your existing Script Manager settings before enabling "
+"Any previous plugin-level disables will now disable the entire plugin. "
+"Please review your existing Script Manager configuration before enabling "
 "this option."
 msgstr ""
-"Все предыдущие отключения скрипта уровня плагина теперь будут отключать весь "
-"плагин.. Пожалуйста, просмотрите существующие настройки диспетчера сценариев "
-"перед включением этой опции."
+"Любые предыдущие отключения на уровне плагина теперь будут отключать весь "
+"плагин. Перед включением этой опции проверьте существующую конфигурацию "
+"Менеджера скриптов."
 
-#: inc/script_manager.php:366
+#: inc/script_manager.php:373
 msgid "MU plugin installed."
 msgstr "Плагин MU установлен."
 
-#: inc/script_manager.php:381 inc/script_manager.php:385
-msgid "Reset Script Manager"
-msgstr "Сбросить диспетчер скриптов"
-
 #: inc/script_manager.php:388
-msgid "Remove and reset all of your existing Script Manager settings."
-msgstr "Удалите и сбросите все существующие настройки менеджера скриптов."
+msgid "Hide Disclaimer"
+msgstr "Скрыть отказ от ответственности"
 
-#: inc/script_manager.php:424
+#: inc/script_manager.php:395
+msgid "Hide the disclaimer message box across all Script Manager views."
+msgstr ""
+"Скрыть окно сообщения об отказе от ответственности во всех представлениях "
+"Менеджера скриптов."
+
+#: inc/script_manager.php:399 inc/script_manager.php:403
+msgid "Reset Script Manager"
+msgstr "Сбросить Менеджер скриптов"
+
+#: inc/script_manager.php:406
+msgid "Remove and reset all of your existing Script Manager settings."
+msgstr "Удалить и сбросить все существующие настройки Менеджера скриптов."
+
+#: inc/script_manager.php:448
 msgid ""
 "Are you sure? This will remove and reset all of your existing Script Manager "
 "settings and cannot be undone!"
 msgstr ""
-"Вы уверены? Это удалить и сбросить все существующие настройки менеджера "
+"Вы уверены? Это удалить и сбросить все существующие настройки Менеджера "
 "скриптов и не может быть отменено!"
 
-#: inc/settings.php:15
+#: inc/settings.php:17
 msgid "Disable Emojis"
 msgstr "Отключить Emojis"
 
-#: inc/settings.php:21
+#: inc/settings.php:23
 msgid "Removes WordPress Emojis JavaScript file (wp-emoji-release.min.js)."
 msgstr "Удаляет файл WordPress Emojis JavaScript (wp-emoji-release.min.js)."
 
-#: inc/settings.php:28
+#: inc/settings.php:30
 msgid "Disable Embeds"
 msgstr "Отключить Embeds"
 
-#: inc/settings.php:34
+#: inc/settings.php:36
 msgid "Removes WordPress Embed JavaScript file (wp-embed.min.js)."
 msgstr "Удаляет файл WordPress Embed JavaScript (wp-embed.min.js)."
 
-#: inc/settings.php:41
-msgid "Remove Query Strings"
-msgstr "Удалить Query Strings"
-
-#: inc/settings.php:47
-msgid "Remove query strings from static resources (CSS, JS)."
-msgstr ""
-"Удалить строки запроса (query strings) из статических ресурсов (CSS, JS)."
-
-#: inc/settings.php:54
+#: inc/settings.php:43
 msgid "Disable XML-RPC"
 msgstr "Отключить XML-RPC"
 
-#: inc/settings.php:60
+#: inc/settings.php:49
 msgid "Disables WordPress XML-RPC functionality."
 msgstr "Отключает функциональность WordPress XML-RPC."
 
-#: inc/settings.php:67
+#: inc/settings.php:56
 msgid "Remove jQuery Migrate"
 msgstr "Удалить jQuery Migrate"
 
-#: inc/settings.php:73
+#: inc/settings.php:62
 msgid "Removes jQuery Migrate JavaScript file (jquery-migrate.min.js)."
 msgstr "Удаляет файл jQuery Migrate JavaScript (jquery-migrate.min.js)."
 
-#: inc/settings.php:80
+#: inc/settings.php:69
 msgid "Hide WP Version"
 msgstr "Скрыть версию WP"
 
-#: inc/settings.php:86
+#: inc/settings.php:75
 msgid "Removes WordPress version meta tag."
 msgstr "Удаляет метатег версии WordPress."
 
-#: inc/settings.php:93
+#: inc/settings.php:82
 msgid "Remove wlwmanifest Link"
 msgstr "Удалить ссылку wlwmanifest"
 
-#: inc/settings.php:99
+#: inc/settings.php:88
 msgid "Remove wlwmanifest (Windows Live Writer) link tag."
 msgstr "Удалялить тег ссылки wlwmanifest (Windows Live Writer)."
 
-#: inc/settings.php:106
+#: inc/settings.php:95
 msgid "Remove RSD Link"
 msgstr "Удалить RSD ссылку"
 
-#: inc/settings.php:112
+#: inc/settings.php:101
 msgid "Remove RSD (Real Simple Discovery) link tag."
 msgstr "Удалить тег ссылки RSD (Real Simple Discovery)."
 
-#: inc/settings.php:119
+#: inc/settings.php:108
 msgid "Remove Shortlink"
 msgstr "Удалить короткую ссылку"
 
-#: inc/settings.php:125
+#: inc/settings.php:114
 msgid "Remove Shortlink link tag."
 msgstr "Удалить тег ссылки Shortlink."
 
-#: inc/settings.php:132
+#: inc/settings.php:121
 msgid "Disable RSS Feeds"
 msgstr "Отключить RSS-каналы"
 
-#: inc/settings.php:138
+#: inc/settings.php:127
 msgid "Disable WordPress generated RSS feeds and 301 redirect URL to parent."
 msgstr ""
 "Отключает сгенерированные WordPress RSS-каналы и 301 редирект URL на "
 "родительский."
 
-#: inc/settings.php:145
+#: inc/settings.php:134
 msgid "Remove RSS Feed Links"
 msgstr "Удалить ссылки канала RSS"
 
-#: inc/settings.php:151
+#: inc/settings.php:140
 msgid "Disable WordPress generated RSS feed link tags."
 msgstr "Отключить сгенерированные WordPress теги RSS-каналов."
 
-#: inc/settings.php:158
+#: inc/settings.php:147
 msgid "Disable Self Pingbacks"
 msgstr "Отключить Self Pingbacks"
 
-#: inc/settings.php:164
+#: inc/settings.php:153
 msgid ""
 "Disable Self Pingbacks (generated when linking to an article on your own "
 "blog)."
@@ -714,23 +761,23 @@ msgstr ""
 "Отключить Self Pingbacks (сгенерированные при ссылке на статью в вашем "
 "блоге)."
 
-#: inc/settings.php:171
+#: inc/settings.php:160
 msgid "Disable REST API"
 msgstr "Отключить REST API"
 
-#: inc/settings.php:179
+#: inc/settings.php:168
 msgid "Default (Enabled)"
 msgstr "По умолчанию (включено)"
 
-#: inc/settings.php:180
+#: inc/settings.php:169
 msgid "Disable for Non-Admins"
 msgstr "Отключить для не-администраторов"
 
-#: inc/settings.php:181
+#: inc/settings.php:170
 msgid "Disable When Logged Out"
 msgstr "Отключить при выходе из системы"
 
-#: inc/settings.php:183
+#: inc/settings.php:172
 msgid ""
 "Disables REST API requests and displays an error message if the requester "
 "doesn't have permission."
@@ -738,11 +785,11 @@ msgstr ""
 "Отключает запросы API REST и отображает сообщение об ошибке, если "
 "запрашивающая сторона не имеет разрешения."
 
-#: inc/settings.php:190
+#: inc/settings.php:179
 msgid "Remove REST API Links"
 msgstr "Удалить ссылки REST API"
 
-#: inc/settings.php:196
+#: inc/settings.php:185
 msgid ""
 "Removes REST API link tag from the front end and the REST API header link "
 "from page requests."
@@ -750,37 +797,49 @@ msgstr ""
 "Удаляет тег ссылки API REST из внешнего интерфейса и ссылку заголовка API "
 "REST из запросов страниц."
 
-#: inc/settings.php:203
+#: inc/settings.php:192
 msgid "Disable Dashicons"
 msgstr "Отключить Dashicons"
 
-#: inc/settings.php:209
+#: inc/settings.php:198
 msgid "Disables dashicons on the front end when not logged in."
 msgstr "Отключает WordPress иконки (для фронтенда), если вход не выполнен."
 
-#: inc/settings.php:216
+#: inc/settings.php:205
 msgid "Disable Google Maps"
 msgstr "Отключить Google Карты"
 
-#: inc/settings.php:222
+#: inc/settings.php:212
 msgid ""
 "Removes any instances of Google Maps being loaded across your entire site."
 msgstr "Удаляет все случаи загрузки Карт Google по всему вашему сайту."
 
-#: inc/settings.php:229
+#: inc/settings.php:219
+msgid "Exclude Post IDs"
+msgstr "Исключить ID записей"
+
+#: inc/settings.php:228
+msgid ""
+"Prevent Google Maps from being disabled on specific post IDs. Format: comma "
+"separated"
+msgstr ""
+"Запретить отключение Google Maps для определенных ID записей. Формат: через "
+"запятую"
+
+#: inc/settings.php:235
 msgid "Disable Google Fonts"
 msgstr "Отключить шрифты Google"
 
-#: inc/settings.php:235
+#: inc/settings.php:241
 msgid ""
 "Removes any instances of Google Fonts being loaded across your entire site."
 msgstr "Удаляет все случаи загрузки шрифтов Google по всему сайту."
 
-#: inc/settings.php:242
+#: inc/settings.php:248
 msgid "Disable Password Strength Meter"
 msgstr "Отключить проверку надежности пароля"
 
-#: inc/settings.php:248
+#: inc/settings.php:254
 msgid ""
 "Removes WordPress and WooCommerce Password Strength Meter scripts from non "
 "essential pages."
@@ -788,46 +847,46 @@ msgstr ""
 "Удаляет скрипты WordPress и WooCommerce Проверки надежности пароля с "
 "несущественных страниц."
 
-#: inc/settings.php:255
+#: inc/settings.php:261
 msgid "Disable Comments"
 msgstr "Отключить комментарии"
 
-#: inc/settings.php:261
+#: inc/settings.php:267
 msgid "Disables WordPress comments across your entire site."
 msgstr "Отключает комментарии WordPress по всему сайту."
 
-#: inc/settings.php:268
+#: inc/settings.php:274
 msgid "Remove Comment URLs"
 msgstr "Удалить URL в комментариях"
 
-#: inc/settings.php:274
+#: inc/settings.php:280
 msgid ""
 "Removes the WordPress comment author link and website field from blog posts."
 msgstr ""
 "Удаляет ссылку автора комментария WordPress и поле веб-сайта из сообщений "
 "блога."
 
-#: inc/settings.php:284
+#: inc/settings.php:290
 msgid "Images"
 msgstr "Изображения"
 
-#: inc/settings.php:290
+#: inc/settings.php:296
 msgid "Enable lazy loading on images."
 msgstr "Включить отложенную загрузку изображений."
 
-#: inc/settings.php:297
+#: inc/settings.php:303
 msgid "iFrames and Videos"
 msgstr "iFrames и видео"
 
-#: inc/settings.php:303
+#: inc/settings.php:309
 msgid "Enable lazy loading on iframes and videos."
 msgstr "Включитт отложенную загрузку на iframes и видео."
 
-#: inc/settings.php:310
+#: inc/settings.php:316
 msgid "YouTube Preview Thumbnails"
 msgstr "Предпросмотр YouTube"
 
-#: inc/settings.php:316
+#: inc/settings.php:322
 msgid ""
 "Swap out YouTube iFrames with preview thumbnails. The original iFrame is "
 "loaded when the thumbnail is clicked."
@@ -835,35 +894,44 @@ msgstr ""
 "Замена YouTube iFrames миниатюрами предварительного просмотра. Исходный "
 "iFrame загружается при щелчке миниатюры."
 
-#: inc/settings.php:323
+#: inc/settings.php:329
+msgid "Exclude from Lazy Loading"
+msgstr "Исключить из ленивой загрузки"
+
+#: inc/settings.php:338
+msgid ""
+"Exclude specific elements from lazy loading. Exclude an element by adding "
+"the source URL (example.png) or by adding any unique portion of its "
+"attribute string (class=\"example\"). Format: one per line"
+msgstr ""
+"Исключить определенные элементы из ленивой загрузки. Исключите элемент, "
+"добавив исходный URL-адрес (example.png) или любую уникальную часть его "
+"строки атрибута (class = \"example\"). Формат: по одному на строку"
+
+#: inc/settings.php:345
 msgid "DOM Monitoring"
 msgstr "DOM Мониторинг"
 
-#: inc/settings.php:329
+#: inc/settings.php:351
 msgid ""
 "Watch for changes in the DOM and dynamically lazy load newly added elements."
 msgstr ""
 "Следите за изменениями в DOM и динамически отложенно загружайте вновь "
 "добавленные элементы."
 
-#: inc/settings.php:336
+#: inc/settings.php:358
 msgid "Disable Heartbeat"
 msgstr "Отключить пульсацию"
 
-#: inc/settings.php:344 inc/settings.php:363 inc/settings.php:383
-#: inc/settings.php:411 inc/settings.php:616 inc/settings.php:635
-msgid "Default"
-msgstr "По умолчанию"
-
-#: inc/settings.php:345
+#: inc/settings.php:367
 msgid "Disable Everywhere"
 msgstr "Отключить везде"
 
-#: inc/settings.php:346
+#: inc/settings.php:368
 msgid "Only Allow When Editing Posts/Pages"
 msgstr "Разрешить только при редактировании записей/страниц"
 
-#: inc/settings.php:348
+#: inc/settings.php:370
 msgid ""
 "Disable WordPress Heartbeat everywhere or in certain areas (used for auto "
 "saving and revision tracking)."
@@ -871,61 +939,61 @@ msgstr ""
 "Отключить WordPress Heartbeat (пульсации) везде или в определенных областях "
 "(используется для автоматического сохранения и отслеживания изменений)."
 
-#: inc/settings.php:355
+#: inc/settings.php:377
 msgid "Heartbeat Frequency"
 msgstr "Интервал пульсации"
 
-#: inc/settings.php:363 inc/settings.php:364 inc/settings.php:365
-#: inc/settings.php:366
+#: inc/settings.php:385 inc/settings.php:386 inc/settings.php:387
+#: inc/settings.php:388
 #, php-format
 msgid "%s Seconds"
 msgstr "%s сек"
 
-#: inc/settings.php:368
+#: inc/settings.php:390
 msgid "Controls how often the WordPress Heartbeat API is allowed to run."
 msgstr "Управляет частотой запуска API Heartbeat WordPress."
 
-#: inc/settings.php:375
+#: inc/settings.php:397
 msgid "Limit Post Revisions"
 msgstr "Установить лимит ревизий"
 
-#: inc/settings.php:384
+#: inc/settings.php:406
 msgid "Disable Post Revisions"
 msgstr "Отключить публикацию редакций"
 
-#: inc/settings.php:396
+#: inc/settings.php:418
 msgid ""
 "Limits the maximum amount of revisions that are allowed for posts and pages."
 msgstr ""
 "Ограничивает максимальное количество редакций, разрешенных для постов и "
 "страниц."
 
-#: inc/settings.php:403
+#: inc/settings.php:425
 msgid "Autosave Interval"
 msgstr "Интервал автосохранения"
 
-#: inc/settings.php:411
+#: inc/settings.php:433
 msgid "1 Minute"
 msgstr "1 минута"
 
-#: inc/settings.php:412 inc/settings.php:413 inc/settings.php:414
-#: inc/settings.php:415
+#: inc/settings.php:434 inc/settings.php:435 inc/settings.php:436
+#: inc/settings.php:437
 #, php-format
 msgid "%s Minutes"
 msgstr "%s минут"
 
-#: inc/settings.php:417
+#: inc/settings.php:439
 msgid ""
 "Controls how often WordPress will auto save posts and pages while editing."
 msgstr ""
 "Управляет тем, как часто WordPress будет автоматически сохранять записи и "
 "страницы при редактировании."
 
-#: inc/settings.php:424
+#: inc/settings.php:446
 msgid "Change Login URL"
 msgstr "Изменить URL логина"
 
-#: inc/settings.php:432
+#: inc/settings.php:454
 msgid ""
 "When set, this will change your WordPress login URL (slug) to the provided "
 "string and will block wp-admin and wp-login endpoints from being directly "
@@ -935,11 +1003,11 @@ msgstr ""
 "предоставленную строку и заблокирует прямой доступ к конечным точкам wp-"
 "admin и wp-login."
 
-#: inc/settings.php:442
+#: inc/settings.php:464
 msgid "Disable Scripts"
 msgstr "Отключить скрипты"
 
-#: inc/settings.php:448
+#: inc/settings.php:470
 msgid ""
 "Disables WooCommerce scripts and styles except on product, cart, and "
 "checkout pages."
@@ -947,35 +1015,35 @@ msgstr ""
 "Отключает скрипты и стили WooCommerce, кроме страниц товаров, корзин и "
 "оформления заказа."
 
-#: inc/settings.php:455
+#: inc/settings.php:477
 msgid "Disable Cart Fragmentation"
 msgstr "Откл. фрагмент. корзины"
 
-#: inc/settings.php:461
+#: inc/settings.php:483
 msgid "Completely disables WooCommerce cart fragmentation script."
 msgstr "Полностью отключает скрипт фрагментации корзины WooCommerce."
 
-#: inc/settings.php:468
+#: inc/settings.php:490
 msgid "Disable Status Meta Box"
 msgstr "Отключить Status Meta Box"
 
-#: inc/settings.php:474
+#: inc/settings.php:496
 msgid "Disables WooCommerce status meta box from the WP Admin Dashboard."
 msgstr "Отключает Status Meta Box WooCommerce на панели администратора WP."
 
-#: inc/settings.php:481
+#: inc/settings.php:503
 msgid "Disable Widgets"
 msgstr "Отключить виджеты"
 
-#: inc/settings.php:487
+#: inc/settings.php:509
 msgid "Disables all WooCommerce widgets."
 msgstr "Отключает все виджеты WooCommerce."
 
-#: inc/settings.php:504
+#: inc/settings.php:526
 msgid "Enable CDN Rewrite"
 msgstr "Включить перезапись CDN"
 
-#: inc/settings.php:511
+#: inc/settings.php:533
 msgid ""
 "Enables rewriting of your site URLs with your CDN URLs which can be "
 "configured below."
@@ -983,22 +1051,22 @@ msgstr ""
 "Включить переписывание URL вашего сайта с вашими URL CDN, которые можно "
 "настроить ниже."
 
-#: inc/settings.php:518
+#: inc/settings.php:540 inc/settings.php:731
 msgid "CDN URL"
 msgstr "CDN URL"
 
-#: inc/settings.php:527
+#: inc/settings.php:549
 msgid ""
 "Enter your CDN URL without the trailing backslash. Example: https://cdn."
 "example.com"
 msgstr ""
 "Введите ваш CDN URL без обратной косой черты. Пример: https://cdn.example.com"
 
-#: inc/settings.php:534
+#: inc/settings.php:556
 msgid "Included Directories"
 msgstr "Включенные каталоги"
 
-#: inc/settings.php:543
+#: inc/settings.php:565
 msgid ""
 "Enter any directories you would like to be included in CDN rewriting, "
 "separated by commas (,). Default: wp-content,wp-includes"
@@ -1006,11 +1074,11 @@ msgstr ""
 "Введите любые каталоги, которые вы хотели бы включить в перезапись CDN, "
 "разделяя их запятыми (,). По умолчанию: wp-content, wp-includes"
 
-#: inc/settings.php:550
+#: inc/settings.php:572
 msgid "CDN Exclusions"
 msgstr "Исключения CDN"
 
-#: inc/settings.php:559
+#: inc/settings.php:581
 msgid ""
 "Enter any directories or file extensions you would like to be excluded from "
 "CDN rewriting, separated by commas (,). Default: .php"
@@ -1018,36 +1086,36 @@ msgstr ""
 "Введите любые каталоги или расширения файлов, которые вы хотели бы исключить "
 "из перезаписи CDN, разделяя их запятыми (,). По умолчанию: .php"
 
-#: inc/settings.php:578
+#: inc/settings.php:600
 msgid "Enable Local Analytics"
 msgstr "Включить аналитику"
 
-#: inc/settings.php:585
+#: inc/settings.php:607
 msgid "Enable syncing of the Google Analytics script to your own server."
 msgstr ""
 "Включить синхронизацию скрипта Google Analytics с вашим собственным сервером."
 
-#: inc/settings.php:592
+#: inc/settings.php:614
 msgid "Tracking ID"
 msgstr "Код отслеживания"
 
-#: inc/settings.php:600
-msgid "Input your Google Analytics tracking ID."
+#: inc/settings.php:622
+msgid "Input your Google Analytics tracking or measurement ID."
 msgstr "Введите свой идентификатор отслеживания Google Analytics."
 
-#: inc/settings.php:607
+#: inc/settings.php:629
 msgid "Tracking Code Position"
-msgstr "Позиция кода слежения"
+msgstr "Расположение кода слежения"
 
-#: inc/settings.php:616
+#: inc/settings.php:638
 msgid "Header"
 msgstr "Header (заголовок)"
 
-#: inc/settings.php:617
+#: inc/settings.php:639
 msgid "Footer"
-msgstr "Footer (Нижняя часть)"
+msgstr "Footer (нижний колонтитул)"
 
-#: inc/settings.php:619
+#: inc/settings.php:641
 msgid ""
 "Load your analytics script in the header (default) or footer of your site. "
 "Default: Header"
@@ -1055,56 +1123,56 @@ msgstr ""
 "Загрузите скрипт аналитики в верхний или нижний колонтитул сайта. По "
 "умолчанию: Header (заголовок)"
 
-#: inc/settings.php:626
+#: inc/settings.php:648
 msgid "Script Type"
 msgstr "Тип скрипта"
 
-#: inc/settings.php:636
+#: inc/settings.php:660
 msgid "Minimal"
 msgstr "минимальный"
 
-#: inc/settings.php:637
+#: inc/settings.php:661
 msgid "Minimal Inline"
 msgstr "минимальный Inline"
 
-#: inc/settings.php:640
-msgid "Choose which script method, method_name)"
-msgstr ""
+#: inc/settings.php:664
+msgid "Choose which script method you would like to use."
+msgstr "Выберите, какой метод сценария вы хотите использовать."
 
-#: inc/settings.php:647
+#: inc/settings.php:671
 msgid "Disable Display Features"
 msgstr "Отключить allowAdFeatures"
 
-#: inc/settings.php:655
+#: inc/settings.php:679
 msgid "Disable remarketing and advertising which generates a 2nd HTTP request."
 msgstr "Отключите ремаркетинг и рекламу, которая генерирует 2-й Запрос HTTP."
 
-#: inc/settings.php:662
+#: inc/settings.php:686
 msgid "Anonymize IP"
 msgstr "Анонимизация IP"
 
-#: inc/settings.php:669
+#: inc/settings.php:694
 msgid ""
 "Shorten visitor IP to comply with privacy restrictions in some countries."
 msgstr ""
 "Скрывает IP-адрес посетителя, чтобы соблюсти ограничения конфиденциальности "
 "в некоторых странах (anonymizeIp)."
 
-#: inc/settings.php:676
+#: inc/settings.php:701
 msgid "Track Logged In Admins"
 msgstr "Вошедшие в систему"
 
-#: inc/settings.php:683
+#: inc/settings.php:708
 msgid "Include logged-in WordPress admins in your Google Analytics reports."
 msgstr ""
 "Включить зарегистрированных администраторов WordPress в свои отчеты Google "
 "Analytics."
 
-#: inc/settings.php:690
+#: inc/settings.php:715
 msgid "Adjusted Bounce Rate"
 msgstr "Показатель отказов"
 
-#: inc/settings.php:699
+#: inc/settings.php:724
 msgid ""
 "Set a timeout limit in seconds to better evaluate the quality of your "
 "traffic. (1-100)"
@@ -1112,23 +1180,43 @@ msgstr ""
 "Установите время ожидания в секундах, чтобы лучше оценить качество вашего "
 "трафика. (1-100)  (setTimeout)"
 
-#: inc/settings.php:706
+#: inc/settings.php:741
+msgid ""
+"Use your CDN URL when referencing analytics.js from inside gtag.js. Example: "
+"https://cdn.example.com"
+msgstr ""
+"Используйте свой URL-адрес CDN при обращении к analytics.js изнутри gtag.js. "
+"Пример: https://cdn.example.com"
+
+#: inc/settings.php:748
 msgid "Use MonsterInsights"
 msgstr "Использовать MonsterInsights"
 
-#: inc/settings.php:714
+#: inc/settings.php:756
 msgid ""
-"Allows MonsterInsights to manage your Google Analaytics while still using "
-"the locally hosted analytics.js file generated by Perfmatters."
+"Allows MonsterInsights to manage your Google Analytics while still using the "
+"locally hosted gtag.js file generated by Perfmatters."
 msgstr ""
-"Позволяет ProblemInsights управлять вашим Google Analaytics, по-прежнему "
-"используя локально размещенный файл analytics.js, созданный Perfmatters."
+"Позволяет MonsterInsights управлять вашей Google Analytics, продолжая "
+"использовать локально размещенный файл gtag.js, созданный Perfmatters."
 
-#: inc/settings.php:729
+#: inc/settings.php:763
+msgid "Enable AMP Support"
+msgstr "Включить поддержку AMP"
+
+#: inc/settings.php:771
+msgid ""
+"Enable support for analytics tracking on AMP sites. This is not a local "
+"script, but a native AMP script."
+msgstr ""
+"Включить поддержку отслеживания аналитики на сайтах AMP. Это не локальный "
+"скрипт, а собственный AMP-скрипт."
+
+#: inc/settings.php:786
 msgid "Add Blank Favicon"
 msgstr "Добавить пустой Favicon"
 
-#: inc/settings.php:736
+#: inc/settings.php:793
 msgid ""
 "Adds a blank favicon to your WordPress header which will prevent a Missing "
 "Favicon or 404 error from showing up on certain website speed testing tools."
@@ -1137,11 +1225,11 @@ msgstr ""
 "ошибки Missing Favicon или 404 на некоторых инструментах тестирования "
 "скорости сайта."
 
-#: inc/settings.php:743
+#: inc/settings.php:800
 msgid "Add Header Code"
 msgstr "Добавить код в Header"
 
-#: inc/settings.php:751
+#: inc/settings.php:808
 msgid ""
 "Code added here will be printed in the head section on every page of your "
 "website."
@@ -1149,11 +1237,11 @@ msgstr ""
 "Код, добавленный здесь, будет прописан в головном разделе на каждой странице "
 "вашего сайта."
 
-#: inc/settings.php:760
+#: inc/settings.php:817
 msgid "Add Body Code"
 msgstr "Добавить код в Body"
 
-#: inc/settings.php:768
+#: inc/settings.php:825
 msgid ""
 "Code added here will be printed below the opening body tag on every page of "
 "your website."
@@ -1161,11 +1249,11 @@ msgstr ""
 "Добавленный здесь код будет прописан под открывающим тегом <body> на каждой "
 "странице вашего веб-сайта."
 
-#: inc/settings.php:776
+#: inc/settings.php:833
 msgid "Add Footer Code"
 msgstr "Добавить код в Footer"
 
-#: inc/settings.php:784
+#: inc/settings.php:841
 msgid ""
 "Code added here will be printed above the closing body tag on every page of "
 "your website."
@@ -1173,39 +1261,31 @@ msgstr ""
 "Добавленный здесь код будет прописан над закрывающим тегом </body> на каждой "
 "странице вашего веб-сайта."
 
-#: inc/settings.php:801
+#: inc/settings.php:858
 msgid ""
 "Enables the Perfmatters Script Manager, which gives you the ability to "
 "disable CSS and JS files on a page by page basis."
 msgstr ""
-"Включить менеджер скриптов Perfmatters, который позволяет отключать файлы "
+"Включить Менеджер скриптов Perfmatters, который позволяет отключать файлы "
 "CSS и JS на каждой странице."
 
-#: inc/settings.php:806
+#: inc/settings.php:863
 msgid "JavaScript"
 msgstr "JavaScript"
 
-#: inc/settings.php:811
+#: inc/settings.php:868
 msgid "Defer Javascript"
 msgstr "Отложить JavaScript"
 
-#: inc/settings.php:818
+#: inc/settings.php:875
 msgid "Add the defer attribute to your JavaScript files."
 msgstr "Добавьте атрибут defer (отложить) в свои файлы JavaScript."
 
-#: inc/settings.php:825
-msgid "Defer Inline Javascript"
-msgstr "Отдожить Inline Javascript"
-
-#: inc/settings.php:832
-msgid "Add the defer attribute to your inline JavaScript tags."
-msgstr "Добавьте атрибут defer (отложить) к inline JavaScript tags."
-
-#: inc/settings.php:839
+#: inc/settings.php:882
 msgid "Include jQuery"
 msgstr "Включить jQuery"
 
-#: inc/settings.php:846
+#: inc/settings.php:889
 msgid ""
 "Many plugins and themes require jQuery. We recommend either testing jQuery "
 "deferral separately or leaving this option turned off."
@@ -1213,7 +1293,7 @@ msgstr ""
 "Многие плагины и темы требуют jQuery. Мы рекомендуем либо протестировать "
 "отсрочку jQuery отдельно, либо оставить эту опцию выключенной."
 
-#: inc/settings.php:847
+#: inc/settings.php:890
 msgid ""
 "Allow jQuery core to be deferred. We recommend testing this separately or "
 "leaving it off."
@@ -1221,26 +1301,34 @@ msgstr ""
 "Разрешить отсрочку ядра jQuery. Мы рекомендуем протестировать это отдельно "
 "или не использовать."
 
-#: inc/settings.php:854
+#: inc/settings.php:897
 msgid "Exclude from Deferral"
 msgstr "Исключить из отсрочки"
 
-#: inc/settings.php:861
+#: inc/settings.php:907
 msgid ""
-"Exclude specific JavaScript files or tags from deferral. Exclude a file by "
-"adding the source URL (example.js). Exclude an inline tag by adding a unique "
-"identifier from the script content (see documentation). Format: one per line"
+"Exclude specific JavaScript files from deferral. Exclude a file by adding "
+"the source URL (example.js). Format: one per line"
 msgstr ""
-"Исключите из отсрочки определенные файлы или теги JavaScript. Исключите "
-"файл, добавив исходный URL (example.js). Исключите inline tag, добавив "
-"уникальный идентификатор из содержимого скрипта (см. Документацию). Формат: "
-"по одному на строку"
+"Исключить определенные файлы JavaScript из отсрочки. Исключите файл, добавив "
+"исходный URL-адрес (example.js). Формат: по одному на строку"
 
-#: inc/settings.php:871
+#: inc/settings.php:914
+msgid "Delay Javascript"
+msgstr "Отложить JavaScript"
+
+#: inc/settings.php:924
+msgid ""
+"Delay JavaScript from loading until user interaction. Format: one per line"
+msgstr ""
+"Отложить загрузку JavaScript до взаимодействия с пользователем. Формат: по "
+"одному в строке"
+
+#: inc/settings.php:934
 msgid "Enable Instant Page"
 msgstr "Включить мгновенную страницу"
 
-#: inc/settings.php:878
+#: inc/settings.php:941
 msgid ""
 "Automatically prefetch URLs in the background after a user hovers over a "
 "link. This results in almost instantaneous load times and improves the user "
@@ -1250,51 +1338,52 @@ msgstr ""
 "того, как пользователь наводит курсор на ссылку. Это приводит к почти "
 "мгновенной загрузке и улучшает взаимодействие с пользователем."
 
-#: inc/settings.php:885
+#: inc/settings.php:948
 msgid "Preload"
 msgstr "Предварительная загрузка"
 
-#: inc/settings.php:892
+#: inc/settings.php:955
 msgid ""
 "Preload allows you to specify resources (such as fonts or CSS) needed right "
 "away during a page load. This helps fix render-blocking resource warnings. "
-"Format: /style.css"
+"Format: https://example.com/font.woff2"
 msgstr ""
-"Предварительная загрузка позволяет указать ресурсы (например, шрифты или "
+"Предварительная загрузка позволяет вам указать ресурсы (например, шрифты или "
 "CSS), необходимые сразу во время загрузки страницы. Это помогает исправить "
-"предупреждения о ресурсах, блокирующих рендеринг. Формат: /style.css"
+"предупреждения о ресурсах, блокирующих рендеринг. Формат: https://example."
+"com/font.woff2"
 
-#: inc/settings.php:899
+#: inc/settings.php:962
 msgid "Preconnect"
 msgstr "Предварительное подключение"
 
-#: inc/settings.php:906
+#: inc/settings.php:969
 msgid ""
 "Preconnect allows the browser to set up early connections before an HTTP "
 "request, eliminating roundtrip latency and saving time for users. Format: "
-"scheme://domain.tld"
+"https://example.com"
 msgstr ""
-"Предварительное подключение позволяет браузеру устанавливать ранние "
-"подключения перед HTTP-запросом, устраняя задержку в обоих направлениях и "
-"экономя время пользователей. Формат: схема: //domain.tld (по одному в строке)"
+"Preconnect позволяет браузеру устанавливать ранние соединения перед HTTP-"
+"запросом, устраняя задержку в обоих направлениях и экономя время для "
+"пользователей. Формат: https://example.com"
 
-#: inc/settings.php:913
+#: inc/settings.php:976
 msgid "DNS Prefetch"
-msgstr "Упреждающая выборка DNS"
+msgstr "Предзагрузка DNS"
 
-#: inc/settings.php:920
+#: inc/settings.php:986
 msgid ""
-"Resolve domain names before a user clicks. Format: //domain.tld (one per "
+"Resolve domain names before a user clicks. Format: //example.com (one per "
 "line)"
 msgstr ""
-"Разрешить доменные имена до щелчка пользователя. Формат: //domain.tld (по "
-"одному на строку)"
+"Разрешите доменные имена до того, как пользователь щелкнет. Формат: //"
+"example.com (по одному в строке)"
 
-#: inc/settings.php:948
+#: inc/settings.php:1014
 msgid "Accessibility Mode"
 msgstr "Режим специальных возможностей"
 
-#: inc/settings.php:956
+#: inc/settings.php:1022
 msgid ""
 "Disable the use of visual UI elements in the plugin settings such as "
 "checkbox toggles and hovering tooltips."
@@ -1302,15 +1391,34 @@ msgstr ""
 "Отключите использование элементов визуального интерфейса в настройках "
 "плагина, таких как переключатели флажков и всплывающие подсказки."
 
-#: inc/settings.php:963
+#: inc/settings.php:1029 inc/settings.php:1037 inc/settings.php:1662
+msgid "Purge Meta Options"
+msgstr "Очистить мета-параметры"
+
+#: inc/settings.php:1038
+msgid ""
+"Are you sure? This will delete all existing Perfmatters meta options for all "
+"posts from the database."
+msgstr ""
+"Вы уверены? Это приведет к удалению всех существующих параметров метаданных "
+"Perfmatters для всех сообщений из базы данных."
+
+#: inc/settings.php:1039
+msgid ""
+"Permanently delete all existing Perfmatters meta options from your database."
+msgstr ""
+"Безвозвратно удалите все существующие мета-параметры Perfmatters из вашей "
+"базы данных."
+
+#: inc/settings.php:1046
 msgid "Export Settings"
 msgstr "Экспорт настроек"
 
-#: inc/settings.php:970
+#: inc/settings.php:1053
 msgid "Export Plugin Settings"
 msgstr "Экспорт настроек плагина"
 
-#: inc/settings.php:972
+#: inc/settings.php:1055
 msgid ""
 "Export your Perfmatters settings for this site as a .json file. This lets "
 "you easily import the configuration into another site."
@@ -1318,19 +1426,19 @@ msgstr ""
 "Экспортируйте настройки Perfmatters для этого сайта в виде файла .json. Это "
 "позволяет легко импортировать конфигурацию на другой сайт."
 
-#: inc/settings.php:979
+#: inc/settings.php:1062
 msgid "Import Settings"
 msgstr "Импорт настроек"
 
-#: inc/settings.php:984
+#: inc/settings.php:1067
 msgid "Import Perfmatters settings from an exported .json file."
 msgstr "Импортировать настройки Perfmatters из экспортируемого файла .json."
 
-#: inc/settings.php:994
+#: inc/settings.php:1077
 msgid "Post Revisions"
 msgstr "Редакции записей"
 
-#: inc/settings.php:1001
+#: inc/settings.php:1084
 msgid ""
 "Include post revisions in your database optimization. This also includes "
 "revisions for pages and custom post types."
@@ -1338,11 +1446,11 @@ msgstr ""
 "Включить пост-ревизии в оптимизацию базы данных. Это также включает в себя "
 "ревизии для страниц и пользовательских типов записей."
 
-#: inc/settings.php:1008
+#: inc/settings.php:1091
 msgid "Post Auto-Drafts"
 msgstr "Авто-черновики записей"
 
-#: inc/settings.php:1015
+#: inc/settings.php:1098
 msgid ""
 "Include post auto-drafts in your database optimization. This also includes "
 "auto-drafts for pages and custom post types."
@@ -1350,7 +1458,7 @@ msgstr ""
 "Включить авто черновики постов в оптимизацию базы данных. Это также включает "
 "в себя авто-черновики для страниц и пользовательских типов сообщений."
 
-#: inc/settings.php:1029
+#: inc/settings.php:1112
 msgid ""
 "Include trashed posts in your database optimization. This also includes "
 "trashed pages and custom post types."
@@ -1358,44 +1466,44 @@ msgstr ""
 "Включить удаленные посты в оптимизацию базы данных. Сюда также входят "
 "загруженные страницы и пользовательские типы сообщений."
 
-#: inc/settings.php:1043
+#: inc/settings.php:1126
 msgid "Include spam comments in your database optimization."
 msgstr "Включить спам-комментарии в оптимизацию базы данных."
 
-#: inc/settings.php:1057
+#: inc/settings.php:1140
 msgid "Include trashed comments in your database optimization."
 msgstr "Включить удаленные комментарии в оптимизацию вашей базы данных."
 
-#: inc/settings.php:1064
+#: inc/settings.php:1147
 msgid "Expired Transients"
 msgstr "Просроченные переходные процессы"
 
-#: inc/settings.php:1071
+#: inc/settings.php:1154
 msgid "Include expired transients in your database optimization."
 msgstr ""
 "Включите просроченные переходные процессы в вашу базу данных оптимизации."
 
-#: inc/settings.php:1078
+#: inc/settings.php:1161
 msgid "All Transients"
-msgstr "Все переходные процессы"
+msgstr "Все временные данные"
 
-#: inc/settings.php:1085
+#: inc/settings.php:1168
 msgid "Include all transients in your database optimization."
 msgstr "Включите все истекшие временные данные в вашу базу данных оптимизации."
 
-#: inc/settings.php:1099
+#: inc/settings.php:1182
 msgid "Include tables in your database optimization."
 msgstr "Включить таблицы в оптимизацию базы данных."
 
-#: inc/settings.php:1106
+#: inc/settings.php:1189
 msgid "Optimize Database"
 msgstr "Оптимизация БД"
 
-#: inc/settings.php:1113
+#: inc/settings.php:1196
 msgid "Optimize Now"
 msgstr "Оптимизировать сейчас"
 
-#: inc/settings.php:1115
+#: inc/settings.php:1198
 msgid ""
 "Run a one-time optimization of your WordPress database based on the selected "
 "options above. This process runs in the background."
@@ -1403,23 +1511,23 @@ msgstr ""
 "Запустите однократную оптимизацию вашей базы данных WordPress на основе "
 "выбранных выше параметров. Этот процесс работает в фоновом режиме."
 
-#: inc/settings.php:1122
+#: inc/settings.php:1205
 msgid "Scheduled Optimization"
 msgstr "Расписание оптимизации"
 
-#: inc/settings.php:1132
+#: inc/settings.php:1215
 msgid "Daily"
 msgstr "Ежедневно"
 
-#: inc/settings.php:1133
+#: inc/settings.php:1216
 msgid "Weekly"
 msgstr "Еженедельно"
 
-#: inc/settings.php:1134
+#: inc/settings.php:1217
 msgid "Monthly"
 msgstr "Ежемесячно"
 
-#: inc/settings.php:1136
+#: inc/settings.php:1219
 msgid ""
 "Schedule a routine optimization of your WordPress database based on the "
 "selected options above. This process runs in the background and starts "
@@ -1429,55 +1537,55 @@ msgstr ""
 "выше опций. Этот процесс выполняется в фоновом режиме и запускается сразу "
 "после сохранения."
 
-#: inc/settings.php:1258
+#: inc/settings.php:1338
 msgid "Select which performance options you would like to enable."
 msgstr "Выберите, какие параметры Performance вы хотели бы включить."
 
-#: inc/settings.php:1263
+#: inc/settings.php:1343
 msgid "Disable specific elements of WooCommerce."
 msgstr "Отключить определенные элементы WooCommerce."
 
-#: inc/settings.php:1268
+#: inc/settings.php:1348
 msgid "Lazy Load images across your site."
 msgstr "Отложенная загрузка изображений по всему сайту."
 
-#: inc/settings.php:1273
+#: inc/settings.php:1353
 msgid ""
 "CDN options that allow you to rewrite your site URLs with your CDN URLs."
 msgstr ""
 "Параметры CDN, которые позволяют перезаписывать URL-адреса вашего сайта URL-"
 "адресами вашего CDN."
 
-#: inc/settings.php:1278
+#: inc/settings.php:1358
 msgid "Optimization options for Google Analytics."
 msgstr "Параметры оптимизации для Google Analytics."
 
-#: inc/settings.php:1283
+#: inc/settings.php:1363
 msgid "Extra options that pertain to Perfmatters plugin functionality."
 msgstr ""
 "Дополнительные параметры, относящиеся к функциональности плагина Perfmatters."
 
-#: inc/settings.php:1288
+#: inc/settings.php:1368
 msgid "Manage the assets loading on your site."
-msgstr "Управляйте загрузкой скриптов на вашем сайте."
+msgstr "Управляйте загрузкой активов на вашем сайте."
 
-#: inc/settings.php:1293
+#: inc/settings.php:1373
 msgid "Manage JavaScript loading on your site."
 msgstr "Управляйте загрузкой JavaScript на вашем сайте."
 
-#: inc/settings.php:1298
+#: inc/settings.php:1378
 msgid "Preload resources you'll need later in advance."
 msgstr "Предварительная загрузка ресурсов, которые вам понадобятся позже."
 
-#: inc/settings.php:1303
+#: inc/settings.php:1383
 msgid "Perfmatters plugin management tools."
 msgstr "Инструменты управления плагинами Perfmatters."
 
-#: inc/settings.php:1308
+#: inc/settings.php:1388
 msgid "Optimize and clean up your WordPress database."
 msgstr "Оптимизировать и очистить базу данных WordPress."
 
-#: inc/settings.php:1309
+#: inc/settings.php:1389
 msgid ""
 "These functions make permanent changes that cannot be reverted! Back up your "
 "database before proceeding."
@@ -1485,56 +1593,56 @@ msgstr ""
 "Эти функции вносят изменения, которые нельзя отменить! Сделайте резервную "
 "копию вашей базы данных, прежде чем продолжить."
 
-#: inc/settings.php:1461 inc/settings.php:1543
+#: inc/settings.php:1533 inc/settings.php:1615
 msgid "Add New"
 msgstr "Добавить новый"
 
-#: inc/settings.php:1501 inc/settings.php:1569
+#: inc/settings.php:1573 inc/settings.php:1641
 msgid "Remove"
 msgstr "Удалить"
 
-#: inc/settings.php:1597
+#: inc/settings.php:1675
 msgid "Import Plugin Settings"
 msgstr "Импортировать настройки плагина"
 
-#: inc/settings.php:1652
+#: inc/settings.php:1753
 #, php-format
 msgid "Click %s to view documentation."
 msgstr "Нажмите %s, чтобы просмотреть документацию."
 
-#: inc/settings.php:1695
+#: inc/settings.php:1796
 msgid "Revisions Found"
 msgstr "редакции найдены"
 
-#: inc/settings.php:1699
+#: inc/settings.php:1800
 msgid "Auto-Drafts Found"
 msgstr "авто черновики найдены"
 
-#: inc/settings.php:1703
+#: inc/settings.php:1804
 msgid "Trashed Posts Found"
 msgstr "удаленные записи найдены"
 
-#: inc/settings.php:1707
+#: inc/settings.php:1808
 msgid "Spam Comments Found"
 msgstr "спам комментарии найдены"
 
-#: inc/settings.php:1711
+#: inc/settings.php:1812
 msgid "Trashed Comments Found"
 msgstr "удаленные комментарии найдены"
 
-#: inc/settings.php:1716
+#: inc/settings.php:1817
 msgid "Expired Transients Found"
 msgstr "просроченные переходные процессы найдены"
 
-#: inc/settings.php:1720
+#: inc/settings.php:1821
 msgid "Transients Found"
 msgstr "временные данные найдены"
 
-#: inc/settings.php:1724
+#: inc/settings.php:1825
 msgid "Unoptimized Tables Found"
-msgstr "Найдены неоптимизированные таблицы"
+msgstr "неоптимизированные таблицы найдены"
 
-#: inc/settings.php:1728
+#: inc/settings.php:1829
 msgid ""
 "Setting a new schedule will run the database optimization process "
 "immediately after saving your changes."
@@ -1542,19 +1650,19 @@ msgstr ""
 "Установка нового расписания запустит процесс оптимизации базы данных сразу "
 "после сохранения ваших изменений."
 
-#: perfmatters.php:121
+#: perfmatters.php:129
 msgid "License is Activated"
 msgstr "Лицензия активирована"
 
-#: perfmatters.php:124
+#: perfmatters.php:132
 msgid "Renew License"
 msgstr "Продлить лицензию"
 
-#: perfmatters.php:154
+#: perfmatters.php:162
 msgid "Documentation"
 msgstr "Документация"
 
-#: perfmatters.php:159
+#: perfmatters.php:167
 msgid ""
 "Looking to speed up WordPress? Check out our <a href='https://woorkup.com/"
 "speed-up-wordpress/?"
@@ -1565,8 +1673,8 @@ msgstr ""
 "Хотите ускорить работу WordPress? Ознакомьтесь с <a href='https://woorkup."
 "com/speed-up-wordpress/?"
 "utm_source=perfmatters&utm_medium=banner&utm_campaign=header-cta' "
-"title='WordPress Optimization Guide' target='_blank'> полным руководством по "
-"оптимизации </a>."
+"title='WordPress Optimization Guide' target='_blank'>полным руководством по "
+"оптимизации</a>."
 
 #. Plugin Name of the plugin/theme
 msgid "Perfmatters"
@@ -1591,3 +1699,10 @@ msgstr "forgemedia"
 #. Author URI of the plugin/theme
 msgid "https://forgemedia.io/"
 msgstr "https://forgemedia.io/"
+
+#~ msgid "Remove Query Strings"
+#~ msgstr "Удалить Query Strings"
+
+#~ msgid "Remove query strings from static resources (CSS, JS)."
+#~ msgstr ""
+#~ "Удалить строки запроса (query strings) из статических ресурсов (CSS, JS)."

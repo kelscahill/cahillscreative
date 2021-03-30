@@ -369,7 +369,7 @@ class SB_Instagram_Settings {
 		if ( ! $users ) {
 			$set = false;
 			foreach ( $this->connected_accounts as $connected_account ) {
-				if ( ! $set && strpos( $connected_account['accesstoken'], '.' ) === false ) {
+				if ( ! $set && strpos( $connected_account['access_token'], '.' ) === false ) {
 					$set = true;
 					$this->settings['user'] = $connected_account['username'];
 					$this->connected_accounts_in_feed = array( $connected_account['user_id'] => $connected_account );

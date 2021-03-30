@@ -221,7 +221,7 @@ jQuery(function($) {
       $copy_templates_button = $(this);
       $spinner = $copy_templates_button.siblings('.spinner');
 
-      $copy_templates_button.addClass( 'disabled' );
+      $copy_templates_button.addClass( 'yarpp-disabled' );
       $spinner.addClass('is-active');
 
       window.location = window.location + (window.location.search.length ? '&' : '?') + 'action=copy_templates&_ajax_nonce=' + $('#yarpp_copy_templates-nonce').val();
@@ -232,7 +232,7 @@ jQuery(function($) {
     $button = $(this);
     $spinner = $button.siblings('.spinner');
 
-    $button.addClass( 'disabled' );
+    $button.addClass( 'yarpp-disabled' );
     $spinner.addClass( 'is-active' );
   });
   
@@ -335,5 +335,73 @@ jQuery(function($) {
       $details.addClass('hidden');
       $(this).text('Show Details [+]');
     }
+  });
+  var yarpp_model  = $(
+			'\
+			<div id="shareaholic-deactivate-dialog" class="shareaholic-deactivate-dialog" data-remodal-id="">\
+				<div class="shareaholic-deactivate-header" style="background-image: url(' + yarpp_messages.logo + '); background-color: ' + yarpp_messages.bgcolor + ';"><div class="shareaholic-deactivate-text"><h2>' +yarpp_messages.model_title + '</h2></div></div>\
+				<div class="shareaholic-deactivate-body">\
+					<div class="shareaholic-deactivate-body-foreword">' + yarpp_messages.alert_message + '</div>\
+					<div class="shareaholic-deactivate-dialog-footer">\
+                    <input type="submit" class="button confirm button-secondary" id="yarpp-clear-cache-submit" value="Delete"/>\
+						<button data-remodal-action="cancel" class="button button-secondary">Cancel</button>\
+						</div>\
+				</div>\
+			</div>\
+		'
+		)[0];
+  $('#yarpp-clear-cache').click(function() {    
+		var inst = $(yarpp_model).remodal({hashTracking:false,closeOnOutsideClick:false});
+		inst.open();
+		event.preventDefault();
+  });
+  $( document.body ).on(
+				'click',
+				'#yarpp-clear-cache-submit',
+				function() {
+	  var inst = $(yarpp_model).remodal();	  
+	  /**
+	   * Closes the modal window
+	   */
+	   inst.close();
+	   var cache_button = '#yarpp-clear-cache';
+	   var display_notices = '#display_notices';
+	   var notice_class = 'notice notice-error is-dismissible';
+	   $(cache_button).prop( "disabled", true );	   
+	   $.ajax({
+          type:'POST',
+          url: ajaxurl,
+          data: {
+            action: 'yarpp_clear_cache',
+            '_ajax_nonce': $('#clear_cache-nonce').val()
+          },
+		  beforeSend: function() {
+			  $(cache_button).siblings( '.spinner' ).addClass( 'is-active' );
+		  },
+          success:function(data){
+			  $(cache_button).siblings( '.spinner' ).removeClass( 'is-active' );			  
+			  $(display_notices).show();
+			  if( 'success' == data ) {
+				var message = yarpp_messages.success;
+				notice_class = 'notice notice-success is-dismissible';
+				$(cache_button).prop( "disabled", false );
+			  } else if( 'forbidden' == data ) {
+				var message = yarpp_messages.forbidden;
+			  } else if( 'nonce_fail' == data ) {
+				var message = yarpp_messages.nonce_fail;
+			  } else {
+				var message = yarpp_messages.error;
+			  }
+			  $(display_notices).addClass( notice_class );
+			  $(display_notices).html('<p>' + message + '</p>');
+      },
+      error:function(data){
+		  $(display_notices).show();
+		  $(display_notices).addClass( notice_class );
+		  $(cache_button).siblings( '.spinner' ).removeClass( 'is-active' );
+		  $(display_notices).html('<p>' + yarpp_messages.error + '</p>');
+      }
+    });
+	$(display_notices).delay(5000).fadeOut(1000);
   });
 });

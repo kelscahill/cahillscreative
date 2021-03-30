@@ -555,7 +555,7 @@ trait terms_and_taxonomies
 					if ( $bcd->taxonomies()->protectlist_has( $action->taxonomy, $action->new_term->slug, $key ) )
 					{
 						$current_value = get_term_meta( $new_term_id, $key, true);
-						if ( count( $current_value ) > 0 )
+						if ( $current_value )
 						{
 							$this->debug( 'Taxonomy term %s (%s) already has a %s term meta value. Skipping.', $action->new_term->slug, $action->new_term->term_id, $key );
 							continue;

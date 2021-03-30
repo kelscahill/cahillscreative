@@ -44,9 +44,9 @@ class SBI_Account_Connector {
 			return;
 		}
 		$connected_accounts = SBI_Account_Connector::stored_connected_accounts();
-		if( isset( $_GET['access_token'] ) && isset( $_GET['graph_api'] ) ) {
+		if( isset( $_GET['sbi_access_token'] ) && isset( $_GET['sbi_graph_api'] ) ) {
 			sbi_get_business_account_connection_modal( $sb_instagram_user_id );
-		} elseif ( isset( $_GET['access_token'] ) && isset( $_GET['account_type'] ) ) {
+		} elseif ( isset( $_GET['sbi_access_token'] ) && isset( $_GET['sbi_account_type'] ) ) {
 			sbi_get_personal_connection_modal( $connected_accounts );
 		}
 	}

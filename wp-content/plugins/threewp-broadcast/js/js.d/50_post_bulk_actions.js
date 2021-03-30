@@ -71,7 +71,7 @@
 
 				// Take over the apply buttons
 				$( '.button.action' )
-				.click( function()
+				.on( 'click', function()
 				{
 					// What is the current selection?
 					var $container = $( this ).parent();

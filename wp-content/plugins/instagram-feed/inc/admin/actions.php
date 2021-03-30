@@ -278,7 +278,7 @@ function sbi_do_account_delete( $account_id ) {
 	$options = get_option( 'sb_instagram_settings', array() );
 	$connected_accounts =  isset( $options['connected_accounts'] ) ? $options['connected_accounts'] : array();
 	global $sb_instagram_posts_manager;
-	$sb_instagram_posts_manager->remove_connected_account_error( $connected_accounts[ $account_id ] );
+	$sb_instagram_posts_manager->reset_api_errors();
 	wp_cache_delete ( 'alloptions', 'options' );
 	$username = $connected_accounts[ $account_id ]['username'];
 	$sb_instagram_posts_manager->add_action_log( 'Deleting account ' . $username );
@@ -580,7 +580,7 @@ function sbi_after_connection() {
 add_action( 'wp_ajax_sbi_after_connection', 'sbi_after_connection' );
 
 function sbi_get_business_account_connection_modal($sb_instagram_user_id) {
-	$access_token = sbi_maybe_clean(urldecode($_GET['access_token']));
+	$access_token = sbi_maybe_clean(urldecode($_GET['sbi_access_token']));
 	//
 	$url = 'https://graph.facebook.com/me/accounts?fields=instagram_business_account,access_token&limit=500&access_token='.$access_token;
 	$args = array(
@@ -683,7 +683,7 @@ function sbi_get_business_account_connection_modal($sb_instagram_user_id) {
                 </div> <!-- end scrollable -->
                 <p style="font-size: 11px; line-height: 1.5; margin-bottom: 0;"><i style="color: #666;">*<?php echo sprintf( __( 'Changing the password, updating privacy settings, or removing page admins for the related Facebook page may require %smanually reauthorizing our app%s to reconnect an account.', 'instagram-feed' ), '<a href="https://smashballoon.com/reauthorizing-our-instagram-facebook-app/" target="_blank" rel="noopener noreferrer">', '</a>' ); ?></i></p>
 
-                <a href="JavaScript:void(0);" id="sbi-connect-business-accounts" class="button button-primary" disabled="disabled" style="margin-top: 20px;">Connect Accounts</a>
+                <button id="sbi-connect-business-accounts" class="button button-primary" disabled="disabled" style="margin-top: 20px;"><?php _e( 'Connect Accounts', 'instagram-feed' ); ?></button>
 
 			<?php endif; ?>
 
@@ -694,11 +694,11 @@ function sbi_get_business_account_connection_modal($sb_instagram_user_id) {
 }
 
 function sbi_get_personal_connection_modal( $connected_accounts, $action_url = 'admin.php?page=sb-instagram-feed' ) {
-	$access_token = sanitize_text_field( $_GET['access_token'] );
-	$account_type = sanitize_text_field( $_GET['account_type'] );
-	$user_id = sanitize_text_field( $_GET['id'] );
-	$user_name = sanitize_text_field( $_GET['username'] );
-	$expires_in = (int)$_GET['expires_in'];
+	$access_token = sanitize_text_field( $_GET['sbi_access_token'] );
+	$account_type = sanitize_text_field( $_GET['sbi_account_type'] );
+	$user_id = sanitize_text_field( $_GET['sbi_id'] );
+	$user_name = sanitize_text_field( $_GET['sbi_username'] );
+	$expires_in = (int)$_GET['sbi_expires_in'];
 	$expires_timestamp = time() + $expires_in;
 
 	$new_account_details = array(

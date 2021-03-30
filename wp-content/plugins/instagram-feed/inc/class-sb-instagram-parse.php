@@ -246,6 +246,12 @@ class SB_Instagram_Parse
 			$caption = $post['caption']['text'];
 		}
 
+		$video_title = SB_Instagram_Parse::get_video_title( $post );
+
+		if ( ! empty( $video_title ) ) {
+			$caption = $video_title .'. ' . $caption;
+		}
+
 		return $caption;
 	}
 
@@ -359,5 +365,39 @@ class SB_Instagram_Parse
 		}
 		return $permalink;
 
+	}
+
+	/**
+	 * New in IG Graph API 10.0. A title for IGTV posts
+	 *
+	 * @param array $post
+	 *
+	 * @return string
+	 *
+	 * @since 2.9/5.12
+	 */
+	public static function get_video_title( $post ) {
+		if ( isset( $post['video_title'] ) ) {
+			return $post['video_title'];
+		}
+
+		return '';
+	}
+
+	/**
+	 * New in IG Graph API 10.0
+	 *
+	 * @param array $post
+	 *
+	 * @return string
+	 *
+	 * @since 2.9/5.12
+	 */
+	public static function get_media_product_type( $post ) {
+		if ( isset( $post['media_product_type'] ) ) {
+			return strtolower( $post['media_product_type'] );
+		}
+
+		return 'feed';
 	}
 }

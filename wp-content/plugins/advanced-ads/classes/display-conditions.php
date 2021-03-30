@@ -232,15 +232,42 @@ class Advanced_Ads_Display_Conditions {
 	}
 
 	/**
-	 * Render the list of set display conditions
+	 * Render the list of set display conditions.
 	 *
 	 * @param array  $set_conditions array of existing conditions.
 	 * @param string $list_target ID of the list with the conditions.
 	 * @param string $form_name prefix of the form field name attribute.
+	 * @param array  $options {
+	 *     Optional. Render options.
+	 *
+	 *     @type string/array $in May be:
+	 *     - set to `all` (default) to include all conditions, including not global.
+	 *     - set to `global` to include all conditions, except for not global.
+	 *     - set to array of condition ID's to include only them.
+	 * }
 	 */
-	public static function render_condition_list( array $set_conditions, $list_target = '', $form_name = '' ) {
-
+	public static function render_condition_list( array $set_conditions, $list_target = '', $form_name = '', $options = array() ) {
 		$conditions = self::get_instance()->get_conditions();
+
+
+		if ( isset( $options['in'] ) ) {
+			if ( 'global' === $options['in'] ) {
+				$conditions = array_filter( $conditions, function( $condition ) {
+					return ! isset( $condition['options']['global'] ) || $condition['options']['global'];
+				} );
+			} elseif ( is_array( $options['in'] ) ) {
+				// Include already set condition types.
+				$set_types = array();
+				foreach ( $set_conditions as $set_condition ) {
+					if ( isset( $set_condition['type'] ) ) {
+						$set_types[] = $set_condition['type'];
+					}
+				}
+
+				$in         = array_merge( $options['in'], $set_types );
+				$conditions = array_intersect_key( $conditions, array_flip( $in ) );
+			}
+		}
 
 		// use default form name if not given explicitly.
 		// @todo create a random form name, in case we have more than one form per page and the parameter is not given.

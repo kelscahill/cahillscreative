@@ -220,10 +220,15 @@ if(!sbi_js_exists) {
                 // enable header hover action
                 $('.sb_instagram_header').each(function () {
                     var $thisHeader = $(this);
-                    $thisHeader.find('.sbi_header_link').hover(function () {
-                        $thisHeader.find('.sbi_header_img_hover').addClass('sbi_fade_in');
-                    }, function () {
-                        $thisHeader.find('.sbi_header_img_hover').removeClass('sbi_fade_in');
+                    $thisHeader.find('.sbi_header_link').on('mouseenter mouseleave', function(e) {
+                        switch(e.type) {
+                            case 'mouseenter':
+                                $thisHeader.find('.sbi_header_img_hover').addClass('sbi_fade_in');
+                                break;
+                            case 'mouseleave':
+                                $thisHeader.find('.sbi_header_img_hover').removeClass('sbi_fade_in');
+                                break;
+                        }
                     });
                 });
 
@@ -283,7 +288,7 @@ if(!sbi_js_exists) {
                         sbi_timer = setTimeout(sbi_callback, sbi_ms);
                     };
                 })();
-                jQuery(window).resize(function () {
+                jQuery(window).on('resize',function () {
                     sbi_delay(function () {
                         feed.afterResize();
                     }, 500);
@@ -349,11 +354,15 @@ if(!sbi_js_exists) {
                     var $self = jQuery(this);
 
                     //Photo links
-                    //If lightbox is disabled
-                    $self.find('.sbi_photo').hover(function () {
-                        jQuery(this).fadeTo(200, 0.85);
-                    }, function () {
-                        jQuery(this).stop().fadeTo(500, 1);
+                    $self.find('.sbi_photo').on('mouseenter mouseleave', function(e) {
+                        switch(e.type) {
+                            case 'mouseenter':
+                                jQuery(this).fadeTo(200, 0.85);
+                                break;
+                            case 'mouseleave':
+                                jQuery(this).stop().fadeTo(500, 1);
+                                break;
+                        }
                     });
                 }); //End .sbi_item each
 
@@ -1057,7 +1066,7 @@ if(!sbi_js_exists) {
         sbi_init();
 
         // Cookie Notice by dFactory
-        $('#cookie-notice a').click(function() {
+        $('#cookie-notice a').on('click',function() {
             setTimeout(function() {
                 $.each(window.sbi.feeds,function(index){
                     window.sbi.feeds[ index ].afterConsentToggled();
@@ -1066,7 +1075,7 @@ if(!sbi_js_exists) {
         });
 
         // GDPR Cookie Consent by WebToffee
-        $('#cookie-law-info-bar a').click(function() {
+        $('#cookie-law-info-bar a').on('click',function() {
             setTimeout(function() {
                 $.each(window.sbi.feeds,function(index){
                     window.sbi.feeds[ index ].afterConsentToggled();
@@ -1075,7 +1084,7 @@ if(!sbi_js_exists) {
         });
 
         // GDPR Cookie Consent by WebToffee
-        $('.cli-user-preference-checkbox').click(function(){
+        $('.cli-user-preference-checkbox').on('click',function(){
             setTimeout(function() {
                 $.each(window.sbi.feeds,function(index){
                     window.sbi.feeds[ index ].settings.consentGiven = false;

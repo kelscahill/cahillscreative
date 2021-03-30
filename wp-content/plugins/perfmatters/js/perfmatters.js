@@ -140,9 +140,10 @@ jQuery(document).ready(function($) {
 			});
 
 			if(controller.is('select')) {
-				var className = this.className.match(/perfmatters-select-control-([^\s]*)/);
+				var classNames = this.className.match(/perfmatters-select-control-([^\s]*)/g);
+				var foundClass = ($.inArray('perfmatters-select-control-' + controller.val(), classNames)) >= 0;
 
-				if(className && className[1] == controller.val()) {
+				if(classNames && (foundClass != $(this).hasClass('perfmatters-control-reverse'))) {
 					forceShow = true;
 				}
 				else {

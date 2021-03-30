@@ -1,186 +1,317 @@
-//Dynamic Form Selection
-jQuery(document).ready(function($) {
+document.addEventListener("DOMContentLoaded", function() {
 
-	var $loader = $('#pmsm-loading-wrapper');
-	if($loader) {
-		$loader.hide();
+	//hide loader
+	var loader = document.getElementById('pmsm-loading-wrapper');
+	if(loader) {
+		loader.style.display = "none";
 	}
 
-	//group status select
-	$('.pmsm-group-heading .perfmatters-status-select').on('change', function(ev) {
+	//group heading containers
+	var groupHeadings = document.querySelectorAll(".pmsm-group-heading");
 
-		var $group = $(this).closest('.perfmatters-script-manager-group');
+	groupHeadings.forEach(function(groupHeading) {
 
-		if($(this).children(':selected').val() == 'enabled') {
-			$(this).removeClass('disabled');
-			$group.find('.perfmatters-script-manager-section .perfmatters-script-manager-assets-disabled').hide();
-			$group.find('.perfmatters-script-manager-section table').show();
-		 	$group.find('.pmsm-mu-mode-badge').hide();
-		}
-		else {
-			$(this).addClass('disabled');
-			$group.find('.perfmatters-script-manager-section table').hide();
-			$group.find('.perfmatters-script-manager-section .perfmatters-script-manager-assets-disabled').show();
-			$group.find('.pmsm-mu-mode-badge').show();
-		}
+		groupHeading.addEventListener('change', function(e) {
+
+			var elem = event.target;
+
+			//group status toggle/select
+			if(elem.classList.contains('perfmatters-status-toggle') || elem.classList.contains('perfmatters-status-select')) {
+
+				var group = elem.closest('.perfmatters-script-manager-group');
+
+				var table = group.querySelector('.perfmatters-script-manager-section table');
+				var disabled = group.querySelector('.perfmatters-script-manager-section .perfmatters-script-manager-assets-disabled');
+				var muBadge = group.querySelector('.pmsm-mu-mode-badge');
+
+				if((elem.type == 'checkbox' && elem.checked) || (elem.type == 'select-one' && elem.value == 'disabled')) {
+
+					elem.classList.add('disabled');
+
+					if(table) {
+						table.style.display = "none";
+					}
+					if(disabled) {
+						disabled.style.display = "block";
+					}
+					if(muBadge) {
+						muBadge.style.display = "inline-block";
+					}
+				}
+				else {
+
+					elem.classList.remove('disabled');
+
+					if(table) {
+						table.style.display = "table";
+					}
+					if(disabled) {
+						disabled.style.display = "none";
+					}
+					if(muBadge) {
+						muBadge.style.display = "none";
+					}
+				}
+			} 
+		});
 	});
 
-	//group status toggle
-	$('.pmsm-group-heading .perfmatters-status-toggle').on('change', function(ev) {
+	//section containers
+	var sections = document.querySelectorAll(".perfmatters-script-manager-section");
 
-		var $group = $(this).closest('.perfmatters-script-manager-group');
+	sections.forEach(function(section) {
 
-		if($(this).is(':checked')) {
-			$group.find('.perfmatters-script-manager-section table').hide();
-			$group.find('.perfmatters-script-manager-section .perfmatters-script-manager-assets-disabled').show();
-			$group.find('.pmsm-mu-mode-badge').show();
-		}
-		else {
-			$group.find('.perfmatters-script-manager-section .perfmatters-script-manager-assets-disabled').hide();
-			$group.find('.perfmatters-script-manager-section table').show();
-			$group.find('.pmsm-mu-mode-badge').hide();
-		}
-	});
+		section.addEventListener('change', function(e) {
 
-	//script status select
-	$('.perfmatters-script-manager-status .perfmatters-status-select').on('change', function(ev) {
+			var elem = event.target;
 
-		var $controls = $(this).closest('tr').find('.perfmatters-script-manager-controls');
+			//script status toggle/select
+			if(elem.classList.contains('perfmatters-status-toggle') || elem.classList.contains('perfmatters-status-select')) {
 
-		if($(this).children(':selected').val() == 'enabled') {
-			$(this).removeClass('disabled');
-			$controls.hide();
-		}
-		else {
-			$(this).addClass('disabled');
-			$controls.show();
-		}
-	});
+				var tr = elem.closest('tr');
 
-	//script status toggle
-	$('.perfmatters-script-manager-status .perfmatters-status-toggle').on('change', function(ev) {
+				var controls = tr.querySelector('.perfmatters-script-manager-controls');
 
-		var $controls = $(this).closest('tr').find('.perfmatters-script-manager-controls');
+				if((elem.type == 'checkbox' && elem.checked) || (elem.type == 'select-one' && elem.value == 'disabled')) {
 
-		if($(this).is(':checked')) {
-			$controls.show();
-		}
-		else {
-			$controls.hide();
-		}
-	});
+					elem.classList.add('disabled');
+					controls.style.display = "block";
+				}
+				else {
 
-	//disable radio
-	$('.perfmatters-disable-select').on('change', function(ev) {
+					elem.classList.remove('disabled');
+					controls.style.display = "none";
+				}
+			}
 
-		var $controls = $(this).closest('.perfmatters-script-manager-controls');
+			//disable radio buttons
+			if(elem.classList.contains('perfmatters-disable-select')) {
 
-		if($(this).val() == 'everywhere') {
-			$controls.find('.perfmatters-script-manager-enable').show();
-		}
-		else {
-			$controls.find('.perfmatters-script-manager-enable').hide();
-		}
-		if($(this).val() == 'regex') {
-			$controls.find('.pmsm-disable-regex').show();
-		}
-		else {
-			$controls.find('.pmsm-disable-regex').hide();
-		}
+				var controls = elem.closest('.perfmatters-script-manager-controls');
+
+				var enable = controls.querySelector('.perfmatters-script-manager-enable');
+				var regex = controls.querySelector('.pmsm-disable-regex');
+
+				enable.style.display = (elem.value == 'everywhere' ? "block" : "none");
+				regex.style.display = (elem.value == 'regex' ? "block" : "none");
+			}
+		});
 	});
 
 	//set changed status of selected inputs
-	$('#pmsm-main-form input').on('change', function() {
-		$(this).addClass('pmsm-changed');
+	var inputs = document.querySelectorAll("#pmsm-main-form input, #pmsm-main-form select");
 
-		if($(this).is(':checkbox')) {
+	inputs.forEach(function(input) {
 
-			var $checkboxes = $(this).closest('.pmsm-checkbox-container').find('input');
+		input.addEventListener('change', function(e) {
 
-			$checkboxes.addClass('pmsm-changed');
-		}
+			var elem = event.target;
+
+			elem.classList.add('pmsm-changed');
+
+			if(elem.type == 'checkbox') {
+
+				var checkboxContainer = elem.closest('.pmsm-checkbox-container');
+				var checkboxes = checkboxContainer.querySelectorAll('input');
+
+				checkboxes.forEach(function(checkbox) {
+					checkbox.classList.add('pmsm-changed');
+				});
+			}
+		});
 	});
-	  
+
+	var mainForm = document.getElementById("pmsm-main-form");
+
 	//submit main script manager form
-	$('#pmsm-main-form').on('submit', function(e) {
+	if(mainForm) {
 
-		//prevent server side submission
-		e.preventDefault();
+		mainForm.addEventListener('submit', function(e) {
 
-		//disable any inputs that weren't touched
-	    $('#pmsm-main-form input:not(.pmsm-changed)').prop('disabled', true);
+			//prevent server side submission
+			e.preventDefault();
 
-	    //save button feedback
-	    var $saveButton = $('#pmsm-save').find('input');
-	    var $saveSpinner = $('#pmsm-save').find('.pmsm-spinner');
-	    $saveButton.val(pmsm.messages.buttonSaving);
-	    $saveSpinner.css('display', 'inline-block');
+			//disable any inputs that weren't touched
+		    var inputs = e.target.querySelectorAll('input:not(.pmsm-changed), select:not(.pmsm-changed)');
+		    inputs.forEach(function(input) {
+		    	input.disabled = true;
+		    });
 
-	    //serialize form data
-	    var formData = $('#pmsm-main-form').serialize();
+		    //save button feedback
+		    var saveButton = document.querySelector('#pmsm-save input');
+		    var saveSpinner = document.querySelector('#pmsm-save .pmsm-spinner');
+		    saveButton.value = pmsm.messages.buttonSaving;
+		    saveSpinner.style.display = "inline-block";
 
-	    // set ajax data
-	    var data = {
-	        'action' : 'pmsm_save',
-	        'current_id' : pmsm.currentID,
-	        'pmsm_data' : formData
-	    };
+		    //get form data
+		    const formData = new FormData(e.target);
+	  		const formDataString = new URLSearchParams(formData).toString();
 
-	    $.post(pmsm.ajaxURL, data, function(response) {
+	  		//ajax request
+	    	var request = new XMLHttpRequest();
 
-	    	//setup message variables
-	    	var message;
+	    	request.open('POST', pmsm.ajaxURL, true);
+	    	request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+	    	request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+		    request.onload = function() {
 
-	    	//set message from response
-	    	if(response == 'update_success') {
-	    		message = pmsm.messages.updateSuccess;
+		    	//successful request
+		        if(this.status >= 200 && this.status < 400) {
 
-	    		//if status was toggled back on, clear child input values
-	    		$('.perfmatters-status-toggle.pmsm-changed').each(function() {
-	    			if(!$(this).is(':checked')) {
-	    				var $toggleRow = $(this).closest('tr');
-	    				$toggleRow.find('.perfmatters-script-manager-enable').hide();
-	    				$toggleRow.find('input:checkbox, input:radio').prop('checked', false);
-	    				$toggleRow.find('input:text').val('');
-	    			}
-	    		});
-	    	}
-	    	else if(response == 'update_failure') {
-	    		message = pmsm.messages.updateFailure;
-	    	}
-	    	else if(response == 'update_nochange') {
-	    		message = pmsm.messages.updateNoChange;
-	    	}
+		            //setup message variable
+		    		var message;
 
-	    	//display message
-	    	if(message) {
-	    		pmsmPopupMessage(message);
-	    	}
+		            if(this.response == 'update_success') {
+			    		message = pmsm.messages.updateSuccess;
 
-	        //successful response, reset form
-	        $('#pmsm-main-form input:not(.pmsm-changed)').prop('disabled', false);
-	        $saveButton.val(pmsm.messages.buttonSave);
-	        $saveSpinner.hide();
-	        $(".pmsm-changed").removeClass("pmsm-changed");
-		    
-	    });
-	});
+			    		//if script status was toggled back on, clear child input values
+			    		var changedScriptStatusToggles = e.target.querySelectorAll('.perfmatters-script-manager-section .perfmatters-status-toggle.pmsm-changed');
+			    		changedScriptStatusToggles.forEach(function(toggle) {
+			    			if(!toggle.checked) {
+
+			    				var toggleRow = toggle.closest('tr');
+
+			    				toggleRow.querySelector('.perfmatters-script-manager-enable').style.display = "none";
+
+			    				var rowInputs = toggleRow.querySelectorAll('input');
+			    				rowInputs.forEach(function(input) {
+			    					if(input.type == "checkbox" || input.type == "radio") {
+			    						input.checked = false;
+			    					}
+			    					else if(input.type == "text") {
+			    						input.value = "";
+			    					}
+			    				});
+			    			}
+			    		});
+
+			    		//if group status was toggled back on, clear child input values
+			    		var changedGroupStatusToggles = e.target.querySelectorAll('.pmsm-group-heading .perfmatters-status-toggle.pmsm-changed');
+			    		changedGroupStatusToggles.forEach(function(toggle) {
+			    			if(!toggle.checked) {
+
+			    				var toggleGroup = toggle.closest('.perfmatters-script-manager-group');
+
+			    				var toggleGroupAssets = toggleGroup.querySelector('.perfmatters-script-manager-assets-disabled');
+
+			    				toggleGroupAssets.querySelector('.perfmatters-script-manager-enable').style.display = "none";
+
+			    				var groupInputs = toggleGroupAssets.querySelectorAll('input');
+			    				groupInputs.forEach(function(input) {
+			    					if(input.type == "checkbox" || input.type == "radio") {
+			    						input.checked = false;
+			    					}
+			    					else if(input.type == "text") {
+			    						input.value = "";
+			    					}
+			    				});
+			    			}
+			    		});
+
+			    		//reset changed inputs
+			    		var changedInputs = e.target.querySelectorAll('.pmsm-changed');
+				        changedInputs.forEach(function(input) {
+				        	input.classList.remove('pmsm-changed');
+				        });
+
+			    	}
+			    	else if(this.response == 'update_failure') {
+			    		message = pmsm.messages.updateFailure;
+			    	}
+			    	else if(this.response == 'update_nooption') {
+			    		message = pmsm.messages.updateNoOption;
+			    	}
+			    	else if(this.response == 'update_nochange') {
+			    		message = pmsm.messages.updateNoChange;
+			    	}
+
+			    	//display message
+			    	if(message) {
+			    		pmsmPopupMessage(message);
+			    	}
+
+		        	//reenable form inputs
+				    inputs.forEach(function(input) {
+				    	input.disabled = false;
+				    });
+
+			        saveButton.value = pmsm.messages.buttonSave;
+			        saveSpinner.style.display = "none";
+		        }
+		        else {
+		            //failed request response
+		            console.log(this.response);
+		        }
+		    };
+	    	request.onerror = function() {
+	        	//connection error
+	    	};
+
+	    	//send request
+	    	request.send('action=pmsm_save&current_id=' + pmsm.currentID + '&pmsm_data=' + encodeURIComponent(formDataString));
+		});
+	}
 
 	//reset button
-	$('.pmsm-reset').click(function(ev) {
-		ev.preventDefault();
-		$('#pmsm-reset-form').submit();
-	});
+	var resetButton = document.getElementById('pmsm-reset');
+	if(resetButton) {
+		resetButton.addEventListener('click', function(ev) {
+			ev.preventDefault();
+			var resetForm = document.getElementById('pmsm-reset-form');
+			var confirmCheck = confirm(resetForm.getAttribute('pmsm-confirm'));
+			if(confirmCheck) {
+				resetForm.submit();
+			}
+		});
+	}
+
+	//menu toggle
+	var menuToggle = document.getElementById('pmsm-menu-toggle');
+	if(menuToggle) {
+		menuToggle.addEventListener('click', function(ev) {
+			ev.preventDefault();
+			var header = document.getElementById('perfmatters-script-manager-header');
+
+			if(window.innerWidth > 782) {
+				if(!header.classList.contains('pmsm-header-minimal')) {
+					header.classList.add('pmsm-header-minimal');
+				}
+				else {
+					header.classList.remove('pmsm-header-minimal');
+				}
+			}
+			else {
+				if(!header.classList.contains('pmsm-header-expanded')) {
+					header.classList.add('pmsm-header-expanded');
+				}
+				else {
+					header.classList.remove('pmsm-header-expanded');
+				}
+			}
+			
+			
+		});
+		window.addEventListener('click', function(e) {
+			var header = document.getElementById('perfmatters-script-manager-header');
+			if(!header.contains(e.target)) {
+				header.classList.remove('pmsm-header-expanded');
+			}
+		});
+	}
 });
 
 //popup message after submit
 function pmsmPopupMessage(message) {
 
 	if(message) {
-		var $messageContainer = jQuery('.pmsm-message');
+		var messageContainer = document.getElementById('pmsm-message');
 
-		$messageContainer.text(message).stop(true, true).show().animate({'opacity': 1, 'bottom': '80px'}, 500).delay(2000).animate({'opacity': 0}, 500, function() {
-			jQuery(this).hide().css({'opacity': 0, 'bottom': '0px'});
-		});
+		messageContainer.innerHTML = message;
+
+		messageContainer.classList.add('pmsm-fade');
+
+		setTimeout(function() {
+			messageContainer.classList.remove('pmsm-fade');
+		}, 2000);
 	}
 }

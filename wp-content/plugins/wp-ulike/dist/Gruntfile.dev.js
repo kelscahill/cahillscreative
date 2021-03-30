@@ -206,7 +206,7 @@ module.exports = function (grunt) {
             return (separator + src).replace(/;\s*$/, "") + ";"; // make sure always a semicolon is at the end
           }
         },
-        src: ['admin/assets/js/src/plugins/**/*.js'],
+        src: ['node_modules/chart.js/dist/Chart.js', 'node_modules/jquery-match-height/dist/jquery.matchHeight.js'],
         dest: 'admin/assets/js/plugins.js'
       } // adminJsScripts: {
       //     options: {
@@ -257,7 +257,8 @@ module.exports = function (grunt) {
       options: {},
       main: {
         files: {
-          'assets/js/wp-ulike.min.js': ['<%= concat.frontJsScripts.dest %>']
+          'assets/js/wp-ulike.min.js': ['<%= concat.frontJsScripts.dest %>'],
+          'admin/assets/js/plugins.js': ['<%= concat.adminJsPlugins.dest %>']
         }
       }
     },

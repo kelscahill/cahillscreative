@@ -7,8 +7,7 @@ jQuery( document ).ready(
 		/**
 		 * Pressing the button to add a new condition to the list of conditions
 		 */
-		$( '.advads-conditions-new button' ).click(
-			function () {
+		$( '.advads-conditions-new button' ).on( 'click', function () {
 				// get the form fieldset and values.
 				var condition_form_container     = $( this ).parents( 'fieldset' )
 				var condition_type               = condition_form_container.find( '.advads-conditions-new select' ).val()

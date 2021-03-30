@@ -63,7 +63,7 @@ if( ! function_exists( 'wp_ulike_set_default_template' ) ){
 	function wp_ulike_set_default_template( array $wp_ulike_template ){
 		//This function will turn output buffering on
 		ob_start();
-		do_action( 'wp_ulike_before_template' );
+		do_action( 'wp_ulike_before_template', $wp_ulike_template );
 		// Extract input array
 		extract( $wp_ulike_template );
 	?>
@@ -99,7 +99,7 @@ if( ! function_exists( 'wp_ulike_set_default_template' ) ){
 		?>
 		</div>
 	<?php
-		do_action( 'wp_ulike_after_template' );
+		do_action( 'wp_ulike_after_template', $wp_ulike_template );
 		return ob_get_clean(); // data is now in here
 	}
 }
@@ -115,7 +115,7 @@ if( ! function_exists( 'wp_ulike_set_simple_heart_template' ) ){
 	function wp_ulike_set_simple_heart_template( array $wp_ulike_template ){
 		//This function will turn output buffering on
 		ob_start();
-		do_action( 'wp_ulike_before_template' );
+		do_action( 'wp_ulike_before_template', $wp_ulike_template );
 		// Extract input array
 		extract( $wp_ulike_template );
 	?>
@@ -151,7 +151,7 @@ if( ! function_exists( 'wp_ulike_set_simple_heart_template' ) ){
 		?>
 		</div>
 	<?php
-		do_action( 'wp_ulike_after_template' );
+		do_action( 'wp_ulike_after_template', $wp_ulike_template );
 		return ob_get_clean(); // data is now in here
 	}
 }
@@ -167,7 +167,7 @@ if( ! function_exists( 'wp_ulike_set_robeen_template' ) ){
 	function wp_ulike_set_robeen_template( array $wp_ulike_template ){
 		//This function will turn output buffering on
 		ob_start();
-		do_action( 'wp_ulike_before_template' );
+		do_action( 'wp_ulike_before_template', $wp_ulike_template );
 		// Extract input array
 		extract( $wp_ulike_template );
 	?>
@@ -200,7 +200,7 @@ if( ! function_exists( 'wp_ulike_set_robeen_template' ) ){
 		?>
 		</div>
 	<?php
-		do_action( 'wp_ulike_after_template' );
+		do_action( 'wp_ulike_after_template', $wp_ulike_template );
 		return ob_get_clean(); // data is now in here
 	}
 }
@@ -217,7 +217,7 @@ if( ! function_exists( 'wp_ulike_set_animated_heart_template' ) ){
 	function wp_ulike_set_animated_heart_template( array $wp_ulike_template ){
 		//This function will turn output buffering on
 		ob_start();
-		do_action( 'wp_ulike_before_template' );
+		do_action( 'wp_ulike_before_template', $wp_ulike_template );
 		// Extract input array
 		extract( $wp_ulike_template );
 	?>
@@ -255,7 +255,7 @@ if( ! function_exists( 'wp_ulike_set_animated_heart_template' ) ){
 		?>
 		</div>
 	<?php
-		do_action( 'wp_ulike_after_template' );
+		do_action( 'wp_ulike_after_template', $wp_ulike_template );
 		return ob_get_clean(); // data is now in here
 	}
 }

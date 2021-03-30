@@ -12,9 +12,6 @@ if(!empty($perfmatters_options['disable_emojis']) && $perfmatters_options['disab
 if(!empty($perfmatters_options['disable_embeds']) && $perfmatters_options['disable_embeds'] == "1") {
 	add_action('init', 'perfmatters_disable_embeds', 9999);
 }
-if(!empty($perfmatters_options['remove_query_strings']) && $perfmatters_options['remove_query_strings'] == "1") {
-	add_action('init', 'perfmatters_remove_query_strings');
-}
 
 /* Disable XML-RPC
 /***********************************************************************/
@@ -29,7 +26,7 @@ function perfmatters_remove_x_pingback($headers) {
     return $headers;
 }
 
-if(!empty($perfmatters_options['remove_jquery_migrate']) && $perfmatters_options['remove_jquery_migrate'] == "1") {
+if(!empty($perfmatters_options['remove_jquery_migrate']) && !perfmatters_is_page_builder()) {
 	add_filter('wp_default_scripts', 'perfmatters_remove_jquery_migrate');
 }
 if(!empty($perfmatters_options['hide_wp_version']) && $perfmatters_options['hide_wp_version'] == "1") {
@@ -155,6 +152,29 @@ if(!empty($perfmatters_options['disable_google_maps']) && $perfmatters_options['
 }
 
 function perfmatters_disable_google_maps() {
+
+	global $perfmatters_options;
+
+	if(!empty($perfmatters_options['disable_google_maps_exclusions'])) {
+
+		$exploded = explode(',', $perfmatters_options['disable_google_maps_exclusions']);
+		$trimmed = array_map('trim', $exploded);
+
+		//single post exclusion
+		if(is_singular()) {
+			global $post;
+
+			if(in_array($post->ID, $trimmed)) {
+				return;
+			}
+		}
+
+		//posts page exclusion
+		if(is_home() && in_array('blog', $trimmed)) {
+			return;
+		}
+	}
+
 	ob_start('perfmatters_disable_google_maps_regex');
 }
 
@@ -609,27 +629,6 @@ function perfmatters_disable_embeds_rewrites($rules) {
 	return $rules;
 }
 
-/* Remove Query Strings
-/***********************************************************************/
-function perfmatters_remove_query_strings() {
-	if(!is_admin()) {
-		add_filter('script_loader_src', 'perfmatters_remove_query_strings_split', 15);
-		add_filter('style_loader_src', 'perfmatters_remove_query_strings_split', 15);
-	}
-}
-
-function perfmatters_remove_query_strings_split($src) {
-
-	//keep query strings on script manager js
-	if(strpos($src, '/perfmatters/js/script-manager.js')) {
-		return $src;
-	}
-
-	//strip query strings
-	$output = preg_split("/(&ver|\?ver)/", $src);
-	return $output[0];
-}
-
 /* Remove jQuery Migrate
 /***********************************************************************/
 function perfmatters_remove_jquery_migrate(&$scripts) {
@@ -656,16 +655,25 @@ function perfmatters_disable_heartbeat() {
 	//check for exception pages in admin
 	if(is_admin()) {
 		global $pagenow;
-		if(!empty($pagenow) && in_array($pagenow, array('admin.php'))) {
-			if(!empty($_GET['page'])) {
-				$exceptions = array(
-					'gf_edit_forms',
-					'gf_entries',
-					'gf_settings'
-				);
-				if(in_array($_GET['page'], $exceptions)) {
-					return;
+		if(!empty($pagenow)) {
+
+			//admin checks
+			if($pagenow == 'admin.php') {
+				if(!empty($_GET['page'])) {
+					$exceptions = array(
+						'gf_edit_forms',
+						'gf_entries',
+						'gf_settings'
+					);
+					if(in_array($_GET['page'], $exceptions)) {
+						return;
+					}
 				}
+			}
+
+			//site health check
+			if($pagenow == 'site-health.php') {
+				return;
 			}
 		}
 	}
@@ -919,6 +927,7 @@ function perfmatters_admin_url($url) {
 /***********************************************************************/
 if(!empty($perfmatters_extras['instant_page'])) {
 	add_action('wp_enqueue_scripts', 'perfmatters_enqueue_instant_page', PHP_INT_MAX);
+	add_filter('script_loader_tag', 'perfmatters_instant_page_attribute', 10, 2);
 }
 
 function perfmatters_enqueue_instant_page() {
@@ -929,6 +938,14 @@ function perfmatters_enqueue_instant_page() {
 		wp_register_script('perfmatters-instant-page', plugins_url('vendor/instant-page/instantpage.js', dirname(__FILE__)), array(), PERFMATTERS_VERSION, true);
 		wp_enqueue_script('perfmatters-instant-page');
 	}
+}
+
+//add ignore attribute for rocket loader
+function perfmatters_instant_page_attribute($tag, $handle) {
+	if($handle !== 'perfmatters-instant-page') {
+		return $tag;
+	}
+	return str_replace(' src', ' data-cfasync="false" data-no-optimize="1" src', $tag);
 }
 
 /* CDN Rewrite URLs
@@ -969,15 +986,21 @@ function perfmatters_cdn_rewrite_url($url) {
 	//Make Sure CDN URL is Set
 	if(!empty($perfmatters_cdn['cdn_url'])) {
 
-		//Don't Rewrite if Excluded
+		//base exclusions
+		$exclusions = array('script-manager.js');
+
+		//add user exclusions
 		if(!empty($perfmatters_cdn['cdn_exclusions'])) {
-			$exclusions = array_map('trim', explode(',', $perfmatters_cdn['cdn_exclusions']));
-			foreach($exclusions as $exclusion) {
-	            if(!empty($exclusion) && stristr($url[0], $exclusion) != false) {
-	                return $url[0];
-	            }
-	        }
-		} 
+			$exclusions_user = array_map('trim', explode(',', $perfmatters_cdn['cdn_exclusions']));
+			$exclusions = array_merge($exclusions, $exclusions_user);
+		}
+
+		//Don't Rewrite if Excluded
+		foreach($exclusions as $exclusion) {
+            if(!empty($exclusion) && stristr($url[0], $exclusion) != false) {
+                return $url[0];
+            }
+        }
 
 	    //Don't Rewrite if Previewing
 	    if(is_admin_bar_showing() && isset($_GET['preview']) && $_GET['preview'] == 'true') {
@@ -1014,13 +1037,16 @@ if(!empty($perfmatters_ga['enable_local_ga']) && $perfmatters_ga['enable_local_g
 
 	$print_analytics = true;
 
-	if(empty($perfmatters_ga['script_type'])) {
+	if(empty($perfmatters_ga['script_type']) || $perfmatters_ga['script_type'] == 'gtag' || $perfmatters_ga['script_type'] == 'gtagv4') {
 		if(!wp_next_scheduled('perfmatters_update_ga')) {
 			wp_schedule_event(time(), 'daily', 'perfmatters_update_ga');
 		}
-		if(!empty($perfmatters_ga['use_monster_insights'])) {
-			$print_analytics = false;
-			add_filter('monsterinsights_frontend_output_analytics_src', 'perfmatters_monster_ga', 1000);
+		if(empty($perfmatters_ga['script_type']) || $perfmatters_ga['script_type'] == 'gtag') {
+			if(!empty($perfmatters_ga['use_monster_insights'])) {
+				$print_analytics = false;
+				add_filter('monsterinsights_frontend_output_analytics_src', 'perfmatters_monster_ga', 1000);
+				add_filter('monsterinsights_frontend_output_gtag_src', 'perfmatters_monster_ga_gtag', 1000);
+			}
 		}
 	}
 	else {
@@ -1040,6 +1066,11 @@ if(!empty($perfmatters_ga['enable_local_ga']) && $perfmatters_ga['enable_local_g
 		
 		add_action($tracking_code_position, 'perfmatters_print_ga', 0);
 	}
+
+	//add notice if tracking id isnt set
+	if(empty($perfmatters_ga['tracking_id'])) {
+		add_action('admin_notices', 'perfmatters_admin_notice_ga_tracking_id');
+	}
 }
 else {
 	if(wp_next_scheduled('perfmatters_update_ga')) {
@@ -1049,50 +1080,59 @@ else {
 
 //update analytics.js
 function perfmatters_update_ga() {
-	//paths
-	$local_file = dirname(dirname(__FILE__)) . '/js/analytics.js';
-	$host = 'www.google-analytics.com';
-	$path = '/analytics.js';
 
-	//open connection
-	$fp = @fsockopen($host, '80', $errno, $errstr, 10);
+	$perfmatters_ga = get_option('perfmatters_ga');
 
-	if($fp){	
-		//send headers
-		$header = "GET $path HTTP/1.0\r\n";
-		$header.= "Host: $host\r\n";
-		$header.= "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6\r\n";
-		$header.= "Accept: */*\r\n";
-		$header.= "Accept-Language: en-us,en;q=0.5\r\n";
-		$header.= "Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\n";
-		$header.= "Keep-Alive: 300\r\n";
-		$header.= "Connection: keep-alive\r\n";
-		$header.= "Referer: https://$host\r\n\r\n";
-		fwrite($fp, $header);
-		$response = '';
-		
-		//get response
-		while($line = fread($fp, 4096)) {
-			$response.= $line;
+	$queue = array();
+
+	$upload_dir = wp_get_upload_dir();
+
+	//add analytics.js to the queue
+	if(empty($perfmatters_ga['script_type']) || $perfmatters_ga['script_type'] == 'gtag') {
+		$queue['analytics'] = array(
+			'remote' => 'https://www.google-analytics.com/analytics.js',
+			'local' => dirname(dirname(__FILE__)) . '/js/analytics.js'
+		);
+	}
+	
+	//add gtag to queue
+	if((!empty($perfmatters_ga['script_type']) && ($perfmatters_ga['script_type'] == 'gtag' || $perfmatters_ga['script_type'] == 'gtagv4')) || (empty($perfmatters_ga['script_type']) && !empty($perfmatters_ga['use_monster_insights']))) {
+		if(!empty($perfmatters_ga['tracking_id'])) {
+			$script_type = !empty($perfmatters_ga['script_type']) ? $perfmatters_ga['script_type'] : 'gtag';
+			$queue[$script_type]= array(
+				'remote' => 'https://www.googletagmanager.com/gtag/js?id=' . $perfmatters_ga['tracking_id'],
+				'local' => $upload_dir['basedir'] . '/perfmatters/' . $script_type . '.js'
+			);
 		}
+	}
 
-		//close connection
-		fclose($fp);
+	if(!empty($queue)) {
+		foreach($queue as $type => $files) {
+			if(!empty($files['remote']) && !empty($files['local'])) {
 
-		//remove headers
-		$position = strpos($response, "\r\n\r\n");
-		$response = substr($response, $position + 4);
+				$file = wp_remote_get($files['remote']);
 
-		//create file if needed
-		if(!file_exists($local_file)) {
-			fopen($local_file, 'w');
-		}
+				if(is_wp_error($file)) {
+			    	return $file->get_error_code() . ': ' . $file->get_error_message();
+			    }
 
-		//write response to file
-		if(is_writable($local_file)) {
-			if($fp = fopen($local_file, 'w')) {
-				fwrite($fp, $response);
-				fclose($fp);
+			    if(!is_dir($upload_dir['basedir']  . '/perfmatters/')) {
+			    	wp_mkdir_p($upload_dir['basedir']  . '/perfmatters/');
+			    }
+
+			    if($type == 'gtag') {
+			    	$plugins_url = (!empty($perfmatters_ga['cdn_url']) ? trailingslashit($perfmatters_ga['cdn_url']) . 'wp-content/plugins' : plugins_url()) . '/perfmatters/js/';
+			    	$split_upload_dir = explode('/wp-content/', $upload_dir['baseurl']);
+			    	$uploads_url = (!empty($perfmatters_ga['cdn_url']) ? trailingslashit($perfmatters_ga['cdn_url']) . 'wp-content/' . $split_upload_dir[1] : $upload_dir['baseurl']) . '/perfmatters';
+			    	$body = str_replace('https://www.google-analytics.com/', $plugins_url, $file['body']);
+			    	$body = str_replace('/gtag/js?id=', '/gtag.js?id=', $body);
+		            $body = str_replace('"//www.googletagmanager.com"', '"' . preg_replace('(^https?:)', "", $uploads_url) . '"', $body);
+			    }
+			    else {
+			    	$body = $file['body'];
+			    }
+
+			   	file_put_contents($files['local'], $body);
 			}
 		}
 	}
@@ -1113,47 +1153,109 @@ function perfmatters_print_ga() {
 		return;
 	}
 
+	$upload_dir = wp_get_upload_dir();
+
+	$output = '';
+
 	if(empty($perfmatters_ga['script_type'])) {
-		echo "<!-- Local Analytics generated with perfmatters. -->";
-		echo "<script>";
-		    echo "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		$output.= "<script>";
+		    $output.= "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 					(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 					m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 					})(window,document,'script','" . plugins_url() . "/perfmatters/js/analytics.js','ga');";
-		    echo "ga('create', '" . $perfmatters_ga['tracking_id'] . "', 'auto');";
+		    $output.= "ga('create', '" . $perfmatters_ga['tracking_id'] . "', 'auto');";
 
 		    //disable display features
 		    if(!empty($perfmatters_ga['disable_display_features']) && $perfmatters_ga['disable_display_features'] == "1") {
-		    	echo "ga('set', 'allowAdFeatures', false);";
+		    	$output.= "ga('set', 'allowAdFeatures', false);";
 		    }
 
 		    //anonymize ip
 		   	if(!empty($perfmatters_ga['anonymize_ip']) && $perfmatters_ga['anonymize_ip'] == "1") {
-		   		echo "ga('set', 'anonymizeIp', true);";
+		   		$output.= "ga('set', 'anonymizeIp', true);";
 		   	}
 
-		    echo "ga('send', 'pageview');";
+		    $output.= "ga('send', 'pageview');";
 
 		    //adjusted bounce rate
 		    if(!empty($perfmatters_ga['adjusted_bounce_rate'])) {
-		    	echo 'setTimeout("ga(' . "'send','event','adjusted bounce rate','" . $perfmatters_ga['adjusted_bounce_rate'] . " seconds')" . '"' . "," . $perfmatters_ga['adjusted_bounce_rate'] * 1000 . ");";
+		    	$output.= 'setTimeout("ga(' . "'send','event','adjusted bounce rate','" . $perfmatters_ga['adjusted_bounce_rate'] . " seconds')" . '"' . "," . $perfmatters_ga['adjusted_bounce_rate'] * 1000 . ");";
 		    }
-	    echo "</script>";
+	    $output.= "</script>";
+	}
+	elseif($perfmatters_ga['script_type'] == 'gtag') {
+		$output.= '<script src="' . $upload_dir['baseurl'] . '/perfmatters/gtag.js?id=' . $perfmatters_ga['tracking_id'] . '"></script>'; 
+		$output.= '<script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag("js", new Date());gtag("config", "' . $perfmatters_ga['tracking_id'] . '", {' . (!empty($perfmatters_ga['anonymize_ip']) ? '"anonymize_ip": true' : '') . '});</script>';
+	}
+	elseif($perfmatters_ga['script_type'] == 'gtagv4') {
+    	$output.= '<script src="' . $upload_dir['baseurl'] . '/perfmatters/gtagv4.js?id=' . $perfmatters_ga['tracking_id'] . '"></script>'; 
+    	$output.= '<script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag("js", new Date());gtag("config", "' . $perfmatters_ga['tracking_id'] . '");</script>';
 	}
 	elseif($perfmatters_ga['script_type'] == 'minimal') {
-
-		echo '<!-- Local Analytics generated with perfmatters. --><script>window.pmGAID="' . $perfmatters_ga['tracking_id'] . '";' . (!empty($perfmatters_ga['anonymize_ip']) ? 'window.pmGAAIP=true;' : '') . '</script>';
-		echo '<script src="' . plugins_url() . '/perfmatters/js/analytics-minimal.js"></script>';
-
+		$output.= '<script>window.pmGAID="' . $perfmatters_ga['tracking_id'] . '";' . (!empty($perfmatters_ga['anonymize_ip']) ? 'window.pmGAAIP=true;' : '') . '</script>';
+		$output.= '<script src="' . plugins_url() . '/perfmatters/js/analytics-minimal.js"></script>';
 	}
 	elseif($perfmatters_ga['script_type'] == 'minimal_inline') {
-		echo '<!-- Local Analytics generated with perfmatters. --><script>(function(a,b,c){var d=a.history,e=document,f=navigator||{},g=localStorage,h=encodeURIComponent,i=d.pushState,k=function(){return Math.random().toString(36)},l=function(){return g.cid||(g.cid=k()),g.cid},m=function(r){var s=[];for(var t in r)r.hasOwnProperty(t)&&void 0!==r[t]&&s.push(h(t)+"="+h(r[t]));return s.join("&")},n=function(r,s,t,u,v,w,x){var z="https://www.google-analytics.com/collect",A=m({v:"1",ds:"web",aip:c.anonymizeIp?1:void 0,tid:b,cid:l(),t:r||"pageview",sd:c.colorDepth&&screen.colorDepth?screen.colorDepth+"-bits":void 0,dr:e.referrer||void 0,dt:e.title,dl:e.location.origin+e.location.pathname+e.location.search,ul:c.language?(f.language||"").toLowerCase():void 0,de:c.characterSet?e.characterSet:void 0,sr:c.screenSize?(a.screen||{}).width+"x"+(a.screen||{}).height:void 0,vp:c.screenSize&&a.visualViewport?(a.visualViewport||{}).width+"x"+(a.visualViewport||{}).height:void 0,ec:s||void 0,ea:t||void 0,el:u||void 0,ev:v||void 0,exd:w||void 0,exf:"undefined"!=typeof x&&!1==!!x?0:void 0});if(f.sendBeacon)f.sendBeacon(z,A);else{var y=new XMLHttpRequest;y.open("POST",z,!0),y.send(A)}};d.pushState=function(r){return"function"==typeof d.onpushstate&&d.onpushstate({state:r}),setTimeout(n,c.delay||10),i.apply(d,arguments)},n(),a.ma={trackEvent:function o(r,s,t,u){return n("event",r,s,t,u)},trackException:function q(r,s){return n("exception",null,null,null,null,r,s)}}})(window,"' . $perfmatters_ga['tracking_id'] . '",{' . (!empty($perfmatters_ga['anonymize_ip']) ? 'anonymizeIp:true,' : '') . 'colorDepth:true,characterSet:true,screenSize:true,language:true});</script>';
+		$output.= '<script>(function(a,b,c){var d=a.history,e=document,f=navigator||{},g=localStorage,h=encodeURIComponent,i=d.pushState,k=function(){return Math.random().toString(36)},l=function(){return g.cid||(g.cid=k()),g.cid},m=function(r){var s=[];for(var t in r)r.hasOwnProperty(t)&&void 0!==r[t]&&s.push(h(t)+"="+h(r[t]));return s.join("&")},n=function(r,s,t,u,v,w,x){var z="https://www.google-analytics.com/collect",A=m({v:"1",ds:"web",aip:c.anonymizeIp?1:void 0,tid:b,cid:l(),t:r||"pageview",sd:c.colorDepth&&screen.colorDepth?screen.colorDepth+"-bits":void 0,dr:e.referrer||void 0,dt:e.title,dl:e.location.origin+e.location.pathname+e.location.search,ul:c.language?(f.language||"").toLowerCase():void 0,de:c.characterSet?e.characterSet:void 0,sr:c.screenSize?(a.screen||{}).width+"x"+(a.screen||{}).height:void 0,vp:c.screenSize&&a.visualViewport?(a.visualViewport||{}).width+"x"+(a.visualViewport||{}).height:void 0,ec:s||void 0,ea:t||void 0,el:u||void 0,ev:v||void 0,exd:w||void 0,exf:"undefined"!=typeof x&&!1==!!x?0:void 0});if(f.sendBeacon)f.sendBeacon(z,A);else{var y=new XMLHttpRequest;y.open("POST",z,!0),y.send(A)}};d.pushState=function(r){return"function"==typeof d.onpushstate&&d.onpushstate({state:r}),setTimeout(n,c.delay||10),i.apply(d,arguments)},n(),a.ma={trackEvent:function o(r,s,t,u){return n("event",r,s,t,u)},trackException:function q(r,s){return n("exception",null,null,null,null,r,s)}}})(window,"' . $perfmatters_ga['tracking_id'] . '",{' . (!empty($perfmatters_ga['anonymize_ip']) ? 'anonymizeIp:true,' : '') . 'colorDepth:true,characterSet:true,screenSize:true,language:true});</script>';
+	}
+
+	//amp analytics
+	if(!empty($perfmatters_ga['enable_amp']) && (empty($perfmatters_ga['script_type']) || $perfmatters_ga['script_type'] != 'gtagv4')) {
+		if(function_exists('is_amp_endpoint') && is_amp_endpoint()) {
+			$output.= '<script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>';
+			$output.= '<amp-analytics type="gtag" data-credentials="include"><script type="application/json">{"vars" : {"gtag_id": "' . $perfmatters_ga['tracking_id'] . '", "config" : {"' . $perfmatters_ga['tracking_id'] . '": { "groups": "default" }}}}</script></amp-analytics>';
+		}
+	}
+
+	if(!empty($output)) {
+		echo $output;
 	}
 }
 
 //return local anlytics url for Monster Insights
 function perfmatters_monster_ga($url) {
 	return plugins_url() . "/perfmatters/js/analytics.js";
+}
+
+//return local gtag url for Monster Insights
+function perfmatters_monster_ga_gtag($url) {
+	$upload_dir = wp_get_upload_dir();
+	return $upload_dir['baseurl'] . '/perfmatters/gtag.js';
+}
+
+//run analytics updater after settings update if we need to
+function perfmatters_update_option_perfmatters_ga($old_value, $new_value) {
+	$update_flag = false;
+
+	if($new_value['script_type'] != $old_value['script_type'] && (empty($new_value['script_type']) || $new_value['script_type'] == 'gtag' || $new_value['script_type'] == 'gtagv4')) {
+		$update_flag = true;
+	}
+
+	if(!empty($new_value['tracking_id']) && $new_value['tracking_id'] != $old_value['tracking_id'] && ($new_value['script_type'] == 'gtag' || $new_value['script_type'] == 'gtagv4')) {
+		$update_flag = true;
+	}
+
+	if($new_value['cdn_url'] != $old_value['cdn_url'] && $new_value['script_type'] == 'gtag') {
+		$update_flag = true;
+	}
+
+	if(empty($new_value['script_type']) && empty($old_value['use_monster_insights']) && !empty($new_value['use_monster_insights'])) {
+		$update_flag = true;
+	}
+
+	if($update_flag) {
+		perfmatters_update_ga();
+	}
+}
+
+//notice in case analytics is on without tracking id
+function perfmatters_admin_notice_ga_tracking_id() {
+	echo "<div class='notice notice-error'>";
+		echo "<p>";
+			echo "<strong>" . __('Perfmatters Warning', 'perfmatters') . ":</strong> ";
+			echo __('Local Analytics is enabled but no Tracking ID is set.', 'perfmatters');
+		echo "</p>";
+	echo "</div>";
 }
 
 /* Preload
@@ -1185,7 +1287,7 @@ function perfmatters_preload() {
 				$mime_type = !empty($path_info['extension']) && isset($mime_types[$path_info['extension']]) ? $mime_types[$path_info['extension']] : "";
 			}
 			
-			echo "<link rel='preload' href='" . $line['url'] . "'" . (!empty($line['as']) ? " as='" . $line['as'] . "'" : "") . (!empty($mime_type) ? " type='" . $mime_type . "'" : "") . (!empty($line['crossorigin']) ? " crossorigin" : "") . ">" . "\n";
+			echo "<link rel='preload' href='" . $line['url'] . "'" . (!empty($line['as']) ? " as='" . $line['as'] . "'" : "") . (!empty($mime_type) ? " type='" . $mime_type . "'" : "") . (!empty($line['crossorigin']) ? " crossorigin" : "") . (!empty($line['as']) && $line['as'] == 'style' ? " onload=\"this.rel='stylesheet';this.removeAttribute('onload');\"" : "") . ">" . "\n";
 		}
 	}
 }
@@ -1280,6 +1382,40 @@ function perfmatters_insert_footer_code() {
 //check option update for custom inputs and modify result
 function perfmatters_pre_update_option_perfmatters_extras($new_value, $old_value) {
 
+	//purge meta options button press
+	if(!empty($new_value['purge_meta'])) {
+
+		//no meta options selected
+		if(empty($_POST['perfmatters_extras_temp']['purge_meta_options'])) {
+			add_settings_error('perfmatters', 'perfmatters-purge-meta-error', __('No meta options selected.', 'perfmatters'), 'error');
+			return $old_value;
+		}
+
+		global $wpdb;
+
+		$purged = array();
+
+		//delete selected options from postmeta table
+		foreach($_POST['perfmatters_extras_temp']['purge_meta_options'] as $key => $meta_key) {
+
+			$result = $wpdb->delete($wpdb->prefix . 'postmeta', array('meta_key' => $meta_key));
+
+			if($result !== false) {
+				$purged[] = $meta_key;
+			}
+		}
+
+		//display message
+		if(!empty($purged)) {
+			add_settings_error('perfmatters', 'perfmatters-purge-success', __('Meta options purged.', 'perfmatters'), 'success');
+		}
+		else {
+			add_settings_error('perfmatters', 'perfmatters-purge-error', __('Meta options not purged.', 'perfmatters'), 'error');
+		}
+
+		return $old_value;
+	}
+
 	//export settings button was pressed
 	if(!empty($new_value['export_settings'])) {
 
@@ -1353,8 +1489,28 @@ function perfmatters_pre_update_option_perfmatters_extras($new_value, $old_value
 //add filter to update options
 function perfmatters_update_options() {
 	add_filter('pre_update_option_perfmatters_extras', 'perfmatters_pre_update_option_perfmatters_extras', 10, 2);
+	add_filter('update_option_perfmatters_ga', 'perfmatters_update_option_perfmatters_ga', 10, 2);
 }
 add_action('admin_init', 'perfmatters_update_options');
+
+//check for page builder query args
+function perfmatters_is_page_builder() {
+	$page_builders = array(
+		'elementor-preview', //elementor
+		'fl_builder', //beaver builder
+		'et_fb', //divi
+		'ct_builder', //oxygen
+		'tve' //thrive
+	);
+
+	foreach($page_builders as $page_builder) {
+		if(isset($_GET[$page_builder])) {
+			return true;
+		}
+	}
+
+	return false;
+}
 
 /* EDD License Functions
 /***********************************************************************/

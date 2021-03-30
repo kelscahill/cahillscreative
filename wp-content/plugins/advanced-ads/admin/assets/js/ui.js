@@ -25,7 +25,7 @@
 				$label.addClass( 'advads-ui-state-active' );
 			}
 
-			$button.change( function() {
+			$button.on('change', function() {
 				var $changed = jQuery( this );
 				var $label = jQuery( 'label[for="' + $changed.attr( 'id' ) + '"]', $ancestor );
 
@@ -128,9 +128,7 @@
 			}
 			$this.data( 'advads_tooltip', true );
 
-			$this
-				.on( 'mouseover', open )
-				.on( 'focusin', open );
+			$this.on( 'mouseover focusin', open );
 		} );
 	};
 } )( jQuery );

@@ -74,8 +74,10 @@ class Advanced_Ads_Shortcode_Creator {
 
 	/**
 	 * Print shortcode plugin inline.
+	 *
+	 * @param array|null $mce_settings TinyMCE settings array.
 	 */
-	public function print_shortcode_plugin() {
+	public function print_shortcode_plugin( $mce_settings = array() ) {
 		static $printed = null;
 
 		if ( $printed !== null ) {
@@ -84,8 +86,8 @@ class Advanced_Ads_Shortcode_Creator {
 
 		$printed = true;
 
-		// the `tinymce` argument of the `wp_editor()` function is set  to `false`.
-		if ( ! wp_script_is( 'wp-tinymce', 'done' ) ) {
+		// The `tinymce` argument of the `wp_editor()` function is set  to `false`.
+		if ( empty( $mce_settings ) && ! ( doing_action( 'print_default_editor_scripts' ) && user_can_richedit() ) ) {
 			return;
 		}
 

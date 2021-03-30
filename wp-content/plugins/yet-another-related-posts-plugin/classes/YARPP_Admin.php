@@ -69,9 +69,25 @@ class YARPP_Admin {
       add_action('wp_ajax_yarpp_optin_disable',           array($this, 'ajax_optin_disable'));
       add_action('wp_ajax_yarpp_set_display_code',        array($this, 'ajax_set_display_code'));
       add_action('wp_ajax_yarpp_switch',                  array($this, 'ajax_switch'));
+      add_action('wp_ajax_yarpp_clear_cache',             array($this, 'ajax_clear_cache'));
     }
   }
-  
+  /**
+  * Ajax callback for clearing the YARPP cache
+  *
+  * @since 5.13.0
+  */
+  public function ajax_clear_cache() {
+    if( false === check_ajax_referer( 'clear_cache_yarpp', false, false ) ) {
+      echo 'nonce_fail';
+    } else if ( current_user_can( 'manage_options' ) ) {
+      $this->core->cache->flush();
+      echo 'success';
+    } else {
+      echo 'forbidden';
+    }
+    wp_die();
+}
   /**
    * Check review notice status for current user
    *
@@ -401,7 +417,7 @@ class YARPP_Admin {
     $this->optin_notice('install', $optinAction);
   }
 
-  public function optin_notice($type=false, $optinAction) {
+  public function optin_notice($type=false, $optinAction='disable') {
     $screen = get_current_screen();
     if(is_null($screen) || $screen->id == 'settings_page_yarpp') return;
 
@@ -499,21 +515,42 @@ class YARPP_Admin {
   public function enqueue() {
     $version = defined('WP_DEBUG') && WP_DEBUG ? time() : YARPP_VERSION;
     $screen = get_current_screen();
+    $options_basic = false;
     if (!is_null($screen) && $screen->id === 'settings_page_yarpp') {
+      $options_basic = true;
       wp_enqueue_style('yarpp_switch_options',  plugins_url('style/options_switch.css', dirname(__FILE__)), array(), $version );
-      wp_enqueue_script('yarpp_switch_options', plugins_url('js/options_switch.js', dirname(__FILE__)), array('jquery'), $version );
+      wp_enqueue_script('yarpp_switch_options', yarpp_get_file_url_for_environment('js/options_switch.min.js', 'js/options_switch.js'), array('jquery'), $version );
       
-      wp_enqueue_style('wp-pointer');
-      wp_enqueue_style('yarpp_options', plugins_url('style/options_basic.css', dirname(__FILE__)), array(), $version );
+      wp_enqueue_style('wp-pointer');      
+      wp_enqueue_style('yarpp_remodal', plugins_url('lib/plugin-deactivation-survey/remodal.css', dirname(__FILE__)), array(), $version );
+      wp_enqueue_style('yarpp_deactivate', plugins_url('lib/plugin-deactivation-survey/deactivate-feedback-form.css', dirname(__FILE__)), array(), $version );
+      wp_enqueue_style('yarpp_default_theme', plugins_url('lib/plugin-deactivation-survey/remodal-default-theme.css', dirname(__FILE__)), array(), $version );
 
       wp_enqueue_script('postbox');
       wp_enqueue_script('wp-pointer');
-      wp_enqueue_script('yarpp_options', plugins_url('js/options_basic.js', dirname(__FILE__)), array('jquery'), $version );
+      wp_enqueue_script('yarpp_remodal', plugins_url('lib/plugin-deactivation-survey/remodal.min.js', dirname(__FILE__)), array(), $version );
+      wp_enqueue_script('yarpp_options', yarpp_get_file_url_for_environment('js/options_basic.min.js', 'js/options_basic.js'), array('jquery'), $version );
+      // Localize the script with messages
+      $translation_strings = array(
+        'alert_message' => __( 'This will clear all of YARPP’s cached related results.<br> Are you sure?', 'yarpp' ),
+        'model_title'       => __( 'YARPP Cache', 'yarpp' ),
+        'success'       => __( 'Cache cleared successfully!', 'yarpp' ),
+        'logo'    => plugins_url('/images/icon-256x256.png', YARPP_MAIN_FILE),
+        'bgcolor'=> '#fff',
+        'forbidden'     => __( 'You are not allowed to do this!', 'yarpp' ),
+        'nonce_fail'    => __( 'You left this page open for too long. Please refresh the page and try again!', 'yarpp' ),
+        'error'         => __( 'There is some error. Please refresh the page and try again!', 'yarpp' ),
+      );
+      wp_localize_script( 'yarpp_options', 'yarpp_messages', $translation_strings );
     }
 
     $metabox_post_types = $this->core->get_option('auto_display_post_types');
     if (!is_null($screen) && ($screen->id == 'post' || in_array( $screen->id, $metabox_post_types))) {
+      $options_basic = true;
       wp_enqueue_script('yarpp_metabox', plugins_url('js/metabox.js', dirname(__FILE__)), array('jquery'), $version );
+    }
+    if ( true === $options_basic ) {
+      wp_enqueue_style('yarpp_options', plugins_url('style/options_basic.css', dirname(__FILE__)), array(), $version );
     }
   }
   
@@ -630,19 +667,23 @@ class YARPP_Admin {
       return array();
     return $wpdb->get_col("select term_id from $wpdb->term_taxonomy where taxonomy = '{$taxonomy}' and term_taxonomy_id in (" . join(',', $tt_ids) . ")");
   }
-  
+
+	/**
+	 * Handles populating the YARPP related metabox. When the page is initially loaded, this is called to populate it
+     * but $_REQUEST['refresh'] isn't set because we're happy using the cached results. But when the user clicks the
+     * "Refresh" button, $_REQUEST['refresh'] is set so we try to clear the cache and re-calculate the related content.
+	 */
   public function ajax_display() {
     check_ajax_referer('yarpp_display');
 
     if (!isset($_REQUEST['ID'])) return;
 
     $args = array(
-      'post_type' => array('post'),
       'domain' => isset($_REQUEST['domain']) ? $_REQUEST['domain'] : 'website'
     );
-
-    if ($this->core->get_option('cross_relate')) $args['post_type'] = $this->core->get_post_types();
-      
+    if(isset($_REQUEST['refresh']) && $this->core->cache instanceof YARPP_Cache){
+	    $this->core->cache->clear($_REQUEST['ID']);
+    }
     $return = $this->core->display_related(absint($_REQUEST['ID']), $args, false);
 
     header("HTTP/1.1 200");

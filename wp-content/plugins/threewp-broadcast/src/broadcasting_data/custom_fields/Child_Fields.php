@@ -79,7 +79,11 @@ class Child_Fields
 	**/
 	public function update_meta( $key, $value )
 	{
-		ThreeWP_Broadcast()->debug( 'Child fields: updating %s on blog %s post %s with %s', $key, get_current_blog_id(), $this->broadcasting_data->new_post( 'ID' ), htmlspecialchars( $value ) );
+		if ( is_string( $value ) )
+			$value_text = htmlspecialchars( $value );
+		else
+			$value_text = '<pre>' . htmlspecialchars( var_export( $value, true ) ) . '</pre>';
+		ThreeWP_Broadcast()->debug( 'Child fields: updating %s on blog %s post %s with %s', $key, get_current_blog_id(), $this->broadcasting_data->new_post( 'ID' ), $value_text );
 		update_post_meta( $this->broadcasting_data->new_post( 'ID' ), $key, $value );
 		return $this;
 	}

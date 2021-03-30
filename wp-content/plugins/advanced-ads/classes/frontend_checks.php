@@ -422,6 +422,12 @@ class Advanced_Ads_Frontend_Checks {
 			}
 		}
 
+		// hide-ads-from-bots option is enabled
+		$options = Advanced_Ads_Plugin::get_instance()->options();
+		if ( ! empty( $options['block-bots'] ) ) {
+			$aa_classes[] = 'aa-disabled-bots';
+		}
+
 		$aa_classes = apply_filters( 'advanced-ads-body-classes', $aa_classes );
 
 		if ( ! is_array( $classes ) ) {
@@ -748,23 +754,13 @@ class Advanced_Ads_Frontend_Checks {
 					 context = 'html'
 				}
 				if ( window.jQuery ) {
-					var advads_ad_health_check_adsense_hidden_ids = [];
 					var responsive_zero_width = [];
 					jQuery( 'ins.adsbygoogle', context ).each( function() {
-						// The parent container is invisible.
-						if( ! jQuery( this ).parent().is(':visible') ){
-						    // advads_ad_health_check_adsense_hidden_ids.push( this.dataset.adSlot );
-                            // advanced_ads_frontend_checks.add_item_to_notices( 'adsense_hidden', { mode: 'add', append_key: this.dataset.adSlot, append_text: ' AdSense ID: ' + this.dataset.adSlot + ' URL: ' + window.location + ', ' + jQuery( document ).width() + 'px' } );
-						}
-
 						// Zero width, perhaps because a parent container is floated
 						if ( jQuery( this ).attr( 'data-ad-format' ) && 0 === jQuery( this ).width() ) {
 							responsive_zero_width.push( this.dataset.adSlot );
 						}
 					});
-					if( advads_ad_health_check_adsense_hidden_ids.length ){
-						// advanced_ads_frontend_checks.add_item_to_node( '.advanced_ads_ad_health_hidden_adsense', advads_ad_health_check_adsense_hidden_ids );
-					}
 					if ( responsive_zero_width.length ) {
 						advanced_ads_frontend_checks.add_item_to_node( '.advanced_ads_ad_health_floated_responsive_adsense', responsive_zero_width );
 					}

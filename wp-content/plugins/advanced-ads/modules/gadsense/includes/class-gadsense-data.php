@@ -12,7 +12,7 @@ class Advanced_Ads_AdSense_Data {
 
 	// set defaults
 	if (!isset($options['adsense-id'])) {
-	    
+
 		$options['adsense-id'] = '';
 		// starting version 1.7.9, the default limit setting was changed from true to false due to AdSense policy change
 		$options['limit-per-page'] = false;
@@ -27,7 +27,7 @@ class Advanced_Ads_AdSense_Data {
 
 	if (!isset($options['page-level-enabled'])) {
 	    $options['page-level-enabled'] = false;
-	    
+
 	}
 	if ( ! isset( $options['background'] ) ) {
 		$options['background'] = false;
@@ -92,12 +92,23 @@ class Advanced_Ads_AdSense_Data {
         };
         return false;
     }
-    // load stats from AdSense account.
+
+	/**
+	 * Whether to hide the AdSense stats metabox.
+	 *
+	 * @return bool
+	 */
 	public function is_hide_stats(){
-		if ( isset( $this->options ) && is_array( $this->options ) && isset( $this->options['hide-stats'] ) ){
-			return true;
-		};
-		return false;
+		global $post;
+
+		if ( $post instanceof WP_Post && Advanced_Ads::POST_TYPE_SLUG === $post->post_type ) {
+			$the_ad = new Advanced_Ads_Ad( $post->ID );
+			if ( $the_ad->type !== 'adsense' ) {
+				return true;
+			}
+		}
+
+		return isset( $this->options['hide-stats'] );
 	}
 
 }

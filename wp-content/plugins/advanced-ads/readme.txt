@@ -2,9 +2,9 @@
 Contributors: webzunft, advancedads
 Tags: ads, ad manager, ad rotation, adsense, banner
 Requires at least: 4.6
-Tested up to: 5.6
+Tested up to: 5.7
 Requires PHP: 5.6
-Stable tag: 1.23.2
+Stable tag: 1.24.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -123,7 +123,7 @@ Amazing features of the most powerful and easy Google AdSense plugin.
 * change type and sizes of an ad without going into your Google AdSense account
 * hide Google AdSense advertisements on 404 pages by default (to comply with Google AdSense terms)
 * insert Google AdSense code for verification and AdSense Auto Ads (previously called Page-Level ads and QuickStart)
-* disable Google Auto ads anchor ads at the top of the page
+* enable AdSense Auto ads on AMP
 * easy Ad Health integration and Google AdSense violation checks
 * option to make the Google AdSense background transparent
 * place Google AdSense In-feed ads using the also free [In-feed add-on](https://wordpress.org/plugins/advanced-ads-adsense-in-feed/)
@@ -316,6 +316,21 @@ Yes. You can use plenty of [hooks](https://wpadvancedads.com/codex/) to customiz
 10. Convert AdSense ads into AMP automatically (Responsive add-on)
 
 == Changelog ==
+
+= 1.24.1 =
+
+- fix compatibilty with WP prior to 5.0
+
+= 1.24.0 =
+
+- AdSense deprecated Link Units and might no longer fill them. So we removed them when creating new ads. [Learn more](https://wpadvancedads.com/adsense-link-units/)
+- enable AdSense Auto ads on AMP pages
+- interpret WP blocks in the plain text ad type
+- remove MailPoet warning since they are not retiring custom shortcodes after all
+- convert jQuery shorthand functions to `.on()` and `.trigger()`
+- made shortcode button work with WordPress 4.9
+- allow to exclude conditions from the "new display condition" dropdown
+- prevent AdSense earnings box from appearing on non AdSense ad page when AdSense connection is lost
 
 = 1.23.2 =
 

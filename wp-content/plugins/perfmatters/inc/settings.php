@@ -6,6 +6,8 @@ function perfmatters_settings() {
 		add_option('perfmatters_options', apply_filters('perfmatters_default_options', perfmatters_default_options()));
 	}
 
+    $perfmatters_options = get_option('perfmatters_options');
+
     //pptions primary section
     add_settings_section('perfmatters_options', __('Options', 'perfmatters'), 'perfmatters_options_callback', 'perfmatters_options');
 
@@ -32,19 +34,6 @@ function perfmatters_settings() {
     	array(
     		'id' => 'disable_embeds',
     		'tooltip' => __('Removes WordPress Embed JavaScript file (wp-embed.min.js).', 'perfmatters')   		
-    	)
-    );
-
-    //remove query strings
-    add_settings_field(
-    	'remove_query_strings', 
-    	perfmatters_title(__('Remove Query Strings', 'perfmatters'), 'remove_query_strings', 'https://perfmatters.io/docs/remove-query-strings-from-static-resources/'), 
-    	'perfmatters_print_input', 
-    	'perfmatters_options', 
-    	'perfmatters_options', 
-    	array(
-    		'id' => 'remove_query_strings',
-    		'tooltip' => __('Remove query strings from static resources (CSS, JS).', 'perfmatters')
     	)
     );
 
@@ -219,7 +208,24 @@ function perfmatters_settings() {
         'perfmatters_options', 
         array(
             'id' => 'disable_google_maps',
+            'class' => 'perfmatters-input-controller',
             'tooltip' => __('Removes any instances of Google Maps being loaded across your entire site.', 'perfmatters')
+        )
+    );
+
+    //disable google maps exclusions
+    add_settings_field(
+        'disable_google_maps_exclusions', 
+        perfmatters_title(__('Exclude Post IDs', 'perfmatters'), 'disable_google_maps_exclusions', 'https://perfmatters.io/docs/disable-google-maps-api-wordpress/#exclude'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'perfmatters_options', 
+        array(
+            'id' => 'disable_google_maps_exclusions',
+            'input' => 'text',
+            'placeholder' => '23,19,blog',
+            'class' => 'disable_google_maps' . (empty($perfmatters_options['disable_google_maps']) ? ' hidden' : ''),
+            'tooltip' => __('Prevent Google Maps from being disabled on specific post IDs. Format: comma separated', 'perfmatters')
         )
     );
 
@@ -314,6 +320,22 @@ function perfmatters_settings() {
         array(
             'id' => 'youtube_preview_thumbnails',
             'tooltip' => __('Swap out YouTube iFrames with preview thumbnails. The original iFrame is loaded when the thumbnail is clicked.', 'perfmatters')
+        )
+    );
+
+    //lazy load exclusions
+    add_settings_field(
+        'lazy_loading_exclusions', 
+        perfmatters_title(__('Exclude from Lazy Loading', 'perfmatters'), 'lazy_loading_exclusions', 'https://perfmatters.io/docs/lazy-load-wordpress/#exclude'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'perfmatters_lazy_loading', 
+        array(
+            'id' => 'lazy_loading_exclusions',
+            'input' => 'textarea',
+            'textareatype' => 'oneperline',
+            'placeholder' => 'example.png',
+            'tooltip' => __('Exclude specific elements from lazy loading. Exclude an element by adding the source URL (example.png) or by adding any unique portion of its attribute string (class="example"). Format: one per line', 'perfmatters')
         )
     );
 
@@ -488,7 +510,7 @@ function perfmatters_settings() {
         )
     );
 
-    register_setting('perfmatters_options', 'perfmatters_options');
+    register_setting('perfmatters_options', 'perfmatters_options', 'perfmatters_sanitize_options');
 
     //cdn option
     if(get_option('perfmatters_cdn') == false) {    
@@ -597,7 +619,7 @@ function perfmatters_settings() {
             'id' => 'tracking_id',
             'option' => 'perfmatters_ga',
             'input' => 'text',
-            'tooltip' => __('Input your Google Analytics tracking ID.', 'perfmatters')
+            'tooltip' => __('Input your Google Analytics tracking or measurement ID.', 'perfmatters')
         )
     );
 
@@ -632,12 +654,14 @@ function perfmatters_settings() {
             'option' => 'perfmatters_ga',
             'input' => 'select',
             'options' => array(
-            	"" => 'analytics.js' . ' (' . __('Default', 'perfmatters') . ')',
-            	"minimal" => __('Minimal', 'perfmatters'),
+            	'' => 'analytics.js' . ' (' . __('Default', 'perfmatters') . ')',
+                'gtagv4' => 'gtag.js v4',
+                'gtag' => 'gtag.js',
+            	'minimal' => __('Minimal', 'perfmatters'),
             	'minimal_inline' => __('Minimal Inline', 'perfmatters')
             ),
             'class' => 'perfmatters-input-controller',
-            'tooltip' => __('Choose which script method, method_name)', 'perfmatters')
+            'tooltip' => __('Choose which script method you would like to use.', 'perfmatters')
         )
     );
 
@@ -666,6 +690,7 @@ function perfmatters_settings() {
         array(
             'id' => 'anonymize_ip',
             'option' => 'perfmatters_ga',
+            'class' => 'script_type perfmatters-select-control-gtagv4 perfmatters-control-reverse' . (!empty($perfmatters_ga['script_type']) && $perfmatters_ga['script_type'] == 'gtagv4' ? ' hidden' : ''),
             'tooltip' => __('Shorten visitor IP to comply with privacy restrictions in some countries.', 'perfmatters')
         )
     );
@@ -700,6 +725,23 @@ function perfmatters_settings() {
         )
     );
 
+    //cdn url
+    add_settings_field(
+        'cdn_url', 
+        perfmatters_title(__('CDN URL', 'perfmatters'), 'cdn_url', 'https://perfmatters.io/docs/local-analytics/#gtag-cdn'), 
+        'perfmatters_print_input', 
+        'perfmatters_ga', 
+        'perfmatters_ga', 
+        array(
+            'id' => 'cdn_url',
+            'option' => 'perfmatters_ga',
+            'input' => 'text',
+            'placeholder' => 'https://cdn.example.com',
+            'class' => 'script_type perfmatters-select-control- perfmatters-select-control-gtag' . (!empty($perfmatters_ga['script_type']) && $perfmatters_ga['script_type'] != 'gtag' ? ' hidden' : ''),
+            'tooltip' => __('Use your CDN URL when referencing analytics.js from inside gtag.js. Example: https://cdn.example.com', 'perfmatters')
+        )
+    );
+
     //use monsterinsights
     add_settings_field(
         'use_monster_insights', 
@@ -710,8 +752,23 @@ function perfmatters_settings() {
         array(
             'id' => 'use_monster_insights',
             'option' => 'perfmatters_ga',
-            'class' => 'script_type perfmatters-select-control-' . (!empty($perfmatters_ga['script_type']) ? ' hidden' : ''),
-            'tooltip' => __('Allows MonsterInsights to manage your Google Analaytics while still using the locally hosted analytics.js file generated by Perfmatters.', 'perfmatters')
+            'class' => 'script_type perfmatters-select-control- perfmatters-select-control-gtag' . (!empty($perfmatters_ga['script_type']) && $perfmatters_ga['script_type'] != 'gtag' ? ' hidden' : ''),
+            'tooltip' => __('Allows MonsterInsights to manage your Google Analytics while still using the locally hosted gtag.js file generated by Perfmatters.', 'perfmatters')
+        )
+    );
+
+    //enable amp support
+    add_settings_field(
+        'enable_amp', 
+        perfmatters_title(__('Enable AMP Support', 'perfmatters'), 'enable_amp', 'https://perfmatters.io/docs/local-analytics/#amp'), 
+        'perfmatters_print_input', 
+        'perfmatters_ga', 
+        'perfmatters_ga', 
+        array(
+            'id' => 'enable_amp',
+            'option' => 'perfmatters_ga',
+            'class' => 'script_type perfmatters-select-control-gtagv4 perfmatters-control-reverse' . (!empty($perfmatters_ga['script_type']) && $perfmatters_ga['script_type'] == 'gtagv4' ? ' hidden' : ''),
+            'tooltip' => __('Enable support for analytics tracking on AMP sites. This is not a local script, but a native AMP script.', 'perfmatters')
         )
     );
 
@@ -819,20 +876,6 @@ function perfmatters_settings() {
         )
     );
 
-    //defer inline js
-    add_settings_field(
-        'defer_inline_js', 
-        perfmatters_title(__('Defer Inline Javascript', 'perfmatters'), 'defer_inline_js', 'https://perfmatters.io/docs/defer-javascript-wordpress/#defer-inline'), 
-        'perfmatters_print_input', 
-        'perfmatters_extras', 
-        'assets_js', 
-        array(
-            'id' => 'defer_inline_js',
-            'option' => 'perfmatters_extras',
-            'tooltip' => __('Add the defer attribute to your inline JavaScript tags.', 'perfmatters')
-        )
-    );
-
     //defer jquery
     add_settings_field(
         'defer_jquery', 
@@ -852,13 +895,33 @@ function perfmatters_settings() {
     add_settings_field(
         'js_exclusions', 
         perfmatters_title(__('Exclude from Deferral', 'perfmatters'), 'js_exclusions', 'https://perfmatters.io/docs/defer-javascript-wordpress/#exclude'), 
-        'perfmatters_print_js_exclusions', 
+        'perfmatters_print_input', 
         'perfmatters_extras', 
         'assets_js', 
         array(
             'id' => 'js_exclusions',
             'option' => 'perfmatters_extras',
-            'tooltip' => __('Exclude specific JavaScript files or tags from deferral. Exclude a file by adding the source URL (example.js). Exclude an inline tag by adding a unique identifier from the script content (see documentation). Format: one per line', 'perfmatters')
+            'input' => 'textarea',
+            'textareatype' => 'oneperline',
+            'placeholder' => 'example.js',
+            'tooltip' => __('Exclude specific JavaScript files from deferral. Exclude a file by adding the source URL (example.js). Format: one per line', 'perfmatters')
+        )
+    );
+
+    //delay js
+    add_settings_field(
+        'delay_js', 
+        perfmatters_title(__('Delay Javascript', 'perfmatters'), 'delay_js', 'https://perfmatters.io/docs/delay-javascript/'), 
+        'perfmatters_print_input', 
+        'perfmatters_extras', 
+        'assets_js', 
+        array(
+            'id' => 'delay_js',
+            'option' => 'perfmatters_extras',
+            'input' => 'textarea',
+            'textareatype' => 'oneperline',
+            'placeholder' => 'example.js',
+            'tooltip' => __('Delay JavaScript from loading until user interaction. Format: one per line', 'perfmatters')
         )
     );
 
@@ -889,7 +952,7 @@ function perfmatters_settings() {
         array(
             'id' => 'preload',
             'option' => 'perfmatters_extras',
-            'tooltip' => __('Preload allows you to specify resources (such as fonts or CSS) needed right away during a page load. This helps fix render-blocking resource warnings. Format: /style.css', 'perfmatters')
+            'tooltip' => __('Preload allows you to specify resources (such as fonts or CSS) needed right away during a page load. This helps fix render-blocking resource warnings. Format: https://example.com/font.woff2', 'perfmatters')
         )
     );
 
@@ -903,7 +966,7 @@ function perfmatters_settings() {
         array(
             'id' => 'preconnect',
             'option' => 'perfmatters_extras',
-            'tooltip' => __('Preconnect allows the browser to set up early connections before an HTTP request, eliminating roundtrip latency and saving time for users. Format: scheme://domain.tld', 'perfmatters')
+            'tooltip' => __('Preconnect allows the browser to set up early connections before an HTTP request, eliminating roundtrip latency and saving time for users. Format: https://example.com', 'perfmatters')
         )
     );
 
@@ -911,13 +974,16 @@ function perfmatters_settings() {
     add_settings_field(
         'dns_prefetch', 
         perfmatters_title(__('DNS Prefetch', 'perfmatters'), 'dns_prefetch', 'https://perfmatters.io/docs/dns-prefetching/'), 
-        'perfmatters_print_dns_prefetch', 
+        'perfmatters_print_input', 
         'perfmatters_extras', 
         'preloading', 
         array(
             'id' => 'dns_prefetch',
             'option' => 'perfmatters_extras',
-            'tooltip' => __('Resolve domain names before a user clicks. Format: //domain.tld (one per line)', 'perfmatters')
+            'input' => 'textarea',
+            'textareatype' => 'oneperline',
+            'placeholder' => '//example.com',
+            'tooltip' => __('Resolve domain names before a user clicks. Format: //example.com (one per line)', 'perfmatters')
         )
     );
 
@@ -954,6 +1020,23 @@ function perfmatters_settings() {
         	'input' => 'checkbox',
         	'option' => 'perfmatters_extras',
         	'tooltip' => __('Disable the use of visual UI elements in the plugin settings such as checkbox toggles and hovering tooltips.', 'perfmatters')
+        )
+    );
+
+    //purge meta options
+    add_settings_field(
+        'purge_meta', 
+        perfmatters_title(__('Purge Meta Options', 'perfmatters'), false, 'https://perfmatters.io/docs/purge-meta-options/'), 
+        'perfmatters_print_purge_meta', 
+        'perfmatters_extras', 
+        'tools', 
+        array(
+            'id'           => 'purge_meta',
+            'input'        => 'button',
+            'option'       => 'perfmatters_extras',
+            'title'        => __('Purge Meta Options', 'perfmatters'),
+            'confirmation' => __('Are you sure? This will delete all existing Perfmatters meta options for all posts from the database.', 'perfmatters'),
+            'tooltip'      => __('Permanently delete all existing Perfmatters meta options from your database.', 'perfmatters')
         )
     );
 
@@ -1149,7 +1232,6 @@ function perfmatters_default_options() {
 	$defaults = array(
 		'disable_emojis' => "0",
 		'disable_embeds' => "0",
-		'remove_query_strings' => "0",
 		'disable_xmlrpc' => "0",
 		'remove_jquery_migrate' => "0",
 		'hide_wp_version' => "0",
@@ -1186,8 +1268,6 @@ function perfmatters_default_options() {
 //cdn default values
 function perfmatters_default_cdn() {
     $defaults = array(
-        'enable_cdn' => "0",
-        'cdn_url' => "0",
         'cdn_directories' => "wp-content,wp-includes",
         'cdn_exclusions' => ".php"
     );
@@ -1379,8 +1459,19 @@ function perfmatters_print_input($args) {
 
     //text area
     elseif(!empty($args['input']) && $args['input'] == 'textarea') {
-        echo "<textarea id='" . $args['id'] . "' name='" . $option . "[" . $args['id'] . "]'>";
-            echo (!empty($options[$args['id']]) ? $options[$args['id']] : '');
+        echo "<textarea id='" . $args['id'] . "' name='" . $option . "[" . $args['id'] . "]' placeholder='" . (!empty($args['placeholder']) ? $args['placeholder'] : '') . "'>";
+            if(!empty($options[$args['id']])) {
+                if(!empty($args['textareatype'])) {
+                    if($args['textareatype'] == 'oneperline') {
+                         foreach($options[$args['id']] as $line) {
+                            echo $line . "\n";
+                        }
+                    }
+                }
+                else {
+                    echo $options[$args['id']];
+                }
+            }
         echo "</textarea>";
     }
 
@@ -1410,25 +1501,6 @@ function perfmatters_print_input($args) {
 	if(!empty($args['tooltip'])) {
 		perfmatters_tooltip($args['tooltip']);
 	}
-}
-
-//print js exclusions
-function perfmatters_print_js_exclusions($args) {
-    $extras = get_option('perfmatters_extras');
-
-    //input
-    echo "<textarea id='" . $args['id'] . "' name='perfmatters_extras[" . $args['id'] . "]' placeholder='example.js'>";
-        if(!empty($extras['js_exclusions'])) {
-            foreach($extras['js_exclusions'] as $line) {
-                echo $line . "\n";
-            }
-        }
-    echo "</textarea>";
-
-    //tooltip
-    if(!empty($args['tooltip'])) {
-        perfmatters_tooltip($args['tooltip']);
-    }
 }
 
 //print preload
@@ -1470,7 +1542,7 @@ function perfmatters_print_preload($args) {
 
 function perfmatters_print_preload_row($rowCount = 0, $line = array()) {
     echo "<div class='perfmatters-input-row'>";
-        echo "<input type='text' id='preload-" . $rowCount . "-url' name='perfmatters_extras[preload][" . $rowCount . "][url]' value='" . (isset($line['url']) ? $line['url'] : "") . "' placeholder='/font.woff2' />";
+        echo "<input type='text' id='preload-" . $rowCount . "-url' name='perfmatters_extras[preload][" . $rowCount . "][url]' value='" . (isset($line['url']) ? $line['url'] : "") . "' placeholder='https://example.com/font.woff2' />";
 
         $types = array(
             'audio'    => 'Audio',
@@ -1550,7 +1622,7 @@ function perfmatters_print_preconnect($args) {
     }
 }
 
-function perfmatters_print_preconnect_row($rowCount = 0, $line) {
+function perfmatters_print_preconnect_row($rowCount = 0, $line = '') {
     if(is_array($line)) {
         $url = $line['url'];
         $crossorigin = isset($line['crossorigin']) ? $line['crossorigin'] : 0;
@@ -1570,22 +1642,28 @@ function perfmatters_print_preconnect_row($rowCount = 0, $line) {
     echo "</div>";
 }
 
-//print dns prefetch
-function perfmatters_print_dns_prefetch($args) {
-    $extras = get_option('perfmatters_extras');
+//print purge meta options
+function perfmatters_print_purge_meta($args) {
 
-    //input
-    echo "<textarea id='" . $args['id'] . "' name='perfmatters_extras[" . $args['id'] . "]' placeholder='//example.com'>";
-        if(!empty($extras['dns_prefetch'])) {
-            foreach($extras['dns_prefetch'] as $line) {
-                echo $line . "\n";
-            }
+    //input + button
+    $meta_options = array('perfmatters_exclude_defer_js' => 'Defer JavaScript', 'perfmatters_exclude_lazy_loading' => 'Lazy Loading', 'perfmatters_exclude_instant_page' => 'Instant Page');
+    echo "<div style='margin-bottom: 10px;'>";
+        foreach($meta_options as $key => $name) {
+            echo "<label for='perfmatters-purge-meta-" . $key . "' style='margin-right: 10px;'>";
+                echo "<input type='checkbox' name='perfmatters_extras_temp[purge_meta_options][]' id='perfmatters-purge-meta-" . $key . "' value='" . $key . "' />";
+                echo $name;
+            echo "</label>";
         }
-    echo "</textarea>";
+    echo "</div>";
+    echo "<button id='import_settings' name='perfmatters_extras[purge_meta]' value='1' class='button button-secondary'";
+        if(!empty($args['confirmation'])) {
+            echo " onClick=\"return confirm('" . $args['confirmation'] . "');\"";
+        }
+    echo ">" . __("Purge Meta Options", 'perfmatters') . "</button>";
 
     //tooltip
     if(!empty($args['tooltip'])) {
-    	perfmatters_tooltip($args['tooltip']);
+        perfmatters_tooltip($args['tooltip']);
     }
 }
 
@@ -1602,14 +1680,31 @@ function perfmatters_print_import_settings($args) {
     }
 }
 
+//sanitize options
+function perfmatters_sanitize_options($values) {
+
+    //textarea inputs with one per line
+    $one_per_line = array(
+        'lazy_loading_exclusions'
+    );
+
+    perfmatters_sanitize_one_per_line($values, $one_per_line);
+
+    return $values;
+}
+
 //sanitize extras
 function perfmatters_sanitize_extras($values) {
-    if(!empty($values['js_exclusions']) && !is_array($values['js_exclusions'])) {
-        $text = trim($values['js_exclusions']);
-        $text_array = explode("\n", $text);
-        $text_array = array_filter($text_array, 'trim');
-        $values['js_exclusions'] = $text_array;
-    }
+
+    //textarea inputs with one per line
+    $one_per_line = array(
+        'js_exclusions',
+        'delay_js',
+        'dns_prefetch'
+    );
+
+    perfmatters_sanitize_one_per_line($values, $one_per_line);
+
 	if(!empty($values['preload'])) {
         foreach($values['preload'] as $key => $line) {
             if(empty(trim($line['url']))) {
@@ -1626,12 +1721,6 @@ function perfmatters_sanitize_extras($values) {
         }
         $values['preconnect'] = array_values($values['preconnect']);
     }
-    if(!empty($values['dns_prefetch']) && !is_array($values['dns_prefetch'])) {
-        $text = trim($values['dns_prefetch']);
-        $text_array = explode("\n", $text);
-        $text_array = array_filter($text_array, 'trim');
-        $values['dns_prefetch'] = $text_array;
-    }
     
     return $values;
 }
@@ -1643,6 +1732,18 @@ function perfmatters_edd_sanitize_license($new) {
 		delete_option( 'perfmatters_edd_license_status' ); // new license has been entered, so must reactivate
 	}
 	return $new;
+}
+
+//sanitize one per line text field
+function perfmatters_sanitize_one_per_line(&$values, $one_per_line) {
+    foreach($one_per_line as $id) {
+        if(!empty($values[$id]) && !is_array($values[$id])) {
+            $text = trim($values[$id]);
+            $text_array = explode("\n", $text);
+            $text_array = array_filter(array_map('trim', $text_array));
+            $values[$id] = $text_array;
+        }
+    }
 }
 
 //print tooltip

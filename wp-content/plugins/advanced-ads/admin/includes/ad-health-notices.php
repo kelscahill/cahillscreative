@@ -116,19 +116,6 @@ $advanced_ads_ad_health_notices = apply_filters(
 			'get_help_link' => ADVADS_URL . 'manual/ad-health/?utm_source=advanced-ads&utm_medium=link&utm_campaign=error-visible-ad-in-header#header-ads',
 			'timeout'       => YEAR_IN_SECONDS,
 		),
-		// ad AdSense ad was hidden in the frontend using CSS
-		// check in Ad Health in frontend.
-		'adsense_hidden'                                => array(
-			// we keep the %s here and replace it with an empty string, because we use it somewhere else and don’t want to create a new string that is basically the same.
-			'text'          => sprintf(
-				'%s: %s.',
-				__( 'AdSense violation', 'advanced-ads' ),
-				__( 'Ad is hidden', 'advanced-ads' )
-			),
-			'type'          => 'problem',
-			'hide'          => false,
-			'get_help_link' => ADVADS_URL . 'adsense-errors/?utm_source=advanced-ads&utm_medium=link&utm_campaign=error-adsense-hidden#AdSense_hidden',
-		),
 		// Ad has HTTP, but site uses HTTPS
 		// check in Ad Health in frontend.
 		'ad_has_http'                                   => array(
@@ -189,6 +176,14 @@ $advanced_ads_ad_health_notices = apply_filters(
 				          . _x( 'Create one now.', 'related to ads.txt file', 'advanced-ads' ) . '</a>',
 				          admin_url( 'admin.php?page=advanced-ads-settings#general__advads-ads-txt' )
 			          ) . ' ' . Advanced_Ads_Ad_Health_Notices::get_adsense_error_link( 'ADS_TXT_ISSUES' ),
+			'type' => 'problem',
+		),
+		// AdSense deprecated link units
+		'adsense_link_units_deprecated'                  => array(
+			'text' => __( 'Google AdSense deprecated Link Units. Please choose another format.', 'advanced-ads' )
+					  . ' <a href="' . esc_url( ADVADS_URL ) . 'adsense-link-units/" target="_blank" rel="noopener">'
+					  . esc_html__( 'Learn more', 'advanced-ads' )
+					  . '</a>',
 			'type' => 'problem',
 		),
 		'nested_the_content_filters'                    => array(
@@ -283,16 +278,6 @@ $advanced_ads_ad_health_notices = apply_filters(
 				) . '&nbsp;' .
 				'<a href="' . ADVADS_URL . 'add-header-and-footer-code-wordpress/#utm_source=advanced-ads&utm_medium=link&utm_campaign=notice-header-footer' . '" target="_blank">' . __( 'Learn how.', 'advanced-ads' ) . '</a>',
 			'type'    => 'notice',
-			'hide'    => false,
-			'timeout' => YEAR_IN_SECONDS,
-		),
-		// MailPoet changed how they are using custom shortcodes
-		// Advanced_Ads_Compatibility::mailpoet_ad_shortcode().
-		'mailpoet-deprecated-custom-shortcodes'         => array(
-			'text' =>
-				__( 'MailPoet is going to deprecate custom shortcodes. This might remove ads from your newsletters.', 'advanced-ads' )
-				. ' <a href="' . ADVADS_URL . 'mailpoet-newsletters/?utm_source=advanced-ads&utm_medium=link&utm_campaign=notice-mailpoet-shortcodes#Enable_MailPoet_support_in_Advanced_Ads">' . __( 'Learn more', 'advanced-ads' ) . '</a>',
-			'type' => 'problem',
 			'hide'    => false,
 			'timeout' => YEAR_IN_SECONDS,
 		),

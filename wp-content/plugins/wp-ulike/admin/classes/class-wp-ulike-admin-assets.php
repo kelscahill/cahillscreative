@@ -72,13 +72,15 @@ if ( ! class_exists( 'wp_ulike_admin_assets' ) ) {
 			// remove_all_actions( 'admin_notices' );
 
 			// Enqueue vueJS
-			wp_enqueue_script(
-				'wp_ulike_vuejs',
-				WP_ULIKE_ADMIN_URL . '/assets/js/solo/vue/vue.min.js',
-				array(),
-				null,
-				false
-			);
+			if ( preg_match("/(logs|statistics)/i", $this->hook ) ) {
+				wp_enqueue_script(
+					'wp_ulike_vuejs',
+					WP_ULIKE_ADMIN_URL . '/assets/js/solo/vue/vue.min.js',
+					array(),
+					null,
+					false
+				);
+			}
 
 			// Enqueue admin plugins
 			wp_enqueue_script(

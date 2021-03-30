@@ -19,18 +19,26 @@ class SB_Instagram_Display_Elements
 	 * except if the js image loading is disabled using the plugin
 	 * settings
 	 *
-	 * @param $settings
+	 * @param array $settings
+	 * @param array|bool $post
 	 *
 	 * @return string
 	 *
 	 * @since 2.0/5.0
 	 */
-	public static function get_item_classes( $settings ) {
+	public static function get_item_classes( $settings, $post = false ) {
+		$classes = '';
 		if ( !$settings['disable_js_image_loading'] ) {
-			return ' sbi_new sbi_transition';
+			$classes .= ' sbi_new sbi_transition';
 		} else {
-			return ' sbi_new sbi_no_js sbi_no_resraise sbi_js_load_disabled';
+			$classes .= ' sbi_new sbi_no_js sbi_no_resraise sbi_js_load_disabled';
 		}
+
+		if ( $post && SB_Instagram_Parse::get_media_product_type( $post ) === 'igtv' ) {
+			$classes .= ' sbi_igtv';
+		}
+
+		return $classes;
 	}
 
 	/**

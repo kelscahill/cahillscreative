@@ -3,7 +3,7 @@
 Plugin Name: Perfmatters MU
 Plugin URI: https://perfmatters.io/
 Description: Perfmatters is a lightweight performance plugin developed to speed up your WordPress site.
-Version: 1.6.2
+Version: 1.6.8
 Author: forgemedia
 Author URI: https://forgemedia.io/
 License: GPLv2 or later
@@ -22,7 +22,17 @@ function perfmatters_mu_disable_plugins($plugins) {
 	}
 
     //dont filter if its a rest or ajax request
-    if((defined('REST_REQUEST') && REST_REQUEST) || wp_is_json_request() || wp_doing_ajax()) {
+    if((defined('REST_REQUEST') && REST_REQUEST) || wp_is_json_request() || wp_doing_ajax() || wp_doing_cron()) {
+        return $plugins;
+    }
+
+    //manual wp-json check
+    if(stripos(trailingslashit($_SERVER['REQUEST_URI']), '/wp-json/') !== false) {
+        return $plugins;
+    }
+
+    //manual ajax check
+    if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
         return $plugins;
     }
 
@@ -43,13 +53,30 @@ function perfmatters_mu_disable_plugins($plugins) {
 		return $plugins;
 	}
 
+    //wp login check
+    $perfmatters_options = get_option('perfmatters_options');
+    if((!empty($GLOBALS['pagenow']) && $GLOBALS['pagenow'] == 'wp-login.php') || (!empty($perfmatters_options['login_url']) && !empty($GLOBALS['_SERVER']['REQUEST_URI']) && trim($GLOBALS['_SERVER']['REQUEST_URI'], '/') == $perfmatters_options['login_url'])) {
+        return $plugins;
+    }
+
 	//script manager is being viewed
 	if(isset($_GET['perfmatters'])) {
 
 		//store active plugins for script manager UI in case they get disabled completely
 		global $pmsm_active_plugins;
 		$pmsm_active_plugins = $plugins;
+
+        //don't filter plugins if script manager is up
+        return $plugins;
 	}
+
+    //testing mode check
+    if(!empty($pmsm_settings['testing_mode'])) {
+        require_once(wp_normalize_path(ABSPATH) . 'wp-includes/pluggable.php');
+        if(!function_exists('wp_get_current_user') || !current_user_can('manage_options')) {
+            return $plugins;
+        }
+    }
 
 	//check for manual override
 	if(!empty($_GET['mu_mode']) && $_GET['mu_mode'] == 'off') {
@@ -87,6 +114,14 @@ function perfmatters_mu_disable_plugins($plugins) {
 				if(!empty($enabled[$handle]['current']) && in_array($currentID, $enabled[$handle]['current'])) {
 					continue;
 				}
+
+                //user status check
+                if(!empty($enabled[$handle]['user_status']) && function_exists('wp_get_current_user')) {
+                    $status = is_user_logged_in();
+                    if(($status && $enabled[$handle]['user_status'] == 'loggedin') || (!$status && $enabled[$handle]['user_status'] == 'loggedout')) {
+                        continue;
+                    }
+                }
 
 				//disable regex check
 				if(!empty($data['regex'])) {
@@ -155,7 +190,6 @@ function perfmatters_mu_get_current_ID() {
  	$wp_rewrite = new WP_Rewrite();
  	$wp = new WP();
  	
-
 	//attempt to get post id from url
 	$currentID = perfmatters_url_to_postid(home_url($_SERVER['REQUEST_URI']));
 
@@ -178,7 +212,6 @@ function perfmatters_mu_get_current_ID() {
 
 //custom url_to_postid() replacement - modified from https://gist.github.com/Webcreations907/ce5b77565dfb9a208738
 function perfmatters_url_to_postid($url) {
-    global $wp_rewrite;
 
     if ( isset( $_GET['post'] ) && ! empty( $_GET['post'] ) && is_numeric( $_GET['post'] ) ) {
         return $_GET['post'];
@@ -194,9 +227,7 @@ function perfmatters_url_to_postid($url) {
     }
 
     // Check to see if we are using rewrite rules
-    if ( isset( $wp_rewrite ) ) {
-        $rewrite = $wp_rewrite->wp_rewrite_rules();
-    }
+    $rewrite = get_option('rewrite_rules');
 
     // Not using rewrite rules, and 'p=N' and 'page_id=N' methods failed, so we're out of options
     if ( empty( $rewrite ) ) {

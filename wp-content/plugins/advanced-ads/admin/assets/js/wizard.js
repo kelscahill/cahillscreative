@@ -16,21 +16,21 @@ var advads_wizard = {
     status: false, // what is the current status? true if running, else false
     init: function( status ){ // status can be "start" to start wizard or nothing to not start it
 	var _this = this;
-	jQuery('#advads-wizard-controls-next').click( function( ){ _this.next(); } );
-	jQuery('#advads-wizard-controls-prev').click( function( ){ _this.prev(); } );
-	jQuery('#advads-wizard-controls-save').click( function( e ){ e.preventDefault(); jQuery('#publish').click(); } ); // save ad
-	jQuery('#advads-wizard-display-conditions-show').click( function( ){ _this.show_conditions( '#ad-display-box' ); } );
-	jQuery('#advads-wizard-visitor-conditions-show').click( function( ){ _this.show_conditions( '#ad-visitor-box' ); } );
+	jQuery('#advads-wizard-controls-next').on('click', function( ){ _this.next(); } );
+	jQuery('#advads-wizard-controls-prev').on('click', function( ){ _this.prev(); } );
+	jQuery('#advads-wizard-controls-save').on('click', function( e ){ e.preventDefault(); jQuery('#publish').trigger('click'); } ); // save ad
+	jQuery('#advads-wizard-display-conditions-show').on('click', function( ){ _this.show_conditions( '#ad-display-box' ); } );
+	jQuery('#advads-wizard-visitor-conditions-show').on('click', function( ){ _this.show_conditions( '#ad-visitor-box' ); } );
 	jQuery( '.advads-show-in-wizard').hide();
-	jQuery( '#advads-start-wizard' ).click( function(){
+	jQuery( '#advads-start-wizard' ).on('click', function(){
 	    _this.start();
 	});
 	// end wizard when the button was clicked
-	jQuery( '.advads-stop-wizard' ).click( function(){
+	jQuery( '.advads-stop-wizard' ).on('click', function(){
 	    _this.close();
 	});
 	// jump to next box when ad type is selected
-	jQuery('#advanced-ad-type input').change(function(e){
+	jQuery('#advanced-ad-type input').on('change', function(){
 	    _this.next();
 	});
     },

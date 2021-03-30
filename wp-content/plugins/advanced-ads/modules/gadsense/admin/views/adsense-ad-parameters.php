@@ -108,13 +108,24 @@ if( $pub_id_errors ) : ?>
 	    <option value="normal" <?php selected( $unit_type, 'normal' ); ?>><?php _e( 'Normal', 'advanced-ads' ); ?></option>
 	    <option value="responsive" <?php selected( $unit_type, 'responsive' ); ?>><?php _e( 'Responsive', 'advanced-ads' ); ?></option>
 	    <option value="matched-content" <?php selected( $unit_type, 'matched-content' ); ?>><?php _e( 'Responsive (Matched Content)', 'advanced-ads' ); ?></option>
+		<?php if ( $unit_type === 'link' ) : ?>
 	    <option value="link" <?php selected( $unit_type, 'link' ); ?>><?php _e( 'Link ads', 'advanced-ads' ); ?></option>
+		<?php endif; ?>
+		<?php if ( $unit_type === 'link-responsive' ) : ?>
 	    <option value="link-responsive" <?php selected( $unit_type, 'link-responsive' ); ?>><?php _e( 'Link ads (Responsive)', 'advanced-ads' ); ?></option>
+		<?php endif; ?>
 	    <option value="in-article" <?php selected( $unit_type, 'in-article' ); ?>><?php _e( 'In-article', 'advanced-ads' ); ?></option>
 	    <option value="in-feed" <?php selected( $unit_type, 'in-feed' ); ?>><?php _e( 'In-feed', 'advanced-ads' ); ?></option>
 	</select>
 	<a href="<?php echo ADVADS_URL . 'adsense-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=adsense-ad-types'; ?>" target="_blank"><?php _e( 'manual', 'advanced-ads' ); ?></a>
     </div>
+<?php if ( in_array( $unit_type, array( 'link', 'link-responsive' ), true ) ) : ?>
+<p class="advads-message-warning"><?php esc_html_e( 'Google AdSense deprecated Link Units. Please choose another type.', 'advanced-ads' ); ?>
+	<a href="<?php echo esc_url( ADVADS_URL ); ?>adsense-link-units/"" target="_blank" rel="noopener">
+		<?php esc_html_e( 'Learn more', 'advanced-ads' ); ?>
+	</a>
+</p>
+<?php endif; ?>
     <hr/>
     <label class="label" <?php if ( ! $is_responsive || 2 > count( $sizing_array ) ) { echo 'style="display: none;"'; } ?> id="resize-label"><?php _e( 'Resizing', 'advanced-ads' ); ?></label>
     <div <?php if ( ! $is_responsive || 2 > count( $sizing_array ) ) { echo 'style="display: none;"'; } ?>>

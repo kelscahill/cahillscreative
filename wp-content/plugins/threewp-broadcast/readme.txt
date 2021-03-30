@@ -4,9 +4,9 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 5.4
-Stable tag: 47.02
+Stable tag: 47.03
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
-Tested up to: 5.6
+Tested up to: 5.7
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -65,6 +65,7 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/activity-monitor/">Activity Monitor</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">Advanced Custom Fields</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/all-in-one-calendar/">All In One Calendar</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/all-in-one-seo/">All In One SEO</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/aqua-page-builder/">Aqua Page Builder</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/avia-layout-builder/">Avia Layout Builder</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/bbpress/">bbPress</a>
@@ -85,6 +86,7 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/fliphtml5/">Flip HTML5</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/foogallery/">FooGallery</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/formidable-forms/">Formidable Forms</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/generatepress/">GeneratePress</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/geo-my-wp/">GEO my WordPress</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/geodirectory/">Geodirectory</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/global-blocks-for-cornerstone/">Global Blocks For Cornerstone</a>
@@ -352,6 +354,11 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/all-in-one-seo/">All In One SEO</a> adds support for the <a href="https://wordpress.org/plugins/all-in-one-seo-pack/">All in One SEO</a> plugin.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/generatepress/">GeneratePress</a> adds support for the <a href="https://generatepress.com/">GeneratePress</a> theme / plugin.
+* Fix: Update javascript to be compatible with new Wordpress JQuery version.
+* Fix: Remove warning when checking for the taxonomy protect list.
 
 = 47.02 20210216 =
 
