@@ -26,7 +26,7 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
   }
 
   .wpcf7 .ajax-loader {
-    display: none;
+    flex: 1;
   }
 
   // Main Layout
@@ -50,6 +50,10 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
   .btn,
   input[type="submit"] {
     justify-content: center;
+
+    @include media('>small') {
+      max-width: 200px;
+    }
   }
 
   .btn--red {
@@ -380,6 +384,15 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
     border-right: 0;
     padding-left: 0;
     color: white;
+
+    &:hover,
+    &:focus {
+      border-bottom: 1px solid white;
+    }
+
+    &:-internal-autofill-selected {
+      padding-left: 10px;
+    }
   }
 
   .wpcf7-list-item,
@@ -410,6 +423,12 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
       text-align: left;
       display: block;
     }
+  }
+
+  .wpcf7-response-output {
+    color: white;
+    padding: $space-half;
+    border-radius: 4px;
   }
 
   input[type=submit] {

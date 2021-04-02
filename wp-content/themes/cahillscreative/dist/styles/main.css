@@ -6834,7 +6834,9 @@ img.mfp-img {
 }
 
 .l-body-party .wpcf7 .ajax-loader {
-  display: none;
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
 }
 
 .l-body-party .main {
@@ -6868,6 +6870,13 @@ img.mfp-img {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
+}
+
+@media (min-width: 501px) {
+  .l-body-party .btn,
+  .l-body-party input[type="submit"] {
+    max-width: 200px;
+  }
 }
 
 .l-body-party .btn--red {
@@ -7227,6 +7236,15 @@ img.mfp-img {
   color: white;
 }
 
+.page-birthday-party__rsvp input:hover,
+.page-birthday-party__rsvp input:focus {
+  border-bottom: 1px solid white;
+}
+
+.page-birthday-party__rsvp input:-internal-autofill-selected {
+  padding-left: 10px;
+}
+
 .page-birthday-party__rsvp .wpcf7-list-item,
 .page-birthday-party__rsvp .wpcf7-list-item-label {
   text-align: left;
@@ -7256,6 +7274,12 @@ img.mfp-img {
   content: "Are you attending?";
   text-align: left;
   display: block;
+}
+
+.page-birthday-party__rsvp .wpcf7-response-output {
+  color: white;
+  padding: 0.625rem;
+  border-radius: 4px;
 }
 
 .page-birthday-party__rsvp input[type=submit] {
