@@ -6837,6 +6837,7 @@ img.mfp-img {
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
+  margin-top: 0.625rem;
 }
 
 .l-body-party .main {
@@ -7280,6 +7281,7 @@ img.mfp-img {
   color: white;
   padding: 0.625rem;
   border-radius: 4px;
+  margin-top: 0;
 }
 
 .page-birthday-party__rsvp input[type=submit] {

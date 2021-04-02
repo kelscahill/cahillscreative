@@ -27,6 +27,7 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
 
   .wpcf7 .ajax-loader {
     flex: 1;
+    margin-top: $space-half;
   }
 
   // Main Layout
@@ -429,6 +430,7 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
     color: white;
     padding: $space-half;
     border-radius: 4px;
+    margin-top: 0;
   }
 
   input[type=submit] {
