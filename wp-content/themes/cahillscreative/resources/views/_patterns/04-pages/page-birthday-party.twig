@@ -1,0 +1,20 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  {% include "02-organisms/global/head.twig" %}
+  <body id="top" class="l-body l-body-party page-birthday-party">
+    <main class="main" role="document">
+      <div class="layout-container">
+        <article class="article spacing--double">
+          <div class="article__title">
+            <h1 class="page-title color--white">Can you keep a secret?</h1>
+          </div>
+          <div class="article__buttons spacing">
+            <a href="/birthday-party/invite" class="btn btn--red">Of Course!</a>
+            <a href="/birthday-party/decline" class="btn btn--outline">Nah, secrets don't make friends</a>
+          </div>
+        </article>
+      </div>
+    </main>
+    {{ function('wp_footer') }}
+  </body>
+</html>

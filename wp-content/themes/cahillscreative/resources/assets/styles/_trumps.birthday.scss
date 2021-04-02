@@ -1,0 +1,404 @@
+/* ------------------------------------*\
+    $BIRTHDAY
+\*------------------------------------ */
+
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500&family=Teko:wght@600&display=swap');
+
+.search .alm-btn-wrap {
+  display: none;
+}
+
+$bp-black: #141416;
+$bp-red: #fb2640;
+$bp-gray: #9b9b9b;
+$bp-ff-primary: "Teko", sans-serif;
+$bp-ff-secondary: "Rajdhani", sans-serif;
+
+.l-body-party {
+  background: $bp-black !important;
+
+  // Main Layout
+  .main {
+    padding: 0;
+    margin: 0;
+  }
+
+  .article {
+    position: relative;
+    height: 100%;
+    min-height: 100vh;
+    padding: $space-double $space;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    align-content: stretch;
+  }
+
+  // Buttons
+  .btn {
+    justify-content: center;
+  }
+
+  .btn--red {
+    background-color: $bp-red;
+
+    &:hover {
+      background-color: darken($bp-red, 10%);
+    }
+  }
+
+  .btn--outline {
+    border-color: $bp-gray;
+    color: $bp-gray;
+    padding-left: $space;
+    padding-right: $space;
+  }
+
+  // Headings
+  h1 {
+    font-family: $bp-ff-primary;
+    font-size: 34px;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-align: center;
+  }
+
+  h2 {
+    font-family: $bp-ff-primary;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: 0;
+    text-align: center;
+  }
+
+  h3 {
+    font-family: $bp-ff-primary;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: 0;
+    text-align: center;
+    color: white;
+  }
+
+  h4 {
+    font-family: $bp-ff-secondary;
+    color: white;
+    text-transform: uppercase;
+    text-align: left;
+    font-weight: bold;
+  }
+
+  p,
+  p a {
+    font-family: $bp-ff-secondary;
+    text-align: center;
+    color: $bp-gray;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .kicker {
+    color: $bp-red;
+    font-family: $bp-ff-secondary;
+    border-bottom: 1px solid white;
+  }
+}
+
+.page-birthday-party {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+
+  .article {
+    &__title {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      flex: 1 1 auto;
+    }
+
+    &__buttons {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+.page-birthday-party__decline {
+  .article {
+    &__title {
+      position: relative;
+      min-height: 50vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &::after {
+        content: "";
+        display: block;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border: 1px solid $bp-red;
+      }
+    }
+
+    &__dot {
+      .dot {
+        width: 15px;
+        height: 15px;
+        border-radius: 50px;
+        background-color: $bp-red;
+        display: block;
+        margin: $space-half auto 0 auto;
+      }
+    }
+  }
+}
+
+.page-birthday-party__invite {
+  .layout-container {
+    max-width: 100%;
+  }
+
+  .article {
+    max-width: 600px;
+    margin: 0 auto;
+    padding-top: 100px;
+
+    &__alert {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: $bp-red;
+      color: white;
+      text-align: center;
+      padding: $space-half;
+
+      small {
+        font-size: 12px;
+      }
+
+      p {
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+      }
+    }
+
+    &__body {
+      position: relative;
+      padding-bottom: 200px;
+      background: url("../../assets/images/cup.png") bottom center no-repeat;
+
+      &::before {
+        content: "";
+        display: block;
+        width: 1px;
+        height: calc(100% - 100px);
+        background-color: $bp-gray;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: -1;
+      }
+
+      .person {
+        margin-left: -$space;
+        margin-right: -$space;
+
+        &-row {
+          width: 50%;
+          position: relative;
+          margin-bottom: $space-double;
+
+          &::before {
+            content: "";
+            display: block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50px;
+            border: 1px solid $bp-red;
+            background-color: $bp-black;
+            position: absolute;
+            top: 0;
+            z-index: 1;
+          }
+
+          &::after {
+            content: "";
+            display: block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50px;
+            background-color: $bp-red;
+            position: absolute;
+            top: 8px;
+            z-index: 1;
+          }
+
+          .kicker {
+            margin-bottom: $space;
+            display: table;
+          }
+
+          h3 {
+            line-height: 1.2;
+          }
+
+          p {
+            margin-top: 5px;
+          }
+
+          &:nth-child(even) {
+            > * {
+              text-align: right;
+              margin-right: 30px;
+            }
+
+            &::before {
+              right: -11px;
+            }
+
+            &::after {
+              right: -3px;
+            }
+
+            .kicker {
+              text-align: right;
+              margin-left: auto;
+            }
+          }
+
+          &:nth-child(odd) {
+            left: 50%;
+
+            > * {
+              text-align: left;
+              margin-left: 30px;
+            }
+
+            &::before {
+              left: -11px;
+            }
+
+            &::after {
+              left: -3px;
+            }
+          }
+        }
+      }
+    }
+
+    &__details {
+      display: flex;
+      flex-direction: column;
+
+      &--row {
+        border-bottom: 1px solid $bp-gray;
+        padding: $space-half 0;
+        display: flex;
+
+        &:last-child {
+          border-bottom: 0;
+        }
+
+        h4 {
+          padding-right: $space;
+          width: 100px;
+
+          @include media(">small") {
+            width: 50%;
+          }
+        }
+
+        p {
+          text-align: left;
+        }
+      }
+    }
+
+    &__buttons {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+
+      @include media(">small") {
+        max-width: 200px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+  }
+}
+
+.page-birthday-party__rsvp {
+  input {
+    border-bottom: 1px solid $bp-gray;
+    background-color: transparent;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    padding-left: 0;
+    color: white;
+  }
+
+  .wpcf7-list-item,
+  .wpcf7-list-item-label {
+    text-align: left;
+    top: -4px;
+    position: relative;
+  }
+
+  form {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  input[type=radio] {
+    border: 1px solid $bp-red;
+    box-shadow: 0;
+  }
+
+  input[type=radio]:checked {
+    background-color: $bp-red;
+  }
+
+  .wpcf7-form-control-wrap.attending {
+    display: block;
+
+    .wpcf7-list-item {
+      margin-top: 15px;
+    }
+
+    &::before {
+      content: "Are you attending?";
+      text-align: left;
+      display: block;
+      margin-bottom: 5px;
+    }
+  }
+
+  input[type=submit] {
+    background-color: $bp-red;
+    text-align: center;
+    box-shadow: none;
+    border: 0;
+    padding-left: $space;
+    padding-right: $space;
+    width: 100%;
+
+    @include media(">small") {
+      max-width: 200px;
+    }
+  }
+}
