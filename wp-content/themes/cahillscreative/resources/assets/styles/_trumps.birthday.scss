@@ -129,7 +129,7 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
       display: flex;
       align-items: center;
       height: 100%;
-      flex: 1 1 auto;
+      flex-basis: 50vh;
     }
 
     &__buttons {
@@ -358,7 +358,6 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
     &__title {
       display: flex;
       flex-direction: column;
-      flex: 1 1 auto;
       align-items: center;
       justify-content: center;
     }
