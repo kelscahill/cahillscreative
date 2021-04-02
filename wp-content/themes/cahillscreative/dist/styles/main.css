@@ -7298,11 +7298,12 @@ img.mfp-img {
   display: block;
 }
 
-.page-birthday-party__rsvp .wpcf7-response-output {
+.page-birthday-party__rsvp .wpcf7 form .wpcf7-response-output {
   color: white;
   padding: 0.625rem;
   border-radius: 4px;
   margin-top: 0 !important;
+  font-family: "Rajdhani", sans-serif;
 }
 
 .page-birthday-party__rsvp input[type=submit] {

@@ -441,11 +441,12 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
     }
   }
 
-  .wpcf7-response-output {
+  .wpcf7 form .wpcf7-response-output {
     color: white;
     padding: $space-half;
     border-radius: 4px;
     margin-top: 0 !important;
+    font-family: $bp-ff-secondary;
   }
 
   input[type=submit] {
