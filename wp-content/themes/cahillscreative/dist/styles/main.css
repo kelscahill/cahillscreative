@@ -6933,32 +6933,18 @@ img.mfp-img {
   border-bottom: 1px solid white;
 }
 
-.page-birthday-party {
+.page-birthday-party .article__title {
+  position: relative;
+  min-height: 50vh;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-}
-
-.page-birthday-party .article__title {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  height: 100%;
-  -ms-flex-preferred-size: 50vh;
-      flex-basis: 50vh;
 }
 
 .page-birthday-party .article__buttons {

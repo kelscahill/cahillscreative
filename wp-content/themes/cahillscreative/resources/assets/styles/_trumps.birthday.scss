@@ -118,17 +118,13 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
 }
 
 .page-birthday-party {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
   .article {
     &__title {
+      position: relative;
+      min-height: 50vh;
       display: flex;
       align-items: center;
-      height: 100%;
-      flex-basis: 50vh;
+      justify-content: center;
     }
 
     &__buttons {
