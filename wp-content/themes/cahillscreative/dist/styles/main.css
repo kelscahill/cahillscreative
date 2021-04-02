@@ -6825,8 +6825,22 @@ img.mfp-img {
   display: none;
 }
 
+.l-html-party {
+  height: -webkit-fill-available;
+  height: -moz-available;
+  height: stretch;
+}
+
 .l-body-party {
   background: #141416 !important;
+}
+
+.l-body-party .grecaptcha-badge {
+  right: -300px !important;
+}
+
+.l-body-party .wpcf7 .ajax-loader {
+  display: none;
 }
 
 .l-body-party .main {
@@ -6940,7 +6954,6 @@ img.mfp-img {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  height: 100%;
 }
 
 .page-birthday-party .article__title {
@@ -7196,6 +7209,39 @@ img.mfp-img {
   }
 }
 
+.page-birthday-party__rsvp .article__title {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 auto;
+          flex: 1 1 auto;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.page-birthday-party__rsvp br {
+  display: none !important;
+}
+
+.page-birthday-party__rsvp form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.page-birthday-party__rsvp form p > * + * {
+  margin-top: 1.25rem;
+  display: block;
+}
+
 .page-birthday-party__rsvp input {
   border-bottom: 1px solid #9b9b9b;
   background-color: transparent;
@@ -7209,13 +7255,8 @@ img.mfp-img {
 .page-birthday-party__rsvp .wpcf7-list-item,
 .page-birthday-party__rsvp .wpcf7-list-item-label {
   text-align: left;
-  top: -4px;
+  top: 0;
   position: relative;
-}
-
-.page-birthday-party__rsvp form {
-  max-width: 500px;
-  margin: 0 auto;
 }
 
 .page-birthday-party__rsvp input[type=radio] {
@@ -7240,7 +7281,6 @@ img.mfp-img {
   content: "Are you attending?";
   text-align: left;
   display: block;
-  margin-bottom: 5px;
 }
 
 .page-birthday-party__rsvp input[type=submit] {
@@ -7252,6 +7292,7 @@ img.mfp-img {
   padding-left: 1.25rem;
   padding-right: 1.25rem;
   width: 100%;
+  margin-top: 2.5rem;
 }
 
 @media (min-width: 501px) {

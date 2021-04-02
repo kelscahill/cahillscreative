@@ -1,4 +1,8 @@
 .shortcode-builder {
+	a.group {
+		border-radius: 0 0 $radius $radius;
+	}
+
 	p.warning-callout {
 		&:before {
 			display: block;
@@ -33,6 +37,7 @@
 				width: 100%;
 			}
 			.shortcode-builder--label {
+				border: none;
 				border-bottom: 1px solid $light_border;
 			}
 		}
@@ -49,12 +54,12 @@
 	}
 	&--label,
 	&--fields {
-		padding: 23px 20px;
+		padding: 20px;
 	}
 	&--label {
 		background-color: #fcfcfc;
 		border-right: 1px solid $light_border;
-		width: 40%;
+		width: 35%;
 		padding-right: 30px;
 		&.full {
 			width: 100%;
@@ -96,19 +101,31 @@
 			display: flex;
 			width: 100%;
 			flex-wrap: nowrap;
+			justify-content: space-between;
 			&--two,
 			&--three {
-				width: 102%;
-				margin-left: -1%;
+				width: 100%;
 				> div {
-					width: 50%;
-					padding: 0 1%;
+					width: 48%;
 				}
 			}
 
 			&--three {
 				> div {
-					width: 33.333%;
+					width: 31.333%;
+				}
+			}
+		}
+
+		ul {
+			display: flex;
+			width: 100%;
+			flex-wrap: wrap;
+			li {
+				width: 50%;
+				padding-right: 10px;
+				label {
+					margin-bottom: 0 !important;
 				}
 			}
 		}
@@ -196,9 +213,26 @@
 		}
 	}
 	.section-intro {
-		font-size: 13px;
-		padding: 20px 5px 20px;
-		margin: 0 0 20px;
-		border-bottom: 1px solid $light_border;
+		margin: 0 0 10px;
+	}
+	.section-anchor-nav {
+		display: flex;
+		flex-wrap: wrap;
+		width: 100%;
+		margin: 0;
+		padding: 0 0 15px;
+		border-bottom: 1px solid $border;
+		li {
+			margin: 0 10px 5px 0;
+			padding: 0;
+			font-size: 12px;
+		}
+		a {
+			display: block;
+			&:focus,
+			&:hover {
+				text-decoration: none;
+			}
+		}
 	}
 }

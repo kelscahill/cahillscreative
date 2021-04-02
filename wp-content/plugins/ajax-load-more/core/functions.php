@@ -280,19 +280,19 @@ function alm_parse_tax_terms($terms){
  */
 function alm_get_meta_query($meta_key, $meta_value, $meta_compare, $meta_type){
 
-   if ( !empty( $meta_key ) ) {
-      // do_shortcode fixes (shortcode was rendering as HTML when using < OR  <==)
+   if ( ! empty( $meta_key ) ) {
+      // do_shortcode fixes (shortcode was rendering as HTML when using < OR  <==).
       $meta_compare = ($meta_compare === 'lessthan') ? '<' : $meta_compare;
       $meta_compare = ($meta_compare === 'lessthanequalto') ? '<=' : $meta_compare;
       $meta_compare = ($meta_compare === 'greaterthan') ? '>' : $meta_compare;
       $meta_compare = ($meta_compare === 'greatthanequalto') ? '>=' : $meta_compare;
 
-      // Get optimized `meta_value` parameter
+      // Get optimized `meta_value` parameter.
       $meta_values = alm_parse_meta_value($meta_value, $meta_compare);
 
-      // Unset `$meta_values` if empty
-      if($meta_values === ''){
-         unset($meta_values);
+      // Unset `$meta_values` if empty.
+      if ( $meta_values === '' ) {
+         unset( $meta_values );
       }
 
       if(isset($meta_values)){
@@ -302,13 +302,15 @@ function alm_get_meta_query($meta_key, $meta_value, $meta_compare, $meta_type){
             'compare' => $meta_compare,
             'type' => $meta_type
          );
+
       }else{
-         // If $meta_values is empty, don't query for 'value'
+         // If $meta_values is empty, don't query for 'value'.
          $return = array(
             'key' => $meta_key,
             'compare' => $meta_compare,
             'type' => $meta_type
          );
+
       }
       return $return;
    }
@@ -436,16 +438,18 @@ function alm_get_canonical_url(){
  */
 function alm_get_page_slug( $post ) {
 
-   // Exit if admin
-   if(is_admin()) return false;
+   // Exit if admin.
+   if ( is_admin() ) {
+		return false;
+	}
 
-	if(!is_archive()){
+	if ( ! is_archive() ) {
    	// If not archive, set the post slug
-		if(is_front_page() || is_home()){
+		if( is_front_page() || is_home() ){
 			$slug = 'home';
-		}else{
+		} else {
    		// Search
-   		if(is_search()){
+   		if ( is_search() ) {
       		$search_query = get_search_query();
       		if($search_query){
          		$slug = "?s=$search_query";
@@ -456,31 +460,31 @@ function alm_get_page_slug( $post ) {
 		      $slug = $post->post_name;
 		   }
       }
-	}else{
+	} else {
 		// Tax
-		if(is_tax()){
+		if ( is_tax() ) {
 			$queried_object = get_queried_object();
 			$slug = $queried_object->slug;
 		}
 		// Category
-		elseif(is_category()){
+		elseif ( is_category() ) {
 	      $cat = get_query_var('cat');
 			$category = get_category($cat);
 			$slug = $category->slug;
 	   }
 	   // Tag
-	   elseif(is_tag()){
+	   elseif ( is_tag() ) {
 	      $slug = get_query_var('tag');
 	   }
 		// Author
-		elseif(is_author()){
+		elseif ( is_author() ) {
 	      $slug = get_the_author_meta('ID');
 	   }
 		// Post Type Archive
-		elseif(is_post_type_archive()){
+		elseif ( is_post_type_archive() ) {
 			$slug = get_post_type();
 		}
-		elseif(is_date()){
+		elseif ( is_date() ) {
 			// Is archive page
 	      $archive_year = get_the_date('Y');
 	      $archive_month = get_the_date('m');
@@ -488,10 +492,10 @@ function alm_get_page_slug( $post ) {
 	      if(is_year()){
 	        $slug = $archive_year;
 	      }
-	      if(is_month()){
+	      if ( is_month() ) {
 	        $slug = $archive_year.'-'.$archive_month;
 	      }
-	      if(is_day()){
+	      if ( is_day() ) {
 	        $slug = $archive_year.'-'.$archive_month.'-'.$archive_day;
 	      }
 		}
@@ -513,8 +517,10 @@ function alm_get_page_slug( $post ) {
  */
 function alm_get_page_id($post){
 
-   // Exit if admin
-   if(is_admin()) return false;
+   // Exit if admin.
+   if(is_admin()) {
+		return false;
+	}
 
    $post_id = '';
 

@@ -14,8 +14,20 @@ $bp-gray: #9b9b9b;
 $bp-ff-primary: "Teko", sans-serif;
 $bp-ff-secondary: "Rajdhani", sans-serif;
 
+.l-html-party {
+  height: stretch;
+}
+
 .l-body-party {
   background: $bp-black !important;
+
+  .grecaptcha-badge {
+    right: -300px !important;
+  }
+
+  .wpcf7 .ajax-loader {
+    display: none;
+  }
 
   // Main Layout
   .main {
@@ -111,7 +123,6 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
 
   .article {
     &__title {
@@ -343,6 +354,30 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
 }
 
 .page-birthday-party__rsvp {
+  .article {
+    &__title {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  br {
+    display: none !important;
+  }
+
+  form {
+    max-width: 500px;
+    margin: 0 auto;
+
+    p > * + * {
+      margin-top: $space;
+      display: block;
+    }
+  }
+
   input {
     border-bottom: 1px solid $bp-gray;
     background-color: transparent;
@@ -356,13 +391,8 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
   .wpcf7-list-item,
   .wpcf7-list-item-label {
     text-align: left;
-    top: -4px;
+    top: 0;
     position: relative;
-  }
-
-  form {
-    max-width: 500px;
-    margin: 0 auto;
   }
 
   input[type=radio] {
@@ -385,7 +415,6 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
       content: "Are you attending?";
       text-align: left;
       display: block;
-      margin-bottom: 5px;
     }
   }
 
@@ -397,6 +426,7 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
     padding-left: $space;
     padding-right: $space;
     width: 100%;
+    margin-top: $space-double;
 
     @include media(">small") {
       max-width: 200px;

@@ -7,15 +7,15 @@ Text Domain: ajax-load-more
 Author: Darren Cooney
 Twitter: @KaptonKaos
 Author URI: https://connekthq.com
-Version: 5.4.3
+Version: 5.4.4
 License: GPL
 Copyright: Darren Cooney & Connekt Media
 */
 
 // @codingStandardsIgnoreStart
 
-define( 'ALM_VERSION', '5.4.3' );
-define( 'ALM_RELEASE', 'February 11, 2021' );
+define( 'ALM_VERSION', '5.4.4' );
+define( 'ALM_RELEASE', 'March 31, 2021' );
 define( 'ALM_STORE_URL', 'https://connekthq.com' );
 
 /**
@@ -40,6 +40,7 @@ function alm_install( $network_wide ) {
 }
 register_activation_hook( __FILE__, 'alm_install' );
 add_action( 'wpmu_new_blog', 'alm_install' );
+
 
 /**
  * Create new table and repeater template.

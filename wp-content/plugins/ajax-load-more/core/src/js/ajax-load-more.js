@@ -962,11 +962,11 @@ let alm_is_filtering = false;
 				.then(function (response) {
 					// Success
 					let results = response.data; // Get data from response
-					let data = '',
-						html = results.html,
-						meta = results.meta,
-						postcount = meta.postcount,
-						totalposts = meta.totalposts;
+					let data = '';
+					let html = results.html;
+					let meta = results.meta;
+					let postcount = meta && meta.postcount ? meta.postcount : 0;
+					let totalposts = meta && meta.totalposts ? meta.totalposts : 0;
 
 					// loop results to get data from each
 					for (let i = 0; i < html.length; i++) {
@@ -1006,8 +1006,8 @@ let alm_is_filtering = false;
 		/**
 		 * Success function after loading data.
 		 *
-		 * @param {object} data      The results of the Ajax request
-		 * @param {boolean} is_cache Are results of the Ajax request coming from cache
+		 * @param {object} data      The results of the Ajax request.
+		 * @param {boolean} is_cache Are results of the Ajax request coming from cache?
 		 * @since 2.6.0
 		 */
 		alm.AjaxLoadMore.success = function (data, is_cache) {
@@ -1029,7 +1029,7 @@ let alm_is_filtering = false;
 			// Paging container
 			let pagingContent = alm.listing.querySelector('.alm-paging-content');
 
-			var html, meta, total, totalLoaded;
+			let html, meta, total;
 
 			if (is_cache) {
 				// If Cache, do not look for json data as we won't be querying the DB.
@@ -1038,11 +1038,19 @@ let alm_is_filtering = false;
 				// Standard ALM query results
 				html = data.html;
 				meta = data.meta;
-				alm.posts = alm.addons.paging ? meta.postcount : alm.posts + meta.postcount;
-				total = meta.postcount;
-				alm.totalposts = meta.totalposts;
-				alm.totalposts = alm.addons.preloaded === 'true' ? alm.totalposts - alm.addons.preloaded_amount : alm.totalposts;
+				total = meta && meta.postcount ? meta.postcount : alm.posts_per_page;
+
+				let totalposts = meta && meta.totalposts ? meta.totalposts : alm.posts_per_page * 5;
+				alm.totalposts = alm.addons.preloaded === 'true' ? totalposts - alm.addons.preloaded_amount : totalposts;
+				alm.posts = alm.addons.paging ? total : alm.posts + total;
 				alm.debug = meta.debug ? meta.debug : '';
+
+				if (!meta) {
+					// Display warning if `meta` is missing.
+					console.warn(
+						'Ajax Load More: Unable to access `meta` object in Ajax response. There may be an issue in your Repeater Template or another hook causing interference.'
+					);
+				}
 			}
 
 			// Set alm.html as plain text return
@@ -1166,7 +1174,7 @@ let alm_is_filtering = false;
 								// Call to Actions
 								if (alm.addons.cta === 'true') {
 									posts_per_page = posts_per_page + 1; // Add 1 to posts_per_page for CTAs
-									pages = Math.ceil(total / posts_per_page); // Update pages var with new posts_per_page
+									pages = Math.ceil(total / posts_per_page); // Update pages let with new posts_per_page
 									total = pages + total; // Get new total w/ CTAs added
 								}
 
@@ -1343,7 +1351,7 @@ let alm_is_filtering = false;
 					if (alm.transition !== 'masonry' || (alm.init && !alm.is_masonry_preloaded)) {
 						if (!isPaged) {
 							if (!alm.transition_container) {
-								// No transition container
+								// No transition container.
 								if (alm.images_loaded === 'true') {
 									imagesLoaded(reveal, function () {
 										almAppendChildren(alm.listing, reveal);
@@ -1354,11 +1362,11 @@ let alm_is_filtering = false;
 								} else {
 									almAppendChildren(alm.listing, reveal);
 
-									// Run srcSet polyfill
+									// Run srcSet polyfill.
 									srcsetPolyfill(alm.listing, alm.ua);
 								}
 							} else {
-								// Standard container
+								// Standard container.
 								alm.listing.appendChild(reveal);
 							}
 						}
@@ -1388,7 +1396,7 @@ let alm_is_filtering = false;
 					}
 
 					// None
-					else if (alm.transition === 'none') {
+					else if (alm.transition === 'none' && alm.transition_container) {
 						if (alm.images_loaded === 'true') {
 							imagesLoaded(reveal, function () {
 								almFadeIn(reveal, 0);
@@ -1400,7 +1408,7 @@ let alm_is_filtering = false;
 						}
 					}
 
-					// Default(Fade)
+					// Default (Fade)
 					else {
 						if (alm.images_loaded === 'true') {
 							imagesLoaded(reveal, function () {
@@ -1534,7 +1542,7 @@ let alm_is_filtering = false;
 
 			// Destroy After
 			if (alm.destroy_after !== undefined && alm.destroy_after !== '') {
-				var currentPage = alm.page + 1; // Add 1 because alm.page starts at 0
+				let currentPage = alm.page + 1; // Add 1 because alm.page starts at 0
 				currentPage = alm.addons.preloaded === 'true' ? currentPage++ : currentPage; // Add 1 for preloaded
 				if (currentPage == alm.destroy_after) {
 					// Disable ALM if page = alm.destroy_after val
@@ -1986,7 +1994,7 @@ let alm_is_filtering = false;
 				window.dispatchEvent(new Event('resize'));
 			} else {
 				//This will be executed on old browsers and especially IE
-				var resizeEvent = window.document.createEvent('UIEvents');
+				let resizeEvent = window.document.createEvent('UIEvents');
 				resizeEvent.initUIEvent('resize', true, false, window, 0);
 				window.dispatchEvent(resizeEvent);
 			}
@@ -2076,7 +2084,7 @@ let alm_is_filtering = false;
 				});
 				alm.window.addEventListener('keyup', function (e) {
 					// End, Page Down
-					let code = e.keyCode ? e.keyCode : e.which;
+					let code = e.key ? e.key : e.code;
 					switch (code) {
 						case 35:
 						case 34:
@@ -2164,8 +2172,10 @@ let alm_is_filtering = false;
 					alm.finished = true;
 					alm.button.classList.add('done');
 				} else {
+					// Set button label.
+					alm.button.innerHTML = alm.button_label;
+					// If Pause.
 					if (alm.pause === 'true') {
-						alm.button.innerHTML = alm.button_label;
 						alm.loading = false;
 					} else {
 						alm.AjaxLoadMore.loadPosts();
@@ -2183,10 +2193,7 @@ let alm_is_filtering = false;
 					alm.AjaxLoadMore.triggerDone();
 				}
 
-				/*
-				 *  Display tableOfContents
-				 */
-
+				// Display Table of Contents
 				tableOfContents(alm, true, true);
 			}
 
@@ -2226,10 +2233,7 @@ let alm_is_filtering = false;
 					resultsText.almInitResultsText(alm, 'preloaded');
 				}
 
-				/*
-				 *  Display tableOfContents
-				 */
-
+				// Display Table of Contents
 				tableOfContents(alm, alm.init, true);
 			}
 
@@ -2250,28 +2254,26 @@ let alm_is_filtering = false;
 					}
 				}
 
+				// Results Text.
 				if (alm.resultsText) {
 					resultsText.almInitResultsText(alm, 'nextpage');
 				}
 
-				/*
-				 *  Display tableOfContents
-				 */
-
+				// Display Table of Contents
 				tableOfContents(alm, alm.init, true);
 			}
 
-			// WooCommerce Add-on
+			// WooCommerce Add-on.
 			if (alm.addons.woocommerce) {
 				wooInit(alm);
 
-				// Trigger `Done` if `paged is less than `pages`
+				// Trigger `Done` if `paged is less than `pages`.
 				if (alm.addons.woocommerce_settings.paged >= parseInt(alm.addons.woocommerce_settings.pages)) {
 					alm.AjaxLoadMore.triggerDone();
 				}
 			}
 
-			// Elementor Add-on
+			// Elementor Add-on.
 			if (alm.addons.elementor && alm.addons.elementor_type && alm.addons.elementor_type === 'posts') {
 				elementorInit(alm);
 
@@ -2281,7 +2283,7 @@ let alm_is_filtering = false;
 				}
 			}
 
-			// Window Load (Masonry + Preloaded)
+			// Window Load (Masonry + Preloaded).
 			alm.window.addEventListener('load', function () {
 				if (alm.is_masonry_preloaded) {
 					// Wrap almMasonry in anonymous async/await function
@@ -2299,7 +2301,8 @@ let alm_is_filtering = false;
 		};
 
 		/**
-		 * Update current page - triggered from paging add-on.
+		 * Update Current Page.
+		 * Callback function triggered from paging add-on.
 		 *
 		 * @since 2.7.0
 		 */
@@ -2447,8 +2450,8 @@ let reset = function (props = {}) {
 				instance.dataset.wooSettings = settings; // Update data atts
 				almFilter('fade', '100', data, 'filter');
 			}
-		})().catch((e) => {
-			console.log('There was an resetting the Ajax Load More instance.');
+		})().catch(() => {
+			console.warn('Ajax Load More: There was an resetting the Ajax Load More instance.');
 		});
 	} else {
 		// Standard ALM

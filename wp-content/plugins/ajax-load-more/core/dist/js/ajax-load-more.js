@@ -912,9 +912,8 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 exports.singlePostHTML = singlePostHTML;
-/**  
- * singlePostHTML
- * Create the HTML for loading Single Posts
+/**
+ * Create the HTML for loading Single Posts.
  *
  * @param {Object} response Query response
  * @param {HTMLElement} target The target div
@@ -931,18 +930,70 @@ function singlePostHTML(response) {
 			debug: 'Single Posts Query'
 		}
 	};
+
 	if (response.status === 200 && response.data && target) {
-		var div = document.createElement("div");
+		// Create temp div to hold Ajax response data.
+		var div = document.createElement('div');
 		div.innerHTML = response.data;
-		var htmlTarget = div.querySelector(target);
-		if (htmlTarget) {
-			data.html = htmlTarget.innerHTML;
+
+		// Get target element.
+		var html = div.querySelector(target);
+
+		// Get any custom target elements.
+		var customElements = window && window.almSinglePostsCustomElements;
+		if (customElements) {
+			html.appendChild(singlePostsGetCustomElements(div, customElements));
+		}
+
+		if (html) {
+			data.html = html.innerHTML;
+		} else {
+			console.warn('Ajax Load More: Unable to find ' + target + ' element.');
 		}
 	}
 	return data;
 }
-
 exports.default = singlePostHTML;
+
+/**
+ * Collect custom target elements and append them to the returned HTML.
+ *
+ * This function is useful to get elements from outside the ALM target and bring them into the returned HTML.
+ * Useful for when CSS or JS may be loaded in the <head/> and we need it brought into the HTML for Single Posts.
+ *
+ * e.g. window.almSinglePostsCustomElements = ['#woocommerce-inline-inline-css', '#wc-block-style-css'];
+ *
+ * @param {object} content The HTML element.
+ * @param {array|string} customElements The elements to search for in content.
+ * @return {object} HTML elements.
+ */
+
+function singlePostsGetCustomElements() {
+	var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	var customElements = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+	// Create container element to hold elements.
+	var container = document.createElement('div');
+	container.classList.add('alm-custom-elements');
+
+	// Exit if empty.
+	if (!content || !customElements) {
+		return container;
+	}
+
+	// Convert customElements to an Array.
+	customElements = !Array.isArray(customElements) ? [customElements] : customElements;
+
+	// Loop Array to extract elements and append to container.
+	for (var i = 0; i < customElements.length; i++) {
+		var element = content.querySelector(customElements[i]);
+		if (element) {
+			container.appendChild(element);
+		}
+	}
+
+	return container;
+}
 
 /***/ }),
 
@@ -2343,11 +2394,11 @@ var alm_is_filtering = false;
 			_axios2.default.get(alm_rest_url, { params: params }).then(function (response) {
 				// Success
 				var results = response.data; // Get data from response
-				var data = '',
-				    html = results.html,
-				    meta = results.meta,
-				    postcount = meta.postcount,
-				    totalposts = meta.totalposts;
+				var data = '';
+				var html = results.html;
+				var meta = results.meta;
+				var postcount = meta && meta.postcount ? meta.postcount : 0;
+				var totalposts = meta && meta.totalposts ? meta.totalposts : 0;
 
 				// loop results to get data from each
 				for (var i = 0; i < html.length; i++) {
@@ -2386,8 +2437,8 @@ var alm_is_filtering = false;
 		/**
    * Success function after loading data.
    *
-   * @param {object} data      The results of the Ajax request
-   * @param {boolean} is_cache Are results of the Ajax request coming from cache
+   * @param {object} data      The results of the Ajax request.
+   * @param {boolean} is_cache Are results of the Ajax request coming from cache?
    * @since 2.6.0
    */
 		alm.AjaxLoadMore.success = function (data, is_cache) {
@@ -2411,7 +2462,9 @@ var alm_is_filtering = false;
 			// Paging container
 			var pagingContent = alm.listing.querySelector('.alm-paging-content');
 
-			var html, meta, total, totalLoaded;
+			var html = void 0,
+			    meta = void 0,
+			    total = void 0;
 
 			if (is_cache) {
 				// If Cache, do not look for json data as we won't be querying the DB.
@@ -2420,11 +2473,17 @@ var alm_is_filtering = false;
 				// Standard ALM query results
 				html = data.html;
 				meta = data.meta;
-				alm.posts = alm.addons.paging ? meta.postcount : alm.posts + meta.postcount;
-				total = meta.postcount;
-				alm.totalposts = meta.totalposts;
-				alm.totalposts = alm.addons.preloaded === 'true' ? alm.totalposts - alm.addons.preloaded_amount : alm.totalposts;
+				total = meta ? parseInt(meta.postcount) : parseInt(alm.posts_per_page);
+
+				var totalposts = meta && meta.totalposts ? meta.totalposts : alm.posts_per_page * 5;
+				alm.totalposts = alm.addons.preloaded === 'true' ? totalposts - alm.addons.preloaded_amount : totalposts;
+				alm.posts = alm.addons.paging ? total : alm.posts + total;
 				alm.debug = meta.debug ? meta.debug : '';
+
+				if (!meta) {
+					// Display warning if `meta` is missing.
+					console.warn('Ajax Load More: Unable to access `meta` object in Ajax response. There may be an issue in your Repeater Template or another hook causing interference.');
+				}
 			}
 
 			// Set alm.html as plain text return
@@ -2560,7 +2619,7 @@ var alm_is_filtering = false;
 								// Call to Actions
 								if (alm.addons.cta === 'true') {
 									posts_per_page = posts_per_page + 1; // Add 1 to posts_per_page for CTAs
-									pages = Math.ceil(total / posts_per_page); // Update pages var with new posts_per_page
+									pages = Math.ceil(total / posts_per_page); // Update pages let with new posts_per_page
 									total = pages + total; // Get new total w/ CTAs added
 								}
 
@@ -2769,7 +2828,7 @@ var alm_is_filtering = false;
 					if (alm.transition !== 'masonry' || alm.init && !alm.is_masonry_preloaded) {
 						if (!isPaged) {
 							if (!alm.transition_container) {
-								// No transition container
+								// No transition container.
 								if (alm.images_loaded === 'true') {
 									imagesLoaded(reveal, function () {
 										(0, _almAppendChildren2.default)(alm.listing, reveal);
@@ -2780,11 +2839,11 @@ var alm_is_filtering = false;
 								} else {
 									(0, _almAppendChildren2.default)(alm.listing, reveal);
 
-									// Run srcSet polyfill
+									// Run srcSet polyfill.
 									(0, _srcsetPolyfill2.default)(alm.listing, alm.ua);
 								}
 							} else {
-								// Standard container
+								// Standard container.
 								alm.listing.appendChild(reveal);
 							}
 						}
@@ -2828,7 +2887,7 @@ var alm_is_filtering = false;
 					}
 
 					// None
-					else if (alm.transition === 'none') {
+					else if (alm.transition === 'none' && alm.transition_container) {
 							if (alm.images_loaded === 'true') {
 								imagesLoaded(reveal, function () {
 									(0, _fadeIn2.default)(reveal, 0);
@@ -2840,7 +2899,7 @@ var alm_is_filtering = false;
 							}
 						}
 
-						// Default(Fade)
+						// Default (Fade)
 						else {
 								if (alm.images_loaded === 'true') {
 									imagesLoaded(reveal, function () {
@@ -3509,7 +3568,7 @@ var alm_is_filtering = false;
 				});
 				alm.window.addEventListener('keyup', function (e) {
 					// End, Page Down
-					var code = e.keyCode ? e.keyCode : e.which;
+					var code = e.key ? e.key : e.code;
 					switch (code) {
 						case 35:
 						case 34:
@@ -3600,8 +3659,10 @@ var alm_is_filtering = false;
 					alm.finished = true;
 					alm.button.classList.add('done');
 				} else {
+					// Set button label.
+					alm.button.innerHTML = alm.button_label;
+					// If Pause.
 					if (alm.pause === 'true') {
-						alm.button.innerHTML = alm.button_label;
 						alm.loading = false;
 					} else {
 						alm.AjaxLoadMore.loadPosts();
@@ -3619,10 +3680,7 @@ var alm_is_filtering = false;
 					alm.AjaxLoadMore.triggerDone();
 				}
 
-				/*
-     *  Display tableOfContents
-     */
-
+				// Display Table of Contents
 				(0, _tableofcontents.tableOfContents)(alm, true, true);
 			}
 
@@ -3662,10 +3720,7 @@ var alm_is_filtering = false;
 					resultsText.almInitResultsText(alm, 'preloaded');
 				}
 
-				/*
-     *  Display tableOfContents
-     */
-
+				// Display Table of Contents
 				(0, _tableofcontents.tableOfContents)(alm, alm.init, true);
 			}
 
@@ -3686,28 +3741,26 @@ var alm_is_filtering = false;
 					}
 				}
 
+				// Results Text.
 				if (alm.resultsText) {
 					resultsText.almInitResultsText(alm, 'nextpage');
 				}
 
-				/*
-     *  Display tableOfContents
-     */
-
+				// Display Table of Contents
 				(0, _tableofcontents.tableOfContents)(alm, alm.init, true);
 			}
 
-			// WooCommerce Add-on
+			// WooCommerce Add-on.
 			if (alm.addons.woocommerce) {
 				(0, _woocommerce.wooInit)(alm);
 
-				// Trigger `Done` if `paged is less than `pages`
+				// Trigger `Done` if `paged is less than `pages`.
 				if (alm.addons.woocommerce_settings.paged >= parseInt(alm.addons.woocommerce_settings.pages)) {
 					alm.AjaxLoadMore.triggerDone();
 				}
 			}
 
-			// Elementor Add-on
+			// Elementor Add-on.
 			if (alm.addons.elementor && alm.addons.elementor_type && alm.addons.elementor_type === 'posts') {
 				(0, _elementor.elementorInit)(alm);
 
@@ -3717,7 +3770,7 @@ var alm_is_filtering = false;
 				}
 			}
 
-			// Window Load (Masonry + Preloaded)
+			// Window Load (Masonry + Preloaded).
 			alm.window.addEventListener('load', function () {
 				if (alm.is_masonry_preloaded) {
 					// Wrap almMasonry in anonymous async/await function
@@ -3749,7 +3802,8 @@ var alm_is_filtering = false;
 		};
 
 		/**
-   * Update current page - triggered from paging add-on.
+   * Update Current Page.
+   * Callback function triggered from paging add-on.
    *
    * @since 2.7.0
    */
@@ -3926,8 +3980,8 @@ var reset = function reset() {
 					}
 				}
 			}, _callee6, this);
-		}))().catch(function (e) {
-			console.log('There was an resetting the Ajax Load More instance.');
+		}))().catch(function () {
+			console.warn('Ajax Load More: There was an resetting the Ajax Load More instance.');
 		});
 	} else {
 		// Standard ALM

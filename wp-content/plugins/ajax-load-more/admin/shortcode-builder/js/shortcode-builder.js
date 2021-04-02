@@ -1,17 +1,17 @@
 jQuery(document).ready(function ($) {
-	'use strict';
+	('use strict');
 
 	var _alm = {},
 		output_div = $('.ajax-load-more.shortcode-builder #shortcode_output'),
 		output = '[ajax_load_more]';
 
-	output_div.text(output); //Init the shortcode output
+	//Init the shortcode output.
+	output_div.text(output);
 
-	/*
-	 *  _alm.select2
-	 *  Init Select2 select replacement
+	/**
+	 * Init Select2 select replacement
 	 *
-	 *  @since 2.5.0
+	 * @since 2.5.0
 	 */
 	_alm.select2 = function () {
 		// Default Select2
@@ -1311,7 +1311,6 @@ jQuery(document).ready(function ($) {
 		var no_results = $('.alm-instance-options textarea#no_results_text').val();
 		if (no_results !== '') {
 			no_results = no_results.replace(/"/g, "'");
-
 			output += ' no_results_text="' + no_results + '"';
 		}
 
@@ -1410,13 +1409,12 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
-	/*
-	 *  Jump to section, Table of contents [Repeater Templates, Shortcode Builder]
+	/**
+	 * Jump to section, Table of contents [Repeater Templates, Shortcode Builder]
 	 *
-	 *  @since 2.0.0
-	 *  Updated v2.13.0
+	 * @since 2.0.0
+	 * @updated v2.13.0
 	 */
-
 	var jumpMenuOptions = '';
 	function almBuildJumpMenu(type) {
 		if (type === 'repeaters') {
@@ -1461,8 +1459,7 @@ jQuery(document).ready(function ($) {
 		almBuildJumpMenu('repeaters'); // repeater templates
 	}
 
-	/* Jump Menu */
-
+	// Jump Menu.
 	$('select.jump-menu').append(jumpMenuOptions);
 	$('select.jump-menu').change(function () {
 		var pos = $(this).val();
@@ -1500,11 +1497,10 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
-	/*
-	 *  get_tax_terms
-	 *  Get taxonomy terms via ajax
+	/**
+	 * Get taxonomy terms via ajax
 	 *
-	 *  @since 2.1.0
+	 * @since 2.1.0
 	 */
 	function get_tax_terms(tax, parent, index) {
 		var placement = $('.tax-terms-container', parent);
@@ -1529,90 +1525,33 @@ jQuery(document).ready(function ($) {
 		});
 	}
 
-	/*
-	 *  _alm.alm_easeInOutQuad
-	 *  Ajax Load More easing
-	 *
-	 *  @since 2.0.0
-	 */
-
+	// Ajax Load More easing.
 	$.easing.alm_easeInOutQuad = function (x, t, b, c, d) {
 		if ((t /= d / 2) < 1) return (c / 2) * t * t + b;
 		return (-c / 2) * (--t * (t - 2) - 1) + b;
 	};
 
-	/*
-	 *  _alm.SelectText
-	 *  Click to select text
-	 *
-	 *  @since 2.0.0
-	 */
-
-	_alm.SelectText = function (element) {
-		var doc = document,
-			text = doc.getElementById(element),
-			range,
-			selection;
-		if (doc.body.createTextRange) {
-			range = document.body.createTextRange();
-			range.moveToElementText(text);
-			range.select();
-		} else if (window.getSelection) {
-			selection = window.getSelection();
-			range = document.createRange();
-			range.selectNodeContents(text);
-			selection.removeAllRanges();
-			selection.addRange(range);
-		}
-	};
-	$('#shortcode_output').click(function () {
-		_alm.SelectText('shortcode_output');
-	});
-
-	/*
-	 *  Reset shortcode builder
-	 *
-	 *  @since 2.5.0
-	 */
-
+	// Reset shortcode builder.
 	$(document).on('click', '.reset-shortcode-builder a', function () {
 		$('#alm-shortcode-builder-form').trigger('reset');
 		_alm.reset_select2();
-		//total_tax_query = 0;
-		//$('.ajax-load-more .taxonomy-wrap').hide();
 		_alm.buildShortcode();
 	});
 
-	/*
-	 *  _alm.generateUniqueID
-	 *  Generate Unique Cache ID
-	 *
-	 *  @since 2.6.0
-	 */
-
+	// Generate Unique Cache ID.
 	_alm.generateUniqueID = function (length, el) {
 		var id = Math.floor(Math.pow(10, length - 1) + Math.random() * 9 * Math.pow(10, length - 1));
 		$(el).val(id);
-		//_alm.buildShortcode();
 	};
 
-	/*
-   *  Option toggle click events
-   8
-   *  @since 5.2.0
-   */
+	// Option toggle click events.
 	$('.builder-option-toggle--buttons button').on('click', function () {
 		var siblings = $(this).siblings('button').removeClass('active');
 		$(this).addClass('active');
 		_alm.buildShortcode();
 	});
 
-	/*
-	 *  Generate Unique/Cache ID
-	 *
-	 *  @since 2.6.0
-	 */
-
+	// Generate Unique/Cache ID.
 	$(document).on('click', '.generate-id a', function () {
 		var id = $(this).data('id'),
 			el = $('#' + id);
@@ -1627,6 +1566,44 @@ jQuery(document).ready(function ($) {
 			$(this).addClass('loading');
 		} else {
 			$(this).toggleClass('loading');
+		}
+	});
+
+	// Create anchor links for shortcode builder items.
+	$('.shortcode-parameter-wrap.alm-tabbed-wrapper--section').each(function () {
+		var section = this;
+		var ul = section.querySelector('ul.section-anchor-nav');
+		var headings = section.querySelectorAll('h3.heading');
+		if (headings && headings.length > 2) {
+			var list = '';
+			$(headings).each(function () {
+				var title = $(this).text();
+				list += '<li><a role="button" href="javascript: void(0);">' + title + '</a></li>';
+			});
+			ul.innerHTML = list;
+
+			var anchors = ul.querySelectorAll('a');
+			if (anchors) {
+				$(anchors).each(function () {
+					$(this).on('click', function () {
+						var element = this;
+						var text = element.innerHTML;
+						var target = $('h3.heading:contains(' + text + ')', section);
+						if (target) {
+							$('html, body').animate(
+								{
+									scrollTop: target.offset().top - 45,
+								},
+								350,
+								function () {
+									// Set focus on the element scrolled to.
+									target.get(0).focus({ preventScroll: true });
+								}
+							);
+						}
+					});
+				});
+			}
 		}
 	});
 });
