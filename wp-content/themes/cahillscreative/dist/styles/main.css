@@ -6876,7 +6876,10 @@ img.mfp-img {
 @media (min-width: 501px) {
   .l-body-party .btn,
   .l-body-party input[type="submit"] {
-    max-width: 200px;
+    min-width: 400px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
@@ -6898,17 +6901,29 @@ img.mfp-img {
 .l-body-party h1 {
   font-family: "Teko", sans-serif;
   font-size: 34px;
-  line-height: 1.2;
+  line-height: 1;
   letter-spacing: 0;
   text-align: center;
 }
 
+@media (min-width: 501px) {
+  .l-body-party h1 {
+    font-size: 50px;
+  }
+}
+
 .l-body-party h2 {
   font-family: "Teko", sans-serif;
-  font-size: 20px;
+  font-size: 25px;
   line-height: 1;
   letter-spacing: 0;
   text-align: center;
+}
+
+@media (min-width: 501px) {
+  .l-body-party h2 {
+    font-size: 30px;
+  }
 }
 
 .l-body-party h3 {
@@ -6918,6 +6933,12 @@ img.mfp-img {
   letter-spacing: 0;
   text-align: center;
   color: white;
+}
+
+@media (min-width: 501px) {
+  .l-body-party h3 {
+    font-size: 30px;
+  }
 }
 
 .l-body-party h4 {
@@ -7191,7 +7212,7 @@ img.mfp-img {
 
 @media (min-width: 501px) {
   .page-birthday-party__invite .article__buttons {
-    max-width: 200px;
+    max-width: 400px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -7281,7 +7302,7 @@ img.mfp-img {
   color: white;
   padding: 0.625rem;
   border-radius: 4px;
-  margin-top: 0;
+  margin-top: 0 !important;
 }
 
 .page-birthday-party__rsvp input[type=submit] {
@@ -7294,12 +7315,6 @@ img.mfp-img {
   padding-right: 1.25rem;
   width: 100%;
   margin-top: 2.5rem;
-}
-
-@media (min-width: 501px) {
-  .page-birthday-party__rsvp input[type=submit] {
-    max-width: 200px;
-  }
 }
 
 
