@@ -7302,8 +7302,15 @@ img.mfp-img {
   color: white;
   padding: 0.625rem;
   border-radius: 4px;
-  margin-top: 0 !important;
+  margin: 0 0 1.25rem 0 !important;
   font-family: "Rajdhani", sans-serif;
+  width: 100%;
+}
+
+.page-birthday-party__rsvp .wpcf7 form .wpcf7-not-valid-tip {
+  font-style: italic;
+  text-align: left;
+  margin-top: 5px;
 }
 
 .page-birthday-party__rsvp input[type=submit] {
