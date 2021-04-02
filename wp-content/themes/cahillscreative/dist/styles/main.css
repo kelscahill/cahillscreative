@@ -6856,7 +6856,8 @@ img.mfp-img {
       align-content: stretch;
 }
 
-.l-body-party .btn {
+.l-body-party .btn,
+.l-body-party input[type="submit"] {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;

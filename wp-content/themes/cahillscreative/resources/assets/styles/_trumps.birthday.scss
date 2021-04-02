@@ -36,7 +36,8 @@ $bp-ff-secondary: "Rajdhani", sans-serif;
   }
 
   // Buttons
-  .btn {
+  .btn,
+  input[type="submit"] {
     justify-content: center;
   }
 
