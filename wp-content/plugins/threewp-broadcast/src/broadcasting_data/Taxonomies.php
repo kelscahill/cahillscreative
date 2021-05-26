@@ -73,6 +73,11 @@ class Taxonomies
 	**/
 	public function also_sync( $post_type, $taxonomy )
 	{
+		// If no post type is specified, absolutely force syncing of the taxonomy.
+		if ( ! $post_type )
+			if ( isset( $this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ] ) )
+				unset( $this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ] );
+
 		$this->also_sync_taxonomy( [
 			'post_type' => $post_type,
 			'taxonomy' => $taxonomy,

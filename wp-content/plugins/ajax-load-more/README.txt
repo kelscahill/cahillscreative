@@ -4,7 +4,7 @@ Donate;WordPressInfiniteScrollAjaxLoadMoreContributorsWordPressInfiniteScrollAja
 Tags: infinite scroll, load more, scroll, infinite, lazy load, lazy loading, endless scroll, pagination, ajax pagination, ajax, ajax posts, woocommerce, ajax load more, masonry
 Requires at least: 4.0
 Tested up to: 5.7
-Stable tag: 5.4.4
+Stable tag: 5.4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -259,6 +259,16 @@ How to install Ajax Load More.
 7. Shortcode and implementation examples
 
 == Changelog ==
+
+= 5.4.5 - April 20, 2021 =
+* NEW - Added new `lazy_images` parameter that provides a potential fix for images not loading when other plugins/scripts are hooked into the sites image loading process.
+* NEW - Added filter that can disable the `<noscript/>` functionality of the SEO and Filters add-ons.
+	`add_filter( 'alm_disable_noscript_{alm_id}', '__return_true' );`
+* FIX - Added fix for issue where Load More button would not disable if zero posts were available on initial page load.
+* FIX - Updated fix for `postcount === undefined` JavaScript error when an issue occurs in a Repeater Template and the return data is corrupt.
+* UPDATE - Updated Masonry parameters and how they are passed and handled inside Ajax Load More.
+* UPDATE - Admin UI/UX updates and refresh.
+
 
 = 5.4.4 - March 31, 2021 =
 

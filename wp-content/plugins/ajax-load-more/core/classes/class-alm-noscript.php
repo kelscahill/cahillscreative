@@ -16,6 +16,9 @@ if(!class_exists('ALM_NOSCRIPT')):
 
    class ALM_NOSCRIPT {
 
+		/**
+		 * Element tag.
+		 */
 	   static $element = 'noscript';
 
 

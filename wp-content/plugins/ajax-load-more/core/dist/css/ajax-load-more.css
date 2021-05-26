@@ -265,7 +265,6 @@
     display: table;
     clear: both;
     height: 0;
-    width: 100%;
     content: ''; }
 
 .alm-listing {

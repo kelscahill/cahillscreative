@@ -1370,6 +1370,10 @@ jQuery(document).ready(function ($) {
 				// trigger a click.
 				nodeItem.click();
 			}
+		} else {
+			if (tabbedNav) {
+				tabbedNav[0].classList.add(ACTIVE_TAB_CLASS);
+			}
 		}
 	}
 
@@ -1571,6 +1575,10 @@ jQuery(document).ready(function ($) {
 			}, 2500);
 		}
 	});
+
+	_alm.copyToClipboard = function (text) {
+		window.prompt('Copy link to your clipboard: Press Ctrl + C then hit Enter to copy.', text);
+	};
 
 	// Copy link on repeater templates
 	$('.alm-dropdown .copy a').click(function () {

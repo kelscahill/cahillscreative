@@ -4,7 +4,7 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 5.4
-Stable tag: 47.03
+Stable tag: 47.06
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
 Tested up to: 5.7
 
@@ -60,7 +60,7 @@ There are several <a href="https://broadcast.plainviewplugins.com/">Broadcast ad
 3rd party pack
 --------------
 
-The following add-ons add support for the plugin after which they are named.
+The following add-ons add support for the plugin after which they are named:
 
 * <a href="https://broadcast.plainviewplugins.com/addon/activity-monitor/">Activity Monitor</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">Advanced Custom Fields</a>
@@ -111,6 +111,7 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/pods/">Pods</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/polylang/">Polylang</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/post-expirator/">Post Expirator</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/rank-math-seo/">Rank Math SEO</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/sensei/">Sensei</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/simple-custom-post-order/">Simple Custom Post Order</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/siteorigin-page-builder/">SiteOrigin Page Builder</a>
@@ -143,7 +144,7 @@ If you don't see your plugin in this list, it <a href="https://broadcast.plainvi
 Control pack
 ------------
 
-These add-ons give you extra control of what you broadcast and how.
+These add-ons give you extra control of what you broadcast and how:
 
 * <a href="https://broadcast.plainviewplugins.com/addon/all-blogs/">All Blogs</a> gives all users access to all of the blogs in the network.
 * <a href="https://broadcast.plainviewplugins.com/addon/all-blogs/">All Blogs Superadmin</a> allows only superadmins to broadcast to all blogs in the network without having to be a user of the blog.
@@ -186,7 +187,7 @@ These add-ons give you extra control of what you broadcast and how.
 Efficiency pack
 ---------------
 
-These add-ons allow you to broadcast more efficiently, saving you even more time.
+These add-ons allow you to broadcast more efficiently, saving you even more time:
 
 * <a href="https://broadcast.plainviewplugins.com/addon/blog-groups-2/">Blog Groups 2</a> provides a means of groups blogs together, in order to be able to quickly select and unselect blogs from the Broadcast meta box.
 * <a href="https://broadcast.plainviewplugins.com/addon/duplicate-attachments/">Duplicate Attachments</a> will duplicate the attachment and thumbnails, instead of letting WordPress regenerate them.
@@ -200,7 +201,7 @@ These add-ons allow you to broadcast more efficiently, saving you even more time
 Utilities pack
 --------------
 
-These add-ons do things semi-related to broadcasting, but are good to have none-the-less.
+These add-ons do things semi-related to broadcasting, but are good to have none-the-less:
 
 * <a href="https://broadcast.plainviewplugins.com/addon/bulk-cloner/">Bulk Cloner</a> creates clones of existing blogs on the network.
 * <a href="https://broadcast.plainviewplugins.com/addon/cdn-workaround/">CDN Workaround</a> works around faulty CDNs that do not report the correct URL for attachments.
@@ -354,6 +355,14 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 47.06 20210412 =
+
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/rank-math-seo/">Rank Math SEO</a> adds support for the <a href="https://wordpress.org/plugins/seo-by-rank-math/">Rank Math SEO</a> plugin.
+* Fix: Force syncing of a taxonomy when no post type is specified.
+* Tweak: Restore $_POST after broadcasting finished.
+
+= 47.03 20210308 =
 
 * New add-on: <a href="https://broadcast.plainviewplugins.com/addon/all-in-one-seo/">All In One SEO</a> adds support for the <a href="https://wordpress.org/plugins/all-in-one-seo-pack/">All in One SEO</a> plugin.
 * New add-on: <a href="https://broadcast.plainviewplugins.com/addon/generatepress/">GeneratePress</a> adds support for the <a href="https://generatepress.com/">GeneratePress</a> theme / plugin.

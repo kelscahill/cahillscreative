@@ -786,8 +786,8 @@ exports.createSEOAttributes = createSEOAttributes;
  * createMasonrySEOPage
  * Create data attributes for SEO paged results
  *
- * @param {Object} alm
- * @param {Array} elements
+ * @param {object} alm
+ * @param {array} elements
  * @since 5.3.1
  */
 function createMasonrySEOPage(alm, element) {
@@ -808,8 +808,8 @@ function createMasonrySEOPage(alm, element) {
  * createMasonrySEOPages
  * Create data attributes for SEO -  used when /page/2/, /page/3/ etc are hit on page load
  *
- * @param {Object} alm
- * @param {Array} elements
+ * @param {object} alm
+ * @param {array} elements
  * @since 5.3.1
  */
 function createMasonrySEOPages(alm, elements) {
@@ -848,7 +848,16 @@ function createMasonrySEOPages(alm, elements) {
 	return elements;
 }
 
-// Create the attributes (page, url, classes)  for the masonry items
+/**
+ * Create the attributes (page, url, classes) for the masonry items.
+ *
+ * @param {object} alm
+ * @param {object} element
+ * @param {string} querystring
+ * @param {string} seo_class
+ * @param {int} pagenum
+ * @returns
+ */
 function masonrySEOAtts(alm, element, querystring, seo_class, pagenum) {
 	element.classList.add(seo_class);
 	element.dataset.page = pagenum;
@@ -873,12 +882,11 @@ function masonrySEOAtts(alm, element, querystring, seo_class, pagenum) {
 }
 
 /**
- * createSEOAttributes
- * Create data attributes for SEO -  used when /page/2/, /page/3/ etc are hit on page load
+ * Create data attributes for SEO -  used when /page/2/, /page/3/ etc are hit on page load.
  *
- * @param {Object} alm
- * @param {Array} elements
- * ...
+ * @param {object} alm
+ * @param {array} elements
+ *
  * @since 5.3.1
  */
 function createSEOAttributes(alm, element, querystring, seo_class, pagenum) {
@@ -1375,8 +1383,6 @@ var _getButtonURL2 = _interopRequireDefault(_getButtonURL);
 
 var _masonry = __webpack_require__(/*! ./modules/masonry */ "./core/src/js/modules/masonry.js");
 
-var _masonry2 = _interopRequireDefault(_masonry);
-
 var _fadeIn = __webpack_require__(/*! ./modules/fadeIn */ "./core/src/js/modules/fadeIn.js");
 
 var _fadeIn2 = _interopRequireDefault(_fadeIn);
@@ -1406,6 +1412,10 @@ var _srcsetPolyfill = __webpack_require__(/*! ./helpers/srcsetPolyfill */ "./cor
 var _srcsetPolyfill2 = _interopRequireDefault(_srcsetPolyfill);
 
 var _placeholder = __webpack_require__(/*! ./modules/placeholder */ "./core/src/js/modules/placeholder.js");
+
+var _lazyImages = __webpack_require__(/*! ./modules/lazyImages */ "./core/src/js/modules/lazyImages.js");
+
+var _lazyImages2 = _interopRequireDefault(_lazyImages);
 
 var _singleposts = __webpack_require__(/*! ./addons/singleposts */ "./core/src/js/addons/singleposts.js");
 
@@ -1598,6 +1608,7 @@ var alm_is_filtering = false;
 		alm.orginal_posts_per_page = parseInt(alm.listing.dataset.postsPerPage); // Used for paging add-on
 		alm.posts_per_page = alm.listing.dataset.postsPerPage;
 		alm.offset = alm.listing.dataset.offset ? parseInt(alm.listing.dataset.offset) : 0;
+		alm.lazy_images = alm.listing.dataset.lazyImages ? alm.listing.dataset.lazyImages : false;
 		alm.integration.woocommerce = alm.listing.dataset.woocommerce ? alm.listing.dataset.woocommerce : false;
 		alm.integration.woocommerce = alm.integration.woocommerce === 'true' ? true : false;
 		alm.is_search = alm.is_search === undefined ? false : alm.is_search;
@@ -1684,9 +1695,7 @@ var alm_is_filtering = false;
 		}
 
 		alm.addons.tabs = alm.listing.dataset.tabs;
-
 		alm.addons.filters = alm.listing.dataset.filters;
-
 		alm.addons.seo = alm.listing.dataset.seo;
 
 		// Preloaded
@@ -1703,6 +1712,8 @@ var alm_is_filtering = false;
 		}
 
 		// Extension Shortcode Params
+
+		// REST API.
 		alm.extensions.restapi = alm.listing.dataset.restapi; // REST API
 		alm.extensions.restapi_base_url = alm.listing.dataset.restapiBaseUrl;
 		alm.extensions.restapi_namespace = alm.listing.dataset.restapiNamespace;
@@ -1710,7 +1721,8 @@ var alm_is_filtering = false;
 		alm.extensions.restapi_template_id = alm.listing.dataset.restapiTemplateId;
 		alm.extensions.restapi_debug = alm.listing.dataset.restapiDebug;
 
-		alm.extensions.acf = alm.listing.dataset.acf; // ACF
+		// ACF.
+		alm.extensions.acf = alm.listing.dataset.acf;
 		alm.extensions.acf_field_type = alm.listing.dataset.acfFieldType;
 		alm.extensions.acf_field_name = alm.listing.dataset.acfFieldName;
 		alm.extensions.acf_parent_field_name = alm.listing.dataset.acfParentFieldName;
@@ -1721,14 +1733,14 @@ var alm_is_filtering = false;
 			alm.extensions.acf = false;
 		}
 
-		// Term Query
+		// Term Query.
 		alm.extensions.term_query = alm.listing.dataset.termQuery; // TERM QUERY
 		alm.extensions.term_query_taxonomy = alm.listing.dataset.termQueryTaxonomy;
 		alm.extensions.term_query_hide_empty = alm.listing.dataset.termQueryHideEmpty;
 		alm.extensions.term_query_number = alm.listing.dataset.termQueryNumber;
 		alm.extensions.term_query = alm.extensions.term_query === 'true' ? true : false;
 
-		// Paging
+		// Paging.
 		alm.addons.paging = alm.listing.dataset.paging; // Paging add-on
 		if (alm.addons.paging === 'true') {
 			alm.addons.paging = true;
@@ -1751,19 +1763,23 @@ var alm_is_filtering = false;
 		} else {
 			alm.addons.paging = false;
 		}
-		/* End Paging  */
 
-		/* Filters */
+		// Filters
 		if (alm.addons.filters === 'true') {
 			alm.addons.filters = true;
-
 			alm.addons.filters_url = alm.listing.dataset.filtersUrl === 'true' ? true : false;
+			alm.addons.filters_target = alm.listing.dataset.filtersTarget ? alm.listing.dataset.filtersTarget : false;
 			alm.addons.filters_paging = alm.listing.dataset.filtersPaging === 'true' ? true : false;
 			alm.addons.filters_scroll = alm.listing.dataset.filtersScroll === 'true' ? true : false;
 			alm.addons.filters_scrolltop = alm.listing.dataset.filtersScrolltop ? alm.listing.dataset.filtersScrolltop : '30';
 			alm.addons.filters_analtyics = alm.listing.dataset.filtersAnalytics;
 			alm.addons.filters_debug = alm.listing.dataset.filtersDebug;
 			alm.addons.filters_startpage = 0;
+
+			// Display warning if `filters_target` parameter is missing.
+			if (!alm.addons.filters_target) {
+				console.warn('Ajax Load More: Unable to locate target for Filters. Make sure you set a filters_target in core Ajax Load More.');
+			}
 
 			// Get Paged Querystring Val
 			var page = (0, _getParameterByName2.default)('pg');
@@ -1777,9 +1793,8 @@ var alm_is_filtering = false;
 		} else {
 			alm.addons.filters = false;
 		}
-		/* End Filters  */
 
-		/* TABS */
+		// Tabs.
 		if (alm.addons.tabs === 'true') {
 			alm.addons.tabs = true;
 			alm.addons.tab_template = alm.listing.dataset.tabTemplate ? alm.listing.dataset.tabTemplate : '';
@@ -1802,7 +1817,7 @@ var alm_is_filtering = false;
 		} else {
 			alm.addons.tabs = false;
 		}
-		/* End TABS  */
+		/* End Tabs  */
 
 		/* REST API */
 		if (alm.extensions.restapi === 'true') {
@@ -1935,7 +1950,7 @@ var alm_is_filtering = false;
 		alm.theme_repeater = alm.theme_repeater === undefined ? false : alm.theme_repeater;
 
 		/* Max Pages (while scrolling) */
-		alm.max_pages = alm.max_pages === undefined || alm.max_pages === 0 ? 10000 : alm.max_pages;
+		alm.max_pages = alm.max_pages === undefined || alm.max_pages === 0 ? 9999 : alm.max_pages;
 
 		/* Scroll Distance */
 		alm.scroll_distance = alm.scroll_distance === undefined ? 100 : alm.scroll_distance;
@@ -1963,23 +1978,8 @@ var alm_is_filtering = false;
 		alm.tcc = alm.tcc === undefined ? '' : alm.tcc;
 
 		/* Masonry */
-		alm.is_masonry_preloaded = false;
 		if (alm.transition === 'masonry') {
-			alm.masonry_init = true;
-			if (alm.msnry) {
-				alm.msnry.destroy(); // destroy masonry if it currently exists
-			} else {
-				alm.msnry = '';
-			}
-			alm.masonry_selector = alm.listing.dataset.masonrySelector;
-			alm.masonry_columnwidth = alm.listing.dataset.masonryColumnwidth;
-			alm.masonry_animation = alm.listing.dataset.masonryAnimation;
-			alm.masonry_animation = alm.masonry_animation === undefined ? 'standard' : alm.masonry_animation;
-			alm.masonry_horizontalorder = alm.listing.dataset.masonryHorizontalorder;
-			alm.masonry_horizontalorder = alm.masonry_horizontalorder === undefined ? 'true' : alm.masonry_horizontalorder;
-			alm.transition_container = false;
-			alm.images_loaded = false;
-			alm.is_masonry_preloaded = alm.addons.preloaded === 'true' ? true : alm.is_masonry_preloaded;
+			alm = (0, _masonry.almMasonryConfig)(alm);
 		}
 
 		/* Scroll */
@@ -2475,7 +2475,7 @@ var alm_is_filtering = false;
 				meta = data.meta;
 				total = meta ? parseInt(meta.postcount) : parseInt(alm.posts_per_page);
 
-				var totalposts = meta && meta.totalposts ? meta.totalposts : alm.posts_per_page * 5;
+				var totalposts = typeof meta !== 'undefined' ? meta.totalposts : alm.posts_per_page * 5;
 				alm.totalposts = alm.addons.preloaded === 'true' ? totalposts - alm.addons.preloaded_amount : totalposts;
 				alm.posts = alm.addons.paging ? total : alm.posts + total;
 				alm.debug = meta.debug ? meta.debug : '';
@@ -2594,12 +2594,10 @@ var alm_is_filtering = false;
 					} else {
 						if (!alm.transition_container) {
 							// No transition container
-
 							alm.el = alm.html;
 							reveal = alm.container_type === 'table' ? (0, _tableWrap2.default)(alm.html) : (0, _stripEmptyNodes2.default)((0, _almDomParser2.default)(alm.html, 'text/html'));
 						} else {
 							// Standard container
-
 							var pagenum = void 0;
 							var querystring = window.location.search;
 							var seo_class = alm.addons.seo ? ' alm-seo' : '';
@@ -2753,12 +2751,14 @@ var alm_is_filtering = false;
 												window.almComplete(alm);
 											}
 
+											(0, _lazyImages2.default)(alm);
+
 											// ALM Done
 											if (nextPageNum > parseInt(alm.addons.woocommerce_settings.pages)) {
 												alm.AjaxLoadMore.triggerDone();
 											}
 
-										case 9:
+										case 10:
 										case 'end':
 											return _context2.stop();
 									}
@@ -2802,12 +2802,14 @@ var alm_is_filtering = false;
 												window.almComplete(alm);
 											}
 
+											(0, _lazyImages2.default)(alm);
+
 											// ALM Done
 											if (!nextPage) {
 												alm.AjaxLoadMore.triggerDone();
 											}
 
-										case 9:
+										case 10:
 										case 'end':
 											return _context3.stop();
 									}
@@ -2825,7 +2827,7 @@ var alm_is_filtering = false;
 
 					// Append `reveal` div to ALM Listing container
 					// Do not append when transtion == masonry OR init and !preloaded
-					if (alm.transition !== 'masonry' || alm.init && !alm.is_masonry_preloaded) {
+					if (alm.transition !== 'masonry' || alm.init && alm.addons.preloaded !== 'true') {
 						if (!isPaged) {
 							if (!alm.transition_container) {
 								// No transition container.
@@ -2864,18 +2866,21 @@ var alm_is_filtering = false;
 									switch (_context4.prev = _context4.next) {
 										case 0:
 											_context4.next = 2;
-											return (0, _masonry2.default)(alm, alm.init, alm_is_filtering);
+											return (0, _masonry.almMasonry)(alm, alm.init, alm_is_filtering);
 
 										case 2:
-											alm.masonry_init = false;
+											alm.masonry.init = false;
 
 											alm.AjaxLoadMore.triggerWindowResize();
 											alm.AjaxLoadMore.transitionEnd();
+
 											if (typeof almComplete === 'function') {
 												window.almComplete(alm);
 											}
 
-										case 6:
+											(0, _lazyImages2.default)(alm);
+
+										case 7:
 										case 'end':
 											return _context4.stop();
 									}
@@ -2978,6 +2983,8 @@ var alm_is_filtering = false;
 					if (typeof almComplete === 'function' && alm.transition !== 'masonry') {
 						window.almComplete(alm);
 					}
+
+					(0, _lazyImages2.default)(alm);
 
 					// Filters Add-on Complete
 					if (alm_is_filtering && alm.addons.filters) {
@@ -3772,7 +3779,7 @@ var alm_is_filtering = false;
 
 			// Window Load (Masonry + Preloaded).
 			alm.window.addEventListener('load', function () {
-				if (alm.is_masonry_preloaded) {
+				if (alm.transition === 'masonry' && alm.addons.preloaded === 'true') {
 					// Wrap almMasonry in anonymous async/await function
 					_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
 						return regeneratorRuntime.wrap(function _callee5$(_context5) {
@@ -3780,10 +3787,10 @@ var alm_is_filtering = false;
 								switch (_context5.prev = _context5.next) {
 									case 0:
 										_context5.next = 2;
-										return (0, _masonry2.default)(alm, true, false);
+										return (0, _masonry.almMasonry)(alm, true, false);
 
 									case 2:
-										alm.masonry_init = false;
+										alm.masonry.init = false;
 
 									case 3:
 									case 'end':
@@ -5723,6 +5730,50 @@ exports.default = insertScript;
 
 /***/ }),
 
+/***/ "./core/src/js/modules/lazyImages.js":
+/*!*******************************************!*\
+  !*** ./core/src/js/modules/lazyImages.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+/**
+ * Lazy load images helper.
+ * When a plugin or 3rd party script has hooked into WP Post Thumbnails to provide a lazy load solution, images will not load via Ajax.
+ * This helper provides a fix by grabbing the dataset value and making it the src.
+ *
+ * @param {Object} alm The Ajax Load More object.
+ */
+var lazyImages = function lazyImages(alm) {
+	if (!alm || !alm.lazy_images) {
+		return;
+	}
+	var images = alm.el.getElementsByTagName('img');
+	if (images) {
+		// Loop all images.
+		Array.prototype.forEach.call(images, function (img) {
+			if (img) {
+				if (img.dataset.src) {
+					img.src = img.dataset.src;
+				}
+				if (img.dataset.srcset) {
+					img.srcset = img.dataset.srcset;
+				}
+			}
+		});
+	}
+};
+
+exports.default = lazyImages;
+
+/***/ }),
+
 /***/ "./core/src/js/modules/loadImage.js":
 /*!******************************************!*\
   !*** ./core/src/js/modules/loadImage.js ***!
@@ -5821,7 +5872,7 @@ function _asyncToGenerator(fn) {
 }
 
 /**
- * Load all items
+ * Load all items.
  *
  * @param {HTMLElement} container
  * @param {HTMLElement} items
@@ -5917,6 +5968,8 @@ exports.default = loadItems;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+exports.almMasonry = almMasonry;
+exports.almMasonryConfig = almMasonryConfig;
 
 var _fadeIn = __webpack_require__(/*! ./fadeIn */ "./core/src/js/modules/fadeIn.js");
 
@@ -5953,8 +6006,7 @@ function _interopRequireDefault(obj) {
 var imagesLoaded = __webpack_require__(/*! imagesloaded */ "./node_modules/imagesloaded/imagesloaded.js");
 
 /**
- * almMasonry
- * Function to trigger built-in Ajax Load More Masonry
+ * Function to trigger built-in Ajax Load More Masonry.
  *
  * @param {object} alm
  * @param {boolean} init
@@ -5962,17 +6014,21 @@ var imagesLoaded = __webpack_require__(/*! imagesloaded */ "./node_modules/image
  * @since 3.1
  * @updated 5.0.2
  */
-var almMasonry = function almMasonry(alm, init, filtering) {
+function almMasonry(alm, init, filtering) {
+	if (!alm.masonry) {
+		console.warn('Ajax Load More: Unable to locate Masonry settings.');
+	}
+
 	return new Promise(function (resolve) {
 		var container = alm.listing;
 		var html = alm.html;
 
-		var selector = alm.masonry_selector;
-		var columnWidth = alm.masonry_columnwidth;
-		var animation = alm.masonry_animation;
-		var horizontalOrder = alm.masonry_horizontalorder;
+		var selector = alm.masonry.selector;
+		var columnWidth = alm.masonry.columnwidth;
+		var animation = alm.masonry.animation;
+		var horizontalOrder = alm.masonry.horizontalorder;
 		var speed = alm.speed;
-		var masonry_init = alm.masonry_init;
+		var masonry_init = alm.masonry.init;
 
 		var duration = (speed + 100) / 1000 + 's'; // Add 100 for some delay
 		var hidden = 'scale(0.5)';
@@ -6013,9 +6069,10 @@ var almMasonry = function almMasonry(alm, init, filtering) {
 		horizontalOrder = horizontalOrder === 'true' ? true : false;
 
 		if (!filtering) {
-			// First Run
+			// First Run.
 			if (masonry_init && init) {
-				(0, _srcsetPolyfill2.default)(container, alm.ua); // Run srcSet polyfill
+				// Run srcSet polyfill.
+				(0, _srcsetPolyfill2.default)(container, alm.ua);
 
 				imagesLoaded(container, function () {
 					var defaults = {
@@ -6033,7 +6090,7 @@ var almMasonry = function almMasonry(alm, init, filtering) {
 						}
 					};
 
-					// Get custom Masonry options (https://masonry.desandro.com/options.html)
+					// Get custom Masonry options (https://masonry.desandro.com/options.html).
 					var alm_masonry_vars = window.alm_masonry_vars;
 					if (alm_masonry_vars) {
 						Object.keys(alm_masonry_vars).forEach(function (key) {
@@ -6044,17 +6101,17 @@ var almMasonry = function almMasonry(alm, init, filtering) {
 
 					var data = container.querySelectorAll(selector);
 
-					// Create Filters URL, if required
+					// Create Filters URL, if required.
 					if (alm.addons.filters) {
 						data = (0, _filters.createMasonryFiltersPages)(alm, Array.prototype.slice.call(data));
 					}
 
-					// Create SEO URL, if required
+					// Create SEO URL, if required.
 					if (alm.addons.seo) {
 						data = (0, _seo.createMasonrySEOPages)(alm, Array.prototype.slice.call(data));
 					}
 
-					// Init Masonry, delay to allow time for items to be added to the page
+					// Init Masonry, delay to allow time for items to be added to the page.
 					setTimeout(function () {
 						alm.msnry = new Masonry(container, defaults);
 
@@ -6066,31 +6123,31 @@ var almMasonry = function almMasonry(alm, init, filtering) {
 				});
 			}
 
-			// Standard / Append content
+			// Standard / Append content.
 			else {
 					// Loop all items and create array of node elements
 					var data = (0, _stripEmptyNodes2.default)((0, _almDomParser2.default)(html, 'text/html'));
 
 					if (data) {
-						// Append elements listing
+						// Append elements listing.
 						(0, _almAppendChildren2.default)(alm.listing, data, 'masonry');
 
-						// Run srcSet polyfill
+						// Run srcSet polyfill.
 						(0, _srcsetPolyfill2.default)(container, alm.ua);
 
-						// imagesLoaded & append
+						// imagesLoaded & append.
 						imagesLoaded(container, function () {
 							alm.msnry.appended(data);
 
-							// Set Focus
+							// Set Focus.
 							(0, _setFocus2.default)(alm, data, data.length, false);
 
-							// Create Filters URL, if required
+							// Create Filters URL, if required.
 							if (alm.addons.filters) {
 								(0, _filters.createMasonryFiltersPage)(alm, data[0]);
 							}
 
-							// Create SEO URL, if required
+							// Create SEO URL, if required.
 							if (alm.addons.seo) {
 								(0, _seo.createMasonrySEOPage)(alm, data[0]);
 							}
@@ -6106,9 +6163,37 @@ var almMasonry = function almMasonry(alm, init, filtering) {
 			resolve(true);
 		}
 	});
-};
+}
 
-exports.default = almMasonry;
+/**
+ * Set up initial Masonry Configuration.
+ *
+ * @param {*} alm
+ * @return object
+ */
+function almMasonryConfig(alm) {
+	alm.masonry = {};
+	alm.masonry.init = true;
+	if (alm.msnry) {
+		// destroy masonry if it currently exists.
+		alm.msnry.destroy();
+	} else {
+		alm.msnry = '';
+	}
+	var masonry_config = JSON.parse(alm.listing.dataset.masonryConfig);
+	if (masonry_config) {
+		alm.masonry.selector = masonry_config.selector;
+		alm.masonry.columnwidth = masonry_config.columnwidth;
+		alm.masonry.animation = masonry_config.animation === '' ? 'standard' : masonry_config.animation;
+		alm.masonry.horizontalorder = masonry_config.horizontalorder === '' ? 'true' : masonry_config.horizontalorder;
+		alm.transition_container = false;
+		alm.images_loaded = false;
+	} else {
+		console.warn('Ajax Load More: Unable to locate Masonry configuration settings.');
+	}
+
+	return alm;
+}
 
 /***/ }),
 
@@ -6161,7 +6246,7 @@ exports.default = almNoResults;
 
 
 Object.defineProperty(exports, "__esModule", {
-   value: true
+	value: true
 });
 exports.showPlaceholder = showPlaceholder;
 exports.hidePlaceholder = hidePlaceholder;
@@ -6175,29 +6260,29 @@ var _fadeOut = __webpack_require__(/*! ./fadeOut */ "./core/src/js/modules/fadeO
 var _fadeOut2 = _interopRequireDefault(_fadeOut);
 
 function _interopRequireDefault(obj) {
-   return obj && obj.__esModule ? obj : { default: obj };
+	return obj && obj.__esModule ? obj : { default: obj };
 }
 
 function showPlaceholder(alm) {
-   if (!alm || !alm.main || alm.addons.paging) {
-      return false;
-   }
-   if (alm.placeholder) {
-      alm.placeholder.style.display = 'block';
-      (0, _fadeIn2.default)(alm.placeholder, 75);
-   }
+	if (!alm || !alm.main || alm.addons.paging) {
+		return false;
+	}
+	if (alm.placeholder) {
+		alm.placeholder.style.display = 'block';
+		(0, _fadeIn2.default)(alm.placeholder, 150);
+	}
 }
 
 function hidePlaceholder(alm) {
-   if (!alm || !alm.main || alm.addons.paging) {
-      return false;
-   }
-   if (alm.placeholder) {
-      (0, _fadeOut2.default)(alm.placeholder, 75);
-      setTimeout(function () {
-         alm.placeholder.style.display = 'none';
-      }, 75);
-   }
+	if (!alm || !alm.main || alm.addons.paging) {
+		return false;
+	}
+	if (alm.placeholder) {
+		(0, _fadeOut2.default)(alm.placeholder, 150);
+		setTimeout(function () {
+			alm.placeholder.style.display = 'none';
+		}, 75);
+	}
 }
 
 /***/ }),

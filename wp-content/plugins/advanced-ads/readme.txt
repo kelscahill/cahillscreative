@@ -4,7 +4,7 @@ Tags: ads, ad manager, ad rotation, adsense, banner
 Requires at least: 4.6
 Tested up to: 5.7
 Requires PHP: 5.6
-Stable tag: 1.24.1
+Stable tag: 1.24.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -316,6 +316,10 @@ Yes. You can use plenty of [hooks](https://wpadvancedads.com/codex/) to customiz
 10. Convert AdSense ads into AMP automatically (Responsive add-on)
 
 == Changelog ==
+
+= 1.24.2 =
+
+- fix authenticated (i.e. logged-in) DOM-based XSS vulnerability while creating jQuery object from user input in Safari and IE
 
 = 1.24.1 =
 

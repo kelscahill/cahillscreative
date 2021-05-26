@@ -708,6 +708,8 @@ trait broadcasting
 		// Finished broadcasting.
 		array_pop( $this->broadcasting );
 
+		$_POST = $bcd->_POST;
+
 		if ( $this->debugging_to_browser() )
 		{
 			if ( ! $this->is_broadcasting() )

@@ -7,15 +7,16 @@ Text Domain: ajax-load-more
 Author: Darren Cooney
 Twitter: @KaptonKaos
 Author URI: https://connekthq.com
-Version: 5.4.4
+Version: 5.4.5
 License: GPL
 Copyright: Darren Cooney & Connekt Media
+
 */
 
 // @codingStandardsIgnoreStart
 
-define( 'ALM_VERSION', '5.4.4' );
-define( 'ALM_RELEASE', 'March 31, 2021' );
+define( 'ALM_VERSION', '5.4.5' );
+define( 'ALM_RELEASE', 'April 20, 2021' );
 define( 'ALM_STORE_URL', 'https://connekthq.com' );
 
 /**
@@ -177,7 +178,7 @@ if ( !class_exists('AjaxLoadMore') ) :
 		 */
 		public function alm_noscript( $args, $container_element, $css_classes = '', $transition_container_classes = '' ) {
 			if ( is_admin() || apply_filters( 'alm_disable_noscript', false ) ) {
-				return false;
+				return;
 			}
 			include_once ALM_PATH . 'core/classes/class-alm-noscript.php'; // Load Noscript Class.
 			$noscript = ALM_NOSCRIPT::alm_get_noscript( $args, $container_element, $css_classes, $transition_container_classes );
@@ -185,7 +186,7 @@ if ( !class_exists('AjaxLoadMore') ) :
 		}
 
 		/**
-		 * This function will build an pagination for users without JS enabled.
+		 * This function will build pagination for users without JS enabled.
 		 *
 		 * @param array $query
 		 * @return $return string
@@ -193,7 +194,7 @@ if ( !class_exists('AjaxLoadMore') ) :
 		 */
 		public function alm_noscript_pagination( $query ) {
 			if ( is_admin() || apply_filters( 'alm_disable_noscript', false ) ) {
-				return false;
+				return;
 			}
 			include_once ALM_PATH . 'core/classes/class-alm-noscript.php'; // Load Noscript Class.
 			$noscript = ALM_NOSCRIPT::build_noscript_paging( $query );

@@ -175,10 +175,23 @@ jQuery( document ).ready( function ( $ ) {
 	 * also highlight the box with an effect for a short time.
 	 * Use attribute selector to avoid the need to escape the selector.
 	 */
-	var single_placement_slug = '[id="' + window.location.hash.substr( 1 ) + '"]';
-	if ( jQuery( single_placement_slug ).length ) {
-		jQuery( single_placement_slug ).find( '.advads-toggle-link + div, .advads-usage' ).show()
+	function sanitize( string ) {
+		var map = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;',
+			'"': '&quot;',
+			'\'': '&#x27;',
+			'/': '&#x2F;'
+		};
+		return string.replace( /[&<>"'/]/ig, function ( match ) {
+			return map[match];
+		} );
+	}
 
+	var single_placement_slug = '#' + sanitize( window.location.hash.substr( 1 ) );
+	if ( jQuery( single_placement_slug ).length ) {
+		jQuery( single_placement_slug ).find( '.advads-toggle-link + div, .advads-usage' ).show();
 	}
 
 	// group page: add ad to group

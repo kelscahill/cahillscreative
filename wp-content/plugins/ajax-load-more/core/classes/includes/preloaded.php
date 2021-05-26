@@ -319,9 +319,16 @@ else {
 			$output .= apply_filters( 'alm_filters_reveal_close', '</div>' );
 		}
 
-		// SEO, create noscript pagination.
+		/**
+		 * SEO - create <noscript/> pagination of current query.
+		 * ALM Core Filter Hook
+		 *
+		 * @return html;
+		 */
 		if ( has_action( 'alm_seo_installed') && $seo === 'true' ) {
-			$noscript_pagingnav = apply_filters('alm_noscript_pagination', $alm_preload_query);
+			if ( ! apply_filters( 'alm_disable_noscript_' . $id, false ) ) {
+				$noscript_pagingnav = apply_filters( 'alm_noscript_pagination', $alm_preload_query );
+			}
 		}
 
 	endif;

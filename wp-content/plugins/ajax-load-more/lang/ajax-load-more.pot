@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Ajax Load More\n"
-"POT-Creation-Date: 2021-03-31 08:10-0400\n"
+"POT-Creation-Date: 2021-04-20 19:43-0400\n"
 "PO-Revision-Date: 2018-06-20 13:05-0500\n"
 "Last-Translator: Darren Cooney <darren@connekthq.com>\n"
 "Language-Team: \n"
@@ -107,7 +107,7 @@ msgid "Applying layout"
 msgstr ""
 
 #: admin/admin.php:489 admin/editor/editor-build.php:72
-#: admin/views/repeater-templates.php:447
+#: admin/views/repeater-templates.php:448
 msgid "Template Updated"
 msgstr ""
 
@@ -183,12 +183,12 @@ msgid ""
 "to read and write files within the /ajax-load-more/core/repeater directory."
 msgstr ""
 
-#: admin/admin.php:640 admin/admin.php:641 ajax-load-more.php:294
+#: admin/admin.php:640 admin/admin.php:641 ajax-load-more.php:274
 msgid "Settings"
 msgstr ""
 
 #: admin/admin.php:649 admin/admin.php:650
-#: admin/views/repeater-templates.php:13
+#: admin/views/repeater-templates.php:14
 msgid "Repeater Templates"
 msgstr ""
 
@@ -260,7 +260,7 @@ msgstr ""
 msgid "Error Writing File"
 msgstr ""
 
-#: admin/admin.php:1119 admin/views/repeater-templates.php:388
+#: admin/admin.php:1119 admin/views/repeater-templates.php:389
 msgid "Something went wrong and the data could not be saved."
 msgstr ""
 
@@ -378,7 +378,7 @@ msgstr ""
 
 #: admin/admin.php:1689 admin/shortcode-builder/shortcode-builder.php:155
 #: admin/shortcode-builder/shortcode-builder.php:371
-#: core/classes/class-alm-shortcode.php:208
+#: core/classes/class-alm-shortcode.php:205
 msgid "Load More"
 msgstr ""
 
@@ -466,13 +466,13 @@ msgstr ""
 
 #: admin/includes/components/example-list.php:2
 #: admin/views/repeater-templates.php:134
-#: admin/views/repeater-templates.php:172
+#: admin/views/repeater-templates.php:173
 msgid "Collapse All"
 msgstr ""
 
 #: admin/includes/components/example-list.php:2
 #: admin/views/repeater-templates.php:135
-#: admin/views/repeater-templates.php:173
+#: admin/views/repeater-templates.php:174
 msgid "Expand All"
 msgstr ""
 
@@ -692,30 +692,8 @@ msgstr ""
 msgid "Get Plugin Support"
 msgstr ""
 
-#: admin/includes/cta/writeable.php:2
+#: admin/includes/cta/writeable.php:5
 msgid "Read/Write Access"
-msgstr ""
-
-#: admin/includes/cta/writeable.php:12
-msgid ""
-"<p class=\"writeable-title\"><i class=\"fa fa-check\"></i><strong>Enabled</"
-"strong></p><p class=\"desc\">Read/Write access is enabled within the "
-"Repeater Template directory."
-msgstr ""
-
-#: admin/includes/cta/writeable.php:14
-msgid ""
-"<p class=\"writeable-title\"><i class=\"fa fa-exclamation\"></"
-"i><strong>Access Denied</strong></p><p class=\"desc\">You must enable read "
-"and write access to save repeater template data.<br/><br/>Please contact "
-"your hosting provider or site administrator for more information.</p>"
-msgstr ""
-
-#: admin/includes/cta/writeable.php:17
-msgid ""
-"<p class=\"writeable-title\"><i class=\"fa fa-exclamation\"></"
-"i><strong>Error</strong></p><p class=\"desc\">Unable to locate configuration "
-"file. Directory access may not be granted."
 msgstr ""
 
 #: admin/shortcode-builder/components/acf.php:3
@@ -1347,7 +1325,7 @@ msgid "Show first/last and next/previous buttons in the paging navigation."
 msgstr ""
 
 #: admin/shortcode-builder/components/paging.php:105
-#: core/classes/class-alm-noscript.php:159
+#: core/classes/class-alm-noscript.php:162
 msgid "First Page"
 msgstr ""
 
@@ -1361,7 +1339,7 @@ msgid "Label for the <span>First Page</span> button."
 msgstr ""
 
 #: admin/shortcode-builder/components/paging.php:119
-#: core/classes/class-alm-noscript.php:177
+#: core/classes/class-alm-noscript.php:180
 msgid "Last Page"
 msgstr ""
 
@@ -2846,12 +2824,12 @@ msgstr ""
 msgid "Your Account"
 msgstr ""
 
-#: admin/views/repeater-templates.php:14
+#: admin/views/repeater-templates.php:15
 msgid "The library of editable templates for use within your theme"
 msgstr ""
 
 #: admin/views/repeater-templates.php:105
-#: admin/views/repeater-templates.php:271
+#: admin/views/repeater-templates.php:272
 msgid "Location"
 msgstr ""
 
@@ -2865,23 +2843,23 @@ msgstr ""
 msgid "Manage Settings"
 msgstr ""
 
-#: admin/views/repeater-templates.php:210
+#: admin/views/repeater-templates.php:211
 msgid "Default Template"
 msgstr ""
 
-#: admin/views/repeater-templates.php:219
+#: admin/views/repeater-templates.php:220
 msgid "Template Code:"
 msgstr ""
 
-#: admin/views/repeater-templates.php:220
+#: admin/views/repeater-templates.php:221
 msgid "Enter the PHP and HTML markup for this template."
 msgstr ""
 
-#: admin/views/repeater-templates.php:253
+#: admin/views/repeater-templates.php:254
 msgid "Save Template"
 msgstr ""
 
-#: admin/views/repeater-templates.php:269
+#: admin/views/repeater-templates.php:270
 msgid ""
 "It appears you are loading the <a href=\"https://connekthq.com/plugins/ajax-"
 "load-more/docs/repeater-templates/#default-template\" target=\"_blank"
@@ -2890,7 +2868,7 @@ msgid ""
 "your server."
 msgstr ""
 
-#: admin/views/repeater-templates.php:280
+#: admin/views/repeater-templates.php:281
 msgid ""
 "Repeater Templates editing has been disabled for this instance of Ajax Load "
 "More. To enable the template editing, please remove the "
@@ -2898,11 +2876,11 @@ msgid ""
 "config.php and then re-activate this plugin."
 msgstr ""
 
-#: admin/views/repeater-templates.php:355
+#: admin/views/repeater-templates.php:356
 msgid "Saving template..."
 msgstr ""
 
-#: admin/views/repeater-templates.php:426
+#: admin/views/repeater-templates.php:427
 msgid "Updating template..."
 msgstr ""
 
@@ -2954,15 +2932,15 @@ msgstr ""
 msgid "Reset"
 msgstr ""
 
-#: ajax-load-more.php:368
+#: ajax-load-more.php:348
 msgid "Viewing {post_count} of {total_posts} results."
 msgstr ""
 
-#: ajax-load-more.php:369
+#: ajax-load-more.php:349
 msgid "No results found."
 msgstr ""
 
-#: core/classes/class-alm-noscript.php:155
+#: core/classes/class-alm-noscript.php:158
 msgid "Pages: "
 msgstr ""
 
@@ -3155,7 +3133,7 @@ msgid " Theme Repeaters"
 msgstr ""
 
 #: core/functions/addons.php:233
-msgid " Manage repeater templates within your current theme directory."
+msgid " Manage Repeater Templates within your current theme directory."
 msgstr ""
 
 #: core/functions/addons.php:234

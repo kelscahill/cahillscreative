@@ -278,37 +278,37 @@ function alm_parse_tax_terms($terms){
  * @since 2.5.0
  * @return array
  */
-function alm_get_meta_query($meta_key, $meta_value, $meta_compare, $meta_type){
+function alm_get_meta_query( $meta_key, $meta_value, $meta_compare, $meta_type ){
 
    if ( ! empty( $meta_key ) ) {
       // do_shortcode fixes (shortcode was rendering as HTML when using < OR  <==).
-      $meta_compare = ($meta_compare === 'lessthan') ? '<' : $meta_compare;
-      $meta_compare = ($meta_compare === 'lessthanequalto') ? '<=' : $meta_compare;
-      $meta_compare = ($meta_compare === 'greaterthan') ? '>' : $meta_compare;
-      $meta_compare = ($meta_compare === 'greatthanequalto') ? '>=' : $meta_compare;
+      $meta_compare = $meta_compare === 'lessthan' ? '<' : $meta_compare;
+      $meta_compare = $meta_compare === 'lessthanequalto' ? '<=' : $meta_compare;
+      $meta_compare = $meta_compare === 'greaterthan' ? '>' : $meta_compare;
+      $meta_compare = $meta_compare === 'greatthanequalto' ? '>=' : $meta_compare;
 
       // Get optimized `meta_value` parameter.
-      $meta_values = alm_parse_meta_value($meta_value, $meta_compare);
+      $meta_values = alm_parse_meta_value( $meta_value, $meta_compare );
 
       // Unset `$meta_values` if empty.
       if ( $meta_values === '' ) {
          unset( $meta_values );
       }
 
-      if(isset($meta_values)){
+      if ( isset( $meta_values ) ) {
          $return = array(
-            'key' => $meta_key,
-            'value' => $meta_values,
+            'key'     => $meta_key,
+            'value'   => $meta_values,
             'compare' => $meta_compare,
-            'type' => $meta_type
+            'type'    => $meta_type
          );
 
-      }else{
+      } else {
          // If $meta_values is empty, don't query for 'value'.
          $return = array(
-            'key' => $meta_key,
+            'key'     => $meta_key,
             'compare' => $meta_compare,
-            'type' => $meta_type
+            'type'    => $meta_type
          );
 
       }
@@ -365,9 +365,9 @@ function alm_get_canonical_url(){
 	// Date
    if(is_date()){
       // Is archive page
-      $archive_year = get_the_date('Y');
+      $archive_year  = get_the_date('Y');
       $archive_month = get_the_date('m');
-      $archive_day = get_the_date('d');
+      $archive_day   = get_the_date('d');
       if(is_year()){
         $canonicalURL = get_year_link( $archive_year );
       }
@@ -392,31 +392,31 @@ function alm_get_canonical_url(){
    }
    // Category
    elseif(is_category()){
-      $cat_id = get_query_var( 'cat' );
+      $cat_id       = get_query_var( 'cat' );
       $canonicalURL = get_category_link($cat_id);
    }
    // Tag
    elseif(is_tag()){
-      $tag_id = get_query_var('tag_id');
+      $tag_id       = get_query_var('tag_id');
       $canonicalURL = get_tag_link($tag_id);
    }
    // Author
    elseif(is_author()){
-      $author_id = get_the_author_meta('ID');
+      $author_id    = get_the_author_meta('ID');
       $canonicalURL = get_author_posts_url($author_id);
    }
    // Taxonomy
    elseif(is_tax()){
 		$tax_term = get_term_by('slug', get_query_var('term'), get_query_var('taxonomy' ));
 		if($tax_term){
-      	$tax_id = $tax_term->term_id;
+      	$tax_id       = $tax_term->term_id;
       	$canonicalURL = get_term_link($tax_id);
       }
    }
    // Post Type
    elseif(is_post_type_archive()){
       $post_type_archive = get_post_type();
-      $canonicalURL = get_post_type_archive_link($post_type_archive);
+      $canonicalURL      = get_post_type_archive_link($post_type_archive);
    }
    // Search
    elseif(is_search()){
