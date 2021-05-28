@@ -1,0 +1,21 @@
+{% include "02-molecules/components/alert.twig" %}
+<header class="c-header">
+  <div class="c-header__social">
+    {% include "02-molecules/components/social-links.twig" %}
+  </div>
+  <div class="c-header__logo">
+    {% include "01-atoms/images/logo-text.twig" %}
+  </div>
+  <div class="c-header__menu-icons">
+    <a href="/cart" class="o-icon o-icon--s">
+      {% if cart_count > 0 %}
+        <span class="o-add-to-cart-count" data-animation="animate__animated animate__swing">{{ cart_count }}</span>
+      {% endif %}
+      {% include "01-atoms/icons/cart.twig" %}
+    </a>
+    <button class="o-icon o-icon--s js-toggle" data-toggled="l-body" data-prefix="menu" aria-role="Menu">
+      {% include "01-atoms/icons/menu.twig" %}
+    </button>
+  </div>
+</header>
+{% include "02-molecules/navigation/nav-drawer.twig" %}

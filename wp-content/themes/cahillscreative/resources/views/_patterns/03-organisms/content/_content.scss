@@ -1,0 +1,121 @@
+/* ------------------------------------ *\
+    $CONTENT
+\* ------------------------------------ */
+
+.c-content-front {
+  @include media(">medium") {
+    padding-top: 35vh;
+  }
+
+
+  h1 {
+    padding-left: $space;
+    padding-right: $space;
+
+    @include media(">medium") {
+      padding-top: $space-double;
+    }
+  }
+
+  p {
+    max-width: $large;
+    padding-left: $space;
+    padding-right: $space;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.c-product {
+  display: flex;
+  flex-direction: column;
+
+  @include media(">medium") {
+    flex-direction: row;
+  }
+
+
+  > * {
+    @include media(">medium") {
+      width: 50%;
+
+      &:first-child {
+        margin-right: $space;
+      }
+
+      &:last-child {
+        margin-left: $space;
+      }
+    }
+  }
+
+  &__gallery {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    margin-bottom: 0;
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    &-image {
+      width: calc(100% - 50px);
+      padding-right: $space-half;
+      order: 0;
+
+      @include media(">medium") {
+        width: calc(100% - 100px);
+        padding-left: $space;
+        padding-right: 0;
+        order: 1;
+      }
+
+      .slick {
+        &-slider {
+          margin: 0;
+        }
+
+        &-dots {
+          @include media("<=medium") {
+            display: none !important;
+          }
+        }
+      }
+    }
+
+    &-nav {
+      width: 50px;
+      height: 100%;
+      order: 1;
+
+      @include media(">medium") {
+        width: 100px;
+        order: 0;
+      }
+
+      .slick {
+        &-slider {
+          margin: 0;
+        }
+
+        &-track {
+          display: flex;
+          flex-direction: column;
+          flex-wrap: nowrap;
+        }
+      }
+
+      img {
+        margin: 0 0 $space-half 0;
+
+        @include media(">medium") {
+          margin-bottom: $space;
+        }
+      }
+    }
+  }
+}

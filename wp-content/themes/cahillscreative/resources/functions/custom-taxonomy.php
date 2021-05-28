@@ -99,6 +99,7 @@ function register_custom_taxonomy() {
   $labels = array(
     "name" => __( "Store", "sage" ),
     "singular_name" => __( "Store", "sage" ),
+    "menu_name" => __( "Stores", "sage" ),
   );
 
   $args = array(
@@ -117,7 +118,7 @@ function register_custom_taxonomy() {
     "rest_base" => "",
     "show_in_quick_edit" => true,
   );
-  register_taxonomy( "store", array( "affiliate" ), $args );
+  register_taxonomy( "store", array( "affiliate", "product" ), $args );
 
   /**
    * Taxonomy: Skill Levels.
@@ -126,6 +127,7 @@ function register_custom_taxonomy() {
   $labels = array(
     "name" => __( "Skill Level", "sage" ),
     "singular_name" => __( "Skill Level", "sage" ),
+    "menu_name" => __( "Skill Levels", "sage" ),
   );
 
   $args = array(
@@ -138,7 +140,7 @@ function register_custom_taxonomy() {
     "show_in_menu" => true,
     "show_in_nav_menus" => true,
     "query_var" => true,
-    "rewrite" => array( 'slug' => 'skill_level', 'with_front' => true, ),
+    "rewrite" => array( 'slug' => 'skill-level', 'with_front' => true, ),
     "show_admin_column" => true,
     "show_in_rest" => true,
     "rest_base" => "",
@@ -147,39 +149,13 @@ function register_custom_taxonomy() {
   register_taxonomy( "skill_level", array( "post" ), $args );
 
   /**
-   * Taxonomy: Affiliate Tags.
-   */
-
-  $labels = array(
-    "name" => __( "Affiliate Tags", "sage" ),
-    "singular_name" => __( "Affiliate Tag", "sage" ),
-  );
-
-  $args = array(
-    "label" => __( "Affiliate Tags", "sage" ),
-    "labels" => $labels,
-    "public" => true,
-    "hierarchical" => false,
-    "label" => "Affiliate Tags",
-    "show_ui" => true,
-    "show_in_menu" => true,
-    "show_in_nav_menus" => true,
-    "query_var" => true,
-    "rewrite" => array( 'slug' => 'affiliate-tag', 'with_front' => true, ),
-    "show_admin_column" => true,
-    "show_in_rest" => true,
-    "rest_base" => "",
-    "show_in_quick_edit" => true,
-  );
-  register_taxonomy( "affiliate_tag", array( "affiliate" ), $args );
-
-  /**
    * Taxonomy: Work Tags.
    */
 
   $labels = array(
     "name" => __( "Work Tags", "sage" ),
     "singular_name" => __( "Work Tag", "sage" ),
+    "menu_name" => __( "Tags", "sage" ),
   );
 
   $args = array(
@@ -200,5 +176,32 @@ function register_custom_taxonomy() {
   );
   register_taxonomy( "work_tag", array( "work" ), $args );
 
+  /**
+   * Taxonomy: Renovation Category.
+   */
+
+  $labels = array(
+    "name" => __( "Renovation Categories", "sage" ),
+    "singular_name" => __( "Renovation Category", "sage" ),
+    "menu_name" => __( "Categories", "sage" ),
+  );
+
+  $args = array(
+    "label" => __( "Renovation Category", "sage" ),
+    "labels" => $labels,
+    "public" => true,
+    "hierarchical" => true,
+    "label" => "Renovation Category",
+    "show_ui" => true,
+    "show_in_menu" => true,
+    "show_in_nav_menus" => true,
+    "query_var" => true,
+    "rewrite" => array( 'slug' => 'renovation-category', 'with_front' => true, ),
+    "show_admin_column" => true,
+    "show_in_rest" => true,
+    "rest_base" => "",
+    "show_in_quick_edit" => true,
+  );
+  register_taxonomy( "renovation_category", array( "renovation" ), $args );
 }
 add_action('init', 'register_custom_taxonomy');

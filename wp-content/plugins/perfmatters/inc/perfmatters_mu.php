@@ -3,7 +3,7 @@
 Plugin Name: Perfmatters MU
 Plugin URI: https://perfmatters.io/
 Description: Perfmatters is a lightweight performance plugin developed to speed up your WordPress site.
-Version: 1.6.8
+Version: 1.7.1
 Author: forgemedia
 Author URI: https://forgemedia.io/
 License: GPLv2 or later
@@ -22,7 +22,7 @@ function perfmatters_mu_disable_plugins($plugins) {
 	}
 
     //dont filter if its a rest or ajax request
-    if((defined('REST_REQUEST') && REST_REQUEST) || wp_is_json_request() || wp_doing_ajax() || wp_doing_cron()) {
+    if((defined('REST_REQUEST') && REST_REQUEST) || (function_exists('wp_is_json_request') && wp_is_json_request()) || wp_doing_ajax() || wp_doing_cron()) {
         return $plugins;
     }
 
@@ -119,6 +119,14 @@ function perfmatters_mu_disable_plugins($plugins) {
                 if(!empty($enabled[$handle]['user_status']) && function_exists('wp_get_current_user')) {
                     $status = is_user_logged_in();
                     if(($status && $enabled[$handle]['user_status'] == 'loggedin') || (!$status && $enabled[$handle]['user_status'] == 'loggedout')) {
+                        continue;
+                    }
+                }
+
+                //device type check
+                if(!empty($enabled[$handle]['device_type'])) {
+                    $mobile = wp_is_mobile();
+                    if(($mobile && $enabled[$handle]['device_type'] == 'mobile') || (!$mobile && $enabled[$handle]['device_type'] == 'desktop')) {
                         continue;
                     }
                 }

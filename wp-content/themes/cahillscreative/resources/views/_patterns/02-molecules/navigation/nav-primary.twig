@@ -1,0 +1,12 @@
+{% if primary_nav.theme_location == "primary_navigation" %}
+  <nav class="c-nav-primary" role="navigation">
+    <ul class="c-nav-primary__list">
+      {% for item in primary_nav.get_items %}
+        <li class="{{ item.classes|join(' c-nav-primary__') }}">
+          <a class="c-nav-primary__link" target="{{ item.target }}" href="{{ item.link }}">{{ item.title }}</a>
+          {% include "02-molecules/navigation/nav-primary.twig" with { 'primary_nav': item.get_children } %}
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}

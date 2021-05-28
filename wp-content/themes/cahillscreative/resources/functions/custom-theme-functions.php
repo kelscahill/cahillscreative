@@ -27,11 +27,16 @@ function acf_timber_context( $context ) {
 add_filter('timber_context', 'acf_timber_context');
 
 /**
- * Change Term Description
+ * Change Term Description.
  */
 remove_filter('term_description','wpautop');
 
 /**
- * Add excerpt to pages
+ * Add excerpt to pages.
  */
 add_post_type_support( 'page', 'excerpt' );
+
+/**
+ * Disable Woocommerce default css.
+ */
+add_filter('woocommerce_enqueue_styles', '__return_empty_array');

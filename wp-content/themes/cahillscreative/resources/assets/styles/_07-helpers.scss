@@ -1,0 +1,143 @@
+/* ------------------------------------ *\
+    $HELPER/TRUMP CLASSES
+\* ------------------------------------ */
+
+@for $i from 1 to 10 {
+  .u-animation__delay *:nth-child(#{$i}) {
+    animation-delay: $i * 0.25s + 0.5s;
+  }
+}
+
+/**
+ * Colors
+ */
+.u-color--primary {
+  color: $c-primary;
+}
+
+.u-color--secondary {
+  color: $c-secondary;
+}
+
+.u-color--tertiary {
+  color: $c-tertiary;
+}
+
+.u-color--gray {
+  color: $c-gray;
+}
+
+/**
+ * Font Families
+ */
+.u-font {
+  font-family: $ff-font;
+}
+
+.u-font--primary,
+.u-font--primary p {
+  font-family: $ff-font--primary;
+}
+
+.u-font--secondary,
+.u-font--secondary p {
+  font-family: $ff-font--secondary;
+}
+
+/**
+ * Text Sizes
+ */
+
+.u-font--xs {
+  font-size: $font-size-xs;
+}
+
+.u-font--s {
+  font-size: $font-size-s;
+}
+
+.u-font--m {
+  font-size: $font-size-m;
+}
+
+.u-font--l {
+  font-size: $font-size-l;
+}
+
+.u-font--xl {
+  font-size: $font-size-xl;
+}
+
+/**
+ * Completely remove from the flow but leave available to screen readers.
+ */
+.is-vishidden,
+.visually-hidden,
+.screen-reader-text {
+  position: absolute !important;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+}
+
+.js-inview {
+  opacity: 0;
+  visibility: hidden;
+
+  &.is-inview {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.touch .js-inview {
+  opacity: 1;
+  visibility: visible;
+}
+
+/**
+ * Hide elements only present and necessary for js enabled browsers.
+ */
+.no-js .no-js-hide {
+  display: none;
+}
+
+.u-align--center {
+  text-align: center;
+}
+
+.u-background--cover {
+  background-size: cover;
+  background-position: center center;
+}
+
+/**
+ * Remove all margins/padding
+ */
+.u-no-spacing {
+  padding: 0;
+  margin: 0;
+}
+
+/**
+ * Active on/off states
+ */
+[class*="-is-active"].js-toggle-parent,
+[class*="-is-active"].js-toggle {
+  .u-active--on {
+    display: none;
+  }
+
+  .u-active--off {
+    display: block;
+  }
+}
+
+[class*="-is-active"] {
+  .u-hide-on-active {
+    display: none;
+  }
+}

@@ -107,6 +107,9 @@ html, body {
 	cursor: pointer;
 	border-radius: 0px;
 	height: 60px;
+	text-transform: none;
+	text-decoration: none;
+	outline: none;
 }
 #perfmatters-script-manager-tabs {
 	overflow: hidden;
@@ -386,8 +389,9 @@ html, body {
 	height: auto;
 	width: auto;
 	font-size: 16px;
+	outline: none;
 }
-#perfmatters-script-manager input[type='checkbox']:after {
+#perfmatters-script-manager input[type='checkbox']:before, #perfmatters-script-manager input[type='checkbox']:after {
 	display: none;
 }
 #perfmatters-script-manager .perfmatters-script-manager-controls {
@@ -419,6 +423,9 @@ html, body {
 	width: 100%;
 	background: #fff;
 	font-size: 12px;
+	outline: none;
+	border: 1px solid #ccc;
+	margin: 0px;
 }
 #perfmatters-script-manager .pmsm-dependencies {
 	font-size: 10px;
@@ -491,6 +498,8 @@ html, body {
 	font-weight: 700;
 	width: auto;
 	border-radius: 0px;
+	text-transform: none;
+	outline: none;
 }
 #perfmatters-script-manager input[type='submit']:hover {
 	background: #5A93E0;
@@ -766,5 +775,8 @@ html, body {
     background-size: 32px 32px;
     width: 32px;
     height: 32px;
+}
+#perfmatters-script-manager .pmsm-hide {
+	display: none;
 }
 </style>";

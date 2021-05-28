@@ -1,0 +1,99 @@
+/* ------------------------------------ *\
+    $BUTTONS
+\* ------------------------------------ */
+
+@mixin o-button {
+  @include o-heading--xs;
+
+  display: inline-flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  transition: $transition-all;
+  text-decoration: none;
+  border: $border--standard;
+  border-radius: $border-radius;
+  text-align: center;
+  line-height: 1;
+  white-space: nowrap;
+  appearance: none;
+  cursor: pointer;
+  padding: $space-half $space;
+  text-transform: uppercase;
+  outline: 0;
+}
+
+/**
+ * Button Primary
+ */
+@mixin o-button--primary {
+  color: $c-black;
+  background: linear-gradient(to left, transparent 50%, $c-primary 50%);
+  background-size: 200% 100%;
+  background-position: right bottom;
+
+  &:hover,
+  &:focus {
+    color: $c-white;
+    border-color: $c-primary;
+    background-position: left bottom;
+  }
+}
+
+.o-button--primary {
+  @include o-button;
+  @include o-button--primary;
+}
+
+/**
+ * Button Secondary
+ */
+@mixin o-button--secondary {
+  color: $c-white;
+  background: linear-gradient(to left, $c-black 50%, $c-primary 50%);
+  background-size: 200% 100%;
+  background-position: right bottom;
+  border-color: $c-black;
+
+  &:hover,
+  &:focus {
+    color: $c-white;
+    border-color: $c-primary;
+    background-position: left bottom;
+  }
+}
+
+.o-button--secondary {
+  @include o-button;
+  @include o-button--secondary;
+}
+
+/**
+ * Button Tertiary
+ */
+@mixin o-button--teritary {
+  color: $c-black;
+  background: linear-gradient(to left, transparent 50%, $c-black 50%);
+  background-size: 200% 100%;
+  background-position: right bottom;
+
+  &:hover,
+  &:focus {
+    color: $c-white;
+    border-color: $c-black;
+    background-position: left bottom;
+  }
+}
+
+.o-button--teritary {
+  @include o-button;
+  @include o-button--teritary;
+}
+
+
+button,
+input[type="submit"],
+.o-button {
+  @include o-button;
+  @include o-button--primary;
+}

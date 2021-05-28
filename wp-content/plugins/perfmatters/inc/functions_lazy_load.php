@@ -9,7 +9,7 @@ function perfmatters_lazy_load_init() {
 		$exclude_lazy_loading = perfmatters_get_post_meta('perfmatters_exclude_lazy_loading');
 
 		//check if its ok to lazy load
-		if(!$exclude_lazy_loading && !is_admin() && !wp_doing_ajax() && !isset($_GET['perfmatters']) && !perfmatters_is_page_builder() && !is_embed() && !is_feed()) {
+		if(!$exclude_lazy_loading && !is_admin() && !perfmatters_is_dynamic_request() && !isset($_GET['perfmatters']) && !perfmatters_is_page_builder() && !is_embed() && !is_feed()) {
 
 			//don't lazy load on amp
 			if(function_exists('is_amp_endpoint') && is_amp_endpoint()) {
@@ -479,7 +479,7 @@ function perfmatters_lazy_load_youtube_iframe($iframe) {
 function perfmatters_lazy_load_css() {
 	$output = '.perfmatters-lazy-youtube{position:relative;width:100%;max-width:100%;height:0;padding-bottom:56.23%;overflow:hidden}.perfmatters-lazy-youtube img{position:absolute;top:0;right:0;bottom:0;left:0;display:block;width:100%;max-width:100%;height:auto;margin:auto;border:none;cursor:pointer;transition:.5s all;-webkit-transition:.5s all;-moz-transition:.5s all}.perfmatters-lazy-youtube img:hover{-webkit-filter:brightness(75%)}.perfmatters-lazy-youtube .play{position:absolute;top:50%;left:50%;width:68px;height:48px;margin-left:-34px;margin-top:-24px;background:url('.plugins_url('perfmatters/img/youtube.svg').') no-repeat;background-position:center;background-size:cover;pointer-events:none}.perfmatters-lazy-youtube iframe{position:absolute;top:0;left:0;width:100%;height:100%;z-index:99}';
 	if(current_theme_supports('responsive-embeds')) {
-		$output.= '.wp-has-aspect-ratio .perfmatters-lazy-youtube{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;padding-bottom:0}';
+		$output.= '.wp-has-aspect-ratio .wp-block-embed__wrapper{position:relative;}.wp-has-aspect-ratio .perfmatters-lazy-youtube{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;padding-bottom:0}';
 	}
 
 	return $output;

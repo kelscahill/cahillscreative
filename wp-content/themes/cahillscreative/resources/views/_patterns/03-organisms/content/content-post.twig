@@ -1,0 +1,8 @@
+<article class="c-content c-content-post u-spacing--double">
+  <h1 class="o-page-title">{{ post.title }}</h1>
+  <div class="l-container o-rte-text">
+    {% include "01-atoms/text/byline.twig" %}
+    <img src="{{ post.thumbnail.src|resize(1200, 300) }}">
+    {{ post.content }}
+  </div>
+</article>

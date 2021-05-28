@@ -1,4 +1,5 @@
 /* eslint-disable */
+import inView from 'in-view';
 
 export default {
   init() {
@@ -18,61 +19,81 @@ export default {
       $('html').addClass(' no-touch');
     }
 
-    // check window width
-    var getWidth = function() {
-      var width;
-      if (document.body && document.body.offsetWidth) {
-        width = document.body.offsetWidth;
-      }
-      if (document.compatMode === 'CSS1Compat' &&
-          document.documentElement &&
-          document.documentElement.offsetWidth ) {
-         width = document.documentElement.offsetWidth;
-      }
-      if (window.innerWidth) {
-         width = window.innerWidth;
-      }
-      return width;
-    };
-    window.onload = function() {
-      getWidth();
-    };
-    window.onresize = function() {
-      getWidth();
-    };
+    /**
+    * Add inview class on scroll if has-animation class.
+    */
+    if (!isMobile()) {
+      inView('.js-inview').on('enter', function() {
+        $("*[data-animation]").each(function() {
+          var animation = $(this).attr('data-animation');
+          if (inView.is(this)) {
+            $(this).addClass("is-inview");
+            $(this).addClass(animation);
+          }
+        });
+      });
+    }
 
-    $('.primary-nav--with-subnav.js-toggle > a').click(function(e) {
-      e.preventDefault();
-    });
-
-    // Popup
-    $('.popup__close').click(function(e) {
-      e.preventDefault();
-      $('#popup-container').addClass('popup--hide');
-    });
-
-    $('.popup .btn').click(function() {
-      $('#popup-container').addClass('popup--hide');
-    });
-
-    // $(window).load(function(){
-    //   function show_popup(){
-    //     var visits = $.cookie('visits') || 0;
-    //     visits++;
-    //     $.cookie('visits', visits, { expires: 7, path: '/' });
-    //
-    //     if ($.cookie('visits') <= 1) {
-    //       $('#popup-container').fadeIn();
-    //       $('#popup-container').removeClass('popup--hide');
-    //     }
-    //   };
-    //    window.setTimeout( show_popup, 2000 ); // 2 seconds
+    /**
+    * Remove Active Classes when clicking outside menus and modals
+    */
+    // $(document).click(function(event) {
+    //   if (!$(event.target).closest(".c-nav-drawer").length) {
+    //     $("html").find(".menu-is-active").removeClass("menu-is-active");
+    //   }
     // });
+
+    // Expires after one day
+    var setCookie = function(name, value) {
+      var date = new Date(),
+          expires = 'expires=';
+      date.setDate(date.getDate() + 1);
+      expires += date.toGMTString();
+      document.cookie = name + '=' + value + '; ' + expires + '; path=/; SameSite=Strict;';
+    }
+
+    var getCookie = function(name) {
+      var allCookies = document.cookie.split(';'),
+        cookieCounter = 0,
+        currentCookie = '';
+      for (cookieCounter = 0; cookieCounter < allCookies.length; cookieCounter++) {
+        currentCookie = allCookies[cookieCounter];
+        while (currentCookie.charAt(0) === ' ') {
+          currentCookie = currentCookie.substring(1, currentCookie.length);
+        }
+        if (currentCookie.indexOf(name + '=') === 0) {
+          return currentCookie.substring(name.length + 1, currentCookie.length);
+        }
+      }
+      return false;
+    }
+
+    $('.js-alert-close').click(function(e) {
+      e.preventDefault();
+      $('.js-alert').addClass('is-hidden');
+      setCookie('alert', 'true');
+    });
+
+    var showAlert = function() {
+      $('.js-alert').fadeIn();
+      $('.js-alert').removeClass('is-hidden');
+    }
+
+    var hideAlert = function() {
+      $('.js-alert').fadeOut();
+      $('.js-alert').addClass('is-hidden');
+    }
+
+    if (getCookie('alert')) {
+      hideAlert();
+    } else {
+      showAlert();
+    }
 
     // Smooth scrolling on anchor clicks
     $(function() {
       $('a[href*="#"]:not([href="#"])').click(function() {
-        $('.nav__primary, .nav-toggler').removeClass('main-nav-is-active');
+        $('.c-primary-nav, body').removeClass('primary-nav-is-active');
         if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
           var target = $(this.hash);
           target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
@@ -164,24 +185,6 @@ export default {
        });
       });
     }
-
-    /**
-     * Share Tooltip
-     */
-    $(document).on('click', '.tooltip-toggle', function() {
-      $(this).parent().addClass('is-active');
-      $('.overlay').show();
-    });
-
-    $('.tooltip-close').click(function() {
-      $(this).parent().parent().removeClass('is-active');
-      $('.overlay').hide();
-    });
-
-    $('.overlay').click(function() {
-      $(this).hide();
-      $('.tooltip').removeClass('is-active');
-    });
 
     /**
      * Main class toggling function

@@ -1,0 +1,279 @@
+/* ------------------------------------ *\
+    $WOOCOMMERCE
+\* ------------------------------------ */
+
+.cart,
+.checkout {
+  .l-container--l {
+    max-width: $max-width;
+  }
+}
+
+.stock {
+  font-style: italic;
+}
+
+.c-content .woocommerce {
+  & > * + * {
+    margin-top: $space;
+  }
+
+  .button {
+    @include o-button--secondary;
+  }
+}
+
+.woocommerce-tabs {
+  display: none;
+}
+
+.woocommerce-variation-add-to-cart {
+  display: flex;
+  margin-top: $space;
+
+  .quantity {
+    margin-right: $space-half;
+  }
+}
+
+.variations_form {
+  button {
+    margin: 0;
+  }
+}
+
+.variations {
+  margin-bottom: $space-quarter;
+  position: relative;
+
+  .label {
+    display: flex;
+  }
+
+  .value {
+    display: flex;
+    align-items: center;
+
+    a {
+      text-decoration: underline;
+      position: absolute;
+      top: $space-half;
+      right: $space-half;
+    }
+  }
+}
+
+.c-nav-drawer + .woocommerce-notices-wrapper {
+  @include l-wrap;
+
+  > * {
+    @include l-container;
+  }
+}
+
+.o-notice {
+  padding: $space-half;
+  border: $border--standard;
+  border-radius: $border-radius;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: $space;
+
+  &--success {
+    border-color: $c-tertiary;
+    background-color: lighten($c-tertiary, 30%);
+  }
+
+  &--info {
+    border: none;
+    background-color: $c-gray--lighter;
+  }
+
+  &--error {
+    border-color: $c-primary;
+    background-color: lighten($c-primary, 30%);
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: left;
+
+    > * {
+      width: 100%;
+      line-height: 1.6;
+    }
+  }
+
+  a {
+    margin-right: $space-quarter;
+  }
+}
+
+.o-add-to-cart {
+  display: flex;
+  position: relative;
+}
+
+.c-cart {
+  &__table {
+    td:first-child {
+      a {
+        border: 0;
+      }
+    }
+
+    img {
+      max-width: 50px;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+
+    @include media(">medium") {
+      flex-direction: row;
+      justify-content: space-between;
+      margin-top: $space-double;
+    }
+
+
+    > * {
+      margin-top: $space;
+
+      @include media(">medium") {
+        &:first-child {
+          margin-right: $space;
+          width: 40%;
+        }
+
+        &:last-child {
+          margin-left: $space;
+          width: 60%;
+        }
+      }
+    }
+  }
+}
+
+.c-cart-totals {
+  padding: $space;
+  border-radius: $border-radius;
+  background-color: $c-gray--lighter;
+
+  &__table {
+    th,
+    td {
+      border-bottom: 1px solid $c-white;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    th {
+      text-align: left;
+    }
+
+    td {
+      text-align: right;
+    }
+  }
+
+  ul {
+    li {
+      padding-left: 0;
+    }
+
+    li::before {
+      display: none;
+    }
+  }
+
+  hr {
+    margin: 0;
+  }
+
+  label {
+    font-size: $font-size-s;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.c-shipping-calculator__form {
+  text-align: left;
+}
+
+.woocommerce-NoticeGroup {
+  grid-column: span 12;
+}
+
+.c-review-order {
+  background-color: $c-gray--lighter;
+  border-radius: $border-radius;
+  padding: $space;
+
+  &__details {
+    background-color: transparent;
+
+    table {
+      thead th {
+        background-color: darken($c-gray--lighter, 10%);
+      }
+
+      th,
+      td {
+        border-bottom-color: $c-gray--lighter;
+        padding: $space-half;
+        background-color: $c-white;
+      }
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+      margin-top: $space;
+
+      li {
+        padding: 0;
+        margin-top: $space-half;
+        clear: left;
+      }
+
+      li::before {
+        display: none;
+      }
+    }
+
+    .order-total .amount {
+      font-size: $font-size-m;
+    }
+  }
+}
+
+.c-checkout-payment {
+  background-color: transparent;
+}
+
+.c-checkout-payment-method {
+  &__select-box {
+    font-weight: normal;
+    margin-top: 0;
+  }
+
+  img {
+    display: none;
+  }
+
+  img + a {
+    margin-left: $space-half;
+  }
+
+  .form-row {
+    margin-top: $space-half;
+  }
+
+  .wc-stripe-elements-field {
+    border: $border--standard;
+    padding: $space-half;
+    border-radius: $border-radius;
+  }
+}

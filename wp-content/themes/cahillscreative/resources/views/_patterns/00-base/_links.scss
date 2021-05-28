@@ -1,0 +1,50 @@
+/* ------------------------------------ *\
+    $LINKS
+\* ------------------------------------ */
+
+a {
+  text-decoration: none;
+  color: $c-link-color;
+  transition: $transition-all;
+
+  &:hover,
+  &:focus {
+    color: $c-link-hover-color;
+  }
+}
+
+@mixin o-link {
+  display: inline-flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  border-radius: 0;
+  text-align: center;
+  line-height: 1;
+  white-space: nowrap;
+  appearance: none;
+  cursor: pointer;
+  padding: 0;
+  text-transform: inherit;
+  border: 0;
+  outline: 0;
+  font-weight: normal;
+  font-family: $ff-font;
+  font-size: $body-font-size;
+  letter-spacing: normal;
+  background: transparent;
+  color: $c-link-color;
+  border-bottom: 1px solid $c-link-color;
+
+  &:hover,
+  &:focus {
+    background: transparent;
+    color: $c-link-hover-color;
+    border-bottom-color: $c-link-hover-color;
+  }
+}
+
+.o-link {
+  @include o-link;
+}

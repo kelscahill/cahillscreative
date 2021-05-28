@@ -38,10 +38,8 @@ class SageTimberTheme extends TimberSite {
 	function add_to_context( $context ) {
 
 		/* Navigation */
-		$context['primary_nav_left'] = new TimberMenu('primary_nav_left');
-		$context['primary_nav_right'] = new TimberMenu('primary_nav_right');
-		$context['footer_nav_col_1'] = new TimberMenu('footer_nav_col_1');
-		$context['footer_nav_col_2'] = new TimberMenu('footer_nav_col_2');
+		$context['primary_nav'] = new TimberMenu('primary_nav');
+		$context['footer_nav'] = new TimberMenu('footer_nav');
 
 		/* Site info */
 		$context['site'] = $this;

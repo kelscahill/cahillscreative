@@ -1,0 +1,276 @@
+/* ------------------------------------ *\
+    $FORMS
+\* ------------------------------------ */
+
+form ol,
+form ul {
+  list-style: none;
+  margin-left: 0;
+}
+
+legend {
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: none;
+  appearance: none;
+  outline: 0;
+}
+
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=search],
+input[type=tel],
+input[type="number"],
+select,
+textarea,
+.select2-container .select2-selection--single {
+  font-size: $body-font-size;
+  font-family: $ff-font;
+  padding: $space-half;
+  box-shadow: none;
+  border: $border--standard;
+  border-radius: $border-radius;
+
+  &::placeholder {
+    color: $c-gray;
+  }
+
+  &:focus {
+    border-color: $c-tertiary;
+  }
+}
+
+input[type="number"] {
+  padding: 0;
+  padding-left: 8px;
+  padding-right: 20px;
+  border-radius: $border-radius;
+  border: $border--standard;
+  width: 50px;
+  height: 38px;
+  line-height: 40px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 20.41'%3E%3Cpath d='M.15,5.06a.5.5,0,0,1,0-.71L4.5,0,8.85,4.35a.5.5,0,0,1,0,.71.48.48,0,0,1-.7,0L4.5,1.41.85,5.06A.48.48,0,0,1,.15,5.06Zm8,10.29L4.5,19,.85,15.35a.5.5,0,0,0-.7,0,.5.5,0,0,0,0,.71L4.5,20.41l4.35-4.35a.5.5,0,0,0,0-.71A.5.5,0,0,0,8.15,15.35Z' fill='%23000'/%3E%3C/svg%3E") center right 5px no-repeat;
+  background-size: 10px 40px;
+
+  &:focus {
+    border-color: $c-black;
+  }
+}
+
+/* Spin Buttons modified */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  width: 15px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  cursor: pointer;
+}
+
+input[type=radio],
+input[type=checkbox] {
+  outline: none;
+  margin: 0;
+  margin-right: $space-half;
+  height: 30px;
+  width: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  line-height: 1;
+  background-size: 30px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  cursor: pointer;
+  display: block;
+  float: left;
+  border: $border--standard;
+  padding: 0;
+  user-select: none;
+  appearance: none;
+  background-color: $c-white;
+  top: -5px;
+  position: relative;
+}
+
+input[type=radio] + label,
+input[type=checkbox] + label {
+  display: inline-block;
+  cursor: pointer;
+  position: relative;
+  margin-bottom: 0;
+  font-size: $body-font-size;
+  width: calc(100% - 40px);
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    display: block;
+    clear: left;
+  }
+}
+
+input[type=radio]:checked,
+input[type=checkbox]:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath d='M26.08,3.56l-2,1.95L10.61,19l-5-4L3.47,13.29,0,17.62l2.17,1.73L9.1,24.9,11,26.44l1.77-1.76L28.05,9.43,30,7.48Z' fill='#{url-friendly-color($c-white)}'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 15px;
+  background-color: $c-black;
+}
+
+input[type=radio] {
+  border-radius: 50px;
+}
+
+input[type=checkbox] {
+  border-radius: $border-radius;
+}
+
+.o-form-item__checkbox,
+.o-form-item__radio {
+  &::after {
+    content: "";
+    display: block;
+    clear: left;
+  }
+}
+
+input[type=submit] {
+  transition: $transition-all;
+}
+
+/* clears the 'X' from Internet Explorer */
+input[type=search]::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+input[type=search]::-ms-reveal {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* clears the 'X' from Chrome */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  display: none;
+}
+
+/* removes the blue background on Chrome's autocomplete */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset;
+}
+
+select,
+.select2-container .select2-selection--single {
+  background-color: $c-white;
+  appearance: none;
+  position: relative;
+  width: 100%;
+  padding-right: $space-and-half;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11.7 7.21'%3E%3Ctitle%3ESmall Arrow%3C/title%3E%3Cpath d='M5.79,7.21.29,1.71A1,1,0,0,1,1.71.29l4.1,4.1L10,.29a1,1,0,0,1,1.41,0,1,1,0,0,1,0,1.41Z' fill='#{url-friendly-color($c-gray)}'/%3E%3C/svg%3E") $c-white center right 10px no-repeat;
+  background-size: 10px 10px;
+}
+
+.select2-container .select2-selection--single {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: $space-half;
+  height: 43px;
+
+  .select2-selection__rendered {
+    height: 40px;
+    line-height: 40px;
+    padding: 0;
+  }
+
+  .select2-selection__arrow {
+    display: none;
+  }
+}
+
+.select2-container .select2-dropdown {
+  border: $border--standard !important;
+}
+
+label {
+  font-weight: bold;
+  font-size: $font-size-xs;
+}
+
+/**
+ * Validation
+ */
+.has-error {
+  border-color: $c-error !important;
+}
+
+.is-valid {
+  border-color: $c-valid !important;
+}
+
+@mixin c-form--inline {
+  display: flex;
+  flex-direction: column;
+
+  @include media(">medium") {
+    flex-direction: row;
+  }
+
+  input[type=text],
+  input[type=email] {
+    width: 100%;
+    border: $border--standard;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: transparent;
+
+    &:hover,
+    &:focus {
+      border-color: $c-black;
+    }
+  }
+
+  input[type=submit],
+  button {
+    width: 100%;
+    margin-top: $space-half;
+    padding-left: $space;
+    padding-right: $space;
+
+    @include media(">medium") {
+      width: auto;
+      margin-top: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      margin-left: -2px;
+    }
+  }
+}
+
+.c-form--inline {
+  @include c-form--inline;
+}

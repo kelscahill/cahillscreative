@@ -1,0 +1,157 @@
+/* ------------------------------------ *\
+    $NAVIGATION
+\* ------------------------------------ */
+
+/**
+ * Drawer menu
+ */
+.l-body.menu-is-active {
+  overflow: hidden;
+
+  &::before {
+    opacity: 1;
+    visibility: visible;
+    z-index: 9998;
+  }
+
+  .c-nav-drawer {
+    right: 0;
+  }
+}
+
+.c-nav-drawer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100vh;
+  max-width: 80vw;
+  background-color: $c-white;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  right: -400px;
+  transition: right 0.25s $transition-effect;
+
+  @include media('>small') {
+    max-width: 400px;
+  }
+
+  &__toggle {
+    background-color: transparent;
+    justify-content: flex-start;
+    padding: $space;
+    outline: 0;
+    border: 0;
+    border-radius: 0;
+    background-image: none;
+
+    .o-icon {
+      transition: transform 0.25s $transition-effect;
+      transform: scale(1);
+    }
+
+    &:hover,
+    &:focus {
+      .o-icon {
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  &__nav {
+    height: 100%;
+    padding-top: $space-double;
+  }
+
+  &__social {
+    border-top: $border--standard-light;
+
+    .c-social-links {
+      justify-content: space-evenly;
+
+      &__item {
+        border: 0;
+        border-radius: 0;
+        background: none;
+        margin: 0;
+
+        svg path {
+          fill: $c-gray--light;
+        }
+
+        &:hover,
+        &:focus {
+          svg path {
+            fill: $c-primary;
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Primary nav
+ */
+.c-nav-primary {
+  &__menu-item {
+    margin: 0 $space;
+  }
+
+  &__link {
+    width: 100%;
+    padding: $space 0;
+    border-bottom: $border--standard-light;
+    color: $c-black;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &:hover,
+    &:focus {
+      color: $c-primary;
+
+      &::after {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    &::after {
+      opacity: 0;
+      visibility: hidden;
+      content: "→";
+      color: $c-gray--light;
+      font-size: 22px;
+      line-height: 1;
+      transition: $transition-all;
+    }
+  }
+}
+
+/**
+ * Footer nav
+ */
+.c-nav-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -$space-half;
+  margin-right: -$space-half;
+
+  @include media('>medium') {
+    justify-content: flex-end;
+  }
+
+  &__link {
+    color: $c-white;
+    padding: $space-quarter $space-half;
+    text-decoration: underline;
+
+    &:hover,
+    &:focus {
+      color: $c-white;
+    }
+  }
+}

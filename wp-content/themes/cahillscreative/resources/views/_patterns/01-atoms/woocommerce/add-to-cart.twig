@@ -1,0 +1,6 @@
+{% if post._stock_status == 'instock' %}
+  <form class="o-add-to-cart" action="{{ post.link|apply_filters('woocommerce_add_to_cart_form_action') }}" method="post" enctype='multipart/form-data'>
+    <div class="o-add-to-cart__quantity u-space--half--right">{{ fn('woocommerce_quantity_input') }}</div>
+    <button class="o-add-to-cart__submit o-button--tertiary" type="submit" name="add-to-cart" value="{{ post.id }}">Add to Cart</button>
+  </form>
+{% endif %}

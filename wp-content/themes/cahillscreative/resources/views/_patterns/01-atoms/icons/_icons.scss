@@ -1,0 +1,43 @@
+/* ------------------------------------ *\
+    $ICONS
+\* ------------------------------------ */
+
+.o-icon {
+  display: inline-block;
+}
+
+.o-icon--xs svg {
+  width: $icon-xsmall;
+  height: $icon-xsmall;
+  min-width: $icon-xsmall;
+}
+
+.o-icon--s svg {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+
+  @include media('>small') {
+    width: $icon-small;
+    height: $icon-small;
+    min-width: $icon-small;
+  }
+}
+
+.o-icon--m svg {
+  width: $icon-medium;
+  height: $icon-medium;
+  min-width: $icon-medium;
+}
+
+.o-icon--l svg {
+  width: $icon-large;
+  height: $icon-large;
+  min-width: $icon-large;
+}
+
+.o-icon--xl svg {
+  width: $icon-xlarge;
+  height: $icon-xlarge;
+  min-width: $icon-xlarge;
+}

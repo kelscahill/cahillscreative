@@ -1,0 +1,14 @@
+{% extends "04-templates/base.twig" %}
+
+{% block sections_before %}
+  {% include "03-organisms/sections/section-hero.twig" %}
+{% endblock %}
+
+{% block content %}
+  {% include "03-organisms/content/content-front.twig" %}
+{% endblock %}
+
+{% block sections_after %}
+  {% include "03-organisms/sections/section-featured-products.twig" %}
+  {% include "03-organisms/sections/section-testimonials.twig" %}
+{% endblock %}

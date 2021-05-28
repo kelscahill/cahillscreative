@@ -1,0 +1,142 @@
+/* ------------------------------------ *\
+    $TABLES
+\* ------------------------------------ */
+
+table {
+  border-spacing: 0;
+  border: $border--standard-light;
+  border-radius: $border-radius;
+  overflow: hidden;
+  width: 100%;
+
+  label {
+    font-size: $body-font-size;
+  }
+}
+
+th {
+  text-align: left;
+  border: 1px solid transparent;
+  padding: $space-half 0;
+  vertical-align: top;
+  font-weight: bold;
+}
+
+tr {
+  border: 1px solid transparent;
+}
+
+th,
+td {
+  border: 1px solid transparent;
+  padding: $space-half;
+  border-bottom: $border--standard-light;
+}
+
+thead th {
+  background-color: $c-gray--lighter;
+
+  @include o-heading--xs;
+}
+
+tfoot th {
+  @include p;
+
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: bold;
+}
+
+/**
+ * Responsive Table
+ */
+.c-table--responsive {
+  border-collapse: collapse;
+  border-radius: $border-radius;
+  padding: 0;
+  width: 100%;
+
+  th {
+    background-color: $c-gray--lighter;
+  }
+
+  th,
+  td {
+    padding: $space-half;
+    border-bottom: $border--standard-light;
+  }
+
+  @include media("<=medium") {
+    border: 0;
+
+    thead {
+      border: none;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px;
+    }
+
+    tr {
+      display: block;
+      margin-bottom: $space / 2;
+      border: 1px solid $c-gray--light;
+      border-radius: $border-radius;
+      overflow: hidden;
+
+      &.this-is-active {
+        td:not(:first-child) {
+          display: flex;
+        }
+
+        td:first-child::before {
+          content: "- " attr(data-label);
+        }
+      }
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid $c-white;
+      background-color: $c-gray--lighter;
+    }
+
+    td {
+      border-bottom: $border--standard-light;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 40px;
+      text-align: right;
+
+      &:first-child {
+        cursor: pointer;
+        background-color: $c-gray--lighter;
+
+        &::before {
+          content: "+ " attr(data-label);
+        }
+      }
+
+      &:last-child {
+        border-bottom: 0;
+      }
+
+      &:not(:first-child) {
+        display: none;
+        margin: 0 $space-half;
+        background-color: $c-white;
+      }
+
+      &::before {
+        content: attr(data-label);
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: $font-size-xs;
+      }
+    }
+  }
+}

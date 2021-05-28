@@ -1,0 +1,27 @@
+{% if post._stock_status == "outofstock" %}
+  {% set classes = " is-coming-soon" %}
+{% endif %}
+<a href="{{ post.link }}" class="c-block-product{{ classes }} js-inview" data-animation="animate__animated animate__fadeInUp">
+  {% if post.get_thumbnail %}
+    <picture class="c-block-product__image">
+      <img src="{{ Image(post.get_thumbnail).src|resize(900,900) }}" />
+    </picture>
+  {% endif %}
+  <div class="c-block-product__content u-spacing--half">
+    <div class="c-block-product__heading u-spacing--quarter">
+      {% if post._sale_price %}
+        <div class="o-eyebrow">On Sale!</div>
+      {% endif %}
+      <h3 class="o-heading--l">{{ post.title }}</h3>
+      <p>{{ post.get_preview(999, false, NULL, false, '')|striptags }}</p>
+    </div>
+    <hr class="o-hr--small" />
+    <div class="c-block-product__body u-spacing">
+      {% if post._stock_status == "outofstock" %}
+        <p><em>Coming soon!</em></p>
+      {% else %}
+        {% include "01-atoms/woocommerce/price.twig" %}
+      {% endif %}
+    </div>
+  </div>
+</a>

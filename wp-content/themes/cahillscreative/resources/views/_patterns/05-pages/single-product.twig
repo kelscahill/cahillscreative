@@ -1,0 +1,13 @@
+{% extends "04-templates/base.twig" %}
+
+{% block sections_before %}
+  {% do action('woocommerce_before_single_product') %}
+{% endblock %}
+
+{% block content %}
+  {% include "03-organisms/content/content-product.twig" %}
+{% endblock %}
+
+{% block sections_after %}
+  {% do action('woocommerce_after_single_product') %}
+{% endblock %}

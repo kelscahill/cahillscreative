@@ -925,6 +925,34 @@ function perfmatters_settings() {
         )
     );
 
+    //delay timeout
+    add_settings_field(
+        'delay_timeout', 
+        perfmatters_title(__('Delay Timeout', 'perfmatters'), 'delay_timeout', 'https://perfmatters.io/docs/delay-javascript/#timeout'), 
+        'perfmatters_print_input', 
+        'perfmatters_extras', 
+        'assets_js', 
+        array(
+            'id' => 'delay_timeout',
+            'option' => 'perfmatters_extras',
+            'input' => 'select',
+            'options' => array(
+                "" => __('None', 'perfmatters'),
+                "1" => '1 ' . __('second', 'perfmatters'),
+                "2" => '2 ' . __('seconds', 'perfmatters'),
+                "3" => '3 ' . __('seconds', 'perfmatters'),
+                "4" => '4 ' . __('seconds', 'perfmatters'),
+                "5" => '5 ' . __('seconds', 'perfmatters'),
+                "6" => '6 ' . __('seconds', 'perfmatters'),
+                "7" => '7 ' . __('seconds', 'perfmatters'),
+                "8" => '8 ' . __('seconds', 'perfmatters'),
+                "9" => '9 ' . __('seconds', 'perfmatters'),
+                "10" => '10 ' . __('seconds', 'perfmatters')
+                ),
+            'tooltip' => __('Load delayed scripts after a set amount of time if no user interaction has been detected.', 'perfmatters')
+        )
+    );
+
     //preloading section
     add_settings_section('preloading', __('Preloading', 'perfmatters'), 'perfmatters_extras_preloading_callback', 'perfmatters_extras');
 
@@ -1542,7 +1570,11 @@ function perfmatters_print_preload($args) {
 
 function perfmatters_print_preload_row($rowCount = 0, $line = array()) {
     echo "<div class='perfmatters-input-row'>";
-        echo "<input type='text' id='preload-" . $rowCount . "-url' name='perfmatters_extras[preload][" . $rowCount . "][url]' value='" . (isset($line['url']) ? $line['url'] : "") . "' placeholder='https://example.com/font.woff2' />";
+
+        echo "<div style='display: flex; width: 100%; align-items: center; margin-bottom: 5px;'>";
+            echo "<input type='text' id='preload-" . $rowCount . "-url' name='perfmatters_extras[preload][" . $rowCount . "][url]' value='" . (isset($line['url']) ? $line['url'] : "") . "' placeholder='https://example.com/font.woff2' style='' />";
+            echo "<a href='#' class='perfmatters-delete-input-row' title='" . __('Remove', 'perfmatters') . "'><span class='dashicons dashicons-no'></span></a>";
+        echo "</div>";
 
         $types = array(
             'audio'    => 'Audio',
@@ -1560,17 +1592,25 @@ function perfmatters_print_preload_row($rowCount = 0, $line = array()) {
         );
 
         echo "<select id='preload-" . $rowCount . "-as' name='perfmatters_extras[preload][" . $rowCount . "][as]' style=''>";
-            echo "<option value=''>Select Type</option>";
+            echo "<option value=''>" . __('Select Type', 'perfmatters') . "</option>";
             foreach($types as $value => $label) {
                 echo "<option value='" . $value . "'" . (isset($line['as']) && $line['as'] == $value ? " selected='selected'" : "") . ">" . $label . "</option>";
             }
         echo "</select>";
 
+        echo "<select id='preload-" . $rowCount . "-device' name='perfmatters_extras[preload][" . $rowCount . "][device]' style='margin-left: 5px;'>";
+            echo "<option value=''>" . __('All Devices', 'perfmatters') . "</option>";
+            echo "<option value='desktop'" . (isset($line['device']) && $line['device'] == 'desktop' ? " selected='selected'" : "") . ">" . __('Desktop', 'perfmatters') . "</option>";
+            echo "<option value='mobile'" . (isset($line['device']) && $line['device'] == 'mobile' ? " selected='selected'" : "") . ">" . __('Mobile', 'perfmatters') . "</option>";
+        echo "</select>";
+
+        echo "<label class='perfmatters-inline-label-input' style='flex-grow: 1;'><span>" . __('Location', 'perfmatters') . "</span>";
+            echo "<input type='text' id='preload-" . $rowCount . "-locations' name='perfmatters_extras[preload][" . $rowCount . "][locations]' value='" . (isset($line['locations']) ? $line['locations'] : "") . "' placeholder='23,19,blog' style='min-width: auto; padding-left: 74px;' />";
+        echo "</label>";
+
         echo "<label for='preload-" . $rowCount . "-crossorigin'>";
             echo "<input type='checkbox' id='preload-" . $rowCount . "-crossorigin' name='perfmatters_extras[preload][" . $rowCount . "][crossorigin]' " . (!empty($line['crossorigin']) ? "checked" : "") . " value='1' /> CrossOrigin";
         echo "</label>";
-
-        echo "<a href='#' class='perfmatters-delete-input-row' title='" . __('Remove', 'perfmatters') . "'><span class='dashicons dashicons-no'></span></a>";
     echo "</div>";
 }
 

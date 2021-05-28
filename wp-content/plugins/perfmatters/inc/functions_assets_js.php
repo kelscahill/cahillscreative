@@ -29,18 +29,21 @@ function perfmatters_assets_js_init() {
 	if($defer_check || $delay_check) {
 
 		//check if its ok to continue
-		if(!is_admin() && !wp_doing_ajax() && !isset($_GET['perfmatters']) && !perfmatters_is_page_builder() && !is_embed() && !is_feed()) {
+		if(!is_admin() && !perfmatters_is_dynamic_request() && !isset($_GET['perfmatters']) && !perfmatters_is_page_builder() && !is_embed() && !is_feed()) {
 
 			//actions + filters
-			add_filter('perfmatters_output_buffer', 'perfmatters_defer_js', 2);
-			add_action('wp_footer', 'perfmatters_print_delay_js', PHP_INT_MAX);
+			add_filter('perfmatters_output_buffer', 'perfmatters_optimize_js', 2);
+
+			if($delay_check) {
+				add_action('wp_footer', 'perfmatters_print_delay_js', PHP_INT_MAX);
+			}
 		}
 	}
 }
 add_action('wp', 'perfmatters_assets_js_init');
 
 //add defer tag to js files in html
-function perfmatters_defer_js($html) {
+function perfmatters_optimize_js($html) {
 
 	//strip comments before search
 	$html_no_comments = preg_replace('/<!--(.*)-->/Uis', '', $html);
@@ -55,10 +58,12 @@ function perfmatters_defer_js($html) {
 
 	$perfmatters_extras = get_option('perfmatters_extras');
 
+	$defer_check = !empty($perfmatters_extras['defer_js']) && !perfmatters_get_post_meta('perfmatters_exclude_defer_js');
+
 	//build js exlusions array
 	$js_exclusions = array();
 
-	if(!empty($perfmatters_extras['defer_js'])) {
+	if($defer_check) {
 
 		//add jquery if needed
 		if(empty($perfmatters_extras['defer_jquery'])) {
@@ -88,6 +93,7 @@ function perfmatters_defer_js($html) {
 
 		//delay javascript
 		if(!empty($perfmatters_extras['delay_js'])) {
+
 	 		foreach($perfmatters_extras['delay_js'] as $delayed_script) {
 
         		if(strpos($tag, $delayed_script) !== false) {
@@ -112,7 +118,7 @@ function perfmatters_defer_js($html) {
 		}
 
 		//defer javascript
-		if(!empty($perfmatters_extras['defer_js'])) {
+		if($defer_check) {
 
 			//src is not set
 			if(empty($atts_array['src'])) {
@@ -172,11 +178,9 @@ function perfmatters_get_post_meta($option) {
 function perfmatters_print_delay_js() {
 
 	$extras = get_option('perfmatters_extras');
+	$timeout = !empty($extras['delay_timeout']) ? $extras['delay_timeout'] : '';
 
   	if(!empty($extras['delay_js'])) {
-
-  		echo '<script type="text/javascript" id="perfmatters-delayed-scripts-js">const perfmattersUserInteractions=["keydown","mouseover","touchmove","touchstart"];perfmattersUserInteractions.forEach(function(event){window.addEventListener(event,pmTriggerDelayedScripts,{passive:!0})});function pmTriggerDelayedScripts(){pmLoadDelayedScripts();perfmattersUserInteractions.forEach(function(event){window.removeEventListener(event,pmTriggerDelayedScripts,{passive:!0})})}
-function pmLoadDelayedScripts(){document.querySelectorAll("script[data-pmdelayedscript]").forEach(function(elem){elem.setAttribute("src",elem.getAttribute("data-pmdelayedscript"))})}</script>';
-
+  		echo '<script type="text/javascript" id="perfmatters-delayed-scripts-js">' . (!empty($timeout) ? 'const perfmattersDelayTimer = setTimeout(pmLoadDelayedScripts,' . $timeout . '*1000);' : '') . 'const perfmattersUserInteractions=["keydown","mouseover","wheel","touchmove","touchstart"];perfmattersUserInteractions.forEach(function(event){window.addEventListener(event,pmTriggerDelayedScripts,{passive:!0})});function pmTriggerDelayedScripts(){pmLoadDelayedScripts();' . (!empty($timeout) ? 'clearTimeout(perfmattersDelayTimer);' : '') . 'perfmattersUserInteractions.forEach(function(event){window.removeEventListener(event, pmTriggerDelayedScripts,{passive:!0});});}function pmLoadDelayedScripts(){document.querySelectorAll("script[data-pmdelayedscript]").forEach(function(elem){elem.setAttribute("src",elem.getAttribute("data-pmdelayedscript"));});}</script>';
   	}
 }

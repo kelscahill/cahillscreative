@@ -1,0 +1,204 @@
+/* ------------------------------------ *\
+    $TEXT
+\* ------------------------------------ */
+
+p {
+  @include p;
+}
+
+small {
+  font-size: 90%;
+}
+
+/**
+ * Bold
+ */
+strong,
+b {
+  font-weight: bold;
+}
+
+/**
+ * Blockquote
+ */
+blockquote {
+  display: flex;
+  flex-wrap: wrap;
+
+  &::before {
+    content: "\201C";
+    font-family: $ff-font;
+    font-size: 40px;
+    line-height: 1;
+    color: $c-secondary;
+    min-width: 40px;
+    border-right: 6px solid $c-border;
+    display: block;
+    margin-right: $space;
+  }
+
+  p {
+    line-height: 1.7;
+    flex: 1;
+  }
+}
+
+/**
+ * Horizontal Rule
+ */
+hr {
+  height: 1px;
+  border: none;
+  background-color: rgba($c-gray--light, 0.5);
+  margin: 0 auto;
+}
+
+.o-hr--small {
+  border: 0;
+  width: 100px;
+  height: 2px;
+  background-color: $c-black;
+  margin-left: 0;
+}
+
+/**
+ * Abbreviation
+ */
+abbr {
+  border-bottom: 1px dotted $c-gray;
+  cursor: help;
+}
+
+/**
+ * Eyebrow
+ */
+.o-eyebrow {
+  padding: 0 $space-quarter;
+  background-color: $c-black;
+  color: $c-white;
+  border-radius: $border-radius;
+  display: inline-flex;
+  line-height: 1;
+
+  @include o-heading--xs;
+}
+
+/**
+ * Page title
+ */
+.o-page-title {
+  text-align: center;
+  padding: 0 $space;
+}
+
+/**
+ * Rich text editor text
+ */
+.o-rte-text {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+
+  @include p;
+
+  & > * + * {
+    margin-top: $space;
+  }
+
+  > dl dd,
+  > dl dt,
+  > ol li,
+  > ul li,
+  > p {
+    @include p;
+  }
+
+  h2:empty,
+  h3:empty,
+  p:empty {
+    display: none;
+  }
+
+  .o-button,
+  .o-link {
+    text-decoration: none;
+  }
+
+  a:not(.o-button--secondary) {
+    @include o-link;
+  }
+
+  hr {
+    margin-top: $space-double;
+    margin-bottom: $space-double;
+  }
+
+  hr.o-hr--small {
+    margin-top: $space;
+    margin-bottom: $space;
+  }
+
+  code,
+  pre {
+    font-size: 125%;
+  }
+
+  ol,
+  ul {
+    padding-left: 0;
+    margin-left: 0;
+
+    li {
+      list-style: none;
+      padding-left: $space-half;
+      margin-left: 0;
+      position: relative;
+
+      &::before {
+        color: $c-tertiary;
+        width: $space-half;
+        display: inline-block;
+        position: absolute;
+        left: 0;
+        font-size: $body-font-size;
+      }
+
+      li {
+        list-style: none;
+      }
+    }
+  }
+
+  ol {
+    counter-reset: item;
+
+    li {
+      &::before {
+        content: counter(item) ". ";
+        counter-increment: item;
+      }
+
+      li {
+        counter-reset: item;
+
+        &::before {
+          content: '\002010';
+        }
+      }
+    }
+  }
+
+  ul {
+    li {
+      &::before {
+        content: '\002022';
+      }
+
+      li {
+        &::before {
+          content: '\0025E6';
+        }
+      }
+    }
+  }
+}

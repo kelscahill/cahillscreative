@@ -1,0 +1,68 @@
+/* ------------------------------------ *\
+    $RELLAX
+\* ------------------------------------ */
+
+.has-rellax {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: $space-double;
+  padding-bottom: $space-double;
+
+  @include media('>medium') {
+    padding-top: $space-quad;
+    padding-bottom: $space-quad;
+    min-height: 80vh;
+  }
+}
+
+.o-rellax {
+  position: absolute;
+  width: 40vw;
+  max-width: 600px;
+  height: auto;
+  display: none;
+  z-index: -1;
+  opacity: 0.05;
+
+  @include media('>medium') {
+    display: block;
+  }
+
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+
+  &__pineapple {
+    top: 0;
+    left: -200px;
+
+    img {
+      transform: rotate(45deg);
+    }
+  }
+
+  &__jalapeno {
+    bottom: -20vh;
+    right: -60px;
+
+    img {
+      transform: rotate(-15deg);
+    }
+  }
+
+  &__habanero {
+    width: 40vw;
+    top: -25vh;
+    right: -60px;
+
+    @include media('>xxlarge') {
+      display: none;
+    }
+  }
+}

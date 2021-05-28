@@ -1,0 +1,27 @@
+<article class="c-block-featured-product js-inview" data-animation="animate__animated animate__fadeInUp">
+  {% if post.product_featured_image %}
+    <a href="{{ post.link }}" class="c-block-featured-product__link">
+      <picture class="c-block-featured-product__image">
+        <img src="{{ Image(post.product_featured_image).src|resize(200,715) }}" alt="{{ Image(post.product_featured_image).alt }}" />
+      </picture>
+    </a>
+  {% endif %}
+  <div class="c-block-featured-product__content u-spacing">
+    <div class="c-block-featured-product__heading u-spacing--half">
+      {% if post._sale_price %}
+        <div class="o-eyebrow">On Sale!</div>
+      {% endif %}
+      <h2><a href="{{ post.link }}">{{ post.title }}</a></h2>
+      <p class="u-font--m"><strong>{{ post.get_preview(999, false, NULL, false, '')|striptags }}</strong></p>
+    </div>
+    <hr class="o-hr--small" />
+    <div class="c-block-featured-product__body u-spacing">
+      {% if post._stock_status == "instock" and post._regular_price %}
+        {% include "01-atoms/woocommerce/price.twig" %}
+        {% include "01-atoms/woocommerce/add-to-cart.twig" %}
+      {% else %}
+        <p><em>Coming soon!</em></p>
+      {% endif %}
+    </div>
+  </div>
+</article>

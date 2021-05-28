@@ -1,0 +1,29 @@
+{% extends "04-templates/base.twig" %}
+
+{% block content %}
+  {% include "03-organisms/content/content-page.twig" %}
+
+  <div class="u-spacing--quad">
+    {% if sauce %}
+      <div class="c-section-posts u-spacing--double">
+        <h3 class="o-heading--l u-align--center">SAUCE</h3>
+        <div class="c-section-posts__grid l-container u-animation__delay" bp="grid 6@sm 4@md">
+          {% for post in sauce %}
+            {% include ['02-molecules/blocks/block-'~post.post_type~'.twig', '02-molecules/blocks/block.twig'] %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if swag %}
+      <div class="c-section-posts u-spacing--double">
+        <h3 class="o-heading--l u-align--center">SWAG</h3>
+        <div class="c-section-posts__grid l-container u-animation__delay" bp="grid 6@sm 4@md 3@lg">
+          {% for post in swag %}
+            {% include ['02-molecules/blocks/block-'~post.post_type~'.twig', '02-molecules/blocks/block.twig'] %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

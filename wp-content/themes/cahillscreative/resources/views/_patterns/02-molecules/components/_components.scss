@@ -1,0 +1,112 @@
+/* ------------------------------------ *\
+    $SPECIFIC FORMS
+\* ------------------------------------ */
+
+/* Alert */
+.c-alert {
+  background-color: $c-primary;
+  color: $c-white;
+  width: 100%;
+  transition: opacity 0.25s $transition-effect, visibility 0.25s $transition-effect;
+  opacity: 1;
+  visibility: visible;
+  padding: $space-half 0;
+  position: relative;
+
+  &.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    padding: 0;
+    height: 0;
+  }
+
+  &__content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 $space;
+    width: calc(100% - 60px);
+
+    .o-link {
+      color: $c-white;
+      border-bottom: 1px solid $c-white;
+      margin-left: $space-half;
+    }
+  }
+
+  &__close {
+    background: transparent;
+    padding: 0 $space;
+    border: 0;
+    outline: 0;
+    width: auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    svg {
+      transition: $transition-all;
+      transform: scale(1);
+
+      path {
+        fill: $c-white;
+      }
+    }
+
+    &:hover,
+    &:focus {
+      svg {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
+/* Social Links */
+.c-social-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__item {
+    padding: $space-half;
+    border-radius: $border-radius;
+    border: $border--standard;
+    margin: 0 $space-half;
+    background: linear-gradient(to bottom, transparent 50%, $c-primary 50%);
+    background-size: 100% 200%;
+
+    svg path {
+      transition: $transition-all;
+    }
+
+    &:hover,
+    &:focus {
+      background-position: left bottom;
+      border-color: $c-primary;
+
+      svg path {
+        fill: $c-white;
+      }
+    }
+  }
+}
+
+/* Contact Form 7 */
+.wpcf7 {
+  form {
+    & > * + * {
+      margin-top: $space;
+    }
+
+    input[type="submit"] {
+      width: auto;
+
+      @include o-button--secondary;
+    }
+  }
+}

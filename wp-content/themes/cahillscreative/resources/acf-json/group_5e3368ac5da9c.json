@@ -20,19 +20,43 @@
         },
         {
             "key": "field_5e33691bf6719",
-            "label": "Logo",
-            "name": "logo",
+            "label": "Logo Full",
+            "name": "logo_full",
             "type": "image",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "",
+                "width": "33.33",
                 "class": "",
                 "id": ""
             },
             "return_format": "array",
             "preview_size": "thumbnail",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": ""
+        },
+        {
+            "key": "field_60b01a0606548",
+            "label": "Logo Horizontal",
+            "name": "logo_horizontal",
+            "type": "image",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "33.33",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "preview_size": "medium",
             "library": "all",
             "min_width": "",
             "min_height": "",
@@ -51,7 +75,7 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "",
+                "width": "33.33",
                 "class": "",
                 "id": ""
             },
@@ -110,6 +134,36 @@
                 "id": ""
             },
             "default_value": "#393939"
+        },
+        {
+            "key": "field_60b01a957a763",
+            "label": "White",
+            "name": "white",
+            "type": "color_picker",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": ""
+        },
+        {
+            "key": "field_60b01aa17a764",
+            "label": "Black",
+            "name": "black",
+            "type": "color_picker",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": ""
         },
         {
             "key": "social_links_tab",
@@ -290,6 +344,61 @@
             "new_lines": "br",
             "readonly": 0,
             "disabled": 0
+        },
+        {
+            "key": "field_60b019de06547",
+            "label": "Modal Image",
+            "name": "modal_image",
+            "type": "image",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": ""
+        },
+        {
+            "key": "field_60b01b68507e2",
+            "label": "Other",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_60b01b51507e1",
+            "label": "Header Button",
+            "name": "header_button",
+            "type": "link",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array"
         }
     ],
     "location": [
@@ -309,5 +418,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1622063138
+    "modified": 1622154162
 }

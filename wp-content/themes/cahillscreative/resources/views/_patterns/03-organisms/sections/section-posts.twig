@@ -1,0 +1,9 @@
+{% if posts %}
+  <div class="c-section-posts">
+    <div class="c-section-posts__grid l-container u-animation__delay" bp="grid 6@sm 4@md 3@lg">
+      {% for post in posts %}
+        {% include ['02-molecules/blocks/block-'~post.post_type~'.twig', '02-molecules/blocks/block.twig'] %}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}

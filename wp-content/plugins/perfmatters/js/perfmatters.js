@@ -88,7 +88,7 @@ jQuery(document).ready(function($) {
 	$('.perfmatters-input-row-wrapper').on('click', '.perfmatters-delete-input-row', function(ev) {
 		ev.preventDefault();
 
-		var siblings = $(this).closest('div').siblings();
+		var siblings = $(this).closest('.perfmatters-input-row').siblings();
 		var $addButton = $(this).closest('.perfmatters-input-row-wrapper').find('.perfmatters-add-input-row');
 
 		if($addButton.prop('rel') == 0) {
@@ -97,12 +97,11 @@ jQuery(document).ready(function($) {
 			$row.find(':checkbox').prop("checked", false);
 		}
 		else {
-			$(this).closest('div').remove();
+			$(this).closest('.perfmatters-input-row').remove();
 			$addButton.prop('rel', $addButton.prop('rel') - 1);
 		}
 		
 		siblings.each(function(i) {
-
 			perfmattersUpdateRowCount(this, i);
 		});
 	});

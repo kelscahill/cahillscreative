@@ -444,31 +444,45 @@ function perfmatters_disable_woocommerce_scripts() {
 			global $perfmatters_options;
 			
 			//Dequeue WooCommerce Styles
-			wp_dequeue_style('woocommerce-general');
-			wp_dequeue_style('woocommerce-layout');
-			wp_dequeue_style('woocommerce-smallscreen');
-			wp_dequeue_style('woocommerce_frontend_styles');
-			wp_dequeue_style('woocommerce_fancybox_styles');
-			wp_dequeue_style('woocommerce_chosen_styles');
-			wp_dequeue_style('woocommerce_prettyPhoto_css');
-			wp_dequeue_style('woocommerce-inline');
+			$styles = array(
+				'woocommerce-general',
+				'woocommerce-layout',
+				'woocommerce-smallscreen',
+				'woocommerce_frontend_styles',
+				'woocommerce_fancybox_styles',
+				'woocommerce_chosen_styles',
+				'woocommerce_prettyPhoto_css',
+				'woocommerce-inline',
+				'wc-block-style',
+				'wc-block-vendors-style'
+			);
+			foreach($styles as $style) {
+				wp_dequeue_style($style);
+				wp_deregister_style($style);
+			}
 
 			//Dequeue WooCommerce Scripts
-			wp_dequeue_script('wc_price_slider');
-			wp_dequeue_script('wc-single-product');
-			wp_dequeue_script('wc-add-to-cart');
-			wp_dequeue_script('wc-checkout');
-			wp_dequeue_script('wc-add-to-cart-variation');
-			wp_dequeue_script('wc-single-product');
-			wp_dequeue_script('wc-cart');
-			wp_dequeue_script('wc-chosen');
-			wp_dequeue_script('woocommerce');
-			wp_dequeue_script('prettyPhoto');
-			wp_dequeue_script('prettyPhoto-init');
-			wp_dequeue_script('jquery-blockui');
-			wp_dequeue_script('jquery-placeholder');
-			wp_dequeue_script('fancybox');
-			wp_dequeue_script('jqueryui');
+			$scripts = array(
+				'wc_price_slider',
+				'wc-single-product',
+				'wc-add-to-cart',
+				'wc-checkout',
+				'wc-add-to-cart-variation',
+				'wc-single-product',
+				'wc-cart',
+				'wc-chosen',
+				'woocommerce',
+				'prettyPhoto',
+				'prettyPhoto-init',
+				'jquery-blockui',
+				'jquery-placeholder',
+				'fancybox',
+				'jqueryui'
+			);
+			foreach($scripts as $script) {
+				wp_dequeue_script($script);
+				wp_deregister_script($script);
+			}
 
 			//Remove no-js Script + Body Class
 			add_filter('body_class', function($classes) {
@@ -540,7 +554,9 @@ if(!empty($perfmatters_options['limit_post_revisions'])) {
 	if(defined('WP_POST_REVISIONS')) {
 		add_action('admin_notices', 'perfmatters_admin_notice_post_revisions');
 	}
-	define('WP_POST_REVISIONS', $perfmatters_options['limit_post_revisions']);
+	else {
+		define('WP_POST_REVISIONS', $perfmatters_options['limit_post_revisions']);
+	}
 }
 
 function perfmatters_admin_notice_post_revisions() {
@@ -558,7 +574,9 @@ if(!empty($perfmatters_options['autosave_interval'])) {
 	if(defined('AUTOSAVE_INTERVAL')) {
 		add_action('admin_notices', 'perfmatters_admin_notice_autosave_interval');
 	}
-	define('AUTOSAVE_INTERVAL', $perfmatters_options['autosave_interval']);
+	else {
+		define('AUTOSAVE_INTERVAL', $perfmatters_options['autosave_interval']);
+	}
 }
 
 function perfmatters_admin_notice_autosave_interval() {
@@ -758,6 +776,9 @@ function perfmatters_filter_wp_login($url, $scheme = null) {
 		$query_string = explode('?', $url);
 		if(isset($query_string[1])) {
 			parse_str($query_string[1], $query_string);
+			if(isset($query_string['login'])) {
+				$query_string['login'] = rawurlencode($query_string['login']);
+			}
 			$url = add_query_arg($query_string, perfmatters_login_url($scheme));
 		} 
 		else {
@@ -823,6 +844,16 @@ function perfmatters_plugins_loaded() {
 		$_SERVER['REQUEST_URI'] = perfmatters_trailingslashit('/' . str_repeat('-/', 10));
 		$pagenow = 'index.php';
 	} 
+	//wp-register.php
+	elseif(!is_admin() && (strpos(rawurldecode($_SERVER['REQUEST_URI']), 'wp-register.php') !== false || $path === site_url('wp-register', 'relative'))) {
+
+		//Set Flag
+		$perfmatters_wp_login = true;
+
+		//Prevent Redirect to Hidden Login
+		$_SERVER['REQUEST_URI'] = perfmatters_trailingslashit('/' . str_repeat('-/', 10));
+		$pagenow = 'index.php';
+	}
 	//Hidden Login URL
 	elseif($path === home_url($slug, 'relative') || (!get_option('permalink_structure') && isset($_GET[$slug]) && empty($_GET[$slug]))) {
 		
@@ -1280,6 +1311,47 @@ function perfmatters_preload() {
 
 		foreach($perfmatters_extras['preload'] as $line) {
 
+			//device type check
+			if(!empty($line['device'])) {
+				$device_type = wp_is_mobile() ? 'mobile' : 'desktop';
+				if($line['device'] != $device_type) {
+					continue;
+				}
+			}
+
+			//location check
+			if(!empty($line['locations'])) {
+
+				$location_match = false;
+
+				$exploded_locations = explode(',', $line['locations']);
+				$trimmed_locations = array_map('trim', $exploded_locations);
+
+				//single post exclusion
+				if(is_singular()) {
+					global $post;
+					if(in_array($post->ID, $trimmed_locations)) {
+						$location_match = true;
+					}
+				}
+				//posts page exclusion
+				elseif(is_home() && in_array('blog', $trimmed_locations)) {
+					$location_match = true;
+				}
+				elseif(is_archive()) {
+					//woocommerce shop check
+					if(function_exists('is_shop') && is_shop()) {
+						if(in_array(wc_get_page_id('shop'), $trimmed_locations)) {
+							$location_match = true;
+						}
+					}
+				}
+
+				if(!$location_match) {
+					continue;
+				}
+			}
+
 			$mime_type = "";
 
 			if(!empty($line['as']) && $line['as'] == 'font') {
@@ -1510,6 +1582,15 @@ function perfmatters_is_page_builder() {
 	}
 
 	return false;
+}
+
+//check if the current request is rest or ajax
+function perfmatters_is_dynamic_request () {
+    if((defined('REST_REQUEST') && REST_REQUEST) || (function_exists('wp_is_json_request') && wp_is_json_request()) || wp_doing_ajax() || wp_doing_cron()) {
+        return true;
+    }
+
+    return false;
 }
 
 /* EDD License Functions

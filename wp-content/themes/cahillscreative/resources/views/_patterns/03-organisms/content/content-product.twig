@@ -1,0 +1,62 @@
+<article class="c-content c-content-product">
+  <div class="l-container u-spacing--quad">
+    <div class="c-product u-spacing">
+      <div class="c-product__images">
+        {% if product.get_gallery_image_ids %}
+          <div class="c-product__gallery">
+            <div class="c-product__gallery-nav">
+              <div class="js-product-gallery-nav">
+                {% for image in product.get_gallery_image_ids %}
+                  <div class="o-gallery-item">
+                    <img src="{{ Image(image).src|resize(150,150) }}" alt="{{ Image(image).alt }}" />
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="c-product__gallery-image">
+              <div class="js-product-gallery">
+                {% for image in product.get_gallery_image_ids %}
+                  <div class="o-gallery-item">
+                    <img src="{{ Image(image).src|resize(900,900) }}" alt="{{ Image(image).alt }}" />
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% elseif post.thumbnail %}
+          <img src="{{ post.thumbnail.src|resize(900,900) }}" alt="{{ post.thumbnail.alt }}" />
+        {% endif %}
+      </div>
+      <div class="c-product__content u-spacing">
+        <div class="c-product__heading u-spacing--half">
+          {% if post._sale_price %}
+            <div class="o-eyebrow">On Sale!</div>
+          {% endif %}
+          <h2 class="o-heading--xl">{{ post.title }}</h2>
+          <p class="u-font--m"><strong>{{ post.get_preview(999, false, NULL, false, '')|striptags }}</strong></p>
+        </div>
+        <hr class="o-hr--small" />
+        <div class="c-product__body u-spacing">
+          <div class="o-rte-text u-spacing">
+            {{ post.post_content|wpautop }}
+            {% if post.product_ingredients %}
+              {{ post.product_ingredients|wpautop }}
+            {% endif %}
+          </div>
+          {% if post._stock_status == "outofstock" %}
+            <p><em>Coming soon!</em></p>
+          {% else %}
+            {% include "01-atoms/woocommerce/price.twig" %}
+            {% if product.get_available_variations %}
+              {% do action('woocommerce_variable_add_to_cart') %}
+            {% else %}
+              {% include "01-atoms/woocommerce/add-to-cart.twig" %}
+            {% endif %}
+          {% endif %}
+          {% do action('woocommerce_archive_description') %}
+        </div>
+      </div>
+    </div>
+    {% include "03-organisms/sections/section-related-products.twig" %}
+  </div>
+</article>

@@ -131,3 +131,11 @@ $register_custom_taxonomy = __DIR__.'/functions/custom-taxonomy.php';
 if (file_exists($register_custom_taxonomy)) {
   require_once $register_custom_taxonomy;
 }
+
+/**
+ * Register Custom Blocks.
+ */
+$register_custom_blocks = __DIR__.'/functions/custom-blocks.php';
+if (file_exists($register_custom_blocks)) {
+  require_once $register_custom_blocks;
+}
