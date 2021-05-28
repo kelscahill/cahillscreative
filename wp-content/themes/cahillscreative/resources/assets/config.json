@@ -7,6 +7,9 @@
     ],
     "customizer": [
       "./scripts/customizer.js"
+    ],
+    "magnific-popup": [
+      "./scripts/magnific-popup.js"
     ]
   },
   "publicPath": "/wp-content/themes/cahillscreative",
