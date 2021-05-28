@@ -170,22 +170,6 @@ export default {
         }
       ]
     });
-
-    /**
-    * Magnigic Popup
-    */
-    if ($('.js-gallery').length) {
-      $('.js-gallery').each(function() {
-       $(this).magnificPopup({
-         delegate: 'a',
-         type: 'image',
-         gallery: {
-           enabled: true
-         }
-       });
-      });
-    }
-
     /**
      * Main class toggling function
      */
