@@ -1,0 +1,206 @@
+.c-newsletter-signup {
+  width: 100%;
+
+  .o-small {
+    color: $c-gray;
+
+    a {
+      color: $c-gray;
+
+      &:hover,
+      &:focus {
+        color: $c-primary;
+      }
+    }
+  }
+
+  input[type="email"],
+  input[type="submit"] {
+    width: 100%;
+    height: auto;
+    outline: 0;
+    padding: 15px $space;
+  }
+
+  input[type="email"] {
+    color: $c-white;
+    background-color: transparent;
+    border: $border--standard;
+
+    &::placeholder {
+      font-style: italic;
+      color: $c-gray;
+    }
+
+    &:focus {
+      border-color: $c-white;
+    }
+  }
+
+  input[type="submit"] {
+    background-color: $c-primary;
+    color: $c-black;
+    margin-top: $space;
+    border: 0;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-family: $font-secondary;
+    transition: $transition-all;
+
+    &:hover,
+    &:focus {
+      background-color: $c-primary;
+    }
+  }
+
+  &__recaptcha {
+    margin-top: $space-half;
+
+    &-error {
+      color: $c-error--light;
+    }
+
+    &-wrap {
+      margin-top: $space-half;
+    }
+
+    &-message {
+      a {
+        border-bottom-color: $c-gray;
+
+        &:hover,
+        &:focus {
+          border-bottom-color: $c-primary;
+        }
+      }
+    }
+  }
+
+  &__success,
+  &__success.o-small {
+    color: $c-green;
+
+    a {
+      text-decoration: underline;
+      color: $c-green;
+      transition: $transition-all;
+
+      &:hover,
+      &:focus {
+        color: $c-white;
+      }
+    }
+  }
+
+  &__error,
+  &__error.o-small {
+    color: $c-error--light;
+    font-style: italic;
+
+    a {
+      text-decoration: underline;
+      color: $c-error--light;
+      transition: $transition-all;
+
+      &:hover,
+      &:focus {
+        color: $c-white;
+      }
+    }
+  }
+}
+
+/* Newsletter Signup - Header */
+.c-newsletter-signup--header {
+  .c-newsletter-signup__form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    @include media(">medium") {
+      flex-direction: row;
+    }
+
+
+    .o-fieldset {
+      margin-top: $space;
+
+      @include media(">medium") {
+        width: 50%;
+
+        &:first-child {
+          padding-right: $space;
+        }
+
+        &:last-child {
+          padding-left: $space;
+        }
+      }
+
+
+      @include media(">large") {
+        margin-top: 0;
+      }
+    }
+
+    .o-form-item__checkbox {
+      h4 {
+        color: $c-white;
+      }
+
+      small {
+        text-transform: none;
+        letter-spacing: normal;
+        color: $c-white;
+        display: block;
+        margin-top: $space-half;
+        font-weight: normal;
+      }
+    }
+  }
+}
+
+/* Newsletter Signup - Header */
+.c-newsletter-signup--block {
+  padding: $space;
+  background-color: $c-white;
+  box-shadow: $box-shadow--standard;
+
+  .o-small {
+    color: $c-gray;
+
+    a {
+      color: $c-gray;
+
+      &:hover {
+        color: $c-black;
+      }
+    }
+  }
+
+  hr {
+    margin: $space-half 0 $space 0;
+  }
+
+  form {
+    input[type="email"] {
+      border-color: $c-black;
+      color: $c-black;
+
+      &::placeholder {
+        color: $c-gray;
+      }
+
+      &:hover,
+      &:focus {
+        border-color: $c-black;
+      }
+    }
+
+    input[type="submit"] {
+      @include o-button;
+    }
+  }
+}

@@ -1,0 +1,45 @@
+/*
+ * General Layout
+*/
+
+.l-main {
+  padding-top: $space-double;
+  padding-bottom: $space-double;
+}
+
+.has-sidebar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: stretch;
+
+  @include media(">medium") {
+    flex-wrap: nowrap;
+  }
+
+
+  > article {
+    width: 100%;
+    flex: 1;
+
+    @include media(">medium") {
+      width: $main-width;
+    }
+  }
+
+  > aside {
+    width: 100%;
+    margin-top: $space-double;
+
+    @include media(">medium") {
+      margin-top: 0;
+      margin-left: $space;
+      min-width: $sidebar-width;
+      max-width: $sidebar-width;
+    }
+
+    @include media(">large") {
+      margin-left: $space-double;
+    }
+  }
+}

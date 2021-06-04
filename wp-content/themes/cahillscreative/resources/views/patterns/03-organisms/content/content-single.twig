@@ -1,0 +1,103 @@
+{% if post.content or post.thumbnail %}
+  {% set content_single_base_class = content_single.base_class|default('c-content-single') %}
+
+  {% if post.article_type %}
+    {% set content_single_modifiers = post.article_type %}
+  {% endif %}
+
+  {% embed "@molecules/components/content-modal/content-modal.twig" with {
+    "content_modal": {
+      "title": post.thumbnail.title
+    }
+  } %}
+    {% block content_modal_body %}
+      {% include "@atoms/images/image/figure.twig" with {
+        "figure" : {
+          "image": {
+            "output_tag": true,
+            "src": post.thumbnail.src|resize(1200, 675),
+            "alt": post.thumbnail.alt,
+            "caption": post.thumbnail.caption
+          }
+        }
+      } %}
+    {% endblock %}
+  {% endembed %}
+
+  <article class="{{ bem_classes(content_single_base_class, content_single.element, content_single_modifiers, content_single.extra) }}">
+    <div class="{{ bem_classes(content_single_base_class, 'container') }} l-container--l u-spacing--half">
+      {% include "@molecules/navigation/breadcrumbs/breadcrumbs.twig" with {
+        "breadcrumbs": post.terms('category')
+      } %}
+      <div class="{{ bem_classes(content_single_base_class, 'wrap') }}">
+        <div class="{{ bem_classes(content_single_base_class, 'header') }}">
+          {% include "@organisms/sections/page-headers/page-header.twig" %}
+        </div>
+        {% if post.thumbnail %}
+          <div class="{{ bem_classes(content_single_base_class, 'hero') }} js-toggle" data-prefix="content-modal" data-toggled="body">
+            {% include "@atoms/images/image/responsive-image.twig" with {
+              "image": {
+                "srcset": post.thumbnail.src|resize(720, 405) ~ ' 720w, ' ~ post.thumbnail.src|resize(960, 540) ~ ' 960w',
+                "src": post.thumbnail.src|resize(500, 281),
+                "alt": post.thumbnail.alt
+              }
+            } %}
+          </div>
+        {% endif %}
+        {% if post.content %}
+          <div class="{{ bem_classes(content_single_base_class, 'content') }} u-gradient--top--white">
+            {% include "@atoms/text/meta/meta.twig" with {
+              "meta": {
+                "author": post.terms('byline'),
+                "show_img": true,
+                "date": post.date,
+                "hr": {
+                  "modifiers": "accent"
+                }
+              }
+            } %}
+            <div class="{{ bem_classes(content_single_base_class, 'body-wrap') }} u-spacing--double">
+              {% include "@molecules/components/social/social-share/social-share.twig" with {
+                "social_share": {
+                  "modifiers": "stacked"
+                }
+              } %}
+              <div class="{{ bem_classes(content_single_base_class, 'body') }}">
+                {% include "@molecules/asides/sidebar.twig" with {
+                  "sidebar": {
+                    "ad_only": true,
+                    "ad_sticky": true
+                  }
+                } %}
+                {% include "@atoms/text/rich-text/rich-text.twig" with {
+                  "rich_text": {
+                    "extra": post.disable_dropcap ? false : "has-dropcap",
+                    "text": post.content
+                  }
+                } %}
+              </div>
+              {% include "@molecules/navigation/tags/tags.twig" with {
+                "tags": post.terms('post_tag')
+              } %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    {% include "@organisms/sections/feeds/recirc.twig" with {
+      "recirc": {
+        "modifiers": "article",
+        "heading": {
+          "text": post.recirc_heading
+        },
+        "posts": post.recirc_posts ? Post(post.recirc_posts) : recirc_posts,
+        "button": {
+          "text": post.recirc_button.title,
+          "url": post.recirc_button.url,
+          "target": post.recirc_button.target
+        }
+      }
+    } %}
+    {% include "@molecules/components/social/article-share/article-share.twig" %}
+  </article>
+{% endif %}

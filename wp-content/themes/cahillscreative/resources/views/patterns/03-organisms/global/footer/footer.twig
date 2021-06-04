@@ -1,0 +1,42 @@
+{# {% set footer_base_class = footer.base_class|default('c-footer') %}
+
+<footer class="{{ bem_classes(footer_base_class) }} no-print" role="contentinfo">
+  <div class="{{ footer_base_class ~ '--inner' }} l-wrap l-container">
+    <div class="{{ bem_classes(footer_base_class, 'grid') }}">
+      <div class="{{ bem_classes(footer_base_class, 'grid-item') }}">
+        <div class="{{ bem_classes(footer_base_class, 'mission') }}">
+          <h3 class="o-heading__primary--l">{{ 'Our Mission' }}</h3>
+          <p>{{ 'To inspire active participation in the world outside through award-winning coverage of the sports, people, places, adventure, discoveries, health and fitness, gear and apparel, trends and events that make up an active lifestyle.' }}</p>
+        </div>
+        {% include "@molecules/components/social/social-links/social-links.twig" %}
+      </div>
+      <div class="{{ bem_classes(footer_base_class, 'grid-item') }}">
+        <div class="{{ bem_classes(footer_base_class, 'newsletter') }}">
+          <h3 class="o-heading__primary--l">{{ 'Newsletter Sign Up' }}</h3>
+          <p>{{ 'Subscribe to our What You Missed newsletter for the top headlines from the outdoor world, in your inbox six days a week. Looking for something else? Check out <a href="'~ newsletter_link ~'">our entire suite of free newsletters here</a>.' }}</p>
+          {% include "@molecules/components/newsletter-signup/newsletter-signup-footer.twig" %}
+        </div>
+      </div>
+      <div class="{{ bem_classes(footer_base_class, 'grid-item') }}">
+        <h3 class="o-heading__primary--l">{{ 'Additional Links' }}</h3>
+        {% include "@molecules/navigation/footer/footer-nav.twig" %}
+      </div>
+    </div>
+    <div class="{{ bem_classes(footer_base_class, 'copyright') }}">
+      {% include "@atoms/images/logos/logo.twig" with {
+        "logo": {
+          "image": {
+            "src": logo_src,
+            "alt": logo_alt,
+          },
+          "link": logo_link
+        }
+      } %}
+      <span class="o-copyright o-small">{{ copyright }}</span>
+    </div>
+  </div>
+</footer> #}
+
+{% if theme.path %}
+  {{ function('wp_footer') }}
+{% endif %}

@@ -1,0 +1,41 @@
+{% set social_share_base_class = social_share.base_class|default('c-social-share') %}
+
+{% if social_share %}
+  {% set social_share_links = [
+    {
+      "name": "facebook",
+      "url": "https://facebook.com/sharer/sharer.php?u=" ~ post.link|url_encode ~ "%3Futm_medium%3Dsocial%26utm_source%3Dfacebook%26utm_campaign%3Donsiteshare"
+    },
+    {
+      "name": "twitter",
+      "url": "https://twitter.com/intent/tweet/?text=" ~ post.title ~ " @outsidemagazine&amp;url=" ~ post.link|url_encode ~ "%3Futm_medium%3Dsocial%26utm_source%3Dtwitter%26utm_campaign%3Donsiteshare"
+    },
+    {
+      "name": "email",
+      "url": "mailto:?subject=" ~ post.title ~ "&amp;body=" ~ post.link|url_encode ~ "%3Futm_medium%3Dsocial%26utm_source%3Demail%26utm_campaign%3Donsiteshare"
+    }
+  ] %}
+
+  <div class="{{ bem_classes(social_share_base_class, social_share.element, social_share.modifiers, social_share.extra) }}">
+    {% for link in social_share_links %}
+      {% if link.url %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "url": link.url,
+            "target": "_blank",
+            "extra": [
+              bem_classes(social_share_base_class, 'item', link.name)
+            ],
+            "icon": {
+              "name": link.name,
+              "modifiers": "xsmall"
+            },
+            "attributes": {
+              "aria-label": link.name|capitalize
+            }
+          }
+        } %}
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}

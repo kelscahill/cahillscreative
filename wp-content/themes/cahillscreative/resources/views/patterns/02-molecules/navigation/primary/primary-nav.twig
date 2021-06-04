@@ -1,0 +1,39 @@
+{% set primary_nav_base_class = primary_nav.base_class|default('c-primary-nav') %}
+
+{% if primary_nav.name == "Primary Navigation" %}
+  <nav role="navigation" class="{{ bem_classes(primary_nav_base_class, primary_nav.element, primary_nav.modifiers, primary_nav.extra) }}">
+    {% include "@atoms/buttons/button.twig" with {
+      "button": {
+        "extra": [
+          bem_classes(primary_nav_base_class, 'icon-close'),
+          "js-toggle"
+        ],
+        "icon": {
+          "name": "close",
+          "modifiers": "xsmall"
+        },
+        "attributes": {
+          "aria-label": "Close",
+          "data-toggled": "body",
+          "data-prefix": "menu",
+        }
+      }
+    } %}
+    {% if primary_nav.items %}
+      <ul class="{{ bem_classes(primary_nav_base_class, 'list') }}">
+        {% for item in primary_nav.get_items %}
+          <li class="{{ bem_classes(primary_nav_base_class, 'item') }}">
+            {% include "@atoms/links/link.twig" with {
+              "link": {
+                "text": item.title,
+                "url": item.url,
+                "target": item.target,
+                "extra": [bem_classes(primary_nav_base_class, 'link')]|merge(item.classes),
+              }
+            } %}
+          {% endfor %}
+        </li>
+      </ul>
+    {% endif %}
+  </nav>
+{% endif %}

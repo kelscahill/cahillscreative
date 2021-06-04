@@ -1,0 +1,5 @@
+{% if hr %}
+  {% set hr_base_class = hr.base_class|default('o-hr') %}
+
+  <hr class="{{ bem_classes(hr_base_class, hr.element, hr.modifiers, hr.extra) }}">
+{% endif %}

@@ -1,0 +1,39 @@
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: $body-font-size;
+  background: $c-white;
+  color: $c-black;
+
+  @include body-copy;
+}
+
+a {
+  text-decoration: none;
+  transition: $transition-all;
+  color: inherit;
+
+  svg path {
+    fill: currentColor;
+  }
+}
+
+img,
+video,
+object,
+svg,
+iframe {
+  max-width: 100%;
+  border: none;
+  display: block;
+}

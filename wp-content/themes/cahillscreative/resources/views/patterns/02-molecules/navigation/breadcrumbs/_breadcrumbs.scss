@@ -1,0 +1,51 @@
+.c-breadcrumbs {
+  display: flex;
+  align-items: center;
+  line-height: $line-height-s;
+
+  a + span {
+    @include o-link--small;
+
+    border: none;
+    pointer-events: none;
+  }
+
+  a {
+    @include o-link--small;
+
+    color: $c-gray;
+    box-shadow: none;
+    text-decoration: none;
+    position: relative;
+    margin-right: 20px;
+
+    &::after {
+      position: absolute;
+      right: -13px;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      content: "";
+      display: inline-flex;
+      width: 6px;
+      height: 6px;
+      transform: rotate(135deg);
+      border-top: 2px solid $c-gray;
+      border-left: 2px solid $c-gray;
+    }
+
+    &:hover,
+    &:focus {
+      color: $c-black;
+      box-shadow: none;
+
+      &::after {
+        color: $c-gray;
+      }
+    }
+
+    &:last-child::after {
+      display: none;
+    }
+  }
+}

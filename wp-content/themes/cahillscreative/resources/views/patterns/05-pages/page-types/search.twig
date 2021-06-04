@@ -1,0 +1,7 @@
+{% extends "@templates/_layout.twig" %}
+
+{% block content %}
+  {% for post in posts %}
+    {% include ['@molecules/cards/card-' ~ post.post_type ~ '.twig', '@molecules/blocks/card.twig'] %}
+  {% endfor %}
+{% endblock %}

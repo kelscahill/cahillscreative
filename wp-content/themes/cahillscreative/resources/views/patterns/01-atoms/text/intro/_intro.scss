@@ -1,0 +1,15 @@
+.o-intro {
+  position: relative;
+
+  * {
+    @include u-font--m;
+
+    color: $c-secondary;
+  }
+
+  hr {
+    border-color: $c-gray;
+    margin: $space-and-half 0 $space-double 0;
+    width: 100px;
+  }
+}

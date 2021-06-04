@@ -1,15 +1,11 @@
 {
   "entry": {
     "main": [
-      "./scripts/plugins.js",
       "./scripts/main.js",
       "./styles/main.scss"
     ],
     "customizer": [
       "./scripts/customizer.js"
-    ],
-    "magnific-popup": [
-      "./scripts/magnific-popup.js"
     ]
   },
   "publicPath": "/wp-content/themes/cahillscreative",

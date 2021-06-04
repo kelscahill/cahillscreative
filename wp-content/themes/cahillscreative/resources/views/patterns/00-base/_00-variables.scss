@@ -1,0 +1,252 @@
+/*
+ * General Variables
+ * Note: colors should go into
+ * patterns/00-base/01-colors/_color-vars.css
+ * and breakpoint related vars into
+ * patterns/00-base/base/_breakpoints.css
+*/
+
+/*
+ * Colors
+*/
+$c-primary: var(--c-primary, black);
+$c-secondary: var(--c-secondary, black);
+$c-tertiary: var(--c-tertiary, black);
+$c-white: var(--c-white, white);
+$c-black: var(--c-black, black);
+$c-gray: #ddd;
+
+// Brand Colors
+$c-green: #8fcea6;
+
+// Border/Overlay Colors
+$c-border: $c-gray;
+$c-overlay: rgba(0, 0, 0, 0.5);
+$c-overlay--dark: rgba(0, 0, 0, 0.8);
+
+// Default Colors
+$c-error--light: #f99;
+$c-error: #cb4324;
+$c-error--dark: #bf2600;
+$c-error--darker: #841a00;
+
+$c-valid--lighter: #fafdfc;
+$c-valid--light: #ecf3ee;
+$c-valid: #36b370;
+$c-valid--dark: #008842;
+$c-valid--darker: #1a6343;
+
+$c-warning--lighter: #fffef9;
+$c-warning--light: #fffae6;
+$c-warning: #ffab00;
+$c-warning--dark: #b26100;
+$c-warning--darker: #774100;
+
+$c-information--lighter: #fffef9;
+$c-information--light: #e6fcff;
+$c-information: #00b8d9;
+$c-information--dark: #008da6;
+$c-information--darker: #005b6b;
+
+// Component Colors
+$c-link-hover: $c-tertiary;
+$c-body-bg: $c-white;
+
+/**
+ * Fonts
+ */
+@font-face {
+  font-family: "Guardian Egyptian Web";
+  src: url("/wp-content/themes/outside-child/resources/assets/fonts/GuardianEgyp-Regular-Web.woff2") format("woff2"), url("/wp-content/themes/outside-child/resources/views/patterns/00-base/fonts/GuardianEgyp-Regular-Web.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Guardian Egyptian Web";
+  src: url("/wp-content/themes/outside-child/resources/assets/fonts/GuardianEgyp-Semibold-Web.woff2") format("woff2"), url("/wp-content/themes/outside-child/resources/views/patterns/00-base/fonts/GuardianEgyp-Semibold-Web.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+$font-primary: "Guardian Egyptian Web", Georgia, serif;
+$font-secondary: "HelveticaNeue", Arial, Helvetica, Geneva, sans-serif;
+$font-tertiary: Georgia, serif;
+$font-body: $font-primary;
+
+/**
+ * Native Custom Properties
+ */
+:root {
+  --body-font-size: 17px;
+  --font-size-xs: 12px;
+  --font-size-s: 15px;
+  --font-size-m: 18px;
+  --font-size-l: 24px;
+  --font-size-xl: 32px;
+  --font-size-xxl: 40px;
+  --font-size-xxxl: 50px;
+}
+
+// Large Breakpoint
+@media screen and (min-width: 720px) {
+  :root {
+    --font-size-xl: 40px;
+    --font-size-xxl: 50px;
+    --font-size-xxxl: 70px;
+  }
+}
+
+// XLarge Breakpoint
+@media screen and (min-width: 960px) {
+  :root {
+    --font-size-m: 20px;
+    --font-size-l: 28px;
+    --font-size-xl: 42px;
+    --font-size-xxl: 55px;
+    --font-size-xxxl: 90px;
+  }
+}
+
+/**
+ * Font Sizes.
+ */
+$body-font-size: var(--body-font-size, 17px);
+$font-size-xs: var(--font-size-xs, 12px);
+$font-size-s: var(--font-size-s, 15px);
+$font-size-m: var(--font-size-m, 20px);
+$font-size-l: var(--font-size-l, 28px);
+$font-size-xl: var(--font-size-xl, 42px);
+$font-size-xxl: var(--font-size-xxl, 55px);
+$font-size-xxxl: var(--font-size-xxxl, 90px);
+
+/**
+ * Letter spacing.
+ */
+$letter-spacing-1: 1px;
+$letter-spacing-2: 2px;
+$letter-spacing-3: 3px;
+
+/**
+ * Line height.
+ */
+$line-height: 1.5;
+$line-height-s: 1.3;
+
+/**
+ * Grid.
+ */
+$grid-columns: 12;
+$gutter: 20px;
+
+/**
+ * Spacing.
+ */
+$space: 20px;
+
+/**
+ * Spacing - Times.
+ */
+$space-and-half: $space * 1.5;
+$space-double: $space * 2;
+$space-triple: $space * 3;
+$space-quadruple: $space * 4;
+$space-quintuple: $space * 5;
+$space-sextuple: $space * 6;
+$space-septuple: $space * 7;
+
+/**
+ * Spacing - Divided.
+ */
+$space-three-fourth: $space * 0.75;
+$space-one-half: $space / 2;
+$space-half: $space-one-half;
+$space-one-third: $space / 3;
+$space-third: $space-one-third;
+$space-one-fourth: $space / 4;
+$space-fourth: $space-one-fourth;
+$space-quarter: $space-one-fourth;
+$space-one-fifth: $space / 5;
+$space-one-sixth: $space / 6;
+$space-one-seventh: $space / 7;
+$space-one-eighth: $space / 8;
+
+/**
+ * Common breakpoints.
+ */
+$xsmall: 320px;
+$small: 500px;
+$medium: 720px;
+$large: 960px;
+$xlarge: 1220px;
+$xxlarge: 1440px;
+
+$breakpoints: ("xsmall": $xsmall, "small": $small, "medium": $medium, "large": $large, "xlarge": $xlarge, "xxlarge": $xxlarge);
+
+/**
+ * Max width.
+ */
+$max-width: $xlarge;
+$max-width-s: 600px;
+$max-width-m: 800px;
+$max-width-l: $large;
+$max-width-xl: $xlarge;
+$max-width-xxl: $xxlarge;
+
+/**
+ * Icons.
+ */
+$icon-xsmall: 15px;
+$icon-small: 20px;
+$icon-medium: 25px;
+$icon-large: 40px;
+$icon-xlarge: 50px;
+$icon-xxlarge: 75px;
+
+/**
+ * Border/Shadow Styles.
+ */
+$border-radius-curve: 2px;
+$border-radius-curve--hard: 4px;
+$border--standard: 1px solid $c-gray;
+$border--dotted: 1px dashed $c-gray;
+$border--thick: 6px solid $c-primary;
+$box-shadow--small: 0 0 5px rgba(black, 0.3);
+$box-shadow--standard: 0 0 15px rgba(black, 0.15);
+$outline: 3px solid $c-primary;
+
+/**
+ * Transitions.
+ */
+$transition-effect: cubic-bezier(0.86, 0, 0.07, 1);
+$transition-all: all 0.25s $transition-effect;
+
+/**
+ * Z Index.
+ */
+$z-index-vanish: -1;
+$z-index-none: 0;
+$z-index-1: 100;
+$z-index-2: 200;
+$z-index-5: 500;
+$z-index-10: 1000;
+$z-index-15: 1500;
+$z-index-30: 3000;
+$z-index-50: 5000;
+$z-index-75: 7500;
+$z-index-100: 10000;
+
+$z-index-mq-display: $z-index-100;
+$z-index-menu-toggle: $z-index-100;
+$z-index-back-to-top: $z-index-100;
+
+/*
+ * Theme variables.
+ */
+$header-main-height: 45px;
+$header-utility-height: 40px;
+$header-height: calc(45px + 40px);
+$footer-artwork-height: 60px;
+$sidebar-width: 300px;
+$main-width: calc(100% - (#{$sidebar-width}));
+$image-path: '/wp-content/themes/outside-child/resources/assets/images/';

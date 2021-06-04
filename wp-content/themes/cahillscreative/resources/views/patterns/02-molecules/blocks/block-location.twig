@@ -1,0 +1,26 @@
+{% if block_location %}
+  {% set block_location_base_class = block_location.base_class|default('c-block-location') %}
+
+  <div class="{{ bem_classes(block_location_base_class, block_location.element, block_location.modifiers, block_location.extra) }}">
+    {% if block_location.heading.text %}
+      <div class="{{ bem_classes(block_location_base_class, 'heading') }}">
+        {% include "@atoms/text/heading/heading.twig" with block_location %}
+      </div>
+    {% endif %}
+    <div class="{{ bem_classes(block_location_base_class, 'content') }}" bp="grid">
+      {% if block_location.map %}
+        <div class="{{ bem_classes(block_location_base_class, 'map') }}" bp="6@md">
+          {% include "@atoms/maps/map.twig" with block_location %}
+        </div>
+      {% endif %}
+      {% if block_location.image %}
+        <style>
+          {{ '.o-background-image--' ~ block_location.image.id }} {
+            background-image: url('{{ block_location.image.src }}');
+          }
+        </style>
+        <div class="{{ bem_classes(block_location_base_class, 'image') }} {{ 'u-background-cover o-background-image--' ~ block_location.image.id }}" bp="6@md"></div>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

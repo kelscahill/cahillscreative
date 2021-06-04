@@ -1,0 +1,20 @@
+.c-page-header-center {
+  .c-social-share {
+    justify-content: center;
+  }
+}
+
+.c-page-header-podcast {
+  display: flex;
+
+  &__icon {
+    margin-right: $space;
+    opacity: 1;
+    transition: $transition-all;
+
+    &:hover,
+    &:focus {
+      opacity: 0.6;
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{% if icon.name %}
+  {% set icon_base_class = icon.base_class|default('o-icon') %}
+
+  <span class="{{ bem_classes(icon_base_class, icon.element, icon.modifiers, icon.extra) }}" aria-label="{{ icon.title }}">
+    {% include '@atoms/images/icons/' ~ icon.name ~ '.twig' %}
+  </span>
+{% endif %}

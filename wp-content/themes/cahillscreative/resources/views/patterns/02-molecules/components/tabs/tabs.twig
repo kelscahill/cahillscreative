@@ -1,0 +1,67 @@
+{% set tabs_base_class = tabs.base_class|default('c-tabs') %}
+
+{% if tabs %}
+  <div class="{{ bem_classes(tabs_base_class, tabs.element, tabs.modifiers, tabs.extra) }}">
+    {% for tab in tabs %}
+      {% set index = loop.index %}
+      {% if tab.title %}
+        <div class="{{ bem_classes(tabs_base_class, 'title') }}{{ loop.first ? ' is-active'}} js-tab" data-tab="tab-{{ index }}">
+          {% include "@atoms/text/heading/heading.twig" with {
+            "heading": {
+              "level": "3",
+              "size": "s",
+              "type": "secondary",
+              "text": tab.title
+            }
+          } %}
+        </div>
+      {% endif %}
+      {% for post in Post(tab.post) %}
+        <div id="tab-{{ index }}" class="{{ bem_classes(tabs_base_class, 'content') }}">
+          <div class="{{ bem_classes(tabs_base_class, 'content-block') }}">
+            {% include "@molecules/blocks/block.twig" with {
+              "block": {
+                "heading": {
+                  "level": "4",
+                  "type": "primary",
+                  "size": "l",
+                  "text": post.display_title is not empty ? post.display_title : post.title,
+                  "link": {
+                    "url": post.link
+                  }
+                },
+                "meta": {
+                  "author": post.terms('byline'),
+                  "date": post.date
+                },
+                "kicker": {
+                  "text": post.category,
+                  "link": "/"
+                },
+                "dek": {
+                  "text": post.dek
+                }
+              }
+            } %}
+          </div>
+          {% if post.thumbnail.src %}
+            <div class="{{ bem_classes(tabs_base_class, 'content-image') }}">
+              {% include "@atoms/images/image/figure.twig" with {
+                "figure": {
+                  "link": {
+                    "url": post.link
+                  },
+                  "image": {
+                    "srcset": post.thumbnail.src|resize(720, 540) ~ ' 720w',
+                    "src": post.thumbnail.src|resize(500, 375),
+                    "alt": post.thumbnail.alt
+                  }
+                }
+              } %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+{% endif %}

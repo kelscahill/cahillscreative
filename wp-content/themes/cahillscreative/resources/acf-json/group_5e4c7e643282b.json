@@ -1,27 +1,11 @@
 {
     "key": "group_5e4c7e643282b",
-    "title": "Post Sections",
+    "title": "Product Fields",
     "fields": [
         {
-            "key": "accordion_tab",
-            "label": "Accordion",
-            "name": "",
-            "type": "tab",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "placement": "top",
-            "endpoint": 0
-        },
-        {
             "key": "field_59dd50d81137f",
-            "label": "Accordion",
-            "name": "accordion",
+            "label": "Product Accordion",
+            "name": "product_accordion_items",
             "type": "repeater",
             "instructions": "",
             "required": 0,
@@ -39,12 +23,12 @@
             "sub_fields": [
                 {
                     "key": "field_59dd510e2ca05",
-                    "label": "Accordion Title",
-                    "name": "accordion_title",
+                    "label": "Title",
+                    "name": "product_accordion_title",
                     "type": "text",
                     "instructions": "",
-                    "required": "",
-                    "conditional_logic": "",
+                    "required": 0,
+                    "conditional_logic": 0,
                     "wrapper": {
                         "width": "",
                         "class": "",
@@ -54,18 +38,16 @@
                     "placeholder": "",
                     "prepend": "",
                     "append": "",
-                    "maxlength": "",
-                    "readonly": 0,
-                    "disabled": 0
+                    "maxlength": ""
                 },
                 {
                     "key": "field_59dd51172ca06",
-                    "label": "Accordion Body",
-                    "name": "accordion_body",
+                    "label": "Body",
+                    "name": "product_accordion_body",
                     "type": "wysiwyg",
                     "instructions": "",
-                    "required": "",
-                    "conditional_logic": "",
+                    "required": 0,
+                    "conditional_logic": 0,
                     "wrapper": {
                         "width": "",
                         "class": "",
@@ -78,89 +60,6 @@
                     "delay": 0
                 }
             ]
-        },
-        {
-            "key": "instructions_tab",
-            "label": "Instructions",
-            "name": "",
-            "type": "tab",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "placement": "top",
-            "endpoint": 0
-        },
-        {
-            "key": "field_59dd51f142fe1",
-            "label": "Instructions",
-            "name": "instructions",
-            "type": "repeater",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "collapsed": "field_59e952492119c",
-            "min": 0,
-            "max": 0,
-            "layout": "row",
-            "button_label": "Add Step",
-            "sub_fields": [
-                {
-                    "key": "field_59e952492119c",
-                    "label": "Instructions Content",
-                    "name": "instructions_content",
-                    "type": "wysiwyg",
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "default_value": "",
-                    "tabs": "all",
-                    "toolbar": "full",
-                    "media_upload": 0,
-                    "delay": 0
-                },
-                {
-                    "key": "field_59e952732119d",
-                    "label": "Instructions Image",
-                    "name": "instructions_image",
-                    "type": "gallery",
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "min": "",
-                    "max": "",
-                    "preview_size": "thumbnail",
-                    "insert": "append",
-                    "library": "all",
-                    "min_width": "",
-                    "min_height": "",
-                    "min_size": "",
-                    "max_width": "",
-                    "max_height": "",
-                    "max_size": "",
-                    "mime_types": "",
-                    "return_format": "array"
-                }
-            ]
         }
     ],
     "location": [
@@ -168,7 +67,7 @@
             {
                 "param": "post_type",
                 "operator": "==",
-                "value": "post"
+                "value": "product"
             }
         ]
     ],
@@ -180,5 +79,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1622163832
+    "modified": 1622225396
 }

@@ -1,0 +1,17 @@
+{% set ad_base_class = ad.base_class|default('o-ad') %}
+
+{% if ad and post.disable_ads != true %}
+  <div class="{{ bem_classes(ad_base_class) }}{{ ad.delay ? ' js-ad-delay' : ' js-ad' }}{{ ad.scroll_load ? ' scroll-load' }}{{ ad.sticky ? ' is-sticky' }}"
+    {{ ad.size ? ' data-size=' ~ ad.size }}
+    {{ ad.size_map ? ' data-size-map=' ~ ad.size_map }}
+    {{ ad.viewport ? ' data-viewport=' ~ ad.viewport }}
+    {{ ad.pos ? ' data-pos=' ~ ad.pos }}
+  >
+    {# @TODO Remove once ads are hooked up #}
+    {% if ad.size == "[728,90]" %}
+      <img src="{{ theme.link }}/assets/images/ad-728x90.jpg" alt="ad" />
+    {% else %}
+      <img src="{{ theme.link }}/assets/images/ad-300x600.jpg" alt="ad" />
+    {% endif %}
+  </div>
+{% endif %}

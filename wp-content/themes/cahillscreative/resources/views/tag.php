@@ -38,4 +38,4 @@ $args = array(
 );
 $context['posts'] = Timber::query_posts($args);
 
-Timber::render('04-pages/index.twig', $context);
+Timber::render('05-pages/page-types/index.twig', $context);

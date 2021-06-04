@@ -1,0 +1,13 @@
+{% if dek.text %}
+  {% set dek_base_class = dek.base_class|default('o-dek') %}
+
+  {% if dek.output_tags == true %}
+    {% set dek_text = dek.text|raw %}
+  {% else %}
+    {% set dek_text = "<p>" ~ dek.text|striptags ~ "</p>" %}
+  {% endif %}
+
+  <div class="{{ bem_classes(dek_base_class, dek.element, dek.modifiers, dek.extra) }}">
+    {{ dek_text }}
+  </div>
+{% endif %}

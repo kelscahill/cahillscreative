@@ -1,0 +1,10 @@
+{% if logo %}
+  {% set logo_base_class = logo.base_class|default("o-logo") %}
+  {% if logo.link %}
+    <a href="{{ logo.link }}" class="{{ bem_classes(logo_base_class, 'link') }}" {{ add_attributes(logo.attributes) }}>
+  {% endif %}
+    <img class="{{ bem_classes(logo_base_class, logo.element, logo.modifiers, logo.extra) }}" src="{{ logo.image.src }}" alt="{{ logo.image.alt ? logo.image.alt : "Logo" }}" />
+  {% if logo.link %}
+    </a>
+  {% endif %}
+{% endif %}

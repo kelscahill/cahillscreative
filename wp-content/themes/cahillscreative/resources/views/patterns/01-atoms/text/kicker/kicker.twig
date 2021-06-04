@@ -1,0 +1,13 @@
+{% if kicker.text %}
+  {% set kicker_base_class = kicker.base_class|default('o-kicker') %}
+
+  <span class="{{ bem_classes(kicker_base_class, kicker.element, kicker.modifiers, kicker.extra) }}">
+    {% if kicker.link %}
+      <a class="{{ bem_classes(kicker_base_class, 'link') }}" href="{{ kicker.link }}">
+        {{ kicker.text }}
+      </a>
+    {% else %}
+      {{ kicker.text }}
+    {% endif %}
+  </span>
+{% endif %}

@@ -1,0 +1,15 @@
+{% set leaderboard_base_class = leaderboard.base_class|default('c-leaderboard') %}
+
+{% if leaderboard %}
+  <div class="{{ bem_classes(leaderboard_base_class, '', '', leaderboard.extra) }} js-leaderboard js-ad-responsive{{ leaderboard.refresh ? ' js-ad-refresh' }}{{ leaderboard.sticky ? ' js-ad-sticky' }}{{ leaderboard.sticky_force ? ' js-ad-sticky--force' }}{{ leaderboard.sticky_force_load ? ' js-ad-sticky--force-load' }}">
+    {# {% include "@atoms/ads/ad.twig" with {
+      "ad": {
+        "size": "[[970,66],[970,90],[728,90],[970,250],[300,50],[320,50],[1,1]]",
+        "size_map": "[[[970,0],[[970,66],[970,90],[728,90],[970,250],[1,1]]],[[728,0],[[728,90],[1,1]]],[[0,0],[[320,50],[300,50],[1,1]]]]'",
+        "delay": true
+      }
+    } %} #}
+    {# @TODO Remove once ads are hooked up #}
+    <img src="{{ theme.link }}/assets/images/ad-728x90.jpg" alt="ad" />
+  </div>
+{% endif %}

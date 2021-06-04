@@ -1,0 +1,23 @@
+{% set search_form_base_class = search_form.base_class|default('c-search-form') %}
+
+<form class="{{ bem_classes(search_form_base_class, search_form.element, search_form.modifiers, search_form.extra) }} l-container--small" id="search-form" action="/bcse/search" method="get" accept-charset="UTF-8" role="search">
+  <fieldset class="{{ bem_classes(search_form_base_class, 'fieldset') }} o-fieldset">
+    <label class="o-form-item__label is-vishidden" for="edit-keys">Search</label>
+    <input class="o-form-item__search" name="keys" id="edit-keys" type="text" placeholder="Search Outside">
+    {% include "@atoms/buttons/button.twig" with {
+      "button": {
+        "text": "Search",
+        "extra": [
+          "o-form-item__button"
+        ],
+        "icon": {
+          "name": "search",
+          "modifiers": "large"
+        },
+        "attributes": {
+          "aria-label": "Search"
+        }
+      }
+    } %}
+  </fieldset>
+</form>

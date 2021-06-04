@@ -1,0 +1,62 @@
+{% set article_share_base_class = article_share.base_class|default('c-article-share') %}
+
+{% set article_share_links = [
+  {
+    "name": "facebook",
+    "url": "https://facebook.com/sharer/sharer.php?u=" ~ post.link|url_encode ~ "%3Futm_medium%3Dsocial%26utm_source%3Dfacebook%26utm_campaign%3Donsiteshare"
+  },
+  {
+    "name": "twitter",
+    "url": "https://twitter.com/intent/tweet/?text=" ~ post.title ~ " @outsidemagazine&amp;url=" ~ post.link|url_encode ~ "%3Futm_medium%3Dsocial%26utm_source%3Dtwitter%26utm_campaign%3Donsiteshare"
+  },
+  {
+    "name": "sms",
+    "url": "https://www.addtoany.com/add_to/sms?linkurl=" ~ post.link|url_encode ~ "&linkname=" ~ post.title ~ "%3Futm_medium%3Dsocial%26utm_source%3Demail%26utm_campaign%3Donsiteshare"
+  },
+  {
+    "name": "email",
+    "url": "mailto:?subject=" ~ post.title ~ "&amp;body=" ~ post.link|url_encode ~ "%3Futm_medium%3Dsocial%26utm_source%3Demail%26utm_campaign%3Donsiteshare"
+  }
+] %}
+
+<div class="{{ bem_classes(article_share_base_class, article_share.element, article_share.modifiers, article_share.extra) }} no-print">
+  <div class="{{ bem_classes(article_share_base_class, 'links') }} u-spacing--half">
+    {% for item in article_share_links %}
+      {% include "@atoms/links/link.twig" with {
+        "link": {
+          "url": item.url,
+          "target": "_blank",
+          "extra": bem_classes(article_share_base_class, 'item', item.name),
+          "icon": {
+            "name": item.name,
+            "modifiers": "medium"
+          },
+          "attributes": {
+            "aria-label": item.name|e('html_attr')|capitalize ~ " Share",
+            "data-share-type": item.name|e('html_attr')|capitalize,
+            "data-share-url": post.link|e('html_attr'),
+            "data-ga-event-category": "outsideShare",
+            "data-ga-event-on": "click",
+            "data-ga-event-action": item.name|e('html_attr'),
+            "data-ga-event-label": post.link|e('html_attr'),
+            "data-ga-event-processed": "true"
+          }
+        }
+      } %}
+    {% endfor %}
+  </div>
+  {% include "@atoms/buttons/button.twig" with {
+    "button": {
+      "extra": [
+        bem_classes(article_share_base_class, 'toggle'),
+        "js-toggle"
+      ],
+      "text": "Share",
+      "attributes": {
+        "aria-label": "Share",
+        "data-toggled": "body",
+        "data-prefix": "article-share"
+      }
+    }
+  } %}
+</div>

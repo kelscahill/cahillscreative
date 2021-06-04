@@ -25,4 +25,4 @@ $context = Timber::get_context();
 $context['found_posts'] = $wp_query->found_posts;
 $post = new TimberPost();
 $context['post'] = $post;
-Timber::render(array('04-pages/search.twig'), $context);
+Timber::render(array('05-pages/page-types/search.twig'), $context);

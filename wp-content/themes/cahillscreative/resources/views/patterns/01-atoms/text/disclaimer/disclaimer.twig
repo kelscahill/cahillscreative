@@ -1,0 +1,7 @@
+{% set disclaimer_base_class = disclaimer.base_class|default('o-disclaimer') %}
+
+{% if disclaimer %}
+  <div class="{{ bem_classes(disclaimer_base_class) }} js-no-ad-insert o-small u-spacing--half">
+    {{ disclaimer|raw }}
+  </div>
+{% endif %}

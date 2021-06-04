@@ -1,0 +1,75 @@
+{% set section_employees_base_class = section_employees.base_class|default('c-section-employees') %}
+
+{% if section.employees %}
+  <section class="{{ bem_classes(section_employees_base_class, section_employees.element, section_employees.modifiers, section_employees.extra ) }} l-wrap u-spacing--double">
+    {% include "@atoms/text/heading/heading.twig" with {
+      "heading": {
+        "level": "2",
+        "size": "xxxl",
+        "type": "secondary",
+        "text": section.employees_heading,
+        "extra": "u-color--yellow--with-shadow u-text-align--center"
+      }
+    } %}
+    <div class="{{ bem_classes(section_employees_base_class, 'grid') }} l-container l-container--gradient-white" bp="grid">
+      {% for item in Post(section.employees) %}
+        <div class="{{ bem_classes(section_employees_base_class, 'grid-item') }}" bp="4@md">
+          {% set social = item.meta('social') %}
+
+          {% set social_links = [] %}
+          {% for item in social %}
+            {% set links = {
+              "link": {
+                "url": item.link,
+                "icon": {
+                  "name": item.social_network|lower,
+                  "modifiers": [
+                    "small"
+                  ]
+                },
+                "attributes": {
+                  "aria-label": item.social_network|capitalize
+                }
+              }
+            } %}
+            {% set social_links = social_links|merge([links]) %}
+          {% endfor %}
+
+          {% include "@molecules/blocks/block-person.twig" with {
+            "block_person": {
+              "figure" : {
+                "link": {
+                  "url": item.link
+                },
+                "picture": {
+                  "modifiers": "round"
+                },
+                "image": {
+                  "src": Image(item.headshot).src|resize(300, 300),
+                  "alt": item.title
+                },
+                "attributes": {
+                  "aria-label": item.title
+                }
+              },
+              "heading": {
+                "level": "2",
+                "type": "primary",
+                "size": "l",
+                "text": item.title,
+                "link": {
+                  "url": item.link
+                }
+              },
+              "dek": {
+                "text": item.job_description,
+                "modifiers": "large"
+              },
+              "social_links": social_links
+            }
+          } %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}

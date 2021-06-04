@@ -1,0 +1,76 @@
+{% if hero %}
+  {% set hero_base_class = hero.base_class|default('c-hero') %}
+
+  {% if hero.background_image %}
+    <style>
+      .{{ bem_classes(hero_base_class) }} {
+        background-image: url('{{ hero.background_image|resize(720) }}');
+      }
+      @media (min-width: 720px) {
+        .{{ bem_classes(hero_base_class) }} {
+          background-image: url('{{ hero.background_image|resize(960) }}');
+        }
+      }
+      @media (min-width: 960px) {
+        .{{ bem_classes(hero_base_class) }} {
+          background-image: url('{{ hero.background_image|resize(1200) }}');
+        }
+      }
+      @media (min-width: 1200px) {
+        .{{ bem_classes(hero_base_class) }} {
+          background-image: url('{{ hero.background_image|resize(1600) }}');
+        }
+      }
+    </style>
+  {% endif %}
+
+  <div class="{{ bem_classes(hero_base_class, hero.element, hero.modifiers, hero.extra) }}">
+    <div class="{{ hero_base_class ~ '--inner' }} l-wrap l-container--m u-spacing">
+      <div class="{{ bem_classes(hero_base_class, 'header') }}">
+        {% if hero.hr and hero.hr.modifiers == 'large' %}
+          <div class="{{ bem_classes(hero_base_class, 'hr') }}">
+            {% include "@atoms/hr/hr.twig" with hero %}
+          </div>
+        {% endif %}
+        {% if hero.kicker.text %}
+          <div class="{{ bem_classes(hero_base_class, 'kicker') }}">
+            {% include "@atoms/text/kicker/kicker.twig" with hero %}
+          </div>
+        {% endif %}
+        {% if hero.heading %}
+          <div class="{{ bem_classes(hero_base_class, 'heading') }}">
+            {% include "@atoms/text/heading/heading.twig" with hero %}
+          </div>
+        {% endif %}
+      </div>
+      {% if hero.hr and not hero.hr.position %}
+        <div class="{{ bem_classes(hero_base_class, 'hr') }}">
+          {% include "@atoms/hr/hr.twig" with hero %}
+        </div>
+      {% endif %}
+      {% if hero.dek.text %}
+        <div class="{{ bem_classes(hero_base_class, 'dek') }}">
+          {% include "@atoms/text/dek/dek.twig" with hero %}
+        </div>
+      {% endif %}
+      {% if hero.link.url %}
+        <a class="{{ bem_classes(hero_base_class , 'link') }}" href="{{ hero.link.url }}">
+      {% endif %}
+      {% if hero.link.heading %}
+        {% include "@atoms/text/heading/heading.twig" with hero.link %}
+      {% endif %}
+      {% if hero.link.url %}
+        {% if hero.link.cta %}
+          <span class="{{ bem_classes(hero_base_class, 'link-cta', '', 'o-kicker') }}">{{ hero.link.cta }} <span class="o-arrow">→</span></span>
+        {% endif %}
+        </a>
+      {% endif %}
+      {% if hero.social_share %}
+        {% include "@molecules/components/social/social-share/social-share.twig" with hero %}
+      {% endif %}
+      {% if hero.secondary_nav %}
+        {% include "@molecules/navigation/header/header-secondary-nav.twig" with hero %}
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

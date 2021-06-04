@@ -1,0 +1,40 @@
+// Prefixes
+$prefix: 'bp' !default; // prefix layout attribute
+
+// Grid Variables
+$container-width: $xxlarge !default;
+$gutter: $gutter !default;
+$cols: $grid-columns !default;
+
+// Breakpoint Variables
+$no-break: 0 !default;
+$sm-break: $small !default;
+$md-break: $medium !default;
+$lg-break: $large !default;
+$xl-break: $xlarge !default;
+
+// Spacing Variables
+$xs-spacing: $space-one-fourth !default;
+$sm-spacing: $space-one-half !default;
+$md-spacing: $space-and-half !default;
+$lg-spacing: $space !default;
+
+// Size Suffixes
+$xs-suffix: '--xs' !default;
+$sm-suffix: '--sm' !default;
+$md-suffix: '' !default;
+$lg-suffix: '--lg' !default;
+$none-suffix: '--none' !default;
+
+// Location Suffixes
+$no-suffix: '' !default;
+$top-suffix: '-top' !default;
+$bottom-suffix: '-bottom' !default;
+$left-suffix: '-left' !default;
+$right-suffix: '-right' !default;
+
+// Lists
+$location-suffixes: $no-suffix, $top-suffix, $bottom-suffix, $right-suffix, $left-suffix;
+
+// Maps
+$spacing-map: ($xs-suffix: $xs-spacing, $sm-suffix: $sm-spacing, $md-suffix: $md-spacing, $lg-suffix: $lg-spacing, $none-suffix: 0);

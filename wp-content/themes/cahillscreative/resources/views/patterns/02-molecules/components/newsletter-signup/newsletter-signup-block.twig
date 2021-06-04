@@ -1,0 +1,26 @@
+{% set newsletter_signup_block_base_class = newsletter_signup_block.base_class|default('c-newsletter-signup') %}
+
+<div class="{{ bem_classes(newsletter_signup_block_base_class, '', 'block') }}" data-js-sailthru-form-wrapper>
+  <h3 class="o-heading__primary--l">The most important outdoor news, in your inbox Monday through Saturday.</h3>
+  <hr class="o-hr--yellow" />
+  <form class="{{ bem_classes(newsletter_signup_block_base_class, 'form') }} js-hide-success o-form--inline" data-js-sailthru-form="" action="" method="post">
+    <fieldset class="o-fieldset">
+      <label class="o-form-item__label is-vishidden" for="o-form-item__email">Enter Email Address</label>
+      <input class="o-form-item__email" type="email" placeholder="Enter email address" name="sailthru-email" id="site-newletter-email" aria-label="Email Address">
+      <input type="hidden" name="sailthru-registration-source" value="navigation_footer">
+      <input class="form-checkbox is-hidden" type="checkbox" name="what_you_missed" value="what_you_missed" checked>
+      <input id="footer-recaptcha" type="hidden" name="footer-recaptcha" value="" />
+      <input class="o-form-item__submit" type="submit" name="op" value="Sign Up" />
+    </fieldset>
+    <div class="{{ bem_classes(newsletter_signup_block_base_class, 'recaptcha') }} o-small">
+      <div class="{{ bem_classes(newsletter_signup_block_base_class, 'error') }} js-nl-signup-error is-hidden"></div>
+      <div class="{{ bem_classes(newsletter_signup_block_base_class, 'recaptcha-message') }}">{{ recapthca_message }}</div>
+      <div class="{{ bem_classes(newsletter_signup_block_base_class, 'recaptcha-wrap') }}" id="footer-recaptcha-div"></div>
+    </div>
+  </form>
+  <div class="{{ bem_classes(newsletter_signup_block_base_class, 'success') }} o-small js-nl-signup-success is-hidden">
+    <p>You are now subscribed to <i>What You Missed</i>
+    <br>We will not share your email with anyone for any reason.
+    <br>Find more newsletters on our <a href="{{ newsletter_link }}">newsletter sign-up page</a>.
+  </div>
+</div>

@@ -1,0 +1,12 @@
+.o-category {
+  @include o-heading__secondary--xl;
+
+  color: $c-gray;
+  text-align: center;
+  line-height: 1;
+  margin-bottom: -4px;
+
+  @include media('>medium') {
+    margin-bottom: -5px;
+  }
+}

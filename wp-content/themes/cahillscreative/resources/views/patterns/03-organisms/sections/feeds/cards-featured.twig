@@ -1,0 +1,140 @@
+{% set cards_featured_base_class = cards_featured.base_class|default('c-cards-featured') %}
+
+{% if cards_featured.modifiers == "slider" %}
+  {% set cards_featured_extra = "" %}
+  {% set wrap_extra = "l-container--with-border l-container--gradient-white" %}
+  {% set grid_extra = "l-wrap l-container--xxl js-slick-cards" %}
+{% else %}
+  {% set cards_featured_extra = "l-wrap u-spacing--double" %}
+  {% set wrap_extra = "l-container" %}
+  {% set grid_attributes = {
+    "bp": "grid 4@md"|e('html_attr')
+  } %}
+{% endif %}
+
+{% if cards_featured %}
+  <section class="{{ bem_classes(cards_featured_base_class, cards_featured.element, cards_featured.modifiers, cards_featured.extra) }} {{ cards_featured_extra }}">
+    {% if cards_featured.heading.text or cards_featured.dek.text %}
+      <div class="{{ bem_classes(cards_featured_base_class, 'header') }} l-container--m u-center-block u-text-align--center u-spacing">
+        {% include "@atoms/text/heading/heading.twig" with {
+          "heading": {
+            "level": "2",
+            "size": "xxl",
+            "type": "secondary",
+            "text": cards_featured.heading.text,
+            "extra": [
+              bem_classes(cards_featured_base_class, 'heading'),
+              "u-color--yellow--with-shadow"
+            ]
+          }
+        } %}
+        {% include "@atoms/text/dek/dek.twig" with {
+          "dek": {
+            "text": cards_featured.dek.text,
+            "modifiers": "gray",
+            "extra": bem_classes(cards_featured_base_class, 'dek')
+          }
+        } %}
+      </div>
+    {% endif %}
+    {% if cards_featured.posts %}
+      <div class="{{ bem_classes(cards_featured_base_class, 'wrap', '', wrap_extra) }}">
+        <div class="{{ bem_classes(cards_featured_base_class, 'grid', '', grid_extra) }}" {{ add_attributes(grid_attributes) }}>
+          {% for post in cards_featured.posts %}
+            {% if post.post_type == "product" %}
+              {% include "@molecules/cards/card.twig" with {
+                "card": {
+                  "figure": {
+                    "link": {
+                      "url": post.external_url,
+                      "attributes": {
+                        "target": "_blank",
+                        "rel": "noreferrer"
+                      }
+                    },
+                    "image": {
+                      "src": post.thumbnail.src|resize(720, 540),
+                      "alt": post.thumbnail.alt
+                    }
+                  },
+                  "heading": {
+                    "level": "2",
+                    "size": "l",
+                    "type": "primary",
+                    "text": post.display_title is not empty ? post.display_title : post.title,
+                    "link": {
+                      "url": post.external_url,
+                      "attributes": {
+                        "target": "_blank",
+                        "rel": "noreferrer"
+                      }
+                    }
+                  },
+                  "rich_text": {
+                    "text": post.product_description
+                  },
+                  "price": {
+                    "regular": post.retail_price,
+                    "sale": post.sale_price
+                  },
+                  "link": {
+                    "text": "Buy Now",
+                    "url": post.external_url,
+                    "target":"_blank",
+                    "arrow": true,
+                    "modifiers": "alt"
+                  },
+                  "link_report": true,
+                  "social_share": true
+                }
+              } %}
+            {% else %}
+              {% include "@molecules/cards/card.twig" with {
+                "card": {
+                  "heading": {
+                    "level": "2",
+                    "size": "l",
+                    "type": "primary",
+                    "text": post.display_title is not empty ? post.display_title : post.title,
+                    "link": {
+                      "url": post.link
+                    }
+                  },
+                  "meta": {
+                    "author": post.terms('byline'),
+                    "show_img": true,
+                    "date": post.date
+                  },
+                  "eyebrow": {
+                    "text": post.native_advertising_eyebrow
+                  },
+                  "kicker": {
+                    "text": post.category,
+                    "link": "/"
+                  },
+                  "dek": {
+                    "text": post.dek,
+                    "modifiers": "large"
+                  },
+                  "price": {
+                    "regular": post.price.regular,
+                    "sale": post.price.sale
+                  },
+                  "figure": {
+                    "link": {
+                      "url": post.link
+                    },
+                    "image": {
+                      "src": post.thumbnail.src|resize(720,540),
+                      "alt": post.thumbnail.alt
+                    }
+                  }
+                }
+              } %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </section>
+{% endif %}

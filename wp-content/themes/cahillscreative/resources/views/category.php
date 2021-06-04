@@ -22,4 +22,4 @@ $context['post_type'] = 'post';
 $context['category'] = get_queried_object()->slug;
 $context['posts'] = Timber::query_posts();
 
-Timber::render('04-pages/index.twig', $context);
+Timber::render('05-pages/page-types/index.twig', $context);

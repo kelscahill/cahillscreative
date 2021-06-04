@@ -1,0 +1,120 @@
+.o-meta {
+  @include u-font--xs;
+  width: auto;
+
+  &--with-image {
+    margin: 0 auto;
+    text-align: center;
+
+    .o-meta__authors {
+      margin-right: 0;
+    }
+
+    .o-meta__date {
+      display: block;
+      margin-top: 2px;
+    }
+
+    .o-meta__authors + .o-meta__date {
+      margin-left: 0;
+    }
+  }
+
+  &--large {
+    .o-meta__image {
+      max-width: 100px;
+      max-height: 100px;
+    }
+  }
+
+  &--alt {
+    max-width: 100%;
+
+    .o-meta__date {
+      text-align: left;
+      margin-top: $space;
+    }
+  }
+
+  &--sidebar {
+    @include u-font--s;
+
+    padding: $space 0;
+    border-top: $border--standard;
+    border-bottom: $border--standard;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    max-width: 100%;
+    text-align: left;
+
+    .o-meta__author {
+      text-transform: uppercase;
+    }
+
+    .o-meta__image {
+      max-width: 80px;
+      max-height: 80px;
+      margin-left: 0;
+      margin-right: $space;
+    }
+  }
+
+  &__image-link {
+    display: block;
+  }
+
+  &__image {
+    max-width: 75px;
+    max-height: 75px;
+    min-width: 75px;
+    min-height: 75px;
+    margin: 0 auto $space-one-fourth auto;
+    border-radius: 50%;
+    display: block;
+    overflow: hidden;
+    border: 2px solid $c-white;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  &__authors {
+    > a {
+      text-decoration: none;
+
+      &:not(:last-child) {
+        margin-right: -0.3em;
+      }
+    }
+  }
+
+  &__author {
+    color: $c-gray;
+    transition: $transition-all;
+
+    &:hover,
+    &:focus {
+      color: $c-link-hover;
+    }
+  }
+
+  &__authors + &__date {
+    margin-left: $space;
+  }
+
+  &__summary {
+    margin-top: $space-one-fourth;
+  }
+
+  hr {
+    margin: $space-one-fourth auto;
+  }
+
+  &.o-meta--alt.o-meta--with-image {
+    margin-bottom: $space-half;
+  }
+}

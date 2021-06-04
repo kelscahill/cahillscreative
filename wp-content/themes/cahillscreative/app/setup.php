@@ -10,14 +10,25 @@ use Roots\Sage\Template\BladeProvider;
 /**
  * Theme assets
  */
-add_action('wp_enqueue_scripts', function () {
-    wp_enqueue_style('sage/main.css', asset_path('styles/main.css'), false, null);
-    wp_enqueue_script('sage/main.js', asset_path('scripts/main.js'), ['jquery'], null, true);
 
-    if (is_single() || is_page()) {
-        wp_enqueue_script('sage/magnific-popup.js', asset_path('scripts/magnific-popup.js'), ['jquery'], null, true);
-    }
+add_action('wp_enqueue_scripts', function () {
+  wp_enqueue_style('sage/main.css', asset_path('styles/main.css' ), false, null);
+  wp_enqueue_script('sage/main.js', asset_path('scripts/main.js'), array(), null, true);
 }, 100);
+
+/**
+ * Remove jQuery Migrate.
+ */
+add_action('wp_default_scripts', function ($scripts) {
+  if (!is_admin() && isset($scripts->registered['jquery'])) {
+    $script = $scripts->registered['jquery'];
+
+    // Check whether the script has any dependencies.
+    if ($script->deps) {
+      $script->deps = array_diff($script->deps, array('jquery-migrate'));
+    }
+  }
+});
 
 /**
  * Theme setup
@@ -44,8 +55,8 @@ add_action('after_setup_theme', function () {
      * @link https://developer.wordpress.org/reference/functions/register_nav_menus/
      */
     register_nav_menus([
-        'primary_nav' => __('Primary Navigation', 'sage'),
-        'footer_nav' => __('Footer Navigation', 'sage'),
+        'primary_navigation' => __('Primary Navigation', 'sage'),
+        'footer_navigation' => __('Footer Navigation', 'sage')
     ]);
 
     /**
@@ -70,7 +81,7 @@ add_action('after_setup_theme', function () {
      * Use main stylesheet for visual editor
      * @see resources/assets/styles/layouts/_tinymce.scss
      */
-    add_editor_style(asset_path('styles/main.css'));
+    //add_editor_style(asset_path('styles/main.css'));
 }, 20);
 
 /**

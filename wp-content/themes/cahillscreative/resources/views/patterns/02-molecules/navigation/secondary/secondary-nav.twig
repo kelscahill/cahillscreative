@@ -1,0 +1,33 @@
+{% set secondary_nav_base_class = secondary_nav.base_class|default('c-secondary-nav') %}
+
+{% if not is_front_page and secondary_nav %}
+  <div class="{{ bem_classes(secondary_nav_base_class, secondary_nav.element, secondary_nav.modifiers, secondary_nav.extra) }}">
+    <nav role="navigation" class="{{ secondary_nav_base_class ~ '--inner' }} l-container">
+      {% if secondary_nav.items %}
+        <ul class="{{ bem_classes(secondary_nav_base_class, 'list') }}">
+          {% for item in secondary_nav.items %}
+            <li class="{{ bem_classes(secondary_nav_base_class, 'item') }}">
+              {% include "@atoms/links/link.twig" with {
+                "link": {
+                  "text": item.name,
+                  "url": item.slug,
+                  "extra": [
+                    term.slug == item.slug ? 'is-active',
+                    bem_classes(secondary_nav_base_class, 'link')
+                  ],
+                  "attributes": {
+                    "data-ga-event-category": item.title|e('html_attr'),
+                    "data-ga-event-on": "click",
+                    "data-ga-event-action": "mainNav",
+                    "data-ga-event-label": item.url|e('html_attr'),
+                    "data-ga-event-processed": "true"
+                  }
+                }
+              } %}
+            {% endfor %}
+          </li>
+        </ul>
+      {% endif %}
+    </nav>
+  </div>
+{% endif %}

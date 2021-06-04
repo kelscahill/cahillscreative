@@ -1,0 +1,10 @@
+{% if link_report %}
+  {% set link_report_base_class = link_report.base_class|default('o-link-report') %}
+
+  <a class="{{ bem_classes(link_report_base_class) }} js-toggle"
+    data-toggled="body"
+    data-prefix="content-modal"
+  >
+    <span class="u-space--quarter--right">⚑</span>{{ ' Report' }}
+  </a>
+{% endif %}

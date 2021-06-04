@@ -1,0 +1,8 @@
+{% if ornament %}
+  {% set ornament_base_class = ornament.base_class|default('o-ornament') %}
+
+  <div class="{{ bem_classes(ornament_base_class, ornament.element, ornament.modifiers, ornament.extra) }}">
+    <span class="{{ bem_classes(ornament_base_class, 'string') }}"></span>
+    <span class="{{ bem_classes(ornament_base_class, 'ball') }}"></span>
+  </div>
+{% endif %}

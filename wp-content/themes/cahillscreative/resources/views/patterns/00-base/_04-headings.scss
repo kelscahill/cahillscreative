@@ -1,0 +1,177 @@
+/*
+ * Generic header styles:
+ * All arguments are optional. If not defined, the defaults below will be used
+*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+@mixin o-heading-link($color-link: currentColor, $color-link-hover: currentColor) {
+  a {
+    color: $color-link;
+
+    &:hover,
+    &:focus {
+      color: $color-link-hover;
+    }
+  }
+}
+
+/*
+ * Primary Headings
+*/
+
+@mixin o-heading__primary--xxl {
+  font-family: $font-primary;
+  font-size: $font-size-xxl;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: $letter-spacing-1;
+  line-height: 1.2;
+
+  @include o-heading-link(currentColor, $c-link-hover);
+}
+
+.o-heading__primary--xxl {
+  @include o-heading__primary--xxl;
+}
+
+@mixin o-heading__primary--xl {
+  font-family: $font-primary;
+  font-size: $font-size-xl;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: $letter-spacing-1;
+  line-height: 1.2;
+
+  @include o-heading-link(currentColor, $c-link-hover);
+}
+
+.o-heading__primary--xl,
+h1 {
+  @include o-heading__primary--xl;
+}
+
+@mixin o-heading__primary--l {
+  font-family: $font-primary;
+  font-size: $font-size-l;
+  font-weight: 600;
+  font-style: normal;
+  line-height: $line-height-s;
+
+  @include o-heading-link(currentColor, $c-link-hover);
+}
+
+.o-heading__primary--l,
+h2 {
+  @include o-heading__primary--l;
+}
+
+@mixin o-heading__primary--m {
+  font-family: $font-primary;
+  font-size: $font-size-m;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  line-height: $line-height-s;
+
+  @include o-heading-link(currentColor, $c-link-hover);
+}
+
+.o-heading__primary--m,
+h3 {
+  @include o-heading__primary--m;
+}
+
+/*
+ * Secondary Headings
+*/
+@mixin o-heading__secondary--xxxl {
+  font-family: $font-secondary;
+  font-size: $font-size-xxxl;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.1;
+  letter-spacing: $letter-spacing-3;
+  text-transform: uppercase;
+}
+
+.o-heading__secondary--xxxl {
+  @include o-heading__secondary--xxxl;
+}
+
+@mixin o-heading__secondary--xxl {
+  font-family: $font-secondary;
+  font-size: $font-size-xxl;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: $letter-spacing-3;
+  text-transform: uppercase;
+}
+
+.o-heading__secondary--xxl {
+  @include o-heading__secondary--xxl;
+}
+
+@mixin o-heading__secondary--xl {
+  font-family: $font-secondary;
+  font-size: $font-size-xl;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: $letter-spacing-1;
+  text-transform: uppercase;
+}
+
+.o-heading__secondary--xl {
+  @include o-heading__secondary--xl;
+}
+
+@mixin o-heading__secondary--l {
+  font-family: $font-secondary;
+  font-size: $font-size-l;
+  font-weight: 600;
+  font-style: normal;
+  line-height: $line-height-s;
+  letter-spacing: $letter-spacing-1;
+  text-transform: uppercase;
+}
+
+.o-heading__secondary--l {
+  @include o-heading__secondary--l;
+}
+
+@mixin o-heading__secondary--s {
+  font-family: $font-secondary;
+  font-size: $font-size-s;
+  font-weight: 400;
+  font-style: normal;
+  line-height: $line-height;
+  letter-spacing: $letter-spacing-2;
+  text-transform: uppercase;
+}
+
+.o-heading__secondary--s {
+  @include o-heading__secondary--s;
+}
+
+@mixin o-heading__secondary--xs {
+  font-family: $font-secondary;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  font-style: normal;
+  line-height: $line-height;
+  letter-spacing: $letter-spacing-2;
+  text-transform: uppercase;
+}
+
+.o-heading__secondary--xs {
+  @include o-heading__secondary--xs;
+}

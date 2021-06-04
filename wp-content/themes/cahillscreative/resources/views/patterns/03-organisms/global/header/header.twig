@@ -1,0 +1,60 @@
+{% set header_base_class = header.base_class|default('c-header') %}
+
+{% include "@molecules/components/alert/alert.twig" %}
+<header role="banner" class="{{ bem_classes(header_base_class, header.element, header.modifiers, header.extra) }}">
+  <div class="{{ header_base_class ~ '--inner' }} l-container">
+    {% include "@molecules/navigation/primary/primary-nav.twig" %}
+    {% include "@atoms/images/logos/logo.twig" with {
+      "logo": {
+        "image": {
+          "src": Image(options.logo_horizontal).src,
+          "alt": site.name,
+        },
+        "link": site.link,
+        "extra": bem_classes(header_base_class, 'logo')
+      }
+    } %}
+    <div class="{{ bem_classes(header_base_class, 'utility') }}">
+      {% include "@atoms/buttons/button.twig" with {
+        "button": {
+          "text": options.header_button.title,
+          "url": options.header_button.url
+        }
+      } %}
+      {% include "@atoms/buttons/button.twig" with {
+        "button": {
+          "extra": [
+            bem_classes(header_base_class, 'icon-search'),
+            "js-toggle"
+          ],
+          "icon": {
+            "title": "Search",
+            "name": "search",
+            "modifiers": "small"
+          },
+          "attributes": {
+            "aria-label": "Search",
+            "data-toggled": "body",
+            "data-prefix": "search",
+          }
+        }
+      } %}
+      <a href="{{ site.link }}/cart" class="{{ bem_classes(header_base_class, 'icon-cart') }}" aria-label="Cart">
+        {% if cart_count > 0 %}
+          <span class="o-add-to-cart-count" data-animation="animate__animated animate__swing">{{ cart_count }}</span>
+        {% endif %}
+        {% include "@atoms/images/icons/icon.twig" with {
+          "icon": {
+            "title": "Cart",
+            "name": "cart",
+            "modifiers": "small"
+          }
+        } %}
+      </a>
+    </div>
+  </div>
+</header>
+{% include "@molecules/components/search/search-modal.twig" %}
+{% include "@molecules/components/progress-bar/progress-bar.twig" %}
+{% include "@molecules/components/leaderboard/leaderboard.twig" %}
+{% include "@molecules/navigation/secondary/secondary-nav.twig" %}

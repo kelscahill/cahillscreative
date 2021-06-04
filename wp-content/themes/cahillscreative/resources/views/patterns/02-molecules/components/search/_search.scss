@@ -1,0 +1,198 @@
+/* Search Modal */
+.c-search-modal {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: $c-gray;
+  opacity: 0;
+  visibility: hidden;
+  z-index: -1;
+  pointer-events: none;
+  transition: opacity 0.25s $transition-effect, visibility 0.25s $transition-effect;
+  padding-top: 70px;
+
+  &::after {
+    content: "";
+    display: block;
+    z-index: -1;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 113.55 119.71'%3E%3Cpath d='M56,.46C20.81.46.52,26.35.52,60.25c0,33,22.14,58.57,55.48,58.57h0c31.79,0,52.93-23.12,55.39-54.17a66.78,66.78,0,0,0-1-16.12C105.63,22.11,86.6.46,56,.46Zm3.17,100.72-.08-.1c-16.63.12-26.77-26.41-26.77-49.76,0-13.45,5.09-33.86,20.47-33.86,20.36,0,27,32.76,27,48.75,0,15-4.87,35-20.62,35Z' fill='%23ffffff'/%3E%3C/svg%3E");
+    background-position: right -10vw bottom -10vh;
+    background-repeat: no-repeat;
+    background-size: 100vw auto;
+
+    @include media(">small") {
+      background-size: auto 80vh;
+    }
+  }
+
+  &__close {
+    padding: $space;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: $c-black;
+
+    .o-icon {
+      transition: $transition-all;
+      transform: scale(1);
+
+      @include media("<=small") {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    &:hover,
+    &:focus {
+      color: $c-black;
+      background-color: transparent;
+
+      svg {
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  &.is-active {
+    pointer-events: all;
+    opacity: 1;
+    visibility: visible;
+    z-index: 99999;
+  }
+}
+
+body.search-is-active {
+  overflow: hidden;
+
+  .c-search-modal {
+    pointer-events: all;
+    opacity: 1;
+    visibility: visible;
+    z-index: 99999;
+  }
+}
+
+/* Search Form */
+.c-search-form {
+  display: flex;
+  position: relative;
+  z-index: 1;
+  flex-direction: column;
+  padding: $space;
+  margin: 0 auto;
+  max-width: $medium;
+
+  @include media(">medium") {
+    padding: $space 30px;
+  }
+
+
+  .o-fieldset {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  input[type="text"] {
+    background-color: transparent;
+    outline: 0;
+    border: 0;
+    height: auto;
+    border-bottom: $border--standard;
+    padding: $space 0 15px 0;
+    font-size: 30px;
+    font-family: $font-primary;
+    line-height: 1;
+    width: calc(100% - 70px);
+
+    @include media(">small") {
+      font-size: 45px;
+      width: calc(100% - 80px);
+    }
+
+
+    &::placeholder {
+      color: $c-gray;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: transparent;
+      outline: 0;
+    }
+  }
+
+  button {
+    padding: $space;
+    outline: 0;
+    border: 0;
+    background: transparent;
+    border-bottom: $border--standard;
+    transition: $transition-all;
+    color: $c-gray;
+
+    span:not(.o-icon) {
+      display: none;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: $c-primary;
+      color: $c-black;
+    }
+  }
+
+  &__legal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: $space-half;
+
+    &-logo {
+      width: 50px;
+    }
+  }
+
+  &__results {
+    @include u-font--s;
+
+    margin-top: $space;
+    color: $c-gray;
+  }
+
+  &--alt {
+    input[type="text"] {
+      font-family: $font-secondary;
+      font-size: $font-size-s;
+      border: 1px solid $c-black;
+      padding: 15px;
+    }
+
+    button {
+      @include o-button;
+
+      padding: 15px $space;
+
+      span {
+        display: block;
+      }
+
+      svg {
+        display: none;
+      }
+    }
+  }
+}

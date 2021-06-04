@@ -1,16 +1,5 @@
-$tests: false;
-@import "00-reset";
-@import "01-variables";
-@import "02-mixins";
-@import "03-breakpoints";
-@import "04-breakpoints-tests";
-@import "05-blueprint";
-@import "06-spacing";
-@import "07-helpers";
-
-@import "../../views/_patterns/00-base/**/**/*.scss";
-@import "../../views/_patterns/01-atoms/**/**/*.scss";
-@import "../../views/_patterns/02-molecules/**/**/*.scss";
-@import "../../views/_patterns/03-organisms/**/**/*.scss";
-@import "../../views/_patterns/04-templates/**/**/*.scss";
-@import "../../views/_patterns/05-pages/**/**/*.scss";
+@import "../../views/patterns/00-base/**/**/*.scss";
+@import "../../views/patterns/01-atoms/**/**/*.scss";
+@import "../../views/patterns/02-molecules/**/**/*.scss";
+@import "../../views/patterns/03-organisms/**/**/*.scss";
+@import "../../views/patterns/04-templates/**/**/*.scss";

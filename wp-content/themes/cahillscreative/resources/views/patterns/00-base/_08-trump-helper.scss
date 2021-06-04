@@ -1,0 +1,193 @@
+/* ------------------------------------*\
+    $HELPER/TRUMP CLASSES
+\*------------------------------------ */
+
+.slick-slider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .slick-list {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+  }
+
+  .slick-track {
+    display: flex;
+    width: 100%;
+  }
+
+  .slick-slide {
+    width: 100%;
+    margin: 0 $space-half;
+  }
+
+  .slick-arrow {
+    padding: 0;
+    display: block;
+    cursor: pointer;
+    min-width: 50px;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-indent: 9999px;
+    overflow: hidden;
+    transition: $transition-all;
+    position: relative;
+    background: transparent;
+    border: 0;
+    outline: 0;
+
+    @include media('>xlarge') {
+      line-height: 65px;
+      min-width: 65px;
+      width: 65px;
+      height: 65px;
+    }
+
+    &:hover {
+      background-color: $c-primary;
+    }
+
+    &.slick-disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    &::before {
+      content: "";
+      display: block;
+      width: 20px;
+      height: 20px;
+      border-left: 3px solid $c-black;
+      border-bottom: 3px solid $c-black;
+      position: absolute;
+      top: 50%;
+      left: calc(50% + 3px);
+      transform: translate(-50%, -50%) rotate(45deg);
+
+      @include media('>xlarge') {
+        width: 25px;
+        height: 25px;
+        left: calc(50% + 5px);
+      }
+    }
+  }
+
+  .slick-next::before {
+    left: calc(50% - 3px);
+    transform: translate(-50%, -50%) rotate(-135deg);
+
+    @include media('>xlarge') {
+      left: calc(50% - 5px);
+    }
+  }
+}
+
+/**
+ * Completely remove from the flow but leave available to screen readers.
+ */
+.is-vishidden,
+.visually-hidden {
+  position: absolute !important;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+/**
+ * Hide elements only present and necessary for js enabled browsers.
+ */
+.no-js {
+  &-hide {
+    display: none;
+  }
+}
+
+.js-toggle {
+  cursor: pointer;
+}
+
+/**
+ * Misc
+ */
+.u-color--yellow--with-shadow {
+ text-shadow: 1px 1px 0 $c-tertiary;
+ color: $c-primary;
+}
+
+.u-border--top--black {
+  border-top: 3px solid $c-black;
+}
+
+.u-border--thick--white {
+  border: 10px solid $c-white;
+}
+
+.u-border--med--white {
+  border: 3px solid $c-white;
+}
+
+.u-hover--bw-to-color {
+  filter: grayscale(100%);
+  transition: all 0.5s ease-in-out;
+
+  &:hover,
+  &:focus {
+    filter: grayscale(0);
+  }
+}
+
+.u-background-cover {
+  background-size: cover;
+  background-position: center center;
+}
+
+.u-gradient--top--white {
+  background: linear-gradient(white, $c-white);
+}
+
+/**
+ * Center block
+ */
+.u-text-align--center {
+  text-align: center;
+}
+
+.u-center-block {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.u-reversed-out {
+  color: $c-white;
+
+  p,
+  h1 a,
+  h2 a,
+  h3 a {
+    color: $c-white;
+  }
+}
+
+.u-no-spacing {
+  padding: 0;
+  margin: 0;
+}
+
+.u-rounded {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.u-text-transform--upper {
+  text-transform: uppercase;
+}

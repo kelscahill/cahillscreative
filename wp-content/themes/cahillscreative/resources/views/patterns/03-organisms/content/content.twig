@@ -1,0 +1,28 @@
+{% if post.title or post.display_title or post.content %}
+  {% set content_base_class = content.base_class|default('c-content') %}
+
+  <article class="{{ bem_classes(content_base_class) }} l-container--m u-spacing">
+    {% if post.title or post.display_title %}
+      <div class="{{ bem_classes(content_base_class, 'header') }}">
+        {% include "@atoms/text/heading/heading.twig" with {
+          "heading": {
+            "level": "1",
+            "size": "xl",
+            "type": "primary",
+            "text": post.display_title is not empty ? post.display_title : post.title,
+            "extra": "u-text-align--center"
+          }
+        } %}
+      </div>
+    {% endif %}
+    {% if post.content %}
+      <div class="{{ bem_classes(content_base_class, 'content') }}">
+        {% include "@atoms/text/rich-text/rich-text.twig" with {
+          "rich_text": {
+            "text": post.content
+          }
+        } %}
+      </div>
+    {% endif %}
+  </article>
+{% endif %}

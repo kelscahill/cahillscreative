@@ -1,0 +1,37 @@
+img,
+picture {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+figcaption {
+  display: block;
+  margin-top: $space-half;
+}
+
+.o-picture {
+  img {
+    width: 100%;
+    height: auto;
+  }
+
+  &--round {
+    border-radius: 50%;
+    overflow: hidden;
+
+    @include aspect-ratio(1, 1);
+  }
+
+  &--square {
+    @include aspect-ratio(1, 1);
+  }
+
+  &--16x9 {
+    @include aspect-ratio(16, 9);
+  }
+
+  &--4x3 {
+    @include aspect-ratio(4, 3);
+  }
+}

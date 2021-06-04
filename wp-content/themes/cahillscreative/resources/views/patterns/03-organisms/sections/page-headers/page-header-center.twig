@@ -1,0 +1,43 @@
+{% if page_header %}
+  {% set page_header_base_class = page_header.base_class|default('c-page-header-center') %}
+
+  <div class="{{ bem_classes(page_header_base_class, page_header.element, page_header.modifiers, page_header.extra) }}">
+    <div class="{{ page_header_base_class ~ '--inner' }} l-wrap l-container--m u-spacing u-text-align--center">
+      {% if page_header.kicker %}
+        <div class="{{ bem_classes(page_header_base_class, 'kicker') }}">
+          {% include "@atoms/text/kicker/kicker.twig" with page_header %}
+        </div>
+      {% endif %}
+      {% if page_header.heading %}
+        <div class="{{ bem_classes(page_header_base_class, 'heading') }}">
+          {% include "@atoms/text/heading/heading.twig" with page_header %}
+        </div>
+      {% endif %}
+      {% if page_header.hr %}
+        <div class="{{ bem_classes(page_header_base_class, 'dek') }}">
+          {% include "@atoms/hr/hr.twig" with page_header %}
+        </div>
+      {% endif %}
+      {% if page_header.dek.text %}
+        <div class="{{ bem_classes(page_header_base_class, 'dek') }}">
+          {% include "@atoms/text/dek/dek.twig" with page_header %}
+        </div>
+      {% endif %}
+      {% if page_header.social_share %}
+        <div class="{{ bem_classes(page_header_base_class, 'social-share') }}">
+          {% include "@molecules/components/social/social-share/social-share.twig" with page_header %}
+        </div>
+      {% endif %}
+      {% if page_header.disclaimer %}
+        <div class="{{ bem_classes(page_header_base_class, 'disclaimer') }}">
+          {% include "@atoms/text/disclaimer/disclaimer.twig" %}
+        </div>
+      {% endif %}
+      {% if page_header.link.url %}
+        <div class="{{ bem_classes(page_header_base_class, 'link') }}">
+          {% include "@atoms/links/link.twig" with page_header %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

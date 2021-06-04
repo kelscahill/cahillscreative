@@ -20,4 +20,4 @@ $context['post']['title'] = get_queried_object()->name;
 $context['tag'] = get_queried_object()->slug;
 $context['category'] = get_query_var('taxonomy');
 $context['posts'] = Timber::query_posts();
-Timber::render('04-pages/index.twig', $context);
+Timber::render('05-pages/page-types/index.twig', $context);

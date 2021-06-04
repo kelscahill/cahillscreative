@@ -1,0 +1,12 @@
+{% if pullquote %}
+  {% set pullquote_base_class = pullquote.base_class|default('o-pullquote') %}
+
+  <pullquote class="{{ bem_classes(pullquote_base_class, pullquote.element, pullquote.modifiers, pullquote.extra) }}" >
+    {% if pullquote.text %}
+      {{ pullquote.text }}
+    {% endif %}
+    {% if pullquote.cite %}
+      <cite>{{ pullquote.cite }}</cite>
+    {% endif %}
+  </pullquote>
+{% endif %}

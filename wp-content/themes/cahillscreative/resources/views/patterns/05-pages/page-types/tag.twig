@@ -1,0 +1,42 @@
+{% extends "@templates/_layout.twig" %}
+
+{% block sections_before %}
+  <div class="u-spacing--double">
+    {% include "@organisms/sections/page-headers/page-header-center.twig" with {
+      "page_header": {
+        "heading": {
+          "level": "1",
+          "size": "xl",
+          "type": "primary",
+          "text": term.name,
+          "extra": "u-text-align--center"
+        },
+        "hr": {
+          "modifiers": "yellow",
+          "extra": "u-center-block"
+        },
+        "dek": {
+          "text": term.description,
+          "modifiers": "large"
+        }
+      }
+    } %}
+    {% include "@organisms/sections/feeds/block-list.twig" with {
+      "block_list": {
+        "heading": {
+          "size": "xxl",
+          "text": "The latest"
+        },
+        "featured_posts": posts|slice(0,4),
+        "posts": posts|slice(4),
+        "pager": {
+          "current": posts.pagination.current,
+          "next": posts.pagination.next.link,
+          "prev": posts.pagination.prev.link
+        },
+        "ad": true,
+        "sidebar": true
+      }
+    } %}
+  </div>
+{% endblock %}

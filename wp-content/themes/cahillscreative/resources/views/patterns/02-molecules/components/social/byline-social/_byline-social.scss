@@ -1,0 +1,18 @@
+.c-byline-social {
+  display: flex;
+  justify-content: center;
+
+  &__item {
+    margin: 0 $space-quarter;
+    box-shadow: none;
+
+    &:hover,
+    &:focus {
+      box-shadow: none;
+
+      svg * {
+        fill: $c-tertiary;
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+.o-kicker {
+  @include o-heading__secondary--xs;
+
+  letter-spacing: $letter-spacing-1;
+  display: inline-block;
+  color: $c-gray;
+
+  a {
+    &:hover,
+    &:active {
+      color: $c-link-hover;
+    }
+  }
+
+  &--large {
+    color: $c-gray;
+    letter-spacing: 6px;
+    font-size: $font-size-m;
+  }
+}

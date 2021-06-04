@@ -1,5 +1,8 @@
 /* eslint-disable */
 import inView from 'in-view';
+import progressBar from '../util/progress-bar';
+import slick from '../util/slick.min.js';
+import magnificPopup from '../util/magnific-popup.min.js';
 
 export default {
   init() {
@@ -33,15 +36,6 @@ export default {
         });
       });
     }
-
-    /**
-    * Remove Active Classes when clicking outside menus and modals
-    */
-    // $(document).click(function(event) {
-    //   if (!$(event.target).closest(".c-nav-drawer").length) {
-    //     $("html").find(".menu-is-active").removeClass("menu-is-active");
-    //   }
-    // });
 
     // Expires after one day
     var setCookie = function(name, value) {
@@ -110,7 +104,7 @@ export default {
     /**
      * Slick sliders
      */
-    $('.slick').slick({
+    $('.js-slick').slick({
       prevArrow: '<span class="icon--arrow icon--arrow-prev"></span>',
       nextArrow: '<span class="icon--arrow icon--arrow-next"></span>',
       dots: false,
@@ -123,22 +117,7 @@ export default {
       adaptiveHeight: true,
     });
 
-    $('.slick-gallery').slick({
-      prevArrow: '<span class="icon--arrow icon--arrow-prev"></span>',
-      nextArrow: '<span class="icon--arrow icon--arrow-next"></span>',
-      dots: true,
-      autoplay: false,
-      arrows: true,
-      infinite: true,
-      speed: 250,
-      fade: true,
-      cssEase: 'linear',
-      adaptiveHeight: true,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-    });
-
-    $('.slick-favorites').slick({
+    $('.js-slick-cards').slick({
       prevArrow: '<span class="icon--arrow icon--arrow-prev"></span>',
       nextArrow: '<span class="icon--arrow icon--arrow-next"></span>',
       dots: false,
@@ -187,22 +166,26 @@ export default {
     }
 
     /**
-     * Main class toggling function
+     * General helper function to support toggle functions.
      */
-    var $toggled = '';
     var toggleClasses = function(element) {
       var $this = element,
           $togglePrefix = $this.data('prefix') || 'this';
 
       // If the element you need toggled is relative to the toggle, add the
       // .js-this class to the parent element and "this" to the data-toggled attr.
-      if ($this.data('toggled') === "this") {
-        $toggled = $this.parents('.js-this');
+      if ($this.data('toggled') == "this") {
+        var $toggled = $this.closest('.js-this');
       }
       else {
-        $toggled = $('.' + $this.data('toggled'));
+        var $toggled = $('.' + $this.data('toggled'));
       }
-
+      if ($this.attr('aria-expanded', 'true')) {
+        $this.attr('aria-expanded', 'true')
+      }
+      else {
+        $this.attr('aria-expanded', 'false')
+      }
       $this.toggleClass($togglePrefix + '-is-active');
       $toggled.toggleClass($togglePrefix + '-is-active');
 
@@ -228,6 +211,7 @@ export default {
      *
      */
     $('.js-toggle').on('click', function(e) {
+      e.preventDefault();
       e.stopPropagation();
       toggleClasses($(this));
     });
@@ -236,21 +220,29 @@ export default {
     $('.js-toggle-parent').on('click', function(e) {
       e.preventDefault();
       var $this = $(this);
+      $this.toggleClass('this-is-active');
+      $this.parent().toggleClass('this-is-active');
+    });
 
-      $this.parent().toggleClass('is-active');
+    // Prevent bubbling to the body. Add this class to the element (or element
+    // container) that should allow the click event.
+    $('.js-stop-prop').on('click', function(e) {
+      e.stopPropagation();
     });
 
     // Toggle hovered classes
     $('.js-hover').on('mouseenter mouseleave', function(e) {
       e.preventDefault();
+      e.stopPropagation();
       toggleClasses($(this));
     });
 
     $('.js-hover-parent').on('mouseenter mouseleave', function(e) {
       e.preventDefault();
-      toggleClasses($(this).parent());
+      var $this = $(this);
+      $this.toggleClass('this-is-active');
+      $this.parent().toggleClass('this-is-active');
     });
-
   },
   finalize() {
     // JavaScript to be fired on all pages, after page specific JS is fired

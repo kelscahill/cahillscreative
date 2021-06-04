@@ -1,0 +1,22 @@
+{% extends "@templates/_layout.twig" %}
+
+{% block sections_before %}
+  <div class="u-spacing--quad u-gradient--top--white u-border--top--black">
+    {% include "@organisms/sections/feeds/block-list.twig" with {
+      "block_list": {
+        "subhead": {
+          "kicker": "Archive",
+          "text": term.name
+        },
+        "dek": paged == 1 ? term.description,
+        "posts": posts,
+        "pager": {
+          "current": posts.pagination.current,
+          "next": posts.pagination.next.link,
+          "prev": posts.pagination.prev.link
+        },
+        "sidebar": true
+      }
+    } %}
+  </div>
+{% endblock %}

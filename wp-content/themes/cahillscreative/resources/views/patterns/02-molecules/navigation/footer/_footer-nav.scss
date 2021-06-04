@@ -1,0 +1,28 @@
+.c-footer-nav {
+  column-count: 2;
+  column-gap: $space-double;
+  margin: (-$space-one-fourth) 0;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  &__link {
+    @include u-font--s;
+
+    color: $c-gray;
+    transition: $transition-all;
+    padding: $space-one-fourth 0;
+    text-align: left;
+    display: block;
+    box-shadow: none;
+
+    &:hover,
+    &:focus {
+      color: $c-primary;
+      box-shadow: none;
+    }
+  }
+}

@@ -1,0 +1,46 @@
+.c-social-share {
+  display: flex;
+  flex-direction: row;
+
+  &__item {
+    overflow: hidden;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: $space;
+    text-align: center;
+    transition: $transition-all;
+    text-decoration: none;
+    background: linear-gradient($c-black 50%, $c-primary 50%);
+    background-size: 100% 200%;
+    background-position: 0 top;
+    box-shadow: none;
+    color: $c-white;
+
+    &:hover,
+    &:focus {
+      background-position: 0 bottom;
+      color: $c-white;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  &--stacked {
+    flex-direction: column;
+
+    .c-social-share__item {
+      margin-right: 0;
+      margin-bottom: $space-half;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

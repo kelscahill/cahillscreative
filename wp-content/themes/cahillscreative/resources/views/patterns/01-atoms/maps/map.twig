@@ -1,0 +1,8 @@
+{% if map %}
+  {% set map_base_class = map.base_class|default('o-map') %}
+  {% set address_string = map.address.street_address_1 ~ '+' ~ map.address.street_address_2|url_encode ~ '+' ~ map.address.city ~ '+' ~ map.address.state.value ~ '+' ~ map.address.zipcode %}
+
+  <div class="{{ bem_classes(map_base_class, map.element, map.modifiers, map.extra) }}">
+    <iframe title="{{ map.address.city ~ ' Map' }}" src="https://www.google.com/maps/embed/v1/place?q={{ address_string }}&key=AIzaSyCtgj31hy9JZp2req_6RoP6-m1Z4D_YHGc" width="600" height="400" frameborder="0" allowfullscreen=""></iframe>
+  </div>
+{% endif %}

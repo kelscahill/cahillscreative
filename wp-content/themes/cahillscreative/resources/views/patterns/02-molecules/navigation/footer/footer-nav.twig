@@ -1,0 +1,29 @@
+{% set footer_nav_base_class = footer_nav.base_class|default('c-footer-nav') %}
+
+{% if footer_nav.name == "Footer Navigation" %}
+  <nav role="navigation" class="{{ bem_classes(footer_nav_base_class, footer_nav.element, footer_nav.modifiers, footer_nav.extra) }}">
+    {% if footer_nav.items %}
+      <ul class="{{ bem_classes(footer_nav_base_class, 'list') }}">
+        {% for item in footer_nav.items %}
+          <li class="{{ bem_classes(footer_nav_base_class, 'item') }}">
+            {% include "@atoms/links/link.twig" with {
+              "link": {
+                "text": item.title,
+                "url": item.url,
+                "target": item.target,
+                "extra": bem_classes(footer_nav_base_class, 'link'),
+                "attributes": {
+                  "data-ga-event-category": item.title|e('html_attr'),
+                  "data-ga-event-on": "click",
+                  "data-ga-event-action": "mainNav",
+                  "data-ga-event-label": item.url|e('html_attr'),
+                  "data-ga-event-processed": "true"
+                }
+              }
+            } %}
+          {% endfor %}
+        </li>
+      </ul>
+    {% endif %}
+  </nav>
+{% endif %}

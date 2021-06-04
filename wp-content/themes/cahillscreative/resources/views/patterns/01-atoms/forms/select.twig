@@ -1,0 +1,22 @@
+{% if select.options is not empty %}
+  {% set select_base_class = select_base_class|default('o-form-item') %}
+
+  <div class="{{ bem_classes(select_base_class, select.element, select.modifiers, select.extra) }}">
+    {% if select.label.text %}
+      <label for="{{ select.id }}" class="{{ bem_classes(select_base_class, 'label' ) }}{{ select.label.hidden ? ' is-vishidden' }}">{{ select.label.text }}</label>
+    {% endif %}
+    <select id="{{ select.id }}" class="{{ bem_classes(select_base_class, 'select') }}" {{ add_attributes(select.attributes) }}>
+      {% if select.optgroup_label %}
+        <optgroup label="{{ select.optgroup_label }}">
+      {% endif %}
+        <option value="{{ clear_uri }}" {% if 'see-all' in request_uri %}selected{% endif %}>{{ 'See All' }}</option>
+        {% for option in select.options %}
+          {% set option_slug = option|lower|replace({' ' : '-'}) %}
+          <option title="{{ option }}" {% if option_slug in request_uri %}selected{% endif %} value="'?product-tag={{ option_slug }}&_filter={{ nonce }}#{{ select.id }}">{{ option }}</option>
+        {% endfor %}
+      {% if select.optgroup_label %}
+        </optgroup>
+      {% endif %}
+    </select>
+  </div>
+{% endif %}

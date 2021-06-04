@@ -1,0 +1,94 @@
+.o-rich-text {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  pointer-events: auto;
+  max-width: $max-width-l;
+
+  & > * + * {
+    margin-top: $space;
+
+    @include media('>medium') {
+      margin-top: $space-and-half;
+    }
+  }
+
+  > dl dd,
+  > dl dt,
+  > ol li,
+  > ul li,
+  > p {
+    font-family: $font-tertiary;
+    font-weight: 400;
+    line-height: 1.75;
+  }
+
+  > h1,
+  > h2,
+  > h3,
+  > h4,
+  > h5,
+  > h6 {
+    padding-top: $space;
+    margin-bottom: -$space-half;
+  }
+
+  > *:first-child {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  h2:empty,
+  h3:empty,
+  p:empty {
+    display: none;
+  }
+
+  > p a,
+  > a {
+    @include o-link;
+    display: unset;
+  }
+
+  > hr {
+    @include o-hr--small;
+    margin: $space-triple auto;
+  }
+
+  > ul {
+    margin-left: $space-double;
+  }
+
+  .wp-block-quote {
+    @include o-blockquote;
+  }
+
+  .wp-block-pullquote {
+    @include o-pullquote;
+  }
+
+  .wp-block-separator.is-style-wide {
+    @include o-hr;
+  }
+
+  &--small {
+    p,
+    a {
+      @include u-font--s;
+
+      line-height: $line-height;
+    }
+
+    a {
+      @include o-link;
+    }
+  }
+
+  &--longform {
+    .wp-block-image {
+      @include media('>large') {
+        margin-left: -120px;
+      }
+    }
+  }
+}

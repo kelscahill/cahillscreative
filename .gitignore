@@ -3,6 +3,7 @@
 *.lock
 .htaccess
 wp-config.php
+wp-config-local.php
 wp-content/advanced-cache.php
 wp-content/backup-db/
 wp-content/backups/
@@ -14,6 +15,7 @@ wp-content/wp-cache-config.php
 wp-content/mu-plugins/
 
 wp-content/themes/**/.cache-loader/
+wp-content/themes/**/dist/
 wp-content/themes/**/node_modules/
 wp-content/themes/**/vendor/
 wp-content/themes/**/config-local.json

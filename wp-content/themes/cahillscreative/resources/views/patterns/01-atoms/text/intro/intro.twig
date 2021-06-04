@@ -1,0 +1,8 @@
+{% if intro %}
+  {% set intro_base_class = intro.base_class|default('o-intro') %}
+
+  <div class="{{ bem_classes(intro_base_class, intro.element, intro.modifiers, intro.extra) }}" >
+    <p>{{ intro.text }}</p>
+    {% include "@atoms/hr/hr.twig" with { "hr" : { "modifiers": "intro" } } %}
+  </div>
+{% endif %}

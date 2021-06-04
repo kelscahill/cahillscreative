@@ -1,0 +1,43 @@
+{% set pager_base_class = pager.base_class|default('c-pager') %}
+
+{% if pager.prev or pager.next %}
+  <div class="{{ bem_classes(pager_base_class) }}">
+    <div class="{{ pager_base_class ~ '--inner' }}">
+      {% if pager.prev %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "url": pager.prev,
+            "modifiers": [
+              "alt"
+            ],
+            "extra": [
+              bem_classes(pager_base_class, 'nav', 'prev')
+            ],
+            "attributes": {
+              "aria-label": "Previous"
+            }
+          }
+        } %}
+      {% endif %}
+      {% if pager.current %}
+        <span class="{{ bem_classes(pager_base_class, 'current') }} o-heading__secondary--xs">Page {{ pager.current }}</span>
+      {% endif %}
+      {% if pager.next %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "url": pager.next,
+            "modifiers": [
+              "alt"
+            ],
+            "extra": [
+              bem_classes(pager_base_class, 'nav', 'next')
+            ],
+            "attributes": {
+              "aria-label": "Next"
+            }
+          }
+        } %}
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

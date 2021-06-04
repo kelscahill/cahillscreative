@@ -1,0 +1,71 @@
+@mixin o-link($color: currentColor, $color-hover: white) {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  text-align: center;
+  transition: $transition-all;
+  text-decoration: none;
+  color: $color;
+  box-shadow: inset 0 -3px 0 -1px $c-secondary;
+
+  span {
+    transition: right 0.25s $transition-effect;
+    right: 3px;
+    color: currentColor;
+  }
+
+  &:hover,
+  &:focus {
+    color: $color-hover;
+    box-shadow: inset 0 -25px 0 -1px $c-secondary;
+
+    span {
+      right: 0;
+    }
+  }
+}
+
+@mixin o-link--small {
+  @include o-link;
+
+  font-family: $font-secondary;
+  font-size: $font-size-xs;
+}
+
+@mixin o-link--alt {
+  @include o-link;
+
+  font-family: $font-secondary;
+  font-size: $font-size-xs;
+  letter-spacing: $letter-spacing-3;
+  text-transform: uppercase;
+  box-shadow: none;
+
+  &:hover,
+  &:focus {
+    box-shadow: none;
+  }
+}
+
+.o-link {
+  @include o-link;
+
+  &--small {
+    @include o-link--small;
+  }
+
+  &--alt {
+    @include o-link--alt;
+  }
+
+  &--no-shadow {
+    box-shadow: none;
+
+    &:hover,
+    &:focus {
+      box-shadow: none;
+    }
+  }
+}

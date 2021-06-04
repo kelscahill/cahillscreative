@@ -30,4 +30,4 @@ $related_products_args = array(
 );
 $context['related_products'] = Timber::query_posts($related_products_args);
 
-Timber::render(array('05-pages/single-product.twig'), $context);
+Timber::render(array('05-pages/post-types/single-product.twig'), $context);

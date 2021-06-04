@@ -1,0 +1,44 @@
+{% set links_subscribe_base_class = links_subscribe.base_class|default('c-links-subscribe') %}
+
+{# Set the data via ACF. #}
+{% set links_subscribe = {
+  "items": options.subscribe_links,
+  "more": options.subscribe_links_more,
+} %}
+
+{% if links_subscribe.items %}
+  <div class="{{ bem_classes(links_subscribe_base_class) }}">
+    <span class="{{ bem_classes(links_subscribe_base_class, 'title') }}">{{ 'Subscribe:' }}</span>
+    <div class="{{ bem_classes(links_subscribe_base_class, 'links') }}">
+      {% for item in links_subscribe.items %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "text": item.subscribe_link.title,
+            "url": item.subscribe_link.url,
+            "target": item.subscribe_link.target,
+            "modifiers": "simple",
+            "extra": bem_classes(links_subscribe_base_class, 'link')
+          }
+        } %}
+      {% endfor %}
+      {% if links_subscribe.more %}
+        <div class="{{ bem_classes(links_subscribe_base_class, 'tooltip') }}">
+          <span class="{{ bem_classes(links_subscribe_base_class, 'tooltip-label') }} js-toggle" data-toggled="c-links-subscribe__tooltip">{{ 'More' }}</span>
+          <div class="{{ bem_classes(links_subscribe_base_class, 'tooltip-wrap') }}">
+            {% for item in links_subscribe.more %}
+              {% include "@atoms/links/link.twig" with {
+                "link": {
+                  "text": item.subscribe_link.title,
+                  "url": item.subscribe_link.url,
+                  "target": item.subscribe_link.target,
+                  "modifiers": "simple",
+                  "extra": bem_classes(links_subscribe_base_class, 'tooltip-link')
+                }
+              } %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

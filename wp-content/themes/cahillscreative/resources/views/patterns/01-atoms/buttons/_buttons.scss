@@ -1,0 +1,52 @@
+@mixin o-button($bg-color: $c-primary, $color: white, $bg-color-hover: $c-black, $color-hover: $c-white) {
+  border: none;
+  cursor: pointer;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  text-align: center;
+  background-color: $bg-color;
+  color: $color;
+  padding: 15px $space-double;
+  transition: $transition-all;
+  border-radius: 50px;
+
+  &:focus,
+  &:hover {
+    color: $color-hover;
+    background-color: $bg-color-hover;
+  }
+
+  .o-icon {
+    position: relative;
+    top: 2px;
+  }
+
+  span + span {
+    margin-left: $space-half
+  }
+}
+
+@mixin o-button--secondary {
+  @include o-button($c-secondary, $c-white, $c-black, $c-white);
+}
+
+@mixin o-button--small {
+  @include o-button($c-primary, white, $c-black, $c-white);
+
+  padding: $space-one-half $space;
+}
+
+.o-button {
+  @include o-button;
+
+  &--secondary {
+    @include o-button--secondary;
+  }
+
+  &--small {
+    @include o-button--small;
+  }
+}

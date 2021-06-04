@@ -1,0 +1,40 @@
+{% set accordion_base_class = accordion.base_class|default('c-accordion') %}
+
+{% if accordion %}
+  <div class="{{ bem_classes(accordion_base_class) }} u-spacing">
+    {% if accordion.heading %}
+      {% include "@atoms/text/heading/heading.twig" with {
+        "heading": {
+          "level": "3",
+          "size": "l",
+          "type": "primary",
+          "text": accordion.heading,
+          "extra": bem_classes(accordion_base_class, 'heading')
+        }
+      } %}
+    {% endif %}
+    {% if accordion.items %}
+      <div class="{{ bem_classes(accordion_base_class, 'items') }} u-spacing--half">
+        {% for item in accordion.items %}
+          <div class="{{ bem_classes(accordion_base_class, 'item') }} {{ 'c-accordion__item--' ~ loop.index }}">
+            {% if item.heading %}
+              <div class="{{ bem_classes(accordion_base_class, 'item-heading') }} js-toggle-parent">
+                {{ item.heading }}
+              </div>
+            {% endif %}
+            {% if item.body %}
+              <div class="{{ bem_classes(accordion_base_class, 'item-body') }}">
+                {% include "@atoms/text/rich-text/rich-text.twig" with {
+                  "rich_text": {
+                    "text": item.body,
+                    "modifiers": "small"
+                  }
+                } %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endif %}

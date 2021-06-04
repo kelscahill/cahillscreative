@@ -1,0 +1,42 @@
+{% set page_header_base_class = page_header.base_class|default('c-page-header') %}
+{% set cluster = post.terms('cluster')[0] %}
+
+<div class="{{ bem_classes(page_header_base_class, page_header.element, page_header.modifiers, page_header.extra) }} u-spacing--quarter">
+  {% include "@atoms/misc/presented-by.twig" with {
+    "presented_by": {
+      "logo": {
+        "base_url": true,
+        "image": {
+          "src": Image(post.advertiser_logo).src,
+          "alt": Image(post.advertiser_logo).alt
+        }
+      }
+    }
+  } %}
+  {% include "@atoms/text/kicker/kicker.twig" with {
+    "kicker": {
+      "text": cluster.name,
+      "link": cluster.link
+    }
+  } %}
+  {% include "@atoms/text/eyebrow/eyebrow.twig" with {
+    "eyebrow": {
+      "sponsored": post.is_native_advertising,
+      "sponsor": post.native_advertising_eyebrow
+    }
+  } %}
+  {% include "@atoms/text/heading/heading.twig" with {
+    "heading": {
+      "level": "1",
+      "size": heading_size ? heading_size : "xl",
+      "type": "primary",
+      "text": post.display_title is not empty ? post.display_title : post.title
+    }
+  } %}
+  {% include "@atoms/text/dek/dek.twig" with {
+    "dek": {
+      "text": post.dek,
+      "modifiers": "large"
+    }
+  } %}
+</div>

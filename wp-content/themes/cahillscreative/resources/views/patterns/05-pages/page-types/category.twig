@@ -1,0 +1,63 @@
+{% extends "@templates/_layout.twig" %}
+
+{% block sections_before %}
+  {% include "@molecules/navigation/secondary/secondary-nav.twig" with {
+    "secondary_nav": {
+      "items": sub_menu_items
+    }
+  } %}
+  {% if term_image %}
+    {% include "@organisms/sections/heroes/hero.twig" with {
+      "hero": {
+        "heading": {
+          "level": "1",
+          "size": "xxl",
+          "type": "primary",
+          "text": term.name
+        },
+        "hr": {
+          "modifiers": "yellow"
+        },
+        "dek": {
+          "text": term.description
+        },
+        "background_image": Image(term_image).src,
+        "modifiers": "overlay"
+      }
+    } %}
+  {% endif %}
+  <div class="u-spacing--quad u-gradient--top--white">
+    {% if term.parent == 0 %}
+      {% include "@organisms/sections/feeds/cards-featured.twig" with {
+        "cards_featured": {
+          "heading": {
+            "text": term_image ? "The latest" : term.name
+          },
+          "dek": {
+            "text": term_image ? NULL : term.description
+          },
+          "posts": posts|slice(0,3),
+          "extra": "u-padding--double--top"
+        }
+      } %}
+    {% endif %}
+    {% include "@organisms/sections/feeds/block-list.twig" with {
+      "block_list": {
+        "subhead": {
+          "text": term.parent == 0 ? NULL : term.name
+        },
+        "posts": term.parent == 0 ? posts|slice(3) : posts,
+        "button": {
+          "url": posts.pagination.next.link,
+          "text": "More Stories",
+        },
+        "pager": {
+          "current": posts.pagination.current,
+          "next": posts.pagination.next.link,
+          "prev": posts.pagination.prev.link
+        },
+        "sidebar": true
+      }
+    } %}
+  </div>
+{% endblock %}

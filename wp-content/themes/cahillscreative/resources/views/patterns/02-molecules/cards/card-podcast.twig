@@ -1,0 +1,63 @@
+{% if post %}
+  {% set card_podcast_base_class = card_podcast.base_class|default('c-card-podcast') %}
+
+  <div class="{{ bem_classes(card_podcast_base_class, card_podcast.element, card_podcast.modifiers, card_podcast.extra) }} u-fade-up">
+    {% include "@atoms/images/image/figure.twig" with {
+      "figure": {
+        "link": {
+          "url": post.link
+        },
+        "type": post.post_type,
+        "picture": {
+          "modifiers": "round"
+        },
+        "image": {
+          "src": post.thumbnail.src|resize(300, 300),
+          "alt": post.thumbnail.alt
+        },
+        "extra": bem_classes(card_podcast_base_class, 'image')
+      }
+    } %}
+    <div class="{{ bem_classes(card_podcast_base_class, 'content') }} u-spacing--double">
+      <div class="{{ bem_classes(card_podcast_base_class, 'body') }} u-spacing--half">
+        {% include "@atoms/text/meta/meta.twig" with {
+          "meta": {
+            "date": post.date,
+            "extra": bem_classes(card_podcast_base_class, 'meta')
+          }
+        } %}
+        {% include "@atoms/text/heading/heading.twig" with {
+          "heading": {
+            "level": "2",
+            "size": "l",
+            "type": "primary",
+            "text": post.display_title is not empty ? post.display_title : post.title,
+            "link": {
+              "url": post.link
+            },
+            "extra": bem_classes(card_podcast_base_class, 'heading')
+          }
+        } %}
+        {% include "@atoms/text/dek/dek.twig" with {
+          "dek": {
+            "modifiers": "large",
+            "text": post.dek,
+            "extra": bem_classes(card_podcast_base_class, 'dek')
+          }
+        } %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "url": post.link,
+            "text": "Listen",
+            "arrow": true,
+            "modifiers": "alt",
+            "extra": bem_classes(card_podcast_base_class, 'link')
+          }
+        } %}
+      </div>
+      <div class="{{ bem_classes(card_podcast_base_class, 'subscribe') }}">
+        {% include "@atoms/links/links-subscribe.twig" %}
+      </div>
+    </div>
+  </div>
+{% endif %}

@@ -1,0 +1,46 @@
+.c-leaderboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space;
+  background-color: $c-gray;
+
+  &.is-sticky {
+    @at-root body[class*="js-scroll-dir"] & {
+      position: sticky;
+      top: calc(#{$header-utility-height} + #{$header-main-height});
+      width: 100%;
+      z-index: 995;
+      background-color: $c-gray;
+      border-bottom: $border--standard;
+
+      .js-close-ad {
+        background-color: $c-gray;
+        position: absolute;
+        bottom: -10px;
+        right: $space;
+        border-radius: 100%;
+        border: $border--standard;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        line-height: 1;
+
+        &::before {
+          content: "×";
+          font-size: 15px;
+        }
+      }
+    }
+
+    @at-root .js-scroll-dir--up & {
+      display: none;
+
+      .js-ad {
+        // Important for js functionality.
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+  }
+}
