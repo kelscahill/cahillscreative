@@ -1,20 +1,28 @@
-{% set newsletter_signup_footer_base_class = newsletter_signup_footer.base_class|default('c-newsletter-signup') %}
+{% set newsletter_signup_base_class = newsletter_signup.base_class|default('c-newsletter-signup') %}
 
-<div class="{{ bem_classes(newsletter_signup_footer_base_class, '', 'footer') }}" data-js-footer-sailthru-form-wrapper>
-  <form class="{{ bem_classes(newsletter_signup_footer_base_class, 'form') }} js-hide-success" data-js-footer-sailthru-form="" action="" method="post">
-    <fieldset class="o-fieldset">
-      <label class="o-form-item__label is-vishidden" for="o-form-item__email">Enter Email Address</label>
-      <input class="o-form-item__email" type="email" placeholder="Enter email address" name="sailthru-email" id="site-footer-newletter-email" aria-label="Email Address">
-      <input type="hidden" name="sailthru-registration-source" value="navigation_footer">
-      <input class="form-checkbox is-hidden" type="checkbox" name="what_you_missed" value="what_you_missed" checked>
-      <input id="footer-recaptcha" type="hidden" name="footer-recaptcha" value="" />
-      <input class="o-form-item__submit" type="submit" name="op" value="Sign Up" />
-    </fieldset>
-    <div class="{{ bem_classes(newsletter_signup_footer_base_class, 'recaptcha') }} o-small">
-      <div class="{{ bem_classes(newsletter_signup_footer_base_class, 'error') }} js-nl-signup-error is-hidden"></div>
-      <div class="{{ bem_classes(newsletter_signup_footer_base_class, 'recaptcha-message') }}">{{ recapthca_message }}</div>
-      <div class="{{ bem_classes(newsletter_signup_footer_base_class, 'recaptcha-wrap') }}" id="footer-recaptcha-div"></div>
+{% if options.mailchimp_url %}
+  <div class="{{ bem_classes(newsletter_signup_base_class, '', 'footer') }} u-spacing">
+    <div class="{{ bem_classes(newsletter_signup_base_class, 'heading') }} u-spacing--half">
+      {% include "@atoms/text/heading/heading.twig" with {
+        "heading": {
+          "level": "3",
+          "size": "s",
+          "type": "secondary",
+          "text": "Get on the list",
+          "extra": bem_classes(newsletter_signup_base_class, 'title')
+        }
+      } %}
+      <p>{{ 'Sign up for first dibs on new collections and much more.' }}</p>
     </div>
-  </form>
-  <div class="{{ bem_classes(newsletter_signup_footer_base_class, 'success') }} o-small js-nl-signup-success is-hidden">Thanks for signing up! Find more newsletters on our <a href="{{ newsletter_link }}">newsletter sign-up page</a>.</div>
-</div>
+    <form class="{{ bem_classes(newsletter_signup_base_class, 'form') }}" action="" method="post">
+      <form action="{{ options.mailchimp_url }}" method="post" name="mc-embedded-subscribe-form" class="validate u-spacing" target="_blank" rel="noopener" novalidate>
+        <input name="EMAIL" type="email" placeholder="Enter email address" name="email"/>
+        {% include "@atoms/buttons/button.twig" with {
+          "button": {
+            "text": "Let's Do This"
+          }
+        } %}
+      </form>
+    </form>
+  </div>
+{% endif %}

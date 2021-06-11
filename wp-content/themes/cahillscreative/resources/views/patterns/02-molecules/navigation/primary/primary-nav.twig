@@ -2,37 +2,59 @@
 
 {% if primary_nav.name == "Primary Navigation" %}
   <nav role="navigation" class="{{ bem_classes(primary_nav_base_class, primary_nav.element, primary_nav.modifiers, primary_nav.extra) }}">
-    {% include "@atoms/buttons/button.twig" with {
-      "button": {
-        "extra": [
-          bem_classes(primary_nav_base_class, 'icon-close'),
-          "js-toggle"
-        ],
-        "icon": {
-          "name": "close",
-          "modifiers": "xsmall"
-        },
-        "attributes": {
-          "aria-label": "Close",
-          "data-toggled": "body",
-          "data-prefix": "menu",
-        }
-      }
-    } %}
+    <div class="{{ bem_classes(primary_nav_base_class, 'menu-toggle') }} js-toggle" data-toggled="body" data-prefix="primary-nav" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </div>
     {% if primary_nav.items %}
-      <ul class="{{ bem_classes(primary_nav_base_class, 'list') }}">
+      <ul class="{{ bem_classes(primary_nav_base_class, 'parent-list') }}">
         {% for item in primary_nav.get_items %}
-          <li class="{{ bem_classes(primary_nav_base_class, 'item') }}">
-            {% include "@atoms/links/link.twig" with {
-              "link": {
-                "text": item.title,
-                "url": item.url,
-                "target": item.target,
-                "extra": [bem_classes(primary_nav_base_class, 'link')]|merge(item.classes),
-              }
-            } %}
+          <li class="{{ bem_classes(primary_nav_base_class, 'parent-list-item') }}">
+            <div class="{{ bem_classes(primary_nav_base_class, 'link-wrap') }}">
+              {% include "@atoms/links/link.twig" with {
+                "link": {
+                  "text": item.title,
+                  "url": item.url,
+                  "target": item.target,
+                  "modifiers": "no-shadow",
+                  "extra": [
+                    bem_classes(primary_nav_base_class, 'link'),
+                    item.children ? 'has-children'
+                  ]|merge(item.classes),
+                }
+              } %}
+              {% if item.children %}
+                {% include "@atoms/images/icons/icon.twig" with {
+                  "icon": {
+                    "title": "Arrow",
+                    "name": "arrow",
+                    "modifiers": "xsmall",
+                    "extra": [
+                      bem_classes(primary_nav_base_class, 'link-toggle'),
+                      "js-toggle-parent"
+                    ]
+                  }
+                } %}
+              </div>
+              <ul class="{{ bem_classes(primary_nav_base_class, 'child-list') }}">
+                {% for item in item.children %}
+                  <li class="{{ bem_classes(primary_nav_base_class, 'child-list-item') }}">
+                    {% include "@atoms/links/link.twig" with {
+                      "link": {
+                        "text": item.title,
+                        "url": item.url,
+                        "target": item.target,
+                        "modifiers": "no-shadow",
+                        "extra": [bem_classes(primary_nav_base_class, 'link')]|merge(item.classes),
+                      }
+                    } %}
+                    </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
           {% endfor %}
         </li>
+        {% include "@molecules/components/social/social-links/social-links.twig" %}
       </ul>
     {% endif %}
   </nav>

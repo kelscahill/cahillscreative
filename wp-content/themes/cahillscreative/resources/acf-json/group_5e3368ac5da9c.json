@@ -399,6 +399,40 @@
                 "id": ""
             },
             "return_format": "array"
+        },
+        {
+            "key": "field_60bad36120b55",
+            "label": "Alert Text",
+            "name": "alert_text",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_60bad36b20b56",
+            "label": "Alert Link",
+            "name": "alert_link",
+            "type": "link",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array"
         }
     ],
     "location": [
@@ -418,5 +452,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1622154162
+    "modified": 1622856602
 }

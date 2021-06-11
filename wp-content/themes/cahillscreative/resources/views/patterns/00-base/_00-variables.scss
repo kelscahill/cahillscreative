@@ -12,8 +12,8 @@
 $c-primary: var(--c-primary, black);
 $c-secondary: var(--c-secondary, black);
 $c-tertiary: var(--c-tertiary, black);
-$c-white: var(--c-white, white);
 $c-black: var(--c-black, black);
+$c-white: var(--c-white, white);
 $c-gray: #ddd;
 
 // Brand Colors
@@ -56,69 +56,93 @@ $c-body-bg: $c-white;
  * Fonts
  */
 @font-face {
-  font-family: "Guardian Egyptian Web";
-  src: url("/wp-content/themes/outside-child/resources/assets/fonts/GuardianEgyp-Regular-Web.woff2") format("woff2"), url("/wp-content/themes/outside-child/resources/views/patterns/00-base/fonts/GuardianEgyp-Regular-Web.ttf") format("truetype");
+  font-family: "GT Walsheim Light";
+  src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/gt-walsheim-light.woff2") format("woff2"), url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/gt-walsheim-light.woff2") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GT Walsheim Light";
+  src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/gt-walsheim-light-oblique.woff2") format("woff2"), url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/gt-walsheim-light-oblique.woff2") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "GT Walsheim";
+  src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/gt-walsheim-regular.woff2") format("woff2"), url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/gt-walsheim-regular.woff2") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Guardian Egyptian Web";
-  src: url("/wp-content/themes/outside-child/resources/assets/fonts/GuardianEgyp-Semibold-Web.woff2") format("woff2"), url("/wp-content/themes/outside-child/resources/views/patterns/00-base/fonts/GuardianEgyp-Semibold-Web.ttf") format("truetype");
-  font-weight: bold;
+  font-family: "GT Walsheim Medium";
+  src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/gt-walsheim-medium.woff2") format("woff2"), url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/gt-walsheim-medium.woff2") format("truetype");
+  font-weight: normal;
   font-style: normal;
 }
 
-$font-primary: "Guardian Egyptian Web", Georgia, serif;
-$font-secondary: "HelveticaNeue", Arial, Helvetica, Geneva, sans-serif;
+// @font-face {
+//   font-family: "GT Walsheim Bold";
+//   src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/gt-walsheim-bold.woff2") format("woff2"), url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/gt-walsheim-bold.woff2") format("truetype");
+//   font-weight: bold;
+//   font-style: normal;
+// }
+
+@font-face {
+  font-family: "Voster";
+  src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/voster.woff2") format("woff2"), url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/voster.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GT Alpina Fine";
+  src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/gt-alpina-fine-regular.woff2") format("woff2"), url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/gt-alpina-fine-regular.woff2") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+$font-body: "GT Walsheim Light", Arial, Helvetica, sans-serif;
+$font-primary: var(--font-primary, $font-body);
+$font-secondary: var(--font-secondary, $font-body);
 $font-tertiary: Georgia, serif;
-$font-body: $font-primary;
 
 /**
  * Native Custom Properties
  */
 :root {
-  --body-font-size: 17px;
-  --font-size-xs: 12px;
-  --font-size-s: 15px;
+  --body-font-size: 16px;
+  --font-size-xxs: 12px;
+  --font-size-xs: 14px;
+  --font-size-s: 16px;
   --font-size-m: 18px;
-  --font-size-l: 24px;
-  --font-size-xl: 32px;
-  --font-size-xxl: 40px;
-  --font-size-xxxl: 50px;
+  --font-size-l: 22px;
+  --font-size-xl: 30px;
+  --font-size-xxl: 50px;
 }
 
 // Large Breakpoint
 @media screen and (min-width: 720px) {
   :root {
+    --font-size-l: 24px;
     --font-size-xl: 40px;
-    --font-size-xxl: 50px;
-    --font-size-xxxl: 70px;
-  }
-}
-
-// XLarge Breakpoint
-@media screen and (min-width: 960px) {
-  :root {
-    --font-size-m: 20px;
-    --font-size-l: 28px;
-    --font-size-xl: 42px;
-    --font-size-xxl: 55px;
-    --font-size-xxxl: 90px;
+    --font-size-xxl: 60px;
   }
 }
 
 /**
  * Font Sizes.
  */
-$body-font-size: var(--body-font-size, 17px);
-$font-size-xs: var(--font-size-xs, 12px);
-$font-size-s: var(--font-size-s, 15px);
-$font-size-m: var(--font-size-m, 20px);
-$font-size-l: var(--font-size-l, 28px);
-$font-size-xl: var(--font-size-xl, 42px);
-$font-size-xxl: var(--font-size-xxl, 55px);
-$font-size-xxxl: var(--font-size-xxxl, 90px);
+$body-font-size: var(--body-font-size, 16px);
+$font-size-xxs: var(--font-size-xxs, 12px);
+$font-size-xs: var(--font-size-xs, 14px);
+$font-size-s: var(--font-size-s, 16px);
+$font-size-m: var(--font-size-m, 18px);
+$font-size-l: var(--font-size-l, 24px);
+$font-size-xl: var(--font-size-xl, 40px);
+$font-size-xxl: var(--font-size-xxl, 60px);
 
 /**
  * Letter spacing.
@@ -196,12 +220,12 @@ $max-width-xxl: $xxlarge;
 /**
  * Icons.
  */
-$icon-xsmall: 15px;
+$icon-xsmall: 10px;
 $icon-small: 20px;
-$icon-medium: 25px;
+$icon-medium: 30px;
 $icon-large: 40px;
 $icon-xlarge: 50px;
-$icon-xxlarge: 75px;
+$icon-xxlarge: 90px;
 
 /**
  * Border/Shadow Styles.
@@ -212,7 +236,7 @@ $border--standard: 1px solid $c-gray;
 $border--dotted: 1px dashed $c-gray;
 $border--thick: 6px solid $c-primary;
 $box-shadow--small: 0 0 5px rgba(black, 0.3);
-$box-shadow--standard: 0 0 15px rgba(black, 0.15);
+$box-shadow: 0 10px 15px rgba(black, 0.15);
 $outline: 3px solid $c-primary;
 
 /**
@@ -243,10 +267,9 @@ $z-index-back-to-top: $z-index-100;
 /*
  * Theme variables.
  */
-$header-main-height: 45px;
 $header-utility-height: 40px;
 $header-height: calc(45px + 40px);
-$footer-artwork-height: 60px;
+$footer-logo: 150px;
 $sidebar-width: 300px;
 $main-width: calc(100% - (#{$sidebar-width}));
-$image-path: '/wp-content/themes/outside-child/resources/assets/images/';
+$image-path: '/wp-content/themes/cahillscreative/resources/assets/images/';

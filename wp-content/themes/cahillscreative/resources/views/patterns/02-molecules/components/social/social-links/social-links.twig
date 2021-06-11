@@ -2,16 +2,16 @@
 
 {% set social_links = [
   {
+    "name": "instagram",
+    "url": options.instagram_url
+  },
+  {
     "name": "facebook",
     "url": options.facebook_url
   },
   {
     "name": "twitter",
     "url": options.twitter_url
-  },
-  {
-    "name": "instagram",
-    "url": options.instagram_url
   },
   {
     "name": "pinterest",
@@ -32,7 +32,7 @@
             ],
             "icon": {
               "name": link.name,
-              "modifiers": "xsmall"
+              "modifiers": "small"
             },
             "attributes": {
               "aria-label": link.name|capitalize

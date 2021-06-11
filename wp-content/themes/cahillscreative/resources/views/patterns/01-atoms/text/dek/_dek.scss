@@ -2,38 +2,4 @@
   @include u-font--s;
 
   color: $c-secondary;
-
-  &--large {
-    @include u-font--m;
-
-    font-size: 18px;
-  }
-
-  &--xlarge {
-    @include u-font--m;
-  }
-
-  &--html {
-    p a {
-      @include o-link;
-    }
-
-    ul {
-      list-style: none;
-      font-size: $font-size-s;
-
-      li {
-        margin-bottom: $space-one-fourth;
-
-        a {
-          font-weight: bold;
-          color: $c-gray;
-        }
-      }
-    }
-  }
-
-  &--gray {
-    color: $c-gray;
-  }
 }

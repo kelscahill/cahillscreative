@@ -3,3 +3,13 @@
 {% block content %}
   {% include ['@organisms/content/content-single-' ~ post.post_type|replace({'_': '-'}) ~ '.twig', '@organisms/content/content-single.twig'] %}
 {% endblock %}
+
+{% block sections_after %}
+  {% include "@organisms/sections/feeds/related-posts.twig" with {
+    "related_posts": {
+      "heading": "Latest blog posts",
+      "posts": latest_blog_posts,
+      "modifiers": "tertiary"
+    }
+  } %}
+{% endblock %}

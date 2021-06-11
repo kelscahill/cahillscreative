@@ -1,21 +1,22 @@
 .c-social-links {
   display: flex;
   flex-direction: row;
-  margin-left: -$space-half;
-  margin-right: -$space-half;
 
   &__item {
-    padding: 8px $space-half;
+    padding: $space-half;
+    border-radius: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: none;
-    color: $c-gray;
+    color: $c-tertiary;
+    background-color: transparent;
+    margin-right: $space-half;
 
     &:hover,
     &:focus {
       box-shadow: none;
-      color: $c-primary;
+      background-color: $c-secondary;
     }
   }
 }

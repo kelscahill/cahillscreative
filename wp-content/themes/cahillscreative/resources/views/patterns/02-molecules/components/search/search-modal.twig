@@ -1,6 +1,11 @@
 {% set search_modal_base_class = search_modal.base_class|default('c-search-modal') %}
 
 <div class="{{ bem_classes(search_modal_base_class, search_modal.element, search_modal.modifiers, search_modal.extra) }}">
+  <style>
+    .{{ bem_classes(search_modal_base_class) }}::after {
+      background-image: url({{ Image(options.logo_full).src }});
+    }
+  </style>
   {% include "@atoms/buttons/button.twig" with {
     "button": {
       "extra": [
@@ -9,7 +14,7 @@
       ],
       "icon": {
         "name": "close",
-        "modifiers": "large"
+        "modifiers": "medium"
       },
       "attributes": {
         "aria-label": "Close",

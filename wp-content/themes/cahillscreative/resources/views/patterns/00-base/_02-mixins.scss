@@ -6,14 +6,17 @@
   font-family: $font-body;
   font-size: $body-font-size;
   line-height: $line-height;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.25px;
+}
+
+p {
+  @include body-copy;
 }
 
 @mixin u-font--m {
-  font-family: $font-primary;
+  font-family: $font-body;
   font-size: $font-size-m;
   line-height: $line-height;
-  letter-spacing: 0.04em;
 }
 
 .u-font--m {
@@ -21,7 +24,7 @@
 }
 
 @mixin u-font--s {
-  font-family: $font-secondary;
+  font-family: $font-body;
   font-size: $font-size-s;
   line-height: $line-height-s;
 }
@@ -31,21 +34,9 @@
 }
 
 @mixin u-font--xs {
-  font-family: $font-secondary;
+  font-family: $font-body;
   font-size: $font-size-xs;
   line-height: $line-height;
-  color: $c-gray;
-
-  a {
-    text-decoration: underline;
-    color: $c-gray;
-    transition: $transition-all;
-
-    &:hover,
-    &:focus {
-      color: $c-white;
-    }
-  }
 }
 
 .u-font--xs {

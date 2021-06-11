@@ -1,5 +1,6 @@
 /* eslint-disable */
 import inView from 'in-view';
+import header from '../util/header';
 import progressBar from '../util/progress-bar';
 import slick from '../util/slick.min.js';
 import magnificPopup from '../util/magnific-popup.min.js';
@@ -7,6 +8,8 @@ import magnificPopup from '../util/magnific-popup.min.js';
 export default {
   init() {
     // JavaScript to be fired on all pages
+
+    header();
 
     // Add class if is mobile
     function isMobile() {
@@ -105,21 +108,18 @@ export default {
      * Slick sliders
      */
     $('.js-slick').slick({
-      prevArrow: '<span class="icon--arrow icon--arrow-prev"></span>',
-      nextArrow: '<span class="icon--arrow icon--arrow-next"></span>',
-      dots: false,
-      autoplay: false,
-      arrows: true,
+      dots: true,
+      autoplay: true,
+      autoplaySpeed: 3000,
+      arrows: false,
       infinite: true,
-      speed: 250,
+      speed: 300,
       fade: true,
       cssEase: 'linear',
-      adaptiveHeight: true,
+      adaptiveHeight: false,
     });
 
-    $('.js-slick-cards').slick({
-      prevArrow: '<span class="icon--arrow icon--arrow-prev"></span>',
-      nextArrow: '<span class="icon--arrow icon--arrow-next"></span>',
+    $('.js-slick-posts').slick({
       dots: false,
       infinite: false,
       speed: 300,
@@ -127,7 +127,7 @@ export default {
       slidesToScroll: 4,
       responsive: [
         {
-          breakpoint: 700,
+          breakpoint: 720,
           settings: {
             slidesToShow: 3,
             slidesToScroll: 3,
@@ -141,7 +141,40 @@ export default {
           }
         },
         {
-          breakpoint: 375,
+          breakpoint: 320,
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+          }
+        }
+      ]
+    });
+
+    $('.js-slick-products').slick({
+      prevArrow: '<span class="o-icon--arrow o-icon--arrow-prev"></span>',
+      nextArrow: '<span class="o-icon--arrow o-icon--arrow-next"></span>',
+      dots: false,
+      infinite: false,
+      speed: 300,
+      slidesToShow: 4,
+      slidesToScroll: 4,
+      responsive: [
+        {
+          breakpoint: 720,
+          settings: {
+            slidesToShow: 3,
+            slidesToScroll: 3,
+          }
+        },
+        {
+          breakpoint: 500,
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 2,
+          }
+        },
+        {
+          breakpoint: 320,
           settings: {
             slidesToShow: 1,
             slidesToScroll: 1,

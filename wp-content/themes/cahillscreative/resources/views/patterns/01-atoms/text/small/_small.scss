@@ -1,9 +1,4 @@
 small,
 .o-small {
-  @include u-font--xs;
-
-  a {
-    @include o-link--small;
-    line-height: $line-height-s;
-  }
+  font-size: $font-size-xs;
 }

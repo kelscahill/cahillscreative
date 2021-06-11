@@ -1,8 +1,8 @@
 {% set header_base_class = header.base_class|default('c-header') %}
 
 {% include "@molecules/components/alert/alert.twig" %}
-<header role="banner" class="{{ bem_classes(header_base_class, header.element, header.modifiers, header.extra) }}">
-  <div class="{{ header_base_class ~ '--inner' }} l-container">
+<header id="c-header" role="banner" class="{{ bem_classes(header_base_class, header.element, header.modifiers, header.extra) }}">
+  <div class="{{ header_base_class ~ '--inner' }}">
     {% include "@molecules/navigation/primary/primary-nav.twig" %}
     {% include "@atoms/images/logos/logo.twig" with {
       "logo": {
@@ -18,13 +18,19 @@
       {% include "@atoms/buttons/button.twig" with {
         "button": {
           "text": options.header_button.title,
-          "url": options.header_button.url
+          "url": options.header_button.url,
+          "modifiers": [
+            "small",
+            "tertiary"
+          ],
+          "extra": bem_classes(header_base_class, 'button'),
         }
       } %}
       {% include "@atoms/buttons/button.twig" with {
         "button": {
+          "modifiers": "icon",
           "extra": [
-            bem_classes(header_base_class, 'icon-search'),
+            bem_classes(header_base_class, 'icon', 'search'),
             "js-toggle"
           ],
           "icon": {
@@ -39,7 +45,7 @@
           }
         }
       } %}
-      <a href="{{ site.link }}/cart" class="{{ bem_classes(header_base_class, 'icon-cart') }}" aria-label="Cart">
+      <a href="{{ site.link }}/cart" class="{{ bem_classes(header_base_class, 'icon', 'cart') }}" aria-label="Cart">
         {% if cart_count > 0 %}
           <span class="o-add-to-cart-count" data-animation="animate__animated animate__swing">{{ cart_count }}</span>
         {% endif %}
@@ -55,6 +61,5 @@
   </div>
 </header>
 {% include "@molecules/components/search/search-modal.twig" %}
-{% include "@molecules/components/progress-bar/progress-bar.twig" %}
-{% include "@molecules/components/leaderboard/leaderboard.twig" %}
 {% include "@molecules/navigation/secondary/secondary-nav.twig" %}
+{% include "@molecules/components/progress-bar/progress-bar.twig" %}

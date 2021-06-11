@@ -1,20 +1,11 @@
-.c-page-header-center {
-  .c-social-share {
-    justify-content: center;
-  }
-}
-
-.c-page-header-podcast {
-  display: flex;
+.c-page-header {
+  background-color: $c-white;
 
   &__icon {
-    margin-right: $space;
-    opacity: 1;
-    transition: $transition-all;
-
-    &:hover,
-    &:focus {
-      opacity: 0.6;
-    }
+    width: 80px;
+    height: 80px;
+    border-radius: 80px;
+    border: $border--standard;
+    background-color: $c-white;
   }
 }

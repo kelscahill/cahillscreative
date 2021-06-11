@@ -14,6 +14,6 @@ $context['accordion']['heading'] = get_field( 'accordion_heading' );
 $context['accordion']['items']   = get_field( 'accordion_items' );
 
 $templates = array(
-	'patterns/02-molecules/components/accordion/accordion.twig',
+	get_stylesheet_directory() . '/views/patterns/02-molecules/components/accordion/accordion.twig',
 );
 Timber::render( $templates, $context );

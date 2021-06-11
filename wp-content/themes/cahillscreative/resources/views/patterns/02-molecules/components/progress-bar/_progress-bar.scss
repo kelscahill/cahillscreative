@@ -3,7 +3,7 @@
   padding: 0;
   position: sticky;
   width: 100%;
-  top: calc(#{$header-utility-height} + #{$header-main-height});
+  top: calc(#{$header-utility-height} + #{$header-height});
   left: 0;
   display: flex;
   z-index: 996;

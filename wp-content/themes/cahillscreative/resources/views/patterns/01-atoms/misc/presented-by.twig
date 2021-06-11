@@ -1,8 +1,0 @@
-{% if presented_by.logo.image.src %}
-  {% set presented_by_base_class = presented_by.base_class|default('o-presented-by') %}
-
-  <div class="{{ bem_classes(presented_by_base_class, presented_by.element, presented_by.modifiers, presented_by.extra) }} u-spacing--quarter">
-    <span class="{{ bem_classes(presented_by_base_class, 'text') }}">Presented by</span>
-    {% include "@atoms/images/logos/logo.twig" with presented_by %}
-  </div>
-{% endif %}

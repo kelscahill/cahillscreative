@@ -22,27 +22,4 @@ hr {
   &--small {
     @include o-hr--small;
   }
-
-  &--large {
-    width: 200px;
-    height: 15px;
-    background-color: $c-black;
-  }
-
-  &--accent {
-    width: 70px;
-    height: 2px;
-    background-color: $c-black;
-  }
-
-  &--yellow {
-    width: 100px;
-    height: 6px;
-    background-color: $c-primary;
-  }
-
-  &--intro {
-    width: 100px;
-    background-color: $c-gray;
-  }
 }

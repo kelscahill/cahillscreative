@@ -2,14 +2,35 @@
 {% if options.alert_text or options.alert_link %}
   <div class="{{ bem_classes(alert_base_class) }} js-alert">
     <div class="{{ bem_classes(alert_base_class, 'content') }}">
-      {% if options.alert_link %}
-        <a class="{{ bem_classes(alert_base_class, 'link') }}" href="{{ options.alert_link }}">{{ options.alert_text }}</a>
-      {% else %}
-        {{ options.alert_text }}
-      {% endif %}
+      {{ options.alert_text|wpautop }}
+      {% include "@atoms/links/link.twig" with {
+        "link": {
+          "text": options.alert_link.title,
+          "url": options.alert_link.url,
+          "target": options.alert_link.target,
+          "modifiers": "simple",
+          "extra": bem_classes(alert_base_class, 'link')
+        }
+      } %}
     </div>
-    <button class="o-icon o-icon--small js-alert-close" aria-label="Close">
-      {% include "@atoms/images/icons/close.twig" %}
-    </button>
+    {# {% include "@atoms/buttons/button.twig" with {
+      "button": {
+        "modifiers": "icon",
+        "extra": [
+          bem_classes(alert_base_class, 'close'),
+          "js-alert-close"
+        ],
+        "icon": {
+          "title": "Close",
+          "name": "close",
+          "modifiers": "xsmall"
+        },
+        "attributes": {
+          "aria-label": "Close",
+          "data-toggled": "body",
+          "data-prefix": "alert",
+        }
+      }
+    } %} #}
   </div>
 {% endif %}

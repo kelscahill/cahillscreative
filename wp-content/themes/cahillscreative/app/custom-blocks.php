@@ -21,7 +21,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'id',
         'keywords'        => array( 'accordion', 'section' ),
-        'render_template' => 'blocks/accordion.php',
+        'render_template' => get_stylesheet_directory() . '/views/blocks/accordion.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
@@ -37,7 +37,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'screenoptions',
         'keywords'        => array( 'cards', 'blocks'),
-        'render_template' => 'blocks/cards.php',
+        'render_template' => get_stylesheet_directory() . '/views/blocks/cards.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
@@ -53,7 +53,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'screenoptions',
         'keywords'        => array( 'image', 'row', 'section'),
-        'render_template' => 'blocks/image-row.php',
+        'render_template' => get_stylesheet_directory() . '/views/blocks/image-row.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
@@ -69,7 +69,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'screenoptions',
         'keywords'        => array( 'newsletter', 'blocks'),
-        'render_template' => 'blocks/newsletter.php',
+        'render_template' => get_stylesheet_directory() . '/views/blocks/newsletter.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
@@ -85,7 +85,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'screenoptions',
         'keywords'        => array( 'promo', 'section'),
-        'render_template' => 'blocks/promo.php',
+        'render_template' => get_stylesheet_directory() . '/views/blocks/promo.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
@@ -101,7 +101,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'screenoptions',
         'keywords'        => array( 'steps', 'blocks'),
-        'render_template' => 'blocks/steps.php',
+        'render_template' => get_stylesheet_directory() . '/views/blocks/steps.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,

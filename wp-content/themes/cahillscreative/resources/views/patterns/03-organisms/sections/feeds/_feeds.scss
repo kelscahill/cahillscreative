@@ -1,0 +1,18 @@
+.c-related-posts {
+  &--tertiary {
+    padding-top: 0;
+    padding-bottom: $space-quadruple * 2;
+    background-color: $c-tertiary;
+    margin-bottom: -95px;
+
+    .c-related-posts__header {
+      background-color: transparent;
+
+      .o-icon {
+        background-color: $c-tertiary;
+        border: none;
+        margin-top: -40px;
+      }
+    }
+  }
+}

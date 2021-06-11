@@ -1,3 +1,12 @@
+
+{# {% include "@atoms/images/image/responsive-image.twig" with {
+  "image": {
+    "srcset": Image(item.image).src|resize(720, 720) ~ ' 720w, ' ~ Image(item.image).src|resize(960, 960) ~ ' 960w',
+    "src": Image(item.image).src|resize(500, 500),
+    "alt": Image(item.image).alt
+  }
+} %} #}
+
 {% if block %}
   {% set block_base_class = block.base_class|default('c-block') %}
 

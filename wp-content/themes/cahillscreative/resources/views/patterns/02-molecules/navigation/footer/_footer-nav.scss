@@ -1,28 +1,28 @@
 .c-footer-nav {
-  column-count: 2;
-  column-gap: $space-double;
-  margin: (-$space-one-fourth) 0;
-
-  &__item {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
+  ul {
+    list-style: none;
+    margin-left: 0;
   }
 
-  &__link {
-    @include u-font--s;
-
-    color: $c-gray;
-    transition: $transition-all;
-    padding: $space-one-fourth 0;
+  a {
+    display: table;
     text-align: left;
-    display: block;
-    box-shadow: none;
 
     &:hover,
     &:focus {
-      color: $c-primary;
-      box-shadow: none;
+      color: $c-tertiary;
+    }
+  }
+
+  &__parent-list {
+    columns: 2 auto;
+  }
+
+  &__parent-list-item {
+    break-inside: avoid;
+
+    > a {
+      @include o-heading__secondary--s;
     }
   }
 }

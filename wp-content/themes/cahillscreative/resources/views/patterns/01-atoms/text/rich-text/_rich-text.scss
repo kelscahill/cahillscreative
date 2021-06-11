@@ -13,16 +13,6 @@
     }
   }
 
-  > dl dd,
-  > dl dt,
-  > ol li,
-  > ul li,
-  > p {
-    font-family: $font-tertiary;
-    font-weight: 400;
-    line-height: 1.75;
-  }
-
   > h1,
   > h2,
   > h3,
@@ -81,14 +71,6 @@
 
     a {
       @include o-link;
-    }
-  }
-
-  &--longform {
-    .wp-block-image {
-      @include media('>large') {
-        margin-left: -120px;
-      }
     }
   }
 }

@@ -91,7 +91,6 @@ if ( ! class_exists( 'StarterSite' ) ) {
 
       /* Global */
       $context['image_path'] = '/wp-content/themes/cahillscreative/resources/assets/images/';
-      $context['copyright'] = '© ' . date( 'Y' ) . ' Cahill\'s Creative LLC';
       $context['disclaimer'] = 'DISCLOSURE: Some of the links are affiliate links, meaning, at no additional cost to you, I will earn a commission if you click through and make a purchase.';
 
       /* Menus */
@@ -102,6 +101,12 @@ if ( ! class_exists( 'StarterSite' ) ) {
       global $woocommerce;
       $context['woocommerce'] = $woocommerce;
       $context['cart_count'] = $woocommerce->cart->cart_contents_count;
+
+      if (is_main_site()) {
+        $context['is_main_site'] = TRUE;
+      } else {
+        $context['is_main_site'] = FALSE;
+      }
 
       return $context;
     }

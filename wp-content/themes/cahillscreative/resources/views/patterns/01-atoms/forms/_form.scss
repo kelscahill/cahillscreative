@@ -24,7 +24,7 @@ label {
 }
 
 legend {
-  @include o-heading__primary--l;
+  @include o-heading__secondary--m;
 }
 
 input[type=text],
@@ -39,7 +39,7 @@ select,
 textarea {
   @include u-font--s;
 
-  padding: $space-half;
+  padding: 15px $space;
   box-shadow: none;
   border-radius: 0;
   border: $border--standard;

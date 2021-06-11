@@ -10,6 +10,8 @@
   color: $color;
   box-shadow: inset 0 -3px 0 -1px $c-secondary;
 
+  @include body-copy;
+
   span {
     transition: right 0.25s $transition-effect;
     right: 3px;
@@ -49,6 +51,18 @@
   }
 }
 
+@mixin o-link--simple {
+  @include o-link(currentColor, $c-tertiary);
+
+  text-decoration: underline;
+  box-shadow: none;
+
+  &:hover,
+  &:focus {
+    box-shadow: none;
+  }
+}
+
 .o-link {
   @include o-link;
 
@@ -58,6 +72,10 @@
 
   &--alt {
     @include o-link--alt;
+  }
+
+  &--simple {
+    @include o-link--simple;
   }
 
   &--no-shadow {
