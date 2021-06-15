@@ -251,6 +251,11 @@ class Advanced_Ads_Group {
 
 		$output_string = implode( '', $output_array );
 
+		// Adds inline css to the wrapper.
+		if ( ! empty( $this->ad_args['inline-css'] ) ) {
+			$this->wrapper = Advanced_Ads_Inline_Css::get_instance()->add_css( $this->wrapper, $this->ad_args['inline-css'] );
+		}
+
 		if ( ! $this->is_head_placement && $this->wrapper !== array() ) {
 			$output_string = '<div' . Advanced_Ads_Utils::build_html_attributes( $this->wrapper ) . '>'
 			. $this->label
@@ -600,8 +605,6 @@ class Advanced_Ads_Group {
 	 */
 	private function create_wrapper() {
 		$this->wrapper = array();
-
-
 
 		if ( $this->ad_args['is_top_level'] ) {
 			// Add label.

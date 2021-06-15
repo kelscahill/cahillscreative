@@ -53,7 +53,7 @@ class Advanced_Ads_Admin {
 	 * settings page and menu.
 	 */
 	private function __construct() {
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		if ( wp_doing_ajax() ) {
 			new Advanced_Ads_Ad_Ajax_Callbacks();
 			add_action( 'plugins_loaded', array( $this, 'wp_plugins_loaded_ajax' ) );
 		} else {

@@ -566,6 +566,12 @@ class ADVADS_SL_Plugin_Updater {
 
 		$cache = get_option( $cache_key );
 
+		// Remove cache when WordPress’ "force-update" option is used through Dashboard > Updates
+		if ( ! empty( $_GET['force-check'] ) ) {
+			delete_option( $cache_key );
+			return false;
+		}
+
 		if( empty( $cache['timeout'] ) || time() > $cache['timeout'] ) {
 			return false; // Cache is expired
 		}

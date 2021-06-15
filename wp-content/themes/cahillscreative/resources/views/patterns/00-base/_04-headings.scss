@@ -12,7 +12,7 @@ h6 {
   margin: 0;
 }
 
-@mixin o-heading-link($color-link: currentColor, $color-link-hover: currentColor) {
+@mixin o-heading-link($color-link: currentColor, $color-link-hover: $c-secondary) {
   a {
     color: $color-link;
 
@@ -34,7 +34,7 @@ h6 {
   font-style: normal;
   line-height: 1.1;
 
-  @include o-heading-link(currentColor, $c-link-hover);
+  @include o-heading-link;
 }
 
 .o-heading__primary--xxl,
@@ -49,7 +49,7 @@ h1 {
   font-style: normal;
   line-height: 1.2;
 
-  @include o-heading-link(currentColor, $c-link-hover);
+  @include o-heading-link;
 }
 
 .o-heading__primary--xl,
@@ -64,7 +64,7 @@ h2 {
   font-style: normal;
   line-height: 1.4;
 
-  @include o-heading-link(currentColor, $c-link-hover);
+  @include o-heading-link;
 }
 
 .o-heading__primary--l,

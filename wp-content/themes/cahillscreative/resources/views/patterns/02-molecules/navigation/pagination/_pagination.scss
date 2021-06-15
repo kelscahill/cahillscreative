@@ -1,0 +1,10 @@
+.c-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: $space-double;
+
+  > * {
+    padding: 0 $space;
+  }
+}

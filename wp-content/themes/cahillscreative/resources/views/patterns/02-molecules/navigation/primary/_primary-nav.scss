@@ -139,8 +139,8 @@
 
     @include media('>large') {
       border: 0;
-      padding: 0 $space-half;
       justify-content: flex-start;
+      padding: $space-half;
 
       @include body-copy;
 
@@ -157,23 +157,30 @@
       }
     }
 
-    &:first-child {
-      padding-top: 0;
-    }
+    @include media('<=large') {
+      &:first-child {
+        padding-top: 0;
+      }
 
-    &:last-child {
-      border: 0;
-      padding-bottom: 0;
+      &:last-child {
+        border: 0;
+        padding-bottom: 0;
+      }
     }
 
     a {
-      @include media('>large') {
-        padding: $space-half 0;
-      }
-
       &:hover,
       &:focus {
         color: $c-secondary;
+      }
+
+      &.current-menu-parent,
+      &.current-menu-item {
+        border-bottom: 1px solid $c-black;
+
+        &:hover {
+          border-color: $c-secondary;
+        }
       }
     }
   }
@@ -214,7 +221,7 @@
         width: 8px;
         height: 8px;
         border-radius: 8px;
-        background-color: $c-black;
+        background-color: $c-secondary;
         left: calc(-#{$space} - 4.5px);
         top: 0;
         bottom: 0;
@@ -226,6 +233,10 @@
         @include media('>large') {
           left: calc(-#{$space-half} - 4.5px);
         }
+      }
+
+      &.current-menu-item {
+        border: 0;
       }
 
       &:hover,

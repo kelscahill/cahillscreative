@@ -1,4 +1,6 @@
 .c-related-posts {
+  position: relative;
+
   &--tertiary {
     padding-top: 0;
     padding-bottom: $space-quadruple * 2;
@@ -13,6 +15,51 @@
         border: none;
         margin-top: -40px;
       }
+    }
+  }
+
+  &__wrap {
+    max-width: calc(#{$max-width-xxl} + #{$space-double});
+  }
+
+  &__posts {
+    position: relative;
+  }
+
+  .slick-list {
+    margin: 0 $space;
+  }
+
+  .slick-arrow {
+    @include o-heading__secondary--s;
+    position: absolute;
+    text-indent: 0;
+    padding: 0;
+    z-index: 2;
+    width: 80px;
+    height: 40px;
+    line-height: 40px;
+    display: block;
+    overflow: visible;
+
+    &:hover,
+    &:focus {
+      background-color: transparent;
+      color: $c-secondary;
+    }
+
+    &::before {
+      display: none;
+    }
+
+    &.slick-prev {
+      left: -35px;
+      transform: rotate(-90deg);
+    }
+
+    &.slick-next {
+      right: -35px;
+      transform: rotate(90deg);
     }
   }
 }

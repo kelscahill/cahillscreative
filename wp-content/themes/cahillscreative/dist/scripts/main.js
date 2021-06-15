@@ -229,6 +229,18 @@ Router.prototype.loadEvents = function loadEvents () {
       $('html').addClass(' no-touch');
     }
 
+    // Copy link on button click.
+    $('.js-copy-link').click(function(e) {
+      e.preventDefault();
+      var $temp = $("<input>");
+      var $url = $(this).attr('href');
+      $("body").append($temp);
+      $temp.val($url).select();
+      document.execCommand("copy");
+      $temp.remove();
+      $(this).text('Link Copied!');
+    });
+
     /**
     * Add inview class on scroll if has-animation class.
     */

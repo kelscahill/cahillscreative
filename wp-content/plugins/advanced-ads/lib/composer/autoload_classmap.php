@@ -41,6 +41,7 @@ return array(
     'Advanced_Ads_Frontend_Notices' => $baseDir . '/classes/frontend-notices.php',
     'Advanced_Ads_Group' => $baseDir . '/classes/ad_group.php',
     'Advanced_Ads_Groups_List' => $baseDir . '/admin/includes/class-ad-groups-list.php',
+    'Advanced_Ads_Inline_Css' => $baseDir . '/classes/inline-css.php',
     'Advanced_Ads_Model' => $baseDir . '/classes/ad-model.php',
     'Advanced_Ads_Overview_Widgets_Callbacks' => $baseDir . '/admin/includes/class-overview-widgets.php',
     'Advanced_Ads_Placements' => $baseDir . '/classes/ad_placements.php',

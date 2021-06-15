@@ -2,20 +2,18 @@
 
 {% if tags %}
   <div class="{{ bem_classes(tags_base_class) }}">
-    <span class="{{ bem_classes(tags_base_class, 'title') }}">{{ 'Filed to:' }}</span>
-    <ul class="{{ bem_classes(tags_base_class, 'list') }}">
-      {% for tag in tags %}
-        <li class="{{ bem_classes(tags_base_class, 'item') }}">
-          {% include "@atoms/links/link.twig" with {
-            "link": {
-              "text": tag.name,
-              "url": tag.link,
-              "modifiers": "small",
-              "extra": bem_classes(tags_base_class, 'link')
-            }
-          } %}
-        </li>
-      {% endfor %}
-    </ul>
+    {% for tag in tags %}
+      {% include "@atoms/links/link.twig" with {
+        "link": {
+          "text": tag.name,
+          "url": tag.link,
+          "modifiers": "small",
+          "extra": bem_classes(tags_base_class, 'link')
+        }
+      } %}
+      {% if not loop.last %}
+        <span>,&nbsp;</span>
+      {% endif %}
+    {% endfor %}
   </div>
 {% endif %}

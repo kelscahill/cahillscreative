@@ -1,0 +1,23 @@
+.c-card {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+
+  &__content {
+    padding: $space;
+    flex: 1;
+  }
+
+  &__footer {
+    padding: $space;
+    border-top: $border--standard;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__copy-link {
+    color: $c-tertiary;
+    text-decoration: none;
+  }
+}

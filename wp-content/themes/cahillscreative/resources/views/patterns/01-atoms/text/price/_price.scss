@@ -1,7 +1,5 @@
 .o-price {
-  font-family: $font-secondary;
-  font-size: $body-font-size;
-  font-weight: bold;
+  @include u-font--m;
 
   &--sale {
     .o-price__regular {

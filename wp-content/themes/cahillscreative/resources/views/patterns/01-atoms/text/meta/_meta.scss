@@ -1,3 +1,5 @@
 .o-meta {
-  @include o-heading__secondary--xs;
+  font-size: $font-size-xxs;
+  line-height: 1;
+  color: $c-tertiary;
 }

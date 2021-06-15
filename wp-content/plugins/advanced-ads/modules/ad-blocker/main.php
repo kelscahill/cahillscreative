@@ -5,7 +5,7 @@ function advanced_ads_load_adblocker() {
 
 		// only load if not already existing (maybe included from another plugin)
 		if ( defined( 'ADVADS_AB_BASE_PATH' ) ) {
-			return ;
+			return;
 		}
 
 		// load basic path to the plugin
@@ -15,14 +15,10 @@ function advanced_ads_load_adblocker() {
 
 		Advanced_Ads_Ad_Blocker::get_instance();
 
-		$is_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
-
-		if ( is_admin() && ! $is_ajax ) {
+		if ( is_admin() && ! wp_doing_ajax() ) {
 			Advanced_Ads_Ad_Blocker_Admin::get_instance();
 		}
 	}
 }
 
 add_action( 'advanced-ads-plugin-loaded', 'advanced_ads_load_adblocker' );
-
-

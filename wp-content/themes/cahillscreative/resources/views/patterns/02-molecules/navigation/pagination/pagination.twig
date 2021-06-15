@@ -1,0 +1,33 @@
+{% set pagination_base_class = pagination.base_class|default('c-pagination') %}
+
+{% if posts.pagination %}
+  <div class="{{ bem_classes(pagination_base_class) }}">
+    {% include "@atoms/links/link.twig" with {
+      "link": {
+        "text": "Previous",
+        "url": posts.pagination.prev.link,
+        "modifiers": "alt",
+        "extra": bem_classes(pagination_base_class, 'nav', 'prev')
+      }
+    } %}
+    {% if posts.pagination.pages %}
+      <div class="{{ bem_classes(pagination_base_class, 'pages') }}">
+        {% for page in posts.pagination.pages %}
+          {% if page.link %}
+            <a href="{{ page.link }}" class="{{ bem_classes(pagination_base_class, 'page', 'link') }}" aria-label="{{ 'Page ' ~ page.title }}"></a>
+          {% else %}
+            <span class="{{ bem_classes(pagination_base_class, 'page', 'current') }}" aria-label="{{ 'Page ' ~ page.title }}"></span>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% include "@atoms/links/link.twig" with {
+      "link": {
+        "text": "Next",
+        "url": posts.pagination.next.link,
+        "modifiers": "alt",
+        "extra": bem_classes(pagination_base_class, 'nav', 'next')
+      }
+    } %}
+  </div>
+{% endif %}

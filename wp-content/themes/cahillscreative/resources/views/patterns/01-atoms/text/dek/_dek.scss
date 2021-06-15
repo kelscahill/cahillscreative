@@ -1,5 +1,7 @@
 .o-dek {
-  @include u-font--s;
+  @include u-font--xs;
 
-  color: $c-secondary;
+  &--large {
+    @include u-font--m;
+  }
 }

@@ -10,6 +10,12 @@
         "extra": bem_classes(page_header_base_class, "icon")
       }
     } %}
+    {% include "@atoms/text/kicker/kicker.twig" with {
+      "kicker": {
+        "text": page_header.kicker.text,
+        "extra": bem_classes(page_header_base_class, "kicker")
+      }
+    } %}
     {% include "@atoms/text/heading/heading.twig" with {
       "heading": {
         "level": "1",

@@ -59,7 +59,7 @@ class Advanced_Ads_Ad_List_Filters {
 	 * Constructs the unique instance.
 	 */
 	private function __construct() {
-		if ( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+		if ( is_admin() && ! wp_doing_ajax() ) {
 			add_filter( 'posts_results', array( $this, 'post_results' ), 10, 2 );
 			add_filter( 'posts_orderby', array( $this, 'orderby_filter' ), 10, 2 );
 			add_filter( 'post_limits', array( $this, 'limit_filter' ), 10, 2 );

@@ -1,10 +1,10 @@
 === Advanced Ads – Ad Manager & AdSense ===
 Contributors: webzunft, advancedads
 Tags: ads, ad manager, ad rotation, adsense, banner
-Requires at least: 4.6
+Requires at least: 4.9
 Tested up to: 5.7
 Requires PHP: 5.6
-Stable tag: 1.24.2
+Stable tag: 1.25.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -316,6 +316,16 @@ Yes. You can use plenty of [hooks](https://wpadvancedads.com/codex/) to customiz
 10. Convert AdSense ads into AMP automatically (Responsive add-on)
 
 == Changelog ==
+
+= 1.25.0 =
+
+- show ad label event when ad wrapper is now shown
+- add filter `advanced-ads-ajax-ad-select-arguments` to modify arguments of AJAX ad selection
+- display ads on BuddyPress pages when no ads allowed on 404 pages
+- Ad blocker fix: do not copy assets from "vendor" and "lib" folders
+- Ad blocker fix: compare assets based on `filemtime` instead of `filesize`
+- bump minimal require WP core version to 4.9
+- allow to add a replacement for AdSense page-level code
 
 = 1.24.2 =
 

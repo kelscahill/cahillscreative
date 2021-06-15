@@ -1,69 +1,40 @@
-{% if meta.author or meta.date %}
+{% if meta.author.name or meta.date %}
   {% set meta_base_class = meta.base_class|default('o-meta') %}
 
-  {% if Image(meta.author.0.profile_photo).src %}
-    {% set author_image_src = Image(meta.author.0.profile_photo).src|resize(100, 100) %}
-    {% set author_image_alt = Image(meta.author.0.profile_photo).alt %}
-  {% else %}
-    {% set author_image_src = image_path ~ 'author-default-thumbnail.jpg' %}
-    {% set author_image_alt = meta.author.0.name ? meta.author.0.name : 'Default author profile photo' %}
-  {% endif %}
-
-  {% if meta.modifiers and meta.show_img %}
+  {% if meta.image.src and meta.modifiers %}
     {% set meta_modifiers = [meta.modifiers]|merge(['with-image']) %}
-  {% elseif meta.show_img %}
+  {% elseif meta.image.src %}
     {% set meta_modifiers = ['with-image'] %}
   {% endif %}
 
   <div class="{{ bem_classes(meta_base_class, meta.element, meta_modifiers, meta.extra) }}">
-    {% if meta.show_img %}
-      {% if meta.author.0.link %}
-        <a href="{{ meta.author.0.link }}" class="{{ bem_classes(meta_base_class, 'image-link') }}">
+    {% if meta.image.src %}
+      {% if meta.author.link %}
+        <a href="{{ meta.author.link }}" class="{{ bem_classes(meta_base_class, 'image-link') }}">
       {% endif %}
         <div class="{{ bem_classes(meta_base_class, 'image') }}">
-          {% include "@atoms/images/image/responsive-image.twig" with {
-            "image": {
-              "output_tag": true,
-              "src": author_image_src,
-              "alt": author_image_alt
-            }
-          } %}
+          {% include "@atoms/images/image/responsive-image.twig" with meta %}
         </div>
-      {% if meta.author.0.link %}
+      {% if meta.author.link %}
         </a>
       {% endif %}
     {% endif %}
     {% if meta.author %}
-      <span class="{{ bem_classes(meta_base_class, 'authors') }}">
-        {% if meta.author_prefix %}
-          <span class="{{ bem_classes(meta_base_class, 'author-prefix') }}">{{ meta.author_prefix }}</span>
-        {% endif %}
-        {% for item in meta.author %}
-          {% if item.link %}
-            <a href="{{ item.link }}" class="{{ bem_classes(meta_base_class, 'link') }}">
-          {% endif %}
-          {% if item.name %}
-            <span itemprop="author" itemtype="https://schema.org/Person" class="{{ bem_classes(meta_base_class, 'author') }}" >
-              <strong>{{ item.name }}</strong>
-            </span>
-          {% endif %}
-          {# {% if item.summary %}
-            <div class="{{ bem_classes(meta_base_class, 'summary') }} o-dek" >
-              {{ item.summary }}
-            </div>
-          {% endif %} #}
-          {% if item.link %}
-            </a>
-          {% endif %}
-          {%- if not loop.last -%}
-            <span>,</span>
-          {% endif %}
-        {% endfor %}
-      </span>
+      {% if meta.author.link %}
+        <a href="{{ meta.author.link }}" class="{{ bem_classes(meta_base_class, 'link') }}">
+      {% endif %}
+      {% if meta.author.name %}
+        <span itemprop="author" itemtype="https://schema.org/Person" class="{{ bem_classes(meta_base_class, 'author') }}" >
+          <strong>{{ meta.author.name }}</strong>
+        </span>
+      {% endif %}
+      {% if meta.author.link %}
+        </a>
+      {% endif %}
     {% endif %}
     {% include "@atoms/hr/hr.twig" with meta %}
     {% if meta.date %}
-      <time datetime="{{ meta.date|date('M j, Y') }}" class="{{ bem_classes(meta_base_class, 'date', meta.date.modifiers, meta.date.extra) }}" >{{ meta.date|date('M j, Y') }}</time>
+      <time datetime="{{ meta.date|date('m.d.y') }}" class="{{ bem_classes(meta_base_class, 'date', meta.date.modifiers, meta.date.extra) }}" >{{ meta.date|date('m.d.y') }}</time>
     {% endif %}
   </div>
 {% endif %}

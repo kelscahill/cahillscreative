@@ -22,9 +22,9 @@ $related_products_args = array(
   'post_status' => 'publish',
   'tax_query' => array(
     array(
-      'taxonomy' => 'product_cat',
+      'taxonomy' => 'product_category',
       'field' => 'slug',
-      'terms' => get_the_terms($id ,'product_cat')[0]->name,
+      'terms' => get_the_terms($id ,'product_category')[0]->name,
     )
   )
 );

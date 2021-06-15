@@ -1,37 +1,15 @@
 .c-tags {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  line-height: $line-height-s;
+  flex-wrap: wrap;
+  color: $c-black;
 
-  &__title {
-    margin-right: $space-half;
-    font-size: $font-size-s;
-    font-weight: 600;
-  }
+  @include u-font--xs;
 
-  &__list {
-    display: flex;
-    align-items: center;
-    list-style-type: none;
-
-    li {
-      display: table;
-
-      &::after {
-        position: relative;
-        content: '\00b7';
-        line-height: 0.01;
-        margin: 0 $space-one-fourth;
-        font-size: $font-size-m;
-        top: 2px;
-        right: 0;
-        border-bottom: 0;
-      }
-
-      &:last-child::after {
-        content: '';
-      }
-    }
+  &::before {
+    content: "Tags: ";
+    display: inline-flex;
+    margin-right: $space-one-fourth;
   }
 }

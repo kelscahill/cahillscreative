@@ -21,7 +21,7 @@ class Advanced_Ads_Frontend_Checks {
 		// Wait until other plugins (for example Elementor) have disabled admin bar using `show_admin_bar` filter.
 		add_action( 'template_redirect', array( $this, 'init' ), 11 );
 
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		if ( wp_doing_ajax() ) {
 			add_filter( 'advanced-ads-ad-output', array( $this, 'after_ad_output' ), 10, 2 );
 		}
 	}
@@ -842,10 +842,6 @@ class Advanced_Ads_Frontend_Checks {
 							return;
 						}
 						var autoads_ads = document.querySelectorAll('.google-auto-placed');
-						var autoads_code_enabled = document.querySelectorAll('#wp-admin-bar-advanced_ads_ad_health_auto_ads_found:not(.hidden)').length;
-						<?php /* jQuery( '<p class="advads-autoads-hint" style="background-color:#0085ba;color:#fff;font-size:0.8em;padding:5px;"><?php
-							printf(__( 'This ad was automatically placed here by AdSense. <a href="%s" target="_blank" style="color:#fff;border-color:#fff;">Click here to learn more</a>.', 'advanced-ads' ), ADVADS_URL . 'adsense-in-random-positions-auto-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=frontend-autoads-ads' );
-							?></p>' ).prependTo( autoads_ads ); */ ?>
 						// show Auto Ads warning in Ad Health bar if relevant
 						if( autoads_ads.length ){
 							var advads_autoads_link = document.querySelector( '#wp-admin-bar-advanced_ads_autoads_displayed.hidden' );
@@ -1162,4 +1158,3 @@ class Advanced_Ads_Frontend_Checks {
 		return false;
 	}
 }
-

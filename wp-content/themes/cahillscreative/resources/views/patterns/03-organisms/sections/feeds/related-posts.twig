@@ -2,7 +2,7 @@
 
 {% if related_posts %}
   <section class="{{ bem_classes(related_posts_base_class, related_posts.element, related_posts.modifiers, related_posts.extra) }} o-section--full">
-    <div class="l-wrap l-container u-spacing--double">
+    <div class="{{ bem_classes(related_posts_base_class, 'wrap') }} l-wrap u-spacing--double">
       {% include "@organisms/sections/page-headers/page-header.twig" with {
         "page_header": {
           "icon": {
@@ -18,41 +18,8 @@
       {% if related_posts.posts %}
         <div class="{{ bem_classes(related_posts_base_class, 'posts') }} js-slick-posts">
           {% for post in related_posts.posts %}
-            {% include "@molecules/blocks/block.twig" with {
-              "block": {
-                "figure": {
-                  "link": {
-                    "url": post.link
-                  },
-                  "type": post.post_type,
-                  "image": {
-                    "src": post.thumbnail.src|resize(720, 405),
-                    "alt": post.thumbnail.alt
-                  }
-                },
-                "kicker": {
-                  "text": post.category
-                },
-                "heading": {
-                  "level": "2",
-                  "size": "l",
-                  "type": "primary",
-                  "text": post.title,
-                  "link": {
-                    "url": post.link
-                  }
-                },
-                "dek": {
-                  "text": post.excerpt ? post.excerpt : post.preview(50, '...')
-                },
-                "meta": {
-                  "date": post.date
-                },
-                "link": {
-                  "url": post.link,
-                  "text": "Read More"
-                }
-              }
+            {% include "@molecules/cards/card.twig" with {
+              "card": post
             } %}
           {% endfor %}
         </div>

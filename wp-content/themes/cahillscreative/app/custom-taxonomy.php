@@ -25,7 +25,6 @@ function register_custom_taxonomy() {
     "labels" => $labels,
     "public" => true,
     "hierarchical" => false,
-    "label" => "Room",
     "show_ui" => true,
     "show_in_menu" => true,
     "show_in_nav_menus" => true,
@@ -36,7 +35,7 @@ function register_custom_taxonomy() {
     "rest_base" => "",
     "show_in_quick_edit" => true,
   );
-  register_taxonomy( "room", array( "post", "affiliate" ), $args );
+  register_taxonomy( "room", array( "post" ), $args );
 
   /**
    * Taxonomy: Cost.
@@ -52,7 +51,6 @@ function register_custom_taxonomy() {
     "labels" => $labels,
     "public" => true,
     "hierarchical" => false,
-    "label" => "Cost",
     "show_ui" => true,
     "show_in_menu" => true,
     "show_in_nav_menus" => true,
@@ -79,7 +77,6 @@ function register_custom_taxonomy() {
     "labels" => $labels,
     "public" => true,
     "hierarchical" => false,
-    "label" => "Projects",
     "show_ui" => true,
     "show_in_menu" => true,
     "show_in_nav_menus" => true,
@@ -91,34 +88,6 @@ function register_custom_taxonomy() {
     "show_in_quick_edit" => true,
   );
   register_taxonomy( "project", array( "post" ), $args );
-
-  /**
-   * Taxonomy: Store.
-   */
-
-  $labels = array(
-    "name" => __( "Store", "sage" ),
-    "singular_name" => __( "Store", "sage" ),
-    "menu_name" => __( "Stores", "sage" ),
-  );
-
-  $args = array(
-    "label" => __( "Store", "sage" ),
-    "labels" => $labels,
-    "public" => true,
-    "hierarchical" => false,
-    "label" => "Store",
-    "show_ui" => true,
-    "show_in_menu" => true,
-    "show_in_nav_menus" => true,
-    "query_var" => true,
-    "rewrite" => array( 'slug' => 'store', 'with_front' => true, ),
-    "show_admin_column" => true,
-    "show_in_rest" => true,
-    "rest_base" => "",
-    "show_in_quick_edit" => true,
-  );
-  register_taxonomy( "store", array( "affiliate", "product" ), $args );
 
   /**
    * Taxonomy: Skill Levels.
@@ -135,7 +104,6 @@ function register_custom_taxonomy() {
     "labels" => $labels,
     "public" => true,
     "hierarchical" => false,
-    "label" => "Skill Levels",
     "show_ui" => true,
     "show_in_menu" => true,
     "show_in_nav_menus" => true,
@@ -163,7 +131,6 @@ function register_custom_taxonomy() {
     "labels" => $labels,
     "public" => true,
     "hierarchical" => false,
-    "label" => "Work Tags",
     "show_ui" => true,
     "show_in_menu" => true,
     "show_in_nav_menus" => true,
@@ -191,7 +158,6 @@ function register_custom_taxonomy() {
     "labels" => $labels,
     "public" => true,
     "hierarchical" => true,
-    "label" => "Renovation Category",
     "show_ui" => true,
     "show_in_menu" => true,
     "show_in_nav_menus" => true,
@@ -203,6 +169,87 @@ function register_custom_taxonomy() {
     "show_in_quick_edit" => true,
   );
   register_taxonomy( "renovation_category", array( "renovation" ), $args );
+
+  /**
+   * Taxonomy: Store.
+   */
+
+  $labels = array(
+    "name" => __( "Store", "sage" ),
+    "singular_name" => __( "Store", "sage" ),
+    "menu_name" => __( "Stores", "sage" ),
+  );
+
+  $args = array(
+    "label" => __( "Store", "sage" ),
+    "labels" => $labels,
+    "public" => true,
+    "hierarchical" => false,
+    "show_ui" => true,
+    "show_in_menu" => true,
+    "show_in_nav_menus" => true,
+    "query_var" => true,
+    "rewrite" => array( 'slug' => 'store', 'with_front' => true, ),
+    "show_admin_column" => true,
+    "show_in_rest" => true,
+    "rest_base" => "",
+    "show_in_quick_edit" => true,
+  );
+  register_taxonomy( "store", array( "affiliate", "product" ), $args );
+
+  /**
+   * Taxonomy: Product Category.
+   */
+
+  $labels = array(
+    "name" => __( "Categories", "sage" ),
+    "singular_name" => __( "Category", "sage" ),
+    "menu_name" => __( "Categories", "sage" ),
+  );
+
+  $args = array(
+    "label" => __( "Category", "sage" ),
+    "labels" => $labels,
+    "public" => true,
+    "hierarchical" => true,
+    "show_ui" => true,
+    "show_in_menu" => true,
+    "show_in_nav_menus" => true,
+    "query_var" => true,
+    "rewrite" => array( 'slug' => 'product-category', 'with_front' => true, ),
+    "show_admin_column" => true,
+    "show_in_rest" => true,
+    "rest_base" => "",
+    "show_in_quick_edit" => true,
+  );
+  register_taxonomy( "affiliate_category", array( "product", "affiliate" ), $args );
+
+  /**
+   * Taxonomy: Product Tag.
+   */
+
+  $labels = array(
+    "name" => __( "Tags", "sage" ),
+    "singular_name" => __( "Tag", "sage" ),
+    "menu_name" => __( "Tags", "sage" ),
+  );
+
+  $args = array(
+    "label" => __( "Tag", "sage" ),
+    "labels" => $labels,
+    "public" => true,
+    "hierarchical" => false,
+    "show_ui" => true,
+    "show_in_menu" => true,
+    "show_in_nav_menus" => true,
+    "query_var" => true,
+    "rewrite" => array( 'slug' => 'product-tag', 'with_front' => true, ),
+    "show_admin_column" => true,
+    "show_in_rest" => true,
+    "rest_base" => "",
+    "show_in_quick_edit" => true,
+  );
+  register_taxonomy( "affiliate_tag", array( "product", "affiliate" ), $args );
 
   /**
    * Taxonomy: RV.
@@ -218,8 +265,7 @@ function register_custom_taxonomy() {
     "label" => __( "RV", "sage" ),
     "labels" => $labels,
     "public" => true,
-    "hierarchical" => false,
-    "label" => "RV",
+    "hierarchical" => true,
     "show_ui" => true,
     "show_in_menu" => true,
     "show_in_nav_menus" => true,

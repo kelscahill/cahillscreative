@@ -98,6 +98,33 @@ class Advanced_Ads_AdSense_Public {
 			);
 			$script_src      = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
 
+			/**
+			 * Allows to override the page-level code.
+			 *
+			 * The Pro add-on uses this filter to inject a drop-in replacement for the page-level header code.
+			 *
+			 * @param string $code Existing page level code.
+			 * @param array $parameters {
+			 *    Parameters of the AdSense code.
+			 *
+			 *    @type string $client_id       The Google AdSense client ID.
+			 *    @type bool   $top_anchor      AdSense anchor ad on top of pages.
+			 *    @type string $top_anchor_code The code for top anchor ads.
+			 *    @type string $script_src      AdSense script url.
+			 * }
+			 */
+			$custom_code = apply_filters(
+				'advanced-ads-gadsense-page-level-code',
+				'',
+				compact( array( 'client_id', 'top_anchor', 'top_anchor_code', 'script_src' ) )
+			);
+
+			if ( $custom_code ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the snippet has already been escaped.
+				echo $custom_code;
+				return;
+			}
+
 			// inject page-level header code.
 			include GADSENSE_BASE_PATH . 'public/templates/page-level.php';
 		}

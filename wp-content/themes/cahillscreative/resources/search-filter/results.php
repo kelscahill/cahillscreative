@@ -1,12 +1,12 @@
-<div class="posts spacing--double">
-  <?php if ($query->have_posts()): ?>
-    <h4 class="text-align--center">Found <?php echo $query->found_posts; ?> Results</h4>
-    <div class="grid grid--full">
-      <?php while ($query->have_posts()): $query->the_post(); ?>
-        <?php include(locate_template('views/block.php')); ?>
-      <?php endwhile; $query->wp_reset_query(); ?>
+<div class="c-posts u-spacing--double">
+  <?php if ($query->have_posts()) : ?>
+    <div class="c-posts__grid" bp="grid 6 4@lg 3@xl">
+      <?php while ($query->have_posts()): $query->the_post(); $post_id = get_the_ID(); ?>
+        <?php include locate_template('views/blocks/card.php'); ?>
+      <?php endwhile; ?>
     </div>
+    <?php include locate_template('views/blocks/pagination.php'); ?>
   <?php else: ?>
-    <p class="text-align--center"><em>No Results Found</em></p>
+    <p><?php echo "No Results Found"; ?></p>
   <?php endif; ?>
 </div>

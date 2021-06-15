@@ -18,6 +18,10 @@
     color: currentColor;
   }
 
+  svg path {
+    fill: currentColor;
+  }
+
   &:hover,
   &:focus {
     color: $color-hover;
@@ -30,14 +34,31 @@
 }
 
 @mixin o-link--small {
-  @include o-link;
+  @include o-link(currentColor, $c-primary);
 
-  font-family: $font-secondary;
-  font-size: $font-size-xs;
+  font-family: $font-primary;
+  font-size: $font-size-xxs;
+  box-shadow: none;
+  display: flex;
+  text-decoration: underline;
+
+  .o-icon {
+    order: 1;
+    margin-left: $space-one-fourth;
+
+    svg path {
+      fill: $c-black;
+    }
+  }
+
+  &:hover,
+  &:focus {
+    box-shadow: none;
+  }
 }
 
 @mixin o-link--alt {
-  @include o-link;
+  @include o-link(currentColor, $c-secondary);
 
   font-family: $font-secondary;
   font-size: $font-size-xs;

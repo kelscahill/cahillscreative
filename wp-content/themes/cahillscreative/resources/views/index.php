@@ -15,7 +15,23 @@
 
 $context = Timber::get_context();
 $post = new TimberPost();
+$term = get_queried_object();
 $context['post'] = $post;
-$context['posts'] = Timber::query_posts();
+$context['term'] = $term;
+$context['posts'] = new Timber\PostQuery();
 
-Timber::render('05-pages/page-types/index.twig', $context);
+if (is_tax('affiliate_category') || is_tax('affiliate_tag') || is_tax('store')) {
+ $context['kicker'] = 'Shop';
+ $context['title'] = $term->name;
+ $context['description'] = $term->description;
+} elseif (is_category() || is_tag() || is_tax()) {
+  $context['kicker'] = 'Blog';
+  $context['title'] = $term->name;
+  $context['description'] = $term->description;
+}
+
+$templates = array(
+  'patterns/05-pages/page-types/archive.twig',
+  'patterns/05-pages/page-types/index.twig',
+);
+Timber::render( $templates, $context );

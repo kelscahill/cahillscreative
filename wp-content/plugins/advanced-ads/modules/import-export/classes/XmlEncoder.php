@@ -99,8 +99,6 @@ class Advanced_Ads_XmlEncoder
                 $append = $this->appendNode($parentNode, $data, 'item', $key);
             } elseif ( $this->isElementNameValid($key) ) {
                 $append = $this->appendNode($parentNode, $data, $key);
-            } else {
-                throw new UnexpectedValueException( sprintf( _x( 'The key %s is not valid', 'import_export', 'advanced-ads' ), $key ) );
             }
         }
 

@@ -146,6 +146,91 @@ jQuery( document ).ready( function ( $ ) {
 			}
 		} )
 	} )
+
+	/**
+	 * Logic for placement list
+	 */
+	// filter placement by type
+	jQuery( '.advads_filter_placement_type' ).on( 'change', function () {
+		var selectedValue = jQuery( this ).val();
+		if ( selectedValue === '0' ) {
+			jQuery( '.advads-placements-table tbody > tr' ).show();
+		} else {
+			jQuery( '.advads-placements-table tbody > tr' ).each( function () {
+				if ( jQuery( this ).data( 'type' ) !== selectedValue ) {
+					jQuery( this ).hide();
+				} else {
+					jQuery( this ).show();
+				}
+			} );
+		}
+	} );
+
+	// search placement by name
+	jQuery( '.advads_search_placement_name' ).on( 'keyup', function () {
+		jQuery( '.advads_filter_placement_type option[value=\'0\']' ).attr( 'selected', true );
+		var value = this.value;
+		jQuery( '.advads-placements-table' ).find( 'tr' ).each( function ( index ) {
+			if ( ! index ) {
+				return;
+			}
+			var name = jQuery( this ).data( 'name' );
+			if ( typeof name !== 'undefined' ) {
+				jQuery( this ).toggle( name.toLowerCase().indexOf( value.toLowerCase() ) !== - 1 );
+			}
+		} );
+	} );
+
+	jQuery( '.advads-modal-close-action' ).on( 'click', function () {
+		// Change url hash, so that the modal doesn't load after refresh again.
+		window.location.hash = '#close';
+		jQuery( '#advanced-ads-placements-form' ).submit();
+	} );
+
+	jQuery( '.advads-delete-tag' ).each( function () {
+		jQuery( this ).on( 'click', function () {
+			var r = confirm( 'Wirklich löschen?' );
+			if ( r === true ) {
+				var row = jQuery( this ).parents( '.advanced-ads-placement-row' );
+				row.find( '.advads-placements-item-delete' ).prop( 'checked', true );
+				row.data( 'touched', true );
+				jQuery( '#advanced-ads-placements-form' ).submit();
+			}
+		} );
+	} );
+
+	// sort placement by type or name
+	jQuery( '.advads-sort' ).on( 'click', function ( e ) {
+		var sort  = jQuery( this );
+		var order = sort.data( 'order' );
+		var table = jQuery( '.advads-placements-table' );
+		var rows  = jQuery( '> tbody > tr', table );
+		var links = jQuery( '> thead th > a', table );
+		links.each( function () {
+			jQuery( this ).removeClass( 'advads-placement-sorted' );
+		} );
+		sort.addClass( 'advads-placement-sorted' );
+		rows.sort( function ( a, b ) {
+			var keyA = jQuery( a ).data( order );
+			var keyB = jQuery( b ).data( order );
+			return ( keyA.localeCompare( keyB ) );
+		} );
+		jQuery.each( rows, function ( index, row ) {
+			table.append( row );
+		} );
+		sort.data( 'order', order );
+		var state = {order: order};
+		var url   = window.location.pathname + window.location.search;
+
+		if ( url.indexOf( 'orderby=' ) !== - 1 ) {
+			url = url.replace( /\borderby=[0-9a-zA-Z_@.#+-]{1,50}\b/, 'orderby=' + order );
+		} else {
+			url += '&orderby=' + order;
+		}
+		window.history.replaceState( state, document.title, url );
+		e.preventDefault();
+	} );
+
 	// display placement settings form
 	$( '.advads-placements-table a.advads-placement-options-link' ).on( 'click', function ( e ) {
 		e.preventDefault()
@@ -405,7 +490,7 @@ jQuery( document ).ready( function ( $ ) {
 	 * PLACEMENTS
 	 */
 	// show image tooltips
-	$( '.advads-placements-new-form .advads-placement-type' ).advads_tooltip( {
+	$( '.advanced-ads_page_advanced-ads-placements .advads-placement-type' ).advads_tooltip( {
 		content: function () {
 			return jQuery( this ).find( '.advads-placement-description' ).html()
 		}

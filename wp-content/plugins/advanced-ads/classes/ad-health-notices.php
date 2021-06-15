@@ -230,7 +230,7 @@ class Advanced_Ads_Ad_Health_Notices {
 		}
 
 		// don’t run on AJAX calls.
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		if ( wp_doing_ajax() ) {
 			return;
 		}
 

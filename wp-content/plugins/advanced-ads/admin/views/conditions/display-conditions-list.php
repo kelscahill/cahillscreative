@@ -40,7 +40,7 @@
 						echo Advanced_Ads_Display_Conditions::render_connector_option( $i, $connector, $form_name );
 						if ( $show_or_force_warning ) {
 							?>
-							<p class="advads-error-message">
+							<p class="advads-error-message" style="display:block;">
 								<?php
 								esc_attr_e( 'Forced to OR.', 'advanced-ads' );
 								echo '&nbsp;<a target="_blank" href="' . esc_url( ADVADS_URL ) . 'manual/display-conditions#manual-combining-multiple-conditions">' . esc_attr__( 'manual', 'advanced-ads' ) . '</a>';

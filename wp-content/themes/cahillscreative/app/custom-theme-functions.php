@@ -60,28 +60,39 @@ add_post_type_support( 'page', 'excerpt' );
 add_filter('woocommerce_enqueue_styles', '__return_empty_array');
 
 /**
- * Hook to alter the Woocommerce product_cat taxonomy.
+ * Remove woocommerce tags and categories.
  */
-function filter_woocommerce_taxonomy_args_product_cat( $array ) {
-  $array = array(
-    'label' => 'Categories',
-    'show_admin_column' => true,
-    'show_in_rest' => true,
-    'hierarchical' => true,
-  );
-  return $array;
-};
-add_filter( 'woocommerce_taxonomy_args_product_cat', 'filter_woocommerce_taxonomy_args_product_cat', 10, 1 );
+add_action('init', function() {
+  register_taxonomy('product_tag', 'product', [
+    'public'            => false,
+    'show_ui'           => false,
+    'show_admin_column' => false,
+    'show_in_nav_menus' => false,
+    'show_tagcloud'     => false,
+  ]);
+  register_taxonomy('product_cat', 'product', [
+    'public'            => false,
+    'show_ui'           => false,
+    'show_admin_column' => false,
+    'show_in_nav_menus' => false,
+  ]);
+}, 100);
+
+add_action( 'admin_init' , function() {
+  add_filter('manage_product_posts_columns', function($columns) {
+    unset($columns['product_tag']);
+    unset($columns['product_cat']);
+    return $columns;
+  }, 100);
+});
 
 /**
- * Hook to alter the Woocommerce product_tag taxonomy.
+ * Add custom post types to main query.
  */
-function filter_woocommerce_taxonomy_args_product_tag( $array ) {
-  $array = array(
-    'label' => 'Tags',
-    'show_admin_column' => true,
-    'show_in_rest' => true,
-  );
-  return $array;
-};
-add_filter( 'woocommerce_taxonomy_args_product_tag', 'filter_woocommerce_taxonomy_args_product_tag', 10, 1 );
+// add_filter( 'pre_get_posts', 'main_query_post_types' );
+// function main_query_post_types( $query ) {
+//   if ( is_home() && $query->is_main_query() ) {
+//     $query->set( 'post_type', array( 'affiliate', 'product', 'post', 'work', 'renovation' ) );
+//     return $query;
+//   }
+// }
