@@ -44,6 +44,14 @@
     }
   }
 
+  @media (min-width: $xs-break) {
+    @include column-generator('xs');
+
+    [#{$prefix}~='show\@xs'] {
+      display: block !important;
+    }
+  }
+
   @media (min-width: $sm-break) {
     @include column-generator('sm');
 

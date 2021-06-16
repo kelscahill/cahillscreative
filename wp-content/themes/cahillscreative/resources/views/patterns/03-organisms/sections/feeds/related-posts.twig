@@ -6,8 +6,8 @@
       {% include "@organisms/sections/page-headers/page-header.twig" with {
         "page_header": {
           "icon": {
-            "title": "Blog",
-            "name": "blog"
+            "title": related_posts.icon ? related_posts.icon|capitalize : "Blog",
+            "name": related_posts.icon ? related_posts.icon|lower : "blog"
           },
           "heading": {
             "text": related_posts.heading

@@ -18,13 +18,13 @@ $context['product'] = wc_get_product($id);
 $related_products_args = array(
   'post__not_in' => array($id),
   'post_type' => 'product',
-  'posts_per_page' => 4,
+  'posts_per_page' => 8,
   'post_status' => 'publish',
   'tax_query' => array(
     array(
-      'taxonomy' => 'product_category',
+      'taxonomy' => 'affiliate_category',
       'field' => 'slug',
-      'terms' => get_the_terms($id ,'product_category')[0]->name,
+      'terms' => get_the_terms($id ,'affiliate_category')[0]->name,
     )
   )
 );

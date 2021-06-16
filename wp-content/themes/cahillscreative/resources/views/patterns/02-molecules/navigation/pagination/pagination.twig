@@ -14,9 +14,13 @@
       <div class="{{ bem_classes(pagination_base_class, 'pages') }}">
         {% for page in posts.pagination.pages %}
           {% if page.link %}
-            <a href="{{ page.link }}" class="{{ bem_classes(pagination_base_class, 'page', 'link') }}" aria-label="{{ 'Page ' ~ page.title }}"></a>
+            <a target="_blank" href="{{ page.link }}" class="{{ bem_classes(pagination_base_class, 'page', 'link') }}">{{ page.title }}</a>
           {% else %}
-            <span class="{{ bem_classes(pagination_base_class, 'page', 'current') }}" aria-label="{{ 'Page ' ~ page.title }}"></span>
+            {% if page.title == "&hellip;" %}
+              <span class="{{ bem_classes(pagination_base_class, 'page', 'hellip') }}">{{ page.title }}</span>
+            {% else %}
+              <span class="{{ bem_classes(pagination_base_class, 'page', 'current') }}">{{ page.title }}</span>
+            {% endif %}
           {% endif %}
         {% endfor %}
       </div>

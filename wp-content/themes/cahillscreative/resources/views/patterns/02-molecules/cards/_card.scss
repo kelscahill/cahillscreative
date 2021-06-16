@@ -6,6 +6,10 @@
   &__content {
     padding: $space;
     flex: 1;
+
+    @include media('<=small') {
+      padding: $space-half;
+    }
   }
 
   &__footer {
@@ -14,10 +18,35 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    @include media('<=small') {
+      padding: $space-half;
+    }
   }
 
   &__copy-link {
     color: $c-tertiary;
     text-decoration: none;
+
+    .o-icon {
+      @include media('<=small') {
+        display: none;
+      }
+    }
+  }
+
+  .o-button {
+    padding: 0;
+    margin: 0;
+    color: $c-black;
+    background-color: transparent;
+    box-shadow: none;
+
+    @include o-heading__secondary--xs;
+
+    &:hover,
+    &:focus {
+      color: $c-secondary;
+    }
   }
 }

@@ -20,11 +20,7 @@ textarea {
 }
 
 label {
-  @include o-heading__secondary--xs;
-}
-
-legend {
-  @include o-heading__secondary--m;
+  @include u-font--xs;
 }
 
 input[type=text],
@@ -45,11 +41,12 @@ textarea {
   border: $border--standard;
 
   &::placeholder {
-    color: $c-gray;
+    color: $c-tertiary;
   }
 
   &:focus {
-    outline: 1px solid $c-tertiary;
+    outline: none;
+    border: 1px solid $c-primary;
   }
 }
 
@@ -58,10 +55,10 @@ input[type=checkbox] {
   outline: none;
   margin: 0;
   margin-right: $space-half;
-  height: 18px;
-  width: 18px;
+  height: 20px;
+  width: 20px;
   line-height: 1;
-  background-size: 18px;
+  background-size: 20px;
   background-repeat: no-repeat;
   background-position: 0 0;
   cursor: pointer;
@@ -71,7 +68,7 @@ input[type=checkbox] {
   padding: 0;
   user-select: none;
   appearance: none;
-  background-color: $c-white;
+  background-color: white;
   transition: background-color 0.25s $transition-effect;
 }
 
@@ -80,23 +77,30 @@ input[type=checkbox] + label {
   cursor: pointer;
   position: relative;
   margin-bottom: 0;
-  line-height: 18px;
+  line-height: 20px;
   overflow: hidden;
   text-transform: none;
   letter-spacing: normal;
-  font-family: $font-secondary;
-  font-size: $font-size-s;
+  font-family: $font-primary;
+  font-size: $font-size-xs;
+  top: 2px;
+  width: calc(100% - 30px);
 }
 
-input[type=checkbox]:checked,
-input[type=radio]:checked {
-  background: $c-primary url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath d='M26.08,3.56l-2,1.95L10.61,19l-5-4L3.47,13.29,0,17.62l2.17,1.73L9.1,24.9,11,26.44l1.77-1.76L28.05,9.43,30,7.48Z' fill='%23000'/%3E%3C/svg%3E") no-repeat center center;
+input[type=checkbox]:checked {
+  background: $c-primary url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath d='M26.08,3.56l-2,1.95L10.61,19l-5-4L3.47,13.29,0,17.62l2.17,1.73L9.1,24.9,11,26.44l1.77-1.76L28.05,9.43,30,7.48Z' fill='%23fff'/%3E%3C/svg%3E") no-repeat center center;
   background-size: 10px 10px;
   border-color: $c-primary;
 }
 
+input[type=radio]:checked {
+  background: $c-primary url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M10,5A5,5,0,1,1,5,0,5,5,0,0,1,10,5Z' fill='%23fff'/%3E%3C/svg%3E") no-repeat center center;
+  background-size: 8px 8px;
+  border-color: $c-primary;
+}
+
 input[type=checkbox] {
-  border-radius: 0;
+  border-radius: $border-radius-curve;
 }
 
 input[type=radio] {
@@ -164,4 +168,9 @@ select {
       margin-top: 0;
     }
   }
+}
+
+.sf-label-checkbox,
+.sf-label-radio {
+  padding: 0 !important;
 }

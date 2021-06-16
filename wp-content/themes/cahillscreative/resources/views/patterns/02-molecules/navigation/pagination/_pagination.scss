@@ -2,9 +2,47 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: $space-double;
+  background-color: $c-white;
+  @include o-heading__secondary--s;
 
-  > * {
+  &__pages {
     padding: 0 $space;
+  }
+
+  &__page {
+    display: inline-flex;
+    padding: $space-half 0 $space-half 4px;
+    margin: 0;
+    position: relative;
+    text-align: center;
+
+    &::after {
+      content: "";
+      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      background-color: $c-black;
+      height: 5px;
+      width: 5px;
+      border-radius: 5px;
+    }
+
+    &:hover,
+    &:focus,
+    &--current {
+      &::after {
+        display: block;
+      }
+    }
+
+    &:hover,
+    &:focus {
+      &::after {
+        background-color: $c-secondary;
+      }
+    }
   }
 }

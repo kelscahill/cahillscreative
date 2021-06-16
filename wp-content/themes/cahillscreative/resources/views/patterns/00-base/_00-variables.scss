@@ -113,12 +113,12 @@ $font-tertiary: Georgia, serif;
  * Native Custom Properties
  */
 :root {
-  --body-font-size: 16px;
-  --font-size-xxs: 12px;
-  --font-size-xs: 14px;
-  --font-size-s: 16px;
-  --font-size-m: 18px;
-  --font-size-l: 22px;
+  --body-font-size: 15px;
+  --font-size-xxs: 10px;
+  --font-size-xs: 12px;
+  --font-size-s: 14px;
+  --font-size-m: 16px;
+  --font-size-l: 18px;
   --font-size-xl: 30px;
   --font-size-xxl: 50px;
 }
@@ -126,6 +126,11 @@ $font-tertiary: Georgia, serif;
 // Large Breakpoint
 @media screen and (min-width: 720px) {
   :root {
+    --body-font-size: 16px;
+    --font-size-xxs: 12px;
+    --font-size-xs: 14px;
+    --font-size-s: 16px;
+    --font-size-m: 18px;
     --font-size-l: 24px;
     --font-size-xl: 40px;
     --font-size-xxl: 60px;
@@ -268,7 +273,7 @@ $z-index-back-to-top: $z-index-100;
  * Theme variables.
  */
 $header-utility-height: 40px;
-$header-height: calc(45px + 40px);
+$header-height: 70px;
 $footer-logo: 150px;
 $sidebar-width: 300px;
 $main-width: calc(100% - (#{$sidebar-width}));

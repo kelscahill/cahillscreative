@@ -7,8 +7,8 @@
         "link": {
           "url": card.affiliate_link ? card.affiliate_link : card.link,
           "attributes": {
-            "target": "_blank",
-            "rel": "noreferrer"
+            "target": card.affiliate_link ? "_blank" : "_self",
+            "rel": card.affiliate_link ? "noreferrer"
           }
         },
         "image": {
@@ -35,8 +35,8 @@
           "link": {
             "url": card.affiliate_link ? card.affiliate_link : card.link,
             "attributes": {
-              "target": "_blank",
-              "rel": "noreferrer"
+              "target": card.affiliate_link ? "_blank" : "_self",
+              "rel": card.affiliate_link ? "noreferrer"
             }
           },
           "extra": bem_classes(card_base_class, 'heading')
@@ -55,31 +55,41 @@
       } %}
     </div>
     <div class="{{ bem_classes(card_base_class, 'footer') }}">
-      {% include "@atoms/links/link.twig" with {
-        "link": {
-          "url": card.affiliate_link ? card.affiliate_link : card.link,
-          "text": "Buy Now",
-          "target": "_blank",
-          "modifiers": "alt",
-          "extra": bem_classes(card_base_class, 'link')
-        }
-      } %}
-      {% include "@atoms/links/link.twig" with {
-        "link": {
-          "modifiers": "small",
-          "text": "Copy Link",
-          "url": card.affiliate_link ? card.affiliate_link : card.link,
-          "extra": [
-            bem_classes(card_base_class, 'copy-link'),
-            "js-copy-link"
-          ],
-          "icon": {
-            "title": "Link",
-            "name": "link",
-            "modifiers": "small"
+      {% if card.affiliate_link %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "url": card.affiliate_link,
+            "text": "Buy Now",
+            "target": "_blank",
+            "modifiers": "alt",
+            "extra": bem_classes(card_base_class, 'link'),
+            "icon": {
+              "name": "share",
+              "size": "small"
+            }
           }
-        }
-      } %}
+        } %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "modifiers": "small",
+            "text": "Copy Link",
+            "url": card.affiliate_link ? card.affiliate_link : card.link,
+            "extra": [
+              bem_classes(card_base_class, 'copy-link'),
+              "js-copy-link"
+            ],
+            "icon": {
+              "title": "Link",
+              "name": "link",
+              "modifiers": "small"
+            }
+          }
+        } %}
+      {% else %}
+        {% include "@atoms/woocommerce/add-to-cart.twig" with {
+          "post": card
+        } %}
+      {% endif %}
     </div>
   </div>
 {% endif %}

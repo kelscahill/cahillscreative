@@ -97,6 +97,10 @@
   }
 }
 
+@media (min-width: $xs-break) {
+  @include column-generator('xs');
+}
+
 @media (min-width: $sm-break) {
   @include column-generator('sm');
 }

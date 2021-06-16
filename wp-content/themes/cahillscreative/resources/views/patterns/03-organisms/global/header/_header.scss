@@ -75,6 +75,7 @@
   }
 
   &__icon {
+    position: relative;
     padding: $space-half;
     border-radius: 50px;
 
@@ -85,6 +86,17 @@
     &:hover,
     &:focus {
       background-color: $c-white;
+    }
+
+    .o-add-to-cart-count {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 11px;
+      margin: auto;
+      text-align: center;
+      font-size: 11px;
+      line-height: 1;
     }
   }
 }

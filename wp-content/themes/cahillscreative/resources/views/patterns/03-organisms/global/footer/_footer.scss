@@ -1,4 +1,6 @@
 .c-footer {
+  margin-top: $space-quadruple;
+
   &__main {
     padding-top: calc((#{$footer-logo} + #{$space-double}) / 2 + #{$space-double});
     padding-bottom: $space-double;

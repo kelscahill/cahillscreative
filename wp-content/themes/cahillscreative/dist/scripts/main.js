@@ -229,6 +229,11 @@ Router.prototype.loadEvents = function loadEvents () {
       $('html').addClass(' no-touch');
     }
 
+    // Shop filter.
+    $('.searchandfilter li').each(function() {
+      $(this).find('h4').addClass('js-toggle-parent');
+    });
+
     // Copy link on button click.
     $('.js-copy-link').click(function(e) {
       e.preventDefault();

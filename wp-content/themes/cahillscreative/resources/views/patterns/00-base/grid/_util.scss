@@ -64,6 +64,10 @@
   }
 }
 
+@media (max-width: $xs-break) {
+  @include column-generator('xs');
+}
+
 @media (max-width: $sm-break) {
   @include full-width-generator('sm');
 }

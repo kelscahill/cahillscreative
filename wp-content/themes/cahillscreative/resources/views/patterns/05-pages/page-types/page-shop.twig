@@ -1,19 +1,9 @@
 {% extends "@templates/_layout.twig" %}
 
-{% block sections_before %}
-{% endblock %}
-
 {% block content %}
   {% include "@organisms/content/content.twig" %}
 {% endblock %}
 
 {% block sections_after %}
-  <div class="l-container--xxl" bp="grid">
-    <div bp="4@md 3@lg">
-      {{ function('do_shortcode', '[searchandfilter id="'~ post.filter_id ~'"]') }}
-    </div>
-    <div bp="8@md 9@lg">
-      {{ function('do_shortcode', '[searchandfilter id="'~ post.filter_id ~'" show="results"]') }}
-    </div>
-  </div>
+  {% include "@organisms/sections/feeds/cards-filter.twig" %}
 {% endblock %}
