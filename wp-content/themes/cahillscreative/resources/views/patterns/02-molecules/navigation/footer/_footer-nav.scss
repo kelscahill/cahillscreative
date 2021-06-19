@@ -14,6 +14,10 @@
     }
   }
 
+  a[href='#'] {
+    pointer-events: none;
+  }
+
   &__parent-list {
     columns: 2 auto;
   }

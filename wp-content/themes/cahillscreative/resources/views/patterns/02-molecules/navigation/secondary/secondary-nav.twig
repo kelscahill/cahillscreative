@@ -1,33 +1,75 @@
 {% set secondary_nav_base_class = secondary_nav.base_class|default('c-secondary-nav') %}
 
-{% if not is_front_page and secondary_nav %}
+{% set secondary_nav = NULL %}
+{% if primary_nav.items %}
+  {% for item in primary_nav.get_items %}
+    {% if post.slug == item.slug or item.current_item_parent %}
+      {% set secondary_nav = true %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% if secondary_nav or is_single %}
   <div class="{{ bem_classes(secondary_nav_base_class, secondary_nav.element, secondary_nav.modifiers, secondary_nav.extra) }}">
-    <nav role="navigation" class="{{ secondary_nav_base_class ~ '--inner' }} l-container">
-      {% if secondary_nav.items %}
-        <ul class="{{ bem_classes(secondary_nav_base_class, 'list') }}">
-          {% for item in secondary_nav.items %}
-            <li class="{{ bem_classes(secondary_nav_base_class, 'item') }}">
-              {% include "@atoms/links/link.twig" with {
-                "link": {
-                  "text": item.name,
-                  "url": item.slug,
-                  "extra": [
-                    term.slug == item.slug ? 'is-active',
-                    bem_classes(secondary_nav_base_class, 'link')
-                  ],
-                  "attributes": {
-                    "data-ga-event-category": item.title|e('html_attr'),
-                    "data-ga-event-on": "click",
-                    "data-ga-event-action": "mainNav",
-                    "data-ga-event-label": item.url|e('html_attr'),
-                    "data-ga-event-processed": "true"
+    <div class="{{ bem_classes(secondary_nav_base_class, 'container') }} l-wrap l-container">
+      {% if is_single %}
+        {% if post.post_type == 'product' or post.post_type == 'affiliate' %}
+          {% set link_text = "Shop" %}
+          {% set link_url = "/shop" %}
+        {% elseif post.post_type == 'renovation' %}
+          {% set link_text = "Explore" %}
+          {% set link_url = "/explore" %}
+        {% elseif post.post_type == 'work' %}
+          {% set link_text = "Work" %}
+          {% set link_url = "/work" %}
+        {% else %}
+          {% set link_text = "Blog" %}
+          {% set link_url = "/blog" %}
+        {% endif %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "text": link_text,
+            "url": link_url,
+            "modifiers": "alt"
+          }
+        } %}
+        {{ function('yoast_breadcrumb', '<nav class="'~ bem_classes(secondary_nav_base_class, 'breadcrumbs') ~'">','</nav>', false ) }}
+      {% else %}
+        <ul class="{{ bem_classes(secondary_nav_base_class, 'parent-list') }}">
+          {% for item in primary_nav.get_items %}
+            {% if post.slug == item.slug or item.current_item_parent %}
+              <li class="{{ bem_classes(secondary_nav_base_class, 'parent-list-item') }}">
+                {% include "@atoms/links/link.twig" with {
+                  "link": {
+                    "text": item.title,
+                    "url": item.url,
+                    "target": item.target,
+                    "modifiers": "alt",
+                    "extra": [
+                      bem_classes(secondary_nav_base_class, 'link'),
+                    ]|merge(item.classes),
                   }
-                }
-              } %}
-            {% endfor %}
-          </li>
+                } %}
+                <ul class="{{ bem_classes(secondary_nav_base_class, 'child-list') }}">
+                  {% for item in item.children %}
+                    <li class="{{ bem_classes(secondary_nav_base_class, 'child-list-item') }}">
+                      {% include "@atoms/links/link.twig" with {
+                        "link": {
+                          "text": item.title,
+                          "url": item.url,
+                          "target": item.target,
+                          "modifiers": "xsmall",
+                          "extra": [bem_classes(secondary_nav_base_class, 'link')]|merge(item.classes),
+                        }
+                      } %}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </li>
+            {% endif %}
+          {% endfor %}
         </ul>
       {% endif %}
-    </nav>
+    </div>
   </div>
 {% endif %}

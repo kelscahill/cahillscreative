@@ -1,0 +1,50 @@
+{% set post_grid_base_class = post_grid.base_class|default('c-post-grid') %}
+
+{% if post_grid %}
+  <section class="{{ bem_classes(post_grid_base_class, post_grid.element, post_grid.modifiers, post_grid.extra) }} l-wrap l-container u-spacing">
+    {% if post_grid.heading or post_grid.dek %}
+      <div class="{{ bem_classes(post_grid_base_class, 'header') }}">
+        {% if post_grid.heading %}
+          {% include "@atoms/text/heading/heading.twig" with {
+            "heading": {
+              "level": "2",
+              "size": "xl",
+              "type": "primary",
+              "text": post_grid.heading,
+              "extra": bem_classes(post_grid_base_class, 'heading')
+            }
+          } %}
+        {% endif %}
+        {% if post_grid.dek %}
+          {% include "@atoms/text/dek/dek.twig" with {
+            "dek": {
+              "text": post_grid.dek,
+              "extra": [
+                bem_classes(post_grid_base_class, 'dek'),
+                "l-container--m"
+              ]
+            }
+          } %}
+        {% endif %}
+      </div>
+    {% endif %}
+    {% if post_grid.posts %}
+      <div class="{{ bem_classes(post_grid_base_class, 'posts') }}" bp="grid 6 4@md 3@lg">
+        {% for post in post_grid.posts %}
+          {% if post.post_type == "post" %}
+            {% include "@molecules/cards/card.twig" with {
+              "card": post
+            } %}
+          {% else %}
+            {% include "@molecules/cards/card-product.twig" with {
+              "card": post
+            } %}
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% include "@molecules/navigation/pagination/pagination.twig" with post_grid %}
+    {% else %}
+      <p>Sorry, there are no posts at this time.</p>
+    {% endif %}
+  </section>
+{% endif %}

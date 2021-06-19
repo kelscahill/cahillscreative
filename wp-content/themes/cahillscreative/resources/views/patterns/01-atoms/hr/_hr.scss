@@ -7,6 +7,13 @@
   background-color: $c-gray;
 }
 
+@mixin o-hr--responsive {
+  width: 50%;
+  background-color: $c-gray;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 @mixin o-hr--small {
   width: 150px;
   background-color: $c-gray;
@@ -18,6 +25,10 @@ hr {
 
 .o-hr {
   @include o-hr;
+
+  &--responsive {
+    @include o-hr--responsive;
+  }
 
   &--small {
     @include o-hr--small;

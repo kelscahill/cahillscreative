@@ -8,17 +8,17 @@
         "name": post.icon|lower|replace({' ': '-'})
       },
       "kicker": {
-        "text": kicker
+        "text": post.kicker
       },
       "heading": {
-        "text": title ? title : post.title
+        "text": post.title
       },
       "extra": bem_classes(content_base_class, 'header')
     }
   } %}
   {% include "@atoms/text/rich-text/rich-text.twig" with {
     "rich_text": {
-      "text": description ? description : post.content,
+      "text": post.content,
       "extra": bem_classes(content_base_class, 'content')
     }
   } %}

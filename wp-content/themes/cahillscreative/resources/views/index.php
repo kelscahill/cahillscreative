@@ -14,20 +14,18 @@
  */
 
 $context = Timber::get_context();
-$post = new TimberPost();
 $term = get_queried_object();
-$context['post'] = $post;
 $context['term'] = $term;
 $context['posts'] = new Timber\PostQuery();
 
 if (is_tax('affiliate_category') || is_tax('affiliate_tag') || is_tax('store')) {
- $context['kicker'] = 'Shop';
- $context['title'] = $term->name;
- $context['description'] = $term->description;
+ $context['post']['kicker'] = 'Shop';
+ $context['post']['title'] = $term->name;
+ $context['post']['content'] = $term->description;
 } elseif (is_category() || is_tag() || is_tax()) {
-  $context['kicker'] = 'Blog';
-  $context['title'] = $term->name;
-  $context['description'] = $term->description;
+  $context['post']['kicker'] = 'Blog';
+  $context['post']['title'] = $term->name;
+  $context['post']['content'] = $term->description;
 }
 
 $templates = array(

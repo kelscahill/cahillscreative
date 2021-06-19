@@ -15,9 +15,19 @@
       }
     } %}
     <div class="{{ bem_classes(card_base_class, 'content') }} u-spacing--half">
+      {% if card.icon %}
+        <div class="{{ bem_classes(card_base_class, 'icon') }}">
+          {% include "@atoms/images/image/image.twig" with {
+            "image": {
+              "src": Image(card.icon).src,
+              "alt": Image(card.icon).alt
+            }
+          } %}
+        </div>
+      {% endif %}
       {% include "@atoms/text/kicker/kicker.twig" with {
         "kicker": {
-          "text": card.category,
+          "text": card.kicker ? card.kicker : card.category,
           "link": card.category.link,
           "extra": bem_classes(card_base_class, 'kicker')
         }
@@ -34,28 +44,48 @@
           "extra": bem_classes(card_base_class, 'heading')
         }
       } %}
+      {% if card.hr %}
+        {% include "@atoms/hr/hr.twig" with {
+          "hr": {
+            "modifiers": card.hr,
+            "extra": bem_classes(card_base_class, 'hr')
+          }
+        } %}
+      {% endif %}
       {% include "@atoms/text/dek/dek.twig" with {
         "dek": {
-          "text": card.preview.length(20).read_more(false),
+          "text": card.dek ? card.dek : card.preview.length(20).read_more(false),
           "extra": bem_classes(card_base_class, 'dek')
         }
       } %}
     </div>
     <div class="{{ bem_classes(card_base_class, 'footer') }}">
-      {% include "@atoms/links/link.twig" with {
-        "link": {
-          "url": card.link,
-          "text": "Read More",
-          "modifiers": "alt",
-          "extra": bem_classes(card_base_class, 'link')
-        }
-      } %}
-      {% include "@atoms/text/meta/meta.twig" with {
-        "meta": {
-          "date": card.date,
-          "extra": bem_classes(card_base_class, 'meta')
-        }
-      } %}
+      {% if card.button.url %}
+        {% include "@atoms/buttons/button.twig" with {
+          "button": {
+            "url": card.button.url,
+            "text": card.button.text,
+            "target": card.button.target,
+            "modifiers": "center",
+            "extra": bem_classes(card_base_class, 'button')
+          }
+        } %}
+      {% else %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "url": card.link,
+            "text": "Read More",
+            "modifiers": "alt",
+            "extra": bem_classes(card_base_class, 'link')
+          }
+        } %}
+        {% include "@atoms/text/meta/meta.twig" with {
+          "meta": {
+            "date": card.date,
+            "extra": bem_classes(card_base_class, 'meta')
+          }
+        } %}
+      {% endif %}
     </div>
   </div>
 {% endif %}

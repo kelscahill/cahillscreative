@@ -1,10 +1,9 @@
-{% set cards_filter_base_class = cards_filter.base_class|default('c-cards-filter') %}
-
+{% set post_filter_base_class = post_filter.base_class|default('c-post-filter') %}
 {% set filter_base_class = filter.base_class|default('c-filter') %}
 
 {% if post.filter_id %}
-  <section class="{{ bem_classes(cards_filter_base_class, cards_filter.element, cards_filter.modifiers, cards_filter.extra) }} l-wrap l-container--xxl">
-    <div class="{{ bem_classes(cards_filter_base_class, 'grid') }}" bp="grid">
+  <section class="{{ bem_classes(post_filter_base_class, post_filter.element, post_filter.modifiers, post_filter.extra) }} l-wrap l-container--xxl">
+    <div class="{{ bem_classes(post_filter_base_class, 'grid') }}" bp="grid">
       <div class="{{ bem_classes(filter_base_class) }}" bp="12 4@md 3@lg 2@xl">
         <div class="{{ bem_classes(filter_base_class, 'bar') }} js-toggle-parent">
           <span class="o-heading__primary--l">
@@ -22,7 +21,7 @@
           {{ function('do_shortcode', '[searchandfilter id="'~ post.filter_id ~'"]') }}
         </div>
       </div>
-      <div class="{{ bem_classes(cards_filter_base_class, 'results') }}" bp="8@md 9@lg 10@xl">
+      <div class="{{ bem_classes(post_filter_base_class, 'results') }}" bp="8@md 9@lg 10@xl">
         {{ function('do_shortcode', '[searchandfilter id="'~ post.filter_id ~'" show="results"]') }}
       </div>
     </div>

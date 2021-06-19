@@ -1,0 +1,50 @@
+{% set cards_base_class = cards.base_class|default('c-cards') %}
+
+{% if cards.items %}
+  <section class="{{ bem_classes(cards_base_class, cards.element, cards.modifiers, cards.extra) }} l-wrap l-container--xl u-spacing--double">
+    {% include "@organisms/sections/page-headers/page-header.twig" with {
+      "page_header": {
+        "kicker": {
+          "text": cards.kicker
+        },
+        "heading": {
+          "text": cards.title
+        },
+        "dek": {
+          "text": cards.description
+        },
+        "extra": bem_classes(content_base_class, 'header')
+      }
+    } %}
+    <div class="{{ bem_classes(cards_base_class, 'items') }}" bp="grid 4@lg">
+      {% for item in cards.items %}
+        {% include "@molecules/cards/card.twig" with {
+          "card": {
+            "icon": item.icon,
+            "kicker": item.kicker,
+            "title": item.title,
+            "hr": "responsive",
+            "dek": item.description,
+            "link": item.button.url,
+            "button": {
+              "url": item.button.url,
+              "text": item.button.title,
+              "target": item.button.target
+            },
+            "modifiers": "promo",
+            "extra": "u-text-align--center"
+          }
+        } %}
+      {% endfor %}
+    </div>
+    {% include "@atoms/buttons/button.twig" with {
+      "button": {
+        "text": cards.button.title,
+        "url": cards.button.url,
+        "target": cards.button.target,
+        "extra": bem_classes(cards_base_class, 'button'),
+        "modifiers": ["secondary", "center"]
+      }
+    } %}
+  </section>
+{% endif %}

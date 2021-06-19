@@ -1,5 +1,6 @@
 .c-related-posts {
   position: relative;
+  margin-top: $space-quadruple;
 
   &--tertiary {
     padding-top: 0;
@@ -62,6 +63,11 @@
       transform: rotate(90deg);
     }
   }
+}
+
+
+.c-post-filter {
+  padding-top: $space-double;
 }
 
 .c-filter {
@@ -254,6 +260,11 @@
         position: absolute;
         top: 3px;
         right: 0;
+      }
+
+      &:hover,
+      &:focus {
+        color: $c-secondary;
       }
     }
 

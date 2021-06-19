@@ -58,6 +58,12 @@
     @include o-button--small;
   }
 
+  &--center {
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+  }
+
   &--icon {
     background-color: transparent;
     border-radius: 0;

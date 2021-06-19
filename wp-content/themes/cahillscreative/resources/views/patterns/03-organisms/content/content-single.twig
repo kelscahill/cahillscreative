@@ -2,9 +2,6 @@
 
 <article class="{{ bem_classes(content_single_base_class, content_single.element, content_single.modifiers, content_single.extra) }}">
   <div class="{{ bem_classes(content_single_base_class, 'container') }} l-container--l u-spacing--half">
-    {% include "@molecules/navigation/breadcrumbs/breadcrumbs.twig" with {
-      "breadcrumbs": post.terms('category')
-    } %}
     <div class="{{ bem_classes(content_single_base_class, 'wrap') }}">
       <div class="{{ bem_classes(content_single_base_class, 'header') }}">
         {% include "@organisms/sections/page-headers/page-header.twig" %}
@@ -33,7 +30,7 @@
                 "modifiers": "stacked"
               }
             } %}
-            <div class="{{ bem_classes(content_single_base_class, 'body') }} l-container--m">
+            <div class="{{ bem_classes(content_single_base_class, 'body') }}">
               {% include "@atoms/text/rich-text/rich-text.twig" with {
                 "rich_text": {
                   "extra": "has-dropcap",

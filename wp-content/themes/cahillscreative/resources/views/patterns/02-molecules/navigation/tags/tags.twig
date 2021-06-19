@@ -2,6 +2,15 @@
 
 {% if tags %}
   <div class="{{ bem_classes(tags_base_class) }}">
+    {% include "@atoms/text/heading/heading.twig" with {
+      "heading": {
+        "level": "6",
+        "size": "xs",
+        "type": "secondary",
+        "text": "Tags",
+        "extra": bem_classes(tags_base_class, 'heading')
+      }
+    } %}
     {% for tag in tags %}
       {% include "@atoms/links/link.twig" with {
         "link": {

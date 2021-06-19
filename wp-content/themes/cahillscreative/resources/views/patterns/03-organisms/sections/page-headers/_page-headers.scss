@@ -1,5 +1,11 @@
 .c-page-header {
   background-color: $c-white;
+  margin-top: $space;
+  margin-bottom: $space;
+
+  &__kicker {
+    display: block;
+  }
 
   &__icon {
     width: 80px;

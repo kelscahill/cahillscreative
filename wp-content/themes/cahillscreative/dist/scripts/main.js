@@ -348,21 +348,21 @@ Router.prototype.loadEvents = function loadEvents () {
       slidesToScroll: 4,
       responsive: [
         {
-          breakpoint: 720,
+          breakpoint: 960,
           settings: {
             slidesToShow: 3,
             slidesToScroll: 3,
           }
         },
         {
-          breakpoint: 500,
+          breakpoint: 720,
           settings: {
             slidesToShow: 2,
             slidesToScroll: 2,
           }
         },
         {
-          breakpoint: 320,
+          breakpoint: 500,
           settings: {
             slidesToShow: 1,
             slidesToScroll: 1,

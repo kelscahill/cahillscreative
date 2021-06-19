@@ -1,13 +1,13 @@
 {% set page_header_base_class = page_header.base_class|default('c-page-header') %}
 
-{% if page_header %}
-  <div class="{{ bem_classes(page_header_base_class, page_header.element, page_header.modifiers, page_header.extra) }} l-container--m u-text-align--center u-spacing">
+{% if page_header.heading.text or page_header.dek.text %}
+  <div class="{{ bem_classes(page_header_base_class, page_header.element, page_header.modifiers, page_header.extra) }} l-container--m u-text-align--center u-spacing--half">
     {% include "@atoms/images/icons/icon.twig" with {
       "icon": {
         "title": page_header.icon.title,
         "name": page_header.icon.name,
         "modifiers": "large",
-        "extra": bem_classes(page_header_base_class, "icon")
+        "extra": [bem_classes(page_header_base_class, "icon"), "u-space--half--bottom"]
       }
     } %}
     {% include "@atoms/text/kicker/kicker.twig" with {

@@ -2,6 +2,10 @@
     $HELPER/TRUMP CLASSES
 \*------------------------------------ */
 
+#wpadminbar {
+  z-index: 1;
+}
+
 .slick-slider {
   display: flex;
   align-items: center;
@@ -20,7 +24,7 @@
 
   .slick-slide {
     width: 100%;
-    margin: 0 $space-half;
+    margin: 0 calc(#{$gutter} / 2);
   }
 
   .slick-arrow {

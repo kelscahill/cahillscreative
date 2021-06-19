@@ -33,6 +33,17 @@
   }
 }
 
+@mixin o-link--xsmall {
+  @include o-link(currentColor, $c-secondary);
+  font-size: $font-size-s;
+  box-shadow: none;
+
+  &:hover,
+  &:focus {
+    box-shadow: none;
+  }
+}
+
 @mixin o-link--small {
   @include o-link(currentColor, $c-primary);
 
@@ -86,6 +97,10 @@
 
 .o-link {
   @include o-link;
+
+  &--xsmall {
+    @include o-link--xsmall;
+  }
 
   &--small {
     @include o-link--small;

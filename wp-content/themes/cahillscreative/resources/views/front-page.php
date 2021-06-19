@@ -11,7 +11,8 @@
 
 $context = Timber::get_context();
 $post = new TimberPost();
-$context['post'] = $post;
+$context['post']['title'] = NULL;
+$context['post']['content'] = $post->content;
 
 $latest_blog_posts = array(
   'post_type' => 'post',

@@ -19,11 +19,11 @@
                   "modifiers": "no-shadow",
                   "extra": [
                     bem_classes(primary_nav_base_class, 'link'),
-                    item.children ? 'has-children'
+                    item.children and loop.first ? 'has-children'
                   ]|merge(item.classes),
                 }
               } %}
-              {% if item.children %}
+              {% if item.children and loop.first %}
                 {% include "@atoms/images/icons/icon.twig" with {
                   "icon": {
                     "title": "Arrow",

@@ -1,4 +1,5 @@
 {% extends "@templates/_layout.twig" %}
+{% set is_single = true %}
 
 {% block sections_before %}
   {% do action('woocommerce_before_single_product') %}

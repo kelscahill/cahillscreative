@@ -3,10 +3,10 @@
   margin-left: auto;
   margin-right: auto;
   pointer-events: auto;
-  max-width: $max-width-l;
 
   & > * + * {
     margin-top: $space;
+    max-width: $max-width-m;
 
     @include media('>medium') {
       margin-top: $space-and-half;
@@ -44,7 +44,9 @@
     margin: $space-triple auto;
   }
 
-  > ul {
+  > ul,
+  > ol {
+    @include body-copy;
     margin-left: $space-double;
   }
 
@@ -58,6 +60,11 @@
 
   .wp-block-separator.is-style-wide {
     @include o-hr;
+  }
+
+  > section {
+    margin-top: 0;
+    max-width: inherit;
   }
 
   &--small {

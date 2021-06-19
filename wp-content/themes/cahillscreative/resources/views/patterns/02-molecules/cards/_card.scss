@@ -35,18 +35,59 @@
     }
   }
 
-  .o-button {
-    padding: 0;
-    margin: 0;
-    color: $c-black;
-    background-color: transparent;
-    box-shadow: none;
+  &__icon {
+    position: relative;
+    width: 70px;
+    height: 70px;
+    border-radius: 70px;
+    margin-top: -75px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: $space;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    @include o-heading__secondary--xs;
+    img {
+      max-width: $icon-medium;
+      max-height: $icon-medium;
+      margin: auto;
+    }
+  }
 
-    &:hover,
-    &:focus {
-      color: $c-secondary;
+  &--product {
+    .o-button {
+      padding: 0;
+      margin: 0;
+      color: $c-black;
+      background-color: transparent;
+      box-shadow: none;
+
+      @include o-heading__secondary--xs;
+
+      &:hover,
+      &:focus {
+        color: $c-secondary;
+      }
+    }
+  }
+
+  &--promo {
+    padding: $space-double;
+
+    .c-card__content {
+      padding: 0;
+    }
+
+    .c-card__hr {
+      margin-top: $space;
+      margin-bottom: $space;
+    }
+
+    .c-card__footer {
+      border: 0;
+      padding: $space 0 0 0;
     }
   }
 }

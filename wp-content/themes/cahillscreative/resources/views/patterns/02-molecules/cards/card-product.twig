@@ -1,7 +1,7 @@
 {% if card %}
   {% set card_base_class = card.base_class|default('c-card') %}
 
-  <div class="{{ bem_classes(card_base_class, card.element, card.modifiers, card.extra) }}" {{ add_attributes(card.attributes) }}>
+  <div class="{{ bem_classes(card_base_class, card.element, 'product', card.extra) }}" {{ add_attributes(card.attributes) }}>
     {% include "@atoms/images/image/figure.twig" with {
       "figure": {
         "link": {
