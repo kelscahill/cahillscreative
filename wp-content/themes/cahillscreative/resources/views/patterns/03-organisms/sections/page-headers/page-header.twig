@@ -7,13 +7,13 @@
         "title": page_header.icon.title,
         "name": page_header.icon.name,
         "modifiers": "large",
-        "extra": [bem_classes(page_header_base_class, "icon"), "u-space--half--bottom"]
+        "extra": [bem_classes(page_header_base_class, 'icon'), "u-space--half--bottom"]
       }
     } %}
     {% include "@atoms/text/kicker/kicker.twig" with {
       "kicker": {
         "text": page_header.kicker.text,
-        "extra": bem_classes(page_header_base_class, "kicker")
+        "extra": bem_classes(page_header_base_class, 'kicker')
       }
     } %}
     {% include "@atoms/text/heading/heading.twig" with {
@@ -22,14 +22,14 @@
         "size": "xl",
         "type": "primary",
         "text": page_header.heading.text,
-        "extra": bem_classes(page_header_base_class, "heading")
+        "extra": bem_classes(page_header_base_class, 'heading')
       }
     } %}
     {% include "@atoms/text/dek/dek.twig" with {
       "dek": {
         "text": page_header.dek.text,
         "modifiers": "large",
-        "extra": bem_classes(page_header_base_class, "dek")
+        "extra": bem_classes(page_header_base_class, 'dek')
       }
     } %}
   </div>

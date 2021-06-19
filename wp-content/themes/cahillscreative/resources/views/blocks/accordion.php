@@ -9,9 +9,9 @@
  * @since      Timber 0.1
  */
 
-$context                         = Timber::context();
+$context = Timber::context();
 $context['accordion']['heading'] = get_field( 'accordion_heading' );
-$context['accordion']['items']   = get_field( 'accordion_items' );
+$context['accordion']['items'] = get_field( 'accordion_items' );
 
 $templates = array(
 	get_stylesheet_directory() . '/views/patterns/02-molecules/components/accordion/accordion.twig',

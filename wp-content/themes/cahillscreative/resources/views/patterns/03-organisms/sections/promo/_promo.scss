@@ -33,6 +33,8 @@
   }
 
   &__item--background-none {
+    background-color: $c-white;
+
     .o-kicker {
       color: $c-secondary;
     }

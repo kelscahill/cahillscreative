@@ -9,7 +9,7 @@
  * @since      Timber 0.1
  */
 
-$context          = Timber::context();
+$context = Timber::context();
 $context['promo'] = get_field( 'promo' );
 
 $templates = array(

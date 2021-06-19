@@ -1,28 +1,25 @@
-{% set newsletter_signup_base_class = newsletter_signup.base_class|default('c-newsletter-signup') %}
+{% set newsletter_signup_base_class = newsletter_signup.base_class|default('c-newsletter-signup-footer') %}
 
 {% if options.mailchimp_url %}
-  <div class="{{ bem_classes(newsletter_signup_base_class, '', 'footer') }} u-spacing">
+  <div class="{{ bem_classes(newsletter_signup_base_class, newsletter_signup.element, newsletter_signup.modifiers, newsletter_signup.extra) }} u-spacing">
     <div class="{{ bem_classes(newsletter_signup_base_class, 'heading') }} u-spacing--half">
       {% include "@atoms/text/heading/heading.twig" with {
         "heading": {
           "level": "3",
           "size": "s",
           "type": "secondary",
-          "text": "Get on the list",
+          "text": options.newsletter_title,
           "extra": bem_classes(newsletter_signup_base_class, 'title')
         }
       } %}
-      <p>{{ 'Sign up for first dibs on new collections and much more.' }}</p>
+      <p>{{ options.newsletter_description }}</p>
     </div>
-    <form class="{{ bem_classes(newsletter_signup_base_class, 'form') }}" action="" method="post">
-      <form action="{{ options.mailchimp_url }}" method="post" name="mc-embedded-subscribe-form" class="validate u-spacing" target="_blank" rel="noopener" novalidate>
-        <input name="EMAIL" type="email" placeholder="Enter email address" name="email"/>
-        {% include "@atoms/buttons/button.twig" with {
-          "button": {
-            "text": "Let's Do This"
-          }
-        } %}
-      </form>
-    </form>
+    <div class="{{ bem_classes(newsletter_signup_base_class, 'form') }}">
+      {% include "@molecules/components/newsletter-signup/newsletter-signup-form.twig" with {
+        "newsletter_signup": {
+          "extra": "u-spacing"
+        }
+      } %}
+    </div>
   </div>
 {% endif %}

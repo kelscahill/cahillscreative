@@ -337,7 +337,7 @@ Router.prototype.loadEvents = function loadEvents () {
       speed: 300,
       fade: true,
       cssEase: 'linear',
-      adaptiveHeight: false,
+      adaptiveHeight: true,
     });
 
     $('.js-slick-posts').slick({

@@ -133,7 +133,7 @@ export default {
       speed: 300,
       fade: true,
       cssEase: 'linear',
-      adaptiveHeight: false,
+      adaptiveHeight: true,
     });
 
     $('.js-slick-posts').slick({

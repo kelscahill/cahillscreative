@@ -230,22 +230,6 @@
             "placeholder": ""
         },
         {
-            "key": "field_5e336996f6721",
-            "label": "Mailchimp Url",
-            "name": "mailchimp_url",
-            "type": "url",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": ""
-        },
-        {
             "key": "modal_tab",
             "label": "Modal",
             "name": "",
@@ -370,6 +354,76 @@
             "mime_types": ""
         },
         {
+            "key": "field_60ce02044b9ac",
+            "label": "Newsletter",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_60ce020c4b9ad",
+            "label": "Newsletter Title",
+            "name": "newsletter_title",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_60ce02124b9ae",
+            "label": "Newsletter Description",
+            "name": "newsletter_description",
+            "type": "textarea",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_5e336996f6721",
+            "label": "Mailchimp Url",
+            "name": "mailchimp_url",
+            "type": "url",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": ""
+        },
+        {
             "key": "field_60b01b68507e2",
             "label": "Other",
             "name": "",
@@ -452,5 +506,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1622856602
+    "modified": 1624113766
 }
