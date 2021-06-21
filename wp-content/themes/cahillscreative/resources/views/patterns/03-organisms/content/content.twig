@@ -4,16 +4,11 @@
   {% include "@organisms/sections/page-headers/page-header.twig" with {
     "page_header": {
       "icon": {
-        "title": post.icon|capitalize,
-        "name": post.icon|lower|replace({' ': '-'})
+        "name": post.icon
       },
-      "kicker": {
-        "text": post.kicker
-      },
-      "heading": {
-        "text": post.title
-      },
-      "extra": bem_classes(content_base_class, 'header')
+      "kicker": post.kicker,
+      "heading": post.title,
+      "extra": bem_classes(cards_base_class, 'header')
     }
   } %}
   {% include "@atoms/text/rich-text/rich-text.twig" with {

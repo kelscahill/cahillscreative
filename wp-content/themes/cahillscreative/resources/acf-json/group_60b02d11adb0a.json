@@ -22,30 +22,6 @@
             "button_label": "Add Section",
             "sub_fields": [
                 {
-                    "key": "field_60b02d5fd3f5c",
-                    "label": "Icon",
-                    "name": "icon",
-                    "type": "image",
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "return_format": "array",
-                    "preview_size": "medium",
-                    "library": "all",
-                    "min_width": "",
-                    "min_height": "",
-                    "min_size": "",
-                    "max_width": "",
-                    "max_height": "",
-                    "max_size": "",
-                    "mime_types": ""
-                },
-                {
                     "key": "field_60b02d2ad3f5a",
                     "label": "Kicker",
                     "name": "kicker",
@@ -82,25 +58,6 @@
                     "prepend": "",
                     "append": "",
                     "maxlength": ""
-                },
-                {
-                    "key": "field_60b02e2450522",
-                    "label": "Hr",
-                    "name": "hr",
-                    "type": "true_false",
-                    "instructions": "Check to show an hr under the title.",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "message": "",
-                    "default_value": 0,
-                    "ui": 0,
-                    "ui_on_text": "",
-                    "ui_off_text": ""
                 },
                 {
                     "key": "field_60b02d31d3f5b",
@@ -145,7 +102,7 @@
                     "required": 0,
                     "conditional_logic": 0,
                     "wrapper": {
-                        "width": "",
+                        "width": "50",
                         "class": "",
                         "id": ""
                     },
@@ -169,7 +126,7 @@
                     "required": 0,
                     "conditional_logic": 0,
                     "wrapper": {
-                        "width": "",
+                        "width": "50",
                         "class": "",
                         "id": ""
                     },
@@ -185,6 +142,29 @@
                     "save_other_choice": 0
                 },
                 {
+                    "key": "field_60cf593341a4e",
+                    "label": "Icon",
+                    "name": "icon",
+                    "type": "clone",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "clone": [
+                        "field_60cf4b8b6f242",
+                        "field_60cf4b626f240",
+                        "field_60cf4b7d6f241"
+                    ],
+                    "display": "seamless",
+                    "layout": "block",
+                    "prefix_label": 0,
+                    "prefix_name": 0
+                },
+                {
                     "key": "field_60b02d6cd3f5d",
                     "label": "Background Color",
                     "name": "background_color",
@@ -193,7 +173,7 @@
                     "required": 0,
                     "conditional_logic": 0,
                     "wrapper": {
-                        "width": "",
+                        "width": "50",
                         "class": "",
                         "id": ""
                     },
@@ -209,6 +189,25 @@
                     "layout": "vertical",
                     "return_format": "value",
                     "save_other_choice": 0
+                },
+                {
+                    "key": "field_60b02e2450522",
+                    "label": "Hr",
+                    "name": "hr",
+                    "type": "true_false",
+                    "instructions": "Check to show an hr under the title.",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "message": "",
+                    "default_value": 0,
+                    "ui": 0,
+                    "ui_on_text": "",
+                    "ui_off_text": ""
                 }
             ]
         }
@@ -230,5 +229,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1624098455
+    "modified": 1624201754
 }

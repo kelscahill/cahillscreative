@@ -25,6 +25,48 @@ export default {
       $('html').addClass(' no-touch');
     }
 
+    // Convert lists with the classname of .c-checkbox-list to have checkboxes.
+    $('ul.c-checkbox-list li').each(function(index) {
+      var url = $(location).attr('href'),
+        parts = url.split('/'),
+        post_slug = parts[parts.length-2];
+      var id = 'checkbox-' + index;
+      var text = $(this).text();
+      var label = $('<label>').attr('for', id).text(text);
+      var input = $('<input type="checkbox">').attr({id: id, name: id});
+      var link = $(this).find('a').text('Buy here').attr('class', 'o-link o-link--small');
+      $(this).parent().attr('class', 'c-checkbox-list u-spacing--half');
+      $(this).attr('id', 'accordion-' + post_slug + '__' + index);
+      $(this).append(input);
+      $(this).append(label);
+      label.append(link);
+      $(this).find('span').remove();
+    });
+
+
+    // Checkbox list localstorage on checked.
+    $('.c-checkbox-list').each(function() {
+      // Bind the change event handler.
+      $(this).on('change', 'input', function() {
+        var $item = $(this).parent().attr('id');
+        if (this.checked) {
+          localStorage.setItem($item, 'checked');
+        } else {
+          localStorage.removeItem($item, 'checked');
+        }
+      });
+    });
+
+    // Loop through localStorage and add class if key/value exists.
+    for (var i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+      var value = localStorage.getItem(key);
+
+      if (value == 'checked') {
+        $('.c-checkbox-list #' + key + ' input').attr('checked', true);
+      }
+    }
+
     // Shop filter.
     $('.searchandfilter li').each(function() {
       $(this).find('h4').addClass('js-toggle-parent');

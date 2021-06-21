@@ -3,10 +3,10 @@
     "title": "Cards",
     "fields": [
         {
-            "key": "field_60b0335e9312c",
-            "label": "Cards Kicker",
-            "name": "cards_kicker",
-            "type": "text",
+            "key": "field_60cf56d956790",
+            "label": "Header",
+            "name": "",
+            "type": "tab",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -15,17 +15,14 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
+            "placement": "top",
+            "endpoint": 0
         },
         {
-            "key": "field_60b0332ee0cf4",
-            "label": "Cards Title",
-            "name": "cards_title",
-            "type": "text",
+            "key": "field_60cf56ef56792",
+            "label": "Cards Header",
+            "name": "cards_header",
+            "type": "clone",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -34,17 +31,19 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
+            "clone": [
+                "group_60cf4b38c351e"
+            ],
+            "display": "seamless",
+            "layout": "block",
+            "prefix_label": 0,
+            "prefix_name": 0
         },
         {
-            "key": "field_60b0333a9c768",
-            "label": "Cards Description",
-            "name": "cards_description",
-            "type": "wysiwyg",
+            "key": "field_60cf56e056791",
+            "label": "Cards",
+            "name": "",
+            "type": "tab",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -53,16 +52,13 @@
                 "class": "",
                 "id": ""
             },
-            "tabs": "all",
-            "toolbar": "full",
-            "media_upload": 1,
-            "default_value": "",
-            "delay": 0
+            "placement": "top",
+            "endpoint": 0
         },
         {
             "key": "field_60b02f688240d",
             "label": "Cards",
-            "name": "cards",
+            "name": "cards_items",
             "type": "repeater",
             "instructions": "",
             "required": 0,
@@ -175,21 +171,6 @@
                     "return_format": "array"
                 }
             ]
-        },
-        {
-            "key": "field_60b033449312b",
-            "label": "Cards Button",
-            "name": "cards_button",
-            "type": "link",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "return_format": "array"
         }
     ],
     "location": [
@@ -209,5 +190,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1622163491
+    "modified": 1624201363
 }

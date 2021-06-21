@@ -3,10 +3,10 @@
     "title": "Accordion",
     "fields": [
         {
-            "key": "field_60b03379f4b11",
-            "label": "Accordion Kicker",
-            "name": "accordion_kicker",
-            "type": "text",
+            "key": "field_60cf4d130bd2a",
+            "label": "Header",
+            "name": "",
+            "type": "tab",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -15,17 +15,14 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
+            "placement": "top",
+            "endpoint": 0
         },
         {
-            "key": "field_60b03260a1805",
-            "label": "Accordion Title",
-            "name": "accordion_title",
-            "type": "text",
+            "key": "field_60cf4c8e243ea",
+            "label": "Accordion Header",
+            "name": "accordion_header",
+            "type": "clone",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -34,15 +31,33 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
+            "clone": [
+                "group_60cf4b38c351e"
+            ],
+            "display": "seamless",
+            "layout": "block",
+            "prefix_label": 0,
+            "prefix_name": 0
+        },
+        {
+            "key": "field_60cf4d1e0bd2b",
+            "label": "Accordion",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
         },
         {
             "key": "field_60b0302b4dee9",
-            "label": "Accordion Items",
+            "label": "Accordion",
             "name": "accordion_items",
             "type": "repeater",
             "instructions": "",
@@ -56,7 +71,7 @@
             "collapsed": "field_60b030364deea",
             "min": 0,
             "max": 0,
-            "layout": "block",
+            "layout": "row",
             "button_label": "",
             "sub_fields": [
                 {
@@ -239,40 +254,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "key": "field_60b0326da1806",
-            "label": "Accordion Description",
-            "name": "accordion_description",
-            "type": "wysiwyg",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "tabs": "all",
-            "toolbar": "full",
-            "media_upload": 0,
-            "delay": 0
-        },
-        {
-            "key": "field_60b0327ba1807",
-            "label": "Accordion Button",
-            "name": "accordion_button",
-            "type": "link",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "return_format": "array"
         }
     ],
     "location": [
@@ -292,5 +273,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1622164279
+    "modified": 1624234257
 }

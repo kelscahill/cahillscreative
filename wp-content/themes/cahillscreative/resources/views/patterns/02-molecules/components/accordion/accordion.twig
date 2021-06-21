@@ -1,40 +1,57 @@
 {% set accordion_base_class = accordion.base_class|default('c-accordion') %}
 
-{% if accordion %}
-  <div class="{{ bem_classes(accordion_base_class) }} u-spacing">
-    {% if accordion.heading %}
-      {% include "@atoms/text/heading/heading.twig" with {
-        "heading": {
-          "level": "3",
-          "size": "l",
-          "type": "primary",
-          "text": accordion.heading,
-          "extra": bem_classes(accordion_base_class, 'heading')
-        }
-      } %}
-    {% endif %}
-    {% if accordion.items %}
-      <div class="{{ bem_classes(accordion_base_class, 'items') }} u-spacing--half">
-        {% for item in accordion.items %}
-          <div class="{{ bem_classes(accordion_base_class, 'item') }} {{ 'c-accordion__item--' ~ loop.index }}">
-            {% if item.heading %}
-              <div class="{{ bem_classes(accordion_base_class, 'item-heading') }} js-toggle-parent">
-                {{ item.heading }}
-              </div>
-            {% endif %}
-            {% if item.body %}
-              <div class="{{ bem_classes(accordion_base_class, 'item-body') }}">
-                {% include "@atoms/text/rich-text/rich-text.twig" with {
-                  "rich_text": {
-                    "text": item.body,
-                    "modifiers": "small"
-                  }
-                } %}
-              </div>
-            {% endif %}
+{% if accordion.items %}
+  <section class="{{ bem_classes(accordion_base_class, accordion.element, accordion.modifiers, accordion.extra) }} u-spacing">
+    {% include "@organisms/sections/page-headers/page-header.twig" with {
+      "page_header": {
+        "icon": {
+          "type": accordion.header.icon_type,
+          "name": accordion.header.icon_name,
+          "image": accordion.header.icon_image
+        },
+        "kicker": accordion.header.kicker,
+        "heading": accordion.header.title,
+        "dek": accordion.header.description,
+        "extra": bem_classes(accordion_base_class, 'header')
+      }
+    } %}
+    <div class="{{ bem_classes(accordion_base_class, 'items') }} l-container--m">
+      {% for item in accordion.items %}
+        <div class="{{ bem_classes(accordion_base_class, 'item') }} {{ 'c-accordion__item--' ~ loop.index }}">
+          {% include "@atoms/text/heading/heading.twig" with {
+            "heading": {
+              "level": "3",
+              "size": accordion.heading_size ? accordion.heading_size : "m",
+              "type": accordion.heading_type ? accordion.heading_type : "primary",
+              "text": item.title,
+              "extra": [bem_classes(accordion_base_class, 'heading'), "js-toggle-parent"]
+            }
+          } %}
+          <div class="{{ bem_classes(accordion_base_class, 'body') }} u-spacing">
+            {% include "@atoms/text/rich-text/rich-text.twig" with {
+              "rich_text": {
+                "text": item.body
+              }
+            } %}
+            {% include "@molecules/components/checkbox-list/checkbox-list.twig" with {
+              "checkbox_list": item.checkboxes,
+              "id": 'accordion-' ~ post.slug ~ '-' ~ loop.index
+            } %}
+            {% include "@molecules/components/steps/steps.twig" with {
+              "steps": item.steps
+            } %}
           </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% include "@atoms/buttons/button.twig" with {
+      "button": {
+        "text": cards.header.button.title,
+        "url": cards.header.button.url,
+        "target": cards.header.button.target,
+        "extra": bem_classes(cards_base_class, 'button'),
+        "modifiers": ["secondary", "center"]
+      }
+    } %}
+  </section>
 {% endif %}

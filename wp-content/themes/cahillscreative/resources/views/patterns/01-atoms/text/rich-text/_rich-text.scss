@@ -4,9 +4,13 @@
   margin-right: auto;
   pointer-events: auto;
 
+  > *:not(section) {
+    max-width: $max-width-m;
+  }
+
   & > * + * {
     margin-top: $space;
-    max-width: $max-width-m;
+    // max-width: $max-width-m;
 
     @include media('>medium') {
       margin-top: $space-and-half;

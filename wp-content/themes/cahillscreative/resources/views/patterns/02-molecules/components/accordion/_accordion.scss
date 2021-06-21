@@ -1,57 +1,70 @@
 .c-accordion {
+  width: 100%;
+
   &__heading {
-    text-align: center;
+    background-color: $c-white;
+    padding: $space-half $space-double $space-half 0;
+    cursor: pointer;
+    position: relative;
+    border-bottom: $border--standard;
+
+    &::before,
+    &::after {
+      content: "";
+      height: 1px;
+      width: 20px;
+      background-color: $c-black;
+      display: block;
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+    }
+
+    &::after {
+      transition: $transition-all;
+      transform: rotate(90deg);
+    }
+  }
+
+  &__body {
+    position: relative;
+    background-color: $c-white;
+    height: 0;
   }
 
   &__item {
-    &-heading {
-      background-color: $c-white;
-      padding: $space $space-double $space $space;
-      font-weight: bold;
-      font-family: $font-secondary;
-      cursor: pointer;
-      position: relative;
-
-      &::before,
-      &::after {
-        content: "";
-        height: 2px;
-        width: 15px;
-        background-color: $c-gray;
-        display: block;
-        position: absolute;
-        right: $space;
-        top: 0;
-        bottom: 0;
-        margin: auto;
-      }
-
-      &::after {
-        transition: $transition-all;
-        transform: rotate(90deg);
-      }
-    }
-
-    &-body {
-      position: relative;
-      background-color: $c-white;
-      height: 0;
-      max-height: 0;
-      font-family: $font-secondary;
-      font-size: $font-size-s;
-      transition: max-height 0.25s $transition-effect;
-      overflow: hidden;
-    }
-
     &.this-is-active {
-      .c-accordion__item-heading::after {
+      .c-accordion__heading::after {
         transform: rotate(0);
       }
 
-      .c-accordion__item-body {
+      .c-accordion__body {
         height: auto;
-        max-height: 1000px;
-        padding: 0 $space $space $space;
+        padding: $space 0 $space-double 0;
+      }
+    }
+  }
+
+  &.is-open {
+    .c-accordion__heading::after {
+      transform: rotate(0);
+    }
+
+    .c-accordion__body {
+      height: auto;
+      padding: $space 0 $space-double 0;
+    }
+
+    .this-is-active {
+      .c-accordion__heading::after {
+        transform: rotate(90deg);
+      }
+
+      .c-accordion__body {
+        height: 0;
+        padding: 0;
       }
     }
   }

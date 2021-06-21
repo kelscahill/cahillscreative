@@ -19,9 +19,9 @@ $context['term'] = $term;
 $context['posts'] = new Timber\PostQuery();
 
 if (is_tax('affiliate_category') || is_tax('affiliate_tag') || is_tax('store')) {
- $context['post']['kicker'] = 'Shop';
- $context['post']['title'] = $term->name;
- $context['post']['content'] = $term->description;
+  $context['post']['kicker'] = 'Shop';
+  $context['post']['title'] = $term->name;
+  $context['post']['content'] = $term->description;
 } elseif (is_category() || is_tag() || is_tax()) {
   $context['post']['kicker'] = 'Blog';
   $context['post']['title'] = $term->name;

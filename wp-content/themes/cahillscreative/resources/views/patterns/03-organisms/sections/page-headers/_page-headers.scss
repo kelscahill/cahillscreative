@@ -1,7 +1,12 @@
 .c-page-header {
+  width: 100%;
+  margin: $space auto;
   background-color: $c-white;
-  margin-top: $space;
-  margin-bottom: $space;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
 
   &__kicker {
     display: block;
@@ -13,5 +18,13 @@
     border-radius: 80px;
     border: $border--standard;
     background-color: $c-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      max-width: $icon-large;
+      max-height: $icon-large;
+    }
   }
 }

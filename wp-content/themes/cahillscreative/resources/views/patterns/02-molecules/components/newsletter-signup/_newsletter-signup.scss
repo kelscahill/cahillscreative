@@ -85,12 +85,17 @@
 
     @include media('>medium') {
       margin-bottom: 0;
+      margin-right: $space;
     }
   }
 
   &__form {
     @include media('>medium') {
       min-width: 320px;
+    }
+
+    @include media('>xlarge') {
+      min-width: 400px;
     }
   }
 }

@@ -10,11 +10,8 @@
  */
 
 $context = Timber::context();
-$context['cards']['kicker'] = get_field( 'cards_kicker' );
-$context['cards']['title'] = get_field( 'cards_title' );
-$context['cards']['description'] = get_field( 'cards_description' );
-$context['cards']['button'] = get_field( 'cards_button' );
-$context['cards']['items'] = get_field( 'cards' );
+$context['cards']['header'] = get_field( 'cards_header' );
+$context['cards']['items'] = get_field( 'cards_items' );
 
 $templates = array(
   get_stylesheet_directory() . '/views/patterns/03-organisms/sections/cards/cards.twig',

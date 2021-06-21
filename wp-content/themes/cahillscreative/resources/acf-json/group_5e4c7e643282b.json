@@ -60,6 +60,27 @@
                     "delay": 0
                 }
             ]
+        },
+        {
+            "key": "field_60cfd598225fa",
+            "label": "Product Accordion",
+            "name": "product_accordion",
+            "type": "clone",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "clone": [
+                "field_60b0302b4dee9"
+            ],
+            "display": "seamless",
+            "layout": "block",
+            "prefix_label": 0,
+            "prefix_name": 0
         }
     ],
     "location": [
@@ -79,5 +100,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1622225396
+    "modified": 1624234035
 }

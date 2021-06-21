@@ -31,15 +31,9 @@
     {% if post_grid.posts %}
       <div class="{{ bem_classes(post_grid_base_class, 'posts') }}" bp="grid 6 4@md 3@lg">
         {% for post in post_grid.posts %}
-          {% if post.post_type == "post" %}
-            {% include "@molecules/cards/card.twig" with {
-              "card": post
-            } %}
-          {% else %}
-            {% include "@molecules/cards/card-product.twig" with {
-              "card": post
-            } %}
-          {% endif %}
+          {% include ['@molecules/cards/card-' ~ post.post_type ~ '.twig', '@molecules/cards/card.twig'] with {
+            "card": post
+          } %}
         {% endfor %}
       </div>
       {% include "@molecules/navigation/pagination/pagination.twig" with post_grid %}

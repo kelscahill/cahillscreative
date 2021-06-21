@@ -3,9 +3,16 @@
 <article class="{{ bem_classes(content_single_base_class, content_single.element, content_single.modifiers, content_single.extra) }}">
   <div class="{{ bem_classes(content_single_base_class, 'container') }} l-container--l u-spacing--half">
     <div class="{{ bem_classes(content_single_base_class, 'wrap') }}">
-      <div class="{{ bem_classes(content_single_base_class, 'header') }}">
-        {% include "@organisms/sections/page-headers/page-header.twig" %}
-      </div>
+      {% include "@organisms/sections/page-headers/page-header.twig" with {
+        "page_header": {
+          "icon": {
+            "name": post.icon
+          },
+          "kicker": post.kicker,
+          "heading": post.title,
+          "extra": bem_classes(content_single_base_class, 'header')
+        }
+      } %}
       {% if post.thumbnail %}
         <div class="{{ bem_classes(content_single_base_class, 'hero') }} js-toggle" data-prefix="content-modal" data-toggled="body">
           {% include "@atoms/images/image/responsive-image.twig" with {

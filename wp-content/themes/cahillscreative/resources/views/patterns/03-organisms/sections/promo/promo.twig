@@ -60,12 +60,14 @@
               }
             }
           </style>
-          {% if item.icon %}
+          {% if item.icon_name or item.icon_image %}
             <div class="{{ bem_classes(promo_base_class, 'icon') }}">
-              {% include "@atoms/images/image/image.twig" with {
-                "image": {
-                  "src": Image(item.icon).src,
-                  "alt": Image(item.icon).alt
+              {% include "@atoms/images/icons/icon.twig" with {
+                "icon": {
+                  "type": item.icon_type,
+                  "name": item.icon_name,
+                  "image": item.icon_image,
+                  "modifiers": "large"
                 }
               } %}
             </div>

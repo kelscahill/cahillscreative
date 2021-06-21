@@ -6,12 +6,10 @@
       {% include "@organisms/sections/page-headers/page-header.twig" with {
         "page_header": {
           "icon": {
-            "title": related_posts.icon ? related_posts.icon|capitalize : "Blog",
-            "name": related_posts.icon ? related_posts.icon|lower : "blog"
+            "type": "Name",
+            "name": related_posts.icon.name ? related_posts.icon.name : "Blog"
           },
-          "heading": {
-            "text": related_posts.heading
-          },
+          "heading": related_posts.heading,
           "extra": bem_classes(related_posts_base_class, 'header')
         }
       } %}

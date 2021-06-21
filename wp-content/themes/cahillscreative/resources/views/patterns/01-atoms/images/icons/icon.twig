@@ -1,7 +1,16 @@
-{% if icon.name %}
-  {% set icon_base_class = icon.base_class|default('o-icon') %}
+{% set icon_base_class = icon.base_class|default('o-icon') %}
 
-  <span class="{{ bem_classes(icon_base_class, icon.element, icon.modifiers, icon.extra) }}" aria-label="{{ icon.title }}">
-    {% include '@atoms/images/icons/' ~ icon.name ~ '.twig' %}
-  </span>
+{% if icon %}
+  {% if icon.type == "Image" %}
+    {% include "@atoms/images/image/image.twig" with {
+      "image": {
+        "src": Image(icon.image).src,
+        "alt": Image(icon.image).alt
+      }
+    } %}
+  {% else %}
+    <span class="{{ bem_classes(icon_base_class, icon.element, icon.modifiers, icon.extra) }}" aria-label="{{ icon.title ? icon.title : icon.name|capitalize|replace({'-': ' '}) }}">
+      {% include '@atoms/images/icons/' ~ icon.name ~ '.twig' %}
+    </span>
+  {% endif %}
 {% endif %}

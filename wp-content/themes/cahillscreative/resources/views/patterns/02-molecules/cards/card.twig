@@ -71,17 +71,24 @@
           }
         } %}
       {% else %}
+        {% if card.post_type == 'post' %}
+          {% set link_text = 'Read More'%}
+        {% elseif card.post_type == 'affiliate' %}
+          {% set link_text = 'Buy Now' %}
+        {% else %}
+          {% set link_text = 'View More' %}
+        {% endif %}
         {% include "@atoms/links/link.twig" with {
           "link": {
             "url": card.link,
-            "text": "Read More",
+            "text": link_text,
             "modifiers": "alt",
             "extra": bem_classes(card_base_class, 'link')
           }
         } %}
         {% include "@atoms/text/meta/meta.twig" with {
           "meta": {
-            "date": card.date,
+            "date": card.post_type != "page" ? card.date,
             "extra": bem_classes(card_base_class, 'meta')
           }
         } %}

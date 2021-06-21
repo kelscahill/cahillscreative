@@ -10,10 +10,11 @@
  */
 
 $context = Timber::context();
-$context['accordion']['heading'] = get_field( 'accordion_heading' );
+$context['accordion']['header'] = get_field( 'accordion_header' );
 $context['accordion']['items'] = get_field( 'accordion_items' );
+$context['accordion']['extra'] = 'is-open';
 
 $templates = array(
-	get_stylesheet_directory() . '/views/patterns/02-molecules/components/accordion/accordion.twig',
+  get_stylesheet_directory() . '/views/patterns/02-molecules/components/accordion/accordion.twig',
 );
 Timber::render( $templates, $context );
