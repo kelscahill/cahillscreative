@@ -1,5 +1,19 @@
 {% extends "@templates/_layout.twig" %}
 
+{% block sections_before %}
+  {% if post.thumbnail %}
+    <div class="js-toggle" data-prefix="content-modal" data-toggled="body">
+      {% include "@atoms/images/image/responsive-image.twig" with {
+        "image": {
+          "srcset": post.thumbnail.src|resize(720, 405) ~ ' 720w, ' ~ post.thumbnail.src|resize(960, 540) ~ ' 960w',
+          "src": post.thumbnail.src|resize(500, 281),
+          "alt": post.thumbnail.alt
+        }
+      } %}
+    </div>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
   {% include ['@organisms/content/content-single-' ~ post.post_type|replace({'_': '-'}) ~ '.twig', '@organisms/content/content-single.twig'] %}
 {% endblock %}
@@ -7,8 +21,8 @@
 {% block sections_after %}
   {% include "@organisms/sections/feeds/related-posts.twig" with {
     "related_posts": {
-      "heading": "Latest blog posts",
-      "posts": latest_blog_posts,
+      "heading": "Read this next",
+      "posts": related_blog_posts,
       "modifiers": "tertiary"
     }
   } %}

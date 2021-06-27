@@ -1,0 +1,99 @@
+.c-steps {
+  &__item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  &__counter {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    min-height: 200px;
+    min-width: 30px;
+    margin-right: $space-double;
+    justify-content: space-between;
+
+    &-index,
+    &-step {
+      line-height: 1;
+      display: block;
+      z-index: 1;
+      position: relative;
+      background-color: $c-white;
+    }
+
+    &-index {
+      font-size: 72px;
+      font-family: $font-secondary;
+    }
+
+    &-step {
+      transform: rotate(-90deg);
+      position: absolute;
+      bottom: 13px;
+      width: 42px;
+      height: 16px;
+    }
+
+    &::before {
+      content: "";
+      display: block;
+      position: absolute;
+      margin: auto;
+      left: 0;
+      right: 0;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      background-color: $c-black;
+      z-index: 0;
+    }
+  }
+
+  &__image,
+  &__images {
+    padding-top: $space-half;
+    background-color: $c-white;
+  }
+
+  &__images {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: calc(-50vw - #{$space-double} + 5px);
+    margin-right: calc(-50vw - #{$space-double} + 5px);
+    position: relative;
+    background-color: $c-white;
+    padding-top: $space-half;
+
+    @include media('>medium') {
+      flex-direction: row;
+    }
+
+    > * {
+      padding-bottom: $space;
+
+      @include media('>medium') {
+        padding-right: $space;
+      }
+
+
+      &:last-child {
+        padding-bottom: 0;
+
+        @include media('>medium') {
+          padding-right: 0;
+        }
+      }
+    }
+
+    figcaption {
+      padding-left: $space;
+    }
+  }
+}

@@ -1,57 +1,61 @@
 {% set content_single_base_class = content_single.base_class|default('c-content-single') %}
 
-<article class="{{ bem_classes(content_single_base_class, content_single.element, content_single.modifiers, content_single.extra) }}">
-  <div class="{{ bem_classes(content_single_base_class, 'container') }} l-container--l u-spacing--half">
-    <div class="{{ bem_classes(content_single_base_class, 'wrap') }}">
-      {% include "@organisms/sections/page-headers/page-header.twig" with {
-        "page_header": {
-          "icon": {
-            "name": post.icon
-          },
-          "kicker": post.kicker,
-          "heading": post.title,
-          "extra": bem_classes(content_single_base_class, 'header')
+{% embed "@molecules/components/content-modal/content-modal.twig" %}
+  {% block content_modal_body %}
+    {% include "@atoms/images/image/figure.twig" with {
+      "figure" : {
+        "image": {
+          "output_tag": true,
+          "src": post.thumbnail.src|resize(auto, 600),
+          "alt": post.thumbnail.alt,
+          "caption": post.thumbnail.caption
         }
-      } %}
-      {% if post.thumbnail %}
-        <div class="{{ bem_classes(content_single_base_class, 'hero') }} js-toggle" data-prefix="content-modal" data-toggled="body">
-          {% include "@atoms/images/image/responsive-image.twig" with {
-            "image": {
-              "srcset": post.thumbnail.src|resize(720, 405) ~ ' 720w, ' ~ post.thumbnail.src|resize(960, 540) ~ ' 960w',
-              "src": post.thumbnail.src|resize(500, 281),
-              "alt": post.thumbnail.alt
-            }
-          } %}
-        </div>
-      {% endif %}
-      {% if post.content %}
-        <div class="{{ bem_classes(content_single_base_class, 'content') }}">
-          {% include "@atoms/text/meta/meta.twig" with {
-            "meta": {
-              "date": post.date
-            }
-          } %}
-          <div class="{{ bem_classes(content_single_base_class, 'body-wrap') }} u-spacing--double">
-            {% include "@molecules/components/social/social-share/social-share.twig" with {
-              "social_share": {
-                "modifiers": "stacked"
-              }
-            } %}
-            <div class="{{ bem_classes(content_single_base_class, 'body') }}">
-              {% include "@atoms/text/rich-text/rich-text.twig" with {
-                "rich_text": {
-                  "extra": "has-dropcap",
-                  "text": post.content
-                }
-              } %}
-            </div>
-            {% include "@molecules/navigation/tags/tags.twig" with {
-              "tags": post.terms('post_tag')
-            } %}
-          </div>
-        </div>
-      {% endif %}
-    </div>
+      }
+    } %}
+  {% endblock %}
+{% endembed %}
+
+<article class="{{ bem_classes(content_single_base_class, content_single.element, content_single.modifiers, content_single.extra) }} l-container">
+  <div class="{{ bem_classes(content_single_base_class, 'meta') }} u-spacing">
+    {% include "@atoms/text/meta/meta.twig" with {
+      "meta": {
+        "date": post.date
+      }
+    } %}
+    {% include "@molecules/components/social/social-share/social-share.twig" with {
+      "social_share": {
+        "modifiers": "stacked"
+      }
+    } %}
   </div>
-  {% include "@molecules/components/social/article-share/article-share.twig" %}
+  <div class="{{ bem_classes(content_single_base_class, 'container') }} l-container--m u-spacing--double">
+    {% include "@organisms/sections/page-headers/page-header.twig" with {
+      "page_header": {
+        "icon": {
+          "name": post.icon
+        },
+        "kicker": post.kicker,
+        "heading": post.title,
+        "extra": bem_classes(content_single_base_class, 'header')
+      }
+    } %}
+    {% include "@molecules/components/stats/stats.twig" with {
+      "stats": {
+        "project": post.terms('project'),
+        "room": post.terms('room'),
+        "cost": post.terms('cost'),
+        "skill_level": post.terms('skill_level'),
+        "extra": bem_classes(content_single_base_class, 'stats')
+      }
+    } %}
+    {% include "@atoms/text/rich-text/rich-text.twig" with {
+      "rich_text": {
+        "text": post.content,
+        "extra": ["has-dropcap", bem_classes(content_single_base_class, 'body')],
+      }
+    } %}
+    {% include "@molecules/navigation/tags/tags.twig" with {
+      "tags": post.terms('post_tag')
+    } %}
+  </div>
 </article>

@@ -32,6 +32,7 @@
     position: relative;
     background-color: $c-white;
     height: 0;
+    overflow: hidden;
   }
 
   &__item {
@@ -42,6 +43,7 @@
 
       .c-accordion__body {
         height: auto;
+        overflow: visible;
         padding: $space 0 $space-double 0;
       }
     }
@@ -54,6 +56,7 @@
 
     .c-accordion__body {
       height: auto;
+      overflow: visible;
       padding: $space 0 $space-double 0;
     }
 
@@ -65,6 +68,7 @@
       .c-accordion__body {
         height: 0;
         padding: 0;
+        overflow: hidden;
       }
     }
   }

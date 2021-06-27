@@ -26,6 +26,8 @@ if (is_tax('affiliate_category') || is_tax('affiliate_tag') || is_tax('store')) 
   $context['post']['kicker'] = 'Blog';
   $context['post']['title'] = $term->name;
   $context['post']['content'] = $term->description;
+} else {
+  $context['post'] = new TimberPost();
 }
 
 $templates = array(

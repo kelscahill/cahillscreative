@@ -1,51 +1,71 @@
 {% set steps_base_class = steps.base_class|default('c-steps') %}
 
 {% if steps %}
-  <div class="{{ bem_classes(steps_base_class, steps.element, steps.modifiers, steps.extra) }}">
+  <div class="{{ bem_classes(steps_base_class, steps.element, steps.modifiers, steps.extra) }} u-spacing--double">
     {% for step in steps %}
-      <div class="{{ bem_classes(steps_base_class, 'counter') }}">
-       <span class="{{ bem_classes(steps_base_class, 'counter-index') }}">
-          {{ loop.index }}
-       </span>
-       {% include "@atoms/text/heading/heading.twig" with {
-         "heading": {
-           "level": "6",
-           "size": "s",
-           "type": "secondary",
-           "text": "Step",
-           "extra": bem_classes(steps_base_class, 'counter-step')
-         }
-       } %}
-      </div>
-      <div class="{{ bem_classes(steps_base_class, 'body') }} u-spacing">
-        {% include "@atoms/text/heading/heading.twig" with {
-          "heading": {
-            "level": "3",
-            "size": "m",
-            "type": "primary",
-            "text": step.title,
-            "extra": bem_classes(steps_base_class, 'heading')
-          }
-        } %}
-        {% include "@atoms/text/rich-text/rich-text.twig" with {
-          "rich_text": {
-            "text": step.body,
-            "extra": bem_classes(steps_base_class, 'rich-text')
-          }
-        } %}
-        {% if step.images %}
-          <div class="{{ bem_classes(steps_base_class, 'images') }}{{ step.images|length > 1 ? " o-section--full" }}">
-            {% for image in step.images %}
-              {% include "@atoms/images/image/responsive-image.twig" with {
-                "image": {
-                  "srcset": Image(image).src|resize(720, 540) ~ ' 720w, ' ~ Image(image).src|resize(960, 720) ~ ' 960w',
-                  "src": Image(image).src|resize(500, 375),
-                  "alt": Image(image).alt
-                }
-              } %}
-            {% endfor %}
-          </div>
-        {% endif %}
+      <div class="{{ bem_classes(steps_base_class, 'item') }}">
+        <div class="{{ bem_classes(steps_base_class, 'counter') }}">
+         <span class="{{ bem_classes(steps_base_class, 'counter-index') }}">
+            {{ loop.index }}
+         </span>
+         {% include "@atoms/text/heading/heading.twig" with {
+           "heading": {
+             "level": "6",
+             "size": "s",
+             "type": "secondary",
+             "text": "Step",
+             "extra": bem_classes(steps_base_class, 'counter-step')
+           }
+         } %}
+        </div>
+          <div class="{{ bem_classes(steps_base_class, 'body') }} u-spacing">
+          {% include "@atoms/text/heading/heading.twig" with {
+            "heading": {
+              "level": "3",
+              "size": "m",
+              "type": "primary",
+              "text": step.title,
+              "extra": bem_classes(steps_base_class, 'heading')
+            }
+          } %}
+          {% include "@atoms/text/rich-text/rich-text.twig" with {
+            "rich_text": {
+              "text": step.body,
+              "extra": bem_classes(steps_base_class, 'rich-text')
+            }
+          } %}
+          {% if step.images|length > 1 %}
+            <div class="{{ bem_classes(steps_base_class, 'images') }}">
+              {% for image in step.images %}
+                {% include "@atoms/images/image/figure.twig" with {
+                  "figure": {
+                    "image": {
+                      "srcset": Image(image).src|resize(720, 540) ~ ' 720w, ' ~ Image(image).src|resize(960, 720) ~ ' 960w',
+                      "src": Image(image).src|resize(500, 375),
+                      "alt": Image(image).alt,
+                      "caption": Image(image).caption
+                    }
+                  }
+                } %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="{{ bem_classes(steps_base_class, 'image') }}">
+              {% for image in step.images %}
+                {% include "@atoms/images/image/figure.twig" with {
+                  "figure": {
+                    "image": {
+                      "srcset": Image(image).src|resize(800, 600) ~ ' 720w',
+                      "src": Image(image).src|resize(500, 375),
+                      "alt": Image(image).alt,
+                      "caption": Image(image).caption
+                    }
+                  }
+                } %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
       </div>
     {% endfor %}
   </div>

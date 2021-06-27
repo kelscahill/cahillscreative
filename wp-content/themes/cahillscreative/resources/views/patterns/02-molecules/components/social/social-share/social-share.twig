@@ -17,25 +17,36 @@
   ] %}
 
   <div class="{{ bem_classes(social_share_base_class, social_share.element, social_share.modifiers, social_share.extra) }}">
-    {% for link in social_share_links %}
-      {% if link.url %}
-        {% include "@atoms/links/link.twig" with {
-          "link": {
-            "url": link.url,
-            "target": "_blank",
-            "extra": [
-              bem_classes(social_share_base_class, 'item', link.name)
-            ],
-            "icon": {
-              "name": link.name,
-              "modifiers": "xsmall"
-            },
-            "attributes": {
-              "aria-label": link.name|capitalize
+    {% include "@atoms/text/heading/heading.twig" with {
+      "heading": {
+        "level": "6",
+        "size": "xs",
+        "type": "secondary",
+        "text": "Share",
+        "extra": bem_classes(social_share_base_class, 'heading')
+      }
+    } %}
+    <div class="{{ bem_classes(social_share_base_class, 'links') }}">
+      {% for link in social_share_links %}
+        {% if link.url %}
+          {% include "@atoms/links/link.twig" with {
+            "link": {
+              "url": link.url,
+              "target": "_blank",
+              "extra": [
+                bem_classes(social_share_base_class, 'item', link.name)
+              ],
+              "icon": {
+                "name": link.name,
+                "modifiers": "small"
+              },
+              "attributes": {
+                "aria-label": link.name|capitalize
+              }
             }
-          }
-        } %}
-      {% endif %}
-    {% endfor %}
+          } %}
+        {% endif %}
+      {% endfor %}
+    </div>
   </div>
 {% endif %}
