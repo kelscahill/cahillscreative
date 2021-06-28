@@ -55,8 +55,8 @@
                 {% include "@atoms/images/image/figure.twig" with {
                   "figure": {
                     "image": {
-                      "srcset": Image(image).src|resize(800, 600) ~ ' 720w',
-                      "src": Image(image).src|resize(500, 375),
+                      "srcset": Image(image).src|resize(800, auto) ~ ' 720w',
+                      "src": Image(image).src|resize(500, auto),
                       "alt": Image(image).alt,
                       "caption": Image(image).caption
                     }

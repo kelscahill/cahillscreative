@@ -1,7 +1,7 @@
 {% set related_posts_base_class = related_posts.base_class|default('c-related-posts') %}
 
-{% if related_posts %}
-  <section class="{{ bem_classes(related_posts_base_class, related_posts.element, related_posts.modifiers, related_posts.extra) }} o-section--full">
+{% if related_posts.posts %}
+  <section class="{{ bem_classes(related_posts_base_class, related_posts.element, related_posts.modifiers, related_posts.extra) }} l-container--full">
     <div class="{{ bem_classes(related_posts_base_class, 'wrap') }} l-wrap u-spacing--double">
       {% include "@organisms/sections/page-headers/page-header.twig" with {
         "page_header": {
@@ -13,15 +13,13 @@
           "extra": bem_classes(related_posts_base_class, 'header')
         }
       } %}
-      {% if related_posts.posts %}
-        <div class="{{ bem_classes(related_posts_base_class, 'posts') }} js-slick-posts">
-          {% for post in related_posts.posts %}
-            {% include "@molecules/cards/card.twig" with {
-              "card": post
-            } %}
-          {% endfor %}
-        </div>
-      {% endif %}
+      <div class="{{ bem_classes(related_posts_base_class, 'posts') }} js-slick-posts">
+        {% for post in related_posts.posts %}
+          {% include "@molecules/cards/card.twig" with {
+            "card": post
+          } %}
+        {% endfor %}
+      </div>
     </div>
   </section>
 {% endif %}

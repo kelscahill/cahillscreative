@@ -3,43 +3,6 @@
     "title": "Steps",
     "fields": [
         {
-            "key": "field_60cf57413c423",
-            "label": "Header",
-            "name": "",
-            "type": "tab",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "placement": "top",
-            "endpoint": 0
-        },
-        {
-            "key": "field_60cf57663c425",
-            "label": "Steps Header",
-            "name": "steps_header",
-            "type": "clone",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "clone": [
-                "group_60cf4b38c351e"
-            ],
-            "display": "seamless",
-            "layout": "block",
-            "prefix_label": 0,
-            "prefix_name": 0
-        },
-        {
             "key": "field_60cf57483c424",
             "label": "Steps",
             "name": "",
@@ -113,6 +76,43 @@
                     "delay": 0
                 }
             ]
+        },
+        {
+            "key": "field_60cf57413c423",
+            "label": "Header",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_60cf57663c425",
+            "label": "Steps Header",
+            "name": "steps_header",
+            "type": "clone",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "clone": [
+                "group_60cf4b38c351e"
+            ],
+            "display": "seamless",
+            "layout": "block",
+            "prefix_label": 0,
+            "prefix_name": 0
         }
     ],
     "location": [
@@ -132,5 +132,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1624201350
+    "modified": 1624839371
 }

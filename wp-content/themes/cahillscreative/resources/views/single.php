@@ -14,22 +14,25 @@ $post = Timber::query_post();
 $context['post'] = $post;
 $context['is_single'] = true;
 
-$term = get_the_category($post->ID)[0];
-$related_blog_posts = array(
-  'post_type' => 'post',
-  'posts_per_page' => 8,
-  'post_status' => 'publish',
-  'order' => 'DESC',
-  'post__not_in' => array($post->ID),
-  'tax_query'      => array(
-    array(
-      'taxonomy' => 'category',
-      'field'    => 'id',
-      'terms'    => $term->term_id,
+$term = get_the_category($post->ID);
+if ($term) {
+  $context['term'] = $term[0];
+  $related_blog_posts = array(
+    'post_type' => 'post',
+    'posts_per_page' => 8,
+    'post_status' => 'publish',
+    'order' => 'DESC',
+    'post__not_in' => array($post->ID),
+    'tax_query'      => array(
+      array(
+        'taxonomy' => 'category',
+        'field'    => 'id',
+        'terms'    => $term[0]->term_id,
+      ),
     ),
-  ),
-);
-$context['related_blog_posts'] = Timber::query_posts($related_blog_posts);
+  );
+  $context['related_blog_posts'] = Timber::query_posts($related_blog_posts);
+}
 
 Timber::render(array(
   '05-pages/post-types/single-' . $post->ID . '.twig',

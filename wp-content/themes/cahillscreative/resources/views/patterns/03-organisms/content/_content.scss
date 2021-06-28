@@ -7,11 +7,11 @@
 .c-content-single {
   display: flex;
   flex-direction: column;
-  margin-top: -50px;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
   background: linear-gradient(to bottom, white, $c-white);
   padding: $space $space 0 $space;
+  margin-top: $space-double;
   position: relative;
 
   @include media('>medium') {
@@ -21,7 +21,9 @@
     border-top-right-radius: 50px;
   }
 
-  .c-page-header {
+  .c-page-header,
+  .c-accordion__heading,
+  .c-accordion__body {
     background-color: transparent;
   }
 

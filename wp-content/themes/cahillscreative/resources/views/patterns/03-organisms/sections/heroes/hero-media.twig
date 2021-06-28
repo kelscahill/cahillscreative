@@ -1,0 +1,17 @@
+{% if hero_media.video.src or hero_media.figure.image.src %}
+  {% set hero_media_base_class = hero_media.base_class|default('c-hero-media') %}
+  {% if hero_media.video.src %}
+    {% set hero_media_modifiers = "video" %}
+  {% else %}
+    {% set hero_media_modifiers = "image" %}
+  {% endif %}
+  <div class="{{ bem_classes(hero_media_base_class, hero_media.element, hero_media_modifiers, hero_media.extra) }}">
+    {% if hero_media.video.src %}
+      {% include "@atoms/videos/video.twig" with hero_media %}
+    {% else %}
+      <div class="{{ bem_classes(hero_media_base_class, 'image') }} js-toggle" data-prefix="content-modal" data-toggled="body">
+        {% include "@atoms/images/image/figure.twig" with hero_media %}
+      </div>
+    {% endif %}
+  </div>
+{% endif %}

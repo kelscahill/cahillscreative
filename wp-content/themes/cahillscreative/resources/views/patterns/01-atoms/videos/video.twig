@@ -1,0 +1,7 @@
+{% if video.src %}
+  {% set video_base_class = video.base_class|default('o-video') %}
+
+  <div class="{{ bem_classes(video_base_class, video.element, video.modifiers, video.extra) }}">
+    <video src="{{ video.src }}" type="video/mp4" {{ add_attributes(video.attributes) }}></video>
+  </div>
+{% endif %}

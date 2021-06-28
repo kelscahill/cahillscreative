@@ -3,43 +3,6 @@
     "title": "Cards",
     "fields": [
         {
-            "key": "field_60cf56d956790",
-            "label": "Header",
-            "name": "",
-            "type": "tab",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "placement": "top",
-            "endpoint": 0
-        },
-        {
-            "key": "field_60cf56ef56792",
-            "label": "Cards Header",
-            "name": "cards_header",
-            "type": "clone",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "clone": [
-                "group_60cf4b38c351e"
-            ],
-            "display": "seamless",
-            "layout": "block",
-            "prefix_label": 0,
-            "prefix_name": 0
-        },
-        {
             "key": "field_60cf56e056791",
             "label": "Cards",
             "name": "",
@@ -171,6 +134,43 @@
                     "return_format": "array"
                 }
             ]
+        },
+        {
+            "key": "field_60cf56d956790",
+            "label": "Header",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_60cf56ef56792",
+            "label": "Cards Header",
+            "name": "cards_header",
+            "type": "clone",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "clone": [
+                "group_60cf4b38c351e"
+            ],
+            "display": "seamless",
+            "layout": "block",
+            "prefix_label": 0,
+            "prefix_name": 0
         }
     ],
     "location": [
@@ -190,5 +190,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1624201363
+    "modified": 1624839344
 }

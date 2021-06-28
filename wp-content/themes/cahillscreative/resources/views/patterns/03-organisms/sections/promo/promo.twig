@@ -1,8 +1,8 @@
-{% if promo %}
+{% if promo.items %}
   {% set promo_base_class = promo.base_class|default('c-promo') %}
 
-  <section class="{{ bem_classes(promo_base_class, promo.element, promo.modifiers, promo.extra) }} o-section--full {{ promo|length > 1 ? 'js-slick' }}">
-    {% for item in promo %}
+  <section{{ promo.anchor ? ' id="' ~ promo.anchor ~ '"'}} class="{{ bem_classes(promo_base_class, promo.element, promo.modifiers, promo.extra) }} l-container--full{{ promo.items|length > 1 ? ' js-slick' }}">
+    {% for item in promo.items %}
       <div class="{{ bem_classes(promo_base_class, 'item', ['image-' ~ item.image_placement|lower, 'background-' ~ item.background_color|lower ]) }}">
         <div class="{{ bem_classes(promo_base_class, 'content') }} u-spacing">
           <div class="{{ bem_classes(promo_base_class, 'header') }} u-spacing--half">

@@ -36,10 +36,13 @@ export default {
       var input = $('<input type="checkbox">').attr({id: id, name: id});
       var link = $(this).find('a').text('Buy here').attr('class', 'o-link o-link--small');
       $(this).parent().attr('class', 'c-checkbox-list u-spacing--half');
+      if ($(this).has('a')) {
+        label.append(link);
+      }
       $(this).attr('id', 'accordion-' + post_slug + '__' + index);
+      $(this).empty();
       $(this).append(input);
       $(this).append(label);
-      label.append(link);
       $(this).find('span').remove();
     });
 
@@ -147,20 +150,18 @@ export default {
     }
 
     // Smooth scrolling on anchor clicks
-    $(function() {
-      $('a[href*="#"]:not([href="#"])').click(function() {
-        $('.c-primary-nav, body').removeClass('primary-nav-is-active');
-        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-          var target = $(this.hash);
-          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-          if (target.length) {
-            $('html, body').animate({
-              scrollTop: target.offset().top - 50
-            }, 1000);
-            return false;
-          }
+    $('a[href*="#"]:not([href="#"])').click(function() {
+      // $('.c-primary-nav, body').removeClass('primary-nav-is-active');
+      if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+        var target = $(this.hash);
+        target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+        if (target.length) {
+          $('html, body').animate({
+            scrollTop: target.offset().top - 70
+          }, 1000);
+          return false;
         }
-      });
+      }
     });
 
     /**

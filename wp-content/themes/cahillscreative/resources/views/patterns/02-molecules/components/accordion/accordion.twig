@@ -1,7 +1,7 @@
 {% set accordion_base_class = accordion.base_class|default('c-accordion') %}
 
 {% if accordion.items %}
-  <section class="{{ bem_classes(accordion_base_class, accordion.element, accordion.modifiers, accordion.extra) }} u-spacing">
+  <section{{ accordion.anchor ? ' id="' ~ accordion.anchor ~ '"'}} class="{{ bem_classes(accordion_base_class, accordion.element, accordion.modifiers, accordion.extra) }} u-spacing{{ accordion.expanded ? ' is-open' }}">
     {% include "@organisms/sections/page-headers/page-header.twig" with {
       "page_header": {
         "icon": {

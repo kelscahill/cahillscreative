@@ -11,7 +11,7 @@
   z-index: -1;
   pointer-events: none;
   transition: opacity 0.25s $transition-effect, visibility 0.25s $transition-effect;
-  padding-top: 70px;
+  padding-top: 50px;
 
   &__close {
     padding: $space;
@@ -20,6 +20,7 @@
     right: 0;
     border: 0;
     outline: 0;
+    box-shadow: none;
     background: transparent;
     color: $c-black;
 
@@ -52,7 +53,7 @@
     background-color: $c-white;
     padding: $space;
     max-width: $max-width;
-    max-height: calc(100vh - 160px);
+    max-height: calc(100vh - 40px);
     overflow: auto;
 
     @include align-center;
@@ -63,12 +64,6 @@
     opacity: 1;
     visibility: visible;
     z-index: 99999;
-  }
-
-  &--report {
-    .c-content-modal__body {
-      max-width: $max-width-m;
-    }
   }
 }
 

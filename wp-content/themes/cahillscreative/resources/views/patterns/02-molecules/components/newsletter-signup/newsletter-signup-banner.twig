@@ -1,6 +1,6 @@
 {% set newsletter_signup_base_class = newsletter_signup.base_class|default('c-newsletter-signup-banner') %}
 
-<section class="{{ bem_classes(newsletter_signup_base_class, newsletter_signup.element, newsletter_signup.modifiers, newsletter_signup.extra) }} o-section--full u-background-color--tertiary">
+<section class="{{ bem_classes(newsletter_signup_base_class, newsletter_signup.element, newsletter_signup.modifiers, newsletter_signup.extra) }} l-container--full u-background-color--tertiary">
   <div class="{{ bem_classes(newsletter_signup_base_class, 'container') }} l-wrap l-container">
     {% include "@atoms/images/icons/icon.twig" with {
       "icon": {

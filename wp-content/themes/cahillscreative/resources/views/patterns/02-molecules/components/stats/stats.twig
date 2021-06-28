@@ -1,6 +1,6 @@
 {% set stats_base_class = stats.base_class|default('c-stats') %}
 
-{% if stats %}
+{% if stats.project or stats.room or stats.cost or stats.skill_level %}
   <div class="{{ bem_classes(stats_base_class, stats.element, stats.modifiers, stats.extra) }}">
     {% for tag in stats.project %}
       <div class="{{ bem_classes(stats_base_class, 'item') }}">

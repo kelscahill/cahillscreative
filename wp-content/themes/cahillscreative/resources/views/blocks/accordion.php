@@ -12,7 +12,8 @@
 $context = Timber::context();
 $context['accordion']['header'] = get_field( 'accordion_header' );
 $context['accordion']['items'] = get_field( 'accordion_items' );
-$context['accordion']['extra'] = 'is-open';
+$context['accordion']['expanded'] = get_field( 'accordion_expanded' );
+$context['accordion']['anchor'] = get_field( 'accordion_anchor' );
 
 $templates = array(
   get_stylesheet_directory() . '/views/patterns/02-molecules/components/accordion/accordion.twig',
