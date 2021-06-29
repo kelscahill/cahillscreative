@@ -16,3 +16,85 @@
     }
   }
 }
+
+.c-hero-gallery {
+  &__item {
+    display: block;
+    position: relative;
+  }
+
+  &__image {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    width: 100vw;
+    height: 50vh;
+    z-index: 1;
+
+    @include media('>medium') {
+      height: 80vh;
+    }
+  }
+
+  .o-button {
+    position: absolute;
+    top: $space;
+    right: $space;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .slick-slide {
+    margin: 0;
+  }
+
+  .slick-arrow {
+    position: absolute;
+    z-index: 2;
+    top: 65px;
+    margin: auto;
+    height: calc(100% - 65px);
+    width: 50vw;
+
+    &:hover,
+    &:focus {
+      background-color: transparent;
+    }
+
+    &::before {
+      border: none;
+    }
+
+    &.slick-next {
+      right: 0;
+      left: auto;
+      cursor: url('../images/arrow-next.png'), zoom-in;
+    }
+
+    &.slick-prev {
+      left: 0;
+      right: auto;
+      cursor: url('../images/arrow-prev.png'), zoom-in;
+    }
+  }
+
+  .slick-dots {
+    bottom: -35px;
+
+    @include media('<=medium') {
+      bottom: -25px;
+
+      button {
+        height: 10px;
+        width: 10px;
+        border-radius: 10px;
+
+        &::after {
+          height: 4px;
+          width: 4px;
+          border-radius: 4px;
+        }
+      }
+    }
+  }
+}

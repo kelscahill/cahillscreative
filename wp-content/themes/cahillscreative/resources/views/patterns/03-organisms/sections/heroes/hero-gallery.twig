@@ -1,0 +1,46 @@
+{% set hero_gallery_base_class = hero_gallery.base_class|default('c-hero-gallery') %}
+
+{% if hero_gallery %}
+  <div class="{{ bem_classes(hero_gallery_base_class, hero_gallery.element, hero_gallery_modifiers, hero_gallery.extra) }} js-gallery js-slick-gallery">
+    {% for image in hero_gallery %}
+      <div class="{{ bem_classes(hero_gallery_base_class, 'item') }}">
+        {% include "@atoms/buttons/button.twig" with {
+          "button": {
+            "url": Image(image).src|resize(auto, 600),
+            "text": "Enlarge Gallery",
+            "modifiers": "secondary",
+            "attributes": {
+              "title": Image(image).caption
+            }
+          }
+        } %}
+        <style>
+          .o-background-image--{{ Image(image).id }} {
+            background-image: url('{{ Image(image).src|resize(500) }}');
+          }
+          @media(min-width: 500px) {
+            .o-background-image--{{ Image(image).id }} {
+              background-image: url('{{ Image(image).src|resize(720) }}');
+            }
+          }
+          @media(min-width: 720px) {
+            .o-background-image--{{ Image(image).id }} {
+              background-image: url('{{ Image(image).src|resize(960) }}');
+            }
+          }
+          @media(min-width: 960px) {
+            .o-background-image--{{ Image(image).id }} {
+              background-image: url('{{ Image(image).src|resize(1220) }}');
+            }
+          }
+          @media(min-width: 1220px) {
+            .o-background-image--{{ Image(image).id }} {
+              background-image: url('{{ Image(image).src|resize(1440) }}');
+            }
+          }
+        </style>
+        <div class="{{ bem_classes(hero_gallery_base_class, 'image') }} o-background-image--{{ Image(image).id }}"></div>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}

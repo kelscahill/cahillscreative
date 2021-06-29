@@ -46,7 +46,6 @@ export default {
       $(this).find('span').remove();
     });
 
-
     // Checkbox list localstorage on checked.
     $('.c-checkbox-list').each(function() {
       // Bind the change event handler.
@@ -179,6 +178,16 @@ export default {
       adaptiveHeight: true,
     });
 
+    $('.js-slick-gallery').slick({
+      dots: true,
+      autoplay: false,
+      arrows: true,
+      infinite: true,
+      speed: 300,
+      fade: true,
+      cssEase: 'linear',
+    });
+
     $('.js-slick-posts').slick({
       dots: false,
       infinite: false,
@@ -257,6 +266,18 @@ export default {
        });
       });
     }
+
+    // if ($('.js-gallery-button').length) {
+    //   $('.js-gallery-button').each(function() {
+    //    $(this).magnificPopup({
+    //      delegate: 'a',
+    //      type: 'image',
+    //      gallery: {
+    //        enabled: true
+    //      }
+    //    });
+    //   });
+    // }
 
     /**
      * General helper function to support toggle functions.

@@ -107,7 +107,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    padding: $space-double $space;
+    padding: $space-double $space 50px $space;
     order: 1;
 
     @include media('>medium') {
@@ -163,69 +163,13 @@
     margin: 0;
   }
 
-  .slick-list {
-    position: relative;
-    z-index: 1;
-  }
-
   .slick-dots {
-    position: absolute;
-    left: 0;
-    bottom: -30px;
-    margin: auto;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
-    width: 100%;
-    height: auto;
-
     @include media('>medium') {
       flex-direction: column;
       width: auto;
       height: 100%;
       bottom: 0;
       left: 20px;
-    }
-
-    .slick-active {
-      button {
-        border-color: $c-secondary;
-      }
-    }
-
-    li {
-      list-style-type: none;
-    }
-
-    button {
-      text-indent: 9999px;
-      height: $space;
-      width: $space;
-      border-radius: $space;
-      background-color: transparent;
-      border: 1px solid transparent;
-      margin: $space-one-fourth;
-      text-align: center;
-      position: relative;
-      padding: 0;
-      cursor: pointer;
-
-      &::after {
-        content: "";
-        display: block;
-        height: 6px;
-        width: 6px;
-        border-radius: 6px;
-        background-color: $c-secondary;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: auto;
-      }
     }
   }
 }

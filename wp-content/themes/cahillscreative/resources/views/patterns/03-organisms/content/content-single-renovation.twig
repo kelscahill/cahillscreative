@@ -1,0 +1,27 @@
+{% set content_single_base_class = content_single.base_class|default('c-content-single-renovation') %}
+
+<article class="{{ bem_classes(content_single_base_class, content_single.element, content_single.modifiers, content_single.extra) }} l-container">
+  <div class="{{ bem_classes(content_single_base_class, 'container') }} l-container--m u-spacing--double">
+    {% include "@organisms/sections/page-headers/page-header.twig" with {
+      "page_header": {
+        "kicker": term.name,
+        "heading": post.title,
+        "extra": bem_classes(content_single_base_class, 'header')
+      }
+    } %}
+    {% include "@atoms/text/rich-text/rich-text.twig" with {
+      "rich_text": {
+        "text": post.content,
+        "extra": ["has-dropcap", bem_classes(content_single_base_class, 'body')],
+      }
+    } %}
+    {% include "@molecules/components/social/social-share/social-share.twig" with {
+      "social_share": {
+        "modifiers": "inline"
+      }
+    } %}
+    {% include "@molecules/navigation/tags/tags.twig" with {
+      "tags": post.terms('post_tag')
+    } %}
+  </div>
+</article>
