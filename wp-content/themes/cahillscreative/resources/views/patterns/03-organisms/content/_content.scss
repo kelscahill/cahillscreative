@@ -45,3 +45,55 @@
     }
   }
 }
+
+.c-content-single-renovation {
+  &__intro {
+    margin-top: $space-quadruple;
+    display: flex;
+    flex-direction: column;
+    background-color: $c-white;
+
+    @include media('>medium') {
+      flex-direction: row;
+      justify-content: space-between;
+      background-color: transparent;
+    }
+
+    &-left,
+    &-right {
+      @include media('>medium') {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    &-left {
+      padding-top: $space;
+
+      @include media('>medium') {
+        padding-top: 0;
+        padding-right: $space;
+      }
+    }
+
+    &-right {
+      align-items: center;
+      margin-top: $space-double;
+      padding-bottom: $space;
+
+      @include media('>medium') {
+        align-items: flex-end;
+        padding-left: $space;
+        padding-bottom: 0;
+        margin-top: 0;
+      }
+    }
+
+    .c-page-header {
+      text-align: left;
+      align-items: flex-start;
+      margin: 0;
+    }
+  }
+}

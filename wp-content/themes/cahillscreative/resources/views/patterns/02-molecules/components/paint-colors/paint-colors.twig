@@ -1,0 +1,34 @@
+{% set paint_colors_base_class = paint_colors.base_class|default('c-paint-colors') %}
+
+{% if post.paint_colors %}
+  <div class="{{ bem_classes(paint_colors_base_class, paint_colors.element, paint_colors.modifiers, paint_colors.extra) }} u-spacing">
+    {% include "@atoms/text/heading/heading.twig" with {
+      "heading": {
+        "level": "6",
+        "size": "s",
+        "type": "secondary",
+        "text": "Paint Colors Used",
+        "extra": bem_classes(paint_colors_base_class, 'heading')
+      }
+    } %}
+    <div class="{{ bem_classes(paint_colors_base_class, 'items') }}">
+      {% for paint_color in post.meta('paint_colors') %}
+        <div class="{{ bem_classes(paint_colors_base_class, 'paint-color') }}">
+          {% if paint_color.color_brand %}
+            <div class="{{ bem_classes(paint_colors_base_class, 'color') }}" style="background-color: {{ paint_color.color }}"></div>
+          {% endif %}
+          {% if paint_color.color_name %}
+            <p class="{{ bem_classes(paint_colors_base_class, 'color-name') }}">
+              {{ paint_color.color_name }}
+            </p>
+          {% endif %}
+          {% if paint_color.color_brand %}
+            <p class="{{ bem_classes(paint_colors_base_class, 'color-brand') }}">
+              {{ 'By ' ~ paint_color.color_brand }}
+            </p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}

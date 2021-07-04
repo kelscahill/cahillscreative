@@ -14,7 +14,14 @@ $post = Timber::query_post();
 $context['post'] = $post;
 $context['is_single'] = true;
 
-$term = get_the_category($post->ID);
+if (get_the_terms($post->ID, 'renovation_category')) {
+  $term = get_the_terms($post->ID, 'renovation_category');
+} elseif (get_the_category($post->ID)) {
+  $term = get_the_category($post->ID);
+} else {
+  $term = NULL;
+}
+
 if ($term) {
   $context['term'] = $term[0];
   $related_blog_posts = array(

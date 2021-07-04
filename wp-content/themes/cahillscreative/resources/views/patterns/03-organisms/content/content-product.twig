@@ -1,8 +1,42 @@
 {% set content_base_class = content.base_class|default('c-content') %}
 
-<article class="{{ bem_classes(content_base_class) }} l-container u-spacing">
-  <div class="c-product u-spacing">
-    <div class="c-product__images">
+<article class="{{ bem_classes(content_single_base_class, content_single.element, content_single.modifiers, content_single.extra) }} u-spacing--double">
+  <div class="{{ bem_classes(content_single_base_class, 'intro') }}">
+    <div class="{{ bem_classes(content_single_base_class, 'intro-left') }} u-spacing">
+      {% include "@organisms/sections/page-headers/page-header.twig" with {
+        "page_header": {
+          "kicker": term.name,
+          "heading": post.title,
+          "extra": bem_classes(content_single_base_class, 'header')
+        }
+      } %}
+      {% include "@atoms/text/rich-text/rich-text.twig" with {
+        "rich_text": {
+          "text": post.post_content|wpautop,
+          "extra": bem_classes(content_single_base_class, 'body'),
+        }
+      } %}
+      <div class="{{ bem_classes(content_single_base_class, 'actions') }}">
+        {% if product.get_available_variations %}
+          {% do action('woocommerce_variable_add_to_cart') %}
+        {% else %}
+          {% include "01-atoms/woocommerce/add-to-cart.twig" %}
+        {% endif %}
+        {% include "01-atoms/woocommerce/price.twig" %}
+      </div>
+      {% if post._downloadable == 'yes' %}
+        <p><small><strong>Instant Download:</strong> Your files will be available to download once payment is confirmed. For digital downloads, I don't accept returns, exchanges, or cancellations. But please contact me if you have any problems with your order.</small></p>
+      {% endif %}
+      {% include "@molecules/components/accordion/accordion.twig" with {
+        "accordion": {
+          "items": post.meta('accordion_items'),
+          "heading_size": "s",
+          "heading_type": "secondary"
+        }
+      } %}
+    </div>
+    <div class="{{ bem_classes(content_single_base_class, 'intro-right') }}">
+    {{ dump(product.get_gallery_image_ids)}}
       {% if product.get_gallery_image_ids %}
         <div class="c-product__gallery">
           <div class="c-product__gallery-nav">
@@ -28,51 +62,5 @@
         <img src="{{ post.thumbnail.src|resize(900,900) }}" alt="{{ post.thumbnail.alt }}" />
       {% endif %}
     </div>
-    <div class="c-product__content u-spacing">
-      <div class="c-product__heading u-spacing--half">
-        {% if post._sale_price %}
-          <div class="o-eyebrow">On Sale!</div>
-        {% endif %}
-        <h2 class="o-heading--xl">{{ post.title }}</h2>
-        <p class="u-font--m"><strong>{{ post.get_preview(999, false, NULL, false, '')|striptags }}</strong></p>
-      </div>
-      <hr class="o-hr--small" />
-      <div class="c-product__body u-spacing">
-        <div class="o-rte-text u-spacing">
-          {{ post.post_content|wpautop }}
-          {% if post.product_ingredients %}
-            {{ post.product_ingredients|wpautop }}
-          {% endif %}
-        </div>
-        {% if post._stock_status == "outofstock" %}
-          <p><em>Coming soon!</em></p>
-        {% else %}
-          {% include "01-atoms/woocommerce/price.twig" %}
-          {% if product.get_available_variations %}
-            {% do action('woocommerce_variable_add_to_cart') %}
-          {% else %}
-            {% include "01-atoms/woocommerce/add-to-cart.twig" %}
-          {% endif %}
-        {% endif %}
-        {% do action('woocommerce_archive_description') %}
-      </div>
-    </div>
   </div>
-  {% include "@molecules/components/accordion/accordion.twig" with {
-    "accordion": {
-      "items": post.meta('accordion_items'),
-      "heading_size": "s",
-      "heading_type": "secondary"
-    }
-  } %}
-  {% include "@organisms/sections/feeds/related-posts.twig" with {
-    "related_posts": {
-      "icon": {
-        "name": "Shop"
-      },
-      "heading": "Related products",
-      "posts": related_products,
-      "modifiers": "tertiary"
-    }
-  } %}
 </article>

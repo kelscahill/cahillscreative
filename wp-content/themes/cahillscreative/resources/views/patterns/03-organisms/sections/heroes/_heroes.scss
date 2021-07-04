@@ -78,6 +78,29 @@
     }
   }
 
+  li:not(.slick-active) {
+    button {
+      text-indent: 0px;
+      font-family: $font-secondary;
+      line-height: 1;
+      color: $c-secondary;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  li.slick-active {
+    button {
+      top: 3px;
+
+      @include media('>medium') {
+        top: 0;
+      }
+    }
+  }
+
   .slick-dots {
     bottom: -35px;
 

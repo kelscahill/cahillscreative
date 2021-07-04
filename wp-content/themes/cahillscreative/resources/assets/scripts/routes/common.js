@@ -220,8 +220,6 @@ export default {
     });
 
     $('.js-slick-products').slick({
-      prevArrow: '<span class="o-icon--arrow o-icon--arrow-prev"></span>',
-      nextArrow: '<span class="o-icon--arrow o-icon--arrow-next"></span>',
       dots: false,
       infinite: false,
       speed: 300,

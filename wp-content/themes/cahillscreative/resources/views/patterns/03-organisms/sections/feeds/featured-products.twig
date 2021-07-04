@@ -1,0 +1,24 @@
+{% set featured_products_base_class = featured_products.base_class|default('c-featured-products') %}
+
+{% if featured_products %}
+  <section class="{{ bem_classes(featured_products_base_class, featured_products.element, featured_products.modifiers, featured_products.extra) }} l-container--full u-background-color--tertiary">
+    <div class="{{ bem_classes(featured_products_base_class, 'wrap') }} l-wrap l-container--xxl u-spacing--double">
+      {% include "@atoms/text/heading/heading.twig" with {
+        "heading": {
+          "level": "3",
+          "size": "xl",
+          "type": "primary",
+          "text": featured_products.heading,
+          "extra": bem_classes(featured_products_base_class, 'header')
+        }
+      } %}
+      <div class="{{ bem_classes(featured_products_base_class, 'posts') }} js-slick-products">
+        {% for post in featured_products.posts %}
+          {% include "@molecules/cards/card-product.twig" with {
+            "card": post
+          } %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}

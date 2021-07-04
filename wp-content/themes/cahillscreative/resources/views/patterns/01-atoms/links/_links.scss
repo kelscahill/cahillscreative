@@ -12,12 +12,6 @@
 
   @include body-copy;
 
-  span {
-    transition: right 0.25s $transition-effect;
-    right: 3px;
-    color: currentColor;
-  }
-
   svg path {
     fill: currentColor;
   }
@@ -27,8 +21,8 @@
     color: $color-hover;
     box-shadow: inset 0 -25px 0 -1px $c-secondary;
 
-    span {
-      right: 0;
+    svg path {
+      fill: currentColor;
     }
   }
 }

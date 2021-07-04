@@ -11,4 +11,11 @@
 
 {% block sections_after %}
   {% do action('woocommerce_after_single_product') %}
+  {% include "@organisms/sections/feeds/featured-products.twig" with {
+    "featured_products": {
+      "heading": "Related products",
+      "posts": related_products,
+      "extra": "has-footer-overlay"
+    }
+  } %}
 {% endblock %}

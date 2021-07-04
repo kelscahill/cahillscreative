@@ -49,4 +49,20 @@
       }
     }
   }
+
+  &--inline {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    .c-social-share__links {
+      flex-direction: row;
+    }
+
+    .c-social-share__item {
+      @include media('>medium') {
+        padding: 0 $space-half;
+      }
+    }
+  }
 }

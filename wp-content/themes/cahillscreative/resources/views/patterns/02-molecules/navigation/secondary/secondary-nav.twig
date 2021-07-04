@@ -11,7 +11,7 @@
 
 {% if secondary_nav or is_single %}
   <div class="{{ bem_classes(secondary_nav_base_class, secondary_nav.element, secondary_nav.modifiers, secondary_nav.extra) }}">
-    <div class="{{ bem_classes(secondary_nav_base_class, 'container') }} l-wrap l-container">
+    <div class="{{ bem_classes(secondary_nav_base_class, 'container') }} l-wrap l-container--xxl">
       {% if is_single %}
         {% if post.post_type == 'product' or post.post_type == 'affiliate' %}
           {% set link_text = "Shop" %}

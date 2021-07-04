@@ -1,4 +1,5 @@
 {% extends "@templates/_layout.twig" %}
+{% set layout = { extra: "l-container--xxl" } %}
 
 {% block sections_before %}
   {% include "@organisms/sections/heroes/hero-gallery.twig" with {
@@ -11,6 +12,15 @@
 {% endblock %}
 
 {% block sections_after %}
+  {% include "@organisms/sections/feeds/related-products.twig" with {
+    "related_products": post.meta('related_products')
+  } %}
+  {% include "@organisms/sections/feeds/featured-products.twig" with {
+    "featured_products": {
+      "heading": "More prodcucts you may love",
+      "posts": Post(post.featured_products)
+    }
+  } %}
   {% include "@organisms/sections/feeds/related-posts.twig" with {
     "related_posts": {
       "heading": "Read this next",

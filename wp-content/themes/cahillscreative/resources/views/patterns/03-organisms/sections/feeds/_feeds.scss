@@ -65,6 +65,112 @@
   }
 }
 
+.c-related-products {
+  &__row {
+    padding-top: $space-quadruple;
+    margin-top: $space-quadruple;
+    overflow: hidden;
+    background: linear-gradient(to bottom, white, transparent);
+  }
+
+  &__wrap {
+    position: relative;
+  }
+
+  &__header {
+    display: flex;
+
+    @include media('<=small') {
+      width: 50%;
+    }
+
+    .o-link {
+      margin-left: $space;
+      flex-direction: row-reverse;
+      color: $c-secondary;
+
+      @include media('>large') {
+        margin-left: $space-double;
+      }
+
+      &:hover,
+      &:focus {
+        text-decoration: underline;
+      }
+
+      .o-icon {
+        transform: rotate(-90deg);
+        margin-left: $space-one-fourth;
+      }
+
+      svg path {
+        fill: $c-secondary;
+      }
+    }
+  }
+}
+
+.c-featured-products {
+  padding-top: $space-quadruple;
+  padding-bottom: $space-quadruple;
+  margin-top: $space-quadruple;
+  overflow: hidden;
+
+  &__header {
+    @include media('<=small') {
+      width: 50%;
+    }
+  }
+
+  &.has-footer-overlay {
+    padding-bottom: $space-quadruple * 2;
+    margin-bottom: calc(-95px - #{$space-quadruple});
+  }
+}
+
+.js-slick-products.slick-slider {
+  overflow: visible;
+  margin-left: -$space-half;
+  margin-right: -$space-half;
+
+  .slick-list {
+    overflow: visible;
+  }
+
+  .slick-arrow {
+    position: absolute;
+    top: -60px;
+    right: $space-half;
+    z-index: 999;
+    background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80.5 20.71"%3E%3Cpath d="M80.35,10.71l-10,10-.7-.71,9.14-9.15H0v-1H78.79L69.65.71l.7-.71,10,10A.5.5,0,0,1,80.35,10.71Z" fill="%23000"/%3E%3C/svg%3E') no-repeat;
+    background-size: 60px 20px;
+    width: 60px;
+    height: 20px;
+
+    @include media('>medium') {
+      background-size: 80px 20px;
+      width: 80px;
+    }
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .slick-prev {
+    right: 90px;
+    transform: rotate(180deg);
+    background-position: left center;
+
+    @include media('>medium') {
+      right: 110px;
+    }
+  }
+
+  .slick-next {
+    background-position: right center;
+  }
+}
 
 .c-post-filter {
   padding-top: $space-double;
