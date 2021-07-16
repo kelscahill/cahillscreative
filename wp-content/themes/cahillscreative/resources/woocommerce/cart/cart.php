@@ -117,7 +117,7 @@ defined( 'ABSPATH' ) || exit; ?>
 	<div class="c-cart__info" bg="grid">
 		<div class="c-cart__coupons u-spacing">
 			<?php if ( wc_coupons_enabled() ) : ?>
-				<div class="c-coupon c-form--inline">
+				<div class="c-coupon o-form--inline">
 					<label for="coupon_code" class="o-form__item-label is-vishidden"><?php esc_html_e( 'Coupon:', 'woocommerce' ); ?></label>
 					<input type="text" name="coupon_code" class="o-form__item-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?>" />
 					<button type="submit" class="o-button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?></button>
