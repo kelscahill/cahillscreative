@@ -50,21 +50,23 @@
                     ]|merge(item.classes),
                   }
                 } %}
-                <ul class="{{ bem_classes(secondary_nav_base_class, 'child-list') }}">
-                  {% for item in item.children %}
-                    <li class="{{ bem_classes(secondary_nav_base_class, 'child-list-item') }}">
-                      {% include "@atoms/links/link.twig" with {
-                        "link": {
-                          "text": item.title,
-                          "url": item.url,
-                          "target": item.target,
-                          "modifiers": "xsmall",
-                          "extra": [bem_classes(secondary_nav_base_class, 'link')]|merge(item.classes),
-                        }
-                      } %}
-                    </li>
-                  {% endfor %}
-                </ul>
+                {% if item.children %}
+                  <ul class="{{ bem_classes(secondary_nav_base_class, 'child-list') }}">
+                    {% for item in item.children %}
+                      <li class="{{ bem_classes(secondary_nav_base_class, 'child-list-item') }}">
+                        {% include "@atoms/links/link.twig" with {
+                          "link": {
+                            "text": item.title,
+                            "url": item.url,
+                            "target": item.target,
+                            "modifiers": "xsmall",
+                            "extra": [bem_classes(secondary_nav_base_class, 'link')]|merge(item.classes),
+                          }
+                        } %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
               </li>
             {% endif %}
           {% endfor %}

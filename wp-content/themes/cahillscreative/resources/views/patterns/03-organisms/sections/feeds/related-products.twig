@@ -1,6 +1,6 @@
 {% set related_products_base_class = related_products.base_class|default('c-related-products') %}
 
-{% if related_products %}
+{% if related_products is not empty  %}
   <div class="{{ bem_classes(related_products_base_class, related_products.element, related_products.modifiers, related_products.extra) }}">
     {% for section in related_products %}
       <section class="{{ bem_classes(related_products_base_class, 'row') }} l-container--full">

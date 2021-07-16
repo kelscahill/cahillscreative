@@ -1,6 +1,6 @@
 {% set related_posts_base_class = related_posts.base_class|default('c-related-posts') %}
 
-{% if related_posts.posts %}
+{% if related_posts.posts is not empty %}
   <section class="{{ bem_classes(related_posts_base_class, related_posts.element, related_posts.modifiers, related_posts.extra) }} l-container--full">
     <div class="{{ bem_classes(related_posts_base_class, 'wrap') }} l-wrap u-spacing--double">
       {% include "@organisms/sections/page-headers/page-header.twig" with {

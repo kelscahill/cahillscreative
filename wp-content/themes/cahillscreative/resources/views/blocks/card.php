@@ -16,7 +16,7 @@ $context['card'] = $post;
 if ($post->post_type == 'product' || $post->post_type == 'affiliate') {
   $template = 'product';
 } else {
-  $template = NULL;
+  $template = $post->post_type;
 }
 
 $templates = array(

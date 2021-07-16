@@ -1,6 +1,6 @@
 {% set featured_products_base_class = featured_products.base_class|default('c-featured-products') %}
 
-{% if featured_products %}
+{% if featured_products is not empty  %}
   <section class="{{ bem_classes(featured_products_base_class, featured_products.element, featured_products.modifiers, featured_products.extra) }} l-container--full u-background-color--tertiary">
     <div class="{{ bem_classes(featured_products_base_class, 'wrap') }} l-wrap l-container--xxl u-spacing--double">
       {% include "@atoms/text/heading/heading.twig" with {
