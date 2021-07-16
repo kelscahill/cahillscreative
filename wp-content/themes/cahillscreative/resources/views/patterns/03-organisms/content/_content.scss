@@ -97,3 +97,38 @@
     }
   }
 }
+
+.c-content-single-product {
+  &__intro {
+    display: flex;
+    flex-direction: column;
+
+    @include media('>medium') {
+      flex-direction: row;
+
+      > * {
+        width: 50vw;
+      }
+
+      &-left {
+        padding-right: $space;
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+
+    .o-price {
+      position: relative;
+      top: 2px;
+      padding-left: $space;
+    }
+  }
+
+  .c-page-header {
+    text-align: left;
+    align-items: flex-start;
+  }
+}

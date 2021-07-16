@@ -9,9 +9,8 @@ th {
   text-align: left;
   border: 1px solid transparent;
   padding: ($space / 2) 0;
-  text-transform: uppercase;
   vertical-align: top;
-  font-weight: bold;
+  @include o-heading__secondary--s;
 }
 
 tr {
@@ -34,7 +33,7 @@ td {
 
   tr {
     border: 1px solid $c-gray;
-    background-color: $c-gray;
+    background-color: $c-white;
   }
 
   th,
@@ -43,8 +42,6 @@ td {
   }
 
   th {
-    font-size: $font-size-xs;
-    text-transform: uppercase;
     border-bottom: 1px solid $c-gray;
   }
 
@@ -103,9 +100,8 @@ td {
 
       &::before {
         content: attr(data-label);
-        font-weight: bold;
-        text-transform: uppercase;
-        font-size: $font-size-xs;
+        @include o-heading__secondary--s;
+        padding-right: $space-half;
       }
     }
   }

@@ -28,7 +28,7 @@ if ( ! wc_coupons_enabled() ) { // @codingStandardsIgnoreLine.
 
 <form class="c-form-coupon u-space--top checkout_coupon woocommerce-form-coupon" method="post" style="display:none">
   <p><strong><?php esc_html_e( 'If you have a coupon code, please apply it below.', 'woocommerce' ); ?></strong></p>
-  <div class="c-form--inline">
+  <div class="o-form--inline">
     <input type="text" name="coupon_code" class="input-text" placeholder="<?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?>" id="coupon_code" value="" />
     <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_html_e( 'Apply coupon', 'woocommerce' ); ?></button>
   </div>
