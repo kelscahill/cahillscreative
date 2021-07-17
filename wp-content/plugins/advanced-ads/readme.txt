@@ -4,7 +4,7 @@ Tags: ads, ad manager, ad rotation, adsense, banner
 Requires at least: 4.9
 Tested up to: 5.7
 Requires PHP: 5.6
-Stable tag: 1.25.0
+Stable tag: 1.25.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -316,6 +316,14 @@ Yes. You can use plenty of [hooks](https://wpadvancedads.com/codex/) to customiz
 10. Convert AdSense ads into AMP automatically (Responsive add-on)
 
 == Changelog ==
+
+= 1.25.1 =
+
+- fixed a bug that prevented removing placement conditions
+- trim `inline-css` to remove duplicate spaces
+- check if `inline-css` index exists in ad options to prevent undefined index notice
+- move `Advanced_Ads_Inline_Css` class from singleton to one instance per ad, to fix issues with `inline-css` not being added
+- fixed ad edit button visibility in frontend when ad label was activated
 
 = 1.25.0 =
 

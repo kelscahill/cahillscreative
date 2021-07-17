@@ -402,7 +402,6 @@ trait admin_menu
 			$this->update_site_option( 'role_broadcast_as_draft', $role_broadcast_as_draft->get_post_value() );
 			$this->update_site_option( 'role_broadcast_scheduled_posts', $role_broadcast_scheduled_posts->get_post_value() );
 
-			$form->post()->use_post_values();
 			$post_types = $form->input( 'post_types' )->get_value();
 			$post_types = $this->lines_to_string( $post_types );
 			$this->update_site_option( 'post_types', $post_types);

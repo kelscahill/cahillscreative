@@ -866,7 +866,7 @@ class Advanced_Ads {
 	 * Show custom CSS in the header
 	 */
 	public function custom_header_code(){
-		if ( ! defined( 'ADVANCED_ADS_DISABLE_EDIT_BAR' ) && current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') ) ){
+		if ( ! defined( 'ADVANCED_ADS_DISABLE_EDIT_BAR' ) && current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads' ) ) ) {
 			?><style>
 			    div.advads-edit-bar{position:relative;top:0;left:0;height:0;display:none;z-index:10000;animation:advads-edit-appear 2s linear 1;}
 				@keyframes advads-edit-appear {
@@ -876,7 +876,9 @@ class Advanced_Ads {
                 }
 			    a.advads-edit-button{position:absolute;top:0;left:0;text-decoration:none !important;box-shadow:none;border-bottom:none;color:#0074a2;margin-top:-5px;}
 			    a.advads-edit-button span{top:10px;line-height:25px;margin-left:-5px;width:26px;height:26px;border-radius:13px;border:solid 1px #0074a2;background:#fff}
-			    :hover > .advads-edit-bar:first-child{display:block;}</style><?php
+				:hover > div.advads-edit-bar {display: block;}
+				:hover > div.advads-edit-bar ~ div.advads-edit-bar {display: none;}</style>
+			<?php
 		}
 	}
 

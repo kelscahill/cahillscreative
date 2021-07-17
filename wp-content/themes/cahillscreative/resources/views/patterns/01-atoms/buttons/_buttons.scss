@@ -13,6 +13,9 @@
   transition: $transition-all;
   border-radius: 50px;
   box-shadow: $box-shadow;
+  font-family: $font-tertiary;
+  font-size: $font-size-s;
+  line-height: 1;
 
   &:focus,
   &:hover {

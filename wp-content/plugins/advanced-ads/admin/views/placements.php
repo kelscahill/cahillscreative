@@ -436,18 +436,6 @@ $quick_actions['delete'] = '<a style="cursor: pointer;" class="advads-delete-tag
 							<?php if ( $advanced_options ) : ?>
 								<a href="#modal-<?php echo esc_attr( $_placement_slug ); ?>" style="cursor: pointer;"
 								   data-placement="<?php echo esc_attr( $_placement_slug ); ?>" class="advads-mobile-hidden"><?php esc_html_e( 'edit conditions', 'advanced-ads' ); ?></a>
-								<?php
-								// phpcs:ignore
-								$hidden = ( isset( $_POST['advads-last-edited-placement'] ) && $_placement_slug === $_POST['advads-last-edited-placement'] ) ? '' : ' hidden';
-								// phpcs:ignore
-								?>
-								<div class="advads-placements-advanced-options advads-placements-advanced-options-
-									<?php
-										echo esc_attr( $_placement_slug );
-										echo esc_attr( $hidden );
-									?>
-								">
-								</div>
 							<?php endif; ?>
 						</td>
 						<?php do_action( 'advanced-ads-placements-list-column', $_placement_slug, $_placement ); ?>

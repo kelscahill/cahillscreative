@@ -9,7 +9,10 @@ jQuery( document ).ready( function(){
 		var action = localStorage.getItem( 'advads_frontend_action' );
 		if (typeof(action) !== 'undefined'){
 			var show_all_link = jQuery( 'a[data-placement="' + placement + '"]');
-			Advanced_Ads_Admin.toggle_placements_visibility( show_all_link, true );
+			var tr = jQuery( show_all_link ).closest( 'tr.advanced-ads-placement-row' )
+			if ( tr ) {
+				tr.data( 'touched', true )
+			}
 
 			// Auto-save the placement after selecting an element in the frontend.
 			var param = {

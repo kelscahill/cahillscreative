@@ -231,21 +231,6 @@ jQuery( document ).ready( function ( $ ) {
 		e.preventDefault();
 	} );
 
-	// display placement settings form
-	$( '.advads-placements-table a.advads-placement-options-link' ).on( 'click', function ( e ) {
-		e.preventDefault()
-		Advanced_Ads_Admin.toggle_placements_visibility( this )
-	} )
-	// display manual placement usage
-	$( '.advads-placements-table .usage-link' ).on( 'click', function ( e ) {
-		e.preventDefault()
-		var usagediv = $( this ).parents( 'tr' ).find( '.advads-usage' )
-		if ( usagediv.is( ':visible' ) ) {
-			usagediv.hide()
-		} else {
-			usagediv.show()
-		}
-	} )
 	// show warning if Container ID option contains invalid characters
 	$( '#advads-output-wrapper-id' ).on( 'keyup', function () {
 		var id_value = $( this ).val()
@@ -496,23 +481,21 @@ jQuery( document ).ready( function ( $ ) {
 		}
 	} )
 
-	//  keep track of placements that were changed
-	$( 'form#advanced-ads-placements-form input, #advanced-ads-placements-form select' ).on( 'change', function () {
+	var set_touched_placement = function() {
 		var tr = $( this ).closest( 'tr.advanced-ads-placement-row' )
 		if ( tr ) {
 			tr.data( 'touched', true )
 		}
-	} )
+	}
+
+	//  keep track of placements that were changed
+	$( 'form#advanced-ads-placements-form input, #advanced-ads-placements-form select' ).on( 'change', set_touched_placement )
+	$( 'form#advanced-ads-placements-form button' ).on( 'click', set_touched_placement )
 
 	//  some special form elements overwrite the jquery listeners (or render them unusable in some strange way)
 	//  to counter that and make it more robust in general, we now listen for mouseover events, that will
 	//  only occur, when the settings of a placement are expanded (let's just assume this means editing)
-	$( 'form#advanced-ads-placements-form .advads-placements-advanced-options' ).on( 'mouseover', function () {
-		var tr = $( this ).closest( 'tr.advanced-ads-placement-row' )
-		if ( tr ) {
-			tr.data( 'touched', true )
-		}
-	} )
+	$( 'form#advanced-ads-placements-form .advads-modal' ).on( 'mouseover', set_touched_placement )
 
 	//  on submit remove placements that were untouched
 	$( 'form#advanced-ads-placements-form' ).on( 'submit', function () {
@@ -1103,6 +1086,12 @@ window.Advanced_Ads_Admin = window.Advanced_Ads_Admin || {
 			jQuery( '#advads-parameters-shortcodes-warning' ).hide()
 		}
 	},
+
+	/**
+	 * Toggle placement advanced options.
+	 *
+	 * @deprecated. Used only by add-ons when the base plugin version < 1.19.
+	 */
 	toggle_placements_visibility: function ( elm, state ) {
 		var advadsplacementformrow = jQuery( elm ).next( '.advads-placements-advanced-options' )
 
@@ -1115,7 +1104,7 @@ window.Advanced_Ads_Admin = window.Advanced_Ads_Admin || {
 			var placement_id = jQuery( elm ).parents( '.advads-placements-table-options' ).find( '.advads-placement-slug' ).val()
 			advadsplacementformrow.show()
 			jQuery( '#advads-last-edited-placement' ).val( placement_id )
-			//  some special elements (color picker) may not be detected with jquery
+			// Some special elements (color picker) may not be detected with jquery.
 			var tr = jQuery( elm ).closest( 'tr.advanced-ads-placement-row' )
 			if ( tr ) {
 				tr.data( 'touched', true )

@@ -291,7 +291,7 @@ fieldset.advads-group-add-ad { margin-top: 1em; }
 .advads-placements-table th span { font-weight: normal; }
 .advads-placements-table td { margin: 0; padding: 20px 10px; text-align: left; vertical-align: top; }
 .advads-placements-table img { height: 70px; margin-bottom: 5px; }
-.advads-placements-table .usage-link, .advads-placements-table .usage-modal-link { cursor: pointer; }
+.advads-placements-table .usage-modal-link { cursor: pointer; }
 .advads-placements-table .advads-usage { margin-bottom: 20px; }
 .advads-placements-table .advads-usage input { width: 100%; }
 .advads-placements-table-options { text-align: right; }
@@ -697,8 +697,8 @@ tr.advads-clickable-row:hover{
 /* table layout, mobile by default */
 .advads-option-table { width:100%; }
 .advads-option-table thead { display: none; }
-.advads-option-table tbody td { display: block; }
-.advads-option-table tbody td:before { /* display a label that is in the "data-th" attribute of the td tag */
+.advads-option-table tbody td, .advads-option-table tfoot th { display: block; }
+.advads-option-table tbody td:before, .advads-option-table tfoot th:before { /* display a label that is in the "data-th" attribute of the td tag */
 	content: attr( data-th );
 	display: inline-block;
 	width: 32%;
@@ -717,15 +717,15 @@ tr.advads-clickable-row:hover{
 	/* tables */
 	.advads-option-table { width:100%; }
 	.advads-option-table thead { display: table-header-group; }
-	.advads-option-table tbody td { display: table-cell; }
-	.advads-option-table tbody td:before { display: none; }
+	.advads-option-table tbody td, .advads-option-table tfoot th { display: table-cell; }
+	.advads-option-table tbody td:before, .advads-option-table tfoot th:before { display: none; }
 }
 @media screen and (min-width: 1150px) {
 	/* tables */
 	.advads-option-table-responsive { width:100%; }
 	.advads-option-table-responsive thead { display: table-header-group; }
-	.advads-option-table-responsive tbody td { display: table-cell; }
-	.advads-option-table-responsive tbody td:before { display: none; }
+	.advads-option-table-responsive tbody td, .advads-option-table-responsive tfoot th { display: table-cell; }
+	.advads-option-table-responsive tbody td:before, .advads-option-table-responsive tfoot th:before { display: none; }
 }
 @media (min-width: 1200px) {
 	.advads-placements-table .advads-placement-name {

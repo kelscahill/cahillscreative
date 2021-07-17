@@ -19,17 +19,17 @@ defined( 'ABSPATH' ) || exit;
 
 $show_shipping = ! wc_ship_to_billing_address_only() && $order->needs_shipping_address();
 ?>
-<section class="woocommerce-customer-details">
+<section class="woocommerce-customer-details u-spacing">
 
   <?php if ( $show_shipping ) : ?>
 
   <section class="woocommerce-columns woocommerce-columns--2 woocommerce-columns--addresses col2-set addresses" bp="grid 6@md">
-    <div class="woocommerce-column woocommerce-column--1 woocommerce-column--billing-address col-1">
+    <div class="woocommerce-column woocommerce-column--1 woocommerce-column--billing-address col-1 u-spacing">
 
   <?php endif; ?>
 
-  <h2 class="woocommerce-column__title"><?php esc_html_e( 'Billing address', 'woocommerce' ); ?></h2>
-  <hr class="o-hr--small" />
+  <h3 class="woocommerce-column__title"><?php esc_html_e( 'Billing address', 'woocommerce' ); ?></h3>
+  <hr />
   <address>
     <?php echo wp_kses_post( $order->get_formatted_billing_address( esc_html__( 'N/A', 'woocommerce' ) ) ); ?>
 
@@ -46,9 +46,9 @@ $show_shipping = ! wc_ship_to_billing_address_only() && $order->needs_shipping_a
 
     </div><!-- /.col-1 -->
 
-    <div class="woocommerce-column woocommerce-column--2 woocommerce-column--shipping-address col-2">
+    <div class="woocommerce-column woocommerce-column--2 woocommerce-column--shipping-address col-2 u-spacing">
       <h2 class="woocommerce-column__title"><?php esc_html_e( 'Shipping address', 'woocommerce' ); ?></h2>
-      <hr class="o-hr--small" />
+      <hr />
       <address>
         <?php echo wp_kses_post( $order->get_formatted_shipping_address( esc_html__( 'N/A', 'woocommerce' ) ) ); ?>
       </address>

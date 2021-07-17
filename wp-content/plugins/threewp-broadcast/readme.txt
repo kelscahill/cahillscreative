@@ -3,8 +3,8 @@ Contributors: edward_plainview
 Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
-Requires PHP: 5.4
-Stable tag: 47.06
+Requires PHP: 7.1
+Stable tag: 47.08
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
 Tested up to: 5.7
 
@@ -96,6 +96,7 @@ The following add-ons add support for the plugin after which they are named:
 * <a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/h5p/">H5P</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/image-map-pro/">Image Map Pro</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/imagify/">Imagify</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/inboundnow/">Inbound Now</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/intagrate/">Intagrate</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/jetpack/">Jetpack</a>
@@ -177,6 +178,7 @@ These add-ons give you extra control of what you broadcast and how:
 * <a href="https://broadcast.plainviewplugins.com/addon/shortcode-menus/">Shortcode Menus</a> modifies menu IDs found in shortcodes to match their equivalent menus on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/shortcode-posts/">Shortcode Posts</a> modifies post IDs found in shortcodes to match their equivalent posts on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/shortcode-terms/">Shortcode Terms</a> automatically translates taxonomy term IDs found in shortcodes when broadcasting.
+* <a href="https://broadcast.plainviewplugins.com/addon/term-meta-attachments//">Term Meta Attachments</a>: Allow taxonomy term meta containing attachment IDs to be broadcasted correctly.
 * <a href="https://broadcast.plainviewplugins.com/addon/thumbnail-sizes/">Thumbnail Sizes</a> allows for different additional thumbnail sizes on a per-blog basis.
 * <a href="https://broadcast.plainviewplugins.com/addon/update-attachments/">Update Attachments</a> updates existing attachments by copying over the files to the child blogs.
 * <a href="https://broadcast.plainviewplugins.com/addon/update-family/">Update Family</a> updates the parent post and siblings when editing a child post.
@@ -355,6 +357,15 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 47.08 20210623 =
+
+* Fix: Correct URL for non-standard install directories.
+* Fix: Bulk post popup only pops up once now on when plugins modify the post overview page (ACF, for example).
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/custom-field-cleanup/">Custom Field Cleanup</a>: Cleans up the custom fields of a post.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/imagify/">Imagify</a>: Adds support for the <a href="https://wordpress.org/plugins/imagify/">Imagify</a> plugin / service.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/more-children/">More Children</a>: Allows children to create more children of the parent.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/term-meta-attachments/">Term Meta Attachments</a>: Allow taxonomy term meta containing attachment IDs to be broadcasted correctly.
 
 = 47.06 20210412 =
 

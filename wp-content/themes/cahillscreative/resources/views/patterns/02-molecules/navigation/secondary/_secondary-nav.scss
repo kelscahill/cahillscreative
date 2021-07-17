@@ -58,14 +58,6 @@
   }
 
   &__child-list-item {
-    &::before {
-      content: "|";
-      display: inline-block;
-      color: $c-gray;
-      margin-left: $space-half;
-      margin-right: $space-half;
-    }
-
     a {
       display: flex;
       align-items: center;
@@ -86,6 +78,18 @@
 
     a[href^="/explore#"] {
       border: none;
+    }
+  }
+
+  .o-link + * {
+    display: flex;
+
+    &::before {
+      content: "|";
+      display: inline-block;
+      color: $c-gray;
+      margin-left: $space-half;
+      margin-right: $space-half;
     }
   }
 

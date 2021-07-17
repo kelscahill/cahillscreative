@@ -5,34 +5,19 @@
  */
 class Advanced_Ads_Inline_Css {
 	/**
-	 * Singleton instance of the plugin
-	 *
-	 * @var self
-	 */
-	protected static $instance;
-
-	/**
-	 * Module options
-	 *
-	 * @var array
-	 */
-	protected $options;
-
-	/**
-	 *  Holds the state if inline css should be outputted or not.
+	 *  Holds the state if inline css should be output or not.
 	 *
 	 * @var bool
 	 */
 	protected $add_inline_css;
 
 	/**
-	 * Initialize the module
+	 * Initialize the module.
 	 */
-	private function __construct() {
-		$this->options();
+	public function __construct() {
 
 		/**
-		 * Filters the state if inline css should be outputted or not.
+		 * Filters the state if inline css should be output or not.
 		 * Ajax CB container could have added inline css already.
 		 *
 		 * Set to false if an addon output inline css before the main plugin.
@@ -45,22 +30,20 @@ class Advanced_Ads_Inline_Css {
 		}
 
 		// Add inline css to the tcf container.
-		if ( ! empty( $this->options['enabled'] ) && $this->options['enabled'] === 'on' && $this->options['consent-method'] === 'iab_tcf_20' ) {
-			add_filter( 'advanced-ads-output-final', array( $this, 'add_tcf_container' ), 20, 2 );
-			$this->add_inline_css = false;
-		}
+		$this->check_tcf_option();
 	}
 
 	/**
 	 * Adds inline css.
 	 *
-	 * @param array  $wrapper Add wrapper array.
-	 * @param string $css     Custom inline css.
+	 * @param array     $wrapper       Add wrapper array.
+	 * @param string    $css           Custom inline css.
+	 * @param bool|null $global_output Whether this ad is using cache-busting.
 	 *
 	 * @return array
 	 */
-	public function add_css( $wrapper, $css ) {
-		$this->add_inline_css = apply_filters( 'advanced-ads-output-inline-css', $this->add_inline_css );
+	public function add_css( $wrapper, $css, $global_output ) {
+		$this->add_inline_css = $this->add_inline_css && $global_output !== false;
 		if ( ! $this->add_inline_css ) {
 			return $wrapper;
 		}
@@ -81,14 +64,23 @@ class Advanced_Ads_Inline_Css {
 	 * @return string
 	 */
 	public function add_tcf_container( $output, Advanced_Ads_Ad $ad ) {
+		$inline_css = $ad->options( 'inline-css' );
+
+		if (
+			empty( $inline_css )
+			|| strpos( $output, '<div class="tcf-container"' ) === 0
+		) {
+			return $output;
+		}
+
 		return sprintf(
-			'<div class="tcf-container" style="' . $ad->options()['inline-css'] . '">%s</div>',
+			'<div class="tcf-container" style="' . $inline_css . '">%s</div>',
 			$output
 		);
 	}
 
 	/**
-	 * Reformats css styles string to array.
+	 * Reformat css styles string to array.
 	 *
 	 * @param string $string CSS-Style.
 	 *
@@ -96,39 +88,25 @@ class Advanced_Ads_Inline_Css {
 	 */
 	private function get_styles_by_string( $string ) {
 		$chunks = array_chunk( preg_split( '/[:;]/', $string ), 2 );
+		array_walk_recursive( $chunks, function( &$value ) {
+			$value = trim( $value );
+		} );
 
 		return array_combine( array_filter( array_column( $chunks, 0 ) ), array_filter( array_column( $chunks, 1 ) ) );
 	}
 
 	/**
-	 * Return TCF options.
-	 *
-	 * @return array
+	 * If TCF is active, i.e. there is a TCF container, add the options to this container.
 	 */
-	public function options() {
-		if ( isset( $this->options ) ) {
-			return $this->options;
+	private function check_tcf_option() {
+		static $privacy_options;
+		if ( $privacy_options === null ) {
+			$privacy_options = Advanced_Ads_Privacy::get_instance()->options();
 		}
 
-		$this->options = get_option( Advanced_Ads_Privacy::OPTION_KEY, array() );
-		if ( isset( $this->options['enabled'] ) && empty( $this->options['consent-method'] ) ) {
-			$this->options['enabled'] = false;
+		if ( ! empty( $privacy_options['enabled'] ) && $privacy_options['enabled'] === 'on' && $privacy_options['consent-method'] === 'iab_tcf_20' ) {
+			add_filter( 'advanced-ads-output-final', array( $this, 'add_tcf_container' ), 20, 2 );
+			$this->add_inline_css = false;
 		}
-
-		return $this->options;
-	}
-
-	/**
-	 * Return an instance of Advanced_Ads_Inline_Css
-	 *
-	 * @return self
-	 */
-	public static function get_instance() {
-		// If the single instance hasn't been set, set it now.
-		if ( self::$instance === null ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
 	}
 }

@@ -162,7 +162,7 @@ class Indexable extends Model {
 			$this->permalink_hash = \strlen( $this->permalink ) . ':' . \md5( $this->permalink );
 		}
 		if ( \strlen( $this->primary_focus_keyword ) > 191 ) {
-			$this->primary_focus_keyword = \substr( $this->primary_focus_keyword, 0, 191 );
+			$this->primary_focus_keyword = \mb_substr( $this->primary_focus_keyword, 0, 191, 'UTF-8' );
 		}
 
 		return parent::save();
@@ -174,6 +174,10 @@ class Indexable extends Model {
 	 * @return void
 	 */
 	protected function sanitize_permalink() {
+		if ( $this->permalink === 'unindexed' ) {
+			return;
+		}
+
 		$permalink_structure = \get_option( 'permalink_structure' );
 		$permalink_parts     = \wp_parse_url( $this->permalink );
 

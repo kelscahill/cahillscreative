@@ -154,23 +154,30 @@ class Advanced_Ads_Ad {
 	protected $label = '';
 
 	/**
+	 * Inline CSS object, one instance per ad.
+	 *
+	 * @var Advanced_Ads_Inline_Css
+	 */
+	private $inline_css;
+
+	/**
 	 * Init ad object
 	 *
 	 * @param int   $id id of the ad.
 	 * @param array $args additional arguments.
 	 */
 	public function __construct( $id, $args = array() ) {
-		$id         = absint( $id );
-		$this->id   = $id;
+		$this->id   = (int) $id;
 		$this->args = is_array( $args ) ? $args : array();
-		// Run constructor to check early if ajax cache busting already created inline css.
-		Advanced_Ads_Inline_Css::get_instance();
 
 		// whether the ad will be tracked.
 		$this->global_output = isset( $this->args['global_output'] ) ? (bool) $this->args['global_output'] : true;
 
-		if ( ! empty( $id ) ) {
-			$this->load( $id );
+		// Run constructor to check early if ajax cache busting already created inline css.
+		$this->inline_css = new Advanced_Ads_Inline_Css();
+
+		if ( ! empty( $this->id ) ) {
+			$this->load( $this->id );
 		}
 
 		// dynamically add sanitize filters for condition types.
@@ -929,8 +936,8 @@ class Advanced_Ads_Ad {
 		}
 
 		// Adds inline css to the wrapper.
-		if ( ! empty( $this->options['inline-css'] ) ) {
-			$wrapper_options = Advanced_Ads_Inline_Css::get_instance()->add_css( $wrapper_options, $this->options['inline-css'] );
+		if ( ! empty( $this->options['inline-css'] ) && $this->args['is_top_level'] ) {
+			$wrapper_options = $this->inline_css->add_css( $wrapper_options, $this->options['inline-css'], $this->global_output );
 		}
 
 		if ( ( ! isset( $this->output['wrapper-id'] ) || '' === $this->output['wrapper-id'] )

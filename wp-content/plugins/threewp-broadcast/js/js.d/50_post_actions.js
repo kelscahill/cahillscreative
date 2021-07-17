@@ -19,7 +19,7 @@
 
                 $this.submitted = false;
 
-                $this.unbind( 'click' );
+                $this.off( 'click' );
 
                 $this.on( 'click', function()
                 {

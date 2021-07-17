@@ -41,7 +41,7 @@ function register_custom_post_types() {
       'show_ui' => true,
       'show_in_rest' => true,
       'rest_base' => '',
-      'has_archive' => true,
+      'has_archive' => false,
       'show_in_menu' => true,
       'exclude_from_search' => false,
       'capability_type' => 'post',

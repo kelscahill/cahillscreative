@@ -256,6 +256,10 @@ trait meta_boxes
 
 		foreach( $blogs as $blog )
 		{
+			// This is a "workaround" for the More Children add-on that would otherwise allow the child (parent) to broadcast to itself.
+			if ( $blog->id == $meta_box_data->broadcast_data->blog_id )
+				continue;
+
 			$label = $form::unfilter_text( $blog->get_name() );
 			if ( $label == '' )
 				$label = $blog->domain;
