@@ -1,5 +1,5 @@
 {% if price.regular %}
-  {% set price_base_class = price.base_class|default('o-price') %}
+  {% set base_class = price.base_class|default('o-price') %}
 
   {% if price.sale %}
     {% set price_modifiers = ['sale'] %}
@@ -7,11 +7,11 @@
     {% set price_modifiers = price.modifiers %}
   {% endif %}
 
-  <div class="{{ bem_classes(price_base_class, price.element, price_modifiers, price.extra) }}">
-    <span class="{{ bem_classes(price_base_class, 'regular') }}">{{ '$' ~ price.regular }}</span>
+  <div class="{{ bem_classes(base_class, price.element, price_modifiers, price.extra) }}">
+    <span class="{{ bem_classes(base_class, 'regular') }}">{{ '$' ~ price.regular }}</span>
     {% if price.sale %}
-      <span class="{{ bem_classes(price_base_class, 'sale') }}">{{ '$' ~ price.sale }}</span>
-      <div class="{{ bem_classes(price_base_class, 'discount') }} u-space--quarter--top">{{ (price.sale / price.regular * 100)|round ~ '%' }}</div>
+      <span class="{{ bem_classes(base_class, 'sale') }}">{{ '$' ~ price.sale }}</span>
+      <div class="{{ bem_classes(base_class, 'discount') }} u-space--quarter--top">{{ (price.sale / price.regular * 100)|round ~ '%' }}</div>
     {% endif %}
   </div>
 {% endif %}

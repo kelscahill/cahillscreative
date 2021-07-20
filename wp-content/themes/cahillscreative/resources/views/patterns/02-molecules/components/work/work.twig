@@ -1,0 +1,21 @@
+{% set base_class = secondary_nav.base_class|default('c-secondary-nav') %}
+
+{% if post.meta('work') %}
+  {% for item in post.meta('work') %}
+    <div class="work">
+      <div class="work-item spacing--double">
+        <div class="work-item__title">
+          <span class="font--primary--s">{{ item.work_section_title }}</span>
+        </div>
+        {% for image in item.work_section_images %}
+        {% set image = Image(image) %}
+          <div class="work-item__image">
+            <picture class="work__image">
+              <img src="{{ image.src }}" alt="{{ image.alt }}">
+            </picture>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+{% endif %}

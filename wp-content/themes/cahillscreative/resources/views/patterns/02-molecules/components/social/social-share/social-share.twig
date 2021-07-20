@@ -1,4 +1,4 @@
-{% set social_share_base_class = social_share.base_class|default('c-social-share') %}
+{% set base_class = social_share.base_class|default('c-social-share') %}
 
 {% if social_share %}
   {% set social_share_links = [
@@ -24,17 +24,17 @@
     }
   ] %}
 
-  <div class="{{ bem_classes(social_share_base_class, social_share.element, social_share.modifiers, social_share.extra) }}">
+  <div class="{{ bem_classes(base_class, social_share.element, social_share.modifiers, social_share.extra) }}">
     {% include "@atoms/text/heading/heading.twig" with {
       "heading": {
         "level": "6",
         "size": "xs",
         "type": "secondary",
         "text": "Share",
-        "extra": bem_classes(social_share_base_class, 'heading')
+        "extra": bem_classes(base_class, 'heading')
       }
     } %}
-    <div class="{{ bem_classes(social_share_base_class, 'links') }}">
+    <div class="{{ bem_classes(base_class, 'links') }}">
       {% for link in social_share_links %}
         {% if link.url %}
           {% include "@atoms/links/link.twig" with {
@@ -42,7 +42,7 @@
               "url": link.url,
               "target": "_blank",
               "extra": [
-                bem_classes(social_share_base_class, 'item', link.name)
+                bem_classes(base_class, 'item', link.name)
               ],
               "icon": {
                 "name": link.name,

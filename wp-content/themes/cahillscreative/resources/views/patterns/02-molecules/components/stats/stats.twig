@@ -1,19 +1,19 @@
-{% set stats_base_class = stats.base_class|default('c-stats') %}
+{% set base_class = stats.base_class|default('c-stats') %}
 
 {% if stats.project or stats.room or stats.cost or stats.skill_level %}
-  <div class="{{ bem_classes(stats_base_class, stats.element, stats.modifiers, stats.extra) }}">
+  <div class="{{ bem_classes(base_class, stats.element, stats.modifiers, stats.extra) }}">
     {% for tag in stats.project %}
-      <div class="{{ bem_classes(stats_base_class, 'item') }}">
+      <div class="{{ bem_classes(base_class, 'item') }}">
         {% include "@atoms/text/heading/heading.twig" with {
           "heading": {
             "level": "6",
             "size": "xs",
             "type": "secondary",
             "text": "Project",
-            "extra": bem_classes(stats_base_class, 'heading')
+            "extra": bem_classes(base_class, 'heading')
           }
         } %}
-        <div class="{{ bem_classes(stats_base_class, 'tags') }}">
+        <div class="{{ bem_classes(base_class, 'tags') }}">
           {{ tag.name }}
           {% if not loop.last %}
             <span>,&nbsp;</span>
@@ -22,17 +22,17 @@
       </div>
     {% endfor %}
     {% for tag in stats.room %}
-      <div class="{{ bem_classes(stats_base_class, 'item') }}">
+      <div class="{{ bem_classes(base_class, 'item') }}">
         {% include "@atoms/text/heading/heading.twig" with {
           "heading": {
             "level": "6",
             "size": "xs",
             "type": "secondary",
             "text": "Room",
-            "extra": bem_classes(stats_base_class, 'heading')
+            "extra": bem_classes(base_class, 'heading')
           }
         } %}
-        <div class="{{ bem_classes(stats_base_class, 'tags') }}">
+        <div class="{{ bem_classes(base_class, 'tags') }}">
           {{ tag.name }}
           {% if not loop.last %}
             <span>,&nbsp;</span>
@@ -41,17 +41,17 @@
       </div>
     {% endfor %}
     {% for tag in stats.cost %}
-      <div class="{{ bem_classes(stats_base_class, 'item') }}">
+      <div class="{{ bem_classes(base_class, 'item') }}">
         {% include "@atoms/text/heading/heading.twig" with {
           "heading": {
             "level": "6",
             "size": "xs",
             "type": "secondary",
             "text": "Cost",
-            "extra": bem_classes(stats_base_class, 'heading')
+            "extra": bem_classes(base_class, 'heading')
           }
         } %}
-        <div class="{{ bem_classes(stats_base_class, 'tags') }}">
+        <div class="{{ bem_classes(base_class, 'tags') }}">
           {{ tag.name }}
           {% if not loop.last %}
             <span>,&nbsp;</span>
@@ -60,17 +60,17 @@
       </div>
     {% endfor %}
     {% for tag in stats.skill_level %}
-      <div class="{{ bem_classes(stats_base_class, 'item') }}">
+      <div class="{{ bem_classes(base_class, 'item') }}">
         {% include "@atoms/text/heading/heading.twig" with {
           "heading": {
             "level": "6",
             "size": "xs",
             "type": "secondary",
             "text": "Skill Level",
-            "extra": bem_classes(stats_base_class, 'heading')
+            "extra": bem_classes(base_class, 'heading')
           }
         } %}
-        <div class="{{ bem_classes(stats_base_class, 'tags') }}">
+        <div class="{{ bem_classes(base_class, 'tags') }}">
           {{ tag.name }}
           {% if not loop.last %}
             <span>,&nbsp;</span>

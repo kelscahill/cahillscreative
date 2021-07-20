@@ -1,9 +1,9 @@
-{% set post_grid_base_class = post_grid.base_class|default('c-post-grid') %}
+{% set base_class = post_grid.base_class|default('c-post-grid') %}
 
 {% if post_grid %}
-  <section class="{{ bem_classes(post_grid_base_class, post_grid.element, post_grid.modifiers, post_grid.extra) }} l-wrap l-container u-spacing">
+  <section class="{{ bem_classes(base_class, post_grid.element, post_grid.modifiers, post_grid.extra) }} l-wrap l-container u-spacing">
     {% if post_grid.heading or post_grid.dek %}
-      <div class="{{ bem_classes(post_grid_base_class, 'header') }}">
+      <div class="{{ bem_classes(base_class, 'header') }}">
         {% if post_grid.heading %}
           {% include "@atoms/text/heading/heading.twig" with {
             "heading": {
@@ -11,7 +11,7 @@
               "size": "xl",
               "type": "primary",
               "text": post_grid.heading,
-              "extra": bem_classes(post_grid_base_class, 'heading')
+              "extra": bem_classes(base_class, 'heading')
             }
           } %}
         {% endif %}
@@ -20,7 +20,7 @@
             "dek": {
               "text": post_grid.dek,
               "extra": [
-                bem_classes(post_grid_base_class, 'dek'),
+                bem_classes(base_class, 'dek'),
                 "l-container--m"
               ]
             }
@@ -29,7 +29,7 @@
       </div>
     {% endif %}
     {% if post_grid.posts %}
-      <div class="{{ bem_classes(post_grid_base_class, 'posts') }}" bp="grid 6 4@md 3@lg">
+      <div class="{{ bem_classes(base_class, 'posts') }}" bp="grid 6 4@md 3@lg">
         {% for post in post_grid.posts %}
           {% include ['@molecules/cards/card-' ~ post.post_type ~ '.twig', '@molecules/cards/card.twig'] with {
             "card": post

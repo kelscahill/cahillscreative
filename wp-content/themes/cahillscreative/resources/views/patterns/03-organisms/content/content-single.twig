@@ -1,4 +1,4 @@
-{% set content_single_base_class = content_single.base_class|default('c-content-single') %}
+{% set base_class = content_single.base_class|default('c-content-single') %}
 
 {% embed "@molecules/components/content-modal/content-modal.twig" %}
   {% block content_modal_body %}
@@ -16,8 +16,8 @@
   {% endblock %}
 {% endembed %}
 
-<article class="{{ bem_classes(content_single_base_class, content_single.element, content_single.modifiers, content_single.extra) }} l-container">
-  <div class="{{ bem_classes(content_single_base_class, 'meta') }} u-spacing">
+<article class="{{ bem_classes(base_class, content_single.element, content_single.modifiers, content_single.extra) }} l-container">
+  <div class="{{ bem_classes(base_class, 'meta') }} u-spacing">
     {% include "@atoms/text/meta/meta.twig" with {
       "meta": {
         "date": post.date
@@ -29,12 +29,12 @@
       }
     } %}
   </div>
-  <div class="{{ bem_classes(content_single_base_class, 'container') }} l-container--m u-spacing--double">
+  <div class="{{ bem_classes(base_class, 'container') }} l-container--m u-spacing--double">
     {% include "@organisms/sections/page-headers/page-header.twig" with {
       "page_header": {
         "kicker": term.name,
         "heading": post.title,
-        "extra": bem_classes(content_single_base_class, 'header')
+        "extra": bem_classes(base_class, 'header')
       }
     } %}
     {% include "@molecules/components/stats/stats.twig" with {
@@ -43,13 +43,22 @@
         "room": post.terms('room'),
         "cost": post.terms('cost'),
         "skill_level": post.terms('skill_level'),
-        "extra": bem_classes(content_single_base_class, 'stats')
+        "extra": bem_classes(base_class, 'stats')
       }
     } %}
+    {% if post.website_url %}
+            <a href="{{ post.website_url }}" class="btn btn--outline center space--top" target="_blank" rel="noopener">
+              {% if post.website_text %}
+                {{ post.website_text }}
+              {% else %}
+                Visit Website
+              {% endif %}
+            </a>
+          {% endif %}
     {% include "@atoms/text/rich-text/rich-text.twig" with {
       "rich_text": {
         "text": post.content,
-        "extra": ["has-dropcap", bem_classes(content_single_base_class, 'body')],
+        "extra": ["has-dropcap", bem_classes(base_class, 'body')],
       }
     } %}
     {% include "@molecules/navigation/tags/tags.twig" with {

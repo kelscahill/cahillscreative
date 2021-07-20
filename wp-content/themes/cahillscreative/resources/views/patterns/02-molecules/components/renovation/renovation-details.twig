@@ -1,8 +1,8 @@
-{% set renovation_details_base_class = renovation_details.base_class|default('c-renovation-details') %}
+{% set base_class = renovation_details.base_class|default('c-renovation-details') %}
 
-<div class="{{ bem_classes(renovation_details_base_class, renovation_details.element, renovation_details.modifiers, renovation_details.extra) }}">
+<div class="{{ bem_classes(base_class, renovation_details.element, renovation_details.modifiers, renovation_details.extra) }}">
   {% if post.specs %}
-    <div class="{{ bem_classes(renovation_details_base_class, 'specs') }}">
+    <div class="{{ bem_classes(base_class, 'specs') }}">
       {% include "@atoms/links/link.twig" with {
         "link": {
           "url": "#",
@@ -12,20 +12,20 @@
             "modifiers": "xsmall"
           },
           "modifiers": ["alt", "no-shadow", "small"],
-          "extra": [bem_classes(renovation_details_base_class, 'specs-link'), "js-toggle-parent"]
+          "extra": [bem_classes(base_class, 'specs-link'), "js-toggle-parent"]
         }
       } %}
-      <div class="{{ bem_classes(renovation_details_base_class, 'specs-details') }}">
+      <div class="{{ bem_classes(base_class, 'specs-details') }}">
         {% include "@atoms/text/rich-text/rich-text.twig" with {
           "rich_text": {
             "text": post.specs|wpautop,
-            "extra": bem_classes(renovation_details_base_class, 'body'),
+            "extra": bem_classes(base_class, 'body'),
           }
         } %}
       </div>
     </div>
   {% endif %}
-  <div class="{{ bem_classes(renovation_details_base_class, 'social') }}">
+  <div class="{{ bem_classes(base_class, 'social') }}">
     {% include "@atoms/links/link.twig" with {
       "link": {
         "url": "#",
@@ -35,13 +35,13 @@
           "modifiers": "small"
         },
         "modifiers": ["alt", "no-shadow"],
-        "extra": [bem_classes(renovation_details_base_class, 'social-link'), "js-toggle-parent"]
+        "extra": [bem_classes(base_class, 'social-link'), "js-toggle-parent"]
       }
     } %}
     {% include "@molecules/components/social/social-share/social-share.twig" with {
       "social_share": {
         "modifiers": "inline",
-        "extra": bem_classes(renovation_details_base_class, 'social-share')
+        "extra": bem_classes(base_class, 'social-share')
       }
     } %}
   </div>

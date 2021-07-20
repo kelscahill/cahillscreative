@@ -1,25 +1,35 @@
 table {
   border-collapse: collapse;
   border-spacing: 0;
-  border: 1px solid $c-gray;
   width: 100%;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  overflow: hidden;
 }
 
 th {
   text-align: left;
-  border: 1px solid transparent;
-  padding: ($space / 2) 0;
+  padding: $space / 2;
   vertical-align: top;
+  background-color: $c-primary;
+  color: white;
+  vertical-align: middle;
   @include o-heading__secondary--s;
 }
 
 tr {
-  border: 1px solid transparent;
+  &:nth-child(odd) td {
+    background-color: white;
+  }
 }
 
 td {
-  border: 1px solid transparent;
   padding: $space / 2;
+  vertical-align: middle;
+
+  p {
+    margin: 0;
+  }
 }
 
 /**

@@ -1,8 +1,8 @@
-{% set sidebar_base_class = sidebar.base_class|default('c-sidebar') %}
+{% set base_class = sidebar.base_class|default('c-sidebar') %}
 
 {% if sidebar %}
   {% spaceless %}
-    <aside class="{{ bem_classes(sidebar_base_class) }} u-spacing">
+    <aside class="{{ bem_classes(base_class) }} u-spacing">
       {% if not sidebar.ad_only %}
         {% include "@molecules/components/social/social-share/social-share.twig" %}
         {% include "@atoms/text/meta/meta.twig" with {

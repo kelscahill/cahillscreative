@@ -1,22 +1,22 @@
-{% set content_single_base_class = content.base_class|default('c-content-single-product') %}
+{% set base_class = content.base_class|default('c-content-single-product') %}
 
-<article class="{{ bem_classes(content_single_base_class, content_single.element, content_single.modifiers, content_single.extra) }} u-spacing--double">
-  <div class="{{ bem_classes(content_single_base_class, 'intro') }}">
-    <div class="{{ bem_classes(content_single_base_class, 'intro-left') }} u-spacing">
+<article class="{{ bem_classes(base_class, content_single.element, content_single.modifiers, content_single.extra) }} u-spacing--double">
+  <div class="{{ bem_classes(base_class, 'intro') }}">
+    <div class="{{ bem_classes(base_class, 'intro-left') }} u-spacing">
       {% include "@organisms/sections/page-headers/page-header.twig" with {
         "page_header": {
           "kicker": term.name,
           "heading": post.title,
-          "extra": bem_classes(content_single_base_class, 'header')
+          "extra": bem_classes(base_class, 'header')
         }
       } %}
       {% include "@atoms/text/rich-text/rich-text.twig" with {
         "rich_text": {
           "text": post.post_content|wpautop,
-          "extra": bem_classes(content_single_base_class, 'body'),
+          "extra": bem_classes(base_class, 'body'),
         }
       } %}
-      <div class="{{ bem_classes(content_single_base_class, 'actions') }}">
+      <div class="{{ bem_classes(base_class, 'actions') }}">
         {% if product.get_available_variations %}
           {% do action('woocommerce_variable_add_to_cart') %}
         {% else %}
@@ -25,7 +25,7 @@
         {% include "01-atoms/woocommerce/price.twig" %}
       </div>
       {% if post._downloadable == 'yes' %}
-        <p><small><strong>Instant Download:</strong> Your files will be available to download once payment is confirmed. For digital downloads, I don't accept returns, exchanges, or cancellations. But please contact me if you have any problems with your order.</small></p>
+        <p><small><strong>Instant Download:</strong> Your files will be available to download once payment is confirmed. You may download, save, and print as many times as you'd like, but please do not redistribute. For digital downloads, I don't accept returns, exchanges, or cancellations.</small></p>
       {% endif %}
       {% include "@molecules/components/accordion/accordion.twig" with {
         "accordion": {
@@ -35,23 +35,23 @@
         }
       } %}
     </div>
-    <div class="{{ bem_classes(content_single_base_class, 'intro-right') }}">
+    <div class="{{ bem_classes(base_class, 'intro-right') }}">
       {% if product.get_gallery_image_ids %}
-        <div class="c-product__gallery">
-          <div class="c-product__gallery-nav">
-            <div class="js-product-gallery-nav">
-              {% for image in product.get_gallery_image_ids %}
-                <div class="o-gallery-item">
-                  <img src="{{ Image(image).src|resize(150,150) }}" alt="{{ Image(image).alt }}" />
-                </div>
-              {% endfor %}
-            </div>
-          </div>
-          <div class="c-product__gallery-image">
+        <div class="c-product-gallery">
+          <div class="c-product-gallery__image">
             <div class="js-product-gallery">
               {% for image in product.get_gallery_image_ids %}
                 <div class="o-gallery-item">
                   <img src="{{ Image(image).src|resize(900,900) }}" alt="{{ Image(image).alt }}" />
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="c-product-gallery__nav">
+            <div class="js-product-gallery-nav">
+              {% for image in product.get_gallery_image_ids %}
+                <div class="o-gallery-item">
+                  <img src="{{ Image(image).src|resize(175,175) }}" alt="{{ Image(image).alt }}" />
                 </div>
               {% endfor %}
             </div>

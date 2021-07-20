@@ -1,7 +1,7 @@
-{% set disclaimer_base_class = disclaimer.base_class|default('o-disclaimer') %}
+{% set base_class = disclaimer.base_class|default('o-disclaimer') %}
 
 {% if disclaimer or disclaimer.text %}
-  <div class="{{ bem_classes(disclaimer_base_class) }}">
+  <div class="{{ bem_classes(base_class) }}">
     {{ disclaimer }}
   </div>
 {% endif %}

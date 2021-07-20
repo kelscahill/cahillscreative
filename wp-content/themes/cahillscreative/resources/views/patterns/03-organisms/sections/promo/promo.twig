@@ -1,15 +1,15 @@
 {% if promo.items %}
-  {% set promo_base_class = promo.base_class|default('c-promo') %}
+  {% set base_class = promo.base_class|default('c-promo') %}
 
-  <section{{ promo.anchor ? ' id="' ~ promo.anchor ~ '"'}} class="{{ bem_classes(promo_base_class, promo.element, promo.modifiers, promo.extra) }} l-container--full{{ promo.items|length > 1 ? ' js-slick' }}">
+  <section{{ promo.anchor ? ' id="' ~ promo.anchor ~ '"'}} class="{{ bem_classes(base_class, promo.element, promo.modifiers, promo.extra) }} l-container--full{{ promo.items|length > 1 ? ' js-slick' }}">
     {% for item in promo.items %}
-      <div class="{{ bem_classes(promo_base_class, 'item', ['image-' ~ item.image_placement|lower, 'background-' ~ item.background_color|lower ]) }}">
-        <div class="{{ bem_classes(promo_base_class, 'content') }} u-spacing">
-          <div class="{{ bem_classes(promo_base_class, 'header') }} u-spacing--half">
+      <div class="{{ bem_classes(base_class, 'item', ['image-' ~ item.image_placement|lower, 'background-' ~ item.background_color|lower ]) }}">
+        <div class="{{ bem_classes(base_class, 'content') }} u-spacing">
+          <div class="{{ bem_classes(base_class, 'header') }} u-spacing--half">
             {% include "@atoms/text/kicker/kicker.twig" with {
               "kicker":  {
                 "text": item.kicker,
-                "extra": bem_classes(promo_base_class, 'kicker')
+                "extra": bem_classes(base_class, 'kicker')
               }
             } %}
             {% include "@atoms/text/heading/heading.twig" with {
@@ -18,7 +18,7 @@
                 "size": "xl",
                 "type": "primary",
                 "text": item.title,
-                "extra": bem_classes(promo_base_class, 'heading')
+                "extra": bem_classes(base_class, 'heading')
               }
             } %}
           </div>
@@ -32,7 +32,7 @@
           {% include "@atoms/text/rich-text/rich-text.twig" with {
             "rich_text": {
               "text": item.body|wpautop,
-              "extra": bem_classes(promo_base_class, 'body')
+              "extra": bem_classes(base_class, 'body')
             }
           } %}
           {% include "@atoms/buttons/button.twig" with {
@@ -40,11 +40,11 @@
               "url": item.button.url,
               "text": item.button.title,
               "target": item.button.target,
-              "extra": bem_classes(promo_base_class, 'button')
+              "extra": bem_classes(base_class, 'button')
             }
           } %}
         </div>
-        <div class="{{ bem_classes(promo_base_class, 'image') }} o-background-image--{{ Image(item.image).id }}">
+        <div class="{{ bem_classes(base_class, 'image') }} o-background-image--{{ Image(item.image).id }}">
           <style>
             .o-background-image--{{ Image(item.image).id }} {
               background-image: url('{{ Image(item.image).src|resize(500,500) }}');
@@ -61,7 +61,7 @@
             }
           </style>
           {% if item.icon_name or item.icon_image %}
-            <div class="{{ bem_classes(promo_base_class, 'icon') }}">
+            <div class="{{ bem_classes(base_class, 'icon') }}">
               {% include "@atoms/images/icons/icon.twig" with {
                 "icon": {
                   "type": item.icon_type,

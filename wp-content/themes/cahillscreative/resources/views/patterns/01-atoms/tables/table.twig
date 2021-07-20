@@ -1,13 +1,13 @@
 {% if table %}
-  {% set table_base_class = table.base_class|default('o-table') %}
+  {% set base_class = table.base_class|default('o-table') %}
 
-  <table class="{{ bem_classes(table_base_class, table.element, table.modifiers, table.extra) }}">
+  <table class="{{ bem_classes(base_class, table.element, table.modifiers, table.extra) }}">
     {% if table.heading.rows %}
       <thead>
         {% for row in table.heading.rows %}
           <tr>
             {% for cell in row.cells %}
-              <th class="{{ bem_classes(table_base_class, 'heading-cell') }}" {% if cell.colspan %}colspan="{{ cell.colspan }}"{% endif %}>{{ cell.text }}</th>
+              <th class="{{ bem_classes(base_class, 'heading-cell') }}" {% if cell.colspan %}colspan="{{ cell.colspan }}"{% endif %}>{{ cell.text }}</th>
             {% endfor %}
           </tr>
         {% endfor %}
@@ -19,7 +19,7 @@
         {% for row in table.body.rows %}
           <tr>
             {% for cell in row.cells %}
-              <td class="{{ bem_classes(table_base_class, 'cell') }}"{% if cell.colspan %}colspan="{{ cell.colspan }}"{% endif %}>{{ cell.text }}</td>
+              <td class="{{ bem_classes(base_class, 'cell') }}"{% if cell.colspan %}colspan="{{ cell.colspan }}"{% endif %}>{{ cell.text }}</td>
             {% endfor %}
           </tr>
         {% endfor %}
@@ -31,7 +31,7 @@
         {% for row in table.footer.rows %}
           <tr>
             {% for cell in row.cells %}
-              <th class="{{ bem_classes(table_base_class, 'footer-cell') }}" {% if cell.colspan %}colspan="{{ cell.colspan }}"{% endif %}>{{ cell.text }}</th>
+              <th class="{{ bem_classes(base_class, 'footer-cell') }}" {% if cell.colspan %}colspan="{{ cell.colspan }}"{% endif %}>{{ cell.text }}</th>
             {% endfor %}
           </tr>
         {% endfor %}

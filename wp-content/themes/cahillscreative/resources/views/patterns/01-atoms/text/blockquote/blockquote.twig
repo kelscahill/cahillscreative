@@ -1,7 +1,7 @@
 {% if blockquote %}
-  {% set blockquote_base_class = blockquote.base_class|default('o-blockquote') %}
+  {% set base_class = blockquote.base_class|default('o-blockquote') %}
 
-  <blockquote class="{{ bem_classes(blockquote_base_class, blockquote.element, blockquote.modifiers, blockquote.extra) }}" >
+  <blockquote class="{{ bem_classes(base_class, blockquote.element, blockquote.modifiers, blockquote.extra) }}" >
     {% if blockquote.text %}
       {{ blockquote.text }}
     {% endif %}

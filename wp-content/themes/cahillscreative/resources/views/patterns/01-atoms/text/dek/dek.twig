@@ -1,7 +1,7 @@
 {% if dek.text %}
-  {% set dek_base_class = dek.base_class|default('o-dek') %}
+  {% set base_class = dek.base_class|default('o-dek') %}
 
-  <div class="{{ bem_classes(dek_base_class, dek.element, dek.modifiers, dek.extra) }}">
+  <div class="{{ bem_classes(base_class, dek.element, dek.modifiers, dek.extra) }}">
     {{ dek.text }}
   </div>
 {% endif %}

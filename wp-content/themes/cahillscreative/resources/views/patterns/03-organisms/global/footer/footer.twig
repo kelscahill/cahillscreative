@@ -1,6 +1,6 @@
-{% set footer_base_class = footer.base_class|default('c-footer') %}
+{% set base_class = footer.base_class|default('c-footer') %}
 
-<footer class="{{ bem_classes(footer_base_class) }}" role="contentinfo">
+<footer class="{{ bem_classes(base_class) }}" role="contentinfo">
   {% include "@atoms/images/logos/logo.twig" with {
     "logo": {
       "image": {
@@ -8,28 +8,28 @@
         "alt": site.name,
       },
       "link": site.link,
-      "extra": bem_classes(footer_base_class, 'logo')
+      "extra": bem_classes(base_class, 'logo')
     }
   } %}
-  <div class="{{ bem_classes(footer_base_class, 'main') }} u-background-color--black u-color--white">
+  <div class="{{ bem_classes(base_class, 'main') }} u-background-color--black u-color--white">
     <div class="l-wrap l-container" bp="grid">
-      <div class="{{ bem_classes(footer_base_class, 'nav') }}" bp="5@md">
+      <div class="{{ bem_classes(base_class, 'nav') }}" bp="5@md">
         {% include "@molecules/navigation/footer/footer-nav.twig" %}
       </div>
-      <div class="{{ bem_classes(footer_base_class, 'social') }}" bp="2@md">
+      <div class="{{ bem_classes(base_class, 'social') }}" bp="2@md">
         {% include "@molecules/components/social/social-links/social-links.twig" %}
       </div>
-      <div class="{{ bem_classes(footer_base_class, 'newsletter') }}" bp="5@md">
+      <div class="{{ bem_classes(base_class, 'newsletter') }}" bp="5@md">
         {% include "@molecules/components/newsletter-signup/newsletter-signup-footer.twig" %}
       </div>
     </div>
   </div>
-  <div class="{{ bem_classes(footer_base_class, 'legal') }} u-background-color--black u-color--tertiary">
+  <div class="{{ bem_classes(base_class, 'legal') }} u-background-color--black u-color--tertiary">
     <div class="l-wrap l-container" bp="grid">
-      <div class="{{ bem_classes(footer_base_class, 'copyright') }}" bp="6@md">
+      <div class="{{ bem_classes(base_class, 'copyright') }}" bp="6@md">
         <span class="o-meta">© {{ "now"|date( 'Y' ) }} {{ site.name }} | All Rights Reserved</span>
       </div>
-      <div class="{{ bem_classes(footer_base_class, 'credit') }}" bp="6@md">
+      <div class="{{ bem_classes(base_class, 'credit') }}" bp="6@md">
         <span class="o-small">
           Designed & Developed by
           {% include "@atoms/links/link.twig" with {

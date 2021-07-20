@@ -1,9 +1,9 @@
-{% set page_header_base_class = page_header.base_class|default('c-page-header') %}
+{% set base_class = page_header.base_class|default('c-page-header') %}
 
 {% if page_header.heading or page_header.dek %}
-  <div class="{{ bem_classes(page_header_base_class, page_header.element, page_header.modifiers, page_header.extra) }} l-container--m u-spacing--half">
+  <div class="{{ bem_classes(base_class, page_header.element, page_header.modifiers, page_header.extra) }} l-container--m u-spacing--half">
     {% if page_header.icon.name or page_header.icon.image %}
-      <div class="{{ bem_classes(page_header_base_class, 'icon') }} u-space--half--bottom">
+      <div class="{{ bem_classes(base_class, 'icon') }} u-space--half--bottom">
         {% include "@atoms/images/icons/icon.twig" with {
           "icon": {
             "type": page_header.icon.type,
@@ -17,7 +17,7 @@
     {% include "@atoms/text/kicker/kicker.twig" with {
       "kicker": {
         "text": page_header.kicker,
-        "extra": bem_classes(page_header_base_class, 'kicker')
+        "extra": bem_classes(base_class, 'kicker')
       }
     } %}
     {% include "@atoms/text/heading/heading.twig" with {
@@ -26,14 +26,14 @@
         "size": "xl",
         "type": "primary",
         "text": page_header.heading,
-        "extra": bem_classes(page_header_base_class, 'heading')
+        "extra": bem_classes(base_class, 'heading')
       }
     } %}
     {% include "@atoms/text/dek/dek.twig" with {
       "dek": {
         "text": page_header.dek,
         "modifiers": "large",
-        "extra": bem_classes(page_header_base_class, 'dek')
+        "extra": bem_classes(base_class, 'dek')
       }
     } %}
   </div>

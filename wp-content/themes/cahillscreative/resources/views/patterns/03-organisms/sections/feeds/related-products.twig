@@ -1,18 +1,18 @@
-{% set related_products_base_class = related_products.base_class|default('c-related-products') %}
+{% set base_class = related_products.base_class|default('c-related-products') %}
 
 {% if related_products is not empty  %}
-  <div class="{{ bem_classes(related_products_base_class, related_products.element, related_products.modifiers, related_products.extra) }}">
+  <div class="{{ bem_classes(base_class, related_products.element, related_products.modifiers, related_products.extra) }}">
     {% for section in related_products %}
-      <section class="{{ bem_classes(related_products_base_class, 'row') }} l-container--full">
-        <div class="{{ bem_classes(related_products_base_class, 'wrap') }} l-wrap l-container--xxl u-spacing--double">
-          <div class="{{ bem_classes(related_products_base_class, 'header') }}">
+      <section class="{{ bem_classes(base_class, 'row') }} l-container--full">
+        <div class="{{ bem_classes(base_class, 'wrap') }} l-wrap l-container--xxl u-spacing--double">
+          <div class="{{ bem_classes(base_class, 'header') }}">
             {% include "@atoms/text/heading/heading.twig" with {
               "heading": {
                 "level": "3",
                 "size": "l",
                 "type": "primary",
                 "text": section.title,
-                "extra": bem_classes(related_products_base_class, 'header')
+                "extra": bem_classes(base_class, 'header')
               }
             } %}
             {% include "@atoms/links/link.twig" with {
@@ -25,11 +25,11 @@
                   "modifiers": "xsmall"
                 },
                 "modifiers": ["alt", "no-shadow"],
-                "extra": bem_classes(related_products_base_class, 'link')
+                "extra": bem_classes(base_class, 'link')
               }
             } %}
           </div>
-          <div class="{{ bem_classes(related_products_base_class, 'posts') }} js-slick-products">
+          <div class="{{ bem_classes(base_class, 'posts') }} js-slick-products">
             {% for post in Post(section.products) %}
               {% include "@molecules/cards/card-product.twig" with {
                 "card": post

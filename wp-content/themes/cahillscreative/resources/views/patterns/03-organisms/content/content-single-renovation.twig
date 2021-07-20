@@ -1,24 +1,24 @@
-{% set content_single_base_class = content_single.base_class|default('c-content-single-renovation') %}
+{% set base_class = content_single.base_class|default('c-content-single-renovation') %}
 
-<article class="{{ bem_classes(content_single_base_class, content_single.element, content_single.modifiers, content_single.extra) }} u-spacing--double">
-  <div class="{{ bem_classes(content_single_base_class, 'intro') }}">
-    <div class="{{ bem_classes(content_single_base_class, 'intro-left') }} u-spacing">
+<article class="{{ bem_classes(base_class, content_single.element, content_single.modifiers, content_single.extra) }} u-spacing--double">
+  <div class="{{ bem_classes(base_class, 'intro') }}">
+    <div class="{{ bem_classes(base_class, 'intro-left') }} u-spacing">
       {% include "@organisms/sections/page-headers/page-header.twig" with {
         "page_header": {
           "kicker": term.name,
           "heading": post.title,
-          "extra": bem_classes(content_single_base_class, 'header')
+          "extra": bem_classes(base_class, 'header')
         }
       } %}
       {% include "@atoms/text/rich-text/rich-text.twig" with {
         "rich_text": {
           "text": post.content,
-          "extra": bem_classes(content_single_base_class, 'body'),
+          "extra": bem_classes(base_class, 'body'),
         }
       } %}
       {% include "@molecules/components/renovation/renovation-details.twig" %}
     </div>
-    <div class="{{ bem_classes(content_single_base_class, 'intro-right') }}">
+    <div class="{{ bem_classes(base_class, 'intro-right') }}">
       {% include "@molecules/components/paint-colors/paint-colors.twig" %}
     </div>
   </div>

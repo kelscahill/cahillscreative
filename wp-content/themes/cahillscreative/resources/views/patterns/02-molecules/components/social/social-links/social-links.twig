@@ -1,4 +1,4 @@
-{% set social_links_base_class = social_links.base_class|default('c-social-links') %}
+{% set base_class = social_links.base_class|default('c-social-links') %}
 
 {% set social_links = [
   {
@@ -20,7 +20,7 @@
 ] %}
 
 {% if options.facebook_url or options.twitter_url or options.instagram_url or options.pinterest_url %}
-  <div class="{{ bem_classes(social_links_base_class, social_links.element, social_links.modifiers, social_links.extra) }}">
+  <div class="{{ bem_classes(base_class, social_links.element, social_links.modifiers, social_links.extra) }}">
     {% for link in social_links %}
       {% if link.url %}
         {% include "@atoms/links/link.twig" with {
@@ -28,7 +28,7 @@
             "url": link.url,
             "target": "_blank",
             "extra": [
-              bem_classes(social_links_base_class, 'item', link.name)
+              bem_classes(base_class, 'item', link.name)
             ],
             "icon": {
               "name": link.name,

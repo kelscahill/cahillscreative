@@ -1,5 +1,5 @@
 {% if meta.author.name or meta.date %}
-  {% set meta_base_class = meta.base_class|default('o-meta') %}
+  {% set base_class = meta.base_class|default('o-meta') %}
 
   {% if meta.image.src and meta.modifiers %}
     {% set meta_modifiers = [meta.modifiers]|merge(['with-image']) %}
@@ -7,12 +7,12 @@
     {% set meta_modifiers = ['with-image'] %}
   {% endif %}
 
-  <div class="{{ bem_classes(meta_base_class, meta.element, meta_modifiers, meta.extra) }}">
+  <div class="{{ bem_classes(base_class, meta.element, meta_modifiers, meta.extra) }}">
     {% if meta.image.src %}
       {% if meta.author.link %}
-        <a href="{{ meta.author.link }}" class="{{ bem_classes(meta_base_class, 'image-link') }}">
+        <a href="{{ meta.author.link }}" class="{{ bem_classes(base_class, 'image-link') }}">
       {% endif %}
-        <div class="{{ bem_classes(meta_base_class, 'image') }}">
+        <div class="{{ bem_classes(base_class, 'image') }}">
           {% include "@atoms/images/image/responsive-image.twig" with meta %}
         </div>
       {% if meta.author.link %}
@@ -21,10 +21,10 @@
     {% endif %}
     {% if meta.author %}
       {% if meta.author.link %}
-        <a href="{{ meta.author.link }}" class="{{ bem_classes(meta_base_class, 'link') }}">
+        <a href="{{ meta.author.link }}" class="{{ bem_classes(base_class, 'link') }}">
       {% endif %}
       {% if meta.author.name %}
-        <span itemprop="author" itemtype="https://schema.org/Person" class="{{ bem_classes(meta_base_class, 'author') }}" >
+        <span itemprop="author" itemtype="https://schema.org/Person" class="{{ bem_classes(base_class, 'author') }}" >
           <strong>{{ meta.author.name }}</strong>
         </span>
       {% endif %}
@@ -34,7 +34,7 @@
     {% endif %}
     {% include "@atoms/hr/hr.twig" with meta %}
     {% if meta.date %}
-      <time datetime="{{ meta.date|date('m.d.y') }}" class="{{ bem_classes(meta_base_class, 'date', meta.date.modifiers, meta.date.extra) }}" >{{ meta.date|date('m.d.y') }}</time>
+      <time datetime="{{ meta.date|date('m.d.y') }}" class="{{ bem_classes(base_class, 'date', meta.date.modifiers, meta.date.extra) }}" >{{ meta.date|date('m.d.y') }}</time>
     {% endif %}
   </div>
 {% endif %}

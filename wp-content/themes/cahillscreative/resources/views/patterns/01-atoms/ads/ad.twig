@@ -1,7 +1,7 @@
-{% set ad_base_class = ad.base_class|default('o-ad') %}
+{% set base_class = ad.base_class|default('o-ad') %}
 
 {% if ad and post.disable_ads != true %}
-  <div class="{{ bem_classes(ad_base_class) }}{{ ad.delay ? ' js-ad-delay' : ' js-ad' }}{{ ad.scroll_load ? ' scroll-load' }}{{ ad.sticky ? ' is-sticky' }}"
+  <div class="{{ bem_classes(base_class) }}{{ ad.delay ? ' js-ad-delay' : ' js-ad' }}{{ ad.scroll_load ? ' scroll-load' }}{{ ad.sticky ? ' is-sticky' }}"
     {{ ad.size ? ' data-size=' ~ ad.size }}
     {{ ad.size_map ? ' data-size-map=' ~ ad.size_map }}
     {{ ad.viewport ? ' data-viewport=' ~ ad.viewport }}

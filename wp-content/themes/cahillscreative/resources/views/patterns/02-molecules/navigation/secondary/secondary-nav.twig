@@ -1,4 +1,4 @@
-{% set secondary_nav_base_class = secondary_nav.base_class|default('c-secondary-nav') %}
+{% set base_class = secondary_nav.base_class|default('c-secondary-nav') %}
 
 {% set secondary_nav = NULL %}
 {% if primary_nav.items %}
@@ -10,8 +10,8 @@
 {% endif %}
 
 {% if secondary_nav or is_single %}
-  <div class="{{ bem_classes(secondary_nav_base_class, secondary_nav.element, secondary_nav.modifiers, secondary_nav.extra) }}">
-    <div class="{{ bem_classes(secondary_nav_base_class, 'container') }} l-wrap l-container--xxl">
+  <div class="{{ bem_classes(base_class, secondary_nav.element, secondary_nav.modifiers, secondary_nav.extra) }}">
+    <div class="{{ bem_classes(base_class, 'container') }} l-wrap l-container--xxl">
       {% if is_single %}
         {% if post.post_type == 'product' or post.post_type == 'affiliate' %}
           {% set link_text = "Shop" %}
@@ -33,12 +33,12 @@
             "modifiers": "alt"
           }
         } %}
-        {{ function('yoast_breadcrumb', '<nav class="'~ bem_classes(secondary_nav_base_class, 'breadcrumbs') ~'">','</nav>', false ) }}
+        {{ function('yoast_breadcrumb', '<nav class="'~ bem_classes(base_class, 'breadcrumbs') ~'">','</nav>', false ) }}
       {% else %}
-        <ul class="{{ bem_classes(secondary_nav_base_class, 'parent-list') }}">
+        <ul class="{{ bem_classes(base_class, 'parent-list') }}">
           {% for item in primary_nav.get_items %}
             {% if post.slug == item.slug or item.current_item_parent %}
-              <li class="{{ bem_classes(secondary_nav_base_class, 'parent-list-item') }}">
+              <li class="{{ bem_classes(base_class, 'parent-list-item') }}">
                 {% include "@atoms/links/link.twig" with {
                   "link": {
                     "text": item.title,
@@ -46,21 +46,21 @@
                     "target": item.target,
                     "modifiers": "alt",
                     "extra": [
-                      bem_classes(secondary_nav_base_class, 'link'),
+                      bem_classes(base_class, 'link'),
                     ]|merge(item.classes),
                   }
                 } %}
                 {% if item.children %}
-                  <ul class="{{ bem_classes(secondary_nav_base_class, 'child-list') }}">
+                  <ul class="{{ bem_classes(base_class, 'child-list') }}">
                     {% for item in item.children %}
-                      <li class="{{ bem_classes(secondary_nav_base_class, 'child-list-item') }}">
+                      <li class="{{ bem_classes(base_class, 'child-list-item') }}">
                         {% include "@atoms/links/link.twig" with {
                           "link": {
                             "text": item.title,
                             "url": item.url,
                             "target": item.target,
                             "modifiers": "xsmall",
-                            "extra": [bem_classes(secondary_nav_base_class, 'link')]|merge(item.classes),
+                            "extra": [bem_classes(base_class, 'link')]|merge(item.classes),
                           }
                         } %}
                       </li>

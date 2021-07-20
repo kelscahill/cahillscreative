@@ -1,8 +1,8 @@
-{% set search_modal_base_class = search_modal.base_class|default('c-search-modal') %}
+{% set base_class = search_modal.base_class|default('c-search-modal') %}
 
-<div class="{{ bem_classes(search_modal_base_class, search_modal.element, search_modal.modifiers, search_modal.extra) }}">
+<div class="{{ bem_classes(base_class, search_modal.element, search_modal.modifiers, search_modal.extra) }}">
   <style>
-    .{{ bem_classes(search_modal_base_class) }}::after {
+    .{{ bem_classes(base_class) }}::after {
       background-image: url({{ Image(options.logo_full).src }});
     }
   </style>
@@ -10,7 +10,7 @@
     "button": {
       "modifiers": "icon",
       "extra": [
-        bem_classes(search_modal_base_class, 'close'),
+        bem_classes(base_class, 'close'),
         "js-toggle"
       ],
       "icon": {
@@ -28,7 +28,7 @@
       }
     }
   } %}
-  <div class="{{ bem_classes(search_modal_base_class, 'form') }} l-container--small">
+  <div class="{{ bem_classes(base_class, 'form') }} l-container--small">
     {% include "@molecules/components/search/search-form.twig" with {
       "search_form": {
         "legal": true,

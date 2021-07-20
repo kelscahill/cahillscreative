@@ -1,9 +1,9 @@
-{% set checkbox_list_base_class = checkbox_list.base_class|default('c-checkbox-list') %}
+{% set base_class = checkbox_list.base_class|default('c-checkbox-list') %}
 
 {% if checkbox_list %}
-  <div id="{{ id }}" class="{{ bem_classes(checkbox_list_base_class, checkbox_list.element, checkbox_list.modifiers, checkbox_list.extra) }} js-checkbox-list">
+  <div id="{{ id }}" class="{{ bem_classes(base_class, checkbox_list.element, checkbox_list.modifiers, checkbox_list.extra) }} js-checkbox-list">
     {% for item in checkbox_list %}
-      <div id="{{ id ~ '__' ~ loop.index }}" class="{{ bem_classes(checkbox_list_base_class, 'item') }} u-spacing--half">
+      <div id="{{ id ~ '__' ~ loop.index }}" class="{{ bem_classes(base_class, 'item') }} u-spacing--half">
         <input id="checkbox-{{ loop.index }}" name="{{ loop.index }}" type="checkbox">
         <label for="checkbox-{{ loop.index }}" aria-label="{{ item.title }}">
           <span>{{ item.title }}</span>
@@ -13,7 +13,7 @@
               "text": item.link.title,
               "target": item.link.target,
               "modifiers": "small",
-              "extra": bem_classes(checkbox_list_base_class, 'link'),
+              "extra": bem_classes(base_class, 'link'),
             }
           } %}
         </label>

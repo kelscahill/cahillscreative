@@ -1,9 +1,9 @@
 {% if heading.level and heading.text %}
-  {% set heading_base_class = heading.base_class|default('o-heading') %}
+  {% set base_class = heading.base_class|default('o-heading') %}
 
-  <h{{ heading.level }} class="{{ heading.type and heading.size ? heading_base_class ~ ' ' : '' }}{{ bem_classes(heading_base_class, heading.type, heading.size, heading.extra) }}">
+  <h{{ heading.level }} class="{{ heading.type and heading.size ? base_class ~ ' ' : '' }}{{ bem_classes(base_class, heading.type, heading.size, heading.extra) }}">
     {% if heading.link %}
-      <a class="{{ bem_classes(heading_base_class, 'link') }}" href="{{ heading.link.url }}" {{ add_attributes(heading.link.attributes) }}>
+      <a class="{{ bem_classes(base_class, 'link') }}" href="{{ heading.link.url }}" {{ add_attributes(heading.link.attributes) }}>
         {{ heading.text }}
       </a>
     {% else %}

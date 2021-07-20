@@ -1,6 +1,6 @@
-{% set content_base_class = content.base_class|default('c-content') %}
+{% set base_class = content.base_class|default('c-content') %}
 
-<article class="{{ bem_classes(content_base_class) }} l-container u-spacing">
+<article class="{{ bem_classes(base_class) }} l-container u-spacing">
   {% include "@organisms/sections/page-headers/page-header.twig" with {
     "page_header": {
       "icon": {
@@ -8,13 +8,13 @@
       },
       "kicker": post.kicker,
       "heading": post.title,
-      "extra": bem_classes(cards_base_class, 'header')
+      "extra": bem_classes(base_class, 'header')
     }
   } %}
   {% include "@atoms/text/rich-text/rich-text.twig" with {
     "rich_text": {
       "text": post.content,
-      "extra": bem_classes(content_base_class, 'content')
+      "extra": bem_classes(base_class, 'content')
     }
   } %}
 </article>

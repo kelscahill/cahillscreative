@@ -1,14 +1,14 @@
-{% set tags_base_class = tags.base_class|default('c-tags') %}
+{% set base_class = tags.base_class|default('c-tags') %}
 
 {% if tags %}
-  <div class="{{ bem_classes(tags_base_class) }}">
+  <div class="{{ bem_classes(base_class) }}">
     {% include "@atoms/text/heading/heading.twig" with {
       "heading": {
         "level": "6",
         "size": "xs",
         "type": "secondary",
         "text": "Tags",
-        "extra": bem_classes(tags_base_class, 'heading')
+        "extra": bem_classes(base_class, 'heading')
       }
     } %}
     {% for tag in tags %}
@@ -17,7 +17,7 @@
           "text": tag.name,
           "url": tag.link,
           "modifiers": "small",
-          "extra": bem_classes(tags_base_class, 'link')
+          "extra": bem_classes(base_class, 'link')
         }
       } %}
       {% if not loop.last %}

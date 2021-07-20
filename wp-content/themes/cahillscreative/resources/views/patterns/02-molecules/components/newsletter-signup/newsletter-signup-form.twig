@@ -1,7 +1,7 @@
-{% set newsletter_signup_base_class = newsletter_signup.base_class|default('c-newsletter-signup-form') %}
+{% set base_class = newsletter_signup.base_class|default('c-newsletter-signup-form') %}
 
 {% if options.mailchimp_url %}
-  <form class="{{ bem_classes(newsletter_signup_base_class, newsletter_signup.element, newsletter_signup.modifiers, newsletter_signup.extra) }}" action="{{ options.mailchimp_url }}" method="post" name="mc-embedded-subscribe-form" novalidate>
+  <form class="{{ bem_classes(base_class, newsletter_signup.element, newsletter_signup.modifiers, newsletter_signup.extra) }}" action="{{ options.mailchimp_url }}" method="post" name="mc-embedded-subscribe-form" novalidate>
     <input name="EMAIL" type="email" placeholder="Enter email address" name="email"/>
     {% include "@atoms/buttons/button.twig" with {
       "button": {

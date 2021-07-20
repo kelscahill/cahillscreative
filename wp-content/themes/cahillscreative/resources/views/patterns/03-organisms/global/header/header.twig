@@ -1,8 +1,8 @@
-{% set header_base_class = header.base_class|default('c-header') %}
+{% set base_class = header.base_class|default('c-header') %}
 
 {% include "@molecules/components/alert/alert.twig" %}
-<header id="c-header" role="banner" class="{{ bem_classes(header_base_class, header.element, header.modifiers, header.extra) }}">
-  <div class="{{ header_base_class ~ '--inner' }}">
+<header id="c-header" role="banner" class="{{ bem_classes(base_class, header.element, header.modifiers, header.extra) }}">
+  <div class="{{ base_class ~ '--inner' }}">
     {% include "@molecules/navigation/primary/primary-nav.twig" %}
     {% include "@atoms/images/logos/logo.twig" with {
       "logo": {
@@ -11,10 +11,10 @@
           "alt": site.name,
         },
         "link": site.link,
-        "extra": bem_classes(header_base_class, 'logo')
+        "extra": bem_classes(base_class, 'logo')
       }
     } %}
-    <div class="{{ bem_classes(header_base_class, 'utility') }}">
+    <div class="{{ bem_classes(base_class, 'utility') }}">
       {% include "@atoms/buttons/button.twig" with {
         "button": {
           "text": options.header_button.title,
@@ -23,14 +23,14 @@
             "small",
             "tertiary"
           ],
-          "extra": bem_classes(header_base_class, 'button'),
+          "extra": bem_classes(base_class, 'button'),
         }
       } %}
       {% include "@atoms/buttons/button.twig" with {
         "button": {
           "modifiers": "icon",
           "extra": [
-            bem_classes(header_base_class, 'icon', 'search'),
+            bem_classes(base_class, 'icon', 'search'),
             "js-toggle"
           ],
           "icon": {
@@ -45,7 +45,7 @@
           }
         }
       } %}
-      <a href="{{ site.link }}/cart" class="{{ bem_classes(header_base_class, 'icon', 'cart') }}" aria-label="Cart">
+      <a href="{{ site.link }}/cart" class="{{ bem_classes(base_class, 'icon', 'cart') }}" aria-label="Cart">
         {% if cart_count > 0 %}
           <span class="o-add-to-cart-count" data-animation="animate__animated animate__swing">{{ cart_count }}</span>
         {% endif %}

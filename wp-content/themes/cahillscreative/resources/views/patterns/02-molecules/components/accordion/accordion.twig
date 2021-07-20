@@ -1,7 +1,7 @@
-{% set accordion_base_class = accordion.base_class|default('c-accordion') %}
+{% set base_class = accordion.base_class|default('c-accordion') %}
 
 {% if accordion.items %}
-  <section{{ accordion.anchor ? ' id="' ~ accordion.anchor ~ '"'}} class="{{ bem_classes(accordion_base_class, accordion.element, accordion.modifiers, accordion.extra) }} u-spacing{{ accordion.expanded ? ' is-open' }}">
+  <section{{ accordion.anchor ? ' id="' ~ accordion.anchor ~ '"'}} class="{{ bem_classes(base_class, accordion.element, accordion.modifiers, accordion.extra) }} u-spacing{{ accordion.expanded ? ' is-open' }}">
     {% include "@organisms/sections/page-headers/page-header.twig" with {
       "page_header": {
         "icon": {
@@ -12,22 +12,22 @@
         "kicker": accordion.header.kicker,
         "heading": accordion.header.title,
         "dek": accordion.header.description,
-        "extra": bem_classes(accordion_base_class, 'header')
+        "extra": bem_classes(base_class, 'header')
       }
     } %}
-    <div class="{{ bem_classes(accordion_base_class, 'items') }} l-container--m">
+    <div class="{{ bem_classes(base_class, 'items') }} l-container--m">
       {% for item in accordion.items %}
-        <div class="{{ bem_classes(accordion_base_class, 'item') }} {{ 'c-accordion__item--' ~ loop.index }}">
+        <div class="{{ bem_classes(base_class, 'item') }} {{ 'c-accordion__item--' ~ loop.index }}">
           {% include "@atoms/text/heading/heading.twig" with {
             "heading": {
               "level": "3",
               "size": accordion.heading_size ? accordion.heading_size : "m",
               "type": accordion.heading_type ? accordion.heading_type : "primary",
               "text": item.title,
-              "extra": [bem_classes(accordion_base_class, 'heading'), "js-toggle-parent"]
+              "extra": [bem_classes(base_class, 'heading'), "js-toggle-parent"]
             }
           } %}
-          <div class="{{ bem_classes(accordion_base_class, 'body') }} u-spacing">
+          <div class="{{ bem_classes(base_class, 'body') }} u-spacing">
             {% include "@atoms/text/rich-text/rich-text.twig" with {
               "rich_text": {
                 "text": item.body
@@ -49,7 +49,7 @@
         "text": cards.header.button.title,
         "url": cards.header.button.url,
         "target": cards.header.button.target,
-        "extra": bem_classes(cards_base_class, 'button'),
+        "extra": bem_classes(base_class, 'button'),
         "modifiers": ["secondary", "center"]
       }
     } %}

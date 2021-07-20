@@ -24,6 +24,20 @@
     margin-top: $space;
   }
 
+  table {
+    th {
+      background-color: transparent;
+      color: $c-black;
+    }
+
+    tr th,
+    tr td {
+      background-color: transparent;
+      border-bottom: $border--standard;
+      line-height: $line-height;
+    }
+  }
+
   .button {
     @include o-button;
   }
@@ -238,6 +252,11 @@
     float: none;
     width: 100%;
     padding: 0;
+
+    table > tr td
+    table > tr th {
+      border: 0;
+    }
   }
 }
 
@@ -331,17 +350,20 @@
 }
 
 .woocommerce-order-details {
-  th, td {
-    padding: 0 0 $space-fourth 0;
-    width: 50%;
-
-    &:last-child {
-      padding-left: $space;
-    }
-  }
-
   @include media('>medium') {
     padding-right: $space;
+  }
+
+  > table.woocommerce-table--order-details tr {
+    th, td {
+      padding: 0 0 $space-fourth 0;
+      width: 50%;
+      border: 0;
+
+      &:last-child {
+        padding-left: $space;
+      }
+    }
   }
 }
 
@@ -362,20 +384,9 @@
     white-space: nowrap;
   }
 
-  table {
+  > table.woocommerce-table--order-downloads {
     border: 0;
     border-collapse: collapse;
-
-    th {
-      padding: $space-half;
-      background-color: $c-black;
-      color: white;
-      white-space: nowrap;
-
-      @include media('<=medium') {
-        display: none;
-      }
-    }
 
     tr {
       border: 0;
@@ -384,14 +395,19 @@
         display: flex;
         flex-direction: column;
       }
+    }
 
-      &:nth-child(even) td {
-        background-color: $c-gray;
-        border-color: white;
+    tr > th {
+      background: $c-black;
+      color: white;
+      white-space: nowrap;
+
+      @include media('<=medium') {
+        display: none;
       }
     }
 
-    td {
+    tr > td {
       background-color: white;
       width: 100%;
 
