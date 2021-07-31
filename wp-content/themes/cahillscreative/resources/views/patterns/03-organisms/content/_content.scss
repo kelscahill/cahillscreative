@@ -52,6 +52,33 @@
   }
 }
 
+.c-content-single-work {
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  background: linear-gradient(to bottom, white, $c-white);
+  padding: $space $space 0 $space;
+  margin-top: $space-double;
+  position: relative;
+
+  @include media('>medium') {
+    padding: $space-double $space-double 0 $space-double;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+  }
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .c-page-header {
+    background-color: transparent;
+  }
+}
+
 .c-content-single-renovation {
   &__intro {
     margin-top: $space-quadruple;
@@ -127,7 +154,7 @@
       @include media('>medium') {
         order: 0;
         margin-top: 0;
-        padding-right: $space;
+        padding-right: $space-double;
       }
     }
   }

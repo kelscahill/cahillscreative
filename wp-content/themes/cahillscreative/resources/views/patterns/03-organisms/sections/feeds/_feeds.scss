@@ -1,4 +1,5 @@
-.c-related-posts {
+.c-related-posts,
+.c-posts-slider {
   position: relative;
   margin-top: $space-quadruple;
 
@@ -172,9 +173,9 @@
   }
 }
 
-.c-post-filter {
-  padding-top: $space-double;
-}
+// .c-post-filter {
+//   padding-top: $space-double;
+// }
 
 .c-filter {
   position: sticky;

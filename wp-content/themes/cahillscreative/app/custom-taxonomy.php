@@ -35,7 +35,7 @@ function register_custom_taxonomy() {
     "rest_base" => "",
     "show_in_quick_edit" => true,
   );
-  register_taxonomy( "room", array( "post" ), $args );
+  register_taxonomy( "room", array( "post", "affiliate" ), $args );
 
   /**
    * Taxonomy: Cost.

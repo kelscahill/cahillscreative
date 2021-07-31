@@ -16,6 +16,8 @@ $context['is_single'] = true;
 
 if (get_the_terms($post->ID, 'renovation_category')) {
   $term = get_the_terms($post->ID, 'renovation_category');
+} elseif (get_the_terms($post->ID, 'work_tag')) {
+  $term = get_the_terms($post->ID, 'work_tag');
 } elseif (get_the_category($post->ID)) {
   $term = get_the_category($post->ID);
 } else {
@@ -39,6 +41,23 @@ if ($term) {
     ),
   );
   $context['related_blog_posts'] = Timber::query_posts($related_blog_posts);
+
+  $related_work = array(
+    'post_type' => 'work',
+    'posts_per_page' => 8,
+    'post_status' => 'publish',
+    'orderby' => 'rand',
+    'order' => 'DESC',
+    'post__not_in' => array($post->ID),
+    'tax_query'      => array(
+      array(
+        'taxonomy' => 'work_tag',
+        'field'    => 'id',
+        'terms'    => wp_get_post_terms($post->ID, 'work_tag', array('fields' => 'ids')),
+      ),
+    ),
+  );
+  $context['related_work'] = Timber::query_posts($related_work);
 }
 
 Timber::render(array(

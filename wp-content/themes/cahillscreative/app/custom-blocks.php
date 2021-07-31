@@ -76,6 +76,22 @@ function register_custom_block_types() {
         ),
       )
     );
+    // Register a posts slider block.
+    acf_register_block_type(
+      array(
+        'name'            => 'posts-slider',
+        'title'           => 'Posts Slider',
+        'description'     => 'A custom posts slider block.',
+        'category'        => 'custom',
+        'icon'            => 'slides',
+        'keywords'        => array( 'posts', 'slider' ),
+        'render_template' => get_stylesheet_directory() . '/views/blocks/posts-slider.php',
+        'mode'            => 'edit',
+        'supports'        => array(
+          'mode' => false,
+        ),
+      )
+    );
     // Register a promo block.
     acf_register_block_type(
       array(

@@ -34,7 +34,7 @@
             "collapsed": "field_60b02f8182410",
             "min": 0,
             "max": 0,
-            "layout": "block",
+            "layout": "row",
             "button_label": "Add Card",
             "sub_fields": [
                 {
@@ -103,7 +103,7 @@
                     "key": "field_60b02f8582411",
                     "label": "Description",
                     "name": "description",
-                    "type": "textarea",
+                    "type": "wysiwyg",
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -113,10 +113,10 @@
                         "id": ""
                     },
                     "default_value": "",
-                    "placeholder": "",
-                    "maxlength": "",
-                    "rows": "",
-                    "new_lines": "wpautop"
+                    "tabs": "all",
+                    "toolbar": "basic",
+                    "media_upload": 0,
+                    "delay": 0
                 },
                 {
                     "key": "field_60b02f9982412",
@@ -171,6 +171,25 @@
             "layout": "block",
             "prefix_label": 0,
             "prefix_name": 0
+        },
+        {
+            "key": "field_60fdf64e73432",
+            "label": "Cards Anchor",
+            "name": "cards_anchor",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
         }
     ],
     "location": [
@@ -190,5 +209,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1624839344
+    "modified": 1627258383
 }

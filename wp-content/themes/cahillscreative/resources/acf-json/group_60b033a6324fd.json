@@ -31,11 +31,11 @@
                 "class": "",
                 "id": ""
             },
-            "collapsed": "",
+            "collapsed": "field_60b033d5350dc",
             "min": 0,
             "max": 0,
-            "layout": "table",
-            "button_label": "",
+            "layout": "row",
+            "button_label": "Add Step",
             "sub_fields": [
                 {
                     "key": "field_60b033d5350dc",
@@ -113,6 +113,25 @@
             "layout": "block",
             "prefix_label": 0,
             "prefix_name": 0
+        },
+        {
+            "key": "field_60fdfc41fef49",
+            "label": "Steps Anchor",
+            "name": "steps_anchor",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
         }
     ],
     "location": [
@@ -132,5 +151,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1624839371
+    "modified": 1627258299
 }

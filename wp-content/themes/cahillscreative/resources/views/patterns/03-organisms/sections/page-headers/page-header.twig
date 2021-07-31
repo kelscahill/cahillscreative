@@ -36,5 +36,12 @@
         "extra": bem_classes(base_class, 'dek')
       }
     } %}
+    {% include "@atoms/buttons/button.twig" with {
+      "button": {
+        "url": page_header.button.url,
+        "text": page_header.button.text,
+        "extra": [bem_classes(base_class, 'button'), "u-space--double--top"]
+      }
+    } %}
   </div>
 {% endif %}

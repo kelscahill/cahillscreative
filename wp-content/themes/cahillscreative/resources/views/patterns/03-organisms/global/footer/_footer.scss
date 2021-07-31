@@ -68,9 +68,13 @@
 
   &__copyright {
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     @include media('>medium') {
       text-align: left;
+      justify-content: flex-start;
     }
   }
 

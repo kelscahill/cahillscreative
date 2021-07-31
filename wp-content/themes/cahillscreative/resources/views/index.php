@@ -23,6 +23,8 @@ if (is_tax('renovation_category')) {
   $context['post']['kicker'] = 'Renovation';
 } elseif (is_tax('work_tag')) {
   $context['post']['kicker'] = 'Work';
+} elseif (is_tax('room')) {
+  $context['post']['kicker'] = 'Room';
 } elseif (is_tax('affiliate_category') || is_tax('affiliate_tag') || is_tax('store')) {
   $context['post']['kicker'] = 'Shop';
 } elseif (is_category() || is_tag() || is_tax()) {

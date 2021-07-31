@@ -19,44 +19,6 @@
             "endpoint": 0
         },
         {
-            "key": "field_60d91f2b3f727",
-            "label": "Accordion Expanded",
-            "name": "accordion_expanded",
-            "type": "true_false",
-            "instructions": "Check to have to accordions expanded on page load.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "50",
-                "class": "",
-                "id": ""
-            },
-            "message": "",
-            "default_value": 0,
-            "ui": 0,
-            "ui_on_text": "",
-            "ui_off_text": ""
-        },
-        {
-            "key": "field_60d921d15e432",
-            "label": "Accordion Anchor",
-            "name": "accordion_anchor",
-            "type": "text",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "50",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
-        },
-        {
             "key": "field_60b0302b4dee9",
             "label": "Accordion",
             "name": "accordion_items",
@@ -72,7 +34,7 @@
             "collapsed": "field_60b030364deea",
             "min": 0,
             "max": 0,
-            "layout": "block",
+            "layout": "row",
             "button_label": "Add Accordion Row",
             "sub_fields": [
                 {
@@ -191,7 +153,7 @@
                     },
                     "message": "",
                     "default_value": 0,
-                    "ui": 0,
+                    "ui": 1,
                     "ui_on_text": "",
                     "ui_off_text": ""
                 },
@@ -210,7 +172,7 @@
                     },
                     "message": "",
                     "default_value": 0,
-                    "ui": 0,
+                    "ui": 1,
                     "ui_on_text": "",
                     "ui_off_text": ""
                 },
@@ -311,6 +273,25 @@
             ]
         },
         {
+            "key": "field_60d91f2b3f727",
+            "label": "Accordion Expanded",
+            "name": "accordion_expanded",
+            "type": "true_false",
+            "instructions": "Check to have to accordions expanded on page load.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
             "key": "field_60cf4d130bd2a",
             "label": "Header",
             "name": "",
@@ -346,6 +327,25 @@
             "layout": "block",
             "prefix_label": 0,
             "prefix_name": 0
+        },
+        {
+            "key": "field_60d921d15e432",
+            "label": "Accordion Anchor",
+            "name": "accordion_anchor",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
         }
     ],
     "location": [
@@ -365,5 +365,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1624842739
+    "modified": 1627605464
 }

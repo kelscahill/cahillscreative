@@ -46,15 +46,6 @@
         "extra": bem_classes(base_class, 'stats')
       }
     } %}
-    {% if post.website_url %}
-            <a href="{{ post.website_url }}" class="btn btn--outline center space--top" target="_blank" rel="noopener">
-              {% if post.website_text %}
-                {{ post.website_text }}
-              {% else %}
-                Visit Website
-              {% endif %}
-            </a>
-          {% endif %}
     {% include "@atoms/text/rich-text/rich-text.twig" with {
       "rich_text": {
         "text": post.content,

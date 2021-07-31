@@ -121,3 +121,37 @@
     }
   }
 }
+
+.c-hero-work {
+  z-index: 2;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  min-height: 75vw;
+
+  @include media('>medium') {
+    min-height: 460px;
+  }
+
+  &__image {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -$space-triple;
+    margin: 0 auto;
+  }
+
+  .o-picture img {
+    max-width: 100%;
+    width: auto;
+
+    @include media('>medium') {
+      max-width: $max-width-s;
+    }
+  }
+}

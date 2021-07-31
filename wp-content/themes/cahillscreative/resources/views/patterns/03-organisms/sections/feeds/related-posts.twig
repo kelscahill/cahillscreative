@@ -15,7 +15,7 @@
       } %}
       <div class="{{ bem_classes(base_class, 'posts') }} js-slick-posts">
         {% for post in related_posts.posts %}
-          {% include "@molecules/cards/card.twig" with {
+          {% include ['@molecules/cards/card-' ~ post.post_type ~ '.twig', '@molecules/cards/card.twig'] with {
             "card": post
           } %}
         {% endfor %}

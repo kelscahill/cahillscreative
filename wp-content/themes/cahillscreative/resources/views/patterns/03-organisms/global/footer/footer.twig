@@ -27,20 +27,21 @@
   <div class="{{ bem_classes(base_class, 'legal') }} u-background-color--black u-color--tertiary">
     <div class="l-wrap l-container" bp="grid">
       <div class="{{ bem_classes(base_class, 'copyright') }}" bp="6@md">
-        <span class="o-meta">© {{ "now"|date( 'Y' ) }} {{ site.name }} | All Rights Reserved</span>
+        <small>© {{ "now"|date( 'Y' ) }} {{ site.name }} | All Rights Reserved</small>
       </div>
       <div class="{{ bem_classes(base_class, 'credit') }}" bp="6@md">
-        <span class="o-small">
+        <small>
           Designed & Developed by
           {% include "@atoms/links/link.twig" with {
             "link": {
               "text": "Cahill's Creative",
               "url": "https://cahillscreative.com",
               "target": "_blank",
-              "modifiers": "no-shadow"
+              "modifiers": "no-shadow",
+              "extra": "o-small"
             }
           } %}
-        </span>
+        </small>
       </div>
     </div>
   </div>

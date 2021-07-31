@@ -13,6 +13,7 @@ html {
 body {
   font-family: $font-body;
   font-size: $body-font-size;
+  font-weight: 300;
   background: $c-white;
   color: $c-black;
 
@@ -69,5 +70,5 @@ iframe {
 
 strong,
 b {
-  font-family: 'GT Walsheim Medium';
+  font-weight: 500;
 }

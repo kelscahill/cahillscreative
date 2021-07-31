@@ -165,6 +165,25 @@
                     "prefix_name": 0
                 },
                 {
+                    "key": "field_60b02e2450522",
+                    "label": "Hr",
+                    "name": "hr",
+                    "type": "true_false",
+                    "instructions": "Check to show an hr under the title.",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "message": "",
+                    "default_value": 0,
+                    "ui": 1,
+                    "ui_on_text": "",
+                    "ui_off_text": ""
+                },
+                {
                     "key": "field_60b02d6cd3f5d",
                     "label": "Background Color",
                     "name": "background_color",
@@ -189,25 +208,6 @@
                     "layout": "vertical",
                     "return_format": "value",
                     "save_other_choice": 0
-                },
-                {
-                    "key": "field_60b02e2450522",
-                    "label": "Hr",
-                    "name": "hr",
-                    "type": "true_false",
-                    "instructions": "Check to show an hr under the title.",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "50",
-                        "class": "",
-                        "id": ""
-                    },
-                    "message": "",
-                    "default_value": 0,
-                    "ui": 0,
-                    "ui_on_text": "",
-                    "ui_off_text": ""
                 }
             ]
         },
@@ -248,5 +248,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1624842776
+    "modified": 1627604307
 }
