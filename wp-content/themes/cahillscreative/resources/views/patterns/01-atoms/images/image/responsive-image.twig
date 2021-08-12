@@ -1,0 +1,12 @@
+{#
+ # Available variables:
+ # - sources: The attributes of the <source> tags for this <picture> tag.
+ # - img_element: The controlling image, with the fallback image in srcset.
+ # - output_image_tag: Whether or not to output an <img> tag instead of a <picture> tag.
+ #}
+
+{% if image.output_tag %}
+  {% include "@atoms/images/image/image.twig" %}
+{% else %}
+  {% include "@atoms/images/image/picture.twig" %}
+{% endif %}

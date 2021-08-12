@@ -1,0 +1,31 @@
+{% set base_class = content.base_class|default('c-content') %}
+
+<article class="{{ bem_classes(base_class) }} l-container u-spacing">
+  {% include "@organisms/sections/page-headers/page-header.twig" with {
+    "page_header": {
+      "icon": {
+        "name": post.icon
+      },
+      "kicker": post.kicker,
+      "heading": heading ? heading : post.title,
+      "dek": post.description,
+      "button": {
+        "url": post.button.url,
+        "text": post.button.title,
+        "target": post.button.target
+      },
+      "icon": {
+        "type": post.icon_type,
+        "name": post.icon_name,
+        "image": post.icon_image
+      },
+      "extra": bem_classes(base_class, 'header')
+    }
+  } %}
+  {% include "@atoms/text/rich-text/rich-text.twig" with {
+    "rich_text": {
+      "text": post.content,
+      "extra": bem_classes(base_class, 'content')
+    }
+  } %}
+</article>

@@ -1,0 +1,157 @@
+.c-hero-media {
+  width: 100%;
+  height: auto;
+  max-height: 85vh;
+  overflow: hidden;
+
+  &__image {
+    cursor: zoom-in;
+  }
+
+  + main .c-content-single {
+    margin-top: -30px;
+
+    @include media('>medium') {
+      margin-top: -50px;
+    }
+  }
+}
+
+.c-hero-gallery {
+  &__item {
+    display: block;
+    position: relative;
+  }
+
+  &__image {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    width: 100vw;
+    height: 50vh;
+    z-index: 1;
+
+    @include media('>medium') {
+      height: 80vh;
+    }
+  }
+
+  .o-button {
+    position: absolute;
+    top: $space;
+    right: $space;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .slick-slide {
+    margin: 0;
+  }
+
+  .slick-arrow {
+    position: absolute;
+    z-index: 2;
+    top: 65px;
+    margin: auto;
+    height: calc(100% - 65px);
+    width: 50vw;
+
+    &:hover,
+    &:focus {
+      background-color: transparent;
+    }
+
+    &::before {
+      border: none;
+    }
+
+    &.slick-next {
+      right: 0;
+      left: auto;
+      cursor: url('../images/arrow-next.png'), zoom-in;
+    }
+
+    &.slick-prev {
+      left: 0;
+      right: auto;
+      cursor: url('../images/arrow-prev.png'), zoom-in;
+    }
+  }
+
+  li:not(.slick-active) {
+    button {
+      text-indent: 0px;
+      font-family: $font-secondary;
+      line-height: 1;
+      color: $c-secondary;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  li.slick-active {
+    button {
+      top: 3px;
+
+      @include media('>medium') {
+        top: 0;
+      }
+    }
+  }
+
+  .slick-dots {
+    bottom: -35px;
+
+    @include media('<=medium') {
+      bottom: -25px;
+
+      button {
+        height: 10px;
+        width: 10px;
+        border-radius: 10px;
+
+        &::after {
+          height: 4px;
+          width: 4px;
+          border-radius: 4px;
+        }
+      }
+    }
+  }
+}
+
+.c-hero-work {
+  z-index: 2;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  min-height: 75vw;
+
+  @include media('>medium') {
+    min-height: 460px;
+  }
+
+  &__image {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -$space-triple;
+    margin: 0 auto;
+  }
+
+  .o-picture img {
+    max-width: 100%;
+    width: auto;
+
+    @include media('>medium') {
+      max-width: $max-width-s;
+    }
+  }
+}

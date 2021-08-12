@@ -1,0 +1,82 @@
+@mixin o-button($bg-color: $c-primary, $color: white, $bg-color-hover: $c-tertiary, $color-hover: $c-black) {
+  border: none;
+  cursor: pointer;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  text-align: center;
+  background-color: $bg-color;
+  color: $color;
+  padding: 15px $space-double;
+  transition: $transition-all;
+  border-radius: 50px;
+  box-shadow: $box-shadow;
+  font-family: $font-primary;
+  font-weight: 500;
+  font-size: $font-size-s;
+  line-height: 1;
+
+  &:focus,
+  &:hover {
+    color: $color-hover;
+    background-color: $bg-color-hover;
+  }
+
+  .o-icon {
+    position: relative;
+    top: 2px;
+  }
+
+  span + span {
+    margin-left: $space-half
+  }
+}
+
+@mixin o-button--secondary {
+  @include o-button($c-secondary, $c-white, $c-black, $c-white);
+}
+
+@mixin o-button--tertiary {
+  @include o-button($c-black, white, $c-secondary, white);
+}
+
+@mixin o-button--small {
+  font-size: $font-size-xs;
+  padding: $space-half $space;
+}
+
+.o-button {
+  @include o-button;
+
+  &--secondary {
+    @include o-button--secondary;
+  }
+
+  &--tertiary {
+    @include o-button--tertiary;
+  }
+
+  &--small {
+    @include o-button--small;
+  }
+
+  &--center {
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+  }
+
+  &--icon {
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0 $space;
+    box-shadow: none;
+
+    &:hover,
+    &:focus {
+      background-color: transparent;
+    }
+  }
+}

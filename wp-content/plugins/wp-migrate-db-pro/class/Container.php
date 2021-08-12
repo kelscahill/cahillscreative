@@ -1,39 +1,63 @@
 <?php
 
+
 namespace DeliciousBrains\WPMDB;
 
-class Container {
+/**
+ * Class Container
+ *
+ * THIS CLASS EXISTS AS A BACK-COMPAT FOR PRE 2.0 VERSIONS OF THE PLUGIN AND ADDONS
+ *
+ * @package DeliciousBrains\WPMDB
+ */
+class Container
+{
 
-	// Hold the class instance.
-	private static $instance = null;
+    public $providers = [];
+    public $classes = [];
+    public $props;
 
-	// The constructor is private
-	// to prevent initiation with outer code.
-	private function __construct() {
-		require __DIR__ . '/../vendor/autoload.php';
-	}
+    public static function getInstance()
+    {
+    }
 
-	// The object is created from within the class itself
-	// only if the class has no instance.
-	public static function getInstance() {
-		if ( self::$instance == null ) {
-			self::$instance = ( new Container() )->init();
-		}
+    public function get()
+    {
+        //For back-compat
+        return $this;
+    }
 
-		return self::$instance;
-	}
+    public function addClass($key, $instance)
+    {
+        $this->classes[$key] = $instance;
 
-	public function init() {
-		$container = new League\Container\Container();
+        return $instance;
+    }
 
-		$container->addServiceProvider( new ServiceProvider );
+    //For back-compat
+    public function add($key, $instance)
+    {
+        return $this;
+    }
 
-		/* // Uses PHP reflection to figure out where a class is. Dramatically slows things down, enable at your own risk.
-		$container->delegate(
-			new \DeliciousBrains\WPMDB\League\Container\ReflectionContainer
-		);
-		*/
+    public function has($id)
+    {
+        if (!array_key_exists($id, $this->classes)) {
+            return true;
+        }
 
-		return $container;
-	}
+        return false;
+    }
+
+    //For back-compat
+    public function withArguments()
+    {
+        //NoOp
+    }
+
+    //For back-compat
+    public function register()
+    {
+        //NoOp
+    }
 }

@@ -1,0 +1,14 @@
+{% extends "@templates/_layout.twig" %}
+
+{% block content %}
+  {% include "@organisms/content/content.twig" %}
+{% endblock %}
+
+{% block sections_after %}
+  {% include "@organisms/sections/feeds/related-posts.twig" with {
+    "related_posts": {
+      "heading": "Latest blog posts",
+      "posts": latest_blog_posts
+    }
+  } %}
+{% endblock %}

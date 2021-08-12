@@ -1,8 +1,15 @@
 /* eslint-disable */
+import inView from 'in-view';
+import header from '../util/header';
+import progressBar from '../util/progress-bar';
+import slick from '../util/slick.min.js';
+import magnificPopup from '../util/magnific-popup.min.js';
 
 export default {
   init() {
     // JavaScript to be fired on all pages
+
+    header();
 
     // Add class if is mobile
     function isMobile() {
@@ -18,117 +25,170 @@ export default {
       $('html').addClass(' no-touch');
     }
 
-    // check window width
-    var getWidth = function() {
-      var width;
-      if (document.body && document.body.offsetWidth) {
-        width = document.body.offsetWidth;
+    // Convert lists with the classname of .c-checkbox-list to have checkboxes.
+    $('ul.c-checkbox-list li').each(function(index) {
+      var url = $(location).attr('href'),
+        parts = url.split('/'),
+        post_slug = parts[parts.length-2];
+      var id = 'checkbox-' + index;
+      var text = $(this).text();
+      var label = $('<label>').attr('for', id).text(text);
+      var input = $('<input type="checkbox">').attr({id: id, name: id});
+      var link = $(this).find('a').text('Buy here').attr('class', 'o-link o-link--small');
+      $(this).parent().attr('class', 'c-checkbox-list u-spacing--half');
+      if ($(this).has('a')) {
+        label.append(link);
       }
-      if (document.compatMode === 'CSS1Compat' &&
-          document.documentElement &&
-          document.documentElement.offsetWidth ) {
-         width = document.documentElement.offsetWidth;
-      }
-      if (window.innerWidth) {
-         width = window.innerWidth;
-      }
-      return width;
-    };
-    window.onload = function() {
-      getWidth();
-    };
-    window.onresize = function() {
-      getWidth();
-    };
-
-    // Prevent flash of unstyled content
-    $(document).ready(function() {
-      $('.no-fouc').removeClass('no-fouc');
+      $(this).attr('id', 'accordion-' + post_slug + '__' + index);
+      $(this).empty();
+      $(this).append(input);
+      $(this).append(label);
+      $(this).find('span').remove();
     });
 
-    $('.primary-nav--with-subnav.js-toggle > a').click(function(e) {
-      e.preventDefault();
-    });
-
-    if ($('.btn--download').length) {
-      $('body').addClass('margin--80');
-    }
-
-    // Popup
-    $('.popup__close').click(function(e) {
-      e.preventDefault();
-      $('#popup-container').addClass('popup--hide');
-    });
-
-    $('.popup .btn').click(function() {
-      $('#popup-container').addClass('popup--hide');
-    });
-
-    // $(window).load(function(){
-    //   function show_popup(){
-    //     var visits = $.cookie('visits') || 0;
-    //     visits++;
-    //     $.cookie('visits', visits, { expires: 7, path: '/' });
-    //
-    //     if ($.cookie('visits') <= 1) {
-    //       $('#popup-container').fadeIn();
-    //       $('#popup-container').removeClass('popup--hide');
-    //     }
-    //   };
-    //    window.setTimeout( show_popup, 2000 ); // 2 seconds
-    // });
-
-    // Smooth scrolling on anchor clicks
-    $(function() {
-      $('a[href*="#"]:not([href="#"])').click(function() {
-        $('.nav__primary, .nav-toggler').removeClass('main-nav-is-active');
-        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-          var target = $(this.hash);
-          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-          if (target.length) {
-            $('html, body').animate({
-              scrollTop: target.offset().top - 50
-            }, 1000);
-            return false;
-          }
+    // Checkbox list localstorage on checked.
+    $('.c-checkbox-list').each(function() {
+      // Bind the change event handler.
+      $(this).on('change', 'input', function() {
+        var $item = $(this).parent().attr('id');
+        if (this.checked) {
+          localStorage.setItem($item, 'checked');
+        } else {
+          localStorage.removeItem($item, 'checked');
         }
       });
+    });
+
+    // Loop through localStorage and add class if key/value exists.
+    for (var i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+      var value = localStorage.getItem(key);
+
+      if (value == 'checked') {
+        $('.c-checkbox-list #' + key + ' input').attr('checked', true);
+      }
+    }
+
+    // Shop filter.
+    $('.searchandfilter li').each(function() {
+      $(this).find('h4').addClass('js-toggle-parent');
+    });
+
+    // Copy link on button click.
+    $('.js-copy-link').click(function(e) {
+      e.preventDefault();
+      var $temp = $("<input>");
+      var $url = $(this).attr('href');
+      $("body").append($temp);
+      $temp.val($url).select();
+      document.execCommand("copy");
+      $temp.remove();
+      $(this).text('Link Copied!');
+    });
+
+    /**
+    * Add inview class on scroll if has-animation class.
+    */
+    if (!isMobile()) {
+      inView('.js-inview').on('enter', function() {
+        $("*[data-animation]").each(function() {
+          var animation = $(this).attr('data-animation');
+          if (inView.is(this)) {
+            $(this).addClass("is-inview");
+            $(this).addClass(animation);
+          }
+        });
+      });
+    }
+
+    // Expires after one day
+    var setCookie = function(name, value) {
+      var date = new Date(),
+          expires = 'expires=';
+      date.setDate(date.getDate() + 1);
+      expires += date.toGMTString();
+      document.cookie = name + '=' + value + '; ' + expires + '; path=/; SameSite=Strict;';
+    }
+
+    var getCookie = function(name) {
+      var allCookies = document.cookie.split(';'),
+        cookieCounter = 0,
+        currentCookie = '';
+      for (cookieCounter = 0; cookieCounter < allCookies.length; cookieCounter++) {
+        currentCookie = allCookies[cookieCounter];
+        while (currentCookie.charAt(0) === ' ') {
+          currentCookie = currentCookie.substring(1, currentCookie.length);
+        }
+        if (currentCookie.indexOf(name + '=') === 0) {
+          return currentCookie.substring(name.length + 1, currentCookie.length);
+        }
+      }
+      return false;
+    }
+
+    $('.js-alert-close').click(function(e) {
+      e.preventDefault();
+      $('.js-alert').addClass('is-hidden');
+      setCookie('alert', 'true');
+    });
+
+    var showAlert = function() {
+      $('.js-alert').fadeIn();
+      $('.js-alert').removeClass('is-hidden');
+    }
+
+    var hideAlert = function() {
+      $('.js-alert').fadeOut();
+      $('.js-alert').addClass('is-hidden');
+    }
+
+    if (getCookie('alert')) {
+      hideAlert();
+    } else {
+      showAlert();
+    }
+
+    // Smooth scrolling on anchor clicks
+    $('a[href*="#"]:not([href="#"])').click(function() {
+      // $('.c-primary-nav, body').removeClass('primary-nav-is-active');
+      if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+        var target = $(this.hash);
+        target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+        if (target.length) {
+          $('html, body').animate({
+            scrollTop: target.offset().top - 75
+          }, 1000);
+          return false;
+        }
+      }
     });
 
     /**
      * Slick sliders
      */
-    $('.slick').slick({
-      prevArrow: '<span class="icon--arrow icon--arrow-prev"></span>',
-      nextArrow: '<span class="icon--arrow icon--arrow-next"></span>',
-      dots: false,
-      autoplay: false,
-      arrows: true,
+    $('.js-slick').slick({
+      dots: true,
+      autoplay: true,
+      autoplaySpeed: 3000,
+      arrows: false,
       infinite: true,
-      speed: 250,
+      speed: 300,
       fade: true,
       cssEase: 'linear',
       adaptiveHeight: true,
     });
 
-    $('.slick-gallery').slick({
-      prevArrow: '<span class="icon--arrow icon--arrow-prev"></span>',
-      nextArrow: '<span class="icon--arrow icon--arrow-next"></span>',
+    $('.js-slick-gallery').slick({
       dots: true,
       autoplay: false,
       arrows: true,
       infinite: true,
-      speed: 250,
+      speed: 300,
       fade: true,
       cssEase: 'linear',
-      adaptiveHeight: true,
-      slidesToShow: 1,
-      slidesToScroll: 1,
     });
 
-    $('.slick-favorites').slick({
-      prevArrow: '<span class="icon--arrow icon--arrow-prev"></span>',
-      nextArrow: '<span class="icon--arrow icon--arrow-next"></span>',
+    $('.js-slick-posts').slick({
       dots: false,
       infinite: false,
       speed: 300,
@@ -136,7 +196,38 @@ export default {
       slidesToScroll: 4,
       responsive: [
         {
-          breakpoint: 700,
+          breakpoint: 960,
+          settings: {
+            slidesToShow: 3,
+            slidesToScroll: 3,
+          }
+        },
+        {
+          breakpoint: 720,
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 2,
+          }
+        },
+        {
+          breakpoint: 500,
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+          }
+        }
+      ]
+    });
+
+    $('.js-slick-products').slick({
+      dots: false,
+      infinite: false,
+      speed: 300,
+      slidesToShow: 4,
+      slidesToScroll: 4,
+      responsive: [
+        {
+          breakpoint: 720,
           settings: {
             slidesToShow: 3,
             slidesToScroll: 3,
@@ -150,7 +241,7 @@ export default {
           }
         },
         {
-          breakpoint: 375,
+          breakpoint: 320,
           settings: {
             slidesToShow: 1,
             slidesToScroll: 1,
@@ -159,41 +250,79 @@ export default {
       ]
     });
 
+    var $slickGalleryImages = $('.js-product-gallery');
+    var $slickGalleryNav = $('.js-product-gallery-nav');
+    if ($slickGalleryImages.length) {
+      $slickGalleryImages.slick({
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: true,
+        fade: true,
+        dots: true,
+        asNavFor: $slickGalleryNav
+      });
+
+      $slickGalleryNav.slick({
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        asNavFor: $slickGalleryImages,
+        arrows: false,
+        // vertical: true,
+        // verticalSwiping: true,
+        draggable: true,
+        focusOnSelect: true,
+      });
+    }
+
     /**
-     * Share Tooltip
-     */
-    $(document).on('click', '.tooltip-toggle', function() {
-      $(this).parent().addClass('is-active');
-      $('.overlay').show();
-    });
+    * Magnigic Popup
+    */
+    if ($('.js-gallery').length) {
+      $('.js-gallery').each(function() {
+       $(this).magnificPopup({
+         delegate: 'a',
+         type: 'image',
+         gallery: {
+           enabled: true
+         }
+       });
+      });
+    }
 
-    $('.tooltip-close').click(function() {
-      $(this).parent().parent().removeClass('is-active');
-      $('.overlay').hide();
-    });
-
-    $('.overlay').click(function() {
-      $(this).hide();
-      $('.tooltip').removeClass('is-active');
-    });
+    // if ($('.js-gallery-button').length) {
+    //   $('.js-gallery-button').each(function() {
+    //    $(this).magnificPopup({
+    //      delegate: 'a',
+    //      type: 'image',
+    //      gallery: {
+    //        enabled: true
+    //      }
+    //    });
+    //   });
+    // }
 
     /**
-     * Main class toggling function
+     * General helper function to support toggle functions.
      */
-    var $toggled = '';
     var toggleClasses = function(element) {
       var $this = element,
           $togglePrefix = $this.data('prefix') || 'this';
 
       // If the element you need toggled is relative to the toggle, add the
       // .js-this class to the parent element and "this" to the data-toggled attr.
-      if ($this.data('toggled') === "this") {
-        $toggled = $this.parents('.js-this');
+      if ($this.data('toggled') == "this") {
+        var $toggled = $this.closest('.js-this');
       }
       else {
-        $toggled = $('.' + $this.data('toggled'));
+        var $toggled = $('.' + $this.data('toggled'));
       }
-
+      if ($this.attr('aria-expanded', 'true')) {
+        $this.attr('aria-expanded', 'true')
+      }
+      else {
+        $this.attr('aria-expanded', 'false')
+      }
       $this.toggleClass($togglePrefix + '-is-active');
       $toggled.toggleClass($togglePrefix + '-is-active');
 
@@ -219,6 +348,7 @@ export default {
      *
      */
     $('.js-toggle').on('click', function(e) {
+      e.preventDefault();
       e.stopPropagation();
       toggleClasses($(this));
     });
@@ -227,21 +357,29 @@ export default {
     $('.js-toggle-parent').on('click', function(e) {
       e.preventDefault();
       var $this = $(this);
+      $this.toggleClass('this-is-active');
+      $this.parent().toggleClass('this-is-active');
+    });
 
-      $this.parent().toggleClass('is-active');
+    // Prevent bubbling to the body. Add this class to the element (or element
+    // container) that should allow the click event.
+    $('.js-stop-prop').on('click', function(e) {
+      e.stopPropagation();
     });
 
     // Toggle hovered classes
     $('.js-hover').on('mouseenter mouseleave', function(e) {
       e.preventDefault();
+      e.stopPropagation();
       toggleClasses($(this));
     });
 
     $('.js-hover-parent').on('mouseenter mouseleave', function(e) {
       e.preventDefault();
-      toggleClasses($(this).parent());
+      var $this = $(this);
+      $this.toggleClass('this-is-active');
+      $this.parent().toggleClass('this-is-active');
     });
-
   },
   finalize() {
     // JavaScript to be fired on all pages, after page specific JS is fired

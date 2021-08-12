@@ -6,7 +6,13 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'DeliciousBrains\\WPMDB\\Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
-    'DeliciousBrains\\WPMDB\\League\\Container\\' => array($vendorDir . '/league/container/src'),
-    'DeliciousBrains\\WPMDB\\Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
+    'DeliciousBrains\\WPMDB\\Container\\Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
+    'DeliciousBrains\\WPMDB\\Container\\Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
+    'DeliciousBrains\\WPMDB\\Container\\PhpOption\\' => array($vendorDir . '/phpoption/phpoption/src/PhpOption'),
+    'DeliciousBrains\\WPMDB\\Container\\PhpDocReader\\' => array($vendorDir . '/php-di/phpdoc-reader/src/PhpDocReader'),
+    'DeliciousBrains\\WPMDB\\Container\\Invoker\\' => array($vendorDir . '/php-di/invoker/src'),
+    'DeliciousBrains\\WPMDB\\Container\\Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
+    'DeliciousBrains\\WPMDB\\Container\\Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),
+    'DeliciousBrains\\WPMDB\\Container\\Doctrine\\Common\\Cache\\' => array($vendorDir . '/doctrine/cache/lib/Doctrine/Common/Cache'),
+    'DeliciousBrains\\WPMDB\\Container\\DI\\' => array($vendorDir . '/php-di/php-di/src/DI'),
 );

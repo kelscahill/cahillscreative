@@ -1,0 +1,9 @@
+{% extends "@templates/_layout.twig" %}
+
+{% block content %}
+  {% include "@organisms/content/content.twig" %}
+{% endblock %}
+
+{% block sections_after %}
+  {% include "@organisms/sections/feeds/post-filter.twig" %}
+{% endblock %}

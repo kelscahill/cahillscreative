@@ -1,0 +1,22 @@
+.o-price {
+  @include u-font--m;
+
+  &--sale {
+    .o-price__regular {
+      color: $c-gray;
+      margin-right: $space-one-fourth;
+      position: relative;
+
+      &::before {
+        content: "";
+        position: absolute;
+        width: calc(100% + 10px);
+        height: 2px;
+        left: -5px;
+        top: calc(50% - 1px);
+        background-color: $c-black;
+        transform: rotate(3deg);
+      }
+    }
+  }
+}

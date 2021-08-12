@@ -1,0 +1,8 @@
+{% if checkbox %}
+  {% set base_class = checkbox.base_class|default('o-form-item') %}
+
+  <div class="{{ bem_classes(base_class, '', 'checkbox', checkbox.extra) }}" {{ add_attributes(checkbox.attributes) }}>
+    <input id="checkbox-{{ checkbox.id }}" name="{{ checkbox.id }}" type="checkbox"{% if checkbox.checked %} checked="checked"{% endif %} {{ add_attributes(checkbox.input.attributes) }}>
+    <label for="checkbox-{{ checkbox.id }}" aria-label="{{ checkbox.text }}">{{ checkbox.text }}</label>
+  </div>
+{% endif %}

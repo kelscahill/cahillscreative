@@ -1,0 +1,11 @@
+.o-ad {
+  &.is-sticky {
+    position: sticky;
+    top: calc(#{$header-height} + #{$space-half});
+  }
+
+  > * {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

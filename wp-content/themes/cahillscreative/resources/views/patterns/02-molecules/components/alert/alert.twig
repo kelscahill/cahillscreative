@@ -1,0 +1,36 @@
+{% set base_class = alert.base_class|default('c-alert') %}
+{% if options.alert_text or options.alert_link %}
+  <div class="{{ bem_classes(base_class) }} js-alert">
+    <div class="{{ bem_classes(base_class, 'content') }}">
+      {{ options.alert_text|wpautop }}
+      {% include "@atoms/links/link.twig" with {
+        "link": {
+          "text": options.alert_link.title,
+          "url": options.alert_link.url,
+          "target": options.alert_link.target,
+          "modifiers": "simple",
+          "extra": bem_classes(base_class, 'link')
+        }
+      } %}
+    </div>
+    {# {% include "@atoms/buttons/button.twig" with {
+      "button": {
+        "modifiers": "icon",
+        "extra": [
+          bem_classes(base_class, 'close'),
+          "js-alert-close"
+        ],
+        "icon": {
+          "title": "Close",
+          "name": "close",
+          "modifiers": "xsmall"
+        },
+        "attributes": {
+          "aria-label": "Close",
+          "data-toggled": "body",
+          "data-prefix": "alert",
+        }
+      }
+    } %} #}
+  </div>
+{% endif %}

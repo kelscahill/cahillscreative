@@ -1,0 +1,103 @@
+.c-secondary-nav {
+  position: relative;
+  width: 100%;
+  background-color: white;
+  padding: $space-half 0;
+
+  &__container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  &__breadcrumbs {
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+
+    a,
+    span {
+      font-family: $font-primary;
+      @include u-font--xs;
+    }
+
+    a + span {
+      font-family: $font-primary;
+    }
+
+    a {
+      text-decoration: underline;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &::after {
+        content: "";
+        display: block;
+        background: url('data:image/svg+xml,%3Csvg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.5 8.7"%3E%3Cpath d="M6.5,8.3c0.4,0.4,1,0.5,1.4,0.1c0,0,0.1-0.1,0.1-0.1l6.5-7L13,0L7.2,6.2L1.5,0L0,1.3L6.5,8.3z" fill="%23333" /%3E%3C/svg%3E') center center no-repeat;
+        background-size: 10px 10px;
+        width: 10px;
+        height: 10px;
+        transform: rotate(-90deg);
+        transition: $transition-all;
+        margin-left: $space-half;
+        margin-right: $space-half;
+      }
+
+      &:hover,
+      &:focus {
+        color: $c-secondary;
+      }
+    }
+  }
+
+  &__parent-list-item {
+    display: flex;
+  }
+
+  &__child-list-item {
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: $space;
+      position: relative;
+      top: 3px;
+
+      &:hover,
+      &:focus {
+        color: $c-secondary;
+      }
+
+      &.current-menu-item {
+        border-bottom: 1px solid $c-black;
+      }
+    }
+
+    a[href^="/explore#"] {
+      border: none;
+    }
+  }
+
+  .o-link + * {
+    display: flex;
+
+    &::before {
+      content: "|";
+      display: inline-block;
+      color: $c-gray;
+      margin-left: $space-half;
+      margin-right: $space-half;
+    }
+  }
+
+  ul {
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+}

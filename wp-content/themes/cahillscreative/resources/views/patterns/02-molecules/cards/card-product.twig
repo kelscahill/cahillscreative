@@ -1,0 +1,95 @@
+{% if card %}
+  {% set base_class = card.base_class|default('c-card') %}
+
+  <div class="{{ bem_classes(base_class, card.element, 'product', card.extra) }}" {{ add_attributes(card.attributes) }}>
+    {% include "@atoms/images/image/figure.twig" with {
+      "figure": {
+        "link": {
+          "url": card.affiliate_link ? card.affiliate_link : card.link,
+          "attributes": {
+            "target": card.affiliate_link ? "_blank" : "_self",
+            "rel": card.affiliate_link ? "noreferrer"
+          }
+        },
+        "image": {
+          "src": card.thumbnail.src|resize(330,330),
+          "alt": card.thumbnail.alt
+        },
+        "extra": bem_classes(base_class, 'image')
+      }
+    } %}
+    <div class="{{ bem_classes(base_class, 'content') }} u-spacing--half">
+      {% include "@atoms/text/kicker/kicker.twig" with {
+        "kicker": {
+          "text": card.terms('store')[0],
+          "link": card.terms('store')[0].link,
+          "extra": bem_classes(base_class, 'kicker')
+        }
+      } %}
+      {% include "@atoms/text/heading/heading.twig" with {
+        "heading": {
+          "level": "2",
+          "size": "l",
+          "type": "primary",
+          "text": card.title,
+          "link": {
+            "url": card.affiliate_link ? card.affiliate_link : card.link,
+            "attributes": {
+              "target": card.affiliate_link ? "_blank" : "_self",
+              "rel": card.affiliate_link ? "noreferrer"
+            }
+          },
+          "extra": bem_classes(base_class, 'heading')
+        }
+      } %}
+      {% include "@molecules/navigation/tags/tags.twig" with {
+        "tags": card.terms('affiliate_tag'),
+        "extra": bem_classes(base_class, 'tags')
+      } %}
+      {% include "@atoms/text/price/price.twig" with {
+        "price": {
+          "regular": card._regular_price,
+          "sale": card._sale_price,
+          "extra": bem_classes(base_class, 'price')
+        }
+      } %}
+    </div>
+    <div class="{{ bem_classes(base_class, 'footer') }}">
+      {% if card.affiliate_link %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "url": card.affiliate_link,
+            "text": "Buy Now",
+            "target": "_blank",
+            "modifiers": "alt",
+            "extra": bem_classes(base_class, 'link'),
+            "icon": {
+              "name": "share",
+              "size": "small"
+            }
+          }
+        } %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "modifiers": "small",
+            "text": "Copy Link",
+            "url": card.affiliate_link ? card.affiliate_link : card.link,
+            "extra": [
+              bem_classes(base_class, 'copy-link'),
+              "js-copy-link"
+            ],
+            "icon": {
+              "title": "Link",
+              "name": "link",
+              "modifiers": "small"
+            }
+          }
+        } %}
+      {% else %}
+        {% include "@atoms/woocommerce/add-to-cart.twig" with {
+          "post": card
+        } %}
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

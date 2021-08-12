@@ -1,0 +1,48 @@
+{% set base_class = renovation_details.base_class|default('c-renovation-details') %}
+
+<div class="{{ bem_classes(base_class, renovation_details.element, renovation_details.modifiers, renovation_details.extra) }}">
+  {% if post.specs %}
+    <div class="{{ bem_classes(base_class, 'specs') }}">
+      {% include "@atoms/links/link.twig" with {
+        "link": {
+          "url": "#",
+          "text": "View Specs",
+          "icon": {
+            "name": "arrow",
+            "modifiers": "xsmall"
+          },
+          "modifiers": ["alt", "no-shadow", "small"],
+          "extra": [bem_classes(base_class, 'specs-link'), "js-toggle-parent"]
+        }
+      } %}
+      <div class="{{ bem_classes(base_class, 'specs-details') }}">
+        {% include "@atoms/text/rich-text/rich-text.twig" with {
+          "rich_text": {
+            "text": post.specs,
+            "extra": bem_classes(base_class, 'body'),
+          }
+        } %}
+      </div>
+    </div>
+  {% endif %}
+  <div class="{{ bem_classes(base_class, 'social') }}">
+    {% include "@atoms/links/link.twig" with {
+      "link": {
+        "url": "#",
+        "text": "Share",
+        "icon": {
+          "name": "share",
+          "modifiers": "small"
+        },
+        "modifiers": ["alt", "no-shadow"],
+        "extra": [bem_classes(base_class, 'social-link'), "js-toggle-parent"]
+      }
+    } %}
+    {% include "@molecules/components/social/social-share/social-share.twig" with {
+      "social_share": {
+        "modifiers": "inline",
+        "extra": bem_classes(base_class, 'social-share')
+      }
+    } %}
+  </div>
+</div>

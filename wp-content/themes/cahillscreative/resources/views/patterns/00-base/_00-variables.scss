@@ -1,0 +1,289 @@
+/*
+ * General Variables
+ * Note: colors should go into
+ * patterns/00-base/01-colors/_color-vars.css
+ * and breakpoint related vars into
+ * patterns/00-base/base/_breakpoints.css
+*/
+
+/*
+ * Colors
+*/
+$c-primary: var(--c-primary, black);
+$c-secondary: var(--c-secondary, black);
+$c-tertiary: var(--c-tertiary, black);
+$c-black: var(--c-black, black);
+$c-white: var(--c-white, white);
+$c-gray: #ddd;
+
+// Brand Colors
+$c-green: #89e8b4;
+$c-red: #f47d89;
+$c-orange: #f7b589;
+
+// Border/Overlay Colors
+$c-border: $c-gray;
+$c-overlay: rgba(0, 0, 0, 0.5);
+$c-overlay--dark: rgba(0, 0, 0, 0.8);
+
+// Default Colors
+$c-error--light: #f99;
+$c-error: #cb4324;
+$c-error--dark: #bf2600;
+$c-error--darker: #841a00;
+
+$c-valid--lighter: #fafdfc;
+$c-valid--light: #ecf3ee;
+$c-valid: #36b370;
+$c-valid--dark: #008842;
+$c-valid--darker: #1a6343;
+
+$c-warning--lighter: #fffef9;
+$c-warning--light: #fffae6;
+$c-warning: #ffab00;
+$c-warning--dark: #b26100;
+$c-warning--darker: #774100;
+
+$c-information--lighter: #fffef9;
+$c-information--light: #e6fcff;
+$c-information: #00b8d9;
+$c-information--dark: #008da6;
+$c-information--darker: #005b6b;
+
+// Component Colors
+$c-link-hover: $c-tertiary;
+$c-body-bg: $c-white;
+
+/**
+ * Fonts
+ */
+@font-face {
+  font-family: "GT Walsheim";
+  src: url('/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-Light.eot');
+  src: url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-Light.ttf") format("truetype"),
+       url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Light.woff") format("woff"),
+       url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GT Walsheim";
+  src: url('/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-LightOblique.eot');
+  src: url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-LightOblique.ttf") format("truetype"),
+       url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-LightOblique.woff") format("woff"),
+       url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-LightOblique.woff2") format("woff2");
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "GT Walsheim";
+  src: url('/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-Regular.eot');
+  src: url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-Regular.ttf") format("truetype"),
+       url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Regular.woff") format("woff"),
+       url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-Regular.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GT Walsheim";
+  src: url('/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-RegularOblique.eot');
+  src: url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-RegularOblique.ttf") format("truetype"),
+       url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-RegularOblique.woff") format("woff"),
+       url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-RegularOblique.woff2") format("woff2");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "GT Walsheim";
+  src: url('/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-Medium.eot');
+  src: url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-Medium.ttf") format("truetype"),
+       url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Medium.woff") format("woff"),
+       url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/GTWalsheimPro-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Voster";
+  src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/voster.woff2") format("woff2"), url("/wp-content/themes/cahillscreative/resources/views/patterns/00-base/fonts/voster.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+$font-body: "GT Walsheim", Arial, Helvetica, sans-serif;
+$font-primary: var(--font-primary, $font-body);
+$font-secondary: var(--font-secondary, $font-body);
+
+/**
+ * Native Custom Properties
+ */
+:root {
+  --body-font-size: 15px;
+  --font-size-xxs: 10px;
+  --font-size-xs: 12px;
+  --font-size-s: 14px;
+  --font-size-m: 16px;
+  --font-size-l: 18px;
+  --font-size-xl: 30px;
+  --font-size-xxl: 50px;
+}
+
+// Large Breakpoint
+@media screen and (min-width: 720px) {
+  :root {
+    --body-font-size: 16px;
+    --font-size-xxs: 12px;
+    --font-size-xs: 14px;
+    --font-size-s: 16px;
+    --font-size-m: 18px;
+    --font-size-l: 24px;
+    --font-size-xl: 40px;
+    --font-size-xxl: 60px;
+  }
+}
+
+/**
+ * Font Sizes.
+ */
+$body-font-size: var(--body-font-size, 16px);
+$font-size-xxs: var(--font-size-xxs, 12px);
+$font-size-xs: var(--font-size-xs, 14px);
+$font-size-s: var(--font-size-s, 16px);
+$font-size-m: var(--font-size-m, 18px);
+$font-size-l: var(--font-size-l, 24px);
+$font-size-xl: var(--font-size-xl, 40px);
+$font-size-xxl: var(--font-size-xxl, 60px);
+
+/**
+ * Letter spacing.
+ */
+$letter-spacing-1: 1px;
+$letter-spacing-2: 2px;
+$letter-spacing-3: 3px;
+
+/**
+ * Line height.
+ */
+$line-height: 1.5;
+$line-height-s: 1.3;
+
+/**
+ * Grid.
+ */
+$grid-columns: 12;
+$gutter: 30px;
+
+/**
+ * Spacing.
+ */
+$space: 20px;
+
+/**
+ * Spacing - Times.
+ */
+$space-and-half: $space * 1.5;
+$space-double: $space * 2;
+$space-triple: $space * 3;
+$space-quadruple: $space * 4;
+$space-quintuple: $space * 5;
+$space-sextuple: $space * 6;
+$space-septuple: $space * 7;
+
+/**
+ * Spacing - Divided.
+ */
+$space-three-fourth: $space * 0.75;
+$space-one-half: $space / 2;
+$space-half: $space-one-half;
+$space-one-third: $space / 3;
+$space-third: $space-one-third;
+$space-one-fourth: $space / 4;
+$space-fourth: $space-one-fourth;
+$space-quarter: $space-one-fourth;
+$space-one-fifth: $space / 5;
+$space-one-sixth: $space / 6;
+$space-one-seventh: $space / 7;
+$space-one-eighth: $space / 8;
+
+/**
+ * Common breakpoints.
+ */
+$xsmall: 320px;
+$small: 500px;
+$medium: 720px;
+$large: 960px;
+$xlarge: 1220px;
+$xxlarge: 1440px;
+
+$breakpoints: ("xsmall": $xsmall, "small": $small, "medium": $medium, "large": $large, "xlarge": $xlarge, "xxlarge": $xxlarge);
+
+/**
+ * Max width.
+ */
+$max-width: $xlarge;
+$max-width-s: 600px;
+$max-width-m: 800px;
+$max-width-l: $large;
+$max-width-xl: $xlarge;
+$max-width-xxl: $xxlarge;
+
+/**
+ * Icons.
+ */
+$icon-xsmall: 10px;
+$icon-small: 20px;
+$icon-medium: 30px;
+$icon-large: 40px;
+$icon-xlarge: 50px;
+$icon-xxlarge: 90px;
+
+/**
+ * Border/Shadow Styles.
+ */
+$border-radius-curve: 2px;
+$border-radius-curve--hard: 4px;
+$border--standard: 1px solid $c-gray;
+$border--dotted: 1px dashed $c-gray;
+$border--thick: 6px solid $c-primary;
+$box-shadow--small: 0 0 5px rgba(black, 0.3);
+$box-shadow: 0 10px 15px rgba(black, 0.15);
+$outline: 3px solid $c-primary;
+
+/**
+ * Transitions.
+ */
+$transition-effect: cubic-bezier(0.86, 0, 0.07, 1);
+$transition-all: all 0.25s $transition-effect;
+
+/**
+ * Z Index.
+ */
+$z-index-vanish: -1;
+$z-index-none: 0;
+$z-index-1: 100;
+$z-index-2: 200;
+$z-index-5: 500;
+$z-index-10: 1000;
+$z-index-15: 1500;
+$z-index-30: 3000;
+$z-index-50: 5000;
+$z-index-75: 7500;
+$z-index-100: 10000;
+
+$z-index-mq-display: $z-index-100;
+$z-index-menu-toggle: $z-index-100;
+$z-index-back-to-top: $z-index-100;
+
+/*
+ * Theme variables.
+ */
+$header-utility-height: 40px;
+$header-height: 70px;
+$footer-logo: 150px;
+$sidebar-width: 300px;
+$main-width: calc(100% - (#{$sidebar-width}));
+$image-path: '/wp-content/themes/cahillscreative/resources/assets/images/';

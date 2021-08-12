@@ -1,0 +1,11 @@
+.c-cards {
+  &__items {
+    padding-top: 35px;
+    grid-row-gap: $space-quadruple;
+    grid-column-gap: $gutter;
+
+    @include media('>large') {
+      grid-column-gap: $space-double;
+    }
+  }
+}

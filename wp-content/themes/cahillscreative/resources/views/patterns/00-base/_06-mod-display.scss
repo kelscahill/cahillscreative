@@ -1,0 +1,211 @@
+/* ------------------------------------*\
+    $DISPLAY STATES
+\*------------------------------------ */
+
+/**
+ * Wrapping element to keep content contained and centered.
+ */
+.l-wrap {
+  padding-left: $space;
+  padding-right: $space;
+  width: 100%;
+
+  @include align-center;
+}
+
+/**
+ * Layout containers - keep content centered and within a maximum width. Also
+ * adjusts left and right padding as the viewport widens.
+ */
+
+.l-container {
+  @include align-center;
+
+  max-width: $max-width;
+
+  &--s {
+    @include align-center;
+
+    max-width: $max-width-s;
+  }
+
+  &--m {
+    @include align-center;
+
+    max-width: $max-width-m;
+  }
+
+  &--l {
+    @include align-center;
+
+    max-width: $max-width-l;
+  }
+
+  &--xl {
+    @include align-center;
+
+    max-width: $max-width-xl;
+  }
+
+  &--xxl {
+    @include align-center;
+
+    max-width: $max-width-xxl;
+  }
+}
+
+.l-container--gradient-white {
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background: linear-gradient($c-white, rgba(255, 255, 255, 0));
+  padding-top: $space-double;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+
+  @include media(">medium") {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    padding-left: $space;
+    padding-right: $space;
+  }
+
+
+  @include media(">large") {
+    margin-left: auto;
+    margin-right: auto;
+    overflow: inherit;
+    padding-left: $space-double;
+    padding-right: $space-double;
+  }
+}
+
+.l-container--with-border {
+  border-top: $outline;
+}
+
+.o-heading + .l-container--with-border {
+  margin-top: -9px;
+
+  @include media(">medium") {
+    margin-top: -12px;
+  }
+
+
+  @include media(">large") {
+    margin-top: -16px;
+  }
+}
+
+.o-heading__secondary--xxl + .l-container--with-border,
+.c-cards-featured__header + .l-container--with-border {
+  margin-top: -5px;
+
+  @include media(">medium") {
+    margin-top: -6px;
+  }
+
+
+  @include media(">large") {
+    margin-top: -7px;
+  }
+}
+
+/**
+ * Display Classes
+ */
+.u-display--inline-block {
+  display: inline-block;
+}
+
+.u-display--block {
+  display: block;
+}
+
+.u-flex {
+  display: flex;
+}
+
+.u-justify-content--space-between {
+  justify-content: space-between;
+}
+
+.u-justify-content--flex-end {
+  justify-content: flex-end;
+}
+
+.u-justify-content--center {
+  justify-content: center;
+}
+
+.u-justify-items--center {
+  justify-items: center;
+}
+
+.u-align-items--center {
+  align-items: center;
+}
+
+.u-align-items--start {
+  align-items: flex-start;
+}
+
+.u-flex-directon--column {
+  flex-direction: column;
+}
+
+// Specific Widths - visible greater than #
+.u-hide-until--s {
+  @include media("<=small") {
+    display: none;
+  }
+}
+
+.u-hide-until--m {
+  @include media("<=medium") {
+    display: none;
+  }
+}
+
+.u-hide-until--l {
+  @include media("<=large") {
+    display: none;
+  }
+}
+
+.u-hide-until--xl {
+  @include media("<=xlarge") {
+    display: none;
+  }
+}
+
+// Specific Widths - hide greater than #
+.u-hide-after--s {
+  @include media(">small") {
+    display: none;
+  }
+}
+
+.u-hide-after--m {
+  @include media(">medium") {
+    display: none;
+  }
+}
+
+.u-hide-after--l {
+  @include media(">large") {
+    display: none;
+  }
+}
+
+.u-hide-after--xl {
+  @include media(">xlarge") {
+    display: none;
+  }
+}

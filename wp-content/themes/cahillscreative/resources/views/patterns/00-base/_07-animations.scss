@@ -1,0 +1,54 @@
+@for $i from 1 to 999 {
+  .u-animation-delay *:nth-child(#{$i}) {
+    animation-delay: $i * 0.25s + 0.5s;
+  }
+}
+
+.u-fade-up {
+  transform: translateY(40px);
+  animation: fade-up 1.4s $transition-effect forwards;
+}
+
+@keyframes fade-up {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+ to {
+    opacity: 0;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-$space-one-fourth);
+  }
+}
+
+@keyframes kenburns-left {
+  0% {
+    transform: scale(1) translate(0, 0);
+    transform-origin: 16% 50%;
+  }
+  100% {
+    transform: scale(1.15) translate(-20px, 15px);
+    transform-origin: left;
+  }
+}
+
+@keyframes kenburns-right {
+  0% {
+    transform: scale(1) translate(0, 0);
+    transform-origin: 84% 50%;
+  }
+  100% {
+    transform: scale(1.15) translateX(20px);
+    transform-origin: right;
+  }
+}

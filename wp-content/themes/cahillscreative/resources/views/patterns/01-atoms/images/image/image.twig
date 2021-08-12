@@ -1,0 +1,17 @@
+{% if image.src %}
+  {% set base_class = image.base_class|default('o-image') %}
+
+  <img class="{{ bem_classes(base_class, image.element, image.modifiers, image.extra) }}" loading="lazy"
+    {% if image.srcset %}
+      srcset="{{ image.srcset }}"
+    {% endif %}
+    {% if image.sizes %}
+      sizes="{{ image.sizes }}"
+    {% endif %}
+    src="{{ image.src }}"
+    alt="{{ image.alt ? image.alt : "Image" }}"
+    {% if image.title %}
+      title="{{ image.title }}"
+    {% endif %}
+  />
+{% endif %}

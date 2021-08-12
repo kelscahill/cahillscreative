@@ -1,0 +1,38 @@
+{% extends "@templates/_layout.twig" %}
+
+{% block sections_before %}
+  {% include "@organisms/sections/heroes/hero-media.twig" with {
+    "hero_media": {
+      "video": {
+        "src": post.hero_video ? Post(post.hero_video).guid,
+        "attributes": {
+          "playsinline": "true",
+          "autoplay": "true",
+          "muted": "true",
+          "loop": "true"
+        }
+      },
+      "figure": {
+        "image": {
+          "srcset": Image(post.hero_image).src|resize(720, 405) ~ ' 720w, ' ~ Image(post.hero_image).src|resize(960, 540) ~ ' 960w,' ~ Image(post.hero_image).src|resize(1200, 675) ~ ' 1200w, '  ~ Image(post.hero_image).src|resize(1600, 900) ~ ' 1600w',
+          "src": Image(post.hero_image).src|resize(500, 281),
+          "alt": Image(post.hero_image).alt
+        }
+      }
+    }
+  } %}
+{% endblock %}
+
+{% block content %}
+  {% include ['@organisms/content/content-single-' ~ post.post_type|replace({'_': '-'}) ~ '.twig', '@organisms/content/content-single.twig'] %}
+{% endblock %}
+
+{% block sections_after %}
+  {% include "@organisms/sections/feeds/related-posts.twig" with {
+    "related_posts": {
+      "heading": "Read this next",
+      "posts": related_blog_posts,
+      "modifiers": "tertiary"
+    }
+  } %}
+{% endblock %}

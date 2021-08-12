@@ -1,0 +1,22 @@
+{% extends "@templates/_layout.twig" %}
+
+{% block content %}
+  {% include "@organisms/content/content.twig" %}
+{% endblock %}
+
+{% block sections_after %}
+  {% if post.filter_id %}
+    {% include "@organisms/sections/feeds/post-filter.twig" %}
+  {% else %}
+    {% include "@organisms/sections/feeds/post-grid.twig" with {
+      "post_grid": {
+        "posts": posts,
+        "pagination": {
+          "next": posts.pagination.next,
+          "prev": posts.pagination.prev,
+          "pages": posts.pagination.pages,
+        }
+      }
+    } %}
+  {% endif %}
+{% endblock %}

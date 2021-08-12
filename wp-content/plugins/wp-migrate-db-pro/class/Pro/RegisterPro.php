@@ -2,350 +2,156 @@
 
 namespace DeliciousBrains\WPMDB\Pro;
 
-use DeliciousBrains\WPMDB\Container;
+use DeliciousBrains\WPMDB\Common\Compatibility\CompatibilityManager;
+use DeliciousBrains\WPMDB\Common\Filesystem\Filesystem;
+use DeliciousBrains\WPMDB\Common\Migration\MigrationManager;
+use DeliciousBrains\WPMDB\Common\Plugin\Assets;
+use DeliciousBrains\WPMDB\Common\Plugin\Menu;
+use DeliciousBrains\WPMDB\Common\Plugin\PluginManagerBase;
+use DeliciousBrains\WPMDB\Common\Properties\Properties;
+use DeliciousBrains\WPMDB\Common\Util\Util;
+use DeliciousBrains\WPMDB\Pro\Addon\Addon;
+use DeliciousBrains\WPMDB\Pro\Backups\BackupsManager;
+use DeliciousBrains\WPMDB\Pro\Beta\BetaManager;
+use DeliciousBrains\WPMDB\Pro\Cli\Export;
+use DeliciousBrains\WPMDB\Pro\Migration\Connection\Local;
+use DeliciousBrains\WPMDB\Pro\Migration\Connection\Remote;
+use DeliciousBrains\WPMDB\Pro\Migration\FinalizeComplete;
+use DeliciousBrains\WPMDB\Pro\Plugin\ProPluginManager;
+use DeliciousBrains\WPMDB\Pro\RemoteUpdates\RemoteUpdatesManager;
+use DeliciousBrains\WPMDB\Pro\UI\Template;
+use DeliciousBrains\WPMDB\WPMDBDI;
 
-class RegisterPro {
+class RegisterPro
+{
 
-	/**
-	 * @var
-	 */
-	private $pro_migration_manager;
-	/**
-	 * @var
-	 */
-	private $migration_manager;
-	/**
-	 * @var
-	 */
-	private $usage_tracking;
-	/**
-	 * @var
-	 */
-	private $template;
-	/**
-	 * @var
-	 */
-	private $license;
-	/**
-	 * @var
-	 */
-	private $import;
-	/**
-	 * @var
-	 */
-	private $addon;
-	/**
-	 * @var
-	 */
-	private $beta_manager;
-	/**
-	 * @var
-	 */
-	private $pro_plugin_manager;
-	/**
-	 * @var
-	 */
-	private $menu;
-	/**
-	 * @var mixed|object
-	 */
-	private $backups_manager;
-	/**
-	 * @see Addons and the Pro plugin call this
-	 */
-	public function loadContainer() {
-		$container = Container::getInstance();
+    /**
+     * @var MigrationManager
+     */
+    private $migration_manager;
+    /**
+     * @var UsageTracking
+     */
+    private $usage_tracking;
+    /**
+     * @var Template
+     */
+    private $template;
+    /**
+     * @var License
+     */
+    private $license;
+    /**
+     * @var $import
+     */
+    private $import;
+    /**
+     * @var Addon
+     */
+    private $addon;
+    /**
+     * @var BetaManager
+     */
+    private $beta_manager;
+    /**
+     * @var ProPluginManager
+     */
+    private $pro_plugin_manager;
+    /**
+     * @var Menu
+     */
+    private $menu;
+    /**
+     * @var BackupsManager
+     */
+    private $backups_manager;
+    /**
+     * @var Export
+     */
+    private $cli_export;
+    /**
+     * @var FinalizeComplete
+     */
+    private $finalize_complete;
+    /**
+     * @var Local
+     */
+    private $local_connection;
+    /**
+     * @var Remote
+     */
+    private $remote_connection;
+    /**
+     * @var Migration\Tables\Remote
+     */
+    private $remote_table;
 
-		$container->add( 'import', 'DeliciousBrains\WPMDB\Pro\Import' )
-		          ->withArguments( [
-			          'http',
-			          'migration_state_manager',
-			          'error_log',
-			          'filesystem',
-			          'backup_export',
-			          'table',
-			          'form_data',
-			          'properties',
-		          ] );
+    /**
+     * @var Flush
+     */
+    private $flush;
 
-		//Api
-		$container->add( 'api', 'DeliciousBrains\WPMDB\Pro\Api' )
-		          ->withArguments( [
-			          'util',
-			          'settings',
-			          'error_log',
-			          'properties',
-		          ] );
+    public function register()
+    {
+        $container = WPMDBDI::getInstance();
 
-		//License
-		$container->add( 'license', 'DeliciousBrains\WPMDB\Pro\License' )
-		          ->withArguments( [
-			          'api',
-			          'settings',
-			          'util',
-			          'migration_state_manager',
-			          'download',
-			          'http',
-			          'dynamic_properties',
-			          'error_log',
-			          'http_helper',
-			          'scramble',
-			          'remote_post',
-			          'properties',
-		          ] );
+        $filesystem = $container->get(Filesystem::class);
+        $filesystem->register();
 
-		// Addon
-		$container->add( 'addon', 'DeliciousBrains\WPMDB\Pro\Addon\Addon' )
-		          ->withArguments( [
-			          'api',
-			          'download',
-			          'error_log',
-			          'settings',
-			          'properties',
-		          ] );
+        //        $this->pro_migration_manager = $container->get(RespondToMigrationAction::class);
+        $container->set(
+            Menu::class,
+            new Menu(
+                $container->get(Util::class),
+                $container->get(Properties::class),
+                $container->get(PluginManagerBase::class),
+                $container->get(Assets::class),
+                $container->get(CompatibilityManager::class)
+            )
+        );
 
-		// Template
-		$container->add( 'template', 'DeliciousBrains\WPMDB\Pro\UI\Template' )
-		          ->withArguments( [
-			          'settings',
-			          'util',
-			          'profile_manager',
-			          'filesystem',
-			          'table',
-			          'notice',
-			          'form_data',
-			          'addon',
-			          'dynamic_properties',
-			          'license',
-			          'properties',
-			          'pro_plugin_manager'
-		          ] );
+        $this->remote_table = $container->get(Migration\Tables\Remote::class);
 
-		$container->add( 'usage_tracking', 'DeliciousBrains\WPMDB\Pro\UsageTracking' )
-		          ->withArguments( [
-			          'settings',
-			          'license',
-			          'filesystem',
-			          'error_log',
-			          'template',
-			          'form_data',
-			          'dynamic_properties',
-			          'state_data_container',
-			          'properties',
-		          ] );
+        $this->local_connection       = $container->get(Local::class);
+        $this->remote_connection      = $container->get(Remote::class);
+        $this->finalize_complete      = $container->get(FinalizeComplete::class);
+        $this->migration_manager      = $container->get(MigrationManager::class);
+        $this->template               = $container->get(Template::class);
+        $this->license                = $container->get(License::class);
+        $this->import                 = $container->get(Import::class);
+        $this->addon                  = $container->get(Addon::class);
+        $this->beta_manager           = $container->get(BetaManager::class);
+        $this->pro_plugin_manager     = $container->get(ProPluginManager::class);
+        $this->menu                   = $container->get(Menu::class);
+        $this->usage_tracking         = $container->get(UsageTracking::class);
+        $this->backups_manager        = $container->get(BackupsManager::class);
+        $this->cli_export             = $container->get(Export::class);
+        $this->remote_updates_manager = $container->get(RemoteUpdatesManager::class);
 
-		// BetaManager
-		$container->add( 'beta_manager', 'DeliciousBrains\WPMDB\Pro\Beta\BetaManager' )
-		          ->withArguments( [
-			          'util',
-			          'addon',
-			          'api',
-			          'settings',
-			          'template',
-			          'download',
-			          'properties',
-		          ] );
+        // Register other class actions and filters
+        $this->local_connection->register();
+        $this->remote_connection->register();
+        $this->remote_table->register();
+        $this->finalize_complete->register();
+        $this->migration_manager->register();
+        $this->template->register();
+        $this->license->register();
+        $this->import->register();
+        $this->addon->register();
+        $this->beta_manager->register();
+        $this->pro_plugin_manager->register();
+        $this->menu->register();
+        $this->usage_tracking->register();
+        $this->backups_manager->register();
+        $this->remote_updates_manager->register();
 
+        if (!class_exists('\DeliciousBrains\WPMDBCli\Cli')) {
+            $this->cli_export->register();
+        }
+    }
 
-		$container->add( 'connection', 'DeliciousBrains\WPMDB\Pro\Migration\Connection' )
-		          ->withArguments( [
-			          'scramble',
-			          'migration_state_manager',
-			          'http',
-			          'http_helper',
-			          'properties',
-			          'error_log',
-			          'license',
-			          'remote_post',
-			          'util',
-			          'table',
-			          'form_data',
-			          'settings',
-			          'filesystem',
-			          'dynamic_properties',
-			          'migration_state',
-			          'multisite',
-			          'table_helper',
-		          ] );
+    // @TODO remove once enough users off of 1.9.* branch
+    public function loadContainer() { }
 
-		$container->add( 'finalize_complete', 'DeliciousBrains\WPMDB\Pro\Migration\FinalizeComplete' )
-		          ->withArguments( [
-			          'scramble',
-			          'migration_state_manager',
-			          'http',
-			          'http_helper',
-			          'properties',
-			          'error_log',
-			          'migration_manager',
-			          'form_data',
-			          'finalize_migration',
-			          'settings',
-		          ] );
-
-		//ProMigrationManager
-		$container->add( 'pro_migration_manager', 'DeliciousBrains\WPMDB\Pro\Migration\ProMigrationManager' )
-		          ->withArguments( [
-			          'scramble',
-			          'settings',
-			          'migration_state_manager',
-			          'http',
-			          'http_helper',
-			          'error_log',
-			          'properties',
-			          'form_data',
-			          'migration_manager',
-			          'table',
-			          'backup_export',
-			          'connection',
-			          'finalize_complete',
-		          ] );
-
-		$container->add( 'pro_plugin_manager', 'DeliciousBrains\WPMDB\Pro\Plugin\ProPluginManager' )
-		          ->withArguments( [
-			          'settings',
-			          'assets',
-			          'util',
-			          'table',
-			          'http',
-			          'filesystem',
-			          'multisite',
-			          'license',
-			          'api',
-			          'addon',
-			          'download',
-			          'properties',
-//			          'template_base'
-		          ] );
-
-		$container->add( 'download', 'DeliciousBrains\WPMDB\Pro\Download' )
-		          ->withArguments( [
-			          'properties',
-			          'settings',
-		          ] );
-
-		$container->add( 'cli_export', 'DeliciousBrains\WPMDB\Pro\Cli\Export' )
-		          ->withArguments( [
-			          'form_data',
-			          'util',
-			          'cli_manager',
-			          'table',
-			          'error_log',
-			          'initiate_migration',
-			          'finalize_migration',
-			          'http_helper',
-			          'migration_manager',
-			          'migration_state_manager',
-			          'dynamic_properties',
-		          ] );
-		//Backups
-		$container->add( 'backups_manager', 'DeliciousBrains\WPMDB\Pro\Backups\BackupsManager' )
-		          ->withArguments( [
-			          'http',
-			          'filesystem'
-		          ] );
-	}
-
-	/**
-	 *
-	 */
-	public function loadTransfersContainer() {
-		$container = Container::getInstance();
-
-		//Receiver
-		$container->add( 'transfers_receiver', 'DeliciousBrains\WPMDB\Pro\Transfers\Receiver' )
-		          ->withArguments( [
-			          'transfers_files_util',
-			          'transfers_files_payload',
-			          'settings',
-			          'error_log',
-			          'filesystem',
-		          ] );
-
-		// Sender
-		$container->add( 'transfers_sender', 'DeliciousBrains\WPMDB\Pro\Transfers\Sender' )
-		          ->withArguments( [
-			          'transfers_files_util',
-			          'transfers_files_payload',
-		          ] );
-
-		// Register File transfer classes
-
-		$container->add( 'transfers_files_util', 'DeliciousBrains\WPMDB\Pro\Transfers\Files\Util' )
-		          ->withArguments( [
-			          'filesystem',
-			          'http',
-			          'error_log',
-			          'http_helper',
-			          'remote_post',
-			          'settings',
-			          'migration_state_manager',
-		          ] );
-
-		$container->add( 'transfers_files_chunker', 'DeliciousBrains\WPMDB\Pro\Transfers\Files\Chunker' )
-		          ->withArguments( [
-			          'transfers_files_util',
-		          ] );
-
-		$container->add( 'transfers_files_excludes', 'DeliciousBrains\WPMDB\Pro\Transfers\Files\Excludes' );
-
-		$container->add( 'transfers_files_file_processor', 'DeliciousBrains\WPMDB\Pro\Transfers\Files\FileProcessor' )
-		          ->withArguments( [
-			          'filesystem',
-		          ] );
-
-		$container->add( 'transfers_files_payload', 'DeliciousBrains\WPMDB\Pro\Transfers\Files\Payload' )
-		          ->withArguments( [
-			          'transfers_files_util',
-			          'transfers_files_chunker',
-			          'filesystem',
-			          'http',
-		          ] );
-
-		$container->add( 'transfers_files_transfer_manager', 'DeliciousBrains\WPMDB\Pro\Transfers\Files\TransferManager' )
-		          ->withArguments( [
-			          'queue_manager',
-			          'transfers_files_payload',
-			          'transfers_files_util',
-			          'http_helper',
-			          'transfers_receiver',
-			          'transfers_sender',
-		          ] );
-
-		// Register queue classes
-		$container->add( 'queue_manager', 'DeliciousBrains\WPMDB\Pro\Queue\Manager' )
-		          ->withArguments( [
-			          'properties',
-			          'state_data_container',
-			          'migration_state_manager',
-			          'form_data',
-		          ] );
-	}
-
-	public function register() {
-		$container                   = Container::getInstance();
-		$this->pro_migration_manager = $container->get( 'pro_migration_manager' );
-		$this->migration_manager     = $container->get( 'migration_manager' );
-		$this->template              = $container->get( 'template' );
-		$this->license               = $container->get( 'license' );
-		$this->import                = $container->get( 'import' );
-		$this->addon                 = $container->get( 'addon' );
-		$this->beta_manager          = $container->get( 'beta_manager' );
-		$this->pro_plugin_manager    = $container->get( 'pro_plugin_manager' );
-		$this->menu                  = $container->get( 'menu' );
-		$this->usage_tracking        = $container->get( 'usage_tracking' );
-		$this->backups_manager       = $container->get( 'backups_manager' );
-
-		// Register other class actions and filters
-		$this->pro_migration_manager->register();
-		$this->migration_manager->register();
-		$this->template->register();
-		$this->license->register();
-		$this->import->register();
-		$this->addon->register();
-		$this->beta_manager->register();
-		$this->pro_plugin_manager->register();
-		$this->menu->register();
-		$this->usage_tracking->register();
-		$this->backups_manager->register();
-	}
+    public function loadTransfersContainer() { }
 }

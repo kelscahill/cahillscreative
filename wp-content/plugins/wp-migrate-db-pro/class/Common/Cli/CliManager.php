@@ -4,20 +4,21 @@ namespace DeliciousBrains\WPMDB\Common\Cli;
 
 use DeliciousBrains\WPMDB\Common\Properties\DynamicProperties;
 
-class CliManager {
+class CliManager
+{
 
 	/**
 	 * @var DynamicProperties
 	 */
 	private $dynamic_properties;
 
-	public function __construct(
-		DynamicProperties $dynamic_properties
-	) {
-		$this->dynamic_properties = $dynamic_properties;
+	public function __construct()
+	{
+		$this->dynamic_properties = DynamicProperties::getInstance();
 	}
 
-	function set_cli_migration() {
-		$this->dynamic_properties->doing_cli_migration = true;
+	function set_cli_migration()
+	{
+		DynamicProperties::getInstance()->doing_cli_migration = true;
 	}
 }
