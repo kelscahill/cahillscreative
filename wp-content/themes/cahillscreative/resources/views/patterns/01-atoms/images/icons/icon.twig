@@ -10,7 +10,7 @@
     } %}
   {% else %}
     <span class="{{ bem_classes(base_class, icon.element, icon.modifiers, icon.extra) }}" aria-label="{{ icon.title ? icon.title : icon.name|capitalize|replace({'-': ' '}) }}">
-      {% include '@atoms/images/icons/' ~ icon.name ~ '.twig' %}
+      {% include '@atoms/images/icons/' ~ icon.name|lower|replace({' ' : '-'}) ~ '.twig' %}
     </span>
   {% endif %}
 {% endif %}
