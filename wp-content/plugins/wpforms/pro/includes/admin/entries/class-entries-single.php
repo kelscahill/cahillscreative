@@ -92,6 +92,7 @@ class WPForms_Entries_Single {
 		add_action( 'wpforms_entries_init', [ $this, 'process_note_add' ], 8, 1 );
 		add_action( 'wpforms_entries_init', [ $this, 'process_notifications' ], 15, 1 );
 		add_action( 'wpforms_entries_init', [ $this, 'setup' ], 10, 1 );
+		add_action( 'wpforms_entries_init', [ $this, 'register_alerts' ], 20, 1 );
 
 		do_action( 'wpforms_entries_init', 'details' );
 
@@ -593,8 +594,6 @@ class WPForms_Entries_Single {
 
 			</h1>
 
-			<?php $this->display_alerts(); ?>
-
 			<div class="wpforms-admin-content">
 
 				<div id="poststuff">
@@ -931,12 +930,19 @@ class WPForms_Entries_Single {
 	 * @param object $entry     Entry data.
 	 * @param array  $form_data Form data.
 	 */
-	public function details_meta( $entry, $form_data ) {
+	public function details_meta( $entry, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		$datetime_format = get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' );
-		$datetime_offset = get_option( 'gmt_offset' ) * 3600;
+		$datetime = static function( $date ) {
+			$datetime_offset = get_option( 'gmt_offset' ) * 3600;
 
+			return sprintf( /* translators: %1$s - date for the entry; %2$s - time for the entry. */
+				esc_html__( '%1$s at %2$s', 'wpforms' ),
+				date_i18n( 'M j, Y', strtotime( $date ) + $datetime_offset ),
+				date_i18n( get_option( 'time_format' ), strtotime( $date ) + $datetime_offset )
+			);
+		};
 		?>
+
 		<!-- Entry Details metabox -->
 		<div id="wpforms-entry-details" class="postbox">
 
@@ -985,14 +991,18 @@ class WPForms_Entries_Single {
 					<p class="wpforms-entry-date">
 						<span class="dashicons dashicons-calendar"></span>
 						<?php esc_html_e( 'Submitted:', 'wpforms' ); ?>
-						<strong class="date-time"><?php echo esc_html( date_i18n( $datetime_format, strtotime( $entry->date ) + $datetime_offset ) ); ?></strong>
+						<strong class="date-time">
+							<?php echo esc_html( $datetime( $entry->date ) ); ?>
+						</strong>
 					</p>
 
-					<?php if ( '0000-00-00 00:00:00' !== $entry->date_modified ) : ?>
+					<?php if ( $entry->date_modified !== '0000-00-00 00:00:00' ) : ?>
 						<p class="wpforms-entry-modified">
 							<span class="dashicons dashicons-calendar-alt"></span>
 							<?php esc_html_e( 'Modified:', 'wpforms' ); ?>
-							<strong class="date-time"><?php echo esc_html( date_i18n( $datetime_format, strtotime( $entry->date_modified ) + $datetime_offset ) ); ?></strong>
+							<strong class="date-time">
+								<?php echo esc_html( $datetime( $entry->date_modified ) ); ?>
+							</strong>
 						</p>
 					<?php endif; ?>
 
@@ -1004,9 +1014,9 @@ class WPForms_Entries_Single {
 							$user      = get_userdata( $entry->user_id );
 							$user_name = esc_html( ! empty( $user->display_name ) ? $user->display_name : $user->user_login );
 							$user_url  = add_query_arg(
-								array(
+								[
 									'user_id' => absint( $user->ID ),
-								),
+								],
 								admin_url( 'user-edit.php' )
 							);
 							?>
@@ -1045,12 +1055,12 @@ class WPForms_Entries_Single {
 							<?php
 							$delete_link = wp_nonce_url(
 								add_query_arg(
-									array(
+									[
 										'view'     => 'list',
 										'action'   => 'delete',
 										'form_id'  => $form_data['id'],
 										'entry_id' => $entry->entry_id,
-									)
+									]
 								),
 								'bulk-entries'
 							);
@@ -1086,7 +1096,7 @@ class WPForms_Entries_Single {
 
 		$entry_meta   = json_decode( $entry->meta, true );
 		$status       = ! empty( $entry->status ) ? $entry->status : esc_html__( 'Unknown', 'wpforms' );
-		$currency     = ! empty( $entry_meta['payment_currency'] ) ? $entry_meta['payment_currency'] : wpforms_setting( 'currency', 'USD' );
+		$currency     = ! empty( $entry_meta['payment_currency'] ) ? $entry_meta['payment_currency'] : wpforms_get_currency();
 		$total        = isset( $entry_meta['payment_total'] ) ? wpforms_format_amount( wpforms_sanitize_amount( $entry_meta['payment_total'], $currency ), true, $currency ) : '-';
 		$total        = apply_filters( 'wpforms_entry_details_payment_total', $total, $entry_meta, $entry, $form_data );
 		$note         = ! empty( $entry_meta['payment_note'] ) ? esc_html( $entry_meta['payment_note'] ) : '';
@@ -1447,16 +1457,41 @@ class WPForms_Entries_Single {
 	}
 
 	/**
+	 * Add notices and errors.
+	 *
+	 * @since 1.6.7.1
+	 */
+	public function register_alerts() {
+
+		if ( empty( $this->alerts ) ) {
+			return;
+		}
+
+		foreach ( $this->alerts as $alert ) {
+			$type = ! empty( $alert['type'] ) ? $alert['type'] : 'info';
+
+			\WPForms\Admin\Notice::add( $alert['message'], $type );
+
+			if ( ! empty( $alert['abort'] ) ) {
+				$this->abort = true;
+
+				break;
+			}
+		}
+	}
+
+	/**
 	 * Display admin notices and errors.
 	 *
 	 * @since 1.1.6
-	 *
-	 * @todo Refactor or eliminate this
+	 * @deprecated 1.6.7.1
 	 *
 	 * @param mixed $display Type(s) of the notice.
 	 * @param bool  $wrap    Whether to output the wrapper.
 	 */
 	public function display_alerts( $display = '', $wrap = false ) {
+
+		_deprecated_function( __CLASS__ . '::' . __METHOD__, '1.6.7.1 of WPForms plugin' );
 
 		if ( empty( $this->alerts ) ) {
 			return;
@@ -1493,4 +1528,4 @@ class WPForms_Entries_Single {
 	}
 }
 
-new WPForms_Entries_Single;
+new WPForms_Entries_Single();

@@ -18,16 +18,12 @@ html, body {
 	overflow-y: auto;
 }
 #perfmatters-script-manager {
-	display: flex;
-	flex-grow: 1;
-	position: relative;
 	background: #EEF2F5;
+	padding: 20px 20px 20px 320px;
 	font-size: 14px;
 	line-height: 1.5em;
 	color: #4a545a;
 	min-height: 100%;
-	box-sizing: border-box;
-	overflow: hidden;
 }
 #perfmatters-script-manager * {
 	font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
@@ -42,23 +38,17 @@ html, body {
 	opacity: 1;
 }
 #perfmatters-script-manager-header {
-	width: 270px;
-	min-width: 270px;
+	position: fixed;
+	top: 32px;
+	left: 0px;
+	bottom: 0px;
+	width: 300px;
 	background: #282E34;
 }
-#pmsm-header-hero {
-	display: flex;
-}
-#pmsm-menu-toggle {
-	cursor: pointer;
-}
-#pmsm-header-hero .dashicons-menu {
-	margin: 20px;
-	color: #ffffff;
-}
-#pmsm-header-hero #perfmatters-logo {
+#perfmatters-script-manager-header #perfmatters-logo {
 	display: block;
-	width: 150px;
+	margin: 20px auto;
+	width: 200px;
 }
 #perfmatters-script-manager-header h2 {
 	font-size: 24px;
@@ -92,90 +82,59 @@ html, body {
 	width: 26px;
 }
 #perfmatters-script-manager-tabs button {
-	display: flex;
-	align-items: center;
+	display: block;
 	float: left;
 	padding: 15px 20px;
 	width: 100%;
 	font-size: 17px;
 	line-height: normal;
 	text-align: left;
-	background: transparent;
+	background: #222222;
 	color: #ffffff;
 	font-weight: normal;
 	border: none;
 	cursor: pointer;
 	border-radius: 0px;
-	height: 60px;
-	text-transform: none;
-	text-decoration: none;
-	outline: none;
 }
 #perfmatters-script-manager-tabs {
 	overflow: hidden;
 }
 #perfmatters-script-manager-tabs button span {
-	font: 400 20px/1 dashicons;
-	margin-right: 20px;
+	display: block;
+	font-size: 12px;
+	margin-top: 5px;
 }
 #perfmatters-script-manager-tabs button.active {
 	background: #4A89DD;
 	color: #ffffff;
 }
 #perfmatters-script-manager-tabs button:hover {
-	background: #2f373f;
-	color: #ffffff;
+	background: #ffffff;
+	color: #4A89DD;
 }
 #perfmatters-script-manager-tabs button.active:hover {
 	background: #4A89DD;
 	color: #ffffff;
-}
-#perfmatters-script-manager-header.pmsm-header-minimal {
-	width: 60px;
-	min-width: 60px;
-}
-#perfmatters-script-manager-header.pmsm-header-minimal #perfmatters-logo {
-	display: none;
-}
-#perfmatters-script-manager-header.pmsm-header-expanded {
-	height: auto;
-}
-#pmsm-viewport {
-	width: 100%;
-	overflow-y: scroll;
-	padding: 20px 20px 0px 20px;
 }
 #perfmatters-script-manager-disclaimer {
 	background: #ffffff;
 	padding: 20px 20px 10px 20px;
 	margin: 0px 0px 20px 0px;
 }
-#perfmatters-script-manager #pmsm-disclaimer-close {
-	float: right;
-	margin: -20px -20px 10px 10px;
-	padding: 0px;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-    font-weight: bold;
-}
 #perfmatters-script-manager-disclaimer p {
 	font-size: 14px;
 	margin: 0px 0px 10px 0px;
 }
 #perfmatters-script-manager-container {
-	position: relative;
 	max-width: 1000px;
-	margin: 0px auto;
+	margin: 0px auto 50px auto;
 }
 #perfmatters-script-manager-container .perfmatters-script-manager-title-bar {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 20px;
+	margin-bottom: 13px;
+	text-align: center;
 }
 #perfmatters-script-manager-container .perfmatters-script-manager-title-bar h1 {
-	font-size: 24px;
+	font-size: 28px;
 	line-height: normal;
 	font-weight: 400;
 	margin: 0px;
@@ -184,7 +143,6 @@ html, body {
 #perfmatters-script-manager-container .perfmatters-script-manager-title-bar p {
 	margin: 0px;
 	color: #282E34;
-	font-size: 13px;
 }
 #perfmatters-script-manager h3 {
 	padding: 10px;
@@ -196,29 +154,17 @@ html, body {
 	font-weight: 400;
 }
 .perfmatters-script-manager-group {
-	box-shadow: 0 1px 2px 0 rgba(40,46,52,.1);
+	box-shadow: 0 1px 6px 0 rgba(40,46,52,.3);
 	margin: 0px 0px 20px 0px;
 }
-.pmsm-group-heading {
-	display: flex;
-	justify-content: space-between;
-	height: 40px;
+.perfmatters-script-manager-group h4 {
+	font-size: 20px;
+	line-height: 40px;
+	margin: 0px;
 	padding: 10px;
 	background: #edf3f9;
 	color: #282E34;
 	font-weight: 700;
-	box-sizing: content-box;
-}
-.perfmatters-script-manager-group h4 {
-	display: inline-block;
-	margin: 0px;
-	font-size: 20px;
-	line-height: 40px;
-	font-weight: 700;
-	color: #282E34;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 .perfmatters-script-manager-section {
 	padding: 0px 10px;
@@ -244,24 +190,19 @@ html, body {
 	font-weight: bold;
 	border: none;
 }
+#perfmatters-script-manager table thead tr {
+	border: none;
+	border-bottom: 2px solid #dddddd;
+}
 #perfmatters-script-manager table thead th {
 	font-size: 14px;
 	padding: 8px 5px;
 	vertical-align: middle;
 	border: none;
-	background: #ffffff;
-	color: #4a545a;
-}
-#perfmatters-script-manager .pmsm-column-status {
-	width: 120px;
-}
-#perfmatters-script-manager .pmsm-column-type, #perfmatters-script-manager .pmsm-column-size {
-	width: 100px;
-	text-align: center;
 }
 #perfmatters-script-manager table tr {
 	border: none;
-	border-bottom: 1px solid #EDF3F9;
+	border-bottom: 1px solid #eeeeee;
 	background: #ffffff;
 }
 #perfmatters-script-manager table tbody tr:last-child {
@@ -272,22 +213,12 @@ html, body {
 	border: none;
 	vertical-align: top;
 	font-size: 14px;
-	background: #ffffff;
-	color: #4a545a
 }
 #perfmatters-script-manager table td.perfmatters-script-manager-type {
 	font-size: 14px;
 	text-align: center;
 	padding-top: 16px;
 	text-transform: uppercase;
-}
-#perfmatters-script-manager .pmsm-script-type-js .pmsm-tag {
-	background: #FFC14E;
-	color: #222;
-}
-#perfmatters-script-manager .pmsm-script-type-css .pmsm-tag {
-	background: #536AD4;
-	color: #fff;
 }
 #perfmatters-script-manager table td.perfmatters-script-manager-size {
 	font-size: 14px;
@@ -297,7 +228,7 @@ html, body {
 #perfmatters-script-manager table td.perfmatters-script-manager-script a {
 	white-space: nowrap;
 }
-#perfmatters-script-manager .perfmatters-script-manager-script .pmsm-script-handle {
+#perfmatters-script-manager .perfmatters-script-manager-script span {
 	display: block;
 	max-width: 100%;
 	overflow: hidden;
@@ -322,7 +253,7 @@ html, body {
 	display: none;
 }
 #perfmatters-script-manager select {
-	display: inline-block;
+	display: block;
 	position: relative;
 	height: auto;
 	width: auto;
@@ -355,7 +286,6 @@ html, body {
 #perfmatters-script-manager input[type='radio'] {
 	position: static;
 	display: inline-block;
-	visibility: visible;
 	margin: 0px 3px 0px 0px;
 	vertical-align: middle;
 	opacity: 1;
@@ -372,12 +302,11 @@ html, body {
 	display: none;
 }
 #perfmatters-script-manager .pmsm-checkbox-container {
-	display: inline;
+	display: inline-block;
 }
 #perfmatters-script-manager input[type='checkbox'] {
 	position: static;
 	display: inline-block;
-	visibility: visible;
 	margin: 0px 3px 0px 0px;
 	vertical-align: middle;
 	opacity: 1;
@@ -389,56 +318,21 @@ html, body {
 	height: auto;
 	width: auto;
 	font-size: 16px;
-	outline: none;
 }
-#perfmatters-script-manager input[type='checkbox']:before, #perfmatters-script-manager input[type='checkbox']:after {
+#perfmatters-script-manager input[type='checkbox']:after {
 	display: none;
 }
 #perfmatters-script-manager .perfmatters-script-manager-controls {
 	text-align: left;
 }
-#perfmatters-script-manager .pmsm-input-group {
-	display: flex;
-	padding: 3px 0px;
-}
-#perfmatters-script-manager .pmsm-input-group-label {
-	min-width: 70px;
-	font-size: 10px;
-	font-weight: bold;
-	margin: 0px 5px 0px 0px;
-	white-space: nowrap;
-	color: #282E34;
-}
 #perfmatters-script-manager .perfmatters-script-manager-controls label {
-	display: inline-flex;
-	align-items: center;
+	display: inline-block;
 	margin: 0px 10px 0px 0px;
 	width: auto;
 	font-size: 12px;
 	color: #282E34;
-	white-space: nowrap;
 }
-#perfmatters-script-manager .perfmatters-script-manager-controls input[type='text'], #perfmatters-script-manager .perfmatters-script-manager-controls select {
-	padding: 2px;
-	width: 100%;
-	background: #fff;
-	font-size: 12px;
-	outline: none;
-	border: 1px solid #ccc;
-	margin: 0px;
-}
-#perfmatters-script-manager .pmsm-dependencies {
-	font-size: 10px;
-	line-height: 14px;
-	margin-top: 6px;
-}
-#perfmatters-script-manager .pmsm-dependencies span {
-	font-weight: bold;
-}
-#perfmatters-script-manager .pmsm-reqs span {
-	color: #ED5464;
-}
-#perfmatters-script-manager .pmsm-group-tag {
+#perfmatters-script-manager .pmsm-mu-mode-badge {
 	display: inline-block;
     vertical-align: top;
     font-size: 12px;
@@ -449,23 +343,14 @@ html, body {
     margin: 8px 7px 8px 0px;
     border-radius: 3px;
 }
-#perfmatters-script-manager .pmsm-tag {
-	display: inline-block;
-    font-size: 12px;
-    background: #fff;
-    padding: 2px 6px;
-    border-radius: 3px;
-}
-#perfmatters-script-manager .pmsm-mu-mode-badge {
-	background: #282E34;
-	color: #ffffff;
-}
 #perfmatters-script-manager .perfmatters-script-manager-toolbar {
-	position: sticky;
+	position: fixed;
 	bottom: 0px;
-	left: 0px;
-	right: 0px;
+	left: 300px;
+	right: 17px;
 	padding: 0px 20px;
+	/*height: 70px;*/
+	/*background: rgba(238,242,245,0.98);*/
 	background: #EEF2F5;
 	box-sizing: content-box;
 	z-index: 2
@@ -474,6 +359,7 @@ html, body {
 	position: relative;
 	max-width: 1000px;
 	margin: 0px auto;
+	/*height: 70px;*/
 }
 #perfmatters-script-manager .perfmatters-script-manager-toolbar-container {
 	position: relative;
@@ -491,15 +377,15 @@ html, body {
 	cursor: pointer;
 	border: none;
 	font-size: 14px;
+	/*margin: 10px auto 0px auto;*/
 	margin: 0px;
+	/*padding: 15px 20px;*/
 	padding: 0px 20px;
 	height: 50px;
 	line-height: 50px;
 	font-weight: 700;
 	width: auto;
 	border-radius: 0px;
-	text-transform: none;
-	outline: none;
 }
 #perfmatters-script-manager input[type='submit']:hover {
 	background: #5A93E0;
@@ -512,6 +398,7 @@ html, body {
 	float: left;
 }
 #perfmatters-script-manager input[type='submit'].pmsm-reset {
+	/*float: right;*/
 	float: none;
 	background: #ED5464;
 	height: 35px;
@@ -524,8 +411,7 @@ html, body {
 	background: #c14552;
 }
 #perfmatters-script-manager .pmsm-message {
-	display: block;
-	visibility: hidden;
+	display: none;
 	opacity: 0;
 	position: absolute;
     bottom: 00px;
@@ -535,19 +421,11 @@ html, body {
     padding: 10px;
     border-radius: 3px;
     z-index: 1;
-	-webkit-transition: all 500ms ease;
-	-moz-transition: all 500ms ease;     
-	transition: all 500ms ease;
-}
-#perfmatters-script-manager .pmsm-message.pmsm-fade {
-	visibility: visible;
-	opacity: 1;
-	bottom: 80px;
 }
 /* On/Off Toggle Switch */
 #perfmatters-script-manager .perfmatters-script-manager-switch {
 	position: relative;
-	display: inline-block;
+	display: block;
 	width: 76px;
 	height: 40px;
 	font-size: 1px;
@@ -590,6 +468,9 @@ html, body {
 	box-shadow: 0 0 1px #ED5464;
 }
 #perfmatters-script-manager .perfmatters-script-manager-switch input:checked + .perfmatters-script-manager-slider:before {
+	/*-webkit-transform: translateX(-20px);
+	-ms-transform: translateX(-20px);
+	transform: translateX(-20px);*/
 	-webkit-transform: translateX(-36px);
 	-ms-transform: translateX(-36px);
 	transform: translateX(-36px);
@@ -633,7 +514,6 @@ html, body {
   width: 48px;
   height: 28px;
   font-size: 1px;
-  margin-bottom: 5px;
 }
 #script-manager-settings .switch input {
   display: block;
@@ -700,57 +580,28 @@ html, body {
 	color: #27ae60;
 	margin-top: 5px;
 }
-@media (max-width: 1000px) {
-	#perfmatters-script-manager-header:not(.pmsm-header-minimal) {
-	width: 60px;
-		min-width: 60px;
+@media (max-width: 800px) {
+	#perfmatters-script-manager {
+		padding-left: 20px;
 	}
-	#perfmatters-script-manager-header:not(.pmsm-header-minimal) #perfmatters-logo {
-		display: none;
-	}
-}
-@media (max-width: 782px) {
-	#perfmatters-script-manager-wrapper {
-		top: 46px;
-		padding-top: 60px;
-	}
-
 	#perfmatters-script-manager-header {
-		width: 100% !important;
-	    min-width: 100% !important;
-	    position: absolute;
-	    top: 0px;
-	    z-index: 9999;
-	    height: 60px;
-	    overflow: hidden;
+		position: relative;
+		top: 0px;
+		width: 100%;
+		overflow: hidden;
+		margin-bottom: 20px;
 	}
-
-	#pmsm-header-hero {
-		justify-content: space-between;
-	}
-
-	#perfmatters-logo {
-		display: block !important;
-		margin-right: 20px;
-	}
-
-	#perfmatters-script-manager-container .perfmatters-script-manager-title-bar {
-		flex-direction: column;
-	}
-	#perfmatters-script-manager-container .perfmatters-script-manager-title-bar h1 {
-		margin-bottom: 5px;
-	}
-	#perfmatters-script-manager .pmsm-column-status {
-		width: 90px;
-	}
-	#perfmatters-script-manager .pmsm-column-type, #perfmatters-script-manager .pmsm-column-size {
-		width: 70px;
+	#perfmatters-script-manager .perfmatters-script-manager-toolbar {
+		left: 0px;
 	}
 }
 
+#pmsm-main-form {
+	position: relative;
+}
 #pmsm-loading-wrapper {
 	position: absolute;
-    top: 48px;
+    top: 0;
     bottom: 0;
     padding-top: 200px;
     width: 100%;
@@ -775,8 +626,5 @@ html, body {
     background-size: 32px 32px;
     width: 32px;
     height: 32px;
-}
-#perfmatters-script-manager .pmsm-hide {
-	display: none;
 }
 </style>";

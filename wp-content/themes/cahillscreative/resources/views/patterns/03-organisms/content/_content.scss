@@ -29,8 +29,18 @@
 
   .c-page-header,
   .c-accordion__heading,
-  .c-accordion__body {
+  .c-accordion__body,
+  .o-rich-text > *:not(section),
+  .c-steps__item {
     background-color: transparent;
+  }
+
+  .c-steps__counter-index {
+    background-color: white;
+  }
+
+  .c-steps {
+    margin-top: 0;
   }
 
   &__meta {

@@ -12,6 +12,9 @@
 $context = Timber::context();
 $context['cards']['header'] = get_field( 'cards_header' );
 $context['cards']['items'] = get_field( 'cards_items' );
+if (!empty($block['anchor'])) {
+  $context['cards']['anchor'] = $block['anchor'];
+}
 
 $templates = array(
   get_stylesheet_directory() . '/views/patterns/03-organisms/sections/cards/cards.twig',

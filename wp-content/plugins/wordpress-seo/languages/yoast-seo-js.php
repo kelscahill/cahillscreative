@@ -86,22 +86,28 @@ $generated_i18n_strings = array(
 	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/fleschReadingEaseAssessment.js:91
 	__( '%1$sFlesch Reading Ease%2$s: The copy scores %3$s in the test, which is considered %4$s to read. %5$s%6$s%7$s', 'wordpress-seo' ),
 
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/ListAssessment.js:79
+	__( '%1$sLists%2$s: There is at least one list on this page. Great!', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/ListAssessment.js:95
+	__( '%1$sLists%3$s: No lists appear on this page. %2$sAdd at least one ordered or unordered list%3$s!', 'wordpress-seo' ),
+
 	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/paragraphTooLongAssessment.js:67
 	__( '%1$sParagraph length%2$s: None of the paragraphs are too long. Great job!', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/paragraphTooLongAssessment.js:80
 	_n_noop( '%1$sParagraph length%2$s: %3$d of the paragraphs contains more than the recommended maximum of %4$d words. %5$sShorten your paragraphs%2$s!', '%1$sParagraph length%2$s: %3$d of the paragraphs contain more than the recommended maximum of %4$d words. %5$sShorten your paragraphs%2$s!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/passiveVoiceAssessment.js:57
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/passiveVoiceAssessment.js:56
 	__( '%1$sPassive voice%2$s: You\'re using enough active voice. That\'s great!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/passiveVoiceAssessment.js:71
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/passiveVoiceAssessment.js:70
 	__( '%1$sPassive voice%2$s: %3$s of the sentences contain passive voice, which is more than the recommended maximum of %4$s. %5$sTry to use their active counterparts%2$s.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/sentenceBeginningsAssessment.js:57
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/sentenceBeginningsAssessment.js:56
 	_n_noop( '%1$sConsecutive sentences%2$s: The text contains %3$d consecutive sentences starting with the same word. %5$sTry to mix things up%2$s!', '%1$sConsecutive sentences%2$s: The text contains %4$d instances where %3$d or more consecutive sentences start with the same word. %5$sTry to mix things up%2$s!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/sentenceBeginningsAssessment.js:76
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/sentenceBeginningsAssessment.js:75
 	__( '%1$sConsecutive sentences%2$s: There is enough variety in your sentences. That\'s great!', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/sentenceLengthInTextAssessment.js:145
@@ -127,13 +133,13 @@ $generated_i18n_strings = array(
 	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/textPresenceAssessment.js:27
 	__( '%1$sNot enough content%2$s: %3$sPlease add some content to enable a good analysis%2$s.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/transitionWordsAssessment.js:73
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/transitionWordsAssessment.js:72
 	__( '%1$sTransition words%2$s: None of the sentences contain transition words. %3$sUse some%2$s.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/transitionWordsAssessment.js:89
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/transitionWordsAssessment.js:88
 	__( '%1$sTransition words%2$s: Only %3$s of the sentences contain transition words, which is not enough. %4$sUse more of them%2$s.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/transitionWordsAssessment.js:104
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/transitionWordsAssessment.js:103
 	__( '%1$sTransition words%2$s: Well done!', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/wordComplexityAssessment.js:64
@@ -150,6 +156,24 @@ $generated_i18n_strings = array(
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/FunctionWordsInKeyphraseAssessment.js:60
 	__( '%1$sFunction words in keyphrase%3$s: Your keyphrase "%4$s" contains function words only. %2$sLearn more about what makes a good keyphrase.%3$s', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/ImageCountAssessment.js:91
+	__( '%1$sImages and videos%3$s: No images or videos appear on this page. %2$sAdd some%3$s!', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/ImageCountAssessment.js:105
+	__( '%1$sImages%3$s: No images appear on this page. %2$sAdd some%3$s!', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/ImageCountAssessment.js:124
+	_n_noop( '%3$sImages%5$s: Only %1$d image appears on this page. We recommend at least %2$d. %4$sAdd more relevant images%5$s!', '%3$sImages%5$s: Only %1$d images appear on this page. We recommend at least %2$d. %4$sAdd more relevant images%5$s!', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/ImageCountAssessment.js:146
+	_n_noop( '%3$sImages and videos%5$s: Only %1$d image or video appears on this page. We recommend at least %2$d. %4$sAdd more relevant images or videos%5$s!', '%3$sImages and videos%5$s: Only %1$d images or videos appear on this page. We recommend at least %2$d. %4$sAdd more relevant images or videos%5$s!', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/ImageCountAssessment.js:171
+	__( '%1$sImages and videos%2$s: Good job!', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/ImageCountAssessment.js:187
+	__( '%1$sImages%2$s: Good job!', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/InternalLinksAssessment.js:89
 	/* Translators: %1$s and %2$s expand to links on yoast.com, %3$s expands to the anchor end tag */
@@ -186,6 +210,25 @@ $generated_i18n_strings = array(
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseDistributionAssessment.js:146
 	__( '%1$sKeyphrase distribution%2$s: Good job!', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseInImageTextAssessment.js:134
+	__( '%1$sImage Keyphrase%3$s: Images on this page have alt attributes, but you have not set your keyphrase. %2$sFix that%3$s!', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseInImageTextAssessment.js:152
+	__( '%1$sImage Keyphrase%3$s: Images on this page do not have alt attributes with at least half of the words from your keyphrase. %2$sFix that%3$s!', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseInImageTextAssessment.js:173
+	_n_noop( '%3$sImage Keyphrase%5$s: Out of %2$d images on this page, only %1$d has an alt attribute that reflects the topic of your text. %4$sAdd your keyphrase or synonyms to the alt tags of more relevant images%5$s!', '%3$sImage Keyphrase%5$s: Out of %2$d images on this page, only %1$d have alt attributes that reflect the topic of your text. %4$sAdd your keyphrase or synonyms to the alt tags of more relevant images%5$s!', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseInImageTextAssessment.js:202
+	__( '%1$sImage Keyphrase%2$s: Good job!', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseInImageTextAssessment.js:219
+	__( '%3$sImage Keyphrase%5$s: Out of %2$d images on this page, %1$d have alt attributes with words from your keyphrase or synonyms. That\'s a bit much. %4$sOnly include the keyphrase or its synonyms when it really fits the image%5$s.', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseInImageTextAssessment.js:237
+	/* Translators: %1$s and %2$s expand to links on yoast.com, %3$s expands to the anchor end tag */
+	__( '%1$sImage Keyphrase%3$s: Images on this page do not have alt attributes that reflect the topic of your text. %2$sAdd your keyphrase or synonyms to the alt tags of relevant images%3$s!', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:93
 	__( '%1$sKeyphrase length%3$s: %2$sSet a keyphrase in order to calculate your SEO score%3$s.', 'wordpress-seo' ),
@@ -261,16 +304,17 @@ $generated_i18n_strings = array(
 	/* Translators: %1$s expands to a link on yoast.com, %2$s expands to the anchor end tag */
 	__( '%1$sOutbound links%2$s: There are both nofollowed and normal outbound links on this page. Good job!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/PageTitleWidthAssessment.js:108
-	__( '%1$sSEO title width%3$s: The SEO title is too short. %2$sUse the space to add keyphrase variations or create compelling call-to-action copy%3$s.', 'wordpress-seo' ),
-
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/PageTitleWidthAssessment.js:122
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/PageTitleWidthAssessment.js:111
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/PageTitleWidthAssessment.js:135
 	__( '%1$sSEO title width%2$s: Good job!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/PageTitleWidthAssessment.js:134
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/PageTitleWidthAssessment.js:121
+	__( '%1$sSEO title width%3$s: The SEO title is too short. %2$sUse the space to add keyphrase variations or create compelling call-to-action copy%3$s.', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/PageTitleWidthAssessment.js:147
 	__( '%1$sSEO title width%3$s: The SEO title is wider than the viewable limit. %2$sTry to make it shorter%3$s.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/PageTitleWidthAssessment.js:144
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/PageTitleWidthAssessment.js:157
 	/* Translators: %1$s and %2$s expand to links on yoast.com, %3$s expands to the anchor end tag */
 	__( '%1$sSEO title width%3$s: %2$sPlease create an SEO title%3$s.', 'wordpress-seo' ),
 
@@ -292,26 +336,6 @@ $generated_i18n_strings = array(
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/TextCompetingLinksAssessment.js:92
 	__( '%1$sLink keyphrase%3$s: You\'re linking to another page with the words you want this page to rank for. %2$sDon\'t do that%3$s!', 'wordpress-seo' ),
-
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/TextImagesAssessment.js:133
-	__( '%1$sImage alt attributes%3$s: No images appear on this page. %2$sAdd some%3$s!', 'wordpress-seo' ),
-
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/TextImagesAssessment.js:150
-	__( '%1$sImage alt attributes%3$s: Images on this page have alt attributes, but you have not set your keyphrase. %2$sFix that%3$s!', 'wordpress-seo' ),
-
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/TextImagesAssessment.js:168
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/TextImagesAssessment.js:253
-	/* Translators: %1$s and %2$s expand to links on yoast.com, %3$s expands to the anchor end tag */
-	__( '%1$sImage alt attributes%3$s: Images on this page do not have alt attributes that reflect the topic of your text. %2$sAdd your keyphrase or synonyms to the alt tags of relevant images%3$s!', 'wordpress-seo' ),
-
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/TextImagesAssessment.js:189
-	_n_noop( '%3$sImage alt attributes%5$s: Out of %2$d images on this page, only %1$d has an alt attribute that reflects the topic of your text. %4$sAdd your keyphrase or synonyms to the alt tags of more relevant images%5$s!', '%3$sImage alt attributes%5$s: Out of %2$d images on this page, only %1$d have alt attributes that reflect the topic of your text. %4$sAdd your keyphrase or synonyms to the alt tags of more relevant images%5$s!', 'wordpress-seo' ),
-
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/TextImagesAssessment.js:218
-	__( '%1$sImage alt attributes%2$s: Good job!', 'wordpress-seo' ),
-
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/TextImagesAssessment.js:235
-	__( '%3$sImage alt attributes%5$s: Out of %2$d images on this page, %1$d have alt attributes with words from your keyphrase or synonyms. That\'s a bit much. %4$sOnly include the keyphrase or its synonyms when it really fits the image%5$s.', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/TextLengthAssessment.js:81
 	/* Translators: %1$d expands to the number of words in the text,

@@ -42,17 +42,17 @@ class WPForms_Field_Payment_Select extends WPForms_Field {
 		$this->defaults = array(
 			1 => array(
 				'label'   => esc_html__( 'First Item', 'wpforms' ),
-				'value'   => '10.00',
+				'value'   => wpforms_format_amount( '10.00' ),
 				'default' => '',
 			),
 			2 => array(
 				'label'   => esc_html__( 'Second Item', 'wpforms' ),
-				'value'   => '25.00',
+				'value'   => wpforms_format_amount( '25.00' ),
 				'default' => '',
 			),
 			3 => array(
 				'label'   => esc_html__( 'Third Item', 'wpforms' ),
-				'value'   => '50.00',
+				'value'   => wpforms_format_amount( '50.00' ),
 				'default' => '',
 			),
 		);
@@ -220,20 +220,21 @@ class WPForms_Field_Payment_Select extends WPForms_Field {
 
 		// Show price after item labels.
 		$fld  = $this->field_element(
-			'checkbox',
+			'toggle',
 			$field,
-			array(
+			[
 				'slug'    => 'show_price_after_labels',
 				'value'   => isset( $field['show_price_after_labels'] ) ? '1' : '0',
 				'desc'    => esc_html__( 'Show price after item labels', 'wpforms' ),
 				'tooltip' => esc_html__( 'Check this option to show price of the item after the label.', 'wpforms' ),
-			),
+			],
 			false
 		);
-		$args = array(
+		$args = [
 			'slug'    => 'show_price_after_labels',
 			'content' => $fld,
-		);
+		];
+
 		$this->field_element( 'row', $field, $args );
 
 		// Description.
@@ -293,14 +294,14 @@ class WPForms_Field_Payment_Select extends WPForms_Field {
 		// Placeholder.
 		$this->field_option( 'placeholder', $field );
 
-		// Hide label.
-		$this->field_option( 'label_hide', $field );
-
 		// Custom CSS classes.
 		$this->field_option( 'css', $field );
 
+		// Hide label.
+		$this->field_option( 'label_hide', $field );
+
 		// Options close markup.
-		$this->field_option( 'advanced-options', $field, array( 'markup' => 'close' ) );
+		$this->field_option( 'advanced-options', $field, [ 'markup' => 'close' ] );
 	}
 
 	/**
@@ -492,7 +493,7 @@ class WPForms_Field_Payment_Select extends WPForms_Field {
 			'value_raw'    => sanitize_text_field( $field_submit ),
 			'amount'       => wpforms_format_amount( $amount ),
 			'amount_raw'   => $amount,
-			'currency'     => wpforms_setting( 'currency', 'USD' ),
+			'currency'     => wpforms_get_currency(),
 			'id'           => absint( $field_id ),
 			'type'         => $this->type,
 		);

@@ -25,6 +25,7 @@ function register_custom_block_types() {
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
+          'anchor' => true,
         ),
       )
     );
@@ -41,6 +42,7 @@ function register_custom_block_types() {
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
+          'anchor' => true,
         ),
       )
     );
@@ -57,6 +59,7 @@ function register_custom_block_types() {
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
+          'anchor' => true,
         ),
       )
     );
@@ -73,6 +76,7 @@ function register_custom_block_types() {
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
+          'anchor' => true,
         ),
       )
     );
@@ -89,6 +93,7 @@ function register_custom_block_types() {
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
+          'anchor' => true,
         ),
       )
     );
@@ -105,6 +110,7 @@ function register_custom_block_types() {
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
+          'anchor' => true,
         ),
       )
     );
@@ -121,6 +127,7 @@ function register_custom_block_types() {
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
+          'anchor' => true,
         ),
       )
     );
@@ -137,6 +144,7 @@ function register_custom_block_types() {
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
+          'anchor' => true,
         ),
       )
     );

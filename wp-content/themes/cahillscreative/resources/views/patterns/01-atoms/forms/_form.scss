@@ -21,6 +21,8 @@ textarea {
 
 label {
   @include u-font--xs;
+  display: block;
+  margin-bottom: $space-quarter;
 }
 
 input[type=text],
@@ -35,7 +37,7 @@ select,
 textarea,
 .woocommerce .select2-container .select2-selection--single,
 .woocommerce .select2-container .select2-container--default {
-  @include u-font--s;
+  @include body-copy;
 
   padding: 12px $space-half 8px $space-half;
   box-shadow: none;
@@ -86,7 +88,6 @@ input[type=checkbox] + label {
   letter-spacing: normal;
   font-family: $font-primary;
   font-size: $font-size-xs;
-  top: 2px;
   width: calc(100% - 30px);
 }
 
@@ -153,7 +154,7 @@ select,
   background-position: center right $space-half;
   background-repeat: no-repeat;
   background-size: 10px 10px;
-  background-color: transparent;
+  background-color: white;
   border-radius: $border-radius-curve;
   padding-left: $space-half;
   padding-right: $space-and-half;
@@ -170,7 +171,6 @@ select,
   padding-bottom: 0;
   padding-left: $space-half;
   height: 43px;
-  margin-top: $space-half;
   min-width: 100%;
   background-color: white;
 
@@ -232,4 +232,74 @@ select,
 .sf-label-checkbox,
 .sf-label-radio {
   padding: 0 !important;
+}
+
+form.wpforms-form {
+  & > * + * {
+    margin-top: $space-double;
+  }
+
+  .wpforms-field-container {
+    & > * + * {
+      margin-top: $space;
+    }
+  }
+
+  .wpforms-field-description {
+    @include u-font--xs;
+    display: block;
+    margin-top: $space-quarter;
+    font-style: italic;
+  }
+
+  .wpforms-field-row {
+    display: grid;
+    grid-gap: $space;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .wpforms-required-label {
+    position: relative;
+    left: -5px;
+  }
+
+  label {
+    @include o-heading__secondary--s;
+    position: relative;
+
+    svg {
+      display: none;
+    }
+  }
+
+  input + label,
+  .wpforms-screen-reader-element,
+  .wpforms-error {
+    @include u-font--xs;
+    text-transform: capitalize;
+    letter-spacing: normal;
+    font-weight: 500;
+    margin-bottom: 0;
+    margin-top: $space-quarter;
+  }
+
+  input[type="radio"] + label,
+  input[type="checkbox"] + label {
+    margin-top: 0;
+    line-height: 1;
+    min-height: 30px;
+  }
+
+  .wpforms-screen-reader-element {
+    display: inline-block;
+  }
+
+  .wpforms-error {
+    color: red;
+    font-style: italic;
+  }
+
+  button {
+    @include o-button;
+  }
 }

@@ -286,7 +286,15 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 		init: function() {
 
 			$( app.ready );
-			$( window ).on( 'load', app.load );
+			$( window ).on( 'load', function() {
+
+				// in case of jQuery 3.+ we need to wait for an `ready` event first.
+				if ( typeof $.ready.then === 'function' ) {
+					$.ready.then( app.load );
+				} else {
+					app.load();
+				}
+			} );
 		},
 
 		/**
@@ -450,6 +458,10 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 		 */
 		initTooltips: function( step, anchor, args ) {
 
+			if ( typeof $.fn.tooltipster === 'undefined' ) {
+				return;
+			}
+
 			var $dot = $( '<span class="wpforms-challenge-dot wpforms-challenge-dot-step' + step + '" data-wpforms-challenge-step="' + step + '">&nbsp;</span>' );
 			var tooltipsterArgs = {
 				content          : $( '#tooltip-content' + step ),
@@ -465,7 +477,7 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 					$( helper.tooltip ).addClass( 'wpforms-challenge-tooltip-step' + step );
 
 					// Custom positioning.
-					if ( step === 4 ) {
+					if ( step === 4 || step === 3 ) {
 						instance.option( 'side', 'right' );
 					}
 

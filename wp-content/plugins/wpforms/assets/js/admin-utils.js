@@ -22,6 +22,9 @@ var wpf = {
 
 		wpf.bindUIActions();
 
+		// Init Radio Group for Checkboxes.
+		wpf.initRadioGroupForCheckboxes();
+
 		jQuery( wpf.ready );
 	},
 
@@ -48,21 +51,22 @@ var wpf = {
 	bindUIActions: function() {
 
 		// The following items should all trigger the fieldUpdate trigger.
-		jQuery(document).on('wpformsFieldAdd', wpf.setFieldOrders);
-		jQuery(document).on('wpformsFieldDelete', wpf.setFieldOrders);
-		jQuery(document).on('wpformsFieldMove', wpf.setFieldOrders);
-		jQuery(document).on('wpformsFieldAdd', wpf.setChoicesOrders);
-		jQuery(document).on('wpformsFieldChoiceAdd', wpf.setChoicesOrders);
-		jQuery(document).on('wpformsFieldChoiceDelete', wpf.setChoicesOrders);
-		jQuery(document).on('wpformsFieldChoiceMove', wpf.setChoicesOrders);
-		jQuery(document).on('wpformsFieldAdd', wpf.fieldUpdate);
-		jQuery(document).on('wpformsFieldDelete', wpf.fieldUpdate);
-		jQuery(document).on('wpformsFieldMove', wpf.fieldUpdate);
-		jQuery(document).on('focusout', '.wpforms-field-option-row-label input', wpf.fieldUpdate);
-		jQuery(document).on('wpformsFieldChoiceAdd', wpf.fieldUpdate);
-		jQuery(document).on('wpformsFieldChoiceDelete', wpf.fieldUpdate);
-		jQuery(document).on('wpformsFieldChoiceMove', wpf.fieldUpdate);
-		jQuery(document).on('focusout', '.wpforms-field-option-row-choices input.label', wpf.fieldUpdate);
+		jQuery( document ).on( 'wpformsFieldAdd', wpf.setFieldOrders );
+		jQuery( document ).on( 'wpformsFieldDelete', wpf.setFieldOrders );
+		jQuery( document ).on( 'wpformsFieldMove', wpf.setFieldOrders );
+		jQuery( document ).on( 'wpformsFieldAdd', wpf.setChoicesOrders );
+		jQuery( document ).on( 'wpformsFieldChoiceAdd', wpf.setChoicesOrders );
+		jQuery( document ).on( 'wpformsFieldChoiceDelete', wpf.setChoicesOrders );
+		jQuery( document ).on( 'wpformsFieldChoiceMove', wpf.setChoicesOrders );
+		jQuery( document ).on( 'wpformsFieldAdd', wpf.fieldUpdate );
+		jQuery( document ).on( 'wpformsFieldDelete', wpf.fieldUpdate );
+		jQuery( document ).on( 'wpformsFieldMove', wpf.fieldUpdate );
+		jQuery( document ).on( 'focusout', '.wpforms-field-option-row-label input', wpf.fieldUpdate );
+		jQuery( document ).on( 'wpformsFieldChoiceAdd', wpf.fieldUpdate );
+		jQuery( document ).on( 'wpformsFieldChoiceDelete', wpf.fieldUpdate );
+		jQuery( document ).on( 'wpformsFieldChoiceMove', wpf.fieldUpdate );
+		jQuery( document ).on( 'wpformsFieldDynamicChoiceToggle', wpf.fieldUpdate );
+		jQuery( document ).on( 'focusout', '.wpforms-field-option-row-choices input.label', wpf.fieldUpdate );
 	},
 
 	/**
@@ -126,9 +130,9 @@ var wpf = {
 
 		var fields = wpf.getFields();
 
-		jQuery(document).trigger('wpformsFieldUpdate', [fields] );
+		jQuery( document ).trigger( 'wpformsFieldUpdate', [ fields ] );
 
-		wpf.debug('fieldUpdate triggered');
+		wpf.debug( 'fieldUpdate triggered' );
 	},
 
 	/**
@@ -208,22 +212,26 @@ var wpf = {
 	 * Toggle the loading state/indicator of a field option.
 	 *
 	 * @since 1.2.8
+	 *
+	 * @param {mixed}   option jQuery object, or DOM element selector.
+	 * @param {boolean} unload True if you need to unload spinner, and vice versa.
 	 */
-	fieldOptionLoading: function(option, unload) {
+	fieldOptionLoading: function( option, unload ) {
 
-		var $option = jQuery(option),
-			$label  = $option.find('label'),
-			unload  = (typeof unload === 'undefined') ? false : true,
-			spinner = '<i class="fa fa-spinner fa-spin wpforms-loading-inline"></i>';
+		var $option = jQuery( option ),
+			$label  = $option.find( 'label' ),
+			spinner = '<i class="wpforms-loading-spinner wpforms-loading-inline"></i>';
 
-		if (unload) {
-			$label.find('.wpforms-loading-inline').remove();
-			$label.find('.wpforms-help-tooltip').show();
-			$option.find('input,select,textarea').prop('disabled', false);
+		unload  = typeof unload !== 'undefined';
+
+		if ( unload ) {
+			$label.find( '.wpforms-loading-spinner' ).remove();
+			$label.find( '.wpforms-help-tooltip' ).show();
+			$option.find( 'input,select,textarea' ).prop( 'disabled', false );
 		} else {
-			$label.append(spinner);
-			$label.find('.wpforms-help-tooltip').hide();
-			$option.find('input,select,textarea').prop('disabled', true);
+			$label.append( spinner );
+			$label.find( '.wpforms-help-tooltip' ).hide();
+			$option.find( 'input,select,textarea' ).prop( 'disabled', true );
 		}
 	},
 
@@ -372,18 +380,18 @@ var wpf = {
 		// Convert to string and allow only numbers, dots and commas.
 		amount = String( amount ).replace( /[^0-9.,]/g, '' );
 
-		if ( wpforms_builder.currency_decimal === ',' && ( amount.indexOf( wpforms_builder.currency_decimal ) !== -1 ) ) {
+		if ( wpforms_builder.currency_decimal === ',' ) {
 			if ( wpforms_builder.currency_thousands === '.' && amount.indexOf( wpforms_builder.currency_thousands ) !== -1 ) {
-				amount = amount.replace( wpforms_builder.currency_thousands, '' );
+				amount = amount.replace( new RegExp( '\\' + wpforms_builder.currency_thousands, 'g' ), '' );
 			} else if ( wpforms_builder.currency_thousands === '' && amount.indexOf( '.' ) !== -1 ) {
-				amount = amount.replace( '.', '' );
+				amount = amount.replace( /\./g, '' );
 			}
 			amount = amount.replace( wpforms_builder.currency_decimal, '.' );
 		} else if ( wpforms_builder.currency_thousands === ',' && ( amount.indexOf( wpforms_builder.currency_thousands ) !== -1 ) ) {
-			amount = amount.replace( wpforms_builder.currency_thousands, '' );
+			amount = amount.replace( new RegExp( '\\' + wpforms_builder.currency_thousands, 'g' ), '' );
 		}
 
-		return wpf.numberFormat( amount, 2, '.', '' );
+		return wpf.numberFormat( amount, wpforms_builder.currency_decimals, '.', '' );
 	},
 
 	/**
@@ -403,19 +411,19 @@ var wpf = {
 		if ( wpforms_builder.currency_decimal === ',' && ( amount.indexOf( wpforms_builder.currency_decimal ) !== -1 ) ) {
 			var sepFound = amount.indexOf( wpforms_builder.currency_decimal );
 
-			amount = amount.substr( 0, sepFound ) + '.' + amount.substr( sepFound + 1, amount.strlen - 1 );
+			amount = amount.substr( 0, sepFound ) + '.' + amount.substr( sepFound + 1, amount.length - 1 );
 		}
 
 		// Strip , from the amount (if set as the thousands separator)
 		if ( wpforms_builder.currency_thousands === ',' && ( amount.indexOf( wpforms_builder.currency_thousands ) !== -1 ) ) {
-			amount = amount.replace( ',', '' );
+			amount = amount.replace( /,/g, '' );
 		}
 
 		if ( wpf.empty( amount ) ) {
 			amount = 0;
 		}
 
-		return wpf.numberFormat( amount, 2, wpforms_builder.currency_decimal, wpforms_builder.currency_thousands );
+		return wpf.numberFormat( amount, wpforms_builder.currency_decimals, wpforms_builder.currency_decimal, wpforms_builder.currency_thousands );
 	},
 
 	/**
@@ -629,6 +637,10 @@ var wpf = {
 	 */
 	initTooltips: function() {
 
+		if ( typeof jQuery.fn.tooltipster === 'undefined' ) {
+			return;
+		}
+
 		jQuery( '.wpforms-help-tooltip' ).tooltipster( {
 			contentAsHTML: true,
 			position: 'right',
@@ -746,6 +758,62 @@ var wpf = {
 		return string.replace( /[\u00A0-\u9999<>&]/gim, function( i ) {
 
 			return '&#' + i.charCodeAt( 0 ) + ';';
+		} );
+	},
+
+	/**
+	 * Radio Group for Checkboxes.
+	 *
+	 * @since 1.6.6
+	 */
+	initRadioGroupForCheckboxes: function() {
+
+		var $ = jQuery;
+
+		$( document ).on( 'change', 'input[type="checkbox"].wpforms-radio-group', function() {
+
+			var $input  = $( this ),
+				inputId = $input.attr( 'id' );
+
+			if ( ! $input.prop( 'checked' ) ) {
+				return;
+			}
+
+			var groupName = $input.data( 'radio-group' ),
+				$group    = $( '.wpforms-radio-group-' + groupName ),
+				$item;
+
+			$group.each( function() {
+
+				$item = $( this );
+				if ( $item.attr( 'id' ) !== inputId ) {
+					$item.prop( 'checked', false );
+				}
+			} );
+		} );
+	},
+
+	/**
+	 * Pluck a certain field out of each object in a list.
+	 *
+	 * JS implementation of the `wp_list_pluck()`.
+	 *
+	 * @since 1.6.8
+	 *
+	 * @param {Array}  arr    Array of objects.
+	 * @param {string} column Column.
+	 *
+	 * @returns {Array} Array with extracted column values.
+	 */
+	listPluck: function( arr, column ) {
+
+		return arr.map( function( x ) {
+
+			if ( typeof x !== 'undefined' ) {
+				return x[ column ];
+			}
+
+			return x;
 		} );
 	},
 };

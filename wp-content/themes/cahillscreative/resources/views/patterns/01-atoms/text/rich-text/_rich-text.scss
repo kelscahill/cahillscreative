@@ -13,6 +13,10 @@
     }
   }
 
+  > *:not(section) {
+    background-color: $c-white;
+  }
+
   > h1,
   > h2,
   > h3,
@@ -23,10 +27,6 @@
     margin-bottom: -$space-half;
   }
 
-  > *:first-child {
-    margin-top: 0;
-  }
-
   h2:empty,
   h3:empty,
   p:empty {
@@ -34,6 +34,8 @@
   }
 
   > p a,
+  > ul li a,
+  > ol li a,
   > a {
     @include o-link;
     display: unset;
@@ -50,6 +52,10 @@
     margin-left: $space-double;
   }
 
+  .wp-block-button a {
+    @include o-button;
+  }
+
   .wp-block-quote {
     @include o-blockquote;
   }
@@ -62,11 +68,17 @@
     @include o-hr;
   }
 
+  .wp-block-spacer {
+    background-color: transparent;
+  }
+
   section {
     margin-top: $space-quadruple;
   }
 
-  .c-promo + .c-promo {
+  .c-promo + .c-promo,
+  .c-promo + .c-newsletter-signup-banner,
+  .c-newsletter-signup-banner + .c-promo {
     margin-top: 0
   }
 

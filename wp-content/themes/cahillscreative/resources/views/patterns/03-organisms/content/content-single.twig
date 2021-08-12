@@ -6,8 +6,7 @@
       "figure" : {
         "image": {
           "output_tag": true,
-          "srcset": Image(post.hero_image).src|resize(720, 405) ~ ' 720w, ' ~ Image(post.hero_image).src|resize(960, 540) ~ ' 960w,' ~ Image(post.hero_image).src|resize(1200, 675) ~ ' 1200w',
-          "src": Image(post.hero_image).src|resize(500, 281),
+          "src": Image(post.hero_image).src|resize(auto, 600),
           "alt": Image(post.hero_image).alt,
           "caption": Image(post.hero_image).caption
         }

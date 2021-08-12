@@ -11,7 +11,9 @@
 
 $context = Timber::context();
 $context['promo']['items'] = get_field( 'promo' );
-$context['promo']['anchor'] = get_field( 'promo_anchor' );
+if (!empty($block['anchor'])) {
+  $context['promo']['anchor'] = $block['anchor'];
+}
 
 $templates = array(
 	get_stylesheet_directory() . '/views/patterns/03-organisms/sections/promo/promo.twig',

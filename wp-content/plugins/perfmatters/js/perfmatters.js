@@ -88,7 +88,7 @@ jQuery(document).ready(function($) {
 	$('.perfmatters-input-row-wrapper').on('click', '.perfmatters-delete-input-row', function(ev) {
 		ev.preventDefault();
 
-		var siblings = $(this).closest('.perfmatters-input-row').siblings();
+		var siblings = $(this).closest('div').siblings();
 		var $addButton = $(this).closest('.perfmatters-input-row-wrapper').find('.perfmatters-add-input-row');
 
 		if($addButton.prop('rel') == 0) {
@@ -97,11 +97,12 @@ jQuery(document).ready(function($) {
 			$row.find(':checkbox').prop("checked", false);
 		}
 		else {
-			$(this).closest('.perfmatters-input-row').remove();
+			$(this).closest('div').remove();
 			$addButton.prop('rel', $addButton.prop('rel') - 1);
 		}
 		
 		siblings.each(function(i) {
+
 			perfmattersUpdateRowCount(this, i);
 		});
 	});
@@ -139,10 +140,9 @@ jQuery(document).ready(function($) {
 			});
 
 			if(controller.is('select')) {
-				var classNames = this.className.match(/perfmatters-select-control-([^\s]*)/g);
-				var foundClass = ($.inArray('perfmatters-select-control-' + controller.val(), classNames)) >= 0;
+				var className = this.className.match(/perfmatters-select-control-([^\s]*)/);
 
-				if(classNames && (foundClass != $(this).hasClass('perfmatters-control-reverse'))) {
+				if(className && className[1] == controller.val()) {
 					forceShow = true;
 				}
 				else {

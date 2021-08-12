@@ -14,7 +14,7 @@ class WPForms_Entries_List {
 	 *
 	 * @var array
 	 */
-	public $alerts = array();
+	public $alerts = [];
 
 	/**
 	 * Abort. Bail on proceeding to process the page.
@@ -68,7 +68,7 @@ class WPForms_Entries_List {
 	 *
 	 * @var array
 	 */
-	protected $filter = array();
+	protected $filter = [];
 
 	/**
 	 * Primary class constructor.
@@ -78,18 +78,18 @@ class WPForms_Entries_List {
 	public function __construct() {
 
 		// Maybe load entries page.
-		add_action( 'admin_init', array( $this, 'init' ) );
+		add_action( 'admin_init', [ $this, 'init' ] );
 
 		// Setup screen options - this needs to run early.
-		add_action( 'load-wpforms_page_wpforms-entries', array( $this, 'screen_options' ) );
-		add_filter( 'set-screen-option', array( $this, 'screen_options_set' ), 10, 3 );
+		add_action( 'load-wpforms_page_wpforms-entries', [ $this, 'screen_options' ] );
+		add_filter( 'set-screen-option', [ $this, 'screen_options_set' ], 10, 3 );
 		add_filter( 'set_screen_option_wpforms_entries_per_page', [ $this, 'screen_options_set' ], 10, 3 );
 
 		// Heartbeat doesn't pass $_GET parameters checked by $this->init() condition.
-		add_filter( 'heartbeat_received', array( $this, 'heartbeat_new_entries_check' ), 10, 3 );
+		add_filter( 'heartbeat_received', [ $this, 'heartbeat_new_entries_check' ], 10, 3 );
 
 		// AJAX-callbacks.
-		add_action( 'wp_ajax_wpforms_entry_list_process_delete_all', array( $this, 'process_delete' ) );
+		add_action( 'wp_ajax_wpforms_entry_list_process_delete_all', [ $this, 'process_delete' ] );
 	}
 
 	/**
@@ -104,7 +104,7 @@ class WPForms_Entries_List {
 		$view = $this->get_current_screen_view();
 
 		// Only load if we are actually on the overview page.
-		if ( 'wpforms-entries' !== $page || 'list' !== $view ) {
+		if ( $page !== 'wpforms-entries' || $view !== 'list' ) {
 			return;
 		}
 
@@ -120,22 +120,23 @@ class WPForms_Entries_List {
 		$this->remove_get_parameters();
 
 		// Processing and setup.
-		add_action( 'wpforms_entries_init', array( $this, 'process_filter_dates' ), 7, 1 );
-		add_action( 'wpforms_entries_init', array( $this, 'process_filter_search' ), 7, 1 );
-		add_action( 'wpforms_entries_init', array( $this, 'process_read' ), 8, 1 );
-		add_action( 'wpforms_entries_init', array( $this, 'process_columns' ), 8, 1 );
-		add_action( 'wpforms_entries_init', array( $this, 'setup' ), 10, 1 );
+		add_action( 'wpforms_entries_init', [ $this, 'process_filter_dates' ], 7, 1 );
+		add_action( 'wpforms_entries_init', [ $this, 'process_filter_search' ], 7, 1 );
+		add_action( 'wpforms_entries_init', [ $this, 'process_read' ], 8, 1 );
+		add_action( 'wpforms_entries_init', [ $this, 'process_columns' ], 8, 1 );
+		add_action( 'wpforms_entries_init', [ $this, 'setup' ], 10, 1 );
+		add_action( 'wpforms_entries_init', [ $this, 'register_alerts' ], 20, 1 );
 
 		do_action( 'wpforms_entries_init', 'list' );
 
 		// Output.
-		add_action( 'wpforms_admin_page', array( $this, 'list_all' ) );
-		add_action( 'wpforms_admin_page', array( $this, 'field_column_setting' ) );
-		add_action( 'wpforms_entry_list_title', array( $this, 'list_form_actions' ), 10, 1 );
+		add_action( 'wpforms_admin_page', [ $this, 'list_all' ] );
+		add_action( 'wpforms_admin_page', [ $this, 'field_column_setting' ] );
+		add_action( 'wpforms_entry_list_title', [ $this, 'list_form_actions' ], 10, 1 );
 
 		// Enqueues.
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueues' ) );
-		add_filter( 'wpforms_admin_strings', array( $this, 'js_strings' ) );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueues' ] );
+		add_filter( 'wpforms_admin_strings', [ $this, 'js_strings' ] );
 	}
 
 	/**
@@ -162,6 +163,7 @@ class WPForms_Entries_List {
 
 		// Create an `WPForms_Entries_Table` instance and process bulk actions.
 		$this->entries = new WPForms_Entries_Table();
+
 		$this->entries->process_bulk_actions();
 	}
 
@@ -174,7 +176,7 @@ class WPForms_Entries_List {
 	 */
 	protected function get_current_screen_view() {
 
-		$view = ! empty( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : 'list';
+		$view = ! empty( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : 'list'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		return apply_filters( 'wpforms_entries_list_get_current_screen_view', $view );
 	}
@@ -320,7 +322,7 @@ class WPForms_Entries_List {
 	public function process_columns() {
 
 		// Check for run switch and data.
-		if ( empty( $_POST['action'] ) || empty( $_POST['form_id'] ) || 'list-columns' !== $_POST['action'] ) {
+		if ( empty( $_POST['action'] ) || empty( $_POST['form_id'] ) || $_POST['action'] !== 'list-columns' ) {
 			return;
 		}
 
@@ -331,16 +333,26 @@ class WPForms_Entries_List {
 
 		$post_id = absint( $_POST['form_id'] );
 
+		// Remove KSES filters before updating meta for forms and their fields which contain HTML.
+		// If we don't do this, forms for users who don't have 'unfiltered_html' capabilities can get corrupt due to conflicts with wp_kses().
+		kses_remove_filters();
+
 		// Update or delete.
 		if ( empty( $_POST['fields'] ) ) {
 
-			wpforms()->form->delete_meta( $post_id, 'entry_columns', array( 'cap' => 'view_entries_form_single' ) );
+			wpforms()->form->delete_meta( $post_id, 'entry_columns', [ 'cap' => 'view_entries_form_single' ] );
 
 		} else {
 
 			$fields = array_map( 'intval', $_POST['fields'] );
 
-			wpforms()->form->update_meta( $post_id, 'entry_columns', $fields, array( 'cap' => 'view_entries_form_single' ) );
+			wpforms()->form->update_meta( $post_id, 'entry_columns', $fields, [ 'cap' => 'view_entries_form_single' ] );
+
+		}
+
+		// Re-initialize KSES filters for users who don't have 'unfiltered_html' capabilities.
+		if ( ! current_user_can( 'unfiltered_html' ) ) {
+			kses_init_filters();
 		}
 	}
 
@@ -376,15 +388,24 @@ class WPForms_Entries_List {
 
 		// Check if entries filtered.
 		if ( ! empty( $this->filter['entry_id'] ) ) {
+			array_map( [ WPForms_Field_File_Upload::class, 'delete_uploaded_files_from_entry' ], $this->filter['entry_id'] );
 			$deleted = wpforms()->entry->delete_where_in( 'entry_id', $this->filter['entry_id'] );
 			wpforms()->entry_meta->delete_where_in( 'entry_id', $this->filter['entry_id'] );
 			wpforms()->entry_fields->delete_where_in( 'entry_id', $this->filter['entry_id'] );
 
 		} else {
+			$entries = wpforms()->entry->get_entries(
+				[
+					'select'  => 'entry_ids',
+					'form_id' => $form_id,
+				]
+			);
+
+			array_map( [ WPForms_Field_File_Upload::class, 'delete_uploaded_files_from_entry' ], array_column( $entries, 'entry_id' ) );
 			$deleted = wpforms()->entry->delete_by( 'form_id', $form_id );
 			wpforms()->entry_meta->delete_by( 'form_id', $form_id );
 			wpforms()->entry_fields->delete_by( 'form_id', $form_id );
-			$deleted = $deleted ? -1 : 0;
+			$deleted = $deleted ? - 1 : 0;
 		}
 
 		$redirect_url = ! empty( $_GET['url'] ) ? add_query_arg( 'deleted', $deleted, esc_url_raw( wp_unslash( $_GET['url'] ) ) ) : '';
@@ -764,8 +785,7 @@ class WPForms_Entries_List {
 			<h1 class="page-title"><?php esc_html_e( 'Entries', 'wpforms' ); ?></h1>
 
 			<?php
-			// Admin notices.
-			$this->display_alerts();
+
 			if ( $this->abort ) {
 				echo '</div>'; // close wrap.
 
@@ -774,6 +794,7 @@ class WPForms_Entries_List {
 
 			$this->entries->form_id   = $this->form_id;
 			$this->entries->form_data = $form_data;
+
 			$this->entries->prepare_items();
 
 			$last_entry = wpforms()->entry->get_last( $this->form_id );
@@ -1103,20 +1124,47 @@ class WPForms_Entries_List {
 					?>
 				</ul>
 			</div>
+
 		</div>
 		<?php
+	}
+
+	/**
+	 * Add notices and errors.
+	 *
+	 * @since 1.6.7.1
+	 */
+	public function register_alerts() {
+
+		if ( empty( $this->alerts ) ) {
+			return;
+		}
+
+		foreach ( $this->alerts as $alert ) {
+			$type = ! empty( $alert['type'] ) ? $alert['type'] : 'info';
+
+			\WPForms\Admin\Notice::add( $alert['message'], $type );
+
+			if ( ! empty( $alert['abort'] ) ) {
+				$this->abort = true;
+
+				break;
+			}
+		}
 	}
 
 	/**
 	 * Display admin notices and errors.
 	 *
 	 * @since 1.1.6
-	 * @todo Refactor or eliminate this
+	 * @deprecated 1.6.7.1
 	 *
 	 * @param string $display
 	 * @param bool $wrap
 	 */
 	public function display_alerts( $display = '', $wrap = false ) {
+
+		_deprecated_function( __CLASS__ . '::' . __METHOD__, '1.6.7.1 of WPForms plugin' );
 
 		if ( empty( $this->alerts ) ) {
 			return;

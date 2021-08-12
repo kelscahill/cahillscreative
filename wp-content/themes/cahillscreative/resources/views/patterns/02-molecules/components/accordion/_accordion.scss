@@ -33,6 +33,10 @@
     background-color: $c-white;
     height: 0;
     overflow: hidden;
+
+    table tr:nth-child(even) td {
+      background-color: $c-white;
+    }
   }
 
   &__item {

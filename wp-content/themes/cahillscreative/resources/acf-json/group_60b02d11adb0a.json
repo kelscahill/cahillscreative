@@ -210,25 +210,6 @@
                     "save_other_choice": 0
                 }
             ]
-        },
-        {
-            "key": "field_60d92208a1026",
-            "label": "Promo Anchor",
-            "name": "promo_anchor",
-            "type": "text",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
         }
     ],
     "location": [
@@ -248,5 +229,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1627604307
+    "modified": 1628430068
 }

@@ -79,6 +79,9 @@ class Translations implements IntegrationInterface {
 			return false;
 		}
 
+		// Important for `current_user_can` function in WordPress 4.9.0 - 4.9.4.
+		require_once ABSPATH . 'wp-admin/includes/template.php';
+
 		if ( ! current_user_can( 'install_languages' ) ) {
 			return false;
 		}
@@ -110,6 +113,9 @@ class Translations implements IntegrationInterface {
 
 		// Download translations on plugin activation.
 		add_action( 'activate_plugin', [ $this, 'activate_plugin' ] );
+
+		// Download translations when plugin upgrade from Lite to Pro.
+		add_action( 'wpforms_install', [ $this, 'upgrade_core' ] );
 
 		// Remove translation cache for a plugin on deactivation.
 		// Translation removal is handled on plugin removal by WordPress.
@@ -463,6 +469,17 @@ class Translations implements IntegrationInterface {
 		$this->installed_translations = wp_get_installed_translations( 'plugins' );
 
 		return $this->installed_translations;
+	}
+
+	/**
+	 * Download core languages when upgrading from lite to pro version.
+	 * The upgrade process runs in a silent mode and skips activation hooks.
+	 *
+	 * @since 1.6.8
+	 */
+	public function upgrade_core() {
+
+		$this->activate_plugin( 'wpforms/wpforms.php' );
 	}
 
 	/**

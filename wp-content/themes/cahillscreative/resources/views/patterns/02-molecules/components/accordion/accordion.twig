@@ -38,7 +38,9 @@
               "id": 'accordion-' ~ post.slug ~ '-' ~ loop.index
             } %}
             {% include "@molecules/components/steps/steps.twig" with {
-              "steps": item.steps
+              "steps": {
+                "items": item.steps
+              }
             } %}
           </div>
         </div>

@@ -420,6 +420,8 @@ class Admin_Menu extends Base_Admin_Menu {
 		}
 
 		$this->update_submenus( 'options-general.php', $submenus_to_update );
+
+		add_submenu_page( 'options-general.php', esc_attr__( 'Performance', 'jetpack' ), __( 'Performance', 'jetpack' ), 'manage_options', 'https://wordpress.com/settings/performance/' . $this->domain, null, 1 );
 	}
 
 	/**
@@ -453,51 +455,14 @@ class Admin_Menu extends Base_Admin_Menu {
 	}
 
 	/**
-	 * Re-adds the Site Editor menu without the (beta) tag, and where we want it.
+	 * Update Site Editor menu item's link and position.
 	 */
 	public function add_gutenberg_menus() {
-		// We can bail if we don't meet the conditions of the Site Editor.
-		if ( ! ( function_exists( 'gutenberg_is_fse_theme' ) && gutenberg_is_fse_theme() ) ) {
+		if ( self::CLASSIC_VIEW === $this->get_preferred_view( 'admin.php?page=gutenberg-edit-site' ) ) {
 			return;
 		}
 
-		// Core Gutenberg registers without an explicit position, and we don't want the (beta) tag.
-		remove_menu_page( 'gutenberg-edit-site' );
-		// Core Gutenberg tries to manage its position, foiling our best laid plans. Unfoil.
-		remove_filter( 'menu_order', 'gutenberg_menu_order' );
-
-		$wp_admin = self::CLASSIC_VIEW === $this->get_preferred_view( 'admin.php?page=gutenberg-edit-site' );
-
-		$link = $wp_admin ? 'gutenberg-edit-site' : 'https://wordpress.com/site-editor/' . $this->domain;
-
-		add_menu_page(
-			__( 'Site Editor', 'jetpack' ),
-			__( 'Site Editor', 'jetpack' ),
-			'edit_theme_options',
-			$link,
-			$wp_admin ? 'gutenberg_edit_site_page' : null,
-			'dashicons-layout',
-			61 // Just under Appearance.
-		);
-	}
-
-	/**
-	 * Returns the current slug from the URL.
-	 *
-	 * @param object $screen Screen object (undocumented).
-	 *
-	 * @return string
-	 */
-	public function get_current_slug( $screen ) {
-		$slug = "{$screen->base}.php";
-		if ( '' !== $screen->post_type ) {
-			$slug = add_query_arg( 'post_type', $screen->post_type, $slug );
-		}
-		if ( '' !== $screen->taxonomy ) {
-			$slug = add_query_arg( 'taxonomy', $screen->taxonomy, $slug );
-		}
-
-		return $slug;
+		$this->update_menu( 'gutenberg-edit-site', 'https://wordpress.com/site-editor/' . $this->domain, null, null, null, 59 );
 	}
 
 	/**
@@ -505,16 +470,15 @@ class Admin_Menu extends Base_Admin_Menu {
 	 * Callback for the 'screen_settings' filter (available in WP 3.0 and up).
 	 *
 	 * @param string $current The currently added panels in screen options.
-	 * @param object $screen Screen object (undocumented).
 	 *
 	 * @return string The HTML code to append to "Screen Options"
 	 */
-	public function register_dashboard_switcher( $current, $screen ) {
+	public function register_dashboard_switcher( $current ) {
 		$menu_mappings = require __DIR__ . '/menu-mappings.php';
-		$slug          = $this->get_current_slug( $screen );
+		$screen        = $this->get_current_screen();
 
 		// Let's show the switcher only in screens that we have a Calypso mapping to switch to.
-		if ( ! isset( $menu_mappings[ $slug ] ) ) {
+		if ( ! isset( $menu_mappings[ $screen ] ) ) {
 			return;
 		}
 
@@ -522,7 +486,7 @@ class Admin_Menu extends Base_Admin_Menu {
 			'<div id="dashboard-switcher"><h5>%s</h5><p class="dashboard-switcher-text">%s</p><a class="button button-primary dashboard-switcher-button" href="%s">%s</a></div>',
 			__( 'Screen features', 'jetpack' ),
 			__( 'Currently you are seeing the classic WP-Admin view of this page. Would you like to see the default WordPress.com view?', 'jetpack' ),
-			$menu_mappings[ $slug ] . $this->domain,
+			$menu_mappings[ $screen ] . $this->domain,
 			__( 'Use WordPress.com view', 'jetpack' )
 		);
 

@@ -1,7 +1,7 @@
 {% set base_class = cards.base_class|default('c-cards') %}
 
 {% if cards.items %}
-  <section class="{{ bem_classes(base_class, cards.element, cards.modifiers, cards.extra) }} l-wrap l-container--full u-spacing--double">
+  <section{{ cards.anchor ? ' id="' ~ cards.anchor ~ '"'}} class="{{ bem_classes(base_class, cards.element, cards.modifiers, cards.extra) }} l-wrap l-container--full u-spacing--double">
     <div class="{{ bem_classes(base_class, 'container') }} l-container--xl">
       {% include "@organisms/sections/page-headers/page-header.twig" with {
         "page_header": {

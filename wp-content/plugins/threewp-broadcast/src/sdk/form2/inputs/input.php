@@ -386,7 +386,7 @@ class input
 	**/
 	public function title( $text )
 	{
-		$result = @call_user_func_array( 'sprintf' , func_get_args() );
+		$result = call_user_func_array( [ $this->form, 'sprintf' ], func_get_args() );
 		if ( $result == '' )
 			$result = $text;
 		return $this->set_title( $result );
@@ -399,7 +399,7 @@ class input
 	**/
 	public function title_( $title )
 	{
-		$title = call_user_func_array( array( $this->container, '_' ), func_get_args() );
+		$title = call_user_func_array( [ $this->form, '_' ], func_get_args() );
 		return $this->title( $title );
 	}
 
@@ -409,7 +409,7 @@ class input
 	**/
 	public function unfiltered_title( $text )
 	{
-		$result = @call_user_func_array( 'sprintf' , func_get_args() );
+		$result = call_user_func_array( [ $this->form, 'sprintf' ], func_get_args() );
 		if ( $result == '' )
 			$result = $text;
 		return $this->set_unfiltered_title( $result );

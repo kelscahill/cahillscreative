@@ -2,6 +2,8 @@
 
 namespace WPForms\Pro\Admin\Entries\Export;
 
+use WPForms\Helpers\Transient;
+
 /**
  * Ajax endpoints and data processing.
  *
@@ -62,6 +64,7 @@ class Ajax {
 	public function ajax_form_data() {
 
 		try {
+
 			// Run a security check.
 			if ( ! check_ajax_referer( 'wpforms-tools-entries-export-nonce', 'nonce', false ) ) {
 				throw new \Exception( $this->export->errors['security'] );
@@ -71,39 +74,55 @@ class Ajax {
 				throw new \Exception( $this->export->errors['form_data'] );
 			}
 
-			$disallowed_fields = $this->export->configuration['disallowed_fields'];
-
 			$fields = empty( $this->export->data['form_data']['fields'] ) ? [] : (array) $this->export->data['form_data']['fields'];
 
-			$fields = array_filter(
-				array_values( $fields ),
-				function ( $v ) use ( $disallowed_fields ) {
-					return ! in_array( $v['type'], $disallowed_fields, true );
-				}
-			);
 			$fields = array_map(
-				function ( $field ) {
+				static function ( $field ) {
 					/* translators: %d - Field ID. */
 					$field['label'] = ! empty( $field['label'] ) ? trim( wp_strip_all_tags( $field['label'] ) ) : sprintf( esc_html__( 'Field #%d', 'wpforms' ), (int) $field['id'] );
 					return $field;
 				},
 				$fields
 			);
+
 			wp_send_json_success(
 				[
-					'fields' => $fields,
+					'fields' => $this->exclude_disallowed_fields( $fields ),
 				]
 			);
 
 		} catch ( \Exception $e ) {
 
 			$error = $this->export->errors['common'] . '<br>' . $e->getMessage();
+
 			if ( wpforms_debug() ) {
 				$error .= '<br><b>WPFORMS DEBUG</b>: ' . $e->__toString();
 			}
-			wp_send_json_error( [ 'error' => $error ] );
 
+			wp_send_json_error( [ 'error' => $error ] );
 		}
+	}
+
+	/**
+	 * Exclude disallowed fields from fields array.
+	 *
+	 * @since 1.6.6
+	 *
+	 * @param array $fields Fields array.
+	 *
+	 * @return array
+	 */
+	private function exclude_disallowed_fields( $fields ) {
+
+		$disallowed_fields = $this->export->configuration['disallowed_fields'];
+
+		return array_filter(
+			array_values( $fields ),
+			static function ( $v ) use ( $disallowed_fields ) {
+
+				return isset( $v['type'] ) && ! in_array( $v['type'], $disallowed_fields, true );
+			}
+		);
 	}
 
 	/**
@@ -113,7 +132,7 @@ class Ajax {
 	 *
 	 * @throws \Exception Try-catch.
 	 */
-	public function ajax_export_step() {
+	public function ajax_export_step() {// phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		try {
 
@@ -157,13 +176,14 @@ class Ajax {
 			$response = $this->get_response_data();
 
 			// Store request data.
-			set_transient( 'wpforms-tools-entries-export-request-' . $this->request_data['request_id'], $this->request_data, $this->export->configuration['request_data_ttl'] );
+			Transient::set( 'wpforms-tools-entries-export-request-' . $this->request_data['request_id'], $this->request_data, $this->export->configuration['request_data_ttl'] );
 
 			wp_send_json_success( $response );
 
 		} catch ( \Exception $e ) {
 
 			$error = $this->export->errors['common'] . '<br>' . $e->getMessage();
+
 			if ( wpforms_debug() ) {
 				$error .= '<br><b>WPFORMS DEBUG</b>: ' . $e->__toString();
 			}
@@ -224,7 +244,7 @@ class Ajax {
 			'request_id'      => md5( wp_json_encode( $db_args ) . microtime() ),
 			'form_data'       => $form_data,
 			'db_args'         => $db_args,
-			'fields'          => empty( $args['entry_id'] ) ? $args['fields'] : wp_list_pluck( $form_data['fields'], 'id' ),
+			'fields'          => empty( $args['entry_id'] ) ? $args['fields'] : wp_list_pluck( $this->exclude_disallowed_fields( $form_data['fields'] ), 'id' ),
 			'additional_info' => empty( $args['entry_id'] ) ? $args['additional_info'] : array_keys( $this->export->additional_info_fields ),
 			'count'           => $count,
 			'total_steps'     => ceil( $count / $this->export->configuration['entries_per_step'] ),
@@ -704,7 +724,13 @@ class Ajax {
 		if ( empty( $fields ) ) {
 			return $fields_by_id;
 		}
+
 		foreach ( $fields as $field ) {
+
+			if ( ! isset( $field['id'] ) ) {
+				continue;
+			}
+
 			$fields_by_id[ $field['id'] ] = $field;
 		}
 

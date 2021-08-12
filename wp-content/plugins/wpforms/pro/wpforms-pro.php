@@ -43,6 +43,7 @@ class WPForms_Pro {
 		require_once WPFORMS_PLUGIN_DIR . 'pro/includes/class-entry.php';
 		require_once WPFORMS_PLUGIN_DIR . 'pro/includes/class-entry-fields.php';
 		require_once WPFORMS_PLUGIN_DIR . 'pro/includes/class-entry-meta.php';
+		require_once WPFORMS_PLUGIN_DIR . 'pro/includes/class-conditional-logic-core.php';
 		require_once WPFORMS_PLUGIN_DIR . 'pro/includes/class-conditional-logic-fields.php';
 		require_once WPFORMS_PLUGIN_DIR . 'pro/includes/payments/class-payment.php';
 		require_once WPFORMS_PLUGIN_DIR . 'pro/includes/payments/functions.php';
@@ -51,7 +52,6 @@ class WPForms_Pro {
 			require_once WPFORMS_PLUGIN_DIR . 'pro/includes/admin/ajax-actions.php';
 			require_once WPFORMS_PLUGIN_DIR . 'pro/includes/admin/entries/class-entries-single.php';
 			require_once WPFORMS_PLUGIN_DIR . 'pro/includes/admin/entries/class-entries-list.php';
-			require_once WPFORMS_PLUGIN_DIR . 'pro/includes/admin/class-addons.php';
 			require_once WPFORMS_PLUGIN_DIR . 'pro/includes/admin/class-updater.php';
 			require_once WPFORMS_PLUGIN_DIR . 'pro/includes/admin/class-license.php';
 		}
@@ -340,7 +340,7 @@ class WPForms_Pro {
 	public function register_settings_fields( $settings ) {
 
 		$currencies      = wpforms_get_currencies();
-		$currency_option = array();
+		$currency_option = [];
 
 		// Format currencies for select element.
 		foreach ( $currencies as $code => $currency ) {
@@ -348,64 +348,70 @@ class WPForms_Pro {
 		}
 
 		// Validation settings for fields only available in Pro.
-		$settings['validation']['validation-phone']           = array(
+		$settings['validation']['validation-phone']            = [
 			'id'      => 'validation-phone',
 			'name'    => esc_html__( 'Phone', 'wpforms' ),
 			'type'    => 'text',
 			'default' => esc_html__( 'Please enter a valid phone number.', 'wpforms' ),
-		);
-		$settings['validation']['validation-fileextension']   = array(
+		];
+		$settings['validation']['validation-fileextension']    = [
 			'id'      => 'validation-fileextension',
 			'name'    => esc_html__( 'File Extension', 'wpforms' ),
 			'type'    => 'text',
 			'default' => esc_html__( 'File type is not allowed.', 'wpforms' ),
-		);
-		$settings['validation']['validation-filesize']        = array(
+		];
+		$settings['validation']['validation-filesize']         = [
 			'id'      => 'validation-filesize',
 			'name'    => esc_html__( 'File Size', 'wpforms' ),
 			'type'    => 'text',
 			'default' => esc_html__( 'File exceeds max size allowed. File was not uploaded.', 'wpforms' ),
-		);
-		$settings['validation']['validation-time12h']         = array(
+		];
+		$settings['validation']['validation-time12h']          = [
 			'id'      => 'validation-time12h',
 			'name'    => esc_html__( 'Time (12 hour)', 'wpforms' ),
 			'type'    => 'text',
 			'default' => esc_html__( 'Please enter time in 12-hour AM/PM format (eg 8:45 AM).', 'wpforms' ),
-		);
-		$settings['validation']['validation-time24h']         = array(
+		];
+		$settings['validation']['validation-time24h']          = [
 			'id'      => 'validation-time24h',
 			'name'    => esc_html__( 'Time (24 hour)', 'wpforms' ),
 			'type'    => 'text',
 			'default' => esc_html__( 'Please enter time in 24-hour format (eg 22:45).', 'wpforms' ),
-		);
-		$settings['validation']['validation-requiredpayment'] = array(
+		];
+		$settings['validation']['validation-requiredpayment']  = [
 			'id'      => 'validation-requiredpayment',
 			'name'    => esc_html__( 'Payment Required', 'wpforms' ),
 			'type'    => 'text',
 			'default' => esc_html__( 'Payment is required.', 'wpforms' ),
-		);
-		$settings['validation']['validation-creditcard']      = array(
+		];
+		$settings['validation']['validation-creditcard']       = [
 			'id'      => 'validation-creditcard',
 			'name'    => esc_html__( 'Credit Card', 'wpforms' ),
 			'type'    => 'text',
 			'default' => esc_html__( 'Please enter a valid credit card number.', 'wpforms' ),
-		);
-		$settings['validation']['validation-post_max_size']   = array(
+		];
+		$settings['validation']['validation-post_max_size']    = [
 			'id'      => 'validation-post_max_size',
 			'name'    => esc_html__( 'File Upload Total Size', 'wpforms' ),
 			'type'    => 'text',
 			'default' => esc_html__( 'The total size of the selected files {totalSize} Mb exceeds the allowed limit {maxSize} Mb.', 'wpforms' ),
-		);
+		];
+		$settings['validation']['validation-passwordstrength'] = [
+			'id'      => 'validation-passwordstrength',
+			'name'    => esc_html__( 'Password Strength', 'wpforms' ),
+			'type'    => 'text',
+			'default' => esc_html__( 'A stronger password is required. Consider using upper and lower case letters, numbers, and symbols.', 'wpforms' ),
+		];
 
 		// Payment settings.
-		$settings['payments']['payments-heading'] = array(
+		$settings['payments']['payments-heading'] = [
 			'id'       => 'payments-heading',
 			'content'  => '<h4>' . esc_html__( 'Payments', 'wpforms' ) . '</h4>',
 			'type'     => 'content',
 			'no_label' => true,
-			'class'    => array( 'section-heading', 'no-desc' ),
-		);
-		$settings['payments']['currency']         = array(
+			'class'    => [ 'section-heading', 'no-desc' ],
+		];
+		$settings['payments']['currency']         = [
 			'id'        => 'currency',
 			'name'      => esc_html__( 'Currency', 'wpforms' ),
 			'type'      => 'select',
@@ -413,25 +419,25 @@ class WPForms_Pro {
 			'search'    => true,
 			'default'   => 'USD',
 			'options'   => $currency_option,
-		);
+		];
 
 		// Additional GDPR related options.
 		$settings['general'] = wpforms_array_insert(
 			$settings['general'],
-			array(
-				'gdpr-disable-uuid'    => array(
+			[
+				'gdpr-disable-uuid'    => [
 					'id'   => 'gdpr-disable-uuid',
 					'name' => esc_html__( 'Disable User Cookies', 'wpforms' ),
 					'desc' => esc_html__( 'Check this option to disable user tracking cookies. This will disable the Related Entries feature and the Form Abandonment/Geolocation addons.', 'wpforms' ),
 					'type' => 'checkbox',
-				),
-				'gdpr-disable-details' => array(
+				],
+				'gdpr-disable-details' => [
 					'id'   => 'gdpr-disable-details',
 					'name' => esc_html__( 'Disable User Details', 'wpforms' ),
 					'desc' => esc_html__( 'Check this option to prevent the storage of IP addresses and User Agent on all forms. If unchecked, then this can be managed on a form-by-form basis inside the form builder under Settings → General', 'wpforms' ),
 					'type' => 'checkbox',
-				),
-			),
+				],
+			],
 			'gdpr'
 		);
 
@@ -471,16 +477,7 @@ class WPForms_Pro {
 
 		// If GDPR enhancements are enabled and user details are disabled
 		// globally or in the form settings, discard the IP and UA.
-		if (
-			(
-				wpforms_setting( 'gdpr', false ) &&
-				(
-					wpforms_setting( 'gdpr-disable-details', false ) ||
-					! empty( $form_data['settings']['disable_ip'] )
-				)
-			) ||
-			! apply_filters( 'wpforms_disable_entry_user_ip', '__return_false', $fields, $form_data )
-		) {
+		if ( ! wpforms_is_collecting_ip_allowed( $form_data ) || ! apply_filters( 'wpforms_disable_entry_user_ip', '__return_false', $fields, $form_data ) ) {
 			$user_agent = '';
 			$user_ip    = '';
 		}
@@ -543,7 +540,7 @@ class WPForms_Pro {
 			)
 		) {
 			wpforms_panel_field(
-				'checkbox',
+				'toggle',
 				'settings',
 				'disable_entries',
 				$instance->form_data,
@@ -555,7 +552,7 @@ class WPForms_Pro {
 		// details are not disabled globally.
 		if ( wpforms_setting( 'gdpr', false ) && ! wpforms_setting( 'gdpr-disable-details', false ) ) {
 			wpforms_panel_field(
-				'checkbox',
+				'toggle',
 				'settings',
 				'disable_ip',
 				$instance->form_data,
@@ -667,25 +664,63 @@ class WPForms_Pro {
 
 		$default_notifications_key = min( array_keys( $notifications ) );
 
+		$hidden = empty( $settings->form_data['settings']['notification_enable'] ) ? 'wpforms-hidden' : '';
+
 		echo '<div class="wpforms-panel-content-section-title">';
 			echo '<span id="wpforms-builder-settings-notifications-title">';
 				esc_html_e( 'Notifications', 'wpforms' );
 			echo '</span>';
-			echo '<button class="wpforms-notifications-add wpforms-builder-settings-block-add" data-block-type="notification" data-next-id="' . absint( $next_id ) . '">' . esc_html__( 'Add New Notification', 'wpforms' ) . '</button>';
+			echo '<button class="wpforms-notifications-add wpforms-builder-settings-block-add ' . esc_attr( $hidden ) . '" data-block-type="notification" data-next-id="' . absint( $next_id ) . '">' . esc_html__( 'Add New Notification', 'wpforms' ) . '</button>';// phpcs:ignore
 		echo '</div>';
 
+		$dismissed = get_user_meta( get_current_user_id(), 'wpforms_dismissed', true );
+
+		if ( empty( $dismissed['edu-builder-notifications-description'] ) ) {
+			echo '<div class="wpforms-panel-content-section-description wpforms-dismiss-container wpforms-dismiss-out">';
+			echo '<button type="button" class="wpforms-dismiss-button" title="' . esc_attr__( 'Dismiss this message.', 'wpforms' ) . '" data-section="builder-notifications-description"></button>';
+			echo '<p>';
+			printf(
+				wp_kses( /* translators: %s - Link to the WPForms.com doc article. */
+					__( 'Notifications are emails sent when a form is submitted. By default, these emails include entry details. For setup and customization options, including a video overview, please <a href="%s" target="_blank" rel="noopener noreferrer">see our tutorial</a>.', 'wpforms' ),
+					[
+						'a' => [
+							'href'   => [],
+							'rel'    => [],
+							'target' => [],
+						],
+					]
+				),
+				'https://wpforms.com/docs/setup-form-notification-wpforms/'
+			);
+			echo '</p>';
+			echo '<p>';
+			printf(
+				wp_kses( /* translators: 1$s, %2$s - Links to the WPForms.com doc articles. */
+					__( 'After saving these settings, be sure to <a href="%1$s" target="_blank" rel="noopener noreferrer">test a form submission</a>. This lets you see how emails will look, and to ensure that<br>they <a href="%2$s" target="_blank" rel="noopener noreferrer">are delivered successfully</a>.', 'wpforms' ),
+					[
+						'a'  => [
+							'href'   => [],
+							'rel'    => [],
+							'target' => [],
+						],
+						'br' => [],
+					]
+				),
+				'https://wpforms.com/docs/how-to-properly-test-your-wordpress-forms-before-launching-checklist/',
+				'https://wpforms.com/docs/troubleshooting-email-notifications/'
+			);
+			echo '</p>';
+			echo '</div>';
+		}
+
 		wpforms_panel_field(
-			'select',
+			'toggle',
 			'settings',
 			'notification_enable',
 			$settings->form_data,
-			esc_html__( 'Notifications', 'wpforms' ),
+			esc_html__( 'Enable Notifications', 'wpforms' ),
 			[
-				'default' => '1',
-				'options' => [
-					'1' => esc_html__( 'On', 'wpforms' ),
-					'0' => esc_html__( 'Off', 'wpforms' ),
-				],
+				'value' => empty( $form_settings['notification_enable'] ) ? 0 : 1,
 			]
 		);
 
@@ -693,12 +728,12 @@ class WPForms_Pro {
 
 			$name          = ! empty( $notification['notification_name'] ) ? $notification['notification_name'] : esc_html__( 'Default Notification', 'wpforms' );
 			$closed_state  = '';
-			$toggle_state  = '<i class="fa fa-chevron-up"></i>';
+			$toggle_state  = '<i class="fa fa-chevron-circle-up"></i>';
 			$block_classes = 'wpforms-notification wpforms-builder-settings-block';
 
 			if ( ! empty( $settings->form_data['id'] ) && 'closed' === wpforms_builder_settings_block_get_state( $settings->form_data['id'], $id, 'notification' ) ) {
 				$closed_state = 'style="display:none"';
-				$toggle_state = '<i class="fa fa-chevron-down"></i>';
+				$toggle_state = '<i class="fa fa-chevron-circle-down"></i>';
 			}
 
 			if ( $default_notifications_key === $id ) {
@@ -714,20 +749,21 @@ class WPForms_Pro {
 					<div class="wpforms-builder-settings-block-actions">
 						<?php do_action( 'wpforms_form_settings_notifications_single_action', $id, $notification, $settings ); ?>
 
-						<button class="wpforms-builder-settings-block-edit" title="<?php esc_attr_e( 'Edit', 'wpforms' ); ?>"><i class="fa fa-pencil"></i></button><!--
-						--><button class="wpforms-builder-settings-block-clone" title="<?php esc_attr_e( 'Clone', 'wpforms' ); ?>"><i class="fa fa-clone"></i></button><!--
+						<button class="wpforms-builder-settings-block-clone" title="<?php esc_attr_e( 'Clone', 'wpforms' ); ?>"><i class="fa fa-copy"></i></button><!--
+						--><button class="wpforms-builder-settings-block-delete" title="<?php esc_attr_e( 'Delete', 'wpforms' ); ?>"><i class="fa fa-trash-o"></i></button><!--
 						--><button class="wpforms-builder-settings-block-toggle" title="<?php esc_attr_e( 'Open / Close', 'wpforms' ); ?>">
 							<?php echo $toggle_state; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-						</button><!--
-						--><button class="wpforms-builder-settings-block-delete" title="<?php esc_attr_e( 'Delete', 'wpforms' ); ?>"><i class="fa fa-times-circle"></i></button>
+						</button>
 					</div>
 
 					<div class="wpforms-builder-settings-block-name-holder">
-						<span class="wpforms-builder-settings-block-name"><?php echo esc_html( $name ); ?></span>
-
+						<span class="wpforms-builder-settings-block-name">
+							<?php echo esc_html( $name ); ?>
+						</span>
 						<div class="wpforms-builder-settings-block-name-edit">
 							<input type="text" name="settings[notifications][<?php echo absint( $id ); ?>][notification_name]" value="<?php echo esc_attr( $name ); ?>">
 						</div>
+						<button class="wpforms-builder-settings-block-edit" title="<?php esc_attr_e( 'Edit', 'wpforms' ); ?>"><i class="fa fa-pencil"></i></button>
 					</div>
 
 				</div>
@@ -777,7 +813,7 @@ class WPForms_Pro {
 						'notifications',
 						'subject',
 						$settings->form_data,
-						esc_html__( 'Email Subject', 'wpforms' ),
+						esc_html__( 'Email Subject Line', 'wpforms' ),
 						[
 							/* translators: %s - form name. */
 							'default'    => sprintf( esc_html__( 'New Entry: %s', 'wpforms' ), $settings->form->post_title ),
@@ -834,7 +870,7 @@ class WPForms_Pro {
 						'notifications',
 						'replyto',
 						$settings->form_data,
-						esc_html__( 'Reply-To', 'wpforms' ),
+						esc_html__( 'Reply-To Email Address', 'wpforms' ),
 						[
 							'smarttags'  => [
 								'type'   => 'fields',
@@ -850,7 +886,7 @@ class WPForms_Pro {
 						'notifications',
 						'message',
 						$settings->form_data,
-						esc_html__( 'Message', 'wpforms' ),
+						esc_html__( 'Email Message', 'wpforms' ),
 						[
 							'rows'       => 6,
 							'default'    => '{all_fields}',
@@ -933,7 +969,7 @@ class WPForms_Pro {
 
 			$name          = ! empty( $confirmation['name'] ) ? $confirmation['name'] : esc_html__( 'Default Confirmation', 'wpforms' );
 			$closed_state  = '';
-			$toggle_state  = '<i class="fa fa-chevron-up"></i>';
+			$toggle_state  = '<i class="fa fa-chevron-circle-up"></i>';
 			$block_classes = 'wpforms-confirmation wpforms-builder-settings-block';
 
 			if ( $default_confirmation_key === $id ) {
@@ -942,7 +978,7 @@ class WPForms_Pro {
 
 			if ( ! empty( $settings->form_data['id'] ) && 'closed' === wpforms_builder_settings_block_get_state( $settings->form_data['id'], $id, 'confirmation' ) ) {
 				$closed_state = 'style="display:none"';
-				$toggle_state = '<i class="fa fa-chevron-down"></i>';
+				$toggle_state = '<i class="fa fa-chevron-circle-down"></i>';
 			}
 
 			do_action( 'wpforms_form_settings_confirmations_single_before', $settings, $id );
@@ -954,11 +990,10 @@ class WPForms_Pro {
 					<div class="wpforms-builder-settings-block-actions">
 						<?php do_action( 'wpforms_form_settings_confirmations_single_action', $id, $confirmation, $settings ); ?>
 
-						<button class="wpforms-builder-settings-block-edit" title="<?php esc_attr_e( 'Edit', 'wpforms' ); ?>"><i class="fa fa-pencil"></i></button><!--
+						<button class="wpforms-builder-settings-block-delete" title="<?php esc_attr_e( 'Delete', 'wpforms' ); ?>"><i class="fa fa-trash-o"></i></button><!--
 						--><button class="wpforms-builder-settings-block-toggle" title="<?php esc_attr_e( 'Open / Close', 'wpforms' ); ?>">
 							<?php echo $toggle_state; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-						</button><!--
-						--><button class="wpforms-builder-settings-block-delete" title="<?php esc_attr_e( 'Delete', 'wpforms' ); ?>"><i class="fa fa-times-circle"></i></button>
+						</button>
 					</div>
 
 					<div class="wpforms-builder-settings-block-name-holder">
@@ -967,6 +1002,7 @@ class WPForms_Pro {
 						<div class="wpforms-builder-settings-block-name-edit">
 							<input type="text" name="settings[confirmations][<?php echo absint( $id ); ?>][name]" value="<?php echo esc_attr( $name ); ?>">
 						</div>
+						<button class="wpforms-builder-settings-block-edit" title="<?php esc_attr_e( 'Edit', 'wpforms' ); ?>"><i class="fa fa-pencil"></i></button>
 					</div>
 
 				</div>
@@ -1000,32 +1036,35 @@ class WPForms_Pro {
 						'message',
 						$settings->form_data,
 						esc_html__( 'Confirmation Message', 'wpforms' ),
-						array(
+						[
 							'default'     => esc_html__( 'Thanks for contacting us! We will be in touch with you shortly.', 'wpforms' ),
-							'tinymce'     => array(
+							'tinymce'     => [
 								'editor_height' => '200',
-							),
+							],
 							'input_id'    => 'wpforms-panel-field-confirmations-message-' . $id,
 							'input_class' => 'wpforms-panel-field-confirmations-message',
 							'parent'      => 'settings',
 							'subsection'  => $id,
-						)
+							'class'       => 'wpforms-panel-field-tinymce',
+						]
 					);
 					wpforms_panel_field(
-						'checkbox',
+						'toggle',
 						'confirmations',
 						'message_scroll',
 						$settings->form_data,
 						esc_html__( 'Automatically scroll to the confirmation message', 'wpforms' ),
-						array(
+						[
 							'input_id'    => 'wpforms-panel-field-confirmations-message_scroll-' . $id,
 							'input_class' => 'wpforms-panel-field-confirmations-message_scroll',
 							'parent'      => 'settings',
 							'subsection'  => $id,
-						)
+						]
 					);
-					$p     = array();
+
+					$p     = [];
 					$pages = get_pages();
+
 					foreach ( $pages as $page ) {
 						$depth          = count( $page->ancestors );
 						$p[ $page->ID ] = str_repeat( '-', $depth ) . ' ' . $page->post_title;
@@ -1097,22 +1136,51 @@ class WPForms_Pro {
 	 * @since 1.2.6
 	 *
 	 * @param array  $strings List of strings.
-	 * @param object $form
+	 * @param object $form    CPT of the form.
 	 *
 	 * @return array
 	 */
 	public function form_builder_strings( $strings, $form ) {
 
-		$currency   = wpforms_setting( 'currency', 'USD' );
+		$currency   = wpforms_get_currency();
 		$currencies = wpforms_get_currencies();
 
 		$strings['currency']            = sanitize_text_field( $currency );
-		$strings['currency_name']       = sanitize_text_field( $currencies[ $currency ]['name'] );
-		$strings['currency_decimal']    = sanitize_text_field( $currencies[ $currency ]['decimal_separator'] );
-		$strings['currency_thousands']  = sanitize_text_field( $currencies[ $currency ]['thousands_separator'] );
-		$strings['currency_symbol']     = sanitize_text_field( $currencies[ $currency ]['symbol'] );
-		$strings['currency_symbol_pos'] = sanitize_text_field( $currencies[ $currency ]['symbol_pos'] );
+		$strings['currency_name']       = isset( $currencies[ $currency ]['name'] ) ? sanitize_text_field( $currencies[ $currency ]['name'] ) : '';
+		$strings['currency_decimals']   = wpforms_get_currency_decimals( $currencies[ $currency ] );
+		$strings['currency_decimal']    = isset( $currencies[ $currency ]['decimal_separator'] ) ? sanitize_text_field( $currencies[ $currency ]['decimal_separator'] ) : '.';
+		$strings['currency_thousands']  = isset( $currencies[ $currency ]['thousands_separator'] ) ? sanitize_text_field( $currencies[ $currency ]['thousands_separator'] ) : ',';
+		$strings['currency_symbol']     = isset( $currencies[ $currency ]['symbol'] ) ? sanitize_text_field( $currencies[ $currency ]['symbol'] ) : '$';
+		$strings['currency_symbol_pos'] = isset( $currencies[ $currency ]['symbol_pos'] ) ? sanitize_text_field( $currencies[ $currency ]['symbol_pos'] ) : 'left';
 		$strings['notification_clone']  = esc_html__( ' - clone', 'wpforms' );
+
+		$strings['notification_by_status_enable_alert'] = wp_kses(
+		// translators: %s: Payment provider completed payments. Example: `PayPal Standard completed payments`.
+			__( '<p>You have just enabled this notification for <strong>%s</strong>. Please note that this email notification will only send for <strong>%s</strong>.</p><p>If you\'d like to set up additional notifications for this form, please see our <a href="https://wpforms.com/docs/setup-form-notification-wpforms/" rel="nofollow noopener" target="_blank">tutorial</a>.</p>', 'wpforms' ), // phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
+			[
+				'p'      => [],
+				'strong' => [],
+				'a'      => [
+					'href'   => [],
+					'rel'    => [],
+					'target' => [],
+				],
+			]
+		);
+
+		$strings['notification_by_status_switch_alert'] = wp_kses(
+		// translators: %1$s: Payment provider completed payments. Example: `PayPal Standard completed payments`, %2$s - Disabled Payment provider completed payments.
+			__( '<p>You have just <strong>disabled</strong> the notification for <strong>%2$s</strong> and <strong>enabled</strong> the notification for <strong>%1$s</strong>. Please note that this email notification will only send for <strong>%1$s</strong>.</p><p>If you\'d like to set up additional notifications for this form, please see our <a href="https://wpforms.com/docs/setup-form-notification-wpforms/" rel="nofollow noopener" target="_blank">tutorial</a>.</p>', 'wpforms' ), // phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
+			[
+				'p'      => [],
+				'strong' => [],
+				'a'      => [
+					'href'   => [],
+					'rel'    => [],
+					'target' => [],
+				],
+			]
+		);
 
 		return $strings;
 	}
@@ -1129,8 +1197,24 @@ class WPForms_Pro {
 	public function frontend_strings( $strings ) {
 
 		// If the user has GDPR enhancements enabled and has disabled UUID,
-		// disable the the setting, otherwise enable it.
+		// disable the setting, otherwise enable it.
 		$strings['uuid_cookie'] = ! wpforms_setting( 'gdpr-disable-uuid', false );
+
+		$strings['val_requiredpayment'] = wpforms_setting( 'validation-requiredpayment', esc_html__( 'Payment is required.', 'wpforms' ) );
+		$strings['val_creditcard']      = wpforms_setting( 'validation-creditcard', esc_html__( 'Please enter a valid credit card number.', 'wpforms' ) );
+		$strings['val_post_max_size']   = wpforms_setting( 'validation-post_max_size', esc_html__( 'The total size of the selected files {totalSize} Mb exceeds the allowed limit {maxSize} Mb.', 'wpforms' ) );
+
+		// Date/time.
+		$strings['val_time12h'] = wpforms_setting( 'validation-time12h', esc_html__( 'Please enter time in 12-hour AM/PM format (eg 8:45 AM).', 'wpforms' ) );
+		$strings['val_time24h'] = wpforms_setting( 'validation-time24h', esc_html__( 'Please enter time in 24-hour format (eg 22:45).', 'wpforms' ) );
+
+		// URL.
+		$strings['val_url'] = wpforms_setting( 'validation-url', esc_html__( 'Please enter a valid URL.', 'wpforms' ) );
+
+		// File upload.
+		$strings['val_fileextension'] = wpforms_setting( 'validation-fileextension', esc_html__( 'File type is not allowed.', 'wpforms' ) );
+		$strings['val_filesize']      = wpforms_setting( 'validation-filesize', esc_html__( 'File exceeds max size allowed. File was not uploaded.', 'wpforms' ) );
+		$strings['post_max_size']     = wpforms_size_to_bytes( ini_get( 'post_max_size' ) );
 
 		return $strings;
 	}
@@ -1144,22 +1228,21 @@ class WPForms_Pro {
 	public function conditional_logic_addon_notice() {
 
 		if ( file_exists( WP_PLUGIN_DIR . '/wpforms-conditional-logic/wpforms-conditional-logic.php' ) && ! defined( 'WPFORMS_DEBUG' ) ) {
-			echo '<div class="notice notice-info"><p>';
-			printf(
-				wp_kses(
-					/* translators: %s - WPForms.com announcement page URL. */
+			$notice = sprintf(
+				wp_kses( /* translators: %s - WPForms.com announcement page URL. */
 					__( 'Conditional logic functionality is now included in the core WPForms plugin! The WPForms Conditional Logic addon can be removed without affecting your forms. For more details <a href="%s" target="_blank" rel="noopener noreferrer">read our announcement</a>.', 'wpforms' ),
-					array(
-						'a' => array(
-							'href'   => array(),
-							'target' => array(),
-							'rel'    => array(),
-						),
-					)
+					[
+						'a' => [
+							'href'   => [],
+							'target' => [],
+							'rel'    => [],
+						],
+					]
 				),
 				'https://wpforms.com/announcing-wpforms-1-3-8/'
 			);
-			echo '</p></div>';
+
+			\WPForms\Admin\Notice::info( $notice );
 		}
 	}
 
@@ -1175,7 +1258,7 @@ class WPForms_Pro {
 
 		<!-- Confirmation block 'message' field template -->
 		<script type="text/html" id="tmpl-wpforms-builder-confirmations-message-field">
-			<div id="wpforms-panel-field-confirmations-message-{{ data.id }}-wrap" class="wpforms-panel-field  wpforms-panel-field-textarea" style="display: block;">
+			<div id="wpforms-panel-field-confirmations-message-{{ data.id }}-wrap" class="wpforms-panel-field wpforms-panel-field-tinymce" style="display: block;">
 				<label for="wpforms-panel-field-confirmations-message-{{ data.id }}"><?php esc_html_e( 'Confirmation Message', 'wpforms' ); ?></label>
 				<textarea id="wpforms-panel-field-confirmations-message-{{ data.id }}" name="settings[confirmations][{{ data.id }}][message]" rows="3" placeholder="" class="wpforms-panel-field-confirmations-message"></textarea>
 			</div>
@@ -1184,14 +1267,17 @@ class WPForms_Pro {
 		<!-- Conditional logic toggle field template -->
 		<script  type="text/html" id="tmpl-wpforms-builder-conditional-logic-toggle-field">
 			<div id="wpforms-panel-field-settings-{{ data.type }}s-{{ data.id }}-conditional_logic-wrap" class="wpforms-panel-field wpforms-conditionals-enable-toggle wpforms-panel-field-checkbox">
-				<input type="checkbox" id="wpforms-panel-field-settings-{{ data.type }}s-{{ data.id }}-conditional_logic-checkbox" name="settings[{{ data.type }}s][{{ data.id }}][conditional_logic]" value="1"
-				       class="wpforms-panel-field-conditional_logic-checkbox"
-				       data-name="settings[{{ data.type }}s][{{ data.id }}]"
-				       data-actions="{{ data.actions }}"
-				       data-action-desc="{{ data.actionDesc }}"><label for="wpforms-panel-field-settings-{{ data.type }}s-{{ data.id }}-conditional_logic-checkbox" class="inline">
-					<?php esc_html_e( 'Enable conditional logic', 'wpforms' ); ?>
-					<i class="fa fa-question-circle wpforms-help-tooltip" title="<?php echo esc_attr( $conditional_logic_tooltip ); ?>"></i>
-				</label>
+				<span class="wpforms-toggle-control">
+					<input type="checkbox" id="wpforms-panel-field-settings-{{ data.type }}s-{{ data.id }}-conditional_logic-checkbox" name="settings[{{ data.type }}s][{{ data.id }}][conditional_logic]" value="1"
+						class="wpforms-panel-field-conditional_logic-checkbox"
+						data-name="settings[{{ data.type }}s][{{ data.id }}]"
+						data-actions="{{ data.actions }}"
+						data-action-desc="{{ data.actionDesc }}">
+					<label class="wpforms-toggle-control-icon" for="wpforms-panel-field-settings-{{ data.type }}s-{{ data.id }}-conditional_logic-checkbox"></label>
+					<label for="wpforms-panel-field-settings-{{ data.type }}s-{{ data.id }}-conditional_logic-checkbox" class="wpforms-toggle-control-label">
+						<?php esc_html_e( 'Enable Conditional Logic', 'wpforms' ); ?>
+					</label><i class="fa fa-question-circle-o wpforms-help-tooltip tooltipstered" title="<?php echo esc_attr( $conditional_logic_tooltip ); ?>"></i>
+				</span>
 			</div>
 		</script>
 

@@ -3,6 +3,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
+    background-color: $c-white;
   }
 
   &__counter {
@@ -95,5 +96,9 @@
     figcaption {
       padding-left: $space;
     }
+  }
+
+  .no-images {
+    min-height: 230px;
   }
 }

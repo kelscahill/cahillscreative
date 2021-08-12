@@ -25,6 +25,10 @@ $context = Timber::get_context();
 $post = new TimberPost();
 $context['post'] = $post;
 
+if (get_field('title')) {
+  $context['heading'] = get_field('title', $post->ID);
+}
+
 Timber::render(array(
   '05-pages/page-types/page-' . $post->post_name . '.twig',
   '05-pages/page-types/page.twig'

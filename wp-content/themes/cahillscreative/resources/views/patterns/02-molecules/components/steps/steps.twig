@@ -1,72 +1,87 @@
 {% set base_class = steps.base_class|default('c-steps') %}
 
-{% if steps %}
-  <div class="{{ bem_classes(base_class, steps.element, steps.modifiers, steps.extra) }} u-spacing--double">
-    {% for step in steps %}
-      <div class="{{ bem_classes(base_class, 'item') }}">
-        <div class="{{ bem_classes(base_class, 'counter') }}">
-         <span class="{{ bem_classes(base_class, 'counter-index') }}">
-            {{ loop.index }}
-         </span>
-         {% include "@atoms/text/heading/heading.twig" with {
-           "heading": {
-             "level": "6",
-             "size": "s",
-             "type": "secondary",
-             "text": "Step",
-             "extra": bem_classes(base_class, 'counter-step')
-           }
-         } %}
-        </div>
+{% if steps.items %}
+  <section{{ steps.anchor ? ' id="' ~ steps.anchor ~ '"'}} class="{{ bem_classes(base_class, steps.element, steps.modifiers, steps.extra) }} u-spacing--double">
+    {% include "@organisms/sections/page-headers/page-header.twig" with {
+      "page_header": {
+        "icon": {
+          "type": steps.header.icon_type,
+          "name": steps.header.icon_name,
+          "image": steps.header.icon_image
+        },
+        "kicker": steps.header.kicker,
+        "heading": steps.header.title,
+        "dek": steps.header.description,
+        "extra": bem_classes(base_class, 'header')
+      }
+    } %}
+    <div class="{{ bem_classes(base_class, 'items') }} u-spacing--double">
+      {% for step in steps.items %}
+        <div class="{{ bem_classes(base_class, 'item') }}">
+          <div class="{{ bem_classes(base_class, 'counter') }}">
+           <span class="{{ bem_classes(base_class, 'counter-index') }}">
+             {{ loop.index }}
+           </span>
+           {% include "@atoms/text/heading/heading.twig" with {
+             "heading": {
+               "level": "6",
+               "size": "s",
+               "type": "secondary",
+               "text": "Step",
+               "extra": bem_classes(base_class, 'counter-step')
+             }
+           } %}
+          </div>
           <div class="{{ bem_classes(base_class, 'body') }} u-spacing">
-          {% include "@atoms/text/heading/heading.twig" with {
-            "heading": {
-              "level": "3",
-              "size": "m",
-              "type": "primary",
-              "text": step.title,
-              "extra": bem_classes(base_class, 'heading')
-            }
-          } %}
-          {% include "@atoms/text/rich-text/rich-text.twig" with {
-            "rich_text": {
-              "text": step.body,
-              "extra": bem_classes(base_class, 'rich-text')
-            }
-          } %}
-          {% if step.images|length > 1 %}
-            <div class="{{ bem_classes(base_class, 'images') }}">
-              {% for image in step.images %}
-                {% include "@atoms/images/image/figure.twig" with {
-                  "figure": {
-                    "image": {
-                      "srcset": Image(image).src|resize(720, 540) ~ ' 720w, ' ~ Image(image).src|resize(960, 720) ~ ' 960w',
-                      "src": Image(image).src|resize(500, 375),
-                      "alt": Image(image).alt,
-                      "caption": Image(image).caption
+            {% include "@atoms/text/heading/heading.twig" with {
+              "heading": {
+                "level": "3",
+                "size": "m",
+                "type": "primary",
+                "text": step.title,
+                "extra": bem_classes(base_class, 'heading')
+              }
+            } %}
+            {% include "@atoms/text/rich-text/rich-text.twig" with {
+              "rich_text": {
+                "text": step.body,
+                "extra": [bem_classes(base_class, 'rich-text'), not step.images ? 'no-images']
+              }
+            } %}
+            {% if step.images and step.images|length > 1 %}
+              <div class="{{ bem_classes(base_class, 'images') }}">
+                {% for image in step.images %}
+                  {% include "@atoms/images/image/figure.twig" with {
+                    "figure": {
+                      "image": {
+                        "srcset": Image(image).src|resize(720, 720) ~ ' 720w, ' ~ Image(image).src|resize(960, 960) ~ ' 960w',
+                        "src": Image(image).src|resize(500, 500),
+                        "alt": Image(image).alt,
+                        "caption": Image(image).caption
+                      }
                     }
-                  }
-                } %}
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="{{ bem_classes(base_class, 'image') }}">
-              {% for image in step.images %}
-                {% include "@atoms/images/image/figure.twig" with {
-                  "figure": {
-                    "image": {
-                      "srcset": Image(image).src|resize(800, auto) ~ ' 720w',
-                      "src": Image(image).src|resize(500, auto),
-                      "alt": Image(image).alt,
-                      "caption": Image(image).caption
+                  } %}
+                {% endfor %}
+              </div>
+            {% elseif step.images %}
+              <div class="{{ bem_classes(base_class, 'image') }}">
+                {% for image in step.images %}
+                  {% include "@atoms/images/image/figure.twig" with {
+                    "figure": {
+                      "image": {
+                        "srcset": Image(image).src|resize(800, auto) ~ ' 720w',
+                        "src": Image(image).src|resize(500, auto),
+                        "alt": Image(image).alt,
+                        "caption": Image(image).caption
+                      }
                     }
-                  }
-                } %}
-              {% endfor %}
-            </div>
-          {% endif %}
+                  } %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
         </div>
-      </div>
-    {% endfor %}
-  </div>
+      {% endfor %}
+    </div>
+  </section>
 {% endif %}

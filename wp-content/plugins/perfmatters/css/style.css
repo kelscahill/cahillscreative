@@ -340,16 +340,6 @@
   margin: 10px 10px 0px 0px;
 }
 
-#perfmatters-admin .perfmatters-button-warning {
-  background: #ED5464;
-  border-color: #ED5464;
-  color: #ffffff;
-}
-#perfmatters-admin .perfmatters-button-warning:hover {
-  background: #c14552;
-  border-color: #c14552;
-}
-
 #perfmatters-admin #perfmatters-legend {
   float: right;
   padding-top: 20px;
@@ -379,28 +369,13 @@
 }
 
 .perfmatters-input-row {
-  position: relative;
   margin-bottom: 5px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  max-width: 600px;
 }
 
-.perfmatters-input-row:not(:first-child) {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #ddd;
-}
-
-.perfmatters-input-row input[type="text"] {
-  flex-grow: 1;
-}
-
-.perfmatters-input-row label {
+.perfmatters-input-row label{
   margin: 0px 0px 0px 5px;
   font-size: 12px;
-  white-space: nowrap;
+  vertical-align: baseline;
 }
 
 .perfmatters-input-row input[type="checkbox"] {
@@ -408,45 +383,23 @@
 }
 
 #perfmatters-admin .perfmatters-input-row select {
+  vertical-align: top;
+  margin-left: 5px;
   min-width: auto;
 }
 
 a.perfmatters-delete-input-row {
-  background: #aaa;
-  border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  margin-left: 5px;
+  margin-left: 3px;
+  display: inline-block;
+  vertical-align: baseline;
 }
+
 a.perfmatters-delete-input-row span.dashicons-no {
-  color: #fff;
+  color: red;
   text-decoration: none;
 }
 
 a.perfmatters-add-input-row {
   white-space: nowrap;
   text-decoration: none;
-}
-.perfmatters-inline-label-input {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-.perfmatters-inline-label-input span {
-  position: absolute;
-  left: 1px;
-  background: #F0F0F1;
-  border-right: 1px solid #8c8f94;
-  color: #8c8f94;
-  height: 28px;
-  padding: 0px 10px;
-  display: inline-flex;
-  align-items: center;
-  border-radius: 4px 0px 0px 4px;
-  -webkit-border-radius: 4px 0px 0px 4px;
-  -moz-border-radius: 4px 0px 0px 4px;
-}
-
-#perfmatters-admin ::placeholder {
-  color: #ccc;
 }

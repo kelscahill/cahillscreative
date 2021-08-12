@@ -70,7 +70,7 @@ echo "<form method='post' action=''>";
 				echo "<th>" . perfmatters_title(__('License Key', 'perfmatters'), (empty($license) ? 'perfmatters_edd_license_key' : false), 'https://perfmatters.io/docs/troubleshooting-license-key-activation/') . "</th>";
 				echo "<td>";
 
-					echo "<input id='perfmatters_edd_license_key' name='perfmatters_edd_license_key' type='password' class='regular-text' value='" . (!empty($license) ? 'yourawizardharry' : '') . "' style='margin-right: 10px;' maxlength='50' />";
+					echo "<input id='perfmatters_edd_license_key' name='perfmatters_edd_license_key' type='password' class='regular-text' value='" . $license . "' />";
 
 					if(empty($license)) {
 						//save license button
@@ -129,7 +129,7 @@ echo "<form method='post' action=''>";
 						echo "<tr>";
 							echo "<th>" . __('License Status', 'perfmatters') . "</th>";
 							echo "<td" . ($license_info->license == "expired" ? " style='color: red;'" : "") . ">";
-								echo ucfirst($license_info->license);
+								echo $license_info->license;
 								if($license_info->license == "expired") {
 									echo "<br />";
 									echo "<a href='https://perfmatters.io/checkout/?edd_license_key=" . $license . "&download_id=696' class='button-primary' style='margin-top: 10px;' target='_blank'>" . __('Renew Your License for Updates + Support!', 'perfmatters') . "</a>";
@@ -143,14 +143,6 @@ echo "<form method='post' action=''>";
 						echo "<tr>";
 							echo "<th>" . __('Licenses Used', 'perfmatters') . "</th>";
 							echo "<td>" . $license_info->site_count . "/" . $license_info->license_limit . "</td>";
-						echo "</tr>";
-					}
-
-					//expiration date
-					if(!empty($license_info->expires)) {
-						echo "<tr>";
-							echo "<th>" . __('Expiration Date', 'perfmatters') . "</th>";
-							echo "<td>" . ($license_info->expires != 'lifetime' ? date("F d, Y", strtotime($license_info->expires)) : __('Lifetime', 'perfmatters')) . "</td>";
 						echo "</tr>";
 					}
 				}

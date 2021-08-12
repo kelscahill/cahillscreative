@@ -44,6 +44,11 @@
 }
 
 .o-cart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
   .woocommerce-notices-wrapper {
     padding-left: 0;
     padding-right: 0;
@@ -315,6 +320,14 @@
     margin-top: 0;
   }
 
+  label > p {
+    font-weight: 500;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
   img {
     display: none;
   }
@@ -387,6 +400,7 @@
   > table.woocommerce-table--order-downloads {
     border: 0;
     border-collapse: collapse;
+    margin-top: $space;
 
     tr {
       border: 0;

@@ -30,6 +30,15 @@ td {
   p {
     margin: 0;
   }
+
+  a {
+    text-decoration: underline;
+
+    &:hover,
+    &:focus {
+      color: $c-secondary;
+    }
+  }
 }
 
 /**
