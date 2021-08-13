@@ -1,11 +1,34 @@
 .o-ad {
-  &.is-sticky {
-    position: sticky;
-    top: calc(#{$header-height} + #{$space-half});
-  }
+  display: block;
 
   > * {
     margin-left: auto;
     margin-right: auto;
+  }
+
+  &--sidebar {
+    @include media('>xxlarge') {
+      position: absolute;
+      right: calc(-320px - #{$space-double});
+      top: 0;
+      width: 320px;
+
+      > * {
+        margin-left: 0;
+      }
+    }
+
+    &.is-sticky {
+      position: relative;
+      margin-bottom: $space;
+      margin-left: auto;
+      margin-right: auto;
+
+      @include media('>xxlarge') {
+        position: sticky;
+        float: right;
+        margin-right: calc(-320px - #{$space-double});
+      }
+    }
   }
 }

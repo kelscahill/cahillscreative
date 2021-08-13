@@ -28,6 +28,15 @@
             }
           } %}
           <div class="{{ bem_classes(base_class, 'body') }} u-spacing">
+            {% if loop.index == 2 %}
+              {% include "@atoms/ads/ad.twig" with {
+                "ad": {
+                  "content": "<div id='ezoic-pub-ad-placeholder-154'></div>",
+                  "modifiers": "sidebar",
+                  "extra": "is-sticky"
+                }
+              } %}
+            {% endif %}
             {% include "@atoms/text/rich-text/rich-text.twig" with {
               "rich_text": {
                 "text": item.body
