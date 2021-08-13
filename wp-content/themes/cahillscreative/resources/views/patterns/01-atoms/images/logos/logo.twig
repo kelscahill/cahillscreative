@@ -4,7 +4,7 @@
     {% if logo.link %}
       <a href="{{ logo.link }}" class="{{ bem_classes(base_class, 'link') }}" {{ add_attributes(logo.attributes) }}>
     {% endif %}
-      <img class="{{ bem_classes(base_class, 'image') }}" src="{{ logo.image.src }}" alt="{{ logo.image.alt ? logo.image.alt : "Logo" }}" width="100%" height="auto"/>
+      <img class="{{ bem_classes(base_class, 'image') }}" src="{{ logo.image.src }}" alt="{{ logo.image.alt ? logo.image.alt : "Logo" }}" />
     {% if logo.link %}
       </a>
     {% endif %}
