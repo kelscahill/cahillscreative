@@ -10,22 +10,10 @@
   {% set layout_extra = layout_extra|merge(["has-sidebar"]) %}
 {% endif %}
 
-<style type="text/css">
-  :root {
-    --c-primary: {{ options.primary_color }};
-    --c-secondary: {{ options.secondary_color }};
-    --c-tertiary: {{ options.tertiary_color }};
-    --c-white: {{ options.white }};
-    --c-black: {{ options.black }};
-    --font-primary: "GT Walsheim", Arial, Helvetica, sans-serif;
-    --font-secondary: "Voster", Arial, Helvetica, sans-serif;
-  }
-</style>
-
 <!DOCTYPE html>
 <html class="no-js no-svg" {{ site.language_attributes }}>
   {% include "@templates/_head.twig" %}
-  <body class="body{{ ' ' ~ body_class ~ ' ' ~ body_extra_class }}" data-template="base.twig">
+  <body class="body{{ ' ' ~ body_class ~ ' ' ~ body_extra_class }}">
     <a class="skip-link screen-reader-text visually-hidden" href="#content">Skip to content</a>
     {% include "@organisms/global/header/header.twig" %}
     {% block sections_before %}{% endblock %}
