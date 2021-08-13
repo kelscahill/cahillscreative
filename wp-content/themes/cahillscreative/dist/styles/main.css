@@ -17059,6 +17059,10 @@ body.search-is-active .c-search-modal {
   }
 }
 
+.c-posts-grid__posts {
+  width: 100%;
+}
+
 .c-related-posts,
 .c-posts-slider {
   position: relative;
