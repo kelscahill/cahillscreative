@@ -7,8 +7,7 @@
   }
 
   &__counter {
-    position: sticky;
-    top: 0;
+    position: relative;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -17,6 +16,11 @@
     margin-right: $space-double;
     justify-content: space-between;
     z-index: 2;
+
+    &.is-sticky {
+      position: sticky;
+      top: 0;
+    }
 
     &-index,
     &-step {
@@ -62,15 +66,18 @@
   }
 
   &__images {
-    display: flex;
-    flex-direction: column;
     width: 100vw;
     left: 50%;
     right: 50%;
     margin-left: calc(-50vw - #{$space-double} + 5px);
     margin-right: calc(-50vw - #{$space-double} + 5px);
     position: relative;
-    padding-top: $space-half;
+  }
+
+  &__images-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
 
     @include media('>medium') {
       flex-direction: row;

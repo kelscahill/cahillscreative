@@ -34,13 +34,6 @@
           {% include ['@molecules/cards/card-' ~ post.post_type ~ '.twig', '@molecules/cards/card.twig'] with {
             "card": post
           } %}
-          {% if loop.index % 7 == 0 %}
-            {% include "@atoms/ads/ad.twig" with {
-              "ad": {
-                "extra": "c-card c-card--ad"
-              }
-            } %}
-          {% endif %}
         {% endfor %}
       </div>
       {% include "@molecules/navigation/pagination/pagination.twig" with post_grid %}

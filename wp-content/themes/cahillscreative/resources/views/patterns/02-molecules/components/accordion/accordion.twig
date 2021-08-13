@@ -28,19 +28,20 @@
             }
           } %}
           <div class="{{ bem_classes(base_class, 'body') }} u-spacing">
-            {% if loop.index == 2 %}
-              {% include "@atoms/ads/ad.twig" with {
-                "ad": {
-                  "modifiers": "sidebar",
-                  "extra": "is-sticky"
-                }
-              } %}
-            {% endif %}
             {% include "@atoms/text/rich-text/rich-text.twig" with {
               "rich_text": {
                 "text": item.body
               }
             } %}
+            {% if loop.index == 3 %}
+              {% include "@atoms/ads/ad.twig" with {
+                "ad": {
+                  "id": options.ad_sidebar,
+                  "modifiers": "sidebar",
+                  "extra": "is-sticky"
+                }
+              } %}
+            {% endif %}
             {% include "@molecules/components/checkbox-list/checkbox-list.twig" with {
               "checkbox_list": item.checkboxes,
               "id": 'accordion-' ~ post.slug ~ '-' ~ loop.index
