@@ -76,6 +76,11 @@
     margin-top: $space-quadruple;
   }
 
+  iframe {
+    width: 100%;
+    height: auto;
+  }
+
   .c-promo:first-of-type,
   .c-promo + .c-promo,
   .c-promo + .c-newsletter-signup-banner,
