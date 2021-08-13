@@ -12,6 +12,7 @@
       right: calc(-320px - #{$space-double});
       top: 0;
       width: 320px;
+      z-index: 2;
 
       > * {
         margin-left: 0;
@@ -23,6 +24,7 @@
       margin-bottom: $space;
       margin-left: auto;
       margin-right: auto;
+      z-index: 2;
 
       @include media('>xxlarge') {
         position: sticky;

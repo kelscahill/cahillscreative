@@ -12094,6 +12094,7 @@ img.mfp-img {
     right: calc(-320px - 40px);
     top: 0;
     width: 320px;
+    z-index: 2;
   }
 
   .o-ad--sidebar > * {
@@ -12106,6 +12107,7 @@ img.mfp-img {
   margin-bottom: 20px;
   margin-left: auto;
   margin-right: auto;
+  z-index: 2;
 }
 
 @media (min-width: 1441px) {
