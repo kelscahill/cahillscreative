@@ -1,7 +1,3 @@
 {% set base_class = ad.base_class|default('o-ad') %}
 
-{% if ad %}
-  <div class="{{ bem_classes(base_class, ad.element, ad.modifiers, ad.extra) }}">
-    {{ ad.content }}
-  </div>
-{% endif %}
+<div class="{{ bem_classes(base_class, ad.element, ad.modifiers, ad.extra) }}"></div>

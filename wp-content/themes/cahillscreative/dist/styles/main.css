@@ -14626,6 +14626,10 @@ video {
   padding: 20px 0 0 0;
 }
 
+.c-card--ad {
+  background-color: transparent;
+}
+
 .c-accordion {
   width: 100%;
 }

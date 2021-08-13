@@ -17,15 +17,6 @@
           {% include "@molecules/cards/card-product.twig" with {
             "card": post
           } %}
-          {% if loop.index % 4 == 0 %}
-            <div class="c-card c-card--ad">
-              {% include "@atoms/ads/ad.twig" with {
-                "ad": {
-                  "content": "<div id='ezoic-pub-ad-placeholder-158'></div>"
-                }
-              } %}
-            </div>
-          {% endif %}
         {% endfor %}
       </div>
     </div>

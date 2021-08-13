@@ -81,19 +81,8 @@
             {% endif %}
           </div>
         </div>
-        {% if loop.index == 2 %}
-          {% include "@atoms/ads/ad.twig" with {
-            "ad": {
-              "content": "<div id='ezoic-pub-ad-placeholder-147'></div>"
-            }
-          } %}
-        {% endif %}
-        {% if loop.index == 4 %}
-          {% include "@atoms/ads/ad.twig" with {
-            "ad": {
-              "content": "<div id='ezoic-pub-ad-placeholder-159'></div>"
-            }
-          } %}
+        {% if loop.index % 2 == 0 %}
+          {% include "@atoms/ads/ad.twig" %}
         {% endif %}
       {% endfor %}
     </div>
