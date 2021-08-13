@@ -17235,6 +17235,10 @@ body.search-is-active .c-search-modal {
   background-position: right center;
 }
 
+.c-post-filter {
+  padding-top: 40px;
+}
+
 .c-filter {
   position: sticky;
   top: 0;
