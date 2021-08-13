@@ -106,6 +106,9 @@ td {
 
         &::before {
           content: "+ " attr(data-label);
+          @include body-copy;
+          text-transform: none;
+          font-weight: 500;
         }
       }
 

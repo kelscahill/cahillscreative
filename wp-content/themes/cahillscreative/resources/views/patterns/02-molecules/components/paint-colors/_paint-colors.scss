@@ -1,12 +1,15 @@
 .c-paint-colors {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   flex-direction: column;
+  border-top: $border--standard;
+  padding-top: $space;
 
   @include media('>medium') {
+    border-top: none;
+    padding-top: 0;
     flex-direction: column;
-    align-items: flex-start;
   }
 
   &__items {

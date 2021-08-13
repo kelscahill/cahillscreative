@@ -19,5 +19,6 @@ if (!empty($block['anchor'])) {
 
 $templates = array(
   '/wp-content/themes/cahillscreative/resources/views/patterns/02-molecules/components/accordion/accordion.twig',
+  get_stylesheet_directory() . '/views/patterns/02-molecules/components/accordion/accordion.twig',
 );
 Timber::render( $templates, $context );
