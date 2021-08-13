@@ -65,6 +65,7 @@ $c-body-bg: $c-white;
        url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Light.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -75,6 +76,7 @@ $c-body-bg: $c-white;
        url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-LightOblique.woff2") format("woff2");
   font-weight: 300;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -85,6 +87,7 @@ $c-body-bg: $c-white;
        url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Regular.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -95,6 +98,7 @@ $c-body-bg: $c-white;
        url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-RegularOblique.woff2") format("woff2");
   font-weight: normal;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -105,6 +109,7 @@ $c-body-bg: $c-white;
        url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Medium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -112,6 +117,7 @@ $c-body-bg: $c-white;
   src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/voster.woff2") format("woff2"), url("/wp-content/themes/cahillscreative/resources/assets/fonts/voster.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 $font-body: "GT Walsheim", Arial, Helvetica, sans-serif;

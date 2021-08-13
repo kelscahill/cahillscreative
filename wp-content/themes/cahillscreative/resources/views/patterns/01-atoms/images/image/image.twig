@@ -13,5 +13,7 @@
     {% if image.title %}
       title="{{ image.title }}"
     {% endif %}
+    width="{{ image.width ? image.width : "100%" }}"
+    height="{{ image.height ? image.height : "auto" }}"
   />
 {% endif %}

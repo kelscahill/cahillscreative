@@ -22,6 +22,7 @@
   src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Light.ttf") format("truetype"), url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Light.woff") format("woff"), url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Light.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -30,6 +31,7 @@
   src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-LightOblique.ttf") format("truetype"), url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-LightOblique.woff") format("woff"), url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-LightOblique.woff2") format("woff2");
   font-weight: 300;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -38,6 +40,7 @@
   src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Regular.ttf") format("truetype"), url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Regular.woff") format("woff"), url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Regular.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -46,6 +49,7 @@
   src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-RegularOblique.ttf") format("truetype"), url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-RegularOblique.woff") format("woff"), url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-RegularOblique.woff2") format("woff2");
   font-weight: normal;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -54,6 +58,7 @@
   src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Medium.ttf") format("truetype"), url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Medium.woff") format("woff"), url("/wp-content/themes/cahillscreative/resources/assets/fonts/GTWalsheimPro-Medium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -61,6 +66,7 @@
   src: url("/wp-content/themes/cahillscreative/resources/assets/fonts/voster.woff2") format("woff2"), url("/wp-content/themes/cahillscreative/resources/assets/fonts/voster.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 /**
