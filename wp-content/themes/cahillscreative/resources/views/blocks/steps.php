@@ -18,5 +18,6 @@ if (!empty($block['anchor'])) {
 
 $templates = array(
   '/wp-content/themes/cahillscreative/resources/views/patterns/02-molecules/components/steps/steps.twig',
+  get_stylesheet_directory() . '/views/patterns/02-molecules/components/steps/steps.twig',
 );
 Timber::render( $templates, $context );

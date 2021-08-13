@@ -40,7 +40,7 @@ defined( 'ABSPATH' ) || exit; ?>
 				<?php if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_cart_item_visible', true, $cart_item, $cart_item_key ) ) : ?>
 					<?php $product_permalink = apply_filters( 'woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink( $cart_item ) : '', $cart_item, $cart_item_key ); ?>
 					<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'c-cart__item', $cart_item, $cart_item_key ) ); ?>">
-						<td data-label="<?php echo $_product->get_name(); ?>" class="js-toggle-parent">
+						<td data-label="<?php esc_attr_e( $_product->get_name(), 'woocommerce' ); ?>" class="js-toggle-parent">
 							<?php $thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key ); ?>
 							<?php if ( ! $product_permalink ) : ?>
 								<?php echo $thumbnail; ?>

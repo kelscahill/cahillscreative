@@ -380,6 +380,7 @@ Router.prototype.loadEvents = function loadEvents () {
       fade: true,
       cssEase: 'linear',
       adaptiveHeight: true,
+      draggable: true,
     });
 
     $('.js-slick-gallery').slick({
@@ -390,6 +391,7 @@ Router.prototype.loadEvents = function loadEvents () {
       speed: 300,
       fade: true,
       cssEase: 'linear',
+      draggable: true,
     });
 
     $('.js-slick-posts').slick({
@@ -472,8 +474,6 @@ Router.prototype.loadEvents = function loadEvents () {
         slidesToScroll: 1,
         asNavFor: $slickGalleryImages,
         arrows: false,
-        // vertical: true,
-        // verticalSwiping: true,
         draggable: true,
         focusOnSelect: true,
       });
@@ -493,18 +493,6 @@ Router.prototype.loadEvents = function loadEvents () {
        });
       });
     }
-
-    // if ($('.js-gallery-button').length) {
-    //   $('.js-gallery-button').each(function() {
-    //    $(this).magnificPopup({
-    //      delegate: 'a',
-    //      type: 'image',
-    //      gallery: {
-    //        enabled: true
-    //      }
-    //    });
-    //   });
-    // }
 
     /**
      * General helper function to support toggle functions.
