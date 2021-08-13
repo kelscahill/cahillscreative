@@ -6,6 +6,7 @@
       "link": {
         "text": "Previous",
         "url": posts.pagination.prev.link,
+        "target": "_self",
         "modifiers": "alt",
         "extra": bem_classes(base_class, 'nav', 'prev')
       }
@@ -14,7 +15,7 @@
       <div class="{{ bem_classes(base_class, 'pages') }}">
         {% for page in posts.pagination.pages %}
           {% if page.link %}
-            <a target="_blank" href="{{ page.link }}" class="{{ bem_classes(base_class, 'page', 'link') }}">{{ page.title }}</a>
+            <a target="_self" href="{{ page.link }}" class="{{ bem_classes(base_class, 'page', 'link') }}">{{ page.title }}</a>
           {% else %}
             {% if page.title == "&hellip;" %}
               <span class="{{ bem_classes(base_class, 'page', 'hellip') }}">{{ page.title }}</span>
@@ -29,6 +30,7 @@
       "link": {
         "text": "Next",
         "url": posts.pagination.next.link,
+        "target": "_self",
         "modifiers": "alt",
         "extra": bem_classes(base_class, 'nav', 'next')
       }
