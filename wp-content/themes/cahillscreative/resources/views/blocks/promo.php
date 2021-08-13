@@ -16,6 +16,6 @@ if (!empty($block['anchor'])) {
 }
 
 $templates = array(
-	get_stylesheet_directory() . '/views/patterns/03-organisms/sections/promo/promo.twig',
+  '/wp-content/themes/cahillscreative/resources/views/patterns/03-organisms/sections/promo/promo.twig',
 );
 Timber::render( $templates, $context );
