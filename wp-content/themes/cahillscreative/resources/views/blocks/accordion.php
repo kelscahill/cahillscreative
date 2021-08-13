@@ -16,7 +16,7 @@ $context['accordion']['expanded'] = get_field( 'accordion_expanded' );
 if (!empty($block['anchor'])) {
   $context['accordion']['anchor'] = $block['anchor'];
 }
-
+print_r(get_stylesheet_directory());
 $templates = array(
   get_stylesheet_directory() . '/views/patterns/02-molecules/components/accordion/accordion.twig',
 );
