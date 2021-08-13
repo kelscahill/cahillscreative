@@ -14,6 +14,6 @@ $context = Timber::context();
 // $context['newsletter']['des'] = get_field( 'accordion_items' );
 
 $templates = array(
-  get_stylesheet_directory() . '/views/patterns/02-molecules/components/newsletter-signup/newsletter-signup-banner.twig',
+  '/wp-content/themes/cahillscreative/resources/views/patterns/02-molecules/components/newsletter-signup/newsletter-signup-banner.twig',
 );
 Timber::render( $templates, $context );

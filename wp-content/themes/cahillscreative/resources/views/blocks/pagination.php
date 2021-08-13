@@ -13,6 +13,6 @@ $context = Timber::context();
 $context['posts'] = new Timber\PostQuery($query);
 
 $templates = array(
-  get_stylesheet_directory() . '/views/patterns/02-molecules/navigation/pagination/pagination.twig',
+  '/wp-content/themes/cahillscreative/resources/views/patterns/02-molecules/navigation/pagination/pagination.twig',
 );
 Timber::render( $templates, $context );

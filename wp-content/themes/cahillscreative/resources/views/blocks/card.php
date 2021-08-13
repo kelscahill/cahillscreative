@@ -20,7 +20,7 @@ if ($post->post_type == 'product' || $post->post_type == 'affiliate') {
 }
 
 $templates = array(
-  get_stylesheet_directory() . '/views/patterns/02-molecules/cards/card-' . $template . '.twig',
-  get_stylesheet_directory() . '/views/patterns/02-molecules/cards/card.twig',
+  '/wp-content/themes/cahillscreative/resources/views/patterns/02-molecules/cards/card-' . $template . '.twig',
+  '/wp-content/themes/cahillscreative/resources/views/patterns/02-molecules/cards/card.twig',
 );
 Timber::render( $templates, $context );

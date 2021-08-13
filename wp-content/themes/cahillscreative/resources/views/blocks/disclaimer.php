@@ -12,6 +12,6 @@
 $context = Timber::context();
 
 $templates = array(
-  get_stylesheet_directory() . '/views/patterns/01-atoms/text/disclaimer/disclaimer.twig',
+  '/wp-content/themes/cahillscreative/resources/views/patterns/01-atoms/text/disclaimer/disclaimer.twig',
 );
 Timber::render( $templates, $context );

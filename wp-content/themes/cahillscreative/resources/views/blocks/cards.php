@@ -17,6 +17,6 @@ if (!empty($block['anchor'])) {
 }
 
 $templates = array(
-  get_stylesheet_directory() . '/views/patterns/03-organisms/sections/cards/cards.twig',
+  '/wp-content/themes/cahillscreative/resources/views/patterns/03-organisms/sections/cards/cards.twig',
 );
 Timber::render( $templates, $context );
