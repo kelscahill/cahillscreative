@@ -98,7 +98,7 @@ class Advanced_Ads_Ad_Type_Image extends Advanced_Ads_Ad_Type_Abstract {
 		// override image sizes with the sizes given in ad options, but in frontend only
 		if (
 			! is_admin()
-			|| ( defined( 'DOING_AJAX' ) && DOING_AJAX )
+			|| wp_doing_ajax()
 		) {
 			$width  = isset( $ad->width ) ? absint( $ad->width ) : $width;
 			$height = isset( $ad->height ) ? absint( $ad->height ) : $height;

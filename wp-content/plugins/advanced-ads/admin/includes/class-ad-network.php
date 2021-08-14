@@ -99,7 +99,7 @@ abstract class Advanced_Ads_Ad_Network {
 		add_filter( 'advanced-ads-ad-types', array( $this, 'register_ad_type_callback' ) );
 
 		if ( is_admin() ) {
-			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			if ( wp_doing_ajax() ) {
 				// we need add all the actions for our ajax calls here.
 				// our ajax method that will trigger an update of the ad units of this network.
 				add_action( 'wp_ajax_advanced_ads_get_ad_units_' . $this->identifier, array( $this, 'update_external_ad_units' ) );

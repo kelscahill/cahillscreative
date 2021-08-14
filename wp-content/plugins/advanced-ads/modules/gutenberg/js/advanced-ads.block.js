@@ -48,6 +48,9 @@
 		category: 'common',
 
 		attributes: {
+			className: {
+				type: 'string',
+			},
 			itemID: {
 				type: 'string',
 			},
@@ -109,10 +112,7 @@
 			args.push( el( 'optgroup', {label: advadsGutenberg.i18n['ads']}, ads ) );
 
 			// add a <label /> first and style it.
-			children.push( el( 'label', {style:{fontWeight:'bold',display:'block'}}, advadsGutenberg.i18n.advads ) );
-
-			// then add the <select /> input with its own children
-			children.push( el.apply( null, args ) );
+			children.push( el( 'div', {className: 'components-placeholder__label'}, advadsIconEl, el( 'label', {style: {display: 'block'}}, advadsGutenberg.i18n.advads ) ) );
 
 			if ( itemID && advadsGutenberg.i18n['--empty--'] != itemID ) {
 
@@ -128,23 +128,28 @@
 
 				children.push(
 					el(
-						'a',
-						{
-							class: 'dashicons dashicons-external',
-							style: {
-								'vetical-align': 'middle',
-								margin: 5,
-								'border-bottom': 'none'
-							},
-							href: url,
-							target: '_blank',
-						}
+						'div',
+						{className: 'components-placeholder__fieldset'},
+						// then add the <select /> input with its own children
+						el.apply( null, args ),
+						el(
+							'a',
+							{
+								class:  'dashicons dashicons-external',
+								style:  {
+									margin: 5
+								},
+								href:   url,
+								target: '_blank'
+							}
+						)
 					)
 				);
-
+			} else {
+				children.push( el.apply( null, args ) );
 			}
 			// return the complete form
-			return el( 'form', { onSubmit: setItemID }, children );
+			return el( 'form', { className: 'components-placeholder is-large', onSubmit: setItemID }, children );
 
 		},
 
@@ -152,6 +157,37 @@
 			// server side rendering
 			return null;
 		},
+
+		// Transforms legacy widget to Advanced Ads block.
+		transforms: {
+			from: [{
+				type:      'block',
+				blocks:    ['core/legacy-widget'],
+				isMatch:   function ( attributes ) {
+					if ( ! attributes.instance || ! attributes.instance.raw ) {
+						// Can't transform if raw instance is not shown in REST API.
+						return false;
+					}
+					return attributes.idBase === 'advads_ad_widget';
+				},
+				transform: function ( attributes ) {
+					var instance         = attributes.instance.raw;
+					var transformedBlock = wp.blocks.createBlock( 'advads/gblock', {
+						name:   instance.name,
+						itemID: instance.item_id
+					} );
+					if ( ! instance.title ) {
+						return transformedBlock;
+					}
+					return [
+						wp.blocks.createBlock( 'core/heading', {
+							content: instance.title
+						} ),
+						transformedBlock
+					];
+				}
+			}]
+		}
 
 	} );
 

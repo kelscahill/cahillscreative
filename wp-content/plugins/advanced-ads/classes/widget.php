@@ -15,6 +15,14 @@
 class Advanced_Ads_Widget extends WP_Widget {
 
 	/**
+	 * Allows the REST API to see the widgets instance.
+	 *
+	 * @deprecated deprecated since WordPress version 5.8
+	 * @var bool
+	 */
+	public $show_instance_in_rest = true;
+
+	/**
 	 * Advanced_Ads_Widget constructor.
 	 */
 	public function __construct() {
@@ -22,8 +30,9 @@ class Advanced_Ads_Widget extends WP_Widget {
 		$classname = $prefix . 'widget';
 
 		$widget_ops  = array(
-			'classname'   => $classname,
-			'description' => __( 'Display Ads and Ad Groups.', 'advanced-ads' ),
+			'classname'             => $classname,
+			'show_instance_in_rest' => true,
+			'description'           => __( 'Display Ads and Ad Groups.', 'advanced-ads' ),
 		);
 		$control_ops = array();
 		$base_id     = self::get_base_id();
@@ -276,6 +285,9 @@ class Advanced_Ads_Widget extends WP_Widget {
 	public function q2w3_replace_frontend_id( $sidebars_widgets ) {
 		foreach ( $sidebars_widgets as $sidebar => $widgets ) {
 			foreach ( $widgets as $k => $widget ) {
+				// after Fixed Widget 5.3.0, the widget option includes '#'. It didn’t before. We store the information since we need it later again.
+				$has_hash    = strpos( $widget, '#' ) !== false;
+				$widget      = str_replace( '#', '', $widget );
 				$pos         = strrpos( $widget, '-' );
 				$option_name = substr( $widget, 0, $pos );
 				$number      = substr( $widget, $pos + 1 );
@@ -283,7 +295,8 @@ class Advanced_Ads_Widget extends WP_Widget {
 				if ( self::get_base_id() === $option_name ) {
 					$widget_options = get_option( 'widget_' . $option_name );
 					if ( ! empty( $widget_options[ $number ]['remove-widget-id'] ) ) {
-						$sidebars_widgets[ $sidebar ][ $k ] = $this->get_frontend_id( $number );
+						// add a hash if the widget had one before. See comment above
+						$sidebars_widgets[ $sidebar ][ $k ] = $has_hash ? ( '#' . $this->get_frontend_id( $number ) ) : $this->get_frontend_id( $number );
 					}
 				}
 			}

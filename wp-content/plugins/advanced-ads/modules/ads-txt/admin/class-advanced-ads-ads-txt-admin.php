@@ -290,11 +290,10 @@ class Advanced_Ads_Ads_Txt_Admin {
 		}
 
 		$url = $url ? $url : home_url( '/' );
-		$is_ajax = defined( 'DOING_AJAX') && DOING_AJAX;
 		$key = self::get_transient_key();
 		$transient = get_transient( $key );
 
-		if ( ! $is_ajax || ! doing_action( self::ACTION ) ) {
+		if ( ! wp_doing_ajax() || ! doing_action( self::ACTION ) ) {
 			return isset( $transient[ $func ] ) ? $transient[ $func ] : null;
 		}
 
@@ -450,5 +449,3 @@ class Advanced_Ads_Ads_Txt_Admin {
 	}
 
 }
-
-

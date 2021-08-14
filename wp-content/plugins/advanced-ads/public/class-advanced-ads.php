@@ -152,7 +152,7 @@ class Advanced_Ads {
 		add_action( 'init', array( $this, 'wp_init' ) );
 
 		// only when not doing ajax.
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		if ( wp_doing_ajax() ) {
 			Advanced_Ads_Ajax::get_instance();
 		}
 		add_action( 'plugins_loaded', array( $this, 'wp_plugins_loaded' ) );
@@ -200,7 +200,8 @@ class Advanced_Ads {
 	 */
 	public function wp_plugins_loaded() {
 		// register hook for global constants.
-		add_action( 'wp', array( $this, 'set_disabled_constant' ) );
+		// Wait until BuddyPress assigns `WP_Query->is_404` back to `false`.
+		add_action( 'template_redirect', array( $this, 'set_disabled_constant' ), 11 );
 		add_action( 'rest_api_init', array( $this, 'set_disabled_constant' ) );
 
 		// setup default ad types.
@@ -502,7 +503,7 @@ class Advanced_Ads {
 		// Check if ads are disabled in secondary queries.
 		if ( ! empty( $options['disabled-ads']['secondary'] ) ) {
 			// this function was called by ajax (in secondary query).
-			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			if ( wp_doing_ajax() ) {
 				return $content;
 			}
 			// get out of wp_router_page post type if ads are disabled in secondary queries.
@@ -649,7 +650,7 @@ class Advanced_Ads {
 
 		// check if ads are disabled in secondary queries.
 		// and this is not main query and this is not ajax (because main query does not exist in ajax but ad needs to be shown).
-		if ( ! empty( $options['disabled-ads']['secondary'] ) && ! $this->is_main_query() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+		if ( ! empty( $options['disabled-ads']['secondary'] ) && ! $this->is_main_query() && ! wp_doing_ajax() ) {
 			return false;
 		}
 
@@ -865,7 +866,7 @@ class Advanced_Ads {
 	 * Show custom CSS in the header
 	 */
 	public function custom_header_code(){
-		if ( ! defined( 'ADVANCED_ADS_DISABLE_EDIT_BAR' ) && current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') ) ){
+		if ( ! defined( 'ADVANCED_ADS_DISABLE_EDIT_BAR' ) && current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads' ) ) ) {
 			?><style>
 			    div.advads-edit-bar{position:relative;top:0;left:0;height:0;display:none;z-index:10000;animation:advads-edit-appear 2s linear 1;}
 				@keyframes advads-edit-appear {
@@ -875,7 +876,9 @@ class Advanced_Ads {
                 }
 			    a.advads-edit-button{position:absolute;top:0;left:0;text-decoration:none !important;box-shadow:none;border-bottom:none;color:#0074a2;margin-top:-5px;}
 			    a.advads-edit-button span{top:10px;line-height:25px;margin-left:-5px;width:26px;height:26px;border-radius:13px;border:solid 1px #0074a2;background:#fff}
-			    :hover > .advads-edit-bar:first-child{display:block;}</style><?php
+				:hover > div.advads-edit-bar {display: block;}
+				:hover > div.advads-edit-bar ~ div.advads-edit-bar {display: none;}</style>
+			<?php
 		}
 	}
 

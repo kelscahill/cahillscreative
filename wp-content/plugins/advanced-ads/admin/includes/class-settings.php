@@ -588,13 +588,14 @@ class Advanced_Ads_Admin_Settings {
 			$editor_role->remove_cap( 'advanced_ads_place_ads' );
 		}
 
-		// we need 3 states: ! isset, 1, 0.
-		$options['disabled-ads']['feed'] = isset( $options['disabled-ads']['feed'] ) ? 1 : 0;
+		// we need 3 states: ! empty, 1, 0.
+		$options['disabled-ads']['feed'] = ! empty( $options['disabled-ads']['feed'] ) ? 1 : 0;
 
 		if ( isset( $options['content-injection-everywhere'] ) ) {
-			if ( 0 == $options['content-injection-everywhere'] ) {
+			if ( '0' === $options['content-injection-everywhere'] ) {
 				unset( $options['content-injection-everywhere'] );
-			} elseif ( $options['content-injection-everywhere'] <= - 1 ) {
+			} elseif ( $options['content-injection-everywhere'] === 'true' || $options['content-injection-everywhere'] <= - 1 ) {
+				// Note: the option may be already set 'true' during import.
 				$options['content-injection-everywhere'] = 'true';
 			} else {
 				$options['content-injection-everywhere'] = absint( $options['content-injection-everywhere'] );

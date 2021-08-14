@@ -53,7 +53,8 @@ jQuery( document ).ready(
 								condition_index++
 								condition_form_container.find( '.advads-conditions-index' ).val( condition_index )
 								// reset select.
-								condition_form_container.find( '.advads-conditions-new select' )[ 0 ].selectedIndex = 0
+								condition_form_container.find( '.advads-conditions-new select' )[ 0 ].selectedIndex = 0;
+								advads_display_condition_option_not_selected();
 							}
 						},
 						error: function ( MLHttpRequest, textStatus, errorThrown ) {
@@ -158,9 +159,9 @@ jQuery( document ).ready(
 			$( '.advads-conditions-not-selected' ).each(
 				function () {
 					if ( $( this ).siblings( 'input:checked' ).length ) {
-						$( this ).hide()
+						$( this ).hide();
 					} else {
-						$( this ).show()
+						$( this ).show();
 					}
 				}
 			)

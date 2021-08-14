@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Encodes XML data.
  *
  * Based on code from the Symfony package
@@ -99,8 +99,6 @@ class Advanced_Ads_XmlEncoder
                 $append = $this->appendNode($parentNode, $data, 'item', $key);
             } elseif ( $this->isElementNameValid($key) ) {
                 $append = $this->appendNode($parentNode, $data, $key);
-            } else {
-                throw new UnexpectedValueException( sprintf( _x( 'The key %s is not valid', 'import_export', 'advanced-ads' ), $key ) );
             }
         }
 
@@ -188,21 +186,39 @@ class Advanced_Ads_XmlEncoder
         return $name && false === strpos($name, ' ') && preg_match('#^[\pL_][\pL0-9._:-]*$#ui', $name);
     }
 
-    public function decode($data) {
-        if ( ! extension_loaded( 'simplexml' ) ) {
-            throw new Exception( sprintf( __( 'The %s extension(s) is not loaded', 'advanced-ads' ), 'simplexml' ) );
-        }
-        if ( ! extension_loaded( 'dom' ) ) {
-            throw new Exception( sprintf( __( 'The %s extension(s) is not loaded', 'advanced-ads' ), 'dom' ) );
-        }
+	/**
+	 * Decode XML data.
+	 *
+	 * @throws Exception If an extension is lt loaded.
+	 * @throws UnexpectedValueException If XML data is invalid.
+	 *
+	 * @param string $data XML data.
+	 * @return array Decoded XML data.
+	 */
+	public function decode( $data ) {
+		if ( ! extension_loaded( 'simplexml' ) ) {
+			/* translators: %s: A name of not loaded extension. */
+			throw new Exception( sprintf( __( 'The %s extension(s) is not loaded', 'advanced-ads' ), 'simplexml' ) );
+		}
+		if ( ! extension_loaded( 'dom' ) ) {
+			/* translators: %s: A name of not loaded extension. */
+			throw new Exception( sprintf( __( 'The %s extension(s) is not loaded', 'advanced-ads' ), 'dom' ) );
+		}
 
 
         if ('' === trim($data)) {
             throw new UnexpectedValueException( _x( 'Invalid XML data, it can not be empty', 'import_export', 'advanced-ads' ) );
         }
 
-        $internalErrors = libxml_use_internal_errors(true);
-        $disableEntities = libxml_disable_entity_loader(true);
+		$internal_errors = libxml_use_internal_errors( true );
+
+		if ( PHP_VERSION_ID < 80000 ) {
+			// This function has been deprecated in PHP 8.0 because in libxml 2.9.0, external entity loading
+			// is disabled by default, so this function is no longer needed to protect against XXE attacks.
+			// phpcs:ignore PHPCompatibility.FunctionUse.RemovedFunctions.libxml_disable_entity_loaderDeprecated
+			$disable_entities = libxml_disable_entity_loader( true );
+		}
+
         libxml_clear_errors();
 
         $dom = new DOMDocument();
@@ -214,8 +230,11 @@ class Advanced_Ads_XmlEncoder
 
         $dom->loadXML($data, LIBXML_NONET | LIBXML_NOBLANKS);
 
-        libxml_use_internal_errors($internalErrors);
-        libxml_disable_entity_loader($disableEntities);
+		libxml_use_internal_errors( $internal_errors );
+
+		if ( PHP_VERSION_ID < 80000 && isset( $disable_entities ) ) {
+			libxml_disable_entity_loader( $disable_entities );
+		}
 
         if ($error = libxml_get_last_error()) {
             libxml_clear_errors();

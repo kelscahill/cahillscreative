@@ -1,10 +1,10 @@
 === Advanced Ads – Ad Manager & AdSense ===
 Contributors: webzunft, advancedads
 Tags: ads, ad manager, ad rotation, adsense, banner
-Requires at least: 4.6
-Tested up to: 5.7
+Requires at least: 4.9
+Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 1.24.1
+Stable tag: 1.26.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,14 +14,14 @@ Manage and optimize all ad types. Support for Google AdSense Auto ads, Amazon, i
 
 Are you looking for a simple ad manager plugin? These are the top arguments to use Advanced Ads:
 
-* approved in 10 years of Publishing and Ad Optimization
-* works with all ad types and networks, including Google AdSense, Google Ad Manager (DFP), Amazon ads, or media.net
-* Google AdSense Partner
+* approved in publishing and ad optimization since 2009
+* works with all ad types and networks, including Google AdSense, Google Ad Manager (formerly Google DoubleClick for Publishers, DFP), Amazon ads, or media.net ads
 * most features to test and optimize ads
 * unlimited ad units
 * ads.txt support
-* dedicated Gutenberg block for ads
-* the only solution with *Ad Health* integration and Google AdSense violation checks
+* dedicated ad block for the block editor
+* Google AdSense Partner, who implements all technical changes early and in 100% compliance with the Google AdSense policies
+* the only advertising solution with *Ad Health* integration and Google AdSense violation checks
 * best rated [free support](https://wordpress.org/support/plugin/advanced-ads)
 
 This is what our users are saying about Advanced Ads:
@@ -42,24 +42,24 @@ Advanced Ads allowed us to grow from 0 to 100 MM monthly ad impressions. Benefit
 * schedule ads and set start time and expiration date
 * target ads by content and user groups
 * inject ads into posts and pages automatically without coding
-* sell ads on your website automatically with the [Selling Ads add-on](https://wpadvancedads.com/add-ons/selling-ads/)
 
 = ad types =
 
 choose between different ad types that enable you to:
 
-* insert ads content and banners from all ad and affiliate networks (e.g., Google AdSense, Amazon, BuySellAds, Google Ad Manager, DoubleClick (DFP), Ezoic, media.net, Booking.com, Tradedoubler, Awin, Getyourguide, The Moneytizer...)
-* dedicated support for all types of Google AdSense ads, including text and diplay ads, native ads (In-article, In-feed, matched content), link units (standard and responsive), Auto ads, and Auto ads for AMP
+* insert ads and banners from all ad and affiliate networks (e.g., Google AdSense, Amazon, BuySellAds, Google Ad Manager (formerly Google DoubleClick for Publishers, DFP), Ezoic, media.net, Booking.com, Tradedoubler, Awin, Getyourguide, The Moneytizer, Infolinks...)
+* dedicated support for all types of Google AdSense ads, including text and display ads, native ads (In-article, In-feed, matched content), Auto ads, and Auto ads for AMP
 * display images and image banners
 * create content-rich ads with the WordPress TinyMCE editor
-* create Amazon ads with the Rich Content ad type and the [Amazon Associates Link Builder](https://wordpress.org/plugins/amazon-associates-link-builder/) or insert contextual Amazon Native Shopping Ads
+* insert contextual Amazon Native Shopping Ads
 * inject HTML, CSS, Javascript or PHP code
 * use shortcodes within ads (to also deliver advertisements from another ad plugin like Ad Inserter, AdRotate, Quick AdSense, WP Bannerize, or the Google AdSense Plugin WP QUADS)
 
 = display ads for WP =
 
+* auto-inject ads via placements
 * use functions to display ads in template files
-* use shortcodes to place them manually in post content
+* use shortcodes to place ads manually in post content
 * show ads in the sidebar and in widgets
 * disable all ads on specific pages
 * display multiple ads (ad blocks)
@@ -100,7 +100,7 @@ Placements to insert ads in pre-defined positions in your theme and content. [Li
 * ads at the top or bottom of the post content
 * ads before closing `</head>` tag
 * ads in the footer
-* test placements against each other with [Pro](https://wpadvancedads.com/add-ons/advanced-ads-pro/)
+* test placements against each other with [Pro](https://wpadvancedads.com/add-ons/advanced-ads-pro/) (A/B testing)
 * many more ad positions with [add-ons](https://wpadvancedads.com/add-ons/)
 * automatic insertion of any kind of code into header or footer, not only advertising
 
@@ -119,18 +119,20 @@ Amazing features of the most powerful and easy Google AdSense plugin.
 * pull ad units directly from your Google AdSense account
 * show AdSense revenue in WP Admin
 * change settings of your Google AdSense ads directly from your WordPress backend
-* supports all Google AdSense ad types, including Google AdSense display ads, link units, native ads like In-feed ads, In-article ads, matched content ads, Google AdSense Auto ads, and Google AdSense Auto ads for AMP
-* change type and sizes of an ad without going into your Google AdSense account
+* supports all Google AdSense ad types, including Google AdSense display ads, native ads like In-feed ads, In-article ads, matched content ads, Google AdSense Auto ads, and Google AdSense Auto ads for AMP
+* change type and sizes of AdSense ads without going into your Google AdSense account
 * hide Google AdSense advertisements on 404 pages by default (to comply with Google AdSense terms)
-* insert Google AdSense code for verification and AdSense Auto Ads (previously called Page-Level ads and QuickStart)
+* insert Google AdSense code for verification and AdSense Auto Ads
 * enable AdSense Auto ads on AMP
 * easy Ad Health integration and Google AdSense violation checks
-* option to make the Google AdSense background transparent
+* option to remove the Google AdSense background color
 * place Google AdSense In-feed ads using the also free [In-feed add-on](https://wordpress.org/plugins/advanced-ads-adsense-in-feed/)
-* assistant for exact sizes of responsive Google AdSense code with the [Responsive add-on](https://wpadvancedads.com/add-ons/responsive-ads/)
+* assistant for exact sizes of responsive Google AdSense ads with the [Responsive add-on](https://wpadvancedads.com/add-ons/responsive-ads/)
 * convert Google AdSense ads into AMP ads automatically with the [Responsive add-on](https://wpadvancedads.com/add-ons/responsive-ads/)
 * ads.txt generated with the correct AdSense information automatically
-* works along Google Site Kit or can replace if it you want to [control your ad placements](https://wpadvancedads.com/place-adsense-ad-unit-manually/)
+* works along with Google Site Kit or can replace it if you want to [control your ad placements](https://wpadvancedads.com/place-adsense-ad-unit-manually/)
+
+https://vimeo.com/577120971
 
 Like j4ckson185, there are thousands of happy AdSense users:
 
@@ -138,14 +140,14 @@ Like j4ckson185, there are thousands of happy AdSense users:
 
 = ads.txt =
 
-* generates ads.txt with custom content
+* generates an ads.txt with custom content
 * adds the content for AdSense to the ads.txt automatically
 
-https://vimeo.com/299410390
+https://vimeo.com/577170591
 
 = ad blocker =
 
-* basic features to prevent ad units from being removed by AdBlock and others
+* basic features to prevent ads from being removed by AdBlock and other ad blockers
 * prevent ad blockers from breaking sites where plugin scripts are running
 * ad blocking detection: show alternative content to ad block users with [Pro](https://wpadvancedads.com/add-ons/advanced-ads-pro/) and improve the monetization of your website
 
@@ -153,22 +155,24 @@ Learn more on the [plugin homepage](https://wpadvancedads.com).
 
 Thank you for motivating us with your [positive review](https://wordpress.org/support/plugin/advanced-ads/reviews/?rate=5#new-post).
 
-Localizations: Arabic, Chinese, Czech, Dutch, English, French, German, Hungarian, Italian, Japanese, Norwegian, Polish, Portuguese, Russian, Slovak, Spanish, Turkish, Vietnamese
+Localizations: Arabic, Chinese, Czech, Danish, Dutch, English, French, German, Hungarian, Italian, Japanese, Norwegian, Polish, Portuguese, Russian, Slovak, Spanish, Turkish, Vietnamese
 
 > <strong>Add-Ons</strong>
 >
 > * all add-ons include priority email support
-> * [Advanced Ads Pro](https://wpadvancedads.com/add-ons/advanced-ads-pro/) – powerful tools for ad optimizations: cache-busting, more placements, lazy load, ad blocker module, click fraud, and more
-> * [Tracking](https://wpadvancedads.com/add-ons/tracking/) – ad tracking and statistics
-> * [Responsive Ads](https://wpadvancedads.com/add-ons/responsive-ads/) – create mobile ads or ads for specific browser sizes and ads on AMP
-> * [Google Ad Manager Integration](https://wpadvancedads.com/add-ons/google-ad-manager/) – a quick and error-free way to load ad units from GAM / DFP account without touching any ad codes
-> * [Geo Targeting](https://wpadvancedads.com/add-ons/geo-targeting/) – display ads based on geo location of the visitor
+> * [Advanced Ads Pro](https://wpadvancedads.com/add-ons/advanced-ads-pro/) – powerful tools for ad optimizations: cache-busting, more placements, lazy loading, ad blocker module, click fraud protection, and many more
+> * [Tracking](https://wpadvancedads.com/add-ons/tracking/) – track ad impressions and ad clicks with local methods or Google Analytics
+> * [Responsive Ads](https://wpadvancedads.com/add-ons/responsive-ads/) – target ads to specific browser sizes and create ads for AMP
+> * [Google Ad Manager Integration](https://wpadvancedads.com/add-ons/google-ad-manager/) – a quick and error-free way to load ad units from your Google Ad Manager (formerly Google DoubleClick for Publishers, DFP) account without touching any ad codes
+> * [Geo Targeting](https://wpadvancedads.com/add-ons/geo-targeting/) – display ads based on the geo location of the visitor
 > * [Sticky Ads](https://wpadvancedads.com/add-ons/sticky-ads/) – increase click rates with fixed, sticky, and anchor ads
+> * [Fixed Widget for WordPress](https://wordpress.org/plugins/q2w3-fixed-widget/) – turn sidebar widgets into performant fixed sticky ads
 > * [PopUp and Layer Ads](https://wpadvancedads.com/add-ons/popup-and-layer-ads/) – display ads and other content in layers and popups
 > * [Selling Ads](https://wpadvancedads.com/add-ons/selling-ads/) - allows you to sell ads on your website fully automated, including payments and advertiser profiles.
-> * [Slider](https://wpadvancedads.com/add-ons/slider/) – create a simple slider from your ads
+> * [Ad Slider](https://wpadvancedads.com/add-ons/slider/) – create a simple slider from your ads
 
-If you have problems with Advanced Ads, please reach out to [our support](https://wordpress.org/support/plugin/advanced-ads).
+If you have problems with Advanced Ads, please reach out to [our support](https://wordpress.org/support/plugin/advanced-ads) or open a [new topic](https://wordpress.org/support/plugin/advanced-ads/#new-topic-0) in our forums on wordpress.org
+.
 
 = Integrations =
 
@@ -178,11 +182,12 @@ Advanced Ads integrates with plenty of other plugins:
 - WPML – [Showing different ads per language with WPML](https://wpadvancedads.com/translating-ads-wpml/)
 - WPBakery Page Builder – [Displaying Ads with WPBakery Page Builder (formerly Visual Composer)](https://wpadvancedads.com/visual-composer-ads/)
 - Genesis – [Genesis Ads add-on](https://wpadvancedads.com/add-ons/genesis-ads/)
-- BuddyPress & BuddyBoss – [How to add ads on BuddyPress pages](https://wpadvancedads.com/ads-on-buddypress-pages/)
+- BuddyBoss – [How to integrate ads into BuddyBoss](https://wpadvancedads.com/manual/buddyboss-ads/)
+- BuddyPress – [How to add ads on BuddyPress pages](https://wpadvancedads.com/ads-on-buddypress-pages/)
 - bbPress – [How to show ads on bbPress pages?](https://wpadvancedads.com/ads-in-bbpress/)
-- Cookie Consent, Borlabs Cookies, Complianz and other content manager – [How to show ads based on visitors’ consent](https://wpadvancedads.com/manual/ad-cookie-consent/)
+- Cookie Consent, Borlabs Cookies, Complianz, GDPR Cookie Consent, and other content manager – [How to show ads based on visitors’ consent](https://wpadvancedads.com/manual/ad-cookie-consent/)
 - Paid Memberships Pro – [How to manage ads on membership sites running Paid Memberships Pro](https://wpadvancedads.com/paid-memberships-pro/)
-- IAB TCF 2.0 consent – hide ads until users give their consent. Integrating with any CMP, Quantcast Choices, iubenda, Google Funding Choices, cookiebot, etc.
+- [IAB TCF 2.0 consent](https://wpadvancedads.com/manual/tcf-consent-wordpress/) – hide ads until users give their consent. Integrating with any CMP, Quantcast Choices, iubenda, Google Funding Choices, cookiebot, etc.
 
 == Installation ==
 
@@ -239,7 +244,7 @@ You can learn more about how Advanced Ads and its add-ons handles data and priva
 
 = Which ad networks are supported? =
 
-Advanced Ads is compatible with all ad networks and banners from affiliate programs like Google AdSense, Chitika, Clickbank, Amazon, and also Google Ad Manager (Google Double Click, DFP), media.net.
+Advanced Ads is compatible with all ad networks and banners from affiliate programs like Google AdSense, Chitika, Clickbank, Amazon, and also Google Ad Manager (formerly Google DoubleClick for Publishers, DFP), media.net.
 
 You can also use it to insert additional ad network tags into header or footer of your site without coding.
 
@@ -316,6 +321,39 @@ Yes. You can use plenty of [hooks](https://wpadvancedads.com/codex/) to customiz
 10. Convert AdSense ads into AMP automatically (Responsive add-on)
 
 == Changelog ==
+
+= 1.26.0 =
+
+- overwrite existing options when importing new options
+- add possibility to export privacy, ads.txt and Google AdSense options
+- remove duplicate inline styles for placements with passive cache-busting and activated TCF 2.0 privacy option
+- adjust the Advanced Ads block layout to the default WordPress block layout
+- add migration from Advanced Ads widget to Advanced Ads block
+- fix saving of additional CSS class in Advanced Ads block
+- make placement deletion confirmation dialogue translatable
+- add WebP as allowed image media type for exports
+
+= 1.25.1 =
+
+- fixed a bug that prevented removing placement conditions
+- trim `inline-css` to remove duplicate spaces
+- check if `inline-css` index exists in ad options to prevent undefined index notice
+- move `Advanced_Ads_Inline_Css` class from singleton to one instance per ad, to fix issues with `inline-css` not being added
+- fixed ad edit button visibility in frontend when ad label was activated
+
+= 1.25.0 =
+
+- show ad label event when ad wrapper is now shown
+- add filter `advanced-ads-ajax-ad-select-arguments` to modify arguments of AJAX ad selection
+- display ads on BuddyPress pages when no ads allowed on 404 pages
+- Ad blocker fix: do not copy assets from "vendor" and "lib" folders
+- Ad blocker fix: compare assets based on `filemtime` instead of `filesize`
+- bump minimal require WP core version to 4.9
+- allow to add a replacement for AdSense page-level code
+
+= 1.24.2 =
+
+- fix authenticated (i.e. logged-in) DOM-based XSS vulnerability while creating jQuery object from user input in Safari and IE
 
 = 1.24.1 =
 

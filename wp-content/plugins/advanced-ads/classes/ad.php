@@ -154,21 +154,30 @@ class Advanced_Ads_Ad {
 	protected $label = '';
 
 	/**
+	 * Inline CSS object, one instance per ad.
+	 *
+	 * @var Advanced_Ads_Inline_Css
+	 */
+	private $inline_css;
+
+	/**
 	 * Init ad object
 	 *
 	 * @param int   $id id of the ad.
 	 * @param array $args additional arguments.
 	 */
 	public function __construct( $id, $args = array() ) {
-		$id         = absint( $id );
-		$this->id   = $id;
+		$this->id   = (int) $id;
 		$this->args = is_array( $args ) ? $args : array();
 
 		// whether the ad will be tracked.
 		$this->global_output = isset( $this->args['global_output'] ) ? (bool) $this->args['global_output'] : true;
 
-		if ( ! empty( $id ) ) {
-			$this->load( $id );
+		// Run constructor to check early if ajax cache busting already created inline css.
+		$this->inline_css = new Advanced_Ads_Inline_Css();
+
+		if ( ! empty( $this->id ) ) {
+			$this->load( $this->id );
 		}
 
 		// dynamically add sanitize filters for condition types.
@@ -919,9 +928,21 @@ class Advanced_Ads_Ad {
 	protected function add_wrapper( $ad_content = '' ) {
 		$wrapper_options = apply_filters( 'advanced-ads-output-wrapper-options', $this->wrapper, $this );
 
+		if ( $this->label && ! empty( $wrapper_options['style']['height'] ) ) {
+			// Create another wrapper so that the label does not reduce the height of the ad wrapper.
+			$height = array( 'style' => array( 'height' => $wrapper_options['style']['height'] ) );
+			unset( $wrapper_options['style']['height'] );
+			$ad_content = '<div' . Advanced_Ads_Utils::build_html_attributes( $height ) . '>' . $ad_content . '</div>';
+		}
+
+		// Adds inline css to the wrapper.
+		if ( ! empty( $this->options['inline-css'] ) && $this->args['is_top_level'] ) {
+			$wrapper_options = $this->inline_css->add_css( $wrapper_options, $this->options['inline-css'], $this->global_output );
+		}
+
 		if ( ( ! isset( $this->output['wrapper-id'] ) || '' === $this->output['wrapper-id'] )
 			 && array() === $wrapper_options || ! is_array( $wrapper_options ) ) {
-			return $ad_content;
+			return $this->label . $ad_content;
 		}
 
 		// create unique id if not yet given.
@@ -930,23 +951,12 @@ class Advanced_Ads_Ad {
 			$this->wrapper['id']   = $wrapper_options['id'];
 		}
 
-		if ( $this->label && ! empty( $wrapper_options['style']['height'] ) ) {
-			// Create another wrapper so that the label does not reduce the height of the ad wrapper.
-			$height = array( 'style' => array( 'height' => $wrapper_options['style']['height'] ) );
-			unset( $wrapper_options['style']['height'] );
-			$ad_content = '<div' . Advanced_Ads_Utils::build_html_attributes( $height ) . '>'
-				. $ad_content
-				. '</div>';
-		}
-
 		// add edit button for users with the appropriate rights.
 		if ( ! defined( 'ADVANCED_ADS_DISABLE_EDIT_BAR' ) && current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads' ) ) ) {
 			ob_start();
 			include ADVADS_BASE_PATH . 'public/views/ad-edit-bar.php';
 			$ad_content = ob_get_clean() . $ad_content;
 		}
-
-
 
 		// build the box
 		$wrapper  = '<div' . Advanced_Ads_Utils::build_html_attributes( $wrapper_options ) . '>';

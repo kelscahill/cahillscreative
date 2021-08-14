@@ -42,6 +42,7 @@ class Advanced_Ads_Ajax {
 	 * Simple wp ajax interface for ad selection.
 	 */
 	public function advads_ajax_ad_select() {
+		add_filter( 'advanced-ads-output-inline-css', '__return_false' );
 		// Set proper header.
 		header( 'Content-Type: application/json; charset: utf-8' );
 
@@ -120,6 +121,14 @@ class Advanced_Ads_Ajax {
 				'message' => 'No valid ID or METHOD found.',
 			);
 		}
+
+		/**
+		 * Filters the received arguments before passing them to to ads/groups/placements.
+		 *
+		 * @param array $arguments Existing arguments.
+		 * @param array $request Request data.
+		 */
+		$arguments = apply_filters( 'advanced-ads-ajax-ad-select-arguments', $arguments, $request );
 
 		$advads       = Advanced_Ads::get_instance();
 		$previous_ads = $advads->current_ads;

@@ -20,10 +20,10 @@ class_exists( 'Advanced_Ads', false ) || exit();
 		<fieldset>
 			<input type="hidden" name="action" value="export" />
 			<?php wp_nonce_field( 'advads-export' ); ?>
-			<p><label><input type="checkbox" name="content[]" value="ads" checked="checked" /> <?php _e( 'Ads', 'advanced-ads' ); ?></label></p>
-			<p><label><input type="checkbox" name="content[]" value="groups" checked="checked" /> <?php _e( 'Groups', 'advanced-ads' ); ?></label></p>
-			<p><label><input type="checkbox" name="content[]" value="placements" checked="checked" /> <?php _e( 'Placements', 'advanced-ads' ); ?></label></p>
-			<p><label><input type="checkbox" name="content[]" value="options" checked="checked" /> <?php _e( 'Options', 'advanced-ads' ); ?></label></p>
+			<p><label><input type="checkbox" name="content[]" value="ads" checked="checked" /> <?php esc_html_e( 'Ads', 'advanced-ads' ); ?></label></p>
+			<p><label><input type="checkbox" name="content[]" value="groups" checked="checked" /> <?php esc_html_e( 'Groups', 'advanced-ads' ); ?></label></p>
+			<p><label><input type="checkbox" name="content[]" value="placements" checked="checked" /> <?php esc_html_e( 'Placements', 'advanced-ads' ); ?></label></p>
+			<p><label><input type="checkbox" name="content[]" value="options" /> <?php esc_html_e( 'Options', 'advanced-ads' ); ?></label></p>
 		</fieldset>
 		<?php submit_button( __( 'Download Export File', 'advanced-ads' ) ); ?>
 	</form>

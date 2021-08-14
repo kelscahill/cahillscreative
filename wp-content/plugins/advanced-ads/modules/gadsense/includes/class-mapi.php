@@ -929,6 +929,7 @@ class Advanced_Ads_AdSense_MAPI {
         if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options' ) ) ) {
             die;
         }
+
 		$nonce = isset( $_POST['nonce'] ) ? $_POST['nonce'] : '';
 		if ( false !== wp_verify_nonce( $nonce, 'mapi-alerts' ) ) {
 			$account = stripslashes( $_POST['account'] );
@@ -936,8 +937,16 @@ class Advanced_Ads_AdSense_MAPI {
 
             // the account exists.
             if ( isset( $options['accounts'][ $account ] ) && self::has_token( $account ) ) {
-                $access_token = $this->get_access_token( $account );
+                $access_token = self::get_access_token( $account );
                 $url = str_replace( 'PUBID', $account, self::ALERTS_URL );
+
+				if ( isset( $_POST['inlineAttempt'] ) ) {
+					if ( ! is_array( $options['accounts'][ $account ]['alerts'] ) ) {
+						$options['accounts'][ $account ]['alerts'] = array();
+					}
+					$options['accounts'][ $account ]['alerts']['inlineAttempt'] = time();
+					update_option( self::OPTNAME, $options );
+				}
 
                 // the token is valid.
                 if ( ! isset( $access_token['msg'] ) ) {
@@ -1358,10 +1367,14 @@ class Advanced_Ads_AdSense_MAPI {
 		if ( array() === $alerts && $has_token ) {
 			$refresh_alerts = true;
 		}
-		if ( $has_token && is_array( $alerts ) && isset( $alerts['lastCheck'] ) ) {
-			// check weekly for alerts.
-			if ( time() > absint( $alerts['lastCheck'] ) + 3600 * 24 * 7 ) {
+		if ( $has_token && is_array( $alerts ) ) {
+			// Check weekly for alerts.
+			if ( isset( $alerts['lastCheck'] ) && time() > absint( $alerts['lastCheck'] ) + DAY_IN_SECONDS * 7 ) {
 				$refresh_alerts = true;
+			}
+			// Only try to get the alerts in the background once a day.
+			if ( isset( $alerts['inlineAttempt'] ) && time() < $alerts['inlineAttempt'] + DAY_IN_SECONDS ) {
+				$refresh_alerts = false;
 			}
 		}
 		if ( $refresh_alerts ) {
@@ -1381,6 +1394,7 @@ class Advanced_Ads_AdSense_MAPI {
                         action: 'advads-mapi-get-alerts',
                         account: '<?php echo wp_strip_all_tags( $adsense_id ); ?>',
                         nonce: '<?php echo wp_strip_all_tags( $nonce ); ?>',
+						inlineAttempt: 1,
                     },
                     success:function(response, status, XHR){
                         if ( 'undefined' != typeof response.alerts ) {

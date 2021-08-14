@@ -12,7 +12,7 @@ if ( class_exists( 'Advanced_Ads', false ) ) {
           Advanced_Ads_AdSense_MAPI::get_instance();
         }
 
-        if ( ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX) && is_admin() ) {
+        if ( ! wp_doing_ajax() && is_admin() ) {
             Advanced_Ads_AdSense_Admin::get_instance();
         } else {
             Advanced_Ads_AdSense_Public::get_instance();

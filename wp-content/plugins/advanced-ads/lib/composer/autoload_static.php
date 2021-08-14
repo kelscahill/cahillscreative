@@ -42,6 +42,7 @@ class ComposerStaticInit_advanced_ads
         'Advanced_Ads_Frontend_Notices' => __DIR__ . '/../..' . '/classes/frontend-notices.php',
         'Advanced_Ads_Group' => __DIR__ . '/../..' . '/classes/ad_group.php',
         'Advanced_Ads_Groups_List' => __DIR__ . '/../..' . '/admin/includes/class-ad-groups-list.php',
+        'Advanced_Ads_Inline_Css' => __DIR__ . '/../..' . '/classes/inline-css.php',
         'Advanced_Ads_Model' => __DIR__ . '/../..' . '/classes/ad-model.php',
         'Advanced_Ads_Overview_Widgets_Callbacks' => __DIR__ . '/../..' . '/admin/includes/class-overview-widgets.php',
         'Advanced_Ads_Placements' => __DIR__ . '/../..' . '/classes/ad_placements.php',

@@ -1,4 +1,7 @@
 <?php
+/**
+ * Export functionality.
+ */
 class Advanced_Ads_Export {
     /**
      * @var Advanced_Ads_Export
@@ -47,7 +50,9 @@ class Advanced_Ads_Export {
 	}
 
 	/**
-	 * Generate XML file
+	 * Generate XML file.
+	 *
+	 * @param array $content Types of content to be exported.
 	 */
 	private function process( array $content ) {
 		global $wpdb;
@@ -78,10 +83,13 @@ class Advanced_Ads_Export {
 
 			$posts = $wpdb->get_results( $wpdb->prepare( "SELECT $export_fields FROM {$wpdb->posts} where post_type = '%s' and post_status not in ('trash', 'auto-draft')", Advanced_Ads::POST_TYPE_SLUG ), ARRAY_A );
 
+			$mime_types = array_filter( get_allowed_mime_types(), function( $mime_type ) {
+				return preg_match( '/image\//', $mime_type );
+			} );
+			$search     = '/' . preg_quote( home_url(), '/' ) . '(\S+?)\.(' . implode( '|', array_keys( $mime_types ) ) . ')/i';
 			foreach ( $posts as $k => $post ) {
 				if ( ! empty( $post['post_content'] ) ) {
 					// wrap images in <advads_import_img></advads_import_img> tags
-					$search = '/' . preg_quote( home_url(), '/' ) . '(\S+?)\.(jpg|jpeg|gif|png)/i';
 					$post['post_content']  = preg_replace( $search, '<advads_import_img>\\0</advads_import_img>', $post['post_content']  );
 				}
 
@@ -163,11 +171,18 @@ class Advanced_Ads_Export {
 			$export['placements'] = array_values( $placements );
 		}
 
-		if ( in_array( 'options', $content ) ) {
-			$export['options'] = apply_filters( 'advanced-ads-export-options', array (
-				ADVADS_SLUG => Advanced_Ads::get_instance()->options(),
-				ADVADS_SLUG . '-internal' => Advanced_Ads::get_instance()->internal_options(),
-			) );
+		if ( in_array( 'options', $content, true ) ) {
+			/**
+			 * Filters the list of options to be exported.
+			 *
+			 * @param $options An array of options
+			 */
+			$export['options'] = array_filter( apply_filters( 'advanced-ads-export-options', array(
+				ADVADS_SLUG                           => get_option( ADVADS_SLUG ),
+				GADSENSE_OPT_NAME                     => get_option( GADSENSE_OPT_NAME ),
+				Advanced_Ads_Privacy::OPTION_KEY      => get_option( Advanced_Ads_Privacy::OPTION_KEY ),
+				Advanced_Ads_Ads_Txt_Strategy::OPTION => get_option( Advanced_Ads_Ads_Txt_Strategy::OPTION ),
+			) ) );
 		}
 
 		do_action_ref_array( 'advanced-ads-export', array( $content, &$export ) );
@@ -182,7 +197,7 @@ class Advanced_Ads_Export {
 
 			try {
 				$encoded = Advanced_Ads_XmlEncoder::get_instance()->encode( $export, array( 'encoding' => get_option( 'blog_charset' ) ) );
-				
+
 				header( 'Content-Description: File Transfer' );
 				header( 'Content-Disposition: attachment; filename=' . $filename );
 				header( 'Content-Type: text/xml; charset=' . get_option( 'blog_charset' ), true );

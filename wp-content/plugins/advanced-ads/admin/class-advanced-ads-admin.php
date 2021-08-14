@@ -53,7 +53,7 @@ class Advanced_Ads_Admin {
 	 * settings page and menu.
 	 */
 	private function __construct() {
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		if ( wp_doing_ajax() ) {
 			new Advanced_Ads_Ad_Ajax_Callbacks();
 			add_action( 'plugins_loaded', array( $this, 'wp_plugins_loaded_ajax' ) );
 		} else {
@@ -213,22 +213,23 @@ class Advanced_Ads_Admin {
 
 			// register admin.js translations.
 			$translation_array = array(
-				'condition_or'                 => __( 'or', 'advanced-ads' ),
-				'condition_and'                => __( 'and', 'advanced-ads' ),
-				'after_paragraph_promt'        => __( 'After which paragraph?', 'advanced-ads' ),
-				'page_level_ads_enabled'       => $auto_ads_strings['enabled'],
-				'today'                        => __( 'Today', 'advanced-ads' ),
-				'yesterday'                    => __( 'Yesterday', 'advanced-ads' ),
-				'this_month'                   => __( 'This Month', 'advanced-ads' ),
+				'condition_or'                  => __( 'or', 'advanced-ads' ),
+				'condition_and'                 => __( 'and', 'advanced-ads' ),
+				'after_paragraph_promt'         => __( 'After which paragraph?', 'advanced-ads' ),
+				'page_level_ads_enabled'        => $auto_ads_strings['enabled'],
+				'today'                         => __( 'Today', 'advanced-ads' ),
+				'yesterday'                     => __( 'Yesterday', 'advanced-ads' ),
+				'this_month'                    => __( 'This Month', 'advanced-ads' ),
 				/* translators: 1: The number of days. */
-				'last_n_days'                  => __( 'Last %1$d days', 'advanced-ads' ),
+				'last_n_days'                   => __( 'Last %1$d days', 'advanced-ads' ),
 				/* translators: 1: An error message. */
-				'error_message'                => __( 'An error occurred: %1$s' ),
-				'all'                          => __( 'All', 'advanced-ads' ),
-				'no_results'                   => __( 'There were no results returned for this ad. Please make sure it is active, generating impressions and double check your ad parameters.', 'advanced-ads' ),
-				'show_inactive_ads'            => __( 'Show inactive ads', 'advanced-ads' ),
-				'hide_inactive_ads'            => __( 'Hide inactive ads', 'advanced-ads' ),
-				'display_conditions_form_name' => Advanced_Ads_Display_Conditions::FORM_NAME, // not meant for translation.
+				'error_message'                 => __( 'An error occurred: %1$s' ),
+				'all'                           => __( 'All', 'advanced-ads' ),
+				'no_results'                    => __( 'There were no results returned for this ad. Please make sure it is active, generating impressions and double check your ad parameters.', 'advanced-ads' ),
+				'show_inactive_ads'             => __( 'Show inactive ads', 'advanced-ads' ),
+				'hide_inactive_ads'             => __( 'Hide inactive ads', 'advanced-ads' ),
+				'display_conditions_form_name'  => Advanced_Ads_Display_Conditions::FORM_NAME, // not meant for translation.
+				'delete_placement_confirmation' => __( 'Permanently delete this placement?', 'advanced-ads' ),
 			);
 
 			wp_localize_script( $this->plugin_slug . '-admin-script', 'advadstxt', $translation_array );

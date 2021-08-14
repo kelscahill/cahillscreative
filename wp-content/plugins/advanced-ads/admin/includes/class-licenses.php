@@ -13,6 +13,13 @@ class Advanced_Ads_Admin_Licenses {
 	protected static $instance = null;
 
 	/**
+	 * License API endpoint URL
+	 *
+	 * @const string
+	 */
+	const API_ENDPOINT = ADVADS_URL . 'license-api/';
+
+	/**
 	 * Advanced_Ads_Admin_Licenses constructor.
 	 */
 	private function __construct() {
@@ -32,6 +39,8 @@ class Advanced_Ads_Admin_Licenses {
 
 		// check for add-on updates.
 		add_action( 'admin_init', array( $this, 'add_on_updater' ), 1 );
+		// react on API update checks
+		add_action( 'http_api_debug', array( $this, 'update_license_after_version_info' ), 10, 5 );
 	}
 
 	/**
@@ -54,7 +63,6 @@ class Advanced_Ads_Admin_Licenses {
 	 * @since 1.7.12
 	 */
 	public function check_plugin_licenses() {
-
 		if ( is_multisite() ) {
 			return;
 		}
@@ -113,7 +121,6 @@ class Advanced_Ads_Admin_Licenses {
 	 * @since 1.2.0
 	 */
 	public function activate_license( $addon = '', $plugin_name = '', $options_slug = '', $license_key = '' ) {
-
 		if ( '' === $addon || '' === $plugin_name || '' === $options_slug ) {
 			return __( 'Error while trying to register the license. Please contact support.', 'advanced-ads' );
 		}
@@ -150,7 +157,7 @@ class Advanced_Ads_Admin_Licenses {
 
 		// Call the custom API.
 		$response = wp_remote_post(
-			ADVADS_URL,
+			self::API_ENDPOINT,
 			array(
 				'timeout'   => 15,
 				'sslverify' => false,
@@ -197,12 +204,19 @@ class Advanced_Ads_Admin_Licenses {
 				'license_not_activable' => __( 'This is the bundle license key.', 'advanced-ads' ),
 				'item_name_mismatch'    => __( 'This is not the correct key for this add-on.', 'advanced-ads' ),
 				'no_activations_left'   => __( 'There are no activations left.', 'advanced-ads' )
-				                           . '&nbsp;'
-				                           . sprintf( // translators: %1$s is a starting link tag, %2$s is the closing one.
-					                           __( 'You can manage activations in %1$syour account%2$s.', 'advanced-ads' ),
-					                           '<a href="' . ADVADS_URL . 'account/" target="_blank">',
-					                           '</a>'
-				                           ),
+										   . '&nbsp;'
+										. sprintf(
+											/* translators: %1$s is a starting link tag, %2$s is the closing one. */
+											__( 'You can manage activations in %1$syour account%2$s.', 'advanced-ads' ),
+											'<a href="' . ADVADS_URL . 'account/#utm_source=advanced-ads&utm_medium=link&utm_campaign=settings-licenses-activations-left" target="_blank">',
+											'</a>'
+										) . '&nbsp;'
+										. sprintf(
+											/* translators: %1$s is a starting link tag, %2$s is the closing one. */
+											__( '%1$sUpgrade%2$s for more activations.', 'advanced-ads' ),
+											'<a href="' . ADVADS_URL . 'account/upgrades/#utm_source=advanced-ads&utm_medium=link&utm_campaign=settings-licenses-activations-left" target="_blank">',
+											'</a>'
+										),
 			);
 			$error  = isset( $errors[ $license_data->error ] ) ? $errors[ $license_data->error ] : $license_data->error;
 			if ( 'expired' === $license_data->error ) {
@@ -271,7 +285,6 @@ class Advanced_Ads_Admin_Licenses {
 	 * @deprecated since version 1.7.2 because it only checks if a key is valid, not if the url registered with that key
 	 */
 	public function check_license( $license_key = '', $plugin_name = '', $options_slug = '' ) {
-
 		if ( has_filter( 'advanced_ads_license_' . $options_slug ) ) {
 			return apply_filters( 'advanced_ads_license_' . $options_slug, false, __METHOD__, $plugin_name, $options_slug, $license_key );
 		}
@@ -315,7 +328,6 @@ class Advanced_Ads_Admin_Licenses {
 	 * @since 1.6.11
 	 */
 	public function deactivate_license( $addon = '', $plugin_name = '', $options_slug = '' ) {
-
 		if ( '' === $addon || '' === $plugin_name || '' === $options_slug ) {
 			return __( 'Error while trying to disable the license. Please contact support.', 'advanced-ads' );
 		}
@@ -334,7 +346,7 @@ class Advanced_Ads_Admin_Licenses {
 		);
 		// send the remote request.
 		$response = wp_remote_post(
-			ADVADS_URL,
+			self::API_ENDPOINT,
 			array(
 				'body'      => $api_params,
 				'timeout'   => 15,
@@ -388,14 +400,12 @@ class Advanced_Ads_Admin_Licenses {
 	 * @since 1.6.15
 	 */
 	public function get_licenses() {
-
 		$licenses = array();
 
 		if ( is_multisite() ) {
 			// if multisite, get option from main blog.
 			global $current_site;
 			$licenses = get_blog_option( $current_site->blog_id, ADVADS_SLUG . '-licenses', array() );
-
 		} else {
 			$licenses = get_option( ADVADS_SLUG . '-licenses', array() );
 		}
@@ -411,7 +421,6 @@ class Advanced_Ads_Admin_Licenses {
 	 * @since 1.7.2
 	 */
 	public function save_licenses( $licenses = array() ) {
-
 		if ( is_multisite() ) {
 			// if multisite, get option from main blog.
 			global $current_site;
@@ -430,7 +439,6 @@ class Advanced_Ads_Admin_Licenses {
 	 * @since 1.6.15
 	 */
 	public function get_license_status( $slug = '' ) {
-
 		$status = false;
 
 		if ( is_multisite() ) {
@@ -458,8 +466,38 @@ class Advanced_Ads_Admin_Licenses {
 			ARRAY_FILTER_USE_KEY
 		);
 
-
 		return array() !== $valid && max( array_count_values( $valid ) ) > 1;
+	}
+
+	/**
+	 * Return the licence expiry time if it is equal for more than one add-on. That indicates it is likely an All Access license
+	 *
+	 * @return string|null
+	 */
+	public function get_probably_all_access_expiry() {
+		/**
+		 * Get expiry dates of all add-ons.
+		 *
+		 * @param string $key Add-on key.
+		 *
+		 * @return string|false the expiration date or false.
+		 */
+		$expiry_counts = array_count_values( array_map( function( $key ) {
+			return $this->get_license_expires( ADVADS_SLUG . '-' . $key );
+		}, array_keys( array_filter( $this->get_licenses() ) ) ) );
+		/**
+		 * Remove all licenses that are used only once.
+		 *
+		 * @param int $count the count from array_count_values_above
+		 *
+		 * @return bool whether the count is greater 1
+		 */
+		$all_access = array_filter( $expiry_counts, function( $count ) {
+			return $count > 1;
+		} );
+
+		// if there is an item in $all_access we can assume this is from All Access and return the expiry date.
+		return empty( $all_access ) ? null : key( $all_access );
 	}
 
 	/**
@@ -467,34 +505,28 @@ class Advanced_Ads_Admin_Licenses {
 	 *
 	 * @param string $slug slug of the add-on.
 	 *
-	 * @return string $date expiry date of an add-on
+	 * @return string $date expiry date of an add-on, empty string if no option exists
 	 * @since 1.6.15
 	 */
 	public function get_license_expires( $slug = '' ) {
-
-		$date = false;
-
+		// if multisite, get option from main blog.
 		if ( is_multisite() ) {
-			// if multisite, get option from main blog.
 			global $current_site;
-			$date = get_blog_option( $current_site->blog_id, $slug . '-license-expires', false );
-		} else {
-			$date = get_option( $slug . '-license-expires', false );
+
+			return get_blog_option( $current_site->blog_id, $slug . '-license-expires', '' );
 		}
 
-		return $date;
+		return get_option( $slug . '-license-expires', '' );
 	}
 
 
 	/**
-	 * Add-on updater
-	 *
-	 * @since 1.5.7
+	 * Register the Updater class for every add-on, which includes getting version information
 	 */
 	public function add_on_updater() {
 
-		// ignore, if not main blog.
-		if ( ( is_multisite() && ! is_main_site() ) ) {
+		// ignore, if not main blog or if updater was disabled
+		if ( ( is_multisite() && ! is_main_site() ) || ! apply_filters( 'advanced-ads-add-ons-updater', true ) ) {
 			return;
 		}
 
@@ -513,7 +545,6 @@ class Advanced_Ads_Admin_Licenses {
 			return;
 		}
 
-		// load license keys.
 		$licenses = get_option( ADVADS_SLUG . '-licenses', array() );
 
 		foreach ( $add_ons as $_add_on_key => $_add_on ) {
@@ -524,37 +555,25 @@ class Advanced_Ads_Admin_Licenses {
 			if ( $expiry_date && 'lifetime' !== $expiry_date && strtotime( $expiry_date ) < $now ) {
 				// remove license status.
 				delete_option( $_add_on['options_slug'] . '-license-status' );
-				continue;
-			}
-
-			// check status.
-			if ( $this->get_license_status( $_add_on['options_slug'] ) !== 'valid' ) {
-				continue;
 			}
 
 			// retrieve our license key.
 			$license_key = isset( $licenses[ $_add_on_key ] ) ? $licenses[ $_add_on_key ] : '';
 
-			// setup the updater.
-			if ( $license_key ) {
+			// by default, EDD looks every 3 hours for updates. The following code block changes that to 24 hours. set_expiration_of_update_option delivers that value.
+			$option_key = 'pre_update_option_edd_sl_' . md5( serialize( basename( $_add_on['path'], '.php' ) . $license_key ) );
+			add_filter( $option_key, array( $this, 'set_expiration_of_update_option' ) );
 
-				// register filter to set EDD transient to 86,400 seconds (day) instead of 3,600 (hours).
-				$slug          = basename( $_add_on['path'], '.php' );
-				$transient_key = md5( serialize( $slug . $license_key ) );
-
-				add_filter( 'pre_update_option_' . $transient_key, array( $this, 'set_expiration_of_update_option' ) );
-
-				new ADVADS_SL_Plugin_Updater(
-					ADVADS_URL,
-					$_add_on['path'],
-					array(
-						'version'   => $_add_on['version'],
-						'license'   => $license_key,
-						'item_name' => $_add_on['name'],
-						'author'    => 'Advanced Ads',
-					)
-				);
-			}
+			new ADVADS_SL_Plugin_Updater(
+				self::API_ENDPOINT,
+				$_add_on['path'],
+				array(
+					'version'   => $_add_on['version'],
+					'license'   => $license_key,
+					'item_name' => $_add_on['name'],
+					'author'    => 'Advanced Ads',
+				)
+			);
 		}
 	}
 
@@ -567,7 +586,6 @@ class Advanced_Ads_Admin_Licenses {
 	 * @since   1.7.14
 	 */
 	public function set_expiration_of_update_option( $value ) {
-
 		$value['timeout'] = time() + 86400;
 
 		return $value;
@@ -585,7 +603,6 @@ class Advanced_Ads_Admin_Licenses {
 	 * @todo check if this is still working.
 	 */
 	public function addon_upgrade_filter( $reply, $package, $updater ) {
-
 		if ( isset( $updater->skin->plugin ) ) {
 			$plugin_file = $updater->skin->plugin;
 		} elseif ( isset( $updater->skin->plugin_info['Name'] ) ) {
@@ -599,7 +616,7 @@ class Advanced_Ads_Admin_Licenses {
 		if ( isset( $plugin_file ) && $plugin_file ) {
 			// hides the download url, but makes debugging harder.
 			// $updater->strings['downloading_package'] = __( 'Downloading updated version...', 'advanced-ads' );
-			//$updater->skin->feedback( 'downloading_package' );
+			// $updater->skin->feedback( 'downloading_package' );
 
 			// if AJAX; show direct update link as first possible solution.
 			if ( defined( 'DOING_AJAX' ) ) {
@@ -608,13 +625,7 @@ class Advanced_Ads_Admin_Licenses {
 			} else {
 				$updater->strings['download_failed'] = sprintf( __( 'Download failed. <a href="%s" target="_blank">Click here to learn why</a>.', 'advanced-ads' ), ADVADS_URL . 'manual/download-failed-updating-add-ons/#utm_source=advanced-ads&utm_medium=link&utm_campaign=download-failed' );
 			}
-
 		}
-
-		/*$res = $updater->fs_connect( array( WP_CONTENT_DIR ) );
-		if ( ! $res ) {
-			return new WP_Error( 'no_credentials', __( "Error! Can't connect to filesystem", 'advanced-ads' ) );
-		}*/
 
 		return $reply;
 	}
@@ -627,7 +638,6 @@ class Advanced_Ads_Admin_Licenses {
 	 * @return  array    array with the add-on data
 	 */
 	private function get_installed_add_on_by_name( $name = '' ) {
-
 		$add_ons = apply_filters( 'advanced-ads-add-ons', array() );
 
 		if ( is_array( $add_ons ) ) {
@@ -658,10 +668,14 @@ class Advanced_Ads_Admin_Licenses {
 			// check expiry date.
 			$expiry_date = self::get_instance()->get_license_expires( $_add_on['options_slug'] );
 
-			if ( ( $expiry_date && strtotime( $expiry_date ) > time() )
-			     || 'valid' === $status
-			     || 'lifetime' === $expiry_date ) {
-
+			if (
+				(
+					$expiry_date
+					&& strtotime( $expiry_date ) > time()
+				)
+				 || 'valid' === $status
+				 || 'lifetime' === $expiry_date
+			) {
 				return true;
 			}
 		}
@@ -669,5 +683,89 @@ class Advanced_Ads_Admin_Licenses {
 		return false;
 	}
 
+	/**
+	 * Update the license status based on information retrieved from the version info check
+	 *
+	 * @param array|WP_Error $response    HTTP response or WP_Error object.
+	 * @param string         $context     Context under which the hook is fired.
+	 * @param string         $class       HTTP transport used.
+	 * @param array          $parsed_args HTTP request arguments.
+	 * @param string         $url         The request URL.
+	 * @return array|WP_Error
+	 */
+	public function update_license_after_version_info( $response, $context, $class, $parsed_args, $url ) {
 
+		// bail if this call is not from our version check or returns an issue
+		if ( $url !== self::API_ENDPOINT
+			 || (
+				empty( $parsed_args['body']['edd_action'] )
+				|| 'get_version' !== $parsed_args['body']['edd_action']
+			 )
+			 || is_wp_error( $response )
+		) {
+			return $response;
+		}
+
+		$params = json_decode( wp_remote_retrieve_body( $response ) );
+		// return if no name is given to identify the plugin that needs update
+		if ( empty( $params->name ) ) {
+			return $response;
+		}
+
+		$new_license_status = null;
+		$new_expiry_date    = null;
+
+		// Some of the conditions could happen at the same time, though due to different conditions in EDD we are safer to have multiple checks
+		if ( isset( $params->valid_until ) ) {
+			if ( 'invalid' === $params->valid_until ) {
+				$new_license_status = 'invalid';
+			}
+			if ( 'lifetime' === $params->valid_until ) {
+				$new_license_status = 'valid';
+				$new_expiry_date    = 'lifetime';
+			}
+			// license is timestamp
+			if ( is_int( $params->valid_until ) ) {
+				$new_expiry_date = (int) $params->valid_until;
+				if ( time() < $params->valid_until ) {
+					$new_license_status = 'valid';
+				}
+			}
+		} elseif ( empty( $params->download_link ) || empty( $params->package ) || isset( $params->msg ) ) {
+			// if either of these two parameters is missing then the user does not have a valid license according to our store
+			// if there is a "msg" parameter then the license did also not work for another reason
+			$new_license_status = 'invalid';
+		}
+
+		if ( ! $new_license_status && ! $new_expiry_date ) {
+			return $response;
+		}
+
+		$add_ons = apply_filters( 'advanced-ads-add-ons', array() );
+
+		// look for the add-on with the appropriate license key
+		foreach ( $add_ons as $_add_on_key => $_add_on ) {
+			// identify the add-on based on the name
+			if ( ! isset( $add_on['name'] ) || $params->name !== $add_on['name'] ) {
+				continue;
+			}
+
+			$options_slug = $_add_on['options_slug'];
+
+			if ( $new_license_status ) {
+				update_option( $options_slug . '-license-status', $new_license_status, false );
+			}
+			if ( $new_expiry_date ) {
+				if ( 'lifetime' !== $new_expiry_date ) {
+					$new_expiry_date = gmdate( 'Y-m-d 23:59:49', $new_expiry_date );
+				}
+				update_option( $options_slug . '-license-expires', $new_expiry_date, false );
+			}
+
+			// return with the first match since there should only be one plugin per name
+			return $response;
+		}
+
+		return $response;
+	}
 }

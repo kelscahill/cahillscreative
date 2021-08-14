@@ -31,9 +31,10 @@ class Advanced_Ads_Overview_Widgets_Callbacks {
 		// initiate i18n notice.
 		new Yoast_I18n_WordPressOrg_v3(
 			array(
-				'textdomain'  => 'advanced-ads',
-				'plugin_name' => 'Advanced Ads',
-				'hook'        => 'advanced-ads-overview-below-support',
+				'textdomain'     => 'advanced-ads',
+				'plugin_name'    => 'Advanced Ads',
+				'hook'           => 'advanced-ads-overview-below-support',
+				'glotpress_logo' => false, // disables the plugin icon so we don’t need to keep up with potential changes.
 			)
 		);
 
@@ -82,21 +83,18 @@ class Advanced_Ads_Overview_Widgets_Callbacks {
 	 * @param callable $callback function that fills the box with the desired content.
 	 */
 	public static function add_meta_box( $id = '', $title = '', $position = 'full', $callback ) {
-
 		ob_start();
 		call_user_func( array( 'Advanced_Ads_Overview_Widgets_Callbacks', $callback ) );
 		do_action( 'advanced-ads-overview-widget-content-' . $id, $id );
 		$content = ob_get_clean();
 
 		include ADVADS_BASE_PATH . 'admin/views/overview-widget.php';
-
 	}
 
 	/**
 	 * Render Ad Health notices widget
 	 */
 	public static function render_notices() {
-
 		Advanced_Ads_Ad_Health_Notices::get_instance()->render_widget();
 		?><script>jQuery( document ).ready( function(){ advads_ad_health_maybe_remove_list(); });</script>
 		<?php
@@ -108,7 +106,6 @@ class Advanced_Ads_Overview_Widgets_Callbacks {
 	 * Render next steps widget
 	 */
 	public static function render_next_steps() {
-
 		$primary_taken = false;
 
 		$model      = Advanced_Ads::get_instance()->get_model();
@@ -224,7 +221,6 @@ class Advanced_Ads_Overview_Widgets_Callbacks {
 		}
 
 		do_action( 'advanced-ads-overview-below-support' );
-
 	}
 
 	/**
@@ -449,11 +445,11 @@ class Advanced_Ads_Overview_Widgets_Callbacks {
 	 * @param   bool $hide_activated if true, hide activated add-ons.
 	 */
 	public static function render_addons( $hide_activated = false ) {
-
-		$link = ADVADS_URL . 'manual/how-to-install-an-add-on/#utm_source=advanced-ads&utm_medium=link&utm_campaign=overview-install-add-ons';
-		?>
-		<p><a href="<?php echo esc_url( $link ); ?>" target="_blank"><?php echo esc_attr__( 'How to install and activate an add-on.', 'advanced-ads' ); ?></a></p>
-		<?php
+		if ( ! $hide_activated ) :
+			?>
+			<p><a href="<?php echo esc_url( ADVADS_URL ) . 'manual/how-to-install-an-add-on/#utm_source=advanced-ads&utm_medium=link&utm_campaign=overview-install-add-ons'; ?>" target="_blank"><?php echo esc_attr__( 'How to install and activate an add-on.', 'advanced-ads' ); ?></a></p>
+			<?php
+		endif;
 
 		$caching_used = Advanced_Ads_Checks::cache();
 
@@ -560,12 +556,6 @@ endif;
 				'link'  => ADVADS_URL . 'add-ons/google-ad-manager/#utm_source=advanced-ads&utm_medium=link&utm_campaign=overview-add-ons',
 				'order' => 5,
 			),
-			'geo'             => array(
-				'title' => 'Geo Targeting',
-				'desc'  => __( 'Target visitors with ads that match their geo location and make more money with regional campaigns.', 'advanced-ads' ),
-				'link'  => ADVADS_URL . 'add-ons/geo-targeting/#utm_source=advanced-ads&utm_medium=link&utm_campaign=overview-add-ons',
-				'order' => 5,
-			),
 			'sticky'          => array(
 				'title' => 'Sticky ads',
 				'desc'  => __( 'Increase click rates on your ads by placing them in sticky positions above, next or below your site.', 'advanced-ads' ),
@@ -576,6 +566,12 @@ endif;
 				'title' => 'PopUps and Layers',
 				'desc'  => __( 'Users will never miss an ad or other information in a PopUp. Choose when it shows up and for how long a user can close it.', 'advanced-ads' ),
 				'link'  => ADVADS_URL . 'add-ons/popup-and-layer-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=overview-add-ons',
+				'order' => 5,
+			),
+			'geo'             => array(
+				'title' => 'Geo Targeting',
+				'desc'  => __( 'Target visitors with ads that match their geo location and make more money with regional campaigns.', 'advanced-ads' ),
+				'link'  => ADVADS_URL . 'add-ons/geo-targeting/#utm_source=advanced-ads&utm_medium=link&utm_campaign=overview-add-ons',
 				'order' => 5,
 			),
 			'selling'         => array(
@@ -809,7 +805,7 @@ endif;
 			}
 		}
 
-		// only show All Access Pitch if less than 2 add-ons exist.
+		// show All Access Pitch if less than 2 add-ons exist.
 		if ( $installed_pro_plugins < 2 ) {
 			$add_ons['bundle'] = array(
 				'title'        => 'All Access',
@@ -818,6 +814,22 @@ endif;
 				'link_title'   => __( 'Get full access', 'advanced-ads' ),
 				'link_primary' => true,
 				'order'        => 0,
+			);
+		}
+
+		$all_access_expiry = Advanced_Ads_Admin_Licenses::get_instance()->get_probably_all_access_expiry();
+		// show All Access long-term pitch if less than 2 add-ons exist or All Access license is expiring within next 12 month or already expired
+		if (
+			$installed_pro_plugins < 2
+			|| ( $all_access_expiry && ( time() + YEAR_IN_SECONDS ) > strtotime( $all_access_expiry ) )
+		) {
+			$add_ons['long_term'] = array(
+				'title'        => 'All Access long-term',
+				'desc'         => __( 'A one-time payment for four years of support and updates. The package saves you up to 70% compared to individually purchasing our add-ons.', 'advanced-ads' ),
+				'link'         => ADVADS_URL . 'add-ons/all-access-long-term/#utm_source=advanced-ads&utm_medium=link&utm_campaign=overview-add-ons',
+				'link_title'   => __( 'Get full access', 'advanced-ads' ),
+				'link_primary' => true,
+				'order'        => 1,
 			);
 		}
 

@@ -71,7 +71,8 @@ class Advanced_Ads_Import {
 					return;
 				}
 				// see wp_magic_quotes()
-				$this->import( stripslashes( $_POST['xml_textarea'] ) );
+				$content = stripslashes( $_POST['xml_textarea'] );
+				$this->import( $content );
 				break;
 			case 'xml_file':
 				if ( $this->handle_upload() ) {
@@ -86,11 +87,13 @@ class Advanced_Ads_Import {
 	/**
 	 * The main controller for the actual import stage
 	 *
-	 * @param string $xml_content
+	 * @param string $xml_content XML content to import.
 	 */
 	public function import( &$xml_content ) {
 		@set_time_limit( 0 );
 		@ini_set( 'memory_limit', apply_filters( 'admin_memory_limit', WP_MAX_MEMORY_LIMIT ) );
+
+		$xml_content = trim( $xml_content );
 
 		if ( defined( 'IMPORT_DEBUG' ) && IMPORT_DEBUG ) {
 			error_log( 'source XML:' );
@@ -475,24 +478,37 @@ class Advanced_Ads_Import {
 	}
 
 	/**
-	 * Create new options based on import information
+	 * Create new options based on import information.
 	 *
-	 * @param array $decoded decoded XML
+	 * @param array $decoded decoded XML.
 	 */
 	private function import_options( &$decoded ) {
 		if ( isset( $decoded['options'] ) && is_array( $decoded['options'] ) ) {
-			foreach ( $decoded['options'] as $option_name => $option ) {
-				// ignore options not belonging to advanced ads
-				if ( 0 !== strpos( $option_name, 'advads-' ) && 0 !== strpos( $option_name, 'advanced-ads' ) ) {
+			foreach ( $decoded['options'] as $option_name => $imported_option ) {
+				// Ignore options not belonging to advanced ads.
+				if (
+					0 !== strpos( $option_name, 'advads-' )
+					&& 0 !== strpos( $option_name, 'advads_' )
+					&& 0 !== strpos( $option_name, 'advanced-ads' )
+					&& 0 !== strpos( $option_name, 'advanced_ads' )
+				) {
 					continue;
 				}
 
-				if( ! get_option( $option_name ) ) {
-					$this->messages[] = array( 'error', sprintf(__( 'Option was updated: <em>%s</em>', 'advanced-ads' ), $option_name ) );
-					update_option( $option_name, maybe_unserialize( $option ) );
-				} else {
-					$this->messages[] = array( 'error', sprintf(__( 'Option already exists: <em>%s</em>', 'advanced-ads' ), $option_name ) );
+				$existing_option = get_option( $option_name, array() );
+
+				if ( ! is_array( $imported_option ) ) {
+					$imported_option = array();
 				}
+				if ( ! is_array( $existing_option ) ) {
+					$existing_option = array();
+				}
+
+				$option_to_import = array_merge( $existing_option, $imported_option );
+
+				/* translators: %s: Option name. */
+				$this->messages[] = array( 'update', sprintf( __( 'Option was updated: <em>%s</em>', 'advanced-ads' ), $option_name ) );
+				update_option( $option_name, maybe_unserialize( $option_to_import ) );
 			}
 		}
 	}
@@ -608,7 +624,7 @@ class Advanced_Ads_Import {
 	/**
 	 * Upload image from URL and create attachment
 	 *
-	 * @param string $image_url
+	 * @param string $image_url Image url.
 	 * @return array with indices: post_id, attachment_url, false on failure
 	 */
 	private function upload_image_from_url( $image_url ) {
@@ -652,9 +668,21 @@ class Advanced_Ads_Import {
 			return false;
 		}
 
-		if ( ! ( $fileinfo = @getimagesize( $upload['file'] ) ) || ! in_array( $fileinfo[2], array( IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF ) ) ) {
+		/**
+		 * Get allowed image mime types.
+		 *
+		 * @var string Single mime type.
+		 */
+		$mime_types = array_filter( get_allowed_mime_types(), function( $mime_type ) {
+			return preg_match( '/image\//', $mime_type );
+		} );
+		$fileinfo   = @getimagesize( $upload['file'] );
+
+		if ( ! $fileinfo || ! in_array( $fileinfo['mime'], $mime_types, true ) ) {
 			@unlink( $upload['file'] );
-			$this->messages[] = array(  'error', sprintf( __( 'Error getting remote image <em>%s</em>', 'advanced-ads' ), $image_url ) );
+			/* translators: 1: image url */
+			$this->messages[] = array( 'error', sprintf( __( 'Error getting remote image <em>%s</em>', 'advanced-ads' ), $image_url ) );
+
 			return false;
 		}
 

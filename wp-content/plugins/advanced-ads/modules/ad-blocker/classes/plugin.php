@@ -1,6 +1,8 @@
 <?php
-class Advanced_Ads_Ad_Blocker
-{
+/**
+ * Ad blocker frontend functionality.
+ */
+class Advanced_Ads_Ad_Blocker {
 	/**
 	 * Singleton instance of the plugin
 	 *
@@ -139,5 +141,28 @@ class Advanced_Ads_Ad_Blocker
 			}
 		}
 		return $this->options;
+	}
+
+	/**
+	 * Update module options.
+	 *
+	 * @param array $new_options New options.
+	 */
+	public function update_options( $new_options ) {
+		if ( ! is_array( $new_options ) ) {
+			return;
+		}
+
+		update_option( ADVADS_AB_SLUG, $new_options );
+
+		// We do not save the following keys to the database.
+		if ( isset( $this->options['use-adblocker'] ) ) {
+			$new_options['use-adblocker'] = $this->options['use-adblocker'];
+		}
+		if ( isset( $this->options['upload_dir'] ) ) {
+			$new_options['upload_dir'] = $this->options['upload_dir'];
+		}
+
+		$this->options = $new_options;
 	}
 }

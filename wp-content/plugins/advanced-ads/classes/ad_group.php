@@ -188,13 +188,13 @@ class Advanced_Ads_Group {
 	 *
 	 * @since 1.4.8
 	 * @param array/null $ordered_ad_ids Ordered ids of the ads that belong to the group.
-	 * @return str $output output of ad(s) by ad
+	 * @return string $output output of ad(s) by ad
 	 */
 	public function output( $ordered_ad_ids = false ) {
 		// if $ordered_ad_ids was not passed to the function, load it
 		$ordered_ad_ids = ( $ordered_ad_ids === false ) ? $this->get_ordered_ad_ids() : $ordered_ad_ids;
 		if ( $ordered_ad_ids === null ) {
-			return;
+			return '';
 		}
 
 		// load the ad output
@@ -231,7 +231,8 @@ class Advanced_Ads_Group {
 			}
 		}
 
-		if ( ! isset( $this->ad_args['global_output'] ) || $this->ad_args['global_output'] ) {
+		$global_output = ! isset( $this->ad_args['global_output'] ) || $this->ad_args['global_output'];
+		if ( $global_output ) {
 			// add the group to the global output array
 			$advads = Advanced_Ads::get_instance();
 			$advads->current_ads[] = array('type' => 'group', 'id' => $this->id, 'title' => $this->name);
@@ -250,6 +251,12 @@ class Advanced_Ads_Group {
 		}
 
 		$output_string = implode( '', $output_array );
+
+		// Adds inline css to the wrapper.
+		if ( ! empty( $this->ad_args['inline-css'] ) && $this->ad_args['is_top_level'] ) {
+			$inline_css    = new Advanced_Ads_Inline_Css();
+			$this->wrapper = $inline_css->add_css( $this->wrapper, $this->ad_args['inline-css'], $global_output );
+		}
 
 		if ( ! $this->is_head_placement && $this->wrapper !== array() ) {
 			$output_string = '<div' . Advanced_Ads_Utils::build_html_attributes( $this->wrapper ) . '>'
@@ -600,8 +607,6 @@ class Advanced_Ads_Group {
 	 */
 	private function create_wrapper() {
 		$this->wrapper = array();
-
-
 
 		if ( $this->ad_args['is_top_level'] ) {
 			// Add label.
