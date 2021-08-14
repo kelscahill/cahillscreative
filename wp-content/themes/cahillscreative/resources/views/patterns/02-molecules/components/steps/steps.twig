@@ -86,9 +86,7 @@
         {% if loop.index % 2 == 0 %}
           {% include "@atoms/ads/ad.twig" with {
             "ad": {
-              "id": options.ad_content,
-              "modifiers": "sidebar",
-              "extra": "is-sticky"
+              "snippet": options.ad_content
             }
           } %}
         {% endif %}

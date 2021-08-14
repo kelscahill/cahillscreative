@@ -22,6 +22,12 @@
       "extra": bem_classes(base_class, 'header')
     }
   } %}
+  {% include "@atoms/ads/ad.twig" with {
+    "ad": {
+      "snippet": options.ad_top_of_page,
+      "modifiers": "banner"
+    }
+  } %}
   {% include "@atoms/text/rich-text/rich-text.twig" with {
     "rich_text": {
       "text": post.content,

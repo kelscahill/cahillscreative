@@ -33,12 +33,11 @@
                 "text": item.body
               }
             } %}
-            {% if loop.index == 3 %}
+            {% if loop.index % 3 == 0 %}
               {% include "@atoms/ads/ad.twig" with {
                 "ad": {
-                  "id": options.ad_sidebar,
-                  "modifiers": "sidebar",
-                  "extra": "is-sticky"
+                  "snippet": options.ad_sidebar,
+                  "modifiers": "sidebar"
                 }
               } %}
             {% endif %}

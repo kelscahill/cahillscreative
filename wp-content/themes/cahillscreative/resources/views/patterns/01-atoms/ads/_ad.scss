@@ -1,36 +1,42 @@
 .o-ad {
   display: block;
+  width: 100%;
 
   > * {
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
+    width: 100%;
+    max-width: $max-width-l;
+    height: 200px;
+    background: blue;
+    display: block;
+  }
+
+  &--banner {
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin: $space-double -50vw $space;
+    position: relative;
+    overflow: hidden;
   }
 
   &--sidebar {
+    margin-bottom: $space;
+
     @include media('>xxlarge') {
-      position: absolute;
-      right: calc(-320px - #{$space-double});
+      position: sticky;
+      z-index: 2;
       top: 0;
+      float: right;
       width: 320px;
-      z-index: 2;
-
-      > * {
-        margin-left: 0;
-      }
+      margin: 0 calc(-320px - #{$space-double}) 0 0;
     }
+  }
+}
 
-    &.is-sticky {
-      position: relative;
-      margin-bottom: $space;
-      margin-left: auto;
-      margin-right: auto;
-      z-index: 2;
-
-      @include media('>xxlarge') {
-        position: sticky;
-        float: right;
-        margin-right: calc(-320px - #{$space-double});
-      }
-    }
+.home,
+.woocommerce-page {
+  .o-ad {
+    display: none;
   }
 }

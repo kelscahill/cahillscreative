@@ -95,6 +95,8 @@
       margin-left: $space;
       flex-direction: row-reverse;
       color: $c-secondary;
+      white-space: nowrap;
+
 
       @include media('>large') {
         margin-left: $space-double;

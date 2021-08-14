@@ -487,6 +487,98 @@
                 "id": ""
             },
             "return_format": "array"
+        },
+        {
+            "key": "field_6116d8e590f22",
+            "label": "Ads",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_6116d8ee90f23",
+            "label": "Ad Content",
+            "name": "ad_content",
+            "type": "textarea",
+            "instructions": "Enter the ad code snippet.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_6116d8f590f24",
+            "label": "Ad Sidebar",
+            "name": "ad_sidebar",
+            "type": "textarea",
+            "instructions": "Enter the ad code snippet.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_6116d8fb90f25",
+            "label": "Ad Bottom of Page",
+            "name": "ad_bottom_of_page",
+            "type": "textarea",
+            "instructions": "Enter the ad code snippet.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_6116d9ba1a331",
+            "label": "Ad Top of Page",
+            "name": "ad_top_of_page",
+            "type": "textarea",
+            "instructions": "Enter the ad code snippet.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": "",
+            "new_lines": ""
         }
     ],
     "location": [
@@ -506,5 +598,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1624113766
+    "modified": 1628947587
 }

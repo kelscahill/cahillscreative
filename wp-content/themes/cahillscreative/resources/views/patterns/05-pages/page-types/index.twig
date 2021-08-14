@@ -19,4 +19,10 @@
       }
     } %}
   {% endif %}
+  {% include "@atoms/ads/ad.twig" with {
+    "ad": {
+      "snippet": options.ad_bottom_of_page,
+      "modifiers": "banner"
+    }
+  } %}
 {% endblock %}

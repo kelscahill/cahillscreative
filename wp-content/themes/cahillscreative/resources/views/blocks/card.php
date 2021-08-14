@@ -13,16 +13,10 @@ $context = Timber::get_context();
 $post = new TimberPost($query->post);
 $context['card'] = $post;
 
-if ($post->post_type == 'product' || $post->post_type == 'affiliate') {
-  $template = 'product';
-} else {
-  $template = $post->post_type;
-}
-
 $templates = array(
-  '/wp-content/themes/cahillscreative/resources/views/patterns/02-molecules/cards/card-' . $template . '.twig',
+  '/wp-content/themes/cahillscreative/resources/views/patterns/02-molecules/cards/card-' . $post->post_type . '.twig',
   '/wp-content/themes/cahillscreative/resources/views/patterns/02-molecules/cards/card.twig',
-  get_stylesheet_directory() . '/views/patterns/02-molecules/cards/card-' . $template . '.twig',
+  get_stylesheet_directory() . '/views/patterns/02-molecules/cards/card-' . $post->post_type . '.twig',
   get_stylesheet_directory() . '/views/patterns/02-molecules/cards/card.twig',
 );
 Timber::render( $templates, $context );

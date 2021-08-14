@@ -15,7 +15,7 @@
       }
     } %}
     <div class="{{ bem_classes(base_class, 'content') }} u-spacing--half">
-      {% if card.icon %}
+      {% if Image(card.icon).src %}
         <div class="{{ bem_classes(base_class, 'icon') }}">
           {% include "@atoms/images/image/image.twig" with {
             "image": {

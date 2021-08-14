@@ -21,7 +21,6 @@
   position: relative;
 
   @include media('>medium') {
-    flex-direction: row;
     padding: $space-double $space-double 0 $space-double;
     border-top-left-radius: 50px;
     border-top-right-radius: 50px;
@@ -44,10 +43,6 @@
     flex-direction: column;
     align-items: center;
     margin-bottom: $space;
-
-    @include media('>medium') {
-      margin-right: $space-double;
-    }
 
     @include media('>xlarge') {
       position: absolute;

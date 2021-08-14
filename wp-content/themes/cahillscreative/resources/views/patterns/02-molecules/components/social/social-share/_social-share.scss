@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
 
-  @include media('>medium') {
+  @include media('>xlarge') {
     flex-direction: column;
   }
 
@@ -13,7 +13,7 @@
     flex-direction: row;
     align-items: center;
 
-    @include media('>medium') {
+    @include media('>xlarge') {
       flex-direction: column;
     }
   }
@@ -21,7 +21,7 @@
   &__heading {
     margin-right: $space-half;
 
-    @include media('>medium') {
+    @include media('>xlarge') {
       margin-right: 0;
       margin-bottom: $space-half;
     }
@@ -31,7 +31,7 @@
     box-shadow: none;
     padding: 0 $space-half;
 
-    @include media('>medium') {
+    @include media('>xlarge') {
       padding: $space-half 0;
     }
 
@@ -64,7 +64,7 @@
     }
 
     .c-social-share__item {
-      @include media('>medium') {
+      @include media('>xlarge') {
         padding: 0 $space-half;
       }
     }
