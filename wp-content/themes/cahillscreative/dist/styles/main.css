@@ -12085,7 +12085,7 @@ img.mfp-img {
 }
 
 .o-ad > * {
-  margin: 0 auto;
+  margin: 0 auto !important;
   width: 100%;
   max-width: 970px;
 }
