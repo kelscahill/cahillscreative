@@ -45,5 +45,7 @@
 .woocommerce-page {
   .o-ad {
     display: none;
+    visibility: hidden;
+    opacity: 0;
   }
 }
