@@ -24,8 +24,7 @@ $c-orange: #f7b589;
 
 // Border/Overlay Colors
 $c-border: $c-gray;
-$c-overlay: rgba(0, 0, 0, 0.5);
-$c-overlay--dark: rgba(0, 0, 0, 0.8);
+$c-overlay: rgba(0, 0, 0, 0.8);
 
 // Default Colors
 $c-error--light: #f99;
@@ -222,21 +221,21 @@ $space-one-eighth: $space / 8;
 $xsmall: 320px;
 $small: 500px;
 $medium: 720px;
-$large: 970px;
-$xlarge: 1330px;
-$xxlarge: 1440px;
+$large: 960px;
+$xlarge: 1200px;
+$xxlarge: 1600px;
 
 $breakpoints: ("xsmall": $xsmall, "small": $small, "medium": $medium, "large": $large, "xlarge": $xlarge, "xxlarge": $xxlarge);
 
 /**
  * Max width.
  */
-$max-width: $xlarge;
+$max-width: 1200px;
 $max-width-s: 600px;
 $max-width-m: 728px;
-$max-width-l: $large;
-$max-width-xl: $xlarge;
-$max-width-xxl: $xxlarge;
+$max-width-l: 970px;
+$max-width-xl: 1200px;
+$max-width-xxl: 1440px;
 
 /**
  * Icons.

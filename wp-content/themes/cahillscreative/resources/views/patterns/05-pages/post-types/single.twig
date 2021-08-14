@@ -14,8 +14,25 @@
       },
       "figure": {
         "image": {
-          "srcset": Image(post.hero_image).src|resize(720, 405) ~ ' 720w, ' ~ Image(post.hero_image).src|resize(960, 540) ~ ' 960w,' ~ Image(post.hero_image).src|resize(1200, 675) ~ ' 1200w, '  ~ Image(post.hero_image).src|resize(1600, 900) ~ ' 1600w',
-          "src": Image(post.hero_image).src|resize(500, 281),
+          "sources": [
+            {
+              "media": "(min-width: 1200px)"|json_encode,
+              "srcset": Image(post.hero_image).src('horiz__16x9--xl')
+            },
+            {
+              "media": "(min-width: 500px)"|json_encode,
+              "srcset": Image(post.hero_image).src('horiz__16x9--s')
+            },
+            {
+              "media": "(min-width: 720px)"|json_encode,
+              "srcset": Image(post.hero_image).src('horiz__16x9--m')
+            },
+            {
+              "media": "(min-width: 960px)"|json_encode,
+              "srcset": Image(post.hero_image).src('horiz__16x9--l')
+            }
+          ],
+          "src": Image(post.hero_image).src|resize(500, 500),
           "alt": Image(post.hero_image).alt
         }
       }

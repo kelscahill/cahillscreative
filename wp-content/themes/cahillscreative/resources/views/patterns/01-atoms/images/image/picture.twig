@@ -9,7 +9,7 @@
       #}
       <!--[if IE 9]><video style="display: none;"><![endif]-->
       {% for attributes in image.sources %}
-        <source {{ attributes }}/>
+        <source {{ add_attributes(attributes) }}>
       {% endfor %}
       <!--[if IE 9]></video><![endif]-->
     {% endif %}

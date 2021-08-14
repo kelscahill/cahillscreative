@@ -8,7 +8,7 @@
           "button": {
             "url": Image(image).src|resize(auto, 600),
             "text": "Enlarge Gallery",
-            "modifiers": "secondary",
+            "modifiers": ["secondary", "enlarge"],
             "attributes": {
               "title": Image(image).caption
             }
@@ -30,12 +30,12 @@
           }
           @media(min-width: 960px) {
             .o-background-image--{{ Image(image).id }} {
-              background-image: url('{{ Image(image).src|resize(1220) }}');
+              background-image: url('{{ Image(image).src|resize(1200) }}');
             }
           }
-          @media(min-width: 1220px) {
+          @media(min-width: 1200px) {
             .o-background-image--{{ Image(image).id }} {
-              background-image: url('{{ Image(image).src|resize(1440) }}');
+              background-image: url('{{ Image(image).src|resize(1600) }}');
             }
           }
         </style>
@@ -44,3 +44,4 @@
     {% endfor %}
   </div>
 {% endif %}
+

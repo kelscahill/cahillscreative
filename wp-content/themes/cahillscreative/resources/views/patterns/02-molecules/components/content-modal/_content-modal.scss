@@ -5,7 +5,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  background: $c-gray;
+  background: $c-overlay;
   opacity: 0;
   visibility: hidden;
   z-index: -1;
@@ -22,7 +22,7 @@
     outline: 0;
     box-shadow: none;
     background: transparent;
-    color: $c-black;
+    color: white;
 
     .o-icon {
       transition: $transition-all;
@@ -36,7 +36,7 @@
 
     &:hover,
     &:focus {
-      color: $c-black;
+      color: $c-white;
       background-color: transparent;
 
       svg {

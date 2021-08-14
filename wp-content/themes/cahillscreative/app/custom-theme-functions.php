@@ -86,13 +86,13 @@ add_action( 'admin_init' , function() {
   }, 100);
 });
 
+
 /**
- * Add custom post types to main query.
+ * Custom image styles.
  */
-// add_filter( 'pre_get_posts', 'main_query_post_types' );
-// function main_query_post_types( $query ) {
-//   if ( is_home() && $query->is_main_query() ) {
-//     $query->set( 'post_type', array( 'affiliate', 'product', 'post', 'work', 'renovation' ) );
-//     return $query;
-//   }
-// }
+
+// 16:9 crop.
+add_image_size('horiz__16x9--s', 720, 405, array('center', 'center'));
+add_image_size('horiz__16x9--m', 960, 540, array('center', 'center'));
+add_image_size('horiz__16x9--l', 1200, 675, array('center', 'center'));
+add_image_size('horiz__16x9--xl', 1600, 900, array('center', 'center'));
