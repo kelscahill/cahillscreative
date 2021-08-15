@@ -5,7 +5,7 @@
         <?php include locate_template('views/blocks/card.php'); ?>
       <?php endwhile; ?>
     </div>
-    <?php include locate_template('views/blocks/pagination.php'); ?>
+    <!-- <?php include locate_template('views/blocks/pagination.php'); ?> -->
   <?php else: ?>
     <p><?php echo "No Results Found"; ?></p>
   <?php endif; ?>
