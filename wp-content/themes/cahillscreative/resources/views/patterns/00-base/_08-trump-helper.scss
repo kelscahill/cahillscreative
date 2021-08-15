@@ -7,9 +7,13 @@
 }
 
 .search-filter-scroll-loading {
+  position: absolute;
+  bottom: -2.5rem;
+  left: 0;
+  right: 0;
+  width: 30px;
+  margin: 0 auto;
   display: block;
-  width: 100%;
-  margin: auto !important;
 }
 
 /**
