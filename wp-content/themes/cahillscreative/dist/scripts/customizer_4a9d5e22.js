@@ -97,4 +97,3 @@ wp.customize('blogname', function (value) {
 /***/ })
 
 /******/ });
-//# sourceMappingURL=customizer.js.map
