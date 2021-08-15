@@ -42,6 +42,12 @@
           "extra": bem_classes(base_class, 'heading')
         }
       } %}
+      {% include "@atoms/text/dek/dek.twig" with {
+        "dek": {
+          "text": card.discount_code,
+          "extra": bem_classes(base_class, 'dek')
+        }
+      } %}
       {% include "@molecules/navigation/tags/tags.twig" with {
         "tags": card.terms('affiliate_tag'),
         "extra": bem_classes(base_class, 'tags')
