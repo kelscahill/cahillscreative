@@ -123,11 +123,14 @@
 }
 
 .c-related-posts--tertiary + .c-footer,
-.c-posts-slider--tertiary + .c-footer,
+.c-posts-slider--tertiary + .c-footer {
+  position: relative;
+  margin-top: -175px;
+}
+
 .c-promo + .c-footer {
   position: relative;
-  top: calc(-95px - #{$space-quadruple});
-  margin-bottom: calc(-95px - #{$space-quadruple});
+  margin-top: -55px;
 }
 
 .c-featured-products {
