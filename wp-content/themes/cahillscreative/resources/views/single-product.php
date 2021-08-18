@@ -9,11 +9,11 @@
  * @since    Timber 0.1
  */
 
-$id = get_queried_object_id();
 $context = Timber::context();
 $post = new TimberPost();
 $context['post'] = $post;
-$context['product'] = wc_get_product($id);
+$product = wc_get_product($post->ID);
+$context['product'] = $product;
 
 if (get_the_terms($post->ID, 'affiliate_category')) {
   $term = get_the_terms($post->ID, 'affiliate_category');
