@@ -129,8 +129,12 @@
 }
 
 .c-promo + .c-footer {
-  position: relative;
-  margin-top: -55px;
+  margin-top: $space;
+
+  @include media('>medium') {
+    position: relative;
+    margin-top: -55px;
+  }
 }
 
 .c-featured-products {
