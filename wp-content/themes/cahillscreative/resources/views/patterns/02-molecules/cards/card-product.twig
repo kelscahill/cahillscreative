@@ -52,13 +52,7 @@
         "tags": card.terms('affiliate_tag'),
         "extra": bem_classes(base_class, 'tags')
       } %}
-      {% include "@atoms/text/price/price.twig" with {
-        "price": {
-          "regular": card._regular_price,
-          "sale": card._sale_price,
-          "extra": bem_classes(base_class, 'price')
-        }
-      } %}
+      {% include "@atoms/text/price/price.twig" %}
     </div>
     <div class="{{ bem_classes(base_class, 'footer') }}">
       {% if card.affiliate_link %}

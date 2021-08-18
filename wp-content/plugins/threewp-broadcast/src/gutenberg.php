@@ -77,6 +77,7 @@ class gutenberg
 	public static function render_block( $block, $options = [] )
 	{
 		$options = array_merge( [
+			'force_json_options' => false,
 			'json_options' => JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT,
 		], $options );
 		$options = ( object ) $options;
@@ -93,7 +94,7 @@ class gutenberg
 
 		// Fancy encode?
 		$json_options = 0;
-		if ( static::string_has_unicode( $block[ 'original' ] ) )
+		if ( $options->force_json_options || static::string_has_unicode( $block[ 'original' ] ) )
 			$json_options = $options->json_options;
 
 		return sprintf( "<!-- wp:%s %s -->",

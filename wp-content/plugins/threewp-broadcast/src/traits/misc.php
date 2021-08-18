@@ -481,6 +481,17 @@ trait misc
 	}
 
 	/**
+		@brief		Set the status of a post using the DB.
+		@since		2021-07-21 19:18:59
+	**/
+	public function set_post_status( $post_id, $post_status )
+	{
+		global $wpdb;
+		$this->debug( 'Forcing post_status to %s', $post_status );
+		$wpdb->update( $wpdb->posts, [ 'post_status' => $post_status ], [ 'ID' => $post_id ] );
+	}
+
+	/**
 		@brief		The site options we store.
 		@since		2018-01-25 21:07:47
 	**/

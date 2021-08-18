@@ -92,6 +92,16 @@ class Custom_Fields
 	}
 
 	/**
+		@brief		Set a custom field.
+		@since		2021-07-21 17:11:05
+	**/
+	public function set( $key, $value )
+	{
+		update_post_meta( $this->broadcasting_data->post->ID, $key, $value );
+		$this->put( $key, [ $value ] );
+	}
+
+	/**
 		@brief		Checks whether a name exists in the whitelist.
 		@since		2015-06-06 09:09:26
 	**/

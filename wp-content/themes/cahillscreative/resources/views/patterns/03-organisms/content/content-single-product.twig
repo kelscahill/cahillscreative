@@ -20,9 +20,9 @@
         {% if product.get_available_variations %}
           {% do action('woocommerce_variable_add_to_cart') %}
         {% else %}
-          {% include "01-atoms/woocommerce/add-to-cart.twig" %}
+          {% include "@atoms/woocommerce/add-to-cart.twig" %}
         {% endif %}
-        {% include "01-atoms/woocommerce/price.twig" %}
+        {% include "@atoms/text/price/price.twig" %}
       </div>
       {% if post._downloadable == 'yes' %}
         <p><small><strong>Instant Download:</strong> Your files will be available to download once payment is confirmed. You may download, save, and print as many times as you'd like, but please do not redistribute. For digital downloads, I don't accept returns, exchanges, or cancellations.</small></p>

@@ -13,7 +13,6 @@
     padding-top: 0;
     padding-bottom: $space-quadruple * 2;
     background-color: $c-tertiary;
-    margin-bottom: calc(-95px - #{$space-quadruple});
 
     .c-related-posts__header {
       background-color: transparent;
@@ -23,6 +22,10 @@
         border: none;
         margin-top: -40px;
       }
+    }
+
+    &.u-padding--quad--bottom {
+      padding-bottom: $space-quadruple;
     }
   }
 
@@ -117,6 +120,14 @@
       }
     }
   }
+}
+
+.c-related-posts--tertiary + .c-footer,
+.c-posts-slider--tertiary + .c-footer,
+.c-promo + .c-footer {
+  position: relative;
+  top: calc(-95px - #{$space-quadruple});
+  margin-bottom: calc(-95px - #{$space-quadruple});
 }
 
 .c-featured-products {

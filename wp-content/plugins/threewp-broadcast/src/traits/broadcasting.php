@@ -430,10 +430,7 @@ trait broadcasting
 			if ( ! is_a( $bcd->new_post, 'WP_Post' ) )
 				wp_die( 'Broadcast fatal error! After creating / updating the child post, it has disappeared. Try enabling Broadcast debug mode to help diagnose the error.' );
 
-			global $wpdb;
-			$this->debug( 'Forcing post_status to %s', $bcd->post->post_status );
-			$wpdb->update( $wpdb->posts, [ 'post_status' => $bcd->post->post_status ], [ 'ID' => $bcd->new_post( 'ID' ) ] );
-
+			$this->set_post_status( $bcd->new_post( 'ID' ), $bcd->post->post_status );
 			$bcd->new_post = get_post( $bcd->new_post( 'ID' ) );
 
 			$action = $this->new_action( 'broadcasting_after_update_post' );

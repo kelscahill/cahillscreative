@@ -116,6 +116,12 @@
     }
   }
 
+  &__body {
+    > * {
+      background-color: transparent !important;
+    }
+  }
+
   &__image {
     min-height: 100vw;
     background-size: cover;

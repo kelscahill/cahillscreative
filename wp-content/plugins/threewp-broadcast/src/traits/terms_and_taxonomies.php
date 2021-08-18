@@ -427,6 +427,14 @@ trait terms_and_taxonomies
 			// Store the term meta.
 			foreach( $o->terms as $term )
 			{
+				// Preparse the description so that shortcodes and what not can be picked up.
+				$key = 'term_description_' . $term->term_id;
+				$preparse_content = $this->new_action( 'preparse_content' );
+				$preparse_content->broadcasting_data = $bcd;
+				$preparse_content->content = $term->description;
+				$preparse_content->id = $key;
+				$preparse_content->execute();
+
 				$meta = get_term_meta( $term->term_id );
 				if ( ! is_array( $meta ) )
 					$meta = [];
@@ -512,6 +520,14 @@ trait terms_and_taxonomies
 		$this->debug( 'wp_update_term: %s', $action->new_term );
 		$update = true;
 
+		$key = 'term_description_' . $action->old_term->term_id;
+		$parse_content = $this->new_action( 'parse_content' );
+		$parse_content->broadcasting_data = $bcd;
+		$parse_content->content = $action->new_term->description;
+		$parse_content->id = $key;
+		$parse_content->execute();
+		$action->new_term->description = $parse_content->content;
+
 		// If we are given an old term, then we have a chance of checking to see if there should be an update called at all.
 		if ( $action->has_old_term() )
 		{
@@ -528,6 +544,7 @@ trait terms_and_taxonomies
 		if ( $update )
 		{
 			$this->debug( 'Updating the term %s.', $action->new_term->name );
+
 			wp_update_term( $action->new_term->term_id, $action->taxonomy, array(
 				'description' => $action->new_term->description,
 				'name' => $action->new_term->name,

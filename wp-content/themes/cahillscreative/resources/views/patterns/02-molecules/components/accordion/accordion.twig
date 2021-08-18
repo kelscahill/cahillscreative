@@ -28,10 +28,18 @@
             }
           } %}
           <div class="{{ bem_classes(base_class, 'body') }} u-spacing">
+            {% if loop.index % 1 == 0 %}
+              {% include "@atoms/ads/ad.twig" with {
+                "ad": {
+                  "snippet": options.ad_sidebar_1,
+                  "modifiers": "sidebar"
+                }
+              } %}
+            {% endif %}
             {% if loop.index % 3 == 0 %}
               {% include "@atoms/ads/ad.twig" with {
                 "ad": {
-                  "snippet": options.ad_sidebar,
+                  "snippet": options.ad_sidebar_2,
                   "modifiers": "sidebar"
                 }
               } %}

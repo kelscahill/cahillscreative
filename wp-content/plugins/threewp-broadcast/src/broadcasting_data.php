@@ -352,6 +352,9 @@ class broadcasting_data
 	**/
 	public function add_attachment( $id )
 	{
+		if ( isset( $this->attachment_data[ $id ] ) )
+			return true;
+
 		if ( $id < 1 )
 			return false;
 
