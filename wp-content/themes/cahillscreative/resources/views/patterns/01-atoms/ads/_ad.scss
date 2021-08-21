@@ -29,7 +29,7 @@
     margin-bottom: $space;
 
     @include media('>xxlarge') {
-      position: sticky;
+      position: relative;
       z-index: 2;
       top: 0;
       float: right;
