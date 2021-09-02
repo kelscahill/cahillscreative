@@ -121,7 +121,6 @@ return array(
     'WPSEO_Admin_Gutenberg_Compatibility_Notification' => $baseDir . '/admin/class-admin-gutenberg-compatibility-notification.php',
     'WPSEO_Admin_Help_Panel' => $baseDir . '/admin/class-admin-help-panel.php',
     'WPSEO_Admin_Init' => $baseDir . '/admin/class-admin-init.php',
-    'WPSEO_Admin_Media_Purge_Notification' => $baseDir . '/admin/class-admin-media-purge-notification.php',
     'WPSEO_Admin_Menu' => $baseDir . '/admin/menu/class-admin-menu.php',
     'WPSEO_Admin_Pages' => $baseDir . '/admin/class-config.php',
     'WPSEO_Admin_Recommended_Replace_Vars' => $baseDir . '/admin/class-admin-recommended-replace-vars.php',

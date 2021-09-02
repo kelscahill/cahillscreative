@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit9569cede6748b69e1da9be4a199a2737
+class ComposerStaticInitdb5ec7696d4659aa71f7688ee7001b22
 {
     public static $prefixLengthsPsr4 = array (
         'C' => 
@@ -136,7 +136,6 @@ class ComposerStaticInit9569cede6748b69e1da9be4a199a2737
         'WPSEO_Admin_Gutenberg_Compatibility_Notification' => __DIR__ . '/../..' . '/admin/class-admin-gutenberg-compatibility-notification.php',
         'WPSEO_Admin_Help_Panel' => __DIR__ . '/../..' . '/admin/class-admin-help-panel.php',
         'WPSEO_Admin_Init' => __DIR__ . '/../..' . '/admin/class-admin-init.php',
-        'WPSEO_Admin_Media_Purge_Notification' => __DIR__ . '/../..' . '/admin/class-admin-media-purge-notification.php',
         'WPSEO_Admin_Menu' => __DIR__ . '/../..' . '/admin/menu/class-admin-menu.php',
         'WPSEO_Admin_Pages' => __DIR__ . '/../..' . '/admin/class-config.php',
         'WPSEO_Admin_Recommended_Replace_Vars' => __DIR__ . '/../..' . '/admin/class-admin-recommended-replace-vars.php',
@@ -946,9 +945,9 @@ class ComposerStaticInit9569cede6748b69e1da9be4a199a2737
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit9569cede6748b69e1da9be4a199a2737::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit9569cede6748b69e1da9be4a199a2737::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit9569cede6748b69e1da9be4a199a2737::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitdb5ec7696d4659aa71f7688ee7001b22::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitdb5ec7696d4659aa71f7688ee7001b22::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitdb5ec7696d4659aa71f7688ee7001b22::$classMap;
 
         }, null, ClassLoader::class);
     }

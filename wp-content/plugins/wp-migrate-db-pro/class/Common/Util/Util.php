@@ -443,7 +443,7 @@ class Util
      */
     public function rest_url()
     {
-        if (is_plugin_active( 'sitepress-multilingual-cms/sitepress.php') || defined('ICL_SITEPRESS_VERSION')) {
+        if ((is_plugin_active('sitepress-multilingual-cms/sitepress.php') || defined('ICL_SITEPRESS_VERSION')) && !empty(get_option('permalink_structure'))) {
             return get_option('home') . '/' . rest_get_url_prefix() . '/' . $this->props->rest_api_base;
         }
         return get_rest_url(null, $this->props->rest_api_base);

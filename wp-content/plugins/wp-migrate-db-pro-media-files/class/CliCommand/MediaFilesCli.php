@@ -250,6 +250,7 @@ class MediaFilesCli extends \DeliciousBrains\WPMDBMF\MediaFilesAddon
             'date'               => null,
             'timezone'           => $tz->getName(),
             'stage'              => 'media_files',
+            'is_cli_migration'   => 1,
         ];
 
         if (!empty($mf_options['excludes'])) {

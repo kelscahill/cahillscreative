@@ -316,14 +316,14 @@ class Replace
                 $index = $i + $standard_pairs_count;
                 $tmp_find_replace_pairs[$pair['replace_old']] = $pair['replace_new'];
 
-                if(empty($migration_options['regex'])) {
+                if(empty($migration_options['regex']) && isset($pair['regex'])) {
                     $find_replace_pairs['regex'][$index] = $pair['regex'];
                 }
 
-                if(empty($migration_options['case_sensitive'])) {
+                if(empty($migration_options['case_sensitive']) && isset($pair['case_sensitive'])) {
                     $find_replace_pairs['case_sensitive'][$index] = $pair['case_sensitive'];
                 }
-              
+
                 $i++;
             }
         }
@@ -656,18 +656,20 @@ class Replace
                 $data = $_tmp;
                 unset($_tmp);
             } elseif (is_object($data)) { // Submitted by Tina Matter
-                $_tmp = clone $data;
-                foreach ($data as $key => $value) {
-                    // Integer properties are crazy and the best thing we can do is to just ignore them.
-                    // see http://stackoverflow.com/a/10333200 and https://github.com/deliciousbrains/wp-migrate-db-pro/issues/853
-                    if (is_int($key)) {
-                        continue;
+                if ($this->is_object_cloneable($data)) {
+                    $_tmp = clone $data;
+                    foreach ($data as $key => $value) {
+                        // Integer properties are crazy and the best thing we can do is to just ignore them.
+                        // see http://stackoverflow.com/a/10333200 and https://github.com/deliciousbrains/wp-migrate-db-pro/issues/853
+                        if (is_int($key)) {
+                            continue;
+                        }
+                        $_tmp->$key = $this->recursive_unserialize_replace($value, false, $parent_serialized, $successive_filter);
                     }
-                    $_tmp->$key = $this->recursive_unserialize_replace($value, false, $parent_serialized, $successive_filter);
-                }
 
-                $data = $_tmp;
-                unset($_tmp);
+                    $data = $_tmp;
+                    unset($_tmp);
+                }
             } elseif (Util::is_json($data, true)) {
                 $_tmp = array();
                 $data = json_decode($data, true);
@@ -852,5 +854,24 @@ class Replace
             'methods'  => 'POST',
             'callback' => [ $this, 'validate_regex_pattern' ],
         ]);
+    }
+
+
+    /**
+     * Check if a given object can be cloned.
+     *
+     * @param object $object
+     *
+     * @return bool
+     */
+    private function is_object_cloneable($object) {
+        return (new \ReflectionClass(get_class($object)))->isCloneable();
+    }
+
+    /**
+     * Empties pairs array
+     */
+    public function reset_pairs() {
+        $this->pairs = [];
     }
 }

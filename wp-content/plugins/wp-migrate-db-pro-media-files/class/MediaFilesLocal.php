@@ -159,6 +159,7 @@ class MediaFilesLocal
             'stage'              => 'string',
             'date'               => 'string',
             'timezone'           => 'string',
+            'is_cli_migration'   => 'int'
         );
 
         $state_data = Persistence::setPostData($key_rules, __METHOD__);
@@ -176,7 +177,9 @@ class MediaFilesLocal
         $this->transfer_util->cleanup_temp_chunks(WP_CONTENT_DIR . DIRECTORY_SEPARATOR, 'tmpchunk');
 
         //Bottleneck files scanning
-        Files_Util::enable_scandir_bottleneck();
+        if (empty($state_data['is_cli_migration'])) {
+            Files_Util::enable_scandir_bottleneck();
+        }
 
         //State data populated
         $folder   = $state_data['folder'];
