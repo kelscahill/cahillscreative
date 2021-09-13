@@ -14,7 +14,7 @@ use Yoast\WP\SEO\Helpers\Url_Helper;
 use Yoast\WP\SEO\Integrations\Integration_Interface;
 use Yoast\WP\SEO\Premium\Actions\Prominent_Words\Content_Action;
 use Yoast\WP\SEO\Premium\Helpers\Prominent_Words_Helper;
-use Yoast\WP\SEO\Routes\Prominent_Words_Route;
+use Yoast\WP\SEO\Premium\Routes\Prominent_Words_Route;
 use Yoast\WP\SEO\Actions\Indexing\Indexation_Action_Interface;
 
 /**

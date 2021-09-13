@@ -78,13 +78,13 @@ class Workouts_Integration implements Integration_Interface {
 	/**
 	 * Workouts_Integration constructor.
 	 *
-	 * @param Indexable_Repository      $indexable_repository       The indexables repository.
-	 * @param Link_Suggestions_Action   $link_suggestions_action    The link suggestions action.
-	 * @param WPSEO_Admin_Asset_Manager $admin_asset_manager        The admin asset manager.
-	 * @param WPSEO_Shortlinker         $shortlinker                The shortlinker.
-	 * @param Options_Helper            $options_helper             The options helper.
-	 * @param Prominent_Words_Helper    $prominent_words_helper     The prominent words helper.
-	 * @param Post_Type_Helper          $post_type_helper           The post type helper.
+	 * @param Indexable_Repository      $indexable_repository    The indexables repository.
+	 * @param Link_Suggestions_Action   $link_suggestions_action The link suggestions action.
+	 * @param WPSEO_Admin_Asset_Manager $admin_asset_manager     The admin asset manager.
+	 * @param WPSEO_Shortlinker         $shortlinker             The shortlinker.
+	 * @param Options_Helper            $options_helper          The options helper.
+	 * @param Prominent_Words_Helper    $prominent_words_helper  The prominent words helper.
+	 * @param Post_Type_Helper          $post_type_helper        The post type helper.
 	 */
 	public function __construct(
 		Indexable_Repository $indexable_repository,
@@ -120,7 +120,7 @@ class Workouts_Integration implements Integration_Interface {
 	 * @return array the filtered submenu pages.
 	 */
 	public function add_submenu_page( $submenu_pages ) {
-		// this inserts the workouts menu page at the correct place in the array without overriding that position.
+		// This inserts the workouts menu page at the correct place in the array without overriding that position.
 		$submenu_pages[] = [
 			'wpseo_dashboard',
 			'',
@@ -226,6 +226,9 @@ class Workouts_Integration implements Integration_Interface {
 										if ( $updated_indexable->object_id === $default_category_id && $updated_indexable->object_type === 'term' ) {
 											return false;
 										}
+										if ( $updated_indexable->is_robots_noindex ) {
+											return false;
+										}
 										return $updated_indexable;
 									}
 								}
@@ -241,6 +244,7 @@ class Workouts_Integration implements Integration_Interface {
 		$orphaned = $this->indexable_repository->query()
 			->where_raw( '( incoming_link_count is NULL OR incoming_link_count < 3 )' )
 			->where_raw( '( post_status = \'publish\' OR post_status IS NULL )' )
+			->where_raw( '( is_robots_noindex = FALSE OR is_robots_noindex IS NULL )' )
 			->where_raw( '( object_id != %s OR object_type != \'term\' )', $default_category_id )
 			->where_in( 'object_sub_type', $object_sub_types )
 			->where_in( 'object_type', [ 'term', 'post' ] )

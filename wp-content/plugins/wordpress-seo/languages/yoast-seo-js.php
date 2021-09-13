@@ -45,7 +45,7 @@ $generated_i18n_strings = array(
 
 	// Reference: node_modules/yoastseo/src/parsedPaper/assess/TreeAssessor.js:98
 	// Reference: node_modules/yoastseo/src/scoring/assessor.js:209
-	// Reference: node_modules/yoastseo/src/worker/AnalysisWebWorker.js:1017
+	// Reference: node_modules/yoastseo/src/worker/AnalysisWebWorker.js:1062
 	/* Translators: %1$s expands to the name of the assessment. */
 	__( 'An error occurred in the \'%1$s\' assessment', 'wordpress-seo' ),
 
@@ -86,10 +86,10 @@ $generated_i18n_strings = array(
 	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/fleschReadingEaseAssessment.js:91
 	__( '%1$sFlesch Reading Ease%2$s: The copy scores %3$s in the test, which is considered %4$s to read. %5$s%6$s%7$s', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/ListAssessment.js:79
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/ListAssessment.js:82
 	__( '%1$sLists%2$s: There is at least one list on this page. Great!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/ListAssessment.js:95
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/ListAssessment.js:98
 	__( '%1$sLists%3$s: No lists appear on this page. %2$sAdd at least one ordered or unordered list%3$s!', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/ParagraphTooLongAssessment.js:92
@@ -98,22 +98,22 @@ $generated_i18n_strings = array(
 	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/ParagraphTooLongAssessment.js:105
 	_n_noop( '%1$sParagraph length%2$s: %3$d of the paragraphs contains more than the recommended maximum of %4$d words. %5$sShorten your paragraphs%2$s!', '%1$sParagraph length%2$s: %3$d of the paragraphs contain more than the recommended maximum of %4$d words. %5$sShorten your paragraphs%2$s!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/PassiveVoiceAssessment.js:78
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/PassiveVoiceAssessment.js:79
 	__( '%1$sPassive voice%2$s: You\'re using enough active voice. That\'s great!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/PassiveVoiceAssessment.js:92
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/PassiveVoiceAssessment.js:93
 	__( '%1$sPassive voice%2$s: %3$s of the sentences contain passive voice, which is more than the recommended maximum of %4$s. %5$sTry to use their active counterparts%2$s.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/SentenceBeginningsAssessment.js:77
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/SentenceBeginningsAssessment.js:78
 	_n_noop( '%1$sConsecutive sentences%2$s: The text contains %3$d consecutive sentences starting with the same word. %5$sTry to mix things up%2$s!', '%1$sConsecutive sentences%2$s: The text contains %4$d instances where %3$d or more consecutive sentences start with the same word. %5$sTry to mix things up%2$s!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/SentenceBeginningsAssessment.js:96
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/SentenceBeginningsAssessment.js:97
 	__( '%1$sConsecutive sentences%2$s: There is enough variety in your sentences. That\'s great!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/SentenceLengthInTextAssessment.js:146
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/SentenceLengthInTextAssessment.js:151
 	__( '%1$sSentence length%2$s: Great!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/SentenceLengthInTextAssessment.js:157
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/SentenceLengthInTextAssessment.js:162
 	__( '%1$sSentence length%2$s: %3$s of the sentences contain more than %4$s words, which is more than the recommended maximum of %5$s. %6$sTry to shorten the sentences%2$s.', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/SubheadingDistributionTooLongAssessment.js:134
@@ -133,13 +133,13 @@ $generated_i18n_strings = array(
 	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/TextPresenceAssessment.js:50
 	__( '%1$sNot enough content%2$s: %3$sPlease add some content to enable a good analysis%2$s.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/TransitionWordsAssessment.js:94
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/TransitionWordsAssessment.js:95
 	__( '%1$sTransition words%2$s: None of the sentences contain transition words. %3$sUse some%2$s.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/TransitionWordsAssessment.js:110
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/TransitionWordsAssessment.js:111
 	__( '%1$sTransition words%2$s: Only %3$s of the sentences contain transition words, which is not enough. %4$sUse more of them%2$s.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/TransitionWordsAssessment.js:126
+	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/TransitionWordsAssessment.js:127
 	__( '%1$sTransition words%2$s: Well done!', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/readability/wordComplexityAssessment.js:64
@@ -240,31 +240,31 @@ $generated_i18n_strings = array(
 	__( '%1$sImage Keyphrase%3$s: Images on this page do not have alt attributes that reflect the topic of your text. %2$sAdd your keyphrase or synonyms to the alt tags of relevant images%3$s!', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:113
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:255
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:258
 	__( '%1$sKeyphrase length%3$s: %2$sSet a keyphrase in order to calculate your SEO score%3$s.', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:128
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:270
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:273
 	__( '%1$sKeyphrase length%3$s: No focus keyphrase was set for this page. %2$sSet a keyphrase in order to calculate your SEO score%3$s.', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:149
-	__( '%3$sKeyphrase length%5$s: The keyphrase is %1$d word long. That\'s shorter than the recommended minimum of %2$d words. %4$sMake it longer%5$s!', 'wordpress-seo' ),
+	_n_noop( '%3$sKeyphrase length%5$s: The keyphrase is %1$d word long. That\'s shorter than the recommended minimum of %2$d words. %4$sMake it longer%5$s!', '%3$sKeyphrase length%5$s: The keyphrase is %1$d words long. That\'s shorter than the recommended minimum of %2$d words. %4$sMake it longer%5$s!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:171
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:217
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:174
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:220
 	__( '%3$sKeyphrase length%5$s: The keyphrase is %1$d words long. That\'s longer than the recommended maximum of %2$d words. %4$sMake it shorter%5$s!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:194
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:197
 	__( '%3$sKeyphrase length%5$s: The keyphrase is %1$d words long. That\'s slightly shorter than the recommended minimum of %2$d words. %4$sMake it longer%5$s!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:237
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:286
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:240
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:289
 	__( '%1$sKeyphrase length%2$s: Good job!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:304
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:307
 	__( '%3$sKeyphrase length%5$s: The keyphrase is %1$d words long. That\'s more than the recommended maximum of %2$d words. %4$sMake it shorter%5$s!', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:326
+	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeyphraseLengthAssessment.js:329
 	__( '%3$sKeyphrase length%5$s: The keyphrase is %1$d words long. That\'s way more than the recommended maximum of %2$d words. %4$sMake it shorter%5$s!', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/src/scoring/assessments/seo/KeywordDensityAssessment.js:196

@@ -105,7 +105,7 @@ class Workouts_Route implements Route_Interface {
 	 *
 	 * @param Indexable_Repository    $indexable_repository    The indexable repository.
 	 * @param Link_Suggestions_Action $link_suggestions_action The link suggestions action.
-	 * @param Indexable_Term_Builder  $indexable_term_builder The indexable term builder.
+	 * @param Indexable_Term_Builder  $indexable_term_builder  The indexable term builder.
 	 *
 	 * @return void
 	 */
@@ -404,7 +404,7 @@ class Workouts_Route implements Route_Interface {
 	/**
 	 * Validates a workout.
 	 *
-	 * @param array $workout The workout.
+	 * @param array $workout       The workout.
 	 * @param array $allowed_steps The allowed steps for this workout.
 	 * @return bool If the payload is valid or not.
 	 */

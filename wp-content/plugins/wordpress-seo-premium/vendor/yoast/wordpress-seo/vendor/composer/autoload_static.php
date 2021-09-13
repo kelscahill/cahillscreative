@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit1fcad3678880012c77497dc84e12b0a3
+class ComposerStaticInit83b21ae5195e951637b81d1401e96523
 {
     public static $prefixLengthsPsr4 = array (
         'C' => 
@@ -137,7 +137,6 @@ class ComposerStaticInit1fcad3678880012c77497dc84e12b0a3
         'WPSEO_Admin_Gutenberg_Compatibility_Notification' => __DIR__ . '/../..' . '/admin/class-admin-gutenberg-compatibility-notification.php',
         'WPSEO_Admin_Help_Panel' => __DIR__ . '/../..' . '/admin/class-admin-help-panel.php',
         'WPSEO_Admin_Init' => __DIR__ . '/../..' . '/admin/class-admin-init.php',
-        'WPSEO_Admin_Media_Purge_Notification' => __DIR__ . '/../..' . '/admin/class-admin-media-purge-notification.php',
         'WPSEO_Admin_Menu' => __DIR__ . '/../..' . '/admin/menu/class-admin-menu.php',
         'WPSEO_Admin_Pages' => __DIR__ . '/../..' . '/admin/class-config.php',
         'WPSEO_Admin_Recommended_Replace_Vars' => __DIR__ . '/../..' . '/admin/class-admin-recommended-replace-vars.php',
@@ -594,6 +593,7 @@ class ComposerStaticInit1fcad3678880012c77497dc84e12b0a3
         'Yoast\\WP\\SEO\\Conditionals\\Admin_Conditional' => __DIR__ . '/../..' . '/src/conditionals/admin-conditional.php',
         'Yoast\\WP\\SEO\\Conditionals\\Conditional' => __DIR__ . '/../..' . '/src/conditionals/conditional-interface.php',
         'Yoast\\WP\\SEO\\Conditionals\\Development_Conditional' => __DIR__ . '/../..' . '/src/conditionals/development-conditional.php',
+        'Yoast\\WP\\SEO\\Conditionals\\Farsi_Support_Conditional' => __DIR__ . '/../..' . '/src/conditionals/farsi-support-conditional.php',
         'Yoast\\WP\\SEO\\Conditionals\\Feature_Flag_Conditional' => __DIR__ . '/../..' . '/src/conditionals/feature-flag-conditional.php',
         'Yoast\\WP\\SEO\\Conditionals\\Front_End_Conditional' => __DIR__ . '/../..' . '/src/conditionals/front-end-conditional.php',
         'Yoast\\WP\\SEO\\Conditionals\\Get_Request_Conditional' => __DIR__ . '/../..' . '/src/conditionals/get-request-conditional.php',
@@ -947,9 +947,9 @@ class ComposerStaticInit1fcad3678880012c77497dc84e12b0a3
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit1fcad3678880012c77497dc84e12b0a3::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit1fcad3678880012c77497dc84e12b0a3::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit1fcad3678880012c77497dc84e12b0a3::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit83b21ae5195e951637b81d1401e96523::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit83b21ae5195e951637b81d1401e96523::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit83b21ae5195e951637b81d1401e96523::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -88,24 +88,24 @@ class Prominent_Words_Repository {
 			return [];
 		}
 
-		$offset                           = ( ( $page - 1 ) * $limit );
-		$indexable_ids_in_prominent_words = $this->query()
-			->distinct()
-			->select( 'pw.indexable_id' )
-			->table_alias( 'pw' )
-			->join( Model::get_table_name( 'indexable' ), [ 'pw.indexable_id', '=', 'i.id' ], 'i' )
-			->where_in( 'pw.stem', $stems )
-			->where_raw( 'i.post_status NOT IN ( \'draft\', \'auto-draft\', \'trash\' ) OR post_status IS NULL' )
-			->limit( $limit )
-			->offset( $offset )
-			->find_many();
+		$offset = ( ( $page - 1 ) * $limit );
 
-		return \array_map(
-			static function( $obj ) {
-				return $obj->indexable_id;
-			},
-			$indexable_ids_in_prominent_words
-		);
+		$stem_placeholders = \implode( ', ', \array_fill( 0, \count( $stems ), '%s' ) );
+
+		$query = Model::of_type( 'Indexable' )
+			->table_alias( 'i' )
+			->select( 'id' )
+			->where_raw(
+				'i.id IN ( SELECT DISTINCT pw.indexable_id FROM ' . Model::get_table_name( 'Prominent_Words' ) . ' pw WHERE pw.stem IN (' . $stem_placeholders . ') )',
+				$stems
+			)
+			->where_raw( '( i.post_status NOT IN ( \'draft\', \'auto-draft\', \'trash\' ) OR i.post_status IS NULL )' )
+			->limit( $limit )
+			->offset( $offset );
+
+		$results = $query->find_array();
+
+		return \wp_list_pluck( $results, 'id' );
 	}
 
 	/**

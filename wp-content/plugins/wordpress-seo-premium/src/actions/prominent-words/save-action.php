@@ -12,7 +12,7 @@ use Yoast\WP\SEO\Repositories\Indexable_Repository;
 /**
  * Action for linking a list of prominent words to an indexable.
  *
- * @see \Yoast\WP\SEO\Routes\Prominent_Words_Route;
+ * @see \Yoast\WP\SEO\Premium\Routes\Prominent_Words_Route;
  */
 class Save_Action {
 
@@ -112,13 +112,13 @@ class Save_Action {
 
 	/**
 	 * Updates the weight of the given prominent word.
-	 * (Does not update when the weights are the same).
+	 * (Does not update when the weights are the same, or almost the same).
 	 *
 	 * @param Prominent_Words $word       The prominent word of which to update the weight.
 	 * @param float           $new_weight The new weight.
 	 */
 	protected function update_weight_if_changed( $word, $new_weight ) {
-		if ( $word->weight !== $new_weight ) {
+		if ( \abs( $word->weight - $new_weight ) > 0.1 ) {
 			$word->weight = $new_weight;
 			$word->save();
 		}
