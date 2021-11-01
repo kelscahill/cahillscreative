@@ -43,6 +43,12 @@ class Link_Suggestions_Action {
 	protected $prominent_words_support;
 
 	/**
+	 * The amount of indexables to retrieve in one go
+	 * when generating internal linking suggestions.
+	 */
+	const BATCH_SIZE = 1000;
+
+	/**
 	 * Link_Suggestions_Service constructor.
 	 *
 	 * @param Prominent_Words_Repository            $prominent_words_repository The repository to retrieve prominent words from.
@@ -81,9 +87,9 @@ class Link_Suggestions_Action {
 
 		/*
 		 * Gets best suggestions (returns a sorted array [$indexable_id => score]).
-		 * The indexables are processed in batches of 100 indexables each.
+		 * The indexables are processed in batches of 1000 indexables each.
 		 */
-		$suggestions_scores = $this->retrieve_suggested_indexable_ids( $words_from_request, $limit, 100, $current_indexable_id );
+		$suggestions_scores = $this->retrieve_suggested_indexable_ids( $words_from_request, $limit, self::BATCH_SIZE, $current_indexable_id );
 
 		$indexable_ids = \array_keys( $suggestions_scores );
 
@@ -128,9 +134,9 @@ class Link_Suggestions_Action {
 
 		/*
 		 * Gets best suggestions (returns a sorted array [$indexable_id => score]).
-		 * The indexables are processed in batches of 100 indexables each.
+		 * The indexables are processed in batches of 1000 indexables each.
 		 */
-		$suggestions_scores = $this->retrieve_suggested_indexable_ids( $weighted_words, $limit, 100, $id );
+		$suggestions_scores = $this->retrieve_suggested_indexable_ids( $weighted_words, $limit, self::BATCH_SIZE, $id );
 
 		$indexable_ids = \array_keys( $suggestions_scores );
 

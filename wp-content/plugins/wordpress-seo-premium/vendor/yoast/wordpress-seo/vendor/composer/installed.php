@@ -1,12 +1,12 @@
 <?php return array (
   'root' => 
   array (
-    'pretty_version' => '16.9',
-    'version' => '16.9.0.0',
+    'pretty_version' => '17.1',
+    'version' => '17.1.0.0',
     'aliases' => 
     array (
     ),
-    'reference' => '43c84c96fb44fdd4b5aecebc17a835e6a87a92b4',
+    'reference' => '813bf2e50575b69b47175e5d153748100595c520',
     'name' => 'yoast/wordpress-seo',
   ),
   'versions' => 
@@ -45,12 +45,12 @@
     ),
     'yoast/wordpress-seo' => 
     array (
-      'pretty_version' => '16.9',
-      'version' => '16.9.0.0',
+      'pretty_version' => '17.1',
+      'version' => '17.1.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '43c84c96fb44fdd4b5aecebc17a835e6a87a92b4',
+      'reference' => '813bf2e50575b69b47175e5d153748100595c520',
     ),
   ),
 );
