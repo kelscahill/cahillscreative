@@ -1,4 +1,3 @@
-/* eslint-disable camelcase -- API responses have camelcase properties */
 /**
  * Internal dependencies
  */
@@ -26,6 +25,8 @@ export interface CartResponseCouponItemWithLabel
 	extends CartResponseCouponItem {
 	label: string;
 }
+
+export type CartResponseCoupons = CartResponseCouponItemWithLabel[];
 
 export interface ResponseFirstNameLastName {
 	first_name: string;
@@ -83,11 +84,11 @@ export interface CartResponseShippingAddress
 	extends ResponseBaseAddress,
 		ResponseFirstNameLastName {
 	company: string;
+	phone: string;
 }
 
 export interface CartResponseBillingAddress
 	extends CartResponseShippingAddress {
-	phone: string;
 	email: string;
 }
 

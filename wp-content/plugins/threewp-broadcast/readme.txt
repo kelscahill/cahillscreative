@@ -3,8 +3,8 @@ Contributors: edward_plainview
 Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
-Requires PHP: 7.1
-Stable tag: 47.11
+Requires PHP: 7.2
+Stable tag: 48.03
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
 Tested up to: 5.8
 
@@ -198,6 +198,7 @@ These add-ons allow you to broadcast more efficiently, saving you even more time
 * <a href="https://broadcast.plainviewplugins.com/addon/purge-children/">Purge Children</a> removes children and their attached files from child blogs.
 * <a href="https://broadcast.plainviewplugins.com/addon/queue/">Queue</a> adds a broadcast queue which helps to broadcast posts to tens / hundreds / thousands of blogs.
 * <a href="https://broadcast.plainviewplugins.com/addon/rebroadcast/">Rebroadcast</a> updates selected parent posts by using a bulk action.
+* <a href="https://broadcast.plainviewplugins.com/addon/rebroadcaster/">Rebroadcaster</a>: Periodically and automatically rebroadcast specific posts.
 * <a href="https://broadcast.plainviewplugins.com/addon/send-to-many/">Send To Many</a> allows mass broadcast of several posts to blogs at once.
 
 Utilities pack
@@ -207,7 +208,10 @@ These add-ons do things semi-related to broadcasting, but are good to have none-
 
 * <a href="https://broadcast.plainviewplugins.com/addon/bulk-cloner/">Bulk Cloner</a> creates clones of existing blogs on the network.
 * <a href="https://broadcast.plainviewplugins.com/addon/cdn-workaround/">CDN Workaround</a> works around faulty CDNs that do not report the correct URL for attachments.
+* <a href="https://broadcast.plainviewplugins.com/addon/code-snippets/"></a>: Run code snippets on specific blogs.
 * <a href="https://broadcast.plainviewplugins.com/addon/copy-options/">Copy options</a> copies blog options / settings between blogs.
+* <a href="https://broadcast.plainviewplugins.com/addon/cron-everywhere/"></a>: Runs WordPress cron periodically on all sites of the network.
+* <a href="https://broadcast.plainviewplugins.com/addon/custom-field-cleanup/">Custom Field Cleanup</a>: Cleans up the custom fields of a post.
 * <a href="https://broadcast.plainviewplugins.com/addon/lock-post/">Lock Post</a> allows users to lock editing of posts / pages to only themselves and super admins.
 * <a href="https://broadcast.plainviewplugins.com/addon/manual-post-actions/">Manual Post Actions</a> manually runs bulk post actions on posts.
 * <a href="https://broadcast.plainviewplugins.com/addon/media-cleanup/">Media Cleanup</a>: cleans up unused media by looking for unused items in the database and on disk.
@@ -357,6 +361,28 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 48.03 20211112 =
+
+* Fix: Selected taxonomy terms lost their parents if the parents weren't also selected.
+
+= 48.02 20211110 =
+
+* Fix: Add extra compatibility with PHP 7.2 (which has not been supported for a year, btw). Please upgrade!
+
+= 48.01 20211105 =
+
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/code-snippets/">Code Snippets</a>: Run code snippets on specific blogs.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/cron-everywhere/">Cron Everywhere</a>: Runs WordPress cron periodically on all sites of the network.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/rebroadcaster/">Rebroadcaster</a>: Periodically and automatically rebroadcast specific posts.
+* Tweak: Only used taxonomies are synced now. This prevents the child from receiving all of the taxonomies of the parent when extra taxonomies are synced via the Custom field / Gutenberg / Shortcode Terms add-ons, for example. Anything that uses taxonomies()->also_sync().
+* Code: Add equivalent_posts() sharing, so that subbroadcasts have access to the same equivalent_posts().
+* Code: Add broadcasting_data->equivalent_posts()->broadcast_once() method to broadcast a post once and then use the existing child ID.
+
+= 47.12 20210923 =
+
+* New: Linked child posts have a clickable icon in the Broadcast meta box. The link goes to the editor for the child.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/search-and-filter/">Search And Filter</a>: Adds support for the <a href="https://searchandfilter.com/">Search And Filter</a> plugin.
 
 = 47.11 20210815 =
 

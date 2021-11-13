@@ -33,6 +33,7 @@ exports[`Testing cart Contains a Taxes section if Core options are set to show i
         >
           <table
             class="wc-block-cart-items"
+            tabindex="-1"
           >
             <thead>
               <tr
@@ -64,6 +65,7 @@ exports[`Testing cart Contains a Taxes section if Core options are set to show i
             <tbody>
               <tr
                 class="wc-block-cart-items__row"
+                tabindex="-1"
               >
                 <td
                   aria-hidden="true"
@@ -210,6 +212,7 @@ exports[`Testing cart Contains a Taxes section if Core options are set to show i
               </tr>
               <tr
                 class="wc-block-cart-items__row"
+                tabindex="-1"
               >
                 <td
                   aria-hidden="true"
@@ -426,57 +429,6 @@ exports[`Testing cart Contains a Taxes section if Core options are set to show i
                     Apply a coupon code
                   </span>
                 </button>
-              </div>
-              <div
-                class="wc-block-components-panel__content"
-                hidden=""
-              >
-                <div
-                  class=""
-                >
-                  <div
-                    aria-hidden="false"
-                    class=""
-                  >
-                    <div
-                      class="wc-block-components-totals-coupon__content"
-                    >
-                      <form
-                        class="wc-block-components-totals-coupon__form"
-                      >
-                        <div
-                          class="wc-block-components-text-input wc-block-components-totals-coupon__input is-active"
-                        >
-                          <input
-                            aria-describedby=""
-                            aria-label="Enter code"
-                            autocapitalize="off"
-                            autocomplete="off"
-                            id="wc-block-components-totals-coupon__input-1"
-                            type="text"
-                            value=""
-                          />
-                          <label
-                            for="wc-block-components-totals-coupon__input-1"
-                          >
-                            Enter code
-                          </label>
-                        </div>
-                        <button
-                          class="components-button wc-block-components-button wc-block-components-totals-coupon__button"
-                          disabled=""
-                          type="submit"
-                        >
-                          <span
-                            class="wc-block-components-button__text"
-                          >
-                            Apply
-                          </span>
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -728,9 +680,6 @@ exports[`Testing cart Contains a Taxes section if Core options are set to show i
           </div>
         </div>
       </div>
-      <div
-        style="display: none;"
-      />
     </div>
   </div>
 </div>
@@ -769,6 +718,7 @@ exports[`Testing cart Shows individual tax lines if the store is set to do so 1`
         >
           <table
             class="wc-block-cart-items"
+            tabindex="-1"
           >
             <thead>
               <tr
@@ -800,6 +750,7 @@ exports[`Testing cart Shows individual tax lines if the store is set to do so 1`
             <tbody>
               <tr
                 class="wc-block-cart-items__row"
+                tabindex="-1"
               >
                 <td
                   aria-hidden="true"
@@ -946,6 +897,7 @@ exports[`Testing cart Shows individual tax lines if the store is set to do so 1`
               </tr>
               <tr
                 class="wc-block-cart-items__row"
+                tabindex="-1"
               >
                 <td
                   aria-hidden="true"
@@ -1162,57 +1114,6 @@ exports[`Testing cart Shows individual tax lines if the store is set to do so 1`
                     Apply a coupon code
                   </span>
                 </button>
-              </div>
-              <div
-                class="wc-block-components-panel__content"
-                hidden=""
-              >
-                <div
-                  class=""
-                >
-                  <div
-                    aria-hidden="false"
-                    class=""
-                  >
-                    <div
-                      class="wc-block-components-totals-coupon__content"
-                    >
-                      <form
-                        class="wc-block-components-totals-coupon__form"
-                      >
-                        <div
-                          class="wc-block-components-text-input wc-block-components-totals-coupon__input is-active"
-                        >
-                          <input
-                            aria-describedby=""
-                            aria-label="Enter code"
-                            autocapitalize="off"
-                            autocomplete="off"
-                            id="wc-block-components-totals-coupon__input-2"
-                            type="text"
-                            value=""
-                          />
-                          <label
-                            for="wc-block-components-totals-coupon__input-2"
-                          >
-                            Enter code
-                          </label>
-                        </div>
-                        <button
-                          class="components-button wc-block-components-button wc-block-components-totals-coupon__button"
-                          disabled=""
-                          type="submit"
-                        >
-                          <span
-                            class="wc-block-components-button__text"
-                          >
-                            Apply
-                          </span>
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -1469,9 +1370,6 @@ exports[`Testing cart Shows individual tax lines if the store is set to do so 1`
           </div>
         </div>
       </div>
-      <div
-        style="display: none;"
-      />
     </div>
   </div>
 </div>
@@ -1510,6 +1408,7 @@ exports[`Testing cart Shows rate percentages after tax lines if the block is set
         >
           <table
             class="wc-block-cart-items"
+            tabindex="-1"
           >
             <thead>
               <tr
@@ -1541,6 +1440,7 @@ exports[`Testing cart Shows rate percentages after tax lines if the block is set
             <tbody>
               <tr
                 class="wc-block-cart-items__row"
+                tabindex="-1"
               >
                 <td
                   aria-hidden="true"
@@ -1687,6 +1587,7 @@ exports[`Testing cart Shows rate percentages after tax lines if the block is set
               </tr>
               <tr
                 class="wc-block-cart-items__row"
+                tabindex="-1"
               >
                 <td
                   aria-hidden="true"
@@ -1903,57 +1804,6 @@ exports[`Testing cart Shows rate percentages after tax lines if the block is set
                     Apply a coupon code
                   </span>
                 </button>
-              </div>
-              <div
-                class="wc-block-components-panel__content"
-                hidden=""
-              >
-                <div
-                  class=""
-                >
-                  <div
-                    aria-hidden="false"
-                    class=""
-                  >
-                    <div
-                      class="wc-block-components-totals-coupon__content"
-                    >
-                      <form
-                        class="wc-block-components-totals-coupon__form"
-                      >
-                        <div
-                          class="wc-block-components-text-input wc-block-components-totals-coupon__input is-active"
-                        >
-                          <input
-                            aria-describedby=""
-                            aria-label="Enter code"
-                            autocapitalize="off"
-                            autocomplete="off"
-                            id="wc-block-components-totals-coupon__input-3"
-                            type="text"
-                            value=""
-                          />
-                          <label
-                            for="wc-block-components-totals-coupon__input-3"
-                          >
-                            Enter code
-                          </label>
-                        </div>
-                        <button
-                          class="components-button wc-block-components-button wc-block-components-totals-coupon__button"
-                          disabled=""
-                          type="submit"
-                        >
-                          <span
-                            class="wc-block-components-button__text"
-                          >
-                            Apply
-                          </span>
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -2210,9 +2060,6 @@ exports[`Testing cart Shows rate percentages after tax lines if the block is set
           </div>
         </div>
       </div>
-      <div
-        style="display: none;"
-      />
     </div>
   </div>
 </div>

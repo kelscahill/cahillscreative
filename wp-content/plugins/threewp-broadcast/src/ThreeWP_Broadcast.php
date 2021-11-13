@@ -454,7 +454,10 @@ class ThreeWP_Broadcast
 			{
 				// Do not bother eaching this child if we started here.
 				if ( $blog_id == $action->blog_id )
-					continue;
+				{
+					if ( ! $action->on_source_child )
+						continue;
+				}
 				if ( ! $this->blog_exists( $blog_id ) )
 					continue;
 				switch_to_blog( $blog_id );

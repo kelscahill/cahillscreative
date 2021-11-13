@@ -15,7 +15,8 @@
 		.show_hide
 		{
 			cursor: pointer;
-			text-align: right;
+			position: absolute;
+			right: 0;
 		}
 
 		legend
@@ -31,9 +32,10 @@
 			margin-bottom: 0.25em;
 			margin-top: 0.25em;
 
-			&.linked
+			a.child_edit_link
 			{
-				background-image: url("../images/link-16.png");
+				float: right;
+				text-decoration: none;
 			}
 
 			&.disabled

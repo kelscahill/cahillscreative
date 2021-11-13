@@ -98,11 +98,27 @@ trait broadcasting
 		{
 			$this->debug( 'Will broadcast taxonomies.' );
 			$bcd->add_new_taxonomies = true;
-			$bcd->taxonomies();
+			$bcd_taxonomies = $bcd->taxonomies();
 			$this->collect_post_type_taxonomies( $bcd );
+
 			$this->debug( 'Taxonomy data dump: %s', $bcd->taxonomy_data );
-			$this->debug( 'Parent blog taxonomies dump: %s', $bcd->parent_blog_taxonomies );
-			$this->debug( 'Parent post taxonomies dump: %s', $bcd->parent_post_taxonomies );
+
+			foreach( $bcd->parent_post_taxonomies as $taxonomy => $taxonomy_terms )
+				$this->debug( 'Parent post taxonomy %s dump: %s', $taxonomy, $bcd->taxonomies()->build_nice_terms_list( $taxonomy_terms ) );
+
+			foreach( $bcd->parent_blog_taxonomies as $taxonomy => $taxonomy_data )
+				$this->debug( 'Parent blog taxonomy %s dump: %s', $taxonomy, $bcd->taxonomies()->build_nice_terms_list( $taxonomy_data[ 'terms' ] ) );
+
+			// Make a note of these terms, since they are very important to syncing the post.
+			foreach( $bcd->parent_post_taxonomies as $taxonomy => $terms )
+			{
+				$term_ids = array_keys( $terms );
+				if ( count( $term_ids ) < 1 )
+					continue;
+				$this->debug( 'For taxonomy %s using terms: %s', $taxonomy, json_encode( $term_ids ) );
+				foreach( $term_ids as $term_id )
+					$bcd_taxonomies->use_term( $term_id );
+			}
 		}
 		else
 			$this->debug( 'Will not broadcast taxonomies.' );
@@ -270,6 +286,13 @@ trait broadcasting
 		$action = $this->new_action( 'broadcasting_started' );
 		$action->broadcasting_data = $bcd;
 		$action->execute();
+
+		// Prune the unused parent blog terms.
+		if ( $bcd->taxonomies )
+		{
+			$bcd->taxonomies()->mark_parent_terms_used();
+			$bcd->taxonomies()->prune_parent_blog_terms();
+		}
 
 		$this->debug( 'The attachment data is: %s', $bcd->attachment_data );
 
@@ -509,9 +532,6 @@ trait broadcasting
 					$this->debug( 'Taxonomies: Syncing terms for %s.', $parent_taxonomy );
 					$this->sync_terms( $bcd, $parent_taxonomy );
 					$this->debug( 'Taxonomies: Synced terms for %s.', $parent_taxonomy );
-
-					// Get a list of terms that the target blog has.
-					$target_blog_terms = $this->get_current_blog_taxonomy_terms( $parent_taxonomy );
 
 					// Go through the original post's terms and compare each slug with the slug of the target terms.
 					$taxonomies_to_add_to = [];

@@ -296,7 +296,18 @@ class broadcasting_data
 			throw new Exception( 'Specify the parent post ID property when creating the broadcasting_data object.' );
 
 		if ( $this->equivalent_posts === null )
-			$this->equivalent_posts = new equivalent_posts();
+		{
+			$broadcasts = ThreeWP_Broadcast()->broadcasting;
+			if ( count( $broadcasts ) < 1 )
+			{
+				$this->equivalent_posts = new broadcasting_data\Equivalent_Posts();
+			}
+			else
+			{
+				// Find the first available broadcasting_data, so that all subbroadcasts can use the existing equivalent posts.
+				$this->equivalent_posts = $broadcasts[ 0 ]->equivalent_posts;
+			}
+		}
 
 		if ( $this->_POST === null )
 			$this->_POST = $_POST;

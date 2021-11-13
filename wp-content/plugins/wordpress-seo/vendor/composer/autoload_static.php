@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInite462b8a6b070adaf9b0ddf5e48244aa7
+class ComposerStaticInitb030e7231ba5e4459929663950758f48
 {
     public static $prefixLengthsPsr4 = array (
         'C' => 
@@ -21,6 +21,7 @@ class ComposerStaticInite462b8a6b070adaf9b0ddf5e48244aa7
     );
 
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Composer\\Installers\\AglInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/AglInstaller.php',
         'Composer\\Installers\\AimeosInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/AimeosInstaller.php',
         'Composer\\Installers\\AnnotateCmsInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/AnnotateCmsInstaller.php',
@@ -235,6 +236,7 @@ class ComposerStaticInite462b8a6b070adaf9b0ddf5e48244aa7
         'WPSEO_HelpScout' => __DIR__ . '/../..' . '/admin/class-helpscout.php',
         'WPSEO_Image_Utils' => __DIR__ . '/../..' . '/inc/class-wpseo-image-utils.php',
         'WPSEO_Import_AIOSEO' => __DIR__ . '/../..' . '/admin/import/plugins/class-import-aioseo.php',
+        'WPSEO_Import_AIOSEO_V4' => __DIR__ . '/../..' . '/admin/import/plugins/class-import-aioseo-v4.php',
         'WPSEO_Import_Greg_SEO' => __DIR__ . '/../..' . '/admin/import/plugins/class-import-greg-high-performance-seo.php',
         'WPSEO_Import_HeadSpace' => __DIR__ . '/../..' . '/admin/import/plugins/class-import-headspace.php',
         'WPSEO_Import_Jetpack_SEO' => __DIR__ . '/../..' . '/admin/import/plugins/class-import-jetpack.php',
@@ -592,11 +594,13 @@ class ComposerStaticInite462b8a6b070adaf9b0ddf5e48244aa7
         'Yoast\\WP\\SEO\\Conditionals\\Admin_Conditional' => __DIR__ . '/../..' . '/src/conditionals/admin-conditional.php',
         'Yoast\\WP\\SEO\\Conditionals\\Conditional' => __DIR__ . '/../..' . '/src/conditionals/conditional-interface.php',
         'Yoast\\WP\\SEO\\Conditionals\\Development_Conditional' => __DIR__ . '/../..' . '/src/conditionals/development-conditional.php',
-        'Yoast\\WP\\SEO\\Conditionals\\Farsi_Support_Conditional' => __DIR__ . '/../..' . '/src/conditionals/farsi-support-conditional.php',
+        'Yoast\\WP\\SEO\\Conditionals\\Farsi_Support_Conditional' => __DIR__ . '/../..' . '/src/deprecated/src/conditionals/farsi-support-conditional.php',
         'Yoast\\WP\\SEO\\Conditionals\\Feature_Flag_Conditional' => __DIR__ . '/../..' . '/src/conditionals/feature-flag-conditional.php',
         'Yoast\\WP\\SEO\\Conditionals\\Front_End_Conditional' => __DIR__ . '/../..' . '/src/conditionals/front-end-conditional.php',
         'Yoast\\WP\\SEO\\Conditionals\\Get_Request_Conditional' => __DIR__ . '/../..' . '/src/conditionals/get-request-conditional.php',
+        'Yoast\\WP\\SEO\\Conditionals\\Greek_Support_Conditional' => __DIR__ . '/../..' . '/src/deprecated/src/conditionals/greek-support-conditional.php',
         'Yoast\\WP\\SEO\\Conditionals\\Headless_Rest_Endpoints_Enabled_Conditional' => __DIR__ . '/../..' . '/src/conditionals/headless-rest-endpoints-enabled-conditional.php',
+        'Yoast\\WP\\SEO\\Conditionals\\Japanese_Support_Conditional' => __DIR__ . '/../..' . '/src/conditionals/japanese-support-conditional.php',
         'Yoast\\WP\\SEO\\Conditionals\\Jetpack_Conditional' => __DIR__ . '/../..' . '/src/conditionals/jetpack-conditional.php',
         'Yoast\\WP\\SEO\\Conditionals\\Migrations_Conditional' => __DIR__ . '/../..' . '/src/conditionals/migrations-conditional.php',
         'Yoast\\WP\\SEO\\Conditionals\\News_Conditional' => __DIR__ . '/../..' . '/src/conditionals/news-conditional.php',
@@ -630,6 +634,7 @@ class ComposerStaticInite462b8a6b070adaf9b0ddf5e48244aa7
         'Yoast\\WP\\SEO\\Config\\Migrations\\AddHasAncestorsColumn' => __DIR__ . '/../..' . '/src/config/migrations/20200609154515_AddHasAncestorsColumn.php',
         'Yoast\\WP\\SEO\\Config\\Migrations\\AddIndexableObjectIdAndTypeIndex' => __DIR__ . '/../..' . '/src/config/migrations/20200430075614_AddIndexableObjectIdAndTypeIndex.php',
         'Yoast\\WP\\SEO\\Config\\Migrations\\AddIndexesForProminentWordsOnIndexables' => __DIR__ . '/../..' . '/src/config/migrations/20200728095334_AddIndexesForProminentWordsOnIndexables.php',
+        'Yoast\\WP\\SEO\\Config\\Migrations\\AddVersionColumnToIndexables' => __DIR__ . '/../..' . '/src/config/migrations/20210817092415_AddVersionColumnToIndexables.php',
         'Yoast\\WP\\SEO\\Config\\Migrations\\BreadcrumbTitleAndHierarchyReset' => __DIR__ . '/../..' . '/src/config/migrations/20200428123747_BreadcrumbTitleAndHierarchyReset.php',
         'Yoast\\WP\\SEO\\Config\\Migrations\\ClearIndexableTables' => __DIR__ . '/../..' . '/src/config/migrations/20200430150130_ClearIndexableTables.php',
         'Yoast\\WP\\SEO\\Config\\Migrations\\CreateIndexableSubpagesIndex' => __DIR__ . '/../..' . '/src/config/migrations/20200702141921_CreateIndexableSubpagesIndex.php',
@@ -907,6 +912,7 @@ class ComposerStaticInite462b8a6b070adaf9b0ddf5e48244aa7
         'Yoast\\WP\\SEO\\Routes\\Supported_Features_Route' => __DIR__ . '/../..' . '/src/routes/supported-features-route.php',
         'Yoast\\WP\\SEO\\Routes\\Yoast_Head_REST_Field' => __DIR__ . '/../..' . '/src/routes/yoast-head-rest-field.php',
         'Yoast\\WP\\SEO\\Schema_Templates\\Assets\\Icons' => __DIR__ . '/../..' . '/src/schema-templates/assets/icons.php',
+        'Yoast\\WP\\SEO\\Services\\Indexables\\Indexable_Version_Manager' => __DIR__ . '/../..' . '/src/services/indexables/indexable-version-manager.php',
         'Yoast\\WP\\SEO\\Surfaces\\Classes_Surface' => __DIR__ . '/../..' . '/src/surfaces/classes-surface.php',
         'Yoast\\WP\\SEO\\Surfaces\\Helpers_Surface' => __DIR__ . '/../..' . '/src/surfaces/helpers-surface.php',
         'Yoast\\WP\\SEO\\Surfaces\\Meta_Surface' => __DIR__ . '/../..' . '/src/surfaces/meta-surface.php',
@@ -915,6 +921,7 @@ class ComposerStaticInite462b8a6b070adaf9b0ddf5e48244aa7
         'Yoast\\WP\\SEO\\Surfaces\\Twitter_Helpers_Surface' => __DIR__ . '/../..' . '/src/surfaces/twitter-helpers-surface.php',
         'Yoast\\WP\\SEO\\Surfaces\\Values\\Meta' => __DIR__ . '/../..' . '/src/surfaces/values/meta.php',
         'Yoast\\WP\\SEO\\Values\\Images' => __DIR__ . '/../..' . '/src/values/images.php',
+        'Yoast\\WP\\SEO\\Values\\Indexables\\Indexable_Builder_Versions' => __DIR__ . '/../..' . '/src/values/indexables/indexable-builder-versions.php',
         'Yoast\\WP\\SEO\\Values\\Open_Graph\\Images' => __DIR__ . '/../..' . '/src/values/open-graph/images.php',
         'Yoast\\WP\\SEO\\Values\\SEMrush\\SEMrush_Token' => __DIR__ . '/../..' . '/src/values/semrush/semrush-token.php',
         'Yoast\\WP\\SEO\\WordPress\\Wrapper' => __DIR__ . '/../..' . '/src/wordpress/wrapper.php',
@@ -946,9 +953,9 @@ class ComposerStaticInite462b8a6b070adaf9b0ddf5e48244aa7
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInite462b8a6b070adaf9b0ddf5e48244aa7::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInite462b8a6b070adaf9b0ddf5e48244aa7::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInite462b8a6b070adaf9b0ddf5e48244aa7::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitb030e7231ba5e4459929663950758f48::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitb030e7231ba5e4459929663950758f48::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitb030e7231ba5e4459929663950758f48::$classMap;
 
         }, null, ClassLoader::class);
     }

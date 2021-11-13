@@ -1,5 +1,3 @@
-/* eslint-disable camelcase -- API responses have camelcase properties */
-
 /**
  * Internal dependencies
  */
@@ -8,6 +6,7 @@ import {
 	ShippingRateItem,
 	ExtensionsData,
 } from './cart-response';
+
 export interface CurrencyInfo {
 	currency_code: string;
 	currency_symbol: string;
@@ -67,10 +66,10 @@ export interface CartShippingRate {
 
 export interface CartShippingAddress extends BaseAddress, FirstNameLastName {
 	company: string;
+	phone: string;
 }
 
 export interface CartBillingAddress extends CartShippingAddress {
-	phone: string;
 	email: string;
 }
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wp-migrate-db-pro-media-files\n"
 "Report-Msgid-Bugs-To: nom@deliciousbrains.com\n"
-"POT-Creation-Date: 2021-08-30 15:46+0200\n"
+"POT-Creation-Date: 2021-10-19 08:36-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,6 @@ msgstr ""
 msgid "Uploading files"
 msgstr ""
 
-#: src/wp-migrate-db-pro-media-files/class/MediaFilesLocal.php:184
 #: src/wp-migrate-db-pro-media-files/class/MediaFilesLocal.php:187
 #: src/wp-migrate-db-pro-media-files/class/MediaFilesLocal.php:190
 msgid "Invalid folder path supplied."
@@ -51,7 +50,8 @@ msgid "Initiating media migration..."
 msgstr ""
 
 #: src/wp-migrate-db-pro-media-files/class/CliCommand/MediaFilesCli.php:306
-#: src/wp-migrate-db-pro-media-files/class/CliCommand/MediaFilesCli.php:307
+#: src/wp-migrate-db-pro-media-files/class/CliCommand/MediaFilesCli.php:312
+#: src/wp-migrate-db-pro-media-files/class/CliCommand/MediaFilesCli.php:311
 msgid ""
 "WP Migrate DB Pro Media Files does not seem to be installed/active on the "
 "remote website."

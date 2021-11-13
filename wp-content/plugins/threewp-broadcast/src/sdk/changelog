@@ -1,3 +1,6 @@
+20211109		Wordpress: Update EDD Updater
+20211017		Table: Use headers attribute for td cells.
+20210906		Wordpress: Fix debug sprintf calls.
 20210810		Form2: Fix options trait pointing to form()
 20210701		Form2: Update sprintf calls for php8 compatibility.
 20210615		Wordpress: fix base URL.

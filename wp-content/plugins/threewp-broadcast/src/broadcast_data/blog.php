@@ -73,6 +73,23 @@ class blog
 	}
 
 	/**
+		@brief		Return the edit URL for the post on this blog.
+		@details	Prime the cache by first requesting the URL for the post ID, after which you can call the function without the parameter to get the stored URL.
+		@since		2021-08-17 13:22:52
+	**/
+	public function get_edit_url( $post_id = null )
+	{
+		if ( isset( $this->__edit_url ) )
+			return $this->__edit_url;
+
+		switch_to_blog( $this->id );
+		$this->__edit_url = get_edit_post_link( $post_id );
+		restore_current_blog();
+
+		return $this->__edit_url;
+	}
+
+	/**
 		@brief		Return a unique ID for this blog.
 		@details	This is the preferred way of getting the ID of the blog.
 	**/
@@ -158,6 +175,15 @@ class blog
 	public function selected( $selected = true )
 	{
 		return $this->set_boolean( 'selected', $selected );
+	}
+
+	/**
+		@brief		Set the edit URL for this blog / post pair.
+		@since		2021-08-17 13:25:03
+	**/
+	public function set_edit_url( $edit_url )
+	{
+		$this->__edit_url = $edit_url;
 	}
 
 	public function switch_to()

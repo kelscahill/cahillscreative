@@ -57,6 +57,12 @@ class each_linked_post
 	public $on_parent = true;
 
 	/**
+		@brief		[IN]: If called on a child, run the code on the calling child also?
+		@since		2021-10-25 13:57:52
+	**/
+	public $on_source_child = false;
+
+	/**
 		@brief		IN: The ID of the post.
 		@since		2015-05-02 21:40:01
 	**/

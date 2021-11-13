@@ -32,7 +32,6 @@ import Title from '@woocommerce/base-components/title';
 import { getSetting } from '@woocommerce/settings';
 import { useEffect } from '@wordpress/element';
 import { decodeEntities } from '@wordpress/html-entities';
-import { CartProvider } from '@woocommerce/base-context';
 
 /**
  * Internal dependencies
@@ -60,7 +59,7 @@ interface CartProps {
  * @param {Object} props Incoming props for the component.
  * @param {Object} props.attributes Incoming attributes for block.
  */
-const Cart = ( { attributes }: CartProps ) => {
+const Cart = ( { attributes }: CartProps ): JSX.Element => {
 	const {
 		isShippingCalculatorEnabled,
 		hasDarkControls,
@@ -108,7 +107,7 @@ const Cart = ( { attributes }: CartProps ) => {
 	// Prepare props to pass to the ExperimentalOrderMeta slot fill.
 	// We need to pluck out receiveCart.
 	// eslint-disable-next-line no-unused-vars
-	const { extensions, ...cart } = useStoreCart();
+	const { extensions, receiveCart, ...cart } = useStoreCart();
 	const slotFillProps = {
 		extensions,
 		cart,
@@ -210,12 +209,4 @@ const Cart = ( { attributes }: CartProps ) => {
 	);
 };
 
-const Block = ( props: CartProps ): JSX.Element => {
-	return (
-		<CartProvider>
-			<Cart { ...props } />
-		</CartProvider>
-	);
-};
-
-export default Block;
+export default Cart;

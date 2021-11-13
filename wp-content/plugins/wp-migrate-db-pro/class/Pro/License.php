@@ -654,7 +654,7 @@ class License
 			}
 		}
 
-		return json_decode( $this->check_licence( $licence ), true );
+		return json_decode( $this->check_licence( $licence, get_current_user_id() ), true );
 	}
 
 	/**

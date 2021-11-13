@@ -324,7 +324,7 @@ class MediaFilesLocal
         $datetime = new \DateTime();
         $newdate  = $datetime->format(\DateTime::ATOM);
 
-        $profile_data->media_files->date = $newdate;
+        $profile_data->media_files->last_migration = $newdate;
 
         $profile_type   = $option === 'unsaved' ? 'wpmdb_recent_migrations' : 'wpmdb_saved_profiles';
         $saved_profiles = get_site_option($profile_type);
