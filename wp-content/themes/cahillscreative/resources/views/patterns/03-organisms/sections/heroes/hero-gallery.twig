@@ -6,7 +6,7 @@
       <div class="{{ bem_classes(base_class, 'item') }}">
         {% include "@atoms/buttons/button.twig" with {
           "button": {
-            "url": Image(image).src|resize(auto, 900),
+            "url": Image(image).src|resize(1200),
             "text": "Enlarge Gallery",
             "modifiers": ["secondary", "enlarge"],
             "attributes": {

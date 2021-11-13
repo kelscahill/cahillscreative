@@ -59,6 +59,11 @@
                 background-image: url('{{ Image(item.image).src|resize(960,960) }}');
               }
             }
+            @media (min-width: 1600px) {
+              .o-background-image--{{ Image(item.image).id }} {
+                background-image: url('{{ Image(item.image).src|resize(1200,1200) }}');
+              }
+            }
           </style>
           {% if item.icon_name or item.icon_image %}
             <div class="{{ bem_classes(base_class, 'icon') }}">
