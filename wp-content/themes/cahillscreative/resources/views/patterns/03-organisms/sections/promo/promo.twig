@@ -47,19 +47,14 @@
         <div class="{{ bem_classes(base_class, 'image') }} o-background-image--{{ Image(item.image).id }}">
           <style>
             .o-background-image--{{ Image(item.image).id }} {
-              background-image: url('{{ Image(item.image).src|resize(500,500) }}');
+              background-image: url('{{ Image(item.image).src|resize(720,720) }}');
             }
-            @media (min-width: 500px) {
-              .o-background-image--{{ Image(item.image).id }} {
-                background-image: url('{{ Image(item.image).src|resize(720,720) }}');
-              }
-            }
-            @media (min-width: 1200px) {
+            @media (min-width: 960px) {
               .o-background-image--{{ Image(item.image).id }} {
                 background-image: url('{{ Image(item.image).src|resize(960,960) }}');
               }
             }
-            @media (min-width: 1600px) {
+            @media (min-width: 1200px) {
               .o-background-image--{{ Image(item.image).id }} {
                 background-image: url('{{ Image(item.image).src|resize(1200,1200) }}');
               }

@@ -16,12 +16,7 @@
         } %}
         <style>
           .o-background-image--{{ Image(image).id }} {
-            background-image: url('{{ Image(image).src|resize(500) }}');
-          }
-          @media(min-width: 500px) {
-            .o-background-image--{{ Image(image).id }} {
-              background-image: url('{{ Image(image).src|resize(720) }}');
-            }
+            background-image: url('{{ Image(image).src|resize(720) }}');
           }
           @media(min-width: 720px) {
             .o-background-image--{{ Image(image).id }} {
