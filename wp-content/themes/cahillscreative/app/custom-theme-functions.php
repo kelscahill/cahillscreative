@@ -73,8 +73,10 @@ add_action('init', function() {
     'show_tagcloud'     => false,
   ]);
   register_taxonomy('product_cat', 'product', [
+    'label'             => 'Product Category',
+    'hierarchical'      => true,
     'public'            => false,
-    'show_ui'           => false,
+    'show_ui'           => true,
     'show_admin_column' => false,
     'show_in_nav_menus' => false,
   ]);
