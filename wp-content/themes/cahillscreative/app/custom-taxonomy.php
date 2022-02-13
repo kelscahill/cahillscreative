@@ -216,7 +216,7 @@ function register_custom_taxonomy() {
     "show_in_menu" => true,
     "show_in_nav_menus" => true,
     "query_var" => true,
-    "rewrite" => array( 'slug' => 'product-category', 'with_front' => true, ),
+    "rewrite" => array( 'slug' => '%affiliate_category%', 'with_front' => true, ),
     "show_admin_column" => true,
     "show_in_rest" => true,
     "rest_base" => "",

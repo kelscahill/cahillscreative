@@ -88,6 +88,17 @@ add_action( 'admin_init' , function() {
   }, 100);
 });
 
+// Handle the '%affiliate_category%' URL placeholder
+function ams_asset_filter_post_type_link($link, $post = 0) {
+  if ($post->post_type == 'product') {
+    $cats = wp_get_object_terms( $post->ID, 'affiliate_category' );
+    if ($cats) {
+      $link = str_replace('%affiliate_category%', $cats[0]->slug, $link);
+    }
+  }
+  return $link;
+}
+add_filter('post_type_link', 'ams_asset_filter_post_type_link', 10, 2);
 
 /**
  * Custom image styles.
