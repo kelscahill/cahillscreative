@@ -1,9 +1,10 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { useBlockProps } from '@wordpress/block-editor';
-import { Disabled } from '@wordpress/components';
 import { innerBlockAreas } from '@woocommerce/blocks-checkout';
+import Noninteractive from '@woocommerce/base-components/noninteractive';
 
 /**
  * Internal dependencies
@@ -27,6 +28,7 @@ export const Edit = ( {
 		title: string;
 		description: string;
 		showStepNumber: boolean;
+		className: string;
 	};
 	setAttributes: ( attributes: Record< string, unknown > ) => void;
 } ): JSX.Element => {
@@ -36,11 +38,15 @@ export const Edit = ( {
 		<FormStepBlock
 			attributes={ attributes }
 			setAttributes={ setAttributes }
+			className={ classnames(
+				'wc-block-checkout__contact-fields',
+				attributes?.className
+			) }
 		>
 			<Controls />
-			<Disabled>
+			<Noninteractive>
 				<Block allowCreateAccount={ allowCreateAccount } />
-			</Disabled>
+			</Noninteractive>
 			<AdditionalFields block={ innerBlockAreas.CONTACT_INFORMATION } />
 		</FormStepBlock>
 	);

@@ -112,7 +112,7 @@ class Token {
 		}
 
 		// Add in our current date.
-		$valid_tokens[] = $this->get( $current_date );
+		$valid_tokens[] = $this->get( $current_date, $form_data );
 
 		// Add in the times after our check.
 		foreach ( $valid_token_times_after as $time ) {
@@ -207,6 +207,7 @@ class Token {
 	 * @return bool Is valid or not.
 	 */
 	public function process_antispam_filter_wrapper( $is_valid_not_spam, array $fields, array $entry, array $form_data ) {
+
 		return apply_filters( 'wpforms_process_antispam', $is_valid_not_spam, $fields, $entry, $form_data );
 	}
 
@@ -265,7 +266,7 @@ class Token {
 	 *
 	 * @since 1.6.2.1
 	 *
-	 * @return string Support text if super admin, emtpy string if not.
+	 * @return string Support text if super admin, empty string if not.
 	 */
 	private function maybe_get_support_text() {
 
@@ -275,7 +276,7 @@ class Token {
 		}
 
 		// If the user is an admin, return text with a link to support.
-		// We add a space here to seperate the sentences, but outside of the localized
+		// We add a space here to separate the sentences, but outside of the localized
 		// text to avoid it being removed.
 		return ' ' . sprintf(
 			// translators: placeholders are links.

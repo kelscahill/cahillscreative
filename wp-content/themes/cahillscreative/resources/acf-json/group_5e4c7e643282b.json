@@ -3,65 +3,6 @@
     "title": "Product Fields",
     "fields": [
         {
-            "key": "field_59dd50d81137f",
-            "label": "Product Accordion",
-            "name": "product_accordion_items",
-            "type": "repeater",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "collapsed": "field_59dd510e2ca05",
-            "min": 0,
-            "max": 0,
-            "layout": "row",
-            "button_label": "Add Row",
-            "sub_fields": [
-                {
-                    "key": "field_59dd510e2ca05",
-                    "label": "Title",
-                    "name": "product_accordion_title",
-                    "type": "text",
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "default_value": "",
-                    "placeholder": "",
-                    "prepend": "",
-                    "append": "",
-                    "maxlength": ""
-                },
-                {
-                    "key": "field_59dd51172ca06",
-                    "label": "Body",
-                    "name": "product_accordion_body",
-                    "type": "wysiwyg",
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "default_value": "",
-                    "tabs": "all",
-                    "toolbar": "full",
-                    "media_upload": 1,
-                    "delay": 0
-                }
-            ]
-        },
-        {
             "key": "field_60cfd598225fa",
             "label": "Product Accordion",
             "name": "product_accordion",
@@ -100,5 +41,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1624234035
+    "modified": 1641860100
 }

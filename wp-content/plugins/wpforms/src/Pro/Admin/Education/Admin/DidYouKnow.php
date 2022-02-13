@@ -59,7 +59,9 @@ class DidYouKnow implements EducationInterface {
 	public function init() {
 
 		$this->license = wpforms_get_license_type();
-		$this->page    = str_replace( 'wpforms-', '', filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING ) );
+		$page          = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$page          = is_null( $page ) ? '' : $page;
+		$this->page    = str_replace( 'wpforms-', '', $page );
 
 		if ( ! $this->allow_load() ) {
 			return;

@@ -29,7 +29,7 @@ class WPForms_Pro {
 
 		// Plugin Updater API.
 		if ( ! defined( 'WPFORMS_UPDATER_API' ) ) {
-			define( 'WPFORMS_UPDATER_API', 'https://wpforms.com/' );
+			define( 'WPFORMS_UPDATER_API', 'https://wpforms.com/license-api' );
 		}
 	}
 
@@ -1095,14 +1095,6 @@ class WPForms_Pro {
 						]
 					);
 
-					$p     = [];
-					$pages = get_pages();
-
-					foreach ( $pages as $page ) {
-						$depth          = count( $page->ancestors );
-						$p[ $page->ID ] = str_repeat( '-', $depth ) . ' ' . $page->post_title;
-					}
-
 					wpforms_panel_field(
 						'select',
 						'confirmations',
@@ -1110,7 +1102,7 @@ class WPForms_Pro {
 						$settings->form_data,
 						esc_html__( 'Confirmation Page', 'wpforms' ),
 						[
-							'options'     => $p,
+							'options'     => wpforms_get_pages_list(),
 							'input_id'    => 'wpforms-panel-field-confirmations-page-' . $field_id,
 							'input_class' => 'wpforms-panel-field-confirmations-page',
 							'parent'      => 'settings',
@@ -1384,7 +1376,7 @@ class WPForms_Pro {
 	 * @return array List of table names.
 	 */
 	public function get_existing_custom_tables() {
-		_deprecated_function( __CLASS__ . '::' . __METHOD__, '1.6.3', 'wpforms()->get_existing_custom_tables()' );
+		_deprecated_function( __METHOD__, '1.6.3', 'wpforms()->get_existing_custom_tables()' );
 
 		return wpforms()->get_existing_custom_tables();
 	}

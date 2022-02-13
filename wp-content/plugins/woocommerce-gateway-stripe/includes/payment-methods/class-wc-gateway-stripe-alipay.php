@@ -98,7 +98,7 @@ class WC_Gateway_Stripe_Alipay extends WC_Stripe_Payment_Gateway {
 	 * Returns all supported currencies for this payment method.
 	 *
 	 * @since 4.0.0
-	 * @version 4.0.0
+	 * @version 5.8.0
 	 * @return array
 	 */
 	public function get_supported_currency() {
@@ -115,6 +115,7 @@ class WC_Gateway_Stripe_Alipay extends WC_Stripe_Payment_Gateway {
 				'NZD',
 				'SGD',
 				'USD',
+				'MYR',
 			]
 		);
 	}
@@ -286,7 +287,8 @@ class WC_Gateway_Stripe_Alipay extends WC_Stripe_Payment_Gateway {
 
 			$statuses = apply_filters(
 				'wc_stripe_allowed_payment_processing_statuses',
-				[ 'pending', 'failed' ]
+				[ 'pending', 'failed' ],
+				$order
 			);
 
 			if ( $order->has_status( $statuses ) ) {

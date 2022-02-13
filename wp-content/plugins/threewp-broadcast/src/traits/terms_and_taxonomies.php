@@ -587,8 +587,8 @@ trait terms_and_taxonomies
 					// Is this term protected?
 					if ( $bcd->taxonomies()->protectlist_has( $action->taxonomy, $action->new_term->slug, $key ) )
 					{
-						$current_value = get_term_meta( $new_term_id, $key, true);
-						if ( $current_value )
+						$values = get_term_meta( $new_term_id, $key );
+						if ( count( $values ) > 0 )
 						{
 							$this->debug( 'Taxonomy term %s (%s) already has a %s term meta value. Skipping.', $action->new_term->slug, $action->new_term->term_id, $key );
 							continue;

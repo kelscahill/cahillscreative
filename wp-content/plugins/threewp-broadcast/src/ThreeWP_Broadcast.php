@@ -445,7 +445,15 @@ class ThreeWP_Broadcast
 			$broadcast_data = $this->get_post_broadcast_data( $parent[ 'blog_id' ], $parent[ 'post_id' ] );
 		}
 		else
-			$this->debug( $prefix . 'No linked parent.' );
+		{
+			$this->debug( $prefix . 'On the parent.' );
+			$o = (object)[];
+			$o->post_id = $action->post_id;
+			$o->post = get_post( $o->post_id );
+			$this->debug( $prefix . '' );
+			foreach( $action->callbacks as $callback )
+				$callback( $o );
+		}
 
 		if ( $action->on_children )
 		{
@@ -567,11 +575,20 @@ class ThreeWP_Broadcast
 		$url = get_permalink( $linked_parent[ 'post_id' ] );
 		restore_current_blog();
 
-		echo sprintf( '<link rel="canonical" href="%s" />', $url );
-		echo "\n";
+		$action = $this->new_action( 'canonical_url' );
+		$action->post = $post;
+		$action->url = $url;
+		$action->execute();
 
-		// Prevent Wordpress from outputting its own canonical.
-		remove_action( 'wp_head', 'rel_canonical' );
+		if ( ! $action->url )
+			return;
+
+		if ( $action->html_tag )
+			echo sprintf( $action->html_tag, $action->url );
+
+		if ( $action->disable_rel_canonical )
+			// Prevent Wordpress from outputting its own canonical.
+			remove_action( 'wp_head', 'rel_canonical' );
 
 		// Remove Canonical Link Added By Yoast WordPress SEO Plugin
 		if ( class_exists( '\\WPSEO_Frontend' ) )

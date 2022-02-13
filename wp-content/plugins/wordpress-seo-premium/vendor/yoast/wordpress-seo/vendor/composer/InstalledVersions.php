@@ -27,24 +27,24 @@ class InstalledVersions
 private static $installed = array (
   'root' => 
   array (
-    'pretty_version' => '17.5',
-    'version' => '17.5.0.0',
+    'pretty_version' => '18.1',
+    'version' => '18.1.0.0',
     'aliases' => 
     array (
     ),
-    'reference' => 'd783cd349dbecf03f9c53b425b3dcc1c155cef79',
+    'reference' => 'dc9566d2dd94ddd5bd4a6239a6a9349d42fd77a0',
     'name' => 'yoast/wordpress-seo',
   ),
   'versions' => 
   array (
     'composer/installers' => 
     array (
-      'pretty_version' => 'v1.9.0',
-      'version' => '1.9.0.0',
+      'pretty_version' => 'v1.12.0',
+      'version' => '1.12.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'b93bcf0fa1fccb0b7d176b0967d969691cd74cca',
+      'reference' => 'd20a64ed3c94748397ff5973488761b22f6d3f19',
     ),
     'roundcube/plugin-installer' => 
     array (
@@ -71,12 +71,12 @@ private static $installed = array (
     ),
     'yoast/wordpress-seo' => 
     array (
-      'pretty_version' => '17.5',
-      'version' => '17.5.0.0',
+      'pretty_version' => '18.1',
+      'version' => '18.1.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'd783cd349dbecf03f9c53b425b3dcc1c155cef79',
+      'reference' => 'dc9566d2dd94ddd5bd4a6239a6a9349d42fd77a0',
     ),
   ),
 );

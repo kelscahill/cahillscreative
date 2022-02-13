@@ -12,8 +12,12 @@ import metadata from './block.json';
 
 registerFeaturePluginBlockType( metadata, {
 	icon: {
-		src: <Icon icon={ column } />,
-		foreground: '#874FB9',
+		src: (
+			<Icon
+				icon={ column }
+				className="wc-block-editor-components-block-icon"
+			/>
+		),
 	},
 	edit: Edit,
 	save: Save,

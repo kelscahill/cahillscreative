@@ -562,7 +562,7 @@ class WPForms_Conditional_Logic_Core {
 	 */
 	public function conditionals_block( $args = [], $echo = true ) {
 
-		_deprecated_function( __CLASS__ . '::' . __METHOD__, '1.3.8 of the WPForms', 'wpforms_conditional_logic()->builder_block()' );
+		_deprecated_function( __METHOD__, '1.3.8 of the WPForms', 'wpforms_conditional_logic()->builder_block()' );
 
 		if ( $echo ) {
 			echo $this->builder_block( $args, $echo ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

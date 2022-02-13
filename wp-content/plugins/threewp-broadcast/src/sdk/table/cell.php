@@ -28,12 +28,9 @@ class cell
 
 	public function __construct( $row, $id = null )
 	{
-		if ( $id !== null )
-		{
-			$this->construct_id( $id );
-		}
-		else
-			$this->id = \plainview\sdk_broadcast\base::uuid();
+		if ( $id === null )
+			$id = \plainview\sdk_broadcast\base::uuid();
+		$this->construct_id( $id );
 		$this->row = $row;
 	}
 

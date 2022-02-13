@@ -4,8 +4,8 @@ Donate link: https://yoa.st/1up
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 Tags: SEO, XML sitemap, Content analysis, Readability, Schema
-Tested up to: 5.8
-Stable tag: 17.5
+Tested up to: 5.9
+Stable tag: 18.1
 Requires PHP: 5.6.20
 
 Improve your WordPress SEO: Write better content and have a fully optimized WordPress site using the Yoast SEO plugin.
@@ -126,7 +126,7 @@ Want more information on search engine optimization and Yoast SEO? Have a look a
 * Also follow Yoast on [Facebook](https://facebook.com/yoast), [Instagram](https://www.instagram.com/yoast/) & [Twitter](https://twitter.com/yoast).
 
 == Installation ==
-Starting with Yoast SEO consists of just two steps: installing and setting up the plugin. Yoast SEO is designed to work with your site’s specific needs, so don’t forget to go through the Yoast SEO configuration wizard as explained in the ‘after activation’ step!
+Starting with Yoast SEO consists of just two steps: installing and setting up the plugin. Yoast SEO is designed to work with your site’s specific needs, so don’t forget to go through the Yoast SEO configuration workout as explained in the ‘after activation’ step!
 
 ### INSTALL YOAST SEO FROM WITHIN WORDPRESS
 
@@ -143,8 +143,8 @@ Starting with Yoast SEO consists of just two steps: installing and setting up th
 
 ### AFTER ACTIVATION
 
-1. You should see (a notice to start) the Yoast SEO configuration wizard;
-1. Go through the configuration wizard and set up the plugin for your site;
+1. You should see (a notice to start) the Yoast SEO configuration workout;
+1. Go through the configuration workout and set up the plugin for your site;
 1. You’re done!
 
 == Frequently Asked Questions ==
@@ -236,38 +236,51 @@ Your question has most likely been answered on our help center: [yoast.com/help/
 
 == Changelog ==
 
-= 17.5 =
-Release Date: November 2nd, 2021
+= 18.1 =
+Release Date: February 8th, 2022
 
-Say hello to Yoast SEO 17.5! Or maybe γεια would fit better, as this release introduces Greek readability support. Plus: you’ll also be able to find | and ~ title separators again. Happy updating! Read more about what's new in Yoast SEO 17.5 in [our release post in English](https://yoa.st/release-17-5) or [our release post in Spanish](https://yoa.st/release-17-5-spanish)!
-
-Enhancements:
-
-* Completes the readability analysis for Greek by adding the transition words, sentence beginnings and passive voice assessments.
-* Improves keyword detection for Greek by adding a function words list.
-* Reduces the right padding of the collapsible sidebar buttons to match the block editor's new styling.
-* Restores the `|` and `~` separators.
-* Reduces the right padding of the collapsible sidebar buttons to match Gutenberg's new styling.
-
-Bugfixes:
-
-* Fixes a bug where the analysis highlight button would be visible on tags, categories, and custom taxonomies even though we don't support highlighting for those types.
-* Fixes a bug where links to items on the same page were incorrectly identified as links to other pages, leading to an incorrect result on the Link keyphrase assessment.
-
-= 17.4 =
-Release Date: October 19th, 2021
-
-Yoast SEO 17.4 is out today! This release comes with several fixes and enhancements to help database performance on larger sites by cleaning up data and streamlining retrieval. Happy updating! Read more about what's new in Yoast SEO 17.4 in [our release post](https://yoa.st/release-17-4)!
+Yoast SEO 18.1 is out today! This new release brings another round of bug fixes, plus a new way for us to handle the translations in our plugin — leading to a smaller plugin size for you to install. Read more about what's new in Yoast SEO 18.1 in [our release post in English](https://yoa.st/release-8-2-22) or [our release post in Spanish](https://yoa.st/release-8-2-22-spanish)!
 
 Enhancements:
 
-* Improves two queries used to determine whether or not a site has been fully processed using our SEO data optimization. This should prevent potential slowdowns in extremely large sites.
+* Changes the overall SEO score color on the post type overview pages to red when no keyphrase is set.
 
 Bugfixes:
 
-* Fixes a bug where the `url` property in the search page schema would be empty.
-* Fixes a bug where a duplicate canonical tag was output for web stories created with the Web Stories plugin. Props to [swissspidey](https://github.com/swissspidy).
-* Fixes a bug where a race condition could occur that caused the rewrite rules to be flushed on every page request when using a persistent cache like Redis. This may speed up your site’s load times if it’s using persistent caching.
+* Fixes a bug where images inserted into our FAQ or HowTo blocks would be rendered wider then their respective container when using a Block Theme.
+* Fixes a bug where plugins that would initialize after our plugin would be unable to register certain plugin information or utilize certain hooks.
+* Fixes a bug where capitalized keyphrases would show up twice in the Wincher SEO performance tracking modal. 
+
+Other:
+
+* Switches from packaged script translations to those from wordpress.org in order to reduce ZIP size and disk usage.
+
+= 18.0 =
+Release Date: January 25th, 2022
+
+Yoast SEO 18.0 is out now! This release contains a number of bug fixes and a couple of enhancements. We've enhanced schema presentation for non-alphanumeric languages and made several improvements in both the SEO and readability analysis of the Japanese language. Read more about what's new in Yoast SEO 18.0 in [our release post in English](https://yoa.st/release-18-0) or [our release post in Spanish](https://yoa.st/release-18-0-spanish)!
+
+Enhancements:
+
+* Limits a potentially slow query to certain routes, which makes it so it gets called fewer times.
+* Enhances schema presentation for languages that are not alphanumeric. Props to [sous-studio](https://github.com/sous-studio).
+
+Bugfixes:
+
+* Fixes a bug where removing an image from our Facebook Preview and Twitter Preview modals could lead to a confusing experience due to focus loss.
+* Fixes a bug where clicking outside of a Yoast modal in the block editor would not close the modal.
+* Fixes a bug where Japanese keyphrase enclosed in double quotes failed to be recognized in Keyword in meta description, Keyword density, Keyphrase distribution, Keyphrase in introduction, Keyphrase in image text and in Keyphrase in subheading assessments.
+* Fixes a bug where synonyms enclosed in double quotes in the Link keyphrase assessment failed to be recognized even when there were exact matches in the anchor text.  
+* Fixes a bug where incorrect assessments were shown for keyphrases only consisting of function words in Japanese.
+* Fixes a bug where a fatal error would be thrown if the link count of a corrupt indexable item would get updated.
+* Fixes a bug where the title tag would not be correct in Full Site Editing themes.
+* Fixes a bug where the text length assessment would count URLs from videos loaded in the article in the total amount of the copy characters in Japanese.
+* Fixes a bug where Japanese full stops in a text would be counted as three characters instead of one.
+
+Other:
+
+* Sets the WordPress tested up to version to 5.9.
+* Sets WooCommerce tested up to version to 6.1.
 
 = Earlier versions =
 For the changelog of earlier versions, please refer to [the changelog on yoast.com](https://yoa.st/yoast-seo-changelog).

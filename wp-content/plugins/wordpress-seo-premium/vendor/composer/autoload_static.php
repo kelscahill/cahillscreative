@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita0ca51d73ad862553a29bc1e7efa44fb
+class ComposerStaticInit5f46898a962efedfab53deb9fd8e9a5e
 {
     public static $prefixLengthsPsr4 = array (
         'C' => 
@@ -188,6 +188,7 @@ class ComposerStaticInita0ca51d73ad862553a29bc1e7efa44fb
         'Yoast\\WP\\SEO\\Premium\\Integrations\\OpenGraph_PostType_Archive' => __DIR__ . '/../..' . '/src/integrations/opengraph-posttype-archive.php',
         'Yoast\\WP\\SEO\\Premium\\Integrations\\OpenGraph_Post_Type' => __DIR__ . '/../..' . '/src/integrations/opengraph-post-type.php',
         'Yoast\\WP\\SEO\\Premium\\Integrations\\OpenGraph_Term_Archive' => __DIR__ . '/../..' . '/src/integrations/opengraph-term-archive.php',
+        'Yoast\\WP\\SEO\\Premium\\Integrations\\Routes\\Workouts_Routes_Integration' => __DIR__ . '/../..' . '/src/integrations/routes/workouts-routes-integration.php',
         'Yoast\\WP\\SEO\\Premium\\Integrations\\Third_Party\\Algolia' => __DIR__ . '/../..' . '/src/integrations/third-party/algolia.php',
         'Yoast\\WP\\SEO\\Premium\\Integrations\\Third_Party\\Elementor_Premium' => __DIR__ . '/../..' . '/src/integrations/third-party/elementor-premium.php',
         'Yoast\\WP\\SEO\\Premium\\Integrations\\Third_Party\\Zapier' => __DIR__ . '/../..' . '/src/integrations/third-party/zapier.php',
@@ -223,9 +224,9 @@ class ComposerStaticInita0ca51d73ad862553a29bc1e7efa44fb
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInita0ca51d73ad862553a29bc1e7efa44fb::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInita0ca51d73ad862553a29bc1e7efa44fb::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInita0ca51d73ad862553a29bc1e7efa44fb::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit5f46898a962efedfab53deb9fd8e9a5e::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit5f46898a962efedfab53deb9fd8e9a5e::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit5f46898a962efedfab53deb9fd8e9a5e::$classMap;
 
         }, null, ClassLoader::class);
     }

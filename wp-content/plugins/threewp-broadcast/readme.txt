@@ -4,9 +4,9 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 7.2
-Stable tag: 48.03
+Stable tag: 48.06
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
-Tested up to: 5.8
+Tested up to: 5.9
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -361,6 +361,24 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 48.06 20220129 =
+
+* Tweak: Compatible with WP 5.9
+* Fix: Increase compatibility with PHP 8.1 by renaming the SDK's form class "readonly" trait.
+
+= 48.05 20220106 =
+
+Happy new year!
+
+* Fix: Mark taxonomies as synced earlier, preventing an infinite loop when a taxonomy has ACF fields that refer back to itself.
+* Fix: Execute the each_linked_post action on the parent post itself when called from the parent post.
+
+= 48.04 20211118 =
+
+* Fix: Correctly detect true/false term meta values when trying to protect them.
+* Fix: Remove warning about the Term Index get() function not matching.
+* Code: Add canonical_url action to allow for more flexible canonical URL handling.
 
 = 48.03 20211112 =
 

@@ -148,7 +148,7 @@ class WPForms_Entries_Single {
 			return;
 		}
 
-		_deprecated_function( __CLASS__ . '::' . __METHOD__, '1.5.5 of WPForms plugin', 'WPForms\Pro\Admin\Export\Export class' );
+		_deprecated_function( __METHOD__, '1.5.5 of WPForms plugin', 'WPForms\Pro\Admin\Export\Export class' );
 
 		if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpforms_entry_details_export' ) ) {
 			return;
@@ -322,29 +322,68 @@ class WPForms_Entries_Single {
 			return;
 		}
 
-		if ( empty( $_GET['action'] ) || 'delete_note' !== $_GET['action'] ) {
+		if ( empty( $_GET['action'] ) || $_GET['action'] !== 'delete_note' ) {
 			return;
 		}
 
-		$note_id  = absint( $_GET['note_id'] );
-		$entry_id = absint( $_GET['entry_id'] );
+		$note_id    = absint( $_GET['note_id'] );
+		$entry_id   = absint( $_GET['entry_id'] );
+		$message    = esc_html__( 'Note deleted.', 'wpforms' );
+		$entry_meta = wpforms()->get( 'entry_meta' );
 
 		// Capability check.
-		if ( ! \wpforms_current_user_can( 'edit_entry_single', $entry_id ) ) {
+		if ( ! wpforms_current_user_can( 'edit_entry_single', $entry_id ) ) {
 			return;
 		}
 
-		$deleted = wpforms()->entry_meta->delete( $note_id );
-
-		if ( ! $deleted ) {
-			return;
-		}
-
-		$this->alerts[] = array(
-			'type'    => 'success',
-			'message' => esc_html__( 'Note deleted.', 'wpforms' ),
-			'dismiss' => true,
+		// Get form id.
+		$meta = $entry_meta->get_meta(
+			[
+				'id'   => $note_id,
+				'type' => 'note',
+			]
 		);
+
+		$form_id = null;
+
+		if ( isset( $meta[0] ) ) {
+			$form_id = $meta[0]->form_id;
+		}
+
+		if ( ! $form_id ) {
+			return;
+		}
+
+		$is_deleted = $entry_meta->delete( $note_id );
+
+		if ( ! $is_deleted ) {
+			$this->alerts[] = [
+				'type'    => 'error',
+				'message' => esc_html__( 'Something went wrong while deleting a note. Please try again.', 'wpforms' ),
+				'dismiss' => true,
+			];
+
+			return;
+		}
+
+		// Add log record.
+		$entry_meta->add(
+			[
+				'entry_id' => $entry_id,
+				'form_id'  => $form_id,
+				'user_id'  => get_current_user_id(),
+				'type'     => 'log',
+				'data'     => wpautop( sprintf( '<em>%s</em>', $message ) ),
+			],
+			'entry_meta'
+		);
+
+		// Notify a user.
+		$this->alerts[] = [
+			'type'    => 'success',
+			'message' => $message,
+			'dismiss' => true,
+		];
 	}
 
 	/**
@@ -357,7 +396,7 @@ class WPForms_Entries_Single {
 	public function process_note_add() {
 
 		// Check for post trigger and required vars.
-		if ( empty( $_POST['wpforms_add_note'] ) || empty( $_POST['entry_id'] ) || empty( $_POST['form_id'] ) ) {
+		if ( empty( $_POST['wpforms_add_note'] ) || empty( $_POST['entry_id'] ) || empty( $_POST['form_id'] ) || empty( $_POST['entry_note'] ) ) {
 			return;
 		}
 
@@ -366,27 +405,54 @@ class WPForms_Entries_Single {
 			return;
 		}
 
+		$note = wp_kses_post( wp_unslash( $_POST['entry_note'] ) );
+
 		// Bail if note has no content.
-		if ( empty( $_POST['entry_note'] ) ) {
+		if ( empty( $note ) ) {
+			$this->alerts[] = [
+				'type'    => 'error',
+				'message' => esc_html__( 'Please provide a meaningful content for the note.', 'wpforms' ),
+				'dismiss' => true,
+			];
+
 			return;
 		}
 
-		wpforms()->entry_meta->add(
-			array(
-				'entry_id' => absint( $_POST['entry_id'] ),
-				'form_id'  => absint( $_POST['form_id'] ),
+		$entry_id   = absint( $_POST['entry_id'] );
+		$form_id    = absint( $_POST['form_id'] );
+		$message    = esc_html__( 'Note added.', 'wpforms' );
+		$entry_meta = wpforms()->get( 'entry_meta' );
+
+		// Add note.
+		$entry_meta->add(
+			[
+				'entry_id' => $entry_id,
+				'form_id'  => $form_id,
 				'user_id'  => get_current_user_id(),
 				'type'     => 'note',
-				'data'     => wpautop( wp_kses_post( wp_unslash( $_POST['entry_note'] ) ) ),
-			),
+				'data'     => wpautop( $note ),
+			],
 			'entry_meta'
 		);
 
-		$this->alerts[] = array(
-			'type'    => 'success',
-			'message' => esc_html__( 'Note added.', 'wpforms' ),
-			'dismiss' => true,
+		// Add log record.
+		$entry_meta->add(
+			[
+				'entry_id' => $entry_id,
+				'form_id'  => $form_id,
+				'user_id'  => get_current_user_id(),
+				'type'     => 'log',
+				'data'     => wpautop( sprintf( '<em>%s</em>', $message ) ),
+			],
+			'entry_meta'
 		);
+
+		// Notify a user.
+		$this->alerts[] = [
+			'type'    => 'success',
+			'message' => $message,
+			'dismiss' => true,
+		];
 	}
 
 	/**
@@ -441,7 +507,8 @@ class WPForms_Entries_Single {
 		}
 
 		// Find the entry.
-		$entry = wpforms()->entry->get( absint( $_GET['entry_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$entry = wpforms()->get( 'entry' )->get( absint( $_GET['entry_id'] ) );
 
 		// No entry was found, abort.
 		if ( ! $entry || empty( $entry ) ) {
@@ -452,7 +519,7 @@ class WPForms_Entries_Single {
 		}
 
 		// Find the form information.
-		$form = wpforms()->form->get( $entry->form_id, [ 'cap' => 'view_entries_form_single' ] );
+		$form = wpforms()->get( 'form' )->get( $entry->form_id, [ 'cap' => 'view_entries_form_single' ] );
 
 		// Form details.
 		$form_data      = wpforms_decode( $form->post_content );
@@ -654,7 +721,7 @@ class WPForms_Entries_Single {
 	public function details_fields( $entry, $form_data ) {
 
 		$hide_empty = isset( $_COOKIE['wpforms_entry_hide_empty'] ) && $_COOKIE['wpforms_entry_hide_empty'] === 'true';
-		$form_title = ! isset( $form_data['settings']['form_title'] ) ? $form_data['settings']['form_title'] : '';
+		$form_title = isset( $form_data['settings']['form_title'] ) ? $form_data['settings']['form_title'] : '';
 
 		if ( empty( $form_title ) ) {
 			$form = wpforms()->get( 'form' )->get( $entry->form_id );
@@ -1580,7 +1647,7 @@ class WPForms_Entries_Single {
 	 */
 	public function display_alerts( $display = '', $wrap = false ) {
 
-		_deprecated_function( __CLASS__ . '::' . __METHOD__, '1.6.7.1 of WPForms plugin' );
+		_deprecated_function( __METHOD__, '1.6.7.1 of WPForms plugin' );
 
 		if ( empty( $this->alerts ) ) {
 			return;

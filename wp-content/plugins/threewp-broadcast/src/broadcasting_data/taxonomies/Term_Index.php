@@ -36,11 +36,11 @@ class Term_Index
 		@details	We override this function in order to be able to index unknown terms on the fly.
 		@since		2021-11-11 21:44:39
 	**/
-	public function get( $term_id )
+	public function get( $key, $default = null  )
 	{
-		$term = parent::get( $term_id );
+		$term = parent::get( $key );
 		if ( ! $term )
-			$term = $this->learn( $term_id );
+			$term = $this->learn( $key );
 		return $term;
 	}
 

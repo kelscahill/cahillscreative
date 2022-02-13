@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 abstract class WC_Stripe_UPE_Payment_Method {
 
 	use WC_Stripe_Subscriptions_Utilities_Trait;
+	use WC_Stripe_Pre_Orders_Trait;
 
 	/**
 	 * Stripe key name
@@ -60,11 +61,25 @@ abstract class WC_Stripe_UPE_Payment_Method {
 	protected $supported_currencies;
 
 	/**
+	 * Can this payment method be refunded?
+	 *
+	 * @var array
+	 */
+	protected $can_refund = true;
+
+	/**
 	 * Wether this UPE method is enabled
 	 *
 	 * @var bool
 	 */
 	protected $enabled;
+
+	/**
+	 * List of supported countries
+	 *
+	 * @var array
+	 */
+	protected $supported_countries;
 
 	/**
 	 * Create instance of payment method
@@ -152,6 +167,26 @@ abstract class WC_Stripe_UPE_Payment_Method {
 			return $this->is_reusable();
 		}
 
+		// If cart or order contains pre-order, enable payment method if it's reusable.
+		if ( $this->is_pre_order_item_in_cart() || ( ! empty( $order_id ) && $this->has_pre_order( $order_id ) ) ) {
+			return $this->is_reusable();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Validates if a payment method is available on a given country
+	 *
+	 * @param string $country a two-letter country code
+	 *
+	 * @return bool Will return true if supported_countries is empty on payment method
+	 */
+	public function is_allowed_on_country( $country ) {
+		if ( ! empty( $this->supported_countries ) ) {
+			return in_array( $country, $this->supported_countries );
+		}
+
 		return true;
 	}
 
@@ -172,6 +207,15 @@ abstract class WC_Stripe_UPE_Payment_Method {
 	 * @return bool
 	 */
 	public function is_capability_active() {
+		// Treat all capabilities as active when in test mode.
+		$plugin_settings   = get_option( 'woocommerce_stripe_settings' );
+		$test_mode_setting = ! empty( $plugin_settings['testmode'] ) ? $plugin_settings['testmode'] : 'no';
+
+		if ( 'yes' === $test_mode_setting ) {
+			return true;
+		}
+
+		// Otherwise, make sure the capability is available.
 		$capabilities = $this->get_capabilities_response();
 		if ( empty( $capabilities ) ) {
 			return false;
@@ -280,5 +324,14 @@ abstract class WC_Stripe_UPE_Payment_Method {
 		}
 
 		return count( $messages ) > 0 ? join( '&nbsp;–&nbsp;', $messages ) : '';
+	}
+
+	/**
+	 * Checks if payment method allows refund via stripe
+	 *
+	 * @return bool
+	 */
+	public function can_refund_via_stripe() {
+		return $this->can_refund;
 	}
 }

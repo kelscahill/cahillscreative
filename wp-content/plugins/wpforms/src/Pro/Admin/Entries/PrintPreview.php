@@ -432,30 +432,35 @@ class PrintPreview {
 	public function add_hidden_data( $fields, $entry ) {
 
 		$form_data = wpforms()->get( 'form' )->get( $entry->form_id, [ 'content_only' => true ] );
-		$settings  = ! empty( $form_data['fields'] ) ? $form_data['fields'] : '';
-
-		if ( ! $settings ) {
-			return $fields;
-		}
+		$settings  = ! empty( $form_data['fields'] ) ? $form_data['fields'] : [];
 
 		// Order entry fields by the form fields.
 		foreach ( $settings as $key => $setting ) {
+
 			if ( empty( $setting['type'] ) ) {
 				unset( $settings[ $key ] );
+				continue;
 			}
 
 			$field_type = $setting['type'];
 
-			/** This filter is documented in /src/Pro/Admin/Entries/Edit.php */
-			if ( ! (bool) apply_filters( "wpforms_pro_admin_entries_edit_is_field_displayable_{$field_type}", true, $setting, $form_data ) ) {
-				if ( ! in_array( $setting['type'], [ 'divider', 'html' ], true ) ) {
-					unset( $settings[ $key ] );
-				}
-
-                continue;
+			// Divider and HTML fields must always be included because it's allowed to show and hide these fields.
+			if ( in_array( $field_type, [ 'divider', 'html' ], true ) ) {
+				continue;
 			}
 
-            $settings[ $key ] = $fields[ $key ];
+			/** This filter is documented in /src/Pro/Admin/Entries/Edit.php */
+			if ( ! (bool) apply_filters( "wpforms_pro_admin_entries_edit_is_field_displayable_{$field_type}", true, $setting, $form_data ) ) {
+				unset( $settings[ $key ] );
+				continue;
+			}
+
+			if ( ! isset( $fields[ $key ] ) ) {
+				unset( $settings[ $key ] );
+				continue;
+			}
+
+			$settings[ $key ] = $fields[ $key ];
 		}
 
 		return $settings;

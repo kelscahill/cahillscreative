@@ -69,13 +69,6 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	public $inline_cc_form;
 
 	/**
-	 * Pre Orders Object
-	 *
-	 * @var object
-	 */
-	public $pre_orders;
-
-	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -89,7 +82,6 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 			'refunds',
 			'tokenization',
 			'add_payment_method',
-			'pre-orders',
 		];
 
 		// Load the form fields.
@@ -100,6 +92,9 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 
 		// Check if subscriptions are enabled and add support for them.
 		$this->maybe_init_subscriptions();
+
+		// Check if pre-orders are enabled and add support for them.
+		$this->maybe_init_pre_orders();
 
 		// Get setting values.
 		$this->title                = $this->get_option( 'title' );
@@ -131,12 +126,6 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 
 		// Note: display error is in the parent class.
 		add_action( 'admin_notices', [ $this, 'display_errors' ], 9999 );
-
-		if ( WC_Stripe_Helper::is_pre_orders_exists() ) {
-			$this->pre_orders = new WC_Stripe_Pre_Orders_Compat();
-
-			add_action( 'wc_pre_orders_process_pre_order_completion_payment_' . $this->id, [ $this->pre_orders, 'process_pre_order_release_payment' ] );
-		}
 	}
 
 	/**
@@ -312,142 +301,10 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	}
 
 	/**
-	 * Maybe override the parent admin_options method.
+	 * Override the parent admin_options method.
 	 */
 	public function admin_options() {
-		if ( ! WC_Stripe_Feature_Flags::is_upe_settings_redesign_enabled() ) {
-			parent::admin_options();
-
-			return;
-		}
-
 		do_action( 'wc_stripe_gateway_admin_options_wrapper', $this );
-	}
-
-	/**
-	 * Returns the JavaScript configuration object used on the product, cart, and checkout pages.
-	 *
-	 * @return array  The configuration object to be loaded to JS.
-	 */
-	public function javascript_params() {
-		global $wp;
-
-		$stripe_params = [
-			'title'                => $this->title,
-			'key'                  => $this->publishable_key,
-			'i18n_terms'           => __( 'Please accept the terms and conditions first', 'woocommerce-gateway-stripe' ),
-			'i18n_required_fields' => __( 'Please fill in required checkout fields first', 'woocommerce-gateway-stripe' ),
-		];
-
-		// If we're on the pay page we need to pass stripe.js the address of the order.
-		if ( isset( $_GET['pay_for_order'] ) && 'true' === $_GET['pay_for_order'] ) { // wpcs: csrf ok.
-			$order_id = wc_clean( $wp->query_vars['order-pay'] ); // wpcs: csrf ok, sanitization ok, xss ok.
-			$order    = wc_get_order( $order_id );
-
-			if ( is_a( $order, 'WC_Order' ) ) {
-				$stripe_params['billing_first_name'] = $order->get_billing_first_name();
-				$stripe_params['billing_last_name']  = $order->get_billing_last_name();
-				$stripe_params['billing_address_1']  = $order->get_billing_address_1();
-				$stripe_params['billing_address_2']  = $order->get_billing_address_2();
-				$stripe_params['billing_state']      = $order->get_billing_state();
-				$stripe_params['billing_city']       = $order->get_billing_city();
-				$stripe_params['billing_postcode']   = $order->get_billing_postcode();
-				$stripe_params['billing_country']    = $order->get_billing_country();
-			}
-		}
-
-		$sepa_elements_options = apply_filters(
-			'wc_stripe_sepa_elements_options',
-			[
-				'supportedCountries' => [ 'SEPA' ],
-				'placeholderCountry' => WC()->countries->get_base_country(),
-				'style'              => [ 'base' => [ 'fontSize' => '15px' ] ],
-			]
-		);
-
-		$stripe_params['stripe_locale']             = WC_Stripe_Helper::convert_wc_locale_to_stripe_locale( get_locale() );
-		$stripe_params['no_prepaid_card_msg']       = __( 'Sorry, we\'re not accepting prepaid cards at this time. Your credit card has not been charged. Please try with alternative payment method.', 'woocommerce-gateway-stripe' );
-		$stripe_params['no_sepa_owner_msg']         = __( 'Please enter your IBAN account name.', 'woocommerce-gateway-stripe' );
-		$stripe_params['no_sepa_iban_msg']          = __( 'Please enter your IBAN account number.', 'woocommerce-gateway-stripe' );
-		$stripe_params['payment_intent_error']      = __( 'We couldn\'t initiate the payment. Please try again.', 'woocommerce-gateway-stripe' );
-		$stripe_params['sepa_mandate_notification'] = apply_filters( 'wc_stripe_sepa_mandate_notification', 'email' );
-		$stripe_params['allow_prepaid_card']        = apply_filters( 'wc_stripe_allow_prepaid_card', true ) ? 'yes' : 'no';
-		$stripe_params['inline_cc_form']            = $this->inline_cc_form ? 'yes' : 'no';
-		$stripe_params['is_checkout']               = ( is_checkout() && empty( $_GET['pay_for_order'] ) ) ? 'yes' : 'no'; // wpcs: csrf ok.
-		$stripe_params['return_url']                = $this->get_stripe_return_url();
-		$stripe_params['ajaxurl']                   = WC_AJAX::get_endpoint( '%%endpoint%%' );
-		$stripe_params['stripe_nonce']              = wp_create_nonce( '_wc_stripe_nonce' );
-		$stripe_params['statement_descriptor']      = $this->statement_descriptor;
-		$stripe_params['elements_options']          = apply_filters( 'wc_stripe_elements_options', [] );
-		$stripe_params['sepa_elements_options']     = $sepa_elements_options;
-		$stripe_params['invalid_owner_name']        = __( 'Billing First Name and Last Name are required.', 'woocommerce-gateway-stripe' );
-		$stripe_params['is_change_payment_page']    = isset( $_GET['change_payment_method'] ) ? 'yes' : 'no'; // wpcs: csrf ok.
-		$stripe_params['is_add_payment_page']       = is_wc_endpoint_url( 'add-payment-method' ) ? 'yes' : 'no';
-		$stripe_params['is_pay_for_order_page']     = is_wc_endpoint_url( 'order-pay' ) ? 'yes' : 'no';
-		$stripe_params['elements_styling']          = apply_filters( 'wc_stripe_elements_styling', false );
-		$stripe_params['elements_classes']          = apply_filters( 'wc_stripe_elements_classes', false );
-		$stripe_params['add_card_nonce']            = wp_create_nonce( 'wc_stripe_create_si' );
-
-		// Merge localized messages to be use in JS.
-		$stripe_params = array_merge( $stripe_params, WC_Stripe_Helper::get_localized_messages() );
-
-		return $stripe_params;
-	}
-
-	/**
-	 * Payment_scripts function.
-	 *
-	 * Outputs scripts used for stripe payment
-	 *
-	 * @since 3.1.0
-	 * @version 4.0.0
-	 */
-	public function payment_scripts() {
-		if (
-			! is_product()
-			&& ! WC_Stripe_Helper::has_cart_or_checkout_on_current_page()
-			&& ! isset( $_GET['pay_for_order'] ) // wpcs: csrf ok.
-			&& ! is_add_payment_method_page()
-			&& ! isset( $_GET['change_payment_method'] ) // wpcs: csrf ok.
-			&& ! ( ! empty( get_query_var( 'view-subscription' ) ) && is_callable( 'WCS_Early_Renewal_Manager::is_early_renewal_via_modal_enabled' ) && WCS_Early_Renewal_Manager::is_early_renewal_via_modal_enabled() )
-			|| ( is_order_received_page() )
-		) {
-			return;
-		}
-
-		// If Stripe is not enabled bail.
-		if ( 'no' === $this->enabled ) {
-			return;
-		}
-
-		// If keys are not set bail.
-		if ( ! $this->are_keys_set() ) {
-			WC_Stripe_Logger::log( 'Keys are not set correctly.' );
-			return;
-		}
-
-		// If no SSL bail.
-		if ( ! $this->testmode && ! is_ssl() ) {
-			WC_Stripe_Logger::log( 'Stripe live mode requires SSL.' );
-			return;
-		}
-
-		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-
-		wp_register_style( 'stripe_styles', plugins_url( 'assets/css/stripe-styles.css', WC_STRIPE_MAIN_FILE ), [], WC_STRIPE_VERSION );
-		wp_enqueue_style( 'stripe_styles' );
-
-		wp_register_script( 'stripe', 'https://js.stripe.com/v3/', '', '3.0', true );
-		wp_register_script( 'woocommerce_stripe', plugins_url( 'assets/js/stripe' . $suffix . '.js', WC_STRIPE_MAIN_FILE ), [ 'jquery-payment', 'stripe' ], WC_STRIPE_VERSION, true );
-
-		wp_localize_script(
-			'woocommerce_stripe',
-			'wc_stripe_params',
-			apply_filters( 'wc_stripe_params', $this->javascript_params() )
-		);
-
-		$this->tokenization_script();
-		wp_enqueue_script( 'woocommerce_stripe' );
 	}
 
 	/**
@@ -513,10 +370,8 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 				return $this->process_change_subscription_payment_method( $order_id );
 			}
 
-			// ToDo: `process_pre_order` saves the source to the order for a later payment.
-			// This might not work well with PaymentIntents.
 			if ( $this->maybe_process_pre_orders( $order_id ) ) {
-				return $this->pre_orders->process_pre_order( $order_id );
+				return $this->process_pre_order( $order_id );
 			}
 
 			// Check whether there is an existing intent.
@@ -572,10 +427,6 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 
 			$force_save_source_value = apply_filters( 'wc_stripe_force_save_source', $force_save_source, $prepared_source->source );
 
-			if ( 'succeeded' === $intent->status && ! $this->is_using_saved_payment_method() && ( $this->save_payment_method_requested() || $force_save_source_value ) ) {
-				$this->save_payment_method( $prepared_source->source_object );
-			}
-
 			if ( ! empty( $intent->error ) ) {
 				$this->maybe_remove_non_existent_customer( $intent->error, $order );
 
@@ -586,6 +437,10 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 
 				$this->unlock_order_payment( $order );
 				$this->throw_localized_message( $intent, $order );
+			}
+
+			if ( 'succeeded' === $intent->status && ! $this->is_using_saved_payment_method() && ( $this->save_payment_method_requested() || $force_save_source_value ) ) {
+				$this->save_payment_method( $prepared_source->source_object );
 			}
 
 			if ( ! empty( $intent ) ) {
@@ -1008,7 +863,8 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 		if ( ! $order->has_status(
 			apply_filters(
 				'wc_stripe_allowed_payment_processing_statuses',
-				[ 'pending', 'failed' ]
+				[ 'pending', 'failed' ],
+				$order
 			)
 		) ) {
 			// If payment has already been completed, this function is redundant.
@@ -1021,8 +877,8 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 
 		if ( 'setup_intent' === $intent->object && 'succeeded' === $intent->status ) {
 			WC()->cart->empty_cart();
-			if ( WC_Stripe_Helper::is_pre_orders_exists() && WC_Pre_Orders_Order::order_contains_pre_order( $order ) ) {
-				WC_Pre_Orders_Order::mark_order_as_pre_ordered( $order );
+			if ( $this->has_pre_order( $order ) ) {
+				$this->mark_order_as_pre_ordered( $order );
 			} else {
 				$order->payment_complete();
 			}
@@ -1268,15 +1124,21 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	/**
 	 * Validates statement descriptor value
 	 *
+	 * @param string $param Param name.
 	 * @param string $value Posted Value.
 	 * @param int    $max_length Maximum statement length.
 	 *
 	 * @return string                   Sanitized statement descriptor.
 	 * @throws InvalidArgumentException When statement descriptor is invalid.
 	 */
-	public function validate_account_statement_descriptor_field( $value, $max_length ) {
+	public function validate_account_statement_descriptor_field( $param, $value, $max_length ) {
 		// Since the value is escaped, and we are saving in a place that does not require escaping, apply stripslashes.
 		$value = trim( stripslashes( $value ) );
+		$field = __( 'customer bank statement', 'woocommerce-gateway-stripe' );
+
+		if ( 'short_statement_descriptor' === $param ) {
+			$field = __( 'shortened customer bank statement', 'woocommerce-gateway-stripe' );
+		}
 
 		// Validation can be done with a single regex but splitting into multiple for better readability.
 		$valid_length   = '/^.{5,' . $max_length . '}$/';
@@ -1288,7 +1150,14 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 			! preg_match( $has_one_letter, $value ) ||
 			! preg_match( $no_specials, $value )
 		) {
-			throw new InvalidArgumentException( __( 'Customer bank statement is invalid. Statement should be between 5 and 22 characters long, contain at least single Latin character and does not contain special characters: \' " * &lt; &gt;', 'woocommerce-gateway-stripe' ) );
+			throw new InvalidArgumentException(
+				sprintf(
+					/* translators: %1 field name, %2 Number of the maximum characters allowed */
+					__( 'The %1$s is invalid. The bank statement must contain only Latin characters, be between 5 and %2$u characters, contain at least one letter, and not contain any of the special characters: \' " * &lt; &gt;', 'woocommerce-gateway-stripe' ),
+					$field,
+					$max_length
+				)
+			);
 		}
 
 		return $value;

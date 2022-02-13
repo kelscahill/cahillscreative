@@ -91,7 +91,6 @@ class WC_Gateway_Stripe_P24 extends WC_Stripe_Payment_Gateway {
 		}
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts_for_banner' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] );
 	}
 
@@ -273,7 +272,8 @@ class WC_Gateway_Stripe_P24 extends WC_Stripe_Payment_Gateway {
 			if ( $order->has_status(
 				apply_filters(
 					'wc_stripe_allowed_payment_processing_statuses',
-					[ 'pending', 'failed' ]
+					[ 'pending', 'failed' ],
+					$order
 				)
 			) ) {
 				$this->send_failed_order_email( $order_id );
