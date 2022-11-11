@@ -10,65 +10,82 @@ import { getSetting } from '@woocommerce/settings';
 import deprecated from '@wordpress/deprecated';
 import LoadingMask from '@woocommerce/base-components/loading-mask';
 import type { PaymentMethodInterface } from '@woocommerce/types';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { CHECKOUT_STORE_KEY, PAYMENT_STORE_KEY } from '@woocommerce/block-data';
+import { ValidationInputError } from '@woocommerce/base-components/validation-input-error';
 
 /**
  * Internal dependencies
  */
-import { ValidationInputError } from '../../providers/validation';
 import { useStoreCart } from '../cart/use-store-cart';
 import { useStoreCartCoupons } from '../cart/use-store-cart-coupons';
-import { useEmitResponse } from '../use-emit-response';
-import { useCheckoutContext } from '../../providers/cart-checkout/checkout-state';
-import { usePaymentMethodDataContext } from '../../providers/cart-checkout/payment-methods';
+import { noticeContexts, responseTypes } from '../../event-emit';
+import { useCheckoutEventsContext } from '../../providers/cart-checkout/checkout-events';
+import { usePaymentEventsContext } from '../../providers/cart-checkout/payment-events';
 import { useShippingDataContext } from '../../providers/cart-checkout/shipping';
 import { useCustomerDataContext } from '../../providers/cart-checkout/customer';
 import { prepareTotalItems } from './utils';
+import { useShippingData } from '../shipping/use-shipping-data';
 
 /**
  * Returns am interface to use as payment method props.
  */
 export const usePaymentMethodInterface = (): PaymentMethodInterface => {
 	const {
-		isCalculating,
-		isComplete,
-		isIdle,
-		isProcessing,
 		onCheckoutBeforeProcessing,
 		onCheckoutValidationBeforeProcessing,
 		onCheckoutAfterProcessingWithSuccess,
 		onCheckoutAfterProcessingWithError,
 		onSubmit,
-		customerId,
-	} = useCheckoutContext();
-	const {
-		currentStatus,
-		activePaymentMethod,
-		onPaymentProcessing,
-		setExpressPaymentError,
-		shouldSavePayment,
-	} = usePaymentMethodDataContext();
+	} = useCheckoutEventsContext();
+
+	const { isCalculating, isComplete, isIdle, isProcessing, customerId } =
+		useSelect( ( select ) => {
+			const store = select( CHECKOUT_STORE_KEY );
+			return {
+				isComplete: store.isComplete(),
+				isIdle: store.isIdle(),
+				isProcessing: store.isProcessing(),
+				customerId: store.getCustomerId(),
+				isCalculating: store.isCalculating(),
+			};
+		} );
+	const { currentStatus, activePaymentMethod, shouldSavePayment } = useSelect(
+		( select ) => {
+			const store = select( PAYMENT_STORE_KEY );
+
+			return {
+				currentStatus: store.getCurrentStatus(),
+				activePaymentMethod: store.getActivePaymentMethod(),
+				shouldSavePayment: store.getShouldSavePaymentMethod(),
+			};
+		}
+	);
+
+	const { __internalSetExpressPaymentError } =
+		useDispatch( PAYMENT_STORE_KEY );
+
+	const { onPaymentProcessing } = usePaymentEventsContext();
 	const {
 		shippingErrorStatus,
 		shippingErrorTypes,
-		shippingRates,
-		shippingRatesLoading,
-		selectedRates,
-		setSelectedRates,
-		isSelectingRate,
 		onShippingRateSuccess,
 		onShippingRateFail,
 		onShippingRateSelectSuccess,
 		onShippingRateSelectFail,
-		needsShipping,
 	} = useShippingDataContext();
 	const {
-		billingData,
-		shippingAddress,
-		setShippingAddress,
-	} = useCustomerDataContext();
+		shippingRates,
+		isLoadingRates,
+		selectedRates,
+		isSelectingRate,
+		selectShippingRate,
+		needsShipping,
+	} = useShippingData();
+	const { billingAddress, shippingAddress, setShippingAddress } =
+		useCustomerDataContext();
 	const { cartItems, cartFees, cartTotals, extensions } = useStoreCart();
 	const { appliedCoupons } = useStoreCartCoupons();
-	const { noticeContexts, responseTypes } = useEmitResponse();
 	const currentCartTotals = useRef(
 		prepareTotalItems( cartTotals, needsShipping )
 	);
@@ -95,20 +112,20 @@ export const usePaymentMethodInterface = (): PaymentMethodInterface => {
 				{
 					alternative: '',
 					plugin: 'woocommerce-gutenberg-products-block',
-					link:
-						'https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/4228',
+					link: 'https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/4228',
 				}
 			);
-			setExpressPaymentError( errorMessage );
+			__internalSetExpressPaymentError( errorMessage );
 		},
-		[ setExpressPaymentError ]
+		[ __internalSetExpressPaymentError ]
 	);
 
 	return {
 		activePaymentMethod,
 		billing: {
 			appliedCoupons,
-			billingData,
+			billingAddress,
+			billingData: billingAddress,
 			cartTotal: currentCartTotal.current,
 			cartTotalItems: currentCartTotals.current,
 			currency: getCurrencyFromPriceResponse( cartTotals ),
@@ -157,11 +174,11 @@ export const usePaymentMethodInterface = (): PaymentMethodInterface => {
 			isSelectingRate,
 			needsShipping,
 			selectedRates,
-			setSelectedRates,
+			setSelectedRates: selectShippingRate,
 			setShippingAddress,
 			shippingAddress,
 			shippingRates,
-			shippingRatesLoading,
+			shippingRatesLoading: isLoadingRates,
 		},
 		shippingStatus: {
 			shippingErrorStatus,

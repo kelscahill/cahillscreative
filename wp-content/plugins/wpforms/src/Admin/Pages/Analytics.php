@@ -100,14 +100,14 @@ class Analytics {
 		// Lity.
 		wp_enqueue_style(
 			'wpforms-lity',
-			WPFORMS_PLUGIN_URL . 'assets/css/lity.min.css',
+			WPFORMS_PLUGIN_URL . 'assets/lib/lity/lity.min.css',
 			null,
 			'3.0.0'
 		);
 
 		wp_enqueue_script(
 			'wpforms-lity',
-			WPFORMS_PLUGIN_URL . 'assets/js/lity.min.js',
+			WPFORMS_PLUGIN_URL . 'assets/lib/lity/lity.min.js',
 			array( 'jquery' ),
 			'3.0.0',
 			true
@@ -491,14 +491,13 @@ class Analytics {
 			case 'lite':
 				$step['button_url']   = $this->config['mi_forms_addon_page'];
 				$step['button_class'] = $this->output_data['plugin_setup'] ? 'button-primary' : 'grey';
-
 				break;
+
 			case 'pro':
 				$addon_installed      = array_key_exists( $this->config['forms_addon'], $this->output_data['all_plugins'] );
 				$step['button_text']  = $addon_installed ? esc_html__( 'Activate Now', 'wpforms-lite' ) : esc_html__( 'Install Now', 'wpforms-lite' );
 				$step['button_url']   = admin_url( $this->config['mi_addons'] );
 				$step['button_class'] = $this->output_data['plugin_setup'] ? 'button-primary' : 'grey';
-
 				break;
 		}
 

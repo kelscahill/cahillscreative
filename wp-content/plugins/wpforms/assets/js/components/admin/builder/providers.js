@@ -24,7 +24,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 
 		/**
 		 * Internal cache storage, do not use it directly, but app.cache.{(get|set|delete|clear)()} instead.
-		 * Key is the provider slug, value is a Map, that will have it's own key as a connection id (or not).
+		 * Key is the provider slug, value is a Map, that will have its own key as a connection id (or not).
 		 *
 		 * @since 1.4.7
 		 *
@@ -40,6 +40,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 		 * @type {Object.<string, *>}
 		 */
 		config: {
+
 			/**
 			 * List of default templates that should be compiled.
 			 *
@@ -49,8 +50,8 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 			 */
 			templates: [
 				'wpforms-providers-builder-content-connection-fields',
-				'wpforms-providers-builder-content-connection-conditionals'
-			]
+				'wpforms-providers-builder-content-connection-conditionals',
+			],
 		},
 
 		/**
@@ -105,6 +106,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 		 * @since 1.4.7
 		 */
 		ajax: {
+
 			/**
 			 * Merge custom AJAX data object with defaults.
 			 *
@@ -112,14 +114,16 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 			 * @since 1.5.9 Added a new parameter - provider
 			 *
 			 * @param {string} provider Current provider slug.
-			 * @param {object} custom AJAX data object with custom settings.
+			 * @param {object} custom Ajax data object with custom settings.
 			 *
-			 * @returns {Object}
+			 * @returns {object} Ajax data.
 			 */
 			_mergeData: function( provider, custom ) {
 
 				var data = {
-					id: $( '#wpforms-builder-form' ).data( 'id' ),
+					id: app.form.data( 'id' ),
+					// eslint-disable-next-line camelcase
+					revision_id: app.form.data( 'revision' ),
 					nonce: wpforms_builder.nonce,
 					action: 'wpforms_builder_provider_ajax_' + provider,
 				};
@@ -182,7 +186,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 							$lock.val( 0 );
 						}
 					} );
-			}
+			},
 		},
 
 		/**
@@ -217,7 +221,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 
 			/**
 			 * Get the value from cache by key and an ID.
-			 * Useful when Object is stored under key and we need specific value.
+			 * Useful when Object is stored under key, and we need specific value.
 			 *
 			 * @since 1.4.7
 			 * @since 1.5.9 Added a new parameter - provider.
@@ -329,7 +333,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 			 *
 			 * @param {string} provider Current provider slug.
 			 * @param {string} key Intended to be a string, but can be everything that Map supports as a key.
-			 * @param {string} id ID for a value that should be delete from a certain key.
+			 * @param {string} id ID for a value that should be deleted from a certain key.
 			 *
 			 * @returns {Map} All the cache for the provider. IE11 returns 'undefined' for an undefined reason.
 			 */
@@ -371,7 +375,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 				}
 
 				__private.cache[ provider ].clear();
-			}
+			},
 		},
 
 		/**
@@ -397,7 +401,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 			// Save a current form fields state.
 			__private.fields = $.extend( {}, wpf.getFields( false, true ) );
 
-			app.panelHolder = $( '#wpforms-panel-providers' );
+			app.panelHolder = $( '#wpforms-panel-providers, #wpforms-panel-settings' );
 
 			app.Templates = WPForms.Admin.Builder.Templates;
 			app.Templates.add( __private.config.templates );
@@ -419,7 +423,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 			// On Form save - notify user about required fields.
 			$( document ).on( 'wpformsSaved', function() {
 
-				var $connectionBlocks = $( '#wpforms-panel-providers' ).find( '.wpforms-builder-provider-connection' );
+				var $connectionBlocks = app.panelHolder.find( '.wpforms-builder-provider-connection' );
 
 				if ( ! $connectionBlocks.length ) {
 					return;
@@ -435,15 +439,17 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 					// Do the actual required fields check.
 					$( this ).find( 'input.wpforms-required, select.wpforms-required, textarea.wpforms-required' ).each( function() {
 
-						var value = $( this ).val();
+						const $this = $( this ),
+							value = $this.val();
 
-						if ( _.isEmpty( value ) ) {
+						if ( _.isEmpty( value ) && ! $this.closest( '.wpforms-builder-provider-connection-block' ).hasClass( 'wpforms-hidden' ) ) {
 							$( this ).addClass( 'wpforms-error' );
 							isRequiredEmpty = true;
 
-						} else {
-							$( this ).removeClass( 'wpforms-error' );
+							return;
 						}
+
+						$( this ).removeClass( 'wpforms-error' );
 					} );
 
 					// Notify user.
@@ -482,10 +488,10 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 			 * This will prevent a please-save-prompt to appear, when navigating
 			 * out and back to Marketing tab without doing any changes anywhere.
 			 */
-			$( '#wpforms-panel-providers' ).on( 'connectionRendered', function() {
+			app.panelHolder.on( 'connectionRendered', function() {
 
 				if ( wpf.initialSave === true ) {
-					wpf.savedState = wpf.getFormState( '#wpforms-builder-form');
+					wpf.savedState = wpf.getFormState( '#wpforms-builder-form' );
 				}
 			} );
 		},
@@ -495,7 +501,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 		 *
 		 * @since 1.6.1.2
 		 *
-		 * @param {object} $connections jQuery selector for active conenctions.
+		 * @param {object} $connections jQuery selector for active connections.
 		 */
 		updateMapSelects: function( $connections ) {
 
@@ -589,7 +595,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 		ui: {
 
 			/**
-			 * Process UI related actions/events: click, change etc - that are triggered from UI.
+			 * Process UI related actions/events: click, change etc. - that are triggered from UI.
 			 *
 			 * @since 1.4.7
 			 */
@@ -653,7 +659,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 					} );
 
 				// CONNECTION: Generated.
-				$( '#wpforms-panel-providers' ).on( 'connectionGenerated', function( e, data ) {
+				app.panelHolder.on( 'connectionGenerated', function( e, data ) {
 
 					wpf.initTooltips();
 
@@ -666,7 +672,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 				} );
 
 				// CONNECTION: Rendered.
-				$( '#wpforms-panel-providers' ).on( 'connectionRendered', function( e, provider, connectionId ) {
+				app.panelHolder.on( 'connectionRendered', function( e, provider, connectionId ) {
 
 					wpf.initTooltips();
 
@@ -684,11 +690,23 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 						wpf.fieldUpdate();
 					}
 				} );
+
+				// Remove error class in required fields if a value is supplied.
+				app.panelHolder.on( 'change', '.wpforms-builder-provider select.wpforms-required', function() {
+
+					const $this = $( this );
+
+					if ( ! $this.hasClass( 'wpforms-error' ) || $this.val().length === 0 ) {
+						return;
+					}
+
+					$this.removeClass( 'wpforms-error' );
+				} );
 			},
 
 			/**
 			 * Add a connection to a page.
-			 * This is a multi-step process, where the 1st step is always the same for all providers.
+			 * This is a multistep process, where the 1st step is always the same for all providers.
 			 *
 			 * @since 1.4.7
 			 * @since 1.5.9 Added a new parameter - provider.
@@ -875,8 +893,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 
 							app.getProviderHolder( account.provider ).trigger( 'accountAddModal.contentLoaded', [ modal ] );
 						},
-						// Before the modal is displayed.
-						onOpenBefore: function() {
+						onOpenBefore: function() { // Before the modal is displayed.
 
 							var modal = this;
 
@@ -886,8 +903,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 
 							app.getProviderHolder( account.provider ).trigger( 'accountAddModal.onOpenBefore', [ modal ] );
 						},
-						// Before the modal is hidden.
-						onClose: function() {
+						onClose: function() { // Before the modal is hidden.
 
 							// If an account was configured successfully - show a modal with adding a new connection.
 							if ( true === app.ui.account.isConfigured( account.provider ) ) {

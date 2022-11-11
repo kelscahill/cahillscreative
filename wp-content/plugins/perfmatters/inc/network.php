@@ -13,7 +13,7 @@ function perfmatters_network_admin_menu() {
     }
  
  	//Add Settings Section
-    add_settings_section('perfmatters_network', 'Network Setup', 'perfmatters_network_callback', 'perfmatters_network');
+    add_settings_section('perfmatters_network', 'Network Setup', '__return_false', 'perfmatters_network');
    
    	//Add Options Fields
 	add_settings_field(
@@ -57,11 +57,6 @@ function perfmatters_network_admin_menu() {
 }
 add_filter('network_admin_menu', 'perfmatters_network_admin_menu');
 
-//Perfmatters Network Section Callback
-function perfmatters_network_callback() {
-	echo '<p class="perfmatters-subheading">' . __('Manage network access control and setup a network default site.', 'perfmatters') . '</p>';
-}
- 
 //Perfmatters Network Access
 function perfmatters_network_access_callback() {
 	$perfmatters_network = get_site_option('perfmatters_network');
@@ -104,57 +99,86 @@ function perfmatters_network_page_callback() {
 		if(isset($_POST['perfmatters_network_apply_blog']) && is_numeric($_POST['perfmatters_network_apply_blog'])) {
 			$blog = get_blog_details($_POST['perfmatters_network_apply_blog']);
 			if($blog) {
+				$perfmatters_network = get_site_option('perfmatters_network');
 
-				//apply default settings to selected blog
-				if(is_multisite()) {
-					$perfmatters_network = get_site_option('perfmatters_network');
+				if(!empty($perfmatters_network['default'])) {
 
-					if(!empty($perfmatters_network['default'])) {
+					if($blog->blog_id != $perfmatters_network['default']) {
 
-						if($blog->blog_id != $perfmatters_network['default']) {
+						$option_names = array(
+							'perfmatters_options',
+							'perfmatters_tools'
+						);
 
-							$option_names = array(
-								'perfmatters_options',
-								'perfmatters_cdn',
-								'perfmatters_extras'
-							);
+						foreach($option_names as $option_name) {
 
-							foreach($option_names as $option_name) {
+							//clear selected blog previous option
+							delete_blog_option($blog->blog_id, $option_name);
 
-								//clear selected blog previous option
-								delete_blog_option($blog->blog_id, $option_name);
+							//grab new option from default blog
+							$new_option = get_blog_option($perfmatters_network['default'], $option_name);
 
-								//grab new option from default blog
-								$new_option = get_blog_option($perfmatters_network['default'], $option_name);
-
-								//remove options we don't want to copy
-								if($option_name == 'perfmatters_cdn') {
-									unset($new_option['cdn_url']);
-								}
-
-								//update selected blog with default option
-								update_blog_option($blog->blog_id, $option_name, $new_option);
-
+							//remove options we don't want to copy
+							if($option_name == 'perfmatters_option') {
+								unset($new_option['cdn']['cdn_url']);
 							}
 
-							//Default Settings Updated Notice
-							echo "<div class='notice updated is-dismissible'><p>" . __('Default settings applied!', 'perfmatters') . "</p></div>";
+							//update selected blog with default option
+							update_blog_option($blog->blog_id, $option_name, $new_option);
+
 						}
-						else {
-							//Can't Apply to Network Default
-							echo "<div class='notice error is-dismissible'><p>" . __('Select a site that is not already the Network Default.', 'perfmatters') . "</p></div>";
-						}
+
+						//Default Settings Updated Notice
+						echo "<div class='notice updated is-dismissible'><p>" . __('Default settings applied!', 'perfmatters') . "</p></div>";
 					}
 					else {
-						//Network Default Not Set
-						echo "<div class='notice error is-dismissible'><p>" . __('Network Default not set.', 'perfmatters') . "</p></div>";
+						//Can't Apply to Network Default
+						echo "<div class='notice error is-dismissible'><p>" . __('Select a site that is not already the Network Default.', 'perfmatters') . "</p></div>";
 					}
+				}
+				else {
+					//Network Default Not Set
+					echo "<div class='notice error is-dismissible'><p>" . __('Network Default not set.', 'perfmatters') . "</p></div>";
 				}
 			}
 			else {
 				//Blog Not Found Notice
 				echo "<div class='notice error is-dismissible'><p>" . __('Error: Blog Not Found.', 'perfmatters') . "</p></div>";
 			}
+		}
+	}
+	elseif(isset($_POST['perfmatters_apply_defaults_all'])) {
+		check_admin_referer('perfmatters-network-apply');
+
+		$perfmatters_network = get_site_option('perfmatters_network');
+
+		if(!empty($perfmatters_network['default'])) {
+
+			$sites = array_map('get_object_vars', get_sites(array('deleted' => 0)));
+			if(is_array($sites) && $sites !== array()) {
+
+				$update_count = 0;
+
+				foreach($sites as $site) {
+					$apply = perfmatters_apply_defaults_to_blog($site['blog_id'], $perfmatters_network['default']);
+					if($apply) {
+						$update_count++;
+					}
+				}
+
+				if($update_count > 0) {
+					//default settings applied
+					echo "<div class='notice updated is-dismissible'><p>" . __('Default settings applied!', 'perfmatters') . "</p></div>";
+				}
+			}
+			else {
+				//no sites available
+				echo "<div class='notice error is-dismissible'><p>" . __('No available sites found.', 'perfmatters') . "</p></div>";
+			}
+		}
+		else {
+			//network default not set
+			echo "<div class='notice error is-dismissible'><p>" . __('Network Default not set.', 'perfmatters') . "</p></div>";
 		}
 	}
 
@@ -173,47 +197,51 @@ function perfmatters_network_page_callback() {
 		//hidden h2 for admin notice placement
 		echo "<h2 style='display: none;'></h2>";
 
-  		//Tab Navigation
-		echo "<h2 class='nav-tab-wrapper'>";
-			echo "<a href='?page=perfmatters&tab=network' class='nav-tab " . ($_GET['tab'] == 'network' ? 'nav-tab-active' : '') . "'>" . __('Network', 'perfmatters') . "</a>";
-			echo "<a href='?page=perfmatters&tab=license' class='nav-tab " . ($_GET['tab'] == 'license' ? 'nav-tab-active' : '') . "'>" . __('License', 'perfmatters') . "</a>";
-			echo "<a href='?page=perfmatters&tab=support' class='nav-tab " . ($_GET['tab'] == 'support' ? 'nav-tab-active' : '') . "'>" . __('Support', 'perfmatters') . "</a>";
-		echo "</h2>";
-
 		//Network Tab Content
 		if($_GET['tab'] == 'network') {
 
 	  		echo "<form method='POST' action='edit.php?action=perfmatters_update_network_options' style='overflow: hidden;'>";
 			    settings_fields('perfmatters_network');
-			    do_settings_sections('perfmatters_network');
+			    perfmatters_settings_section('perfmatters_network', 'perfmatters_network');
 			    submit_button();
 	  		echo "</form>";
 
-	  		echo "<form method='POST'>";
-	 
-	  			echo "<h2>" . __('Apply Default Settings', 'perfmatters') . "</h2>";
-	  			echo '<p class="perfmatters-subheading">' . __('Choose a site to apply the settings from your network default site.', 'perfmatters') . '</p>';
+	  		echo "<form method='POST' style='margin-top: 25px;'>";
+	  			echo '<div class="perfmatters-settings-section">';
+		  			echo "<h2>" . __('Apply Default Settings', 'perfmatters') . "</h2>";
 
-				wp_nonce_field('perfmatters-network-apply', '_wpnonce', true, true);
-				echo "<p>" . __('Select a site from the dropdown and click to apply the settings from your network default (above).', 'perfmatters') . "</p>";
+					wp_nonce_field('perfmatters-network-apply', '_wpnonce', true, true);
+					echo "<p>" . __('Select a site from the dropdown and click to apply the settings from your network default (above).', 'perfmatters') . "</p>";
 
-				echo "<select name='perfmatters_network_apply_blog'>";
-					$sites = array_map('get_object_vars', get_sites(array('deleted' => 0)));
-					if(is_array($sites) && $sites !== array()) {
-						echo "<option value=''>" . __('Select a Site', 'perfmatters') . "</option>";
-						foreach($sites as $site) {
-							echo "<option value='" . $site['blog_id'] . "'>" . $site['blog_id'] . ": " . $site['domain'] . $site['path'] . "</option>";
+					echo "<select name='perfmatters_network_apply_blog' style='margin-right: 10px;'>";
+						$sites = array_map('get_object_vars', get_sites(array('deleted' => 0)));
+						if(is_array($sites) && $sites !== array()) {
+							echo "<option value=''>" . __('Select a Site', 'perfmatters') . "</option>";
+							foreach($sites as $site) {
+								echo "<option value='" . $site['blog_id'] . "'>" . $site['blog_id'] . ": " . $site['domain'] . $site['path'] . "</option>";
+							}
 						}
-					}
-				echo "<select>";
+					echo "</select>";
 
-				echo "<input type='submit' name='perfmatters_apply_defaults' value='" . __('Apply Default Settings', 'perfmatters') . "' class='button' />";
+					echo "<input type='submit' name='perfmatters_apply_defaults' value='" . __('Apply Default Settings', 'perfmatters') . "' class='button' />";
+
+					echo "<br />";
+
+					echo "<p>" . __('Apply the settings from your network default to all sites. Depending on the amount, this may take a while.', 'perfmatters') . "</p>";
+
+					echo "<input type='submit' name='perfmatters_apply_defaults_all' value='" . __('Apply Default Settings to All Sites', 'perfmatters') . "' class='button' onclick='return confirm(\"" . __('Are you sure? This will permanently overwrite all Perfmatters options for all subsites.', 'perfmatters') . "\");' />";
+				echo '</div>';
 			echo "</form>";
 		}
-		//License Tab Content
 		elseif($_GET['tab'] == 'license') {
-			//license custom form output
+
+			//license output
 			require_once('license.php');
+		}
+		elseif($_GET['tab'] == 'support') {
+
+			//support output
+			require_once('support.php');
 		}
 
 	echo "</div>";
@@ -244,3 +272,38 @@ function perfmatters_update_network_options() {
 	exit;
 }
 add_action('network_admin_edit_perfmatters_update_network_options',  'perfmatters_update_network_options');
+
+function perfmatters_apply_defaults_to_blog($blog_id, $network_default) {
+
+	$blog = get_blog_details($blog_id);
+
+	if($blog && !empty($network_default)) {
+
+		if($blog->blog_id != $network_default) {
+
+			$option_names = array(
+				'perfmatters_options',
+				'perfmatters_tools'
+			);
+
+			foreach($option_names as $option_name) {
+
+				//clear selected blog previous option
+				delete_blog_option($blog->blog_id, $option_name);
+
+				//grab new option from default blog
+				$new_option = get_blog_option($network_default, $option_name);
+
+				//remove options we don't want to copy
+				if($option_name == 'perfmatters_options') {
+					unset($new_option['cdn']['cdn_url']);
+				}
+
+				//update selected blog with default option
+				update_blog_option($blog->blog_id, $option_name, $new_option);
+			}
+			return true;
+		}
+	}
+	return false;	
+}

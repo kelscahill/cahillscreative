@@ -104,9 +104,13 @@ abstract class WC_Stripe_Payment_Gateway_Voucher extends WC_Stripe_Payment_Gatew
 	 * @since 5.8.0
 	 */
 	public function __construct() {
-		/* translators: link */
-		$this->method_description = sprintf( __( 'All other general Stripe settings can be adjusted <a href="%s">here</a>.', 'woocommerce-gateway-stripe' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ) );
-		$this->supports           = [
+		$this->method_description = sprintf(
+		/* translators: 1) HTML anchor open tag 2) HTML anchor closing tag */
+			__( 'All other general Stripe settings can be adjusted %1$shere%2$s ', 'woocommerce-gateway-stripe' ),
+			'<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ) ) . '">',
+			'</a>'
+		);
+		$this->supports = [
 			'products',
 		];
 
@@ -302,13 +306,19 @@ abstract class WC_Stripe_Payment_Gateway_Voucher extends WC_Stripe_Payment_Gatew
 			$intent_to_be_updated = '/' . $intent->id;
 		}
 
+		$body = [
+			'amount'               => WC_Stripe_Helper::get_stripe_amount( $amount, strtolower( $currency ) ),
+			'currency'             => strtolower( $currency ),
+			'payment_method_types' => [ $this->stripe_id ],
+			'description'          => __( 'stripe - Order', 'woocommerce-gateway-stripe' ) . ' ' . $order->get_id(),
+		];
+
+		if ( method_exists( $this, 'update_request_body_on_create_or_update_payment_intent' ) ) {
+			$body = $this->update_request_body_on_create_or_update_payment_intent( $body );
+		}
+
 		$payment_intent = WC_Stripe_API::request(
-			[
-				'amount'               => WC_Stripe_Helper::get_stripe_amount( $amount, strtolower( $currency ) ),
-				'currency'             => strtolower( $currency ),
-				'payment_method_types' => [ $this->stripe_id ],
-				'description'          => __( 'stripe - Order', 'woocommerce-gateway-stripe' ) . ' ' . $order->get_id(),
-			],
+			$body,
 			'payment_intents' . $intent_to_be_updated
 		);
 

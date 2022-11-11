@@ -76,7 +76,7 @@ class WPForms_Entries_Single {
 		$view = ! empty( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( $page !== 'wpforms-entries' || $view !== 'details' ) {
-		    return;
+			return;
 		}
 
 		$entry_id = isset( $_GET['entry_id'] ) ? absint( $_GET['entry_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
@@ -127,7 +127,7 @@ class WPForms_Entries_Single {
 
 		wp_enqueue_script(
 			'wpforms-admin-view-entry',
-			WPFORMS_PLUGIN_URL . "pro/assets/js/admin/view-entry{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/view-entry{$min}.js",
 			[ 'jquery' ],
 			WPFORMS_VERSION,
 			true
@@ -148,7 +148,7 @@ class WPForms_Entries_Single {
 			return;
 		}
 
-		_deprecated_function( __METHOD__, '1.5.5 of WPForms plugin', 'WPForms\Pro\Admin\Export\Export class' );
+		_deprecated_function( __METHOD__, '1.5.5 of the WPForms plugin', 'WPForms\Pro\Admin\Export\Export class' );
 
 		if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpforms_entry_details_export' ) ) {
 			return;
@@ -510,16 +510,19 @@ class WPForms_Entries_Single {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$entry = wpforms()->get( 'entry' )->get( absint( $_GET['entry_id'] ) );
 
-		// No entry was found, abort.
-		if ( ! $entry || empty( $entry ) ) {
+		// If entry exists.
+		if ( ! empty( $entry ) ) {
+			// Find the form information.
+			$form = wpforms()->get( 'form' )->get( $entry->form_id, [ 'cap' => 'view_entries_form_single' ] );
+		}
+
+		// No entry was found, no form was found, the Form is in the Trash.
+		if ( empty( $entry ) || empty( $form ) || $form->post_status === 'trash' ) {
 			$this->abort_message = esc_html__( 'It looks like the entry you are trying to access is no longer available.', 'wpforms' );
 			$this->abort         = true;
 
 			return;
 		}
-
-		// Find the form information.
-		$form = wpforms()->get( 'form' )->get( $entry->form_id, [ 'cap' => 'view_entries_form_single' ] );
 
 		// Form details.
 		$form_data      = wpforms_decode( $form->post_content );
@@ -647,7 +650,7 @@ class WPForms_Entries_Single {
 				<a href="<?php echo esc_url( $this->form->form_url ); ?>" class="add-new-h2 wpforms-btn-orange"><?php esc_html_e( 'Back to All Entries', 'wpforms' ); ?></a>
 
 				<div class="wpforms-entry-navigation">
-					<span class="wpforms-entry-navigation-text">
+					<div class="wpforms-entry-navigation-text">
 						<?php
 						printf(
 							/* translators: %1$d - current number of entry; %2$d - total number of entries. */
@@ -656,8 +659,8 @@ class WPForms_Entries_Single {
 							(int) $entry->entry_count
 						);
 						?>
-					</span>
-					<span class="wpforms-entry-navigation-buttons">
+					</div>
+					<div class="wpforms-entry-navigation-buttons">
 						<a
 								href="<?php echo esc_url( $entry->entry_prev_url ); ?>"
 								title="<?php esc_attr_e( 'Previous form entry', 'wpforms' ); ?>"
@@ -679,7 +682,7 @@ class WPForms_Entries_Single {
 								class=" add-new-h2 wpforms-btn-grey <?php echo sanitize_html_class( $entry->entry_next_class ); ?>">
 							<span class="dashicons dashicons-arrow-right-alt2"></span>
 						</a>
-					</span>
+					</div>
 				</div>
 
 			</h1>
@@ -780,7 +783,7 @@ class WPForms_Entries_Single {
 						$field_value  = apply_filters( 'wpforms_html_field_value', wp_strip_all_tags( $field_value ), $field, $form_data, 'entry-single' );
 						$field_class  = sanitize_html_class( 'wpforms-field-' . $field_type );
 						$field_class .= wpforms_is_empty_string( $field_value ) ? ' empty' : '';
-						$field_style  = $hide_empty && empty( $field_value ) ? 'display:none;' : '';
+						$field_style  = $hide_empty && wpforms_is_empty_string( $field_value ) ? 'display:none;' : '';
 
 						echo '<div class="wpforms-entry-field ' . wpforms_sanitize_classes( $field_class ) . '" style="' . esc_attr( $field_style ) . '">';
 
@@ -1048,6 +1051,13 @@ class WPForms_Entries_Single {
 			return;
 		}
 
+		/** This filter is documented in /includes/functions.php */
+		$allow_display = apply_filters( 'wpforms_debug_data_allow_display', true ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+
+		if ( ! $allow_display ) {
+			return;
+		}
+
 		?>
 		<!-- Entry Debug metabox -->
 		<div id="wpforms-entry-debug" class="postbox">
@@ -1259,28 +1269,32 @@ class WPForms_Entries_Single {
 
 		switch ( $entry_meta['payment_type'] ) {
 			case 'stripe':
-				$gateway = esc_html__( 'Stripe', 'wpforms' );
+				$gateway       = esc_html__( 'Stripe', 'wpforms' );
+				$dashboard_url = ! empty( $entry_meta['payment_mode'] ) && $entry_meta['payment_mode'] === 'test' ? 'https://dashboard.stripe.com/test/' : 'https://dashboard.stripe.com/';
+
 				if ( ! empty( $entry_meta['payment_transaction'] ) ) {
-					$transaction = sprintf( '<a href="https://dashboard.stripe.com/payments/%s" target="_blank" rel="noopener noreferrer">%s</a>', $entry_meta['payment_transaction'], $entry_meta['payment_transaction'] );
+					$transaction = sprintf( '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>', esc_url( $dashboard_url . 'payments/' . $entry_meta['payment_transaction'] ), $entry_meta['payment_transaction'] );
 				}
 				if ( ! empty( $entry_meta['payment_subscription'] ) ) {
-					$subscription = sprintf( '<a href="https://dashboard.stripe.com/subscriptions/%s" target="_blank" rel="noopener noreferrer">%s</a>', $entry_meta['payment_subscription'], $entry_meta['payment_subscription'] );
+					$subscription = sprintf( '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>', esc_url( $dashboard_url . 'subscriptions/' . $entry_meta['payment_subscription'] ), $entry_meta['payment_subscription'] );
 				}
 				if ( ! empty( $entry_meta['payment_customer'] ) ) {
-					$customer = sprintf( '<a href="https://dashboard.stripe.com/customers/%s" target="_blank" rel="noopener noreferrer">%s</a>', $entry_meta['payment_customer'], $entry_meta['payment_customer'] );
+					$customer = sprintf( '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>', esc_url( $dashboard_url . 'customers/' . $entry_meta['payment_customer'] ), $entry_meta['payment_customer'] );
 				}
 				if ( ! empty( $entry_meta['payment_period'] ) ) {
 					$total .= ' <span style="font-weight:400; color:#999; display:inline-block;margin-left:4px;"><i class="fa fa-refresh" aria-hidden="true"></i> ' . $entry_meta['payment_period'] . '</span>';
 				}
 				break;
+
 			case 'paypal_standard':
 				$gateway = esc_html__( 'PayPal Standard', 'wpforms' );
 				if ( ! empty( $entry_meta['payment_transaction'] ) ) {
 					$type = 'production' === $mode ? '' : 'sandbox.';
-					$transaction = sprintf( '<a href="https://www.%spaypal.com/webscr?cmd=_history-details-from-hub&id=%s" target="_blank" rel="noopener noreferrer">%s</a>', $type, $entry_meta['payment_transaction'], $entry_meta['payment_transaction'] );
+					$transaction = sprintf( '<a href="https://www.%spaypal.com/activity/payment/%s" target="_blank" rel="noopener noreferrer">%s</a>', $type, $entry_meta['payment_transaction'], $entry_meta['payment_transaction'] );
 				}
 				break;
 		}
+
 		?>
 
 		<!-- Entry Payment details metabox -->
@@ -1647,7 +1661,7 @@ class WPForms_Entries_Single {
 	 */
 	public function display_alerts( $display = '', $wrap = false ) {
 
-		_deprecated_function( __METHOD__, '1.6.7.1 of WPForms plugin' );
+		_deprecated_function( __METHOD__, '1.6.7.1 of the WPForms plugin' );
 
 		if ( empty( $this->alerts ) ) {
 			return;

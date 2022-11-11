@@ -57,11 +57,15 @@ class WC_Gateway_Stripe_Multibanco extends WC_Stripe_Payment_Gateway {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->id           = 'stripe_multibanco';
-		$this->method_title = __( 'Stripe Multibanco', 'woocommerce-gateway-stripe' );
-		/* translators: link */
-		$this->method_description = sprintf( __( 'All other general Stripe settings can be adjusted <a href="%s">here</a>.', 'woocommerce-gateway-stripe' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ) );
-		$this->supports           = [
+		$this->id                 = 'stripe_multibanco';
+		$this->method_title       = __( 'Stripe Multibanco', 'woocommerce-gateway-stripe' );
+		$this->method_description = sprintf(
+		/* translators: 1) HTML anchor open tag 2) HTML anchor closing tag */
+			__( 'All other general Stripe settings can be adjusted %1$shere%2$s.', 'woocommerce-gateway-stripe' ),
+			'<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ) ) . '">',
+			'</a>'
+		);
+		$this->supports = [
 			'products',
 			'refunds',
 		];
@@ -222,7 +226,7 @@ class WC_Gateway_Stripe_Multibanco extends WC_Stripe_Payment_Gateway {
 		if ( ! $sent_to_admin && 'stripe_multibanco' === $payment_method && $order->has_status( 'on-hold' ) ) {
 			WC_Stripe_Logger::log( 'Sending multibanco email for order #' . $order_id );
 
-			$this->get_instructions( $order_id, $plain_text );
+			$this->get_instructions( $order, $plain_text );
 		}
 	}
 
@@ -231,10 +235,14 @@ class WC_Gateway_Stripe_Multibanco extends WC_Stripe_Payment_Gateway {
 	 *
 	 * @since 4.1.0
 	 * @version 4.1.0
-	 * @param int $order_id
+	 * @param int|WC_Order $order
 	 */
-	public function get_instructions( $order_id, $plain_text = false ) {
-		$data = get_post_meta( $order_id, '_stripe_multibanco', true );
+	public function get_instructions( $order, $plain_text = false ) {
+		if ( true === is_int( $order ) ) {
+			$order = wc_get_order( $order );
+		}
+
+		$data = $order->get_meta( '_stripe_multibanco' );
 
 		if ( $plain_text ) {
 			esc_html_e( 'MULTIBANCO INFORMAÇÕES DE ENCOMENDA:', 'woocommerce-gateway-stripe' ) . "\n\n";
@@ -285,7 +293,7 @@ class WC_Gateway_Stripe_Multibanco extends WC_Stripe_Payment_Gateway {
 
 		$order_id = $order->get_id();
 
-		update_post_meta( $order_id, '_stripe_multibanco', $data );
+		$order->update_meta_data( '_stripe_multibanco', $data );
 	}
 
 	/**

@@ -372,13 +372,13 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 		initElements: function() {
 
 			el = {
-				$challenge: $( '.wpforms-challenge' ),
-				$btnPause: $( '.wpforms-challenge-pause' ),
-				$btnResume: $( '.wpforms-challenge-resume' ),
-				$listSteps: $( '.wpforms-challenge-list' ),
-				$listBlock: $( '.wpforms-challenge-list-block' ),
+				$challenge:     $( '.wpforms-challenge' ),
+				$btnPause:      $( '.wpforms-challenge-pause' ),
+				$btnResume:     $( '.wpforms-challenge-resume' ),
+				$listSteps:     $( '.wpforms-challenge-list' ),
+				$listBlock:     $( '.wpforms-challenge-list-block' ),
 				$listBtnToggle: $( '.wpforms-challenge-list-block .toggle-list' ),
-				$progressBar: $( '.wpforms-challenge-bar' ),
+				$progressBar:   $( '.wpforms-challenge-bar' ),
 				$tooltipBtnDone: function() {
 					return $( '.wpforms-challenge-tooltip .wpforms-challenge-done-btn' );
 				},
@@ -415,7 +415,7 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 		},
 
 		/**
-		 * Update a step with backend data..
+		 * Update a step with backend data.
 		 *
 		 * @since 1.5.0
 		 */
@@ -479,6 +479,8 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 					// Custom positioning.
 					if ( step === 4 || step === 3 ) {
 						instance.option( 'side', 'right' );
+					} else if ( step === 1 ) {
+						instance.option( 'side', 'left' );
 					}
 
 					// Reposition is needed to render max-width CSS correctly.
@@ -538,7 +540,7 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 		/**
 		 * Init ListUI.
 		 *
-		 * @since {vERSION}
+		 * @since 1.6.2
 		 *
 		 * @param {number|string} status  Challenge status.
 		 * @param {boolean}       initial Initial run, false by default.
@@ -603,8 +605,8 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 
 			step = step || app.loadStep();
 
-			el.$listSteps.find( 'li:lt(' + step + ')' ).addClass( 'wpforms-challenge-item-completed' );
-			el.$listSteps.find( 'li:eq(' + step + ')' ).addClass( 'wpforms-challenge-item-current' );
+			el.$listSteps.find( 'li' ).slice( 0, step ).addClass( 'wpforms-challenge-item-completed' ).removeClass( 'wpforms-challenge-item-current' );
+			el.$listSteps.find( 'li' ).eq( step ).addClass( 'wpforms-challenge-item-current' );
 			el.$progressBar.find( 'div' ).css( 'width', ( step * 20 ) + '%' );
 		},
 
@@ -677,6 +679,8 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 		 * @since 1.6.2
 		 *
 		 * @param {object} e Event object.
+		 *
+		 * @returns {Function|void} Return pause challenge function or void.
 		 */
 		resumeChallenge: function( e ) {
 
@@ -693,7 +697,7 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 
 			vars.resumeEvent = e.type;
 
-			app.pauseResumeChallenge( 'resume' );
+			return app.pauseResumeChallenge( 'resume' );
 		},
 
 		/**
@@ -702,6 +706,8 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 		 * @since 1.6.2
 		 *
 		 * @param {string} action Action to perform. `pause` or `resume`.
+		 *
+		 * @returns {Function} Save challenge option.
 		 */
 		pauseResumeChallenge: function( action ) {
 
@@ -715,9 +721,38 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 				seconds_left : app.timer.getSecondsLeft(),
 			};
 
-			WPFormsChallenge.admin.saveChallengeOption( optionData );
-
 			app.initListUI( optionData.status );
+
+			return WPFormsChallenge.admin.saveChallengeOption( optionData );
+		},
+
+		/**
+		 * Resume Challenge and execute the callback.
+		 *
+		 * @since 1.7.5
+		 *
+		 * @param {object}   e        Event object.
+		 * @param {Function} callback Callback function.
+		 */
+		resumeChallengeAndExec: function( e, callback ) {
+
+			if ( typeof callback !== 'function' ) {
+				callback = function() {};
+			}
+
+			if ( wpforms_challenge_admin.option.status !== 'paused' ) {
+				callback();
+
+				return;
+			}
+
+			var resumeResult = app.resumeChallenge( e );
+
+			if ( typeof resumeResult === 'object' && typeof resumeResult.done === 'function' ) {
+				resumeResult.done( callback );
+			} else {
+				callback();
+			}
 		},
 
 		/**
@@ -776,7 +811,7 @@ WPFormsChallenge.core = window.WPFormsChallenge.core || ( function( document, wi
 				return;
 			}
 
-			// Use MutationObserver to wait while Guttenberg create/display panel with Publish button.
+			// Use MutationObserver to wait while Gutenberg create/display panel with Publish button.
 			var obs = {
 				targetNode  : $gb.find( '.edit-post-layout, .block-editor-editor-skeleton__publish > div' )[0],
 				config      : {

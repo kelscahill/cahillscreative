@@ -1,27 +1,26 @@
 <?php
 $perfmatters_options = get_option('perfmatters_options');
-$perfmatters_cdn = get_option('perfmatters_cdn');
-$perfmatters_ga = get_option('perfmatters_ga');
-$perfmatters_extras = get_option('perfmatters_extras');
+$perfmatters_tools = get_option('perfmatters_tools');
 
 /* Options Actions + Filters
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_emojis']) && $perfmatters_options['disable_emojis'] == "1") {
+if(!empty($perfmatters_options['disable_emojis'])) {
 	add_action('init', 'perfmatters_disable_emojis');
 }
-if(!empty($perfmatters_options['disable_embeds']) && $perfmatters_options['disable_embeds'] == "1") {
+if(!empty($perfmatters_options['disable_embeds'])) {
 	add_action('init', 'perfmatters_disable_embeds', 9999);
-}
-if(!empty($perfmatters_options['remove_query_strings']) && $perfmatters_options['remove_query_strings'] == "1") {
-	add_action('init', 'perfmatters_remove_query_strings');
 }
 
 /* Disable XML-RPC
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_xmlrpc']) && $perfmatters_options['disable_xmlrpc'] == "1") {
+if(!empty($perfmatters_options['disable_xmlrpc'])) {
 	add_filter('xmlrpc_enabled', '__return_false');
 	add_filter('wp_headers', 'perfmatters_remove_x_pingback');
 	add_filter('pings_open', '__return_false', 9999);
+	add_filter('pre_update_option_enable_xmlrpc', '__return_false');
+	add_filter('pre_option_enable_xmlrpc', '__return_zero');
+	add_filter('perfmatters_output_buffer_template_redirect', 'perfmatters_remove_pingback_links', 2);
+	add_action('init', 'perfmatters_intercept_xmlrpc_header');
 }
 
 function perfmatters_remove_x_pingback($headers) {
@@ -29,30 +28,56 @@ function perfmatters_remove_x_pingback($headers) {
     return $headers;
 }
 
-if(!empty($perfmatters_options['remove_jquery_migrate']) && $perfmatters_options['remove_jquery_migrate'] == "1") {
+function perfmatters_remove_pingback_links($html) {
+	preg_match_all('#<link[^>]+rel=["\']pingback["\'][^>]+?\/?>#is', $html, $links, PREG_SET_ORDER);
+	if(!empty($links)) {
+		foreach($links as $link) {
+			$html = str_replace($link[0], "", $html);
+		}
+	}
+	return $html;
+}
+
+function perfmatters_intercept_xmlrpc_header() {
+	if(!isset($_SERVER['SCRIPT_FILENAME'])) {
+		return;
+	}
+	
+	//direct requests only
+	if('xmlrpc.php' !== basename($_SERVER['SCRIPT_FILENAME'])) {
+		return;
+	}
+
+	$header = 'HTTP/1.1 403 Forbidden';
+	header($header);
+	echo $header;
+	die();
+}
+
+if(!empty($perfmatters_options['remove_jquery_migrate']) && !perfmatters_is_page_builder()) {
 	add_filter('wp_default_scripts', 'perfmatters_remove_jquery_migrate');
 }
-if(!empty($perfmatters_options['hide_wp_version']) && $perfmatters_options['hide_wp_version'] == "1") {
+if(!empty($perfmatters_options['hide_wp_version'])) {
 	remove_action('wp_head', 'wp_generator');
 	add_filter('the_generator', 'perfmatters_hide_wp_version');
 }
-if(!empty($perfmatters_options['remove_wlwmanifest_link']) && $perfmatters_options['remove_wlwmanifest_link'] == "1") {
+if(!empty($perfmatters_options['remove_wlwmanifest_link'])) {
 	remove_action('wp_head', 'wlwmanifest_link');
 }
-if(!empty($perfmatters_options['remove_rsd_link']) && $perfmatters_options['remove_rsd_link'] == "1") {
+if(!empty($perfmatters_options['remove_rsd_link'])) {
 	remove_action('wp_head', 'rsd_link');
 }
 
 /* Remove Shortlink
 /***********************************************************************/
-if(!empty($perfmatters_options['remove_shortlink']) && $perfmatters_options['remove_shortlink'] == "1") {
+if(!empty($perfmatters_options['remove_shortlink'])) {
 	remove_action('wp_head', 'wp_shortlink_wp_head');
 	remove_action ('template_redirect', 'wp_shortlink_header', 11, 0);
 }
 
 /* Disable RSS Feeds
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_rss_feeds']) && $perfmatters_options['disable_rss_feeds'] == "1") {
+if(!empty($perfmatters_options['disable_rss_feeds'])) {
 	add_action('template_redirect', 'perfmatters_disable_rss_feeds', 1);
 }
 
@@ -84,14 +109,14 @@ function perfmatters_disable_rss_feeds() {
 
 /* Remove RSS Feed Links
 /***********************************************************************/
-if(!empty($perfmatters_options['remove_feed_links']) && $perfmatters_options['remove_feed_links'] == "1") {
+if(!empty($perfmatters_options['remove_feed_links'])) {
 	remove_action('wp_head', 'feed_links', 2);
 	remove_action('wp_head', 'feed_links_extra', 3);
 }
 
 /* Disable Self Pingbacks
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_self_pingbacks']) && $perfmatters_options['disable_self_pingbacks'] == "1") {
+if(!empty($perfmatters_options['disable_self_pingbacks'])) {
 	add_action('pre_ping', 'perfmatters_disable_self_pingbacks');
 }
 
@@ -122,8 +147,15 @@ function perfmatters_rest_authentication_errors($result) {
 		$rest_route = $GLOBALS['wp']->query_vars['rest_route'];
 
 		//check rest route for exceptions
-		if(strpos($rest_route, 'contact-form-7') !== false) {
-			return;
+		$exceptions = apply_filters('perfmatters_rest_api_exceptions', array(
+			'contact-form-7',
+			'wordfence',
+			'elementor'
+		));
+		foreach($exceptions as $exception) {
+			if(strpos($rest_route, $exception) !== false) {
+				return;
+			}
 		}
 
 		//check settings
@@ -142,7 +174,7 @@ function perfmatters_rest_authentication_errors($result) {
 
 /* Remove REST API Links
 /***********************************************************************/
-if(!empty($perfmatters_options['remove_rest_api_links']) && $perfmatters_options['remove_rest_api_links'] == "1") {
+if(!empty($perfmatters_options['remove_rest_api_links'])) {
 	remove_action('xmlrpc_rsd_apis', 'rest_output_rsd');
 	remove_action('wp_head', 'rest_output_link_wp_head');
 	remove_action('template_redirect', 'rest_output_link_header', 11, 0);
@@ -150,11 +182,34 @@ if(!empty($perfmatters_options['remove_rest_api_links']) && $perfmatters_options
 
 /* Disable Google Maps
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_google_maps']) && $perfmatters_options['disable_google_maps'] == "1") {
+if(!empty($perfmatters_options['disable_google_maps'])) {
 	add_action('template_redirect', 'perfmatters_disable_google_maps');
 }
 
 function perfmatters_disable_google_maps() {
+
+	global $perfmatters_options;
+
+	if(!empty($perfmatters_options['disable_google_maps_exclusions'])) {
+
+		$exploded = explode(',', $perfmatters_options['disable_google_maps_exclusions']);
+		$trimmed = array_map('trim', $exploded);
+
+		//single post exclusion
+		if(is_singular()) {
+			global $post;
+
+			if(in_array($post->ID, $trimmed)) {
+				return;
+			}
+		}
+
+		//posts page exclusion
+		if(is_home() && in_array('blog', $trimmed)) {
+			return;
+		}
+	}
+
 	ob_start('perfmatters_disable_google_maps_regex');
 }
 
@@ -165,7 +220,7 @@ function perfmatters_disable_google_maps_regex($html) {
 
 /* Disable Google Fonts
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_google_fonts']) && $perfmatters_options['disable_google_fonts'] == "1") {
+if(!empty($perfmatters_options['fonts']['disable_google_fonts'])) {
 	add_action('template_redirect', 'perfmatters_disable_google_fonts');
 }
 
@@ -180,7 +235,7 @@ function perfmatters_disable_google_fonts_regex($html) {
 
 /* Disable Password Strength Meter
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_password_strength_meter']) && $perfmatters_options['disable_password_strength_meter'] == "1") {
+if(!empty($perfmatters_options['disable_password_strength_meter'])) {
 	add_action('wp_print_scripts', 'perfmatters_disable_password_strength_meter', 100);
 }
 
@@ -213,7 +268,7 @@ function perfmatters_disable_password_strength_meter() {
 
 /* Disable Comments
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_comments']) && $perfmatters_options['disable_comments'] == "1") {
+if(!empty($perfmatters_options['disable_comments'])) {
 
 	//Disable Built-in Recent Comments Widget
 	add_action('widgets_init', 'perfmatters_disable_recent_comments_widget');
@@ -380,7 +435,7 @@ function perfmatters_blank_comments_template() {
 
 /* Remove Comment URLs
 /***********************************************************************/
-if(!empty($perfmatters_options['remove_comment_urls']) && $perfmatters_options['remove_comment_urls'] == "1") {
+if(!empty($perfmatters_options['remove_comment_urls'])) {
 	add_filter('get_comment_author_link', 'perfmatters_remove_comment_author_link', 10, 3);
 	add_filter('get_comment_author_url', 'perfmatters_remove_comment_author_url');
 	add_filter('comment_form_default_fields', 'perfmatters_remove_website_field', 9999);
@@ -401,7 +456,7 @@ function perfmatters_remove_website_field($fields) {
 
 /* Disable Dashicons
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_dashicons']) && $perfmatters_options['disable_dashicons'] == "1") {
+if(!empty($perfmatters_options['disable_dashicons'])) {
 	add_action('wp_enqueue_scripts', 'perfmatters_disable_dashicons');
 }
 
@@ -414,41 +469,61 @@ function perfmatters_disable_dashicons() {
 
 /* Disable WooCommerce Scripts
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_woocommerce_scripts']) && $perfmatters_options['disable_woocommerce_scripts'] == "1") {
+if(!empty($perfmatters_options['disable_woocommerce_scripts'])) {
 	add_action('wp_enqueue_scripts', 'perfmatters_disable_woocommerce_scripts', 99);
 }
 
 function perfmatters_disable_woocommerce_scripts() {
 	if(function_exists('is_woocommerce')) {
+
+		if(!apply_filters('perfmatters_disable_woocommerce_scripts', true)) {
+			return;
+		}
+
 		if(!is_woocommerce() && !is_cart() && !is_checkout() && !is_account_page() && !is_product() && !is_product_category() && !is_shop()) {
+
 			global $perfmatters_options;
 			
 			//Dequeue WooCommerce Styles
-			wp_dequeue_style('woocommerce-general');
-			wp_dequeue_style('woocommerce-layout');
-			wp_dequeue_style('woocommerce-smallscreen');
-			wp_dequeue_style('woocommerce_frontend_styles');
-			wp_dequeue_style('woocommerce_fancybox_styles');
-			wp_dequeue_style('woocommerce_chosen_styles');
-			wp_dequeue_style('woocommerce_prettyPhoto_css');
-			wp_dequeue_style('woocommerce-inline');
+			$styles = array(
+				'woocommerce-general',
+				'woocommerce-layout',
+				'woocommerce-smallscreen',
+				'woocommerce_frontend_styles',
+				'woocommerce_fancybox_styles',
+				'woocommerce_chosen_styles',
+				'woocommerce_prettyPhoto_css',
+				'woocommerce-inline',
+				'wc-blocks-style',
+				'wc-blocks-vendors-style'
+			);
+			foreach($styles as $style) {
+				wp_dequeue_style($style);
+				wp_deregister_style($style);
+			}
 
 			//Dequeue WooCommerce Scripts
-			wp_dequeue_script('wc_price_slider');
-			wp_dequeue_script('wc-single-product');
-			wp_dequeue_script('wc-add-to-cart');
-			wp_dequeue_script('wc-checkout');
-			wp_dequeue_script('wc-add-to-cart-variation');
-			wp_dequeue_script('wc-single-product');
-			wp_dequeue_script('wc-cart');
-			wp_dequeue_script('wc-chosen');
-			wp_dequeue_script('woocommerce');
-			wp_dequeue_script('prettyPhoto');
-			wp_dequeue_script('prettyPhoto-init');
-			wp_dequeue_script('jquery-blockui');
-			wp_dequeue_script('jquery-placeholder');
-			wp_dequeue_script('fancybox');
-			wp_dequeue_script('jqueryui');
+			$scripts = array(
+				'wc_price_slider',
+				'wc-single-product',
+				'wc-add-to-cart',
+				'wc-checkout',
+				'wc-add-to-cart-variation',
+				'wc-single-product',
+				'wc-cart',
+				'wc-chosen',
+				'woocommerce',
+				'prettyPhoto',
+				'prettyPhoto-init',
+				'jquery-blockui',
+				'jquery-placeholder',
+				'fancybox',
+				'jqueryui'
+			);
+			foreach($scripts as $script) {
+				wp_dequeue_script($script);
+				wp_deregister_script($script);
+			}
 
 			//Remove no-js Script + Body Class
 			add_filter('body_class', function($classes) {
@@ -458,7 +533,7 @@ function perfmatters_disable_woocommerce_scripts() {
 			},10, 1);
 
 			//Dequue Cart Fragmentation Script
-			if(empty($perfmatters_options['disable_woocommerce_cart_fragmentation']) || $perfmatters_options['disable_woocommerce_cart_fragmentation'] == "0") {
+			if(empty($perfmatters_options['disable_woocommerce_cart_fragmentation'])) {
 				wp_dequeue_script('wc-cart-fragments');
 				wp_deregister_script('wc-cart-fragments');
 			}
@@ -468,7 +543,7 @@ function perfmatters_disable_woocommerce_scripts() {
 
 /* Disable WooCommerce Cart Fragmentation
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_woocommerce_cart_fragmentation']) && $perfmatters_options['disable_woocommerce_cart_fragmentation'] == "1") {
+if(!empty($perfmatters_options['disable_woocommerce_cart_fragmentation'])) {
 	add_action('wp_enqueue_scripts', 'perfmatters_disable_woocommerce_cart_fragmentation', 99);
 }
 
@@ -481,7 +556,7 @@ function perfmatters_disable_woocommerce_cart_fragmentation() {
 
 /* Disable WooCommerce Status Meta Box
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_woocommerce_status']) && $perfmatters_options['disable_woocommerce_status'] == "1") {
+if(!empty($perfmatters_options['disable_woocommerce_status'])) {
 	add_action('wp_dashboard_setup', 'perfmatters_disable_woocommerce_status');
 }
 
@@ -491,7 +566,7 @@ function perfmatters_disable_woocommerce_status() {
 
 /* Disable WooCommerce Widgets
 /***********************************************************************/
-if(!empty($perfmatters_options['disable_woocommerce_widgets']) && $perfmatters_options['disable_woocommerce_widgets'] == "1") {
+if(!empty($perfmatters_options['disable_woocommerce_widgets'])) {
 	add_action('widgets_init', 'perfmatters_disable_woocommerce_widgets', 99);
 }
 function perfmatters_disable_woocommerce_widgets() {
@@ -507,7 +582,7 @@ function perfmatters_disable_woocommerce_widgets() {
 	unregister_widget('WC_Widget_Product_Search');
 	unregister_widget('WC_Widget_Recently_Viewed');
 
-	if(empty($perfmatters_options['disable_woocommerce_reviews']) || $perfmatters_options['disable_woocommerce_reviews'] == "0") {
+	if(empty($perfmatters_options['disable_woocommerce_reviews'])) {
 		unregister_widget('WC_Widget_Recent_Reviews');
 		unregister_widget('WC_Widget_Top_Rated_Products');
 		unregister_widget('WC_Widget_Rating_Filter');
@@ -520,7 +595,9 @@ if(!empty($perfmatters_options['limit_post_revisions'])) {
 	if(defined('WP_POST_REVISIONS')) {
 		add_action('admin_notices', 'perfmatters_admin_notice_post_revisions');
 	}
-	define('WP_POST_REVISIONS', $perfmatters_options['limit_post_revisions']);
+	else {
+		define('WP_POST_REVISIONS', $perfmatters_options['limit_post_revisions']);
+	}
 }
 
 function perfmatters_admin_notice_post_revisions() {
@@ -538,7 +615,9 @@ if(!empty($perfmatters_options['autosave_interval'])) {
 	if(defined('AUTOSAVE_INTERVAL')) {
 		add_action('admin_notices', 'perfmatters_admin_notice_autosave_interval');
 	}
-	define('AUTOSAVE_INTERVAL', $perfmatters_options['autosave_interval']);
+	else {
+		define('AUTOSAVE_INTERVAL', $perfmatters_options['autosave_interval']);
+	}
 }
 
 function perfmatters_admin_notice_autosave_interval() {
@@ -561,7 +640,6 @@ function perfmatters_disable_emojis() {
 	remove_filter('comment_text_rss', 'wp_staticize_emoji');	
 	remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
 	add_filter('tiny_mce_plugins', 'perfmatters_disable_emojis_tinymce');
-	add_filter('wp_resource_hints', 'perfmatters_disable_emojis_dns_prefetch', 10, 2);
 	add_filter('emoji_svg_url', '__return_false');
 }
 
@@ -573,27 +651,18 @@ function perfmatters_disable_emojis_tinymce($plugins) {
 	}
 }
 
-function perfmatters_disable_emojis_dns_prefetch( $urls, $relation_type ) {
-	if('dns-prefetch' == $relation_type) {
-		$emoji_svg_url = apply_filters('emoji_svg_url', 'https://s.w.org/images/core/emoji/2.2.1/svg/');
-		$urls = array_diff($urls, array($emoji_svg_url));
-	}
-	return $urls;
-}
-
 /* Disable Embeds
 /***********************************************************************/
 function perfmatters_disable_embeds() {
 	global $wp;
-	$wp->public_query_vars = array_diff($wp->public_query_vars, array('embed',));
-	remove_action( 'rest_api_init', 'wp_oembed_register_route' );
-	add_filter( 'embed_oembed_discover', '__return_false' );
-	remove_filter( 'oembed_dataparse', 'wp_filter_oembed_result', 10 );
-	remove_action( 'wp_head', 'wp_oembed_add_discovery_links' );
-	remove_action( 'wp_head', 'wp_oembed_add_host_js' );
-	add_filter( 'tiny_mce_plugins', 'perfmatters_disable_embeds_tiny_mce_plugin' );
-	add_filter( 'rewrite_rules_array', 'perfmatters_disable_embeds_rewrites' );
-	remove_filter( 'pre_oembed_result', 'wp_filter_pre_oembed_result', 10 );
+	$wp->public_query_vars = array_diff($wp->public_query_vars, array('embed'));
+	add_filter('embed_oembed_discover', '__return_false');
+	remove_filter('oembed_dataparse', 'wp_filter_oembed_result', 10);
+	remove_action('wp_head', 'wp_oembed_add_discovery_links');
+	remove_action('wp_head', 'wp_oembed_add_host_js');
+	add_filter('tiny_mce_plugins', 'perfmatters_disable_embeds_tiny_mce_plugin');
+	add_filter('rewrite_rules_array', 'perfmatters_disable_embeds_rewrites');
+	remove_filter('pre_oembed_result', 'wp_filter_pre_oembed_result', 10);
 }
 
 function perfmatters_disable_embeds_tiny_mce_plugin($plugins) {
@@ -607,27 +676,6 @@ function perfmatters_disable_embeds_rewrites($rules) {
 		}
 	}
 	return $rules;
-}
-
-/* Remove Query Strings
-/***********************************************************************/
-function perfmatters_remove_query_strings() {
-	if(!is_admin()) {
-		add_filter('script_loader_src', 'perfmatters_remove_query_strings_split', 15);
-		add_filter('style_loader_src', 'perfmatters_remove_query_strings_split', 15);
-	}
-}
-
-function perfmatters_remove_query_strings_split($src) {
-
-	//keep query strings on script manager js
-	if(strpos($src, '/perfmatters/js/script-manager.js')) {
-		return $src;
-	}
-
-	//strip query strings
-	$output = preg_split("/(&ver|\?ver)/", $src);
-	return $output[0];
 }
 
 /* Remove jQuery Migrate
@@ -656,16 +704,25 @@ function perfmatters_disable_heartbeat() {
 	//check for exception pages in admin
 	if(is_admin()) {
 		global $pagenow;
-		if(!empty($pagenow) && in_array($pagenow, array('admin.php'))) {
-			if(!empty($_GET['page'])) {
-				$exceptions = array(
-					'gf_edit_forms',
-					'gf_entries',
-					'gf_settings'
-				);
-				if(in_array($_GET['page'], $exceptions)) {
-					return;
+		if(!empty($pagenow)) {
+
+			//admin checks
+			if($pagenow == 'admin.php') {
+				if(!empty($_GET['page'])) {
+					$exceptions = array(
+						'gf_edit_forms',
+						'gf_entries',
+						'gf_settings'
+					);
+					if(in_array($_GET['page'], $exceptions)) {
+						return;
+					}
 				}
+			}
+
+			//site health check
+			if($pagenow == 'site-health.php') {
+				return;
 			}
 		}
 	}
@@ -712,8 +769,8 @@ function perfmatters_heartbeat_frequency($settings) {
 /***********************************************************************/
 $perfmatters_wp_login = false;
 
-if(!empty($perfmatters_options['login_url']) && !defined('WP_CLI')) {
-	add_action('plugins_loaded', 'perfmatters_plugins_loaded', 2);
+if(!empty($perfmatters_options['login_url'])) {
+	add_action('plugins_loaded', 'perfmatters_login_url_plugins_loaded', 2);
 	add_action('wp_loaded', 'perfmatters_wp_loaded');
 	add_action('setup_theme', 'perfmatters_disable_customize_php', 1);
 	add_filter('site_url', 'perfmatters_site_url', 10, 4);
@@ -750,6 +807,9 @@ function perfmatters_filter_wp_login($url, $scheme = null) {
 		$query_string = explode('?', $url);
 		if(isset($query_string[1])) {
 			parse_str($query_string[1], $query_string);
+			if(isset($query_string['login'])) {
+				$query_string['login'] = rawurlencode($query_string['login']);
+			}
 			$url = add_query_arg($query_string, perfmatters_login_url($scheme));
 		} 
 		else {
@@ -785,8 +845,7 @@ function perfmatters_trailingslashit($string) {
 
 function perfmatters_login_slug() {
 
-	//Declare Global Variable
-	global $perfmatters_options;
+	$perfmatters_options = get_option('perfmatters_options');
 
 	//Return Login URL Slug if Available
 	if(!empty($perfmatters_options['login_url'])) {
@@ -794,7 +853,7 @@ function perfmatters_login_slug() {
 	} 
 }
 
-function perfmatters_plugins_loaded() {
+function perfmatters_login_url_plugins_loaded() {
 
 	//Declare Global Variables
 	global $pagenow;
@@ -815,6 +874,16 @@ function perfmatters_plugins_loaded() {
 		$_SERVER['REQUEST_URI'] = perfmatters_trailingslashit('/' . str_repeat('-/', 10));
 		$pagenow = 'index.php';
 	} 
+	//wp-register.php
+	elseif(!is_admin() && (strpos(rawurldecode($_SERVER['REQUEST_URI']), 'wp-register.php') !== false || strpos(rawurldecode($_SERVER['REQUEST_URI']), 'wp-signup.php') !== false || $path === site_url('wp-register', 'relative'))) {
+
+		//Set Flag
+		$perfmatters_wp_login = true;
+
+		//Prevent Redirect to Hidden Login
+		$_SERVER['REQUEST_URI'] = perfmatters_trailingslashit('/' . str_repeat('-/', 10));
+		$pagenow = 'index.php';
+	}
 	//Hidden Login URL
 	elseif($path === home_url($slug, 'relative') || (!get_option('permalink_structure') && isset($_GET[$slug]) && empty($_GET[$slug]))) {
 		
@@ -833,8 +902,8 @@ function perfmatters_wp_loaded() {
 	$URI = parse_url($_SERVER['REQUEST_URI']);
 
 	//Disable Normal WP-Admin
-	if(is_admin() && !is_user_logged_in() && !defined('DOING_AJAX') && $pagenow !== 'admin-post.php' && (isset($_GET) && empty($_GET['adminhash']) && empty($_GET['newuseremail']))) {
-        wp_die(__('This has been disabled.', 'perfmatters'), 403);
+	if(is_admin() && !is_user_logged_in() && !defined('WP_CLI') && !defined('DOING_AJAX') && $pagenow !== 'admin-post.php' && (isset($_GET) && empty($_GET['adminhash']) && empty($_GET['newuseremail']))) {
+		perfmatters_disable_login_url();
 	}
 
 	//Requesting Hidden Login Form - Path Mismatch
@@ -847,7 +916,7 @@ function perfmatters_wp_loaded() {
 	}
 	//Requesting wp-login.php Directly, Disabled
 	elseif($perfmatters_wp_login) {
-		wp_die(__('This has been disabled.', 'perfmatters'), 403);
+		perfmatters_disable_login_url();
 	} 
 	//Requesting Hidden Login Form
 	elseif($pagenow === 'wp-login.php') {
@@ -874,7 +943,7 @@ function perfmatters_disable_customize_php() {
 
 	//Disable customize.php from Redirecting to Login URL
 	if(!is_user_logged_in() && $pagenow === 'customize.php') {
-		wp_die(__('This has been disabled.', 'perfmatters'), 403);
+		perfmatters_disable_login_url();
 	}
 }
 
@@ -911,19 +980,55 @@ function perfmatters_admin_url($url) {
 			} 
 		}
 	}
+	/*elseif(!is_admin() && (function_exists('is_user_logged_in') || !is_user_logged_in())) {
+		$options = get_option('perfmatters_options');
+		if(!empty($options['login_url'])) {
+			$url = preg_replace('/\/wp-admin\/$/', '/' . $options['login_url'] . '/', $url);
+		}
+	}*/
 
 	return $url;
 }
 
+//choose what to do when disabling a login url endpoint
+function perfmatters_disable_login_url() {
+
+	global $perfmatters_options;
+
+	if(!empty($perfmatters_options['login_url_behavior'])) {
+		if($perfmatters_options['login_url_behavior'] == '404') {
+			$template = get_query_template('404');
+			global $wp_query;
+	    	$wp_query->set_404();
+	    	status_header(404);
+	        nocache_headers();
+	        if(!empty($template)) {
+	        	include($template);
+	        }
+	    	die();
+		}
+		elseif($perfmatters_options['login_url_behavior'] == 'home') {
+			wp_safe_redirect(home_url());
+			die();
+		}
+	}
+
+	$message = !empty($perfmatters_options['login_url_message']) ? $perfmatters_options['login_url_message'] : __('This has been disabled.', 'perfmatters');
+	wp_die($message, 403);
+}
+
 /* Instant Page
 /***********************************************************************/
-if(!empty($perfmatters_extras['instant_page'])) {
-	add_action('wp_enqueue_scripts', 'perfmatters_enqueue_instant_page', PHP_INT_MAX);
+if(!empty($perfmatters_options['preload']['instant_page'])) {
+	if(!is_admin()) {
+		add_action('wp_enqueue_scripts', 'perfmatters_enqueue_instant_page', PHP_INT_MAX);
+		add_filter('script_loader_tag', 'perfmatters_instant_page_attribute', 10, 2);
+	}
 }
 
 function perfmatters_enqueue_instant_page() {
 
-	$exclude_instant_page = perfmatters_get_post_meta('perfmatters_exclude_instant_page');
+	$exclude_instant_page = Perfmatters\Utilities::get_post_meta('perfmatters_exclude_instant_page');
 
 	if(!$exclude_instant_page) {
 		wp_register_script('perfmatters-instant-page', plugins_url('vendor/instant-page/instantpage.js', dirname(__FILE__)), array(), PERFMATTERS_VERSION, true);
@@ -931,96 +1036,32 @@ function perfmatters_enqueue_instant_page() {
 	}
 }
 
-/* CDN Rewrite URLs
-/***********************************************************************/
-if(!empty($perfmatters_cdn['enable_cdn']) && $perfmatters_cdn['enable_cdn'] == "1" && !empty($perfmatters_cdn['cdn_url'])) {
-	add_action('template_redirect', 'perfmatters_cdn_rewrite');
-}
-
-function perfmatters_cdn_rewrite() {
-	ob_start('perfmatters_cdn_rewriter');
-}
-
-function perfmatters_cdn_rewriter($html) {
-	global $perfmatters_cdn;
-
-	//Prep Site URL
-    $escapedSiteURL = quotemeta(get_option('home'));
-	$regExURL = '(https?:|)' . substr($escapedSiteURL, strpos($escapedSiteURL, '//'));
-
-	//Prep Included Directories
-	$directories = 'wp\-content|wp\-includes';
-	if(!empty($perfmatters_cdn['cdn_directories'])) {
-		$directoriesArray = array_map('trim', explode(',', $perfmatters_cdn['cdn_directories']));
-		if(count($directoriesArray) > 0) {
-			$directories = implode('|', array_map('quotemeta', array_filter($directoriesArray)));
-		}
+//add ignore attribute for rocket loader
+function perfmatters_instant_page_attribute($tag, $handle) {
+	if($handle !== 'perfmatters-instant-page') {
+		return $tag;
 	}
-  
-  	//Rewrite URLs + Return
-	$regEx = '#(?<=[(\"\'])(?:' . $regExURL . ')?/(?:((?:' . $directories . ')[^\"\')]+)|([^/\"\']+\.[^/\"\')]+))(?=[\"\')])#';
-	$cdnHTML = preg_replace_callback($regEx, 'perfmatters_cdn_rewrite_url', $html);
-	return $cdnHTML;
-}
-
-function perfmatters_cdn_rewrite_url($url) {
-	global $perfmatters_cdn;
-
-	//Make Sure CDN URL is Set
-	if(!empty($perfmatters_cdn['cdn_url'])) {
-
-		//Don't Rewrite if Excluded
-		if(!empty($perfmatters_cdn['cdn_exclusions'])) {
-			$exclusions = array_map('trim', explode(',', $perfmatters_cdn['cdn_exclusions']));
-			foreach($exclusions as $exclusion) {
-	            if(!empty($exclusion) && stristr($url[0], $exclusion) != false) {
-	                return $url[0];
-	            }
-	        }
-		} 
-
-	    //Don't Rewrite if Previewing
-	    if(is_admin_bar_showing() && isset($_GET['preview']) && $_GET['preview'] == 'true') {
-	        return $url[0];
-	    }
-
-	    //Prep Site URL
-	    $siteURL = get_option('home');
-	    $siteURL = substr($siteURL, strpos($siteURL, '//'));
-
-	    //Replace URL w/ No HTTP/S Prefix
-	    if(strpos($url[0], '//') === 0) {
-	        return str_replace($siteURL, $perfmatters_cdn['cdn_url'], $url[0]);
-	    }
-
-	    //Found Site URL, Replace Non Relative URL w/ HTTP/S Prefix
-	    if(strstr($url[0], $siteURL)) {
-	        return str_replace(array('http:' . $siteURL, 'https:' . $siteURL), $perfmatters_cdn['cdn_url'], $url[0]);
-	    }
-
-	    //Replace Relative URL
-    	return $perfmatters_cdn['cdn_url'] . $url[0];
-    }
-
-    //Return Original URL
-    return $url[0];
+	return str_replace(' src', ' data-cfasync="false" data-no-optimize="1" src', $tag);
 }
 
 /* Google Analytics
 /***********************************************************************/
 
 //enable/disable local analytics scheduled event
-if(!empty($perfmatters_ga['enable_local_ga']) && $perfmatters_ga['enable_local_ga'] == "1") {
+if(!empty($perfmatters_options['analytics']['enable_local_ga'])) {
 
 	$print_analytics = true;
 
-	if(empty($perfmatters_ga['script_type'])) {
+	if(empty($perfmatters_options['analytics']['script_type']) || $perfmatters_options['analytics']['script_type'] == 'gtag' || $perfmatters_options['analytics']['script_type'] == 'gtagv4') {
 		if(!wp_next_scheduled('perfmatters_update_ga')) {
 			wp_schedule_event(time(), 'daily', 'perfmatters_update_ga');
 		}
-		if(!empty($perfmatters_ga['use_monster_insights'])) {
-			$print_analytics = false;
-			add_filter('monsterinsights_frontend_output_analytics_src', 'perfmatters_monster_ga', 1000);
+		if(empty($perfmatters_options['analytics']['script_type']) || $perfmatters_options['analytics']['script_type'] == 'gtag') {
+			if(!empty($perfmatters_options['analytics']['use_monster_insights'])) {
+				$print_analytics = false;
+				add_filter('monsterinsights_frontend_output_analytics_src', 'perfmatters_monster_ga', 1000);
+				add_filter('monsterinsights_frontend_output_gtag_src', 'perfmatters_monster_ga_gtag', 1000);
+			}
 		}
 	}
 	else {
@@ -1031,14 +1072,19 @@ if(!empty($perfmatters_ga['enable_local_ga']) && $perfmatters_ga['enable_local_g
 
 	if($print_analytics) {
 
-		if(!empty($perfmatters_ga['tracking_code_position']) && $perfmatters_ga['tracking_code_position'] == 'footer') {
+		if(!empty($perfmatters_options['analytics']['tracking_code_position']) && $perfmatters_options['analytics']['tracking_code_position'] == 'footer') {
 			$tracking_code_position = 'wp_footer';
 		}
 		else {
 			$tracking_code_position = 'wp_head';
 		}
 		
-		add_action($tracking_code_position, 'perfmatters_print_ga', 0);
+		add_action($tracking_code_position, 'perfmatters_print_ga');
+	}
+
+	//add notice if tracking id isnt set
+	if(empty($perfmatters_options['analytics']['tracking_id'])) {
+		add_action('admin_notices', 'perfmatters_admin_notice_ga_tracking_id');
 	}
 }
 else {
@@ -1049,50 +1095,59 @@ else {
 
 //update analytics.js
 function perfmatters_update_ga() {
-	//paths
-	$local_file = dirname(dirname(__FILE__)) . '/js/analytics.js';
-	$host = 'www.google-analytics.com';
-	$path = '/analytics.js';
 
-	//open connection
-	$fp = @fsockopen($host, '80', $errno, $errstr, 10);
+	$options = get_option('perfmatters_options');
 
-	if($fp){	
-		//send headers
-		$header = "GET $path HTTP/1.0\r\n";
-		$header.= "Host: $host\r\n";
-		$header.= "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6\r\n";
-		$header.= "Accept: */*\r\n";
-		$header.= "Accept-Language: en-us,en;q=0.5\r\n";
-		$header.= "Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\n";
-		$header.= "Keep-Alive: 300\r\n";
-		$header.= "Connection: keep-alive\r\n";
-		$header.= "Referer: https://$host\r\n\r\n";
-		fwrite($fp, $header);
-		$response = '';
-		
-		//get response
-		while($line = fread($fp, 4096)) {
-			$response.= $line;
+	$queue = array();
+
+	$upload_dir = wp_get_upload_dir();
+
+	//add analytics.js to the queue
+	if(empty($options['analytics']['script_type']) || $options['analytics']['script_type'] == 'gtag') {
+		$queue['analytics'] = array(
+			'remote' => 'https://www.google-analytics.com/analytics.js',
+			'local' => dirname(dirname(__FILE__)) . '/js/analytics.js'
+		);
+	}
+	
+	//add gtag to queue
+	if((!empty($options['analytics']['script_type']) && ($options['analytics']['script_type'] == 'gtag' || $options['analytics']['script_type'] == 'gtagv4')) || (empty($options['analytics']['script_type']) && !empty($options['analytics']['use_monster_insights']))) {
+		if(!empty($options['analytics']['tracking_id'])) {
+			$script_type = !empty($options['analytics']['script_type']) ? $options['analytics']['script_type'] : 'gtag';
+			$queue[$script_type]= array(
+				'remote' => 'https://www.googletagmanager.com/gtag/js?id=' . $options['analytics']['tracking_id'],
+				'local' => $upload_dir['basedir'] . '/perfmatters/' . $script_type . '.js'
+			);
 		}
+	}
 
-		//close connection
-		fclose($fp);
+	if(!empty($queue)) {
+		foreach($queue as $type => $files) {
+			if(!empty($files['remote']) && !empty($files['local'])) {
 
-		//remove headers
-		$position = strpos($response, "\r\n\r\n");
-		$response = substr($response, $position + 4);
+				$file = wp_remote_get($files['remote']);
 
-		//create file if needed
-		if(!file_exists($local_file)) {
-			fopen($local_file, 'w');
-		}
+				if(is_wp_error($file)) {
+			    	return $file->get_error_code() . ': ' . $file->get_error_message();
+			    }
 
-		//write response to file
-		if(is_writable($local_file)) {
-			if($fp = fopen($local_file, 'w')) {
-				fwrite($fp, $response);
-				fclose($fp);
+			    if(!is_dir($upload_dir['basedir']  . '/perfmatters/')) {
+			    	wp_mkdir_p($upload_dir['basedir']  . '/perfmatters/');
+			    }
+
+			    if($type == 'gtag') {
+			    	$plugins_url = (!empty($options['analytics']['cdn_url']) ? trailingslashit($options['analytics']['cdn_url']) . 'wp-content/plugins' : plugins_url()) . '/perfmatters/js/';
+			    	$split_upload_dir = explode('/wp-content/', $upload_dir['baseurl']);
+			    	$uploads_url = (!empty($options['analytics']['cdn_url']) ? trailingslashit($options['analytics']['cdn_url']) . 'wp-content/' . $split_upload_dir[1] : $upload_dir['baseurl']) . '/perfmatters';
+			    	$body = str_replace('https://www.google-analytics.com/', $plugins_url, $file['body']);
+			    	$body = str_replace('/gtag/js?id=', '/gtag.js?id=', $body);
+		            $body = str_replace('"//www.googletagmanager.com"', '"' . preg_replace('(^https?:)', "", $uploads_url) . '"', $body);
+			    }
+			    else {
+			    	$body = $file['body'];
+			    }
+
+			   	file_put_contents($files['local'], $body);
 			}
 		}
 	}
@@ -1101,53 +1156,78 @@ add_action('perfmatters_update_ga', 'perfmatters_update_ga');
 
 //print analytics script
 function perfmatters_print_ga() {
-	global $perfmatters_ga;
+	$options = get_option('perfmatters_options');
 
 	//dont print for logged in admins
-	if(current_user_can('manage_options') && empty($perfmatters_ga['track_admins'])) {
+	if(current_user_can('manage_options') && empty($options['analytics']['track_admins'])) {
 		return;
 	}
 
 	//make sure we have a tracking id
-	if(empty($perfmatters_ga['tracking_id'])) {
+	if(empty($options['analytics']['tracking_id'])) {
 		return;
 	}
 
-	if(empty($perfmatters_ga['script_type'])) {
-		echo "<!-- Local Analytics generated with perfmatters. -->";
-		echo "<script>";
-		    echo "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	$upload_dir = wp_get_upload_dir();
+
+	$output = '';
+
+	if(empty($options['analytics']['script_type'])) {
+		$output.= "<script>";
+		    $output.= "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 					(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 					m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 					})(window,document,'script','" . plugins_url() . "/perfmatters/js/analytics.js','ga');";
-		    echo "ga('create', '" . $perfmatters_ga['tracking_id'] . "', 'auto');";
+		    $output.= "ga('create', '" . $options['analytics']['tracking_id'] . "', 'auto');";
 
 		    //disable display features
-		    if(!empty($perfmatters_ga['disable_display_features']) && $perfmatters_ga['disable_display_features'] == "1") {
-		    	echo "ga('set', 'allowAdFeatures', false);";
+		    if(!empty($options['analytics']['disable_display_features'])) {
+		    	$output.= "ga('set', 'allowAdFeatures', false);";
 		    }
 
 		    //anonymize ip
-		   	if(!empty($perfmatters_ga['anonymize_ip']) && $perfmatters_ga['anonymize_ip'] == "1") {
-		   		echo "ga('set', 'anonymizeIp', true);";
+		   	if(!empty($options['analytics']['anonymize_ip'])) {
+		   		$output.= "ga('set', 'anonymizeIp', true);";
 		   	}
 
-		    echo "ga('send', 'pageview');";
+		    $output.= "ga('send', 'pageview');";
 
 		    //adjusted bounce rate
-		    if(!empty($perfmatters_ga['adjusted_bounce_rate'])) {
-		    	echo 'setTimeout("ga(' . "'send','event','adjusted bounce rate','" . $perfmatters_ga['adjusted_bounce_rate'] . " seconds')" . '"' . "," . $perfmatters_ga['adjusted_bounce_rate'] * 1000 . ");";
+		    if(!empty($options['analytics']['adjusted_bounce_rate'])) {
+		    	$output.= 'setTimeout("ga(' . "'send','event','adjusted bounce rate','" . $options['analytics']['adjusted_bounce_rate'] . " seconds')" . '"' . "," . $options['analytics']['adjusted_bounce_rate'] * 1000 . ");";
 		    }
-	    echo "</script>";
+	    $output.= "</script>";
 	}
-	elseif($perfmatters_ga['script_type'] == 'minimal') {
-
-		echo '<!-- Local Analytics generated with perfmatters. --><script>window.pmGAID="' . $perfmatters_ga['tracking_id'] . '";' . (!empty($perfmatters_ga['anonymize_ip']) ? 'window.pmGAAIP=true;' : '') . '</script>';
-		echo '<script src="' . plugins_url() . '/perfmatters/js/analytics-minimal.js"></script>';
-
+	elseif($options['analytics']['script_type'] == 'gtag') {
+		$output.= '<script src="' . $upload_dir['baseurl'] . '/perfmatters/gtag.js?id=' . $options['analytics']['tracking_id'] . '"></script>'; 
+		$output.= '<script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag("js", new Date());gtag("config", "' . $options['analytics']['tracking_id'] . '", {' . (!empty($options['analytics']['anonymize_ip']) ? '"anonymize_ip": true' : '') . '});';
+		if(!empty($options['analytics']['dual_tracking']) && !empty($options['analytics']['measurement_id'])) {
+    		$output.= 'gtag("config", "' . $options['analytics']['measurement_id'] . '");';
+    	}
+		$output.= '</script>';
 	}
-	elseif($perfmatters_ga['script_type'] == 'minimal_inline') {
-		echo '<!-- Local Analytics generated with perfmatters. --><script>(function(a,b,c){var d=a.history,e=document,f=navigator||{},g=localStorage,h=encodeURIComponent,i=d.pushState,k=function(){return Math.random().toString(36)},l=function(){return g.cid||(g.cid=k()),g.cid},m=function(r){var s=[];for(var t in r)r.hasOwnProperty(t)&&void 0!==r[t]&&s.push(h(t)+"="+h(r[t]));return s.join("&")},n=function(r,s,t,u,v,w,x){var z="https://www.google-analytics.com/collect",A=m({v:"1",ds:"web",aip:c.anonymizeIp?1:void 0,tid:b,cid:l(),t:r||"pageview",sd:c.colorDepth&&screen.colorDepth?screen.colorDepth+"-bits":void 0,dr:e.referrer||void 0,dt:e.title,dl:e.location.origin+e.location.pathname+e.location.search,ul:c.language?(f.language||"").toLowerCase():void 0,de:c.characterSet?e.characterSet:void 0,sr:c.screenSize?(a.screen||{}).width+"x"+(a.screen||{}).height:void 0,vp:c.screenSize&&a.visualViewport?(a.visualViewport||{}).width+"x"+(a.visualViewport||{}).height:void 0,ec:s||void 0,ea:t||void 0,el:u||void 0,ev:v||void 0,exd:w||void 0,exf:"undefined"!=typeof x&&!1==!!x?0:void 0});if(f.sendBeacon)f.sendBeacon(z,A);else{var y=new XMLHttpRequest;y.open("POST",z,!0),y.send(A)}};d.pushState=function(r){return"function"==typeof d.onpushstate&&d.onpushstate({state:r}),setTimeout(n,c.delay||10),i.apply(d,arguments)},n(),a.ma={trackEvent:function o(r,s,t,u){return n("event",r,s,t,u)},trackException:function q(r,s){return n("exception",null,null,null,null,r,s)}}})(window,"' . $perfmatters_ga['tracking_id'] . '",{' . (!empty($perfmatters_ga['anonymize_ip']) ? 'anonymizeIp:true,' : '') . 'colorDepth:true,characterSet:true,screenSize:true,language:true});</script>';
+	elseif($options['analytics']['script_type'] == 'gtagv4') {
+    	$output.= '<script src="' . $upload_dir['baseurl'] . '/perfmatters/gtagv4.js?id=' . $options['analytics']['tracking_id'] . '"></script>'; 
+    	$output.= '<script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag("js", new Date());gtag("config", "' . $options['analytics']['tracking_id'] . '");</script>';
+	}
+	elseif($options['analytics']['script_type'] == 'minimal') {
+		$output.= '<script>window.pmGAID="' . $options['analytics']['tracking_id'] . '";' . (!empty($options['analytics']['anonymize_ip']) ? 'window.pmGAAIP=true;' : '') . '</script>';
+		$output.= '<script src="' . plugins_url() . '/perfmatters/js/analytics-minimal.js"></script>';
+	}
+	elseif($options['analytics']['script_type'] == 'minimal_inline') {
+		$output.= '<script>(function(a,b,c){var d=a.history,e=document,f=navigator||{},g=localStorage,h=encodeURIComponent,i=d.pushState,k=function(){return Math.random().toString(36)},l=function(){return g.cid||(g.cid=k()),g.cid},m=function(r){var s=[];for(var t in r)r.hasOwnProperty(t)&&void 0!==r[t]&&s.push(h(t)+"="+h(r[t]));return s.join("&")},n=function(r,s,t,u,v,w,x){var z="https://www.google-analytics.com/collect",A=m({v:"1",ds:"web",aip:c.anonymizeIp?1:void 0,tid:b,cid:l(),t:r||"pageview",sd:c.colorDepth&&screen.colorDepth?screen.colorDepth+"-bits":void 0,dr:e.referrer||void 0,dt:e.title,dl:e.location.origin+e.location.pathname+e.location.search,ul:c.language?(f.language||"").toLowerCase():void 0,de:c.characterSet?e.characterSet:void 0,sr:c.screenSize?(a.screen||{}).width+"x"+(a.screen||{}).height:void 0,vp:c.screenSize&&a.visualViewport?(a.visualViewport||{}).width+"x"+(a.visualViewport||{}).height:void 0,ec:s||void 0,ea:t||void 0,el:u||void 0,ev:v||void 0,exd:w||void 0,exf:"undefined"!=typeof x&&!1==!!x?0:void 0});if(f.sendBeacon)f.sendBeacon(z,A);else{var y=new XMLHttpRequest;y.open("POST",z,!0),y.send(A)}};d.pushState=function(r){return"function"==typeof d.onpushstate&&d.onpushstate({state:r}),setTimeout(n,c.delay||10),i.apply(d,arguments)},n(),a.ma={trackEvent:function o(r,s,t,u){return n("event",r,s,t,u)},trackException:function q(r,s){return n("exception",null,null,null,null,r,s)}}})(window,"' . $options['analytics']['tracking_id'] . '",{' . (!empty($options['analytics']['anonymize_ip']) ? 'anonymizeIp:true,' : '') . 'colorDepth:true,characterSet:true,screenSize:true,language:true});</script>';
+	}
+
+	//amp analytics
+	if(!empty($options['analytics']['enable_amp']) && (empty($options['analytics']['script_type']) || $options['analytics']['script_type'] != 'gtagv4')) {
+		if(function_exists('is_amp_endpoint') && is_amp_endpoint()) {
+			$output.= '<script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>';
+			$output.= '<amp-analytics type="gtag" data-credentials="include"><script type="application/json">{"vars" : {"gtag_id": "' . $options['analytics']['tracking_id'] . '", "config" : {"' . $options['analytics']['tracking_id'] . '": { "groups": "default" }}}}</script></amp-analytics>';
+		}
+	}
+
+	if(!empty($output)) {
+		echo $output;
 	}
 }
 
@@ -1156,50 +1236,61 @@ function perfmatters_monster_ga($url) {
 	return plugins_url() . "/perfmatters/js/analytics.js";
 }
 
-/* Preload
-/***********************************************************************/
-if(!empty($perfmatters_extras['preload'])) {
-	add_action('wp_head', 'perfmatters_preload', 1);
+//return local gtag url for Monster Insights
+function perfmatters_monster_ga_gtag($url) {
+	$upload_dir = wp_get_upload_dir();
+	return $upload_dir['baseurl'] . '/perfmatters/gtag.js';
 }
 
-function perfmatters_preload() {
-	global $perfmatters_extras;
-	if(!empty($perfmatters_extras['preload']) && is_array($perfmatters_extras['preload'])) {
+//run analytics updater after settings update if we need to
+function perfmatters_update_option_perfmatters_options($old_value, $new_value) {
 
-		$mime_types = array(
-			'svg'   => 'image/svg+xml',
-			'ttf'   => 'font/ttf',
-			'otf'   => 'font/otf',
-			'woff'  => 'font/woff',
-			'woff2' => 'font/woff2',
-			'eot'   => 'application/vnd.ms-fontobject',
-			'sfnt'  => 'font/sfnt'
-		);
+	$new_script_type = $new_value['analytics']['script_type'] ?? '';
+	$old_script_type = $old_value['analytics']['script_type'] ?? '';
 
-		foreach($perfmatters_extras['preload'] as $line) {
+	$update_flag = false;
 
-			$mime_type = "";
-
-			if(!empty($line['as']) && $line['as'] == 'font') {
-				$path_info = pathinfo($line['url']);
-				$mime_type = !empty($path_info['extension']) && isset($mime_types[$path_info['extension']]) ? $mime_types[$path_info['extension']] : "";
-			}
-			
-			echo "<link rel='preload' href='" . $line['url'] . "'" . (!empty($line['as']) ? " as='" . $line['as'] . "'" : "") . (!empty($mime_type) ? " type='" . $mime_type . "'" : "") . (!empty($line['crossorigin']) ? " crossorigin" : "") . ">" . "\n";
-		}
+	if($new_script_type != $old_script_type && (empty($new_script_type) || $new_script_type == 'gtag' || $new_script_type == 'gtagv4')) {
+		$update_flag = true;
 	}
+
+	if(!empty($new_value['analytics']['tracking_id']) && $new_value['analytics']['tracking_id'] != ($old_value['analytics']['tracking_id'] ?? '') && ($new_script_type == 'gtag' || $new_script_type == 'gtagv4')) {
+		$update_flag = true;
+	}
+
+	if(($new_value['analytics']['cdn_url'] ?? '') != ($old_value['analytics']['cdn_url'] ?? '') && $new_script_type == 'gtag') {
+		$update_flag = true;
+	}
+
+	if(empty($new_value['analytics']['script_type']) && empty($old_value['analytics']['use_monster_insights']) && !empty($new_value['analytics']['use_monster_insights'])) {
+		$update_flag = true;
+	}
+
+	if($update_flag) {
+		perfmatters_update_ga();
+	}
+}
+
+//notice in case analytics is on without tracking id
+function perfmatters_admin_notice_ga_tracking_id() {
+	echo "<div class='notice notice-error'>";
+		echo "<p>";
+			echo "<strong>" . __('Perfmatters Warning', 'perfmatters') . ":</strong> ";
+			echo __('Local Analytics is enabled but no Tracking ID is set.', 'perfmatters');
+		echo "</p>";
+	echo "</div>";
 }
 
 /* Preconnect
 /***********************************************************************/
-if(!empty($perfmatters_extras['preconnect'])) {
+if(!empty($perfmatters_options['preload']['preconnect'])) {
 	add_action('wp_head', 'perfmatters_preconnect', 1);
 }
 
 function perfmatters_preconnect() {
-	global $perfmatters_extras;
-	if(!empty($perfmatters_extras['preconnect']) && is_array($perfmatters_extras['preconnect'])) {
-		foreach($perfmatters_extras['preconnect'] as $line) {
+	global $perfmatters_options;
+	if(!empty($perfmatters_options['preload']['preconnect']) && is_array($perfmatters_options['preload']['preconnect'])) {
+		foreach($perfmatters_options['preload']['preconnect'] as $line) {
 			if(is_array($line)) {
 				echo "<link rel='preconnect' href='" . $line['url'] . "' " . (isset($line['crossorigin']) && $line['crossorigin'] ? "crossorigin" : "") . ">" . "\n";
 			}
@@ -1213,14 +1304,14 @@ function perfmatters_preconnect() {
 
 /* DNS Prefetch
 /***********************************************************************/
-if(!empty($perfmatters_extras['dns_prefetch'])) {
+if(!empty($perfmatters_options['preload']['dns_prefetch'])) {
 	add_action('wp_head', 'perfmatters_dns_prefetch', 1);
 }
 
 function perfmatters_dns_prefetch() {
-	global $perfmatters_extras;
-	if(!empty($perfmatters_extras['dns_prefetch']) && is_array($perfmatters_extras['dns_prefetch'])) {
-		foreach($perfmatters_extras['dns_prefetch'] as $url) {
+	global $perfmatters_options;
+	if(!empty($perfmatters_options['preload']['dns_prefetch']) && is_array($perfmatters_options['preload']['dns_prefetch'])) {
+		foreach($perfmatters_options['preload']['dns_prefetch'] as $url) {
 			echo "<link rel='dns-prefetch' href='" . $url . "'>" . "\n";
 		}
 	}
@@ -1228,7 +1319,7 @@ function perfmatters_dns_prefetch() {
 
 /* Blank Favicon
 /***********************************************************************/
-if(!empty($perfmatters_extras['blank_favicon'])) {
+if(!empty($perfmatters_options['blank_favicon'])) {
 	add_action('wp_head', 'perfmatters_blank_favicon');
 }
 
@@ -1236,49 +1327,150 @@ function perfmatters_blank_favicon() {
 	echo '<link href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII=" rel="icon" type="image/x-icon" />';
 }
 
+/* Remove Global Styles
+/***********************************************************************/
+if(!empty($perfmatters_options['remove_global_styles'])) {
+	add_action('after_setup_theme', function() {
+	  	remove_action('wp_enqueue_scripts', 'wp_enqueue_global_styles');
+	  	remove_action('wp_footer', 'wp_enqueue_global_styles', 1);
+	  	remove_action('wp_body_open', 'wp_global_styles_render_svg_filters');
+		remove_action('in_admin_header', 'wp_global_styles_render_svg_filters');
+	});
+}
+
 /* Header Code
 /***********************************************************************/
-if(!empty($perfmatters_extras['header_code'])) {
+if(!empty($perfmatters_options['assets']['header_code'])) {
 	add_action('wp_head', 'perfmatters_insert_header_code');
 }
 
 function perfmatters_insert_header_code() {
-	global $perfmatters_extras;
-	if(!empty($perfmatters_extras['header_code'])) {
-		echo $perfmatters_extras['header_code'];
+	global $perfmatters_options;
+	if(!empty($perfmatters_options['assets']['header_code'])) {
+		echo $perfmatters_options['assets']['header_code'];
 	}
 }
 
 /* Body Code
 /***********************************************************************/
-if(!empty($perfmatters_extras['body_code'])) {
+if(!empty($perfmatters_options['assets']['body_code'])) {
 	if(function_exists('wp_body_open') && version_compare(get_bloginfo('version'), '5.2' , '>=')) {
 		add_action('wp_body_open', 'perfmatters_insert_body_code');
 	}
 }
 
 function perfmatters_insert_body_code() {
-	global $perfmatters_extras;
-	if(!empty($perfmatters_extras['body_code'])) {
-		echo $perfmatters_extras['body_code'];
+	global $perfmatters_options;
+	if(!empty($perfmatters_options['assets']['body_code'])) {
+		echo $perfmatters_options['assets']['body_code'];
 	}
 }
 
 /* Footer Code
 /***********************************************************************/
-if(!empty($perfmatters_extras['footer_code'])) {
+if(!empty($perfmatters_options['assets']['footer_code'])) {
 	add_action('wp_footer', 'perfmatters_insert_footer_code');
 }
 
 function perfmatters_insert_footer_code() {
-	global $perfmatters_extras;
-	if(!empty($perfmatters_extras['footer_code'])) {
-		echo $perfmatters_extras['footer_code'];
+	global $perfmatters_options;
+	if(!empty($perfmatters_options['assets']['footer_code'])) {
+		echo $perfmatters_options['assets']['footer_code'];
+	}
+}
+
+/* Disable capital_P_dangit filter
+/***********************************************************************/
+$filters = array('the_content', 'the_title', 'wp_title', 'comment_text');
+foreach($filters as $filter) {
+	$priority = has_filter($filter, 'capital_P_dangit');
+	if($priority !== false) {
+		remove_filter($filter, 'capital_P_dangit', $priority);
 	}
 }
 
 //check option update for custom inputs and modify result
-function perfmatters_pre_update_option_perfmatters_extras($new_value, $old_value) {
+function perfmatters_pre_update_option_perfmatters_options($new_value, $old_value) {
+
+	//clear used css button press
+	if(!empty($new_value['assets']['clear_used_css'])) {
+
+		Perfmatters\CSS::clear_used_css();
+
+		//display message
+		add_settings_error('perfmatters', 'perfmatters-clear-success', __('Used CSS cleared.', 'perfmatters'), 'success');
+
+		return $old_value;
+	}
+
+	if((empty($new_value['assets']['rucss_excluded_stylesheets']) !== empty($old_value['assets']['rucss_excluded_stylesheets'])) || (empty($new_value['assets']['rucss_excluded_selectors']) !== empty($old_value['assets']['rucss_excluded_selectors']))) {
+		Perfmatters\CSS::clear_used_css();
+	}
+
+	//clear local fonts button press
+	if(!empty($new_value['fonts']['clear_fonts'])) {
+
+		Perfmatters\Fonts::clear_local_fonts();
+
+		//display message
+		add_settings_error('perfmatters', 'perfmatters-clear-success', __('Local fonts cleared.', 'perfmatters'), 'success');
+
+		return $old_value;
+	}
+
+	if((empty($new_value['fonts']['display_swap']) !== empty($old_value['fonts']['display_swap'])) || (isset($new_value['fonts']['cdn_url']) && isset($old_value['fonts']['cdn_url']) && $new_value['fonts']['cdn_url'] !== $old_value['fonts']['cdn_url'])) {
+		Perfmatters\Fonts::clear_local_fonts();
+	}
+
+	return $new_value;
+}
+
+//check option update for custom inputs and modify result
+function perfmatters_pre_update_option_perfmatters_tools($new_value, $old_value) {
+
+	//restore plugin default options
+	if(!empty($new_value['restore_defaults'])) {
+		$defaults = perfmatters_default_options();
+		if(!empty($defaults)) {
+			update_option("perfmatters_options", $defaults);
+		}
+		add_settings_error('perfmatters', 'perfmatters-restore-success', __('Successfully restored default options.', 'perfmatters'), 'success');
+		return $old_value;
+	}
+
+	//purge meta options button press
+	if(!empty($new_value['purge_meta'])) {
+
+		//no meta options selected
+		if(empty($_POST['perfmatters_tools_temp']['purge_meta_options'])) {
+			add_settings_error('perfmatters', 'perfmatters-purge-meta-error', __('No meta options selected.', 'perfmatters'), 'error');
+			return $old_value;
+		}
+
+		global $wpdb;
+
+		$purged = array();
+
+		//delete selected options from postmeta table
+		foreach($_POST['perfmatters_tools_temp']['purge_meta_options'] as $key => $meta_key) {
+
+			$result = $wpdb->delete($wpdb->prefix . 'postmeta', array('meta_key' => $meta_key));
+
+			if($result !== false) {
+				$purged[] = $meta_key;
+			}
+		}
+
+		//display message
+		if(!empty($purged)) {
+			add_settings_error('perfmatters', 'perfmatters-purge-success', __('Meta options purged.', 'perfmatters'), 'success');
+		}
+		else {
+			add_settings_error('perfmatters', 'perfmatters-purge-error', __('Meta options not purged.', 'perfmatters'), 'error');
+		}
+
+		return $old_value;
+	}
 
 	//export settings button was pressed
 	if(!empty($new_value['export_settings'])) {
@@ -1286,16 +1478,14 @@ function perfmatters_pre_update_option_perfmatters_extras($new_value, $old_value
 		$settings = array();
 
 		$settings['perfmatters_options'] = get_option('perfmatters_options');
-		$settings['perfmatters_cdn'] = get_option('perfmatters_cdn');
-		$settings['perfmatters_ga'] = get_option('perfmatters_ga');
-		$settings['perfmatters_extras'] = get_option('perfmatters_extras');
+		$settings['perfmatters_tools'] = get_option('perfmatters_tools');
 
 		ignore_user_abort(true);
 
 		//setup headers
 		nocache_headers();
 		header('Content-Type: application/json; charset=utf-8');
-		header('Content-Disposition: attachment; filename=perfmatters-settings-export-' . date('m-d-Y') . '.json');
+		header('Content-Disposition: attachment; filename=perfmatters-settings-export-' . date('Y-m-d') . '.json');
 		header('Expires: 0');
 
 		//print encoded file
@@ -1329,19 +1519,10 @@ function perfmatters_pre_update_option_perfmatters_extras($new_value, $old_value
 			update_option('perfmatters_options', $settings['perfmatters_options']);
 		}
 
-		if(isset($settings['perfmatters_cdn'])) {
-			update_option('perfmatters_cdn', $settings['perfmatters_cdn']);
+		if(isset($settings['perfmatters_tools'])) {
+			update_option('perfmatters_tools', $settings['perfmatters_tools']);
 		}
 
-		if(isset($settings['perfmatters_ga'])) {
-			update_option('perfmatters_ga', $settings['perfmatters_ga']);
-		}
-
-		if(isset($settings['perfmatters_extras'])) {
-			update_option('perfmatters_extras', $settings['perfmatters_extras']);
-		}
-
-		//add_action('admin_notices', 'perfmatters_admin_notice_settings_import_success');
 		add_settings_error('perfmatters', 'perfmatters-import-success', __('Successfully imported Perfmatters settings.', 'perfmatters'), 'success');
 
 		return $old_value;
@@ -1352,9 +1533,46 @@ function perfmatters_pre_update_option_perfmatters_extras($new_value, $old_value
 
 //add filter to update options
 function perfmatters_update_options() {
-	add_filter('pre_update_option_perfmatters_extras', 'perfmatters_pre_update_option_perfmatters_extras', 10, 2);
+	add_filter('pre_update_option_perfmatters_options', 'perfmatters_pre_update_option_perfmatters_options', 10, 2);
+	add_filter('pre_update_option_perfmatters_tools', 'perfmatters_pre_update_option_perfmatters_tools', 10, 2);
+	add_filter('update_option_perfmatters_options', 'perfmatters_update_option_perfmatters_options', 10, 2);
 }
 add_action('admin_init', 'perfmatters_update_options');
+
+//check for page builder query args
+function perfmatters_is_page_builder() {
+
+	$page_builders = apply_filters('perfmatters_page_builders', array(
+		'elementor-preview', //elementor
+		'fl_builder', //beaver builder
+		'et_fb', //divi
+		'ct_builder', //oxygen
+		'tve', //thrive
+		'app', //flatsome
+		'uxb_iframe',
+		'fb-edit', //fusion builder
+		'builder'
+	));
+
+	if(!empty($page_builders)) {
+		foreach($page_builders as $page_builder) {
+			if(isset($_GET[$page_builder])) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+//check if the current request is rest or ajax
+function perfmatters_is_dynamic_request () {
+    if((defined('REST_REQUEST') && REST_REQUEST) || (function_exists('wp_is_json_request') && wp_is_json_request()) || wp_doing_ajax() || wp_doing_cron()) {
+        return true;
+    }
+
+    return false;
+}
 
 /* EDD License Functions
 /***********************************************************************/

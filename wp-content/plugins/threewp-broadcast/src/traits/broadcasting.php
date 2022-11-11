@@ -287,6 +287,9 @@ trait broadcasting
 		$action->broadcasting_data = $bcd;
 		$action->execute();
 
+		// Prevent filtering of perfectly normal tags such as iframes.
+		kses_remove_filters();
+
 		// Prune the unused parent blog terms.
 		if ( $bcd->taxonomies )
 		{
@@ -455,6 +458,18 @@ trait broadcasting
 
 			$this->set_post_status( $bcd->new_post( 'ID' ), $bcd->post->post_status );
 			$bcd->new_post = get_post( $bcd->new_post( 'ID' ) );
+
+			if ( $bcd->link )
+			{
+				$new_post_broadcast_data = $this->get_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ) );
+				$new_post_broadcast_data->set_linked_parent( $bcd->parent_blog_id, $bcd->post->ID );
+				$this->debug( 'Saving broadcast data of child: %s', $new_post_broadcast_data );
+				$this->set_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ), $new_post_broadcast_data );
+
+				// Save the parent also.
+				$this->debug( 'Saving parent broadcast data: %s', $bcd->broadcast_data );
+				$this->set_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID, $bcd->broadcast_data );
+			}
 
 			$action = $this->new_action( 'broadcasting_after_update_post' );
 			$action->broadcasting_data = $bcd;
@@ -690,18 +705,6 @@ trait broadcasting
 			{
 				$this->debug( 'Unsticking post.' );
 				unstick_post( $bcd->new_post( 'ID' ) );
-			}
-
-			if ( $bcd->link )
-			{
-				$new_post_broadcast_data = $this->get_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ) );
-				$new_post_broadcast_data->set_linked_parent( $bcd->parent_blog_id, $bcd->post->ID );
-				$this->debug( 'Saving broadcast data of child: %s', $new_post_broadcast_data );
-				$this->set_post_broadcast_data( $bcd->current_child_blog_id, $bcd->new_post( 'ID' ), $new_post_broadcast_data );
-
-				// Save the parent also.
-				$this->debug( 'Saving parent broadcast data: %s', $bcd->broadcast_data );
-				$this->set_post_broadcast_data( $bcd->parent_blog_id, $bcd->post->ID, $bcd->broadcast_data );
 			}
 
 			$action = $this->new_action( 'broadcasting_before_restore_current_blog' );

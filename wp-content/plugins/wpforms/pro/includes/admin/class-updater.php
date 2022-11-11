@@ -112,8 +112,9 @@ class WPForms_Updater {
 			$this->$arg = $config[ $arg ];
 		}
 
-		// If the user cannot update plugins, stop processing here.
-		if ( ! current_user_can( 'update_plugins' ) ) {
+		// If the user cannot update plugins, stop processing here. In WP-CLI context
+		// there is no user available, so we should ignore this check in CLI.
+		if ( ! current_user_can( 'update_plugins' ) && ! wpforms_doing_wp_cli() ) {
 			return;
 		}
 
@@ -265,10 +266,11 @@ class WPForms_Updater {
 		$query_params = wp_parse_args(
 			$body,
 			[
-				'tgm-updater-action'     => $action,
-				'tgm-updater-key'        => $this->key,
-				'tgm-updater-wp-version' => get_bloginfo( 'version' ),
-				'tgm-updater-referer'    => site_url(),
+				'tgm-updater-action'      => $action,
+				'tgm-updater-key'         => $this->key,
+				'tgm-updater-wp-version'  => get_bloginfo( 'version' ),
+				'tgm-updater-php-version' => PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION,
+				'tgm-updater-referer'     => site_url(),
 			]
 		);
 

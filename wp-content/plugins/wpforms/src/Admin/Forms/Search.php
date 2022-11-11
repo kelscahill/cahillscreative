@@ -28,15 +28,6 @@ class Search {
 	private $term_escaped;
 
 	/**
-	 * Count forms in different views.
-	 *
-	 * @since 1.7.2
-	 *
-	 * @var array
-	 */
-	private $count;
-
-	/**
 	 * Determine if the class is allowed to load.
 	 *
 	 * @since 1.7.2
@@ -79,9 +70,6 @@ class Search {
 		// Use filter to add the search term to the get forms arguments.
 		add_filter( 'wpforms_get_multiple_forms_args', [ $this, 'get_forms_args' ] );
 
-		// Count results.
-		add_filter( 'wpforms_overview_table_update_count', [ $this, 'update_count' ], 10, 2 );
-
 		// Encapsulate search into posts_where.
 		add_action( 'wpforms_form_handler_get_multiple_before_get_posts', [ $this, 'before_get_posts' ] );
 		add_action( 'wpforms_form_handler_get_multiple_after_get_posts', [ $this, 'after_get_posts' ], 10, 2 );
@@ -103,6 +91,7 @@ class Search {
 	 * Count search results.
 	 *
 	 * @since 1.7.2
+	 * @deprecated 1.7.5
 	 *
 	 * @param array $count Number of forms in different views.
 	 * @param array $args  Get forms arguments.
@@ -111,26 +100,9 @@ class Search {
 	 */
 	public function update_count( $count, $args ) {
 
-		// Count search result.
-		// We should perform the search without paging and then count the results.
-		$args = array_merge(
-			$args,
-			[
-				'nopaging'               => true,
-				'no_found_rows'          => true,
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
-				'fields'                 => 'ids',
-			]
-		);
+		_deprecated_function( __METHOD__, '1.7.5 of the WPForms plugin', "wpforms()->get( 'forms_views' )->update_count()" );
 
-		$forms        = wpforms()->get( 'form' )->get( '', $args );
-		$count['all'] = is_array( $forms ) ? count( $forms ) : 0;
-
-		// Store in class property for further use.
-		$this->count = $count;
-
-		return $count;
+		return wpforms()->get( 'forms_views' )->update_count();
 	}
 
 	/**
@@ -259,12 +231,46 @@ class Search {
 			return;
 		}
 
+		$views = wpforms()->get( 'forms_views' );
+		$count = $views->get_count();
+		$view  = $views->get_current_view();
+
+		$count['all'] = ! empty( $count['all'] ) ? $count['all'] : 0;
+
+		$message = sprintf(
+			wp_kses( /* translators: %1$d - number of forms found, %2$s - search term. */
+				_n(
+					'Found <strong>%1$d form</strong> containing <em>"%2$s"</em>',
+					'Found <strong>%1$d forms</strong> containing <em>"%2$s"</em>',
+					(int) $count['all'],
+					'wpforms-lite'
+				),
+				[
+					'strong' => [],
+					'em'     => [],
+				]
+			),
+			(int) $count['all'],
+			esc_html( $search_term )
+		);
+
+		/**
+		 * Filters the message in the search reset block.
+		 *
+		 * @since 1.7.3
+		 *
+		 * @param string $message     Message text.
+		 * @param string $search_term Search term.
+		 * @param array  $count       Count forms in different views.
+		 * @param string $view        Current view.
+		 */
+		$message = apply_filters( 'wpforms_admin_forms_search_search_reset_block_message', $message, $search_term, $count, $view );
+
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo wpforms_render(
 			'admin/forms/search-reset',
 			[
-				'search_term' => $search_term,
-				'count_all'   => $this->count['all'],
+				'message' => $message,
 			],
 			true
 		);

@@ -389,7 +389,7 @@ class WPCom_Markdown {
 	public function get_parser() {
 
 		if ( ! self::$parser ) {
-			jetpack_require_lib( 'markdown' );
+			require_once JETPACK__PLUGIN_DIR . '/_inc/lib/markdown.php';
 			self::$parser = new WPCom_GHF_Markdown_Parser();
 		}
 
@@ -408,11 +408,14 @@ class WPCom_Markdown {
 	/**
 	 * Figure out the post type of the post screen we're on
 	 *
+	 * @deprecated since 10.8
 	 * @return string Current post_type
 	 */
 	protected function get_post_screen_post_type() {
+		_deprecated_function( __METHOD__, 'jetpack-10.8', '' );
+
 		global $pagenow;
-		$post_type = filter_input( INPUT_GET, 'post_type', FILTER_SANITIZE_STRING );
+		$post_type = filter_input( INPUT_GET, 'post_type', FILTER_UNSAFE_RAW );
 		$post_id   = filter_input( INPUT_GET, 'post', FILTER_SANITIZE_NUMBER_INT );
 
 		if ( 'post-new.php' === $pagenow ) {

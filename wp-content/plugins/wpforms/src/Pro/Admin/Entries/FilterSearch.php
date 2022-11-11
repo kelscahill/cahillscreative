@@ -49,7 +49,8 @@ trait FilterSearch {
 		 * and can't filter those with empty values.
 		 * The current workaround - display all entries (instead of none at all).
 		 */
-		if ( empty( $term ) && empty( $_REQUEST['search']['term'] ) ) {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		if ( wpforms_is_empty_string( $term ) && wpforms_is_empty_string( $_REQUEST['search']['term'] ) ) {
 			return;
 		}
 
@@ -73,8 +74,14 @@ trait FilterSearch {
 			$args['advanced_search'] = $field !== 'any' ? $field : '';
 		}
 
-		$this->filter           = $args;
-		$this->filter['select'] = 'all';
+		$this->filter = array_merge(
+			$this->filter,
+			$args,
+			[
+				'is_filtered' => true,
+				'select'      => 'all',
+			]
+		);
 
 		// We shouldn't limit searching by the fields.
 		// Limiting the results will be done later in `WPForms_Entry_Handler::get_entries()`.
@@ -87,6 +94,8 @@ trait FilterSearch {
 		}
 
 		$this->prepare_entry_ids_for_get_entries_args( $entries );
+
+		add_filter( 'wpforms_entry_handler_get_entries_args', [ $this, 'get_filtered_entry_table_args' ] );
 	}
 
 	/**
@@ -117,8 +126,6 @@ trait FilterSearch {
 		) {
 			$this->filter['entry_id'] = '0';
 		}
-
-		add_filter( 'wpforms_entry_handler_get_entries_args', [ $this, 'get_filtered_entry_table_args' ] );
 	}
 
 	/**
@@ -132,7 +139,9 @@ trait FilterSearch {
 	 */
 	public function get_filtered_entry_table_args( $args ) {
 
-		$this->filter['is_filtered'] = true;
+		if ( empty( $this->filter['is_filtered'] ) ) {
+			return $args;
+		}
 
 		return array_merge( $args, $this->filter );
 	}

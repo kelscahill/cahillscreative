@@ -97,14 +97,14 @@ class SMTP {
 		// Lity.
 		wp_enqueue_style(
 			'wpforms-lity',
-			WPFORMS_PLUGIN_URL . 'assets/css/lity.min.css',
+			WPFORMS_PLUGIN_URL . 'assets/lib/lity/lity.min.css',
 			null,
 			'3.0.0'
 		);
 
 		wp_enqueue_script(
 			'wpforms-lity',
-			WPFORMS_PLUGIN_URL . 'assets/js/lity.min.js',
+			WPFORMS_PLUGIN_URL . 'assets/lib/lity/lity.min.js',
 			[ 'jquery' ],
 			'3.0.0',
 			true
@@ -237,12 +237,12 @@ class SMTP {
 					<li>%7$s</li>
 				</ul>
 			</section>',
-			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/smtp/screenshot-tnail.png' ),
+			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/smtp/screenshot-tnail.png?ver=' . WPFORMS_VERSION ),
 			esc_attr__( 'WP Mail SMTP screenshot', 'wpforms-lite' ),
-			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/smtp/screenshot-full.png' ),
+			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/smtp/screenshot-full.png?ver=' . WPFORMS_VERSION ),
 			esc_html__( 'Improves email deliverability in WordPress.', 'wpforms-lite' ),
 			esc_html__( 'Used by 2+ million websites.', 'wpforms-lite' ),
-			esc_html__( 'Free mailers: SMTP.com, Sendinblue, Google Workspace / Gmail, Mailgun, Postmark, SendGrid.', 'wpforms-lite' ),
+			esc_html__( 'Free mailers: SendLayer, SMTP.com, Sendinblue, Google Workspace / Gmail, Mailgun, Postmark, SendGrid.', 'wpforms-lite' ),
 			esc_html__( 'Pro mailers: Amazon SES, Microsoft 365 / Outlook.com, Zoho Mail.', 'wpforms-lite' )
 		);
 	}

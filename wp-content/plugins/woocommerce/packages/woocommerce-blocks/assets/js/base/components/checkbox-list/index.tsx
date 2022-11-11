@@ -4,6 +4,7 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Fragment, useMemo, useState } from '@wordpress/element';
 import classNames from 'classnames';
+import { CheckboxControl } from '@woocommerce/blocks-checkout';
 
 /**
  * Internal dependencies
@@ -21,25 +22,25 @@ interface CheckboxListProps {
 	isDisabled?: boolean;
 	limit?: number;
 	checked?: string[];
-	onChange?: ( value: string ) => void;
+	onChange: ( value: string ) => void;
 	options?: CheckboxListOptions[];
 }
 
 /**
  * Component used to show a list of checkboxes in a group.
  *
- * @param {Object} props Incoming props for the component.
- * @param {string} props.className CSS class used.
- * @param {function(string):any} props.onChange Function called when inputs change.
- * @param {Array} props.options Options for list.
- * @param {Array} props.checked Which items are checked.
- * @param {boolean} props.isLoading If loading or not.
- * @param {boolean} props.isDisabled If inputs are disabled or not.
- * @param {number} props.limit Whether to limit the number of inputs showing.
+ * @param {Object}               props            Incoming props for the component.
+ * @param {string}               props.className  CSS class used.
+ * @param {function(string):any} props.onChange   Function called when inputs change.
+ * @param {Array}                props.options    Options for list.
+ * @param {Array}                props.checked    Which items are checked.
+ * @param {boolean}              props.isLoading  If loading or not.
+ * @param {boolean}              props.isDisabled If inputs are disabled or not.
+ * @param {number}               props.limit      Whether to limit the number of inputs showing.
  */
 const CheckboxList = ( {
 	className,
-	onChange = () => void 0,
+	onChange,
 	options = [],
 	checked = [],
 	isLoading = false,
@@ -132,19 +133,15 @@ const CheckboxList = ( {
 								! showExpanded &&
 								index >= limit && { hidden: true } ) }
 						>
-							<input
-								type="checkbox"
+							<CheckboxControl
 								id={ option.value }
-								value={ option.value }
-								onChange={ ( event ) => {
-									onChange( event.target.value );
-								} }
+								className="wc-block-checkbox-list__checkbox"
+								label={ option.label }
 								checked={ checked.includes( option.value ) }
-								disabled={ isDisabled }
+								onChange={ () => {
+									onChange( option.value );
+								} }
 							/>
-							<label htmlFor={ option.value }>
-								{ option.label }
-							</label>
 						</li>
 						{ shouldTruncateOptions &&
 							index === limit - 1 &&

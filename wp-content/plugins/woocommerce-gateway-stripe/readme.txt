@@ -1,10 +1,10 @@
 === WooCommerce Stripe Payment Gateway ===
 Contributors: woocommerce, automattic, royho, akeda, mattyza, bor0, woothemes
 Tags: credit card, stripe, apple pay, payment request, google pay, sepa, sofort, bancontact, alipay, giropay, ideal, p24, woocommerce, automattic
-Requires at least: 5.6
-Tested up to: 5.9
+Requires at least: 5.7
+Tested up to: 6.0
 Requires PHP: 7.0
-Stable tag: 6.1.0
+Stable tag: 7.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Attributions: thorsten-stripe
@@ -128,17 +128,12 @@ If you get stuck, you can ask for help in the Plugin Forum.
 
 == Changelog ==
 
-= 6.1.0 - 2022-01-26 =
-* Tweak - Use the newly exposed LoadableMask component provided by WooCommerce Blocks to trigger the loading state for Payment Request Buttons.
-* Fix - Response type for account summary API.
-* Fix - Invalid response in account summary API when missing account data.
-* Add - Live and test mode information in account summary API.
-* Add - Add filter call when updating an existent intent (wc_stripe_update_existing_intent_request).
-* Add - Add ability to test Stripe account keys' validity.
-* Fix - Fixed full bank statement field description.
-* Fix - Notification messages are placed on top of the account keys modal.
-* Fix - Express checkout with 3DS card on product page when new checkout experience is enabled.
-* Fix - Remove duplicate call to `payment_scripts`.
-* Fix - Send bank statement descriptors to payment intents.
+= 7.0.0 - 2022-11-10 =
+* Add - Update Express Checkout section UI.
+* Add - Auto-complete first and last name on checkout form when using Link payment method.
+* Add - Allow subscription orders to be paid with Link payment method.
+* Add - Add inbox notification for Link payment method.
+* Tweak - Adjust texts and links in WC admin advanced settings.
+* Add - Restrict the Link payment method only for US merchants.
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce-gateway-stripe/trunk/changelog.txt).

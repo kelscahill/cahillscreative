@@ -2,6 +2,7 @@
 
 namespace WPForms\Pro\Admin\Entries\Export;
 
+use WPForms\Pro\Helpers\CSV;
 use WPForms\Helpers\Transient;
 use WPForms\Pro\Admin\Entries;
 
@@ -19,9 +20,18 @@ class Ajax {
 	 *
 	 * @since 1.5.5
 	 *
-	 * @var \WPForms\Pro\Admin\Entries\Export\Export
+	 * @var Export
 	 */
 	protected $export;
+
+	/**
+	 * CSV helper class instance.
+	 *
+	 * @since 1.7.7
+	 *
+	 * @var CSV
+	 */
+	private $csv;
 
 	/**
 	 * Request data.
@@ -37,11 +47,12 @@ class Ajax {
 	 *
 	 * @since 1.5.5
 	 *
-	 * @param \WPForms\Pro\Admin\Entries\Export\Export $export Instance of Export.
+	 * @param Export $export Instance of Export.
 	 */
 	public function __construct( $export ) {
 
 		$this->export = $export;
+		$this->csv    = new CSV();
 
 		$this->hooks();
 	}
@@ -253,7 +264,7 @@ class Ajax {
 			'fields'          => empty( $args['entry_id'] ) ? $args['fields'] : wp_list_pluck( $this->exclude_disallowed_fields( $form_data['fields'] ), 'id' ),
 			'additional_info' => empty( $args['entry_id'] ) ? $args['additional_info'] : array_keys( $this->export->additional_info_fields ),
 			'count'           => $count,
-			'total_steps'     => ceil( $count / $this->export->configuration['entries_per_step'] ),
+			'total_steps'     => (int) ceil( $count / $this->export->configuration['entries_per_step'] ),
 			'type'            => ! empty( $args['export_options'] ) ? $args['export_options'][0] : 'csv',
 		];
 
@@ -349,10 +360,12 @@ class Ajax {
 
 		// Prepare entries data.
 		foreach ( $entries as $entry ) {
+
 			$fields = $this->get_entry_fields_data( $entry );
 			$row    = [];
 
 			foreach ( $this->request_data['columns_row'] as $col_id => $col_label ) {
+
 				if ( is_numeric( $col_id ) ) {
 					$row[ $col_id ] = isset( $fields[ $col_id ]['value'] ) ? $fields[ $col_id ]['value'] : '';
 				} elseif ( strpos( $col_id, 'del_field_' ) !== false ) {
@@ -361,8 +374,10 @@ class Ajax {
 				} else {
 					$row[ $col_id ] = $this->get_additional_info_value( $col_id, $entry, $this->request_data['form_data'] );
 				}
-				$row[ $col_id ] = html_entity_decode( $row[ $col_id ], ENT_QUOTES );
+
+				$row[ $col_id ] = $this->csv->escape_value( $row[ $col_id ] );
 			}
+
 			if ( $no_fields && ! $del_fields ) {
 				continue;
 			}
@@ -402,13 +417,16 @@ class Ajax {
 		$entry = (array) $entry;
 
 		switch ( $col_id ) {
-
 			case 'date':
 				$val = date_i18n( $this->date_format(), strtotime( $entry['date'] ) + $this->gmt_offset_sec() );
 				break;
 
 			case 'notes':
 				$val = $this->get_additional_info_notes_value( $entry );
+				break;
+
+			case 'status':
+				$val = $this->get_additional_info_status_value( $entry );
 				break;
 
 			case 'geodata':
@@ -426,13 +444,21 @@ class Ajax {
 			case 'viewed':
 			case 'starred':
 				$val = (bool) $entry[ $col_id ] ? esc_html__( 'Yes', 'wpforms' ) : esc_html__( 'No', 'wpforms' );
-
 				break;
 
 			default:
 				$val = $entry[ $col_id ];
 		}
 
+		/**
+		 * Modify value of additional information column.
+		 *
+		 * @since 1.5.5
+		 *
+		 * @param string $val    The value.
+		 * @param string $col_id Column id.
+		 * @param object $entry  Entry object.
+		 */
 		return apply_filters( 'wpforms_pro_admin_entries_export_ajax_get_additional_info_value', $val, $col_id, $entry );
 	}
 
@@ -480,6 +506,20 @@ class Ajax {
 		);
 
 		return $val;
+	}
+
+	/**
+	 * Get value of entry status (Additional Information).
+	 *
+	 * @since 1.7.3
+	 *
+	 * @param array $entry Entry data.
+	 *
+	 * @return string
+	 */
+	public function get_additional_info_status_value( $entry ) {
+
+		return in_array( $entry['status'], [ 'partial', 'abandoned' ], true ) ? ucwords( sanitize_text_field( $entry['status'] ) ) : esc_html__( 'Completed', 'wpforms' );
 	}
 
 	/**
@@ -601,18 +641,14 @@ class Ajax {
 	 */
 	public function get_additional_info_pstatus_value( $entry ) {
 
-		if ( $entry['type'] === 'payment' ) {
-			if ( ! empty( $entry['status'] ) ) {
-				$val = ucwords( sanitize_text_field( $entry['status'] ) );
-			} else {
-				$val = esc_html__( 'Unknown', 'wpforms' );
-			}
+		if ( $entry['type'] !== 'payment' ) {
+			return '';
+		}
+
+		if ( ! empty( $entry['status'] ) ) {
+			$val = ucwords( sanitize_text_field( $entry['status'] ) );
 		} else {
-			if ( ! empty( $entry['status'] ) ) {
-				$val = ucwords( sanitize_text_field( $entry['status'] ) );
-			} else {
-				$val = esc_html__( 'Completed', 'wpforms' );
-			}
+			$val = esc_html__( 'Unknown', 'wpforms' );
 		}
 
 		return $val;

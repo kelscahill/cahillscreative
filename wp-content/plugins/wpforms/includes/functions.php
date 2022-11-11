@@ -1,5 +1,7 @@
 <?php
 
+use TrueBV\Punycode;
+
 /**
  * Helper function to trigger displaying a form.
  *
@@ -86,6 +88,126 @@ function wpforms_is_url( $url ) {
 }
 
 /**
+ * Verify that an email is valid.
+ * See the linked RFC.
+ *
+ * @see https://www.rfc-editor.org/rfc/inline-errata/rfc3696.html
+ *
+ * @since 1.7.3
+ *
+ * @param string $email Email address to verify.
+ *
+ * @return string|false Returns a valid email address on success, false on failure.
+ */
+function wpforms_is_email( $email ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+
+	static $punycode;
+
+	// Do not allow callables, arrays and objects.
+	if ( ! is_scalar( $email ) ) {
+		return false;
+	}
+
+	// Allow smart tags in the email address.
+	if ( preg_match( '/{.+?}/', $email ) ) {
+		return $email;
+	}
+
+	// Email can't be longer than 254 octets,
+	// otherwise it can't be used to send an email address (limitation in the MAIL and RCPT commands).
+	// 1 octet = 8 bits = 1 byte.
+	if ( strlen( $email ) > 254 ) {
+		return false;
+	}
+
+	$email_arr = explode( '@', $email );
+
+	if ( count( $email_arr ) !== 2 ) {
+		return false;
+	}
+
+	list( $local, $domain ) = $email_arr;
+
+	/**
+	 * RFC requires local part to be no longer than 64 octets.
+	 * Punycode library checks for 63 octets.
+	 *
+	 * @link https://github.com/true/php-punycode/blob/master/src/Punycode.php#L182.
+	 */
+	if ( strlen( $local ) > 63 ) {
+		return false;
+	}
+
+	$domain_arr = explode( '.', $domain );
+
+	foreach ( $domain_arr as $domain_label ) {
+		$domain_label = trim( $domain_label );
+
+		if ( ! $domain_label ) {
+			return false;
+		}
+
+		// The RFC says: 'A DNS label may be no more than 63 octets long'.
+		if ( strlen( $domain_label ) > 63 ) {
+			return false;
+		}
+	}
+
+	if ( ! $punycode ) {
+		$punycode = new Punycode();
+	}
+
+	/**
+	 * The wp_mail() uses phpMailer, which uses is_email() as verification callback.
+	 * For verification, phpMailer sends the email address where the domain part is punycode encoded only.
+	 * We follow here the same principle.
+	 */
+	$email_check = $local . '@' . $punycode->encode( $domain );
+
+	// Other limitations are checked by the native WordPress function is_email().
+	return is_email( $email_check ) ? $local . '@' . $domain : false;
+}
+
+/**
+ * Check whether the string is json-encoded.
+ *
+ * @since 1.7.5
+ *
+ * @param string $string A string.
+ *
+ * @return bool
+ */
+function wpforms_is_json( $string ) {
+
+	return (
+		is_string( $string ) &&
+		is_array( json_decode( $string, true ) ) &&
+		json_last_error() === JSON_ERROR_NONE
+	);
+}
+
+/**
+ * Decode json-encoded string if it is in json format.
+ *
+ * @since 1.7.5
+ *
+ * @param string $string      A string.
+ * @param bool   $associative Decode to the associative array if true. Decode to object if false.
+ *
+ * @return array|string
+ */
+function wpforms_json_decode( $string, $associative = false ) {
+
+	$string = html_entity_decode( $string );
+
+	if ( ! wpforms_is_json( $string ) ) {
+		return $string;
+	}
+
+	return json_decode( $string, $associative );
+}
+
+/**
  * Get the current URL.
  *
  * @since 1.0.0
@@ -95,8 +217,18 @@ function wpforms_is_url( $url ) {
  */
 function wpforms_current_url() {
 
+	$parsed_home_url = wp_parse_url( home_url() );
+
+	$url = $parsed_home_url['scheme'] . '://' . $parsed_home_url['host'];
+
+	if ( ! empty( $parsed_home_url['port'] ) ) {
+		$url .= ':' . $parsed_home_url['port'];
+	}
+
 	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-	return esc_url_raw( home_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) );
+	$url .= wp_unslash( $_SERVER['REQUEST_URI'] );
+
+	return esc_url_raw( $url );
 }
 
 /**
@@ -137,6 +269,18 @@ function wpforms_setting( $key, $default = false, $option = 'wpforms_settings' )
 	$key     = wpforms_sanitize_key( $key );
 	$options = get_option( $option, false );
 	$value   = is_array( $options ) && ! empty( $options[ $key ] ) ? wp_unslash( $options[ $key ] ) : $default;
+
+	/**
+	 * Allows plugin setting to be modified.
+	 *
+	 * @since 1.7.8
+	 *
+	 * @param mixed  $value   Setting value.
+	 * @param string $key     Setting key.
+	 * @param mixed  $default Setting default value.
+	 * @param string $option  Settings option name.
+	 */
+	$value = apply_filters( 'wpforms_setting', $value, $key, $default, $option );
 
 	return $value;
 }
@@ -300,7 +444,7 @@ function wpforms_has_field_setting( $setting, $form, $multiple = false ) {
  */
 function wpforms_has_pagebreak( $form = false ) {
 
-	if ( ! wpforms()->pro ) {
+	if ( ! wpforms()->is_pro() ) {
 		return false;
 	}
 
@@ -350,7 +494,7 @@ function wpforms_has_pagebreak( $form = false ) {
  */
 function wpforms_get_pagebreak( $form = false, $type = false ) {
 
-	if ( ! wpforms()->pro ) {
+	if ( ! wpforms()->is_pro() ) {
 		return false;
 	}
 
@@ -402,7 +546,7 @@ function wpforms_get_pagebreak( $form = false, $type = false ) {
  */
 function wpforms_get_pagebreak_details( $form = false ) {
 
-	if ( ! wpforms()->pro ) {
+	if ( ! wpforms()->is_pro() ) {
 		return false;
 	}
 
@@ -514,7 +658,7 @@ function wpforms_html_attributes( $id = '', $class = array(), $datas = array(), 
  *
  * @since 1.2.1
  *
- * @param array|string $classes
+ * @param array|string $classes CSS classes.
  * @param bool         $convert True will convert strings to array and vice versa.
  *
  * @return string|array
@@ -522,18 +666,19 @@ function wpforms_html_attributes( $id = '', $class = array(), $datas = array(), 
 function wpforms_sanitize_classes( $classes, $convert = false ) {
 
 	$array = is_array( $classes );
-	$css   = array();
+	$css   = [];
 
 	if ( ! empty( $classes ) ) {
 		if ( ! $array ) {
 			$classes = explode( ' ', trim( $classes ) );
 		}
-		foreach ( $classes as $class ) {
+		foreach ( array_unique( $classes ) as $class ) {
 			if ( ! empty( $class ) ) {
 				$css[] = sanitize_html_class( $class );
 			}
 		}
 	}
+
 	if ( $array ) {
 		return $convert ? implode( ' ', $css ) : $css;
 	}
@@ -564,12 +709,16 @@ function wpforms_size_to_bytes( $size ) {
 	switch ( strtoupper( $suffix ) ) {
 		case 'P':
 			$value *= 1024;
+
 		case 'T':
 			$value *= 1024;
+
 		case 'G':
 			$value *= 1024;
+
 		case 'M':
 			$value *= 1024;
+
 		case 'K':
 			$value *= 1024;
 			break;
@@ -1062,7 +1211,7 @@ function wpforms_countries() {
 		'TO' => esc_html__( 'Tonga', 'wpforms-lite' ),
 		'TT' => esc_html__( 'Trinidad and Tobago', 'wpforms-lite' ),
 		'TN' => esc_html__( 'Tunisia', 'wpforms-lite' ),
-		'TR' => esc_html__( 'Turkey', 'wpforms-lite' ),
+		'TR' => esc_html__( 'Türkiye', 'wpforms-lite' ),
 		'TM' => esc_html__( 'Turkmenistan', 'wpforms-lite' ),
 		'TC' => esc_html__( 'Turks and Caicos Islands', 'wpforms-lite' ),
 		'TV' => esc_html__( 'Tuvalu', 'wpforms-lite' ),
@@ -1140,42 +1289,60 @@ function wpforms_days() {
 }
 
 /**
- * Lookup user IP.
- *
- * There are many ways to do this, but we prefer the way EDD does it.
- * https://github.com/easydigitaldownloads/easy-digital-downloads/blob/master/includes/misc-functions.php#L163
+ * Get the user IP address.
  *
  * @since 1.2.5
+ * @since 1.7.3 Improve the IP detection quality by taking care of proxies (e.g. when the site is behind Cloudflare).
+ *
+ * Code based on the:
+ *   - WordPress method \WP_Community_Events::get_unsafe_client_ip
+ *   - Cloudflare documentation https://support.cloudflare.com/hc/en-us/articles/206776727
  *
  * @return string
  */
 function wpforms_get_ip() {
 
-	$ip = false;
+	$ip = '127.0.0.1';
 
-	if ( ! empty( $_SERVER['HTTP_X_REAL_IP'] ) ) {
-		$ip = filter_var( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ), FILTER_VALIDATE_IP );
-	} elseif ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-		// Check ip from share internet.
-		$ip = filter_var( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ), FILTER_VALIDATE_IP );
-	} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-		// To check ip is pass from proxy.
-		// Can include more than 1 ip, first is the public one.
-		// WPCS: sanitization ok.
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$ips = explode( ',', wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
-		if ( is_array( $ips ) ) {
-			$ip = filter_var( $ips[0], FILTER_VALIDATE_IP );
+	$address_headers = [
+		'HTTP_TRUE_CLIENT_IP',
+		'HTTP_CF_CONNECTING_IP',
+		'HTTP_X_REAL_IP',
+		'HTTP_CLIENT_IP',
+		'HTTP_X_FORWARDED_FOR',
+		'HTTP_X_FORWARDED',
+		'HTTP_X_CLUSTER_CLIENT_IP',
+		'HTTP_FORWARDED_FOR',
+		'HTTP_FORWARDED',
+		'REMOTE_ADDR',
+	];
+
+	foreach ( $address_headers as $header ) {
+		if ( empty( $_SERVER[ $header ] ) ) {
+			continue;
 		}
-	} elseif ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) {
-		$ip = filter_var( wp_unslash( $_SERVER['REMOTE_ADDR'] ), FILTER_VALIDATE_IP );
+
+		/*
+		 * HTTP_X_FORWARDED_FOR can contain a chain of comma-separated addresses, with or without spaces.
+		 * The first address is the original client. It can't be trusted for authenticity,
+		 * but we don't need to for this purpose.
+		 */
+
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$address_chain = explode( ',', wp_unslash( $_SERVER[ $header ] ) );
+		$ip            = filter_var( trim( $address_chain[0] ), FILTER_VALIDATE_IP );
+
+		break;
 	}
 
-	$ip       = false !== $ip ? $ip : '127.0.0.1';
-	$ip_array = explode( ',', $ip );
-	$ip_array = array_map( 'trim', $ip_array );
-
-	return sanitize_text_field( apply_filters( 'wpforms_get_ip', $ip_array[0] ) );
+	/**
+	 * Filter detected IP address.
+	 *
+	 * @since 1.2.5
+	 *
+	 * @param string $ip IP address.
+	 */
+	return filter_var( apply_filters( 'wpforms_get_ip', $ip ), FILTER_VALIDATE_IP );
 }
 
 /**
@@ -1205,23 +1372,36 @@ function wpforms_sanitize_hex_color( $color ) {
  * Sanitize error message, primarily used during form frontend output.
  *
  * @since 1.3.7
+ * @since 1.7.6 Expand list of allowed HTML tags and attributes.
  *
- * @param string $error
+ * @param string $error Error message.
  *
  * @return string
  */
 function wpforms_sanitize_error( $error = '' ) {
 
-	$allow = array(
-		'a'      => array(
-			'href'  => array(),
-			'title' => array(),
-		),
-		'br'     => array(),
-		'em'     => array(),
-		'strong' => array(),
-		'p'      => array(),
-	);
+	$allow = [
+		'a'          => [
+			'href'   => [],
+			'title'  => [],
+			'target' => [],
+			'rel'    => [],
+		],
+		'br'         => [],
+		'em'         => [],
+		'strong'     => [],
+		'del'        => [],
+		'p'          => [
+			'style' => [],
+		],
+		'blockquote' => [],
+		'ul'         => [],
+		'ol'         => [],
+		'li'         => [],
+		'span'       => [
+			'style' => [],
+		],
+	];
 
 	return wp_kses( $error, $allow );
 }
@@ -1352,6 +1532,8 @@ function wpforms_get_allowed_html_tags_for_richtext_field() {
 			'span',
 			'small',
 			'table',
+			'thead',
+			'tbody',
 			'th',
 			'tr',
 			'td',
@@ -1365,7 +1547,7 @@ function wpforms_get_allowed_html_tags_for_richtext_field() {
 			'div',
 		],
 		array_fill_keys(
-			[ 'align', 'class', 'id', 'style', 'src', 'rel', 'href', 'target', 'width', 'height', 'title', 'cite', 'start', 'reversed', 'datetime' ],
+			[ 'align', 'class', 'id', 'style', 'src', 'rel', 'alt', 'href', 'target', 'width', 'height', 'title', 'cite', 'start', 'reversed', 'datetime' ],
 			[]
 		)
 	);
@@ -1694,7 +1876,7 @@ function wpforms_get_field_dynamic_choices( $field, $form_id, $form_data = array
 		foreach ( $posts as $post ) {
 			$choices[] = array(
 				'value' => $post->ID,
-				'label' => $post->post_title,
+				'label' => wpforms_get_post_title( $post ),
 				'depth' => isset( $post->depth ) ? absint( $post->depth ) : 1,
 			);
 		}
@@ -1720,7 +1902,7 @@ function wpforms_get_field_dynamic_choices( $field, $form_id, $form_data = array
 		foreach ( $terms as $term ) {
 			$choices[] = array(
 				'value' => $term->term_id,
-				'label' => $term->name,
+				'label' => wpforms_get_term_name( $term ),
 				'depth' => isset( $term->depth ) ? absint( $term->depth ) : 1,
 			);
 		}
@@ -1811,9 +1993,53 @@ function wpforms_debug() {
  * @param mixed $data What to dump, can be any type.
  * @param bool  $echo Whether to print or return. Default is to print.
  *
- * @return string
+ * @return string|void
  */
 function wpforms_debug_data( $data, $echo = true ) {
+
+	if ( ! wpforms_debug() ) {
+		return;
+	}
+
+	if ( is_array( $data ) || is_object( $data ) ) {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+		$data = print_r( $data, true );
+	}
+
+	$output = sprintf(
+		'<style>
+			.wpforms-debug {
+				line-height: 0;
+			}
+			.wpforms-debug textarea {
+				background: #f6f7f7 !important;
+				margin: 20px 0 0 0;
+				width: 100%%;
+				height: 500px;
+				font-size: 12px;
+				font-family: Consolas, Menlo, Monaco, monospace;
+				direction: ltr;
+				unicode-bidi: embed;
+				line-height: 1.4;
+				padding: 10px;
+				border-radius: 0;
+				border-color: #c3c4c7;
+			}
+			.postbox .wpforms-debug {
+				padding-top: 12px;
+			}
+			.postbox .wpforms-debug:first-of-type {
+				padding-top: 6px;
+			}
+			.postbox .wpforms-debug textarea {
+				margin-top: 0 !important;
+			}
+		</style>
+		<div class="wpforms-debug">
+			<textarea readonly>=================== WPFORMS DEBUG ===================%s</textarea>
+		</div>',
+		"\n\n" . $data
+	);
 
 	/**
 	 * Allow developers to determine whether the debug data should be displayed.
@@ -1825,25 +2051,11 @@ function wpforms_debug_data( $data, $echo = true ) {
 	 */
 	$allow_display = apply_filters( 'wpforms_debug_data_allow_display', true );
 
-	if ( wpforms_debug() ) {
-
-		$output = '<div><textarea style="background:#fff;margin: 20px 0;width:100%;height:500px;font-size:12px;font-family: Consolas,Monaco,monospace;direction: ltr;unicode-bidi: embed;line-height: 1.4;padding: 4px 6px 1px;" readonly>';
-
-		$output .= "=================== WPFORMS DEBUG ===================\n\n";
-
-		if ( is_array( $data ) || is_object( $data ) ) {
-			$output .= print_r( $data, true ); // phpcs:ignore
-		} else {
-			$output .= $data;
-		}
-
-		$output .= '</textarea></div>';
-
-		if ( $echo && $allow_display ) {
-			echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		} else {
-			return $output;
-		}
+	if ( $echo && $allow_display ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $output;
+	} else {
+		return $output;
 	}
 }
 
@@ -1878,6 +2090,7 @@ function wpforms_log( $title = '', $message = '', $args = array() ) {
 	 * - Providers (provider)
 	 * - Security (security)
 	 * - Spam (spam)
+	 * - Log (log)
 	 */
 	$types = ! empty( $args['type'] ) ? (array) $args['type'] : [ 'error' ];
 
@@ -2032,7 +2245,7 @@ function wpforms_get_field_required_label() {
 	$label_html = apply_filters_deprecated(
 		'wpforms_field_required_label',
 		array( ' <span class="wpforms-required-label">*</span>' ),
-		'1.4.8 of WPForms plugin',
+		'1.4.8 of the WPForms plugin',
 		'wpforms_get_field_required_label'
 	);
 
@@ -2058,11 +2271,11 @@ function wpforms_get_capability_manage_options() {
  * @since 1.4.4
  *
  * @param array|string $caps Capability name(s).
- * @param int          $id   ID of the specific object to check against if `$capability` is a "meta" cap.
- *                           "Meta" capabilities, e.g. 'edit_post', 'edit_user', etc., are capabilities used
- *                           by map_meta_cap() to map to other "primitive" capabilities, e.g. 'edit_posts',
- *                           'edit_others_posts', etc. Accessed via func_get_args() and passed to WP_User::has_cap(),
- *                           then map_meta_cap().
+ * @param int          $id   ID of the specific object to check against if capability is a "meta" cap. "Meta"
+ *                           capabilities, e.g. 'edit_post', 'edit_user', etc., are capabilities used by
+ *                           map_meta_cap() to map to other "primitive" capabilities, e.g. 'edit_posts',
+ *                           edit_others_posts', etc. Accessed via func_get_args() and passed to
+ *                           WP_User::has_cap(), then map_meta_cap().
  *
  * @return bool
  */
@@ -2164,6 +2377,61 @@ function wpforms_get_day_period_date( $period, $timestamp = '', $format = 'Y-m-d
 }
 
 /**
+ * Return available date formats.
+ *
+ * @since 1.7.5
+ *
+ * @return array
+ */
+function wpforms_date_formats() {
+
+	/**
+	 * Filters available date formats.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param array $date_formats Default date formats.
+	 *                            Item key is JS date character - see https://flatpickr.js.org/formatting/
+	 *                            Item value is in PHP format - see http://php.net/manual/en/function.date.php.
+	 */
+	return (array) apply_filters(
+		'wpforms_datetime_date_formats',
+		[
+			'm/d/Y'  => 'm/d/Y',
+			'd/m/Y'  => 'd/m/Y',
+			'F j, Y' => 'F j, Y',
+		]
+	);
+}
+
+/**
+ * Return available time formats.
+ *
+ * @since 1.7.7
+ *
+ * @return array
+ */
+function wpforms_time_formats() {
+
+	/**
+	 * Filters available time formats.
+	 *
+	 * @since 1.5.9
+	 *
+	 * @param array $time_formats Default time formats.
+	 *                            Item key is in PHP format which it used in jquery.timepicker as well,
+	 *                            see http://php.net/manual/en/function.date.php.
+	 */
+	return (array) apply_filters(
+		'wpforms_datetime_time_formats',
+		[
+			'g:i A' => '12 H',
+			'H:i'   => '24 H',
+		]
+	);
+}
+
+/**
  * Get an array of all possible provider addons.
  *
  * @since 1.5.5
@@ -2245,6 +2513,14 @@ function wpforms_get_providers_all() {
 			'plugin_slug' => 'wpforms-zapier',
 			'license'     => 'pro',
 		],
+		[
+			'name'        => 'HubSpot',
+			'slug'        => 'hubspot',
+			'img'         => 'addon-icon-hubspot.png',
+			'plugin'      => 'wpforms-hubspot/wpforms-hubspot.php',
+			'plugin_slug' => 'wpforms-hubspot',
+			'license'     => 'pro',
+		],
 	];
 }
 
@@ -2306,7 +2582,7 @@ function wpforms_update_providers_options( $provider, $options, $key = '' ) {
 }
 
 /**
- * Helper function to determine if loading an WPForms related admin page.
+ * Helper function to determine if loading on WPForms related admin page.
  *
  * Here we determine if the current administration page is owned/created by
  * WPForms. This is done in compliance with WordPress best practices for
@@ -2478,9 +2754,9 @@ function wpforms_chain( $value ) {
  */
 function wpforms_get_license_type() {
 
-	$type = \wpforms_setting( 'type', '', 'wpforms_license' );
+	$type = wpforms_setting( 'type', '', 'wpforms_license' );
 
-	if ( empty( $type ) || ! \wpforms()->pro ) {
+	if ( empty( $type ) || ! wpforms()->is_pro() ) {
 		return false;
 	}
 
@@ -2514,20 +2790,59 @@ function wpforms_get_license_key() {
  *
  * @param string $type Specific install type to check for.
  *
- * @return int|false
+ * @return int|false Unix timestamp. False on failure.
  */
 function wpforms_get_activated_timestamp( $type = '' ) {
 
-	$activated = get_option( 'wpforms_activated', [] );
-	$types     = ! empty( $type ) ? [ $type ] : [ 'lite', 'pro' ];
+	$activated = (array) get_option( 'wpforms_activated', [] );
 
-	foreach ( $types as $type ) {
-		if ( ! empty( $activated[ $type ] ) ) {
-			return absint( $activated[ $type ] );
+	if ( empty( $activated ) ) {
+		return false;
+	}
+
+	// When a passed install type is empty, then get it from a DB.
+	// If it is installed/activated first, it is saved first.
+	$type = empty( $type ) ? (string) array_keys( $activated )[0] : $type;
+
+	if ( ! empty( $activated[ $type ] ) ) {
+		return absint( $activated[ $type ] );
+	}
+
+	// Fallback.
+	$types = array_diff( [ 'lite', 'pro' ], [ $type ] );
+
+	foreach ( $types as $_type ) {
+		if ( ! empty( $activated[ $_type ] ) ) {
+			return absint( $activated[ $_type ] );
 		}
 	}
 
 	return false;
+}
+
+/**
+ * Retrieve a timestamp when WPForms was upgraded.
+ *
+ * @since 1.7.5
+ *
+ * @param string $version Specific plugin version to check for.
+ *
+ * @return int|false Unix timestamp or migration status. False on failure.
+ *                   Available migration statuses:
+ *                   -2 if migration is failed;
+ *                   -1 if migration is started (in progress);
+ *                    0 if migration is completed, but no luck to set a timestamp.
+ */
+function wpforms_get_upgraded_timestamp( $version ) {
+
+	$option_name = wpforms()->is_pro() ? 'wpforms_versions' : 'wpforms_versions_lite';
+	$upgrades    = (array) get_option( $option_name, [] );
+
+	if ( ! isset( $upgrades[ $version ] ) ) {
+		return false;
+	}
+
+	return (int) $upgrades[ $version ];
 }
 
 /**
@@ -2864,12 +3179,10 @@ function wpforms_is_gutenberg_active() {
 	include_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 	if ( is_plugin_active( 'disable-gutenberg/disable-gutenberg.php' ) ) {
-
 		return ! disable_gutenberg();
 	}
 
 	if ( is_plugin_active( 'classic-editor/classic-editor.php' ) ) {
-
 		return get_option( 'classic-editor-replace' ) === 'block';
 	}
 
@@ -2887,21 +3200,58 @@ function wpforms_is_gutenberg_active() {
  */
 function wpforms_can_install( $type ) {
 
+	return wpforms_can_do( 'install', $type );
+}
+
+/**
+ * Determine if the plugin/addon activations are allowed.
+ *
+ * @since 1.7.3
+ *
+ * @param string $type Should be `plugin` or `addon`.
+ *
+ * @return bool
+ */
+function wpforms_can_activate( $type ) {
+
+	return wpforms_can_do( 'activate', $type );
+}
+
+/**
+ * Determine if the plugin/addon installations/activations are allowed.
+ *
+ * @since 1.7.3
+ *
+ * @internal Use wpforms_can_activate() or wpforms_can_install() instead.
+ *
+ * @param string $what Should be 'activate' or 'install'.
+ * @param string $type Should be `plugin` or `addon`.
+ *
+ * @return bool
+ */
+function wpforms_can_do( $what, $type ) {
+
+	if ( ! in_array( $what, [ 'install', 'activate' ], true ) ) {
+		return false;
+	}
+
 	if ( ! in_array( $type, [ 'plugin', 'addon' ], true ) ) {
 		return false;
 	}
 
-	if ( ! current_user_can( 'install_plugins' ) ) {
+	$capability = $what . '_plugins';
+
+	if ( ! current_user_can( $capability ) ) {
 		return false;
 	}
 
-	// Determine whether file modifications are allowed.
-	if ( ! wp_is_file_mod_allowed( 'wpforms_can_install' ) ) {
+	// Determine whether file modifications are allowed and it is activation permissions checking.
+	if ( $what === 'install' && ! wp_is_file_mod_allowed( 'wpforms_can_install' ) ) {
 		return false;
 	}
 
 	// All plugin checks are done.
-	if ( 'plugin' === $type ) {
+	if ( $type === 'plugin' ) {
 		return true;
 	}
 
@@ -2978,6 +3328,18 @@ function wpforms_is_collecting_ip_allowed( $form_data = [] ) {
 	}
 
 	return true;
+}
+
+/**
+ * Determine if collecting cookies is allowed by GDPR setting.
+ *
+ * @since 1.7.5
+ *
+ * @return bool
+ */
+function wpforms_is_collecting_cookies_allowed() {
+
+	return ! ( wpforms_setting( 'gdpr', false ) && wpforms_setting( 'gdpr-disable-uuid', false ) );
 }
 
 /**
@@ -3086,11 +3448,130 @@ function wpforms_get_pages_list( $args = [] ) {
 	}
 
 	foreach ( $pages as $page ) {
-		/* translators: %d - a page ID. */
-		$title             = ! empty( $page->post_title ) ? $page->post_title : sprintf( __( '#%d (no title)', 'wpforms-lite' ), $page->ID );
+		$title             = wpforms_get_post_title( $page );
 		$depth             = count( $page->ancestors );
 		$list[ $page->ID ] = str_repeat( '&nbsp;', $depth * 3 ) . $title;
 	}
 
 	return $list;
+}
+
+/**
+ * Changes array of items into string of items, separated by comma and sql-escaped.
+ *
+ * @see https://coderwall.com/p/zepnaw
+ *
+ * @since 1.7.4
+ *
+ * @param mixed|array $items  Item(s) to be joined into string.
+ * @param string      $format Can be %s or %d.
+ *
+ * @return string Items separated by comma and sql-escaped.
+ */
+function wpforms_wpdb_prepare_in( $items, $format = '%s' ) {
+
+	global $wpdb;
+
+	$items    = (array) $items;
+	$how_many = count( $items );
+
+	if ( $how_many === 0 ) {
+		return '';
+	}
+
+	$placeholders    = array_fill( 0, $how_many, $format );
+	$prepared_format = implode( ',', $placeholders );
+
+	// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	return $wpdb->prepare( $prepared_format, $items );
+}
+
+/**
+ * Add UTM tags to a link that allows detecting traffic sources for our or partners' websites.
+ *
+ * @since 1.7.5
+ *
+ * @param string $link    Link to which you need to add UTM tags.
+ * @param string $medium  The page or location description. Check your current page and try to find
+ *                        and use an already existing medium for links otherwise, use a page name.
+ * @param string $content The feature's name, the button's content, the link's text, or something
+ *                        else that describes the element that contains the link.
+ * @param string $term    Additional information for the content that makes the link more unique.
+ *
+ * @return string
+ */
+function wpforms_utm_link( $link, $medium, $content = '', $term = '' ) {
+
+	return add_query_arg(
+		array_filter(
+			[
+				'utm_campaign' => wpforms()->is_pro() ? 'plugin' : 'liteplugin',
+				'utm_source'   => strpos( $link, 'https://wpforms.com' ) === 0 ? 'WordPress' : 'wpformsplugin',
+				'utm_medium'   => rawurlencode( $medium ),
+				'utm_content'  => rawurlencode( $content ),
+				'utm_term'     => rawurlencode( $term ),
+			]
+		),
+		$link
+	);
+}
+
+/**
+ * Determines whether the current request is a WP CLI request.
+ *
+ * @since 1.7.6
+ *
+ * @return bool
+ */
+function wpforms_doing_wp_cli() {
+
+	return defined( 'WP_CLI' ) && WP_CLI;
+}
+
+/**
+ * Modify the default USer-Agent generated by wp_remote_*() to include additional information.
+ *
+ * @since 1.7.5.2
+ *
+ * @return string
+ */
+function wpforms_get_default_user_agent() {
+
+	$license_type = wpforms()->is_pro() ? ucwords( (string) wpforms_get_license_type() ) : 'Lite';
+
+	return 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' ) . '; WPForms/' . $license_type . '-' . WPFORMS_VERSION;
+}
+
+/**
+ * Get sanitized post title or "no title" placeholder.
+ *
+ * The placeholder is prepended with post ID.
+ *
+ * @since 1.7.6
+ *
+ * @param WP_Post $post Post object.
+ *
+ * @return string Post title.
+ */
+function wpforms_get_post_title( $post ) {
+
+	/* translators: %d - a post ID. */
+	return wpforms_is_empty_string( trim( $post->post_title ) ) ? sprintf( __( '#%d (no title)', 'wpforms-lite' ), absint( $post->ID ) ) : $post->post_title;
+}
+
+/**
+ * Get sanitized term name or "no name" placeholder.
+ *
+ * The placeholder is prepended with term ID.
+ *
+ * @since 1.7.6
+ *
+ * @param WP_Term $term Term object.
+ *
+ * @return string Term name.
+ */
+function wpforms_get_term_name( $term ) {
+
+	/* translators: %d - a taxonomy term ID. */
+	return wpforms_is_empty_string( trim( $term->name ) ) ? sprintf( __( '#%d (no name)', 'wpforms-lite' ), absint( $term->term_id ) ) : $term->name;
 }

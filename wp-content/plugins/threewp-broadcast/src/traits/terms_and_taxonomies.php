@@ -174,6 +174,8 @@ trait terms_and_taxonomies
 		$action->taxonomy = $taxonomy;
 		$action->execute();
 
+		$bcd->synced_taxonomies()->add( $taxonomy );
+
 		// Clean up the terms.
 		foreach( $bcd->parent_blog_taxonomies[ $taxonomy ][ 'terms' ] as $index => $term )
 			if ( ! $term )
@@ -231,7 +233,10 @@ trait terms_and_taxonomies
 		// These sources were not found. Add them.
 		if ( isset( $bcd->add_new_taxonomies ) && $bcd->add_new_taxonomies )
 		{
-			$this->debug( '%s terms are missing on this blog: %s', count( $unfound_sources ), array_keys( $unfound_sources ) );
+			if ( count( $unfound_sources ) > 0 )
+				$this->debug( '%s terms are missing on this blog: %s', count( $unfound_sources ), array_keys( $unfound_sources ) );
+			else
+				$this->debug( 'All terms found on this blog.' );
 			foreach( $unfound_sources as $unfound_source_id => $unfound_source )
 			{
 				// We need to clone because we will be modifying the source.
@@ -330,8 +335,6 @@ trait terms_and_taxonomies
 			delete_option( $taxonomy . '_children' );
 			clean_term_cache( '', $taxonomy );
 		}
-
-		$bcd->synced_taxonomies()->add( $taxonomy );
 
 		// Tell everyone we've just synced this taxonomy.
 		$action = $this->new_action( 'synced_taxonomy' );

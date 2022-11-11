@@ -18,7 +18,7 @@ class WPForms_Entry_Preview extends WPForms_Field {
 		$this->name  = esc_html__( 'Entry Preview', 'wpforms' );
 		$this->type  = 'entry-preview';
 		$this->icon  = 'fa-file-text-o';
-		$this->order = 160;
+		$this->order = 190;
 		$this->group = 'fancy';
 
 		$this->hooks();
@@ -67,7 +67,7 @@ class WPForms_Entry_Preview extends WPForms_Field {
 
 		wp_enqueue_style(
 			'wpforms-entry-preview',
-			WPFORMS_PLUGIN_URL . "pro/assets/css/fields/entry-preview{$min}.css",
+			WPFORMS_PLUGIN_URL . "assets/pro/css/fields/entry-preview{$min}.css",
 			[],
 			WPFORMS_VERSION
 		);
@@ -93,7 +93,7 @@ class WPForms_Entry_Preview extends WPForms_Field {
 
 		wp_enqueue_script(
 			'wpforms-entry-preview',
-			WPFORMS_PLUGIN_URL . "pro/assets/js/fields/entry-preview{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/pro/js/fields/entry-preview{$min}.js",
 			[ 'jquery' ],
 			WPFORMS_VERSION,
 			true
@@ -306,6 +306,7 @@ class WPForms_Entry_Preview extends WPForms_Field {
 		wpforms()->get( 'process' )->fields = [];
 
 		foreach ( (array) $form_data['fields'] as $field_properties ) {
+
 			$field_id    = absint( $field_properties['id'] );
 			$field_type  = $field_properties['type'];
 			$field_value = isset( $submitted_fields['fields'][ $field_id ] ) ? $submitted_fields['fields'][ $field_id ] : '';
@@ -431,7 +432,7 @@ class WPForms_Entry_Preview extends WPForms_Field {
 
 			$value = $this->get_field_value( $field, $form_data );
 
-			if ( empty( $value ) ) {
+			if ( wpforms_is_empty_string( $value ) ) {
 				continue;
 			}
 
@@ -684,10 +685,10 @@ class WPForms_Entry_Preview extends WPForms_Field {
 			'row',
 			$field,
 			[
-				'slug'    => 'notice',
+				'slug'    => 'description',
 				'content' => sprintf(
 					'<p class="note">%s</p>',
-					esc_html__( 'The Entry Preview field will be displayed on its own page.', 'wpforms' )
+					esc_html__( 'Entry Preview must be displayed on its own page, without other fields. HTML fields are allowed.', 'wpforms' )
 				),
 			]
 		);
@@ -1015,8 +1016,7 @@ class WPForms_Entry_Preview extends WPForms_Field {
 	 */
 	private function is_fields_ignored( $form_data ) {
 
-		// Backward compatibility with Conversational Forms addon.
-		$is_ignore = ! empty( $form_data['settings']['conversational_forms_enable'] ) && get_query_var( 'post_type' ) === 'wpforms';
+		$is_ignore = false;
 
 		/**
 		 * Allow ignoring entry preview fields for some forms.

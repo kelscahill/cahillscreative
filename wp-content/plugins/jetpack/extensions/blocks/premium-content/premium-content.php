@@ -75,7 +75,7 @@ function render_block( $attributes, $content ) {
 	}
 
 	// We don't use FEATURE_NAME here because styles are not in /container folder.
-	Jetpack_Gutenberg::load_styles_as_required( 'premium-content' );
+	Jetpack_Gutenberg::load_assets_as_required( 'premium-content' );
 	return $content;
 }
 
@@ -120,7 +120,7 @@ function render_stripe_nudge() {
  * @return string Final content to render.
  */
 function stripe_nudge( $checkout_url, $description, $button_text ) {
-	\jetpack_require_lib( 'components' );
+	require_once JETPACK__PLUGIN_DIR . '_inc/lib/components.php';
 	return \Jetpack_Components::render_frontend_nudge(
 		array(
 			'checkoutUrl' => $checkout_url,

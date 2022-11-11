@@ -1,8 +1,8 @@
 /**
  * External dependencies
  */
-import { withInstanceId } from '@wordpress/compose';
 import classNames from 'classnames';
+import { useInstanceId } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -11,12 +11,13 @@ import './style.scss';
 
 export type CheckboxControlProps = {
 	className?: string;
-	label?: string;
+	label?: string | React.ReactNode;
 	id?: string;
-	instanceId: string;
 	onChange: ( value: boolean ) => void;
-	children: React.ReactChildren;
-	hasError: boolean;
+	children?: React.ReactChildren;
+	hasError?: boolean;
+	checked?: boolean;
+	disabled?: boolean;
 };
 
 /**
@@ -26,12 +27,14 @@ export const CheckboxControl = ( {
 	className,
 	label,
 	id,
-	instanceId,
 	onChange,
 	children,
 	hasError = false,
+	checked = false,
+	disabled = false,
 	...rest
 }: CheckboxControlProps ): JSX.Element => {
+	const instanceId = useInstanceId( CheckboxControl );
 	const checkboxId = id || `checkbox-control-${ instanceId }`;
 
 	return (
@@ -51,6 +54,8 @@ export const CheckboxControl = ( {
 					type="checkbox"
 					onChange={ ( event ) => onChange( event.target.checked ) }
 					aria-invalid={ hasError === true }
+					checked={ checked }
+					disabled={ disabled }
 					{ ...rest }
 				/>
 				<svg
@@ -72,4 +77,4 @@ export const CheckboxControl = ( {
 	);
 };
 
-export default withInstanceId( CheckboxControl );
+export default CheckboxControl;

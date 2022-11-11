@@ -1,0 +1,12 @@
+name: cahillscreative
+proxy:
+  appserver:
+    - cahillscreative.lndo.site
+    - thehappyglamper.lndo.site
+recipe: wordpress
+config:
+  webroot: .
+  php: '8.1'
+excludes:
+  - wp-content/themes/cahillscreative/vendor
+  - wp-content/themes/cahillscreative/node_modules

@@ -135,16 +135,8 @@ class Addons {
 
 		// JavaScript.
 		wp_enqueue_script(
-			'jquery-matchheight',
-			WPFORMS_PLUGIN_URL . 'assets/js/jquery.matchHeight-min.js',
-			[ 'jquery' ],
-			'0.7.0',
-			false
-		);
-
-		wp_enqueue_script(
 			'listjs',
-			WPFORMS_PLUGIN_URL . 'assets/js/list.min.js',
+			WPFORMS_PLUGIN_URL . 'assets/lib/list.min.js',
 			[ 'jquery' ],
 			'1.5.0'
 		);
@@ -374,6 +366,10 @@ class Addons {
 			! empty( $addon['status'] ) && $addon['status'] === 'active' && $addon['plugin_allow'] ? $addon['doc_url'] : $addon['page_url']
 		);
 
+		if ( $addon['slug'] === 'wpforms-stripe' ) {
+			$addon['recommended'] = true;
+		}
+
 		echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			'admin/addons-item',
 			[
@@ -382,6 +378,7 @@ class Addons {
 				'image'        => WPFORMS_PLUGIN_URL . 'assets/images/' . $image,
 				'url'          => $url,
 				'button'       => $this->get_addon_button_html( $addon ),
+				'recommended'  => isset( $addon['recommended'] ) ? $addon['recommended'] : false,
 			],
 			true
 		);
@@ -419,7 +416,6 @@ class Addons {
 				$html .= '<i class="fa fa-toggle-on" aria-hidden="true"></i>';
 				$html .= esc_html__( 'Deactivate', 'wpforms' );
 				$html .= '</button>';
-
 				break;
 
 			case 'installed':
@@ -427,7 +423,6 @@ class Addons {
 				$html .= '<i class="fa fa-toggle-on fa-flip-horizontal" aria-hidden="true"></i>';
 				$html .= esc_html__( 'Activate', 'wpforms' );
 				$html .= '</button>';
-
 				break;
 
 			case 'missing':
@@ -438,7 +433,6 @@ class Addons {
 				$html .= '<i class="fa fa-cloud-download" aria-hidden="true"></i>';
 				$html .= esc_html__( 'Install Addon', 'wpforms' );
 				$html .= '</button>';
-
 				break;
 		}
 

@@ -4,9 +4,9 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 7.2
-Stable tag: 48.06
+Stable tag: 48.15
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
-Tested up to: 5.9
+Tested up to: 6.1
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -99,6 +99,7 @@ The following add-ons add support for the plugin after which they are named:
 * <a href="https://broadcast.plainviewplugins.com/addon/imagify/">Imagify</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/inboundnow/">Inbound Now</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/intagrate/">Intagrate</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/jetpack/">Jetpack</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/litespeed-cache/">LiteSpeed Cache</a>
@@ -171,8 +172,11 @@ These add-ons give you extra control of what you broadcast and how:
 * <a href="https://broadcast.plainviewplugins.com/addon/per-blog-taxonomies/">Per Blog Taxonomies</a> allows individual control of specific taxonomies for each child post.
 * <a href="https://broadcast.plainviewplugins.com/addon/permalinks/">Permalinks</a> provides more precise control of permalinks for both parents and children.
 * <a href="https://broadcast.plainviewplugins.com/addon/protect-child-properties/">Protect Child Properties</a> prevents various properties of child posts from being overwritten.
+* <a href="https://broadcast.plainviewplugins.com/addon/rebroadcaster/">Rebroadcaster</a>: Periodically and automatically rebroadcast specific posts.
+* <a href="https://broadcast.plainviewplugins.com/addon/rebroadcast-parent-here/"Rebroadcast Parent Here</a>: Rebroadcast the parent to this linked child.
 * <a href="https://broadcast.plainviewplugins.com/addon/redirect-all-children/">Redirect All Children</a> redirects single post views from visitors of child posts to the parent post.
 * <a href="https://broadcast.plainviewplugins.com/addon/redirect-parent/">Redirect Parent</a> redirect all views of a parent post to the first child post.
+* <a href="https://broadcast.plainviewplugins.com/addon/relink-to-parent/">Relink To Parent</a>: Relink an unlinked child to the parent.
 * <a href="https://broadcast.plainviewplugins.com/addon/search-and-replace/">Search And Replace</a> finds and replaces texts in posts during broadcast.
 * <a href="https://broadcast.plainviewplugins.com/addon/shortcode-attachments/">Shortcode Attachments</a> modifies attachment IDs found in shortcodes to match their equivalent attachments on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/shortcode-menus/">Shortcode Menus</a> modifies menu IDs found in shortcodes to match their equivalent menus on each blog.
@@ -192,6 +196,7 @@ Efficiency pack
 These add-ons allow you to broadcast more efficiently, saving you even more time:
 
 * <a href="https://broadcast.plainviewplugins.com/addon/blog-groups-2/">Blog Groups 2</a> provides a means of groups blogs together, in order to be able to quickly select and unselect blogs from the Broadcast meta box.
+* <a href="https://broadcast.plainviewplugins.com/addon/blog-search/">Blog Search</a>: Search and filter the blog list in the editor meta box.
 * <a href="https://broadcast.plainviewplugins.com/addon/duplicate-attachments/">Duplicate Attachments</a> will duplicate the attachment and thumbnails, instead of letting WordPress regenerate them.
 * <a href="https://broadcast.plainviewplugins.com/addon/find-some-unlinked-children/">Find Some Unlinked Children</a> can selectively link orphans / unlinked posts to parents, instead of automatically linking all found children.
 * <a href="https://broadcast.plainviewplugins.com/addon/new-blog/">New Blog Broadcast</a> automatically broadcasts posts when creating a new blog.
@@ -361,6 +366,39 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 48.15 20221031 =
+
+* Version bump for WP 6.1
+* Fix: Allow for PHP 7.2 again. I just needed to remove a comma in the code.
+
+= 48.14 20221008 =
+
+* Fix: During maybe_sync_taxonomy(), mark the taxonomy as synced as soon as possible. This is to prevent looping in add-ons such as ACF, where taxonomies can be referred to by other taxonomies.
+* Fix: When trashing parent and child posts, avoid doing the work double.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/blog-search/">Blog Search</a>: Search and filter the blog list in the editor meta box.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Adds support for <a href="https://crocoblock.com/plugins/jetengine/custom-post-type/">JetEngine custom post types</a>.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/rebroadcast-parent-here/"Rebroadcast Parent Here</a>: Rebroadcast the parent to this linked child.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/relink-to-parent/">Relink To Parent</a>: Relink an unlinked child to the parent.
+* Code: Add trash_untrash_delete_post action.
+* Code: Link the post directly after creating it, instead of waiting until all attachments and taxonomies are synced.
+
+= 48.12 20220727 =
+
+* Dev: Add helper methods to prepare_meta_box action.
+
+= 48.11 20220525 =
+
+* Version bump for WP 6.0
+
+= 48.09 20220418 =
+
+* Fix: Exception when being activated on single installs.
+
+= 48.07 20220226 =
+
+* Fix: Prevent Wordpress from removing iframe tags in the post content.
+* Fix: Prevent Broadcast from being activated on single installs. Fixed the activate() on null error.
 
 = 48.06 20220129 =
 

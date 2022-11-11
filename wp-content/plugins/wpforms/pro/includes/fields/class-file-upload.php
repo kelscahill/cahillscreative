@@ -48,6 +48,15 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 	const TEMPLATE_MAXFILENUM = '{maxFileNumber}';
 
 	/**
+	 * Handle name for wp_register_styles handle.
+	 *
+	 * @since 1.7.7
+	 *
+	 * @var string
+	 */
+	const HANDLE = 'wpforms-dropzone';
+
+	/**
 	 * File extensions that are now allowed.
 	 *
 	 * @since 1.0.0
@@ -76,7 +85,7 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 		$this->name  = esc_html__( 'File Upload', 'wpforms' );
 		$this->type  = 'file-upload';
 		$this->icon  = 'fa-upload';
-		$this->order = 90;
+		$this->order = 100;
 		$this->group = 'fancy';
 
 		// Init our upload helper & add the actions.
@@ -91,11 +100,17 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 		// Field styles for Gutenberg.
 		add_action( 'enqueue_block_editor_assets', [ $this, 'gutenberg_enqueues' ] );
 
+		// Field styles for Gutenberg. Register after wpforms-pro-integrations.
+		add_action( 'init', [ $this, 'register_gutenberg_styles' ], 20 );
+
+		// Set editor style handle for block type editor.
+		add_filter( 'register_block_type_args', [ $this, 'register_block_type_args' ], 10, 2 );
+
 		// Define additional field properties.
 		add_filter( 'wpforms_field_properties_file-upload', [ $this, 'field_properties' ], 5, 3 );
 
-		// Customize value format for HTML emails.
-		add_filter( 'wpforms_html_field_value', [ $this, 'html_email_value' ], 10, 4 );
+		// Customize value format.
+		add_filter( 'wpforms_html_field_value', [ $this, 'html_field_value' ], 10, 4 );
 
 		// Add builder strings.
 		add_filter( 'wpforms_builder_strings', [ $this, 'add_builder_strings' ], 10, 2 );
@@ -162,8 +177,8 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 			$min = wpforms_get_min_suffix();
 
 			wp_enqueue_script(
-				'wpforms-dropzone',
-				WPFORMS_PLUGIN_URL . "pro/assets/js/vendor/dropzone{$min}.js",
+				self::HANDLE,
+				WPFORMS_PLUGIN_URL . 'assets/pro/lib/dropzone.min.js',
 				[ 'jquery' ],
 				self::DROPZONE_VERSION,
 				true
@@ -171,14 +186,14 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 
 			wp_enqueue_script(
 				'wpforms-file-upload',
-				WPFORMS_PLUGIN_URL . "pro/assets/js/wpforms-file-upload{$min}.js",
-				[ 'wpforms', 'wp-util', 'wpforms-dropzone' ],
+				WPFORMS_PLUGIN_URL . "assets/pro/js/wpforms-file-upload{$min}.js",
+				[ 'wpforms', 'wp-util', self::HANDLE ],
 				WPFORMS_VERSION,
 				true
 			);
 
 			wp_localize_script(
-				'wpforms-dropzone',
+				self::HANDLE,
 				'wpforms_file_upload',
 				[
 					'url'             => admin_url( 'admin-ajax.php' ),
@@ -232,9 +247,9 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 			$min = wpforms_get_min_suffix();
 
 			wp_enqueue_style(
-				'wpforms-dropzone',
-				WPFORMS_PLUGIN_URL . "pro/assets/css/dropzone{$min}.css",
-				array(),
+				self::HANDLE,
+				WPFORMS_PLUGIN_URL . "assets/pro/css/dropzone{$min}.css",
+				[],
 				self::DROPZONE_VERSION
 			);
 		}
@@ -282,14 +297,44 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 	 */
 	public function gutenberg_enqueues() {
 
-		$min = wpforms_get_min_suffix();
+		if ( version_compare( get_bloginfo( 'version' ), '5.5', '>=' ) ) {
+			return;
+		}
 
-		wp_enqueue_style(
-			'wpforms-dropzone',
-			WPFORMS_PLUGIN_URL . "pro/assets/css/dropzone{$min}.css",
-			[ 'wpforms-pro-integrations' ],
+		wp_enqueue_style( self::HANDLE );
+	}
+
+	/**
+	 * Register Gutenberg block styles.
+	 *
+	 * @since 1.7.4.2
+	 */
+	public function register_gutenberg_styles() {
+
+		$min  = wpforms_get_min_suffix();
+		$deps = is_admin() ? [ 'wpforms-pro-integrations' ] : [];
+
+		wp_register_style(
+			self::HANDLE,
+			WPFORMS_PLUGIN_URL . "assets/pro/css/dropzone{$min}.css",
+			$deps,
 			self::DROPZONE_VERSION
 		);
+	}
+
+	/**
+	 * Set editor style handle for block type editor.
+	 *
+	 * @since 1.7.4.2
+	 *
+	 * @param array  $args       Array of arguments for registering a block type.
+	 * @param string $block_type Block type name including namespace.
+	 */
+	public function register_block_type_args( $args, $block_type ) {
+
+		if ( $block_type !== 'wpforms/form-selector' ) {
+			return $args;
+		}
 
 		// The Full Site Editor (FSE) uses an iframe with the site editor.
 		// It inserts into the iframe only those scripts defined during the block registration.
@@ -300,20 +345,9 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 		// wpforms-gutenberg-form-selector
 		// wpforms-pro-integrations
 		// wpforms-dropzone.
-		// @todo Find out the better way to inject our styles into the FSE iframe.
-		$wp_block_type_registry = WP_Block_Type_Registry::get_instance();
+		$args['editor_style'] = self::HANDLE;
 
-		if ( ! $wp_block_type_registry ) {
-			return;
-		}
-
-		$block = $wp_block_type_registry->get_registered( 'wpforms/form-selector' );
-
-		if ( ! $block ) {
-			return;
-		}
-
-		$block->editor_style = 'wpforms-dropzone';
+		return $args;
 	}
 
 	/**
@@ -384,10 +418,11 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 	}
 
 	/**
-	 * Customize format for HTML email notifications.
+	 * Customize format for HTML display.
 	 *
-	 * @since 1.1.3
-	 * @since 1.5.6 Added different link generation for classic and modern uploader.
+	 * Additionally, truncates the list of files on the entry table view.
+	 *
+	 * @since 1.7.6
 	 *
 	 * @param string $val       Field value.
 	 * @param array  $field     Field settings.
@@ -396,7 +431,7 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 	 *
 	 * @return string
 	 */
-	public function html_email_value( $val, $field, $form_data = array(), $context = '' ) {
+	public function html_field_value( $val, $field, $form_data = [], $context = '' ) {
 
 		if ( empty( $field['value'] ) || $field['type'] !== $this->type ) {
 			return $val;
@@ -404,7 +439,8 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 
 		// Process modern uploader.
 		if ( ! empty( $field['value_raw'] ) ) {
-			return wpforms_chain( $field['value_raw'] )
+			$values = $context === 'entry-table' ? array_slice( $field['value_raw'], 0, 3, true ) : $field['value_raw'];
+			$html   = wpforms_chain( $values )
 				->map(
 					function ( $file ) use ( $context ) {
 
@@ -418,9 +454,36 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 				->array_filter()
 				->implode()
 				->value();
+
+			if ( count( $values ) < count( $field['value_raw'] ) ) {
+				$html .= '&hellip;';
+			}
+
+			return $html;
 		}
 
 		return $this->get_file_link_html( $field, $context );
+	}
+
+	/**
+	 * Customize format for HTML email notifications.
+	 *
+	 * @since 1.1.3
+	 * @since 1.5.6 Added different link generation for classic and modern uploader.
+	 * @deprecated 1.7.6
+	 *
+	 * @param string $val       Field value.
+	 * @param array  $field     Field settings.
+	 * @param array  $form_data Form data and settings.
+	 * @param string $context   Value display context.
+	 *
+	 * @return string
+	 */
+	public function html_email_value( $val, $field, $form_data = [], $context = '' ) {
+
+		_deprecated_function( __METHOD__, '1.7.6 of the WPForms plugin', __CLASS__ . '::html_field_value()' );
+
+		return $this->html_field_value( $val, $field, $form_data, $context );
 	}
 
 	/**
@@ -515,7 +578,11 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 				'slug'          => 'extensions',
 				'value'         => esc_html__( 'Allowed File Extensions', 'wpforms' ),
 				'tooltip'       => esc_html__( 'Enter the extensions you would like to allow, comma separated.', 'wpforms' ),
-				'after_tooltip' => '<a href="https://wpforms.com/docs/a-complete-guide-to-the-file-upload-field/#file-types" class="after-label-description" target="_blank" rel="noopener noreferrer">' . esc_html__( 'See More Details', 'wpforms' ) . '</a>',
+				'after_tooltip' => sprintf(
+					'<a href="%1$s" class="after-label-description" target="_blank" rel="noopener noreferrer">%2$s</a>',
+					esc_url( wpforms_utm_link( 'https://wpforms.com/docs/a-complete-guide-to-the-file-upload-field/#file-types', 'Field Options', 'File Upload Extensions Documentation' ) ),
+					esc_html__( 'See More Details', 'wpforms' )
+				),
 			),
 			false
 		);
@@ -1809,7 +1876,7 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 
 		foreach ( $sizes as $size ) {
 			if ( $size > $max_size ) {
-				return sprintf( /* translators: $s - allowed file size in Mb. */
+				return sprintf( /* translators: $s - allowed file size in MB. */
 					esc_html__( 'File exceeds max size allowed (%s).', 'wpforms' ),
 					size_format( $max_size )
 				);
@@ -2013,7 +2080,7 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 			->map(
 				static function ( $ext ) {
 
-					return strtolower( preg_replace( '/[^A-Za-z0-9]/', '', $ext ) );
+					return strtolower( preg_replace( '/[^A-Za-z0-9_-]/', '', $ext ) );
 				}
 			)
 			->array_filter()
@@ -2121,12 +2188,27 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 	 */
 	private static function get_form_files_path( $form_id ) {
 
-		$form_data = wpforms()->form->get( $form_id );
-
+		$form_data  = wpforms()->form->get( $form_id );
 		$upload_dir = wpforms_upload_dir();
-		$folder     = absint( $form_data->ID ) . '-' . wp_hash( $form_data->post_date . $form_data->ID );
 
-		return trailingslashit( $upload_dir['path'] ) . $folder;
+		return trailingslashit( $upload_dir['path'] ) . ( new Upload() )->get_form_directory( $form_data->ID, $form_data->post_date );
+	}
+
+	/**
+	 * Fallback method to get Form files path for already existing uploads with incorrectly generated hashes (files uploaded before version 1.7.6 ).
+	 *
+	 * @since 1.7.6
+	 *
+	 * @param string $form_id Form ID.
+	 *
+	 * @return string
+	 */
+	private static function get_form_files_path_backward_fallback( $form_id ) {
+
+		$form_data  = wpforms()->form->get( $form_id );
+		$upload_dir = wpforms_upload_dir();
+
+		return trailingslashit( $upload_dir['path'] ) . absint( $form_data->ID ) . '-' . md5( $form_data->post_date . $form_data->ID );
 	}
 
 	/**
@@ -2149,7 +2231,12 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 			return $removed_files;
 		}
 
-		$files_path       = self::get_form_files_path( $entry->form_id );
+		$files_path = self::get_form_files_path( $entry->form_id );
+
+		if ( ! is_dir( $files_path ) ) {
+			$files_path = self::get_form_files_path_backward_fallback( $entry->form_id );
+		}
+
 		$fields_to_delete = $delete_fields ? $delete_fields : (array) wpforms_decode( $entry->fields );
 
 		foreach ( $fields_to_delete as $field ) {
@@ -2242,6 +2329,57 @@ class WPForms_Field_File_Upload extends WPForms_Field {
 	public static function is_modern_upload( $field_data ) {
 
 		return isset( $field_data['style'] ) && $field_data['style'] === self::STYLE_MODERN;
+	}
+
+	/**
+	 * Returns an array containing the file paths of the files uploading in a file upload entry.
+	 *
+	 * @since 1.7.8
+	 *
+	 * @param string $form_id     Form ID.
+	 * @param array  $entry_field Entry field data.
+	 *
+	 * @return array The file path of the uploaded file. Returns an empty string if the file path isn't fetched.
+	 */
+	public static function get_entry_field_file_paths( $form_id, $entry_field ) {
+
+		$form_file_path = self::get_form_files_path( $form_id );
+		$files          = [];
+
+		if ( self::is_modern_upload( $entry_field ) ) {
+
+			foreach ( $entry_field['value_raw'] as $value ) {
+				$file_path = self::get_file_path( $value['attachment_id'], $value['file'], $form_file_path );
+
+				if ( empty( $file_path ) ) {
+					continue;
+				}
+
+				$files[] = $file_path;
+			}
+		} else {
+			$files[] = self::get_file_path( $entry_field['attachment_id'], $entry_field['file'], $form_file_path );
+		}
+
+		return $files;
+	}
+
+	/**
+	 * Returns the file path of a given attachment ID or file name.
+	 *
+	 * @since 1.7.8
+	 *
+	 * @param int    $attachment_id  Attachment ID.
+	 * @param string $file_name      File name.
+	 * @param string $file_base_path The base path of uploaded files.
+	 *
+	 * @return string
+	 */
+	private static function get_file_path( $attachment_id, $file_name, $file_base_path ) {
+
+		$file_path = empty( $attachment_id ) ? trailingslashit( $file_base_path ) . $file_name : get_attached_file( $attachment_id );
+
+		return ( empty( $file_path ) || ! is_file( $file_path ) ) ? '' : $file_path;
 	}
 }
 

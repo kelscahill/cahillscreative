@@ -38,6 +38,7 @@ class Loader {
 	protected function populate_classes() {
 
 		$this->populate_admin();
+		$this->populate_forms_overview();
 		$this->populate_builder();
 		$this->populate_migrations();
 		$this->populate_capabilities();
@@ -47,6 +48,7 @@ class Loader {
 		$this->populate_logger();
 		$this->populate_education();
 		$this->populate_robots();
+		$this->populate_anti_spam_filters();
 	}
 
 	/**
@@ -65,6 +67,23 @@ class Loader {
 			'name' => 'Forms\Honeypot',
 			'id'   => 'honeypot',
 		];
+
+		$this->classes[] = [
+			'name' => 'Forms\Akismet',
+			'id'   => 'akismet',
+		];
+
+		$this->classes[] = [
+			'name' => 'Forms\Submission',
+			'id'   => 'submission',
+			'hook' => false,
+			'run'  => false,
+		];
+
+		$this->classes[] = [
+			'name' => 'Forms\Locator',
+			'id'   => 'locator',
+		];
 	}
 
 	/**
@@ -81,6 +100,11 @@ class Loader {
 				'id'   => 'notice',
 			],
 			[
+				'name' => 'Admin\Revisions',
+				'id'   => 'revisions',
+				'hook' => 'admin_init',
+			],
+			[
 				'name' => 'Admin\Addons\AddonsCache',
 				'id'   => 'addons_cache',
 			],
@@ -93,12 +117,19 @@ class Loader {
 				'hook' => 'init',
 			],
 			[
-				'name' => 'Admin\Notifications',
+				'name' => 'Admin\Notifications\Notifications',
 				'id'   => 'notifications',
+			],
+			[
+				'name' => 'Admin\Notifications\EventDriven',
 			],
 			[
 				'name' => 'Admin\Entries\Edit',
 				'id'   => 'entries_edit',
+				'hook' => 'admin_init',
+			],
+			[
+				'name' => 'Admin\Pages\Templates',
 				'hook' => 'admin_init',
 			],
 			[
@@ -125,15 +156,57 @@ class Loader {
 				'hook' => 'current_screen',
 			],
 			[
+				'name'      => 'Admin\Tools\Importers',
+				'hook'      => 'admin_init',
+				'run'       => 'load',
+				'condition' => wp_doing_ajax(),
+			],
+			[
 				'name' => 'Admin\Pages\Addons',
 				'id'   => 'addons_page',
 			],
 			[
+				'name' => 'Admin\Pages\ConstantContact',
+				'hook' => 'admin_init',
+			],
+			[
 				'name' => 'Forms\Fields\Richtext\EntryViewContent',
+			]
+		);
+	}
+
+	/**
+	 * Populate Forms Overview admin page related classes.
+	 *
+	 * @since 1.7.5
+	 */
+	private function populate_forms_overview() {
+
+		if ( ! wpforms_is_admin_page( 'overview' ) && ! wp_doing_ajax() ) {
+			return;
+		}
+
+		array_push(
+			$this->classes,
+			[
+				'name' => 'Admin\Forms\Ajax\Tags',
+				'id'   => 'forms_tags_ajax',
 			],
 			[
 				'name' => 'Admin\Forms\Search',
 				'id'   => 'forms_search',
+			],
+			[
+				'name' => 'Admin\Forms\Views',
+				'id'   => 'forms_views',
+			],
+			[
+				'name' => 'Admin\Forms\BulkActions',
+				'id'   => 'forms_bulk_actions',
+			],
+			[
+				'name' => 'Admin\Forms\Tags',
+				'id'   => 'forms_tags',
 			]
 		);
 	}
@@ -165,6 +238,19 @@ class Loader {
 			[
 				'name' => 'Admin\Builder\Templates',
 				'id'   => 'builder_templates',
+			],
+			[
+				'name' => 'Admin\Builder\AntiSpam',
+				'hook' => 'wpforms_builder_init',
+			],
+			[
+				'name' => 'Admin\Builder\Notifications\Advanced\Settings',
+			],
+			[
+				'name' => 'Admin\Builder\Notifications\Advanced\FileUploadAttachment',
+			],
+			[
+				'name' => 'Admin\Builder\Notifications\Advanced\EntryCsvAttachment',
 			]
 		);
 	}
@@ -177,7 +263,7 @@ class Loader {
 	private function populate_migrations() {
 
 		$this->classes[] = [
-			'name' => 'Migrations',
+			'name' => 'Migrations\Migrations',
 			'hook' => 'plugins_loaded',
 		];
 	}
@@ -291,6 +377,7 @@ class Loader {
 
 		// Education features classes.
 		$features = [
+			'LiteConnect',
 			'Builder\Captcha',
 			'Builder\Fields',
 			'Builder\Settings',
@@ -299,20 +386,19 @@ class Loader {
 			'Builder\DidYouKnow',
 			'Builder\Geolocation',
 			'Builder\Confirmations',
+			'Builder\Notifications',
 			'Admin\DidYouKnow',
 			'Admin\Settings\Integrations',
 			'Admin\Settings\Geolocation',
 			'Admin\NoticeBar',
 			'Admin\Entries\Geolocation',
+			'Admin\Entries\UserJourney',
 		];
 
 		foreach ( $features as $feature ) {
-			array_push(
-				$this->classes,
-				[
-					'name' => 'Admin\Education\\' . $feature,
-				]
-			);
+			$this->classes[] = [
+				'name' => 'Admin\Education\\' . $feature,
+			];
 		}
 	}
 
@@ -327,5 +413,25 @@ class Loader {
 			'name' => 'Robots',
 			'run'  => 'hooks',
 		];
+	}
+
+	/**
+	 * Populate Country and Keyword filters from AntiSpam settings.
+	 *
+	 * @since 1.7.8
+	 */
+	private function populate_anti_spam_filters() {
+
+		array_push(
+			$this->classes,
+			[
+				'name' => 'AntiSpam\CountryFilter',
+				'hook' => 'init',
+			],
+			[
+				'name' => 'AntiSpam\KeywordFilter',
+				'hook' => 'init',
+			]
+		);
 	}
 }

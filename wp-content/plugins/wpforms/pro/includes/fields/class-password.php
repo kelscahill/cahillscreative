@@ -359,6 +359,7 @@ class WPForms_Field_Password extends WPForms_Field {
 
 		$placeholder         = ! empty( $field['placeholder'] ) ? $field['placeholder'] : '';
 		$confirm_placeholder = ! empty( $field['confirmation_placeholder'] ) ? $field['confirmation_placeholder'] : '';
+		$default_value       = ! empty( $field['default_value'] ) ? $field['default_value'] : '';
 		$confirm             = ! empty( $field['confirmation'] ) ? 'enabled' : 'disabled';
 
 		// Label.
@@ -368,7 +369,7 @@ class WPForms_Field_Password extends WPForms_Field {
 		<div class="wpforms-confirm wpforms-confirm-<?php echo esc_attr( $confirm ); ?>">
 
 			<div class="wpforms-confirm-primary">
-				<input type="password" placeholder="<?php echo esc_attr( $placeholder ); ?>" class="primary-input" readonly>
+				<input type="password" placeholder="<?php echo esc_attr( $placeholder ); ?>" value="<?php echo esc_attr( $default_value ); ?>" class="primary-input" readonly>
 				<label class="wpforms-sub-label"><?php esc_html_e( 'Password', 'wpforms' ); ?></label>
 			</div>
 
@@ -487,7 +488,8 @@ class WPForms_Field_Password extends WPForms_Field {
 		if (
 			! empty( $fields[ $field_id ]['password-strength'] ) &&
 			! empty( $fields[ $field_id ]['password-strength-level'] ) &&
-			version_compare( PHP_VERSION, '7.2.0', '>=' )
+			PHP_VERSION_ID >= 70200 &&
+			! $this->is_empty_not_required_field( $field_id, $field_submit, $fields ) // Don't check the password strength for empty fields which is set as not required.
 		) {
 
 			require_once WPFORMS_PLUGIN_DIR . 'libs/bjeavons/zxcvbn-php/autoload.php';
@@ -547,7 +549,7 @@ class WPForms_Field_Password extends WPForms_Field {
 
 		wp_enqueue_style(
 			'wpforms-password-field',
-			WPFORMS_PLUGIN_URL . "pro/assets/css/fields/password{$min}.css",
+			WPFORMS_PLUGIN_URL . "assets/pro/css/fields/password{$min}.css",
 			[],
 			WPFORMS_VERSION
 		);
@@ -570,7 +572,7 @@ class WPForms_Field_Password extends WPForms_Field {
 
 		wp_enqueue_script(
 			'wpforms-password-field',
-			WPFORMS_PLUGIN_URL . "pro/assets/js/fields/password{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/pro/js/fields/password{$min}.js",
 			[ 'jquery', 'password-strength-meter' ],
 			WPFORMS_VERSION,
 			true
@@ -646,6 +648,26 @@ class WPForms_Field_Password extends WPForms_Field {
 	public function modify_entry_preview_value( $value, $field, $form_data ) {
 
 		return str_repeat( '*', strlen( $value ) );
+	}
+
+	/**
+	 * Checks if password field has been submitted empty and set as not required at the same time.
+	 *
+	 * @since 1.7.4
+	 *
+	 * @param int   $field_id     Field ID.
+	 * @param array $field_submit Submitted field value.
+	 * @param array $fields       Fields settings.
+	 *
+	 * @return bool
+	 */
+	private function is_empty_not_required_field( $field_id, $field_submit, $fields ) {
+
+		return (
+				// If submitted value is empty or is an array of empty values (that happens when password confirmation is enabled).
+				empty( $field_submit ) || empty( implode( '', array_values( (array) $field_submit ) ) )
+			)
+			&& empty( $fields[ $field_id ]['required'] ); // If field is not set as required.
 	}
 }
 

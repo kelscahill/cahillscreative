@@ -95,12 +95,12 @@ class DidYouKnow implements EducationInterface {
 				'item' => 1,
 			],
 			[
-				'desc' => esc_html__( 'You can easily integrate your forms with 1,500+ useful apps by using WPForms + Zapier.', 'wpforms' ),
+				'desc' => esc_html__( 'You can easily integrate your forms with 5,000+ useful apps by using WPForms + Zapier.', 'wpforms' ),
 				'more' => 'https://wpforms.com/addons/zapier-addon/',
 				'item' => 2,
 			],
 			[
-				'desc' => esc_html__( 'You can integrate your forms to automatically send entries to your most used apps. Perfect for users of Salesforce, Slack, Trello, and 1,500+ others.', 'wpforms' ),
+				'desc' => esc_html__( 'You can integrate your forms to automatically send entries to your most used apps. Perfect for users of Salesforce, Slack, Trello, and 5,000+ others.', 'wpforms' ),
 				'more' => 'https://wpforms.com/addons/zapier-addon/',
 				'item' => 3,
 			],
@@ -304,7 +304,7 @@ class DidYouKnow implements EducationInterface {
 	 *
 	 * @since 1.6.6
 	 *
-	 * @param \WP_List_Table $wp_list_table Instance of WP_List_Table.
+	 * @param WP_List_Table $wp_list_table Instance of WP_List_Table.
 	 */
 	public function display( $wp_list_table ) {
 
@@ -320,11 +320,11 @@ class DidYouKnow implements EducationInterface {
 			return;
 		}
 
-		$message     = $this->message_rnd();
-		$column_info = $wp_list_table->__call( 'get_column_info', [] );
+		$message      = $this->message_rnd();
+		$column_count = $wp_list_table->get_column_count();
 
 		if ( ! empty( $message['more'] ) ) {
-			$message['more'] = \add_query_arg(
+			$message['more'] = add_query_arg(
 				[
 					'utm_source'   => 'WordPress',
 					'utm_medium'   => 'DYK ' . ucfirst( $this->page ),
@@ -338,7 +338,7 @@ class DidYouKnow implements EducationInterface {
 		echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			'education/admin/did-you-know',
 			[
-				'cols' => count( $column_info[0] ),
+				'cols' => $column_count,
 				'desc' => $message['desc'],
 				'more' => ! empty( $message['more'] ) ? $message['more'] : '',
 				'page' => $this->page,

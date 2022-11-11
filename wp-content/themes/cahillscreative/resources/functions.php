@@ -174,9 +174,9 @@ if ( ! class_exists( 'StarterSite' ) ) {
      * @param string $twig get extension.
      */
     public function add_to_twig( $twig ) {
-      $twig->addExtension( new Twig\ Extension\ StringLoaderExtension() );
-      $twig->addFunction( new Twig_SimpleFunction( 'bem_classes', array( $this, 'bem_classes' ), array( 'needs_context' => true ), array( 'is_safe' => array( 'html' ) ) ) );
-      $twig->addFunction( new Twig_SimpleFunction( 'add_attributes', array( $this, 'add_attributes' ), array( 'needs_context' => true ), array( 'is_safe' => array( 'html' ) ) ) );
+      $twig->addExtension( new Twig\Extension\StringLoaderExtension() );
+      $twig->addFunction( new Twig\TwigFunction( 'bem_classes', array( $this, 'bem_classes' ), array( 'needs_context' => true ), array( 'is_safe' => array( 'html' ) ) ) );
+      $twig->addFunction( new Twig\TwigFunction( 'add_attributes', array( $this, 'add_attributes' ), array( 'needs_context' => true ), array( 'is_safe' => array( 'html' ) ) ) );
       return $twig;
     }
   }

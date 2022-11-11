@@ -2,6 +2,7 @@
 
 namespace threewp_broadcast;
 
+use Exception;
 use \threewp_broadcast\broadcast_data\blog;
 
 class ThreeWP_Broadcast
@@ -117,6 +118,8 @@ class ThreeWP_Broadcast
 		if ( ! $this->is_network )
 			return;
 
+		$this->__loaded = false;
+
 		if ( defined( 'WP_CLI' ) && WP_CLI )
 		{
 			$cli = new cli\Broadcast();
@@ -173,6 +176,9 @@ class ThreeWP_Broadcast
 
 	public function activate()
 	{
+		if ( ! is_multisite() )
+			throw new Exception( 'Broadcast requires a Wordpress network install. It does not support single installs.' );
+
 		if ( !$this->is_network )
 			return;
 

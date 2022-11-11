@@ -9,7 +9,7 @@ $fontSizes: (
 // Maps a named font-size to its predefined size. Units default to em, but can
 // be changed using the multiplier parameter.
 @mixin font-size($sizeName, $multiplier: 1em) {
-	font-size: map-get($fontSizes, $sizeName) * $multiplier;
+	font-size: map.get($fontSizes, $sizeName) * $multiplier;
 }
 
 @keyframes spinner__animation {
@@ -29,13 +29,15 @@ $fontSizes: (
 }
 
 // Adds animation to placeholder section
-@mixin placeholder() {
+@mixin placeholder($include-border-radius: true) {
 	outline: 0 !important;
 	border: 0 !important;
 	background-color: #ebebeb !important;
 	color: transparent !important;
 	width: 100%;
-	border-radius: 0.25rem;
+	@if $include-border-radius == true {
+		border-radius: 0.25rem;
+	}
 	display: block;
 	line-height: 1;
 	position: relative !important;
@@ -164,6 +166,20 @@ $fontSizes: (
 	text-decoration: underline;
 }
 
+// Reset <button> style so we can use link style for action buttons in filter blocks
+@mixin filter-link-button() {
+	@include link-button();
+	@include font-size(small);
+	text-decoration: underline;
+	font-weight: normal;
+	color: inherit;
+
+	&:hover {
+		text-decoration: none;
+		color: inherit;
+	}
+}
+
 // Makes sure long words are broken if they overflow the container.
 @mixin wrap-break-word() {
 	// This is the current standard, works in most browsers.
@@ -172,6 +188,61 @@ $fontSizes: (
 	word-break: break-word;
 	// IE11 doesn't support overflow-wrap neither word-break: break-word, so we fallback to -ms-work-break: break-all.
 	-ms-word-break: break-all;
+}
+
+// Add support for content alignment classes
+@mixin with-alignment {
+	// Apply max-width to floated items that have no intrinsic width
+	&.alignleft,
+	&.alignright {
+		max-width: $content-width * 0.5;
+		width: 100%;
+	}
+
+	// Using flexbox without an assigned height property breaks vertical center alignment in IE11.
+	// Appending an empty ::after element tricks IE11 into giving the cover image an implicit height, which sidesteps this issue.
+	&::after {
+		display: block;
+		content: "";
+		font-size: 0;
+		min-height: inherit;
+
+		// IE doesn't support flex so omit that.
+		@supports (position: sticky) {
+			content: none;
+		}
+	}
+
+	// Aligned cover blocks should not use our global alignment rules
+	&.aligncenter,
+	&.alignleft,
+	&.alignright {
+		display: flex;
+	}
+}
+
+// Shows an semi-transparent overlay
+@mixin with-background-dim($opacity: 0.5) {
+	&.has-background-dim {
+		.background-dim__overlay::before {
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			background: inherit;
+			border-radius: inherit;
+			opacity: $opacity;
+			z-index: 1;
+		}
+	}
+
+	@for $i from 1 through 10 {
+		&.has-background-dim-#{ $i * 10 } .background-dim__overlay::before {
+			opacity: $i * 0.1;
+		}
+	}
 }
 
 // Shows a border with the current color and a custom opacity. That can't be achieved
@@ -202,6 +273,19 @@ $fontSizes: (
 	}
 }
 
+// Positions an element absolutely and stretches it over the container
+@mixin absolute-stretch() {
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+}
+
 // Converts a px unit to em.
 @function em($size, $base: 16px) {
 	@return math.div($size, $base) * 1em;
@@ -209,10 +293,10 @@ $fontSizes: (
 
 // Encodes hex colors so they can be used in URL content.
 @function encode-color($color) {
-	@if type-of($color) != "color" or str-index(#{$color}, "#") != 1 {
+	@if type-of($color) != "color" or string.index(#{$color}, "#") != 1 {
 		@return $color;
 	}
 
-	$hex: str-slice(ie-hex-str($color), 4);
+	$hex: string.slice(color.ie-hex-str($color), 4);
 	@return "%23" + unquote("#{$hex}");
 }

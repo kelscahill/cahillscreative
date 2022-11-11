@@ -5,21 +5,19 @@
 import type PaymentMethodLabel from '@woocommerce/base-components/cart-checkout/payment-method-label';
 import type PaymentMethodIcons from '@woocommerce/base-components/cart-checkout/payment-method-icons';
 import type LoadingMask from '@woocommerce/base-components/loading-mask';
+import type ValidationInputError from '@woocommerce/base-components/validation-input-error';
 
 /**
  * Internal dependencies
  */
 import type { Currency } from './currency';
+import type { CartBillingAddress, CartShippingRate } from './cart';
 import type {
-	CartBillingAddress,
-	CartShippingPackageShippingRate,
-} from './cart';
-import type {
+	emitterCallback,
 	responseTypes,
 	noticeContexts,
-} from '../../base/context/hooks/use-emit-response';
-import type { emitterCallback } from '../../base/context/event-emit';
-import type { PaymentMethodCurrentStatusType } from '../../base/context/providers/cart-checkout/payment-methods/types';
+} from '../../base/context/event-emit';
+import type { PaymentMethodCurrentStatusType } from '../../base/context/providers/cart-checkout/payment-events/types';
 import type {
 	CartResponseShippingAddress,
 	CartResponseCouponItem,
@@ -39,9 +37,10 @@ export interface PreparedCartTotalItem {
 export interface BillingDataProps {
 	// All the coupons that were applied to the cart/order.
 	appliedCoupons: CartResponseCouponItem[];
-	//The address used for billing.
+	// The address used for billing.
 	billingData: CartBillingAddress;
-	//The total item for the cart.
+	billingAddress: CartBillingAddress;
+	// The total item for the cart.
 	cartTotal: PreparedCartTotalItem;
 	// The various subtotal amounts.
 	cartTotalItems: PreparedCartTotalItem[];
@@ -49,7 +48,7 @@ export interface BillingDataProps {
 	currency: Currency;
 	// The customer Id the order belongs to.
 	customerId: number;
-	//  True means that the site is configured to display prices including tax.
+	// True means that the site is configured to display prices including tax.
 	displayPricesIncludingTax: boolean;
 }
 
@@ -78,7 +77,7 @@ export interface ComponentProps {
 	// A component used for displaying payment method labels, including an icon.
 	PaymentMethodLabel: typeof PaymentMethodLabel;
 	// A container for holding validation errors
-	ValidationInputError: () => JSX.Element | null;
+	ValidationInputError: typeof ValidationInputError;
 }
 
 export interface EmitResponseProps {
@@ -114,8 +113,8 @@ export interface ShippingDataProps {
 	isSelectingRate: boolean;
 	// True if cart requires shipping.
 	needsShipping: boolean;
-	// An array of selected rates (rate ids).
-	selectedRates: string[];
+	// An object containing package IDs as the key and selected rate as the value (rate ids).
+	selectedRates: Record< string, unknown >;
 	// A function for setting selected rates (receives id).
 	setSelectedRates: (
 		newShippingRateId: string,
@@ -126,7 +125,7 @@ export interface ShippingDataProps {
 	// The current set shipping address.
 	shippingAddress: CartResponseShippingAddress;
 	// All the available shipping rates.
-	shippingRates: CartShippingPackageShippingRate[];
+	shippingRates: CartShippingRate[];
 	// Whether the rates are loading or not.
 	shippingRatesLoading: boolean;
 }
