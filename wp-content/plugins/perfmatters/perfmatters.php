@@ -3,7 +3,7 @@
 Plugin Name: Perfmatters
 Plugin URI: https://perfmatters.io/
 Description: Perfmatters is a lightweight performance plugin developed to speed up your WordPress site.
-Version: 1.9.5
+Version: 2.0.2
 Author: forgemedia
 Author URI: https://forgemedia.io/
 License: GPLv2 or later
@@ -18,13 +18,14 @@ Domain Path: /languages
 define('PERFMATTERS_STORE_URL', 'https://perfmatters.io/');
 define('PERFMATTERS_ITEM_ID', 696);
 define('PERFMATTERS_ITEM_NAME', 'perfmatters');
-define('PERFMATTERS_VERSION', '1.9.5');
+define('PERFMATTERS_VERSION', '2.0.2');
 
 function perfmatters_plugins_loaded() {
 
 	//setup cache constants
 	$perfmatters_cache_path = apply_filters('perfmatters_cache_path', 'cache');
-	$host = parse_url(get_site_url())['host'];
+	$parsed_url = parse_url(get_site_url());
+	$host = $parsed_url['host'] . ($parsed_url['path'] ?? '');
 	define('PERFMATTERS_CACHE_DIR', WP_CONTENT_DIR . '/' . $perfmatters_cache_path . "/perfmatters/$host/");
 	define('PERFMATTERS_CACHE_URL', content_url('/') . $perfmatters_cache_path . "/perfmatters/$host/");
 
@@ -38,7 +39,9 @@ function perfmatters_plugins_loaded() {
     //initialize classes that filter the buffer
     Perfmatters\Fonts::init();
     Perfmatters\Images::init();
+	Perfmatters\LazyLoad::init_iframes();
     Perfmatters\Preload::init();
+    Perfmatters\LazyLoad::init();
     Perfmatters\CSS::init();
     Perfmatters\CDN::init();
     Perfmatters\JS::init();
@@ -54,7 +57,7 @@ function perfmatters_edd_plugin_updater() {
 
 	//to support auto-updates, this needs to run during the wp_version_check cron job for privileged users
 	$doing_cron = defined('DOING_CRON') && DOING_CRON;
-	if(!current_user_can('manage_options') && !$doing_cron) {
+	if(!current_user_can('manage_options') && !$doing_cron && !defined('WP_CLI')) {
 		return;
 	}
 
@@ -409,6 +412,7 @@ function perfmatters_uninstall() {
 		'perfmatters_ga', //deprecated
 		'perfmatters_extras', //deprecated
 		'perfmatters_tools',
+		'perfmatters_used_css_time',
 		'perfmatters_script_manager',
 		'perfmatters_script_manager_settings',
 		'perfmatters_edd_license_key',
@@ -495,7 +499,6 @@ register_uninstall_hook(__FILE__, 'perfmatters_uninstall');
 require_once plugin_dir_path(__FILE__) . 'EDD_SL_Plugin_Updater.php';
 require_once plugin_dir_path(__FILE__) . 'inc/settings.php';
 require_once plugin_dir_path(__FILE__) . 'inc/functions.php';
-require_once plugin_dir_path(__FILE__) . 'inc/functions_lazy_load.php';
 require_once plugin_dir_path(__FILE__) . 'inc/functions_script_manager.php';
 require_once plugin_dir_path(__FILE__) . 'inc/network.php';
 

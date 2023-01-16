@@ -18,8 +18,10 @@ pmUserInteractions.forEach(function(event) {
 });
 
 //add click handling listeners
-window.addEventListener("touchstart", pmTouchStartHandler, {passive: true});
-window.addEventListener("mousedown", pmTouchStartHandler);
+if(pmDelayClick) {
+    window.addEventListener("touchstart", pmTouchStartHandler, {passive: true});
+    window.addEventListener("mousedown", pmTouchStartHandler);
+}
 
 //add visibility change listener
 document.addEventListener("visibilitychange", pmTriggerDOMListener);

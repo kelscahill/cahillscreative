@@ -10,6 +10,7 @@ use Sabberworm\CSS\Property\Charset;
 use Sabberworm\CSS\RuleSet\DeclarationBlock;
 use Sabberworm\CSS\Settings;
 use Sabberworm\CSS\Value\URL;
+use WP_Admin_Bar;
 
 class CSS
 {
@@ -22,6 +23,9 @@ class CSS
         if(!empty(Config::$options['assets']['remove_unused_css'])) {
             add_action('perfmatters_output_buffer_template_redirect', array('Perfmatters\CSS', 'remove_unused_css'));
             add_action('wp_ajax_perfmatters_clear_post_used_css', array('Perfmatters\CSS', 'clear_post_used_css'));
+            add_action('admin_bar_menu', array('Perfmatters\CSS', 'admin_bar_menu'));
+            add_action('admin_notices', array('Perfmatters\CSS', 'admin_notices'));
+            add_action('admin_post_perfmatters_clear_used_css', array('Perfmatters\CSS', 'admin_bar_clear_used_css'));
         }
     }
 
@@ -72,7 +76,7 @@ class CSS
             foreach($stylesheets as $key => $stylesheet) {
 
                 //stylesheet check
-                if(!preg_match('#rel=[\'"]stylesheet[\'"]#is', $stylesheet[0])) {
+                if(!preg_match('#\srel=[\'"]stylesheet[\'"]#is', $stylesheet[0])) {
                     continue;
                 }
 
@@ -88,11 +92,15 @@ class CSS
                     'animations.min.css',
                     'woocommerce-mobile.min.css', //woocommerce
                     'woocommerce-smallscreen.css',
-                    '/uploads/oxygen/css/' //oxygen
+                    '/uploads/oxygen/css/', //oxygen
+                    '/uploads/bb-plugin/cache/', //beaver builder
+                    '/uploads/generateblocks/', //generateblocks
+                    '/et-cache/' //divi
                 );
                 if(!empty(Config::$options['assets']['rucss_excluded_stylesheets'])) {
                     $stylesheet_exclusions = array_merge($stylesheet_exclusions, Config::$options['assets']['rucss_excluded_stylesheets']);
                 }
+                $stylesheet_exclusions = apply_filters('perfmatters_rucss_excluded_stylesheets', $stylesheet_exclusions);
                 foreach($stylesheet_exclusions as $exclude) {
                     if(strpos($stylesheet[1], $exclude) !== false) {
                         unset($stylesheets[$key]);
@@ -104,7 +112,8 @@ class CSS
                 if(!$used_css_exists) {
 
                     //get local stylesheet path
-                    $url = str_replace(trailingslashit(site_url()), '', explode('?', $stylesheet[1])[0]);
+                    $url = str_replace(trailingslashit(apply_filters('perfmatters_local_stylesheet_url', (!empty(Config::$options['assets']['rucss_cdn_url']) ? Config::$options['assets']['rucss_cdn_url'] : site_url()))), '', explode('?', $stylesheet[1])[0]);
+
                     $file = str_replace('/wp-content', '/', WP_CONTENT_DIR) . $url;
 
                     //make sure local file exists
@@ -136,9 +145,17 @@ class CSS
                 }
             }
 
-            //process css to remove unused
+            //store used css file
             if(!empty($used_css_string)) {
-                file_put_contents($used_css_path, apply_filters('perfmatters_used_css', $used_css_string));
+                if(file_put_contents($used_css_path, apply_filters('perfmatters_used_css', $used_css_string)) !== false) {
+
+                    $time = get_option('perfmatters_used_css_time', array());
+
+                    $time[$type] = time();
+
+                    //update stored timestamp
+                    update_option('perfmatters_used_css_time', $time);
+                }
             }
 
             //print used css inline after first title tag
@@ -147,6 +164,11 @@ class CSS
 
                 //print file
                 if(!empty(Config::$options['assets']['rucss_method']) && Config::$options['assets']['rucss_method'] == 'file') {
+                    //grab stored timestamp for query string
+                    $time = get_option('perfmatters_used_css_time', array());
+                    if(!empty($time[$type])) {
+                        $used_css_url = add_query_arg('ver', $time[$type], $used_css_url);
+                    }
                     $used_css_output = "<link rel='preload' href='" . $used_css_url . "' as='style' onload=\"this.rel='stylesheet';this.removeAttribute('onload');\">";
                     $used_css_output.= '<link rel="stylesheet" id="perfmatters-used-css" href="' . $used_css_url . '" media="all" />';
                 }
@@ -160,7 +182,10 @@ class CSS
 
             //delay stylesheet script
             if(empty(Config::$options['assets']['rucss_stylesheet_behavior'])) {
-                if(empty(Config::$options['assets']['delay_js']) || empty(Config::$options['assets']['delay_js_behavior'])) {
+
+                $delay_check = !empty(apply_filters('perfmatters_delay_js', !empty(Config::$options['assets']['delay_js']))) && !Utilities::get_post_meta('perfmatters_exclude_delay_js');
+
+                if(!$delay_check || empty(Config::$options['assets']['delay_js_behavior'])) {
                     $script = '<script type="text/javascript" id="perfmatters-delayed-styles-js">!function(){const e=["keydown","mousemove","wheel","touchmove","touchstart","touchend"];function t(){document.querySelectorAll("link[data-pmdelayedstyle]").forEach(function(e){e.setAttribute("href",e.getAttribute("data-pmdelayedstyle"))}),e.forEach(function(e){window.removeEventListener(e,t,{passive:!0})})}e.forEach(function(e){window.addEventListener(e,t,{passive:!0})})}();</script>';
                     $html = str_replace('</body>', $script . '</body>', $html);
                 }
@@ -262,7 +287,13 @@ class CSS
             '.wp-embed-responsive', //core
             '.wp-block-embed',
             '.wp-block-embed__wrapper',
-            '.elementor-nav-menu' //elementor
+            '.wp-caption',
+            '#elementor-device-mode', //elementor
+            '.elementor-nav-menu',
+            '.elementor-has-item-ratio',
+            '.ast-header-break-point', //astra
+            '.dropdown-nav-special-toggle', //kadence
+            'rs-fw-forcer' //rev slider
         );
         if(!empty(Config::$options['assets']['rucss_excluded_selectors'])) {
             self::$excluded_selectors = array_merge(self::$excluded_selectors, Config::$options['assets']['rucss_excluded_selectors']);
@@ -514,6 +545,7 @@ class CSS
                 unlink($file);
             }
         }
+        delete_option('perfmatters_used_css_time');
     }
 
     //clear used css file for specific post or post type
@@ -540,6 +572,71 @@ class CSS
         }
 
         wp_send_json_success();
+        exit;
+    }
+
+    //add admin bar menu item
+    public static function admin_bar_menu(WP_Admin_Bar $wp_admin_bar) {
+
+        if(!current_user_can('manage_options') || !perfmatters_network_access()) {
+            return;
+        }
+
+        $type = !is_admin() ? self::get_url_type() : '';
+
+        $menu_item = array(
+            'parent' => 'perfmatters',
+            'id'     => 'perfmatters-clear-used-css',
+            'title'  => __('Clear Used CSS', 'perfmatters') . ' (' . (!empty($type) ? __('Current', 'perfmatters') : __('All', 'perfmatters')) . ')',
+            'href'   => add_query_arg(array(
+                'action'           => 'perfmatters_clear_used_css',
+                '_wp_http_referer' => rawurlencode($_SERVER['REQUEST_URI']),
+                '_wpnonce'         => wp_create_nonce('perfmatters_clear_used_css'),
+                'type'             => $type
+            ), 
+            admin_url('admin-post.php'))
+        );
+
+        $wp_admin_bar->add_menu($menu_item);
+    }
+
+    //display admin notices
+    public static function admin_notices() {
+
+        if(get_transient('perfmatters_used_css_cleared') === false) {
+            return;
+        }
+
+        delete_transient('perfmatters_used_css_cleared');
+        echo '<div class="notice notice-success is-dismissible"><p><strong>' . __('Used CSS cleared.', 'perfmatters' ) . '</strong></p></div>';
+    }
+
+    //clear used css from admin bar
+    public static function admin_bar_clear_used_css() {
+
+        if(!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_key($_GET['_wpnonce']), 'perfmatters_clear_used_css')) {
+            wp_nonce_ays('');
+        }
+
+        if(!empty($_GET['type'])) {
+
+            //clear specific type
+            $file = PERFMATTERS_CACHE_DIR . 'css/' . $_GET['type'] . '.used.css';
+            if(is_file($file)) {
+                unlink($file);
+            }
+        }
+        else {
+
+            //clear all
+            self::clear_used_css();
+            if(is_admin()) {
+                set_transient('perfmatters_used_css_cleared', 1);
+            }
+        }
+
+        //go back to url where button was pressed
+        wp_safe_redirect(esc_url_raw(wp_get_referer()));
         exit;
     }
 }

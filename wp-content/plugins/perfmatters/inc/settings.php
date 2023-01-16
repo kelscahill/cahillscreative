@@ -7,6 +7,7 @@ function perfmatters_settings() {
 	}
 
     $perfmatters_options = get_option('perfmatters_options');
+    $perfmatters_tools = get_option('perfmatters_tools');
 
     /* options primary section
     /**********************************************************/
@@ -373,11 +374,17 @@ function perfmatters_settings() {
             'id' => 'autosave_interval',
             'input' => 'select',
             'options' => array(
-                ''    => __('1 Minute', 'perfmatters') . ' (' . __('Default', 'perfmatters') . ')',
-                '120' => sprintf(__('%s Minutes', 'perfmatters'), '2'),
-                '180' => sprintf(__('%s Minutes', 'perfmatters'), '3'),
-                '240' => sprintf(__('%s Minutes', 'perfmatters'), '4'),
-                '300' => sprintf(__('%s Minutes', 'perfmatters'), '5')
+                ''      => '1 ' . __('Minute', 'perfmatters') . ' (' . __('Default', 'perfmatters') . ')',
+                '86400' => __('Disable Autosave Interval', 'perfmatters'),
+                '120'   => '2 ' . __('Minutes', 'perfmatters'),
+                '180'   => '3 ' . __('Minutes', 'perfmatters'),
+                '240'   => '4 ' . __('Minutes', 'perfmatters'),
+                '300'   => '5 ' . __('Minutes', 'perfmatters'),
+                '600'   => '10 ' . __('Minutes', 'perfmatters'),
+                '900'   => '15 ' . __('Minutes', 'perfmatters'),
+                '1200'  => '20 ' . __('Minutes', 'perfmatters'),
+                '1500'  => '25 ' . __('Minutes', 'perfmatters'),
+                '1800'  => '30 ' . __('Minutes', 'perfmatters')
             ),
             'tooltip' => __('Controls how often WordPress will auto save posts and pages while editing.', 'perfmatters')
         )
@@ -415,7 +422,8 @@ function perfmatters_settings() {
             'options' => array(
                 '' => __('Message', 'perfmatters') . ' (' . __('Default', 'perfmatters') . ')',
                 '404' => __('404 Template', 'perfmatters'),
-                'home' => __('Home URL', 'perfmatters')
+                'home' => __('Home URL', 'perfmatters'),
+                'redirect' => __('Local Redirect', 'perfmatters')
             ),
             'class' => 'perfmatters-input-controller',
             'tooltip' => __('Change what happens when an original login endpoint is visited.', 'perfmatters')
@@ -435,6 +443,22 @@ function perfmatters_settings() {
             'class' => 'login_url_behavior perfmatters-select-control-' . (!empty($perfmatters_options['login_url_behavior']) ? ' hidden' : ''),
             'placeholder' => __('This has been disabled.', 'perfmatters'),
             'tooltip' => __('Change the disabled message that is displayed.', 'perfmatters')
+        )
+    );
+
+    //login url redirect
+    add_settings_field(
+        'login_url_redirect', 
+        perfmatters_title(__('Redirect Slug', 'perfmatters'), 'login_url_redirect', 'https://perfmatters.io/docs/change-wordpress-login-url/#local-redirect'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'login_url', 
+        array(
+            'id' => 'login_url_redirect',
+            'input' => 'text',
+            'class' => 'login_url_behavior perfmatters-select-control-redirect' . (empty($perfmatters_options['login_url_behavior']) || $perfmatters_options['login_url_behavior'] !== 'redirect' ? ' hidden' : ''),
+            'placeholder' => __('404', 'perfmatters'),
+            'tooltip' => __('Change the slug that is used for the local redirect.', 'perfmatters')
         )
     );
 
@@ -652,6 +676,39 @@ function perfmatters_settings() {
         )
     );
 
+    if(!empty($perfmatters_tools['show_advanced'])) {
+
+        //disable click delay
+        add_settings_field(
+            'disable_click_delay', 
+            perfmatters_title(__('Disable Click Delay', 'perfmatters'), 'disable_click_delay', 'https://perfmatters.io/docs/delay-javascript/#disable-click-delay'), 
+            'perfmatters_print_input', 
+            'perfmatters_options', 
+            'assets_js', 
+            array(
+                'id' => 'disable_click_delay',
+                'section' => 'assets',
+                'tooltip' => __('Prevents the first click from being delayed until JavaScript has finished loading. This can be helpful if you are excluding scripts for interactive elements manually.', 'perfmatters'),
+                'class' => 'assets-delay_js' . (empty($perfmatters_options['assets']['delay_js']) ? ' hidden' : '')
+            )
+        );
+
+        //fastclick
+        add_settings_field(
+            'fastclick', 
+            perfmatters_title(__('Enable FastClick', 'perfmatters'), 'fastclick', 'https://perfmatters.io/docs/delay-javascript/#fastclick'), 
+            'perfmatters_print_input', 
+            'perfmatters_options', 
+            'assets_js', 
+            array(
+                'id' => 'fastclick',
+                'section' => 'assets',
+                'tooltip' => __('Load the FastClick library locally to fix the double-click issue on iOS.', 'perfmatters'),
+                'class' => 'assets-delay_js' . (empty($perfmatters_options['assets']['delay_js']) ? ' hidden' : '')
+            )
+        );
+    }
+
     //assets css section
     add_settings_section('assets_css', __('CSS', 'perfmatters'), '__return_false', 'perfmatters_options');
 
@@ -744,6 +801,26 @@ function perfmatters_settings() {
             'class' => 'assets-remove_unused_css' . (empty($perfmatters_options['assets']['remove_unused_css']) ? ' hidden' : '')
         )
     );
+
+    if(!empty($perfmatters_tools['show_advanced'])) {
+
+        //cdn url
+        add_settings_field(
+            'rucss_cdn_url', 
+            perfmatters_title(__('CDN URL', 'perfmatters'), 'rucss_cdn_url', 'https://perfmatters.io/docs/remove-unused-css/#cdn-url'), 
+            'perfmatters_print_input', 
+            'perfmatters_options', 
+            'assets_css', 
+            array(
+                'id' => 'rucss_cdn_url',
+                'section' => 'assets',
+                'input' => 'text',
+                'tooltip' => __('Provide your CDN URL if you are using a CDN rewrite outside of Perfmatters.', 'perfmatters'),
+                'placeholder' => 'https://cdn.example.com',
+                'class' => 'assets-remove_unused_css' . (empty($perfmatters_options['assets']['remove_unused_css']) ? ' hidden' : '')
+            )
+        );
+    }
 
     //clear used css
     add_settings_field(
@@ -1005,7 +1082,7 @@ function perfmatters_settings() {
             'input' => 'text',
             'validate' => '[0-9.pPxX%]',
             'placeholder' => '0px',
-            'tooltip' => __('Extend the lazy loading threshold allowing images to load before they are visible in the viewport.', 'perfmatters')
+            'tooltip' => __('Extend the lazy loading threshold allowing images to load before they are visible in the viewport. (px or %)', 'perfmatters')
         )
     );
 
@@ -1481,6 +1558,35 @@ function perfmatters_settings() {
         	'input' => 'checkbox',
         	'option' => 'perfmatters_tools',
         	'tooltip' => __('Disable the use of visual UI elements in the plugin settings such as checkbox toggles and hovering tooltips.', 'perfmatters')
+        )
+    );
+
+    //hide admin bar menu
+    add_settings_field(
+        'hide_admin_bar_menu', 
+        perfmatters_title(__('Hide Admin Bar Menu', 'perfmatters'), 'hide_admin_bar_menu', 'https://perfmatters.io/docs/hide-admin-bar-menu/'), 
+        'perfmatters_print_input', 
+        'perfmatters_tools', 
+        'plugin', 
+        array(
+            'id' => 'hide_admin_bar_menu',
+            'option' => 'perfmatters_tools',
+            'tooltip' => __('Hide the Perfmatters menu in the admin bar.', 'perfmatters')
+        )
+    );
+
+    //show advanced options
+    add_settings_field(
+        'show_advanced', 
+        perfmatters_title(__('Show Advanced Options', 'perfmatters'), 'show_advanced', 'https://perfmatters.io/docs/advanced-options/'), 
+        'perfmatters_print_input', 
+        'perfmatters_tools', 
+        'plugin', 
+        array(
+            'id' => 'show_advanced',
+            'option' => 'perfmatters_tools',
+            'tooltip' => __('Show advanced options in the Perfmatters UI.', 'perfmatters'),
+            'confirmation' => __('Advanced options should only be used if you know exactly what you are doing, as they can break certain plugin functionality if used improperly.', 'perfmatters'),
         )
     );
 
