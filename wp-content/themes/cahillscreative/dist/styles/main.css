@@ -314,6 +314,7 @@ body {
   font-weight: 300;
   background: var(--c-white, white);
   color: var(--c-black, black);
+  overflow-x: hidden;
 }
 
 body::before {
@@ -17136,6 +17137,7 @@ body.search-is-active .c-search-modal {
   line-height: 40px;
   display: block;
   overflow: visible;
+  color: var(--c-black, black);
 }
 
 .c-related-posts .slick-arrow:hover,
@@ -17232,7 +17234,7 @@ body.search-is-active .c-search-modal {
 }
 
 .c-promo + .c-footer {
-  margin-top: 20px;
+  margin-top: 40px;
 }
 
 @media (min-width: 721px) {

@@ -16,6 +16,7 @@ body {
   font-weight: 300;
   background: $c-white;
   color: $c-black;
+  overflow-x: hidden;
 
   &::before {
     content: "";

@@ -52,6 +52,7 @@
     line-height: 40px;
     display: block;
     overflow: visible;
+    color: $c-black;
 
     &:hover,
     &:focus {
@@ -129,7 +130,7 @@
 }
 
 .c-promo + .c-footer {
-  margin-top: $space;
+  margin-top: $space-double;
 
   @include media('>medium') {
     position: relative;

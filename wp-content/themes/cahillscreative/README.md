@@ -82,6 +82,7 @@ Edit `app/setup.php` to enable or disable theme features, setup navigation menus
   * `devUrl` should reflect your local development hostname
   * `publicPath` should reflect your WordPress folder structure (`/wp-content/themes/sage-timber`)
 * Run `yarn dev` from the theme directory to install development dependencies
+* Run `composer install --ignore-platform-reqs` if you get errors on install
 
 ### Build commands
 
