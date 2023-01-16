@@ -20,10 +20,9 @@ const blockConfig = {
 	apiVersion: 2,
 	title,
 	description,
-	parent: [ 'core/group' ],
 	ancestor: [
-		'@woocommerce/all-products',
-		'@woocommerce/single-product',
+		'woocommerce/all-products',
+		'woocommerce/single-product',
 		'core/post-template',
 	],
 	usesContext: [ 'query', 'queryId', 'postId' ],

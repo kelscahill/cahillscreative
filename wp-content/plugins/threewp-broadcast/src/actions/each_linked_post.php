@@ -70,6 +70,7 @@ class each_linked_post
 
 	/**
 		@brief		Convenience method to add a callback to the callback array.
+		@details	The callback is called with an $options parameter. $option->action contains this action, in case you want to pass data to the callback.
 		@since		2015-05-02 21:30:56
 	**/
 	public function add_callback( $callback )

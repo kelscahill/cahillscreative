@@ -155,7 +155,7 @@
 					// If the blog list is closed, then expand and then close again to show the newly selected blogs.
 					if ( $this.$blogs_container.hasClass( 'closed' ) )
 						$this.$show_hide.trigger( 'click' ).trigger( 'click' );
-				} ).change();
+				} ).trigger( 'change' );
 
 				// Unchecked child blogs
 				var $unchecked_child_blogs_div = $( ".form_item_plainview_sdk_broadcast_form2_inputs_select_unchecked_child_blogs", $this ).hide();

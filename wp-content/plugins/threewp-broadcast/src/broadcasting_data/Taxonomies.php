@@ -396,10 +396,22 @@ class Taxonomies
 	{
 		$bc = ThreeWP_Broadcast();
 		$bc->debug( 'Using term %s', $term_id );
+
 		$this->broadcasting_data
 			->taxonomy_data
 			->collection( 'used_terms' )
 			->set( $term_id, $term_id );
+
+		$ti = $this->get_term_index();
+		$term = $ti->get( $term_id );
+		if ( $term->parent > 0 )
+		{
+			$parent_id = $term->parent;
+			ThreeWP_Broadcast()->debug( "Using the term's parent also: %s", $parent_id );
+			// If this taxonomy term has a parent, we use it also.
+			$this->use_term( $parent_id );
+		}
+
 		return $this;
 	}
 

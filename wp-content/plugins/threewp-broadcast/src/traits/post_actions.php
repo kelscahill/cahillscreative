@@ -18,6 +18,7 @@ trait post_actions
 	**/
 	public function post_actions_init()
 	{
+		$this->add_action( 'threewp_broadcast_find_unlinked_children_post_action' );
 		$this->add_action( 'threewp_broadcast_get_post_actions' );
 		$this->add_action( 'threewp_broadcast_get_post_bulk_actions' );
 		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 5 );
@@ -70,8 +71,12 @@ trait post_actions
 		@brief		Find unlinked children of the post on the specified blogs.
 		@since		2020-12-17 11:03:02
 	**/
-	public function find_unlinked_children_post_action( $post_id, $requested_blogs = null )
+	public function threewp_broadcast_find_unlinked_children_post_action( $action )
 	{
+		$post_action = $action->post_action;
+		$post_id = $post_action->post_id;
+		$requested_blogs = $action->requested_blogs;
+
 		$blog_id = get_current_blog_id();
 		$broadcast_data = ThreeWP_Broadcast()->get_post_broadcast_data( $blog_id, $post_id );
 
@@ -80,8 +85,16 @@ trait post_actions
 		if ( $linked_parent )
 		{
 			ThreeWP_Broadcast()->debug( 'Post %s has a linked parent on %s (%s)', $post_id, $linked_parent[ 'blog_id' ], $linked_parent[ 'post_id' ] );
+
 			switch_to_blog( $linked_parent[ 'blog_id' ] );
-			$this->find_unlinked_children_post_action( $linked_parent[ 'post_id' ], $requested_blogs );
+
+			$find_unlinked_children_post_action = $this->new_action( 'find_unlinked_children_post_action' );
+			// We need to overwrite the post_id, but not in the original action.
+			$find_unlinked_children_post_action->post_action = clone( $post_action );
+			$find_unlinked_children_post_action->post_action->post_id = $linked_parent[ 'post_id' ];
+			$find_unlinked_children_post_action->requested_blogs = $requested_blogs;
+			$find_unlinked_children_post_action->execute();
+
 			restore_current_blog();
 			return;
 		}
@@ -129,10 +142,17 @@ trait post_actions
 				'post_status' => $post->post_status,
 			];
 
-			$posts = get_posts( $args );
+			$action->posts = get_posts( $args );
+
+			foreach( $action->post_get_posts_callbacks as $callback )
+			{
+				$callback( $action );
+			}
+
 			$post_ids = [];
-			foreach( $posts as $post )
+			foreach( $action->posts as $post )
 				$post_ids []= $post->ID;
+
 			ThreeWP_Broadcast()->debug( 'Found %d posts (%s) on blog %s: %s',
 				count( $post_ids ),
 				implode( ",", $post_ids ),
@@ -141,9 +161,9 @@ trait post_actions
 			);
 
 			// An exact match was found.
-			if ( count( $posts ) == 1 )
+			if ( count( $action->posts ) == 1 )
 			{
-				$unlinked = reset( $posts );
+				$unlinked = reset( $action->posts );
 
 				$child_broadcast_data = ThreeWP_Broadcast()->get_post_broadcast_data( $blog->id, $unlinked->ID );
 				if ( $child_broadcast_data->get_linked_parent() === false )
@@ -412,7 +432,9 @@ trait post_actions
 				$api->delete_children( $post_id, $action->blogs );
 			break;
 			case 'find_unlinked':
-				$this->find_unlinked_children_post_action( $post_id, $action->blogs );
+				$find_unlinked_children_post_action = $this->new_action( 'find_unlinked_children_post_action' );;
+				$find_unlinked_children_post_action->post_action = $action;
+				$find_unlinked_children_post_action->execute();
 			break;
 			// Restore children
 			case 'restore':

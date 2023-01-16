@@ -2,6 +2,7 @@
 
 namespace DeliciousBrains\WPMDB\Pro;
 
+use DeliciousBrains\WPMDB\Common\Error\Logger;
 use DeliciousBrains\WPMDB\Common\Compatibility\CompatibilityManager;
 use DeliciousBrains\WPMDB\Common\Filesystem\Filesystem;
 use DeliciousBrains\WPMDB\Common\Migration\MigrationManager;
@@ -33,6 +34,10 @@ class RegisterPro
      * @var UsageTracking
      */
     private $usage_tracking;
+     /**
+     * @var Logger
+     */
+    private $logger;
     /**
      * @var Template
      */
@@ -124,6 +129,7 @@ class RegisterPro
         $this->pro_plugin_manager     = $container->get(ProPluginManager::class);
         $this->menu                   = $container->get(Menu::class);
         $this->usage_tracking         = $container->get(UsageTracking::class);
+        $this->logger                 = $container->get(Logger::class);
         $this->backups_manager        = $container->get(BackupsManager::class);
         $this->cli_export             = $container->get(Export::class);
         $this->remote_updates_manager = $container->get(RemoteUpdatesManager::class);
@@ -142,10 +148,11 @@ class RegisterPro
         $this->pro_plugin_manager->register();
         $this->menu->register();
         $this->usage_tracking->register();
+        $this->logger->register();
         $this->backups_manager->register();
         $this->remote_updates_manager->register();
 
-        if (!class_exists('\DeliciousBrains\WPMDBCli\Cli')) {
+        if (!class_exists('\DeliciousBrains\WPMDB\Pro\Cli\Extra\Cli')) {
             $this->cli_export->register();
         }
     }

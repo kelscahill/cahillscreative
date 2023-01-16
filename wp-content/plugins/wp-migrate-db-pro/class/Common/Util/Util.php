@@ -482,9 +482,10 @@ class Util
         }
     }
 
-    function set_time_limit()
-    {
-        @set_time_limit(0);
+    function set_time_limit() {
+        if ( function_exists( 'set_time_limit' ) ) {
+            @\set_time_limit( 0 );
+        }
     }
 
     function display_errors()
@@ -736,29 +737,31 @@ class Util
 
     /**
      * Returns an associative array of html escaped useful information about the site.
-     *
+     * @param array $state_data
      * @return array
      */
-    public function site_details()
+    public function site_details($state_data = [])
     {
         global $wpdb;
         $table_prefix = $wpdb->base_prefix;
         $uploads      = wp_upload_dir();
 
         $site_details = array(
-            'is_multisite'         => esc_html(is_multisite() ? 'true' : 'false'),
-            'site_url'             => esc_html(addslashes(site_url())),
-            'home_url'             => esc_html(addslashes(Util::home_url())),
-            'prefix'               => esc_html($table_prefix),
-            'uploads_baseurl'      => esc_html(addslashes(trailingslashit($uploads['baseurl']))),
-            'uploads'              => $this->uploads_info(),
-            'uploads_dir'          => esc_html(addslashes($this->get_short_uploads_dir())),
-            'subsites'             => $this->subsites_list(),
-            'subsites_info'        => $this->subsites_info(),
-            'is_subdomain_install' => esc_html((is_multisite() && is_subdomain_install()) ? 'true' : 'false'),
+            'is_multisite'                  => esc_html(is_multisite() ? 'true' : 'false'),
+            'site_url'                      => esc_html(addslashes(site_url())),
+            'home_url'                      => esc_html(addslashes(Util::home_url())),
+            'prefix'                        => esc_html($table_prefix),
+            'uploads_baseurl'               => esc_html(addslashes(trailingslashit($uploads['baseurl']))),
+            'uploads'                       => $this->uploads_info(),
+            'uploads_dir'                   => esc_html(addslashes($this->get_short_uploads_dir())),
+            'subsites'                      => $this->subsites_list(),
+            'subsites_info'                 => $this->subsites_info(),
+            'is_subdomain_install'          => esc_html((is_multisite() && is_subdomain_install()) ? 'true' : 'false'),
+            'high_performance_transfers'    => (bool)Settings::get_setting('high_performance_transfers'),
+            'theoreticalTransferBottleneck' => apply_filters('wpmdb_theoretical_transfer_bottleneck', 0)
         );
 
-        $site_details = apply_filters('wpmdb_site_details', $site_details);
+        $site_details = apply_filters('wpmdb_site_details', $site_details, $state_data);
 
         return $site_details;
     }
@@ -1215,16 +1218,16 @@ class Util
     }
 
     public static function is_regex_pattern_valid($pattern) {
-        return @preg_match($pattern, null) !== false;
+        return @preg_match($pattern, '') !== false;
     }
 
     /**
      * Returns an array of table names with a new prefix.
      *
      * @param array  $tables
-     * 
+     *
      * @param string $old_prefix
-     * 
+     *
      * @param string $new_prefix
      *
      * @return array
@@ -1242,9 +1245,9 @@ class Util
      * Modifies of table name to have a new prefix.
      *
      * @param string $table
-     * 
+     *
      * @param string $old_prefix
-     * 
+     *
      * @param string $new_prefix
      *
      * @return array
@@ -1254,7 +1257,7 @@ class Util
         if (substr($prefixed, 0, strlen($old_prefix)) == $old_prefix) {
             $str = substr($prefixed, strlen($old_prefix));
             return $new_prefix . $str;
-        } 
+        }
         return $prefixed;
     }
 
@@ -1273,5 +1276,82 @@ class Util
             add_filter('home_url', array($wpml_url_filters, 'home_url_filter'), -10, 4);
         }
         return $home_url;
+    }
+
+    public static function is_addon_registered($addon) {
+        return apply_filters('wpmdb_addon_registered_'.$addon, false);
+    }
+
+    /**
+     * Deactivates legacy addons on upgrade
+     *
+     * @return void
+     */
+    public static function disable_legacy_addons() {
+        deactivate_plugins([
+            'wp-migrate-db-pro-media-files/wp-migrate-db-pro-media-files.php',
+            'wp-migrate-db-pro-cli/wp-migrate-db-pro-cli.php',
+            'wp-migrate-db-pro-multisite-tools/wp-migrate-db-pro-multisite-tools.php',
+            'wp-migrate-db-pro-theme-plugin-files/wp-migrate-db-pro-theme-plugin-files.php',
+        ]);
+    }
+
+    /**
+     * Checks if a directory is empty
+     *
+     * @return bool
+     */
+    public static function is_empty_dir($dir)
+    {
+        $res = scandir($dir);
+        if ($res === false) {
+            return false;
+        }
+        //do not include directories with only '.' '..'
+        return count(array_diff($res, ['.', '..'])) === 0;
+    }
+
+    /**
+     * Checks if a request was initiated from a frontend page.
+     *
+     * @return bool
+     */
+    public static function is_frontend() {
+        return  !(defined('WP_CLI') && WP_CLI) && !self::is_doing_mdb_rest() && !self::wpmdb_is_ajax() && !is_admin();
+    }
+
+    /**
+     * Checks if a REST request is being made to a migrate endpoint.
+     *
+     * @return bool
+     */
+    public static function is_doing_mdb_rest() {
+        $rest_endpoint = 'mdb-api';
+
+        return isset( $_SERVER['REQUEST_URI'] ) && false !== strpos( $_SERVER['REQUEST_URI'], $rest_endpoint );
+    }
+
+    /**
+     * Checks if an AJAX request is being made to a migrate endpoint.
+     *
+     * @return bool
+     */
+    public static function wpmdb_is_ajax() {
+        // must be doing AJAX the WordPress way
+        if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+            return false;
+        }
+
+        // must be one of our actions -- e.g. core plugin (wpmdb_*), media files (wpmdbmf_*)
+        if ( ! isset( $_POST['action'] ) || 0 !== strpos( $_POST['action'], 'wpmdb' ) ) {
+            return false;
+        }
+
+        // must be on blog #1 (first site) if multisite
+        if ( is_multisite() && 1 != get_current_site()->id ) {
+            return false;
+        }
+
+        return true;
     }
 }

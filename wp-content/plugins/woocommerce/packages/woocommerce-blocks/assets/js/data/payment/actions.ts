@@ -5,31 +5,40 @@ import {
 	PlainPaymentMethods,
 	PlainExpressPaymentMethods,
 } from '@woocommerce/type-defs/payments';
+import type { PaymentResult } from '@woocommerce/types';
 
 /**
  * Internal dependencies
  */
 import { ACTION_TYPES } from './action-types';
-import { checkPaymentMethodsCanPay } from './check-payment-methods';
-import { setDefaultPaymentMethod } from './set-default-payment-method';
-import { PaymentStatus } from './types';
+import { checkPaymentMethodsCanPay } from './utils/check-payment-methods';
+import { setDefaultPaymentMethod } from './utils/set-default-payment-method';
 
 // `Thunks are functions that can be dispatched, similar to actions creators
 export * from './thunks';
 
-/**
- * Set the status of the payment
- *
- * @param  status            An object that holds properties representing different status values
- * @param  paymentMethodData A config object for the payment method being used
- */
-export const __internalSetPaymentStatus = (
-	status: PaymentStatus,
-	paymentMethodData?: Record< string, unknown >
-) => ( {
-	type: ACTION_TYPES.SET_PAYMENT_STATUS,
-	status,
-	paymentMethodData,
+export const __internalSetPaymentPristine = () => ( {
+	type: ACTION_TYPES.SET_PAYMENT_PRISTINE,
+} );
+
+export const __internalSetPaymentStarted = () => ( {
+	type: ACTION_TYPES.SET_PAYMENT_STARTED,
+} );
+
+export const __internalSetPaymentProcessing = () => ( {
+	type: ACTION_TYPES.SET_PAYMENT_PROCESSING,
+} );
+
+export const __internalSetPaymentFailed = () => ( {
+	type: ACTION_TYPES.SET_PAYMENT_FAILED,
+} );
+
+export const __internalSetPaymentError = () => ( {
+	type: ACTION_TYPES.SET_PAYMENT_ERROR,
+} );
+
+export const __internalSetPaymentSuccess = () => ( {
+	type: ACTION_TYPES.SET_PAYMENT_SUCCESS,
 } );
 
 /**
@@ -105,6 +114,16 @@ export const __internalSetPaymentMethodData = (
 } );
 
 /**
+ * Store the result of the payment attempt from the /checkout StoreApi call
+ *
+ * @param  data The result of the payment attempt through the StoreApi /checkout endpoints
+ */
+export const __internalSetPaymentResult = ( data: PaymentResult ) => ( {
+	type: ACTION_TYPES.SET_PAYMENT_RESULT,
+	data,
+} );
+
+/**
  * Set the available payment methods.
  * An available payment method is one that has been validated and can make a payment.
  */
@@ -164,10 +183,10 @@ export function __internalUpdateAvailablePaymentMethods() {
 		const registered = await checkPaymentMethodsCanPay( false );
 		const { paymentMethodsInitialized, expressPaymentMethodsInitialized } =
 			select;
-		if ( registered && paymentMethodsInitialized ) {
+		if ( registered && ! paymentMethodsInitialized() ) {
 			dispatch( __internalSetPaymentMethodsInitialized( true ) );
 		}
-		if ( expressRegistered && expressPaymentMethodsInitialized ) {
+		if ( expressRegistered && ! expressPaymentMethodsInitialized() ) {
 			dispatch( __internalSetExpressPaymentMethodsInitialized( true ) );
 		}
 	};

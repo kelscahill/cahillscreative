@@ -8,6 +8,7 @@
 
 use Automattic\Jetpack\Assets;
 use Automattic\Jetpack\Blocks;
+use Automattic\Jetpack\Connection\Initial_State as Connection_Initial_State;
 use Automattic\Jetpack\Connection\Manager as Connection_Manager;
 use Automattic\Jetpack\Constants;
 use Automattic\Jetpack\Status;
@@ -712,8 +713,9 @@ class Jetpack_Gutenberg {
 		if ( Jetpack::is_module_active( 'publicize' ) && function_exists( 'publicize_init' ) ) {
 			$publicize               = publicize_init();
 			$initial_state['social'] = array(
-				'sharesData'  => $publicize->get_publicize_shares_info( $blog_id ),
-				'hasPaidPlan' => $publicize->has_paid_plan(),
+				'sharesData'                  => $publicize->get_publicize_shares_info( $blog_id ),
+				'hasPaidPlan'                 => $publicize->has_paid_plan(),
+				'isEnhancedPublishingEnabled' => $publicize->is_enhanced_publishing_enabled( $blog_id ),
 			);
 		}
 
@@ -722,6 +724,9 @@ class Jetpack_Gutenberg {
 			'Jetpack_Editor_Initial_State',
 			$initial_state
 		);
+
+		// Adds Connection package initial state.
+		wp_add_inline_script( 'jetpack-blocks-editor', Connection_Initial_State::render(), 'before' );
 	}
 
 	/**
@@ -1079,6 +1084,11 @@ class Jetpack_Gutenberg {
 				array(
 					'br' => array(),
 					'p'  => array(),
+					'a'  => array(
+						'href'   => array(),
+						'target' => array(),
+						'rel'    => array(),
+					),
 				)
 			),
 			esc_attr( $classes ),

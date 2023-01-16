@@ -52,7 +52,7 @@ class Persistence
         $state_data = get_site_option($key);
 
         if (false === $state_data) {
-            $filtered = filter_var_array($_POST, FILTER_SANITIZE_STRING);
+            $filtered = filter_var_array($_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             return $filtered;
         }
 
@@ -64,7 +64,7 @@ class Persistence
         $state_data = get_site_option($key);
 
         if (false === $state_data) {
-            return filter_var_array($_POST, FILTER_SANITIZE_STRING);
+            return filter_var_array($_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         }
 
         return $state_data;
@@ -85,6 +85,36 @@ class Persistence
     public static function storeRemoteResponse($response)
     {
         return update_site_option('wpmdb_remote_response', $response);
+    }
+
+    /**
+     * Stores value of WPE auth cookie stored in site options
+     * @param string $cookie
+     * @return bool
+     **/
+    public static function storeRemoteWPECookie($cookie)
+    {
+        return update_site_option('wpmdb_wpe_remote_cookie', $cookie);
+    }
+
+    /**
+     * Get value of WPE auth cookie stored in site options
+     *
+     * @return bool
+     **/
+    public static function getRemoteWPECookie()
+    {
+        return get_site_option('wpmdb_wpe_remote_cookie');
+    }
+
+     /**
+     * Remove WPE auth cookie stored in site options
+     *
+     * @return bool
+     **/
+    public static function removeRemoteWPECookie()
+    {
+        return delete_site_option('wpmdb_wpe_remote_cookie');
     }
 
     public static function getPostData($fields)
@@ -142,9 +172,8 @@ class Persistence
             (!isset($state_data['site_details']['remote']) || empty($state_data['site_details']['remote']))
             && isset($state_data['site_details']['local'])
         ) {
-            $migration_helper = WPMDBDI::getInstance()->get(MigrationHelper::class);
-
-            $state_data['site_details']['remote'] = $migration_helper->siteDetails()['site_details'];
+            $migration_helper                     = WPMDBDI::getInstance()->get(MigrationHelper::class);
+            $state_data['site_details']['remote'] = $migration_helper->siteDetails($state_data)['site_details'];;
         }
 
 

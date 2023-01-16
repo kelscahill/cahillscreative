@@ -80,6 +80,34 @@ abstract class WPCOM_JSON_API_Endpoint {
 	public $max_version = WPCOM_JSON_API__CURRENT_VERSION;
 
 	/**
+	 * Forced endpoint environment when running on WPCOM
+	 *
+	 * @var string '', 'wpcom', 'secure', or 'jetpack'
+	 */
+	public $force = '';
+
+	/**
+	 * Whether the endpoint is deprecated
+	 *
+	 * @var bool
+	 */
+	public $deprecated = false;
+
+	/**
+	 * Version of the endpoint this endpoint is deprecated in favor of.
+	 *
+	 * @var string
+	 */
+	protected $new_version = WPCOM_JSON_API__CURRENT_VERSION;
+
+	/**
+	 * Whether the endpoint is only available on WordPress.com hosted blogs
+	 *
+	 * @var bool
+	 */
+	public $jp_disabled = false;
+
+	/**
 	 * Path at which to serve this endpoint: sprintf() format.
 	 *
 	 * @var string
@@ -189,6 +217,13 @@ abstract class WPCOM_JSON_API_Endpoint {
 	 * @var string
 	 */
 	public $example_response = '';
+
+	/**
+	 * OAuth2 scope required when running on WPCOM
+	 *
+	 * @var string
+	 */
+	public $required_scope = '';
 
 	/**
 	 * Set to true if the endpoint implements its own filtering instead of the standard `fields` query method
@@ -1656,6 +1691,11 @@ abstract class WPCOM_JSON_API_Endpoint {
 					$response['privacy_setting'] = (int) $metadata['videopress']['privacy_setting'];
 				}
 
+				$thumbnail_query_data = array();
+				if ( function_exists( 'video_is_private' ) && video_is_private( $info ) ) {
+					$thumbnail_query_data['metadata_token'] = video_generate_auth_token( $info );
+				}
+
 				// Thumbnails.
 				if ( function_exists( 'video_format_done' ) && function_exists( 'video_image_url_by_guid' ) ) {
 					$response['thumbnails'] = array(
@@ -1665,11 +1705,15 @@ abstract class WPCOM_JSON_API_Endpoint {
 					);
 					foreach ( $response['thumbnails'] as $size => $thumbnail_url ) {
 						if ( video_format_done( $info, $size ) ) {
-							$response['thumbnails'][ $size ] = video_image_url_by_guid( $info->guid, $size );
+							$response['thumbnails'][ $size ] = \add_query_arg( $thumbnail_query_data, \video_image_url_by_guid( $info->guid, $size ) );
 						} else {
 							unset( $response['thumbnails'][ $size ] );
 						}
 					}
+				}
+
+				if ( isset( $info->title ) ) {
+					$response['title'] = $info->title;
 				}
 
 				// If we didn't get VideoPress information (for some reason) then let's
@@ -2265,6 +2309,11 @@ abstract class WPCOM_JSON_API_Endpoint {
 					if ( 0 === strpos( $item->mime_type, 'audio/' ) ) {
 						wp_update_attachment_metadata( $media_id, $id3_meta );
 					}
+				}
+
+				// Attributes: Meta
+				if ( isset( $attrs['meta'] ) && isset( $attrs['meta']['vertical_id'] ) ) {
+					update_post_meta( $media_id, 'vertical_id', $attrs['meta']['vertical_id'] );
 				}
 			}
 		}

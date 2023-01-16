@@ -75,7 +75,9 @@ trait misc
 	{
 		if ( isset( $this->_js_enqueued ) )
 			return;
-		wp_enqueue_script( 'threewp_broadcast', $this->paths[ 'url' ] . '/js/js.js', '', $this->plugin_version );
+		$file_dir = dirname( $this->paths[ '__FILE__' ] ) . '/js/js.js';
+		$file_url = $this->paths[ 'url' ] . 'js/js.js';
+		wp_enqueue_script( 'threewp_broadcast', $file_url, '', filemtime( $file_dir ) );
 		$this->_js_enqueued = true;
 	}
 

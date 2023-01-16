@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit768b49f916e1e49031714f80f44059a6
+class ComposerStaticInit0321b3b0a573485e7aeb2e6c21c7f37a
 {
     public static $files = array (
         'dbi_mdb_320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
@@ -21,7 +21,6 @@ class ComposerStaticInit768b49f916e1e49031714f80f44059a6
             'DeliciousBrains\\WPMDB\\Container\\Invoker\\' => 40,
             'DeliciousBrains\\WPMDB\\Container\\Interop\\Container\\' => 50,
             'DeliciousBrains\\WPMDB\\Container\\Dotenv\\' => 39,
-            'DeliciousBrains\\WPMDB\\Container\\Doctrine\\Common\\Cache\\' => 54,
             'DeliciousBrains\\WPMDB\\Container\\DI\\' => 35,
         ),
     );
@@ -55,10 +54,6 @@ class ComposerStaticInit768b49f916e1e49031714f80f44059a6
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
-        'DeliciousBrains\\WPMDB\\Container\\Doctrine\\Common\\Cache\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/doctrine/cache/lib/Doctrine/Common/Cache',
-        ),
         'DeliciousBrains\\WPMDB\\Container\\DI\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-di/php-di/src/DI',
@@ -72,9 +67,9 @@ class ComposerStaticInit768b49f916e1e49031714f80f44059a6
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit768b49f916e1e49031714f80f44059a6::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit768b49f916e1e49031714f80f44059a6::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit768b49f916e1e49031714f80f44059a6::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit0321b3b0a573485e7aeb2e6c21c7f37a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit0321b3b0a573485e7aeb2e6c21c7f37a::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit0321b3b0a573485e7aeb2e6c21c7f37a::$classMap;
 
         }, null, ClassLoader::class);
     }

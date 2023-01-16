@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\broadcasting_data;
 
+use Traversable;
+
 /**
 	@brief		Convenience methods for handling copied attachments.
 	@details	Created mainly as a convenience class for get and has lookups.
@@ -45,7 +47,7 @@ class Copied_Attachments
 		@brief		Count for this blog.
 		@since		2018-09-10 15:01:10
 	**/
-	public function count()
+	public function count() : int
 	{
 		$items = $this->get_items();
 		return $items->count();
@@ -98,7 +100,7 @@ class Copied_Attachments
 	 *
 	 * @return ArrayIterator
 	 */
-	public function getIterator()
+	public function getIterator() : Traversable
 	{
 		$items = $this->get_items()->to_array();
 		return new \ArrayIterator( $items );

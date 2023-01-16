@@ -5,6 +5,7 @@ namespace DeliciousBrains\WPMDB\Pro\Transfers;
 use DeliciousBrains\WPMDB\Common\Error\ErrorLog;
 use DeliciousBrains\WPMDB\Common\Filesystem\Filesystem;
 use DeliciousBrains\WPMDB\Common\Settings\Settings;
+use DeliciousBrains\WPMDB\Pro\Transfers\Files\Util;
 
 class Receiver {
 
@@ -55,7 +56,7 @@ class Receiver {
 	 */
 	public static function create_memory_stream( $content ) {
 		$stream = fopen( 'php://memory', 'rb+' );
-		fwrite( $stream, $content );
+		stream_copy_to_stream( $content, $stream );
 		rewind( $stream );
 
 		return $stream;
@@ -109,12 +110,27 @@ class Receiver {
 	/**
 	 * Where to store files as they're being transferred
 	 *
+	 * @param string $stage
 	 * @return bool|mixed|void
 	 */
-	public static function get_temp_dir() {
+	public static function get_temp_dir($stage) {
 		$temp_dir = trailingslashit( WP_CONTENT_DIR );
-
-		return apply_filters( 'wpmdb_transfers_temp_dir', $temp_dir );
+		$temp_dir = apply_filters( 'wpmdb_transfers_temp_dir', $temp_dir );
+		if ('others' === $stage) {
+			$others = $temp_dir . 'tmp' . DIRECTORY_SEPARATOR;
+			return $others;
+		}
+		if ('plugins' === $stage) {
+			$plugins = trailingslashit( WP_PLUGIN_DIR ) . 'tmp' . DIRECTORY_SEPARATOR;
+			return $plugins;
+		}
+		if ('muplugins' === $stage) {
+			return trailingslashit( WPMU_PLUGIN_DIR ) . 'tmp' . DIRECTORY_SEPARATOR;
+		}
+		if ('media_files' === $stage) {
+			return Util::get_wp_uploads_dir() . 'tmp' . DIRECTORY_SEPARATOR;
+		}
+		return $temp_dir . $stage . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
 	}
 
 	/**
@@ -122,8 +138,14 @@ class Receiver {
 	 *
 	 * @return array
 	 */
-	public function is_tmp_folder_writable( $base = 'themes' ) {
-		$tmp          = self::get_temp_dir() . $base . '/tmp';
+	public function is_tmp_folder_writable( $base = 'theme_files' ) {
+		$options_to_dirs = [
+			'theme_files'    => 'themes',
+			'plugin_files'   => 'plugins',
+			'muplugin_files' => 'muplugins',
+			'other_files'    => 'others'
+		];
+		$tmp          = self::get_temp_dir($options_to_dirs[$base]);
 		$test_file    = $tmp . '/test.php';
 		$renamed_file = $tmp . '/test-2.php';
 
@@ -139,6 +161,10 @@ class Receiver {
 				'status'  => false,
 				'message' => $message,
 			];
+		}
+
+		if ( method_exists('WpeCommon', 'get_wpe_auth_cookie_value') ) {
+			return $return;
 		}
 
 		if ( ! $this->filesystem->touch( $test_file ) ) {
@@ -172,7 +198,7 @@ class Receiver {
 		}
 
 		//Clean up
-		if ( ! $this->util->remove_tmp_folder( 'themes' ) ) {
+		if ( ! $this->util->remove_tmp_folder( $options_to_dirs[$base] ) ) {
 			$message = sprintf( __( 'File transfer error - Unable to delete file using PHP\'s unlink() function. (%s)', 'wp-migrate-db' ), $renamed_file );
 			$this->error_log->log_error( $message );
 
@@ -186,19 +212,15 @@ class Receiver {
 	}
 
 	/**
-	 * @param $stage
+	 * @param $state_data
+	 * @param $content
 	 *
-	 * @return bool|null
+	 * @return bool
 	 * @throws \Exception
 	 */
-	public function receive_post_data( $state_data, $content ) {
-		try {
-			$stream = $this->payload->unpack_payload( $content );
-		} catch ( \Exception $e ) {
-			$this->util->catch_general_error( $e->getMessage() );
-		}
 
-		return $this->payload->process_payload( $state_data, $stream );
+	public function receive_post_data( $state_data, $content ) {
+		return $this->payload->process_payload( $state_data, $content );
 	}
 
 	/**

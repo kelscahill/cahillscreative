@@ -54,10 +54,10 @@ class Jetpack_Redux_State_Helper {
 		// Preparing translated fields for JSON encoding by transforming all HTML entities to
 		// respective characters.
 		foreach ( $modules as $slug => $data ) {
-			$modules[ $slug ]['name']              = html_entity_decode( $data['name'] );
-			$modules[ $slug ]['description']       = html_entity_decode( $data['description'] );
-			$modules[ $slug ]['short_description'] = html_entity_decode( $data['short_description'] );
-			$modules[ $slug ]['long_description']  = html_entity_decode( $data['long_description'] );
+			$modules[ $slug ]['name']              = html_entity_decode( $data['name'], ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
+			$modules[ $slug ]['description']       = html_entity_decode( $data['description'], ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
+			$modules[ $slug ]['short_description'] = html_entity_decode( $data['short_description'], ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
+			$modules[ $slug ]['long_description']  = html_entity_decode( $data['long_description'], ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 		}
 
 		// "mock" a block module in order to get it searchable in the settings.
@@ -272,7 +272,7 @@ class Jetpack_Redux_State_Helper {
 
 		$post_thumbnail = isset( $post['post_thumbnail'] ) ? $post['post_thumbnail'] : null;
 		if ( ! empty( $post_thumbnail ) ) {
-			jetpack_require_lib( 'class.jetpack-photon-image' );
+			require_once JETPACK__PLUGIN_DIR . '_inc/lib/class.jetpack-photon-image.php';
 			$photon_image = new Jetpack_Photon_Image(
 				array(
 					'file'   => jetpack_photon_url( $post_thumbnail['URL'] ),
@@ -360,7 +360,7 @@ class Jetpack_Redux_State_Helper {
 	 */
 	public static function get_external_services_connect_urls() {
 		$connect_urls = array();
-		jetpack_require_lib( 'class.jetpack-keyring-service-helper' );
+		require_once JETPACK__PLUGIN_DIR . '_inc/lib/class.jetpack-keyring-service-helper.php';
 		// phpcs:disable
 		foreach ( Jetpack_Keyring_Service_Helper::SERVICES as $service_name => $service_info ) {
 			// phpcs:enable

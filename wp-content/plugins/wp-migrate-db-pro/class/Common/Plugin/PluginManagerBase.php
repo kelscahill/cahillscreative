@@ -243,11 +243,11 @@ class PluginManagerBase
             $schema_version = 3.2;
         }
 
-        if($schema_version < 3.3) {
+        if($schema_version < 3.6) {
             $this->update_profiles();
 
             $update_schema  = true;
-            $schema_version = 3.3;
+            $schema_version = 3.6;
         }
 
         if (true === $update_schema) {
@@ -261,9 +261,9 @@ class PluginManagerBase
     {
         if (false !== ($deactivated_notice_id = get_transient('wp_migrate_db_deactivated_notice_id'))) {
             if ('1' === $deactivated_notice_id) {
-                $message = __("WP Migrate DB and WP Migrate DB Pro cannot both be active. We've automatically deactivated WP Migrate DB.", 'wp-migrate-db');
+                $message = __("WP Migrate Lite and WP Migrate cannot both be active. We've automatically deactivated WP Migrate Lite.", 'wp-migrate-db');
             } else {
-                $message = __("WP Migrate DB and WP Migrate DB Pro cannot both be active. We've automatically deactivated WP Migrate DB Pro.", 'wp-migrate-db');
+                $message = __("WP Migrate Lite and WP Migrate cannot both be active. We've automatically deactivated WP Migrate.", 'wp-migrate-db');
             } ?>
 
 			<div class="updated" style="border-left: 4px solid #ffba00;">
@@ -371,7 +371,7 @@ class PluginManagerBase
 
     public function get_plugin_title()
     {
-        return $this->props->is_pro ? __('Migrate DB Pro', 'wp-migrate-db') : __('Migrate DB', 'wp-migrate-db');
+        return __('WP Migrate', 'wp-migrate-db');
     }
 
 
@@ -392,9 +392,16 @@ class PluginManagerBase
                 }
 
                 $profile_data = json_decode($loaded_profile['value']);
-                if (property_exists($profile_data, 'media_files')) {
-                    $profile_data->media_files->last_migration = $profile_data->media_files->date;
+
+                //Enable database migration by default for pre 2.3 profiles
+                if(!property_exists($profile_data->current_migration, 'databaseEnabled')) {
+                    $profile_data->current_migration->databaseEnabled = true;
                 }
+
+                if (property_exists($profile_data, 'media_files') && !property_exists($profile_data->media_files, 'last_migration')) {
+                    $profile_data->media_files->last_migration = property_exists($profile_data->media_files, 'date') ? $profile_data->media_files->date : null;
+                }
+
                 if (property_exists($profile_data, 'theme_plugin_files')) {
                     if ( ! property_exists($profile_data->theme_plugin_files, 'themes_option')) {
                         $profile_data->theme_plugin_files->themes_option = $profile_data->theme_plugin_files->themes_selected ? 'selected' : 'all';
@@ -408,7 +415,37 @@ class PluginManagerBase
                     if ( ! property_exists($profile_data->theme_plugin_files, 'plugins_excluded')) {
                         $profile_data->theme_plugin_files->plugins_excluded = [];
                     }
+                    if ( ! property_exists($profile_data->theme_plugin_files, 'plugins_excludes')) {
+                        $profile_data->theme_plugin_files->plugins_excludes = property_exists($profile_data->theme_plugin_files, 'excludes')
+                            ? $profile_data->theme_plugin_files->excludes
+                            : '';
+                    }
+                    if ( ! property_exists($profile_data->theme_plugin_files, 'themes_excludes')) {
+                        $profile_data->theme_plugin_files->themes_excludes = property_exists($profile_data->theme_plugin_files, 'excludes')
+                            ? $profile_data->theme_plugin_files->excludes
+                            : '';
+                    }  
+                    
+                    //updates for others and muplugins added 2.3.4
+                    if ( ! property_exists($profile_data->theme_plugin_files, 'other_files')) {
+                        $profile_data->theme_plugin_files->other_files = ['enabled' => false];
+                        $profile_data->theme_plugin_files->others_option = 'selected';
+                        $profile_data->theme_plugin_files->others_selected = [];
+                        $profile_data->theme_plugin_files->others_excludes = '';
+                    }
+                    if ( ! property_exists($profile_data->theme_plugin_files, 'muplugin_files')) {
+                        $profile_data->theme_plugin_files->muplugin_files = ['enabled' => false];
+                        $profile_data->theme_plugin_files->muplugins_option = 'selected';
+                        $profile_data->theme_plugin_files->muplugins_selected = [];
+                        $profile_data->theme_plugin_files->muplugins_excludes = '';
+                    }
+                   
+                    if ( ! property_exists($profile_data->theme_plugin_files, 'muplugin_files')) {}
+                    if ( ! property_exists($profile_data->theme_plugin_files, 'muplugins_option')) {}
+                    if ( ! property_exists($profile_data->theme_plugin_files, 'muplugins_selected')) {}
+                    if ( ! property_exists($profile_data->theme_plugin_files, 'muplugins_excludes')) {}
                 }
+                //gonna need to update the profiles
 
                 $saved_profiles = get_site_option($profile_type);
                 $saved_profiles[$profile['id']]['value'] = json_encode($profile_data);

@@ -22,11 +22,11 @@ class Replace
     /**
      * @var
      */
-    protected $search;
+    protected $search = [];
     /**
      * @var
      */
-    protected $replace;
+    protected $replace = [];
     /**
      * @var
      */
@@ -286,8 +286,11 @@ class Replace
     {
         $find_replace_pairs     = [
             'regex'          => [],
-            'case_sensitive' => []
+            'case_sensitive' => [],
+            'replace_old'    => [],
+            'replace_new'    => []
         ];
+
         $tmp_find_replace_pairs = [];
         $migration_options     = self::$form_data->getFormData();
 
@@ -302,14 +305,12 @@ class Replace
 
 
         // Standard Pairs
-        if (
-            isset($migration_options['search_replace']['standard_search_replace'], $migration_options['search_replace']['standard_search_visible'])
-            && !empty($migration_options['search_replace']['standard_search_replace'])
+        if ( !empty($migration_options['search_replace']['standard_search_replace'])
             && $migration_options['search_replace']['standard_search_visible']
         ) {
             $standard_pairs = $migration_options['search_replace']['standard_search_replace'];
             foreach ($standard_pairs as $key => $pair) {
-                if (in_array($key, $migration_options['search_replace']['standard_options_enabled'])) {
+                if (in_array($key, $migration_options['search_replace']['standard_options_enabled'], true)) {
                     $tmp_find_replace_pairs[$pair['search']] = $pair['replace'];
                 }
             }
@@ -317,7 +318,6 @@ class Replace
 
         // Custom pairs
         if (
-            isset($migration_options['search_replace']['custom_search_replace']) &&
             !empty($migration_options['search_replace']['custom_search_replace'])
         ) {
             $standard_pairs_count = count($tmp_find_replace_pairs);
@@ -326,6 +326,10 @@ class Replace
             $i = 1;
             foreach ($custom_pairs as $pair) {
                 $index = $i + $standard_pairs_count;
+                if (empty($pair['replace_old']) && empty($pair['replace_new'])) {
+                    $i++;
+                    continue;
+                }
                 $tmp_find_replace_pairs[$pair['replace_old']] = $pair['replace_new'];
 
                 if(empty($migration_options['regex']) && isset($pair['regex'])) {
@@ -349,11 +353,6 @@ class Replace
                 $find_replace_pairs['replace_new'][$i] = $replace_new;
                 $i++;
             }
-        }
-
-        if (empty($find_replace_pairs)) {
-            $find_replace_pairs['replace_old'] = [];
-            $find_replace_pairs['replace_new'] = [];
         }
 
         return $find_replace_pairs;
@@ -587,7 +586,12 @@ class Replace
         }
 
         if ('find_replace' === $this->intent) {
-            $this->diff_interpreter->compute(DiffEntity::create($original, $subject, $this->column, is_object($this->row) ? reset($this->row) : null));
+            $row = null;
+            if (is_object($this->row) ) {
+                $get_vars = function_exists('get_mangled_object_vars') ? get_mangled_object_vars($this->row) : $this->row;
+                $row      = reset($get_vars);
+            }
+            $this->diff_interpreter->compute(DiffEntity::create($original, $subject, $this->column, $row));
         }
 
         return $subject;
@@ -658,7 +662,7 @@ class Replace
                         $objectName = array();
                         preg_match('/O:\d+:\"([^\"]+)\"/', $data, $objectName);
                         $objectName = $objectName[1] ? $objectName[1] : $data;
-                        $error      = sprintf(__("WP Migrate DB - Failed to instantiate object for replacement. If the serialized object's class is defined by a plugin, you should enable that plugin for migration requests. \nClass Name: %s", 'wp-migrate-db'), $objectName);
+                        $error      = sprintf(__("WP Migrate - Failed to instantiate object for replacement. If the serialized object's class is defined by a plugin, you should enable that plugin for migration requests. \nClass Name: %s", 'wp-migrate-db'), $objectName);
                         error_log($error);
 
                         return $data;
@@ -857,14 +861,19 @@ class Replace
      * @throws \DI\NotFoundException
      */
     public function validate_regex_pattern() {
-        $_POST = $this->http_helper->convert_json_body_to_post();
-
+       $_POST = $this->http_helper->convert_json_body_to_post();
+        if (isset($_POST['pattern'])) {
+            $pattern = Util::safe_wp_unslash($_POST['pattern']);
+            if (Util::is_regex_pattern_valid( $pattern ) === false) {
+                return $this->http->end_ajax(false);
+            }
+        }
         $key_rules = array(
-            'pattern' => 'string',
+            'pattern' => 'regex',
         );
 
         $state_data = $this->migration_state_manager->set_post_data( $key_rules );
-        return $this->http->end_ajax( Util::is_regex_pattern_valid( $state_data['pattern'] ) );
+        return $this->http->end_ajax(isset($state_data['pattern']) === true);
     }
 
     public function register_rest_routes() {

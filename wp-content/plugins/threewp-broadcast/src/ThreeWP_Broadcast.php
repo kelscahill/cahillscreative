@@ -438,6 +438,8 @@ class ThreeWP_Broadcast
 				{
 					switch_to_blog( $parent[ 'blog_id' ] );
 					$o = (object)[];
+					$o->action = $action;
+					$o->blog_id = $parent[ 'blog_id' ];
 					$o->post_id = $parent[ 'post_id' ];
 					$o->post = get_post( $o->post_id );
 					$this->debug( $prefix . '' );
@@ -476,6 +478,8 @@ class ThreeWP_Broadcast
 					continue;
 				switch_to_blog( $blog_id );
 				$o = (object)[];
+				$o->action = $action;
+				$o->blog_id = $blog_id;
 				$o->post_id = $post_id;
 				$o->post = get_post( $post_id );
 				$this->debug( $prefix . 'Executing callbacks on child post %s on blog %s.', $post_id, $blog_id );

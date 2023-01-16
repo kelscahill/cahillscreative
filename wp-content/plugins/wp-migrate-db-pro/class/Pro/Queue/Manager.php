@@ -88,6 +88,8 @@ class Manager
         $allowed_migration_types = [
             'theme_files',
             'plugin_files',
+            'muplugin_files',
+            'other_files',
             'media_files'
         ];
 

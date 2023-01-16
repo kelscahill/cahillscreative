@@ -667,6 +667,16 @@ trait admin_menu
 		else
 			$target = 'broadcast_menu_tabs';
 
+		// Allow devs to modify the menu shown.
+		// 'admin_menu_tabs' = Super admin menu, all settings.
+		// 'broadcast_menu_tabs' = Normal user, just broadcast info.
+		// false = no menu.
+		$target = apply_filters( 'broadcast_menu_target', $target );
+
+		// No target at all?
+		if ( ! $target )
+			return;
+
 		$this->menu_page()
 			->callback_this( $target )
 			->capability( 'edit_posts' )
