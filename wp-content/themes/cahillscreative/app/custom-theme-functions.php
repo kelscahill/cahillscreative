@@ -99,3 +99,14 @@ add_image_size('horiz__16x9--s', 720, 405, array('center', 'center'));
 add_image_size('horiz__16x9--m', 960, 540, array('center', 'center'));
 add_image_size('horiz__16x9--l', 1200, 675, array('center', 'center'));
 add_image_size('horiz__16x9--xl', 1600, 900, array('center', 'center'));
+
+/**
+ * Update main query post order.
+ */
+add_action( 'pre_get_posts', 'change_posts_order' );
+function change_posts_order($query) {
+  if ($query->is_main_query()) {
+    $query->set('orderby', 'date');
+    $query->set('order', 'DESC');
+  }
+}
