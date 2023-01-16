@@ -14,7 +14,7 @@
  *
  * @see     https://docs.woocommerce.com/document/template-structure/
  * @package WooCommerce\Templates
- * @version 2.4.0
+ * @version 7.0.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -22,6 +22,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<a href="<?php echo esc_url( wc_get_checkout_url() ); ?>" class="o-button--secondary">
+<a href="<?php echo esc_url( wc_get_checkout_url() ); ?>" class="o-button--secondary u-space--top">
   <?php esc_html_e( 'Proceed to checkout', 'woocommerce' ); ?>
 </a>

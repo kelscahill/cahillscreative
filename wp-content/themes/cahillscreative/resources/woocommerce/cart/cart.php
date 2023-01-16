@@ -12,7 +12,7 @@
  *
  * @see     https://docs.woocommerce.com/document/template-structure/
  * @package WooCommerce\Templates
- * @version 3.8.0
+ * @version 7.0.1
  */
 
 defined( 'ABSPATH' ) || exit; ?>
@@ -22,12 +22,12 @@ defined( 'ABSPATH' ) || exit; ?>
 	<table class="c-cart__table c-table--responsive" cellspacing="0">
 		<thead>
 			<tr>
-				<th>&nbsp;</th>
+				<th><span class="screen-reader-text"><?php esc_html_e( 'Thumbnail image', 'woocommerce' ); ?></span></th>
 				<th><?php esc_html_e( 'Product', 'woocommerce' ); ?></th>
 				<th><?php esc_html_e( 'Price', 'woocommerce' ); ?></th>
 				<th><?php esc_html_e( 'Quantity', 'woocommerce' ); ?></th>
 				<th><?php esc_html_e( 'Subtotal', 'woocommerce' ); ?></th>
-				<th>&nbsp;</th>
+				<th><span class="screen-reader-text"><?php esc_html_e( 'Remove item', 'woocommerce' ); ?></span></th>
 			</tr>
 		</thead>
 		<tbody>

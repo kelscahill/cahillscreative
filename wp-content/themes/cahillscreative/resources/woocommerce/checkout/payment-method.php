@@ -31,5 +31,4 @@ if ( ! defined( 'ABSPATH' ) ) {
       <?php endif; ?>
     </label>
   </div>
-
 </div>
