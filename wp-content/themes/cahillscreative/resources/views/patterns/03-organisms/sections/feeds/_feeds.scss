@@ -2,6 +2,11 @@
   &__posts {
     width: 100%;
   }
+
+  .search & {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 .c-related-posts,

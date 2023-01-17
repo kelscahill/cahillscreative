@@ -14769,7 +14769,7 @@ video {
   background-color: var(--c-primary, black);
   color: white;
   position: relative;
-  z-index: 2;
+  z-index: 999;
 }
 
 .c-alert__content {
@@ -15387,6 +15387,11 @@ body.search-is-active .c-search-modal {
   opacity: 1;
   visibility: visible;
   z-index: 99999;
+}
+
+body.search-is-active .c-filter,
+body.search-is-active .c-header {
+  z-index: 1;
 }
 
 /* Search Form */
@@ -17075,6 +17080,11 @@ body.search-is-active .c-search-modal {
 
 .c-post-grid__posts {
   width: 100%;
+}
+
+.search .c-post-grid {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .c-related-posts,
