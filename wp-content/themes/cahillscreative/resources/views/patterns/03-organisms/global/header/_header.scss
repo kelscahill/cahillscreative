@@ -54,6 +54,7 @@
 
     a {
       padding: 0 $space-half;
+      min-width: 100%;
     }
   }
 
@@ -77,6 +78,9 @@
     position: relative;
     padding: $space-half;
     border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     svg path {
       fill: $c-black;
