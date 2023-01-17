@@ -325,7 +325,7 @@ body::before {
   opacity: 0;
   visibility: hidden;
   background: white;
-  z-index: 1;
+  z-index: 99;
   position: fixed;
   top: 0;
   left: 0;
@@ -16355,6 +16355,10 @@ body.search-is-active .c-search-modal {
     opacity: 1;
     visibility: visible;
   }
+
+  body.primary-nav-is-active .c-filter {
+    z-index: 1;
+  }
 }
 
 .c-secondary-nav {
@@ -16936,7 +16940,6 @@ body.search-is-active .c-search-modal {
   position: sticky;
   top: 0;
   left: 0;
-  z-index: 2;
   -webkit-transition: top 0.5s cubic-bezier(0.86, 0, 0.07, 1);
   -o-transition: top 0.5s cubic-bezier(0.86, 0, 0.07, 1);
   transition: top 0.5s cubic-bezier(0.86, 0, 0.07, 1);
@@ -17320,7 +17323,7 @@ body.search-is-active .c-search-modal {
   position: sticky;
   top: 0;
   left: 0;
-  z-index: 99999;
+  z-index: 999;
   width: 100vw;
   background-color: var(--c-white, white);
   margin-left: -20px;

@@ -272,5 +272,9 @@ body.primary-nav-is-active {
       opacity: 1;
       visibility: visible;
     }
+
+    .c-filter {
+      z-index: 1;
+    }
   }
 }
