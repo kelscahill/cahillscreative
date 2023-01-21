@@ -5,6 +5,7 @@
   flex-direction: column;
   border-top: $border--standard;
   padding-top: $space;
+  width: 100%;
 
   @include media('>medium') {
     border-top: none;

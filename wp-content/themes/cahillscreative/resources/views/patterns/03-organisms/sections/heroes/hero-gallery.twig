@@ -16,25 +16,25 @@
         } %}
         <style>
           .o-background-image--{{ Image(image).id }} {
-            background-image: url('{{ Image(image).src|resize(720) }}');
+            background-image: url('{{ Image(image).src|resize(720, auto) }}');
           }
           @media(min-width: 720px) {
             .o-background-image--{{ Image(image).id }} {
-              background-image: url('{{ Image(image).src|resize(960) }}');
+              background-image: url('{{ Image(image).src|resize(960, auto) }}');
             }
           }
           @media(min-width: 960px) {
             .o-background-image--{{ Image(image).id }} {
-              background-image: url('{{ Image(image).src|resize(1200) }}');
+              background-image: url('{{ Image(image).src|resize(1200, auto) }}');
             }
           }
           @media(min-width: 1200px) {
             .o-background-image--{{ Image(image).id }} {
-              background-image: url('{{ Image(image).src|resize(1600) }}');
+              background-image: url('{{ Image(image).src|resize(1600, auto) }}');
             }
           }
         </style>
-        <div class="{{ bem_classes(base_class, 'image') }} o-background-image--{{ Image(image).id }}"></div>
+        <div class="{{ bem_classes(base_class, 'image') }} o-background-image o-background-image--{{ Image(image).id }}"></div>
       </div>
     {% endfor %}
   </div>

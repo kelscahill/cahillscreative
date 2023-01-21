@@ -44,7 +44,7 @@
             }
           } %}
         </div>
-        <div class="{{ bem_classes(base_class, 'image') }} o-background-image--{{ Image(item.image).id }}">
+        <div class="{{ bem_classes(base_class, 'image') }} o-background-image o-background-image--{{ Image(item.image).id }}">
           <style>
             .o-background-image--{{ Image(item.image).id }} {
               background-image: url('{{ Image(item.image).src|resize(720,720) }}');

@@ -24,7 +24,7 @@
     }
   }
 </style>
-<div class="{{ bem_classes(base_class, hero_work.element, hero_work.modifiers, hero_work.extra) }} l-wrap o-background-image--{{ Image(post.featured_banner_image).id }}">
+<div class="{{ bem_classes(base_class, hero_work.element, hero_work.modifiers, hero_work.extra) }} l-wrap o-background-image o-background-image--{{ Image(post.featured_banner_image).id }}">
   {% include "@atoms/images/image/responsive-image.twig" with {
     "image": {
       "src": Image(post.featured_work_image).src|resize(auto, 500),

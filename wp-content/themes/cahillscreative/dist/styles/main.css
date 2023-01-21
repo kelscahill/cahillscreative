@@ -12893,6 +12893,10 @@ picture {
   max-width: 100%;
 }
 
+figure {
+  margin: 0;
+}
+
 figcaption {
   display: block;
   margin-top: 10px;
@@ -12983,6 +12987,10 @@ figcaption {
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+.o-background-image {
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .o-logo {
@@ -14902,7 +14910,7 @@ video {
 .c-content-modal__body {
   padding: 20px;
   max-width: 1200px;
-  max-height: calc(100vh - 40px);
+  max-height: calc(100vh - 100px);
   overflow: auto;
   margin-left: auto;
   margin-right: auto;
@@ -15100,6 +15108,7 @@ body.content-modal-is-active .c-content-modal {
           flex-direction: column;
   border-top: 1px solid #ddd;
   padding-top: 20px;
+  width: 100%;
 }
 
 @media (min-width: 721px) {
@@ -17849,7 +17858,8 @@ button.mfp-arrow {
   -webkit-transform: scale(1) rotate(0);
        -o-transform: scale(1) rotate(0);
           transform: scale(1) rotate(0);
-  top: 20px;
+  top: auto;
+  bottom: 20px;
   opacity: 1;
 }
 
@@ -17879,6 +17889,7 @@ button.mfp-arrow::before {
 
 button.mfp-arrow.mfp-arrow-right {
   right: 20px;
+  left: auto;
 }
 
 button.mfp-arrow.mfp-arrow-left {
@@ -17888,8 +17899,8 @@ button.mfp-arrow.mfp-arrow-left {
 
 button.mfp-close {
   position: absolute;
-  left: 0;
-  right: auto;
+  left: auto;
+  right: 0;
   top: 0;
   width: 50px;
   height: 50px;
@@ -17904,10 +17915,19 @@ button.mfp-close {
 
 img.mfp-img {
   padding-top: 50px;
+  padding-bottom: 95px;
 }
 
 .mfp-figure::after {
   top: 50px;
+  margin-bottom: 95px;
+  background-color: transparent;
+}
+
+.mfp-counter {
+  left: 0;
+  right: auto;
+  top: -55px;
 }
 
 .c-page-header {

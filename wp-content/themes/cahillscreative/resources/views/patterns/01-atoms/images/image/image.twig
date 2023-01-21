@@ -13,5 +13,12 @@
     {% if image.title %}
       title="{{ image.title }}"
     {% endif %}
+    data-pin-media="{{ image.src|resize(1200, auto) }}"
+    {% if post.link or post.affiliate_link %}
+      data-pin-url="{{ post.affiliate_link ? post.affiliate_link : post.link }}"
+    {% endif %}
+    {% if yoast_meta_description %}
+      data-pin-description="{{ yoast_meta_description }}"
+    {% endif %}
   />
 {% endif %}

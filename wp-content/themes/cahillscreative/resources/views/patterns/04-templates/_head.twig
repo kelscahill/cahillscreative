@@ -22,4 +22,10 @@
       --font-secondary: "Voster", Arial, Helvetica, sans-serif;
     }
   </style>
+  {% if post.thumbnail %}
+    <meta property="og:image" content="{{ Image(post.thumbnail).src|resize(1200, auto) }}" />
+  {% endif %}
+  {% if post.hero_image %}
+    <meta property="og:image" content="{{ Image(post.hero_image).src|resize(1200, auto) }}" />
+  {% endif %}
 </head>

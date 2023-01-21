@@ -52,7 +52,7 @@
   &__body {
     padding: $space;
     max-width: $max-width;
-    max-height: calc(100vh - 40px);
+    max-height: calc(100vh - 100px);
     overflow: auto;
 
     @include align-center;

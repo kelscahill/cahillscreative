@@ -1,7 +1,12 @@
 {% set base_class = social_share.base_class|default('c-social-share') %}
 
 {% if social_share %}
+  {% set pinterest_share_image = post.hero_image ? Image(post.hero_image).src|resize(1200, auto) : Image(post.thumbnail).src|resize(1200, auto) %}
   {% set social_share_links = [
+    {
+      "name": "pinterest",
+      "url": "http://pinterest.com/pin/create/button/?url=" ~ post.link|url_encode ~ "&description=" ~ post.title ~ "&media=" ~ pinterest_share_image
+    },
     {
       "name": "facebook",
       "url": "https://facebook.com/sharer/sharer.php?u=" ~ post.link|url_encode
@@ -9,10 +14,6 @@
     {
       "name": "twitter",
       "url": "https://twitter.com/intent/tweet/?text=" ~ post.title ~ "&amp;url=" ~ post.link|url_encode
-    },
-    {
-      "name": "pinterest",
-      "url": "http://pinterest.com/pin/create/button/?url=" ~ post.link|url_encode ~ "&description=" ~ post.title
     },
     {
       "name": "sms",

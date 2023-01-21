@@ -5,6 +5,10 @@ picture {
   max-width: 100%;
 }
 
+figure {
+  margin: 0;
+}
+
 figcaption {
   display: block;
   margin-top: $space-half;
@@ -35,3 +39,8 @@ figcaption {
     @include aspect-ratio(4, 3);
   }
 }
+
+.o-background-image {
+  image-rendering: -webkit-optimize-contrast;
+}
+

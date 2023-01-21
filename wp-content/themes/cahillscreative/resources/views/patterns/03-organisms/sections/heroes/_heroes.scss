@@ -175,11 +175,13 @@
 
 button.mfp-arrow {
   @include o-button--arrow;
-  top: $space;
+  top: auto;
+  bottom: $space;
   opacity: 1;
 
   &.mfp-arrow-right {
     right: $space;
+    left: auto;
   }
 
   &.mfp-arrow-left {
@@ -190,8 +192,8 @@ button.mfp-arrow {
 
 button.mfp-close {
   position: absolute;
-  left: 0;
-  right: auto;
+  left: auto;
+  right: 0;
   top: 0;
   width: 50px;
   height: 50px;
@@ -206,8 +208,17 @@ button.mfp-close {
 
 img.mfp-img {
   padding-top: 50px;
+  padding-bottom: 95px;
 }
 
 .mfp-figure::after {
   top: 50px;
+  margin-bottom: 95px;
+  background-color: transparent;
+}
+
+.mfp-counter {
+  left: 0;
+  right: auto;
+  top: -55px;
 }
