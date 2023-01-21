@@ -12,6 +12,7 @@ use DeliciousBrains\WPMDB\Common\Plugin\PluginManagerBase;
 use DeliciousBrains\WPMDB\Common\Properties\Properties;
 use DeliciousBrains\WPMDB\Common\Util\Util;
 use DeliciousBrains\WPMDB\Pro\Addon\Addon;
+use DeliciousBrains\WPMDB\Pro\Addon\AddonsFacade;
 use DeliciousBrains\WPMDB\Pro\Backups\BackupsManager;
 use DeliciousBrains\WPMDB\Pro\Beta\BetaManager;
 use DeliciousBrains\WPMDB\Pro\Cli\Export;
@@ -96,6 +97,11 @@ class RegisterPro
      */
     private $flush;
 
+    /**
+     * @var AddonsFacade|mixed
+     */
+    private $addons_facade;
+
     public function register()
     {
         $container = WPMDBDI::getInstance();
@@ -125,6 +131,7 @@ class RegisterPro
         $this->license                = $container->get(License::class);
         $this->import                 = $container->get(Import::class);
         $this->addon                  = $container->get(Addon::class);
+        $this->addons_facade          = $container->get(AddonsFacade::class);
         $this->beta_manager           = $container->get(BetaManager::class);
         $this->pro_plugin_manager     = $container->get(ProPluginManager::class);
         $this->menu                   = $container->get(Menu::class);
@@ -135,6 +142,7 @@ class RegisterPro
         $this->remote_updates_manager = $container->get(RemoteUpdatesManager::class);
 
         // Register other class actions and filters
+        $this->addons_facade->register();
         $this->local_connection->register();
         $this->remote_connection->register();
         $this->remote_table->register();

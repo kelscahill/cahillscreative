@@ -2,19 +2,22 @@
 
 namespace DeliciousBrains\WPMDB\Pro\Transfers\Files;
 
+use DeliciousBrains\WPMDB\Common\FullSite\FullSiteExport;
 use DeliciousBrains\WPMDB\Common\Http\Helper;
 use DeliciousBrains\WPMDB\Common\Http\Http;
 use DeliciousBrains\WPMDB\Common\Properties\DynamicProperties;
-use DeliciousBrains\WPMDB\Pro\Queue\Manager;
+use DeliciousBrains\WPMDB\Common\Queue\Manager;
+use DeliciousBrains\WPMDB\Common\Transfers\Files\Util;
 use DeliciousBrains\WPMDB\Pro\Transfers\Receiver;
 use DeliciousBrains\WPMDB\Pro\Transfers\Sender;
+use DeliciousBrains\WPMDB\Common\Transfers\Files\TransferManager as Common_TransferManager;
 
 /**
  * Class TransferManager
  *
  * @package WPMDB\Transfers\Files
  */
-class TransferManager extends \DeliciousBrains\WPMDB\Pro\Transfers\Abstracts\TransferManagerAbstract
+class TransferManager extends Common_TransferManager
 {
 
     /**
@@ -61,9 +64,10 @@ class TransferManager extends \DeliciousBrains\WPMDB\Pro\Transfers\Abstracts\Tra
         Helper $http_helper,
         Http $http,
         Receiver $receiver,
-        Sender $sender
+        Sender $sender,
+        FullSiteExport $full_site_export
     ) {
-        parent::__construct($manager, $payload, $util);
+        parent::__construct($manager, $util, $http, $full_site_export);
         $this->queueManager    = $manager;
         $this->payload         = $payload;
         $this->util            = $util;
@@ -73,27 +77,6 @@ class TransferManager extends \DeliciousBrains\WPMDB\Pro\Transfers\Abstracts\Tra
         $this->http            = $http;
         $this->size_controller = $size_controller;
         $this->dynamic_props   = DynamicProperties::getInstance();
-    }
-
-    /**
-     *
-     * Logic to handle pushes or pulls of files
-     *
-     * @param string $remote_url
-     * @param array  $processed  list of files to transfer
-     * @param array  $state_data MDB's array of $_POST[] items
-     *
-     * @return mixed
-     * @see $this->ajax_initiate_file_migration
-     *
-     */
-    public function manage_file_transfer($remote_url, $processed, $state_data)
-    {
-        if ('pull' === $state_data['intent']) {
-            return $this->handle_pull($processed, $state_data, $remote_url);
-        }
-
-        return $this->handle_push($processed, $state_data, $remote_url);
     }
 
     /**

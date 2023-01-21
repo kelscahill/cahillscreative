@@ -2,15 +2,15 @@
 
 namespace DeliciousBrains\WPMDB\Pro\TPF\Cli;
 
-use DeliciousBrains\WPMDB\Pro\TPF\ThemePluginFilesAddon;
-use DeliciousBrains\WPMDB\Pro\TPF\ThemePluginFilesLocal;
-use DeliciousBrains\WPMDB\Pro\TPF\ThemePluginFilesFinalize;
+use DeliciousBrains\WPMDB\Common\TPF\ThemePluginFilesAddon;
+use DeliciousBrains\WPMDB\Common\TPF\ThemePluginFilesLocal;
+use DeliciousBrains\WPMDB\Common\TPF\ThemePluginFilesFinalize;
 use DeliciousBrains\WPMDB\Common\Filesystem\Filesystem;
 use DeliciousBrains\WPMDB\Common\Profile\ProfileManager;
 use DeliciousBrains\WPMDB\Common\Properties\Properties;
 use DeliciousBrains\WPMDB\Common\Util\Util;
-use DeliciousBrains\WPMDB\Pro\Addon\Addon;
-use DeliciousBrains\WPMDB\Pro\Transfers\Files\PluginHelper;
+use DeliciousBrains\WPMDB\Common\Addon\Addon;
+use DeliciousBrains\WPMDB\Common\Transfers\Files\PluginHelper;
 use DeliciousBrains\WPMDB\Pro\Transfers\Receiver;
 use DeliciousBrains\WPMDB\Pro\UI\Template;
 use DeliciousBrains\WPMDB\WPMDBDI;
@@ -30,7 +30,7 @@ class ThemePluginFilesCli extends ThemePluginFilesAddon
         Filesystem $filesystem,
         ProfileManager $profile_manager,
         Util $util,
-        \DeliciousBrains\WPMDB\Pro\Transfers\Files\Util $transfers_util,
+        \DeliciousBrains\WPMDB\Common\Transfers\Files\Util $transfers_util,
         Receiver $transfers_receiver,
         ThemePluginFilesFinalize $tp_addon_finalize,
         PluginHelper $transfers_plugin_helper,
@@ -39,12 +39,10 @@ class ThemePluginFilesCli extends ThemePluginFilesAddon
         parent::__construct(
             $addon,
             $properties,
-            $template,
             $filesystem,
             $profile_manager,
             $util,
             $transfers_util,
-            $transfers_receiver,
             $tp_addon_finalize,
             $transfers_plugin_helper
         );
@@ -161,9 +159,9 @@ class ThemePluginFilesCli extends ThemePluginFilesAddon
      */
     public function add_tpf_profile_args($profile, $args, $assoc_args)
     {
-        if (!isset($assoc_args['theme-files']) 
-            && !isset($assoc_args['plugin-files']) 
-            && !isset($assoc_args['mu-plugin-files']) 
+        if (!isset($assoc_args['theme-files'])
+            && !isset($assoc_args['plugin-files'])
+            && !isset($assoc_args['mu-plugin-files'])
             && !isset($assoc_args['other-files'])
         ) {
             return $profile;
@@ -456,7 +454,7 @@ class ThemePluginFilesCli extends ThemePluginFilesAddon
      */
     public function get_muplugins_to_migrate($profile, $muplugins)
     {
-        $muplugins_option     = isset($profile['theme_plugin_files']['muplugins_option']) 
+        $muplugins_option     = isset($profile['theme_plugin_files']['muplugins_option'])
             ? $profile['theme_plugin_files']['muplugins_option']
             : '';
         $muplugins_selected   = isset($profile['theme_plugin_files']['muplugins_selected'])
@@ -566,10 +564,10 @@ class ThemePluginFilesCli extends ThemePluginFilesAddon
     }
 
      /**
-     * Get file path to be used for array key 
+     * Get file path to be used for array key
      *
      * @param array $files_array
-     * 
+     *
      * @param string $name
      *
      * @return string

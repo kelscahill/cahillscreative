@@ -264,7 +264,7 @@ class Remote
         $return['table_sizes']            = $this->table->get_table_sizes();
         $return['table_rows']             = $this->table->get_table_row_count();
         $return['table_sizes_hr']         = array_map(array($this->table, 'format_table_sizes'), $this->table->get_table_sizes());
-        $return['path']                   = $this->util->get_absolute_root_file_path();
+        $return['path']                   = Util::get_absolute_root_file_path();
         $return['url']                    = Util::home_url();
         $return['prefix']                 = $site_details['prefix']; // TODO: Remove backwards compatibility.
         $return['bottleneck']             = $this->util->get_bottleneck();

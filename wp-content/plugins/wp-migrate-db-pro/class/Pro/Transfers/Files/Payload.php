@@ -4,7 +4,8 @@ namespace DeliciousBrains\WPMDB\Pro\Transfers\Files;
 
 use DeliciousBrains\WPMDB\Common\Filesystem\Filesystem;
 use DeliciousBrains\WPMDB\Common\Http\Http;
-use DeliciousBrains\WPMDB\Pro\Transfers\Receiver;
+use DeliciousBrains\WPMDB\Common\Transfers\Files\Chunker;
+use DeliciousBrains\WPMDB\Common\Transfers\Files\Util;
 use DeliciousBrains\WPMDB\Pro\Transfers\Sender;
 
 /**
@@ -394,7 +395,7 @@ class Payload
             $file .= self::PART_SUFFIX;
         }
 
-        $dest = Receiver::get_temp_dir($stage) . $file;
+        $dest = Util::get_temp_dir($stage) . $file;
         if ($stage === 'media_files') {
             // Filtered by MST
             $uploads = apply_filters('wpmdb_mf_destination_uploads', Util::get_wp_uploads_dir(), $state_data);

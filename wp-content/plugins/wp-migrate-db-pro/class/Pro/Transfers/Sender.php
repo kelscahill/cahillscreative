@@ -3,6 +3,8 @@
 namespace DeliciousBrains\WPMDB\Pro\Transfers;
 
 use DeliciousBrains\WPMDB\Common\MigrationPersistence\Persistence;
+use DeliciousBrains\WPMDB\Pro\Transfers\Files\Payload;
+use DeliciousBrains\WPMDB\Common\Transfers\Files\Util;
 
 class Sender {
 
@@ -21,12 +23,12 @@ class Sender {
 	/**
 	 * Sender constructor.
 	 *
-	 * @param Files\Util    $util
-	 * @param Files\Payload $payload
+	 * @param Util    $util
+	 * @param Payload $payload
 	 */
 	public function __construct(
-		Files\Util $util,
-		Files\Payload $payload
+		Util $util,
+		Payload $payload
 	) {
 		$this->util    = $util;
 		$this->payload = $payload;

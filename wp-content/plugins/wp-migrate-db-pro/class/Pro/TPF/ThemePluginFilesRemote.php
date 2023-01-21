@@ -10,11 +10,11 @@ use DeliciousBrains\WPMDB\Common\MigrationPersistence\Persistence;
 use DeliciousBrains\WPMDB\Common\MigrationState\MigrationStateManager;
 use DeliciousBrains\WPMDB\Common\Properties\Properties;
 use DeliciousBrains\WPMDB\Common\Settings\Settings;
-use DeliciousBrains\WPMDB\Pro\Queue\Manager;
-use DeliciousBrains\WPMDB\Pro\Transfers\Files\FileProcessor;
-use DeliciousBrains\WPMDB\Pro\Transfers\Files\PluginHelper;
+use DeliciousBrains\WPMDB\Common\Queue\Manager;
+use DeliciousBrains\WPMDB\Common\Transfers\Files\FileProcessor;
+use DeliciousBrains\WPMDB\Common\Transfers\Files\PluginHelper;
+use DeliciousBrains\WPMDB\Common\Transfers\Files\Util;
 use DeliciousBrains\WPMDB\Pro\Transfers\Files\TransferManager;
-use DeliciousBrains\WPMDB\Pro\Transfers\Files\Util;
 use DeliciousBrains\WPMDB\Pro\Transfers\Receiver;
 use DeliciousBrains\WPMDB\Pro\Transfers\Sender;
 
