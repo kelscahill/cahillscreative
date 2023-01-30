@@ -1,4 +1,5 @@
 name: cahillscreative
+domain: lndo.site
 proxy:
   appserver:
     - cahillscreative.lndo.site

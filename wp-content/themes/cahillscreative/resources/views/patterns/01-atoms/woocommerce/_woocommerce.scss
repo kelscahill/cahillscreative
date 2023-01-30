@@ -196,12 +196,12 @@
   }
 }
 
-.c-cart-totals {
+.cart_totals {
   padding: $space;
   border-radius: $border-radius-curve--hard;
   background-color: white;
 
-  &__table {
+  .shop_table {
     th,
     td {
       border-bottom: 1px solid $c-gray;
@@ -239,8 +239,13 @@
   }
 }
 
-.c-shipping-calculator__form {
+.shipping-calculator-form {
   text-align: left;
+  margin-top: $space;
+
+  & > * + * {
+    margin-top: $space-half;
+  }
 }
 
 .woocommerce-NoticeGroup {
@@ -454,4 +459,9 @@
       }
     }
   }
+}
+
+.checkout-button {
+  @include o-button--secondary;
+  margin-top: $space;
 }

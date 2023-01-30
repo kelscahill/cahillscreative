@@ -50,6 +50,11 @@
   > ol {
     @include body-copy;
     margin-left: $space-double;
+
+    li > ul,
+    li > ol {
+      margin-left: $space-and-half;
+    }
   }
 
   .wp-block-button a {

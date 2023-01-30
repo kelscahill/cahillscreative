@@ -685,11 +685,12 @@ trait broadcasting
 
 				// Attached files are custom fields... but special custom fields.
 				if ( $bcd->has_thumbnail )
-				{
-					$new_thumbnail_id = $bcd->copied_attachments()->get( $bcd->thumbnail_id );
-					$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post( 'ID' ), $new_thumbnail_id );
-					update_post_meta( $bcd->new_post( 'ID' ), '_thumbnail_id', $new_thumbnail_id );
-				}
+					if ( ! $bcd->custom_fields()->protectlist_has( '_thumbnail_id' ) )
+					{
+						$new_thumbnail_id = $bcd->copied_attachments()->get( $bcd->thumbnail_id );
+						$this->debug( 'Handling post thumbnail for post %s. Thumbnail ID is now %s', $bcd->new_post( 'ID' ), $new_thumbnail_id );
+						update_post_meta( $bcd->new_post( 'ID' ), '_thumbnail_id', $new_thumbnail_id );
+					}
 				$this->debug( 'Custom fields: Finished.' );
 			}
 

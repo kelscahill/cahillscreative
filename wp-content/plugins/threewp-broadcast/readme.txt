@@ -4,7 +4,7 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 7.4
-Stable tag: 49.02
+Stable tag: 49.04
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
 Tested up to: 6.1
 
@@ -114,6 +114,8 @@ The following add-ons add support for the plugin after which they are named:
 * <a href="https://broadcast.plainviewplugins.com/addon/polylang/">Polylang</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/post-expirator/">Post Expirator</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/rank-math-seo/">Rank Math SEO</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/search-and-filter/">Search And Filter</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/search-exclude/">Search Exclude</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/sensei/">Sensei</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/simple-custom-post-order/">Simple Custom Post Order</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/siteorigin-page-builder/">SiteOrigin Page Builder</a>
@@ -366,6 +368,12 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 49.04	20230127 =
+
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/search-exclude/">Search Exclude</a>: Adds support for the <a href="https://wordpress.org/plugins/search-exclude/">Search Exclude</a> plugin.
+* Fix: Featured image (_thumbnail_id) handler now obeys custom field protect list, allowing the featured image to be protected.
+* Fix: Fix javascript path for Windows installs.
 
 = 49.02	20230104 =
 
