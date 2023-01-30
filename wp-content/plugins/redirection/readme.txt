@@ -183,7 +183,6 @@ A x.1 version increase introduces new or updated features and can be considered 
 
 = 5.3.9 - 25th January 2023 =
 * Fix incorrect sanitization applied to target URLs
-
 = 5.3.8 - 22nd January 2023 =
 * Fix app rendering twice causing problems with upgrades
 * Fix CSV header being detected as an error
