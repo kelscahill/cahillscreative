@@ -86,28 +86,32 @@
         {% if loop.index == 2 %}
           {% include "@atoms/ads/ad.twig" with {
             "ad": {
-              "snippet": options.ad_content_1
+              "snippet": options.ad_content_1,
+              "modifiers": "step"
             }
           } %}
         {% endif %}
         {% if loop.index == 4 %}
           {% include "@atoms/ads/ad.twig" with {
             "ad": {
-              "snippet": options.ad_content_2
+              "snippet": options.ad_content_2,
+              "modifiers": "step"
             }
           } %}
         {% endif %}
         {% if loop.index == 6 %}
           {% include "@atoms/ads/ad.twig" with {
             "ad": {
-              "snippet": options.ad_content_3
+              "snippet": options.ad_content_3,
+              "modifiers": "step"
             }
           } %}
         {% endif %}
         {% if loop.index == 8 %}
           {% include "@atoms/ads/ad.twig" with {
             "ad": {
-              "snippet": options.ad_content_4
+              "snippet": options.ad_content_4,
+              "modifiers": "step"
             }
           } %}
         {% endif %}

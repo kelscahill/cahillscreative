@@ -1,5 +1,4 @@
 .o-ad {
-  display: block;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -37,6 +36,12 @@
       margin: 0 calc(-320px - #{$space-double}) 0 0;
       align-items: flex-start;
       justify-content: flex-start;
+    }
+  }
+
+  &--step {
+    @include media('<=medium') {
+      @include l-container--full;
     }
   }
 }

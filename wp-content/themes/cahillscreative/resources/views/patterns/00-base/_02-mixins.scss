@@ -2,6 +2,19 @@
  * General Mixins (put specific ones in component files where applicable)
 */
 
+@mixin l-container--full {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.l-container--full {
+  @include l-container--full
+}
+
 @mixin body-copy {
   font-family: $font-body;
   font-size: $body-font-size;
