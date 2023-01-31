@@ -179,7 +179,11 @@
     }
   }
 
-  .ezoic-ad {
+  .ezoic-ad,
+  .ezoic-autoinsert-ad {
     display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
   }
 }
