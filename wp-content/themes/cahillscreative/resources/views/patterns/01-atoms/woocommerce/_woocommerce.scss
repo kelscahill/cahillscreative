@@ -35,7 +35,7 @@
   }
 
   .button {
-    @include o-button;
+    @include o-button--secondary;
   }
 }
 
@@ -355,8 +355,6 @@
 
 .woocommerce-order-details,
 .woocommerce-customer-details {
-  margin-top: $space-double;
-
   @include media('>medium') {
     float: left;
     width: 50%;
@@ -462,6 +460,5 @@
 }
 
 .checkout-button {
-  @include o-button--secondary;
   margin-top: $space;
 }

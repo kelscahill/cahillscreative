@@ -11,10 +11,6 @@
   margin-right: -50vw;
 }
 
-.l-container--full {
-  @include l-container--full
-}
-
 @mixin body-copy {
   font-family: $font-body;
   font-size: $body-font-size;

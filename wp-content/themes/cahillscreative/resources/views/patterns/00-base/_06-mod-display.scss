@@ -61,6 +61,10 @@
   }
 }
 
+.l-container--full {
+  @include l-container--full;
+}
+
 .l-container--gradient-white {
   width: 100vw;
   left: 50%;

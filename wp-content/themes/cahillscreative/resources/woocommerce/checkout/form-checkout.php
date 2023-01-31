@@ -29,7 +29,7 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 ?>
 <form bp="grid" name="checkout" method="post" class="c-checkout u-space--top checkout woocommerce-checkout" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data">
   <?php if ( $checkout->get_checkout_fields() ) : ?>
-    <div class="c-checkout__customer-details u-spacing u-space--top" bp="6@md">
+    <div class="c-checkout__customer-details u-spacing" bp="6@md">
       <?php do_action( 'woocommerce_checkout_before_customer_details' ); ?>
       <div class="u-spacing--double woocommerce-customer-details" id="customer_details">
         <?php do_action( 'woocommerce_checkout_billing' ); ?>
