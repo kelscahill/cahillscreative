@@ -8,10 +8,6 @@
 
     @include media('>medium') {
       flex-direction: row;
-
-      > * {
-        flex-basis: 50vw;
-      }
     }
   }
 
@@ -113,6 +109,7 @@
     @include media('>medium') {
       padding: $space-double $space-quadruple;
       order: 0;
+      flex-basis: 50vw;
     }
   }
 
@@ -133,6 +130,7 @@
     @include media('>medium') {
       min-height: 50vw;
       order: 1;
+      flex-basis: 50vw;
     }
   }
 
