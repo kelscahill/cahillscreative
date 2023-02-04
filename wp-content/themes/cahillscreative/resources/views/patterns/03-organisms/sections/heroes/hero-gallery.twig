@@ -16,21 +16,21 @@
         } %}
         <style>
           .o-background-image--{{ Image(image).id }} {
-            background-image: url('{{ Image(image).src|resize(720, auto) }}');
+            background-image: url('{{ Image(image).src|resize(720, 720) }}');
           }
           @media(min-width: 720px) {
             .o-background-image--{{ Image(image).id }} {
-              background-image: url('{{ Image(image).src|resize(960, auto) }}');
+              background-image: url('{{ Image(image).src|resize(960, 540) }}');
             }
           }
           @media(min-width: 960px) {
             .o-background-image--{{ Image(image).id }} {
-              background-image: url('{{ Image(image).src|resize(1200, auto) }}');
+              background-image: url('{{ Image(image).src|resize(1200, 675) }}');
             }
           }
           @media(min-width: 1200px) {
             .o-background-image--{{ Image(image).id }} {
-              background-image: url('{{ Image(image).src|resize(1600, auto) }}');
+              background-image: url('{{ Image(image).src|resize(1600, 900) }}');
             }
           }
         </style>

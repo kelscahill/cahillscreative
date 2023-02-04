@@ -114,6 +114,8 @@
   }
 
   &__body {
+    margin-left: 0;
+
     > * {
       background-color: transparent !important;
     }

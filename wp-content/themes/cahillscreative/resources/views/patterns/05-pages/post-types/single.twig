@@ -20,19 +20,11 @@
               "srcset": Image(post.hero_image).src('horiz__16x9--xl')
             },
             {
-              "media": "(min-width: 500px)"|json_encode,
-              "srcset": Image(post.hero_image).src('horiz__16x9--s')
-            },
-            {
               "media": "(min-width: 720px)"|json_encode,
               "srcset": Image(post.hero_image).src('horiz__16x9--m')
             },
-            {
-              "media": "(min-width: 960px)"|json_encode,
-              "srcset": Image(post.hero_image).src('horiz__16x9--l')
-            }
           ],
-          "src": Image(post.hero_image).src|resize(500, 500),
+          "src": Image(post.hero_image).src('horiz__16x9--s'),
           "alt": Image(post.hero_image).alt
         }
       }

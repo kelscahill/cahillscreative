@@ -81,6 +81,7 @@
   .slick-dots {
     position: absolute;
     left: 0;
+    right: 0;
     bottom: $space-half;
     margin: auto;
     z-index: 2;
@@ -218,7 +219,6 @@
 }
 
 .mfp-zoom {
-  cursor: pointer;
   cursor: -webkit-zoom-in;
   cursor: -moz-zoom-in;
   cursor: zoom-in;
@@ -298,7 +298,7 @@ button::-moz-focus-inner {
   width: 44px;
   height: 44px;
   line-height: 44px;
-  position: absolute;
+  position: fixed;
   right: 0;
   top: 0;
   text-decoration: none;

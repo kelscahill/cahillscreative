@@ -1,9 +1,9 @@
 name: cahillscreative
-domain: lndo.site
+domain: local.host
 proxy:
   appserver:
-    - cahillscreative.lndo.site
-    - thehappyglamper.lndo.site
+    - cahillscreative.local.host
+    - thehappyglamper.local.host
 recipe: wordpress
 config:
   webroot: .
