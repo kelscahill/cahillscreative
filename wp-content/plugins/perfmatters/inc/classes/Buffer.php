@@ -3,12 +3,31 @@ namespace Perfmatters;
 
 class Buffer
 {
-    //initialize buffer
+    //initialize buffer class
     public static function init()
     {
+        add_action('wp', array('Perfmatters\Buffer', 'queue'));
+    }
+
+    //queue functions
+    public static function queue() 
+    {
+
         //inital checks
         if(is_admin() || perfmatters_is_dynamic_request() || perfmatters_is_page_builder() || isset($_GET['perfmatters']) || isset($_GET['perfmattersoff'])) {
             return;
+        }
+
+        //user agent check
+        if(!empty($_SERVER['HTTP_USER_AGENT'])) {
+            $excluded_agents = array(
+                'usercentrics'
+            );
+            foreach($excluded_agents as $agent) {
+                if(stripos($_SERVER['HTTP_USER_AGENT'], $agent) !== false) {
+                    return;
+                }
+            }
         }
 
         //buffer is allowed
@@ -27,11 +46,6 @@ class Buffer
 
             //exclude certain requests
             if(is_embed() || is_feed() || is_preview() || is_customize_preview()) {
-                return;
-            }
-
-            //exclude specific woocommerce pages
-            if(function_exists('is_woocommerce') && (is_cart() || is_checkout() || is_account_page())) {
                 return;
             }
 
