@@ -278,6 +278,10 @@ class Remote
         $return['post_types']             = $this->table->get_post_types();
         // TODO: Use WP_Filesystem API.
         $return['write_permissions']      = (is_writeable($this->filesystem->get_upload_info('path')) ? 'true' : 'false');
+        $return['themes_permissions']     = is_writeable(WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'themes') ? 'true' : 'false';
+        $return['plugins_permissions']    = is_writeable(WP_PLUGIN_DIR) ? 'true' : 'false';
+        $return['muplugins_permissions']  = is_writeable(WPMU_PLUGIN_DIR) ? 'true' : 'false';
+        $return['others_permissions']     = is_writeable(WP_CONTENT_DIR) ? 'true' : 'false';
         $return['upload_dir_long']        = $this->filesystem->get_upload_info('path');
         $return['wp_upload_dir']          = $this->filesystem->get_wp_upload_dir();
         $return['temp_prefix']            = $this->props->temp_prefix;
