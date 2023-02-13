@@ -21,6 +21,8 @@
   }
 
   table {
+    border-radius: 0;
+
     th {
       background-color: transparent;
       color: $c-black;
@@ -28,6 +30,7 @@
 
     tr th,
     tr td {
+      border: none;
       background-color: transparent;
       border-bottom: $border--standard;
       line-height: $line-height;
@@ -461,4 +464,13 @@
 
 .checkout-button {
   margin-top: $space;
+}
+
+.woocommerce-terms-and-conditions {
+  border: $border--standard;
+  padding: $space;
+}
+
+.woocommerce-privacy-policy-text {
+  margin-bottom: $space;
 }

@@ -1,5 +1,4 @@
-table,
-.wp-block-table table {
+table {
   border-collapse: collapse;
   border-spacing: 0;
   width: 100%;
@@ -8,29 +7,28 @@ table,
   overflow: hidden;
 }
 
-th,
-.wp-block-table tr:first-child td {
-  text-align: left;
-  padding: $space / 2;
-  vertical-align: top;
-  background-color: $c-primary;
-  color: white;
-  vertical-align: middle;
-  @include o-heading__secondary--s;
-}
-
 tr {
-  border: 1px solid rgba(black, 0.2);
   &:nth-child(odd) td {
     background-color: white;
   }
+}
+
+th,
+.wp-block-table th {
+  text-align: left;
+  padding: $space / 2;
+  background-color: $c-primary;
+  color: white;
+  vertical-align: middle;
+  border: 1px solid $c-primary;
+  @include o-heading__secondary--s;
 }
 
 td,
 .wp-block-table td {
   padding: $space / 2;
   vertical-align: middle;
-  border: none;
+  border: $border--standard;
 
   p {
     margin: 0;
