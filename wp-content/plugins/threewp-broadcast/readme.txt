@@ -4,7 +4,7 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 7.4
-Stable tag: 49.04
+Stable tag: 49.05
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
 Tested up to: 6.1
 
@@ -368,6 +368,10 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 49.05	20230210 =
+
+* Code: find_unlinked_children post action now accepts a list of blogs to link to. Affects the API and the Bulk CLoner and Find Some Unlinked Children add-ons.
 
 = 49.04	20230127 =
 
