@@ -434,6 +434,8 @@ trait post_actions
 			case 'find_unlinked':
 				$find_unlinked_children_post_action = $this->new_action( 'find_unlinked_children_post_action' );;
 				$find_unlinked_children_post_action->post_action = $action;
+				if ( count( $action->blogs ) > 0 )
+					$find_unlinked_children_post_action->requested_blogs = $action->blogs;
 				$find_unlinked_children_post_action->execute();
 			break;
 			// Restore children

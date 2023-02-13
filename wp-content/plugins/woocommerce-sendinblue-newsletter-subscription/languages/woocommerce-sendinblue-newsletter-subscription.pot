@@ -1,0 +1,126 @@
+# Copyright (C) 2022 
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Sendinblue - WooCommerce Email Marketing 3.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woocommerce-sendinblue-newsletter-subscription\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2022-10-12T11:15:34+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.6.0\n"
+"X-Domain: woocommerce-sendinblue-newsletter-subscription\n"
+
+#. Plugin Name of the plugin
+msgid "Sendinblue - WooCommerce Email Marketing"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+msgid "https://www.sendinblue.com/?r=wporg"
+msgstr ""
+
+#. Description of the plugin
+msgid "Allow users to subscribe to your newsletter via the checkout page and a client to send SMS campaign."
+msgstr ""
+
+#: src/views/admin_menus.php:729
+#: src/views/admin_view.php:726
+msgid "for WooCommerce"
+msgstr ""
+
+#: src/views/admin_menus.php:745
+msgid "Settings"
+msgstr ""
+
+#: src/views/admin_menus.php:759
+msgid "You’re all set!"
+msgstr ""
+
+#: src/views/admin_menus.php:760
+msgid "The connection between Woocommerce and Sendinblue works!"
+msgstr ""
+
+#: src/views/admin_menus.php:769
+msgid "Go to dashboard"
+msgstr ""
+
+#: src/views/admin_menus.php:806
+#: src/views/admin_view.php:827
+msgid "Email Marketing"
+msgstr ""
+
+#: src/views/admin_menus.php:808
+#: src/views/admin_view.php:829
+msgid "Sell more with sleek email messages that you can design in no time"
+msgstr ""
+
+#: src/views/admin_menus.php:818
+msgid "See my campaigns"
+msgstr ""
+
+#: src/views/admin_menus.php:838
+#: src/views/admin_view.php:846
+msgid "Automation"
+msgstr ""
+
+#: src/views/admin_menus.php:840
+#: src/views/admin_view.php:848
+msgid "Save time and boost performance by automating your marketing messages"
+msgstr ""
+
+#: src/views/admin_menus.php:849
+msgid "See my workflows"
+msgstr ""
+
+#: src/views/admin_menus.php:870
+#: src/views/admin_view.php:865
+msgid "Conversations"
+msgstr ""
+
+#: src/views/admin_menus.php:872
+#: src/views/admin_view.php:867
+msgid ""
+"Be there for customers instantly when they have a question\n"
+"                  while browsing your site"
+msgstr ""
+
+#: src/views/admin_menus.php:882
+msgid "See my conversations"
+msgstr ""
+
+#: src/views/admin_menus.php:892
+#: src/views/admin_view.php:875
+msgid "Connect to your favorite plugins"
+msgstr ""
+
+#: src/views/admin_view.php:767
+msgid "Prepare for"
+msgstr ""
+
+#: src/views/admin_view.php:770
+msgid "takeoff."
+msgstr ""
+
+#: src/views/admin_view.php:773
+msgid "WooCommerce marketing tools for small"
+msgstr ""
+
+#: src/views/admin_view.php:774
+msgid "businesses. Email marketing, automations,"
+msgstr ""
+
+#: src/views/admin_view.php:775
+msgid "chat, forms, sales CRM and more"
+msgstr ""
+
+#: src/views/admin_view.php:784
+msgid "Connect your account"
+msgstr ""
+
+#: src/views/admin_view.php:812
+msgid "Do it all with Sendinblue"
+msgstr ""
