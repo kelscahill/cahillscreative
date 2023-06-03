@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class OrderinvoicesCustomBatchRequestEntryCreateRefundInvoiceReturnOption extends \Google\Model
+class OrderinvoicesCustomBatchRequestEntryCreateRefundInvoiceReturnOption extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   /**
    * @var string

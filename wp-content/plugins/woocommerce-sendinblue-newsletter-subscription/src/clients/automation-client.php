@@ -9,7 +9,7 @@ namespace SendinblueWoocommerce\Clients;
  */
 class AutomationClient
 {
-	private const AUTOMATION_URL   = 'https://in-automate.sendinblue.com/api/v2/trackEvent';
+	private const AUTOMATION_URL   = 'https://in-automate.brevo.com/api/v2/trackEvent';
 	private const HTTP_METHOD_POST = 'POST';
 	private const USER_AGENT       = 'sendinblue_plugins/woocommerce_common';
 

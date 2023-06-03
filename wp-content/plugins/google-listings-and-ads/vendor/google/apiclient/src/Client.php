@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-namespace Google;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google;
 
 use BadMethodCallException;
 use DomainException;
-use Google\AccessToken\Revoke;
-use Google\AccessToken\Verify;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\AccessToken\Revoke;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\AccessToken\Verify;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\ApplicationDefaultCredentials;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\Cache\MemoryCacheItemPool;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\Credentials\ServiceAccountCredentials;
@@ -29,8 +29,8 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\CredentialsLo
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\FetchAuthTokenCache;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\OAuth2;
-use Google\AuthHandler\AuthHandlerFactory;
-use Google\Http\REST;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\AuthHandler\AuthHandlerFactory;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Http\REST;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Client as GuzzleClient;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\ClientInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Ring\Client\StreamHandler;
@@ -55,7 +55,7 @@ class Client
     const USER_AGENT_SUFFIX = "google-api-php-client/";
     const OAUTH2_REVOKE_URI = 'https://oauth2.googleapis.com/revoke';
     const OAUTH2_TOKEN_URI = 'https://oauth2.googleapis.com/token';
-    const OAUTH2_AUTH_URL = 'https://accounts.google.com/o/oauth2/auth';
+    const OAUTH2_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
     const API_BASE_PATH = 'https://www.googleapis.com';
 
     /**
@@ -386,6 +386,7 @@ class Client
             'login_hint' => $this->config['login_hint'],
             'openid.realm' => $this->config['openid.realm'],
             'prompt' => $this->config['prompt'],
+            'redirect_uri' => $this->config['redirect_uri'],
             'response_type' => 'code',
             'scope' => $scope,
             'state' => $this->config['state'],
@@ -1184,7 +1185,6 @@ class Client
         if (defined('\Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\ClientInterface::MAJOR_VERSION')) {
             $guzzleVersion = ClientInterface::MAJOR_VERSION;
         } elseif (defined('\Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\ClientInterface::VERSION')) {
-            // @phpstan-ignore-next-line
             $guzzleVersion = (int)substr(ClientInterface::VERSION, 0, 1);
         }
 

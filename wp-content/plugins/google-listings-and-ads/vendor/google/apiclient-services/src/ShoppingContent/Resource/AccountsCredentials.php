@@ -15,19 +15,19 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\AccountCredentials;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\AccountCredentials;
 
 /**
  * The "credentials" collection of methods.
  * Typical usage is:
  *  <code>
  *   $contentService = new Google\Service\ShoppingContent(...);
- *   $credentials = $contentService->credentials;
+ *   $credentials = $contentService->accounts_credentials;
  *  </code>
  */
-class AccountsCredentials extends \Google\Service\Resource
+class AccountsCredentials extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Uploads credentials for the Merchant Center account. If credentials already

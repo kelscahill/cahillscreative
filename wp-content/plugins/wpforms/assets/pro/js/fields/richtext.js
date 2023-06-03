@@ -1,4 +1,4 @@
-/* global tinymce, tinyMCE, tinyMCEPreInit, wpforms_settings */
+/* global tinymce, tinyMCE, tinyMCEPreInit, wpforms_settings, wpforms */
 
 /**
  * Rich Text field.
@@ -59,6 +59,16 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 
 					app.validateRichTextField( editor );
 				} );
+
+				editor.on( 'focus', function( e ) {
+
+					$( e.target.editorContainer ).closest( '.wp-editor-wrap' ).addClass( 'wpforms-focused' );
+				} );
+
+				editor.on( 'blur', function( e ) {
+
+					$( e.target.editorContainer ).closest( '.wp-editor-wrap' ).removeClass( 'wpforms-focused' );
+				} );
 			} );
 
 			// Validate on mutation (insert image or any other changes).
@@ -71,8 +81,14 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 			// Init each field.
 			$document.on( 'tinymce-editor-init', function( event, editor ) {
 
-				// Body text font family.
-				editor.getDoc().body.style.fontFamily = $( 'body' ).css( 'font-family' );
+				const docStyle = editor.getDoc().body.style;
+				const $body = $( 'body' );
+
+				// Inherit body text font family.
+				docStyle.fontFamily = $body.css( 'font-family' );
+				docStyle.background = 'transparent';
+
+				app.initEditorModernMarkupMode( editor );
 
 				app.mediaPostIdUpdate();
 				app.observeEditorChanges( editor );
@@ -105,6 +121,38 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 					app.enableAddMediaButtons( 'escapeEvent' );
 				} );
 			}
+
+			$document.on( 'click', '.switch-html', function() {
+
+				const $wrap = $( this ).closest( '.wp-editor-wrap' );
+
+				setTimeout( function() {
+					$wrap.find( '.wp-editor-area' ).trigger( 'focus' );
+					$wrap.addClass( 'wpforms-focused' );
+				}, 0 );
+			} );
+
+			$document.on( 'click', '.switch-tmce', function( e ) {
+
+				const $wrap = $( this ).closest( '.wp-editor-wrap' ),
+					textareaId = $wrap.find( '.wp-editor-area' ).attr( 'id' );
+
+				const editor = tinyMCE.get( textareaId );
+
+				if ( editor ) {
+					editor.focus();
+				}
+			} );
+
+			$document.on( 'focus', '.wp-editor-area', function() {
+
+				$( this ).closest( '.wp-editor-wrap' ).addClass( 'wpforms-focused' );
+			} );
+
+			$document.on( 'blur', '.wp-editor-area', function( e ) {
+
+				$( this ).closest( '.wp-editor-wrap' ).removeClass( 'wpforms-focused' );
+			} );
 		},
 
 		/**
@@ -315,6 +363,43 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 
 				tinymce.init( tinyMCEPreInit.mceInit[ id ] );
 			} );
+		},
+
+		/**
+		 * Initialize tinyMCE in Modern Markup mode.
+		 *
+		 * @since 1.8.1
+		 *
+		 * @param {object} editor TinyMCE editor instance.
+		 */
+		initEditorModernMarkupMode: function( editor ) {
+
+			if ( ! wpforms.isModernMarkupEnabled() || window.WPFormsEditEntry || ! window.WPForms.FrontendModern ) {
+				return;
+			}
+
+			const docStyle    = editor.getDoc().body.style;
+			const $el         = $( editor.getElement() );
+			const $field      = $el.closest( '.wpforms-field' );
+			const $form       = $el.closest( '.wpforms-form' );
+			const cssVars     = window.WPForms.FrontendModern.getCssVars( $form );
+			const inputHeight = cssVars['field-size-input-height'] ? cssVars['field-size-input-height'].replace( 'px', '' ) : 43;
+			const sizeK      = {
+				'small' : 1.80,
+				'medium': 2.79,
+				'large' : 5.12,
+			};
+
+			let fieldSize = 'medium';
+			fieldSize = $field.hasClass( 'wpforms-field-small' ) ? 'small' : fieldSize;
+			fieldSize = $field.hasClass( 'wpforms-field-large' ) ? 'large' : fieldSize;
+
+			const width  = editor.getWin().clientWidth;
+			const height = inputHeight * sizeK[ fieldSize ];
+			editor.theme.resizeTo( width, height );
+
+			docStyle.color    = cssVars['field-text-color'];
+			docStyle.fontSize = cssVars['field-size-font-size'];
 		},
 	};
 

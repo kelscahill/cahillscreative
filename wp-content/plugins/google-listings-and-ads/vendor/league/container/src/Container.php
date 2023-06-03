@@ -10,7 +10,7 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\League\Container\ServiceP
     ServiceProviderAggregateInterface,
     ServiceProviderInterface
 };
-use Psr\Container\ContainerInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Container\ContainerInterface;
 
 class Container implements ContainerInterface
 {

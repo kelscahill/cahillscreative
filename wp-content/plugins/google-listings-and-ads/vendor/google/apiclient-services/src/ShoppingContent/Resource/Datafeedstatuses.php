@@ -15,12 +15,12 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\DatafeedStatus;
-use Google\Service\ShoppingContent\DatafeedstatusesCustomBatchRequest;
-use Google\Service\ShoppingContent\DatafeedstatusesCustomBatchResponse;
-use Google\Service\ShoppingContent\DatafeedstatusesListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\DatafeedStatus;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\DatafeedstatusesCustomBatchRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\DatafeedstatusesCustomBatchResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\DatafeedstatusesListResponse;
 
 /**
  * The "datafeedstatuses" collection of methods.
@@ -30,7 +30,7 @@ use Google\Service\ShoppingContent\DatafeedstatusesListResponse;
  *   $datafeedstatuses = $contentService->datafeedstatuses;
  *  </code>
  */
-class Datafeedstatuses extends \Google\Service\Resource
+class Datafeedstatuses extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Gets multiple Merchant Center datafeed statuses in a single request.
@@ -55,12 +55,17 @@ class Datafeedstatuses extends \Google\Service\Resource
    * @param string $datafeedId The ID of the datafeed.
    * @param array $optParams Optional parameters.
    *
-   * @opt_param string country The country for which to get the datafeed status.
-   * If this parameter is provided then language must also be provided. Note that
+   * @opt_param string country Deprecated. Use `feedLabel` instead. The country to
+   * get the datafeed status for. If this parameter is provided then `language`
+   * must also be provided. Note that this parameter is required for feeds
+   * targeting multiple countries and languages, since a feed may have a different
+   * status for each target.
+   * @opt_param string feedLabel The feed label to get the datafeed status for. If
+   * this parameter is provided then `language` must also be provided. Note that
    * this parameter is required for feeds targeting multiple countries and
    * languages, since a feed may have a different status for each target.
-   * @opt_param string language The language for which to get the datafeed status.
-   * If this parameter is provided then country must also be provided. Note that
+   * @opt_param string language The language to get the datafeed status for. If
+   * this parameter is provided then `country` must also be provided. Note that
    * this parameter is required for feeds targeting multiple countries and
    * languages, since a feed may have a different status for each target.
    * @return DatafeedStatus

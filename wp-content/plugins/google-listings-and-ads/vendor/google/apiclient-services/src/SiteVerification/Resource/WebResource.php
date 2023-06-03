@@ -15,12 +15,12 @@
  * the License.
  */
 
-namespace Google\Service\SiteVerification\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\SiteVerification\Resource;
 
-use Google\Service\SiteVerification\SiteVerificationWebResourceGettokenRequest;
-use Google\Service\SiteVerification\SiteVerificationWebResourceGettokenResponse;
-use Google\Service\SiteVerification\SiteVerificationWebResourceListResponse;
-use Google\Service\SiteVerification\SiteVerificationWebResourceResource;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\SiteVerification\SiteVerificationWebResourceGettokenRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\SiteVerification\SiteVerificationWebResourceGettokenResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\SiteVerification\SiteVerificationWebResourceListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\SiteVerification\SiteVerificationWebResourceResource;
 
 /**
  * The "webResource" collection of methods.
@@ -30,7 +30,7 @@ use Google\Service\SiteVerification\SiteVerificationWebResourceResource;
  *   $webResource = $siteVerificationService->webResource;
  *  </code>
  */
-class WebResource extends \Google\Service\Resource
+class WebResource extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Relinquish ownership of a website or domain. (webResource.delete)

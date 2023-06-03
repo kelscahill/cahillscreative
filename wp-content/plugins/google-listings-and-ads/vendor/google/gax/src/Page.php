@@ -32,8 +32,8 @@
 namespace Google\ApiCore;
 
 use Generator;
-use Google\Protobuf\Internal\Message;
 use Google\Protobuf\Internal\MapField;
+use Google\Protobuf\Internal\Message;
 use IteratorAggregate;
 
 /**
@@ -110,7 +110,7 @@ class Page implements IteratorAggregate
      * @throws ApiException if the call to fetch the next page fails.
      * @return Page
      */
-    public function getNextPage($pageSize = null)
+    public function getNextPage(int $pageSize = null)
     {
         if (!$this->hasNextPage()) {
             throw new ValidationException(

@@ -100,6 +100,13 @@ class ApiManager
                 self::ROUTE_CALLBACK   => function () {
                     return $this->modify_response($this->delete_attachment());
                 }
+            ),
+            array(
+                self::ROUTE_PATH       => '/settings',
+                self::ROUTE_METHODS    => 'GET',
+                self::ROUTE_CALLBACK   => function () {
+                    return $this->modify_response($this->get_plugin_settings());
+                }
             )
         );
 
@@ -129,6 +136,15 @@ class ApiManager
         );
 
         register_rest_route(self::API_NAMESPACE, $path, $arguments);
+    }
+
+    private function get_plugin_settings()
+    {
+        return new WP_REST_Response(
+            array(
+                'settings' => $this->get_settings(),
+                'email_settings' => $this->get_email_settings(),
+            ), 200);
     }
 
     private function get_file_contents()
@@ -200,7 +216,7 @@ class ApiManager
     {
         $order = $this->wc_get_order($id);
 
-        if (strpos(SendinblueClient::NEW_ORDER_STATUS, $new_status) !== false) {
+        if (strpos(SendinblueClient::NEW_ORDER_STATUS, $new_status) !== false && $status != "on-hold") {
             $this->trigger_admin_email_on_new_order($order);
         }
 

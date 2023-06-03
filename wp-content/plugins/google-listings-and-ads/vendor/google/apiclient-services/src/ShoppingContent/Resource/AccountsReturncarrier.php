@@ -15,20 +15,20 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\AccountReturnCarrier;
-use Google\Service\ShoppingContent\ListAccountReturnCarrierResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\AccountReturnCarrier;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ListAccountReturnCarrierResponse;
 
 /**
  * The "returncarrier" collection of methods.
  * Typical usage is:
  *  <code>
  *   $contentService = new Google\Service\ShoppingContent(...);
- *   $returncarrier = $contentService->returncarrier;
+ *   $returncarrier = $contentService->accounts_returncarrier;
  *  </code>
  */
-class AccountsReturncarrier extends \Google\Service\Resource
+class AccountsReturncarrier extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Links return carrier to a merchant account. (returncarrier.create)

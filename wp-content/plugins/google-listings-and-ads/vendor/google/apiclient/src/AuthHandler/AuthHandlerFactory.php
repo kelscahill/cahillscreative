@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Google\AuthHandler;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\AuthHandler;
 
 use Exception;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\ClientInterface;
@@ -34,7 +34,6 @@ class AuthHandlerFactory
         if (defined('\Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\ClientInterface::MAJOR_VERSION')) {
             $guzzleVersion = ClientInterface::MAJOR_VERSION;
         } elseif (defined('\Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\ClientInterface::VERSION')) {
-            // @phpstan-ignore-next-line
             $guzzleVersion = (int) substr(ClientInterface::VERSION, 0, 1);
         }
 

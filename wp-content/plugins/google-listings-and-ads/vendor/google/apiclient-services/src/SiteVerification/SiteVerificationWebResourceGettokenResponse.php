@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\SiteVerification;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\SiteVerification;
 
-class SiteVerificationWebResourceGettokenResponse extends \Google\Model
+class SiteVerificationWebResourceGettokenResponse extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   /**
    * @var string

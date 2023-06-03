@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class TransitTableTransitTimeRow extends \Google\Collection
+class TransitTableTransitTimeRow extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Collection
 {
   protected $collection_key = 'values';
   protected $valuesType = TransitTableTransitTimeRowTransitTimeValue::class;

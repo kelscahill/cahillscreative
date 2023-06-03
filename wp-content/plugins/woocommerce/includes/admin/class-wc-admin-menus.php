@@ -375,9 +375,12 @@ class WC_Admin_Menus {
 					?>
 				</ul>
 			</div>
-			<p class="button-controls">
+			<p class="button-controls" data-items-type="posttype-woocommerce-endpoints">
 				<span class="list-controls">
-					<a href="<?php echo esc_url( admin_url( 'nav-menus.php?page-tab=all&selectall=1#posttype-woocommerce-endpoints' ) ); ?>" class="select-all"><?php esc_html_e( 'Select all', 'woocommerce' ); ?></a>
+					<label>
+						<input type="checkbox" class="select-all" />
+						<?php esc_html_e( 'Select all', 'woocommerce' ); ?>
+					</label>
 				</span>
 				<span class="add-to-menu">
 					<button type="submit" class="button-secondary submit-add-to-menu right" value="<?php esc_attr_e( 'Add to menu', 'woocommerce' ); ?>" name="add-post-type-menu-item" id="submit-posttype-woocommerce-endpoints"><?php esc_html_e( 'Add to menu', 'woocommerce' ); ?></button>
@@ -424,8 +427,15 @@ class WC_Admin_Menus {
 	 * Maybe add new management product experience.
 	 */
 	public function maybe_add_new_product_management_experience() {
-		if ( Features::is_enabled( 'new-product-management-experience' ) ) {
-			add_submenu_page( 'edit.php?post_type=product', __( 'Add New', 'woocommerce' ), __( 'Add New (MVP)', 'woocommerce' ), 'manage_woocommerce', 'admin.php?page=wc-admin&path=/add-product', '', 2 );
+		if ( Features::is_enabled( 'new-product-management-experience' ) || Features::is_enabled( 'product-block-editor' ) ) {
+			global $submenu;
+			if ( isset( $submenu['edit.php?post_type=product'][10] ) ) {
+				// Disable phpcs since we need to override submenu classes.
+				// Note that `phpcs:ignore WordPress.Variables.GlobalVariables.OverrideProhibited` does not work to disable this check.
+				// phpcs:disable
+				$submenu['edit.php?post_type=product'][10][2] = 'admin.php?page=wc-admin&path=/add-product';
+				// phps:enableWordPress.Variables.GlobalVariables.OverrideProhibited
+			}
 		}
 	}
 }

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace Google\AccessToken;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\AccessToken;
 
 use DateTime;
 use DomainException;
@@ -26,7 +26,7 @@ use Firebase\JWT\ExpiredException as ExpiredExceptionV3;
 use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\Cache\MemoryCacheItemPool;
-use Google\Exception as GoogleException;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Exception as GoogleException;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Client;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\ClientInterface;
 use InvalidArgumentException;

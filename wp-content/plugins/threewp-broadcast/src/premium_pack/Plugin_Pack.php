@@ -126,6 +126,7 @@ abstract class Plugin_Pack
 		$renewal_url = add_query_arg( [
 			'edd_license_key' => $this->get_site_option( 'edd_updater_license_key' ),
 		], $this->edd_get_url() . 'checkout' );
+		$renewal_url = esc_url( $renewal_url );
 		$pack_name = str_replace( 'ThreeWP Broadcast', '', $this->edd_get_item_name() );
 		$text = sprintf( 'Your %s license <strong>expires</strong> in %s. If you wish to renew it, and receive a renewal discount, use this <a href="%s">renewal url</a>.',
 			$pack_name,

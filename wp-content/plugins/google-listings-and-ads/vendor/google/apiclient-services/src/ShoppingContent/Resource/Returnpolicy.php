@@ -15,12 +15,12 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\ReturnPolicy as ReturnPolicyModel;
-use Google\Service\ShoppingContent\ReturnpolicyCustomBatchRequest;
-use Google\Service\ShoppingContent\ReturnpolicyCustomBatchResponse;
-use Google\Service\ShoppingContent\ReturnpolicyListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ReturnPolicy as ReturnPolicyModel;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ReturnpolicyCustomBatchRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ReturnpolicyCustomBatchResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ReturnpolicyListResponse;
 
 /**
  * The "returnpolicy" collection of methods.
@@ -30,7 +30,7 @@ use Google\Service\ShoppingContent\ReturnpolicyListResponse;
  *   $returnpolicy = $contentService->returnpolicy;
  *  </code>
  */
-class Returnpolicy extends \Google\Service\Resource
+class Returnpolicy extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Batches multiple return policy related calls in a single request.

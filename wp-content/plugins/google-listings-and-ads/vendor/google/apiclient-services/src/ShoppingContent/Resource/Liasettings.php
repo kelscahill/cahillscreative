@@ -15,18 +15,18 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\LiaSettings as LiaSettingsModel;
-use Google\Service\ShoppingContent\LiasettingsCustomBatchRequest;
-use Google\Service\ShoppingContent\LiasettingsCustomBatchResponse;
-use Google\Service\ShoppingContent\LiasettingsGetAccessibleGmbAccountsResponse;
-use Google\Service\ShoppingContent\LiasettingsListPosDataProvidersResponse;
-use Google\Service\ShoppingContent\LiasettingsListResponse;
-use Google\Service\ShoppingContent\LiasettingsRequestGmbAccessResponse;
-use Google\Service\ShoppingContent\LiasettingsRequestInventoryVerificationResponse;
-use Google\Service\ShoppingContent\LiasettingsSetInventoryVerificationContactResponse;
-use Google\Service\ShoppingContent\LiasettingsSetPosDataProviderResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LiaSettings as LiaSettingsModel;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LiasettingsCustomBatchRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LiasettingsCustomBatchResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LiasettingsGetAccessibleGmbAccountsResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LiasettingsListPosDataProvidersResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LiasettingsListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LiasettingsRequestGmbAccessResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LiasettingsRequestInventoryVerificationResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LiasettingsSetInventoryVerificationContactResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LiasettingsSetPosDataProviderResponse;
 
 /**
  * The "liasettings" collection of methods.
@@ -36,7 +36,7 @@ use Google\Service\ShoppingContent\LiasettingsSetPosDataProviderResponse;
  *   $liasettings = $contentService->liasettings;
  *  </code>
  */
-class Liasettings extends \Google\Service\Resource
+class Liasettings extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Retrieves and/or updates the LIA settings of multiple accounts in a single

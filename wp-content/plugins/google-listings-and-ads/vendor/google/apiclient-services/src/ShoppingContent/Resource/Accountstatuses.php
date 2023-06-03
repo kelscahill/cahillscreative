@@ -15,12 +15,12 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\AccountStatus;
-use Google\Service\ShoppingContent\AccountstatusesCustomBatchRequest;
-use Google\Service\ShoppingContent\AccountstatusesCustomBatchResponse;
-use Google\Service\ShoppingContent\AccountstatusesListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\AccountStatus;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\AccountstatusesCustomBatchRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\AccountstatusesCustomBatchResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\AccountstatusesListResponse;
 
 /**
  * The "accountstatuses" collection of methods.
@@ -30,7 +30,7 @@ use Google\Service\ShoppingContent\AccountstatusesListResponse;
  *   $accountstatuses = $contentService->accountstatuses;
  *  </code>
  */
-class Accountstatuses extends \Google\Service\Resource
+class Accountstatuses extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Retrieves multiple Merchant Center account statuses in a single request.

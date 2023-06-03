@@ -15,12 +15,12 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\OrderinvoicesCreateChargeInvoiceRequest;
-use Google\Service\ShoppingContent\OrderinvoicesCreateChargeInvoiceResponse;
-use Google\Service\ShoppingContent\OrderinvoicesCreateRefundInvoiceRequest;
-use Google\Service\ShoppingContent\OrderinvoicesCreateRefundInvoiceResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderinvoicesCreateChargeInvoiceRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderinvoicesCreateChargeInvoiceResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderinvoicesCreateRefundInvoiceRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderinvoicesCreateRefundInvoiceResponse;
 
 /**
  * The "orderinvoices" collection of methods.
@@ -30,7 +30,7 @@ use Google\Service\ShoppingContent\OrderinvoicesCreateRefundInvoiceResponse;
  *   $orderinvoices = $contentService->orderinvoices;
  *  </code>
  */
-class Orderinvoices extends \Google\Service\Resource
+class Orderinvoices extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Creates a charge invoice for a shipment group, and triggers a charge capture

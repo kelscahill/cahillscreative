@@ -15,11 +15,11 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\LocalInventory as LocalInventoryModel;
-use Google\Service\ShoppingContent\LocalinventoryCustomBatchRequest;
-use Google\Service\ShoppingContent\LocalinventoryCustomBatchResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LocalInventory as LocalInventoryModel;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LocalinventoryCustomBatchRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LocalinventoryCustomBatchResponse;
 
 /**
  * The "localinventory" collection of methods.
@@ -29,7 +29,7 @@ use Google\Service\ShoppingContent\LocalinventoryCustomBatchResponse;
  *   $localinventory = $contentService->localinventory;
  *  </code>
  */
-class Localinventory extends \Google\Service\Resource
+class Localinventory extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Updates local inventory for multiple products or stores in a single request.

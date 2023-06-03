@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Google;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google;
 
 use Exception as BaseException;
 

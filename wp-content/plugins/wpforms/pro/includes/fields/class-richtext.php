@@ -139,6 +139,9 @@ class WPForms_Field_Richtext extends WPForms_Field {
 		add_filter( 'quicktags_settings', [ $this, 'modify_quicktags' ], 10, 2 );
 
 		add_action( 'pre_get_posts', [ $this, 'modify_attachment_query' ] );
+
+		// This field requires fieldset+legend instead of the field label.
+		add_filter( "wpforms_frontend_modern_is_field_requires_fieldset_{$this->type}", '__return_true', PHP_INT_MAX, 2 );
 	}
 
 	/**
@@ -295,6 +298,9 @@ class WPForms_Field_Richtext extends WPForms_Field {
 			$properties['container']['class'][] = 'wpforms-field-richtext-toolbar-basic';
 		}
 
+		$size                               = ! empty( $field['size'] ) ? $field['size'] : 'medium';
+		$properties['container']['class'][] = 'wpforms-field-' . $size;
+
 		return $properties;
 	}
 
@@ -439,8 +445,18 @@ class WPForms_Field_Richtext extends WPForms_Field {
 		if ( ! wp_style_is( 'editor-buttons' ) ) {
 			wp_enqueue_style(
 				'editor-buttons',
-				includes_url() . "css/editor{$min}.css",
+				includes_url( "css/editor{$min}.css" ),
 				[ 'dashicons' ]
+			);
+		}
+
+		// Make sure a copy of dashicons styles is loaded on the page globally when the admin bar
+		// is displayed. Default dashicons library with the system handle `dashicons-css` will
+		// be loaded in the markup of the Rich Text field and removed after form submission.
+		if ( is_admin_bar_showing() ) {
+			wp_enqueue_style(
+				'wpforms-dashicons',
+				includes_url( "css/dashicons{$min}.css" )
 			);
 		}
 
@@ -1093,6 +1109,10 @@ class WPForms_Field_Richtext extends WPForms_Field {
 
 		if ( $context === 'entry-single' ) {
 			return $this->get_entry_single_field_value_iframe( $field );
+		}
+
+		if ( $context === 'email-html' ) {
+			return wpforms_esc_richtext_field( $field['value'] );
 		}
 
 		return wpforms_sanitize_richtext_field( $field['value'] );

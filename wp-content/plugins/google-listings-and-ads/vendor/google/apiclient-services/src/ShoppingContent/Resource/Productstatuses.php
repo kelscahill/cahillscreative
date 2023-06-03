@@ -15,12 +15,12 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\ProductStatus;
-use Google\Service\ShoppingContent\ProductstatusesCustomBatchRequest;
-use Google\Service\ShoppingContent\ProductstatusesCustomBatchResponse;
-use Google\Service\ShoppingContent\ProductstatusesListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ProductStatus;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ProductstatusesCustomBatchRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ProductstatusesCustomBatchResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ProductstatusesListResponse;
 
 /**
  * The "productstatuses" collection of methods.
@@ -30,7 +30,7 @@ use Google\Service\ShoppingContent\ProductstatusesListResponse;
  *   $productstatuses = $contentService->productstatuses;
  *  </code>
  */
-class Productstatuses extends \Google\Service\Resource
+class Productstatuses extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Gets the statuses of multiple products in a single request.

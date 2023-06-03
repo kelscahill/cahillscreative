@@ -15,20 +15,20 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\AccountLabel;
-use Google\Service\ShoppingContent\ListAccountLabelsResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\AccountLabel;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ListAccountLabelsResponse;
 
 /**
  * The "labels" collection of methods.
  * Typical usage is:
  *  <code>
  *   $contentService = new Google\Service\ShoppingContent(...);
- *   $labels = $contentService->labels;
+ *   $labels = $contentService->accounts_labels;
  *  </code>
  */
-class AccountsLabels extends \Google\Service\Resource
+class AccountsLabels extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Creates a new label, not assigned to any account. (labels.create)

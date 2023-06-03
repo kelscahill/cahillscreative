@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\Promotion;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Promotion;
 
 /**
  * The "promotions" collection of methods.
@@ -27,11 +27,14 @@ use Google\Service\ShoppingContent\Promotion;
  *   $promotions = $contentService->promotions;
  *  </code>
  */
-class Promotions extends \Google\Service\Resource
+class Promotions extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Inserts a promotion for your Merchant Center account. If the promotion
-   * already exists, then it updates the promotion instead. (promotions.create)
+   * already exists, then it updates the promotion instead. To [end or delete]
+   * (https://developers.google.com/shopping-
+   * content/guides/promotions#end_a_promotion) a promotion update the time period
+   * of the promotion to a time that has already passed. (promotions.create)
    *
    * @param string $merchantId Required. The ID of the account that contains the
    * collection.

@@ -428,17 +428,27 @@ class Mailer {
 		$errors = [];
 
 		foreach ( (array) $this->to_email as $email ) {
-			if ( ! \is_email( $email ) ) {
-				$errors[] = sprintf( /* translators: %s - invalid email. */ esc_html__( '[WPForms\Emails\Mailer] Invalid email address %s.', 'wpforms-lite' ), $email );
+			if ( ! is_email( $email ) ) {
+				$errors[] = sprintf( /* translators: %1$s - namespaced class name, %2$s - invalid email. */
+					esc_html__( '%1$s Invalid email address %2$s.', 'wpforms-lite' ),
+					'[WPForms\Emails\Mailer]',
+					$email
+				);
 			}
 		}
 
 		if ( empty( $this->subject ) ) {
-			$errors[] = \esc_html__( '[WPForms\Emails\Mailer] Empty subject line.', 'wpforms-lite' );
+			$errors[] = sprintf( /* translators: %s - namespaced class name. */
+				esc_html__( '%s Empty subject line.', 'wpforms-lite' ),
+				'[WPForms\Emails\Mailer]'
+			);
 		}
 
 		if ( empty( $this->get_message() ) ) {
-			$errors[] = \esc_html__( '[WPForms\Emails\Mailer] Empty message.', 'wpforms-lite' );
+			$errors[] = sprintf( /* translators: %s - namespaced class name. */
+				esc_html__( '%s Empty message.', 'wpforms-lite' ),
+				'[WPForms\Emails\Mailer]'
+			);
 		}
 
 		return $errors;
@@ -460,14 +470,14 @@ class Mailer {
 		foreach ( $errors as $error ) {
 			\wpforms_log(
 				$error,
-				array(
+				[
 					'to_email' => $this->to_email,
 					'subject'  => $this->subject,
 					'message'  => \wp_trim_words( $this->get_message() ),
-				),
-				array(
+				],
+				[
 					'type' => 'error',
-				)
+				]
 			);
 		}
 	}
@@ -521,10 +531,10 @@ class Mailer {
 	 */
 	public function send_before() {
 
-		\do_action( 'wpforms_emails_mailer_send_before', $this );
-		\add_filter( 'wp_mail_from', array( $this, 'get_from_address' ) );
-		\add_filter( 'wp_mail_from_name', array( $this, 'get_from_name' ) );
-		\add_filter( 'wp_mail_content_type', array( $this, 'get_content_type' ) );
+		do_action( 'wpforms_emails_mailer_send_before', $this );
+		add_filter( 'wp_mail_from', [ $this, 'get_from_address' ] );
+		add_filter( 'wp_mail_from_name', [ $this, 'get_from_name' ] );
+		add_filter( 'wp_mail_content_type', [ $this, 'get_content_type' ] );
 	}
 
 	/**
@@ -534,9 +544,9 @@ class Mailer {
 	 */
 	public function send_after() {
 
-		\do_action( 'wpforms_emails_mailer_send_after', $this );
-		\remove_filter( 'wp_mail_from', array( $this, 'get_from_address' ) );
-		\remove_filter( 'wp_mail_from_name', array( $this, 'get_from_name' ) );
-		\remove_filter( 'wp_mail_content_type', array( $this, 'get_content_type' ) );
+		do_action( 'wpforms_emails_mailer_send_after', $this );
+		remove_filter( 'wp_mail_from', [ $this, 'get_from_address' ] );
+		remove_filter( 'wp_mail_from_name', [ $this, 'get_from_name' ] );
+		remove_filter( 'wp_mail_content_type', [ $this, 'get_content_type' ] );
 	}
 }

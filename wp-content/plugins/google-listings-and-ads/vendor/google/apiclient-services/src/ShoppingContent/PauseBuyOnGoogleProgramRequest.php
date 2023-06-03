@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class PauseBuyOnGoogleProgramRequest extends \Google\Model
+class PauseBuyOnGoogleProgramRequest extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
 }
 

@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'woocommerce/woocommerce-blocks',
-        'pretty_version' => 'dev-trunk',
-        'version' => 'dev-trunk',
-        'reference' => '5c157d2514f83cfcb2f98e67c0f2eeca1eb47a38',
+        'pretty_version' => '10.0.6',
+        'version' => '10.0.6.0',
+        'reference' => NULL,
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'automattic/jetpack-autoloader' => array(
-            'pretty_version' => 'v2.11.11',
-            'version' => '2.11.11.0',
-            'reference' => 'c4c5e729bf797b67518936f28053ad9bd396562b',
+            'pretty_version' => 'v2.11.16',
+            'version' => '2.11.16.0',
+            'reference' => '43bc969fd90ce3d92e7b75fbf384a5fd03963dad',
             'type' => 'composer-plugin',
             'install_path' => __DIR__ . '/../automattic/jetpack-autoloader',
             'aliases' => array(),
@@ -41,9 +41,9 @@
             ),
         ),
         'woocommerce/woocommerce-blocks' => array(
-            'pretty_version' => 'dev-trunk',
-            'version' => 'dev-trunk',
-            'reference' => '5c157d2514f83cfcb2f98e67c0f2eeca1eb47a38',
+            'pretty_version' => '10.0.6',
+            'version' => '10.0.6.0',
+            'reference' => NULL,
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -4,7 +4,7 @@ namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\League\Container;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\League\Container\Argument\{ArgumentResolverInterface, ArgumentResolverTrait};
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\League\Container\Exception\NotFoundException;
-use Psr\Container\ContainerInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;

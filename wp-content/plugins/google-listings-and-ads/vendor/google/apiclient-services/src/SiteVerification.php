@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service;
 
-use Google\Client;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Client;
 
 /**
  * Service definition for SiteVerification (v1).
@@ -32,7 +32,7 @@ use Google\Client;
  *
  * @author Google, Inc.
  */
-class SiteVerification extends \Google\Service
+class SiteVerification extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service
 {
   /** Manage the list of sites and domains you control. */
   const SITEVERIFICATION =

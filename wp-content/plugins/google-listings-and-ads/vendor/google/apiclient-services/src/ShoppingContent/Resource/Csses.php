@@ -15,11 +15,11 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\Css;
-use Google\Service\ShoppingContent\LabelIds;
-use Google\Service\ShoppingContent\ListCssesResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Css;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\LabelIds;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ListCssesResponse;
 
 /**
  * The "csses" collection of methods.
@@ -29,7 +29,7 @@ use Google\Service\ShoppingContent\ListCssesResponse;
  *   $csses = $contentService->csses;
  *  </code>
  */
-class Csses extends \Google\Service\Resource
+class Csses extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Retrieves a single CSS domain by ID. (csses.get)

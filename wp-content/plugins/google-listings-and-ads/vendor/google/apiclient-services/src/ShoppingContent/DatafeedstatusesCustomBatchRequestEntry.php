@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class DatafeedstatusesCustomBatchRequestEntry extends \Google\Model
+class DatafeedstatusesCustomBatchRequestEntry extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   /**
    * @var string
@@ -31,6 +31,10 @@ class DatafeedstatusesCustomBatchRequestEntry extends \Google\Model
    * @var string
    */
   public $datafeedId;
+  /**
+   * @var string
+   */
+  public $feedLabel;
   /**
    * @var string
    */
@@ -85,6 +89,20 @@ class DatafeedstatusesCustomBatchRequestEntry extends \Google\Model
   public function getDatafeedId()
   {
     return $this->datafeedId;
+  }
+  /**
+   * @param string
+   */
+  public function setFeedLabel($feedLabel)
+  {
+    $this->feedLabel = $feedLabel;
+  }
+  /**
+   * @return string
+   */
+  public function getFeedLabel()
+  {
+    return $this->feedLabel;
   }
   /**
    * @param string

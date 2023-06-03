@@ -244,7 +244,6 @@ trait attachments
 				if ( ! is_array( $terms ) )
 					continue;
 				delete_option( $taxonomy . '_children' );
-				clean_term_cache( '', $taxonomy );
 				$object_terms = [];
 				foreach( $terms as $term )
 					$object_terms []= $term->name;

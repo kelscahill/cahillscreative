@@ -15,19 +15,19 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\ListRepricingProductReportsResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ListRepricingProductReportsResponse;
 
 /**
  * The "repricingreports" collection of methods.
  * Typical usage is:
  *  <code>
  *   $contentService = new Google\Service\ShoppingContent(...);
- *   $repricingreports = $contentService->repricingreports;
+ *   $repricingreports = $contentService->productstatuses_repricingreports;
  *  </code>
  */
-class ProductstatusesRepricingreports extends \Google\Service\Resource
+class ProductstatusesRepricingreports extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Lists the metrics report for a given Repricing product.

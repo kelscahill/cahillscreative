@@ -68,7 +68,7 @@ class api
 		@brief		API version, as the date.
 		@since		2015-06-25 16:41:57
 	**/
-	public static $version = 20181203;
+	public static $version = 20230404;
 
 	/**
 		@brief		Broadcast a post to one or more blogs. Link the posts as children.
@@ -119,6 +119,50 @@ class api
 		$action->high_priority = $this->high_priority;
 		$action->post_id = $post_id;
 		$action->execute();
+	}
+
+	/**
+		@brief		Convenience method to get just one image ID at a time.
+		@since		2023-04-04 10:17:38
+	**/
+	public function get_equivalent_image_id( int $image_id, array $blogs )
+	{
+		$r = $this->get_equivalent_image_ids( [ $image_id ], $blogs );
+		return $r[ $image_id ];
+	}
+
+	/**
+		@brief		Get the equivalent IDs of these images on the specified blogs.
+		@details	Works on the current blog. Returns an array of
+						parent_image_id => array [ child_blog_id => child_image_id ]
+		@since		2023-04-04 10:17:38
+	**/
+	public function get_equivalent_image_ids( array $image_ids, array $blogs )
+	{
+		// Create an empty post.
+		$temp_post_data = [
+			'post_content' => 'This is a temporary post that Broadcast uses to retrieve the equivalent image ID(s) on child blogs.
+The post should have been deleted by itself, but if you see it you can delete the post yourself.
+[gallery ids="' . implode( ",", $image_ids ) . '"]',
+			'post_title' => 'Broadcast Equivalent Image ID temporary ' . microtime() . ' post',
+			'post_status' => 'draft',
+		];
+		$temp_post_id = wp_insert_post( $temp_post_data );
+
+		$bcd = $this->broadcast_children( $temp_post_id, $blogs );
+		$ca = $bcd->copied_attachments();
+
+		$r = [];
+		foreach( $image_ids as $image_id )
+		{
+			$r[ $image_id ] = [];
+			foreach( $blogs as $blog_id )
+				$r[ $image_id ][ $blog_id ] = $ca->get_attachment_id_on_blog( $image_id, $blog_id );
+		}
+
+		wp_delete_post( $temp_post_id );
+
+		return $r;
 	}
 
 	/**

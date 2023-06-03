@@ -760,18 +760,18 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 			}
 			?>
 			<body style="margin:0; padding:0;">
-			<table style="background-color:#ffffff" cellpadding="0" cellspacing="0" border="0" width="100%">
+			<table style="background-color:#ffffff" cellpadding="0" cellspacing="0" border="0" width="100%" aria-describedby="Unsubscribe-table">
 				<tbody>
 				<tr style="border-collapse:collapse;">
 					<td style="border-collapse:collapse;" align="center">
-						<table cellpadding="0" cellspacing="0" border="0" width="540">
+						<table cellpadding="0" cellspacing="0" border="0" width="540" aria-describedby="Unsubscribe-table">
 							<tbody>
 							<tr>
 								<td style="line-height:0; font-size:0;" height="20"></td>
 							</tr>
 							</tbody>
 						</table>
-						<table cellpadding="0" cellspacing="0" border="0" width="540">
+						<table cellpadding="0" cellspacing="0" border="0" width="540" aria-describedby="Unsubscribe-table">
 							<tbody>
 							<tr>
 								<td style="line-height:0; font-size:0;" height="20">
@@ -782,14 +782,14 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 							</tr>
 							</tbody>
 						</table>
-						<table cellpadding="0" cellspacing="0" border="0" width="540">
+						<table cellpadding="0" cellspacing="0" border="0" width="540" aria-describedby="Unsubscribe-table">
 							<tbody>
 							<tr>
 								<td style="line-height:0; font-size:0;" height="20"></td>
 							</tr>
 							</tbody>
 						</table>
-						<table cellpadding="0" cellspacing="0" border="0" width="540">
+						<table cellpadding="0" cellspacing="0" border="0" width="540" aria-describedby="Unsubscribe-table">
 							<tbody>
 							<tr>
 								<td align="left">
@@ -807,7 +807,7 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 							</tr>
 							</tbody>
 						</table>
-						<table cellpadding="0" cellspacing="0" border="0" width="540">
+						<table cellpadding="0" cellspacing="0" border="0" width="540" aria-describedby="Unsubscribe-table">
 							<tbody>
 							<tr>
 								<td style="line-height:0; font-size:0;" height="20">
@@ -865,18 +865,18 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 			$site_domain = str_replace( 'http://', '', $site_domain );
 			?>
 			<body style="margin:0; padding:0;">
-			<table style="background-color:#ffffff" cellpadding="0" cellspacing="0" border="0" width="100%">
+			<table style="background-color:#ffffff" cellpadding="0" cellspacing="0" border="0" width="100%" aria-describedby="Unsubscribe-template">
 				<tbody>
 				<tr style="border-collapse:collapse;">
 					<td style="border-collapse:collapse;" align="center">
-						<table cellpadding="0" cellspacing="0" border="0" width="540">
+						<table cellpadding="0" cellspacing="0" border="0" width="540" aria-describedby="Unsubscribe-template">
 							<tbody>
 							<tr>
 								<td style="line-height:0; font-size:0;" height="20"></td>
 							</tr>
 							</tbody>
 						</table>
-						<table cellpadding="0" cellspacing="0" border="0" width="540">
+						<table cellpadding="0" cellspacing="0" border="0" width="540" aria-describedby="Unsubscribe-template">
 							<tbody>
 							<tr>
 								<td style="line-height:0; font-size:0;" height="20">
@@ -894,14 +894,14 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 							</tr>
 							</tbody>
 						</table>
-						<table cellpadding="0" cellspacing="0" border="0" width="540">
+						<table cellpadding="0" cellspacing="0" border="0" width="540" aria-describedby="Unsubscribe-template">
 							<tbody>
 							<tr>
 								<td style="line-height:0; font-size:0;" height="20"></td>
 							</tr>
 							</tbody>
 						</table>
-						<table cellpadding="0" cellspacing="0" border="0" width="540">
+						<table cellpadding="0" cellspacing="0" border="0" width="540" aria-describedby="Unsubscribe-template">
 							<tbody>
 							<tr>
 								<td align="left">
@@ -919,7 +919,7 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 							</tr>
 							</tbody>
 						</table>
-						<table cellpadding="0" cellspacing="0" border="0" width="540">
+						<table cellpadding="0" cellspacing="0" border="0" width="540" aria-describedby="Unsubscribe-template">
 							<tbody>
 							<tr>
 								<td style="line-height:0; font-size:0;" height="20">

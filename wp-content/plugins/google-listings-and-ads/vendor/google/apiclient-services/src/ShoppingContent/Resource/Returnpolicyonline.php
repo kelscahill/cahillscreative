@@ -15,10 +15,10 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\ListReturnPolicyOnlineResponse;
-use Google\Service\ShoppingContent\ReturnPolicyOnline as ReturnPolicyOnlineModel;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ListReturnPolicyOnlineResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ReturnPolicyOnline as ReturnPolicyOnlineModel;
 
 /**
  * The "returnpolicyonline" collection of methods.
@@ -28,7 +28,7 @@ use Google\Service\ShoppingContent\ReturnPolicyOnline as ReturnPolicyOnlineModel
  *   $returnpolicyonline = $contentService->returnpolicyonline;
  *  </code>
  */
-class Returnpolicyonline extends \Google\Service\Resource
+class Returnpolicyonline extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Creates a new return policy. (returnpolicyonline.create)

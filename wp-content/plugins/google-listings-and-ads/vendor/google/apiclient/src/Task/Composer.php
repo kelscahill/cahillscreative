@@ -15,7 +15,7 @@
  * the License.
  */
 
-namespace Google\Task;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Task;
 
 use Composer\Script\Event;
 use InvalidArgumentException;

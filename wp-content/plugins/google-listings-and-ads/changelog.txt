@@ -1,5 +1,57 @@
 *** WooCommerce Google Listings and Ads Changelog ***
 
+= 2.4.6 - 2023-05-30 =
+* Add - Filters for manually mapping product IDs.
+* Tweak - Adjust the MCM filter to always show in channels.
+
+= 2.4.5 - 2023-05-09 =
+* Fix - Bug in Attribute Mapping with Taxonomy based rules not being applied in variations.
+* Fix - Missing spaces between the card layouts on the Get Started page.
+* Tweak - WC 7.7 compatibility.
+
+= 2.4.4 - 2023-05-02 =
+* Dev - Fix SEMGREP warnings.
+* Fix - Prefix Psr\Container package to prevent conflicts with other plugins.
+
+= 2.4.3 - 2023-04-25 =
+* Dev - Add PHP Code coverage report as GitHub action.
+* Dev - Unit test support for PHP 8.2.
+* Dev - Use "willReturnOnConsecutiveCalls" instead of "at" for unit tests.
+* Fix - Prevent creating assets for non-Performance Max campaigns.
+* Fix - The fatal errors caused by adding any US Armed Forces location to WooCommerce Shipping setting.
+* Fix - Use Ads account currency in the WooCommerce marketing dashboard.
+* Tweak - Redirect users between Dashboard and Get Started pages as required.
+
+= 2.4.2 - 2023-03-29 =
+* Tweak - WC 7.6 compatibility.
+
+= 2.4.1 - 2023-03-14 =
+* Tweak - WC 7.5 compatibility.
+* Tweak - WP 6.2 compatibility.
+
+= 2.4.0 - 2023-03-07 =
+* Add - Support for the Assets of Performance Max campaigns.
+* Dev - Externalize Panel, PanelBody, and PanelRow.
+* Dev - Externalize the KeyboardShortcuts component.
+* Dev - Increase maximum payload size in the test proxy.
+* Fix - The blank Product Feed page after completing the onboarding flow.
+* Tweak - Make the popover of the tooltip can be closed properly.
+
+= 2.3.10 - 2023-02-21 =
+* Add "Working with DEWP.md" to exclude list.
+* Add - Integration with WooCommerce Multichannel Marketing.
+* Tweak - Remove unnecessary PMax migration banners.
+* Tweak - Remove unnecessary woocommerce_loop_add_to_cart_link filter param.
+
+= 2.3.9 - 2023-02-15 =
+* Dev - Update phpunit to version 9.5.
+* Fix - Prefix Google Service packages to prevent plugin conflicts.
+* Tweak - Improve PHP 8.1 compatibility.
+* Tweak - Show admin notice when PHP 32 bits is being used.
+* Tweak - WC 7.4 compatibility.
+* Update - Google Ads library to API V12.
+* Update - Google Content library to API 2.13.
+
 = 2.3.8 - 2023-01-24 =
 * Fix - Product feed table footer rendering a zero when there are no products.
 

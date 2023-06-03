@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\AccountStatus;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\AccountStatus;
 
 /**
  * The "accountstatusesbyexternalsellerid" collection of methods.
@@ -27,7 +27,7 @@ use Google\Service\ShoppingContent\AccountStatus;
  *   $accountstatusesbyexternalsellerid = $contentService->accountstatusesbyexternalsellerid;
  *  </code>
  */
-class Accountstatusesbyexternalsellerid extends \Google\Service\Resource
+class Accountstatusesbyexternalsellerid extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Gets status of the account with the specified external_seller_id belonging to

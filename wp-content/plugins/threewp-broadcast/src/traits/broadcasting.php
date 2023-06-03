@@ -565,7 +565,6 @@ trait broadcasting
 					{
 						// This relates to the bug mentioned in the method $this->set_term_parent()
 						delete_option( $parent_taxonomy . '_children' );
-						clean_term_cache( '', $parent_taxonomy );
 
 						if ( ! $syncing_parent_blog_taxonomies )
 						{

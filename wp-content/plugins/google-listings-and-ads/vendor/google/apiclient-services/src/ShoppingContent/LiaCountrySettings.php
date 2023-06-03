@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class LiaCountrySettings extends \Google\Model
+class LiaCountrySettings extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   protected $aboutType = LiaAboutPageSettings::class;
   protected $aboutDataType = '';

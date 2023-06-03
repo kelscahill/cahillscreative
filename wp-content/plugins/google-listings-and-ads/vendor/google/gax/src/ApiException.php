@@ -35,6 +35,8 @@ use Exception;
 use Google\Protobuf\Internal\RepeatedField;
 use Google\Rpc\Status;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Exception\RequestException;
+use Google\ApiCore\Testing\MockStatus;
+use stdClass;
 
 /**
  * Represents an exception thrown during an RPC.
@@ -58,9 +60,9 @@ class ApiException extends Exception
      * }
      */
     public function __construct(
-        $message,
-        $code,
-        $status,
+        string $message,
+        int $code,
+        string $status = null,
         array $optionalArgs = []
     ) {
         $optionalArgs += [
@@ -137,17 +139,17 @@ class ApiException extends Exception
     }
 
     /**
-     * @param \stdClass $status
+     * @param stdClass $status
      * @return ApiException
      */
-    public static function createFromStdClass($status)
+    public static function createFromStdClass(stdClass $status)
     {
         $metadata = property_exists($status, 'metadata') ? $status->metadata : null;
         return self::create(
             $status->details,
             $status->code,
             $metadata,
-            Serializer::decodeMetadata($metadata)
+            Serializer::decodeMetadata((array) $metadata)
         );
     }
 
@@ -155,20 +157,20 @@ class ApiException extends Exception
      * @param string $basicMessage
      * @param int $rpcCode
      * @param array|null $metadata
-     * @param \Exception $previous
+     * @param Exception $previous
      * @return ApiException
      */
     public static function createFromApiResponse(
         $basicMessage,
         $rpcCode,
         array $metadata = null,
-        \Exception $previous = null
+        Exception $previous = null
     ) {
         return self::create(
             $basicMessage,
             $rpcCode,
             $metadata,
-            Serializer::decodeMetadata($metadata),
+            Serializer::decodeMetadata((array) $metadata),
             $previous
         );
     }
@@ -179,14 +181,14 @@ class ApiException extends Exception
      * @param string $basicMessage
      * @param int $rpcCode
      * @param array|null $metadata
-     * @param \Exception $previous
+     * @param Exception $previous
      * @return ApiException
      */
     public static function createFromRestApiResponse(
         $basicMessage,
         $rpcCode,
         array $metadata = null,
-        \Exception $previous = null
+        Exception $previous = null
     ) {
         return self::create(
             $basicMessage,
@@ -232,13 +234,18 @@ class ApiException extends Exception
      *
      * @param string $basicMessage
      * @param int $rpcCode
-     * @param array<mixed>|RepeatedField $metadata
+     * @param iterable|null $metadata
      * @param array $decodedMetadata
-     * @param \Exception|null $previous
+     * @param Exception|null $previous
      * @return ApiException
      */
-    private static function create($basicMessage, $rpcCode, $metadata, array $decodedMetadata, $previous = null)
-    {
+    private static function create(
+        string $basicMessage,
+        int $rpcCode,
+        $metadata,
+        array $decodedMetadata,
+        Exception $previous = null
+    ) {
         $containsErrorInfo = self::containsErrorInfo($decodedMetadata);
         $rpcStatus = ApiStatus::statusFromRpcCode($rpcCode);
         $messageData = [
@@ -286,7 +293,7 @@ class ApiException extends Exception
      * @return ApiException
      * @throws ValidationException
      */
-    public static function createFromRequestException(RequestException $ex, $isStream = false)
+    public static function createFromRequestException(RequestException $ex, bool $isStream = false)
     {
         $res = $ex->getResponse();
         $body = (string) $res->getBody();
@@ -298,8 +305,9 @@ class ApiException extends Exception
             $decoded = $decoded[0];
         }
 
-        if ($error = $decoded['error']) {
-            $basicMessage = $error['message'];
+        if (isset($decoded['error']) && $decoded['error']) {
+            $error = $decoded['error'];
+            $basicMessage = isset($error['message']) ? $error['message'] : null;
             $code = isset($error['status'])
                 ? ApiStatus::rpcCodeFromStatus($error['status'])
                 : $ex->getCode();

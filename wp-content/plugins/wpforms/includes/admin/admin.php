@@ -24,7 +24,7 @@ function wpforms_admin_styles() {
 	wp_enqueue_style(
 		'jquery-confirm',
 		WPFORMS_PLUGIN_URL . 'assets/lib/jquery.confirm/jquery-confirm.min.css',
-		array(),
+		[],
 		'3.3.4'
 	);
 
@@ -32,7 +32,7 @@ function wpforms_admin_styles() {
 	wp_enqueue_style(
 		'minicolors',
 		WPFORMS_PLUGIN_URL . 'assets/lib/jquery.minicolors/jquery.minicolors.min.css',
-		array(),
+		[],
 		'2.2.6'
 	);
 
@@ -48,7 +48,7 @@ function wpforms_admin_styles() {
 	wp_enqueue_style(
 		'wpforms-admin',
 		WPFORMS_PLUGIN_URL . "assets/css/admin{$min}.css",
-		array(),
+		[],
 		WPFORMS_VERSION
 	);
 
@@ -223,7 +223,7 @@ function wpforms_admin_scripts() {
 					],
 				]
 			),
-			'https://wpforms.com/docs/how-to-choose-an-include-form-styling-setting/'
+			esc_url( wpforms_utm_link( 'https://wpforms.com/docs/how-to-choose-an-include-form-styling-setting/', 'settings-license-modal', 'Base Styling Only' ) )
 		),
 		'settings_form_style_none'        => sprintf(
 			wp_kses( /* translators: %s - WPForms.com docs page URL. */
@@ -237,7 +237,7 @@ function wpforms_admin_scripts() {
 					],
 				]
 			),
-			'https://wpforms.com/docs/how-to-choose-an-include-form-styling-setting/'
+			esc_url( wpforms_utm_link( 'https://wpforms.com/docs/how-to-choose-an-include-form-styling-setting/', 'settings-license-modal', 'No Styling' ) )
 		),
 		'testing'                         => esc_html__( 'Testing', 'wpforms-lite' ),
 		'upgrade_completed'               => esc_html__( 'Upgrade was successfully completed!', 'wpforms-lite' ),
@@ -255,6 +255,7 @@ function wpforms_admin_scripts() {
 		'loading'                         => esc_html__( 'Loading...', 'wpforms-lite' ),
 		'use_simple_contact_form'         => esc_html__( 'Use Simple Contact Form Template', 'wpforms-lite' ),
 		'error_select_template'           => esc_html__( 'Something went wrong while applying the template.', 'wpforms-lite' ),
+		'payment_delete_confirm'          => esc_html__( 'Are you sure you want to delete this payment and all its information (details, notes, logs, etc.)?', 'wpforms-lite' ),
 	];
 
 	/**
@@ -464,34 +465,27 @@ add_action( 'admin_print_scripts', 'wpforms_admin_hide_unrelated_notices' );
  */
 function wpforms_admin_upgrade_link( $medium = 'link', $content = '' ) {
 
-	$medium      = apply_filters( 'wpforms_upgrade_link_medium', $medium );
-	$license_key = wpforms_get_license_key();
+	$url = 'https://wpforms.com/lite-upgrade/';
 
 	if ( wpforms()->is_pro() ) {
-		$upgrade = add_query_arg(
-			[
-				'utm_source'   => 'WordPress',
-				'utm_campaign' => 'plugin',
-				'utm_medium'   => $medium,
-				'license_key'  => sanitize_text_field( $license_key ),
-			],
+		$license_key = wpforms_get_license_key();
+		$url         = add_query_arg(
+			'license_key',
+			sanitize_text_field( $license_key ),
 			'https://wpforms.com/pricing/'
 		);
-	} else {
-		$upgrade = add_query_arg(
-			[
-				'utm_source'   => 'WordPress',
-				'utm_campaign' => 'liteplugin',
-				'utm_medium'   => $medium,
-			],
-			'https://wpforms.com/lite-upgrade/'
-		);
 	}
 
-	if ( ! empty( $content ) ) {
-		$upgrade = add_query_arg( 'utm_content', $content, $upgrade );
-	}
+	// phpcs:ignore WPForms.Comments.PHPDocHooks.RequiredHookDocumentation
+	$upgrade = wpforms_utm_link( $url, apply_filters( 'wpforms_upgrade_link_medium', $medium ), $content );
 
+	/**
+	 * Modify upgrade link.
+	 *
+	 * @since 1.5.1
+	 *
+	 * @param string $upgrade Upgrade links.
+	 */
 	return apply_filters( 'wpforms_upgrade_link', $upgrade );
 }
 
@@ -634,8 +628,8 @@ function wpforms_get_upgrade_modal_text( $type = 'pro' ) {
 			esc_url(
 				wpforms_utm_link(
 					'https://wpforms.com/contact/',
-					'Upgrade Follow Up Modal',
-					'Contact Support'
+					'Upgrade Intention Alert',
+					'Upgrade Intention Alert'
 				)
 			)
 		) .
@@ -667,8 +661,8 @@ function wpforms_get_upgrade_modal_text( $type = 'pro' ) {
 			esc_url(
 				wpforms_utm_link(
 					'https://wpforms.com/docs/upgrade-wpforms-lite-paid-license/',
-					'Upgrade Follow Up Modal',
-					'How to Upgrade Documentation'
+					'Upgrade Intention Alert',
+					'Upgrade Documentation'
 				)
 			)
 		) .
@@ -688,7 +682,7 @@ function wpforms_admin_hide_wp_version( $text ) {
 
 	// Reset text if we're not on a WPForms screen or page.
 	if ( wpforms_is_admin_page() ) {
-		return '';
+		return 'WPForms ' . WPFORMS_VERSION;
 	}
 
 	return $text;

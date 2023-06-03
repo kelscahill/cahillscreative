@@ -1,4 +1,7 @@
 var captchaRes = '';
+var sibErrMsg;
+var gCaptchaSibWidget;
+var ajax_sib_front_object;
 var sibVerifyCallback = function (response) {
     captchaRes = response;
     var formIdInvisible = sessionStorage.getItem("formIdRecapcha");

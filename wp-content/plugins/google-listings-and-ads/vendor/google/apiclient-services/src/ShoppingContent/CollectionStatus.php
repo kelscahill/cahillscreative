@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class CollectionStatus extends \Google\Collection
+class CollectionStatus extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Collection
 {
   protected $collection_key = 'destinationStatuses';
   protected $collectionLevelIssusesType = CollectionStatusItemLevelIssue::class;

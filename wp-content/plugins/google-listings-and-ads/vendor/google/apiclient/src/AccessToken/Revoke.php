@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-namespace Google\AccessToken;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\AccessToken;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory;
-use Google\Client;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Client;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\ClientInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7\Request;

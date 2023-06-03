@@ -37,9 +37,12 @@ class Loader {
 	 */
 	protected function populate_classes() {
 
+		$this->populate_frontend();
 		$this->populate_admin();
+		$this->populate_fields();
 		$this->populate_forms_overview();
 		$this->populate_builder();
+		$this->populate_db();
 		$this->populate_migrations();
 		$this->populate_capabilities();
 		$this->populate_tasks();
@@ -57,6 +60,11 @@ class Loader {
 	 * @since 1.6.2
 	 */
 	private function populate_forms() {
+
+		$this->classes[] = [
+			'name' => 'Forms\Preview',
+			'id'   => 'preview',
+		];
 
 		$this->classes[] = [
 			'name' => 'Forms\Token',
@@ -88,6 +96,44 @@ class Loader {
 		$this->classes[] = [
 			'name' => 'Forms\IconChoices',
 			'id'   => 'icon_choices',
+		];
+	}
+
+	/**
+	 * Populate Frontend related classes.
+	 *
+	 * @since 1.8.1
+	 */
+	private function populate_frontend() {
+
+		$this->classes[] = [
+			'name' => 'Frontend\Amp',
+			'id'   => 'amp',
+		];
+
+		$this->classes[] = [
+			'name' => 'Frontend\Captcha',
+			'id'   => 'captcha',
+		];
+
+		$this->classes[] = [
+			'name' => 'Frontend\CSSVars',
+			'id'   => 'css_vars',
+		];
+
+		$this->classes[] = [
+			'name' => 'Frontend\Classic',
+			'id'   => 'frontend_classic',
+		];
+
+		$this->classes[] = [
+			'name' => 'Frontend\Modern',
+			'id'   => 'frontend_modern',
+		];
+
+		$this->classes[] = [
+			'name' => 'Frontend\Frontend',
+			'id'   => 'frontend',
 		];
 	}
 
@@ -129,6 +175,16 @@ class Loader {
 				'name' => 'Admin\Notifications\EventDriven',
 			],
 			[
+				'name' => 'Admin\Entries\Overview\Page',
+				'hook' => 'admin_init',
+			],
+			[
+				'name'      => 'Admin\Entries\Overview\Ajax',
+				'hook'      => 'admin_init',
+				'run'       => 'hooks',
+				'condition' => wpforms_is_admin_ajax(),
+			],
+			[
 				'name' => 'Admin\Entries\Edit',
 				'id'   => 'entries_edit',
 				'hook' => 'admin_init',
@@ -147,18 +203,37 @@ class Loader {
 			[
 				'name' => 'Admin\FormEmbedWizard',
 				'hook' => 'admin_init',
+				'id'   => 'form_embed_wizard',
 			],
 			[
 				'name' => 'Admin\SiteHealth',
 				'hook' => 'admin_init',
 			],
 			[
-				'name' => 'Admin\Settings\Captcha',
+				'name' => 'Admin\Settings\ModernMarkup',
+				'hook' => 'admin_init',
+			],
+			[
+				'name' => 'Admin\Settings\Captcha\Page',
+				'hook' => 'admin_init',
+			],
+			[
+				'name' => 'Admin\Settings\Payments',
 				'hook' => 'admin_init',
 			],
 			[
 				'name' => 'Admin\Tools\Tools',
 				'hook' => 'current_screen',
+			],
+			[
+				'name' => 'Admin\Payments\Payments',
+				'hook' => 'init',
+			],
+			[
+				'name'      => 'Admin\Payments\Views\Overview\Ajax',
+				'hook'      => 'admin_init',
+				'run'       => 'hooks',
+				'condition' => wpforms_is_admin_ajax(),
 			],
 			[
 				'name'      => 'Admin\Tools\Importers',
@@ -178,6 +253,39 @@ class Loader {
 				'name' => 'Forms\Fields\Richtext\EntryViewContent',
 			]
 		);
+	}
+
+	/**
+	 * Populate Fields related classes.
+	 *
+	 * @since 1.8.2
+	 */
+	private function populate_fields() {
+
+		$this->classes[] = [
+			'name' => 'Forms\Fields\PaymentCheckbox\Field',
+			'hook' => 'init',
+		];
+
+		$this->classes[] = [
+			'name' => 'Forms\Fields\PaymentMultiple\Field',
+			'hook' => 'init',
+		];
+
+		$this->classes[] = [
+			'name' => 'Forms\Fields\PaymentSelect\Field',
+			'hook' => 'init',
+		];
+
+		$this->classes[] = [
+			'name' => 'Forms\Fields\PaymentSingle\Field',
+			'hook' => 'init',
+		];
+
+		$this->classes[] = [
+			'name' => 'Forms\Fields\PaymentTotal\Field',
+			'hook' => 'init',
+		];
 	}
 
 	/**
@@ -226,6 +334,10 @@ class Loader {
 		array_push(
 			$this->classes,
 			[
+				'name' => 'Admin\Builder\HelpCache',
+				'id'   => 'builder_help_cache',
+			],
+			[
 				'name' => 'Admin\Builder\Help',
 				'id'   => 'builder_help',
 			],
@@ -258,6 +370,35 @@ class Loader {
 				'name' => 'Admin\Builder\Notifications\Advanced\EntryCsvAttachment',
 			]
 		);
+	}
+
+	/**
+	 * Populate database classes.
+	 *
+	 * @since 1.8.2
+	 */
+	private function populate_db() {
+
+		$this->classes[] = [
+			'name' => 'Db\Payments\Payment',
+			'id'   => 'payment',
+			'hook' => false,
+			'run'  => false,
+		];
+
+		$this->classes[] = [
+			'name' => 'Db\Payments\Meta',
+			'id'   => 'payment_meta',
+			'hook' => false,
+			'run'  => false,
+		];
+
+		$this->classes[] = [
+			'name' => 'Db\Payments\Queries',
+			'id'   => 'payment_queries',
+			'hook' => false,
+			'run'  => false,
+		];
 	}
 
 	/**
@@ -377,6 +518,22 @@ class Loader {
 			[
 				'name' => 'Admin\Education\Fields',
 				'id'   => 'education_fields',
+			],
+			[
+				'name' => 'Admin\Education\Admin\Settings\SMTP',
+				'id'   => 'education_smtp_notice',
+			],
+			[
+				'name' => 'Admin\Education\Admin\EditPost',
+				'hook' => 'load-edit.php',
+			],
+			[
+				'name' => 'Admin\Education\Admin\EditPost',
+				'hook' => 'load-post-new.php',
+			],
+			[
+				'name' => 'Admin\Education\Admin\EditPost',
+				'hook' => 'load-post.php',
 			]
 		);
 

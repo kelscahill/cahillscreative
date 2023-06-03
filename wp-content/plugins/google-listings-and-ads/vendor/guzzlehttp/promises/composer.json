@@ -33,13 +33,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Promise\\": "src/"
+            "GuzzleHttp\\Promise\\": "src/"
         },
         "files": ["src/functions_include.php"]
     },
     "autoload-dev": {
         "psr-4": {
-            "Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Promise\\Tests\\": "tests/"
+            "GuzzleHttp\\Promise\\Tests\\": "tests/"
         }
     },
     "scripts": {

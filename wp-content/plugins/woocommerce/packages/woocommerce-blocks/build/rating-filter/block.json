@@ -8,18 +8,9 @@
 	"supports": {
 		"html": false,
 		"multiple": false,
-		"color": {
-		  "__experimentalDefaultControls": {
-			"text": true
-		  }
-		},
+		"color": true,
 		"inserter": false,
 		"lock": false
-	},
-	"example": {
-		"attributes": {
-			"isPreview": true
-		}
 	},
 	"attributes": {
 		"className": {
@@ -47,7 +38,7 @@
 			"default": false
 		}
 	},
-	"textdomain": "woo-gutenberg-products-block",
+	"textdomain": "woocommerce",
 	"apiVersion": 2,
 	"$schema": "https://schemas.wp.org/trunk/block.json"
 }

@@ -85,7 +85,7 @@ class controller
 			$check->next_step( 'start' );
 			$row = $table->body()->row();
 			$name = sprintf( '<a href="%s">%s</a>',
-				add_query_arg( [ 'do_check' => $check->get_id() ] ),
+				esc_url( add_query_arg( [ 'do_check' => $check->get_id() ] ) ),
 				$check->get_name()
 			);
 			$row->td()->text( $name );
@@ -118,10 +118,12 @@ class controller
 	**/
 	public function get_action_url( $check, $action_name )
 	{
-		return add_query_arg( [
+		$r = add_query_arg( [
 			'check' => $check->get_id(),
 			'action' => $action_name,
 		] );
+		$r = esc_url( $r );
+		return $r;
 	}
 
 	/**

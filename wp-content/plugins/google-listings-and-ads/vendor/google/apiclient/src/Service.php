@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-namespace Google;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google;
 
-use Google\Http\Batch;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Http\Batch;
 use TypeError;
 
 class Service

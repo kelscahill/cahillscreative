@@ -333,7 +333,6 @@ trait terms_and_taxonomies
 		if ( $refresh_cache )
 		{
 			delete_option( $taxonomy . '_children' );
-			clean_term_cache( '', $taxonomy );
 		}
 
 		// Tell everyone we've just synced this taxonomy.

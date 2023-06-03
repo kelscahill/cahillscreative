@@ -28,6 +28,15 @@ class PrintPreview {
 	public $form_data;
 
 	/**
+	 * The array of bulk entries.
+	 *
+	 * @since 1.8.2
+	 *
+	 * @var array
+	 */
+	private $entries;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.5.1
@@ -54,11 +63,11 @@ class PrintPreview {
 	public function hooks() {
 
 		add_action( 'admin_init', [ $this, 'print_html' ], 1 );
-		add_filter( 'wpforms_entry_single_data', [ $this, 'add_hidden_data' ], 10, 2 );
+		add_filter( 'wpforms_entry_single_data', [ $this, 'add_hidden_data' ], 1010, 2 );
 	}
 
 	/**
-	 * Check if current page request meets requirements for entry print page.
+	 * Check if current page request meets requirements for the Entry Print page.
 	 *
 	 * @since 1.5.1
 	 *
@@ -85,27 +94,36 @@ class PrintPreview {
 			return false;
 		}
 
-		$entry_id = absint( $_GET['entry_id'] );
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$entry_ids = array_map( 'absint', explode( ',', wp_unslash( $_GET['entry_id'] ) ) );
 
-		if ( empty( $entry_id ) || (string) $entry_id !== $_GET['entry_id'] ) {
+		foreach ( $entry_ids as $entry_id ) {
+			$_entry = wpforms()->get( 'entry' )->get( $entry_id );
+
+			// Filter entries to ensure the current user can access their details.
+			if ( ! is_object( $_entry ) ) {
+				continue;
+			}
+
+			$_entry->entry_notes = wpforms()->get( 'entry_meta' )->get_meta(
+				[
+					'type'     => 'note',
+					'entry_id' => $entry_id,
+				]
+			);
+			$this->entries[]     = $_entry; // Assign data extracted from each entry.
+		}
+
+		// Bail early, in case we have no entry to print.
+		if ( empty( $this->entries ) ) {
 			return false;
 		}
-		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
-		// Check for user with correct capabilities.
-		if ( ! wpforms_current_user_can( 'view_entry_single', $entry_id ) ) {
-			return false;
-		}
+		// Continue store a first entry for backward compatibility.
+		$this->entry = $this->entries[0];
 
-		// Fetch the entry.
-		$this->entry = wpforms()->get( 'entry' )->get( $entry_id );
-
-		// Check if valid entry was found.
-		if ( empty( $this->entry ) ) {
-			return false;
-		}
-
-		// Fetch form details for the entry.
+		// Fetch the current form data with "content_only" flag.
+		// Note that form-id and data will be the same across all entries.
 		$this->form_data = wpforms()->get( 'form' )->get(
 			$this->entry->form_id,
 			[
@@ -113,18 +131,20 @@ class PrintPreview {
 			]
 		);
 
-		// Check if valid form was found.
+		// Bail early, in case form-data is not valid or can not be processed.
 		if ( empty( $this->form_data ) ) {
 			return false;
 		}
 
-		// Everything passed, fetch entry notes.
-		$this->entry->entry_notes = wpforms()->get( 'entry_meta' )->get_meta(
-			[
-				'entry_id' => $this->entry->entry_id,
-				'type'     => 'note',
-			]
-		);
+		/**
+		 * Allow adding entry properties on the print page.
+		 *
+		 * @since 1.8.1
+		 *
+		 * @param object $entry     Entry object.
+		 * @param array  $form_data Form data and settings.
+		 */
+		do_action( 'wpforms_pro_admin_entries_print_preview_entry', $this->entry, $this->form_data );
 
 		return true;
 	}
@@ -133,318 +153,388 @@ class PrintPreview {
 	 * Output HTML markup for the print preview page.
 	 *
 	 * @since 1.5.1
+	 * @since 1.8.1 Rewrite to templates.
 	 */
 	public function print_html() {
 
-		$min = wpforms_get_min_suffix();
-		?>
-		<!doctype html>
-		<html>
-		<head>
-			<meta charset="<?php bloginfo( 'charset' ); ?>">
-			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-			<title>WPForms Print Preview - <?php echo esc_html( ucfirst( sanitize_text_field( $this->form_data['settings']['form_title'] ) ) ); ?> </title>
-			<meta name="description" content="">
-			<meta name="viewport" content="width=device-width, initial-scale=1">
-			<meta name="robots" content="noindex,nofollow,noarchive">
-			<?php // phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet, WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-			<link rel="stylesheet" href="<?php echo esc_url( WPFORMS_PLUGIN_URL ); ?>assets/lib/font-awesome/font-awesome.min.css" type="text/css">
-			<link rel="stylesheet" href="<?php echo esc_url( WPFORMS_PLUGIN_URL ); ?>assets/pro/css/entry-print<?php echo esc_attr( $min ); ?>.css" type="text/css">
-			<script type="text/javascript" src="<?php echo esc_url( includes_url( 'js/utils.js' ) ); ?>"></script>
-			<script type="text/javascript" src="<?php echo esc_url( includes_url( 'js/jquery/jquery.js' ) ); ?>"></script>
-			<?php // phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet, WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-			<script type="text/javascript">
-				jQuery( function( $ ) {
-					var showEmpty = wpCookies.get( 'wpforms_entry_hide_empty' ) !== 'true';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wpforms_render(
+			'admin/entry-print/head',
+			[
+				'entry'     => $this->entry,
+				'form_data' => $this->form_data,
+			],
+			true
+		);
 
-					function toggle( $this, $elem = '', $additional = '' ) {
-						$this.find( '.switch' ).toggleClass( 'active' );
-						$( $elem ).toggleClass( $additional );
-					}
-					// Print page.
-					$( document ).on( 'click', '.print', function( event ) {
-						event.preventDefault();
-						window.print();
-					} );
-					// Close page.
-					$( document ).on( 'click', '.close-window', function( event ) {
-						event.preventDefault();
-						window.close();
-					} );
-					// Settings button toggle.
-					$( document ).on( 'click', '.button-settings', function( event ) {
-						event.preventDefault();
-						$( this ).find( 'i' ).toggleClass( 'active' );
-						$( '.actions' ).toggleClass( 'active' );
-					} );
-					// Init empty fields.
-					if ( showEmpty ) {
-						$( '.field.empty' ).show();
-						$( '.toggle-empty' ).find( '.switch' ).addClass( 'active' );
-					} else {
-						$( '.field.empty' ).hide();
-						$( '.toggle-empty' ).find( '.switch' ).removeClass( 'active' );
-					}
-					// Toggle empty fields.
-					$( document ).on( 'click', '.toggle-empty', function( event ) {
-						event.preventDefault();
-						if ( ! showEmpty ) {
-							wpCookies.set( 'wpforms_entry_hide_empty', 'true', 2592000 );
-							$( this ).find( '.switch' ).addClass( 'active' );
-						} else {
-							wpCookies.remove( 'wpforms_entry_hide_empty' );
-							$( this ).find( '.switch' ).removeClass( 'active' );
-						}
-						$( '.field.empty' ).toggle();
-						showEmpty = !showEmpty;
-					} );
-					// Toggle HTML fields.
-					$( document ).on( 'click', '.toggle-html', function( event ) {
-						event.preventDefault();
-						toggle( $( this ), '.wpforms-field-html, .wpforms-field-content', 'wpforms-hidden' );
-					} );
-					// Toggle section dividers.
-					$( document ).on( 'click', '.toggle-dividers', function( event ) {
-						event.preventDefault();
-						toggle( $( this ), '.wpforms-field-divider, .wpforms-field-pagebreak', 'wpforms-hidden' )
-					} );
-					// Toggle notes.
-					$( document ).on( 'click', '.toggle-notes', function( event ) {
-						event.preventDefault();
-						$( this ).find( '.switch' ).toggleClass( 'active' );
-						$( '.notes, .notes-head' ).toggle();
-					} );
-					// Toggle compact view.
-					$( document ).on( 'click', '.toggle-view', function( event ) {
-						event.preventDefault();
-						toggle( $( this ), '#print', 'compact' )
-					} );
+		$last_entry_index = count( $this->entries ) - 1;
 
-					/**
-					 * Rich Text field iframe onload handler.
-					 *
-					 * @since 1.7.0
-					 *
-					 * @param {object} obj Iframe element.
-					 */
-					var loadRichTextField = function( obj ) {
+		// Loop through all entries.
+		foreach ( $this->entries as $entry_index => $entry ) {
+			$this->entry        = $entry;
+			$is_first_iteration = $entry_index === 0; // Is this the first iteration?
+			$is_last_iteration  = $entry_index === $last_entry_index; // Is this the last iteration?
 
-						if ( ! obj || ! obj.contentWindow ) {
-							return;
-						}
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wpforms_render(
+				'admin/entry-print/legend-start',
+				[
+					'has_header' => $is_first_iteration,
+					'entry'      => $this->entry,
+					'form_data'  => $this->form_data,
+				],
+				true
+			);
 
-						// Resize iframe to fit the height of the content.
-						var doc = obj.contentWindow.document.documentElement || false;
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wpforms_render(
+				'admin/entry-print/fields',
+				[
+					'entry'     => $this->entry,
+					'form_data' => $this->form_data,
+					'fields'    => $this->get_fields(),
+				],
+				true
+			);
 
-						if ( ! doc ) {
-							return;
-						}
+			// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
+			/**
+			 * Fires on entry print page before after all fields.
+			 *
+			 * @param object $entry     Entry.
+			 * @param array  $form_data Form data and settings.
+			 *
+			 * @since 1.5.4.2
+			 */
+			do_action( 'wpforms_pro_admin_entries_printpreview_print_html_fields_after', $this->entry, $this->form_data );
+			// phpcs:enable WPForms.PHP.ValidateHooks.InvalidHookName
 
-						var height = doc.scrollHeight;
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wpforms_render(
+				'admin/entry-print/notes',
+				[
+					'entry'     => $this->entry,
+					'form_data' => $this->form_data,
+				],
+				true
+			);
 
-						height += doc.scrollWidth > doc.clientWidth ? 20 : 0;
+			// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
+			/**
+			 * Fires on entry print page before after notes.
+			 *
+			 * @param object $entry     Entry.
+			 * @param array  $form_data Form data and settings.
+			 *
+			 * @since 1.5.4.2
+			 */
+			do_action( 'wpforms_pro_admin_entries_printpreview_print_html_notes_after', $this->entry, $this->form_data );
+			// phpcs:enable WPForms.PHP.ValidateHooks.InvalidHookName
 
-						obj.style.height = height + 'px';
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wpforms_render(
+				'admin/entry-print/legend-end',
+				[
+					'has_page_break' => ! $is_last_iteration,
+					'entry'          => $this->entry,
+					'form_data'      => $this->form_data,
+				],
+				true
+			);
+		}
 
-						// Add `target` and `rel` attributes to all links inside iframe.
-						$( obj ).contents().find( 'a' ).attr( {
-							'target': '_blank',
-							'rel': 'noopener',
-						} );
-					};
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wpforms_render(
+			'admin/entry-print/footer',
+			[
+				'entry'     => $this->entry,
+				'form_data' => $this->form_data,
+			],
+			true
+		);
+		exit;
+	}
 
-					// Load all Rich Text fields.
-					$( '.wpforms-entry-field-value-richtext' ).each( function() {
+	/**
+	 * Get list of fields for the print page.
+	 *
+	 * @since 1.8.1
+	 *
+	 * @return array
+	 */
+	private function get_fields() {
 
-						var iframe = this,
-							$iframe = $( this );
+		// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
+		/**
+		 * Modify entry fields data.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array  $fields    Entry fields.
+		 * @param object $entry     Entry data.
+		 * @param array  $form_data Form data and settings.
+		 */
+		$fields = (array) apply_filters( 'wpforms_entry_single_data', wpforms_decode( $this->entry->fields ), $this->entry, $this->form_data );
+		// phpcs:enable WPForms.PHP.ValidateHooks.InvalidHookName
 
-						$iframe.on( 'load', function() {
+		foreach ( $fields as $key => $field ) {
 
-							loadRichTextField( iframe );
-						} );
+			$is_field_allowed = $this->is_field_allowed( $field );
 
-						$iframe.attr( 'src', $iframe.data( 'src' ) );
-					} );
-				} );
-			</script>
-			<?php do_action( 'wpforms_pro_admin_entries_printpreview_print_html_head', $this->entry, $this->form_data ); ?>
-		</head>
-		<body class="wp-core-ui">
-			<div class="wpforms-preview" id="print">
-				<?php do_action( 'wpforms_pro_admin_entries_printpreview_print_html_header_before', $this->entry, $this->form_data ); ?>
-				<div class="page-title">
-					<h1>
-						<?php /* translators: %d - entry ID. */ ?>
-						<?php echo esc_html( sanitize_text_field( $this->form_data['settings']['form_title'] ) ); ?> <span> - <?php printf( esc_html__( 'Entry #%d', 'wpforms' ), absint( $this->entry->entry_id ) ); ?></span>
-					</h1>
-					<div class="buttons">
-						<a href="#" class="button button-settings" title="<?php esc_attr_e( 'Cog', 'wpforms' ); ?>"><i class="fa fa-cog" aria-hidden="true"></i></a>
-						<a href="#" class="button button-close close-window" title="<?php esc_attr_e( 'Close', 'wpforms' ); ?>"><?php esc_html_e( 'Close', 'wpforms' ); ?></a>
-						<a href="#" class="button button-print print" title="<?php esc_attr_e( 'Print', 'wpforms' ); ?>"><?php esc_html_e( 'Print', 'wpforms' ); ?></a>
-					</div>
-				</div>
-				<div class="actions no-print">
-					<div class="switch-container toggle-empty">
-						<a href="#" title="<?php esc_attr_e( 'Empty fields', 'wpforms' ); ?>"><i class="switch" aria-hidden="true"></i><span><?php esc_html_e( 'Empty fields', 'wpforms' ); ?></span></a>
-					</div>
-					<div class="switch-container toggle-html">
-						<a href="#" title="<?php esc_attr_e( 'HTML/Content fields', 'wpforms' ); ?>"><i class="switch" aria-hidden="true"></i><span><?php echo esc_html__( 'HTML/Content fields', 'wpforms' ); ?></span></a>
-					</div>
-					<div class="switch-container toggle-dividers">
-						<a href="#" title="<?php esc_attr_e( 'Section Dividers', 'wpforms' ); ?>"><i class="switch" aria-hidden="true"></i><span><?php echo esc_html__( 'Section Dividers', 'wpforms' ); ?></span></a>
-					</div>
-					<?php if ( ! empty( $this->entry->entry_notes ) ) : ?>
-					<div class="switch-container toggle-notes">
-						<a href="#" title="<?php esc_attr_e( 'Notes', 'wpforms' ); ?>"><i class="switch" aria-hidden="true"></i><span><?php echo esc_html__( 'Notes', 'wpforms' ); ?></span></a>
-					</div>
-					<?php endif; ?>
-					<div class="switch-container toggle-view">
-						<a href="#"><i class="switch" title="<?php esc_attr_e( 'Compact view', 'wpforms' ); ?>" aria-hidden="true"></i><span><?php esc_html_e( 'Compact view', 'wpforms' ); ?></span></a>
-					</div>
-				</div>
-				<?php
-				do_action_deprecated(
-					'wpforms_pro_admin_entries_printpreview_print_hrml_header_after',
-					[ $this->entry, $this->form_data ],
-					'1.5.5 of the WPForms plugin',
-					'wpforms_pro_admin_entries_printpreview_print_html_header_after'
-				);
+			if ( ! $is_field_allowed ) {
+				unset( $fields[ $key ] );
+				continue;
+			}
 
-				do_action( 'wpforms_pro_admin_entries_printpreview_print_html_header_after', $this->entry, $this->form_data );
+			if ( ! isset( $field['id'], $field['type'] ) ) {
+				unset( $fields[ $key ] );
+				continue;
+			}
 
-				$fields = apply_filters( 'wpforms_entry_single_data', wpforms_decode( $this->entry->fields ), $this->entry, $this->form_data );
+			if ( $field['type'] !== 'layout' ) {
+				$fields[ $key ] = $this->add_formatted_data( $field );
 
-				if ( empty( $fields ) ) {
+				continue;
+			}
 
-					// Whoops, no fields! This shouldn't happen under normal use cases.
-					echo '<p class="no-fields">' . esc_html__( 'This entry does not have any fields', 'wpforms' ) . '</p>';
+			if ( empty( $field['columns'] ) ) {
+				unset( $fields[ $key ] );
+			}
+		}
 
-				} else {
+		/**
+		 * Modify entry fields data for the print page.
+		 *
+		 * @since 1.8.1.2
+		 *
+		 * @param array $fields Entry fields.
+		 */
+		return apply_filters( 'wpforms_pro_admin_entries_print_preview_fields', $fields );
+	}
 
-					echo '<div class="fields">';
-					// Display the fields and their values.
-					foreach ( $fields as $field ) {
+	/**
+	 * Add formatted data to the field.
+	 *
+	 * @since 1.8.1
+	 *
+	 * @param array $field Entry field.
+	 *
+	 * @return array
+	 */
+	private function add_formatted_data( $field ) {
 
-						if ( ! isset( $field['id'] ) ) {
-							continue;
-						}
+		$field['formatted_value'] = $this->get_formatted_field_value( $field );
+		$field['formatted_label'] = $this->get_formatted_field_label( $field );
 
-						$field_value  = isset( $field['value'] ) ? apply_filters( 'wpforms_html_field_value', wp_strip_all_tags( $field['value'] ), $field, $this->form_data, 'entry-single' ) : '';
-						$field_class  = sanitize_html_class( 'wpforms-field-' . $field['type'] );
-						$field_class .= wpforms_is_empty_string( $field_value ) ? ' empty' : '';
-						$field_label  = isset( $field['name'] ) ? $field['name'] : '';
+		return $field;
+	}
 
-						if ( $field['type'] === 'divider' ) {
-							$field_label = isset( $field['label'] ) && ! empty( $field['label'] ) ? $field['label'] : esc_html__( 'Section Divider', 'wpforms' );
-							$field_class = sanitize_html_class( 'wpforms-field-' . $field['type'] ) . ' wpforms-hidden';
-						}
+	/**
+	 * Get formatted field value.
+	 *
+	 * @since 1.8.1
+	 *
+	 * @param array $field Entry field.
+	 *
+	 * @return string
+	 */
+	private function get_formatted_field_value( $field ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-						if ( $field['type'] === 'html' ) {
-							$field_value = isset( $field['code'] ) ? $field['code'] : '';
-							$field_class = sanitize_html_class( 'wpforms-field-' . $field['type'] ) . ' wpforms-hidden';
-						}
+		// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
+		/** This filter is documented in src/SmartTags/SmartTag/FieldHtmlId.php.*/
+		$field_value = isset( $field['value'] ) ? apply_filters( 'wpforms_html_field_value', wp_strip_all_tags( $field['value'] ), $field, $this->form_data, 'entry-single' ) : '';
+		// phpcs:enable WPForms.PHP.ValidateHooks.InvalidHookName
 
-						if ( $field['type'] === 'content' ) {
-							$field_value = isset( $field['content'] ) ? $field['content'] : '';
-							$field_class = sanitize_html_class( 'wpforms-field-' . $field['type'] ) . ' wpforms-hidden';
-							$field_label = esc_html__( 'Content Field', 'wpforms' );
-						}
+		if ( $field['type'] === 'html' ) {
+			$field_value = isset( $field['code'] ) ? $field['code'] : '';
+		}
 
-						/**
-						 * Filter print preview value.
-						 *
-						 * @since 1.7.9
-						 *
-						 * @param string $field_value Field value.
-						 * @param array  $field       Field data.
-						 */
-						$field_value = make_clickable( apply_filters( 'wpforms_pro_admin_entries_print_preview_field_value', $field_value, $field ) );
+		if ( $field['type'] === 'content' ) {
+			$field_value = isset( $field['content'] ) ? $field['content'] : '';
+		}
 
-						/**
-						 * Decide if field value should use nl2br.
-						 *
-						 * @since 1.7.9
-						 *
-						 * @param bool  $use   Boolean value flagging if field should use nl2br function.
-						 * @param array $field Field data.
-						 */
-						$field_value = apply_filters( 'wpforms_pro_admin_entries_print_preview_field_value_use_nl2br', true, $field ) ? nl2br( $field_value ) : $field_value;
-						?>
-						<?php if ( $field['type'] === 'divider' ) : ?>
-							<div class="field <?php echo esc_attr( $field_class ); ?>">
-								<div class="wpforms-pagebreak-divider">
-									<p class="pagebreak-label"><?php echo esc_html( wp_strip_all_tags( $field_label ) ); ?></p>
-									<span class="line"></span>
-								</div>
-							</div>
-						<?php else : ?>
-						<div class="field <?php echo esc_attr( $field_class ); ?>">
-							<p class="field-name">
-								<?php
-								/* translators: %d - field ID. */
-								echo ! empty( $field_label ) ? esc_html( wp_strip_all_tags( $field_label ) ) : sprintf( esc_html__( 'Field ID #%d', 'wpforms' ), absint( $field['id'] ) );
-								?>
-							</p>
-							<div class="field-value">
-								<?php echo ! wpforms_is_empty_string( $field_value ) ? $field_value : esc_html__( 'Empty', 'wpforms' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-							</div>
-						</div>
-						<?php endif; ?>
-						<?php
-					}
-					echo '</div>';
-				}
+		if (
+			! empty( $this->form_data['fields'][ $field['id'] ]['choices'] )
+			&& in_array( $field['type'], [ 'radio', 'checkbox', 'payment-checkbox', 'payment-multiple' ], true )
+		) {
+			$field_value = $this->get_choices_field_value( $field, $field_value );
+		}
 
-				do_action_deprecated(
-					'wpforms_pro_admin_entries_printpreview_print_hrml_fields_after',
-					[ $this->entry, $this->form_data ],
-					'1.5.5 of the WPForms plugin',
-					'wpforms_pro_admin_entries_printpreview_print_html_fields_after'
-				);
+		/**
+		 * Filter print preview value.
+		 *
+		 * @since 1.7.9
+		 *
+		 * @param string $field_value Field value.
+		 * @param array  $field       Field data.
+		 */
+		$field_value = make_clickable( apply_filters( 'wpforms_pro_admin_entries_print_preview_field_value', $field_value, $field ) );
 
-				do_action( 'wpforms_pro_admin_entries_printpreview_print_html_fields_after', $this->entry, $this->form_data );
+		/**
+		 * Decide if field value should use nl2br.
+		 *
+		 * @since 1.7.9
+		 *
+		 * @param bool  $use   Boolean value flagging if field should use nl2br function.
+		 * @param array $field Field data.
+		 */
+		return apply_filters( 'wpforms_pro_admin_entries_print_preview_field_value_use_nl2br', true, $field ) ? nl2br( $field_value ) : $field_value;
+	}
 
-				if ( ! empty( $this->entry->entry_notes ) ) {
+	/**
+	 * Get formatted field value.
+	 *
+	 * @since 1.8.1
+	 *
+	 * @param array $field Entry field.
+	 *
+	 * @return string
+	 */
+	private function get_formatted_field_label( $field ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-					echo '<h2 class="notes-head">' . esc_html__( 'Notes', 'wpforms' ) . '</h2>';
-					echo '<div class="notes">';
+		$field_label = isset( $field['name'] ) ? $field['name'] : '';
 
-					foreach ( $this->entry->entry_notes as $note ) {
+		if ( $field['type'] === 'divider' ) {
+			$field_label = isset( $field['label'] ) && ! wpforms_is_empty_string( $field['label'] ) ? $field['label'] : esc_html__( 'Section Divider', 'wpforms' );
+		}
 
-						$user      = get_userdata( $note->user_id );
-						$user_name = ! empty( $user->display_name ) ? $user->display_name : $user->user_login;
-						$date      = wpforms_datetime_format( $note->date, '', true );
+		if ( $field['type'] === 'pagebreak' ) {
+			$field_label = isset( $field['title'] ) && ! wpforms_is_empty_string( $field['title'] ) ? $field['title'] : esc_html__( 'Page Break', 'wpforms' );
+		}
 
-						echo '<div class="note">';
-							echo '<div class="note-byline">';
-								printf( /* translators: %1$s - user name; %2$s - date */
-									esc_html__( 'Added by %1$s on %2$s', 'wpforms' ),
-									esc_html( $user_name ),
-									esc_html( $date )
-								);
-							echo '</div>';
-							echo '<div class="note-text">' . wp_kses_post( $note->data ) . '</div>';
-						echo '</div>';
-					}
-					echo '</div>';
-				}
+		if ( $field['type'] === 'content' ) {
+			$field_label = esc_html__( 'Content Field', 'wpforms' );
+		}
 
-				do_action_deprecated(
-					'wpforms_pro_admin_entries_printpreview_print_hrml_notes_after',
-					[ $this->entry, $this->form_data ],
-					'1.5.5 of the WPForms plugin',
-					'wpforms_pro_admin_entries_printpreview_print_html_notes_after'
-				);
+		return $field_label;
+	}
 
-				do_action( 'wpforms_pro_admin_entries_printpreview_print_html_notes_after', $this->entry, $this->form_data );
-				?>
-			</div>
-			<p class="site"><a href="<?php echo esc_url( home_url() ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a></p>
-		</body>
+	/**
+	 * Get field value for checkbox and radio fields.
+	 *
+	 * @since 1.8.1
+	 *
+	 * @param array  $field       Entry field.
+	 * @param string $field_value HTML markup for the field.
+	 *
+	 * @return string
+	 */
+	private function get_choices_field_value( $field, $field_value ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		<?php
-		exit();
+		$choices_html    = '';
+		$choices         = $this->form_data['fields'][ $field['id'] ]['choices'];
+		$type            = in_array( $field['type'], [ 'radio', 'payment-multiple' ], true ) ? 'radio' : 'checkbox';
+		$is_image_choice = ! empty( $this->form_data['fields'][ $field['id'] ]['choices_images'] );
+		$template_name   = $is_image_choice ? 'image-choice' : 'choice';
+		$is_dynamic      = ! empty( $field['dynamic'] );
+
+		if ( $is_dynamic ) {
+			$field_id   = $field['id'];
+			$form_id    = $this->form_data['id'];
+			$field_data = $this->form_data['fields'][ $field_id ];
+			$choices    = wpforms_get_field_dynamic_choices( $field_data, $form_id, $this->form_data );
+		}
+
+		foreach ( $choices as $key => $choice ) {
+			$is_checked = $this->is_checked_choice( $field, $choice, $key, $is_dynamic );
+
+			if ( ! $is_dynamic ) {
+				$choice['label'] = $this->get_choice_label( $field, $choice, $key );
+			}
+
+			$choices_html .= wpforms_render(
+				'admin/entry-print/' . $template_name,
+				[
+					'entry'       => $this->entry,
+					'form_data'   => $this->form_data,
+					'field'       => $field,
+					'choice_type' => $type,
+					'is_checked'  => $is_checked,
+					'choice'      => $choice,
+				],
+				true
+			);
+		}
+
+		return sprintf(
+			'<div class="field-value-default-mode">%1$s</div><div class="field-value-choices-mode">%2$s</div>',
+			wpforms_is_empty_string( $field_value ) ? esc_html__( 'Empty', 'wpforms' ) : $field_value,
+			$choices_html
+		);
+	}
+
+	/**
+	 * Get value for a choice item.
+	 *
+	 * @since 1.8.1.2
+	 *
+	 * @param array $field  Entry field.
+	 * @param array $choice Choice settings.
+	 * @param int   $key    Choice number.
+	 *
+	 * @return string
+	 */
+	private function get_choice_label( $field, $choice, $key ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+
+		$is_payment = strpos( $field['type'], 'payment-' ) === 0;
+
+		if ( ! $is_payment ) {
+			return ! isset( $choice['label'] ) || wpforms_is_empty_string( $choice['label'] )
+				/* translators: %s - choice number. */
+				? sprintf( esc_html__( 'Choice %s', 'wpforms' ), $key )
+				: $choice['label'];
+		}
+
+		$label = isset( $choice['label']['text'] ) ? $choice['label']['text'] : '';
+		/* translators: %s - Choice item number. */
+		$label = $label !== '' ? $label : sprintf( esc_html__( 'Item %s', 'wpforms' ), $key );
+
+		if ( empty( $this->form_data['fields'][ $field['id'] ]['show_price_after_labels'] ) ) {
+			return $label;
+		}
+
+		$value  = ! empty( $choice['value'] ) ? $choice['value'] : 0;
+		$amount = wpforms_format_amount( wpforms_sanitize_amount( $value ), true );
+
+		return $amount ? $label . ' - ' . $amount : $label;
+	}
+
+	/**
+	 * Is the choice item checked?
+	 *
+	 * @since 1.8.1.2
+	 *
+	 * @param array $field      Entry field.
+	 * @param array $choice     Choice settings.
+	 * @param int   $key        Choice number.
+	 * @param bool  $is_dynamic Is dynamic field.
+	 *
+	 * @return bool
+	 */
+	private function is_checked_choice( $field, $choice, $key, $is_dynamic ) {
+
+		$is_payment     = strpos( $field['type'], 'payment-' ) === 0;
+		$separator      = $is_payment || $is_dynamic ? ',' : PHP_EOL;
+		$active_choices = explode( $separator, $field['value_raw'] );
+
+		if ( $is_dynamic ) {
+			$active_choices = array_map( 'absint', $active_choices );
+
+			return in_array( $choice['value'], $active_choices, true );
+		}
+
+		if ( $is_payment ) {
+			$active_choices = array_map( 'absint', $active_choices );
+
+			return in_array( $key, $active_choices, true );
+		}
+
+		$label = ! isset( $choice['label'] ) || wpforms_is_empty_string( $choice['label'] )
+			/* translators: %s - choice number. */
+			? sprintf( esc_html__( 'Choice %s', 'wpforms' ), $key )
+			: $choice['label'];
+
+		return in_array( $label, $active_choices, true );
 	}
 
 	/**
@@ -457,10 +547,13 @@ class PrintPreview {
 	 *
 	 * @return array
 	 */
-	public function add_hidden_data( $fields, $entry ) {
+	public function add_hidden_data( $fields, $entry ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$form_data = wpforms()->get( 'form' )->get( $entry->form_id, [ 'content_only' => true ] );
 		$settings  = ! empty( $form_data['fields'] ) ? $form_data['fields'] : [];
+
+		// Content, Divider, HTML and layout fields must always be included because it's allowed to show and hide these fields.
+		$forced_allowed_fields = [ 'content', 'divider', 'html', 'layout', 'pagebreak' ];
 
 		// Order entry fields by the form fields.
 		foreach ( $settings as $key => $setting ) {
@@ -472,16 +565,17 @@ class PrintPreview {
 
 			$field_type = $setting['type'];
 
-			// Divider, HTML and content fields must always be included because it's allowed to show and hide these fields.
-			if ( in_array( $field_type, [ 'divider', 'html', 'content' ], true ) ) {
+			if ( in_array( $field_type, $forced_allowed_fields, true ) ) {
 				continue;
 			}
 
+			// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
 			/** This filter is documented in /src/Pro/Admin/Entries/Edit.php */
 			if ( ! (bool) apply_filters( "wpforms_pro_admin_entries_edit_is_field_displayable_{$field_type}", true, $setting, $form_data ) ) {
 				unset( $settings[ $key ] );
 				continue;
 			}
+			// phpcs:enable WPForms.PHP.ValidateHooks.InvalidHookName
 
 			if ( ! isset( $fields[ $key ] ) ) {
 				unset( $settings[ $key ] );
@@ -492,5 +586,33 @@ class PrintPreview {
 		}
 
 		return $settings;
+	}
+
+	/**
+	 * Check if field is allowed to be displayed.
+	 *
+	 * @since 1.8.1.2
+	 *
+	 * @param array $field Field data.
+	 *
+	 * @return bool
+	 */
+	public function is_field_allowed( $field ) {
+
+		$is_dynamic = ! empty( $field['dynamic'] );
+
+		// If field is not dynamic, it is allowed.
+		if ( ! $is_dynamic ) {
+			return true;
+		}
+
+		$form_data       = $this->form_data;
+		$fields          = $form_data['fields'];
+		$field_id        = $field['id'];
+		$field_data      = $fields[ $field_id ];
+		$dynamic_choices = wpforms_get_field_dynamic_choices( $field_data, $form_data['id'], $form_data );
+
+		// If field is dynamic and has choices, it is allowed.
+		return ! empty( $dynamic_choices );
 	}
 }

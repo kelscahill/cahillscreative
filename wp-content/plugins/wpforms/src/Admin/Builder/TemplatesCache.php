@@ -2,12 +2,14 @@
 
 namespace WPForms\Admin\Builder;
 
+use WPForms\Helpers\CacheBase;
+
 /**
  * Form templates cache handler.
  *
  * @since 1.6.8
  */
-class TemplatesCache extends \WPForms\Helpers\CacheBase {
+class TemplatesCache extends CacheBase {
 
 	/**
 	 * Determine if the class is allowed to load.
@@ -18,8 +20,9 @@ class TemplatesCache extends \WPForms\Helpers\CacheBase {
 	 */
 	protected function allow_load() {
 
-		// Load for certain places only.
-		$allow = wp_doing_ajax() || wpforms_is_admin_page( 'builder' ) || wpforms_is_admin_page( 'templates' );
+		$has_permissions  = wpforms_current_user_can( [ 'create_forms', 'edit_forms' ] );
+		$allowed_requests = wpforms_is_admin_ajax() || wpforms_is_admin_page( 'builder' ) || wpforms_is_admin_page( 'templates' );
+		$allow            = wp_doing_cron() || wpforms_doing_wp_cli() || ( $has_permissions && $allowed_requests );
 
 		/**
 		 * Whether to load this class.

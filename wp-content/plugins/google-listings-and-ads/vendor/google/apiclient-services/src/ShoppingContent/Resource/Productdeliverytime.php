@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\ProductDeliveryTime as ProductDeliveryTimeModel;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ProductDeliveryTime as ProductDeliveryTimeModel;
 
 /**
  * The "productdeliverytime" collection of methods.
@@ -27,7 +27,7 @@ use Google\Service\ShoppingContent\ProductDeliveryTime as ProductDeliveryTimeMod
  *   $productdeliverytime = $contentService->productdeliverytime;
  *  </code>
  */
-class Productdeliverytime extends \Google\Service\Resource
+class Productdeliverytime extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Creates or updates the delivery time of a product.

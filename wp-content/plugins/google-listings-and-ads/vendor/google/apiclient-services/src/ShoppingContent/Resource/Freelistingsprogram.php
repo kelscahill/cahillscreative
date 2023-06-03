@@ -15,10 +15,10 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\FreeListingsProgramStatus;
-use Google\Service\ShoppingContent\RequestReviewFreeListingsRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\FreeListingsProgramStatus;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\RequestReviewFreeListingsRequest;
 
 /**
  * The "freelistingsprogram" collection of methods.
@@ -28,11 +28,13 @@ use Google\Service\ShoppingContent\RequestReviewFreeListingsRequest;
  *   $freelistingsprogram = $contentService->freelistingsprogram;
  *  </code>
  */
-class Freelistingsprogram extends \Google\Service\Resource
+class Freelistingsprogram extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Retrieves the status and review eligibility for the free listing program.
-   * (freelistingsprogram.get)
+   * Returns errors and warnings if they require action to resolve, will become
+   * disapprovals, or impact impressions. Use `accountstatuses` to view all issues
+   * for an account. (freelistingsprogram.get)
    *
    * @param string $merchantId Required. The ID of the account.
    * @param array $optParams Optional parameters.

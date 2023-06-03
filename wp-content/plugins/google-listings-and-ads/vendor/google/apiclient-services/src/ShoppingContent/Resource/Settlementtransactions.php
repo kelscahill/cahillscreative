@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\SettlementtransactionsListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\SettlementtransactionsListResponse;
 
 /**
  * The "settlementtransactions" collection of methods.
@@ -27,7 +27,7 @@ use Google\Service\ShoppingContent\SettlementtransactionsListResponse;
  *   $settlementtransactions = $contentService->settlementtransactions;
  *  </code>
  */
-class Settlementtransactions extends \Google\Service\Resource
+class Settlementtransactions extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Retrieves a list of transactions for the settlement.

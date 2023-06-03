@@ -15,10 +15,10 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\CollectionStatus;
-use Google\Service\ShoppingContent\ListCollectionStatusesResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\CollectionStatus;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ListCollectionStatusesResponse;
 
 /**
  * The "collectionstatuses" collection of methods.
@@ -28,7 +28,7 @@ use Google\Service\ShoppingContent\ListCollectionStatusesResponse;
  *   $collectionstatuses = $contentService->collectionstatuses;
  *  </code>
  */
-class Collectionstatuses extends \Google\Service\Resource
+class Collectionstatuses extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Gets the status of a collection from your Merchant Center account.
