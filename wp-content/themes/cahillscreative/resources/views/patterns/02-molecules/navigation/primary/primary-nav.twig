@@ -2,7 +2,7 @@
 
 {% if primary_nav.name == "Primary Navigation" %}
   <nav role="navigation" class="{{ bem_classes(base_class, primary_nav.element, primary_nav.modifiers, primary_nav.extra) }}">
-    <div class="{{ bem_classes(base_class, 'menu-toggle') }} js-toggle" data-toggled="body" data-prefix="primary-nav" aria-label="Menu">
+    <div class="{{ bem_classes(base_class, 'menu-toggle') }} js-toggle" data-toggled="body" data-prefix="primary-nav" aria-label="Menu" role="button">
       <span></span>
       <span></span>
     </div>
