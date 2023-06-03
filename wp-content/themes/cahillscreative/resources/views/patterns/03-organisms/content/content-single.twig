@@ -6,7 +6,7 @@
       "figure" : {
         "image": {
           "output_tag": true,
-          "src": Image(post.hero_image).src|resize(1200),
+          "src": Image(post.hero_image).src|towebp|resize(1200),
           "alt": Image(post.hero_image).alt,
           "caption": Image(post.hero_image).caption
         }
