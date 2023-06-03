@@ -152,7 +152,18 @@ function wpforms_new_form() { // phpcs:ignore Generic.Metrics.CyclomaticComplexi
 		);
 	}
 
-	$title_exists = get_page_by_title( $form_title, 'OBJECT', 'wpforms' );
+	$title_query  = new WP_Query(
+		[
+			'post_type'              => 'wpforms',
+			'title'                  => $form_title,
+			'posts_per_page'         => 1,
+			'fields'                 => 'ids',
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+			'no_found_rows'          => true,
+		]
+	);
+	$title_exists = $title_query->post_count > 0;
 	$form_id      = wpforms()->get( 'form' )->add(
 		$form_title,
 		[],
@@ -161,7 +172,7 @@ function wpforms_new_form() { // phpcs:ignore Generic.Metrics.CyclomaticComplexi
 		]
 	);
 
-	if ( $title_exists !== null ) {
+	if ( $title_exists ) {
 
 		// Skip creating a revision for this action.
 		remove_action( 'post_updated', 'wp_save_post_revision' );
@@ -349,16 +360,16 @@ function wpforms_builder_dynamic_choices() {
 
 	// Fetch the option row HTML to be returned to the builder.
 	$field      = new WPForms_Field_Select( false );
-	$field_args = array(
+	$field_args = [
 		'id'              => $id,
 		'dynamic_choices' => $type,
-	);
-	$option_row = $field->field_option( 'dynamic_choices_source', $field_args, array(), false );
+	];
+	$option_row = $field->field_option( 'dynamic_choices_source', $field_args, [], false );
 
 	wp_send_json_success(
-		array(
+		[
 			'markup' => $option_row,
-		)
+		]
 	);
 }
 
@@ -487,9 +498,9 @@ function wpforms_verify_ssl() {
 	// Check for permissions.
 	if ( ! wpforms_current_user_can() ) {
 		wp_send_json_error(
-			array(
+			[
 				'msg' => esc_html__( 'You do not have permission to perform this operation.', 'wpforms-lite' ),
-			)
+			]
 		);
 	}
 
@@ -497,17 +508,17 @@ function wpforms_verify_ssl() {
 
 	if ( 200 === wp_remote_retrieve_response_code( $response ) ) {
 		wp_send_json_success(
-			array(
+			[
 				'msg' => esc_html__( 'Success! Your server can make SSL connections.', 'wpforms-lite' ),
-			)
+			]
 		);
 	}
 
 	wp_send_json_error(
-		array(
+		[
 			'msg'   => esc_html__( 'There was an error and the connection failed. Please contact your web host with the technical details below.', 'wpforms-lite' ),
 			'debug' => '<pre>' . print_r( map_deep( $response, 'wp_strip_all_tags' ), true ) . '</pre>',
-		)
+		]
 	);
 }
 add_action( 'wp_ajax_wpforms_verify_ssl', 'wpforms_verify_ssl' );

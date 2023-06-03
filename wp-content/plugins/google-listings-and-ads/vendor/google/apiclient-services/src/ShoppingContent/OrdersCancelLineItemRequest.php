@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class OrdersCancelLineItemRequest extends \Google\Model
+class OrdersCancelLineItemRequest extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   /**
    * @var string

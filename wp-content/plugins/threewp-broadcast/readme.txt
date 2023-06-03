@@ -4,9 +4,9 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 7.4
-Stable tag: 49.05
+Stable tag: 50
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
-Tested up to: 6.1
+Tested up to: 6.2
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -368,6 +368,20 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 50 20230407 =
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/skip-if-unlinked/">Skip If Unlinked</a>: Do not broadcast to blogs that have an existing, unlinked post.
+* Code: Add API support for finding equivalent image IDs on blogs. See the api() get_equivalent_image_id() and get_equivalent_image_ids() functions./
+
+= 49.07	20230325 =
+
+* Code: SDK update for PHP 8.1 compatibility.  No other changes.
+
+= 49.06	20230303 =
+
+* New: Custom post type inclusion and exclusion lists added. Thanks to @jblifestyles from @hivedigital.
+* Code: Add Gutenberg helper functions.
 
 = 49.05	20230210 =
 

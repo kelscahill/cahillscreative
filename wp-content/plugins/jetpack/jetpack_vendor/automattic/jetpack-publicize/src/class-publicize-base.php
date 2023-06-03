@@ -217,6 +217,7 @@ abstract class Publicize_Base {
 
 		// Default checkbox state for each Connection.
 		add_filter( 'publicize_checkbox_default', array( $this, 'publicize_checkbox_default' ), 10, 2 );
+		add_filter( 'jetpack_open_graph_tags', array( $this, 'get_sig_image_for_post' ), 10, 1 );
 
 		// Alter the "Post Publish" admin notice to mention the Connections we Publicized to.
 		add_filter( 'post_updated_messages', array( $this, 'update_published_message' ), 20, 1 );
@@ -1060,13 +1061,18 @@ abstract class Publicize_Base {
 			'type'          => 'object',
 			'description'   => __( 'Post options related to Jetpack Social.', 'jetpack-publicize-pkg' ),
 			'single'        => true,
-			'default'       => array(),
+			'default'       => array(
+				'image_generator_settings' => array(
+					'template' => ( new Social_Image_Generator\Settings() )->get_default_template(),
+					'enabled'  => false,
+				),
+			),
 			'show_in_rest'  => array(
 				'name'   => 'jetpack_social_options',
 				'schema' => array(
 					'type'       => 'object',
 					'properties' => array(
-						'attached_media' => array(
+						'attached_media'           => array(
 							'type'  => 'array',
 							'items' => array(
 								'type'       => 'object',
@@ -1077,6 +1083,29 @@ abstract class Publicize_Base {
 									'url' => array(
 										'type' => 'string',
 									),
+								),
+							),
+						),
+						'image_generator_settings' => array(
+							'type'       => 'object',
+							'properties' => array(
+								'enabled'     => array(
+									'type' => 'boolean',
+								),
+								'custom_text' => array(
+									'type' => 'string',
+								),
+								'image_type'  => array(
+									'type' => 'string',
+								),
+								'image_id'    => array(
+									'type' => 'number',
+								),
+								'template'    => array(
+									'type' => 'string',
+								),
+								'token'       => array(
+									'type' => 'string',
 								),
 							),
 						),
@@ -1458,6 +1487,26 @@ abstract class Publicize_Base {
 	}
 
 	/**
+	 * Adds the sig image to the meta tags array.
+	 *
+	 * @param array $tags Current tags.
+	 */
+	public function get_sig_image_for_post( $tags ) {
+		$generated_image_url = Social_Image_Generator\get_image_url( get_the_ID() );
+		if ( ! empty( $generated_image_url ) ) {
+			$tags = array_merge(
+				$tags,
+				array(
+					'og:image'        => $generated_image_url,
+					'og:image:width'  => 1200,
+					'og:image:height' => 630,
+				)
+			);
+		}
+		return $tags;
+	}
+
+	/**
 	 * Util
 	 */
 
@@ -1565,6 +1614,15 @@ abstract class Publicize_Base {
 		}
 
 		return ! empty( $data['is_enhanced_publishing_enabled'] );
+	}
+
+	/**
+	 * Check if the social image generator is enabled.
+	 *
+	 * @return bool
+	 */
+	public function has_social_image_generator_feature() {
+		return Current_Plan::supports( 'social-image-generator' );
 	}
 
 	/**

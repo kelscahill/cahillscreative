@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\Account;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Account;
 
 /**
  * The "accountsbyexternalsellerid" collection of methods.
@@ -27,7 +27,7 @@ use Google\Service\ShoppingContent\Account;
  *   $accountsbyexternalsellerid = $contentService->accountsbyexternalsellerid;
  *  </code>
  */
-class Accountsbyexternalsellerid extends \Google\Service\Resource
+class Accountsbyexternalsellerid extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Gets data of the account with the specified external_seller_id belonging to

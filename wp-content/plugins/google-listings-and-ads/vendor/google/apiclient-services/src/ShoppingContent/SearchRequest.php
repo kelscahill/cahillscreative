@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class SearchRequest extends \Google\Model
+class SearchRequest extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   /**
    * @var int

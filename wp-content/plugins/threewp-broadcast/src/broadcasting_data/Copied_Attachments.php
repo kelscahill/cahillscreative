@@ -68,10 +68,7 @@ class Copied_Attachments
 	**/
 	public function get( $old_attachment_id, $default = null )
 	{
-		$items = $this->data()->collection( get_current_blog_id() );
-		if ( ! $items->has( $old_attachment_id ) )
-			return false;
-		return $items->get( $old_attachment_id )->new->ID;
+		return $this->get_attachment_id_on_blog( $old_attachment_id, get_current_blog_id() );
 	}
 
 	/**
@@ -84,6 +81,18 @@ class Copied_Attachments
 		if ( ! $items->has( $old_attachment_id ) )
 			return false;
 		return $items->get( $old_attachment_id )->new;
+	}
+
+	/**
+		@brief		Return the ID of this "old" attachment ID on this specified blog.
+		@since		2023-04-04 10:29:42
+	**/
+	public function get_attachment_id_on_blog( $old_attachment_id, $blog_id )
+	{
+		$items = $this->data()->collection( $blog_id );
+		if ( ! $items->has( $old_attachment_id ) )
+			return false;
+		return $items->get( $old_attachment_id )->new->ID;
 	}
 
 	/**

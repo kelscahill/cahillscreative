@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-namespace Google\Service;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service;
 
-use Google\Exception as GoogleException;
-use Google\Http\MediaFileUpload;
-use Google\Model;
-use Google\Utils\UriTemplate;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Exception as GoogleException;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Http\MediaFileUpload;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Utils\UriTemplate;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7\Request;
 
 /**
@@ -203,7 +203,7 @@ class Resource
         $request = new Request(
             $method['httpMethod'],
             $url,
-            ['content-type' => 'application/json'],
+            $postBody ? ['content-type' => 'application/json'] : [],
             $postBody ? json_encode($postBody) : ''
         );
 

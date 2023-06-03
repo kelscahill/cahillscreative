@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class RepricingRuleRestriction extends \Google\Model
+class RepricingRuleRestriction extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   protected $floorType = RepricingRuleRestrictionBoundary::class;
   protected $floorDataType = '';

@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class TestOrderPickupDetailsPickupPerson extends \Google\Model
+class TestOrderPickupDetailsPickupPerson extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   /**
    * @var string

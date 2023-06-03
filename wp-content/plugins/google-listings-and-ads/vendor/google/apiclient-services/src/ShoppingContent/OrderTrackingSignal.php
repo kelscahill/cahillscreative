@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class OrderTrackingSignal extends \Google\Collection
+class OrderTrackingSignal extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Collection
 {
   protected $collection_key = 'shippingInfo';
   protected $customerShippingFeeType = PriceAmount::class;

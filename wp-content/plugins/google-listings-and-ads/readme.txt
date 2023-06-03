@@ -2,9 +2,10 @@
 Contributors: automattic, google, woocommerce
 Tags: woocommerce, google, listings, ads
 Requires at least: 5.9
-Tested up to: 6.1
+Tested up to: 6.2
 Requires PHP: 7.4
-Stable tag: 2.3.8
+Requires PHP Architecture: 64 Bits
+Stable tag: 2.4.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -56,6 +57,7 @@ Create a new Google Ads account through Google Listings & Ads and a promotional 
 * WordPress 5.9 or greater
 * WooCommerce 6.9 or greater
 * PHP version 7.4 or greater
+* PHP Architecture 64 bits
 * MySQL version 5.6 or greater
 
 Visit the [WooCommerce server requirements documentation](https://docs.woocommerce.com/document/server-requirements/) for a detailed list of server requirements.
@@ -109,15 +111,17 @@ Yes, you can run both at the same time, and we recommend it! In the US, advertis
 
 == Changelog ==
 
-= 2.3.8 - 2023-01-24 =
-* Fix - Product feed table footer rendering a zero when there are no products.
+= 2.4.6 - 2023-05-30 =
+* Add - Filters for manually mapping product IDs.
+* Tweak - Adjust the MCM filter to always show in channels.
 
-= 2.3.7 - 2023-01-17 =
-* Tweak - Pre-select a default MC account.
+= 2.4.5 - 2023-05-09 =
+* Fix - Bug in Attribute Mapping with Taxonomy based rules not being applied in variations.
+* Fix - Missing spaces between the card layouts on the Get Started page.
+* Tweak - WC 7.7 compatibility.
 
-= 2.3.6 - 2023-01-10 =
-* Dev - Use extracted Button component from @wordpress/components package.
-* Fix - i18n for "View Reports" button.
-* Tweak - WooCommerce 7.3 Compatibility with Customer Effort Score prompt.
+= 2.4.4 - 2023-05-02 =
+* Dev - Fix SEMGREP warnings.
+* Fix - Prefix Psr\Container package to prevent conflicts with other plugins.
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/google-listings-and-ads/trunk/changelog.txt).

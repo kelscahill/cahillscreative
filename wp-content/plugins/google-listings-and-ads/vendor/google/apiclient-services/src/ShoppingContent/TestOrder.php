@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class TestOrder extends \Google\Collection
+class TestOrder extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Collection
 {
   protected $collection_key = 'promotions';
   protected $deliveryDetailsType = TestOrderDeliveryDetails::class;

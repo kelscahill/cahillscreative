@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class RepricingRuleEffectiveTimeFixedTimePeriod extends \Google\Model
+class RepricingRuleEffectiveTimeFixedTimePeriod extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   /**
    * @var string

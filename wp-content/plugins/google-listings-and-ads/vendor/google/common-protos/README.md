@@ -4,6 +4,8 @@
 
 ![Build Status](https://github.com/googleapis/common-protos-php/actions/workflows/tests.yml/badge.svg)
 
+- [Documentation](https://googleapis.github.io/common-protos-php)
+
 This repository is a home for the [protocol buffer][protobuf] types which are
 common dependencies throughout the Google API ecosystem, generated for PHP.
 The protobuf definitions for these generated PHP classes are provided in the
@@ -22,7 +24,7 @@ In order to depend on these classes, add the following line to your
 composer.json file in the `requires` section:
 
 ```
-  "google/common-protos": "^1.0"
+  "google/common-protos": "^2.0"
 ```
 
 Or else use composer from the command line:

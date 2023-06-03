@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class Headers extends \Google\Collection
+class Headers extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Collection
 {
   protected $collection_key = 'weights';
   protected $locationsType = LocationIdSet::class;

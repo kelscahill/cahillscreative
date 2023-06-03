@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class ECommercePlatformLinkInfo extends \Google\Model
+class ECommercePlatformLinkInfo extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   /**
    * @var string

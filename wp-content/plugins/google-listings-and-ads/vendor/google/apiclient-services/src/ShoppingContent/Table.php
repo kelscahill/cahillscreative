@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class Table extends \Google\Collection
+class Table extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Collection
 {
   protected $collection_key = 'rows';
   protected $columnHeadersType = Headers::class;

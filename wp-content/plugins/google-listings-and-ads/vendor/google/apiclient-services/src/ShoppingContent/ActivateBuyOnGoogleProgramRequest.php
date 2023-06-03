@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class ActivateBuyOnGoogleProgramRequest extends \Google\Model
+class ActivateBuyOnGoogleProgramRequest extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
 }
 

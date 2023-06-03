@@ -15,13 +15,13 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\Datafeed;
-use Google\Service\ShoppingContent\DatafeedsCustomBatchRequest;
-use Google\Service\ShoppingContent\DatafeedsCustomBatchResponse;
-use Google\Service\ShoppingContent\DatafeedsFetchNowResponse;
-use Google\Service\ShoppingContent\DatafeedsListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Datafeed;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\DatafeedsCustomBatchRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\DatafeedsCustomBatchResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\DatafeedsFetchNowResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\DatafeedsListResponse;
 
 /**
  * The "datafeeds" collection of methods.
@@ -31,7 +31,7 @@ use Google\Service\ShoppingContent\DatafeedsListResponse;
  *   $datafeeds = $contentService->datafeeds;
  *  </code>
  */
-class Datafeeds extends \Google\Service\Resource
+class Datafeeds extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Deletes, fetches, gets, inserts and updates multiple datafeeds in a single

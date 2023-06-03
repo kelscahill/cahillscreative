@@ -1,6 +1,6 @@
 <?php
 
-namespace Google;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google;
 
 /**
  * Extension to the regular Google\Model that automatically

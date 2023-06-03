@@ -1,5 +1,6 @@
 'use strict';
-( function() {
+
+( function( $ ) {
 
 	/**
 	 * All connections are slow by default.
@@ -160,8 +161,14 @@
 
 		var $form    = jQuery( dz.element ).closest( 'form' ),
 			$btn     = $form.find( '.wpforms-submit' ),
+			$btnNext = $form.find( '.wpforms-page-next:visible' ),
 			handler  = toggleLoadingMessage( $form ),
 			disabled = uploadInProgress( dz );
+
+		// For multi-pages layout.
+		if ( $form.find( '.wpforms-page-indicator' ).length !== 0 && $btnNext.length !== 0 ) {
+			$btn = $btnNext;
+		}
 
 		if ( disabled === Boolean( $btn.prop( 'disabled' ) ) ) {
 			return;
@@ -169,7 +176,7 @@
 
 		if ( disabled ) {
 			$btn.prop( 'disabled', true );
-			if ( ! $form.find( '.wpforms-submit-overlay' ).length ) {
+			if ( ! $form.find( '.wpforms-submit-overlay' ).length && $btn.attr( 'type' ) === 'submit' ) {
 				$btn.parent().addClass( 'wpforms-submit-overlay-container' );
 				$btn.parent().append( '<div class="wpforms-submit-overlay"></div>' );
 				$form.find( '.wpforms-submit-overlay' ).css( {
@@ -625,6 +632,7 @@
 				var errorMessage = window.wpforms_file_upload.errors.file_not_uploaded + ' ' + window.wpforms_file_upload.errors.default_error;
 
 				file.previewElement.classList.add( 'dz-processing', 'dz-error', 'dz-complete' );
+				file.previewElement.closest( '.wpforms-field' ).classList.add( 'wpforms-has-error' );
 				addErrorMessage( file, errorMessage );
 			}
 
@@ -855,13 +863,80 @@
 	}
 
 	/**
+	 * Hidden Dropzone input focus event handler.
+	 *
+	 * @since 1.8.1
+	 */
+	function dropzoneInputFocus() {
+
+		$( this ).prev( '.wpforms-uploader' ).addClass( 'wpforms-focus' );
+	}
+
+	/**
+	 * Hidden Dropzone input blur event handler.
+	 *
+	 * @since 1.8.1
+	 */
+	function dropzoneInputBlur() {
+
+		$( this ).prev( '.wpforms-uploader' ).removeClass( 'wpforms-focus' );
+	}
+
+	/**
+	 * Hidden Dropzone input blur event handler.
+	 *
+	 * @since 1.8.1
+	 *
+	 * @param {object} e Event object.
+	 */
+	function dropzoneInputKeypress( e ) {
+
+		e.preventDefault();
+
+		if ( e.keyCode !== 13 ) {
+			return;
+		}
+
+		$( this ).prev( '.wpforms-uploader' ).trigger( 'click' );
+	}
+
+	/**
+	 * Hidden Dropzone input blur event handler.
+	 *
+	 * @since 1.8.1
+	 */
+	function dropzoneClick() {
+
+		$( this ).next( '.dropzone-input' ).trigger( 'focus' );
+	}
+
+	/**
+	 * Events.
+	 *
+	 * @since 1.8.1
+	 */
+	function events() {
+
+		$( '.dropzone-input' )
+			.on( 'focus', dropzoneInputFocus )
+			.on( 'blur', dropzoneInputBlur )
+			.on( 'keypress', dropzoneInputKeypress );
+
+		$( '.wpforms-uploader' )
+			.on( 'click', dropzoneClick );
+	}
+
+	/**
 	 * DOMContentLoaded handler.
 	 *
 	 * @since 1.5.6
 	 */
 	function ready() {
+
 		window.wpforms = window.wpforms || {};
 		window.wpforms.dropzones = [].slice.call( document.querySelectorAll( '.wpforms-uploader' ) ).map( dropZoneInit );
+
+		events();
 	}
 
 	/**
@@ -889,4 +964,5 @@
 	// Call init and save in global variable.
 	wpformsModernFileUpload.init();
 	window.wpformsModernFileUpload = wpformsModernFileUpload;
-}() );
+
+}( jQuery ) );

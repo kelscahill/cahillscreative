@@ -3,7 +3,7 @@
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\League\Container;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\League\Container\Exception\ContainerException;
-use Psr\Container\ContainerInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Container\ContainerInterface;
 
 trait ContainerAwareTrait
 {

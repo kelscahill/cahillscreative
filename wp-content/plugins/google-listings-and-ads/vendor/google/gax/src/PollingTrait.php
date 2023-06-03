@@ -32,6 +32,9 @@
 
 namespace Google\ApiCore;
 
+/**
+ * @internal
+ */
 trait PollingTrait
 {
     /**
@@ -65,7 +68,7 @@ trait PollingTrait
             if ($pollCallable()) {
                 return true;
             }
-            $currentPollDelayMillis = min([
+            $currentPollDelayMillis = (int) min([
                 $currentPollDelayMillis * $pollDelayMultiplier,
                 $maxPollDelayMillis
             ]);
@@ -87,7 +90,7 @@ trait PollingTrait
      *
      * @param int $millis
      */
-    protected function sleepMillis($millis)
+    protected function sleepMillis(int $millis)
     {
         usleep($millis * 1000);
     }

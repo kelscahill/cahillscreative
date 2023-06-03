@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class OrderTrackingSignalShippingInfo extends \Google\Model
+class OrderTrackingSignalShippingInfo extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   protected $actualDeliveryTimeType = DateTime::class;
   protected $actualDeliveryTimeDataType = '';

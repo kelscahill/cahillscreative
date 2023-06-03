@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Psr\Container;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Container;
 
 /**
  * Describes the interface of a container that exposes methods to read its entries.

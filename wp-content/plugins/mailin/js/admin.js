@@ -1,4 +1,5 @@
 var $jQ = jQuery.noConflict();
+var ajax_sib_object;
 var CountryList = {
     213: "DZ",
     376: "AD",

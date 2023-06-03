@@ -2,9 +2,9 @@
 Contributors: automattic, pinterest, woocommerce
 Tags: woocommerce, pinterest, advertise
 Requires at least: 5.6
-Tested up to: 6.1
+Tested up to: 6.2
 Requires PHP: 7.3
-Stable tag: 1.2.11
+Stable tag: 1.3.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -90,6 +90,51 @@ Yes you can! Join in on our [GitHub repository](https://github.com/woocommerce/p
 Release and roadmap notes available on the [WooCommerce Developers Blog](hhttps://developer.woocommerce.com/)
 
 == Changelog ==
+
+= 1.3.0 - 2023-05-30 =
+* Add - Integration with WooCommerce multichannel marketing dashboard.
+* Fix  -  Remove feed configuration during plugin uninstall procedure.
+* Fix - Connection flow not redirection the wizard view.
+
+= 1.2.21 - 2023-05-02 =
+* Tweak - WC 7.7 compatibility.
+
+= 1.2.20 - 2023-04-26 =
+* Fix - Unescaped `add_query_arg` function calls.
+
+= 1.2.19 - 2023-04-18 =
+* Fix - Escape product name for JS tracker.
+* Fix - On backorder items missing from the feed.
+* Fix - When a new feed configuration is created it should be updated in the pinterest.com config.
+
+= 1.2.18 - 2023-04-11 =
+* Add - Automatic enhanced match support.
+* Add - Support to sync setting changes from Pinterest to the plugin.
+* Fix - Fatal error if cart is not set.
+
+= 1.2.17 - 2023-04-05 =
+* Add - Enhanced match documentation link.
+* Tweak - WC 7.6 compatibility.
+* Update - Merchant disapproval reasons.
+
+= 1.2.16 - 2023-03-21 =
+* Fix - Undefined variable when caching API requests.
+
+= 1.2.15 - 2023-03-14 =
+* Tweak - WC 7.5 compatibility.
+* Tweak - WP 6.2 compatibility.
+
+= 1.2.14 - 2023-03-07 =
+* Fix - Add retry mechanism for the feed generation.
+
+= 1.2.13 - 2023-02-22 =
+* Add - WordPress locale to Pinterest locale mapping.
+* Fix - Prevent fatal error if retrieving account fails during onboarding.
+* Fix - Prevent multiple active feed files.
+* Fix - Price inconsistencies when tax region is different than shipping zone.
+
+= 1.2.12 - 2023-02-14 =
+* Dev - Remove deprecated argument call from inside a hook action handler function.
 
 = 1.2.11 - 2023-02-07 =
 * Dev - Fix deprecated method argument version.

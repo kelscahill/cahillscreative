@@ -15,16 +15,16 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\MerchantOrderReturn;
-use Google\Service\ShoppingContent\OrderreturnsAcknowledgeRequest;
-use Google\Service\ShoppingContent\OrderreturnsAcknowledgeResponse;
-use Google\Service\ShoppingContent\OrderreturnsCreateOrderReturnRequest;
-use Google\Service\ShoppingContent\OrderreturnsCreateOrderReturnResponse;
-use Google\Service\ShoppingContent\OrderreturnsListResponse;
-use Google\Service\ShoppingContent\OrderreturnsProcessRequest;
-use Google\Service\ShoppingContent\OrderreturnsProcessResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\MerchantOrderReturn;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderreturnsAcknowledgeRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderreturnsAcknowledgeResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderreturnsCreateOrderReturnRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderreturnsCreateOrderReturnResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderreturnsListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderreturnsProcessRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderreturnsProcessResponse;
 
 /**
  * The "orderreturns" collection of methods.
@@ -34,7 +34,7 @@ use Google\Service\ShoppingContent\OrderreturnsProcessResponse;
  *   $orderreturns = $contentService->orderreturns;
  *  </code>
  */
-class Orderreturns extends \Google\Service\Resource
+class Orderreturns extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Acks an order return in your Merchant Center account.

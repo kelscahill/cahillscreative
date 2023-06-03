@@ -16,8 +16,11 @@
  */
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\HttpHandler;
 
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\BodySummarizer;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Client;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\ClientInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\HandlerStack;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Middleware;
 
 class HttpHandlerFactory
 {
@@ -30,13 +33,22 @@ class HttpHandlerFactory
      */
     public static function build(ClientInterface $client = null)
     {
-        $client = $client ?: new Client();
+        if (is_null($client)) {
+            $stack = null;
+            if (class_exists(BodySummarizer::class)) {
+                // double the # of characters before truncation by default
+                $bodySummarizer = new BodySummarizer(240);
+                $stack = HandlerStack::create();
+                $stack->remove('http_errors');
+                $stack->unshift(Middleware::httpErrors($bodySummarizer), 'http_errors');
+            }
+            $client = new Client(['handler' => $stack]);
+        }
 
         $version = null;
         if (defined('Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\ClientInterface::MAJOR_VERSION')) {
             $version = ClientInterface::MAJOR_VERSION;
         } elseif (defined('Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\ClientInterface::VERSION')) {
-            /** @phpstan-ignore-next-line */
             $version = (int) substr(ClientInterface::VERSION, 0, 1);
         }
 

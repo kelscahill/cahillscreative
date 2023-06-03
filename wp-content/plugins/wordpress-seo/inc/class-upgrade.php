@@ -85,6 +85,10 @@ class WPSEO_Upgrade {
 			'19.3-RC0'   => 'upgrade_193',
 			'19.6-RC0'   => 'upgrade_196',
 			'19.11-RC0'  => 'upgrade_1911',
+			'20.2-RC0'   => 'upgrade_202',
+			'20.5-RC0'   => 'upgrade_205',
+			'20.7-RC0'   => 'upgrade_207',
+			'20.8-RC0'   => 'upgrade_208',
 		];
 
 		array_walk( $routines, [ $this, 'run_upgrade_routine' ], $version );
@@ -964,6 +968,53 @@ class WPSEO_Upgrade {
 	}
 
 	/**
+	 * Performs the 20.2 upgrade routine.
+	 */
+	private function upgrade_202() {
+		if ( WPSEO_Options::get( 'disable-attachment', true ) ) {
+			$attachment_cleanup_helper = YoastSEO()->helpers->attachment_cleanup;
+
+			$attachment_cleanup_helper->remove_attachment_indexables( true );
+			$attachment_cleanup_helper->clean_attachment_links_from_target_indexable_ids( true );
+		}
+
+		$this->clean_unindexed_indexable_rows_with_no_object_id();
+
+		if ( ! \wp_next_scheduled( Cleanup_Integration::START_HOOK ) ) {
+			// This schedules the cleanup routine cron again, since in combination of premium cleans up the prominent words table. We also want to cleanup possible orphaned hierarchies from the above cleanups.
+			\wp_schedule_single_event( ( time() + ( MINUTE_IN_SECONDS * 5 ) ), Cleanup_Integration::START_HOOK );
+		}
+	}
+
+	/**
+	 * Performs the 20.5 upgrade routine.
+	 */
+	private function upgrade_205() {
+		if ( ! \wp_next_scheduled( Cleanup_Integration::START_HOOK ) ) {
+			\wp_schedule_single_event( ( time() + ( MINUTE_IN_SECONDS * 5 ) ), Cleanup_Integration::START_HOOK );
+		}
+	}
+
+	/**
+	 * Performs the 20.7 upgrade routine.
+	 * Removes the metadata related to the settings page introduction modal for all the users.
+	 * Also, schedules another cleanup scheduled action.
+	 */
+	private function upgrade_207() {
+		add_action( 'shutdown', [ $this, 'delete_user_introduction_meta' ] );
+	}
+
+	/**
+	 * Performs the 20.8 upgrade routine.
+	 * Schedules another cleanup scheduled action.
+	 */
+	private function upgrade_208() {
+		if ( ! \wp_next_scheduled( Cleanup_Integration::START_HOOK ) ) {
+			\wp_schedule_single_event( ( time() + ( MINUTE_IN_SECONDS * 5 ) ), Cleanup_Integration::START_HOOK );
+		}
+	}
+
+	/**
 	 * Sets the home_url option for the 15.1 upgrade routine.
 	 *
 	 * @return void
@@ -1507,6 +1558,34 @@ class WPSEO_Upgrade {
 	}
 
 	/**
+	 * Cleans up "unindexed" indexable rows when appropriate, aka when there's no object ID even though it should.
+	 *
+	 * @return void
+	 */
+	private function clean_unindexed_indexable_rows_with_no_object_id() {
+		global $wpdb;
+
+		// If migrations haven't been completed successfully the following may give false errors. So suppress them.
+		$show_errors       = $wpdb->show_errors;
+		$wpdb->show_errors = false;
+
+		$indexable_table = Model::get_table_name( 'Indexable' );
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Reason: No user input, just a table name.
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery -- Reason: Most performant way.
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: No relevant caches.
+		$delete_query = $wpdb->query(
+			"DELETE FROM $indexable_table
+			WHERE post_status = 'unindexed'
+			AND object_type NOT IN ( 'home-page', 'date-archive', 'post-type-archive', 'system-page' )
+			AND object_id IS NULL"
+		);
+		// phpcs:enable
+
+		$wpdb->show_errors = $show_errors;
+	}
+
+	/**
 	 * Removes all user indexable rows when the author archive is disabled.
 	 *
 	 * @return void
@@ -1574,5 +1653,14 @@ class WPSEO_Upgrade {
 			array_merge( array_values( $object_ids ), array_values( $newest_indexable_ids ), [ $object_type ] )
 		);
 		// phpcs:enable
+	}
+
+	/**
+	 * Removes the settings' introduction modal data for users.
+	 *
+	 * @return void
+	 */
+	public function delete_user_introduction_meta() {
+		delete_metadata( 'user', 0, '_yoast_settings_introduction', '', true );
 	}
 }

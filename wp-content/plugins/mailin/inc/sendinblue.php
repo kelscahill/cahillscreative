@@ -10,7 +10,7 @@ class Sendinblue
 		if (!function_exists('curl_init')) {
 			throw new Exception('Sendinblue requires CURL module');
 		}
-		$this->base_url = 'https://in-automate.sendinblue.com/p';
+		$this->base_url = 'https://in-automate.brevo.com/p';
 		$this->api_key = $api_key;
 		//create a session cookie
 		if (!array_key_exists('session_id', $_COOKIE)) {

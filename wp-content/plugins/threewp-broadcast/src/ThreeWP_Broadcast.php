@@ -563,28 +563,65 @@ class ThreeWP_Broadcast
 	**/
 	public function wp_head()
 	{
-		// Only override the canonical if we're looking at a single post.
-		$override = false;
-		$override |= is_single();
-		$override |= is_page();
-		$override = apply_filters( 'broadcast_override_canonical_url', $override );
-		if ( ! $override )
-			return;
+        $post_type = get_post_type();
 
-		global $post;
-		global $blog_id;
+        // Make sure post type isn't skipped
+        $canonical_skip_post_types = $this->get_site_option( 'canonical_skip_post_types' );
+        $canonical_skipped_post_types = explode( ' ', $canonical_skip_post_types );
+        if ( in_array( $post_type, $canonical_skipped_post_types ) )
+        {
+        	if ( $this->debugging() )
+        		echo sprintf ("<!-- Broadcast SEO settings are configured to skip this post type: $post_type. --> \n", $post_type );
+            return;
+        }
 
-		// Find the parent, if any.
-		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
-		$linked_parent = $broadcast_data->get_linked_parent();
-		if ( $linked_parent === false)
-			return;
+        // A linked parent is required for the replacement canonical.
+        global $blog_id;
+        global $post;
+        $broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
+        $linked_parent = $broadcast_data->get_linked_parent();
+        if ( $linked_parent === false)
+        {
+        	if ( $this->debugging() )
+        		echo sprintf ("<!-- Broadcast could not find a linked parent for the canonical. --> \n");
+            return;
+        }
+
+        // Check if post types are limited
+        $canonical_limit_post_types = $this->get_site_option( 'canonical_limit_post_types' );
+        $canonical_limited_post_types = explode( ' ', $canonical_limit_post_types );
+
+        // If post type limit is not defined, we can update any single post type or page.
+        // If defined, post type must be in approved list.
+        if ( $canonical_limit_post_types == '' || in_array( $post_type, $canonical_limited_post_types ) )
+        {
+			$override = false;
+			$override |= is_single();
+			$override |= is_page();
+			$override = apply_filters( 'broadcast_override_canonical_url', $override );
+
+            // If this is an archive page, then exit
+            if ( ! $override )
+            {
+            	if ( $this->debugging() )
+	                echo sprintf ( "<!-- Broadcast is not replacing the canonical after the broadcast_override_canonical_url filter. -->\n" );
+                return;
+            }
+        }
+        // This post type wasn't on the list
+        else
+        {
+            if ( $this->debugging() )
+            	echo sprintf ("<!-- Broadcast SEO settings limit post types to $canonical_limit_post_types which does not include $post_type. -->\n");
+            return;
+        }
 
 		// Post has a parent. Get the parent's permalink.
 		switch_to_blog( $linked_parent[ 'blog_id' ] );
 		$url = get_permalink( $linked_parent[ 'post_id' ] );
 		restore_current_blog();
 
+		// Set the parent's permalink as the canonical
 		$action = $this->new_action( 'canonical_url' );
 		$action->post = $post;
 		$action->url = $url;
@@ -594,7 +631,11 @@ class ThreeWP_Broadcast
 			return;
 
 		if ( $action->html_tag )
+		{
+            if ( $this->debugging() )
+            	echo sprintf ("<!-- Broadcast canonical -->\n");
 			echo sprintf( $action->html_tag, $action->url );
+		}
 
 		if ( $action->disable_rel_canonical )
 			// Prevent Wordpress from outputting its own canonical.

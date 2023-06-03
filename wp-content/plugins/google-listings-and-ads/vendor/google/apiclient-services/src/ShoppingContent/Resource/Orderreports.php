@@ -15,10 +15,10 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\OrderreportsListDisbursementsResponse;
-use Google\Service\ShoppingContent\OrderreportsListTransactionsResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderreportsListDisbursementsResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderreportsListTransactionsResponse;
 
 /**
  * The "orderreports" collection of methods.
@@ -28,7 +28,7 @@ use Google\Service\ShoppingContent\OrderreportsListTransactionsResponse;
  *   $orderreports = $contentService->orderreports;
  *  </code>
  */
-class Orderreports extends \Google\Service\Resource
+class Orderreports extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Retrieves a report for disbursements from your Merchant Center account.

@@ -10,18 +10,18 @@ namespace SendinblueWoocommerce\Clients;
  */
 class SendinblueClient
 {
-    public const INTEGRATION_URL                        = 'https://app.sendinblue.com/integrations/';
+    public const INTEGRATION_URL                        = 'https://app.brevo.com/integrations/';
 	public const CONNECT_URL                            = 'connect/WC/';
 	public const SETTINGS_URL                           = '/settings';
-	public const SMS_CAMPAIGN_URL                       = 'https://my.sendinblue.com/camp/lists/sms';
-	public const SMS_CHAT_URL                           = 'https://account-app.sendinblue.com/account/apps/?utm_source=woocommerce_plugin&utm_medium=plugin&utm_campaign=module_link';
-	public const SMS_STATISTICS_URL                     = 'https://my.sendinblue.com/camp/lists/sms';
-	public const EMAIL_MARKETING_URL                    = 'https://my.sendinblue.com/dashboard';
-	public const DASHBOARD_URL                          = 'https://my.sendinblue.com/dashboard';
-	public const AUTOMATION_URL                         = 'https://automation.sendinblue.com/';
-	public const AUTOMATION_WORKFLOW_URL                = 'https://automation.sendinblue.com/app/workflow';
-	public const CHAT                                   = 'https://app.sendinblue.com/chat';
-	public const CONVERSATIONS_URL                      = 'https://conversations-app.sendinblue.com/';
+	public const SMS_CAMPAIGN_URL                       = 'https://my.brevo.com/camp/lists/sms';
+	public const SMS_CHAT_URL                           = 'https://account-app.brevo.com/account/apps/?utm_source=woocommerce_plugin&utm_medium=plugin&utm_campaign=module_link';
+	public const SMS_STATISTICS_URL                     = 'https://my.brevo.com/camp/lists/sms';
+	public const EMAIL_MARKETING_URL                    = 'https://my.brevo.com/dashboard';
+	public const DASHBOARD_URL                          = 'https://my.brevo.com/dashboard';
+	public const AUTOMATION_URL                         = 'https://automation.brevo.com/';
+	public const AUTOMATION_WORKFLOW_URL                = 'https://automation.brevo.com/app/workflow';
+	public const CHAT                                   = 'https://app.brevo.com/chat';
+	public const CONVERSATIONS_URL                      = 'https://conversations-app.brevo.com/';
 
 	public const DELETE_CONNECTION                      = '/app_uninstalled';
 	public const CONTACT_CREATED                        = '/contact_created';
@@ -73,7 +73,7 @@ class SendinblueClient
 	public const DISPLAY_OPT_IN_LABEL                   = "displayOptInLabel";
 	public const DISPLAY_OPT_IN_LOCATION                = "displayOptInLocation";
 
-	private const INTEGRATION_BACKEND_URL               = 'https://plugin.sendinblue.com/integrations/api';
+	private const INTEGRATION_BACKEND_URL               = 'https://plugin.brevo.com/integrations/api';
 	private const HTTP_METHOD_GET                       = 'GET';
 	private const HTTP_METHOD_POST                      = 'POST';
 	private const INTEGRATION_MIGRATION_URL             = '/migrate/woocommerce';

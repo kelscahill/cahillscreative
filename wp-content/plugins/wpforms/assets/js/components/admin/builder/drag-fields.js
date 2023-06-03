@@ -321,7 +321,7 @@ WPForms.Admin.Builder.DragFields = WPForms.Admin.Builder.DragFields || ( functio
 						return;
 					}
 
-					prevFieldId = $field.prev( '.wpforms-field' ).data( 'field-id' );
+					prevFieldId = $field.prev( '.wpforms-field, .wpforms-alert' ).data( 'field-id' );
 					$prevFieldOption = $( `#wpforms-field-option-${prevFieldId}` );
 
 					if ( $prevFieldOption.length > 0 ) {
@@ -483,7 +483,6 @@ WPForms.Admin.Builder.DragFields = WPForms.Admin.Builder.DragFields || ( functio
 						.append( WPFormsBuilder.settings.spinnerInline )
 						.css( 'width', '100%' );
 
-					el.$builder.find( '.wpforms-add-fields .wpforms-add-fields-button' ).prop( 'disabled', true );
 					el.$builder.find( '.no-fields-preview' ).remove();
 
 					WPFormsBuilder.fieldAdd(

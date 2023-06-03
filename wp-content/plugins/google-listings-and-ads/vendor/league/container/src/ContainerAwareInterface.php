@@ -2,7 +2,7 @@
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\League\Container;
 
-use Psr\Container\ContainerInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Container\ContainerInterface;
 
 interface ContainerAwareInterface
 {

@@ -39,6 +39,8 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\HttpHandler\H
 /**
  * A trait for shared functionality between transports that support only unary RPCs using simple
  * HTTP requests.
+ *
+ * @internal
  */
 trait HttpUnaryTransportTrait
 {

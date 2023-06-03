@@ -15,10 +15,10 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\SearchRequest;
-use Google\Service\ShoppingContent\SearchResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\SearchRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\SearchResponse;
 
 /**
  * The "reports" collection of methods.
@@ -28,7 +28,7 @@ use Google\Service\ShoppingContent\SearchResponse;
  *   $reports = $contentService->reports;
  *  </code>
  */
-class Reports extends \Google\Service\Resource
+class Reports extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Retrieves merchant performance mertrics matching the search query and

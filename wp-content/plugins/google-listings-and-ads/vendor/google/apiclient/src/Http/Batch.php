@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-namespace Google\Http;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Http;
 
-use Google\Client;
-use Google\Service\Exception as GoogleServiceException;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Client;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Exception as GoogleServiceException;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7\Request;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7\Response;

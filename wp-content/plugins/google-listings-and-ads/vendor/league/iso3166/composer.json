@@ -2,10 +2,10 @@
     "name": "league/iso3166",
     "description": "ISO 3166-1 PHP Library",
     "autoload": {
-        "psr-4": { "Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\League\\ISO3166\\": "src" }
+        "psr-4": { "League\\ISO3166\\": "src" }
     },
     "autoload-dev": {
-        "psr-4": { "Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\League\\ISO3166\\": "tests" }
+        "psr-4": { "League\\ISO3166\\": "tests" }
     },
     "require": {
         "php": "^7.3|^8.0"

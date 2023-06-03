@@ -15,13 +15,13 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\ActivateBuyOnGoogleProgramRequest;
-use Google\Service\ShoppingContent\BuyOnGoogleProgramStatus;
-use Google\Service\ShoppingContent\OnboardBuyOnGoogleProgramRequest;
-use Google\Service\ShoppingContent\PauseBuyOnGoogleProgramRequest;
-use Google\Service\ShoppingContent\RequestReviewBuyOnGoogleProgramRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ActivateBuyOnGoogleProgramRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\BuyOnGoogleProgramStatus;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OnboardBuyOnGoogleProgramRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\PauseBuyOnGoogleProgramRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\RequestReviewBuyOnGoogleProgramRequest;
 
 /**
  * The "buyongoogleprograms" collection of methods.
@@ -31,7 +31,7 @@ use Google\Service\ShoppingContent\RequestReviewBuyOnGoogleProgramRequest;
  *   $buyongoogleprograms = $contentService->buyongoogleprograms;
  *  </code>
  */
-class Buyongoogleprograms extends \Google\Service\Resource
+class Buyongoogleprograms extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Reactivates the BoG program in your Merchant Center account. Moves the

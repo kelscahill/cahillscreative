@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class Metrics extends \Google\Model
+class Metrics extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   public $aos;
   public $aovMicros;

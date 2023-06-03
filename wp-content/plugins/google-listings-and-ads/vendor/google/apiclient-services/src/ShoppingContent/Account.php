@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class Account extends \Google\Collection
+class Account extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Collection
 {
   protected $collection_key = 'youtubeChannelLinks';
   /**
@@ -38,6 +38,8 @@ class Account extends \Google\Collection
   public $automaticLabelIds;
   protected $businessInformationType = AccountBusinessInformation::class;
   protected $businessInformationDataType = '';
+  protected $conversionSettingsType = AccountConversionSettings::class;
+  protected $conversionSettingsDataType = '';
   /**
    * @var string
    */
@@ -156,6 +158,20 @@ class Account extends \Google\Collection
   public function getBusinessInformation()
   {
     return $this->businessInformation;
+  }
+  /**
+   * @param AccountConversionSettings
+   */
+  public function setConversionSettings(AccountConversionSettings $conversionSettings)
+  {
+    $this->conversionSettings = $conversionSettings;
+  }
+  /**
+   * @return AccountConversionSettings
+   */
+  public function getConversionSettings()
+  {
+    return $this->conversionSettings;
   }
   /**
    * @param string

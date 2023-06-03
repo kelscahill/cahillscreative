@@ -1,6 +1,134 @@
 # Changelog
 All notable changes to this project will be documented in this file and formatted via [this recommendation](https://keepachangelog.com/).
 
+## [1.8.2] - 2023-05-31
+### Added
+- Payment fields are now available for everyone.
+- Users can connect their Stripe accounts and receive payments via their payment forms.
+- It's now possible to print entries in bulk.
+- Non-admin users are now notified about uninstalled or not activated addons when certain form templates are selected.
+- New filters are added so it's possible to dynamically modify form data before export.
+- There are new thumbnails displayed in all places where you see the list of available form templates (Form Builder and Form Templates page).
+- Plugin cache files are handled in a more performant way.
+
+### Changed
+- The Entries Overview graph and table can now be filtered by custom timeline.
+- An outdated version of the Moment.js library was removed from the plugin, and we switched to using the one bundled in WordPress.
+- Preview labels for choices with HTML tags were improved.
+- Empty dynamic choices in the Form Builder, on the front end, and the Entry Edit page are now more visually appealing.
+
+### Fixed
+- There were situations when the `{user_ip}` smart tag was returning a server IP address instead of the actual user's IP address.
+- The Content field label was visible in the Conversational Forms mode.
+- An unnecessary database query was run on all admin dashboard pages.
+- The Modern Multiple Dropdown couldn't be closed by clicking on the arrow.
+- The "Save" button wasn't fully clickable on the WPForms > Settings admin page.
+- Some UI elements didn't look correctly on the Form Builder page for non-English languages.
+- Some fields were non-responsive on mobile when using the Legacy Layout Classes.
+- Cron event `wpforms_email_summaries_cron` was not removed upon plugin deactivation.
+- Multiple Choice conditional logic wasn't operating reliably if the field value was empty.
+- It was possible to add disabled fields to the form again in the Form Builder.
+- The form was not displayed on the front end when the WPForms block was added to block templates.
+
+## [1.8.1.3] - 2023-05-25
+### Changed
+- The Uncanny Automator logo is updated.
+
+### Fixed
+- Debug information (controlled by a constant) is now properly escaped before being displayed on a page.
+- Turnstile Captcha verification message overlapped the captcha when the captcha type was changed from Invisible to Managed.
+- Fatal error with AMP plugin.
+
+## [1.8.1.2] - 2023-04-12
+### Fixed
+- Checkboxes were shifting when the limit choices rule was triggered.
+- "Ask for a review" admin notice links improperly opened new tab.
+- Empty checkboxes and radio fields were not hidden when printing entries.
+- The Next button was not blocked when the File upload field triggered any error.
+- The message design has been adjusted for a valid license notification after upgrading to Pro with an invalid/expired license.
+- The "Unselected Choices" option worked incorrectly for Dynamic choices in the Entry Print functionality.
+- Rich text field was generating an error in a browser console during form submission on WordPress 5.2.
+- There was a fatal error when settings were incorrectly reset by a 3rd-party plugin.
+
+## [1.8.1.1] - 2023-03-30
+### Fixed
+- Limit Length functionality was broken in the Paragraph Text field.
+
+## [1.8.1] - 2023-03-28
+### Added
+- Modern Form Styles - easily control the appearance of form fields, labels, and buttons without writing code, right inside the Block Editor.
+- The new filter `wpforms_frontend_assets_header_force_load` allows forcing load assets in the header which is useful when the form is in the sidebar widget and similar locations.
+- The new filter `wpforms_entry_preview_get_start_page_break_id_force_first` allows showing all fields from the beginning of the form to the current entry preview page.
+
+### Changed
+- Tooltips design is improved.
+- Entry Print Settings design is revised to provide better UX.
+
+### Fixed
+- The form preview page was incorrectly shown in some themes.
+- CF turnstile form ID was translated creating problems with analysis in Cloudflare Dashboard.
+- Country list style was adjusted for the Phone field, specifically on dark themes.
+- Notifications Settings styles were looking bad on a small screen in the Form Builder.
+- An "active column" state was stuck for a duplicated Layout field inside the Form Builder preview panel.
+
+## [1.8.0.2] - 2023-02-28
+### Changed
+- Updated DOMPurify library to 3.0.1.
+
+### Fixed
+- An error occurred when the DreamHost Panel Login plugin and WPForms Lite were both active and WPForms Pro was activated.
+- Some dropdown fields in the Marketing settings area of the Form Builder were rendered incorrectly in Safari after making a selection.
+- Form template block in the Form Builder could overflow the container on smaller screen sizes.
+- Long links in the HTML email messages did not wrap and caused overflow issues.
+- Google reCAPTCHA v2 could not be reset on server-side validation failure.
+
+## [1.8.0.1] - 2023-02-15
+### Fixed
+- Invisible reCaptcha was incorrectly processed resulting in failed form submissions with a wrong error message.
+
+## [1.8.0] - 2023-02-14
+### Added
+- Prevent spam submissions using the new Cloudflare Turnstile anti-spam integration. You can find it on the Settings > CAPTCHA page.
+
+### Changed
+- Custom Captcha and Section Divider fields are now excluded from custom fields mapping in marketing addons.
+- Filter by country and filter by keyword error messages are now displayed above the Submit button.
+- Non-public taxonomies should not be displayed in Dynamic Choices' available sources.
+- The "Resend Notifications" link on the Entry page is disabled instead of being hidden if any addon blocks this functionality.
+- External usage of removed PHP classes is now handled gracefully without generating fatal errors.
+- Redundant Transaction IDs are not displayed for recurring subscription payments in the View Entry > Payment section.
+- The performance of the Email field validation is improved when using an allowlist or denylist.
+- Files uploaded through Modern File Upload and Rich Text fields to the Media Library now have attachment titles in the "Field label: Original file name" format.
+- State and Country subfields of the Address field now allow selecting the default value from the dropdown if it contains choices.
+- State and Country subfields of the Address field now allow unsetting the default value.
+- Updated DOMPurify library to 2.4.3.
+
+### Fixed
+- The Dropdown field text indentation was incorrect in the Form Builder in Firefox.
+- Various notification modals' titles had inconsistent sizes in the Form Builder.
+- Users without permission to view Entries should not see links for entry counts in the Dashboard widget.
+- The header column background did not fill the entire column height in the Compact view of the Entry print preview.
+- Validation errors in various modals were inconsistent in the Form Builder.
+- When duplicating an inactive field, the settings of the active field are now removed properly.
+- Malformed HTML in the Entry Preview Notice field could brake the Form Builder markup.
+- It was impossible to remove an expired license key after upgrading to WPForms Pro if it was initially set in WPForms Lite.
+- The expired, disabled and invalid license notices were shown twice after entering the key in the WPForms Lite, then installing and activating WPForms Pro.
+- The Page Break field was inserted in the incorrect position if the form contained a notice about a certain field being not available under the current license.
+- Some cache files were unnecessarily re-downloaded on the front end.
+- The Single Item field with a User Defined type could be submitted with a negative amount.
+- Prevent other plugins from adding custom buttons to the Content Field TinyMCE editor to prevent functionality breakage.
+- Images in the Rich Text field were ignoring alignment settings in the entry notification email.
+- Users with roles other than Administrator could not add the reCAPTCHA/hCaptcha field and dismiss notices even if they had sufficient permissions.
+- Number Slider field validation failed if a maximum value was not a multiple of steps.
+- Buttons inside of notices inside of 4-column layout fields were formatted incorrectly.
+- Max File Uploads could have been set to 0 or an empty value, causing File Upload field validation to fail.
+- The Previous page of the Page Break field could not be opened without filling in the Credit Card Number field.
+- Entries export was not working on non-direct file systems, e.g. SSH2, FTP, etc. (including Pantheon.io using Git).
+- Image Choices in Multiple Choice fields were not displaying the image in the entry preview when the choice label contained HTML.
+- HTML markup in the Default Text of Paragraph Text fields was not being displayed on the front end and in the Form Builder preview.
+- Placeholders and Default values of various subfields of the Address field are now consistent in the Form Builder preview.
+- Admin bar icons were broken after submitting a form with the Rich Text field.
+
 ## [1.7.9.1] - 2023-01-11
 ### Fixed
 - Layout fields were not shown when they were on any page other than the first page of a multi-page form and conditional logic was enabled on at least one field within the Layout field.
@@ -435,10 +563,10 @@ All notable changes to this project will be documented in this file and formatte
 - Improved translations by removing confusion if non-translatable placeholders are used.
 - Improved support for WordPress Core UI colors and admin themes in admin bar menu.
 - Improved format and limits validation of modern File Upload field.
-- Improved display of empty and hidden field labels in Form Builder preview. 
+- Improved display of empty and hidden field labels in Form Builder preview.
 - Field helper notification in the Form Builder now can be dismissed.
 - Improved and standardized look of classic and modern Dropdown field across Form Builder, admin area and frontend.
-- Display "Save and Resume" link in Page Break field preview in Form Builder if Save and Resume is turned on. 
+- Display "Save and Resume" link in Page Break field preview in Form Builder if Save and Resume is turned on.
 
 ### Fixed
 - Empty fields are displayed on Entry details after editing an Entry with Page Break or Entry Preview fields.
@@ -558,7 +686,7 @@ All notable changes to this project will be documented in this file and formatte
 - Correctly change the HTML field label when the field is copied.
 - Form Builder performance issue with large number of choices added to option fields.
 - Missing down arrow in Dropdown field in Twenty Twenty-One theme.
-- Checkboxes and Multiple Choice input fields rendered incorrectly in Twenty Twenty-One theme.  
+- Checkboxes and Multiple Choice input fields rendered incorrectly in Twenty Twenty-One theme.
 - Breaking words when wrapping in Modern Dropdown field.
 - After upgrading the license, "Upgrade to Pro" popup is still displayed.
 - Download all relevant translations when initiating an upgrade from Lite to Pro on the plugin Settings page.

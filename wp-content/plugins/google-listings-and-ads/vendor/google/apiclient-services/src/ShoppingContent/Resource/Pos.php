@@ -15,16 +15,16 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\PosCustomBatchRequest;
-use Google\Service\ShoppingContent\PosCustomBatchResponse;
-use Google\Service\ShoppingContent\PosInventoryRequest;
-use Google\Service\ShoppingContent\PosInventoryResponse;
-use Google\Service\ShoppingContent\PosListResponse;
-use Google\Service\ShoppingContent\PosSaleRequest;
-use Google\Service\ShoppingContent\PosSaleResponse;
-use Google\Service\ShoppingContent\PosStore;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\PosCustomBatchRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\PosCustomBatchResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\PosInventoryRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\PosInventoryResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\PosListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\PosSaleRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\PosSaleResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\PosStore;
 
 /**
  * The "pos" collection of methods.
@@ -34,7 +34,7 @@ use Google\Service\ShoppingContent\PosStore;
  *   $pos = $contentService->pos;
  *  </code>
  */
-class Pos extends \Google\Service\Resource
+class Pos extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Batches multiple POS-related calls in a single request. (pos.custombatch)

@@ -2,6 +2,7 @@
 
 namespace WPForms\Admin\Builder;
 
+use WPForms\Helpers\CacheBase;
 use WPForms\Tasks\Actions\AsyncRequestTask;
 
 /**
@@ -9,7 +10,7 @@ use WPForms\Tasks\Actions\AsyncRequestTask;
  *
  * @since 1.6.8
  */
-class TemplateSingleCache extends \WPForms\Helpers\CacheBase {
+class TemplateSingleCache extends CacheBase {
 
 	/**
 	 * Template Id (hash).
@@ -38,8 +39,9 @@ class TemplateSingleCache extends \WPForms\Helpers\CacheBase {
 	 */
 	protected function allow_load() {
 
-		// Load for certain places only.
-		$allow = wp_doing_ajax() || wpforms_is_admin_page( 'builder' ) || wpforms_is_admin_page( 'templates' );
+		$has_permissions  = wpforms_current_user_can( [ 'create_forms', 'edit_forms' ] );
+		$allowed_requests = wpforms_is_admin_ajax() || wpforms_is_admin_page( 'builder' ) || wpforms_is_admin_page( 'templates' );
+		$allow            = wp_doing_cron() || wpforms_doing_wp_cli() || ( $has_permissions && $allowed_requests );
 
 		// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
 		/**
@@ -129,13 +131,13 @@ class TemplateSingleCache extends \WPForms\Helpers\CacheBase {
 	/**
 	 * Get cached data.
 	 *
-	 * @since 1.7.5
+	 * @since 1.8.2
 	 *
 	 * @return array Cached data.
 	 */
-	public function get_cached() {
+	public function get() {
 
-		$data = parent::get_cached();
+		$data = parent::get();
 
 		if ( parent::$updated === false ) {
 			$this->update_usage_tracking();

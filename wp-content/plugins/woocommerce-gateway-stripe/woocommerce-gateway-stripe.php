@@ -5,11 +5,11 @@
  * Description: Take credit card payments on your store using Stripe.
  * Author: WooCommerce
  * Author URI: https://woocommerce.com/
- * Version: 7.1.0
+ * Version: 7.3.1
  * Requires at least: 5.9
- * Tested up to: 6.1
- * WC requires at least: 6.9
- * WC tested up to: 7.3
+ * Tested up to: 6.1.1
+ * WC requires at least: 7.1
+ * WC tested up to: 7.5
  * Text Domain: woocommerce-gateway-stripe
  * Domain Path: /languages
  */
@@ -21,10 +21,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Required minimums and constants
  */
-define( 'WC_STRIPE_VERSION', '7.1.0' ); // WRCS: DEFINED_VERSION.
+define( 'WC_STRIPE_VERSION', '7.3.1' ); // WRCS: DEFINED_VERSION.
 define( 'WC_STRIPE_MIN_PHP_VER', '7.3.0' );
-define( 'WC_STRIPE_MIN_WC_VER', '6.9' );
-define( 'WC_STRIPE_FUTURE_MIN_WC_VER', '7.1' );
+define( 'WC_STRIPE_MIN_WC_VER', '7.1' );
+define( 'WC_STRIPE_FUTURE_MIN_WC_VER', '7.2' );
 define( 'WC_STRIPE_MAIN_FILE', __FILE__ );
 define( 'WC_STRIPE_ABSPATH', __DIR__ . '/' );
 define( 'WC_STRIPE_PLUGIN_URL', untrailingslashit( plugins_url( basename( plugin_dir_path( __FILE__ ) ), basename( __FILE__ ) ) ) );
@@ -49,7 +49,7 @@ function woocommerce_stripe_missing_wc_notice() {
  */
 function woocommerce_stripe_wc_not_supported() {
 	/* translators: $1. Minimum WooCommerce version. $2. Current WooCommerce version. */
-	echo '<div class="error"><p><strong>' . sprintf( esc_html__( 'Stripe requires WooCommerce %1$s or greater to be installed and active. WooCommerce %2$s is no longer supported.', 'woocommerce-gateway-stripe' ), WC_STRIPE_MIN_WC_VER, WC_VERSION ) . '</strong></p></div>';
+	echo '<div class="error"><p><strong>' . sprintf( esc_html__( 'Stripe requires WooCommerce %1$s or greater to be installed and active. WooCommerce %2$s is no longer supported.', 'woocommerce-gateway-stripe' ), esc_html( WC_STRIPE_MIN_WC_VER ), esc_html( WC_VERSION ) ) . '</strong></p></div>';
 }
 
 function woocommerce_gateway_stripe() {

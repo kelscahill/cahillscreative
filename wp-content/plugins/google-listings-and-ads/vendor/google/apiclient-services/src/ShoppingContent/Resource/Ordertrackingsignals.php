@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\OrderTrackingSignal;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\OrderTrackingSignal;
 
 /**
  * The "ordertrackingsignals" collection of methods.
@@ -27,7 +27,7 @@ use Google\Service\ShoppingContent\OrderTrackingSignal;
  *   $ordertrackingsignals = $contentService->ordertrackingsignals;
  *  </code>
  */
-class Ordertrackingsignals extends \Google\Service\Resource
+class Ordertrackingsignals extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Creates new order tracking signal. (ordertrackingsignals.create)

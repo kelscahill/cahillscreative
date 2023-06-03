@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class TestOrderLineItem extends \Google\Model
+class TestOrderLineItem extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   protected $productType = TestOrderLineItemProduct::class;
   protected $productDataType = '';

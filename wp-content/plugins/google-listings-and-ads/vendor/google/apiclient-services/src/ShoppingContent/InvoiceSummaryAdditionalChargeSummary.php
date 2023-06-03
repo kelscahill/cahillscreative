@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class InvoiceSummaryAdditionalChargeSummary extends \Google\Model
+class InvoiceSummaryAdditionalChargeSummary extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   protected $totalAmountType = Amount::class;
   protected $totalAmountDataType = '';

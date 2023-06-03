@@ -139,7 +139,7 @@ if ( ! class_exists( 'SIB_Page_Statistics' ) ) {
                     </form>
                 </div>
             
-                <table id="ws_statistics_table" class="wc_shipping widefat wp-list-table" cellspacing="0">
+                <table aria-describedby="statistic-table" id="ws_statistics_table" class="wc_shipping widefat wp-list-table">
                     <thead>
                     <tr>
                         <th class="sort">&nbsp;</th>
@@ -178,7 +178,7 @@ if ( ! class_exists( 'SIB_Page_Statistics' ) ) {
                     <?php } ?>
                         </tbody>
                     </table>
-                <table id="ws_statistics_table" class="wc_shipping widefat wp-list-table" cellspacing="0">
+                <table aria-describedby="statistic-table" id="ws_statistics_table" class="wc_shipping widefat wp-list-table" cellspacing="0">
                     <thead>
                     <tr>
                         <th class="sort">&nbsp;</th>
@@ -221,7 +221,7 @@ if ( ! class_exists( 'SIB_Page_Statistics' ) ) {
 		/** Generate welcome page */
 		function generate_welcome_page() {
 			?>
-			<img src="<?php echo esc_url( SIB_Manager::$plugin_url . '/img/background/statistics.png' ); ?>"  style="width: 100%;">
+            <img src="<?php echo esc_url( SIB_Manager::$plugin_url . '/img/background/statistics.png' ); ?>" alt="Statistics Background Image" style="width: 100%;">
 		<?php
 			SIB_Page_Home::print_disable_popup();
 		}

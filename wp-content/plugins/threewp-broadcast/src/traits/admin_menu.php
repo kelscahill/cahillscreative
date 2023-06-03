@@ -157,7 +157,7 @@ trait admin_menu
 		$post_types = str_replace( ' ', "\n", $post_types );
 
 		$post_types_input = $fs->textarea( 'post_types' )
-			->cols( 20, 10 )
+			->cols( 40, 10 )
 			->label( __( 'Custom post types to broadcast', 'threewp-broadcast' ) )
 			->value( $post_types );
 		$label = sprintf( __( 'A list of custom post types that have broadcasting enabled. The default value is %s.', 'threewp-broadcast' ), '<code>post<br/>page</code>' );
@@ -165,13 +165,14 @@ trait admin_menu
 
 		$blog_post_types = $this->get_blog_post_types();
 
+		$blog_post_types_m1 = __( 'Custom post types must be specified using their internal Wordpress names on a new line each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types).', 'threewp-broadcast' );
+		$blog_post_types_m2 = sprintf( __( 'The custom post types registered on <em>this</em> blog are: %s', 'threewp-broadcast' ),
+			'<code>' . implode( ', ', $blog_post_types ) . '</code>',
+		);
 		$fs->markup( 'cpt_m1' )
-			->p( __( 'Custom post types must be specified using their internal Wordpress names on a new line each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types).', 'threewp-broadcast' ) );
+			->p( $blog_post_types_m1 );
 		$fs->markup( 'cpt_m2' )
-			->p( sprintf(
-				__( 'The custom post types registered on <em>this</em> blog are: %s', 'threewp-broadcast' ),
-				'<code>' . implode( ', ', $blog_post_types ) . '</code>' )
-			);
+			->p( $blog_post_types_m2 );
 
 		// --DEBUG--------------------------------------------------------------------------------------------------
 
@@ -339,9 +340,32 @@ trait admin_menu
 
 		$canonical_url = $fs->checkbox( 'canonical_url' )
 			->checked( $this->get_site_option( 'canonical_url' ) )
-			->description( __( "Child posts have their canonical URLs pointed to the URL of the parent post. This automatically disables the canonical URL from Yoast's Wordpress SEO plugin.", 'threewp-broadcast' ) )
+			->description( __( "Child posts have their canonical URLs pointed to the URL of the parent post. By default, this applies for all broadcasted content, but can be modified below. This automatically disables the canonical URL from Yoast's Wordpress SEO plugin.", 'threewp-broadcast' ) )
 			// SEO setting
 			->label( __( 'Canonical URL', 'threewp-broadcast' ) );
+
+		$canonical_limit_post_types = $this->get_site_option( 'canonical_limit_post_types' );
+		$canonical_limit_post_types = str_replace( ' ', "\n", $canonical_limit_post_types );
+
+		$canonical_limit_post_types_input = $fs->textarea( 'canonical_limit_post_types' )
+			->cols( 40, 10 )
+			->description( __( 'A list of custom post types that will have the canonical of the parent post. If set, these are the only post types that will have the Canonical URL feature applied.', 'threewp-broadcast' ) )
+			->label( __( 'Limit Canonical updates to these post types', 'threewp-broadcast' ) )
+			->value( $canonical_limit_post_types );
+
+		$canonical_skip_post_types = $this->get_site_option( 'canonical_skip_post_types' );
+		$canonical_skip_post_types = str_replace( ' ', "\n", $canonical_skip_post_types );
+
+		$canonical_skip_post_types_input = $fs->textarea( 'canonical_skip_post_types' )
+			->cols( 40, 10 )
+			->description( __( 'A list of custom post types that will be skipped by the Canonical URL feature. This is used when you apply broad default settings for all post types and just want to block a few.', 'threewp-broadcast' ) )
+			->label( __( 'Exclude canonical updates on these post types', 'threewp-broadcast' ) )
+			->value( $canonical_skip_post_types );
+
+		$fs->markup( 'seo_m1' )
+			->p( $blog_post_types_m1 );
+		$fs->markup( 'seo_m2' )
+			->p( $blog_post_types_m2 );
 
 		// --TAXONOMIES------------------------------------------------------------------------------------------
 
@@ -402,12 +426,19 @@ trait admin_menu
 			$this->update_site_option( 'role_broadcast_as_draft', $role_broadcast_as_draft->get_post_value() );
 			$this->update_site_option( 'role_broadcast_scheduled_posts', $role_broadcast_scheduled_posts->get_post_value() );
 
-			$post_types = $form->input( 'post_types' )->get_value();
+			$post_types = $form->input( 'post_types' )->get_post_value();
 			$post_types = $this->lines_to_string( $post_types );
 			$this->update_site_option( 'post_types', $post_types);
 
 			$this->update_site_option( 'override_child_permalinks', $override_child_permalinks->is_checked() );
 			$this->update_site_option( 'canonical_url', $canonical_url->is_checked() );
+
+			$canonical_limit_post_types = $form->input( 'canonical_limit_post_types' )->get_post_value();
+			$canonical_limit_post_types = $this->lines_to_string( $canonical_limit_post_types );
+			$this->update_site_option( 'canonical_limit_post_types', $canonical_limit_post_types );
+			$canonical_skip_post_types = $form->input( 'canonical_skip_post_types' )->get_post_value();
+			$canonical_skip_post_types = $this->lines_to_string( $canonical_skip_post_types );
+			$this->update_site_option( 'canonical_skip_post_types', $canonical_skip_post_types );
 
 			$custom_field_blacklist = $custom_field_blacklist->get_post_value();
 			$custom_field_blacklist = $this->lines_to_string( $custom_field_blacklist );

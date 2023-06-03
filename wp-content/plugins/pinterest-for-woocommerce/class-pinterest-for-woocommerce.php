@@ -115,14 +115,15 @@ if ( ! class_exists( 'Pinterest_For_Woocommerce' ) ) :
 		 * @since 1.0.0
 		 */
 		protected static $default_settings = array(
-			'track_conversions'      => true,
-			'enhanced_match_support' => true,
-			'save_to_pinterest'      => true,
-			'rich_pins_on_posts'     => true,
-			'rich_pins_on_products'  => true,
-			'product_sync_enabled'   => true,
-			'enable_debug_logging'   => false,
-			'erase_plugin_data'      => false,
+			'track_conversions'                => true,
+			'enhanced_match_support'           => true,
+			'automatic_enhanced_match_support' => true,
+			'save_to_pinterest'                => true,
+			'rich_pins_on_posts'               => true,
+			'rich_pins_on_products'            => true,
+			'product_sync_enabled'             => true,
+			'enable_debug_logging'             => false,
+			'erase_plugin_data'                => false,
 		);
 
 		/**
@@ -266,6 +267,14 @@ if ( ! class_exists( 'Pinterest_For_Woocommerce' ) ) :
 			add_action( 'init', array( Pinterest\TrackerSnapshot::class, 'maybe_init' ) );
 			add_action( 'init', array( Pinterest\Billing::class, 'schedule_event' ) );
 			add_action( 'init', array( Pinterest\AdCredits::class, 'schedule_event' ) );
+
+			// Register the marketing channel if the feature is included.
+			if ( defined( 'WC_MCM_EXISTS' ) ) {
+				add_action(
+					'init',
+					array( Pinterest\MultichannelMarketing\MarketingChannelRegistrar::class, 'register' )
+				);
+			}
 
 			// Verify that the ads_campaign is active or not.
 			add_action( 'admin_init', array( Pinterest\AdCredits::class, 'check_if_ads_campaign_is_active' ) );
@@ -585,6 +594,7 @@ if ( ! class_exists( 'Pinterest_For_Woocommerce' ) ) :
 			new Pinterest\API\Tags();
 			new Pinterest\API\HealthCheck();
 			new Pinterest\API\Options();
+			new Pinterest\API\SyncSettings();
 			new Pinterest\API\UserInteraction();
 		}
 
@@ -828,6 +838,8 @@ if ( ! class_exists( 'Pinterest_For_Woocommerce' ) ) :
 
 			set_transient( PINTEREST_FOR_WOOCOMMERCE_AUTH, $control_key, MINUTE_IN_SECONDS * 5 );
 
+			// phpcs:ignore Squiz.Commenting.InlineComment.InvalidEndChar
+			// nosemgrep: audit.php.wp.security.xss.query-arg
 			return self::get_connection_proxy_url() . 'login/' . PINTEREST_FOR_WOOCOMMERCE_WOO_CONNECT_SERVICE . '?' . $state;
 		}
 
@@ -853,40 +865,51 @@ if ( ! class_exists( 'Pinterest_For_Woocommerce' ) ) :
 		 *
 		 * @since 1.0.0
 		 *
-		 * @return array() account_data from Pinterest
+		 * @return array Account data from Pinterest.
+		 *
+		 * @throws Exception PHP Exception.
 		 */
 		public static function update_account_data() {
 
-			$account_data = Pinterest\API\Base::get_account_info();
+			try {
 
-			if ( 'success' === $account_data['status'] ) {
+				$account_data = Pinterest\API\Base::get_account_info();
 
-				$data = array_intersect_key(
-					(array) $account_data['data'],
-					array(
-						'verified_user_websites'  => '',
-						'is_any_website_verified' => '',
-						'username'                => '',
-						'full_name'               => '',
-						'id'                      => '',
-						'image_medium_url'        => '',
-						'is_partner'              => '',
-					)
-				);
+				if ( 'success' === $account_data['status'] ) {
 
-				/*
-				 * For now we assume that the billing is not setup and credits are not redeemed.
-				 * We will be able to check that only when the advertiser will be connected.
-				 * The billing is tied to advertiser.
-				 */
-				$data['is_billing_setup']   = false;
-				$data['coupon_redeem_info'] = array( 'redeem_status' => false );
+					$data = array_intersect_key(
+						(array) $account_data['data'],
+						array(
+							'verified_user_websites'  => '',
+							'is_any_website_verified' => '',
+							'username'                => '',
+							'full_name'               => '',
+							'id'                      => '',
+							'image_medium_url'        => '',
+							'is_partner'              => '',
+						)
+					);
 
-				Pinterest_For_Woocommerce()::save_setting( 'account_data', $data );
-				return $data;
+					/*
+					 * For now we assume that the billing is not setup and credits are not redeemed.
+					 * We will be able to check that only when the advertiser will be connected.
+					 * The billing is tied to advertiser.
+					 */
+					$data['is_billing_setup']   = false;
+					$data['coupon_redeem_info'] = array( 'redeem_status' => false );
+
+					Pinterest_For_Woocommerce()::save_setting( 'account_data', $data );
+					return $data;
+				}
+
+				self::get_linked_businesses( true );
+
+			} catch ( Throwable $th ) {
+
+				self::disconnect();
+
+				throw new Exception( esc_html__( 'There was an error getting the account data.', 'pinterest-for-woocommerce' ) );
 			}
-
-			self::get_linked_businesses( true );
 
 			return array();
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Google\AuthHandler;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\AuthHandler;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\CredentialsLoader;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\FetchAuthTokenCache;
@@ -105,11 +105,6 @@ class Guzzle6AuthHandler
 
     private function createAuthHttp(ClientInterface $http)
     {
-        return new Client([
-            'base_uri' => $http->getConfig('base_uri'),
-            'http_errors' => true,
-            'verify' => $http->getConfig('verify'),
-            'proxy' => $http->getConfig('proxy'),
-        ]);
+        return new Client(['http_errors' => true] + $http->getConfig());
     }
 }

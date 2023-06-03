@@ -38,12 +38,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\League\\Container\\": "src"
+            "League\\Container\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\League\\Container\\Test\\": "tests"
+            "League\\Container\\Test\\": "tests"
         }
     },
     "extra": {

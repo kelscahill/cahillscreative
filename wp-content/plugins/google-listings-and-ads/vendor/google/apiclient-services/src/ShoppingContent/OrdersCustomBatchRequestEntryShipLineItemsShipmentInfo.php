@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo extends \Google\Model
+class OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   /**
    * @var string

@@ -15,12 +15,12 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\AccountTax as AccountTaxModel;
-use Google\Service\ShoppingContent\AccounttaxCustomBatchRequest;
-use Google\Service\ShoppingContent\AccounttaxCustomBatchResponse;
-use Google\Service\ShoppingContent\AccounttaxListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\AccountTax as AccountTaxModel;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\AccounttaxCustomBatchRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\AccounttaxCustomBatchResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\AccounttaxListResponse;
 
 /**
  * The "accounttax" collection of methods.
@@ -30,7 +30,7 @@ use Google\Service\ShoppingContent\AccounttaxListResponse;
  *   $accounttax = $contentService->accounttax;
  *  </code>
  */
-class Accounttax extends \Google\Service\Resource
+class Accounttax extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Retrieves and updates tax settings of multiple accounts in a single request.

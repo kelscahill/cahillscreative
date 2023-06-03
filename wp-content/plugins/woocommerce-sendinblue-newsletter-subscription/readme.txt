@@ -64,7 +64,7 @@ Learn more with the free Sendinblue Email Marketing academy and these hands-on t
 ## <a href="https://www.sendinblue.com/features/email-marketing/?utm_medium=plugin&utm_source=woocommerce_plugin">Automation</a>
 <p>Sendinblue offers a flexible and versatile marketing automation platform.</p> 
 <p>The Sendinblue Tracker script lets you track web behavior from your contacts to use alongside email engagement data to create complex automation workflows that save you time and help you scale and grow your business.</p>
-<p><a href="https://help.sendinblue.com/hc/en-us/articles/208775609-Introduction-to-Marketing-Automation-Part-1-What-is-Marketing-Automation-#:~:text=keep%20things%20simple.-,how%20does%20marketing%20automation%20work%3F,-With%20Marketing%20Automation?utm_medium=plugin&utm_source=woocommerce_plugin">How does Marketing Automation work?</a></p>
+<p><a href="https://help.brevo.com/hc/en-us/articles/208775609-Introduction-to-Marketing-Automation-Part-1-What-is-Marketing-Automation-#:~:text=keep%20things%20simple.-,how%20does%20marketing%20automation%20work%3F,-With%20Marketing%20Automation?utm_medium=plugin&utm_source=woocommerce_plugin">How does Marketing Automation work?</a></p>
 
 <p>Marketing Automation features: </p>
 
@@ -113,7 +113,7 @@ Sendinblue is proud to be continuously working to maintain GDPR compliance in or
 
 ## Developers
 
-<a href="https://developers.sendinblue.com/?utm_medium=plugin&utm_source=woocommerce_plugin">The Sendinblue API</a> allows you to programmatically execute a wide range of code operations which are also available through the user interface.
+<a href="https://developers.brevo.com/?utm_medium=plugin&utm_source=woocommerce_plugin">The Sendinblue API</a> allows you to programmatically execute a wide range of code operations which are also available through the user interface.
 
 = Follow Us =
 
@@ -128,14 +128,14 @@ This plugin was created by <a href="http://www.sendinblue.com?utm_medium=plugin&
 == Installation ==
 
 = Before installing, make sure to:=
-* whitelist the following Sendinblue domain: whitelist SIB domain: <a href="#" title="https://plugin.sendinblue.com/integrations/api/">https://plugin.sendinblue.com/integrations/api/</a>
+* whitelist the following Sendinblue domain: whitelist SIB domain: <a href="#" title="https://plugin.brevo.com/integrations/api/">https://plugin.brevo.com/integrations/api/</a>
 * whitelist all the IPs comprised in the range from 185.107.232.0 to 185.107.232.24
 * clear your cache
 
 = Once done, you can install the plugin following these steps:=
 1. Install the <strong>Sendinblue for WooCommerce</strong> via the plugins page of WooCommerce or upload the plugin file (link to the plugin file) to your server.
 2. Activate the <strong>Sendinblue for WooCommerce</strong> by clicking <strong>Connect your account</strong> from the <a href="admin.php?page=sendinblue" target="blank" title="WooCommerce > Sendinblue">WooCommerce > Sendinblue</a> page. <strong>Allow access</strong> to your Sendinblue account and <strong>Activate</strong> the plugin to start its configuration.
-3. Configure your plugin settings directly from Sendinblue. To learn more, check our dedicated article <a href="https://help.sendinblue.com/hc/en-us/articles/7702477927442" title="WooCommerce plugin - Installation and set up.">WooCommerce plugin - Installation and set up.</a> 
+3. Configure your plugin settings directly from Sendinblue. To learn more, check our dedicated article <a href="https://help.brevo.com/hc/en-us/articles/7702477927442" title="WooCommerce plugin - Installation and set up.">WooCommerce plugin - Installation and set up.</a> 
 
 == Frequently Asked Questions ==
 = What is Sendinblue? =
@@ -168,6 +168,13 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 4. You can access your settings by clicking on “Settings” at the top right of the screen. 
 
 == Changelog ==
+
+= 3.0.6 =
+* Enhancement in the backend links of the plugin for migration
+
+= 3.0.5 =
+* Improved the connection creation process with Sendinblue
+* Added endpoint to get the saved settings
 
 = 3.0.4 =
 * Improved handling of alphanumeric Order IDs in emails with Sendinblue Templates

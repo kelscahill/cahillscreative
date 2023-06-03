@@ -31,6 +31,7 @@
  */
 namespace Google\ApiCore\Transport;
 
+use BadMethodCallException;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\Call;
 use Google\ApiCore\RequestBuilder;
@@ -90,7 +91,7 @@ class RestTransport implements TransportInterface
      * @return RestTransport
      * @throws ValidationException
      */
-    public static function build($apiEndpoint, $restConfigPath, array $config = [])
+    public static function build(string $apiEndpoint, string $restConfigPath, array $config = [])
     {
         $config += [
             'httpHandler'  => null,
@@ -127,10 +128,33 @@ class RestTransport implements TransportInterface
                 $decodeType = $call->getDecodeType();
                 /** @var Message $return */
                 $return = new $decodeType;
-                $return->mergeFromJsonString(
-                    (string) $response->getBody(),
-                    true
-                );
+                $body = (string) $response->getBody();
+
+                // In some rare cases LRO response metadata may not be loaded
+                // in the descriptor pool, triggering an exception. The catch
+                // statement handles this case and attempts to add the LRO
+                // metadata type to the pool by directly instantiating the
+                // metadata class.
+                try {
+                    $return->mergeFromJsonString(
+                        $body,
+                        true
+                    );
+                } catch (\Exception $ex) {
+                    if (!isset($options['metadataReturnType'])) {
+                        throw $ex;
+                    }
+
+                    if (strpos($ex->getMessage(), 'Error occurred during parsing:') !== 0) {
+                        throw $ex;
+                    }
+
+                    new $options['metadataReturnType']();
+                    $return->mergeFromJsonString(
+                        $body,
+                        true
+                    );
+                }
 
                 if (isset($options['metadataCallback'])) {
                     $metadataCallback = $options['metadataCallback'];

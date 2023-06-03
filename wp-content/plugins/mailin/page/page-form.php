@@ -98,7 +98,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 		function generate() {
 			?>
 			<div id="wrap" class="wrap box-border-box container-fluid">
-				<h1><img id="logo-img" src="<?php echo esc_url( SIB_Manager::$plugin_url . '/img/logo.png' ); ?>">
+				<h1><img id="logo-img" src="<?php echo esc_url( SIB_Manager::$plugin_url . '/img/logo.png' ); ?>" alt="Logo Image">
 					<?php
 					$return_btn = 'none';
 					if (isset( $_GET['id'] ) ) {
@@ -213,7 +213,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 						if ( isset( $_GET['pid'] ) ) {
 							?>
 							<input type="hidden" name="pid" value="<?php echo esc_attr( $_GET['pid'] ); ?>">
-							<?php 
+							<?php
 							$lang = isset( $_GET['lang'] ) ? sanitize_text_field( $_GET['lang'] ) : '';
 							if ( $lang ) { ?>
 								<input type="hidden" name="lang" value="<?php echo esc_attr( $lang ); ?>">
@@ -253,7 +253,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 										} else {
 											?>
 											<textarea class="widefat" cols="160" rows="20" id="sibformmarkup"
-														name="sib_form_html"><?php 
+														name="sib_form_html"><?php
 														// phpcs:ignore
 														echo esc_html( $formData['html'] ); ?></textarea>
 																						<?php
@@ -399,7 +399,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <div id="sib-gdpr-block" class="card form-field" style="padding-bottom: 20px;">
                                             <div class="small-content2"
                                                  style="margin-top: 15px;margin-bottom: 15px;">
@@ -435,7 +435,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 												<input type="radio" name="sib_add_captcha" class="sib-add-captcha" value="1" <?php checked( $gCaptcha, '1' ); ?>><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'Yes', 'mailin' ); ?></label>
 												<input type="radio" name="sib_add_captcha" class="sib-add-captcha" value="0" <?php checked( $gCaptcha, '0' ); ?>><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'No', 'mailin' ); ?></label>
 											</div>
-											<div class="small-content2 sib-captcha-key" 
+											<div class="small-content2 sib-captcha-key"
 											<?php
 											if ( '1' !== $gCaptcha ) {
 												echo("style='display: none;'");}
@@ -474,7 +474,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 												<input type="radio" name="sib_recaptcha_type" class="sib-captcha-type" value="0" <?php checked( $invisibleCaptcha, '0' ); ?>><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'Google Captcha', 'mailin');?></label>
 												<input type="radio" name="sib_recaptcha_type" class="sib-captcha-type" value="1" <?php checked( $invisibleCaptcha, '1' ); ?>><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'Google Invisible Captcha', 'mailin');?></label>
 											</div>
-											<div class="small-content2 sib-captcha-key" 
+											<div class="small-content2 sib-captcha-key"
 											<?php
 											if ( '1' !== $gCaptcha ) {
 												echo("style='display: none;'");}
@@ -499,7 +499,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 												<input type="radio" name="sib_add_terms" class="sib-add-terms" value="1" <?php checked( $formData['termAccept'], '1' ); ?>><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'Yes', 'mailin');?></label>
 												<input type="radio" name="sib_add_terms" class="sib-add-terms" value="0" <?php checked( $formData['termAccept'], '0' ); ?>><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'No', 'mailin');?></label>
 											</div>
-											<div class="small-content2 sib-terms-url" 
+											<div class="small-content2 sib-terms-url"
 											<?php
 											if ( '1' !== $formData['termAccept'] ) {
 												echo("style='display: none;'");}
@@ -514,7 +514,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 												}
 												?>">
 											</div>
-											<div class="small-content2 sib-terms-url" 
+											<div class="small-content2 sib-terms-url"
 											<?php
 											if ( '1' !== $formData['termAccept'] ) {
 												echo("style='display: none;'");}
@@ -573,7 +573,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 											</div>
 											<iframe id="sib-preview-form"
 													src="<?php echo esc_url( site_url() . '/?sib_form=' . esc_attr( $this->formID ) ); ?>"
-													width="300px" height="428"></iframe>
+													width="300px" height="428" title="SIB Preview Form"></iframe>
 										</div>
 									</div>
 								</div>
@@ -598,7 +598,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 								<div id="sib_form_alert_message" class="alert alert-danger alert-dismissable fade in"
 									 role="alert" style="display: none;">
 									<span id="sib_disclaim_smtp"
-										  style="display: none;"><?php _e( 'Confirmation emails will be sent through your own email server, but you have no guarantees on their deliverability. <br/> <a href="https://app-smtp.sendinblue.com/" target="_blank">Click here</a> to send your emails through Sendinblue in order to improve your deliverability and get statistics', 'mailin' ); ?></span>
+										  style="display: none;"><?php _e( 'Confirmation emails will be sent through your own email server, but you have no guarantees on their deliverability. <br/> <a href="https://app-smtp.brevo.com/" target="_blank" rel="noopener">Click here</a> to send your emails through Sendinblue in order to improve your deliverability and get statistics', 'mailin' ); ?></span>
 									<span id="sib_disclaim_do_template"
 										  style="display: none;"><?php _e( 'The template you selected does not include a link [DOUBLEOPTIN] to allow subscribers to confirm their subscription. <br/> Please edit the template to include a link with [DOUBLEOPTIN] as URL.', 'mailin' ); ?></span>
                                     <span id="sib_disclaim_confirm_template"
@@ -655,8 +655,8 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 									<div class="col-md-3" id="sib_template_id_area">
 									</div>
 									<div class="col-md-4">
-										<a href="https://my.sendinblue.com/camp/lists/template" class="col-md-12"
-										   target="_blank"><i
+										<a href="https://my.brevo.com/camp/lists/template" class="col-md-12"
+										   target="_blank" rel="noopener"><i
 												class="fa fa-angle-right"></i> <?php esc_attr_e( 'Set up my templates', 'mailin' ); ?>
 										</a>
 									</div>
@@ -689,8 +689,8 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 									<div class="col-md-3" id="sib_doubleoptin_template_id_area">
 									</div>
 									<div class="col-md-4">
-										<a href="https://my.sendinblue.com/camp/lists/template"
-										   class="col-md-12" target="_blank"><i
+										<a href="https://my.brevo.com/camp/lists/template"
+										   class="col-md-12" target="_blank" rel="noopener"><i
 												class="fa fa-angle-right"></i> <?php esc_attr_e( 'Set up my templates', 'mailin' ); ?>
 										</a>
 									</div>
@@ -710,8 +710,8 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
                                         <div class="col-md-5" id="sib_final_confirm_template_id_area">
                                         </div>
                                         <div class="col-md-4">
-                                            <a href="https://my.sendinblue.com/camp/lists/template"
-                                               class="col-md-12" target="_blank"><i
+                                            <a href="https://my.brevo.com/camp/lists/template"
+                                               class="col-md-12" target="_blank" rel="noopener"><i
                                                         class="fa fa-angle-right"></i> <?php esc_attr_e( 'Set up my templates', 'mailin' ); ?>
                                             </a>
                                         </div>
@@ -859,7 +859,7 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
 		function generate_welcome_page() {
 		?>
 			<div id="main-content" class="row">
-				<img class="small-content" src="<?php echo esc_url( SIB_Manager::$plugin_url . '/img/background/setting.png' ); ?>" style="width: 100%;">
+				<img class="small-content" src="<?php echo esc_url( SIB_Manager::$plugin_url . '/img/background/setting.png' ); ?>" alt="Settings Image" style="width: 100%;">
 			</div>
 		<?php
 			SIB_Page_Home::print_disable_popup();
@@ -879,7 +879,7 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
 			array_walk_recursive( $_POST, function(&$value) {
 				$value = stripslashes($value);
 			});
-			
+
 			// Subscription form.
 			$formID = isset( $_POST['sib_form_id'] ) ? sanitize_text_field( $_POST['sib_form_id'] ) : '';
 			$form_name = isset( $_POST['sib_form_name'] ) ? sanitize_text_field( $_POST['sib_form_name'] ) : '';

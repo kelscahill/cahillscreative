@@ -15,19 +15,19 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\ReturnShippingLabel;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ReturnShippingLabel;
 
 /**
  * The "labels" collection of methods.
  * Typical usage is:
  *  <code>
  *   $contentService = new Google\Service\ShoppingContent(...);
- *   $labels = $contentService->labels;
+ *   $labels = $contentService->orderreturns_labels;
  *  </code>
  */
-class OrderreturnsLabels extends \Google\Service\Resource
+class OrderreturnsLabels extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Links a return shipping label to a return id. You can only create one return

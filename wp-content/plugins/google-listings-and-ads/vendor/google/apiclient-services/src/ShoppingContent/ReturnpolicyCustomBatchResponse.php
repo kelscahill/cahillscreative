@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class ReturnpolicyCustomBatchResponse extends \Google\Collection
+class ReturnpolicyCustomBatchResponse extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Collection
 {
   protected $collection_key = 'entries';
   protected $entriesType = ReturnpolicyCustomBatchResponseEntry::class;

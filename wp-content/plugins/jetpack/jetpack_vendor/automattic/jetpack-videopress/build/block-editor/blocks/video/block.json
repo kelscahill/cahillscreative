@@ -83,6 +83,10 @@
 		"poster": {
 			"type": "string"
 		},
+		"posterData": {
+			"type": "object",
+			"default": {}
+		},
 		"videoRatio": {
 			"type": "number"
 		},
@@ -117,8 +121,8 @@
 		}
 	},
 	"textdomain": "jetpack-videopress",
-	"editorScript": "file:index.js",
-	"editorStyle": "file:index.css",
+	"editorScript": "jetpack-videopress-video-block",
+	"editorStyle": "jetpack-videopress-video-block",
 	"style": "file:style-index.css",
-	"viewScript": "file:view.js"
+	"viewScript": "jetpack-videopress-video-block-view"
 }

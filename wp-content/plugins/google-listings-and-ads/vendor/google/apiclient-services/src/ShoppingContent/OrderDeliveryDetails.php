@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class OrderDeliveryDetails extends \Google\Model
+class OrderDeliveryDetails extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
   protected $addressType = OrderAddress::class;
   protected $addressDataType = '';

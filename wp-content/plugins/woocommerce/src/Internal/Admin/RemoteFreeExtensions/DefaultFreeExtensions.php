@@ -79,17 +79,18 @@ class DefaultFreeExtensions {
 	public static function get_plugin( $slug ) {
 		$plugins = array(
 			'google-listings-and-ads'           => [
-				'name'           => __( 'Google Listings & Ads', 'woocommerce' ),
-				'description'    => sprintf(
+				'min_php_version' => '7.4',
+				'name'            => __( 'Google Listings & Ads', 'woocommerce' ),
+				'description'     => sprintf(
 					/* translators: 1: opening product link tag. 2: closing link tag */
 					__( 'Drive sales with %1$sGoogle Listings and Ads%2$s', 'woocommerce' ),
 					'<a href="https://woocommerce.com/products/google-listings-and-ads" target="_blank">',
 					'</a>'
 				),
-				'image_url'      => plugins_url( '/assets/images/onboarding/google.svg', WC_PLUGIN_FILE ),
-				'manage_url'     => 'admin.php?page=wc-admin&path=%2Fgoogle%2Fstart',
-				'is_built_by_wc' => true,
-				'is_visible'     => [
+				'image_url'       => plugins_url( '/assets/images/onboarding/google.svg', WC_PLUGIN_FILE ),
+				'manage_url'      => 'admin.php?page=wc-admin&path=%2Fgoogle%2Fstart',
+				'is_built_by_wc'  => true,
+				'is_visible'      => [
 					[
 						'type'    => 'not',
 						'operand' => [
@@ -113,6 +114,7 @@ class DefaultFreeExtensions {
 				'description'    => __( 'List products and create ads on Facebook and Instagram with <a href="https://woocommerce.com/products/facebook/">Facebook for WooCommerce</a>', 'woocommerce' ),
 				'image_url'      => plugins_url( '/assets/images/onboarding/facebook.png', WC_PLUGIN_FILE ),
 				'manage_url'     => 'admin.php?page=wc-facebook',
+				'is_visible'     => false,
 				'is_built_by_wc' => false,
 			],
 			'facebook-for-woocommerce:alt'      => [
@@ -120,14 +122,16 @@ class DefaultFreeExtensions {
 				'description'    => __( 'List products and create ads on Facebook and Instagram.', 'woocommerce' ),
 				'image_url'      => plugins_url( '/assets/images/onboarding/facebook.png', WC_PLUGIN_FILE ),
 				'manage_url'     => 'admin.php?page=wc-facebook',
+				'is_visible'     => false,
 				'is_built_by_wc' => false,
 			],
 			'pinterest-for-woocommerce'         => [
-				'name'           => __( 'Pinterest for WooCommerce', 'woocommerce' ),
-				'description'    => __( 'Get your products in front of Pinners searching for ideas and things to buy.', 'woocommerce' ),
-				'image_url'      => plugins_url( '/assets/images/onboarding/pinterest.png', WC_PLUGIN_FILE ),
-				'manage_url'     => 'admin.php?page=wc-admin&path=%2Fpinterest%2Flanding',
-				'is_built_by_wc' => true,
+				'name'            => __( 'Pinterest for WooCommerce', 'woocommerce' ),
+				'description'     => __( 'Get your products in front of Pinners searching for ideas and things to buy.', 'woocommerce' ),
+				'image_url'       => plugins_url( '/assets/images/onboarding/pinterest.png', WC_PLUGIN_FILE ),
+				'manage_url'      => 'admin.php?page=wc-admin&path=%2Fpinterest%2Flanding',
+				'is_built_by_wc'  => true,
+				'min_php_version' => '7.3',
 			],
 			'pinterest-for-woocommerce:alt'     => [
 				'name'           => __( 'Pinterest for WooCommerce', 'woocommerce' ),
@@ -282,11 +286,72 @@ class DefaultFreeExtensions {
 								'value'     => 'SG',
 								'operation' => '=',
 							],
+							[
+								'type'      => 'base_location_country',
+								'value'     => 'CY',
+								'operation' => '=',
+							],
+							[
+								'type'      => 'base_location_country',
+								'value'     => 'DK',
+								'operation' => '=',
+							],
+							[
+								'type'      => 'base_location_country',
+								'value'     => 'EE',
+								'operation' => '=',
+							],
+							[
+								'type'      => 'base_location_country',
+								'value'     => 'FI',
+								'operation' => '=',
+							],
+							[
+								'type'      => 'base_location_country',
+								'value'     => 'GR',
+								'operation' => '=',
+							],
+							[
+								'type'      => 'base_location_country',
+								'value'     => 'LU',
+								'operation' => '=',
+							],
+							[
+								'type'      => 'base_location_country',
+								'value'     => 'LT',
+								'operation' => '=',
+							],
+							[
+								'type'      => 'base_location_country',
+								'value'     => 'LV',
+								'operation' => '=',
+							],
+							[
+								'type'      => 'base_location_country',
+								'value'     => 'NO',
+								'operation' => '=',
+							],
+							[
+								'type'      => 'base_location_country',
+								'value'     => 'MT',
+								'operation' => '=',
+							],
+							[
+								'type'      => 'base_location_country',
+								'value'     => 'SI',
+								'operation' => '=',
+							],
+							[
+								'type'      => 'base_location_country',
+								'value'     => 'SK',
+								'operation' => '=',
+							],
 						],
 					],
 					DefaultPaymentGateways::get_rules_for_cbd( false ),
 				],
 				'is_built_by_wc' => true,
+				'min_wp_version' => '5.9',
 			],
 			'woocommerce-services:shipping'     => [
 				'description'    => sprintf(
@@ -454,6 +519,7 @@ class DefaultFreeExtensions {
 					],
 				],
 				'is_built_by_wc' => false,
+				'min_wp_version' => '6.0',
 			],
 			'mailpoet'                          => [
 				'name'           => __( 'MailPoet', 'woocommerce' ),

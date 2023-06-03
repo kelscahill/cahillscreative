@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Google\AuthHandler;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\AuthHandler;
 
 /**
  * This supports Guzzle 7

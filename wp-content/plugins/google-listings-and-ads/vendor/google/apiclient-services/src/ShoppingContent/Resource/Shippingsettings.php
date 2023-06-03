@@ -15,15 +15,15 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\ShippingSettings as ShippingSettingsModel;
-use Google\Service\ShoppingContent\ShippingsettingsCustomBatchRequest;
-use Google\Service\ShoppingContent\ShippingsettingsCustomBatchResponse;
-use Google\Service\ShoppingContent\ShippingsettingsGetSupportedCarriersResponse;
-use Google\Service\ShoppingContent\ShippingsettingsGetSupportedHolidaysResponse;
-use Google\Service\ShoppingContent\ShippingsettingsGetSupportedPickupServicesResponse;
-use Google\Service\ShoppingContent\ShippingsettingsListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ShippingSettings as ShippingSettingsModel;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ShippingsettingsCustomBatchRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ShippingsettingsCustomBatchResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ShippingsettingsGetSupportedCarriersResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ShippingsettingsGetSupportedHolidaysResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ShippingsettingsGetSupportedPickupServicesResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ShippingsettingsListResponse;
 
 /**
  * The "shippingsettings" collection of methods.
@@ -33,7 +33,7 @@ use Google\Service\ShoppingContent\ShippingsettingsListResponse;
  *   $shippingsettings = $contentService->shippingsettings;
  *  </code>
  */
-class Shippingsettings extends \Google\Service\Resource
+class Shippingsettings extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Retrieves and updates the shipping settings of multiple accounts in a single

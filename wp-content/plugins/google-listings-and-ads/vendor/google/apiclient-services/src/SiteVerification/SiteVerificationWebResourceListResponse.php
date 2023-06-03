@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\SiteVerification;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\SiteVerification;
 
-class SiteVerificationWebResourceListResponse extends \Google\Collection
+class SiteVerificationWebResourceListResponse extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Collection
 {
   protected $collection_key = 'items';
   protected $itemsType = SiteVerificationWebResourceResource::class;

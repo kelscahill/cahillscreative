@@ -15,12 +15,12 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent\Resource;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Resource;
 
-use Google\Service\ShoppingContent\ReturnAddress as ReturnAddressModel;
-use Google\Service\ShoppingContent\ReturnaddressCustomBatchRequest;
-use Google\Service\ShoppingContent\ReturnaddressCustomBatchResponse;
-use Google\Service\ShoppingContent\ReturnaddressListResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ReturnAddress as ReturnAddressModel;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ReturnaddressCustomBatchRequest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ReturnaddressCustomBatchResponse;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ReturnaddressListResponse;
 
 /**
  * The "returnaddress" collection of methods.
@@ -30,7 +30,7 @@ use Google\Service\ShoppingContent\ReturnaddressListResponse;
  *   $returnaddress = $contentService->returnaddress;
  *  </code>
  */
-class Returnaddress extends \Google\Service\Resource
+class Returnaddress extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
    * Batches multiple return address related calls in a single request.

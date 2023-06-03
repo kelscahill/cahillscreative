@@ -5,7 +5,7 @@ import {
 	InnerBlockLayoutContextProvider,
 	ProductDataContextProvider,
 } from '@woocommerce/shared-context';
-import { ProductResponseItem } from '@woocommerce/type-defs/product-response';
+import { ProductResponseItem } from '@woocommerce/types';
 
 /**
  * Internal dependencies
@@ -49,7 +49,7 @@ const CartCrossSellsProduct = ( {
 						/>
 						<ProductName
 							align={ '' }
-							headingLevel={ 2 }
+							headingLevel={ 3 }
 							showProductLink={ true }
 						/>
 						<ProductRating />

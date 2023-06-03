@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class DatafeedStatus extends \Google\Collection
+class DatafeedStatus extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Collection
 {
   protected $collection_key = 'warnings';
   /**
@@ -30,6 +30,10 @@ class DatafeedStatus extends \Google\Collection
   public $datafeedId;
   protected $errorsType = DatafeedStatusError::class;
   protected $errorsDataType = 'array';
+  /**
+   * @var string
+   */
+  public $feedLabel;
   /**
    * @var string
    */
@@ -98,6 +102,20 @@ class DatafeedStatus extends \Google\Collection
   public function getErrors()
   {
     return $this->errors;
+  }
+  /**
+   * @param string
+   */
+  public function setFeedLabel($feedLabel)
+  {
+    $this->feedLabel = $feedLabel;
+  }
+  /**
+   * @return string
+   */
+  public function getFeedLabel()
+  {
+    return $this->feedLabel;
   }
   /**
    * @param string

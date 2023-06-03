@@ -15,9 +15,9 @@
  * the License.
  */
 
-namespace Google\Service\ShoppingContent;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent;
 
-class MinimumOrderValueTable extends \Google\Collection
+class MinimumOrderValueTable extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Collection
 {
   protected $collection_key = 'storeCodeSetWithMovs';
   protected $storeCodeSetWithMovsType = MinimumOrderValueTableStoreCodeSetWithMov::class;

@@ -1,29 +1,8 @@
-interface BlockAttributes {
-	productId: {
-		type: string;
-		default: number;
-	};
-	showProductLink: {
-		type: string;
-		default: boolean;
-	};
-	showSaleBadge: {
-		type: string;
-		default: boolean;
-	};
-	saleBadgeAlign: {
-		type: string;
-		default: string;
-	};
-	imageSizing: {
-		type: string;
-		default: string;
-	};
-	isDescendentOfQueryLoop: {
-		type: string;
-		default: boolean;
-	};
-}
+/**
+ * External dependencies
+ */
+import type { BlockAttributes } from '@wordpress/blocks';
+
 export const blockAttributes: BlockAttributes = {
 	showProductLink: {
 		type: 'boolean',
@@ -46,6 +25,10 @@ export const blockAttributes: BlockAttributes = {
 		default: 0,
 	},
 	isDescendentOfQueryLoop: {
+		type: 'boolean',
+		default: false,
+	},
+	isDescendentOfSingleProductBlock: {
 		type: 'boolean',
 		default: false,
 	},
