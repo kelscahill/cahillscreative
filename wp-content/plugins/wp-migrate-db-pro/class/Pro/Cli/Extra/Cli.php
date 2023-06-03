@@ -249,12 +249,11 @@ class Cli extends Export
             return $this->cli_error(__('There is more than one profile with that name, please use the profile ID instead. See wp migratedb profiles for help.', 'wp-migrate-db'));
         }
 
-        $key = array_search($name, $names);
-
-        if (false !== $key) {
-            $this->profileID = ++$key;
-
-            return $profiles[$this->profileID];
+        foreach($profiles as $key => $profile) {
+            if ($profile['name'] === $name) {
+                $this->profileID = $key;
+                return $profiles[$this->profileID];
+            }
         }
 
         return $this->cli_error(__('Profile not found.', 'wp-migrate-db'));

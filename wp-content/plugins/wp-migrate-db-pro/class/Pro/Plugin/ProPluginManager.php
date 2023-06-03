@@ -164,19 +164,30 @@ class ProPluginManager extends PluginManagerBase
         $data['valid_licence']  = $valid_license ? 1 : 0;
         $data['has_licence']    = $this->license->get_licence_key() === '' ? 0 : 1;
         $data['licence_status'] = $this->license->check_license_status();
+        $data['license_errors'] = [];
         $data['api_data']       = [];
 
-        if ($valid_license) {
+        if ($data['has_licence']) {
             $api_data = $this->license->get_api_data();
             if (!empty($api_data)) {
                 $data['api_data'] = $api_data;
                 //Get expired license notification messages
                 if ($data['licence_status'] === 'subscription_expired') {
                     $data['api_data']['errors']['subscription_expired'] = [];
-                    $licence_status_messages = $this->license->get_licence_status_message( null, 'all' );
+                    $licence_status_messages                            = $this->license->get_licence_status_message(
+                        null,
+                        'all'
+                    );
                     foreach ($licence_status_messages as $frontend_context => $status_message) {
-                        $data['api_data']['errors']['subscription_expired'][ $frontend_context ] = sprintf( '<div class="notification-message warning-notice inline-message invalid-licence">%s</div>', $status_message );
+                        $data['api_data']['errors']['subscription_expired'][$frontend_context] = sprintf(
+                            '<div class="notification-message warning-notice inline-message invalid-licence">%s</div>',
+                            $status_message
+                        );
                     }
+                } elseif (!empty($api_data['errors'][$data['licence_status']])) {
+                    $data['api_data']['errors'][$data['licence_status']] = [];
+                    $data['api_data']['errors'][$data['licence_status']]['default'] = $this->license->get_licence_status_message();
+                    $data['license_errors'][$data['licence_status']] = $data['api_data']['errors'][$data['licence_status']]['default'];
                 }
             }
         }
@@ -193,6 +204,7 @@ class ProPluginManager extends PluginManagerBase
         $templates[$notice_name] = [
             'message' => $this->license->get_licence_status_message(),
             'id'      => $notice_name,
+            'error'   => true,
         ];
 
         return $templates;
