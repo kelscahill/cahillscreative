@@ -103,6 +103,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<select data-field-template-name="{0}[{1}][date_input_format]" class="" data-field-template-id="{0}[{1}][date_input_format]">
 							<option value="timestamp"<?php $this->set_selected($values['date_input_format'], "timestamp"); ?>><?php _e("Timestamp", $this->plugin_slug); ?></option>
 							<option value="yyyymmdd"<?php $this->set_selected($values['date_input_format'], "yyyymmdd"); ?>><?php _e("YYYYMMDD (ACF)", $this->plugin_slug); ?></option>
+							<option value="yyyy-mm-dd"<?php $this->set_selected($values['date_input_format'], "yyyy-mm-dd"); ?>><?php _e("YYYY-MM-DD (PODS)", $this->plugin_slug); ?></option>
 						</select>
 					</label>
 					</p>
