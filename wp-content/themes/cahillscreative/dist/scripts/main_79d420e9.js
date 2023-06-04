@@ -215,6 +215,14 @@ Router.prototype.loadEvents = function loadEvents () {
 
     Object(__WEBPACK_IMPORTED_MODULE_1__util_header__["a" /* default */])();
 
+    // Set the app height for 100vh.
+    var appHeight = function () {
+      var doc = document.documentElement
+      doc.style.setProperty('--app-height', ((window.innerHeight) + "px"))
+    }
+    window.addEventListener('resize', appHeight)
+    appHeight()
+
     // Add class if is mobile
     function isMobile() {
       if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {

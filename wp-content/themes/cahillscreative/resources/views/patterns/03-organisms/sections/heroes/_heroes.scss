@@ -188,6 +188,7 @@
 
 .mfp-gallery {
   top: 0!important;
+  height: var(--app-height) !important;
 }
 
 .mfp-zoom-out-cur {
@@ -214,8 +215,8 @@ button.mfp-arrow {
 button.mfp-close {
   position: fixed;
   left: auto;
-  right: 0;
-  top: 0;
+  right: 10px;
+  top: 10px;
   width: 50px;
   height: 50px;
   max-width: 50px;

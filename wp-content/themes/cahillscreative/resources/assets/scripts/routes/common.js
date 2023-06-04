@@ -11,6 +11,14 @@ export default {
 
     header();
 
+    // Set the app height for 100vh.
+    const appHeight = () => {
+      const doc = document.documentElement
+      doc.style.setProperty('--app-height', `${window.innerHeight}px`)
+    }
+    window.addEventListener('resize', appHeight)
+    appHeight()
+
     // Add class if is mobile
     function isMobile() {
       if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
