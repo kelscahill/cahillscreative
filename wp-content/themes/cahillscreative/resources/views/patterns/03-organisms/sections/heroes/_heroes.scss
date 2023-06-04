@@ -78,7 +78,7 @@
     z-index: 2;
     top: 65px;
     margin: auto;
-    height: calc(100% - 125px);
+    height: calc(100% - 105px);
     width: 50px;
 
     @include media(">small") {
@@ -91,19 +91,29 @@
     }
 
     &::before {
-      border: none;
+      @include media(">small") {
+        border: none;
+      }
     }
 
     &.slick-next {
       right: 0;
       left: auto;
-      cursor: url('../images/arrow-next.png'), zoom-in;
+      cursor: pointer;
+
+      @include media(">small") {
+        cursor: url('../images/arrow-next.png'), zoom-in;
+      }
     }
 
     &.slick-prev {
       left: 0;
       right: auto;
-      cursor: url('../images/arrow-prev.png'), zoom-in;
+      cursor: pointer;
+
+      @include media(">small") {
+        cursor: url('../images/arrow-prev.png'), zoom-in;
+      }
     }
   }
 

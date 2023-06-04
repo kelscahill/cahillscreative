@@ -53,6 +53,10 @@
       z-index: 1;
     }
 
+    img {
+      width: $footer-logo;
+    }
+
     &::before {
       content: "";
       display: block;
