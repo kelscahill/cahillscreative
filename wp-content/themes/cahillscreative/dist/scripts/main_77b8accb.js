@@ -215,7 +215,7 @@ Router.prototype.loadEvents = function loadEvents () {
 
     Object(__WEBPACK_IMPORTED_MODULE_1__util_header__["a" /* default */])();
 
-    // Set the app height for 100vh.
+    // Set the app height for 100vh. Test
     var appHeight = function () {
       var doc = document.documentElement
       doc.style.setProperty('--app-height', ((window.innerHeight) + "px"))

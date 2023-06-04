@@ -11,7 +11,7 @@ export default {
 
     header();
 
-    // Set the app height for 100vh.
+    // Set the app height for 100vh. Test
     const appHeight = () => {
       const doc = document.documentElement
       doc.style.setProperty('--app-height', `${window.innerHeight}px`)
