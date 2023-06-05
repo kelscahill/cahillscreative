@@ -83,6 +83,9 @@
             "url": card.link,
             "text": link_text,
             "modifiers": "alt",
+            "attributes": {
+              "aria-label": card.title ~ " - " ~ link_text
+            },
             "extra": bem_classes(base_class, 'link')
           }
         } %}

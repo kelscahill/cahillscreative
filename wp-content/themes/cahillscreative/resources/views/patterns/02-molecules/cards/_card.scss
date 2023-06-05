@@ -12,6 +12,14 @@
     }
   }
 
+  &__link,
+  &__copy-link {
+    padding-top: $space;
+    padding-bottom: $space;
+    margin-top: -$space;
+    margin-bottom: -$space;
+  }
+
   &__footer {
     padding: $space;
     border-top: $border--standard;
@@ -78,11 +86,10 @@
 
     .o-heading__link {
       text-overflow: ellipsis;
-
       display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
   }
 
