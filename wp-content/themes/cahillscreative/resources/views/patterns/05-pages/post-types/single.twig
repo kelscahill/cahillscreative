@@ -14,17 +14,8 @@
       },
       "figure": {
         "image": {
-          "sources": [
-            {
-              "media": "(min-width: 1200px)"|json_encode,
-              "srcset": Image(post.hero_image).src('horiz__16x9--xl')
-            },
-            {
-              "media": "(min-width: 720px)"|json_encode,
-              "srcset": Image(post.hero_image).src('horiz__16x9--m')
-            },
-          ],
-          "src": Image(post.hero_image).src('horiz__16x9--s'),
+          "srcset": Image(post.hero_image).src|towebp|resize(500, 281.25) ~ ' 500w, ' ~ Image(post.hero_image).src|towebp|resize(720, 405) ~ ' 720w, ' ~ Image(post.hero_image).src|towebp|resize(960, 540) ~ ' 960w, ' ~ Image(post.hero_image).src|towebp|resize(1200, 675) ~ ' 1200w, ' ~ Image(post.hero_image).src|towebp|resize(1600, 900) ~ ' 1440w',
+          "src": Image(post.hero_image).src|towebp,
           "alt": Image(post.hero_image).alt
         }
       }
