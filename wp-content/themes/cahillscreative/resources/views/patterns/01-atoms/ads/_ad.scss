@@ -26,8 +26,10 @@
 
   &--sidebar {
     margin-bottom: $space;
+    display: none;
 
     @include media('>xxlarge') {
+      display: block;
       position: relative;
       z-index: 2;
       top: 0;
