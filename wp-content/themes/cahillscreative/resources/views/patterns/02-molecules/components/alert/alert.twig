@@ -2,7 +2,7 @@
 {% if options.alert_text or options.alert_link %}
   <div class="{{ bem_classes(base_class) }} js-alert">
     <div class="{{ bem_classes(base_class, 'content') }}">
-      {{ options.alert_text|wpautop }}
+      {{ options.alert_text }}
       {% include "@atoms/links/link.twig" with {
         "link": {
           "text": options.alert_link.title,
