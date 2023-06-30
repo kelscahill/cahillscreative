@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7;
 
-use Psr\Http\Message\StreamInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\StreamInterface;
 
 /**
  * Decorator used to return only a subset of a stream.

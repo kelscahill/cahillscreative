@@ -19,7 +19,7 @@ namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\Middlew
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\CacheTrait;
 use Psr\Cache\CacheItemPoolInterface;
-use Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
 
 /**
  * ScopedAccessTokenMiddleware is a Guzzle Middleware that adds an Authorization

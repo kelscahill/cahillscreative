@@ -2,8 +2,8 @@
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Cookie;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\ResponseInterface;
 
 /**
  * Stores HTTP cookies.
@@ -13,7 +13,7 @@ use Psr\Http\Message\ResponseInterface;
  * necessary. Subclasses are also responsible for storing and retrieving
  * cookies from a file, database, etc.
  *
- * @link https://docs.python.org/2/library/cookielib.html Inspiration
+ * @see https://docs.python.org/2/library/cookielib.html Inspiration
  * @extends \IteratorAggregate<SetCookie>
  */
 interface CookieJarInterface extends \Countable, \IteratorAggregate

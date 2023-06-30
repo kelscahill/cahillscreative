@@ -4,8 +4,8 @@ namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Promise as P;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Promise\PromiseInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\ResponseInterface;
 
 /**
  * Middleware that retries requests based on the boolean result of
@@ -44,7 +44,7 @@ class RetryMiddleware
     {
         $this->decider = $decider;
         $this->nextHandler = $nextHandler;
-        $this->delay = $delay ?: __CLASS__ . '::exponentialDelay';
+        $this->delay = $delay ?: __CLASS__.'::exponentialDelay';
     }
 
     /**
@@ -54,7 +54,7 @@ class RetryMiddleware
      */
     public static function exponentialDelay(int $retries): int
     {
-        return (int) \pow(2, $retries - 1) * 1000;
+        return (int) 2 ** ($retries - 1) * 1000;
     }
 
     public function __invoke(RequestInterface $request, array $options): PromiseInterface
@@ -64,6 +64,7 @@ class RetryMiddleware
         }
 
         $fn = $this->nextHandler;
+
         return $fn($request, $options)
             ->then(
                 $this->onFulfilled($request, $options),
@@ -85,6 +86,7 @@ class RetryMiddleware
             )) {
                 return $value;
             }
+
             return $this->doRetry($request, $options, $value);
         };
     }
@@ -103,6 +105,7 @@ class RetryMiddleware
             )) {
                 return P\Create::rejectionFor($reason);
             }
+
             return $this->doRetry($req, $options);
         };
     }

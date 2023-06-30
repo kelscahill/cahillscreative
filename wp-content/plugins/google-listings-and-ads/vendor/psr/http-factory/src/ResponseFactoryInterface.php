@@ -1,6 +1,6 @@
 <?php
 
-namespace Psr\Http\Message;
+namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message;
 
 interface ResponseFactoryInterface
 {

@@ -3,7 +3,7 @@
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Handler;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Promise\PromiseInterface;
-use Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
 
 /**
  * HTTP handler that uses cURL easy handles as a transport layer.

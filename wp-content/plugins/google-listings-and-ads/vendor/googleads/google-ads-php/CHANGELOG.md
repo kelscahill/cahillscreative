@@ -1,3 +1,27 @@
+## 19.1.0
+*   Added support for v13_1 of Google Ads API.
+*   Renamed the HotelAds example directory to Travel.
+*   Added AddThingsToDoAd example.
+*   Updated AddPerformanceMaxForTravelGoalsCampaign example.
+
+## 19.0.0
+*   Removed support for v11 of Google Ads API.
+*   Updated CreateExperiment example.
+
+## 18.0.0
+*   Added support for v13 of Google Ads API.
+*   Removed support for v10 of Google Ads API.
+*   Updated code examples:
+    * AddCustomerMatchUserList
+    * AddPerformanceMaxRetailCampaign
+    * GetAdGroupBidModifiers
+    * GetChangeDetails
+*   Reworked code examples to address the deprecation of combined rule user lists
+    and expression rule user lists:
+    * Edited SetUpAdvancedRemarketing and SetUpRemarketing
+    * Renamed AddCombinedRuleUserList to AddFlexibleRuleUserList
+    * Removed AddExpressionRuleUserList
+
 ## 17.1.0
 *   Added support for v12 of Google Ads API.
 *   Renamed HandleExpandedTextAdPolicyViolations to HandleResponsiveSearchAdPolicyViolations

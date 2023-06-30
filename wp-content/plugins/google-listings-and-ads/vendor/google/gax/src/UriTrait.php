@@ -34,7 +34,7 @@ namespace Google\ApiCore;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7\Query;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7\Utils;
-use Psr\Http\Message\UriInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\UriInterface;
 
 /**
  * Provides a light wrapper around often used URI related functions.

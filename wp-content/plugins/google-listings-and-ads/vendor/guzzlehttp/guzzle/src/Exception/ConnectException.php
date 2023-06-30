@@ -2,8 +2,8 @@
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Exception;
 
-use Psr\Http\Client\NetworkExceptionInterface;
-use Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Client\NetworkExceptionInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
 
 /**
  * Exception thrown when a connection cannot be established.

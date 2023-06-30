@@ -36,8 +36,8 @@ use Google\ApiCore\ResourceTemplate\AbsoluteResourceTemplate;
 use Google\Protobuf\Internal\Message;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7\Request;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7\Utils;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\UriInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\UriInterface;
 
 /**
  * Builds a PSR-7 request from a set of request information.

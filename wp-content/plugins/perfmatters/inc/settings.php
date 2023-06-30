@@ -11,7 +11,7 @@ function perfmatters_settings() {
 
     /* options primary section
     /**********************************************************/
-    add_settings_section('perfmatters_options', __('Options', 'perfmatters'), 'perfmatters_options_callback', 'perfmatters_options');
+    add_settings_section('perfmatters_options', __('General', 'perfmatters'), '__return_false', 'perfmatters_options');
 
     //disable emojis
     add_settings_field(
@@ -489,7 +489,7 @@ function perfmatters_settings() {
             'perfmatters_woocommerce', 
             array(
                 'id' => 'disable_woocommerce_cart_fragmentation',
-                'tooltip' => __('Completely disables WooCommerce cart fragmentation script.', 'perfmatters')
+                'tooltip' => __('Disables WooCommerce cart fragmentation script when there are no items in the cart.', 'perfmatters')
             )
         );
 
@@ -556,21 +556,24 @@ function perfmatters_settings() {
         )
     );
 
-    //defer jquery
-    add_settings_field(
-        'defer_jquery', 
-        perfmatters_title(__('Include jQuery', 'perfmatters'), 'defer_jquery', 'https://perfmatters.io/docs/defer-javascript-wordpress/#include-jquery'), 
-        'perfmatters_print_input', 
-        'perfmatters_options', 
-        'assets_js', 
-        array(
-            'id' => 'defer_jquery',
-            'section' => 'assets',
-            'confirmation' => __('Many plugins and themes require jQuery. We recommend either testing jQuery deferral separately or leaving this option turned off.', 'perfmatters'),
-            'tooltip' => __('Allow jQuery core to be deferred. We recommend testing this separately or leaving it off.', 'perfmatters'),
-            'class' => 'assets-defer_js' . (empty($perfmatters_options['assets']['defer_js']) ? ' hidden' : '')
-        )
-    );
+    if(!empty($perfmatters_tools['show_advanced'])) {
+
+        //defer jquery
+        add_settings_field(
+            'defer_jquery', 
+            perfmatters_title(__('Include jQuery', 'perfmatters'), 'defer_jquery', 'https://perfmatters.io/docs/defer-javascript-wordpress/#include-jquery'), 
+            'perfmatters_print_input', 
+            'perfmatters_options', 
+            'assets_js', 
+            array(
+                'id' => 'defer_jquery',
+                'section' => 'assets',
+                'confirmation' => __('Many plugins and themes require jQuery. We recommend either testing jQuery deferral separately or leaving this option turned off.', 'perfmatters'),
+                'tooltip' => __('Allow jQuery core to be deferred. We recommend testing this separately or leaving it off.', 'perfmatters'),
+                'class' => 'assets-defer_js' . (empty($perfmatters_options['assets']['defer_js']) ? ' hidden' : '')
+            )
+        );
+    }
 
     //js exlusions
     add_settings_field(
@@ -640,6 +643,21 @@ function perfmatters_settings() {
             'placeholder' => 'example.js',
             'tooltip' => __('Delay specific JavaScript files by adding the source URL (example.js), or delay an inline script by adding a unique string from that script. Format: one per line', 'perfmatters'),
             'class' => 'assets-delay_js assets-delay_js_behavior perfmatters-select-control-' . (!empty($perfmatters_options['assets']['delay_js_behavior']) || empty($perfmatters_options['assets']['delay_js']) ? ' hidden' : '')
+        )
+    );
+
+    //delay js quick exclusions
+    add_settings_field(
+        'delay_js_quick_exclusions', 
+        perfmatters_title(__('Quick Exclusions', 'perfmatters'), 'delay_js_quick_exclusions', 'https://perfmatters.io/docs/delay-javascript/#quick-exclusions'), 
+        'perfmatters_print_quick_exclusions', 
+        'perfmatters_options', 
+        'assets_js', 
+        array(
+            'id' => 'delay_js_quick_exclusions',
+            'section' => 'assets',
+            'tooltip' => __('Exclude scripts for popular plugins and themes based on our predefined lists of common exclusions.', 'perfmatters'),
+            'class' => 'assets-delay_js assets-delay_js_behavior perfmatters-select-control-all' . (empty($perfmatters_options['assets']['delay_js_behavior'])  || empty($perfmatters_options['assets']['delay_js']) ? ' hidden' : '') . ' delay_js_quick_exclusions'
         )
     );
 
@@ -928,7 +946,7 @@ function perfmatters_settings() {
     //preload critical images
     add_settings_field(
         'critical_images', 
-        perfmatters_title(__('Preload Critical Images', 'perfmatters') . '<span class="perfmatters-beta">BETA</span>', 'critical_images', 'https://perfmatters.io/docs/preload/#critical-images'), 
+        perfmatters_title(__('Preload Critical Images', 'perfmatters'), 'critical_images', 'https://perfmatters.io/docs/preload/#critical-images'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'preload', 
@@ -1165,18 +1183,18 @@ function perfmatters_settings() {
     /**********************************************************/
     add_settings_section('perfmatters_fonts', __('Fonts', 'perfmatters'), '__return_false', 'perfmatters_options');
 
-    //disable google fonts
+    //local google fonts
     add_settings_field(
-        'disable_google_fonts', 
-        perfmatters_title(__('Disable Google Fonts', 'perfmatters'), 'disable_google_fonts', 'https://perfmatters.io/docs/disable-google-fonts/'), 
+        'local_google_fonts', 
+        perfmatters_title(__('Local Google Fonts', 'perfmatters'), 'local_google_fonts', 'https://perfmatters.io/docs/host-google-fonts-locally/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_fonts', 
         array(
             'section' => 'fonts',
-            'id' => 'disable_google_fonts',
-            'class' => 'perfmatters-input-controller',
-            'tooltip' => __('Removes any instances of Google Fonts being loaded across your entire site.', 'perfmatters')
+            'id' => 'local_google_fonts',
+            'class' => 'perfmatters-input-controller fonts-disable_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) ? ' hidden' : ''),
+            'tooltip' => __('Host Google Font files locally on your server or CDN.', 'perfmatters')
         )
     );
 
@@ -1195,21 +1213,6 @@ function perfmatters_settings() {
         )
     );
 
-    //local google fonts
-    add_settings_field(
-        'local_google_fonts', 
-        perfmatters_title(__('Local Google Fonts', 'perfmatters'), 'local_google_fonts', 'https://perfmatters.io/docs/host-google-fonts-locally/'), 
-        'perfmatters_print_input', 
-        'perfmatters_options', 
-        'perfmatters_fonts', 
-        array(
-            'section' => 'fonts',
-            'id' => 'local_google_fonts',
-            'class' => 'fonts-disable_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) ? ' hidden' : ''),
-            'tooltip' => __('Host Google Font files locally on your server or CDN.', 'perfmatters')
-        )
-    );
-
     //cdn url
     add_settings_field(
         'cdn_url', 
@@ -1221,7 +1224,7 @@ function perfmatters_settings() {
             'section' => 'fonts',
             'id' => 'cdn_url',
             'input' => 'text',
-            'class' => 'fonts-disable_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) ? ' hidden' : ''),
+            'class' => 'fonts-disable_google_fonts fonts-local_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) || empty($perfmatters_options['fonts']['local_google_fonts']) ? ' hidden' : ''),
             'placeholder' => 'https://cdn.example.com',
             'tooltip' => __('Use your CDN URL when referencing Google Font files inside a parent stylesheet. Example: https://cdn.example.com', 'perfmatters')
         )
@@ -1239,7 +1242,7 @@ function perfmatters_settings() {
             'id' => 'clear_fonts',
             'input' => 'button',
             'title' => __('Clear Local Fonts', 'perfmatters'),
-            'class' => 'fonts-disable_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) ? ' hidden' : ''),
+            'class' => 'fonts-disable_google_fonts fonts-local_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) || empty($perfmatters_options['fonts']['local_google_fonts']) ? ' hidden' : ''),
             'tooltip' => __('Remove all existing local Google Font files and stylesheets.', 'perfmatters')
         )
     );
@@ -1256,11 +1259,26 @@ function perfmatters_settings() {
             array(
                 'section' => 'fonts',
                 'id' => 'async',
-                'class' => 'fonts-disable_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) ? ' hidden' : ''),
+                'class' => 'fonts-disable_google_fonts fonts-local_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) || empty($perfmatters_options['fonts']['local_google_fonts']) ? ' hidden' : ''),
                 'tooltip' => __('Load local font stylesheets asynchronously. Preloading individual font files is recommended when this option is enabled.', 'perfmatters')
             )
         );
     }
+
+    //disable google fonts
+    add_settings_field(
+        'disable_google_fonts', 
+        perfmatters_title(__('Disable Google Fonts', 'perfmatters'), 'disable_google_fonts', 'https://perfmatters.io/docs/disable-google-fonts/'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'perfmatters_fonts', 
+        array(
+            'section' => 'fonts',
+            'id' => 'disable_google_fonts',
+            'class' => 'perfmatters-input-controller',
+            'tooltip' => __('Removes any instances of Google Fonts being loaded across your entire site.', 'perfmatters')
+        )
+    );
 
     /* cdn section
     /**********************************************************/
@@ -1396,7 +1414,8 @@ function perfmatters_settings() {
                 'gtagv4' => 'gtag.js v4',
                 'gtag' => 'gtag.js',
                 'minimal' => __('Minimal', 'perfmatters'),
-                'minimal_inline' => __('Minimal Inline', 'perfmatters')
+                'minimal_inline' => __('Minimal Inline', 'perfmatters'),
+                'minimalv4' => __('Minimal v4', 'perfmatters')
             ),
             'class' => 'perfmatters-input-controller',
             'tooltip' => __('Choose which script method you would like to use.', 'perfmatters')
@@ -1428,7 +1447,7 @@ function perfmatters_settings() {
         array(
             'section' => 'analytics',
             'id' => 'anonymize_ip',
-            'class' => 'analytics-script_type perfmatters-select-control-gtagv4 perfmatters-control-reverse' . (!empty($perfmatters_options['analytics']['script_type']) && $perfmatters_options['analytics']['script_type'] == 'gtagv4' ? ' hidden' : ''),
+            'class' => 'analytics-script_type perfmatters-select-control-gtagv4 perfmatters-select-control-minimalv4 perfmatters-control-reverse' . (!empty($perfmatters_options['analytics']['script_type']) && ($perfmatters_options['analytics']['script_type'] == 'gtagv4' || $perfmatters_options['analytics']['script_type'] == 'minimalv4') ? ' hidden' : ''),
             'tooltip' => __('Shorten visitor IP to comply with privacy restrictions in some countries.', 'perfmatters')
         )
     );
@@ -1505,7 +1524,7 @@ function perfmatters_settings() {
         array(
             'section' => 'analytics',
             'id' => 'enable_amp',
-            'class' => 'analytics-script_type perfmatters-select-control-gtagv4 perfmatters-control-reverse' . (!empty($perfmatters_options['analytics']['script_type']) && $perfmatters_options['analytics']['script_type'] == 'gtagv4' ? ' hidden' : ''),
+            'class' => 'analytics-script_type perfmatters-select-control-gtagv4 perfmatters-select-control-minimalv4 perfmatters-control-reverse' . (!empty($perfmatters_options['analytics']['script_type']) && ($perfmatters_options['analytics']['script_type'] == 'gtagv4' || $perfmatters_options['analytics']['script_type'] == 'minimalv4') ? ' hidden' : ''),
             'tooltip' => __('Enable support for analytics tracking on AMP sites. This is not a local script, but a native AMP script.', 'perfmatters')
         )
     );
@@ -1905,11 +1924,11 @@ function perfmatters_network_defaults(&$defaults, $option) {
 }
 
 //print settings section
-function perfmatters_settings_section($page, $section) {
+function perfmatters_settings_section($page, $section, $dashicon = '', $class = '') {
     global $wp_settings_sections;
     if(!empty($wp_settings_sections[$page][$section])) {
         echo '<div class="perfmatters-settings-section">';
-            echo '<h2>' . __($wp_settings_sections[$page][$section]['title'], 'perfmatters') . '</h2>';
+            echo '<h2>' . ($dashicon ? '<span class="dashicons ' . $dashicon . '"></span>' : '') . __($wp_settings_sections[$page][$section]['title'], 'perfmatters') . '</h2>';
             echo '<table class="form-table">';
                 echo '<tbody>';
                     do_settings_fields($page, $section);
@@ -2023,6 +2042,102 @@ function perfmatters_print_input($args) {
 	if(!empty($args['tooltip'])) {
 		perfmatters_tooltip($args['tooltip']);
 	}
+}
+
+//print simple exclusions
+function perfmatters_print_quick_exclusions($args) {
+
+    $options = get_option('perfmatters_options');
+
+    //master exclusions array
+    $master = Perfmatters\JS::get_quick_exclusions_master();
+
+    //local exclusions
+    $exclusions = array(
+        'plugins' => array(
+            'title' => __('Plugins', 'perfmatters'),
+            'items' => array(),
+            'dashicon' => 'admin-plugins'
+        ),
+        'themes' => array(
+            'title' => __('Themes', 'perfmatters'),
+            'items' => array(),
+            'dashicon' => 'admin-appearance'
+        )
+    );
+
+    //add any active plugin sets to list
+    $active_plugins = (array) get_option('active_plugins', array());
+
+    if(is_multisite()) {
+        $active_plugins = array_merge($active_plugins, array_keys((array) get_site_option('active_sitewide_plugins', array())));
+    }
+
+    foreach($master['plugins'] as $key => $exclusion_set) {
+        if(in_array($exclusion_set['id'], $active_plugins)) {
+            $exclusions['plugins']['items'][] = $key;
+        }
+    }
+
+    //add any active theme sets to list
+    $theme = wp_get_theme();
+    $parent = $theme->get_template();
+    $active_theme = strtolower(!empty($parent) ? $parent : $theme->get('Name'));
+
+    foreach($master['themes'] as $key => $exclusion_set) {
+        if($exclusion_set['id'] == $active_theme) {
+            $exclusions['themes']['items'][] = $key;
+        }
+    }
+
+    //quick exclusions ui
+    echo '<div class="perfmatters-input-row-wrapper">';
+        echo '<div class="perfmatters-input-row-container">';
+
+            if(empty($exclusions['plugins']['items']) && empty($exclusions['themes']['items'])) {
+                echo '<style>.delay_js_quick_exclusions { display: none; }</style>';
+            }
+
+            foreach($exclusions as $type => $data) {
+
+                if(!empty($data['items'])) {
+
+                    $opened = !empty($options['assets']['delay_js_quick_exclusions'][$type]) ? ' perfmatters-opened' : '';
+
+                    //quick exclusion section
+                    echo '<div class="perfmatters-quick-exclusion' . $opened . '">';
+
+                        //title bar
+                        echo '<div class="perfmatters-quick-exclusion-title-bar" style="display: flex; justify-content: space-between;">';
+                            echo '<div style="display: flex; align-items: center;">';
+                                echo '<span class="dashicons dashicons-' . $data['dashicon'] . '" style="margin-right: 5px;"></span>';
+                                echo $data['title'];
+                            echo '</div>';
+
+                            echo '<span class="perfmatters-quick-exclusion-toggle dashicons dashicons-plus"></span>';
+                            echo '<span class="perfmatters-quick-exclusion-toggle dashicons dashicons-minus"></span>';
+                        echo '</div>';
+
+                        //exclusions
+                        echo '<div class="perfmatters-quick-exclusion-items">';
+                            foreach($data['items'] as $item) {
+                                echo '<div style="margin-top: 5px;">';
+                                    echo '<input type="checkbox" name="perfmatters_options[assets][delay_js_quick_exclusions][' . $type . '][' . $item . ']" value="1" ' . (!empty($options['assets'][$args['id']][$type][$item]) ? 'checked ' : '') . '/>';
+                                    echo $master[$type][$item]['title'];
+                                echo '</div >';
+                            }
+                        echo '</div>';
+
+                    echo '</div>';
+                }
+            }
+        echo '</div>';
+    echo '</div>';
+
+    //tooltip
+    if(!empty($args['tooltip'])) {
+        perfmatters_tooltip($args['tooltip']);
+    }
 }
 
 //print preload

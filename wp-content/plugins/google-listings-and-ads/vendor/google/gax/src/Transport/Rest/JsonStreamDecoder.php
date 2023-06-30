@@ -32,7 +32,7 @@
 
 namespace Google\ApiCore\Transport\Rest;
 
-use Psr\Http\Message\StreamInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
 class JsonStreamDecoder

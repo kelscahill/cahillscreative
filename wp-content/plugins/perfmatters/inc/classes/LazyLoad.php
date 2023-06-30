@@ -338,12 +338,12 @@ class LazyLoad
 
 		//fade in effect
 		if(!empty(Config::$options['lazyload']['fade_in'])) {
-			$styles.= '.perfmatters-lazy:not(picture),.perfmatters-lazy>img{opacity:0}.perfmatters-lazy.pmloaded,.perfmatters-lazy>img.pmloaded,.perfmatters-lazy[data-ll-status=entered],.perfmatters-lazy.pmloaded>img{opacity:1;transition:opacity ' . apply_filters('perfmatters_fade_in_speed', 500) . 'ms}';
+			$styles.= '.perfmatters-lazy.pmloaded,.perfmatters-lazy.pmloaded>img,.perfmatters-lazy>img.pmloaded,.perfmatters-lazy[data-ll-status=entered]{animation:' . apply_filters('perfmatters_fade_in_speed', 500) . 'ms pmFadeIn}@keyframes pmFadeIn{0%{opacity:0}100%{opacity:1}}';
 		}
 
 		//css background images
 		if(!empty(Config::$options['lazyload']['css_background_images'])) {
-			$styles.='body .perfmatters-lazy-css-bg:not([data-ll-status=entered]),body .perfmatters-lazy-css-bg:not([data-ll-status=entered]) *,body .perfmatters-lazy-css-bg:not([data-ll-status=entered])::before{background-image:none!important;will-change:transform;transition:opacity 0.025s ease-in,transform 0.025s ease-in!important;}';
+			$styles.='body .perfmatters-lazy-css-bg:not([data-ll-status=entered]),body .perfmatters-lazy-css-bg:not([data-ll-status=entered]) *,body .perfmatters-lazy-css-bg:not([data-ll-status=entered])::before,body .perfmatters-lazy-css-bg:not([data-ll-status=entered])::after{background-image:none!important;will-change:transform;transition:opacity 0.025s ease-in,transform 0.025s ease-in!important;}';
 		}
 		
 		//print styles
@@ -648,7 +648,8 @@ class LazyLoad
 		//base exclusions
 		$attributes = array(
 			'data-perfmatters-preload',
-			'gform_ajax_frame'
+			'gform_ajax_frame',
+			';base64'
 		); 
 
 		//get exclusions added from settings

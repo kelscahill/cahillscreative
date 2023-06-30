@@ -6,6 +6,12 @@ class blog
 {
 	use \plainview\sdk_broadcast\traits\method_chaining;
 
+	/**
+		@brief		Temporary property.
+		@since		2023-04-19 21:51:33
+	**/
+	public $__edit_url;
+
 	public $id;
 
 	/**
@@ -31,6 +37,12 @@ class blog
 	public $path;
 
 	public $required = false;
+
+	/**
+		@brief		The site URL.
+		@since		2023-04-19 21:50:39
+	**/
+	public $siteurl = false;
 
 	public $selected = false;
 
@@ -156,7 +168,7 @@ class blog
 		}
 		if ( property_exists( $r, 'blog_id' ) )
 			$r->id = intval( $r->blog_id );
-		if ( ! property_exists( $r, 'siteurl' ) )
+		if ( $r->siteurl === false )
 			$r->siteurl = get_blog_option( $r->id, 'home' );
 		if ( ! property_exists( $r, 'blogname' ) )
 			$r->blogname = '';

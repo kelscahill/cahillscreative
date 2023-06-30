@@ -19,7 +19,7 @@ namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\Middlew
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\FetchAuthTokenInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\GetQuotaProjectInterface;
-use Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
 
 /**
  * AuthTokenMiddleware is a Guzzle Middleware that adds an Authorization header

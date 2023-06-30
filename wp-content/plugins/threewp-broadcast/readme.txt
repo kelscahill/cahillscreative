@@ -4,9 +4,9 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 7.4
-Stable tag: 50
+Stable tag: 50.01
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
-Tested up to: 6.2
+Tested up to: 6.2.2
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -179,6 +179,7 @@ These add-ons give you extra control of what you broadcast and how:
 * <a href="https://broadcast.plainviewplugins.com/addon/redirect-all-children/">Redirect All Children</a> redirects single post views from visitors of child posts to the parent post.
 * <a href="https://broadcast.plainviewplugins.com/addon/redirect-parent/">Redirect Parent</a> redirect all views of a parent post to the first child post.
 * <a href="https://broadcast.plainviewplugins.com/addon/relink-to-parent/">Relink To Parent</a>: Relink an unlinked child to the parent.
+* <a href="https://broadcast.plainviewplugins.com/addon/same-post-id/">Same post ID</a>: Create a new post on several blogs with the same post ID.
 * <a href="https://broadcast.plainviewplugins.com/addon/search-and-replace/">Search And Replace</a> finds and replaces texts in posts during broadcast.
 * <a href="https://broadcast.plainviewplugins.com/addon/shortcode-attachments/">Shortcode Attachments</a> modifies attachment IDs found in shortcodes to match their equivalent attachments on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/shortcode-menus/">Shortcode Menus</a> modifies menu IDs found in shortcodes to match their equivalent menus on each blog.
@@ -368,6 +369,11 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 50.1 20230407 =
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/same-post-id/">Same post ID</a>: Create a new post on several blogs with the same post ID.
+* Code: SDK update for PHP 8.2 compatibility.
 
 = 50 20230407 =
 

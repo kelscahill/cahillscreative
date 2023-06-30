@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7;
 
 use InvalidArgumentException;
-use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UploadedFileInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\StreamInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 
 class UploadedFile implements UploadedFileInterface

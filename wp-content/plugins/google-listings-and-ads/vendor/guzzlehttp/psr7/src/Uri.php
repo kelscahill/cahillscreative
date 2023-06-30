@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7\Exception\MalformedUriException;
-use Psr\Http\Message\UriInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\UriInterface;
 
 /**
  * PSR-7 URI implementation.

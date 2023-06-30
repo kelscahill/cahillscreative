@@ -54,6 +54,8 @@ class Service extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google
    * @var string
    */
   public $shipmentType;
+  protected $storeConfigType = ServiceStoreConfig::class;
+  protected $storeConfigDataType = '';
 
   /**
    * @param bool
@@ -208,6 +210,20 @@ class Service extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google
   public function getShipmentType()
   {
     return $this->shipmentType;
+  }
+  /**
+   * @param ServiceStoreConfig
+   */
+  public function setStoreConfig(ServiceStoreConfig $storeConfig)
+  {
+    $this->storeConfig = $storeConfig;
+  }
+  /**
+   * @return ServiceStoreConfig
+   */
+  public function getStoreConfig()
+  {
+    return $this->storeConfig;
   }
 }
 

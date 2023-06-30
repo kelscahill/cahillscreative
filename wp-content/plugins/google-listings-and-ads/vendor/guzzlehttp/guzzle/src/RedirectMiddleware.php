@@ -5,9 +5,9 @@ namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Exception\BadResponseException;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Exception\TooManyRedirectsException;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Promise\PromiseInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\ResponseInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\UriInterface;
 
 /**
  * Request redirect middleware.
@@ -27,10 +27,10 @@ class RedirectMiddleware
      * @var array
      */
     public static $defaultSettings = [
-        'max'             => 5,
-        'protocols'       => ['http', 'https'],
-        'strict'          => false,
-        'referer'         => false,
+        'max' => 5,
+        'protocols' => ['http', 'https'],
+        'strict' => false,
+        'referer' => false,
         'track_redirects' => false,
     ];
 

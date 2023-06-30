@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7;
 
-use Psr\Http\Message\UriInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\UriInterface;
 
 /**
  * Provides methods to determine if a modified URL should be considered cross-origin.

@@ -4,8 +4,8 @@ Donate link: https://perfmatters.io
 Tags: perfmatters
 Requires at least: 5.5
 Requires PHP: 7.0
-Tested up to: 6.1.1
-Stable tag: 2.0.5
+Tested up to: 6.2.2
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,65 @@ Perfmatters is a lightweight performance plugin developed to speed up your WordP
 Check out our [documentation](https://perfmatters.io/docs/) for more information on how to use Perfmatters.
 
 == Changelog ==
+
+= 2.1.1 - 05.31.2023 =
+* Added WP-CLI support for managing plugin license key activation.
+* Changed behavior of Disable Cart Fragments toggle to only load cart fragmentation script when there are items in the cart.
+* Added default array for critical image preload exclusions that are always needed.
+* Added additional Delay JS quick exclusions for Bricks Slider and WP Armour.
+* Added additional built-in exclusions for Remove Unused CSS for better compatibility with Elementor and Google Reviews Widget.
+* Updated lazy loading fade-in effect to use CSS animation property instead of transition for better compatibility with existing element transitions.
+* Added requirement for advanced options to be turned on to be able to defer jQuery.
+* Added WP-CLI request exclusion to MU plugin functions.
+* Fixed a PHP warning that could sometimes be generated if an image was not able to be parsed for missing dimensions.
+* Updated instant.page library to version 5.2.0.
+* Translation updates.
+
+= 2.1.0 - 05.01.2023 =
+* Added new delay JS option for Quick Exclusions that will show up when certain popular plugins and themes are activated.
+* Made some updates to the Script Manager UI to match recent changes to the main plugin settings.
+* Cleared out some code for the previous settings admin header that was no longer needed.
+* Made an adjustment to CDN URL function to work even if a trailing slash was entered.
+* Rearranged our local and Google font options to give frequently used options more priority.
+* Fixed a bug where multiple settings sections were displaying at the same time after saving from the database tab.
+* Fixed an issue where accessibility mode tooltips were not getting styled properly in the plugin UI.
+* Fixed a styling issue where link and button colors were getting applied outside of the main Perfmatters admin container.
+* Fixed an issue in MU Mode where the global filtered plugin list would not always return correctly.
+* Translation updates.
+
+= 2.0.9 - 03.30.2023 =
+* Updated Request library functions used to download local font files to fix a compatibility issue with WordPress 6.2.
+* Added new perfmatters_preloads_ready filter.
+* Fixed a styling issue in Safari where the settings UI logo was getting clipped.
+
+= 2.0.8 - 03.29.2023 =
+* Updated plugin settings UI. Completely overhauled admin header and navigation. Made additional improvements to various elements (icons, buttons, toggles, etc.).
+* Added additional checks to allow PERFMATTERS_CACHE_DIR and PERFMATTERS_CACHE_URL to be manually set in wp-config.php.
+* Updated user agent for local font remote request.
+* Fixed an issue where multiple preload tags for the same resource could be printed if the resource was matched more than once in the DOM.
+* Fixed an issue where an individually delayed script would fail to load if it matched more than one delayed script entry.
+* Fixed an issue where FastClick script could still load even if Delay JS was turned off.
+* Translation updates.
+
+= 2.0.7 - 03.10.2023 =
+* Fixed an issue that was introduced in the last update that was causing certain images that had their HTML modified by another tool not to lazy load correctly.
+* Translation updates.
+
+= 2.0.6 - 03.02.2023 =
+* Added new Minimal v4 script type option in local analytics.
+* Added support for ::after pseudo element when lazy loading CSS background images.
+* Added support for AVIF images in a source tag to preload critical images feature.
+* Added new perfmatters_preload_critical_images filter.
+* Added new perfmatters_image_dimensions_exclusions filter.
+* Added notice to plugin update row if there is not an active license key.
+* Added async attribute to Instant Page script tag.
+* Added async attribute to all relevant local analytics script tags.
+* Reworked preload class to allow managing preloads entirely with perfmatters_preloads filter if needed.
+* Fixed an issue in MU Mode where plugins would not always disable correctly when helper plugins with similar directories were also active.
+* Fixed a couple of PHP warnings in MU plugin that would show up when certain variables were not declared.
+* Fixed an issue where our lazy loading script was attempting to load in images that had been prepped by another active lazy loader.
+* Fixed an issue where base64 encoded images were being picked up by missing image dimensions feature.
+* Removed BETA tag from preload critical images option.
 
 = 2.0.5 - 02.02.2023 =
 * Added new perfmatters_exclude_leading_images filter.
@@ -617,189 +676,3 @@ Check out our [documentation](https://perfmatters.io/docs/) for more information
 = 1.3.7 – 05.29.2019 =
 * Added links to the Script Manager from the posts list page and post edit page which will take you to the front end and load the Script Manager for the corresponding post.
 * Added warning notices for both WP_POST_REVISIONS and AUTOSAVE_INTERVAL if they are set in Perfmatters while also defined elsewhere.
-
-= 1.3.6 – 04.21.2019 =
-* Added new option to Disable Google Fonts.
-* Removed option to Disable Completely from the Disable REST API dropdown due to core WordPress compatibility issues. Permission model is now the recommended method.
-* Added additional object check to prevent PHP warning in certain cases when using the Separate Archives option in the Script Manager.
-* Added some additional logic to filter duplicate scripts out of the Script Manager master array if they are present.
-* CSS fixes in the Script Manager for better compatibility.
-* Expanded the Script Manager current ID function for better reliability.
-
-= 1.3.5 – 03.10.2019 =
-* Added new Disable WordPress REST API option which will disable REST API requests and display an authentication error message if the requester doesn’t have permission.
-* Added additional action removal to the Remove REST API Links function.
-* Made some changes to the Script Manager save button. It is now fixed on the bottom of the screen for easier access without having to scroll.
-* Additional Script Manager style adjustments.
-
-= 1.3.4 – 02.13.2019 =
-* Minor update to Remove Comment URLs function priority for better compatibility with theme templates.
-
-= 1.3.3 – 02.13.2019 =
-* Added new option to Remove Comment URLs.
-* Added French (fr_FR) language translation. Props to @adbchris. 👏
-* Fixed a PHP warning that would occur when saving Script Manager settings in some instances when Display Archives was also enabled.
-
-= 1.3.2 – 01.13.2019 =
-* Added new option to Add Blank Favicon in the Extras tab.
-* Fixed an issue in the Script Manager Global View where options set for the home page would show up as a 0 with a broken link.
-* Added some additional styles to the main Script Manager view for better compatibility.
-
-= 1.3.1 – 12.07.2018 =
-* Fixed a bug that would sometimes cause an enabled message to display on the front end when using the Regex option in the Script Manager.
-
-= 1.3.0 – 11.23.2018 =
-* Added new Regex option the Script Manager for both disables and exceptions.
-* Added new Reset option in the Script Manager settings which allows for a complete wipe + reset of all configured Script Manager options.
-* Added additional Script Manager styles to improve compatibility.
-* Added new status message in Script Manager global view when no options have been set.
-
-= 1.2.9 – 10.28.2018 =
-* Updated uninstallation function to account for new Script Manager settings.
-* Updated Google Analytics Disable Display Features function to work correctly with Google’s new format.
-* Added support to Use MonsterInsights along with Perfmatters local analytics (analytics.js) hosting functionality. 🎉
-* Added new option in Script Manager settings to Display Archives which will allow you to selectively enable scripts on generated archive pages.
-
-= 1.2.8 – 09.23.2018 =
-* Added mobile + responsive styles to the Script Manager navigation.
-* Added additional styles to the Script Manager for compatibility.
-* Script Manager javascript changes + improvements, specifically for compatibility with sites script minification plugins.
-* Fixed a bug where the Script Manager disclaimer would not turn back on after being switched off.
-
-= 1.2.7 – 09.09.2018 =
-* Small patch to check for a required WP function and include core file if necessary for some setups.
-
-= 1.2.6 – 09.09.2018 =
-* All new Script Manager! View updated documentation at https://perfmatters.io/docs/disable-scripts-per-post-page/.
-* Fix to remove Emoji DNS Prefetch when Emojis are disabled
-
-= Version 1.2.5 – 07.31.2018 =
-* Fixed an issue with the Change Login URL function that was causing an error when using WP-CLI.
-* Added some additional compatibility styles to the Script Manager.
-
-= 1.2.4 – 07.15.2018 =
-* Fixed a bug in the Script Manager that caused Current URL Enable checkboxes to not save properly in certain situations.
-* Updated EDD license functions to process proper SSL verification when calling the WordPress HTTP API.
-* Updated perfmatters_default_options array with new options from recent updates.
-* Removed BETA tag from Local Analytics option.
-* Added more details to the Script Manager Global Settings to see which post IDs and post types have settings assigned to them.
-* Additional styles added to the Script Manager for better compatibility.
-* Updated .pot and translation files.
-
-= 1.2.3 – 07.01.2018 =
-* Bugfix – Rolled back some of the heartbeat changes from the previous update to do some additional testing. Should solve some plugin conflicts that popped up.
-
-= 1.2.2 – 07.01.2018 =
-* Added additional WooCommerce checks for WC specific pages before running disable functions.
-* Changes to the Disable Heartbeat function to avoid causing a script dependency error.
-* Added new Disable Password Strength Meter option.
-* Fixed an issue that was causing Script Manger dropdown colors to not display correctly when jQuery was disabled.
-* Modified admin notice to print our using ‘admin_notices’ hook. (credit: Christian Follmann)
-* Made some adjustments to Script Manager copy to remove unnecessary HTML from the translations. (credit: Christian Follmann)
-* Props to Hasan Basri (www.hasanbasri93.com) for Indonesian (id_ID) translation. 👏
-* Updated translations based on the new .pot file.
-* Various other minor tweaks + improvements.
-
-= 1.2.1 – 05.20.2018 =
-* Updated Local Analytics function to improve compatibility with different server setups.
-
-= Version 1.2.0 – 05.17.2018 =
-* New option to Enable Local Analytics, along with a new dedicated Google Analytics tab with various related options.
-* Added some additional logic to redirect RSS Feed URLs when Disable RSS Feeds is toggled on.
-* Fixed an issue that was causing certain email links not to work when using a Custom Login URL.
-* Fixed a bug that was causing the password reset link not to function properly when using a Custom Login URL in a multisite environment.
-* Made some adjustments to the Disable Self Pingbacks function to fix an issue with case sensitivity.
-* Updated text domain for translations in the EDD Updater class.
-* Fixed a bug where the Clean Uninstall option would still show up on individual sites in a multisite environment.
-* Props to PDPK di Mauro Panzarola (https://pdpkapp.com) for Italian (it_IT) translation. 👏
-
-= 1.1.9 – 04.16.2018 =
-* Perfmatters is now translation ready! If you are interested in helping out with a translation, please contact us.
-* Props to Christian Foellmann (cfoellmann@GitHub) for German (de_DE) translation. 👏
-* Fixed a PHP undefined index warning in the Script Manager.
-* Fixed a bug that was causing issues with the Change Login URL slug when using certain permalink settings.
-
-= 1.1.8 – 03.27.2018 =
-* Fixed a compatibility issue with Script Manager dequeue priority that could cause it to not function properly.
-* Minor update to the uninstall function.
-
-= 1.1.7 – 03.19.2018 =
-* Fixed a bug that was causing the remove query strings option to conflict with files that have necessary query string parameters (Google Fonts).
-
-= 1.1.6 – 03.18.2018 =
-* Added new Clean Uninstall option in the extras tab.
-* Added new Preconnect option in the extras tab.
-
-= 1.1.5 – 02.26.2018 =
-* Fixed multiple PHP warnings related to settings + option initialization.
-
-= 1.1.4 – 02.20.2018 =
-* Added multisite support with the ability to manage default network settings and network access control.
-* Made some adjustments to plugin naming conventions throughout WordPress admin screens, menus, etc…
-* Removed BETA tag on Change Login URL option.
-
-= 1.1.3 – 01.11.2018 =
-* Added new Change Login URL (BETA) feature to change your WordPress login URL and block the default wp-admin and wp-login endpoints from being directly accessed.
-* Added new Disable Dashicons feature to disable Dashicons from the front-end when not logged in.
-
-= 1.1.2 – 12.19.2017 =
-* Added character masking to the license key input field.
-
-= 1.1.1 – 12.07.2017 =
-* Added new CDN URL Rewrite feature in a new settings tab with various settings to customize your configuration.
-* Added new Global Settings section in the Script Manager with a visual representation of the Script Manager options set across the entire site.
-* Made some updates to the Script Manager layout in preparation for future additional features.
-
-= 1.1.0 – 10.23.2017 =
-* Added new Disable Google Maps toggle.
-* Added some backend logic to the Script Manager to hide scripts that have already been disabled sitewide via the main plugin settings.
-* Update to the EDD license activation function variables to help prevent activation conflicts with other plugins.
-
-= 1.0.9 – 10.11.2017 =
-* Removed the toggle to disable WooCommerce reviews, as there is already a WooCommerce setting that provides that functionality.
-
-= 1.0.8 –  10.11.2017 =
-* Added new WooCommerce section to the options tab with multiple toggles to disable or limit certain WooCommerce scripts and functionality including the following:
-* Disable WooCommerce scripts and styles
-* Disable WooCommerce widgets
-* Disable WooCommerce status meta box
-* Disable WooCommerce cart fragments (AJAX) 
-* Added some new styles to the plugin admin page to allow for clearer organization of different sections.
-* Fixed an undefined index notice in the Script Manager.
-* Added some additional styles to the checkboxes in the Script Manager to fix a theme compatibility issue.
-
-= 1.0.7 – 09.03.2017 =
-* Added functionality to remove the shortlink HTTP header when Remove Shortlink is toggled on.
-* Added functionality to remove the xmlrpc.php link as well as the X-Pingback HTTP header when Disable XML-RPC is toggled on.
-
-= 1.0.6 – 08.29.2017 =
-* Removed BETA label from Script Manager.
-* Added new DNS Prefetch option in the Extras tab.
-
-= 1.0.5 – 08.22.2017 =
-* Added new toggle to Remove REST API Links.
-* Renamed ‘Remove Feed Links’ toggle for more clarification.
-* UI improvements, hovering tooltips, more links to the web documentation, etc…
-* Added version numbers to admin scripts to avoid caching on plugin update.
-* Refactored a good portion of the settings initialization code.
-* Removed “Beta” status for script manager. It has been fully tested now and is ready to use in production.
-
-= 1.0.4 – 07.20.2017 =
-* Fixed a few PHP warnings dealing with the Script Manager option array management.
-* Fixed a UI bug in the Script Manager causing certain post type check boxes to not be selectable.
-* Upgrade licensing feature added. You can now upgrade licenses from within your account and you are automatically prorated the new amount.
-
-= 1.0.3 – 07.16.2017 =
-* Introduced the new Script Manager feature to disable scripts on a per page/post basis.
-
-= 1.0.2 – 06.05.2017 =
-* Added Extras tab with a new option for Accessibility Mode. Enabling this will turn off the custom styles we use for our settings toggles and revert to standard HTML checkboxes.
-* Additional accessibility improvements.
-* A few style fixes.
-* WordPress 4.8 support.
-
-= 1.0.1 – 06.04.2017 =
-* Accessibility improvements to the plugin settings page.
-
-= 1.0.0 – 06.01.2017 =
-* Plugin launched.

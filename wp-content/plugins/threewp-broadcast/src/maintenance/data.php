@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\maintenance;
 
+use TypeError;
+
 class data
 {
 	public $checks;
@@ -39,7 +41,14 @@ class data
 		if ( ! is_readable( $filename ) )
 			file_put_contents( $filename, '' );
 		$data = file_get_contents( $filename );
-		$data = unserialize( $data );
+		try
+		{
+			$data = unserialize( $data );
+		}
+		catch ( TypeError $e )
+		{
+			$data = false;
+		}
 		if ( ! $data )
 			$data = new data( $controller );
 		return $data;

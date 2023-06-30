@@ -4,10 +4,10 @@ namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Exceptio
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\BodySummarizer;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\BodySummarizerInterface;
-use Psr\Http\Client\RequestExceptionInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Client\RequestExceptionInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\ResponseInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\UriInterface;
 
 /**
  * HTTP Request exception

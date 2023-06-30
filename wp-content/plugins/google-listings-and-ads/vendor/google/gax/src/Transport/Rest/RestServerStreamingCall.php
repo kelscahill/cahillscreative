@@ -37,8 +37,8 @@ use Google\ApiCore\ApiStatus;
 use Google\ApiCore\ServerStreamingCallInterface;
 use Google\Rpc\Code;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Exception\RequestException;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\ResponseInterface;
 use stdClass;
 
 /**

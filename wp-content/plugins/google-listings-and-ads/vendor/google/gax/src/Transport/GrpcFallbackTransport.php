@@ -41,8 +41,8 @@ use Google\Protobuf\Internal\Message;
 use Google\Rpc\Status;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Exception\RequestException;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7\Request;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\ResponseInterface;
 
 /**
  * A transport that sends protobuf over HTTP 1.1 that can be used when full gRPC support
@@ -170,9 +170,7 @@ class GrpcFallbackTransport implements TransportInterface
      */
     private function getCallOptions(array $options)
     {
-        $callOptions = isset($options['transportOptions']['grpcFallbackOptions'])
-            ? $options['transportOptions']['grpcFallbackOptions']
-            : [];
+        $callOptions = $options['transportOptions']['grpcFallbackOptions'] ?? [];
 
         if (isset($options['timeoutMillis'])) {
             $callOptions['timeout'] = $options['timeoutMillis'] / 1000;

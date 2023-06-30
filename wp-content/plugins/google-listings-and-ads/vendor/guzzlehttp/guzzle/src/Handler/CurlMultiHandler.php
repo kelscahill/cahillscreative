@@ -6,7 +6,7 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Promise as P;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Promise\Promise;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Promise\PromiseInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Utils;
-use Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
 
 /**
  * Returns an asynchronous response using curl_multi_* functions.
@@ -164,7 +164,8 @@ class CurlMultiHandler
             \usleep(250);
         }
 
-        while (\curl_multi_exec($this->_mh, $this->active) === \CURLM_CALL_MULTI_PERFORM);
+        while (\curl_multi_exec($this->_mh, $this->active) === \CURLM_CALL_MULTI_PERFORM) {
+        }
 
         $this->processMessages();
     }

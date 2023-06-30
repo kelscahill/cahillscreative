@@ -4,9 +4,9 @@ namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Handler;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7\Response;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Utils;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\ResponseInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\StreamInterface;
 
 /**
  * Represents a cURL easy handle and the data it populates.
@@ -106,7 +106,7 @@ final class EasyHandle
      */
     public function __get($name)
     {
-        $msg = $name === 'handle' ? 'The EasyHandle has been released' : 'Invalid property: ' . $name;
+        $msg = $name === 'handle' ? 'The EasyHandle has been released' : 'Invalid property: '.$name;
         throw new \BadMethodCallException($msg);
     }
 }

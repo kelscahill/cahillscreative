@@ -17,8 +17,8 @@
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\HttpHandler;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\ClientInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\ResponseInterface;
 
 class Guzzle6HttpHandler
 {

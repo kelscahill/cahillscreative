@@ -4,7 +4,7 @@ namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Handler;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Promise\PromiseInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\RequestOptions;
-use Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
 
 /**
  * Provides basic proxies for handlers.

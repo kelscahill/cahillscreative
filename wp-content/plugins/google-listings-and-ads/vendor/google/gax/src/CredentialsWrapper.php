@@ -40,8 +40,8 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\CredentialsLo
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\FetchAuthTokenCache;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\FetchAuthTokenInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\GetQuotaProjectInterface;
-use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\HttpHandler\Guzzle5HttpHandler;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\HttpHandler\Guzzle6HttpHandler;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\HttpHandler\Guzzle7HttpHandler;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\UpdateMetadataInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -232,7 +232,7 @@ class CredentialsWrapper
     }
 
     /**
-     * @return Guzzle5HttpHandler|Guzzle6HttpHandler
+     * @return Guzzle6HttpHandler|Guzzle7HttpHandler
      * @throws ValidationException
      */
     private static function buildHttpHandlerFactory()

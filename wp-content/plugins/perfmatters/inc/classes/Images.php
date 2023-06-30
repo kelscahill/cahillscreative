@@ -29,6 +29,12 @@ class Images
             //remove any duplicate images
             $images = array_unique($images, SORT_REGULAR);
 
+            //exclude specific images
+            $image_exclusions = array(
+                ';base64'
+            );
+            $image_exclusions = apply_filters('perfmatters_image_dimensions_exclusions', $image_exclusions);
+
             //loop through images
             foreach($images as $image) {
 
@@ -36,6 +42,12 @@ class Images
                 $image_atts = Utilities::get_atts_array($image[1]);
 
                 if(!empty($image_atts['src'])) {
+
+                    foreach($image_exclusions as $exclude) {
+                        if(strpos($image[1], $exclude) !== false) {
+                            continue 2;
+                        }
+                    }
 
                     //get image dimensions
                     $dimensions = self::get_dimensions_from_url($image_atts['src']);
@@ -69,7 +81,11 @@ class Images
         }
 
         //get image path
-        $image_path = str_replace('/wp-content', '', WP_CONTENT_DIR) . '/' . parse_url($url)['path'];
+        $parsed_url = parse_url($url);
+        if(empty($parsed_url['path'])) {
+            return false;
+        }
+        $image_path = str_replace('/wp-content', '', WP_CONTENT_DIR) . '/' . $parsed_url['path'];
 
         if(file_exists($image_path)) {
 

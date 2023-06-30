@@ -17,10 +17,9 @@ trait broadcast_data
 	**/
 	public function broadcast_data_cache()
 	{
-		$property = 'broadcast_data_cache';
-		if ( ! property_exists( $this, $property ) )
-			$this->$property = new \threewp_broadcast\broadcast_data\cache;
-		return $this->$property;
+		if ( $this->broadcast_data_cache === null )
+			$this->broadcast_data_cache = new \threewp_broadcast\broadcast_data\cache;
+		return $this->broadcast_data_cache;
 	}
 
 	/**

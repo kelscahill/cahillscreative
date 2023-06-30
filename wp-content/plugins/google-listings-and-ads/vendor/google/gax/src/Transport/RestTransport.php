@@ -42,8 +42,8 @@ use Google\ApiCore\ValidationException;
 use Google\ApiCore\ValidationTrait;
 use Google\Protobuf\Internal\Message;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Exception\RequestException;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\ResponseInterface;
 
 /**
  * A REST based transport implementation.
@@ -253,9 +253,7 @@ class RestTransport implements TransportInterface
      */
     private function getCallOptions(array $options)
     {
-        $callOptions = isset($options['transportOptions']['restOptions'])
-            ? $options['transportOptions']['restOptions']
-            : [];
+        $callOptions = $options['transportOptions']['restOptions'] ?? [];
 
         if (isset($options['timeoutMillis'])) {
             $callOptions['timeout'] = $options['timeoutMillis'] / 1000;

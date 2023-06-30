@@ -68,6 +68,8 @@ class Product extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google
    * @var string
    */
   public $channel;
+  protected $cloudExportAdditionalPropertiesType = CloudExportAdditionalProperties::class;
+  protected $cloudExportAdditionalPropertiesDataType = 'array';
   /**
    * @var string
    */
@@ -108,6 +110,10 @@ class Product extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google
    * @var string
    */
   public $description;
+  /**
+   * @var string
+   */
+  public $disclosureDate;
   /**
    * @var string
    */
@@ -519,6 +525,20 @@ class Product extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google
     return $this->channel;
   }
   /**
+   * @param CloudExportAdditionalProperties[]
+   */
+  public function setCloudExportAdditionalProperties($cloudExportAdditionalProperties)
+  {
+    $this->cloudExportAdditionalProperties = $cloudExportAdditionalProperties;
+  }
+  /**
+   * @return CloudExportAdditionalProperties[]
+   */
+  public function getCloudExportAdditionalProperties()
+  {
+    return $this->cloudExportAdditionalProperties;
+  }
+  /**
    * @param string
    */
   public function setColor($color)
@@ -671,6 +691,20 @@ class Product extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google
   public function getDescription()
   {
     return $this->description;
+  }
+  /**
+   * @param string
+   */
+  public function setDisclosureDate($disclosureDate)
+  {
+    $this->disclosureDate = $disclosureDate;
+  }
+  /**
+   * @return string
+   */
+  public function getDisclosureDate()
+  {
+    return $this->disclosureDate;
   }
   /**
    * @param string

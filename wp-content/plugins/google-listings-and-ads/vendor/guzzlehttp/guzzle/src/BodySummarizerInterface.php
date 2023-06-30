@@ -2,7 +2,7 @@
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp;
 
-use Psr\Http\Message\MessageInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\MessageInterface;
 
 interface BodySummarizerInterface
 {

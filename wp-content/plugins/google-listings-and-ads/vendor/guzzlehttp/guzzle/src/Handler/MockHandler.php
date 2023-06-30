@@ -8,9 +8,9 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Promise as P;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Promise\PromiseInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\TransferStats;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Utils;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\ResponseInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\StreamInterface;
 
 /**
  * Handler that returns responses or throw exceptions from a queue.
@@ -138,6 +138,7 @@ class MockHandler implements \Countable
                 if ($this->onRejected) {
                     ($this->onRejected)($reason);
                 }
+
                 return P\Create::rejectionFor($reason);
             }
         );
@@ -159,7 +160,7 @@ class MockHandler implements \Countable
             ) {
                 $this->queue[] = $value;
             } else {
-                throw new \TypeError('Expected a Response, Promise, Throwable or callable. Found ' . Utils::describeType($value));
+                throw new \TypeError('Expected a Response, Promise, Throwable or callable. Found '.Utils::describeType($value));
             }
         }
     }

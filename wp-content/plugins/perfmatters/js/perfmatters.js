@@ -2,11 +2,10 @@ jQuery(document).ready(function($) {
 
 	//tab-content display
 	$('.perfmatters-subnav > a').click(function(e) {
-
 		e.preventDefault();
 					
 		//deactivate current tab + hide content
-		var active_tab = $('.perfmatters-subnav > a.active');		
+		var active_tab = $(this).closest('.perfmatters-subnav').find('a.active');	
 		active_tab.removeClass('active');
 		$(active_tab.attr('href')).removeClass('active');
 					
@@ -20,6 +19,21 @@ jQuery(document).ready(function($) {
 		    el.CodeMirror.refresh();
 		});
 	});
+
+	//menu toggle
+	var menuToggle = document.getElementById('perfmatters-menu-toggle');
+	if(menuToggle) {
+		menuToggle.addEventListener('click', function(e) {
+			e.preventDefault();
+			var header = document.getElementById('perfmatters-menu');
+			if(!header.classList.contains('perfmatters-menu-expanded')) {
+				header.classList.add('perfmatters-menu-expanded');
+			}
+			else {
+				header.classList.remove('perfmatters-menu-expanded');
+			}
+		});
+	}
 
     //tooltip display
 	$(".perfmatters-tooltip").hover(function() {
@@ -71,6 +85,17 @@ jQuery(document).ready(function($) {
 			perfmattersUpdateRowCount(this, i);
 		});
 	});
+
+	//quick exclusions
+	$(".perfmatters-quick-exclusion-title-bar").click(function(e) {
+        var clicked = $(this).closest(".perfmatters-quick-exclusion");
+        if(clicked.hasClass("perfmatters-opened")) {
+            clicked.removeClass("perfmatters-opened");
+        }
+        else {
+        	clicked.addClass("perfmatters-opened");
+        }
+    });
 
 	//input display control
 	$('.perfmatters-input-controller input, .perfmatters-input-controller select').change(function() {

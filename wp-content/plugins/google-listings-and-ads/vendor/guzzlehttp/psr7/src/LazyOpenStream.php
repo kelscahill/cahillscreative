@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7;
 
-use Psr\Http\Message\StreamInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\StreamInterface;
 
 /**
  * Lazily reads or writes to a file that is opened only after an IO operation

@@ -23,6 +23,30 @@ class ThreeWP_Broadcast
 	use traits\savings_calculator;
 
 	/**
+		@brief		Has the JS been enqueued?
+		@since		2023-04-19 21:57:02
+	**/
+	public $_js_enqueued = false;
+
+	/**
+		@brief		Has Broadcast finished loading?
+		@since		2023-04-19 21:57:49
+	**/
+	public $__loaded = false;
+
+	/**
+		@brief		Instance of the plugin pack.
+		@since		2023-04-19 21:56:37
+	**/
+	public $__plugin_pack;
+
+	/**
+		@brief		A cache of broadcast data for various posts we encounter.
+		@since		2023-04-19 21:55:26
+	**/
+	public $broadcast_data_cache = null;
+
+	/**
 		@brief		Broadcasting stack.
 		@details
 
@@ -117,8 +141,6 @@ class ThreeWP_Broadcast
 	{
 		if ( ! $this->is_network )
 			return;
-
-		$this->__loaded = false;
 
 		if ( defined( 'WP_CLI' ) && WP_CLI )
 		{

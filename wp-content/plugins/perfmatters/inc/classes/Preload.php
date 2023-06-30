@@ -3,7 +3,10 @@ namespace Perfmatters;
 
 class Preload
 {
-    private static $preloads = array();
+    private static $preloads;
+    private static $critical_images;
+    private static $preloads_ready = array();
+    private static $used_srcs = array();
 
     //initialize preload functions
     public static function init() 
@@ -14,7 +17,10 @@ class Preload
     //queue functions
     public static function queue() 
     {
-        if(!empty(Config::$options['preload']['preload']) || !empty(Config::$options['preload']['critical_images'])) {
+        self::$preloads = apply_filters('perfmatters_preloads', Config::$options['preload']['preload'] ?? array());
+        self::$critical_images = apply_filters('perfmatters_preload_critical_images', Config::$options['preload']['critical_images'] ?? 0);
+
+        if(!empty(self::$preloads) || !empty(self::$critical_images)) {
             add_action('perfmatters_output_buffer_template_redirect', array('Perfmatters\Preload', 'add_preloads'));
         }
     }
@@ -22,11 +28,11 @@ class Preload
     //add preloads to html
     public static function add_preloads($html) {
 
-        if(!empty(Config::$options['preload']['critical_images'])) {
+        if(!empty(self::$critical_images)) {
             self::add_critical_image_preloads($html, Utilities::clean_html($html));
         }
 
-        if(!empty(Config::$options['preload']['preload']) && is_array(Config::$options['preload']['preload'])) {
+        if(!empty(self::$preloads)) {
 
             $mime_types = array(
                 'svg'   => 'image/svg+xml',
@@ -38,9 +44,7 @@ class Preload
                 'sfnt'  => 'font/sfnt'
             );
 
-            $preloads = apply_filters('perfmatters_preloads', Config::$options['preload']['preload']);
-
-            foreach($preloads as $line) {
+            foreach(self::$preloads as $line) {
 
                 //device type check
                 if(!empty($line['device'])) {
@@ -135,17 +139,17 @@ class Preload
                 $preload = "<link rel='preload' href='" . $line['url'] . "'" . (!empty($line['as']) ? " as='" . $line['as'] . "'" : "") . (!empty($mime_type) ? " type='" . $mime_type . "'" : "") . (!empty($line['crossorigin']) ? " crossorigin" : "") . (!empty($line['as']) && $line['as'] == 'style' ? " onload=\"this.rel='stylesheet';this.removeAttribute('onload');\"" : "") . ">";
 
                 if($line['as'] == 'image') {
-                    array_unshift(self::$preloads, $preload);
+                    array_unshift(self::$preloads_ready, $preload);
                 }
                 else {
-                    self::$preloads[] = $preload;
+                    self::$preloads_ready[] = $preload;
                 }
             }
         }
 
-        if(!empty(self::$preloads)) {
+        if(!empty(self::$preloads_ready)) {
             $preloads_string = "";
-            foreach(self::$preloads as $preload) {
+            foreach(apply_filters('perfmatters_preloads_ready', self::$preloads_ready) as $preload) {
                 $preloads_string.= $preload;
             }
             $pos = strpos($html, '</title>');
@@ -165,11 +169,15 @@ class Preload
 
         if(!empty($matches)) {
 
+            $exclusions = apply_filters('perfmatters_critical_image_exclusions', array(
+                ';base64'
+            ));
+
             $count = 0;
             
             foreach($matches as $match) {
 
-                if($count >= Config::$options['preload']['critical_images']) {
+                if($count >= self::$critical_images) {
                     break;
                 }
 
@@ -177,7 +185,6 @@ class Preload
                     continue;
                 }
 
-                $exclusions = apply_filters('perfmatters_critical_image_exclusions', array());
                 if(!empty($exclusions) && is_array($exclusions)) {
                     foreach($exclusions as $exclusion) {
                         if(strpos($match[0], $exclusion) !== false) {
@@ -188,30 +195,32 @@ class Preload
 
                 //picture tag
                 if(!empty($match[1])) {
-                    preg_match('#<source([^>]+?image\/webp[^>]+?)\/?>#is', $match[0], $source);
+                    preg_match('#<source([^>]+?image\/(webp|avif)[^>]+?)\/?>#is', $match[0], $source);
 
                     if(!empty($source)) {
-                        self::generate_critical_image_preload($source[1]);
-                        $new_picture = str_replace('<picture', '<picture data-perfmatters-preload', $match[0]);
-                        $new_picture = str_replace('<img', '<img data-perfmatters-preload', $new_picture);
-                        $html = str_replace($match[0], $new_picture, $html);
-                        $count++;
+                        if(self::generate_critical_image_preload($source[1])) {
+                            $new_picture = str_replace('<picture', '<picture data-perfmatters-preload', $match[0]);
+                            $new_picture = str_replace('<img', '<img data-perfmatters-preload', $new_picture);
+                            $html = str_replace($match[0], $new_picture, $html);
+                            $count++;
+                        }
                         continue;
                     }
                 }
 
                 //img tag
                 if(!empty($match[2])) {
-                    self::generate_critical_image_preload($match[2]);
-                    $new_image = str_replace('<img', '<img data-perfmatters-preload', $match[0]);
-                    $html = str_replace($match[0], $new_image, $html);
-                    $count++;
+                    if(self::generate_critical_image_preload($match[2])) {
+                        $new_image = str_replace('<img', '<img data-perfmatters-preload', $match[0]);
+                        $html = str_replace($match[0], $new_image, $html);
+                        $count++;
+                    }
                 }
             }
         }
 
-        if(!empty(self::$preloads)) {
-            ksort(self::$preloads);
+        if(!empty(self::$preloads_ready)) {
+            ksort(self::$preloads_ready);
         }
     }
 
@@ -220,7 +229,18 @@ class Preload
         if(!empty($att_string)) {
             $atts = Utilities::get_atts_array($att_string);
             $src = $atts['data-src'] ?? $atts['src'] ?? '';
-            self::$preloads[] = '<link rel="preload" href="' . $src . '" as="image"' . (!empty($atts['srcset']) ? ' imagesrcset="' . $atts['srcset'] . '"' : '') . (!empty($atts['sizes']) ? ' imagesizes="' . $atts['sizes'] . '"' : '') . ' />';
+
+            //dont add if src was already used
+            if(in_array($src, self::$used_srcs)) {
+                return false;
+            }
+
+            //generate preload
+            self::$preloads_ready[] = '<link rel="preload" href="' . $src . '" as="image"' . (!empty($atts['srcset']) ? ' imagesrcset="' . $atts['srcset'] . '"' : '') . (!empty($atts['sizes']) ? ' imagesizes="' . $atts['sizes'] . '"' : '') . ' />';
+
+            //mark src used and return
+            self::$used_srcs[] = $src;
+            return true;
         }
     }
 }

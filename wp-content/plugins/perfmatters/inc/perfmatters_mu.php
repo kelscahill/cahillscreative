@@ -3,7 +3,7 @@
 Plugin Name: Perfmatters MU
 Plugin URI: https://perfmatters.io/
 Description: Perfmatters is a lightweight performance plugin developed to speed up your WordPress site.
-Version: 2.0.5
+Version: 2.1.1
 Author: forgemedia
 Author URI: https://forgemedia.io/
 License: GPLv2 or later
@@ -27,7 +27,7 @@ function perfmatters_mu_disable_plugins($plugins) {
     }
 
     //dont filter if its a rest or ajax request
-    if((defined('REST_REQUEST') && REST_REQUEST) || (function_exists('wp_is_json_request') && wp_is_json_request()) || wp_doing_ajax() || wp_doing_cron()) {
+    if((defined('REST_REQUEST') && REST_REQUEST) || (defined('WP_CLI') && WP_CLI) || (function_exists('wp_is_json_request') && wp_is_json_request()) || wp_doing_ajax() || wp_doing_cron()) {
         return $plugins;
     }
 
@@ -94,11 +94,10 @@ function perfmatters_mu_disable_plugins($plugins) {
 
     //make sure mu hasn't run already
     global $mu_run_flag;
+    global $mu_plugins;
     if($mu_run_flag) {
-        return $plugins;
+        return $mu_plugins;
     }
-
-    $mu_run_flag = true;
 
     //get script manager configuration
     $pmsm = get_option('perfmatters_script_manager');
@@ -159,6 +158,7 @@ function perfmatters_mu_disable_plugins($plugins) {
 
                 //remove plugin from list
                 $m_array = preg_grep('/^' . $handle . '.*/', $plugins);
+                $single_array = array();
                 if(!empty($m_array) && is_array($m_array)) {
                     if(count($m_array) > 1) {
                         $single_array = preg_grep('/' . $handle . '\.php/', $m_array);
@@ -173,6 +173,9 @@ function perfmatters_mu_disable_plugins($plugins) {
             }
         }
     }
+
+    $mu_run_flag = true;
+    $mu_plugins = $plugins;
 
     return $plugins;
 }
@@ -402,7 +405,7 @@ function perfmatters_url_to_postid($url) {
                 }
  
                 $post_status_obj = get_post_status_object( $page->post_status );
-                if ( ! $post_status_obj->public && ! $post_status_obj->protected
+                if (is_object($post_status_obj) && ! $post_status_obj->public && ! $post_status_obj->protected
                     && ! $post_status_obj->private && $post_status_obj->exclude_from_search ) {
                     continue;
                 }
@@ -463,9 +466,11 @@ function perfmatters_url_to_postid($url) {
             *************************************************************************/
 
             // Taken from class-wp.php
-            foreach ( $GLOBALS['wp_post_types'] as $post_type => $t ) {
-                if ( $t->query_var ) {
-                    $post_type_query_vars[ $t->query_var ] = $post_type;
+            if(!empty($GLOBALS['wp_post_types'])) {
+                foreach ( $GLOBALS['wp_post_types'] as $post_type => $t ) {
+                    if ( $t->query_var ) {
+                        $post_type_query_vars[ $t->query_var ] = $post_type;
+                    }
                 }
             }
 

@@ -3,7 +3,7 @@
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Promise\PromiseInterface;
-use Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
 
 /**
  * Prepares requests that contain a body, adding the Content-Length,
@@ -84,6 +84,7 @@ class PrepareBodyMiddleware
         // The expect header is unconditionally enabled
         if ($expect === true) {
             $modify['set_headers']['Expect'] = '100-Continue';
+
             return;
         }
 

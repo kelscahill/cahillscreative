@@ -73,7 +73,7 @@ trait misc
 	**/
 	public function enqueue_js()
 	{
-		if ( isset( $this->_js_enqueued ) )
+		if ( $this->_js_enqueued === true )
 			return;
 		$file_dir = dirname( $this->paths[ '__FILE__' ] ) . '/js/js.js';
 		$file_url = trailingslashit( $this->paths[ 'url' ] ) . 'js/js.js';

@@ -18,7 +18,7 @@
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Auth\Middleware;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\GuzzleHttp\Psr7\Query;
-use Psr\Http\Message\RequestInterface;
+use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
 
 /**
  * SimpleMiddleware is a Guzzle Middleware that implements Google's Simple API
