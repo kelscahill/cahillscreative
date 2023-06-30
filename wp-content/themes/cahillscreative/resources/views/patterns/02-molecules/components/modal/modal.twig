@@ -1,0 +1,74 @@
+{% set base_class = modal.base_class|default('c-modal') %}
+
+<div class="{{ bem_classes(base_class, modal.element, modal.modifiers, modal.extra) }}">
+  <div class="{{ bem_classes(base_class, 'container') }}">
+    {% include "@atoms/buttons/button.twig" with {
+      "button": {
+        "extra": [
+          bem_classes(base_class, 'close'),
+          "js-toggle"
+        ],
+        "icon": {
+          "name": "close",
+          "modifiers": "medium"
+        },
+        "modifiers": "no-shadow",
+        "attributes": {
+          "aria-label": "Close",
+          "data-toggled": "body",
+          "data-prefix": "modal"
+        }
+      }
+    } %}
+    <div class="{{ bem_classes(base_class, 'content') }}">
+      {% if options.modal_image %}
+        {% include "@atoms/images/image/responsive-image.twig" with {
+          "image": {
+            "src": Image(options.modal_image).src|towebp|resize(auto, 500),
+            "alt": Image(options.modal_image).alt
+          },
+          "picture": {
+            "extra": bem_classes(base_class, 'image')
+          }
+        } %}
+      {% endif %}
+      <div class="{{ bem_classes(base_class, 'body') }} u-spacing--half">
+        {% include "@atoms/text/kicker/kicker.twig" with {
+          "kicker": {
+            "text": options.modal_kicker,
+            "extra": bem_classes(base_class, 'kicker')
+          }
+        } %}
+        {% include "@atoms/text/heading/heading.twig" with {
+          "heading": {
+            "level": "2",
+            "size": "l",
+            "type": "primary",
+            "text": options.modal_title,
+            "extra": bem_classes(base_class, 'title')
+          }
+        } %}
+        {% include "@atoms/text/dek/dek.twig" with {
+          "dek": {
+            "text": options.modal_description,
+            "extra": bem_classes(base_class, 'dek')
+          }
+        } %}
+        {% if options.modal_embed_code %}
+          <div class="{{ bem_classes(base_class, 'form') }}">
+            {{ options.modal_embed_code }}
+          </div>
+        {% endif %}
+        {% include "@atoms/buttons/button.twig" with {
+          "button": {
+            "text": options.modal_button.title,
+            "url": options.modal_button.url,
+            "target": options.modal_button.target,
+            "modifiers": "tertiary",
+            "extra": [bem_classes(base_class, 'button'), "u-space--and-half--top"]
+          }
+        } %}
+      </div>
+    </div>
+  </div>
+</div>

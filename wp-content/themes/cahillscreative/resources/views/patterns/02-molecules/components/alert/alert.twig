@@ -1,6 +1,6 @@
 {% set base_class = alert.base_class|default('c-alert') %}
 {% if options.alert_text or options.alert_link %}
-  <div class="{{ bem_classes(base_class) }} js-alert">
+  <div class="{{ bem_classes(base_class) }}">
     <div class="{{ bem_classes(base_class, 'content') }}">
       {{ options.alert_text }}
       {% include "@atoms/links/link.twig" with {
@@ -13,24 +13,5 @@
         }
       } %}
     </div>
-    {# {% include "@atoms/buttons/button.twig" with {
-      "button": {
-        "modifiers": "icon",
-        "extra": [
-          bem_classes(base_class, 'close'),
-          "js-alert-close"
-        ],
-        "icon": {
-          "title": "Close",
-          "name": "close",
-          "modifiers": "xsmall"
-        },
-        "attributes": {
-          "aria-label": "Close",
-          "data-toggled": "body",
-          "data-prefix": "alert",
-        }
-      }
-    } %} #}
   </div>
 {% endif %}

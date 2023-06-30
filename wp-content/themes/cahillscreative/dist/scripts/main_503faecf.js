@@ -338,26 +338,14 @@ Router.prototype.loadEvents = function loadEvents () {
       return false;
     }
 
-    $('.js-alert-close').click(function(e) {
-      e.preventDefault();
-      $('.js-alert').addClass('is-hidden');
-      setCookie('alert', 'true');
+    $('.c-modal__close').click(function(e) {
+      setCookie('modal', 'true');
     });
 
-    var showAlert = function() {
-      $('.js-alert').fadeIn();
-      $('.js-alert').removeClass('is-hidden');
-    }
-
-    var hideAlert = function() {
-      $('.js-alert').fadeOut();
-      $('.js-alert').addClass('is-hidden');
-    }
-
-    if (getCookie('alert')) {
-      hideAlert();
+    if (getCookie('modal')) {
+      $('body').removeClass('modal-is-active');
     } else {
-      showAlert();
+      $('body').addClass('modal-is-active');
     }
 
     // Smooth scrolling on anchor clicks
