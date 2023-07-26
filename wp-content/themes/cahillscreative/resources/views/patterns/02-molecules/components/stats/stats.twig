@@ -14,10 +14,7 @@
           }
         } %}
         <div class="{{ bem_classes(base_class, 'tags') }}">
-          {{ tag.name }}
-          {% if not loop.last %}
-            <span>,&nbsp;</span>
-          {% endif %}
+          {{ tag.name|join(', ') }}
         </div>
       </div>
     {% endfor %}
@@ -33,10 +30,7 @@
           }
         } %}
         <div class="{{ bem_classes(base_class, 'tags') }}">
-          {{ tag.name }}
-          {% if not loop.last %}
-            <span>,&nbsp;</span>
-          {% endif %}
+          {{ tag.name|join(', ') }}
         </div>
       </div>
     {% endfor %}
@@ -52,10 +46,7 @@
           }
         } %}
         <div class="{{ bem_classes(base_class, 'tags') }}">
-          {{ tag.name }}
-          {% if not loop.last %}
-            <span>,&nbsp;</span>
-          {% endif %}
+          {{ tag.name|join(', ') }}
         </div>
       </div>
     {% endfor %}
@@ -71,10 +62,7 @@
           }
         } %}
         <div class="{{ bem_classes(base_class, 'tags') }}">
-          {{ tag.name }}
-          {% if not loop.last %}
-            <span>,&nbsp;</span>
-          {% endif %}
+          {{ tag.name|join(', ') }}
         </div>
       </div>
     {% endfor %}
