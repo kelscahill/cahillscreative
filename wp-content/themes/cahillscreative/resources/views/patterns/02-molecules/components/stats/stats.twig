@@ -14,13 +14,15 @@
           }
         } %}
         <div class="{{ bem_classes(base_class, 'tags') }}">
+          {% set projects = [] %}
           {% for tag in stats.project %}
-            {{ tag.name|join(', ') }}
+            {% set projects = projects|merge([tag.name]) %}
           {% endfor %}
+          {{ projects|join(', ') }}
         </div>
       </div>
     {% endif %}
-    {% for tag in stats.room %}
+    {% if stats.room %}
       <div class="{{ bem_classes(base_class, 'item') }}">
         {% include "@atoms/text/heading/heading.twig" with {
           "heading": {
@@ -32,11 +34,15 @@
           }
         } %}
         <div class="{{ bem_classes(base_class, 'tags') }}">
-          {{ tag.name|join(', ') }}
+          {% set rooms = [] %}
+          {% for tag in stats.room %}
+            {% set rooms = rooms|merge([tag.name]) %}
+          {% endfor %}
+          {{ rooms|join(', ') }}
         </div>
       </div>
-    {% endfor %}
-    {% for tag in stats.cost %}
+    {% endif %}
+    {% if stats.cost %}
       <div class="{{ bem_classes(base_class, 'item') }}">
         {% include "@atoms/text/heading/heading.twig" with {
           "heading": {
@@ -48,11 +54,15 @@
           }
         } %}
         <div class="{{ bem_classes(base_class, 'tags') }}">
-          {{ tag.name|join(', ') }}
+          {% set costs = [] %}
+          {% for tag in stats.cost %}
+            {% set costs = costs|merge([tag.name]) %}
+          {% endfor %}
+          {{ costs|join(', ') }}
         </div>
       </div>
-    {% endfor %}
-    {% for tag in stats.skill_level %}
+    {% endif %}
+    {% if stats.skill_level %}
       <div class="{{ bem_classes(base_class, 'item') }}">
         {% include "@atoms/text/heading/heading.twig" with {
           "heading": {
@@ -64,9 +74,13 @@
           }
         } %}
         <div class="{{ bem_classes(base_class, 'tags') }}">
-          {{ tag.name|join(', ') }}
+          {% set skill_levels = [] %}
+          {% for tag in stats.skill_level %}
+            {% set skill_levels = skill_levels|merge([tag.name]) %}
+          {% endfor %}
+          {{ skill_levels|join(', ') }}
         </div>
       </div>
-    {% endfor %}
+    {% endif %}
   </div>
 {% endif %}
