@@ -342,11 +342,11 @@ Router.prototype.loadEvents = function loadEvents () {
       setCookie('modal', 'true');
     });
 
-    if (getCookie('modal')) {
-      $('body').removeClass('modal-is-active');
-    } else {
-      $('body').addClass('modal-is-active');
-    }
+    // if (getCookie('modal')) {
+    //   $('body').removeClass('modal-is-active');
+    // } else {
+    //   $('body').addClass('modal-is-active');
+    // }
 
     // Smooth scrolling on anchor clicks
     $('a[href*="#"]:not([href="#"])').click(function() {
