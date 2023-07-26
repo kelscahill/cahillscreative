@@ -2,7 +2,7 @@
 
 {% if stats.project or stats.room or stats.cost or stats.skill_level %}
   <div class="{{ bem_classes(base_class, stats.element, stats.modifiers, stats.extra) }}">
-    {% for tag in stats.project %}
+    {% if stats.project %}
       <div class="{{ bem_classes(base_class, 'item') }}">
         {% include "@atoms/text/heading/heading.twig" with {
           "heading": {
@@ -14,10 +14,12 @@
           }
         } %}
         <div class="{{ bem_classes(base_class, 'tags') }}">
-          {{ tag.name|join(', ') }}
+          {% for tag in stats.project %}
+            {{ tag.name|join(', ') }}
+          {% endfor %}
         </div>
       </div>
-    {% endfor %}
+    {% endif %}
     {% for tag in stats.room %}
       <div class="{{ bem_classes(base_class, 'item') }}">
         {% include "@atoms/text/heading/heading.twig" with {
