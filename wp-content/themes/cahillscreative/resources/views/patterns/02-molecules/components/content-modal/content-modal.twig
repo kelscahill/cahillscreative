@@ -1,5 +1,5 @@
 {% set base_class = content_modal.base_class|default('c-content-modal') %}
-{% if content_modal.title or content_modal.body %}
+{% if content_modal.title %}
   <div class="{{ bem_classes(base_class, content_modal.element, content_modal.modifiers, content_modal.extra) }}">
     {% include "@atoms/buttons/button.twig" with {
       "button": {
