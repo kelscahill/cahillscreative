@@ -74,7 +74,7 @@ module.exports = jQuery;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(2);
-module.exports = __webpack_require__(11);
+module.exports = __webpack_require__(10);
 
 
 /***/ }),
@@ -197,13 +197,11 @@ Router.prototype.loadEvents = function loadEvents () {
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_in_view__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_in_view___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_in_view__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util_header__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_progress_bar__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__util_slick_min_js__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__util_slick_min_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__util_slick_min_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__util_magnific_popup_min_js__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__util_magnific_popup_min_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__util_magnific_popup_min_js__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_slick_min_js__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_slick_min_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__util_slick_min_js__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__util_magnific_popup_min_js__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__util_magnific_popup_min_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__util_magnific_popup_min_js__);
 /* eslint-disable */
-
 
 
 
@@ -342,11 +340,13 @@ Router.prototype.loadEvents = function loadEvents () {
       setCookie('modal', 'true');
     });
 
-    // if (getCookie('modal')) {
-    //   $('body').removeClass('modal-is-active');
-    // } else {
-    //   $('body').addClass('modal-is-active');
-    // }
+    if (document.querySelector('.c-modal')) {
+      if (getCookie('modal')) {
+        $('body').removeClass('modal-is-active');
+      } else {
+        $('body').addClass('modal-is-active');
+      }
+    }
 
     // Smooth scrolling on anchor clicks
     $('a[href*="#"]:not([href="#"])').click(function() {
@@ -653,90 +653,6 @@ Router.prototype.loadEvents = function loadEvents () {
 
 /***/ }),
 /* 8 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* eslint-disable */
-
-/*
- * Progress Bar
- *
- * @description
- * Show a progress bar in the header on scroll of an article.
- *
- */
-/* unused harmony default export */ var _unused_webpack_default_export = (function() {
-  window.progressArticle = document.querySelector('article') !== null;
-
-  // Check to make sure an article is present.
-  if (window.progressArticle) {
-    var progressArticleIsIntersecting = false;
-    var progressBar = document.querySelector('.js-progress-bar progress');
-
-    var articleObserver = new IntersectionObserver(
-      function (entries, observer) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            progressArticle = entry.target;
-            progressArticleIsIntersecting = true;
-          }
-        });
-      },
-      {
-        // Fire when comes into view.
-        threshold: 0,
-      }
-    );
-
-    // OBSERVE ARTICLES
-    [].concat( document.querySelectorAll('article') ).forEach(function (el) {
-      articleObserver.observe(el);
-    })
-
-    // CATCH STACKS
-    var body = document.querySelector('body');
-    var mObserver = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        if (mutation.target != body) {
-          [].concat( mutation.target.querySelectorAll('article') ).forEach(function (el) {
-            articleObserver.observe(el);
-          });
-        }
-      });
-    });
-
-    // Trigger observer with options.
-    mObserver.observe(body, {
-      childList: true,
-      subtree: true,
-    });
-
-    // THROTTLING THIS LOOKS BAD
-    document.addEventListener('scroll', function() {
-      if (progressArticle) {
-        var width = (1 - ((progressArticle.getBoundingClientRect().bottom - window.innerHeight) / progressArticle.offsetHeight)) * 100;
-        progressBar.setAttribute('value', width);
-      }
-    });
-
-    function throttle(callback, limit) {
-      var wait = false;
-      return function() {
-        if (!wait) {
-          callback.call();
-          wait = true;
-          setTimeout(function() {
-            wait = false;
-          }, limit);
-        }
-      }
-    }
-  }
-});
-
-
-/***/ }),
-/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* eslint-disable */
@@ -749,7 +665,7 @@ var e,t,o=this;if(!0===o.options.dots){for(o.$slider.addClass("slick-dotted"),t=
 
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* eslint-disable */
@@ -763,7 +679,7 @@ var e,t,o=this;if(!0===o.options.dots){for(o.$slider.addClass("slick-dotted"),t=
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
