@@ -227,6 +227,22 @@ class UpdatePluginManagers
             }
         }
 
+        $new_settings_template = array(
+            'newOrderTemplateId' => 'isNewOrderTemplateEnabled',
+            'processingOrderTemplateId' => 'isProcessingOrderTemplateEnabled',
+            'refundedOrderTemplateId' => 'isRefundedOrderTemplateEnabled',
+            'cancelledOrderTemplateId' => 'isCancelledOrderTemplateEnabled',
+            'completedOrderTemplateId' => 'isCompletedOrderTemplateEnabled',
+            'newAccountTemplateId' => 'isNewAccountTemplateEnabled',
+            'onHoldOrderTemplateId' => 'isOnHoldOrderTemplateEnabled',
+            'failedOrderTemplateId' => 'isFailedOrderTemplateEnabled',
+            'customerNoteTemplateId' => 'isCustomerNoteTemplateEnabled'
+        );
+
+        foreach ($new_settings_template as $key => $value) {
+            $new_settings[$value] = is_null($new_settings[$key]) ? false : true;
+        }
+
         return $new_settings;
     }
 

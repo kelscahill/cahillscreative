@@ -36,7 +36,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 		 * Constructs new page object and adds entry to WordPress admin menu
 		 */
 		function __construct() {
-			add_menu_page( __( 'Sendinblue', 'mailin' ), __( 'Sendinblue', 'mailin' ), 'manage_options', self::PAGE_ID, array( &$this, 'generate' ), SIB_Manager::$plugin_url . '/img/favicon.ico' );
+			add_menu_page( __( 'Brevo', 'mailin' ), __( 'Brevo', 'mailin' ), 'manage_options', self::PAGE_ID, array( &$this, 'generate' ), SIB_Manager::$plugin_url . '/img/favicon.ico' );
 			$this->page_hook = add_submenu_page( self::PAGE_ID, __( 'Home', 'mailin' ), __( 'Home', 'mailin' ), 'manage_options', self::PAGE_ID, array( &$this, 'generate' ) );
 			add_action( 'load-' . $this->page_hook, array( &$this, 'init' ) );
 			add_action( 'admin_print_scripts-' . $this->page_hook, array( $this, 'enqueue_scripts' ) );
@@ -82,7 +82,14 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 		function generate() {
 			?>
 			<div id="wrap" class="wrap box-border-box container-fluid">
-				<h2><img id="logo-img" src="<?php echo esc_url( SIB_Manager::$plugin_url . '/img/logo.png' ); ?>" alt="Logo Image"></h2>
+				<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" viewBox="0 0 32 32">
+					<circle cx="16" cy="16" r="16" fill="#0B996E"/>
+  					<path fill="#fff" d="M21.002 14.54c.99-.97 1.453-2.089 1.453-3.45 0-2.814-2.07-4.69-5.19-4.69H9.6v20h6.18c4.698 0 8.22-2.874 8.22-6.686 0-2.089-1.081-3.964-2.998-5.174Zm-8.62-5.538h4.573c1.545 0 2.565.877 2.565 2.208 0 1.513-1.329 2.663-4.048 3.54-1.854.574-2.688 1.059-2.997 1.634l-.094.001V9.002Zm3.151 14.796h-3.152v-3.085c0-1.362 1.175-2.693 2.813-3.208 1.453-.484 2.657-.969 3.677-1.482 1.36.787 2.194 2.148 2.194 3.57 0 2.42-2.35 4.205-5.532 4.205Z"/>
+				</svg>
+				<svg xmlns="http://www.w3.org/2000/svg" width="80" height="25" fill="currentColor" viewBox="0 0 90 31">
+					<path fill="#0B996E" d="M73.825 19.012c0-4.037 2.55-6.877 6.175-6.877 3.626 0 6.216 2.838 6.216 6.877s-2.59 6.715-6.216 6.715c-3.626 0-6.175-2.799-6.175-6.715Zm-3.785 0c0 5.957 4.144 10.155 9.96 10.155 5.816 0 10-4.198 10-10.155 0-5.957-4.143-10.314-10-10.314s-9.96 4.278-9.96 10.314ZM50.717 8.937l7.81 19.989h3.665l7.81-19.989h-3.945L60.399 24.37h-.08L54.662 8.937h-3.945Zm-15.18 9.354c.239-3.678 2.67-6.156 5.977-6.156 2.867 0 5.02 1.84 5.338 4.598h-6.614c-2.35 0-3.626.28-4.58 1.56h-.12v-.002Zm-3.784.6c0 5.957 4.183 10.274 9.96 10.274 3.904 0 7.33-1.998 8.804-5.158l-3.187-1.6c-1.115 2.08-3.267 3.319-5.618 3.319-2.83 0-5.379-2.16-5.379-4.238 0-1.08.718-1.56 1.753-1.56h12.63v-1.079c0-5.997-3.825-10.155-9.323-10.155-5.497 0-9.641 4.279-9.641 10.195M20.916 28.924h3.586V16.653c0-2.639 1.632-4.518 3.905-4.518.956 0 1.951.32 2.43.758.36-.96.917-1.918 1.753-2.878-.957-.799-2.59-1.32-4.184-1.32-4.382 0-7.49 3.279-7.49 7.956v12.274-.001Zm-17.33-13.23V5.937h5.896c1.992 0 3.307 1.16 3.307 2.919 0 1.998-1.713 3.518-5.218 4.677-2.39.759-3.466 1.399-3.865 2.16h-.12Zm0 9.794v-4.077c0-1.799 1.514-3.558 3.626-4.238 1.873-.64 3.425-1.28 4.74-1.958 1.754 1.04 2.829 2.837 2.829 4.717 0 3.198-3.028 5.556-7.132 5.556H3.586ZM0 28.926h7.968c6.057 0 10.597-3.798 10.597-8.835 0-2.759-1.393-5.237-3.864-6.836 1.275-1.28 1.873-2.76 1.873-4.559 0-3.717-2.67-6.196-6.693-6.196H0v26.426Z"/>
+				</svg>
+
 				<div class="row">
 					<div id="wrap-left" class="box-border-box col-md-9">
 						<div id="sib-message-box" class="row alert alert-success" style="display: none;">
@@ -114,19 +121,19 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 				<input type="hidden" id="cur_refer_url" value="<?php echo esc_url( add_query_arg( array( 'page' => 'sib_page_home' ), admin_url( 'admin.php' ) ) ); ?> ">
 				<div class="card sib-small-content">
 					<div class="card-header">
-						<span style="color: #777777;"><?php esc_attr_e( 'Step', 'mailin' ); ?> 1&nbsp;|&nbsp;</span><strong><?php esc_attr_e( 'Create a Sendinblue Account', 'mailin' ); ?></strong>
+						<span style="color: #777777;"><?php esc_attr_e( 'Step', 'mailin' ); ?> 1&nbsp;|&nbsp;</span><strong><?php esc_attr_e( 'Create a Brevo Account', 'mailin' ); ?></strong>
 					</div>
 					<div class="card-body">
 						<div class="col-md-9">
-							<p><?php esc_attr_e( 'By creating a free Sendinblue account, you will be able to send confirmation emails and:', 'mailin' ); ?></p>
+							<p><?php esc_attr_e( 'By creating a free Brevo account, you will be able to send confirmation emails and:', 'mailin' ); ?></p>
 							<ul class="sib-home-feature">
 								<li><span class="glyphicon glyphicon-ok" style="font-size: 12px;"></span>&nbsp;&nbsp;<?php esc_attr_e( 'Collect your contacts and upload your lists', 'mailin' ); ?></li>
-								<li><span class="glyphicon glyphicon-ok" style="font-size: 12px;"></span>&nbsp;&nbsp;<?php esc_attr_e( 'Use Sendinblue SMTP to send your transactional emails', 'mailin' ); ?></li>
+								<li><span class="glyphicon glyphicon-ok" style="font-size: 12px;"></span>&nbsp;&nbsp;<?php esc_attr_e( 'Use Brevo SMTP to send your transactional emails', 'mailin' ); ?></li>
 								<li class="home-read-more-content"><span class="glyphicon glyphicon-ok" style="font-size: 12px;"></span>&nbsp;&nbsp;<?php esc_attr_e( 'Email marketing builders', 'mailin' ); ?></li>
 								<li class="home-read-more-content"><span class="glyphicon glyphicon-ok" style="font-size: 12px;"></span>&nbsp;&nbsp;<?php esc_attr_e( 'Create and schedule your email marketing campaigns', 'mailin' ); ?></li>
-								<li class="home-read-more-content"><span class="glyphicon glyphicon-ok" style="font-size: 12px;"></span>&nbsp;&nbsp;<?php esc_attr_e( 'Try all of', 'mailin' ); ?>&nbsp;<a href="https://www.sendinblue.com/features/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=module_link" target="_blank" rel="noopener"><?php esc_attr_e( 'Sendinblue\'s features', 'mailin' ); ?></a></li>
+								<li class="home-read-more-content"><span class="glyphicon glyphicon-ok" style="font-size: 12px;"></span>&nbsp;&nbsp;<?php esc_attr_e( 'Try all of', 'mailin' ); ?>&nbsp;<a href="https://www.brevo.com/features/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=module_link" target="_blank" rel="noopener"><?php esc_attr_e( 'Brevo\'s features', 'mailin' ); ?></a></li>
 							</ul>
-							<a href="https://www.sendinblue.com/users/signup?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=module_link" class="btn btn-primary" target="_blank" rel="noopener" style="margin-top: 10px;"><?php esc_attr_e( 'Create an account', 'mailin' ); ?></a>
+							<a href="https://www.brevo.com/users/signup?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=module_link" class="btn btn-success" target="_blank" rel="noopener" style="margin-top: 10px;"><?php esc_attr_e( 'Create an account', 'mailin' ); ?></a>
 						</div>
 					</div>
 				</div>
@@ -138,11 +145,11 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 						<div class="col-md-9 row">
 							<div id="success-alert" class="alert alert-success" role="alert" style="display: none;"><?php esc_attr_e( 'You successfully activate your account.', 'mailin' ); ?></div>
 							<input type="hidden" id="general_error" value="<?php esc_attr_e( 'Please input a valid API v3 key', 'mailin' ); ?>">
-							<input type="hidden" id="curl_no_exist_error" value="<?php esc_attr_e( 'Please install curl on site to use sendinblue plugin.', 'mailin' ); ?>">
+							<input type="hidden" id="curl_no_exist_error" value="<?php esc_attr_e( 'Please install curl on site to use brevo plugin.', 'mailin' ); ?>">
 							<input type="hidden" id="curl_error" value="<?php esc_attr_e( 'Curl error.', 'mailin' ); ?>">
 							<div id="failure-alert" class="alert alert-danger" role="alert" style="display: none;"><?php esc_attr_e( 'Please input a valid API v3 key.', 'mailin' ); ?></div>
 							<p>
-								<?php esc_attr_e( 'Once you have created a Sendinblue account, activate this plugin to send all of your transactional emails via Sendinblue SMTP. Sendinblue optimizes email delivery to ensure emails reach the inbox.', 'mailin' ); ?><br>
+								<?php esc_attr_e( 'Once you have created a Brevo account, activate this plugin to send all of your transactional emails via Brevo SMTP. Brevo optimizes email delivery to ensure emails reach the inbox.', 'mailin' ); ?><br>
 								<?php esc_attr_e( 'To activate your plugin, enter your API v3 Access key.', 'mailin' ); ?><br>
 							</p>
 							<p>
@@ -151,7 +158,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 							<p>
 								<div class="col-md-7">
 									<p class="col-md-12"><input id="sib_access_key" type="text" class="col-md-10" style="margin-top: 10px;" placeholder="xkeysib-xxxxxx"></p>
-									<p class="col-md-12"><button type="button" id="sib_validate_btn" class="col-md-4 btn btn-primary"><span class="sib-spin"><i class="fa fa-circle-o-notch fa-spin fa-lg"></i>&nbsp;&nbsp;</span><?php esc_attr_e( 'Login', 'mailin' ); ?></button></p>
+									<p class="col-md-12"><button type="button" id="sib_validate_btn" class="col-md-4 btn btn-success"><span class="sib-spin"><i class="fa fa-circle-o-notch fa-spin fa-lg"></i>&nbsp;&nbsp;</span><?php esc_attr_e( 'Login', 'mailin' ); ?></button></p>
 								</div>
 							</p>
 						</div>
@@ -193,10 +200,10 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 			if ( $isSynced != $currentUsers['total_users'] ) {
 				$isEnableSync = '1';
 				/* translators: %s: total users */
-				$desc = sprintf( esc_attr__( 'You have %s existing users. Do you want to add them to Sendinblue?', 'mailin' ), $currentUsers['total_users'] );
+				$desc = sprintf( esc_attr__( 'You have %s existing users. Do you want to add them to Brevo?', 'mailin' ), $currentUsers['total_users'] );
 				self::print_sync_popup();
 			} else {
-				$desc = esc_attr__( 'All your users have been added to a Sendinblue list.','mailin' );
+				$desc = esc_attr__( 'All your users have been added to a Brevo list.','mailin' );
 			}
 		?>
 
@@ -240,7 +247,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 									<?php echo esc_attr( $desc ); ?><br>
 								</p>
 								<div class="col-md-5">
-								<a <?= '1' === $isEnableSync ? 'id="sib-sync-btn" data-bs-toggle="modal" data-bs-target="#syncUsers"' : 'disabled href="javascript:void(0)"'; ?> class="<?=  '1' !== $isEnableSync ? 'disabled not-allowed shadow-none' : ''; ?> btn btn-primary" style="margin-top: 28px; " name="<?php echo esc_attr__( 'Users Synchronisation', 'mailin' ); ?>" href="#"><?php esc_attr_e( 'Sync my users', 'mailin' ); ?></a>
+								<a <?= '1' === $isEnableSync ? 'id="sib-sync-btn" data-bs-toggle="modal" data-bs-target="#syncUsers"' : 'disabled href="javascript:void(0)"'; ?> class="<?=  '1' !== $isEnableSync ? 'disabled not-allowed shadow-none' : ''; ?> btn btn-success" style="margin-top: 28px; " name="<?php echo esc_attr__( 'Users Synchronisation', 'mailin' ); ?>" href="#"><?php esc_attr_e( 'Sync my users', 'mailin' ); ?></a>
 								</div>
 							</div>
 						</div>
@@ -255,14 +262,14 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 						<?php
 						if ( 'disabled' == $smtp_status ) :
 							?>
-							<div id="smtp-failure-alert" class="col-md-12 sib_alert alert alert-danger" role="alert"><?php esc_attr_e( 'Unfortunately, your "Transactional emails" are not activated because your Sendinblue SMTP account is not active. Please send an email to contact@sendinblue.com in order to ask for SMTP account activation', 'mailin' ); ?></div>
+							<div id="smtp-failure-alert" class="col-md-12 sib_alert alert alert-danger" role="alert"><?php esc_attr_e( 'Unfortunately, your "Transactional emails" are not activated because your Brevo SMTP account is not active. Please send an email to contact@brevo.com in order to ask for SMTP account activation', 'mailin' ); ?></div>
 							<?php
 						endif;
 						?>
 						<div id="success-alert" class="col-md-12 sib_alert alert alert-success" role="alert" style="display: none;"><?php esc_attr_e( 'Mail Sent.', 'mailin' ); ?></div>
 						<div id="failure-alert" class="col-md-12 sib_alert alert alert-danger" role="alert" style="display: none;"><?php esc_attr_e( 'Please input valid email.', 'mailin' ); ?></div>
 						<div class="row">
-							<p class="col-md-4 text-left"><?php esc_attr_e( 'Activate email through Sendinblue', 'mailin' ); ?></p>
+							<p class="col-md-4 text-left"><?php esc_attr_e( 'Activate email through Brevo', 'mailin' ); ?></p>
 							<div class="col-md-3">
 								<label class="col-md-5"><input type="radio" name="activate_email" id="activate_email_radio_yes" value="yes"
 								<?php
@@ -275,7 +282,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 								<label class="col-md-5"><input type="radio" name="activate_email" id="activate_email_radio_no" value="no" <?php checked( $home_settings['activate_email'], 'no' ); ?>>&nbsp;<?php esc_attr_e( 'No', 'mailin' ); ?></label>
 							</div>
 							<div class="col-md-5">
-								<small style="font-style: italic;"><?php esc_attr_e( 'Choose "Yes" if you want to use Sendinblue SMTP to send transactional emails', 'mailin' ); ?></small>
+								<small style="font-style: italic;"><?php esc_attr_e( 'Choose "Yes" if you want to use Brevo SMTP to send transactional emails', 'mailin' ); ?></small>
 							</div>
 						</div>
 						<div id="email_send_field"
@@ -305,7 +312,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 								<p class="col-md-4 text-left"><?php esc_attr_e( 'Enter email to send a test', 'mailin' ); ?></p>
 								<div class="col-md-3">
 									<input id="activate_email" type="email" class="col-md-12">
-									<button type="button" id="send_email_btn" class="col-md-12 btn btn-primary"><span class="sib-spin"><i class="fa fa-circle-o-notch fa-spin fa-lg"></i>&nbsp;&nbsp;</span><?php esc_attr_e( 'Send email', 'mailin' ); ?></button>
+									<button type="button" id="send_email_btn" class="col-md-12 btn btn-success"><span class="sib-spin"><i class="fa fa-circle-o-notch fa-spin fa-lg"></i>&nbsp;&nbsp;</span><?php esc_attr_e( 'Send email', 'mailin' ); ?></button>
 								</div>
 								<div class="col-md-5">
 									<small style="font-style: italic;"><?php esc_attr_e( 'Select here the email address you want to send a test email to.', 'mailin' ); ?></small>
@@ -322,10 +329,10 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 					<div class="card-body">
 						<div class="sib-ma-alert sib-ma-active alert alert-success" role="alert" style="display: none;"><?php esc_attr_e( 'Your Marketing Automation script is installed correctly.', 'mailin' ); ?></div>
 						<div class="sib-ma-alert sib-ma-inactive alert alert-danger" role="alert" style="display: none;"><?php esc_attr_e( 'Your Marketing Automation script has been uninstalled', 'mailin' ); ?></div>
-						<div class="sib-ma-alert sib-ma-disabled alert alert-danger" role="alert" style="display: none;"><?php esc_attr_e( 'You have not enabled automation in Sendinblue. Please do so by choosing the Automation application here: ', 'mailin' ); ?> <a href="https://account-app.brevo.com/account/apps/" target="_blank" rel="noopener">account-app.sendinblue.com/account/apps/</a> <?php esc_attr_e( 'Thanks', 'mailin' ) ?></div>
+						<div class="sib-ma-alert sib-ma-disabled alert alert-danger" role="alert" style="display: none;"><?php esc_attr_e( 'You have not enabled automation in Brevo. Please do so by choosing the Automation application here: ', 'mailin' ); ?> <a href="https://account-app.brevo.com/account/apps/" target="_blank" rel="noopener">account-app.brevo.com/account/apps/</a> <?php esc_attr_e( 'Thanks', 'mailin' ) ?></div>
 						<input type="hidden" id="sib-ma-unistall" value="<?php esc_attr_e( 'Your Marketing Automation script will be uninstalled, you won\'t have access to any Marketing Automation data and workflows', 'mailin' ); ?>">
 						<div class="row">
-							<p class="col-md-4 text-left"><?php esc_attr_e( 'Activate Marketing Automation through Sendinblue', 'mailin' ); ?></p>
+							<p class="col-md-4 text-left"><?php esc_attr_e( 'Activate Marketing Automation through Brevo', 'mailin' ); ?></p>
 							<div class="col-md-3">
 								<label class="col-md-5"><input type="radio" name="activate_ma" id="activate_ma_radio_yes" value="yes"
 								<?php
@@ -335,13 +342,13 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 								<label class="col-md-5"><input type="radio" name="activate_ma" id="activate_ma_radio_no" value="no" <?php checked( $home_settings['activate_ma'], 'no' ); ?>>&nbsp;<?php esc_attr_e( 'No', 'mailin' ); ?></label>
 							</div>
 							<div class="col-md-5">
-								<small style="font-style: italic;"><?php esc_attr_e( 'Choose "Yes" if you want to use Sendinblue Automation to track your website activity', 'mailin' ); ?></small>
+								<small style="font-style: italic;"><?php esc_attr_e( 'Choose "Yes" if you want to use Brevo Automation to track your website activity', 'mailin' ); ?></small>
 							</div>
 						</div>
 						<div class="row" style="">
-							<p class="col-md-4 text-left" style="font-size: 13px; font-style: italic;"><?php printf( esc_attr__( '%s Explore our resource %s to learn more about Sendinblue Automation', 'mailin' ), '<a class="text-decoration-none" href="https://help.brevo.com/hc/en-us/articles/208775609/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=module_link" target="_blank" rel="noopener">', '</a>' ); ?></p>
+							<p class="col-md-4 text-left" style="font-size: 13px; font-style: italic;"><?php printf( esc_attr__( '%s Explore our resource %s to learn more about Brevo Automation', 'mailin' ), '<a class="text-decoration-none" href="https://help.brevo.com/hc/en-us/articles/208775609/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=module_link" target="_blank" rel="noopener">', '</a>' ); ?></p>
 							<div class="col-md-3">
-								<button type="button" id="validate_ma_btn" class="col-md-12 btn btn-primary"><span class="sib-spin"><i class="fa fa-circle-o-notch fa-spin fa-lg"></i>&nbsp;&nbsp;</span><?php esc_attr_e( 'Activate', 'mailin' ); ?></button>
+								<button type="button" id="validate_ma_btn" class="col-md-12 btn btn-success"><span class="sib-spin"><i class="fa fa-circle-o-notch fa-spin fa-lg"></i>&nbsp;&nbsp;</span><?php esc_attr_e( 'Activate', 'mailin' ); ?></button>
 							</div>
 							<div class="col-md-5">
 							</div>
@@ -361,18 +368,18 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 		?>
 
 			<div class="card text-left box-border-box sib-small-content">
-				<div class="card-header"><strong><?php esc_attr_e( 'About Sendinblue', 'mailin' ); ?></strong></div>
+				<div class="card-header"><strong><?php esc_attr_e( 'About Brevo', 'mailin' ); ?></strong></div>
 				<div class="card-body">
-					<p><?php esc_attr_e( 'Sendinblue is an online software that helps you build and grow relationships through marketing and transactional emails, marketing automation, and text messages.', 'mailin' ); ?></p>
+					<p><?php esc_attr_e( 'Brevo is an online software that helps you build and grow relationships through marketing and transactional emails, marketing automation, and text messages.', 'mailin' ); ?></p>
 					<ul class="sib-widget-menu list-group">
 						<li>
-							<a class="text-decoration-none" href="https://www.sendinblue.com/about/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=module_link" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i> &nbsp;<?php esc_attr_e( 'Who we are', 'mailin' ); ?></a>
+							<a class="text-decoration-none" href="https://www.brevo.com/about/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=module_link" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i> &nbsp;<?php esc_attr_e( 'Who we are', 'mailin' ); ?></a>
 						</li>
 						<li>
-							<a class="text-decoration-none" href="https://www.sendinblue.com/pricing/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=module_link" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i> &nbsp;<?php esc_attr_e( 'Pricing', 'mailin' ); ?></a>
+							<a class="text-decoration-none" href="https://www.brevo.com/pricing/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=module_link" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i> &nbsp;<?php esc_attr_e( 'Pricing', 'mailin' ); ?></a>
 						</li>
 						<li>
-							<a class="text-decoration-none" href="https://www.sendinblue.com/features/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=module_link" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i> &nbsp;<?php esc_attr_e( 'Features', 'mailin' ); ?></a>
+							<a class="text-decoration-none" href="https://www.brevo.com/features/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=module_link" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i> &nbsp;<?php esc_attr_e( 'Features', 'mailin' ); ?></a>
 						</li>
 					</ul>
 				</div>
@@ -394,7 +401,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 				<div class="card-body">
 					<p><?php esc_attr_e( 'Let everyone know you like this plugin through a review!' ,'mailin' ); ?></p>
 					<ul class="sib-widget-menu list-group">
-						<li><a class="text-decoration-none" href="http://wordpress.org/support/view/plugin-reviews/mailin" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i> &nbsp;<?php esc_attr_e( 'Recommend the Sendinblue plugin', 'mailin' ); ?></a></li>
+						<li><a class="text-decoration-none" href="http://wordpress.org/support/view/plugin-reviews/mailin" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i> &nbsp;<?php esc_attr_e( 'Recommend the Brevo plugin', 'mailin' ); ?></a></li>
 					</ul>
 				</div>
 			</div>
@@ -421,11 +428,11 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 					<div class="modal-content">
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" style="font-size: 22px;">&times;</span><span class="sr-only">Close</span></button>
-							<h4 class="modal-title"><?php esc_attr_e( 'Sendinblue','mailin' ); ?></h4>
+							<h4 class="modal-title"><?php esc_attr_e( 'Brevo','mailin' ); ?></h4>
 						</div>
 						<div class="modal-body" style="padding: 30px;">
 							<p>
-								<?php esc_attr_e( 'You are currently not logged in. Create an account or log in to benefit from all of Sendinblue\'s features an your WordPress site.', 'mailin' ); ?>
+								<?php esc_attr_e( 'You are currently not logged in. Create an account or log in to benefit from all of Brevo\'s features an your WordPress site.', 'mailin' ); ?>
 							</p>
 							<ul>
 								<li> <span class="glyphicon glyphicon-ok" style="font-size: 12px;"></span>&nbsp;&nbsp;<?php esc_attr_e( 'Collect and manage your contacts', 'mailin' ); ?></li>
@@ -435,10 +442,10 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 							</ul>
 							<div class="row" style="margin-top: 40px;">
 								<div class="col-md-6">
-									<a href="https://www.sendinblue.com/users/login/" target="_blank" rel="noopener"><i><?php esc_attr_e( 'Have an account?', 'mailin' ); ?></i></a>
+									<a href="https://www.brevo.com/users/login/" target="_blank" rel="noopener"><i><?php esc_attr_e( 'Have an account?', 'mailin' ); ?></i></a>
 								</div>
 								<div class="col-md-6">
-									<a href="https://www.sendinblue.com/users/signup/" target="_blank" rel="noopener" class="btn btn-default"><i class="fa fa-angle-double-right"></i>&nbsp;<?php esc_attr_e( 'Free Subscribe Now', 'mailin' ); ?>&nbsp;<i class="fa fa-angle-double-left"></i></a>
+									<a href="https://www.brevo.com/users/signup/" target="_blank" rel="noopener" class="btn btn-default"><i class="fa fa-angle-double-right"></i>&nbsp;<?php esc_attr_e( 'Free Subscribe Now', 'mailin' ); ?>&nbsp;<i class="fa fa-angle-double-left"></i></a>
 								</div>
 							</div>
 						</div>
@@ -446,7 +453,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 					</div><!-- /.modal-content -->
 				</div><!-- /.modal-dialog -->
 			</div><!-- /.modal -->
-			<button id="sib-disable-popup" class="btn btn-primary" data-toggle="modal" data-target=".sib-disable-modal" style="display: none;">sss</button>
+			<button id="sib-disable-popup" class="btn btn-success" data-toggle="modal" data-target=".sib-disable-modal" style="display: none;">sss</button>
 			<script>
 				jQuery(document).ready(function() {
 					jQuery('.sib-disable-modal').modal();
@@ -489,7 +496,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 								<b><p><?php esc_attr_e( 'Sync Lists', 'mailin' ); ?></p></b>
 								<div class="row" style="margin-top: 0;">
 									<div class="col-md-6">
-										<p><?php esc_attr_e( 'Choose the Sendinblue list in which you want to add your existing customers:', 'mailin' ); ?></p>
+										<p><?php esc_attr_e( 'Choose the Brevo list in which you want to add your existing customers:', 'mailin' ); ?></p>
 									</div>
 									<div class="col-md-6">
 										<select data-placeholder="Please select the list" id="sib_select_list" name="list_id" multiple="true">
@@ -526,7 +533,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 											<p><?php esc_attr_e( 'WordPress Users Attributes', 'mailin' ); ?></p>
 										</div>
 										<div class="col-md-6">
-											<p><?php esc_attr_e( 'Sendinblue Contact Attributes', 'mailin' ); ?></p>
+											<p><?php esc_attr_e( 'Brevo Contact Attributes', 'mailin' ); ?></p>
 										</div>
 									</div>
 								</div>
@@ -562,7 +569,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 							</div>
 							<!-- Apply button -->
 							<div class="col-md-12 mt-2">
-								<a href="javascript:void(0)" id="sib_sync_users_btn" class="btn btn-primary" style="float: right;"><?php esc_attr_e( 'Apply', 'mailin' ); ?></a>
+								<a href="javascript:void(0)" id="sib_sync_users_btn" class="btn btn-success" style="float: right;"><?php esc_attr_e( 'Apply', 'mailin' ); ?></a>
 							</div>
 							</form>
 						</div>
@@ -650,15 +657,15 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 		public static function ajax_send_email() {
 			check_ajax_referer( 'ajax_sib_admin_nonce', 'security' );
 
-			$subject  = __( '[Sendinblue SMTP] test email', 'mailin' );
+			$subject  = __( '[Brevo SMTP] test email', 'mailin' );
 			// Get sender info.
 			$home_settings = get_option( SIB_Manager::HOME_OPTION_NAME );
 			if ( isset( $home_settings['sender'] ) ) {
 				$fromname = $home_settings['from_name'];
 				$from_email = $home_settings['from_email'];
 			} else {
-				$from_email = __( 'no-reply@sendinblue.com', 'mailin' );
-				$fromname = __( 'Sendinblue', 'mailin' );
+				$from_email = __( 'no-reply@brevo.com', 'mailin' );
+				$fromname = __( 'Brevo', 'mailin' );
 			}
 
 			$from = array( $from_email, $fromname );

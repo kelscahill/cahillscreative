@@ -25,7 +25,7 @@ if ( ! \defined( 'ABSPATH' ) ) {
 			<?php
 			echo wp_kses(
 				sprintf(
-					/* translators: %1$d - Number of minutes; %2$s - Single or plural word 'minute'. */
+					/* translators: %1$d - number of minutes, %2$s - singular or plural form of 'minute'. */
 					__( 'Complete the <b>WPForms Challenge</b> and get up and running within %1$d&nbsp;%2$s.', 'wpforms-lite' ),
 					absint( $minutes ),
 					_n( 'minute', 'minutes', absint( $minutes ), 'wpforms-lite' )
@@ -35,12 +35,12 @@ if ( ! \defined( 'ABSPATH' ) ) {
 			?>
 		</p>
 		<ul class="wpforms-challenge-list">
-			<li class="wpforms-challenge-step1-item"><?php esc_html_e( 'Name Your Form', 'wpforms-lite' ); ?></li>
-			<li class="wpforms-challenge-step2-item"><?php esc_html_e( 'Select a Template', 'wpforms-lite' ); ?></li>
-			<li class="wpforms-challenge-step3-item"><?php esc_html_e( 'Add Fields to Your Form', 'wpforms-lite' ); ?></li>
-			<li class="wpforms-challenge-step4-item"><?php esc_html_e( 'Check Notifications', 'wpforms-lite' ); ?></li>
-			<li class="wpforms-challenge-step5-item"><?php esc_html_e( 'Embed in a Page', 'wpforms-lite' ); ?></li>
-			<li class="wpforms-challenge-completed"><?php esc_html_e( 'Challenge Complete', 'wpforms-lite' ); ?></li>
+			<li class="wpforms-challenge-step1-item"><span></span><?php esc_html_e( 'Name Your Form', 'wpforms-lite' ); ?></li>
+			<li class="wpforms-challenge-step2-item"><span></span><?php esc_html_e( 'Select a Template', 'wpforms-lite' ); ?></li>
+			<li class="wpforms-challenge-step3-item"><span></span><?php esc_html_e( 'Add Fields to Your Form', 'wpforms-lite' ); ?></li>
+			<li class="wpforms-challenge-step4-item"><span></span><?php esc_html_e( 'Check Notifications', 'wpforms-lite' ); ?></li>
+			<li class="wpforms-challenge-step5-item"><span></span><?php esc_html_e( 'Embed in a Page', 'wpforms-lite' ); ?></li>
+			<li class="wpforms-challenge-completed"><span></span><?php esc_html_e( 'Challenge Complete', 'wpforms-lite' ); ?></li>
 		</ul>
 	</div>
 

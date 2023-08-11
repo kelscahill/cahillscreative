@@ -297,6 +297,9 @@ class ApiManager
         $customer_data['first_name'] = $customer_data['billing']['first_name'];
         $customer_data['last_name'] = $customer_data['billing']['last_name'];
         $customer_data['email'] = $customer_data['billing']['email'];
+        if (!empty($customer_data['customer_id'])) {
+            $customer_data['date_created_gmt'] = get_userdata($customer_data['customer_id'])->user_registered;
+        }
         $customer_data['order_id'] = $order->get_order_number();
         $customer_data['order_date'] = gmdate('Y-m-d', strtotime($order->get_date_created()));
         $customer_data['order_price'] = $order->get_total();
@@ -312,6 +315,7 @@ class ApiManager
         $data['orderPrice'] = $order->get_total();
         $data['orderDate'] = $order->get_date_created()->date("Y-m-d H:i:s");
         $data['recipient'] = $order->get_billing_phone();
+        $data['country_code'] = $order->get_billing_country();
 
         $client = new SendinblueClient();
         $client->eventsSync($event, $data);
@@ -583,14 +587,16 @@ class ApiManager
         $attachment_path = $this->get_email_attachments_path($email);
 
         if (isset($settings[SendinblueClient::IS_NEW_ACCOUNT_EMAIL_ENABLED]) && $settings[SendinblueClient::IS_NEW_ACCOUNT_EMAIL_ENABLED]) {
-            if ($settings[SendinblueClient::IS_NEW_ACCOUNT_TEMPLATE_ENABLED]) {
+            $tags = "New Account";
+            $reply_to =  $this->get_admin_details()['email']; //Admin email address
+            if ($settings[SendinblueClient::IS_NEW_ACCOUNT_TEMPLATE_ENABLED] && !empty($settings[SendinblueClient::NEW_ACCOUNT_TEMPLATE_ID])) {
                 $data['USER_LOGIN'] = $new_customer_data['user_login'];
                 $data['USER_PASSWORD'] = $new_customer_data['user_pass'];
-                $this->trigger_event_email_sib($new_customer_data['user_email'], $data, $settings[SendinblueClient::NEW_ACCOUNT_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path );
+                $this->trigger_event_email_sib($new_customer_data['user_email'], $data, $settings[SendinblueClient::NEW_ACCOUNT_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path, $tags, $reply_to);
             } else {
                 $template = $this->wp_mail_template_new_account($new_customer_data);
                 $subject = WC()->mailer()->emails['WC_Email_Customer_New_Account']->get_subject();
-                $this->trigger_event_email_woocommerce($new_customer_data['user_email'], $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path );
+                $this->trigger_event_email_woocommerce($new_customer_data['user_email'], $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path, $tags, $reply_to);
             }
         }
     }
@@ -617,15 +623,17 @@ class ApiManager
             $mailer = WC()->mailer();
             $email = $mailer->emails['WC_Email_Customer_Note'];
             $attachment_path = $this->get_email_attachments_path($email);
+            $tags = "Customer Note";
+            $reply_to =  $this->get_admin_details()['email']; //Admin email address
 
-            if ($settings[SendinblueClient::IS_CUSTOMER_NOTE_TEMPLATE_ENABLED]) {
-                $this->trigger_event_email_sib($order_details['BILLING_EMAIL'], $order_details, $settings[SendinblueClient::CUSTOMER_NOTE_TEMPLATE_ID],  self::EVENT_GROUP_SIB, $attachment_path);
+            if ($settings[SendinblueClient::IS_CUSTOMER_NOTE_TEMPLATE_ENABLED] && !empty($settings[SendinblueClient::CUSTOMER_NOTE_TEMPLATE_ID])) {
+                $this->trigger_event_email_sib($order_details['BILLING_EMAIL'], $order_details, $settings[SendinblueClient::CUSTOMER_NOTE_TEMPLATE_ID],  self::EVENT_GROUP_SIB, $attachment_path, $tags, $reply_to);
             } else {
                 $order = $this->wc_get_order($order->get_order_number());
                 $template = $this->wp_mail_template_customer_note($order, $email);
 
                 $subject = $email->get_subject();
-                $this->trigger_event_email_woocommerce($order_details['BILLING_EMAIL'], $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path);
+                $this->trigger_event_email_woocommerce($order_details['BILLING_EMAIL'], $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path, $tags, $reply_to);
             }
         }
     }
@@ -642,14 +650,16 @@ class ApiManager
             $mailer = WC()->mailer();
             $email = $mailer->emails['WC_Email_Customer_Completed_Order'];
             $attachment_path = $this->get_email_attachments_path($email);
-            if ($settings[SendinblueClient::IS_COMPLETED_ORDER_TEMPLATE_ENABLED]) {
-                $this->trigger_event_email_sib($order_details['BILLING_EMAIL'], $order_details, $settings[SendinblueClient::COMPLETED_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path );
+            $tags = "Completed Order";
+            $reply_to =  $this->get_admin_details()['email']; //Admin email address
+            if ($settings[SendinblueClient::IS_COMPLETED_ORDER_TEMPLATE_ENABLED] && !empty($settings[SendinblueClient::COMPLETED_ORDER_TEMPLATE_ID])) {
+                $this->trigger_event_email_sib($order_details['BILLING_EMAIL'], $order_details, $settings[SendinblueClient::COMPLETED_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path, $tags, $reply_to);
             } else {
                 
                 $order = $this->wc_get_order($order_id);
                 $template = $this->wp_mail_template_order($order, $email);
                 $subject = $email->get_subject();
-                $this->trigger_event_email_woocommerce($order_details['BILLING_EMAIL'], $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path );
+                $this->trigger_event_email_woocommerce($order_details['BILLING_EMAIL'], $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path, $tags, $reply_to);
             }
         }
     }
@@ -663,15 +673,16 @@ class ApiManager
             $email = $mailer->emails['WC_Email_Failed_Order'];
             $admin_email = $email->recipient;
             $attachment_path = $this->get_email_attachments_path($email);
-
+            $tags = "Failed Order";
+            $reply_to = $order->get_billing_email(); //Customer's email address
             if (isset($settings[SendinblueClient::IS_FAILED_ORDER_EMAIL_ENABLED]) && $settings[SendinblueClient::IS_FAILED_ORDER_EMAIL_ENABLED]) {
-                if ($settings[SendinblueClient::IS_FAILED_ORDER_TEMPLATE_ENABLED]) {
+                if ($settings[SendinblueClient::IS_FAILED_ORDER_TEMPLATE_ENABLED] && !empty($settings[SendinblueClient::FAILED_ORDER_TEMPLATE_ID])) {
                     $order_details = $this->prepare_order_data($order);
-                    $this->trigger_event_email_sib($admin_email, $order_details, $settings[SendinblueClient::FAILED_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path);
+                    $this->trigger_event_email_sib($admin_email, $order_details, $settings[SendinblueClient::FAILED_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path, $tags, $reply_to);
                 } else {
                     $template = $this->wp_mail_template_order($order, $email);
                     $subject = $email->get_subject();
-                    $this->trigger_event_email_woocommerce($admin_email, $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path);
+                    $this->trigger_event_email_woocommerce($admin_email, $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path, $tags, $reply_to);
                 }
             }
         }
@@ -686,15 +697,16 @@ class ApiManager
             $email = $mailer->emails['WC_Email_Cancelled_Order'];
             $admin_email = $email->recipient;
             $attachment_path = $this->get_email_attachments_path($email);
-
+            $tags = "Cancelled Order";
+            $reply_to = $order->get_billing_email(); //Customer's email address
             if (isset($settings[SendinblueClient::IS_CANCELLED_ORDER_EMAIL_ENABLED]) && $settings[SendinblueClient::IS_CANCELLED_ORDER_EMAIL_ENABLED]) {
-                if ($settings[SendinblueClient::IS_CANCELLED_ORDER_TEMPLATE_ENABLED]) {
+                if ($settings[SendinblueClient::IS_CANCELLED_ORDER_TEMPLATE_ENABLED] && !empty($settings[SendinblueClient::CANCELLED_ORDER_TEMPLATE_ID])) {
                     $order_details = $this->prepare_order_data($order);
-                    $this->trigger_event_email_sib($admin_email, $order_details, $settings[SendinblueClient::CANCELLED_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path);
+                    $this->trigger_event_email_sib($admin_email, $order_details, $settings[SendinblueClient::CANCELLED_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path, $tags, $reply_to);
                 } else {
                     $template = $this->wp_mail_template_order($order, $email);
                     $subject = $email->get_subject();
-                    $this->trigger_event_email_woocommerce($admin_email, $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path);
+                    $this->trigger_event_email_woocommerce($admin_email, $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path, $tags, $reply_to);
                 }
             }
         }
@@ -712,13 +724,15 @@ class ApiManager
             $mailer = WC()->mailer();
             $email = $mailer->emails['WC_Email_Customer_On_Hold_Order'];
             $attachment_path = $this->get_email_attachments_path($email);
-            if ($settings[SendinblueClient::IS_ON_HOLD_ORDER_TEMPLATE_ENABLED]) {
-                $this->trigger_event_email_sib($order_details['BILLING_EMAIL'], $order_details, $settings[SendinblueClient::ON_HOLD_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path);
+            $tags = "Order On-Hold";
+            $reply_to =  $this->get_admin_details()['email']; //Admin email address
+            if ($settings[SendinblueClient::IS_ON_HOLD_ORDER_TEMPLATE_ENABLED] && !empty($settings[SendinblueClient::ON_HOLD_ORDER_TEMPLATE_ID])) {
+                $this->trigger_event_email_sib($order_details['BILLING_EMAIL'], $order_details, $settings[SendinblueClient::ON_HOLD_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path, $tags, $reply_to);
             } else {
                 $order = $this->wc_get_order($order_id);
                 $template = $this->wp_mail_template_order($order, $email);
                 $subject = $email->get_subject();
-                $this->trigger_event_email_woocommerce($order_details['BILLING_EMAIL'], $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path);
+                $this->trigger_event_email_woocommerce($order_details['BILLING_EMAIL'], $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path, $tags, $reply_to);
             }
         }
     }
@@ -735,13 +749,15 @@ class ApiManager
             $mailer = WC()->mailer();
             $email = $mailer->emails['WC_Email_Customer_Refunded_Order'];
             $attachment_path = $this->get_email_attachments_path($email);
-            if ($settings[SendinblueClient::IS_REFUNDED_ORDER_TEMPLATE_ENABLED]) {
-                $this->trigger_event_email_sib($order_details['BILLING_EMAIL'], $order_details, $settings[SendinblueClient::REFUNDED_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path);
+            $tags = "Refunded Order";
+            $reply_to =  $this->get_admin_details()['email']; //Admin email address
+            if ($settings[SendinblueClient::IS_REFUNDED_ORDER_TEMPLATE_ENABLED] && !empty($settings[SendinblueClient::REFUNDED_ORDER_TEMPLATE_ID])) {
+                $this->trigger_event_email_sib($order_details['BILLING_EMAIL'], $order_details, $settings[SendinblueClient::REFUNDED_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path, $tags, $reply_to);
             } else {
                 $order = $this->wc_get_order($order_id);
                 $template = $this->wp_mail_template_order($order, $email);
                 $subject = $email->get_subject();
-                $this->trigger_event_email_woocommerce($order_details['BILLING_EMAIL'], $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path);
+                $this->trigger_event_email_woocommerce($order_details['BILLING_EMAIL'], $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path, $tags, $reply_to);
             }
         }
     }
@@ -758,13 +774,15 @@ class ApiManager
             $mailer = WC()->mailer();
             $email = $mailer->emails['WC_Email_Customer_Processing_Order'];
             $attachment_path = $this->get_email_attachments_path($email);
-            if ($settings[SendinblueClient::IS_PROCESSING_ORDER_TEMPLATE_ENABLED]) {
-                $this->trigger_event_email_sib($order_details['BILLING_EMAIL'], $order_details, $settings[SendinblueClient::PROCESSING_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path);
+            $tags = "Processing Order";
+            $reply_to =  $this->get_admin_details()['email']; //Admin email address
+            if ($settings[SendinblueClient::IS_PROCESSING_ORDER_TEMPLATE_ENABLED] && !empty($settings[SendinblueClient::PROCESSING_ORDER_TEMPLATE_ID])) {
+                $this->trigger_event_email_sib($order_details['BILLING_EMAIL'], $order_details, $settings[SendinblueClient::PROCESSING_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path, $tags, $reply_to);
             } else {
                 $order = $this->wc_get_order($order_id);
                 $template = $this->wp_mail_template_order($order, $email);
                 $subject = $email->get_subject();
-                $this->trigger_event_email_woocommerce($order_details['BILLING_EMAIL'], $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path);
+                $this->trigger_event_email_woocommerce($order_details['BILLING_EMAIL'], $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path, $tags, $reply_to);
             }
         }
     }
@@ -779,15 +797,16 @@ class ApiManager
             $email = $mailer->emails['WC_Email_New_Order'];
             $admin_email = $email->recipient;
             $attachment_path = $this->get_email_attachments_path($email);
-
+            $tags = "New Order";
+            $reply_to = $order->get_billing_email(); //Customer's email address
             if (isset($settings[SendinblueClient::IS_NEW_ORDER_EMAIL_ENABLED]) && $settings[SendinblueClient::IS_NEW_ORDER_EMAIL_ENABLED]) {
-                if ($settings[SendinblueClient::IS_NEW_ORDER_TEMPLATE_ENABLED]) {
+                if ($settings[SendinblueClient::IS_NEW_ORDER_TEMPLATE_ENABLED] && !empty($settings[SendinblueClient::NEW_ORDER_TEMPLATE_ID])) {
                     $order_details = $this->prepare_order_data($order);
-                    $this->trigger_event_email_sib($admin_email, $order_details, $settings[SendinblueClient::NEW_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path);
+                    $this->trigger_event_email_sib($admin_email, $order_details, $settings[SendinblueClient::NEW_ORDER_TEMPLATE_ID], self::EVENT_GROUP_SIB, $attachment_path, $tags, $reply_to);
                 } else {
                     $template = $this->wp_mail_template_order($order, $email);
                     $subject = $email->get_subject();
-                    $this->trigger_event_email_woocommerce($admin_email, $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path);
+                    $this->trigger_event_email_woocommerce($admin_email, $subject, $template, self::EVENT_GROUP_WOOCOMERCE, $attachment_path, $tags, $reply_to);
                 }
             }
         }
@@ -822,7 +841,7 @@ class ApiManager
         ];
     }
 
-    private function trigger_event_email_sib($to, $data, $template_id, $event_group, $attachment_path)
+    private function trigger_event_email_sib($to, $data, $template_id, $event_group, $attachment_path, $tags, $reply_to)
     {
         $sender_details = $this->get_admin_details();
         $payload['data'] = $data;
@@ -831,6 +850,8 @@ class ApiManager
         $payload['sender_name'] = $sender_details['name'];
         $payload['event_group'] = $event_group;
         $payload['to'] = $to;
+        $payload['reply_to'] = $reply_to;
+        $payload['tags'] = $tags;
         if (!empty($attachment_path)) {
             $payload['attachment_path'] = $attachment_path;
         }
@@ -838,7 +859,7 @@ class ApiManager
         $client->eventsSync(SendinblueClient::EMAIL_SEND, $payload);
     }
 
-    private function trigger_event_email_woocommerce($to, $subject, $template, $event_group, $attachment_path)
+    private function trigger_event_email_woocommerce($to, $subject, $template, $event_group, $attachment_path, $tags, $reply_to)
     {
         $sender_email = \WC_Emails::instance()->get_from_address();
         $sender_name  = \WC_Emails::instance()->get_from_name();
@@ -855,13 +876,15 @@ class ApiManager
         $payload['sender_name'] = $sender_name;
         $payload['event_group'] = $event_group;
         $payload['to'] = $to;
+        $payload['reply_to'] = $reply_to;
+        $payload['tags'] = $tags;
         if (!empty($attachment_path)) {
             $payload['attachment_path'] = $attachment_path;
         }
         $client = new SendinblueClient();
         $client->eventsSync(SendinblueClient::EMAIL_SEND, $payload);
     }
-
+    
     private function prepare_order_data($order)
     {
         if ( null != $order ) {

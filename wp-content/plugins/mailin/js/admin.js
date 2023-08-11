@@ -375,7 +375,7 @@ $jQ(document).ready(function(){
                 if (value['id'] == selected_template_id) {
                     select_html += '<option value="' + value['id'] + '" selected>' + value['name'] + '</option>';
                 }
-                else {
+                else if (!value['is_dopt']) {
                     select_html += '<option value="' + value['id'] + '">' + value['name'] + '</option>';
                 }
             });
@@ -394,7 +394,7 @@ $jQ(document).ready(function(){
                 if (value['id'] == selected_do_template_id) {
                     select_html += '<option is_shortcode="' + value['is_dopt']  + '" value="' + value['id'] + '" selected>' + value['name'] + '</option>';
                 }
-                else {
+                else if (value['is_dopt']) {
                     select_html += '<option is_shortcode="' + value['is_dopt']  + '" value="' + value['id'] + '">' + value['name'] + '</option>';
                 }
             });
@@ -414,7 +414,7 @@ $jQ(document).ready(function(){
                 if (value['id'] == selected_confirm_template_id) {
                     select_html += '<option is_shortcode="' + value['is_dopt']  + '" value="' + value['id'] + '" selected>' + value['name'] + '</option>';
                 }
-                else {
+                else if (!value['is_dopt']) {
                     select_html += '<option is_shortcode="' + value['is_dopt']  + '" value="' + value['id'] + '">' + value['name'] + '</option>';
                 }
             });

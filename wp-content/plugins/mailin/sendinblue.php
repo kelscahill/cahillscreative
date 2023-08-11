@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: Newsletter, SMTP, Email marketing and Subscribe forms by Sendinblue
- * Plugin URI: https://www.sendinblue.com/?r=wporg
+ * Plugin Name: Newsletter, SMTP, Email marketing and Subscribe forms by Brevo
+ * Plugin URI: https://www.brevo.com/?r=wporg
  * Description: Manage your contact lists, subscription forms and all email and marketing-related topics from your wp panel, within one single plugin
- * Version: 3.1.62
- * Author: Sendinblue
- * Author URI: https://www.sendinblue.com/?r=wporg
+ * Version: 3.1.69
+ * Author: Brevo
+ * Author URI: https://www.brevo.com/?r=wporg
  * License: GPLv2 or later
  *
  * @package SIB
@@ -492,6 +492,8 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 				);
 				update_option( self::HOME_OPTION_NAME, $home_settings );
 			}
+
+			self::activate_brevo_connection();
 		}
 
 		/**
@@ -511,6 +513,11 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			// Delete access_token.
 			$token_settings = array();
 			update_option( SIB_Manager::ACCESS_TOKEN_OPTION_NAME, $token_settings );
+
+			//Deactivate the connection on Brevo
+			self::deactivate_brevo_connection();
+
+			//Then delete the api key in our plugin
             delete_option(SIB_Manager::API_KEY_V3_OPTION_NAME);
 			// Empty tables.
 			SIB_Model_Users::removeTable();
@@ -519,6 +526,30 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 
 			// Remove all transient.
 			SIB_API_Manager::remove_transients();
+		}
+
+		static function deactivate_brevo_connection()
+		{
+			$installationId = get_option( SIB_Manager::INSTALLATION_ID );
+			if(!empty($installationId))
+			{
+				$apiClient = new SendinblueApiClient();
+				$params["active"] = false;
+				$params["deactivated_at"] = gmdate("Y-m-d\TH:i:s\Z");
+				$apiClient->updateInstallationInfo($installationId, $params);
+			}
+		}
+
+		static function activate_brevo_connection()
+		{
+			$installationId = get_option( SIB_Manager::INSTALLATION_ID );
+			if(!empty($installationId))
+			{
+				$apiClient = new SendinblueApiClient();
+				$params["active"] = true;
+				$params["activated_at"] = gmdate("Y-m-d\TH:i:s\Z");
+				$apiClient->updateInstallationInfo($installationId, $params);
+			}
 		}
 
 		/**
@@ -532,6 +563,9 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			delete_option( 'sib_sync_users' );
 			// Remove all transient.
 			SIB_API_Manager::remove_transients();
+
+			//Also deactivate the connection on Brevo
+			self::deactivate_brevo_connection();
 		}
 
     /**
@@ -545,6 +579,13 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
                 $apiClient = new SendinblueApiClient();
                 $apiClient->getAccount();
                 if ( SendinblueApiClient::RESPONSE_CODE_OK === $apiClient->getLastResponseCode() ) {
+			//This is only for those users who have an active connection but no installation id could be
+			//saved on their shop
+			$installationId = get_option( SIB_Manager::INSTALLATION_ID );
+			if(empty($installationId))
+			{
+				self::fetch_and_save_installation_id();
+			}
                     return true;
                 } elseif (SendinblueApiClient::RESPONSE_CODE_UNAUTHORIZED === $apiClient->getLastResponseCode()) {
                     delete_option(SIB_Manager::API_KEY_V3_OPTION_NAME);
@@ -569,6 +610,24 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 		    $api_key = get_option(SIB_Manager::API_KEY_V3_OPTION_NAME);
 		    return !empty($api_key);
         }
+
+		static function fetch_and_save_installation_id()
+		{
+			$apiClient = new SendinblueApiClient();
+
+			$params["partnerName"] = "WORDPRESS";
+			$params["plugin_version"] = SendinblueApiClient::PLUGIN_VERSION;
+			$params["shop_url"] = get_home_url();
+			$params["active"] = true;
+			$response = $apiClient->createInstallationInfo($params);
+			if ( $apiClient->getLastResponseCode() === SendinblueApiClient::RESPONSE_CODE_CREATED )
+			{
+				if(!empty($response["id"]))
+				{
+					update_option(SIB_Manager::INSTALLATION_ID, $response["id"]);
+				}
+			}
+		}
 
         /**
          * Install service-worker script in plugin for push notifications
@@ -729,6 +788,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 				<input type="hidden" name="sib_form_action" value="subscribe_form_submit">
 				<input type="hidden" name="sib_form_id" value="<?php echo esc_attr( $frmID ); ?>">
                 <input type="hidden" name="sib_form_alert_notice" value="<?php echo esc_attr($formData['requiredMsg']); ?>">
+                <input type="hidden" name="sib_form_invalid_email_notice" value="<?php echo esc_attr($formData['invalidMsg']); ?>">
                 <input type="hidden" name="sib_security" value="<?php echo esc_attr( wp_create_nonce( 'sib_front_ajax_nonce' ) ); ?>">
 				<div class="sib_signup_box_inside_<?php echo esc_attr( $frmID ); ?>">
 					<div style="/*display:none*/" class="sib_msg_disp">
@@ -1332,7 +1392,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 				$lang_prefix = substr( get_bloginfo( 'language' ), 0, 2 );
 				$lang = self::getLanguageName( $lang_prefix );
 				$class = 'error';
-				$message = sprintf( 'Please note that your Sendinblue account is in %s, but Sendinblue WordPress plugin is only available in English / French for now. Sorry for inconvenience.', $lang );
+				$message = sprintf( 'Please note that your Brevo account is in %s, but Brevo WordPress plugin is only available in English / French for now. Sorry for inconvenience.', $lang );
 				if ( 'en' !== $lang_prefix && 'fr' !== $lang_prefix ) {
 					// phpcs:ignore
 					echo ( "<div class=\"$class\" style='margin-left: 2px;margin-bottom: 4px;'> <p>$message<a class='' href='?dismiss_admin_lang_notice=1'> No problem...</a></p></div>" );
@@ -1345,7 +1405,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 		 */
 		static function wpMailNotices() {
 			if ( self::$wp_mail_conflict ) {
-				echo ( '<div class="error"><p>' . __( 'You cannot use Sendinblue SMTP now because wp_mail has been declared by another process or plugin. ', 'mailin' ) . '</p></div>' );
+				echo ( '<div class="error"><p>' . __( 'You cannot use Brevo SMTP now because wp_mail has been declared by another process or plugin. ', 'mailin' ) . '</p></div>' );
 			}
 		}
 
@@ -1411,7 +1471,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			if ( 'sib_page_form' === $page && 'edit' === $action ) {
 				?>
 				<div class="panel panel-default text-left box-border-box  sib-small-content">
-					<div class="panel-heading"><strong><?php esc_attr_e( 'About Sendinblue', 'mailin' ); ?></strong></div>
+					<div class="panel-heading"><strong><?php esc_attr_e( 'About Brevo', 'mailin' ); ?></strong></div>
 					<div class="panel-body">
 						<p>
 							<label for='sib_form_language'><?php esc_attr_e( 'Language of this form:', 'mailin' ); ?> </label>

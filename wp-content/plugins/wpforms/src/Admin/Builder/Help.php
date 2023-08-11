@@ -208,6 +208,7 @@ class Help {
 			'fields/field_options/square'             => 'square credit card',
 			'fields/field_options/signature'          => 'signature',
 			'fields/field_options/net_promoter_score' => 'net promoter score',
+			'fields/field_options/payment-coupon'     => 'coupon',
 			'settings/general'                        => 'settings',
 			'settings/anti_spam'                      => 'spam',
 			'settings/notifications'                  => 'notification emails',
@@ -287,6 +288,7 @@ class Help {
 				'/docs/setup-captcha-wpforms/',
 				'/docs/how-to-install-and-use-custom-captcha-addon-in-wpforms/',
 				'/docs/setting-up-akismet-anti-spam-protection/',
+				'/docs/viewing-and-managing-spam-entries/',
 			],
 			'fields'                    => [
 				'/docs/how-to-choose-the-right-form-field-for-your-forms/',
@@ -797,6 +799,12 @@ class Help {
 				'/docs/how-to-use-conditional-logic-with-wpforms/',
 				'/docs/how-to-customize-the-style-of-individual-form-fields/',
 			],
+			'coupon'                    => [
+				'/docs/coupons-addon/',
+			],
+			'discount'                  => [
+				'/docs/coupons-addon/',
+			],
 			'payment'                   => [
 				'/docs/viewing-and-managing-payments/',
 				'/docs/how-to-install-and-use-the-stripe-addon-with-wpforms/',
@@ -1215,12 +1223,15 @@ class Help {
 	 * Get doc id.
 	 *
 	 * @since 1.6.3
+	 * @deprecated 1.8.3
 	 *
 	 * @param string $link Absolute link to the doc without the domain part.
 	 *
 	 * @return array Array with doc id as element.
 	 */
 	public function get_doc_id( $link ) {
+
+		_deprecated_function( __METHOD__, '1.8.3 of the WPForms plugin', __CLASS__ . '::get_doc_id_int()' );
 
 		if ( empty( $this->docs ) ) {
 			return [];
@@ -1238,6 +1249,30 @@ class Help {
 	}
 
 	/**
+	 * Get doc id.
+	 *
+	 * @since 1.8.3
+	 *
+	 * @param string $link Absolute link to the doc without the domain part.
+	 *
+	 * @return int Doc id.
+	 */
+	private function get_doc_id_int( $link ) {
+
+		if ( empty( $this->docs ) ) {
+			return 0;
+		}
+
+		foreach ( $this->docs as $id => $doc ) {
+			if ( ! empty( $doc['url'] ) && $doc['url'] === 'https://wpforms.com' . $link ) {
+				return $id;
+			}
+		}
+
+		return 0;
+	}
+
+	/**
 	 * Get doc ids.
 	 *
 	 * @since 1.6.3
@@ -1248,17 +1283,13 @@ class Help {
 	 */
 	public function get_doc_ids( $links ) {
 
-		if ( empty( $this->docs ) ) {
-			return [];
-		}
-
 		$ids = [];
 
 		foreach ( $links as $link ) {
-			$ids[] = $this->get_doc_id( $link );
+			$ids[] = $this->get_doc_id_int( $link );
 		}
 
-		return array_merge( [], ...$ids );
+		return $ids;
 	}
 
 	/**

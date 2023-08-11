@@ -39,8 +39,8 @@ class AdminManager
     {
         add_submenu_page(
             'woocommerce',
-            'Sendinblue', 
-            'Sendinblue', 
+            'Brevo',
+            'Brevo',
             'manage_options', 
             'sendinblue', 
             array( &$this, 'adminOptions' )

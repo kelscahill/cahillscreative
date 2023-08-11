@@ -255,7 +255,7 @@ class SIB_Forms_List extends WP_List_Table {
         }
     }
     public function pagination($which){
-        echo '<a href="'.add_query_arg(array('page' => 'sib_page_form','action'=>'edit'/*,'id'=>'new'*/), admin_url('admin.php')).'" class="btn btn-primary" style="float:right; margin: 2px 1px 8px 15px;" >'.__("Add New Form", "mailin").'</a>';
+        echo '<a href="'.add_query_arg(array('page' => 'sib_page_form','action'=>'edit'/*,'id'=>'new'*/), admin_url('admin.php')).'" class="btn btn-success" style="float:right; margin: 2px 1px 8px 15px;" >'.__("Add New Form", "mailin").'</a>';
         parent::pagination($which);
     }
 

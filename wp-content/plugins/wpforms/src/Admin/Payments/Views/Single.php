@@ -71,6 +71,18 @@ class Single implements PaymentsViewsInterface {
 	}
 
 	/**
+	 * Get the tab label.
+	 *
+	 * @since 1.8.2.2
+	 *
+	 * @return string
+	 */
+	public function get_tab_label() {
+
+		return '';
+	}
+
+	/**
 	 * Enqueue scripts and styles.
 	 *
 	 * @since 1.8.2
@@ -259,7 +271,7 @@ class Single implements PaymentsViewsInterface {
 				'title'               => __( 'Payment Details', 'wpforms-lite' ),
 				'payment_id'          => "#{$this->payment->id}",
 				'gateway_link'        => $this->get_gateway_transaction_link(),
-				'gateway_text'        => sprintf( /* translators: %s - Payment Gateway Name. */
+				'gateway_text'        => sprintf( /* translators: %s - payment gateway name. */
 					__( 'View in %s', 'wpforms-lite' ),
 					$this->get_gateway_name()
 				),
@@ -292,11 +304,12 @@ class Single implements PaymentsViewsInterface {
 					],
 					'coupon' => [
 						'label'          => esc_html__( 'Coupon', 'wpforms-lite' ),
-						'value'          => esc_html__( 'Coming Soon!', 'wpforms-lite' ),
+						'value'          => $this->get_coupon_value(),
 						'button_classes' => [
 							'coupon',
 							'upsell',
 						],
+						'tooltip'        => nl2br( $this->get_coupon_info() ),
 					],
 				],
 			],
@@ -321,7 +334,7 @@ class Single implements PaymentsViewsInterface {
 			[
 				'title'               => __( 'Subscription Details', 'wpforms-lite' ),
 				'gateway_link'        => $this->get_gateway_subscription_link(),
-				'gateway_text'        => sprintf( /* translators: %s - Payment Gateway Name. */
+				'gateway_text'        => sprintf( /* translators: %s - payment gateway name. */
 					__( 'View in %s', 'wpforms-lite' ),
 					$this->get_gateway_name()
 				),
@@ -434,26 +447,67 @@ class Single implements PaymentsViewsInterface {
 	 */
 	private function get_payment_method_details() {
 
-		if ( ! isset( $this->payment_meta['method_type'] ) || $this->payment_meta['method_type']->value !== 'card' ) {
+		if (
+			! isset( $this->payment_meta['method_type'] ) ||
+			$this->payment_meta['method_type']->value !== 'card' ||
+			empty( $this->payment_meta['credit_card_last4'] ) ||
+			empty( $this->payment_meta['credit_card_expires'] )
+		) {
 			return '';
 		}
 
-		$expires_in = sprintf( /* translators: %s - credit card expiry date. */
+		$credit_card_last = 'xxxx xxxx xxxx ' . $this->payment_meta['credit_card_last4']->value;
+		$expires_in       = sprintf( /* translators: %s - credit card expiry date. */
 			__( 'Expires %s', 'wpforms-lite' ),
-			esc_html( $this->payment_meta['credit_card_expires']->value )
+			$this->payment_meta['credit_card_expires']->value
 		);
 
 		$output = '<div>';
 
-		if ( isset( $this->payment_meta['credit_card_name'] ) ) {
+		if ( ! empty( $this->payment_meta['credit_card_name'] ) ) {
 			$output .= '<span>' . esc_html( $this->payment_meta['credit_card_name']->value ) . '</span></br>';
 		}
 
-		$output .= '<span>xxxx xxxx xxxx ' . esc_html( $this->payment_meta['credit_card_last4']->value ) . '</span></br>';
-		$output .= '<span>' . $expires_in . '</span>';
+		$output .= '<span>' . esc_html( $credit_card_last ) . '</span></br>';
+		$output .= '<span>' . esc_html( $expires_in ) . '</span>';
 		$output .= '</div>';
 
 		return $output;
+	}
+
+	/**
+	 * Get coupon info.
+	 *
+	 * @since 1.8.2.2
+	 *
+	 * @return string
+	 */
+	private function get_coupon_info() {
+
+		$coupon_info = ! empty( $this->payment_meta['coupon_info']->value ) ? $this->payment_meta['coupon_info']->value : '';
+
+		/**
+		 * Allow modifying coupon info.
+		 *
+		 * @since 1.8.2.2
+		 *
+		 * @param string $coupon_info  Coupon info.
+		 * @param object $payment      Payment object.
+		 * @param array  $payment_meta Payment meta.
+		 */
+		return apply_filters( 'wpforms_admin_payments_views_single_get_coupon_info', $coupon_info, $this->payment, $this->payment_meta );
+	}
+
+	/**
+	 * Get coupon value.
+	 *
+	 * @since 1.8.2.2
+	 *
+	 * @return string
+	 */
+	private function get_coupon_value() {
+
+		return ! empty( $this->payment_meta['coupon_value']->value ) ? sprintf( '-%s', $this->payment_meta['coupon_value']->value ) : '';
 	}
 
 	/**
@@ -517,6 +571,10 @@ class Single implements PaymentsViewsInterface {
 				'payment_method'  => [
 					'label' => __( 'Payment Method', 'wpforms-lite' ),
 					'value' => $this->get_payment_method_details(),
+				],
+				'coupon_info'     => [
+					'label' => __( 'Coupon', 'wpforms-lite' ),
+					'value' => $this->get_coupon_info(),
 				],
 			],
 			$this->payment
@@ -677,7 +735,7 @@ class Single implements PaymentsViewsInterface {
 	 */
 	private function details() {
 
-		$date = sprintf( /* translators: %1$s - date, %2$s - time when payment was created, e.g. "Oct 22 at 11:11am". */
+		$date = sprintf( /* translators: %1$s - date, %2$s - time when item was created, e.g. "Oct 22 at 11:11am". */
 			__( '%1$s at %2$s', 'wpforms-lite' ),
 			wpforms_datetime_format( $this->payment->date_created_gmt, 'M j, Y', true ),
 			wpforms_datetime_format( $this->payment->date_created_gmt, get_option( 'time_format' ), true )

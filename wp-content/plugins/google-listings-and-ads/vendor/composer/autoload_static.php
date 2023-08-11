@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitf85ba6bb85377c2b0ed8ef8c07d97e3c
+class ComposerStaticInit160862e90214d07e8266e1d06f5a80e4
 {
     public static $files = array (
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
@@ -352,13 +352,13 @@ class ComposerStaticInitf85ba6bb85377c2b0ed8ef8c07d97e3c
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\AdsCampaignCriterion' => __DIR__ . '/../..' . '/src/API/Google/AdsCampaignCriterion.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\AdsConversionAction' => __DIR__ . '/../..' . '/src/API/Google/AdsConversionAction.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\AdsReport' => __DIR__ . '/../..' . '/src/API/Google/AdsReport.php',
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\ApiExceptionTrait' => __DIR__ . '/../..' . '/src/API/Google/ApiExceptionTrait.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\AssetFieldType' => __DIR__ . '/../..' . '/src/API/Google/AssetFieldType.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\BillingSetupStatus' => __DIR__ . '/../..' . '/src/API/Google/BillingSetupStatus.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\CallToActionType' => __DIR__ . '/../..' . '/src/API/Google/CallToActionType.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\CampaignStatus' => __DIR__ . '/../..' . '/src/API/Google/CampaignStatus.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\CampaignType' => __DIR__ . '/../..' . '/src/API/Google/CampaignType.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\Connection' => __DIR__ . '/../..' . '/src/API/Google/Connection.php',
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\ExceptionTrait' => __DIR__ . '/../..' . '/src/API/Google/ExceptionTrait.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\LocationIDTrait' => __DIR__ . '/../..' . '/src/API/Google/LocationIDTrait.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\Merchant' => __DIR__ . '/../..' . '/src/API/Google/Merchant.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\API\\Google\\MerchantMetrics' => __DIR__ . '/../..' . '/src/API/Google/MerchantMetrics.php',
@@ -555,7 +555,6 @@ class ComposerStaticInitf85ba6bb85377c2b0ed8ef8c07d97e3c
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Exception\\InvalidType' => __DIR__ . '/../..' . '/src/Exception/InvalidType.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Exception\\InvalidValue' => __DIR__ . '/../..' . '/src/Exception/InvalidValue.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Exception\\InvalidVersion' => __DIR__ . '/../..' . '/src/Exception/InvalidVersion.php',
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Exception\\MerchantApiException' => __DIR__ . '/../..' . '/src/Exception/MerchantApiException.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Exception\\ValidateInterface' => __DIR__ . '/../..' . '/src/Exception/ValidateInterface.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Exception\\WPError' => __DIR__ . '/../..' . '/src/Exception/WPError.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Exception\\WPErrorTrait' => __DIR__ . '/../..' . '/src/Exception/WPErrorTrait.php',
@@ -764,8 +763,7 @@ class ComposerStaticInitf85ba6bb85377c2b0ed8ef8c07d97e3c
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Shipping\\SyncerHooks' => __DIR__ . '/../..' . '/src/Shipping/SyncerHooks.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Shipping\\ZoneLocationsParser' => __DIR__ . '/../..' . '/src/Shipping/ZoneLocationsParser.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Shipping\\ZoneMethodsParser' => __DIR__ . '/../..' . '/src/Shipping/ZoneMethodsParser.php',
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\TaskList\\CompleteSetup' => __DIR__ . '/../..' . '/src/TaskList/CompleteSetup.php',
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\TaskList\\TaskListTrait' => __DIR__ . '/../..' . '/src/TaskList/TaskListTrait.php',
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\TaskList\\CompleteSetupTask' => __DIR__ . '/../..' . '/src/TaskList/CompleteSetupTask.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Tracking\\EventTracking' => __DIR__ . '/../..' . '/src/Tracking/EventTracking.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Tracking\\Events\\ActivatedEvents' => __DIR__ . '/../..' . '/src/Tracking/Events/ActivatedEvents.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Tracking\\Events\\BaseEvent' => __DIR__ . '/../..' . '/src/Tracking/Events/BaseEvent.php',
@@ -4402,9 +4400,9 @@ class ComposerStaticInitf85ba6bb85377c2b0ed8ef8c07d97e3c
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitf85ba6bb85377c2b0ed8ef8c07d97e3c::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitf85ba6bb85377c2b0ed8ef8c07d97e3c::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitf85ba6bb85377c2b0ed8ef8c07d97e3c::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit160862e90214d07e8266e1d06f5a80e4::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit160862e90214d07e8266e1d06f5a80e4::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit160862e90214d07e8266e1d06f5a80e4::$classMap;
 
         }, null, ClassLoader::class);
     }
