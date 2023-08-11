@@ -1,10 +1,10 @@
-=== Newsletter, SMTP, Email marketing and Subscribe forms by Sendinblue ===
+=== Newsletter, SMTP, Email marketing and Subscribe forms by Brevo (formely Sendinblue) ===
 Contributors: neeraj_slit
-Tags: Email Marketing, Newsletter, Sendinblue, Forms, smtp, marketing automation, email campaign, WordPress smtp, subscription form, email, marketing, signup form
+Tags: Email Marketing, Newsletter, Sendinblue, Brevo, Forms, smtp, marketing automation, email campaign, WordPress smtp, subscription form, email, marketing, signup form
 Requires at least: 4.4
-Tested up to: 6.2
+Tested up to: 6.3
 Requires PHP: 5.6
-Stable tag: 3.1.62
+Stable tag: 3.1.69
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,14 +12,14 @@ Manage your contact lists, subscription forms and all email and marketing-relate
 
 == Description ==
 
-<a href="https://www.sendinblue.com/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page" target="_blank" rel="noopener">Sendinblue</a>’s official plugin for WordPress is a powerful all-in-one email marketing plugin. At a glance:
+<a href="https://www.brevo.com/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page" target="_blank" rel="noopener">Brevo</a>’s official plugin for WordPress is a powerful all-in-one email marketing plugin. At a glance:
 <ul>
 <li><b>Subscription forms</b> - Create custom subscription forms and easily integrate them into your posts, pages or sidebars</li>
 <li><b>Contact lists</b> - Manage your contact lists and take advantage of advanced segmentation to improve your campaign performance</li>
 <li><b>Marketing campaigns</b> - Easily create and send beautiful newsletters using our mobile-friendly, drag and drop builder to create custom emails or select from our template library</li>
-<li><b>Transactional emails</b> - The wp_mail() function automatically uses Sendinblue’s SMTP for enhanced deliverability and tracking</li>
+<li><b>Transactional emails</b> - The wp_mail() function automatically uses Brevo’s SMTP for enhanced deliverability and tracking</li>
 <li><b>Statistics</b> - Real-time report dashboard gives you advanced insights into deliverability and performance: opens, clicks, bounce reports, etc.</li>
-<li><b>Marketing automation</b> - Enable Automation on WordPress to auto-install the script on your website and the identify tag on the Sendinblue forms and Wordpress Login </li>
+<li><b>Marketing automation</b> - Enable Automation on WordPress to auto-install the script on your website and the identify tag on the Brevo forms and Wordpress Login </li>
 </ul>
 
 = Subscription Forms =
@@ -59,62 +59,81 @@ Manage your contact lists, subscription forms and all email and marketing-relate
 = Marketing Automation =
 <ul>
 <li>Auto-installation of the automation script on your website</li>
-<li>Auto-deployment of the identify tag for Sendinblue’s forms and Wordpress plugin</li>
-<li>Access to the Sendinblue online dashboard for workflow creation and management</li>
+<li>Auto-deployment of the identify tag for Brevo’s forms and Wordpress plugin</li>
+<li>Access to the Brevo online dashboard for workflow creation and management</li>
 </ul>
 
 = Plugin Support =
-To get support, please send an email to <a href="mailto:contact@sendinblue.com">contact@sendinblue.com</a>, we will be happy to help you!
+To get support, please send an email to <a href="mailto:contact@brevo.com">contact@brevo.com</a>, we will be happy to help you!
 
 The plugin is available in English and French.
 
 == Installation ==
 
-1.	In your WordPress admin panel, go to Plugins > New Plugin, search for "Sendinblue for WP" and click "Install now". Alternatively, download the plugin and upload the contents of mailin.zip to your plugins directory, which may be  /wp-content/plugins/.
-2.	Activate the Sendinblue plugin through the 'Plugins' menu in WordPress.
-3.	The "Sendinblue" tab must appear in your WordPress side navigation panel, then set your <a href="https://app.brevo.com/settings/keys/api?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page" target="_blank" rel="noopener">Sendinblue API key</a> in the plugin homepage.
+1.	In your WordPress admin panel, go to Plugins > New Plugin, search for "Brevo for WP" and click "Install now". Alternatively, download the plugin and upload the contents of mailin.zip to your plugins directory, which may be  /wp-content/plugins/.
+2.	Activate the Brevo plugin through the 'Plugins' menu in WordPress.
+3.	The "Brevo" tab must appear in your WordPress side navigation panel, then set your <a href="https://app.brevo.com/settings/keys/api?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page" target="_blank" rel="noopener">Brevo API key</a> in the plugin homepage.
 
-To get a Sendinblue API key, you have to <a href="https://onboarding.brevo.com/account/register/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page" target="_blank" rel="noopener">create an account</a>. It's free and takes less than 2 minutes!
+To get a Brevo API key, you have to <a href="https://onboarding.brevo.com/account/register/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page" target="_blank" rel="noopener">create an account</a>. It's free and takes less than 2 minutes!
 
 == Screenshots ==
-1. First, your are invited to create an account on Sendinblue then enter your API keys
-2. The Homepage gives you an overall view over your campaigns and allows you to activate Sendinblue SMTP for all transactional emails and Marketing Automation to better target your customers
+1. First, your are invited to create an account on Brevo then enter your API keys
+2. The Homepage gives you an overall view over your campaigns and allows you to activate Brevo SMTP for all transactional emails and Marketing Automation to better target your customers
 3. The Forms page gives you access to your forms list
 4. When you click on a specific form, you can configure your sign up process and customize it
 5. The Statistics page gives you a global view over your performance: delivered, opened, clicked, etc.
-6. From the Widget page, you are able to add the Sendinblue widget in one or more sidebars. For each form, you can choose the fields displayed and the list where contacts are saved.
-7. The Workflows page (Marketing Automation activated) allows you to create new workflows in Sendinblue or access your logs or existing workflows
 
 == Frequently Asked Questions ==
 
-= What is Sendinblue? =
-Sendinblue is a powerful all-in-one marketing platform. Over 165 000 companies around the world trust Sendinblue to deliver their emails and SMS messages.
-Sendinblue combines competitive pricing and excellent deliverability & powerful features such as Email, SMS, Facebook, Chat, CRM, and marketing automation.
-Sendinblue is available and supported in 6 languages: English, French, Spanish, German, Italian, and Portuguese.
+= What is Brevo? =
+Brevo is a powerful all-in-one marketing platform. Over 165 000 companies around the world trust Brevo to deliver their emails and SMS messages.
+Brevo combines competitive pricing and excellent deliverability & powerful features such as Email, SMS, Facebook, Chat, CRM, and marketing automation.
+Brevo is available and supported in 6 languages: English, French, Spanish, German, Italian, and Portuguese.
 
-= Why use Sendinblue as an SMTP relay for my website? =
-By using Sendinblue’s SMTP, you will avoid the risk of having your legitimate emails ending up in the spam folder and you will have statistics on emails sent: deliverability, opens, clicks, etc. Sendinblue’s proprietary infrastructure optimizes your deliverability, enabling you to focus on your content.
+= Why use Brevo as an SMTP relay for my website? =
+By using Brevo’s SMTP, you will avoid the risk of having your legitimate emails ending up in the spam folder and you will have statistics on emails sent: deliverability, opens, clicks, etc. Brevo’s proprietary infrastructure optimizes your deliverability, enabling you to focus on your content.
 
-= Why do I need a Sendinblue account? =
-The Sendinblue for WordPress plugin uses Sendinblue’s API to synchronize contacts, send emails and get statistics. Creating an account on Sendinblue is free and takes less than 2 minutes. Once logged into your account, you can get the API key, and you can send up to 300 emails / day on the free (forever) plan.
+= Why do I need a Brevo account? =
+The Brevo for WordPress plugin uses Brevo’s API to synchronize contacts, send emails and get statistics. Creating an account on Brevo is free and takes less than 2 minutes. Once logged into your account, you can get the API key, and you can send up to 300 emails / day on the free (forever) plan.
 
 = Do I have to pay to use the plugin and send emails? =
-No, the plugin is totally free and Sendinblue offers a free forever plan with 9,000 emails per month. Additionally, Sendinblue comes with unlimited contacts (including on the free plan), so there is no hidden cost.
+No, the plugin is totally free and Brevo offers a free forever plan with 9,000 emails per month. Additionally, Brevo comes with unlimited contacts (including on the free plan), so there is no hidden cost.
 If you need to send more than 300 emails / day, check out our pricing. Paid plans start at $25 / month to send up to 10 000 emails / month with no daily sending limit.
 
 = How do I get my get synchronize my lists? =
-You have nothing to do – synchronization is automatic! It doesn’t matter whether your lists were uploaded on your WordPress interface or on your Sendinblue account: they will always remain up-to-date on both sides.
-Sendinblue also integrates with most lead capture and advanced form builder plugins.
+You have nothing to do – synchronization is automatic! It doesn’t matter whether your lists were uploaded on your WordPress interface or on your Brevo account: they will always remain up-to-date on both sides.
+Brevo also integrates with most lead capture and advanced form builder plugins.
 
 = How can I get support? =
-If you need some assistance, you can post an issue in the Support tab, or send us an email at contact@sendinblue.com.
+If you need some assistance, you can post an issue in the Support tab, or send us an email at contact@brevo.com.
 
 = How do I create a signup form? =
 In order to create a signup form, you need to:
-1. Go to Wp admin > Sendinblue > Settings in order to define your form’s fields and settings
-2. Integrate the form in a sidebar using a widget from WP panel > Appearance > Widgets. The Sendinblue widget form should appear in your widgets list, you just to have to drag and drop the widget into the sidebar of your choice.
+1. Go to Wp admin > Brevo > Settings in order to define your form’s fields and settings
+2. Integrate the form in a sidebar using a widget from WP panel > Appearance > Widgets. The Brevo widget form should appear in your widgets list, you just to have to drag and drop the widget into the sidebar of your choice.
 
 == Changelog ==
+
+= 3.1.69 =
+* Plugin made compatible with Wordpress v6.3
+
+= 3.1.68 =
+* Enhanced user experience of plugin.
+
+= 3.1.67 =
+* Rebranded plugin from old Sendinblue brand to new Brevo brand
+
+= 3.1.66 =
+* Enhanced user experience of plugin.
+
+= 3.1.65 =
+* Plugin code enhancements to correctly handle the plugin activation and deactivation events on Brevo.
+
+= 3.1.64 =
+* Enhanced user experience of plugin.
+
+= 3.1.63 =
+* Added fix for correctly displaying custom error message while using Wordpress form.
 
 = 3.1.62 =
 * Improvements have been made to the plugin code to enhance performance and security.

@@ -90,6 +90,12 @@ namespace WPForms {
 			}
 
 			if ( $name === 'pro' ) {
+				_deprecated_argument(
+					'wpforms()->pro',
+					'1.8.2.2 of the WPForms plugin',
+					'Please use `wpforms()->is_pro()` instead.'
+				);
+
 				return wpforms()->is_pro();
 			}
 
@@ -362,7 +368,7 @@ namespace WPForms {
 
 			global $wpdb;
 
-			$tables = $wpdb->get_results( "SHOW TABLES LIKE '" . $wpdb->prefix . "wpforms_%'", 'ARRAY_N' ); // phpcs:ignore
+			$tables = $wpdb->get_results( "SHOW TABLES LIKE '{$wpdb->prefix}wpforms_%'", 'ARRAY_N' ); // phpcs:ignore
 
 			return ! empty( $tables ) ? wp_list_pluck( $tables, 0 ) : [];
 		}

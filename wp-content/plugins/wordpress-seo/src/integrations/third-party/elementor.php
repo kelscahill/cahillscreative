@@ -10,9 +10,9 @@ use WPSEO_Admin_Asset_Manager;
 use WPSEO_Admin_Recommended_Replace_Vars;
 use WPSEO_Language_Utils;
 use WPSEO_Meta;
+use WPSEO_Metabox_Analysis_Inclusive_Language;
 use WPSEO_Metabox_Analysis_Readability;
 use WPSEO_Metabox_Analysis_SEO;
-use WPSEO_Metabox_Analysis_Inclusive_Language;
 use WPSEO_Metabox_Formatter;
 use WPSEO_Post_Metabox_Formatter;
 use WPSEO_Replace_Vars;
@@ -110,9 +110,9 @@ class Elementor implements Integration_Interface {
 	/**
 	 * Constructor.
 	 *
-	 * @param WPSEO_Admin_Asset_Manager $asset_manager                      The asset manager.
-	 * @param Options_Helper            $options                            The options helper.
-	 * @param Capability_Helper         $capability                         The capability helper.
+	 * @param WPSEO_Admin_Asset_Manager $asset_manager The asset manager.
+	 * @param Options_Helper            $options       The options helper.
+	 * @param Capability_Helper         $capability    The capability helper.
 	 */
 	public function __construct(
 		WPSEO_Admin_Asset_Manager $asset_manager,
@@ -146,9 +146,11 @@ class Elementor implements Integration_Interface {
 
 	/**
 	 * Registers our Elementor hooks.
+	 * This is done for pages with metabox on page load and not on ajax request.
 	 */
 	public function register_elementor_hooks() {
-		if ( ! $this->display_metabox( $this->get_metabox_post()->post_type ) ) {
+
+		if ( $this->get_metabox_post() === null || ! $this->display_metabox( $this->get_metabox_post()->post_type ) ) {
 			return;
 		}
 
@@ -545,7 +547,7 @@ class Elementor implements Integration_Interface {
 
 		$post = null;
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reason: We are not processing form information.
-		if ( isset( $_GET['post'] ) && \is_string( $_GET['post'] ) ) {
+		if ( isset( $_GET['post'] ) && \is_numeric( $_GET['post'] ) ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Recommended -- Reason: No sanitization needed because we cast to an integer,We are not processing form information.
 			$post = (int) \wp_unslash( $_GET['post'] );
 		}

@@ -537,8 +537,8 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 				$sender_name = trim( get_bloginfo( 'name' ) );
 			}
 			if ( '' == $sender_email ) {
-				$sender_email = __( 'no-reply@sendinblue.com', 'mailin' );
-				$sender_name = __( 'Sendinblue', 'mailin' );
+				$sender_email = __( 'no-reply@brevo.com', 'mailin' );
+				$sender_name = __( 'Brevo', 'mailin' );
 			}
 
 			$template_contents = self::get_email_template( $type );
@@ -801,7 +801,7 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 										<br>
 										<?php esc_attr_e( 'The user has been unsubscribed', 'mailin' ); ?><br>
 										<br>
-										-Sendinblue
+										-Brevo
 									</div>
 								</td>
 							</tr>
@@ -914,7 +914,7 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 											echo esc_attr__( 'You have just subscribed to the newsletter of ', 'mailin' ) . esc_attr( $site_domain ) . ' .'; }
 										?>
 										<br><br>
-										<?php esc_attr_e( '-Sendinblue', 'mailin' ); ?></div>
+										<?php esc_attr_e( '-Brevo', 'mailin' ); ?></div>
 								</td>
 							</tr>
 							</tbody>

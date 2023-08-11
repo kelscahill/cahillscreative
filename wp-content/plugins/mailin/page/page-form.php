@@ -98,15 +98,13 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 		function generate() {
 			?>
 			<div id="wrap" class="wrap box-border-box container-fluid">
-				<h1><img id="logo-img" src="<?php echo esc_url( SIB_Manager::$plugin_url . '/img/logo.png' ); ?>" alt="Logo Image">
-					<?php
-					$return_btn = 'none';
-					if (isset( $_GET['id'] ) ) {
-						$return_btn = 'inline-block';
-					}
-					?>
-				<a href="<?php echo esc_url( add_query_arg( 'page', self::PAGE_ID, admin_url( 'admin.php' ) ) ); ?>" class="button" style="margin-top: 6px; display: <?php echo esc_attr( $return_btn ); ?>;"><?php esc_attr_e( 'Back to form\'s list' ,'mailin' ); ?></a>
-				</h1>
+				<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" viewBox="0 0 32 32">
+					<circle cx="16" cy="16" r="16" fill="#0B996E"/>
+  					<path fill="#fff" d="M21.002 14.54c.99-.97 1.453-2.089 1.453-3.45 0-2.814-2.07-4.69-5.19-4.69H9.6v20h6.18c4.698 0 8.22-2.874 8.22-6.686 0-2.089-1.081-3.964-2.998-5.174Zm-8.62-5.538h4.573c1.545 0 2.565.877 2.565 2.208 0 1.513-1.329 2.663-4.048 3.54-1.854.574-2.688 1.059-2.997 1.634l-.094.001V9.002Zm3.151 14.796h-3.152v-3.085c0-1.362 1.175-2.693 2.813-3.208 1.453-.484 2.657-.969 3.677-1.482 1.36.787 2.194 2.148 2.194 3.57 0 2.42-2.35 4.205-5.532 4.205Z"/>
+				</svg>
+				<svg xmlns="http://www.w3.org/2000/svg" width="80" height="25" fill="currentColor" viewBox="0 0 90 31">
+					<path fill="#0B996E" d="M73.825 19.012c0-4.037 2.55-6.877 6.175-6.877 3.626 0 6.216 2.838 6.216 6.877s-2.59 6.715-6.216 6.715c-3.626 0-6.175-2.799-6.175-6.715Zm-3.785 0c0 5.957 4.144 10.155 9.96 10.155 5.816 0 10-4.198 10-10.155 0-5.957-4.143-10.314-10-10.314s-9.96 4.278-9.96 10.314ZM50.717 8.937l7.81 19.989h3.665l7.81-19.989h-3.945L60.399 24.37h-.08L54.662 8.937h-3.945Zm-15.18 9.354c.239-3.678 2.67-6.156 5.977-6.156 2.867 0 5.02 1.84 5.338 4.598h-6.614c-2.35 0-3.626.28-4.58 1.56h-.12v-.002Zm-3.784.6c0 5.957 4.183 10.274 9.96 10.274 3.904 0 7.33-1.998 8.804-5.158l-3.187-1.6c-1.115 2.08-3.267 3.319-5.618 3.319-2.83 0-5.379-2.16-5.379-4.238 0-1.08.718-1.56 1.753-1.56h12.63v-1.079c0-5.997-3.825-10.155-9.323-10.155-5.497 0-9.641 4.279-9.641 10.195M20.916 28.924h3.586V16.653c0-2.639 1.632-4.518 3.905-4.518.956 0 1.951.32 2.43.758.36-.96.917-1.918 1.753-2.878-.957-.799-2.59-1.32-4.184-1.32-4.382 0-7.49 3.279-7.49 7.956v12.274-.001Zm-17.33-13.23V5.937h5.896c1.992 0 3.307 1.16 3.307 2.919 0 1.998-1.713 3.518-5.218 4.677-2.39.759-3.466 1.399-3.865 2.16h-.12Zm0 9.794v-4.077c0-1.799 1.514-3.558 3.626-4.238 1.873-.64 3.425-1.28 4.74-1.958 1.754 1.04 2.829 2.837 2.829 4.717 0 3.198-3.028 5.556-7.132 5.556H3.586ZM0 28.926h7.968c6.057 0 10.597-3.798 10.597-8.835 0-2.759-1.393-5.237-3.864-6.836 1.275-1.28 1.873-2.76 1.873-4.559 0-3.717-2.67-6.196-6.693-6.196H0v26.426Z"/>
+				</svg>
 				<div class="row">
 					<div id="wrap-left" class="box-border-box col-md-9 ">
 						<input type="hidden" class="sib-dateformat" value="<?php echo esc_attr( 'yyyy-mm-dd' ); ?>">
@@ -159,7 +157,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 				<div class="card-header"><strong><?php esc_attr_e( 'Forms', 'mailin' ); ?></strong></div>
 
 					<form method="post" class="sib-forms-wrapper" style="padding:20px;min-height: 500px;">
-						<i style="font-size: 13px;"><?php esc_attr_e( "Note: Forms created in Sendinblue plugin for WordPress won't be displayed in Forms section in Sendinblue application", 'mailin' ); ?></i>
+						<i style="font-size: 13px;"><?php esc_attr_e( "Note: Forms created in Brevo plugin for WordPress won't be displayed in Forms section in Brevo application", 'mailin' ); ?></i>
 			<?php
 			$this->forms->display();
 			?>
@@ -335,7 +333,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 												<div class="small-content2" style="margin-top: 20px;"
 													 id="sib_field_add_area">
 													<button type="button" id="sib_add_to_form_btn"
-															class="btn btn-primary sib-add-to-form"><span
+															class="btn btn-success sib-add-to-form"><span
 															class="sib-large-icon"><</span> <?php esc_attr_e( 'Add to form', 'mailin' ); ?>
 													</button>&nbsp;&nbsp;
                                                     <div style="display:none">
@@ -386,7 +384,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
                                                 <div class="small-content2" style="margin-top: 20px;"
                                                      id="sib_multi_field_add_area">
                                                     <button type="button" id="sib_multi_lists_add_form_btn"
-                                                            class="btn btn-primary sib-add-to-form"><span
+                                                            class="btn btn-success sib-add-to-form"><span
                                                                 class="sib-large-icon"><</span> <?php esc_attr_e( 'Add to form', 'mailin' ); ?>
                                                     </button>&nbsp;&nbsp;
                                                     <?php SIB_Page_Home::get_narration_script( __( 'Add to form', 'mailin' ), __( 'Please click where you want to insert the field and click on this button. By default, the new field will be added at top.', 'mailin' ) ); ?>
@@ -416,7 +414,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
                                             </div>
                                             <div class="small-content2 sib-gdpr-block-btn" style="display: none;">
                                                 <button type="button" id="sib_add_compliance_note"
-                                                        class="btn btn-primary sib-add-to-form"><span
+                                                        class="btn btn-success sib-add-to-form"><span
                                                             class="sib-large-icon"><</span> <?php esc_attr_e( 'Add to form', 'mailin' ); ?>
                                                 </button>&nbsp;&nbsp;
                                                 <?php SIB_Page_Home::get_narration_script( __( 'Add to form', 'mailin' ), __( 'Please click where you want to insert the field and click on this button. By default, the new field will be added at top.', 'mailin' ) ); ?>
@@ -481,7 +479,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 											?>
 											>
 												<button type="button" id="sib_add_captcha_btn"
-														class="btn btn-primary sib-add-to-form"><span
+														class="btn btn-success sib-add-to-form"><span
 														class="sib-large-icon"><</span> <?php esc_attr_e( 'Add to form', 'mailin' ); ?>
 												</button>&nbsp;&nbsp;
 												<?php SIB_Page_Home::get_narration_script( __( 'Add Captcha', 'mailin' ), __( 'Please click where you want to insert the field and click on this button. By default, the new field will be added at top.', 'mailin' ) ); ?>
@@ -521,7 +519,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 											?>
 											>
 												<button type="button" id="sib_add_termsUrl_btn"
-														class="btn btn-primary sib-add-to-form"><span
+														class="btn btn-success sib-add-to-form"><span
 														class="sib-large-icon"><</span> <?php esc_attr_e( 'Add to form', 'mailin' ); ?>
 												</button>&nbsp;&nbsp;
 												<?php SIB_Page_Home::get_narration_script( __( 'Add Terms URL', 'mailin' ), __( 'Please click where you want to insert the field and click on this button. By default, the new field will be added at top.', 'mailin' ) ); ?>
@@ -553,11 +551,11 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 										<input type="hidden" id="sib_hidden_submit" data-type="submit"
 											   data-name="submit" data-text="<?php esc_attr_e( 'Subscribe', 'mailin' ); ?>">
 										<input type="hidden" id="sib_hidden_message_1"
-											   value="<?php esc_attr_e( 'Select Sendinblue Attribute', 'mailin' ); ?>">
+											   value="<?php esc_attr_e( 'Select Brevo Attribute', 'mailin' ); ?>">
 										<input type="hidden" id="sib_hidden_message_2"
-											   value="<?php esc_attr_e( 'Sendinblue merge fields : Normal', 'mailin' ); ?>">
+											   value="<?php esc_attr_e( 'Brevo merge fields : Normal', 'mailin' ); ?>">
 										<input type="hidden" id="sib_hidden_message_3"
-											   value="<?php esc_attr_e( 'Sendinblue merge fields : Category', 'mailin' ); ?>">
+											   value="<?php esc_attr_e( 'Brevo merge fields : Category', 'mailin' ); ?>">
 										<input type="hidden" id="sib_hidden_message_4"
 											   value="<?php esc_attr_e( 'Other', 'mailin' ); ?>">
 										<input type="hidden" id="sib_hidden_message_5"
@@ -579,7 +577,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 								</div>
 								<div class="sib-small-content" style="margin-top: 30px;">
 									<div class="col-md-3">
-										<button class="btn btn-primary"><?php esc_attr_e( 'Save', 'mailin' ); ?></button>
+										<button class="btn btn-success"><?php esc_attr_e( 'Save', 'mailin' ); ?></button>
 									</div>
 								</div>
 							</div>
@@ -598,7 +596,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 								<div id="sib_form_alert_message" class="alert alert-danger alert-dismissable fade in"
 									 role="alert" style="display: none;">
 									<span id="sib_disclaim_smtp"
-										  style="display: none;"><?php _e( 'Confirmation emails will be sent through your own email server, but you have no guarantees on their deliverability. <br/> <a href="https://app-smtp.brevo.com/" target="_blank" rel="noopener">Click here</a> to send your emails through Sendinblue in order to improve your deliverability and get statistics', 'mailin' ); ?></span>
+										  style="display: none;"><?php _e( 'Confirmation emails will be sent through your own email server, but you have no guarantees on their deliverability. <br/> <a href="https://app-smtp.brevo.com/" target="_blank" rel="noopener">Click here</a> to send your emails through Brevo in order to improve your deliverability and get statistics', 'mailin' ); ?></span>
 									<span id="sib_disclaim_do_template"
 										  style="display: none;"><?php _e( 'The template you selected does not include a link [DOUBLEOPTIN] to allow subscribers to confirm their subscription. <br/> Please edit the template to include a link with [DOUBLEOPTIN] as URL.', 'mailin' ); ?></span>
                                     <span id="sib_disclaim_confirm_template"
@@ -757,7 +755,7 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
 
 								<div class="row sib-small-content" style="margin-top: 30px;">
 									<div class="col-md-3">
-										<button class="btn btn-primary"><?php esc_attr_e( 'Save', 'mailin' ); ?></button>
+										<button class="btn btn-success"><?php esc_attr_e( 'Save', 'mailin' ); ?></button>
 									</div>
 								</div>
 
@@ -819,7 +817,7 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
                                 </div>
 								<div class="row sib-small-content" style="margin-top: 30px;">
 									<div class="col-md-3">
-										<button class="btn btn-primary"><?php esc_attr_e( 'Save', 'mailin' ); ?></button>
+										<button class="btn btn-success"><?php esc_attr_e( 'Save', 'mailin' ); ?></button>
 									</div>
 								</div>
 							</div>

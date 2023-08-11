@@ -12,7 +12,7 @@ class WPForms_Field_Phone extends WPForms_Field {
 	 *
 	 * @since 1.6.3
 	 */
-	const INTL_VERSION = '17.0.17';
+	const INTL_VERSION = '18.1.6';
 
 	/**
 	 * Primary class constructor.
@@ -22,11 +22,12 @@ class WPForms_Field_Phone extends WPForms_Field {
 	public function init() {
 
 		// Define field type information.
-		$this->name  = esc_html__( 'Phone', 'wpforms' );
-		$this->type  = 'phone';
-		$this->icon  = 'fa-phone';
-		$this->order = 50;
-		$this->group = 'fancy';
+		$this->name     = esc_html__( 'Phone', 'wpforms' );
+		$this->keywords = esc_html__( 'telephone, mobile, cell', 'wpforms' );
+		$this->type     = 'phone';
+		$this->icon     = 'fa-phone';
+		$this->order    = 50;
+		$this->group    = 'fancy';
 
 		// Define additional field properties.
 		add_filter( 'wpforms_field_properties_phone', [ $this, 'field_properties' ], 5, 3 );

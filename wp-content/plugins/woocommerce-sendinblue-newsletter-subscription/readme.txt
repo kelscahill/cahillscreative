@@ -1,8 +1,8 @@
-=== Sendinblue for WooCommerce ===
+=== Brevo (formely Sendinblue) for WooCommerce ===
 Contributors: neeraj_slit
-Tags: email, marketing, newsletter, automation, chat, CRM, contacts, email marketing, marketing automation, analytics, woocommerce email, woocommerce SMS, woocommerce text message, woocommerce sendinblue, ecommerce email confirmation, ecommerce sms confirmation, ecommerce statistics, woocommerce Add-on, confirmation emails, confirmation text message, email autoresponder
+Tags: email, marketing, newsletter, automation, chat, CRM, contacts, email marketing, marketing automation, analytics, woocommerce email, woocommerce SMS, woocommerce text message, woocommerce sendinblue, brevo, ecommerce email confirmation, ecommerce sms confirmation, ecommerce statistics, woocommerce Add-on, confirmation emails, confirmation text message, email autoresponder
 Requires at least: 4.3.1
-Tested up to: 6.1.1
+Tested up to: 6.3
 Requires PHP: 5.6
 Stable tag: trunk
 License: GNU General Public License v2.0 or later
@@ -12,8 +12,8 @@ Email marketing, marketing automation, live chat, CRM tool to design, manage, an
 
 == Description ==
 
-<p>Sendinblue’s plugin for WooCommerce is the easiest way to integrate your store and send better communications.</p> 
-<p>Trusted by over 400,000 businesses worldwide, <a href="https://www.sendinblue.com/?utm_medium=plugin&utm_source=woocommerce_plugin">Sendinblue</a> is an all-in-one marketing platform for engaging with your contacts and building better customer relationships through targeted and meaningful communication.</p> 
+<p>Brevo’s plugin for WooCommerce is the easiest way to integrate your store and send better communications.</p>
+<p>Trusted by over 400,000 businesses worldwide, <a href="https://www.brevo.com/?utm_medium=plugin&utm_source=woocommerce_plugin">Brevo</a> is an all-in-one marketing platform for engaging with your contacts and building better customer relationships through targeted and meaningful communication.</p>
 
 ## Cover your entire marketing funnel with one single tool:
 
@@ -31,14 +31,14 @@ Email marketing, marketing automation, live chat, CRM tool to design, manage, an
 
 <blockquote>
 1. Install, and activate the plugin in your WooCommerce store.
-2. Create a Sendinblue account or log into an existing account.
-3. Sync WooCommerce data to Sendinblue (lead and/or customer).
+2. Create a Brevo account or log into an existing account.
+3. Sync WooCommerce data to Brevo (lead and/or customer).
 </blockquote>
 
-<p>After you sync your historical and new WooCommerce store data with Sendinblue to better manage your customers and their orders,
+<p>After you sync your historical and new WooCommerce store data with Brevo to better manage your customers and their orders,
 you can deploy effective email and SMS campaigns, improve transactional email deliverability, and track detailed metrics including delivery, open and click rates.</p> 
 
-## <a href="https://www.sendinblue.com/features/email-marketing/?utm_medium=plugin&utm_source=woocommerce_plugin">Email Marketing</a>
+## <a href="https://www.brevo.com/features/email-marketing/?utm_medium=plugin&utm_source=woocommerce_plugin">Email Marketing</a>
 <p>Promote your brand and grow your business with beautifully designed emails. Our easy to use template builder allows you to create personalized messages and build meaningful relationships with your contacts.</p>
 
 <p>Email Marketing features:</p>
@@ -46,29 +46,29 @@ you can deploy effective email and SMS campaigns, improve transactional email de
 <ul>
     <li>Create WooCommerce email templates that look great on every device.</br> 
 Using our drag-and-drop email editor, you can quickly create beautiful, responsive emails and personalize them to showcase your business and keep subscribers in the loop about new product launches, promotions, blog posts, and more.</br>
-        Choose one of Sendinblue’s 40+ pre-designed <a href="https://www.sendinblue.com/blog/newsletter-templates/?utm_medium=plugin&utm_source=woocommerce_plugin">templates</a> — all you have to do is add your content and send.</i>
+        Choose one of Brevo’s 40+ pre-designed <a href="https://www.brevo.com/blog/newsletter-templates/?utm_medium=plugin&utm_source=woocommerce_plugin">templates</a> — all you have to do is add your content and send.</i>
     <li>Send personalized newsletters and promotional email campaigns to your subscribers.</i>
     <li>Send confirmation emails with optimized deliverability.</i>
-    <li>Use WooCommerce order variables directly within your Sendinblue email templates.</i>
+    <li>Use WooCommerce order variables directly within your Brevo email templates.</i>
     <li>Monitor the most important email metrics: delivery, open and click rates.</i>
     <li>Enable and manage customer subscriptions: opt-out, opt-in, or double opt-in after order creation or completion.</i>
-    <li>Order tracking: transactional data (order ID, price, etc.) is saved in Sendinblue to enable powerful segmentation.</i>
+    <li>Order tracking: transactional data (order ID, price, etc.) is saved in Brevo to enable powerful segmentation.</i>
     <li>Create and send confirmation text messages after key events like new order or order shipment.</i>
     <li>Send text message campaigns to all customers or subscribers.</i>
 </ul>
 
-Learn more with the free Sendinblue Email Marketing academy and these hands-on tutorials:
-<p><a href="https://www.sendinblue.com/blog/woocommerce-email/?utm_medium=plugin&utm_source=woocommerce_plugin">WooCommerce Email Marketing: A Beginner's Guide</a></p>
-<p><a href="https://academy.sendinblue.com/course/email-marketing-course-english?utm_medium=plugin&utm_source=woocommerce_plugin">Certification for Email Marketing</a></p>
+Learn more with the free Brevo Email Marketing academy and these hands-on tutorials:
+<p><a href="https://www.brevo.com/blog/woocommerce-email/?utm_medium=plugin&utm_source=woocommerce_plugin">WooCommerce Email Marketing: A Beginner's Guide</a></p>
+<p><a href="https://academy.brevo.com/course/email-marketing-course-english?utm_medium=plugin&utm_source=woocommerce_plugin">Certification for Email Marketing</a></p>
 
-## <a href="https://www.sendinblue.com/features/email-marketing/?utm_medium=plugin&utm_source=woocommerce_plugin">Automation</a>
-<p>Sendinblue offers a flexible and versatile marketing automation platform.</p> 
-<p>The Sendinblue Tracker script lets you track web behavior from your contacts to use alongside email engagement data to create complex automation workflows that save you time and help you scale and grow your business.</p>
+## <a href="https://www.brevo.com/features/email-marketing/?utm_medium=plugin&utm_source=woocommerce_plugin">Automation</a>
+<p>Brevo offers a flexible and versatile marketing automation platform.</p>
+<p>The Brevo Tracker script lets you track web behavior from your contacts to use alongside email engagement data to create complex automation workflows that save you time and help you scale and grow your business.</p>
 <p><a href="https://help.brevo.com/hc/en-us/articles/208775609-Introduction-to-Marketing-Automation-Part-1-What-is-Marketing-Automation-#:~:text=keep%20things%20simple.-,how%20does%20marketing%20automation%20work%3F,-With%20Marketing%20Automation?utm_medium=plugin&utm_source=woocommerce_plugin">How does Marketing Automation work?</a></p>
 
 <p>Marketing Automation features: </p>
 
-<p>Sendinblue marketing automation allows you to create a wide range of automated workflows that help you grow your store by improving engagement, increasing traffic & revenue, and building relationships. Marketing automation is free up to 2,000 contacts</p>
+<p>Brevo marketing automation allows you to create a wide range of automated workflows that help you grow your store by improving engagement, increasing traffic & revenue, and building relationships. Marketing automation is free up to 2,000 contacts</p>
 
 <ul>
 	<li>Welcome message — Send a welcome email after a subscriber joins your list.</i>
@@ -82,17 +82,17 @@ Learn more with the free Sendinblue Email Marketing academy and these hands-on t
       <li>Product purchase — Send an email when a product is purchased on your website.</i>
 </ul>
 
-<p>Learn with free Sendinblue Marketing Automation academy and these hands-on tutorials:</p>
-<p><a href="https://www.sendinblue.com/blog/woocommerce-abandoned-cart-email/?utm_medium=plugin&utm_source=woocommerce_plugin">WooCommerce Abandoned Cart Email Strategies to Recover More Orders</a></p>
+<p>Learn with free Brevo Marketing Automation academy and these hands-on tutorials:</p>
+<p><a href="https://www.brevo.com/blog/woocommerce-abandoned-cart-email/?utm_medium=plugin&utm_source=woocommerce_plugin">WooCommerce Abandoned Cart Email Strategies to Recover More Orders</a></p>
 <p><a href="https://academy.sendinblue.com/course/marketing-automation-essentials-sendinblue?utm_medium=plugin&utm_source=woocommerce_plugin">Certification for Marketing Automation</a></p>
 
 
-## <a href="https://www.sendinblue.com/conversations//?utm_medium=plugin&utm_source=woocommerce_plugin">Conversations</a>
+## <a href="https://www.brevo.com/conversations//?utm_medium=plugin&utm_source=woocommerce_plugin">Conversations</a>
 <p>Live Chat and messaging platform for sales and support</p> 
 
 <p>Find new customers and provide instant customer service via a chat widget on your website, or use Facebook Messenger, Instagram Direct, and WhatsApp to drive traffic to your site, increase sales and average order value through live conversations.</p>
 
-<p>Sendinblue Conversations is free for 1 user.</p> 
+<p>Brevo Conversations is free for 1 user.</p>
 
 
 <p>Conversations features: </p>
@@ -100,74 +100,91 @@ Learn more with the free Sendinblue Email Marketing academy and these hands-on t
 	<li>Bring all your customer conversations under one roof and connect with customers where they are, across Live Chat, Facebook Messenger, and Instagram.</i>
     <li>Create personalized experiences for your web visitors, answer questions in real time, and convert visitors by helping them find what they’re looking for.</i>
     <li>Amplify lead generation for your CRM</i>
-    <li>Respond to your clients from anywhere, at any time using the Sendinblue Conversations mobile app, available for both iOS & Android.</i>
+    <li>Respond to your clients from anywhere, at any time using the Brevo Conversations mobile app, available for both iOS & Android.</i>
 </ul>
 
-## <a href="https://www.sendinblue.com/gdpr/?utm_medium=plugin&utm_source=woocommerce_plugin">GDPR</a>
+## <a href="https://www.brevo.com/gdpr/?utm_medium=plugin&utm_source=woocommerce_plugin">GDPR</a>
 
 <blockquote>
 GDPR compliance, in itself, is never truly finished. It’s an ongoing process that requires regular monitoring and confirmation. 
 
-Sendinblue is proud to be continuously working to maintain GDPR compliance in order to remain a trusted third-party software provider for our users.
+Brevo is proud to be continuously working to maintain GDPR compliance in order to remain a trusted third-party software provider for our users.
 </blockquote>
 
 ## Developers
 
-<a href="https://developers.brevo.com/?utm_medium=plugin&utm_source=woocommerce_plugin">The Sendinblue API</a> allows you to programmatically execute a wide range of code operations which are also available through the user interface.
+<a href="https://developers.brevo.com/?utm_medium=plugin&utm_source=woocommerce_plugin">The Brevo API</a> allows you to programmatically execute a wide range of code operations which are also available through the user interface.
 
 = Follow Us =
 
-* **Our Official Website** - [https://www.sendinblue.com](https://www.sendinblue.com)
+* **Our Official Website** - [https://www.brevo.com](https://www.brevo.com)
 * **LinkedIn** - [https://www.linkedin.com/company/sendinblue](https://www.linkedin.com/company/sendinblue)
 * **Our Facebook Page** - [https://www.facebook.com/sendinblue](https://www.facebook.com/sendinblue)
 * **Our Twitter Account** - [https://twitter.com/sendinblue](https://twitter.com/sendinblue)
 
 = Credits =
-This plugin was created by <a href="http://www.sendinblue.com?utm_medium=plugin&utm_source=woocommerce_plugin" title="Sendinblue">Sendinblue</a>.
+This plugin was created by <a href="http://www.brevo.com?utm_medium=plugin&utm_source=woocommerce_plugin" title="Brevo">Brevo</a>.
 
 == Installation ==
 
 = Before installing, make sure to:=
-* whitelist the following Sendinblue domain: whitelist SIB domain: <a href="#" title="https://plugin.brevo.com/integrations/api/">https://plugin.brevo.com/integrations/api/</a>
+* whitelist the following Brevo domain: whitelist SIB domain: <a href="#" title="https://plugin.brevo.com/integrations/api/">https://plugin.brevo.com/integrations/api/</a>
 * whitelist all the IPs comprised in the range from 185.107.232.0 to 185.107.232.24
 * clear your cache
 
 = Once done, you can install the plugin following these steps:=
-1. Install the <strong>Sendinblue for WooCommerce</strong> via the plugins page of WooCommerce or upload the plugin file (link to the plugin file) to your server.
-2. Activate the <strong>Sendinblue for WooCommerce</strong> by clicking <strong>Connect your account</strong> from the <a href="admin.php?page=sendinblue" target="blank" title="WooCommerce > Sendinblue">WooCommerce > Sendinblue</a> page. <strong>Allow access</strong> to your Sendinblue account and <strong>Activate</strong> the plugin to start its configuration.
-3. Configure your plugin settings directly from Sendinblue. To learn more, check our dedicated article <a href="https://help.brevo.com/hc/en-us/articles/7702477927442" title="WooCommerce plugin - Installation and set up.">WooCommerce plugin - Installation and set up.</a> 
+1. Install the <strong>Brevo for WooCommerce</strong> via the plugins page of WooCommerce or upload the plugin file (link to the plugin file) to your server.
+2. Activate the <strong>Brevo for WooCommerce</strong> by clicking <strong>Connect your account</strong> from the <a href="admin.php?page=sendinblue" target="blank" title="WooCommerce > Brevo">WooCommerce > Brevo</a> page. <strong>Allow access</strong> to your Brevo account and <strong>Activate</strong> the plugin to start its configuration.
+3. Configure your plugin settings directly from Brevo. To learn more, check our dedicated article <a href="https://help.brevo.com/hc/en-us/articles/7702477927442" title="WooCommerce plugin - Installation and set up.">WooCommerce plugin - Installation and set up.</a>
 
 == Frequently Asked Questions ==
-= What is Sendinblue? =
-Sendinblue is a powerful all-in-one marketing platform. Over 300 000 companies around the world trust Sendinblue to deliver their emails and SMS messages. 
-Sendinblue combines competitive pricing and excellent deliverability & powerful features such as Email, SMS, Facebook, Chat, CRM, and marketing automation.
-Sendinblue is available and supported in 6 languages: English, French, Spanish, German, Italian, and Portuguese.
+= What is Brevo? =
+Brevo is a powerful all-in-one marketing platform. Over 300 000 companies around the world trust Brevo to deliver their emails and SMS messages.
+Brevo combines competitive pricing and excellent deliverability & powerful features such as Email, SMS, Facebook, Chat, CRM, and marketing automation.
+Brevo is available and supported in 6 languages: English, French, Spanish, German, Italian, and Portuguese.
 
-= Why use Sendinblue as an SMTP relay for my WooCommerce confirmation emails? =
-By using Sendinblue’s SMTP, you will avoid the risk of having your legitimate emails ending up in the spam folder and you will have statistics on emails sent: deliverability, opens, clicks, etc. Sendinblue’s proprietary infrastructure optimizes your deliverability, enabling you to focus on your content.
+= Why use Brevo as an SMTP relay for my WooCommerce confirmation emails? =
+By using Brevo’s SMTP, you will avoid the risk of having your legitimate emails ending up in the spam folder and you will have statistics on emails sent: deliverability, opens, clicks, etc. Brevo’s proprietary infrastructure optimizes your deliverability, enabling you to focus on your content.
 
-= Why do I need a Sendinblue account? =
-The Sendinblue for WooCommerce plugin uses Sendinblue’s API to synchronize contacts, send emails and get statistics. Creating an account on Sendinblue is free and takes less than 2 minutes. Once logged into your account, you can get the API key, and you can send up to 300 emails / day on the free (forever) plan.
+= Why do I need a Brevo account? =
+The Brevo for WooCommerce plugin uses Brevo’s API to synchronize contacts, send emails and get statistics. Creating an account on Brevo is free and takes less than 2 minutes. Once logged into your account, you can get the API key, and you can send up to 300 emails / day on the free (forever) plan.
 
 = Do I have to pay to use the plugin and send emails? =
-No, the plugin is totally free and Sendinblue offers a free forever plan with 9,000 emails per month. Additionally, Sendinblue comes with unlimited contacts (including on the free plan), so there is no hidden cost.
+No, the plugin is totally free and Brevo offers a free forever plan with 9,000 emails per month. Additionally, Brevo comes with unlimited contacts (including on the free plan), so there is no hidden cost.
 If you need to send more than 300 emails / day, check out our pricing. Paid plans start at $25 / month to send up to 10 000 emails / month with no daily sending limit. 
 
 = How do I synchronize my lists? =
-You have nothing to do – synchronization is automatic! It doesn’t matter whether your lists were uploaded on your WordPress interface or on your Sendinblue account: they will always remain up-to-date on both sides.
-Sendinblue also integrates with most lead capture and advanced form builder plugins.
+You have nothing to do – synchronization is automatic! It doesn’t matter whether your lists were uploaded on your WordPress interface or on your Brevo account: they will always remain up-to-date on both sides.
+Brevo also integrates with most lead capture and advanced form builder plugins.
 
 = How can I receive support? =
-If you need some assistance, you can post an issue in the Support tab, or send us an email at contact@sendinblue.com.
+If you need some assistance, you can post an issue in the Support tab, or send us an email at contact@brevo.com.
 
 
 == Screenshots ==
-1. Click on “Connect your account” to link WooCommerce and your Sendinblue account.
-2. Once it’s done, you can click on “Go to dashboard” to directly land on your Sendinblue account.
+1. Click on “Connect your account” to link WooCommerce and your Brevo account.
+2. Once it’s done, you can click on “Go to dashboard” to directly land on your Brevo account.
 3. Click on the relevant button to see your campaigns, your workflows, and your conversations.
 4. You can access your settings by clicking on “Settings” at the top right of the screen. 
 
 == Changelog ==
+
+= 3.0.11 =
+* Plugin made compatible with Wordpress v6.3
+
+= 3.0.10 =
+* Rebranded plugin from old Sendinblue brand to new Brevo brand
+
+= 3.0.9 =
+* Plugin code enhancements to handle the deleted email templates case
+
+= 3.0.8 =
+* Declare compatibility for WooCommerce HPOS
+* Improved the Reply To of Woocommerce mails sent through the plugin
+
+= 3.0.7 =
+* Enhanced plugin code
+* Added tags for all emails sent through the plugin. Tags will be displayed in the transactional email logs on the Brevo platform
 
 = 3.0.6 =
 * Enhancement in the backend links of the plugin for migration

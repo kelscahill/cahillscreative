@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woocommerce-"
 "sendinblue-newsletter-subscription\n"
 "POT-Creation-Date: 2022-10-12T11:15:34+00:00\n"
-"PO-Revision-Date: 2022-10-17 13:35+0530\n"
+"PO-Revision-Date: 2023-07-14 00:37+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -14,11 +14,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.3.2\n"
 "X-Domain: woocommerce-sendinblue-newsletter-subscription\n"
 
 #. Plugin Name of the plugin
-msgid "Sendinblue - WooCommerce Email Marketing"
+msgid "Brevo - WooCommerce Email Marketing"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -45,8 +45,8 @@ msgid "You’re all set!"
 msgstr "C’est fait !"
 
 #: src/views/admin_menus.php:760
-msgid "The connection between Woocommerce and Sendinblue works!"
-msgstr "Woocommerce et Sendinblue sont maintenant connectés !"
+msgid "The connection between Woocommerce and Brevo works!"
+msgstr "Woocommerce et Brevo sont maintenant connectés !"
 
 #: src/views/admin_menus.php:769
 msgid "Go to dashboard"
@@ -106,7 +106,7 @@ msgstr "décollage."
 
 #: src/views/admin_view.php:773
 msgid "WooCommerce marketing tools for small"
-msgstr "Outils marketing WooCommerce pour PME."
+msgstr "Outils marketing WooCommerce pour PME"
 
 #: src/views/admin_view.php:774
 msgid "businesses. Email marketing, automations,"
@@ -121,5 +121,5 @@ msgid "Connect your account"
 msgstr "Connectez votre compte"
 
 #: src/views/admin_view.php:812
-msgid "Do it all with Sendinblue"
-msgstr "Sendinblue, l’outil tout-en-un"
+msgid "Do it all with Brevo"
+msgstr "Brevo, l’outil tout-en-un"

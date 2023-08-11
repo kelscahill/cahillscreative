@@ -109,6 +109,8 @@ let WPFormsPaymentsOverview = window.WPFormsPaymentsOverview || ( function( docu
 		 */
 		classNames: {
 			hide: 'wpforms-hide',
+			ready: 'is-ready',
+			fetching: 'doing-ajax',
 			selected: 'is-selected',
 			calculated: 'is-calculated',
 		},
@@ -223,6 +225,24 @@ let WPFormsPaymentsOverview = window.WPFormsPaymentsOverview || ( function( docu
 		},
 
 		/**
+		 * Retrieves the previewed dataset label.
+		 *
+		 * @since 1.8.2.2
+		 *
+		 * @returns {string} The dataset tooltip label.
+		 */
+		get datasetLabel() {
+
+			const $statcard = $( `[data-stats=${this.report}]` );
+
+			if ( ! $statcard.length ) {
+				return this.i18n?.label;
+			}
+
+			return $statcard.find( '.statcard-label' ).text();
+		},
+
+		/**
 		 * Chart.js settings.
 		 *
 		 * @since 1.8.2
@@ -239,7 +259,7 @@ let WPFormsPaymentsOverview = window.WPFormsPaymentsOverview || ( function( docu
 					datasets: [
 						{
 							data: [],
-							label: this.i18n?.label || '',
+							label: '',
 							borderWidth: 2,
 							pointRadius: 4,
 							pointBorderWidth: 1,
@@ -340,7 +360,7 @@ let WPFormsPaymentsOverview = window.WPFormsPaymentsOverview || ( function( docu
 						callbacks: {
 							label: ( { yLabel: value } ) => {
 
-								let label = `${this.i18n?.label} `;
+								let label = `${this.datasetLabel} `;
 
 								// Update the scales if the dataset returned includes price amounts.
 								if ( this.isAmount ) {
@@ -400,7 +420,6 @@ let WPFormsPaymentsOverview = window.WPFormsPaymentsOverview || ( function( docu
 
 			// Cache DOM elements.
 			el.$document      = $( document );
-			el.$screenOptions = $( '#screen-options-wrap' );
 			el.$wrapper       = $( '.wpforms-payments-wrap-overview' );
 			el.$spinner       = $( '.wpforms-overview-chart .spinner' );
 			el.$canvas        = $( '#wpforms-payments-overview-canvas' );
@@ -421,8 +440,6 @@ let WPFormsPaymentsOverview = window.WPFormsPaymentsOverview || ( function( docu
 
 			el.$document
 				.on( 'click', { selectors: [ '.wpforms-datepicker-popover', '.wpforms-dash-widget-settings-menu' ] }, app.handleOnClickOutside );
-			el.$screenOptions
-				.find( '.hide-column-tog' ).on( 'change', app.handleOnChangeScreenOptions );
 			el.$wrapper
 				.on( 'submit', '.wpforms-overview-top-bar-filter-form', app.handleOnSubmitDatepicker )
 				.on( 'click', '.wpforms-overview-top-bar-filter-form [type="reset"]', app.handleOnResetDatepicker )
@@ -696,23 +713,6 @@ let WPFormsPaymentsOverview = window.WPFormsPaymentsOverview || ( function( docu
 		},
 
 		/**
-		 * For styling purposes, we will add a dedicated class name for determining the number of visible columns.
-		 *
-		 * @since 1.8.2
-		 */
-		handleOnChangeScreenOptions: function() {
-
-			const $columns       = el.$table.find( 'thead .manage-column' );
-			const $hidden        = $columns.filter( '.hidden' );
-			const hasManyColumns = Boolean( ( $columns.length - $hidden.length ) > 5 );
-
-			// This is used to adjust the table layout.
-			// Add a class to the table to indicate the number of columns.
-			el.$table.toggleClass( 'has-many-columns', hasManyColumns );
-			el.$table.toggleClass( 'has-few-columns', ! hasManyColumns );
-		},
-
-		/**
 		 * Either fills the container with placeholder data or determines
 		 * whether actual data is available to process the chart dataset.
 		 *
@@ -744,6 +744,14 @@ let WPFormsPaymentsOverview = window.WPFormsPaymentsOverview || ( function( docu
 
 				return { labels, datasets };
 			}
+
+			const { i18n: { no_dataset: placeholderText } } = vars;
+
+			// If there is a placeholder text for the current report, use it.
+			if ( placeholderText?.[vars.report] ) {
+				el.$notice.find( 'h2' ).text( placeholderText[vars.report] );
+			}
+
 
 			el.$notice.removeClass( vars.classNames.hide );
 
@@ -801,6 +809,10 @@ let WPFormsPaymentsOverview = window.WPFormsPaymentsOverview || ( function( docu
 				return;
 			}
 
+			// Add a class name indicating that the chart is fetching data.
+			// This is mainly to avoid fast clicking on the stat cards to avoid multiple Ajax requests.
+			el.$reports.addClass( vars.classNames.fetching );
+
 			$.post(
 				ajaxurl,
 				$.extend(
@@ -823,7 +835,8 @@ let WPFormsPaymentsOverview = window.WPFormsPaymentsOverview || ( function( docu
 			).done(
 				function() {
 
-					el.$reports.addClass( 'is-ready' );
+					el.$reports.addClass( vars.classNames.ready );
+					el.$reports.removeClass( vars.classNames.fetching );
 				}
 			);
 		},

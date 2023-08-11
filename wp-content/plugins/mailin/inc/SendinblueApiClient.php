@@ -14,7 +14,7 @@ class SendinblueApiClient
     const RESPONSE_CODE_CREATED = 201;
     const RESPONSE_CODE_ACCEPTED = 202;
     const RESPONSE_CODE_UNAUTHORIZED = 401;
-    const PLUGIN_VERSION = '3.1.62';
+    const PLUGIN_VERSION = '3.1.69';
     const USER_AGENT = 'sendinblue_plugins/wordpress';
 
     private $apiKey;

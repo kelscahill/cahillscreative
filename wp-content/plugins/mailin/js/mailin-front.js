@@ -34,6 +34,15 @@ jQuery(document).ready(function(){
     });
     // run MA script identify() when submit on any forms with email field
     jQuery(document).on('submit', 'form', function(e){
+        var invalidEmail = jQuery(this).closest('form').find('input[name="sib_form_invalid_email_notice"]').val();
+        var requiredField = jQuery(this).closest('form').find('input[name="sib_form_alert_notice"]').val();
+        if (invalidEmail !== undefined) {
+            sibErrMsg.invalidMail = invalidEmail;
+        }
+        if (requiredField !== undefined) {
+            sibErrMsg.requiredField = requiredField;
+        }
+
         if(!jQuery(this).hasClass('sib_signup_form')) {
             var email = jQuery(this).find('input[type=email]').val();
             var emailPattern = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
