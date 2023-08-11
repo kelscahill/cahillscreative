@@ -2,6 +2,6 @@
 
 {% if ad.snippet %}
   <div class="{{ bem_classes(base_class, ad.element, ad.modifiers, ad.extra) }}">
-    {{ ad.snippet }}
+    {{ ad.snippet|raw }}
   </div>
 {% endif %}
