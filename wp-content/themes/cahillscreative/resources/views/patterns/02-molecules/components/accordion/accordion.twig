@@ -58,6 +58,12 @@
                 "items": item.steps
               }
             } %}
+            {% include "@atoms/ads/ad.twig" with {
+              "ad": {
+                "snippet": options.ad_content_1,
+                "modifiers": "step"
+              }
+            } %}
           </div>
         </div>
       {% endfor %}
