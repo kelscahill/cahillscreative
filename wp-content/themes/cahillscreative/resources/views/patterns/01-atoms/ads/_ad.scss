@@ -5,6 +5,10 @@
   align-items: center;
   justify-content: center;
 
+  script {
+    display: none;
+  }
+
   > * {
     margin: 0 auto !important;
     width: 100%;
