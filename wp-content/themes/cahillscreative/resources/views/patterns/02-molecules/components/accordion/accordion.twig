@@ -28,7 +28,7 @@
             }
           } %}
           <div class="{{ bem_classes(base_class, 'body') }} u-spacing">
-            {% if loop.index % 1 == 0 %}
+            {% if loop.index == 2 %}
               {% include "@atoms/ads/ad.twig" with {
                 "ad": {
                   "snippet": options.ad_sidebar_1,
@@ -36,7 +36,7 @@
                 }
               } %}
             {% endif %}
-            {% if loop.index % 3 == 0 %}
+            {% if loop.index  == 4 %}
               {% include "@atoms/ads/ad.twig" with {
                 "ad": {
                   "snippet": options.ad_sidebar_2,
@@ -58,12 +58,22 @@
                 "items": item.steps
               }
             } %}
-            {% include "@atoms/ads/ad.twig" with {
-              "ad": {
-                "snippet": options.ad_content_1,
-                "modifiers": "step"
-              }
-            } %}
+            {% if loop.index  == 1 %}
+              {% include "@atoms/ads/ad.twig" with {
+                "ad": {
+                  "snippet": options.ad_content_1,
+                  "modifiers": "step"
+                }
+              } %}
+            {% endif %}
+            {% if loop.index  == 3 %}
+              {% include "@atoms/ads/ad.twig" with {
+                "ad": {
+                  "snippet": options.ad_content_3,
+                  "modifiers": "step"
+                }
+              } %}
+            {% endif %}
           </div>
         </div>
       {% endfor %}
