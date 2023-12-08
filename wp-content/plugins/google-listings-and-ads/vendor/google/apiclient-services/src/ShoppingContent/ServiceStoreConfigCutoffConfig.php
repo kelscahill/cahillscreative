@@ -22,6 +22,10 @@ class ServiceStoreConfigCutoffConfig extends \Automattic\WooCommerce\GoogleListi
   protected $localCutoffTimeType = ServiceStoreConfigCutoffConfigLocalCutoffTime::class;
   protected $localCutoffTimeDataType = '';
   /**
+   * @var bool
+   */
+  public $noDeliveryPostCutoff;
+  /**
    * @var string
    */
   public $storeCloseOffsetHours;
@@ -39,6 +43,20 @@ class ServiceStoreConfigCutoffConfig extends \Automattic\WooCommerce\GoogleListi
   public function getLocalCutoffTime()
   {
     return $this->localCutoffTime;
+  }
+  /**
+   * @param bool
+   */
+  public function setNoDeliveryPostCutoff($noDeliveryPostCutoff)
+  {
+    $this->noDeliveryPostCutoff = $noDeliveryPostCutoff;
+  }
+  /**
+   * @return bool
+   */
+  public function getNoDeliveryPostCutoff()
+  {
+    return $this->noDeliveryPostCutoff;
   }
   /**
    * @param string

@@ -169,6 +169,36 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 
 == Changelog ==
 
+= 4.0.5 =
+* Improved error handling in endpoints
+
+= 4.0.4 =
+* Bug fixes related to missing products creation date during sync
+
+= 4.0.3 =
+* Bug fixes related to incorrect handling of double-opt-in status of shop customers
+
+= 4.0.2 =
+* Bug fixes related to incorrect handling of opt-in status of shop customers in checkout flow
+
+= 4.0.1 =
+* Bug fixes related to eCommerce analytics syncing.
+
+= 4.0.0 =
+* Gain powerful insights into your online store's performance, revenue, and customer behavior with the Ecommerce Dashboard.
+* Easily compare data with previous periods to measure growth and track performance trends.
+* Analyze your product performance with the new Product Insights feature.
+* Unlock the potential of your marketing strategy with Retention Analysis tools.
+* Seamlessly segment your customers based on their purchase history for targeted marketing campaigns.
+* Access comprehensive customer order histories directly within customer profiles.
+* Updated user interface for a smoother and more intuitive experience.
+
+= 3.0.13 =
+* Improve compatibility with WooCommerce attachment plugins
+
+= 3.0.12 =
+* Enabled edit access to the plugin for Editor roles in Wordpress
+
 = 3.0.11 =
 * Plugin made compatible with Wordpress v6.3
 

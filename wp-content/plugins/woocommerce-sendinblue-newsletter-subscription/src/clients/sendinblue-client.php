@@ -30,6 +30,16 @@ class SendinblueClient
 	public const SMS_ORDER_CONFIRMATION                 = '/sms_send?action=order_confirmation';
 	public const EMAIL_SEND                             = "/email_send?action=email_event";
 
+	public const PRODUCT_CREATED                        = '/products_sync?action=product_created';
+	public const PRODUCT_DELETED                        = '/products_sync?action=product_deleted';
+	public const CATEGORY_CREATED                       = '/collection_sync?action=collection_created';
+	public const CATEGORY_UPDATED                       = '/collection_sync?action=collection_updated';
+	public const CATEGORY_DELETED                       = '/collection_sync?action=collection_deleted';
+	public const ORDER_CREATE                           = '/order_tracking?action=order_create';
+	public const ORDER_PAID                             = '/order_tracking?action=order_paid';
+	public const ORDER_REFUND                           = '/order_tracking?action=order_refund';
+	public const ORDER_CANCELLED                        = '/order_tracking?action=order_cancelled';
+
 	public const IS_PAGE_TRACKING_ENABLED               = 'isPageTrackingEnabled';
 	public const IS_ABANDONED_CART_ENABLED              = 'isAbandonedCartTrackingEnabled';
 	public const MA_KEY                                 = 'marketingAutomationKey';
@@ -40,6 +50,8 @@ class SendinblueClient
 	public const CANCELLED_ORDER_STATUS                 = 'cancelled';
 	public const FAILED_ORDER_STATUS                    = 'failed';
 	public const IS_SUBSCRIBE_EVENT_ENABLED             = 'isSubscribeEventEnabled';
+	public const IS_SUBSCRIPTION_EMAIL_ENABLED          = 'subscriptionMailing';
+	public const SUBSCRIPTION_EMAIL_TYPE                = 'isSubscribeEventEnabled';
 	public const IS_EMAIL_FEATURE_ENABLED               = 'isEmailOptionsEnabled';
 	public const IS_NEW_ORDER_EMAIL_ENABLED             = "isNewOrderEmailEnabled";
 	public const IS_NEW_ORDER_TEMPLATE_ENABLED          = "isNewOrderTemplateEnabled";
@@ -72,6 +84,9 @@ class SendinblueClient
 	public const IS_DISPLAY_OPT_IN_CHECKED              = "isDisplayOptInChecked";
 	public const DISPLAY_OPT_IN_LABEL                   = "displayOptInLabel";
 	public const DISPLAY_OPT_IN_LOCATION                = "displayOptInLocation";
+	public const IS_PRODUCT_SYNC_ENABLED                = "isProductsAutoSyncEnabled";
+	public const IS_CATEGORY_SYNC_ENABLED               = "isCategoryAutoSyncEnabled";
+	public const IS_ORDERS_SYNC_ENABLED                  = "isOrdersAutoSyncEnabled";
 
 	private const INTEGRATION_BACKEND_URL               = 'https://plugin.brevo.com/integrations/api';
 	private const HTTP_METHOD_GET                       = 'GET';

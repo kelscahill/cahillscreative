@@ -60,8 +60,12 @@ class License
 	 * @var WPMDBRestAPIServer
 	 */
 	private $rest_API_server;
+    /**
+     * @var Download
+     */
+    private $download;
 
-	public function __construct(
+    public function __construct(
 		Api $api,
 		Settings $settings,
 		Util $util,

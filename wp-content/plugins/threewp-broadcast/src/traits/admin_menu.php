@@ -164,6 +164,10 @@ trait admin_menu
 		$post_types_input->description->set_unfiltered_label( $label );
 
 		$blog_post_types = $this->get_blog_post_types();
+		// Remove the attachment.
+		$blog_post_types = array_flip( $blog_post_types );
+		unset( $blog_post_types[ 'attachment' ] );
+		$blog_post_types = array_flip( $blog_post_types );
 
 		$blog_post_types_m1 = __( 'Custom post types must be specified using their internal Wordpress names on a new line each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types).', 'threewp-broadcast' );
 		$blog_post_types_m2 = sprintf( __( 'The custom post types registered on <em>this</em> blog are: %s', 'threewp-broadcast' ),

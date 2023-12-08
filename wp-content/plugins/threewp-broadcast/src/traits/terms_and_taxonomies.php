@@ -432,6 +432,11 @@ trait terms_and_taxonomies
 				'terms'    => $o->terms,
 			];
 
+
+			// Don't show debug info if there are a lot of terms.
+			// A lot is 6, let's say.
+			$show_debug = count( $o->terms ) < 6;
+
 			// Store the term meta.
 			foreach( $o->terms as $term )
 			{
@@ -441,7 +446,10 @@ trait terms_and_taxonomies
 				$preparse_content->broadcasting_data = $bcd;
 				$preparse_content->content = $term->description;
 				$preparse_content->id = $key;
-				$this->debug( 'Preparsing description %s', $key );
+
+				if ( $show_debug )
+					$this->debug( 'Preparsing description %s', $key );
+
 				$preparse_content->execute();
 
 				$meta = get_term_meta( $term->term_id );
@@ -465,15 +473,6 @@ trait terms_and_taxonomies
 					->set( $term->term_id, $meta );
 			}
 		}
-
-		$nice_taxonomy_term_meta = [];
-		foreach( $bcd->taxonomy_term_meta->collection( $bcd->parent_blog_id )->collection( 'terms' ) as $term_id => $term )
-		{
-			if ( count( $term ) < 1 )
-				continue;
-			$nice_taxonomy_term_meta[ $term_id ] = $term->to_array();
-		}
-		$this->debug( 'Taxonomy term meta: %s', $nice_taxonomy_term_meta );
 	}
 
 	/**

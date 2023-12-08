@@ -96,7 +96,7 @@ class AddToCartForm extends AbstractBlock {
 
 		$classname          = $attributes['className'] ?? '';
 		$classes_and_styles = StyleAttributesUtils::get_classes_and_styles_by_attributes( $attributes );
-		$product_classname = $is_descendent_of_single_product_block ? 'product' : '';
+		$product_classname  = $is_descendent_of_single_product_block ? 'product' : '';
 
 		$form = sprintf(
 			'<div class="wp-block-add-to-cart-form %1$s %2$s %3$s" style="%4$s">%5$s</div>',
@@ -162,6 +162,11 @@ class AddToCartForm extends AbstractBlock {
 	public function add_to_cart_redirect_filter( $url ) {
 		// phpcs:ignore
 		if ( isset( $_POST['is-descendent-of-single-product-block'] ) && 'true' == $_POST['is-descendent-of-single-product-block'] ) {
+
+			if ( 'yes' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
+				return wc_get_cart_url();
+			}
+
 			return wp_validate_redirect( wp_get_referer(), $url );
 		}
 

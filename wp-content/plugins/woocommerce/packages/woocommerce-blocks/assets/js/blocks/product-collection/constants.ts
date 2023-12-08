@@ -13,7 +13,9 @@ import {
 	TProductCollectionOrderBy,
 	ProductCollectionQuery,
 	ProductCollectionDisplayLayout,
+	LayoutOptions,
 } from './types';
+import { getDefaultValueOfInheritQueryFromTemplate } from './utils';
 
 export const STOCK_STATUS_OPTIONS = getSetting< Record< string, string > >(
 	'stockStatusOptions',
@@ -41,10 +43,8 @@ export const DEFAULT_QUERY: ProductCollectionQuery = {
 	author: '',
 	search: '',
 	exclude: [],
-	sticky: '',
 	inherit: null,
 	taxQuery: {},
-	parents: [],
 	isProductCollectionBlock: true,
 	woocommerceOnSale: false,
 	woocommerceStockStatus: getDefaultStockStatuses(),
@@ -56,22 +56,29 @@ export const DEFAULT_ATTRIBUTES: Partial< ProductCollectionAttributes > = {
 	query: DEFAULT_QUERY,
 	tagName: 'div',
 	displayLayout: {
-		type: 'flex',
+		type: LayoutOptions.GRID,
 		columns: 3,
+		shrinkColumns: false,
 	},
 };
+
+export const getDefaultQuery = (
+	currentQuery: ProductCollectionQuery
+): ProductCollectionQuery => ( {
+	...currentQuery,
+	orderBy: DEFAULT_QUERY.orderBy as TProductCollectionOrderBy,
+	order: DEFAULT_QUERY.order as TProductCollectionOrder,
+	inherit: getDefaultValueOfInheritQueryFromTemplate(),
+} );
+
+export const getDefaultDisplayLayout = () =>
+	DEFAULT_ATTRIBUTES.displayLayout as ProductCollectionDisplayLayout;
 
 export const getDefaultSettings = (
 	currentAttributes: ProductCollectionAttributes
 ): Partial< ProductCollectionAttributes > => ( {
-	displayLayout:
-		DEFAULT_ATTRIBUTES.displayLayout as ProductCollectionDisplayLayout,
-	query: {
-		...currentAttributes.query,
-		orderBy: DEFAULT_QUERY.orderBy as TProductCollectionOrderBy,
-		order: DEFAULT_QUERY.order as TProductCollectionOrder,
-		inherit: DEFAULT_QUERY.inherit,
-	},
+	displayLayout: getDefaultDisplayLayout(),
+	query: getDefaultQuery( currentAttributes.query ),
 } );
 
 export const DEFAULT_FILTERS: Partial< ProductCollectionQuery > = {

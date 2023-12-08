@@ -169,7 +169,6 @@
 	width: 100%;
 	height: 0;
 	display: block;
-	position: relative;
 	pointer-events: none;
 	outline: none !important;
 	position: absolute;
@@ -332,11 +331,10 @@
 	}
 	.wc-block-components-price-slider__range-input-progress {
 		--range-color: currentColor;
-		margin: -$border-width;
 	}
 	.wc-block-price-filter__range-input {
 		background: transparent;
-		margin: -$border-width;
+		height: 0;
 		width: calc(100% + #{$border-width * 2});
 		&:hover,
 		&:focus {
@@ -351,13 +349,24 @@
 			}
 		}
 		&::-webkit-slider-thumb {
-			margin-top: -9px;
+			background: $white;
+			margin-top: -6px;
+			width: 12px;
+			height: 12px;
 		}
 		&.wc-block-components-price-slider__range-input--max::-moz-range-thumb {
-			transform: translate(2px, 1px);
+			background: $white;
+			transform: translate(2px, 2px);
+			width: 12px;
+			height: 12px;
+			box-sizing: content-box;
 		}
 		&.wc-block-components-price-slider__range-input--min::-moz-range-thumb {
-			transform: translate(-2px, 1px);
+			background: $white;
+			transform: translate(-2px, 2px);
+			width: 12px;
+			height: 12px;
+			box-sizing: content-box;
 		}
 		&::-ms-track {
 			border-color: transparent !important;
@@ -366,7 +375,6 @@
 	@include ie11() {
 		.wc-block-components-price-slider__range-input-wrapper {
 			border: 0;
-			height: auto;
 			position: relative;
 			height: 50px;
 		}

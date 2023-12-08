@@ -4,9 +4,9 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 7.4
-Stable tag: 50.01
+Stable tag: 50.06
 Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
-Tested up to: 6.2.2
+Tested up to: 6.4
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -319,6 +319,7 @@ The broadcast meta box, menu and columns in the post view can be hidden from use
 
 Below is a list of plugins that just will not work properly with Broadcast and / or its addons:
 
+* <a href="https://wordpress.org/plugins/cf-image-resizing/">Cloudflare Image Resizing</a> - Creates 404 errors for images.
 * <a href="https://wordpress.org/plugins/intuitive-custom-post-order/">Intuitive Custom Post Order</a> - Prevents broadcasting due to switch_to_blog() mismatch.
 * Post Type Switcher - Turns post types into attachments and vice versa.
 * <a href="https://wordpress.org/plugins/query-monitor/">Query Monitor</a> causes the queue data to increase exponentially.
@@ -370,7 +371,23 @@ If your products have variations, a product image gallery, you want to sync stoc
 
 == Changelog ==
 
-= 50.1 20230407 =
+= 50.06 20231108 =
+
+* Fix: Added Cloudflare Image Resizing plugin to the list of incompatible plugins.
+* Tweak: Don't show "Preparsing" debug text if there are more than 5 terms in the taxonomy.
+* Dev: Add get_user_writable_blogs::remove_access() method.
+
+= 50.05 20230918 =
+
+* Fix: Fix error message when clicking on things in the broadcasted column. The problem was a double nonce - one form nonce is enough.
+
+= 50.04 20230913 =
+
+* Fix: Remove "attachment" as a broadcastable post type in the settings. Attachments can only really be broadcasted by being used in posts.
+* Tweak: Tested with 6.3
+* Tweak: Added hook priority info in info table.
+
+= 50.01 20230407 =
 
 New add-on: <a href="https://broadcast.plainviewplugins.com/addon/same-post-id/">Same post ID</a>: Create a new post on several blogs with the same post ID.
 * Code: SDK update for PHP 8.2 compatibility.

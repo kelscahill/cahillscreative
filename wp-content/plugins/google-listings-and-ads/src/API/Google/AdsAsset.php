@@ -6,15 +6,15 @@ namespace Automattic\WooCommerce\GoogleListingsAndAds\API\Google;
 use Automattic\WooCommerce\GoogleListingsAndAds\Google\Ads\GoogleAdsClient;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsAwareTrait;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsAwareInterface;
-use Google\Ads\GoogleAds\V13\Services\GoogleAdsRow;
-use Google\Ads\GoogleAds\V13\Enums\AssetTypeEnum\AssetType;
-use Google\Ads\GoogleAds\V13\Resources\Asset;
-use Google\Ads\GoogleAds\V13\Services\AssetOperation;
-use Google\Ads\GoogleAds\V13\Services\MutateOperation;
-use Google\Ads\GoogleAds\Util\V13\ResourceNames;
-use Google\Ads\GoogleAds\V13\Common\TextAsset;
-use Google\Ads\GoogleAds\V13\Common\ImageAsset;
-use Google\Ads\GoogleAds\V13\Common\CallToActionAsset;
+use Google\Ads\GoogleAds\V14\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V14\Enums\AssetTypeEnum\AssetType;
+use Google\Ads\GoogleAds\V14\Resources\Asset;
+use Google\Ads\GoogleAds\V14\Services\AssetOperation;
+use Google\Ads\GoogleAds\V14\Services\MutateOperation;
+use Google\Ads\GoogleAds\Util\V14\ResourceNames;
+use Google\Ads\GoogleAds\V14\Common\TextAsset;
+use Google\Ads\GoogleAds\V14\Common\ImageAsset;
+use Google\Ads\GoogleAds\V14\Common\CallToActionAsset;
 use Automattic\WooCommerce\GoogleListingsAndAds\Proxies\WP;
 use Google\ApiCore\ApiException;
 use Exception;
@@ -116,7 +116,6 @@ class AdsAsset implements OptionsAwareInterface {
 			default:
 				throw new Exception( 'Asset Field type not supported' );
 		}
-
 	}
 
 	/**
@@ -209,7 +208,6 @@ class AdsAsset implements OptionsAwareInterface {
 		}
 
 		return $arns;
-
 	}
 
 	/**
@@ -245,7 +243,6 @@ class AdsAsset implements OptionsAwareInterface {
 
 		$operation = ( new AssetOperation() )->setCreate( $asset );
 		return ( new MutateOperation() )->setAssetOperation( $operation );
-
 	}
 
 	/**

@@ -34,14 +34,37 @@ class get_user_writable_blogs
 
 	/**
 		@brief		Convenience method to add access to a blog.
+		@details	Parameter can be either an INT or an ( ARRAY of INT ).
 		@since		2018-12-13 14:42:11
 	**/
-	public function add_access( $blog_id )
+	public function add_access( $blog_ids )
 	{
-		if ( ! ThreeWP_Broadcast()->blog_exists( $blog_id ) )
-			return;
-		$blog = blog::from_blog_id( $blog_id );
-		$this->blogs->set( $blog_id, $blog );
+		if ( ! is_array( $blog_ids ) )
+			$blog_ids = [ $blog_ids ];
+
+		foreach( $blog_ids as $blog_id )
+		{
+			if ( ! ThreeWP_Broadcast()->blog_exists( $blog_id ) )
+				continue;
+			$blog = blog::from_blog_id( $blog_id );
+			$this->blogs->set( $blog_id, $blog );
+		}
+		return $this;
+	}
+
+	/**
+		@brief		Convenience method to remove access from a blog.
+		@details	Parameter can be either an INT or an ( ARRAY of INT ).
+		@since		2023-09-20 15:04:35
+	**/
+	public function remove_access( $blog_ids )
+	{
+		if ( ! is_array( $blog_ids ) )
+			$blog_ids = [ $blog_ids ];
+
+		foreach( $blog_ids as $blog_id )
+			$this->blogs->forget( $blog_id );
+
 		return $this;
 	}
 }

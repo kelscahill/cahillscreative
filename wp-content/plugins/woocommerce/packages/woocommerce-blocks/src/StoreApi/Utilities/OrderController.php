@@ -42,8 +42,9 @@ class OrderController {
 	 * Update an order using data from the current cart.
 	 *
 	 * @param \WC_Order $order The order object to update.
+	 * @param boolean   $update_totals Whether to update totals or not.
 	 */
-	public function update_order_from_cart( \WC_Order $order ) {
+	public function update_order_from_cart( \WC_Order $order, $update_totals = true ) {
 		/**
 		 * This filter ensures that local pickup locations are still used for order taxes by forcing the address used to
 		 * calculate tax for an order to match the current address of the customer.
@@ -81,8 +82,10 @@ class OrderController {
 		);
 
 		// Ensure cart is current.
-		wc()->cart->calculate_shipping();
-		wc()->cart->calculate_totals();
+		if ( $update_totals ) {
+			wc()->cart->calculate_shipping();
+			wc()->cart->calculate_totals();
+		}
 
 		// Update the current order to match the current cart.
 		$this->update_line_items_from_cart( $order );
@@ -201,18 +204,34 @@ class OrderController {
 			$this->update_order_from_cart( $order );
 
 			// Return exception so customer can review before payment.
-			throw new RouteException(
-				'woocommerce_rest_cart_coupon_errors',
-				sprintf(
-					/* translators: %s Coupon codes. */
-					__( 'Invalid coupons were removed from the cart: "%s"', 'woocommerce' ),
-					implode( '", "', array_keys( $coupon_errors ) )
-				),
-				409,
-				[
-					'removed_coupons' => $coupon_errors,
-				]
-			);
+			if ( 1 === count( $coupon_errors ) ) {
+				throw new RouteException(
+					'woocommerce_rest_cart_coupon_errors',
+					sprintf(
+						/* translators: %1$s Coupon codes, %2$s Reason */
+						__( '"%1$s" was removed from the cart. %2$s', 'woocommerce' ),
+						array_keys( $coupon_errors )[0],
+						array_values( $coupon_errors )[0],
+					),
+					409,
+					[
+						'removed_coupons' => $coupon_errors,
+					]
+				);
+			} else {
+				throw new RouteException(
+					'woocommerce_rest_cart_coupon_errors',
+					sprintf(
+						/* translators: %s Coupon codes. */
+						__( 'Invalid coupons were removed from the cart: "%s"', 'woocommerce' ),
+						implode( '", "', array_keys( $coupon_errors ) )
+					),
+					409,
+					[
+						'removed_coupons' => $coupon_errors,
+					]
+				);
+			}
 		}
 	}
 
@@ -427,14 +446,90 @@ class OrderController {
 	protected function validate_coupon_usage_limit( \WC_Coupon $coupon, \WC_Order $order ) {
 		$coupon_usage_limit = $coupon->get_usage_limit_per_user();
 
-		if ( $coupon_usage_limit > 0 ) {
-			$data_store  = $coupon->get_data_store();
-			$usage_count = $order->get_customer_id() ? $data_store->get_usage_by_user_id( $coupon, $order->get_customer_id() ) : $data_store->get_usage_by_email( $coupon, $order->get_billing_email() );
-
-			if ( $usage_count >= $coupon_usage_limit ) {
-				throw new Exception( $coupon->get_coupon_error( \WC_Coupon::E_WC_COUPON_USAGE_LIMIT_REACHED ) );
-			}
+		if ( 0 === $coupon_usage_limit ) {
+			return;
 		}
+
+		// First, we check a logged in customer usage count, which happens against their user id, billing email, and account email.
+		if ( $order->get_customer_id() ) {
+			// We get usage per user id and associated emails.
+			$usage_count = $this->get_usage_per_aliases(
+				$coupon,
+				[
+					$order->get_billing_email(),
+					$order->get_customer_id(),
+					$this->get_email_from_user_id( $order->get_customer_id() ),
+				]
+			);
+		} else {
+			// Otherwise we check if the email doesn't belong to an existing user.
+			$customer_data_store = \WC_Data_Store::load( 'customer' );
+
+			// This will get us any user ids for the given billing email.
+			$user_ids = $customer_data_store->get_user_ids_for_billing_email( array( $order->get_billing_email() ) );
+
+			// Convert all found user ids to a list of email addresses.
+			$user_emails = array_map( [ $this, 'get_email_from_user_id' ], $user_ids );
+
+			// This matches a user against the given billing email and gets their ID/email/billing email.
+			$found_user = get_user_by( 'email', $order->get_billing_email() );
+			if ( $found_user ) {
+				$user_ids[]    = $found_user->ID;
+				$user_emails[] = $found_user->user_email;
+				$user_emails[] = get_user_meta( $found_user->ID, 'billing_email', true );
+			}
+
+			// Finally, grab usage count for all found IDs and emails.
+			$usage_count = $this->get_usage_per_aliases(
+				$coupon,
+				array_merge(
+					$user_emails,
+					$user_ids,
+					array( $order->get_billing_email() )
+				)
+			);
+		}
+
+		if ( $usage_count >= $coupon_usage_limit ) {
+			throw new Exception( $coupon->get_coupon_error( \WC_Coupon::E_WC_COUPON_USAGE_LIMIT_REACHED ) );
+		}
+	}
+
+	/**
+	 * Get user email from user id.
+	 *
+	 * @param integer $user_id User ID.
+	 * @return string Email or empty string.
+	 */
+	private function get_email_from_user_id( $user_id ) {
+		$user_data = get_userdata( $user_id );
+		return $user_data ? $user_data->user_email : '';
+	}
+
+	/**
+	 * Get the usage count for a coupon based on a list of aliases (ids, emails).
+	 *
+	 * @param \WC_Coupon $coupon Coupon object applied to the cart.
+	 * @param array      $aliases List of aliases to check.
+	 *
+	 * @return integer
+	 */
+	private function get_usage_per_aliases( $coupon, $aliases ) {
+		global $wpdb;
+		$aliases        = array_unique( array_filter( $aliases ) );
+		$aliases_string = "('" . implode( "','", array_map( 'esc_sql', $aliases ) ) . "')";
+		$usage_count    = $wpdb->get_var(
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT COUNT( meta_id ) FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = '_used_by' AND meta_value IN {$aliases_string};",
+				$coupon->get_id(),
+			)
+		);
+
+		$data_store = $coupon->get_data_store();
+		// Coupons can be held for an x amount of time before being applied to an order, so we need to check if it's already being held in (maybe via another flow).
+		$tentative_usage_count = $data_store->get_tentative_usages_for_user( $coupon->get_id(), $aliases );
+		return $tentative_usage_count + $usage_count;
 	}
 
 	/**
@@ -459,6 +554,107 @@ class OrderController {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Validate a given order key against an existing order.
+	 *
+	 * @throws RouteException Exception if invalid data is detected.
+	 * @param integer $order_id Order ID.
+	 * @param string  $order_key Order key.
+	 */
+	public function validate_order_key( $order_id, $order_key ) {
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order || ! $order_key || $order->get_id() !== $order_id || ! hash_equals( $order->get_order_key(), $order_key ) ) {
+			throw new RouteException( 'woocommerce_rest_invalid_order', __( 'Invalid order ID or key provided.', 'woocommerce' ), 401 );
+		}
+	}
+
+	/**
+	 * Get errors for order stock on failed orders.
+	 *
+	 * @throws RouteException Exception if invalid data is detected.
+	 * @param integer $order_id Order ID.
+	 */
+	public function get_failed_order_stock_error( $order_id ) {
+		$order = wc_get_order( $order_id );
+
+		// Ensure order items are still stocked if paying for a failed order. Pending orders do not need this check because stock is held.
+		if ( ! $order->has_status( wc_get_is_pending_statuses() ) ) {
+			$quantities = array();
+
+			foreach ( $order->get_items() as $item_key => $item ) {
+				if ( $item && is_callable( array( $item, 'get_product' ) ) ) {
+					$product = $item->get_product();
+
+					if ( ! $product ) {
+						continue;
+					}
+
+					$quantities[ $product->get_stock_managed_by_id() ] = isset( $quantities[ $product->get_stock_managed_by_id() ] ) ? $quantities[ $product->get_stock_managed_by_id() ] + $item->get_quantity() : $item->get_quantity();
+				}
+			}
+
+			// Stock levels may already have been adjusted for this order (in which case we don't need to worry about checking for low stock).
+			if ( ! $order->get_data_store()->get_stock_reduced( $order->get_id() ) ) {
+				foreach ( $order->get_items() as $item_key => $item ) {
+					if ( $item && is_callable( array( $item, 'get_product' ) ) ) {
+						$product = $item->get_product();
+
+						if ( ! $product ) {
+							continue;
+						}
+
+						/**
+						 * Filters whether or not the product is in stock for this pay for order.
+						 *
+						 * @param boolean True if in stock.
+						 * @param \WC_Product $product Product.
+						 * @param \WC_Order $order Order.
+						 *
+						 * @since 9.8.0-dev
+						 */
+						if ( ! apply_filters( 'woocommerce_pay_order_product_in_stock', $product->is_in_stock(), $product, $order ) ) {
+							return array(
+								'code'    => 'woocommerce_rest_out_of_stock',
+								/* translators: %s: product name */
+								'message' => sprintf( __( 'Sorry, "%s" is no longer in stock so this order cannot be paid for. We apologize for any inconvenience caused.', 'woocommerce' ), $product->get_name() ),
+							);
+						}
+
+						// We only need to check products managing stock, with a limited stock qty.
+						if ( ! $product->managing_stock() || $product->backorders_allowed() ) {
+							continue;
+						}
+
+						// Check stock based on all items in the cart and consider any held stock within pending orders.
+						$held_stock     = wc_get_held_stock_quantity( $product, $order->get_id() );
+						$required_stock = $quantities[ $product->get_stock_managed_by_id() ];
+
+						/**
+						 * Filters whether or not the product has enough stock.
+						 *
+						 * @param boolean True if has enough stock.
+						 * @param \WC_Product $product Product.
+						 * @param \WC_Order $order Order.
+						 *
+						 * @since 9.8.0-dev
+						 */
+						if ( ! apply_filters( 'woocommerce_pay_order_product_has_enough_stock', ( $product->get_stock_quantity() >= ( $held_stock + $required_stock ) ), $product, $order ) ) {
+							/* translators: 1: product name 2: quantity in stock */
+							return array(
+								'code'    => 'woocommerce_rest_out_of_stock',
+								/* translators: %s: product name */
+								'message' => sprintf( __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product->get_name(), wc_format_stock_quantity_for_display( $product->get_stock_quantity() - $held_stock, $product ) ),
+							);
+						}
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**

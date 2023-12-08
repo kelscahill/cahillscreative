@@ -596,6 +596,7 @@ trait post_actions
 		$form->hidden_input( 'nonce', $nonce );
 		$form->hidden_input( 'post_id', $post_id );
 		$form->id( 'broadcast_post_action_form' );
+		$form->no_automatic_nonce();
 		$json = new ajax\json();
 		$json->html = '';
 		$has_links = false;

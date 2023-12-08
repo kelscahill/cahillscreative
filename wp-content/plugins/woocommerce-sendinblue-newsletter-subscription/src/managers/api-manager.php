@@ -4,12 +4,19 @@
 namespace SendinblueWoocommerce\Managers;
 
 use SendinblueWoocommerce\Models\ApiSchema;
+use SendinblueWoocommerce\Managers\ProductsManager;
+use SendinblueWoocommerce\Managers\CategoryManager;
+use SendinblueWoocommerce\Managers\OrdersManager;
 use SendinblueWoocommerce\Clients\SendinblueClient;
 use SendinblueWoocommerce\Managers\CartEventsManagers;
 use WP_Error;
 use WP_REST_Response;
+use WP_Query;
 
 require_once SENDINBLUE_WC_ROOT_PATH . '/src/managers/cart-events-manager.php';
+require_once SENDINBLUE_WC_ROOT_PATH . '/src/managers/products-manager.php';
+require_once SENDINBLUE_WC_ROOT_PATH . '/src/managers/category-manager.php';
+require_once SENDINBLUE_WC_ROOT_PATH . '/src/managers/orders-manager.php';
 require_once SENDINBLUE_WC_ROOT_PATH . '/src/models/api-schema.php';
 require_once SENDINBLUE_WC_ROOT_PATH . '/src/clients/sendinblue-client.php';
 
@@ -36,6 +43,9 @@ class ApiManager
     public function add_hooks()
     {
         $cart_events_manager = new CartEventsManagers();
+        $products_events_manager = new ProductsManager();
+        $category_events_manager = new CategoryManager();
+        $order_events_manager = new OrdersManager();
         add_action('woocommerce_checkout_after_terms_and_conditions', array($cart_events_manager, 'add_optin_terms'));
         add_filter('woocommerce_checkout_fields', array($cart_events_manager, 'add_optin_billing'));
         add_action('woocommerce_checkout_update_order_meta', array($cart_events_manager, 'add_optin_order'));
@@ -43,10 +53,18 @@ class ApiManager
         add_action('wp_footer', array($cart_events_manager, 'ws_cart_custom_fragment_load'));
         add_filter('woocommerce_add_to_cart_fragments', array($cart_events_manager, 'ws_cart_custom_fragment'), 10, 1);
         add_action('woocommerce_thankyou', array($cart_events_manager, 'ws_checkout_completed'));
-        add_action('woocommerce_order_status_changed', array( $this, 'on_order_status_changed' ), 10, 3 );
-        add_action('woocommerce_order_status_refunded', array($this, 'on_order_status_refunded'), 10, 1 ); 
+        add_action('woocommerce_order_status_changed', array( $this, 'on_order_status_changed' ), 10, 3);
+        add_action('woocommerce_order_status_refunded', array($this, 'on_order_status_refunded'), 10, 1);
         add_action('woocommerce_order_note_added', array($this, 'on_new_customer_note'), 10, 2);
-        add_action('woocommerce_created_customer', array($this, 'on_new_customer_creation'), 10 , 3);
+        add_action('woocommerce_created_customer', array($this, 'on_new_customer_creation'), 10, 3);
+        add_action('save_post_product', array($products_events_manager, 'product_events'), 10, 3);
+        add_action('before_delete_post', array($products_events_manager, 'product_deleted'));
+        add_action('created_term', array($category_events_manager, 'category_created'), 10, 3);
+        add_action('edit_term', array($category_events_manager, 'category_updated'), 10, 3);
+        add_action('delete_term', array($category_events_manager, 'category_deleted'), 10, 4);
+        add_action('woocommerce_order_status_changed', array($order_events_manager, 'order_events' ), 10, 3);
+        add_action('woocommerce_new_order', array($order_events_manager, 'order_created' ), 10, 1);
+        add_action('woocommerce_order_refunded', array($order_events_manager, 'order_created' ), 10, 1);
     }
 
     public function add_rest_endpoints()
@@ -107,12 +125,132 @@ class ApiManager
                 self::ROUTE_CALLBACK   => function () {
                     return $this->modify_response($this->get_plugin_settings());
                 }
+            ),
+            array(
+                self::ROUTE_PATH       => '/orders/count',
+                self::ROUTE_METHODS    => 'GET',
+                self::ROUTE_CALLBACK   => function () {
+                    return $this->modify_response($this->get_orders_count());
+                }
+            ),
+            array(
+                self::ROUTE_PATH       => '/categories/count',
+                self::ROUTE_METHODS    => 'GET',
+                self::ROUTE_CALLBACK   => function () {
+                    return $this->modify_response($this->get_categories_count());
+                }
+            ),
+            array(
+                self::ROUTE_PATH       => '/products/count',
+                self::ROUTE_METHODS    => 'GET',
+                self::ROUTE_CALLBACK   => function () {
+                    return $this->modify_response($this->get_products_count());
+                }
+            ),
+            array(
+                self::ROUTE_PATH       => '/product/update',
+                self::ROUTE_METHODS    => 'GET',
+                self::ROUTE_CALLBACK   => function ($request) {
+                    return $this->modify_response($this->get_product_update($request));
+                }
+            ),
+            array(
+                self::ROUTE_PATH       => '/category/update',
+                self::ROUTE_METHODS    => 'GET',
+                self::ROUTE_CALLBACK   => function ($request) {
+                    return $this->modify_response($this->get_category_update($request));
+                }
+            ),
+            array(
+                self::ROUTE_PATH       => '/order/update',
+                self::ROUTE_METHODS    => 'GET',
+                self::ROUTE_CALLBACK   => function ($request) {
+                    return $this->modify_response($this->get_order_update($request));
+                }
+            ),
+            array(
+                self::ROUTE_PATH       => '/userconnection/set',
+                self::ROUTE_METHODS    => 'PUT',
+                self::ROUTE_CALLBACK   => function ($request) {
+                    return $this->modify_response($this->set_connection($request));
+                }
+            ),
+            array(
+                self::ROUTE_PATH       => '/categories/url',
+                self::ROUTE_METHODS    => 'POST',
+                self::ROUTE_CALLBACK   => function ($request) {
+                    return $this->modify_response($this->get_categories_url($request));
+                }
             )
         );
 
         foreach ($routes as $route) {
             $this->register_route($route);
         }
+
+        register_rest_field(
+            'shop_order',
+            'email',
+            array(
+                'get_callback' => function ($object) {
+                    return $this->email_for_order($object);
+                },
+                'update_callback' => null,
+                'schema' => null,
+            )
+        );
+
+        register_rest_field(
+            'shop_order',
+            'final_amount',
+            array(
+                'get_callback' => function ($object) {
+                    return $this->price_for_order($object);
+                },
+                'update_callback' => null,
+                'schema' => null,
+            )
+        );
+
+        register_rest_field(
+            'product_cat',
+            'cat_url',
+            array(
+                'get_callback' => function ($object) {
+                    return $this->url_for_categories($object);
+                },
+                'update_callback' => null,
+                'schema' => null,
+            )
+        );
+    }
+
+    private function email_for_order($object)
+    {
+        $id = get_post_meta($object['id'], '_customer_user', true);
+        if (empty($id)) {
+            return get_post_meta($object['id'], '_billing_email', true);
+        }
+
+        return get_userdata($id)->user_email;
+    }
+
+    private function price_for_order($object)
+    {
+        $order = wc_get_order($object['id']);
+
+        if (is_object($order)) {
+            $amount = $order->get_total();
+            return (string) ($amount - $order->get_total_refunded());
+        }
+
+        return '';
+    }
+
+    private function url_for_categories($object)
+    {
+        $url = get_term_link($object['id'], CategoryManager::CAT_TAXONOMY_KEY);
+        return is_string($url) ? $url : '';
     }
 
     private function register_route(array $route)
@@ -146,6 +284,191 @@ class ApiManager
                 'email_settings' => $this->get_email_settings(),
             ), 200);
     }
+
+    private function get_orders_count()
+    {
+        try {
+            $count = 0;
+            $totals = wp_count_posts('shop_order');
+            foreach (wc_get_order_statuses() as $slug => $name ) {
+                if (!isset( $totals->$slug )) {
+                    continue;
+                }
+                $count += (int) $totals->$slug;
+            }
+
+            return new WP_REST_Response(
+                array(
+                    'count' => $count
+                ), 200);
+        }
+        catch (\Throwable $t) {
+            return new WP_REST_Response(
+                array(
+                    'message' => $t->getMessage(), " in file: ", $t->getFile(), "at line no:", $t->getLine()
+                ), 500);
+        }
+        
+    }
+
+    private function get_categories_count()
+    {
+        try {
+            $count = (int) get_terms(
+                CategoryManager::CAT_TAXONOMY_KEY,
+                array('hide_empty' => false, 'fields' => 'count')
+            );
+    
+            return new WP_REST_Response(
+                array(
+                    'count' => !empty($count) ? $count : 0
+                ), 200);
+        }
+        catch (\Throwable $t) {
+            return new WP_REST_Response(
+                array(
+                    'message' => $t->getMessage(), " in file: ", $t->getFile(), "at line no:", $t->getLine()
+                ), 500);
+        }
+    }
+
+    private function get_products_count()
+    {
+        try {
+            $products = new WP_Query(
+                array(
+                    'fields'      => 'ids',
+                    'post_type'   => 'product',
+                    'post_status' => 'publish',
+                    'meta_query'  => array(),
+                )
+            );
+    
+            return new WP_REST_Response(
+                array(
+                    'count' => (int) $products->found_posts
+                ), 200);
+        }
+        catch (\Throwable $t) {
+            return new WP_REST_Response(
+                array(
+                    'message' => $t->getMessage(), " in file: ", $t->getFile(), "at line no:", $t->getLine()
+                ), 500);
+        }
+    }
+
+    private function get_product_update($request)
+    {
+        try {
+            $id = $request->get_param('id');
+            $data = (object)[];
+
+            if (!empty($id)) {
+                $product = wc_get_product($id);
+            }
+
+            if (is_object($product)) {
+                $products_events_manager = new ProductsManager();
+                $data = $products_events_manager->prepare_payload($product);
+            }
+
+            return new WP_REST_Response($data, 200);
+        }
+        catch (\Throwable $t) {
+            return new WP_REST_Response(
+                array(
+                    'message' => $t->getMessage(), " in file: ", $t->getFile(), "at line no:", $t->getLine()
+                ), 500);
+        }
+    }
+
+    private function get_category_update($request)
+    {
+        try {
+            $id = $request->get_param('id');
+            $data = (object)[];
+            $category_events_manager = new CategoryManager();
+
+            if (!empty($id)) {
+                $category = $category_events_manager->is_valid_action($id, CategoryManager::CAT_TAXONOMY_KEY);
+            }
+
+            if (is_object($category)) {
+                $data = $category_events_manager->prepare_payload($category);
+            }
+
+            return new WP_REST_Response($data, 200);
+        }
+        catch (\Throwable $t) {
+            return new WP_REST_Response(
+                array(
+                    'message' => $t->getMessage(), " in file: ", $t->getFile(), "at line no:", $t->getLine()
+                ), 500);
+        }
+    }
+
+    private function get_order_update($request)
+    {
+        try {
+            $id = $request->get_param('id');
+            $data = (object)[];
+
+            if (!empty($id)) {
+                $order = wc_get_order($id);
+            }
+
+            if (is_object($order)) {
+                $orders_events_manager = new OrdersManager();
+                $data = $orders_events_manager->prepare_payload($order);
+            }
+
+            return new WP_REST_Response($data, 200);
+        }
+        catch (\Throwable $t) {
+            return new WP_REST_Response(
+                array(
+                    'message' => $t->getMessage(), " in file: ", $t->getFile(), "at line no:", $t->getLine()
+                ), 500);
+        }
+    }
+
+    private function get_categories_url($request)
+    {
+        try {
+            $data = empty($request->get_body()) ? array() : json_decode($request->get_body(), true);
+            $response = array();
+
+            foreach ($data as $key => $value) {
+                $url = get_term_link($value['id'], CategoryManager::CAT_TAXONOMY_KEY);
+                $response[] = (object) [
+                    'id' => $value['id'],
+                    'url' => is_string($url) ? $url : ""
+                ];
+            }
+
+            return new WP_REST_Response($response, 201);
+        }
+        catch (\Throwable $t) {
+            return new WP_REST_Response(
+                array(
+                    'message' => $t->getMessage(), " in file: ", $t->getFile(), "at line no:", $t->getLine()
+                ), 500);
+        }
+    }
+
+    private function set_connection($request)
+    {
+        $data = empty($request->get_body()) ? array() : json_decode($request->get_body(), true);
+
+        if (!empty($data['userconnection'])) {
+            (get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null) !== null) ? update_option(SENDINBLUE_WC_USER_CONNECTION_ID, $data['userconnection']) : add_option(SENDINBLUE_WC_USER_CONNECTION_ID, $data['userconnection']);
+
+            return new WP_REST_Response(array('success' => true), 201);
+        }
+
+        return new WP_REST_Response(array('success' => false), 201);
+    }
+
 
     private function get_file_contents()
     {
@@ -247,22 +570,22 @@ class ApiManager
         }
 
         $opt_in_checked = false;
-        if (empty($settings[SendinblueClient::IS_DISPLAY_OPT_IN_ENABLED]) || get_post_meta($id, 'ws_opt_in', true)) {
+        $doi_enabled = !empty($settings[SendinblueClient::IS_SUBSCRIPTION_EMAIL_ENABLED]) && !empty($settings[SendinblueClient::SUBSCRIPTION_EMAIL_TYPE]) && $settings[SendinblueClient::SUBSCRIPTION_EMAIL_TYPE] == 1;
+
+        if (empty($settings[SendinblueClient::IS_DISPLAY_OPT_IN_ENABLED]) || get_post_meta($id, 'ws_opt_in', true) || $doi_enabled) {
             $opt_in_checked = true;
         }
 
         if (!empty($settings[SendinblueClient::IS_SUBSCRIBE_EVENT_ENABLED])
             && $settings[SendinblueClient::IS_SUBSCRIBE_EVENT_ENABLED] == 1
             && (strpos(SendinblueClient::NEW_ORDER_STATUS, $new_status) !== false)
-            && $opt_in_checked
         ) {
-            $this->trigger_event_customer_sync($order);
+            $this->trigger_event_customer_sync($order, $opt_in_checked);
         } elseif (!empty($settings[SendinblueClient::IS_SUBSCRIBE_EVENT_ENABLED])
             && $settings[SendinblueClient::IS_SUBSCRIBE_EVENT_ENABLED] == 2
             && (strpos(SendinblueClient::COMPLETED_ORDER_STATUS, $new_status) !== false)
-            && $opt_in_checked
         ) {
-            $this->trigger_event_customer_sync($order);
+            $this->trigger_event_customer_sync($order, $opt_in_checked);
         }
 
         if (!empty($settings[SendinblueClient::IS_ORDER_CONFIRMATION_SMS])
@@ -280,15 +603,15 @@ class ApiManager
         }
     }
 
-    private function trigger_event_customer_sync($data)
+    private function trigger_event_customer_sync($data, $opt_in_checked)
     {
-        $data = $this->prepare_customer_payload($data);
+        $data = $this->prepare_customer_payload($data, $opt_in_checked);
         $client = new SendinblueClient();
         $client->eventsSync(SendinblueClient::ORDER_CREATED, $data);
         $client->eventsSync(SendinblueClient::CONTACT_CREATED, $data);
     }
 
-    private function prepare_customer_payload($order)
+    private function prepare_customer_payload($order, $opt_in_checked)
     {
         $customer_data = $order->get_data();
         $order_info = array();
@@ -297,8 +620,14 @@ class ApiManager
         $customer_data['first_name'] = $customer_data['billing']['first_name'];
         $customer_data['last_name'] = $customer_data['billing']['last_name'];
         $customer_data['email'] = $customer_data['billing']['email'];
+        $customer_data['subscribed'] = "false";
         if (!empty($customer_data['customer_id'])) {
-            $customer_data['date_created_gmt'] = get_userdata($customer_data['customer_id'])->user_registered;
+            $main_customer = get_userdata($customer_data['customer_id']);
+            $customer_data['date_created_gmt'] = $main_customer->user_registered;
+            $customer_data['email'] = $main_customer->user_email;
+            $customer_data['subscribed'] = "true";
+        } elseif ($opt_in_checked) {
+            $customer_data['subscribed'] = "true";
         }
         $customer_data['order_id'] = $order->get_order_number();
         $customer_data['order_date'] = gmdate('Y-m-d', strtotime($order->get_date_created()));
@@ -331,22 +660,24 @@ class ApiManager
     }
 
     private function get_email_attachments_path($wc_email) {
-        $complete_file_path = wp_upload_dir()['basedir'] . self::FILE_UPLOADS_PATH;
-        wp_mkdir_p($complete_file_path);
-        $attachments = $wc_email->get_attachments();
-        $attachment_path = array();
-        if ( is_array( $attachments ) ) {
-            foreach ( $attachments as $key => $attachment ) {
-                $user_connection_id = get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null);
-                $temp_file_name = $user_connection_id . uniqid('_', false) . wp_basename($attachment);
-                $file_path = $complete_file_path . $temp_file_name;
-                copy($attachment, $file_path);
-                $attachment_path[$key]['temp_file_name'] = $temp_file_name;
-                $attachment_path[$key]['file_name'] = wp_basename($attachment);
+            $complete_file_path = wp_upload_dir()['basedir'] . self::FILE_UPLOADS_PATH;
+            wp_mkdir_p($complete_file_path);
+            $attachments = $wc_email->get_attachments();
+            $attachment_path = array();
+            if ( is_array( $attachments ) ) {
+                $i = 0;
+                foreach ( $attachments as $key => $attachment ) {
+                    $user_connection_id = get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null);
+                    $temp_file_name = $user_connection_id . uniqid('_', false) . wp_basename($attachment);
+                    $file_path = $complete_file_path . $temp_file_name;
+                    copy($attachment, $file_path);
+                    $attachment_path[$i]['temp_file_name'] = $temp_file_name;
+                    $attachment_path[$i]['file_name'] = wp_basename($attachment);
+                    $i++;
+                }
             }
+            return $attachment_path;
         }
-        return $attachment_path;
-    }
 
     public function get_settings()
     {

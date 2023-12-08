@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Class for handling API requests related to the asset groups.
- * See https://developers.google.com/google-ads/api/reference/rpc/v13/AssetGroup
+ * See https://developers.google.com/google-ads/api/reference/rpc/v14/AssetGroup
  *
  * @package Automattic\WooCommerce\GoogleListingsAndAds\API\Site\Controllers\Ads
  */
@@ -143,11 +143,11 @@ class AssetGroupController extends BaseController {
 	 * @return callable
 	 */
 	protected function get_asset_groups_callback(): callable {
-		return function( Request $request ) {
+		return function ( Request $request ) {
 			try {
 				$campaign_id = $request->get_param( 'campaign_id' );
 				return array_map(
-					function( $item ) use ( $request ) {
+					function ( $item ) use ( $request ) {
 						$data = $this->prepare_item_for_response( $item, $request );
 						return $this->prepare_response_for_collection( $data );
 					},
@@ -157,7 +157,6 @@ class AssetGroupController extends BaseController {
 			} catch ( Exception $e ) {
 				return $this->response_from_exception( $e );
 			}
-
 		};
 	}
 
@@ -167,7 +166,7 @@ class AssetGroupController extends BaseController {
 	 * @return callable
 	 */
 	public function create_asset_group_callback(): callable {
-		return function( Request $request ) {
+		return function ( Request $request ) {
 			try {
 				$asset_group_id = $this->ads_asset_group->create_asset_group( $request->get_param( 'campaign_id' ) );
 				return [
@@ -187,7 +186,7 @@ class AssetGroupController extends BaseController {
 	 * @return callable
 	 */
 	public function edit_asset_group_callback(): callable {
-		return function( Request $request ) {
+		return function ( Request $request ) {
 			try {
 				$asset_group_fields = array_intersect_key(
 					$request->get_params(),

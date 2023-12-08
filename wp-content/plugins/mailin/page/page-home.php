@@ -36,8 +36,12 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 		 * Constructs new page object and adds entry to WordPress admin menu
 		 */
 		function __construct() {
-			add_menu_page( __( 'Brevo', 'mailin' ), __( 'Brevo', 'mailin' ), 'manage_options', self::PAGE_ID, array( &$this, 'generate' ), SIB_Manager::$plugin_url . '/img/favicon.ico' );
-			$this->page_hook = add_submenu_page( self::PAGE_ID, __( 'Home', 'mailin' ), __( 'Home', 'mailin' ), 'manage_options', self::PAGE_ID, array( &$this, 'generate' ) );
+			global $wp_roles;
+			$wp_roles->add_cap( 'administrator', 'view_custom_menu' ); 
+			$wp_roles->add_cap( 'editor', 'view_custom_menu' );
+
+			add_menu_page( __( 'Brevo', 'mailin' ), __( 'Brevo', 'mailin' ), 'view_custom_menu', self::PAGE_ID, array( &$this, 'generate' ), SIB_Manager::$plugin_url . '/img/favicon.ico' );
+			$this->page_hook = add_submenu_page( self::PAGE_ID, __( 'Home', 'mailin' ), __( 'Home', 'mailin' ), 'view_custom_menu', self::PAGE_ID, array( &$this, 'generate' ) );
 			add_action( 'load-' . $this->page_hook, array( &$this, 'init' ) );
 			add_action( 'admin_print_scripts-' . $this->page_hook, array( $this, 'enqueue_scripts' ) );
 			add_action( 'admin_print_styles-' . $this->page_hook, array( $this, 'enqueue_styles' ) );

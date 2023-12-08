@@ -208,7 +208,6 @@ class Edit {
 	 * @return void
 	 */
 	public function handle_order_update() {
-		global $theorder;
 		if ( ! isset( $this->order ) ) {
 			return;
 		}
@@ -232,6 +231,8 @@ class Edit {
 		 * @since 2.1.0
 		 */
 		do_action( 'woocommerce_process_shop_order_meta', $this->order->get_id(), $this->order );
+
+		$this->custom_meta_box->handle_metadata_changes($this->order);
 
 		// Order updated message.
 		$this->message = 1;
@@ -388,6 +389,7 @@ class Edit {
 		<input type="hidden" id="hiddenaction" name="action" value="<?php echo esc_attr( $form_action ); ?>"/>
 		<input type="hidden" id="original_order_status" name="original_order_status" value="<?php echo esc_attr( $this->order->get_status() ); ?>"/>
 		<input type="hidden" id="referredby" name="referredby" value="<?php echo $referer ? esc_url( $referer ) : ''; ?>"/>
+		<input type="hidden" id="post_ID" name="post_ID" value="<?php echo esc_attr( $this->order->get_id() ); ?>"/>
 		<div id="poststuff">
 		<div id="post-body"
 		class="metabox-holder columns-<?php echo ( 1 === get_current_screen()->get_columns() ) ? '1' : '2'; ?>">

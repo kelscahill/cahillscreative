@@ -17,5 +17,4 @@ return array(
     '56823cacd97af379eceaf82ad00b928f' => $vendorDir . '/phpseclib/bcmath_compat/lib/bcmath.php',
     'e69f7f6ee287b969198c3c9d6777bd38' => $vendorDir . '/symfony/polyfill-intl-normalizer/bootstrap.php',
     'a66af3295a2671f868924c6f4a9afc6c' => $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
-    '7fd7393568b2f049bdce22a915a0972c' => $vendorDir . '/guzzlehttp/promises/src/functions_include.php',
 );

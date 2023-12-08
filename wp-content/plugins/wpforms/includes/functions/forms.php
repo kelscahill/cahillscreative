@@ -173,6 +173,8 @@ function wpforms_setting( $key, $default = false, $option = 'wpforms_settings' )
  */
 function wpforms_update_settings( $settings ) {
 
+	$old_settings = (array) get_option( 'wpforms_settings', [] );
+
 	/**
 	 * Allows plugin settings to be modified before persisting in the database.
 	 *
@@ -190,11 +192,13 @@ function wpforms_update_settings( $settings ) {
 	 * The `$updated` parameter allows to check whether the update was actually successful.
 	 *
 	 * @since 1.6.1
+	 * @since 1.8.4 The `$old_settings` parameter was added.
 	 *
-	 * @param array  $settings An array of plugin settings.
-	 * @param bool   $updated  Whether an option was updated or not.
+	 * @param array $settings     An array of plugin settings.
+	 * @param bool  $updated      Whether an option was updated or not.
+	 * @param array $old_settings An old array of plugin settings.
 	 */
-	do_action( 'wpforms_settings_updated', $settings, $updated );
+	do_action( 'wpforms_settings_updated', $settings, $updated, $old_settings );
 
 	return $updated;
 }
@@ -303,14 +307,14 @@ function wpforms_has_field_setting( $setting, $form, $multiple = false ) {
  * Retrieve actual fields from a form.
  *
  * Non-posting elements such as section divider, page break, and HTML are
- * automatically excluded. Optionally a white list can be provided.
+ * automatically excluded. Optionally, a whitelist can be provided.
  *
  * @since 1.0.0
  *
  * @param mixed $form      Form data.
  * @param array $allowlist A list of allowed fields.
  *
- * @return mixed boolean or array
+ * @return mixed boolean false or array
  */
 function wpforms_get_form_fields( $form = false, $allowlist = [] ) {
 
@@ -319,14 +323,13 @@ function wpforms_get_form_fields( $form = false, $allowlist = [] ) {
 		$form = wpforms_decode( $form->post_content );
 	} elseif ( is_numeric( $form ) ) {
 		$form = wpforms()->get( 'form' )->get(
-			$form,
+			absint( $form ),
 			[
 				'content_only' => true,
 			]
 		);
 	}
 
-	// White list of field types to allow.
 	$allowed_form_fields = [
 		'address',
 		'checkbox',
@@ -356,6 +359,13 @@ function wpforms_get_form_fields( $form = false, $allowlist = [] ) {
 		'url',
 	];
 
+	/**
+	 * Filter the list of allowed form fields.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $allowed_form_fields List of allowed form fields.
+	 */
 	$allowed_form_fields = apply_filters( 'wpforms_get_form_fields_allowed', $allowed_form_fields );
 
 	if ( ! is_array( $form ) || empty( $form['fields'] ) ) {

@@ -19,6 +19,7 @@ trait savings_calculator
 		$defaults = $data->get_defaults();
 
 		$form = $this->form();
+		$form->id( 'savings_calculator' );
 		$form->css_class( 'plainview_form_auto_tabs' );
 
 		$r = '';

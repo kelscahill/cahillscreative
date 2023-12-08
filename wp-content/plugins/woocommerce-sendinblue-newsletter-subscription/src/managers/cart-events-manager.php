@@ -205,7 +205,7 @@ class CartEventsManagers
             $variation = new \WC_Product_Variation($item['variant_id']);
             $cartitem['variation_sku'] = $variation->get_sku();
             $item['variant_sku']  = (!empty($cartitem['variation_sku']) && is_string($cartitem['variation_sku'])) ? $cartitem['variation_sku'] : '';
-            $variant_name = implode(',', $cartitem['variation']);
+            $variant_name = is_array($cartitem['variation']) ? implode(',', $cartitem['variation']) : $cartitem['variation'] ?? '';
             $item['variant_name'] = (!empty($variant_name) && is_string($variant_name)) ? $variant_name : '';
             $item['quantity'] = (!empty( $cartitem['quantity'] ) && is_numeric($cartitem['quantity']) && ! is_nan($cartitem['quantity'])) ? $cartitem['quantity'] : 0;
             $unit_price = $cartitem['data']->is_on_sale() ? $cartitem['data']->get_sale_price() : $cartitem['data']->get_regular_price();
@@ -251,6 +251,7 @@ class CartEventsManagers
         $data['affiliation'] = (!empty(get_bloginfo('name')) && is_string(get_bloginfo('name'))) ? get_bloginfo('name') : '';
         $data['date'] = (!empty($order->get_date_created()->date(DATE_ATOM)) && is_string($order->get_date_created()->date(DATE_ATOM))) ? $order->get_date_created()->date(DATE_ATOM) : '';
         $data['subtotal'] = (!empty($order->get_subtotal()) && is_numeric($order->get_subtotal()) && !is_nan( $order->get_subtotal())) ? (float) $order->get_subtotal() : 0;
+        $data['total'] = (!empty($order->get_total()) && is_numeric($order->get_total()) && !is_nan( $order->get_total())) ? (float) $order->get_total() : 0;
         $data['discount'] = (!empty($order->get_total_discount()) && is_numeric($order->get_total_discount()) && !is_nan($order->get_total_discount())) ? $order->get_total_discount() : 0;
         $data['shipping'] = (!empty($order->get_shipping_total()) && is_numeric($order->get_shipping_total()) && !is_nan($order->get_shipping_total())) ? (float) $order->get_shipping_total() : 0;
         $data['total_before_tax'] = (float) ($data['subtotal'] - $data['discount']);

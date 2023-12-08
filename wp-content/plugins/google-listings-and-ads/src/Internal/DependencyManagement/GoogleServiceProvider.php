@@ -46,6 +46,7 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\League\Container\Definiti
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Container\ContainerInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\RequestInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\ResponseInterface;
+use Google\Ads\GoogleAds\Util\V14\GoogleAdsFailures;
 use Jetpack_Options;
 
 defined( 'ABSPATH' ) || exit;
@@ -129,7 +130,7 @@ class GoogleServiceProvider extends AbstractServiceProvider {
 	 * Register guzzle with authorization middleware added.
 	 */
 	protected function register_guzzle() {
-		$callback = function() {
+		$callback = function () {
 			$handler_stack = HandlerStack::create();
 			$handler_stack->remove( 'http_errors' );
 			$handler_stack->push( $this->error_handler(), 'http_errors' );
@@ -152,7 +153,7 @@ class GoogleServiceProvider extends AbstractServiceProvider {
 	 * Register ads client.
 	 */
 	protected function register_ads_client() {
-		$callback = function() {
+		$callback = function () {
 			return new GoogleAdsClient( $this->get_connect_server_endpoint() );
 		};
 
@@ -187,11 +188,19 @@ class GoogleServiceProvider extends AbstractServiceProvider {
 	 * @return callable
 	 */
 	protected function error_handler(): callable {
-		return function( callable $handler ) {
-			return function( RequestInterface $request, array $options ) use ( $handler ) {
+		return function ( callable $handler ) {
+			return function ( RequestInterface $request, array $options ) use ( $handler ) {
 				return $handler( $request, $options )->then(
 					function ( ResponseInterface $response ) use ( $request ) {
 						$code = $response->getStatusCode();
+
+						$path = $request->getUri()->getPath();
+
+						// Partial Failures come back with a status code of 200, so it's necessary to call GoogleAdsFailures:init every time.
+						if ( strpos( $path, 'google-ads' ) !== false ) {
+							GoogleAdsFailures::init();
+						}
+
 						if ( $code < 400 ) {
 							return $response;
 						}
@@ -236,8 +245,8 @@ class GoogleServiceProvider extends AbstractServiceProvider {
 	 * @return callable
 	 */
 	protected function add_auth_header(): callable {
-		return function( callable $handler ) {
-			return function( RequestInterface $request, array $options ) use ( $handler ) {
+		return function ( callable $handler ) {
+			return function ( RequestInterface $request, array $options ) use ( $handler ) {
 				try {
 					$request = $request->withHeader( 'Authorization', $this->generate_auth_header() );
 
@@ -263,10 +272,10 @@ class GoogleServiceProvider extends AbstractServiceProvider {
 	 * @return callable
 	 */
 	public function add_plugin_version_header(): callable {
-		return function( callable $handler ) {
-			return function( RequestInterface $request, array $options ) use ( $handler ) {
+		return function ( callable $handler ) {
+			return function ( RequestInterface $request, array $options ) use ( $handler ) {
 				$request = $request->withHeader( 'x-client-name', $this->get_client_name() )
-								   ->withHeader( 'x-client-version', $this->get_version() );
+					->withHeader( 'x-client-version', $this->get_version() );
 				return $handler( $request, $options );
 			};
 		};
@@ -276,8 +285,8 @@ class GoogleServiceProvider extends AbstractServiceProvider {
 	 * @return callable
 	 */
 	protected function override_http_url(): callable {
-		return function( callable $handler ) {
-			return function( RequestInterface $request, array $options ) use ( $handler ) {
+		return function ( callable $handler ) {
+			return function ( RequestInterface $request, array $options ) use ( $handler ) {
 				$request = $request->withUri( $request->getUri()->withScheme( 'http' ) );
 				return $handler( $request, $options );
 			};

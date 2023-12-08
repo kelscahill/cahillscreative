@@ -39,7 +39,11 @@ if ( ! class_exists( 'SIB_Page_Statistics' ) ) {
 		 * Constructs new page object and adds entry to WordPress admin menu
 		 */
 		function __construct() {
-			$this->page_hook = add_submenu_page( SIB_Page_Home::PAGE_ID, __( 'Statistics', 'mailin' ), __( 'Statistics', 'mailin' ), 'manage_options', self::PAGE_ID, array( &$this, 'generate' ) );
+            		global $wp_roles;
+			$wp_roles->add_cap( 'administrator', 'view_custom_menu' ); 
+			$wp_roles->add_cap( 'editor', 'view_custom_menu' );
+
+			$this->page_hook = add_submenu_page( SIB_Page_Home::PAGE_ID, __( 'Statistics', 'mailin' ), __( 'Statistics', 'mailin' ), 'view_custom_menu', self::PAGE_ID, array( &$this, 'generate' ) );
 			add_action( 'load-' . $this->page_hook, array( &$this, 'init' ) );
 			add_action( 'admin_print_scripts-' . $this->page_hook, array( $this, 'enqueue_scripts' ) );
 			add_action( 'admin_print_styles-' . $this->page_hook, array( $this, 'enqueue_styles' ) );

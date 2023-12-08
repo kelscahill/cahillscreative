@@ -1,4 +1,4 @@
-/* global wpforms_education, WPFormsBuilder */
+/* global wpforms_education, WPFormsBuilder, wpf */
 /**
  * WPForms Education Core.
  *
@@ -59,6 +59,7 @@ WPFormsEducation.core = window.WPFormsEducation.core || ( function( document, wi
 			app.dismissEvents();
 			app.openModalButtonClick();
 			app.setDykColspan();
+			app.gotoAdvancedTabClick();
 		},
 
 		/**
@@ -157,16 +158,37 @@ WPFormsEducation.core = window.WPFormsEducation.core || ( function( document, wi
 		},
 
 		/**
+		 * Go to Advanced tab when click on the link in Calculations educational notice.
+		 *
+		 * @since 1.8.4.1
+		 */
+		gotoAdvancedTabClick() {
+			$( document )
+				.on( 'click', '.wpforms-educational-alert.wpforms-calculations a', function( e ) {
+					const $a = $( this );
+
+					if ( $a.attr( 'href' ) !== '#advanced-tab' ) {
+						return;
+					}
+
+					e.preventDefault();
+
+					$a.closest( '.wpforms-field-option' )
+						.find( '.wpforms-field-option-group-advanced .wpforms-field-option-group-toggle' )
+						.trigger( 'click' );
+				} );
+		},
+
+		/**
 		 * Get UTM content for different elements.
 		 *
 		 * @since 1.6.9
 		 *
 		 * @param {jQuery} $el Element.
 		 *
-		 * @returns {string} UTM content string.
+		 * @return {string} UTM content string.
 		 */
-		getUTMContentValue: function( $el ) {
-
+		getUTMContentValue( $el ) {
 			// UTM content for Fields.
 			if ( $el.hasClass( 'wpforms-add-fields-button' ) ) {
 				return $el.data( 'utm-content' ) + ' Field';
@@ -422,19 +444,17 @@ WPFormsEducation.core = window.WPFormsEducation.core || ( function( document, wi
 		 *
 		 * @param {jQuery} $button jQuery button element.
 		 */
-		installModal: function( $button ) {
-
-			var feature = $button.data( 'name' ),
-				message = $button.data( 'message' ),
-				url = $button.data( 'url' ),
-				licenseType = $button.data( 'license' );
+		installModal( $button ) {
+			const feature = $button.data( 'name' ),
+				url = $button.data( 'url' );
 
 			if ( ! url || '' === url ) {
-				app.upgradeModal( feature, '', 'Empty install URL', licenseType, '' );
+				wpf.debug( `Couldn't install the ${ feature } addon: Empty install URL.` );
 				return;
 			}
 
-			const canInstallAddons = wpforms_education.can_install_addons;
+			const canInstallAddons = wpforms_education.can_install_addons,
+				message = $button.data( 'message' );
 
 			$.alert( {
 				title   : false,
@@ -448,8 +468,7 @@ WPFormsEducation.core = window.WPFormsEducation.core || ( function( document, wi
 						btnClass: 'btn-confirm' + ( ! canInstallAddons ? ' hidden' : '' ),
 						keys    : [ 'enter' ],
 						isHidden: ! canInstallAddons,
-						action  : function() {
-
+						action() {
 							this.$$confirm.prop( 'disabled', true )
 								.html( spinner + wpforms_education.installing );
 

@@ -47,12 +47,12 @@ class Turnstile extends Captcha {
 
 		return /** @lang JavaScript */
 			'const wpformsCaptcha = jQuery( ".wpforms-captcha" );
-			if ( wpformsCaptcha.length > 0 ) { 
-				var widgetID = ' . static::$api_var . '.render( ".wpforms-captcha", { 
-					"refresh-expired": "never" 
-				} ); 
-				wpformsCaptcha.attr( "data-captcha-id", widgetID); 
-				jQuery( document ).trigger( "wpformsSettingsCaptchaLoaded" ); 
+			if ( wpformsCaptcha.length > 0 ) {
+				var widgetID = ' . static::$api_var . '.render( ".wpforms-captcha", {
+					"refresh-expired": "auto"
+				} );
+				wpformsCaptcha.attr( "data-captcha-id", widgetID);
+				jQuery( document ).trigger( "wpformsSettingsCaptchaLoaded" );
 			}';
 	}
 
@@ -71,7 +71,7 @@ class Turnstile extends Captcha {
 				'content'  => $this->get_field_desc(),
 				'type'     => 'content',
 				'no_label' => true,
-				'class'    => [ 'section-heading' ],
+				'class'    => [ 'section-heading', 'specific-note' ],
 			],
 			'turnstile-site-key'   => [
 				'id'   => 'turnstile-site-key',

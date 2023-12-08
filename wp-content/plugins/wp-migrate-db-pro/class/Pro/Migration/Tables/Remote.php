@@ -31,6 +31,58 @@ class Remote
      * @var TableHelper
      */
     private $table_helper;
+    /**
+     * @var WPMDBRestAPIServer
+     */
+    private $rest_API_server;
+    /**
+     * @var FinalizeComplete
+     */
+    private $finalize_complete;
+    /**
+     * @var BackupExport
+     */
+    private $backup_export;
+    /**
+     * @var Table
+     */
+    private $table;
+    /**
+     * @var MigrationManager
+     */
+    private $migration_manager;
+    /**
+     * @var FormData
+     */
+    private $form_data;
+    /**
+     * @var Properties
+     */
+    private $props;
+    /**
+     * @var ErrorLog
+     */
+    private $error_log;
+    /**
+     * @var Helper
+     */
+    private $http_helper;
+    /**
+     * @var Http
+     */
+    private $http;
+    /**
+     * @var MigrationStateManager
+     */
+    private $migration_state_manager;
+    /**
+     * @var array
+     */
+    private $settings;
+    /**
+     * @var Scramble
+     */
+    private $scrambler;
 
     public function __construct(
         Scramble $scrambler,

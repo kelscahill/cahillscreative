@@ -139,20 +139,24 @@
 		}
 	}
 }
-.wc-block-grid__product-onsale {
+.wc-block-grid__product-image .wc-block-grid__product-onsale,
+.wc-block-grid .wc-block-grid__product-onsale {
 	@include font-size(small);
 	padding: em($gap-smallest) em($gap-small);
 	display: inline-block;
 	width: auto;
 	border: 1px solid #43454b;
-	border-radius: 3px;
+	border-radius: $universal-border-radius;
 	color: #43454b;
 	background: #fff;
 	text-align: center;
 	text-transform: uppercase;
 	font-weight: 600;
 	z-index: 9;
-	position: relative;
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	left: auto;
 }
 
 // Element spacing.

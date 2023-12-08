@@ -180,9 +180,9 @@ trait misc
 				{
 					$function_name = $function[ 0 ];
 					if ( is_object( $function_name ) )
-						$function_name = sprintf( '%s::%s', get_class( $function_name ), $function[ 1 ] );
+						$function_name = sprintf( '%s %s::%s', $priority, get_class( $function_name ), $function[ 1 ] );
 					else
-						$function_name = sprintf( '%s::%s', $function_name, $function[ 1 ] );
+						$function_name = sprintf( '%s %s::%s', $priority, $function_name, $function[ 1 ] );
 				}
 				if ( is_a( $function, 'Closure' ) )
 					$function_name = '[Anonymous function]';

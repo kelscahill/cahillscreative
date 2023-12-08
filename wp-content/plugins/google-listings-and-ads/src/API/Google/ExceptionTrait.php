@@ -54,7 +54,7 @@ trait ExceptionTrait {
 	 * The following are the example sources of ApiException, GoogleServiceException,
 	 * and other Exception in order:
 	 *
-	 * @link https://github.com/googleads/google-ads-php/blob/v19.1.0/src/Google/Ads/GoogleAds/V13/Services/Gapic/CustomerServiceGapicClient.php#L359-L361
+	 * @link https://github.com/googleads/google-ads-php/blob/v19.2.0/src/Google/Ads/GoogleAds/V14/Services/Gapic/CustomerServiceGapicClient.php#L391
 	 * @link https://github.com/googleapis/google-api-php-client/blob/v2.15.0/src/Http/REST.php#L119-L135
 	 * @link https://github.com/googleapis/google-api-php-client/blob/v2.15.0/src/Service/Resource.php#L86-L175
 	 *
@@ -145,18 +145,18 @@ trait ExceptionTrait {
 	/**
 	 * Get an error message from a ClientException.
 	 *
-	 * @param ClientExceptionInterface $exception Exception to check.
-	 * @param string                   $default   Default error message.
+	 * @param ClientExceptionInterface $exception     Exception to check.
+	 * @param string                   $default_error Default error message.
 	 *
 	 * @return string
 	 */
-	protected function client_exception_message( ClientExceptionInterface $exception, string $default ): string {
+	protected function client_exception_message( ClientExceptionInterface $exception, string $default_error ): string {
 		if ( $exception instanceof BadResponseException ) {
 			$response = json_decode( $exception->getResponse()->getBody()->getContents(), true );
 			$message  = $response['message'] ?? false;
-			return $message ? $default . ': ' . $message : $default;
+			return $message ? $default_error . ': ' . $message : $default_error;
 		}
-		return $default;
+		return $default_error;
 	}
 
 	/**

@@ -1,7 +1,6 @@
 <?php
 namespace Automattic\WooCommerce\Blocks;
 
-use Automattic\WooCommerce\Blocks\BlockTypes\AtomicBlock;
 use Automattic\WooCommerce\Blocks\Package;
 use Automattic\WooCommerce\Blocks\Assets\AssetDataRegistry;
 use Automattic\WooCommerce\Blocks\Assets\Api as AssetApi;
@@ -52,6 +51,7 @@ final class BlockTypesController {
 		add_filter( 'render_block', array( $this, 'add_data_attributes' ), 10, 2 );
 		add_action( 'woocommerce_login_form_end', array( $this, 'redirect_to_field' ) );
 		add_filter( 'widget_types_to_hide_from_legacy_widget_block', array( $this, 'hide_legacy_widgets_with_block_equivalent' ) );
+		add_action( 'woocommerce_delete_product_transients', array( $this, 'delete_product_transients' ) );
 	}
 
 	/**
@@ -61,10 +61,10 @@ final class BlockTypesController {
 		$block_types = $this->get_block_types();
 
 		foreach ( $block_types as $block_type ) {
-			$block_type_class    = __NAMESPACE__ . '\\BlockTypes\\' . $block_type;
-			$block_type_instance = new $block_type_class( $this->asset_api, $this->asset_data_registry, new IntegrationRegistry() );
-		}
+			$block_type_class = __NAMESPACE__ . '\\BlockTypes\\' . $block_type;
 
+			new $block_type_class( $this->asset_api, $this->asset_data_registry, new IntegrationRegistry() );
+		}
 	}
 
 	/**
@@ -161,6 +161,13 @@ final class BlockTypesController {
 	}
 
 	/**
+	 * Delete product transients when a product is deleted.
+	 */
+	public function delete_product_transients() {
+		delete_transient( 'wc_blocks_has_downloadable_product' );
+	}
+
+	/**
 	 * Get list of block types.
 	 *
 	 * @return array
@@ -177,6 +184,7 @@ final class BlockTypesController {
 			'Breadcrumbs',
 			'CatalogSorting',
 			'ClassicTemplate',
+			'ClassicShortcode',
 			'CustomerAccount',
 			'FeaturedCategory',
 			'FeaturedProduct',
@@ -190,14 +198,18 @@ final class BlockTypesController {
 			'ProductButton',
 			'ProductCategories',
 			'ProductCategory',
-			'ProductGallery',
+			'ProductCollection',
 			'ProductImage',
 			'ProductImageGallery',
 			'ProductNew',
 			'ProductOnSale',
 			'ProductPrice',
+			'ProductTemplate',
 			'ProductQuery',
+			'ProductAverageRating',
 			'ProductRating',
+			'ProductRatingCounter',
+			'ProductRatingStars',
 			'ProductResultsCount',
 			'ProductReviews',
 			'ProductSaleBadge',
@@ -216,6 +228,18 @@ final class BlockTypesController {
 			'ProductDetails',
 			'SingleProduct',
 			'StockFilter',
+			'PageContentWrapper',
+			'OrderConfirmation\Status',
+			'OrderConfirmation\Summary',
+			'OrderConfirmation\Totals',
+			'OrderConfirmation\TotalsWrapper',
+			'OrderConfirmation\Downloads',
+			'OrderConfirmation\DownloadsWrapper',
+			'OrderConfirmation\BillingAddress',
+			'OrderConfirmation\ShippingAddress',
+			'OrderConfirmation\BillingWrapper',
+			'OrderConfirmation\ShippingWrapper',
+			'OrderConfirmation\AdditionalInformation',
 		];
 
 		$block_types = array_merge(
@@ -226,9 +250,13 @@ final class BlockTypesController {
 		);
 
 		if ( Package::feature()->is_experimental_build() ) {
-			$block_types[] = 'ProductCollection';
-			$block_types[] = 'ProductRatingStars';
-			$block_types[] = 'ProductTemplate';
+			$block_types[] = 'ProductGallery';
+			$block_types[] = 'ProductGalleryLargeImage';
+			$block_types[] = 'ProductGalleryLargeImageNextPrevious';
+			$block_types[] = 'ProductGalleryPager';
+			$block_types[] = 'ProductGalleryThumbnails';
+			$block_types[] = 'CollectionFilters';
+			$block_types[] = 'CollectionPriceFilter';
 		}
 
 		/**
@@ -258,7 +286,17 @@ final class BlockTypesController {
 					'ClassicTemplate',
 					'ProductResultsCount',
 					'ProductDetails',
-					'StoreNotices',
+					'OrderConfirmation\Status',
+					'OrderConfirmation\Summary',
+					'OrderConfirmation\Totals',
+					'OrderConfirmation\TotalsWrapper',
+					'OrderConfirmation\Downloads',
+					'OrderConfirmation\DownloadsWrapper',
+					'OrderConfirmation\BillingAddress',
+					'OrderConfirmation\ShippingAddress',
+					'OrderConfirmation\BillingWrapper',
+					'OrderConfirmation\ShippingWrapper',
+					'OrderConfirmation\AdditionalInformation',
 				]
 			);
 		}

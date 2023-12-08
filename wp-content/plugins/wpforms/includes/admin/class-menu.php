@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Register menu elements and do other global tasks.
  *
@@ -357,15 +361,9 @@ class WPForms_Admin_Menu {
 				onmouseout="this.style.color=\'#00a32a\';"
 				>%3$s</a>',
 			esc_url(
-				add_query_arg(
-					[
-						'utm_content'  => 'Get+WPForms+Pro',
-						'utm_campaign' => 'liteplugin',
-						'utm_medium'   => 'all-plugins',
-						'utm_source'   => 'WordPress',
-						'utm_locale'   => wpforms_sanitize_key( get_locale() ),
-					],
-					'https://wpforms.com/lite-upgrade/'
+				wpforms_admin_upgrade_link(
+					'all-plugins',
+					'Get WPForms Pro'
 				)
 			),
 			esc_attr__( 'Upgrade to WPForms Pro', 'wpforms-lite' ),

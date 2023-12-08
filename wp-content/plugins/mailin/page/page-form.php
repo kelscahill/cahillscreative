@@ -47,9 +47,13 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 		 * Constructs new page object and adds entry to WordPress admin menu
 		 */
 		function __construct() {
+			global $wp_roles;
+			$wp_roles->add_cap( 'administrator', 'view_custom_menu' ); 
+			$wp_roles->add_cap( 'editor', 'view_custom_menu' );
+
 		    $title = get_bloginfo('name');
 		    $this->defaultComplianceNote = sprintf( esc_attr('Your e-mail address is only used to send you our newsletter and information about the activities of %s. You can always use the unsubscribe link included in the newsletter.', 'mailin'), $title);
-			$this->page_hook = add_submenu_page( SIB_Page_Home::PAGE_ID, __( 'Forms', 'mailin' ), __( 'Forms', 'mailin' ), 'manage_options', self::PAGE_ID, array( &$this, 'generate' ) );
+			$this->page_hook = add_submenu_page( SIB_Page_Home::PAGE_ID, __( 'Forms', 'mailin' ), __( 'Forms', 'mailin' ), 'view_custom_menu', self::PAGE_ID, array( &$this, 'generate' ) );
 			add_action( 'admin_print_scripts-' . $this->page_hook, array( $this, 'enqueue_scripts' ) );
 			add_action( 'admin_print_styles-' . $this->page_hook, array( $this, 'enqueue_styles' ) );
 			add_action( 'load-' . $this->page_hook, array( &$this, 'init' ) );

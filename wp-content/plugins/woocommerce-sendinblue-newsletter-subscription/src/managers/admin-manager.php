@@ -33,15 +33,20 @@ class AdminManager
         add_action('admin_menu', array($this, 'adminMenu' ), 110);
         add_action('rest_api_init', array($this->api_manager, 'add_rest_endpoints'));
         add_action('wp_head', array($this, 'install_ma_and_chat_script'));
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_carts_fragment'));
     }
 
     public function adminMenu()
     {
+        global $wp_roles; 
+	$wp_roles->add_cap( 'administrator', 'view_custom_menu' ); 
+	$wp_roles->add_cap( 'editor', 'view_custom_menu' );
+
         add_submenu_page(
             'woocommerce',
             'Brevo',
             'Brevo',
-            'manage_options', 
+            'view_custom_menu', 
             'sendinblue', 
             array( &$this, 'adminOptions' )
         );
@@ -111,5 +116,20 @@ class AdminManager
         $output .= 'window.sendinblue = {}; for (var j = [\'track\', \'identify\', \'trackLink\', \'page\'], i = 0; i < j.length; i++) { (function(k) { window.sendinblue[k] = function() { var arg = Array.prototype.slice.call(arguments); (window.sib[k] || function() { var t = {}; t[k] = arg; window.sib.equeue.push(t);})(arg[0], arg[1], arg[2]);};})(j[i]);}var n = document.createElement("script"),i = document.getElementsByTagName("script")[0]; n.type = "text/javascript", n.id = "sendinblue-js", n.async = !0, n.src = "https://sibautomation.com/sa.js?key=" + window.sib.client_key, i.parentNode.insertBefore(n, i), window.sendinblue.page();})();</script>';
         $output .= '<!-- Sendinblue Marketing automation WooCommerce integration and Chat: end -->';
         echo $output;
+    }
+
+    public function enqueue_carts_fragment()
+    {
+        $settings = $this->api_manager->get_settings();
+
+        if (
+            empty($settings) ||
+            !$settings[SendinblueClient::IS_PAGE_TRACKING_ENABLED] ||
+            !$settings[SendinblueClient::MA_KEY]
+        ) {
+            return;
+        }
+
+        wp_enqueue_script( 'wc-cart-fragments' );
     }
 }

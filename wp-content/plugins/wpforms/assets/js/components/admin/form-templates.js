@@ -89,6 +89,10 @@ var WPFormsFormTemplates = window.WPFormsFormTemplates || ( function( document, 
 						attr: 'data-categories',
 					},
 					{
+						name: 'subcategories',
+						attr: 'data-subcategories',
+					},
+					{
 						name: 'has-access',
 						attr: 'data-has-access',
 					},
@@ -243,10 +247,43 @@ var WPFormsFormTemplates = window.WPFormsFormTemplates || ( function( document, 
 		 * @param {string} query Value to search.
 		 */
 		performSearch( query ) {
-
-			let searchResult = vars.templateList.search( query );
+			const searchResult = vars.templateList.search( query, [ 'name' ], function( searchString ) {
+				for ( let index = 0, length = vars.templateList.items.length; index < length; index++ ) {
+					vars.templateList.items[ index ].found = ( new RegExp( searchString ) ).test( vars.templateList.items[ index ].values()[ 'wpforms-template-name' ].toLowerCase() );
+				}
+			} );
 
 			$( '.wpforms-templates-no-results' ).toggle( ! searchResult.length );
+		},
+
+		/**
+		 * Select subcategory.
+		 *
+		 * @since 1.8.4
+		 *
+		 * @param {Object} e Event object.
+		 */
+		selectSubCategory( e ) {
+			e.preventDefault();
+
+			const $item = $( this );
+			const $active = $item.closest( 'ul' ).find( '.active' );
+			const subcategory = $item.data( 'subcategory' );
+			const category = $item.parents( 'li' ).data( 'category' );
+			const searchQuery = $( '#wpforms-setup-template-search' ).val();
+
+			$active.removeClass( 'active' );
+			$item.addClass( 'active' );
+
+			vars.templateList.filter( function( item ) {
+				return category === 'all' || ( item.values().categories.split( ',' ).indexOf( category ) > -1 && item.values().subcategories.split( ',' ).indexOf( subcategory ) > -1 );
+			} );
+
+			if ( searchQuery !== '' ) {
+				app.performSearch( searchQuery );
+			}
+
+			app.showUpgradeBanner();
 		},
 
 		/**
@@ -254,24 +291,22 @@ var WPFormsFormTemplates = window.WPFormsFormTemplates || ( function( document, 
 		 *
 		 * @since 1.7.7
 		 *
-		 * @param {object} e Event object.
+		 * @param {Object} e Event object.
 		 */
-		selectCategory: function( e ) {
-
+		selectCategory( e ) {
 			e.preventDefault();
 
-			let $item       = $( this ),
-				$active     = $item.closest( 'ul' ).find( '.active' ),
-				category    = $item.data( 'category' ),
+			const $item = $( this ).parent(),
+				$active = $item.closest( 'ul' ).find( '.active' ),
+				category = $item.data( 'category' ),
 				searchQuery = $( '#wpforms-setup-template-search' ).val();
 
 			$active.removeClass( 'active' );
 			$item.addClass( 'active' );
 
 			vars.templateList.filter( function( item ) {
-
 				if ( category === 'available' ) {
-					return item.values()['has-access'];
+					return item.values()[ 'has-access' ];
 				}
 
 				if ( category === 'favorites' ) {

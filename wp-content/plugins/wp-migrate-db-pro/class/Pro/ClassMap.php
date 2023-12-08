@@ -143,6 +143,11 @@ class ClassMap extends \DeliciousBrains\WPMDB\ClassMap
      */
     private $hosting_platform;
 
+    /**
+     * @var RemoteUpdatesManager
+     */
+    public $remote_updates_manager;
+
     public function __construct()
     {
         parent::__construct();

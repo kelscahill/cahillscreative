@@ -7,13 +7,13 @@ use Automattic\WooCommerce\GoogleListingsAndAds\API\Google\Query\AdsAssetGroupAs
 use Automattic\WooCommerce\GoogleListingsAndAds\Google\Ads\GoogleAdsClient;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsAwareInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsAwareTrait;
-use Google\Ads\GoogleAds\V13\Services\GoogleAdsRow;
-use Google\Ads\GoogleAds\V13\Resources\AssetGroupAsset;
+use Google\Ads\GoogleAds\V14\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V14\Resources\AssetGroupAsset;
 use Google\ApiCore\ApiException;
 use Automattic\WooCommerce\GoogleListingsAndAds\Exception\ExceptionWithResponseData;
-use Google\Ads\GoogleAds\V13\Services\MutateOperation;
-use Google\Ads\GoogleAds\V13\Services\AssetGroupAssetOperation;
-use Google\Ads\GoogleAds\Util\V13\ResourceNames;
+use Google\Ads\GoogleAds\V14\Services\MutateOperation;
+use Google\Ads\GoogleAds\V14\Services\AssetGroupAssetOperation;
+use Google\Ads\GoogleAds\Util\V14\ResourceNames;
 
 
 
@@ -22,7 +22,7 @@ use Google\Ads\GoogleAds\Util\V13\ResourceNames;
  * Class AdsAssetGroupAsset
  *
  * Use to get assets group assets for specific asset groups.
- * https://developers.google.com/google-ads/api/fields/v13/asset_group_asset
+ * https://developers.google.com/google-ads/api/fields/v14/asset_group_asset
  *
  * @since 2.4.0
  *
@@ -143,7 +143,6 @@ class AdsAssetGroupAsset implements OptionsAwareInterface {
 				[ 'errors' => $errors ]
 			);
 		}
-
 	}
 
 	/**
@@ -210,7 +209,6 @@ class AdsAssetGroupAsset implements OptionsAwareInterface {
 				[ 'errors' => $errors ]
 			);
 		}
-
 	}
 
 	/**
@@ -224,7 +222,7 @@ class AdsAssetGroupAsset implements OptionsAwareInterface {
 		return array_values(
 			array_filter(
 				$assets,
-				function( $asset ) {
+				function ( $asset ) {
 					return ! empty( $asset['id'] );
 				}
 			)
@@ -242,7 +240,7 @@ class AdsAssetGroupAsset implements OptionsAwareInterface {
 		return array_values(
 			array_filter(
 				$assets,
-				function( $asset ) {
+				function ( $asset ) {
 					return ! empty( $asset['content'] );
 				}
 			)
@@ -293,7 +291,7 @@ class AdsAssetGroupAsset implements OptionsAwareInterface {
 	 */
 	protected function get_override_operations( int $asset_group_id, array $asset_field_types ): array {
 		return array_map(
-			function( $asset ) use ( $asset_group_id ) {
+			function ( $asset ) use ( $asset_group_id ) {
 				return $this->delete_operation( $asset_group_id, $asset['field_type'], $asset['id'] );
 			},
 			$this->get_specific_assets( $asset_group_id, $asset_field_types )
@@ -338,7 +336,6 @@ class AdsAssetGroupAsset implements OptionsAwareInterface {
 		// The delete operations must be executed first otherwise will cause a conflict with existing assets with identical content.
 		// See here: https://github.com/woocommerce/google-listings-and-ads/pull/1870
 		return array_merge( $delete_asset_group_assets_operations, $asset_group_assets_operations );
-
 	}
 
 
@@ -378,8 +375,4 @@ class AdsAssetGroupAsset implements OptionsAwareInterface {
 		$operation                       = ( new AssetGroupAssetOperation() )->setRemove( $asset_group_asset_resource_name );
 		return ( new MutateOperation() )->setAssetGroupAssetOperation( $operation );
 	}
-
-
-
-
 }

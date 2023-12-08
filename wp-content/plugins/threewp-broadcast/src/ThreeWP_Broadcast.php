@@ -107,6 +107,7 @@ class ThreeWP_Broadcast
 		@since		2017-01-16 17:14:35
 	**/
 	public static $incompatible_plugins = [
+		'cf-image-resizing/cf-image-resizing.php',
 		'intuitive-custom-post-order/intuitive-custom-post-order.php',
 		'post-type-switcher/post-type-switcher.php',
 		/**

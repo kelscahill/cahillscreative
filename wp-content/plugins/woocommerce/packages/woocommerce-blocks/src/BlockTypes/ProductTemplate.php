@@ -61,7 +61,11 @@ class ProductTemplate extends AbstractBlock {
 		$classnames = '';
 		if ( isset( $block->context['displayLayout'] ) && isset( $block->context['query'] ) ) {
 			if ( isset( $block->context['displayLayout']['type'] ) && 'flex' === $block->context['displayLayout']['type'] ) {
-				$classnames = "is-flex-container columns-{$block->context['displayLayout']['columns']}";
+				if ( isset( $block->context['displayLayout']['shrinkColumns'] ) && $block->context['displayLayout']['shrinkColumns'] ) {
+					$classnames = "wc-block-product-template__responsive columns-{$block->context['displayLayout']['columns']}";
+				} else {
+					$classnames = "is-flex-container columns-{$block->context['displayLayout']['columns']}";
+				}
 			}
 		}
 		if ( isset( $attributes['style']['elements']['link']['color']['text'] ) ) {
@@ -97,7 +101,7 @@ class ProductTemplate extends AbstractBlock {
 
 			// Wrap the render inner blocks in a `li` element with the appropriate post classes.
 			$post_classes = implode( ' ', get_post_class( 'wc-block-product' ) );
-			$content     .= '<li class="' . esc_attr( $post_classes ) . '">' . $block_content . '</li>';
+			$content     .= '<li data-wc-key="product-item-' . get_the_ID() . '" class="' . esc_attr( $post_classes ) . '">' . $block_content . '</li>';
 		}
 
 		/*

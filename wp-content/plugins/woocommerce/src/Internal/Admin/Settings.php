@@ -9,6 +9,7 @@ use Automattic\WooCommerce\Admin\API\Plugins;
 use Automattic\WooCommerce\Admin\PageController;
 use Automattic\WooCommerce\Admin\API\Reports\Orders\DataStore as OrdersDataStore;
 use Automattic\WooCommerce\Admin\PluginsHelper;
+use Automattic\WooCommerce\Internal\Admin\WCPayPromotion\Init as WCPayPromotionInit;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use WC_Marketplace_Suggestions;
 
@@ -137,9 +138,7 @@ class Settings {
 
 		//phpcs:ignore
 		$preload_data_endpoints = apply_filters( 'woocommerce_component_settings_preload_endpoints', array() );
-		if ( class_exists( 'Jetpack' ) ) {
-			$preload_data_endpoints['jetpackStatus'] = '/jetpack/v4/connection';
-		}
+		$preload_data_endpoints['jetpackStatus'] = '/jetpack/v4/connection';
 		if ( ! empty( $preload_data_endpoints ) ) {
 			$preload_data = array_reduce(
 				array_values( $preload_data_endpoints ),
@@ -235,6 +234,8 @@ class Settings {
 		$settings['wcpay_welcome_page_connect_nonce'] = wp_create_nonce( 'wcpay-connect' );
 
 		$settings['features'] = $this->get_features();
+
+		$settings['isWooPayEligible'] = WCPayPromotionInit::is_woopay_eligible();
 
 		return $settings;
 	}

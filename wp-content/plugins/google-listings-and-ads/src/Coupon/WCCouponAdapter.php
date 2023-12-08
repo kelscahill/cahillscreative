@@ -50,6 +50,8 @@ class WCCouponAdapter extends GooglePromotion implements Validatable {
 
 	protected const DATE_TIME_FORMAT = 'Y-m-d h:i:sa';
 
+	public const COUNTRIES_WITH_FREE_SHIPPING_DESTINATION = [ 'BR', 'IT', 'ES', 'JP', 'NL', 'KR', 'US' ];
+
 	/**
 	 *
 	 * @var int wc_coupon_id
@@ -59,41 +61,39 @@ class WCCouponAdapter extends GooglePromotion implements Validatable {
 	/**
 	 * Initialize this object's properties from an array.
 	 *
-	 * @param array $array
-	 *            Used to seed this object's properties.
+	 * @param array $properties Used to seed this object's properties.
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidValue When a WooCommerce coupon is not provided or it is invalid.
 	 */
-	public function mapTypes( $array ) {
-		if ( empty( $array['wc_coupon'] ) ||
-			! $array['wc_coupon'] instanceof WC_Coupon ) {
+	public function mapTypes( $properties ) {
+		if ( empty( $properties['wc_coupon'] ) ||
+			! $properties['wc_coupon'] instanceof WC_Coupon ) {
 				throw InvalidValue::not_instance_of( WC_Coupon::class, 'wc_coupon' );
 		}
 
-		$wc_coupon          = $array['wc_coupon'];
+		$wc_coupon          = $properties['wc_coupon'];
 		$this->wc_coupon_id = $wc_coupon->get_id();
-			$this->map_woocommerce_coupon( $wc_coupon );
+		$this->map_woocommerce_coupon( $wc_coupon, $this->get_coupon_destinations( $properties ) );
 
 		// Google doesn't expect extra fields, so it's best to remove them
-		unset( $array['wc_coupon'] );
+		unset( $properties['wc_coupon'] );
 
-		parent::mapTypes( $array );
+		parent::mapTypes( $properties );
 	}
 
 	/**
 	 * Map the WooCommerce coupon attributes to the current class.
 	 *
 	 * @param WC_Coupon $wc_coupon
+	 * @param string[]  $destinations The destination ID's for the coupon
 	 *
 	 * @return void
 	 */
-	protected function map_woocommerce_coupon( WC_Coupon $wc_coupon ) {
+	protected function map_woocommerce_coupon( WC_Coupon $wc_coupon, array $destinations ) {
 		$this->setRedemptionChannel( self::CHANNEL_ONLINE );
-		$this->setPromotionDestinationIds(
-			[ self::PROMOTION_DESTINATION_ADS, self::PROMOTION_DESTINATION_FREE_LISTING ]
-		);
+		$this->setPromotionDestinationIds( $destinations );
 
 		$content_language = empty( get_locale() ) ? 'en' : strtolower(
 			substr( get_locale(), 0, 2 )
@@ -374,5 +374,20 @@ class WCCouponAdapter extends GooglePromotion implements Validatable {
 	public function setTargetCountry( $targetCountry ) {
 		// set the new target country
 		parent::setTargetCountry( $targetCountry );
+	}
+
+	/**
+	 * Get the destinations allowed per specific country.
+	 *
+	 * @param array $coupon_data The coupon data to get the allowed destinations.
+	 * @return string[] The destinations country based.
+	 */
+	private function get_coupon_destinations( array $coupon_data ): array {
+		$destinations = [ self::PROMOTION_DESTINATION_ADS ];
+		if ( isset( $coupon_data['targetCountry'] ) && in_array( $coupon_data['targetCountry'], self::COUNTRIES_WITH_FREE_SHIPPING_DESTINATION, true ) ) {
+			$destinations[] = self::PROMOTION_DESTINATION_FREE_LISTING;
+		}
+
+		return apply_filters( 'woocommerce_gla_coupon_destinations', $destinations, $coupon_data );
 	}
 }

@@ -13,9 +13,9 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Http\Message\StreamIn
  * then appends the zlib.inflate filter. The stream is then converted back
  * to a Guzzle stream resource to be used as a Guzzle stream.
  *
- * @link http://tools.ietf.org/html/rfc1950
- * @link http://tools.ietf.org/html/rfc1952
- * @link http://php.net/manual/en/filters.compression.php
+ * @see http://tools.ietf.org/html/rfc1950
+ * @see http://tools.ietf.org/html/rfc1952
+ * @see http://php.net/manual/en/filters.compression.php
  */
 final class InflateStream implements StreamInterface
 {

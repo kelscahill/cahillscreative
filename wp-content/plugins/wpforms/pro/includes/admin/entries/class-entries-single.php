@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use WPForms\Admin\Payments\Views\Overview\Helpers;
 use WPForms\Db\Payments\ValueValidator;
 
@@ -571,6 +575,15 @@ class WPForms_Entries_Single {
 			return;
 		}
 
+		// Check if entry has trash status.
+		if ( $entry->status === WPForms_Entries_List::TRASH_ENTRY_STATUS ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$this->abort_message = esc_html__( 'You can\'t view this entry because it\'s in the trash.', 'wpforms' );
+			$this->abort         = true;
+
+			return;
+		}
+
 		// Form details.
 		$form_data      = wpforms_decode( $form->post_content );
 		$form_id        = ! empty( $form_data['id'] ) ? $form_data['id'] : $entry->form_id;
@@ -696,7 +709,6 @@ class WPForms_Entries_Single {
 	 * @since 1.0.0
 	 */
 	public function details() {
-
 		?>
 		<div id="wpforms-entries-single" class="wrap wpforms-admin-wrap">
 
@@ -734,8 +746,10 @@ class WPForms_Entries_Single {
 				$form_url = apply_filters( 'wpforms_entries_single_details_form_url', $this->form->form_url, $entry->entry_id, $form_data['id'] );
 				?>
 
-				<a href="<?php echo esc_url( $form_url ); ?>" class="page-title-action wpforms-btn wpforms-btn-orange">
-					<svg class="page-title-action-icon" viewBox="0 0 13 12"><path d="M12.6 5.2v1.6H3.2l3.1 3.1-.8 1.6L0 6 5.5.5l.8 1.6-3.1 3.1h9.4Z"/></svg>
+				<a href="<?php echo esc_url( $form_url ); ?>" class="page-title-action wpforms-btn wpforms-btn-orange" data-action="back">
+					<svg viewBox="0 0 16 14" class="page-title-action-icon">
+						<path d="M16 6v2H4l4 4-1 2-7-7 7-7 1 2-4 4h12Z"/>
+					</svg>
 					<span class="page-title-action-text"><?php esc_html_e( 'Back to All Entries', 'wpforms' ); ?></span>
 				</a>
 
@@ -1159,6 +1173,10 @@ class WPForms_Entries_Single {
 		$value             = $is_choices_field || $no_format ? $field_value : $field['formatted_value'];
 		$hide_choice_value = $is_choices_field && $this->entry_view_settings['fields']['show_unselected_choices']['value'] === 1 ? ' wpforms-hide' : '';
 
+		if ( $field['type'] === 'html' ) {
+			$value = force_balance_tags( $value );
+		}
+
 		echo '<div class="wpforms-entry-field-value' . esc_attr( $hide_choice_value ) . '">';
 			echo ! wpforms_is_empty_string( $value )
 				? wp_kses_post( nl2br( make_clickable( $value ) ) )
@@ -1392,18 +1410,18 @@ class WPForms_Entries_Single {
 				} else {
 					echo '<div class="wpforms-entry-logs-list">';
 					$count = 1;
+
 					foreach ( $entry->entry_logs as $log ) {
-						$user        = get_userdata( $log->user_id );
-						$user_name   = ! empty( $user->display_name ) ? $user->display_name : $user->user_login;
-						$user_url    = add_query_arg(
+						$user      = get_userdata( $log->user_id );
+						$user_name = ! empty( $user->display_name ) ? $user->display_name : $user->user_login;
+						$user_url  = add_query_arg(
 							[
 								'user_id' => absint( $user->ID ),
 							],
 							admin_url( 'user-edit.php' )
 						);
-						$date_format = sprintf( '%s %s', get_option( 'date_format' ), get_option( 'time_format' ) );
-						$date        = date_i18n( $date_format, strtotime( $log->date ) + ( get_option( 'gmt_offset' ) * 3600 ) );
-						$class       = $count % 2 === 0 ? 'even' : 'odd';
+						$date      = wpforms_datetime_format( $log->date, '', true );
+						$class     = $count % 2 === 0 ? 'even' : 'odd';
 						?>
 
 						<div class="wpforms-entry-logs-single <?php echo esc_attr( $class ); ?>">
@@ -1484,13 +1502,11 @@ class WPForms_Entries_Single {
 	 */
 	public function details_meta( $entry, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		$datetime = static function( $date ) {
-			$datetime_offset = get_option( 'gmt_offset' ) * 3600;
-
-			return sprintf( /* translators: %1$s - date for the entry, %2$s - time for the entry. */
-				esc_html__( '%1$s at %2$s', 'wpforms' ),
-				date_i18n( 'M j, Y', strtotime( $date ) + $datetime_offset ),
-				date_i18n( get_option( 'time_format' ), strtotime( $date ) + $datetime_offset )
+		$datetime = static function ( $date ) {
+			return sprintf( /* translators: %1$s - formatted date, %2$s - formatted time. */
+				__( '%1$s at %2$s', 'wpforms' ),
+				wpforms_date_format( $date, 'M j, Y', true ),
+				wpforms_time_format( $date, '', true )
 			);
 		};
 		?>
@@ -1609,11 +1625,12 @@ class WPForms_Entries_Single {
 					?>
 						<div id="delete-action">
 							<?php
-							$delete_link = wp_nonce_url(
+
+							$trash_link = wp_nonce_url(
 								add_query_arg(
 									[
 										'view'     => 'list',
-										'action'   => 'delete',
+										'action'   => 'trash',
 										'form_id'  => $form_id,
 										'entry_id' => $entry->entry_id,
 									]
@@ -1621,8 +1638,8 @@ class WPForms_Entries_Single {
 								'bulk-entries'
 							);
 							?>
-							<a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ); ?>">
-								<?php esc_html_e( 'Delete Entry', 'wpforms' ); ?>
+							<a class="trash" href="<?php echo esc_url( $trash_link ); ?>">
+								<?php esc_html_e( 'Trash Entry', 'wpforms' ); ?>
 							</a>
 						</div>
 					<?php endif; ?>
@@ -1659,11 +1676,13 @@ class WPForms_Entries_Single {
 
 		$allowed_types    = ValueValidator::get_allowed_types();
 		$allowed_gateways = ValueValidator::get_allowed_gateways();
+		$allowed_statuses = ValueValidator::get_allowed_statuses();
 		$placeholder      = __( 'N/A', 'wpforms' );
 
 		$payment_type         = isset( $payment->type, $allowed_types[ $payment->type ] ) ? $allowed_types[ $payment->type ] : $placeholder;
 		$payment_gateway      = isset( $payment->gateway, $allowed_gateways[ $payment->gateway ] ) ? $allowed_gateways[ $payment->gateway ] : $placeholder;
-		$payment_total        = ! empty( $payment->total_amount ) ? wpforms_format_amount( wpforms_sanitize_amount( $payment->total_amount ), $payment->currency ) : $placeholder;
+		$payment_status       = isset( $payment->status, $allowed_statuses[ $payment->status ] ) ? $allowed_statuses[ $payment->status ] : $placeholder;
+		$payment_total        = ! empty( $payment->total_amount ) ? wpforms_format_amount( wpforms_sanitize_amount( $payment->total_amount, $payment->currency ), true, $payment->currency ) : $placeholder;
 		$payment_subscription = Helpers::get_subscription_description( $payment->id, $payment_total );
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -1671,6 +1690,7 @@ class WPForms_Entries_Single {
 			'admin/entries/single-entry/payment-details',
 			[
 				'payment'              => $payment,
+				'payment_status'       => $payment_status,
 				'payment_type'         => $payment_type,
 				'payment_gateway'      => $payment_gateway,
 				'payment_total'        => $payment_total,
@@ -1678,14 +1698,14 @@ class WPForms_Entries_Single {
 				'payment_url'          => add_query_arg(
 					[
 						'page'       => 'wpforms-payments',
-						'view'       => 'single',
+						'view'       => 'payment',
 						'payment_id' => absint( $payment->id ),
 					],
 					admin_url( 'admin.php' )
 				),
 				'entry'                => $entry,
 				'form_data'            => $form_data,
-				'show_button'          => wpforms_current_user_can(),
+				'show_button'          => wpforms_current_user_can() && $payment->is_published,
 			],
 			true
 		);
@@ -1801,6 +1821,28 @@ class WPForms_Entries_Single {
 		];
 
 		$action_links = apply_filters( 'wpforms_entry_details_sidebar_actions_link', $action_links, $entry, $form_data );
+
+		$delete_link = wp_nonce_url(
+			add_query_arg(
+				[
+					'view'     => 'list',
+					'action'   => 'delete',
+					'form_id'  => $form_id,
+					'entry_id' => $entry->entry_id,
+				]
+			),
+			'bulk-entries'
+		);
+
+		if ( wpforms_current_user_can( 'delete_entries_form_single', $form_id ) ) {
+
+			$action_links['delete'] = [
+				'url'   => $delete_link,
+				'icon'  => 'dashicons-trash',
+				'label' => esc_html__( 'Delete Entry', 'wpforms' ),
+			];
+		}
+
 		?>
 
 		<!-- Entry Actions metabox -->
@@ -1997,7 +2039,7 @@ class WPForms_Entries_Single {
 					);
 
 					echo '<li>';
-						echo '<a href="' . esc_url( $url ) . '">' . esc_html( date_i18n( __( 'M j, Y @ g:ia', 'wpforms' ), strtotime( $related->date ) + ( get_option( 'gmt_offset' ) * 3600 ) ) ) . '</a> ';
+						echo '<a href="' . esc_url( $url ) . '">' . esc_html( wpforms_datetime_format( $related->date, '', true ) ) . '</a> ';
 						echo $related->status === 'abandoned' ? esc_html__( '(Abandoned)', 'wpforms' ) : '';
 					echo '</li>';
 				}

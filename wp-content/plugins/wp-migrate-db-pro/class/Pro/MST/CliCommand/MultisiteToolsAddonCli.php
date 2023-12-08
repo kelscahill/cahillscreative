@@ -86,7 +86,8 @@ class MultisiteToolsAddonCli extends MultisiteToolsAddon
         $destination_site   = 'push' === $profile['action'] ? $post_data['site_details']['remote'] : $post_data['site_details']['local'];
         $destination_prefix = $destination_site['prefix'];
         $site_id            = 0;
-        if ($profile['multisite_tools']['enabled']) {
+
+        if (isset($profile['multisite_tools']['enabled']) && $profile['multisite_tools']['enabled']) {
             $site_id = $profile['mst_subsite_to_subsite'] ? $profile['mst_destination_subsite'] : $profile['mst_selected_subsite'];
         }
 

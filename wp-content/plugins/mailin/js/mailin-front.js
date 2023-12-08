@@ -11,7 +11,11 @@ var sibVerifyCallback = function (response) {
             if (jQuery(this).val().trim() == '' || (jQuery(this).attr('type') == "checkbox" && jQuery(this).prop("checked") == false)) {
                 validationErr++;
                 var form = jQuery(this).closest('form');
-                form.find('.sib_msg_disp').html('<p class="sib-alert-message sib-alert-message-warning ">' + sibErrMsg.requiredField + '</p>').show();
+                var requiredField = jQuery(this).closest('form').find('input[name="sib_form_alert_notice"]').val();
+                if (requiredField !== undefined) {
+                    sibErrMsg.requiredField = requiredField;
+                }
+		form.find('.sib_msg_disp').html('<p class="sib-alert-message sib-alert-message-warning ">' + sibErrMsg.requiredField + '</p>').show();
                 return;
             }
         });

@@ -2,8 +2,11 @@
 
 namespace WPForms\Integrations\Gutenberg;
 
+// phpcs:ignore WPForms.PHP.UseStatement.UnusedUseStatement
+use WP_REST_Response;
 use WPForms\Frontend\CSSVars;
 use WPForms\Integrations\IntegrationInterface;
+use WP_Error;
 
 /**
  * Form Selector Gutenberg block with live preview.
@@ -111,8 +114,7 @@ class FormSelector implements IntegrationInterface {
 		add_action( 'init', [ $this, 'register_block' ] );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_block_editor_assets' ] );
 		add_action( 'wpforms_frontend_output_container_after', [ $this, 'replace_wpforms_frontend_container_class_filter' ] );
-		add_action( 'init', [ $this, 'enable_block_translations' ] );
-
+		add_action( 'rest_api_init', [ $this, 'register_api_route' ] );
 	}
 
 	/**
@@ -201,7 +203,7 @@ class FormSelector implements IntegrationInterface {
 			'buttonTextColor'       => [
 				'type' => 'string',
 			],
-			'copyPasteJsonValue'        => [
+			'copyPasteJsonValue'    => [
 				'type' => 'string',
 			],
 		];
@@ -287,6 +289,8 @@ class FormSelector implements IntegrationInterface {
 			$this->get_localize_data()
 		);
 
+		wp_set_script_translations( 'wpforms-gutenberg-form-selector', 'wpforms-lite' );
+
 		if ( $this->render_engine === 'modern' ) {
 			wp_enqueue_script(
 				'wpforms-modern',
@@ -296,6 +300,62 @@ class FormSelector implements IntegrationInterface {
 				true
 			);
 		}
+	}
+
+	/**
+	 * Register API route for Gutenberg block.
+	 *
+	 * @since 1.8.4
+	 */
+	public function register_api_route() {
+
+		/**
+		 * Register route with WordPress.
+		 *
+		 * @see https://developer.wordpress.org/reference/functions/register_rest_route/
+		 */
+		register_rest_route(
+			'wpforms/v1',
+			'/forms/',
+			[
+				'methods'             => 'GET',
+				'callback'            => [ $this, 'protected_data_callback' ],
+				'permission_callback' => [ $this, 'protected_permissions_callback' ],
+			]
+		);
+	}
+
+	/**
+	 * Wrap localized data in protected WP_REST_Response object.
+	 *
+	 * @since 1.8.4
+	 *
+	 * @see https://developer.wordpress.org/reference/functions/rest_ensure_response/
+	 *
+	 * @return WP_Error|WP_REST_Response
+	 */
+	public function protected_data_callback() {
+
+		return rest_ensure_response( $this->get_localize_data() );
+	}
+
+	/**
+	 * Check if user has permission to access private data.
+	 *
+	 * @since 1.8.4
+	 *
+	 * @see https://developer.wordpress.org/rest-api/extending-the-rest-api/routes-and-endpoints/#permissions-callback
+	 *
+	 * @return true|WP_Error True if user has permission.
+	 */
+	public function protected_permissions_callback() {
+
+		// Restrict endpoint to only users who have the edit_posts capability.
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return new WP_Error( 'rest_forbidden', esc_html__( 'This route is private.', 'wpforms-lite' ), [ 'status' => 401 ] );
+		}
+
+		return true;
 	}
 
 	/**
@@ -318,6 +378,8 @@ class FormSelector implements IntegrationInterface {
 			],
 			'form_select'                  => esc_html__( 'Select a Form', 'wpforms-lite' ),
 			'form_settings'                => esc_html__( 'Form Settings', 'wpforms-lite' ),
+			'form_edit'                    => esc_html__( 'Edit Form', 'wpforms-lite' ),
+			'form_entries'                 => esc_html__( 'View Entries', 'wpforms-lite' ),
 			'field_styles'                 => esc_html__( 'Field Styles', 'wpforms-lite' ),
 			'label_styles'                 => esc_html__( 'Label Styles', 'wpforms-lite' ),
 			'button_styles'                => esc_html__( 'Button Styles', 'wpforms-lite' ),
@@ -372,8 +434,7 @@ class FormSelector implements IntegrationInterface {
 		$forms = wpforms()->get( 'form' )->get( '', [ 'order' => 'DESC' ] );
 		$forms = ! empty( $forms ) ? $forms : [];
 		$forms = array_map(
-			static function( $form ) {
-
+			static function ( $form ) {
 				$form->post_title = htmlspecialchars_decode( $form->post_title, ENT_QUOTES );
 
 				return $form;
@@ -386,8 +447,13 @@ class FormSelector implements IntegrationInterface {
 			'block_preview_url' => WPFORMS_PLUGIN_URL . 'assets/images/integrations/gutenberg/block-preview.png',
 			'block_empty_url'   => WPFORMS_PLUGIN_URL . 'assets/images/empty-states/no-forms.svg',
 			'wpnonce'           => wp_create_nonce( 'wpforms-gutenberg-form-selector' ),
+			'urls'              => [
+				'form_url'    => admin_url( 'admin.php?page=wpforms-builder&view=fields&form_id={ID}' ),
+				'entries_url' => admin_url( 'admin.php?view=list&page=wpforms-entries&form_id={ID}' ),
+			],
 			'forms'             => $forms,
 			'strings'           => $strings,
+			'isPro'             => wpforms()->is_pro(),
 			'defaults'          => self::DEFAULT_ATTRIBUTES,
 			'is_modern_markup'  => $this->render_engine === 'modern',
 			'is_full_styling'   => $this->disable_css_setting === 1,
@@ -406,12 +472,11 @@ class FormSelector implements IntegrationInterface {
 	 * Let's WP know that we have translation strings on our block script.
 	 *
 	 * @since 1.8.3
-	 *
-	 * @return void
+	 * @deprecated 1.8.5
 	 */
 	public function enable_block_translations() {
 
-		wp_set_script_translations( 'wpforms-gutenberg-form-selector', 'wpforms-lite' );
+		_deprecated_function( __METHOD__, '1.8.5' );
 	}
 
 	/**
@@ -568,9 +633,9 @@ class FormSelector implements IntegrationInterface {
 
 		if ( empty( $content ) ) {
 			return '<div class="components-placeholder"><div class="components-placeholder__label"></div>' .
-			           '<div class="components-placeholder__fieldset">' .
-			           esc_html__( 'The form cannot be displayed.', 'wpforms-lite' ) .
-			           '</div></div>';
+						'<div class="components-placeholder__fieldset">' .
+						esc_html__( 'The form cannot be displayed.', 'wpforms-lite' ) .
+						'</div></div>';
 		}
 
 		// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_var_export

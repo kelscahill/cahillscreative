@@ -62,11 +62,12 @@ const InheritQueryControl = ( {
 			isShownByDefault
 			onDeselect={ () => {
 				setQueryAttribute( {
-					inherit: null,
+					inherit: defaultValue,
 				} );
 			} }
 		>
 			<ToggleControl
+				className="wc-block-product-collection__inherit-query-control"
 				label={ label }
 				help={ __(
 					'Toggle to use the global query context that is set with the current template, such as an archive or search. Disable to customize the settings independently.',
