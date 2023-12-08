@@ -173,6 +173,40 @@
   }
 }
 
+.c-content-single-plans {
+  max-width: $max-width-l;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: $space-triple;
+
+  .l-container--m {
+    max-width: 800px;
+  }
+
+  .c-page-header:first-child {
+    margin-top: 0;
+  }
+
+  .c-intro {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: $space-quarter;
+
+    &__body {
+      margin-top: $space;
+      margin-bottom: $space;
+    }
+
+    &__signature {
+      mix-blend-mode: multiply;
+      max-width: 230px;
+      margin-bottom: $space-half;
+    }
+  }
+}
+
 .c-product-gallery {
   &__image {
     .slick-slider {

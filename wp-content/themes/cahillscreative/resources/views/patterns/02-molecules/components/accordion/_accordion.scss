@@ -37,6 +37,10 @@
     table tr:nth-child(even) td {
       background-color: $c-white;
     }
+
+    .c-steps {
+      margin-top: 0;
+    }
   }
 
   &__item {

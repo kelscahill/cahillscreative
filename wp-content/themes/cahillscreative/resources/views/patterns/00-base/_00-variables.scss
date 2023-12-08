@@ -128,7 +128,7 @@ $font-secondary: var(--font-secondary, $font-body);
  * Native Custom Properties
  */
 :root {
-  --body-font-size: 15px;
+  --body-font-size: 14px;
   --font-size-xxs: 10px;
   --font-size-xs: 12px;
   --font-size-s: 14px;
@@ -136,6 +136,22 @@ $font-secondary: var(--font-secondary, $font-body);
   --font-size-l: 18px;
   --font-size-xl: 30px;
   --font-size-xxl: 50px;
+  --space: 20px;
+}
+
+// Print styles
+@media print {
+  :root {
+    --body-font-size: 9pt;
+    --font-size-xxs: 7pt;
+    --font-size-xs: 8pt;
+    --font-size-s: 9pt;
+    --font-size-m: 14pt;
+    --font-size-l: 18pt;
+    --font-size-xl: 30pt;
+    --font-size-xxl: 40pt;
+    --space: 0.125in;
+  }
 }
 
 // Large Breakpoint
@@ -186,34 +202,35 @@ $gutter: 30px;
 /**
  * Spacing.
  */
-$space: 20px;
+$space: var(--space);
 
 /**
  * Spacing - Times.
  */
-$space-and-half: $space * 1.5;
-$space-double: $space * 2;
-$space-triple: $space * 3;
-$space-quadruple: $space * 4;
-$space-quintuple: $space * 5;
-$space-sextuple: $space * 6;
-$space-septuple: $space * 7;
+$space-and-half: calc(#{$space} * 1.5);
+$space-double: calc(#{$space} * 2);
+$space-triple: calc(#{$space} * 2);
+$space-quadruple: calc(#{$space} * 4);
+$space-quintuple: calc(#{$space} * 5);
+$space-sextuple: calc(#{$space} * 6);
+$space-septuple: calc(#{$space} * 7);
+$space-super: calc(#{$space} * 8);
 
 /**
  * Spacing - Divided.
  */
-$space-three-fourth: $space * 0.75;
-$space-one-half: $space / 2;
+$space-three-fourth: calc(#{$space} * 0.75);
+$space-one-half: calc(#{$space} / 2);
 $space-half: $space-one-half;
-$space-one-third: $space / 3;
+$space-one-third: calc(#{$space} / 3);
 $space-third: $space-one-third;
-$space-one-fourth: $space / 4;
+$space-one-fourth: calc(#{$space} / 4);
 $space-fourth: $space-one-fourth;
 $space-quarter: $space-one-fourth;
-$space-one-fifth: $space / 5;
-$space-one-sixth: $space / 6;
-$space-one-seventh: $space / 7;
-$space-one-eighth: $space / 8;
+$space-one-fifth: calc(#{$space} / 5);
+$space-one-sixth: calc(#{$space} / 6);
+$space-one-seventh: calc(#{$space} / 7);
+$space-one-eighth: calc(#{$space} / 8);
 
 /**
  * Common breakpoints.

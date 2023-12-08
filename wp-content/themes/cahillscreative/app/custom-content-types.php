@@ -149,5 +149,51 @@ function register_custom_post_types() {
 
     register_post_type( 'affiliate', $args );
   }
+
+  /**
+   * Post Type: Plans.
+   */
+
+  $labels = array(
+    'name' => __( 'Plans', 'sage' ),
+    'singular_name' => __( 'Plan', 'sage' ),
+    'menu_name' => __( 'Plans', 'sage' ),
+    'all_items' => __( 'All Plans', 'sage' ),
+    'add_new' => __( 'Add New Plan', 'sage' ),
+    'add_new_item' => __( 'Add New Plan Item', 'sage' ),
+    'edit_item' => __( 'Edit Plan', 'sage' ),
+    'new_item' => __( 'New Plan', 'sage' ),
+    'view_item' => __( 'View Plan', 'sage' ),
+    'view_items' => __( 'View Plan', 'sage' ),
+    'search_items' => __( 'Search Plans', 'sage' ),
+    'not_found' => __( 'No Plans Found', 'sage' ),
+    'not_found_in_trash' => __( 'No Plans Found in Trash', 'sage' ),
+    'parent_item_colon' => __( 'Parent Plan', 'sage' ),
+    'parent_item_colon' => __( 'Parent Plan', 'sage' ),
+  );
+
+  $args = array(
+    'label' => __( 'Plans', 'sage' ),
+    'labels' => $labels,
+    'description' => '',
+    'public' => true,
+    'publicly_queryable' => true,
+    'show_ui' => true,
+    'show_in_rest' => true,
+    'rest_base' => '',
+    'has_archive' => false,
+    'show_in_menu' => true,
+    'exclude_from_search' => false,
+    'capability_type' => 'post',
+    'map_meta_cap' => true,
+    'hierarchical' => false,
+    'rewrite' => array( 'slug' => 'plans', 'with_front' => true ),
+    'query_var' => true,
+    'menu_icon' => 'dashicons-hammer',
+    'supports' => array( 'title', 'editor', 'thumbnail', 'excerpt' ),
+    'taxonomies' => array('project', 'cost', 'room', 'skill_level' ),
+  );
+
+  register_post_type( 'plans', $args );
 }
 add_action('init', 'register_custom_post_types');

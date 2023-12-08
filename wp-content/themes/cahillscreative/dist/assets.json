@@ -2,7 +2,9 @@
   "images/ajax-loader.gif": "images/ajax-loader_c5cd7f53.gif",
   "images/arrow-next.png": "images/arrow-next_74ecb964.png",
   "images/arrow-prev.png": "images/arrow-prev_2a255222.png",
-  "scripts/customizer.js": "scripts/customizer_303fcb33.js",
-  "styles/main.css": "styles/main_303fcb33.css",
-  "scripts/main.js": "scripts/main_303fcb33.js"
+  "images/signature.png": "images/signature_c1227588.png",
+  "images/signature.webp": "images/signature_d5bec7a7.webp",
+  "scripts/customizer.js": "scripts/customizer_db9e9169.js",
+  "styles/main.css": "styles/main_db9e9169.css",
+  "scripts/main.js": "scripts/main_db9e9169.js"
 }

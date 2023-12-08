@@ -2,7 +2,7 @@
     $SPACING
 \*------------------------------------ */
 
-$sizes: ("": $space, --quarter: $space / 4, --half: $space / 2, --and-half: $space * 1.5, --double: $space * 2, --triple: $space * 3, --quad: $space * 4, --zero: 0);
+$sizes: ("": $space, --quarter: $space-quarter, --half: $space-half, --and-half: $space-and-half, --double: $space-double, --triple: $space-triple, --quad: $space-quadruple, --zero: 0);
 
 $sides: ("": "", --top: "-top", --bottom: "-bottom", --left: "-left", --right: "-right");
 

@@ -13,9 +13,13 @@
     flex-direction: column;
     min-height: 200px;
     min-width: 30px;
-    margin-right: $space-double;
+    margin-right: $space;
     justify-content: space-between;
     z-index: 2;
+
+    @include media(">medium") {
+      margin-right: $space-double;
+    }
 
     &.is-sticky {
       position: sticky;
@@ -68,6 +72,7 @@
     margin-left: calc(-50vw - #{$space-double} + 2.5px);
     margin-right: calc(-50vw - #{$space-double} + 2.5px);
     overflow: hidden;
+    margin-top: $space-double;
   }
 
   &__images-container {
@@ -79,6 +84,11 @@
     figcaption {
       padding-left: $space;
     }
+  }
+
+  &__image {
+    mix-blend-mode: multiply;
+    margin-top: $space-double;
   }
 
   .no-images {

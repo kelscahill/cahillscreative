@@ -1,7 +1,7 @@
 {% set base_class = accordion.base_class|default('c-accordion') %}
 
 {% if accordion.items %}
-  <section{{ accordion.anchor ? ' id="' ~ accordion.anchor ~ '"'}} class="{{ bem_classes(base_class, accordion.element, accordion.modifiers, accordion.extra) }} u-spacing{{ accordion.expanded ? ' is-open' }}">
+  <section{{ accordion.anchor ? ' id="' ~ accordion.anchor ~ '"'}} class="{{ bem_classes(base_class, accordion.element, accordion.modifiers, accordion.extra) }} u-spacing{{ accordion.expanded or user_logged_in ? ' is-open' }}">
     {% include "@organisms/sections/page-headers/page-header.twig" with {
       "page_header": {
         "icon": {
@@ -17,7 +17,7 @@
     } %}
     <div class="{{ bem_classes(base_class, 'items') }} l-container--m">
       {% for item in accordion.items %}
-        <div class="{{ bem_classes(base_class, 'item') }} {{ 'c-accordion__item--' ~ loop.index }}">
+        <div {{ item.title ? 'id="' ~ item.title|lower|replace({' ':'-','/':'-','\'':''}) ~ '" ' }}class="{{ bem_classes(base_class, 'item') }} {{ 'c-accordion__item--' ~ loop.index }}">
           {% include "@atoms/text/heading/heading.twig" with {
             "heading": {
               "level": "3",
@@ -27,8 +27,8 @@
               "extra": [bem_classes(base_class, 'heading'), "js-toggle-parent"]
             }
           } %}
-          <div class="{{ bem_classes(base_class, 'body') }} u-spacing">
-            {% if loop.index == 2 %}
+          <div class="{{ bem_classes(base_class, 'body') }} u-spacing js-gallery-accordion">
+            {% if loop.index == 2 and ads != false %}
               {% include "@atoms/ads/ad.twig" with {
                 "ad": {
                   "snippet": options.ad_sidebar_1,
@@ -36,7 +36,7 @@
                 }
               } %}
             {% endif %}
-            {% if loop.index  == 4 %}
+            {% if loop.index  == 4 and ads != false %}
               {% include "@atoms/ads/ad.twig" with {
                 "ad": {
                   "snippet": options.ad_sidebar_2,
@@ -49,16 +49,24 @@
                 "text": item.body
               }
             } %}
-            {% include "@molecules/components/checkbox-list/checkbox-list.twig" with {
-              "checkbox_list": item.checkboxes,
-              "id": 'accordion-' ~ post.slug ~ '-' ~ loop.index
-            } %}
+            {% if item.checkboxes_style == 'table' %}
+              {% include "@molecules/components/checkbox-table/checkbox-table.twig" with {
+                "checkbox_table_header": item.checkboxes_table_header,
+                "checkbox_table": item.checkboxes,
+                "id": 'accordion-' ~ post.slug ~ '-' ~ loop.index
+              } %}
+            {% else %}
+              {% include "@molecules/components/checkbox-list/checkbox-list.twig" with {
+                "checkbox_list": item.checkboxes,
+                "id": 'accordion-' ~ post.slug ~ '-' ~ loop.index
+              } %}
+            {% endif %}
             {% include "@molecules/components/steps/steps.twig" with {
               "steps": {
                 "items": item.steps
               }
             } %}
-            {% if loop.index  == 1 %}
+            {% if loop.index  == 1 and ads != false %}
               {% include "@atoms/ads/ad.twig" with {
                 "ad": {
                   "snippet": options.ad_content_1,
@@ -66,7 +74,7 @@
                 }
               } %}
             {% endif %}
-            {% if loop.index  == 3 %}
+            {% if loop.index  == 3 and ads != false %}
               {% include "@atoms/ads/ad.twig" with {
                 "ad": {
                   "snippet": options.ad_content_3,

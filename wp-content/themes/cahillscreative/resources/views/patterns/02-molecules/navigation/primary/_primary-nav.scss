@@ -222,7 +222,7 @@
         height: 8px;
         border-radius: 8px;
         background-color: $c-secondary;
-        left: calc(-#{$space} - 4.5px);
+        left: calc((#{$space} - 4.5px) * -1);
         top: 0;
         bottom: 0;
         margin: auto;
@@ -231,7 +231,7 @@
         transition: $transition-all;
 
         @include media('>large') {
-          left: calc(-#{$space-half} - 4.5px);
+          left: calc((#{$space-half} - 4.5px) * -1);
         }
       }
 

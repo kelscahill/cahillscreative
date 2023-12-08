@@ -41,7 +41,9 @@ class Images
                 //get image attributes array
                 $image_atts = Utilities::get_atts_array($image[1]);
 
-                if(!empty($image_atts['src'])) {
+                $src = $image_atts['src'] ?? $image_atts['data-src'] ?? '';
+
+                if(!empty($src)) {
 
                     foreach($image_exclusions as $exclude) {
                         if(strpos($image[1], $exclude) !== false) {
@@ -50,7 +52,7 @@ class Images
                     }
 
                     //get image dimensions
-                    $dimensions = self::get_dimensions_from_url($image_atts['src']);
+                    $dimensions = self::get_dimensions_from_url($src);
 
                     if(!empty($dimensions)) {
 

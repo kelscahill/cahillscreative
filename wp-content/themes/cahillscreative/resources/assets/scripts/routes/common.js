@@ -54,7 +54,7 @@ export default {
     });
 
     // Checkbox list localstorage on checked.
-    $('.c-checkbox-list').each(function() {
+    $('.c-checkbox-list, .js-checkboxes').each(function() {
       // Bind the change event handler.
       $(this).on('change', 'input', function() {
         var $item = $(this).parent().attr('id');
@@ -72,7 +72,7 @@ export default {
       var value = localStorage.getItem(key);
 
       if (value == 'checked') {
-        $('.c-checkbox-list #' + key + ' input').attr('checked', true);
+        $('#' + key + ' input').attr('checked', true);
       }
     }
 
@@ -287,6 +287,18 @@ export default {
       });
     }
 
+    if ($('.js-gallery-accordion').length) {
+      $('.js-gallery-accordion').each(function() {
+       $(this).magnificPopup({
+         delegate: 'a.js-gallery-step',
+         type: 'image',
+         gallery: {
+           enabled: true
+         }
+       });
+      });
+    }
+
     /**
      * General helper function to support toggle functions.
      */
@@ -316,6 +328,20 @@ export default {
         $('.' + $this.data('remove')).removeClass($this.data('remove'));
       }
     };
+
+    /**
+     * Print button
+     */
+    document.getElementById('js-button-print').addEventListener('click', function(e) {
+      e.preventDefault();
+      // Scroll to the top of the page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Initiate the print dialog after scrolling to the top
+      setTimeout(function() {
+        window.print();
+      }, 1000); // Adjust the delay time if needed
+    });
 
     /*
      * Toggle Active Classes

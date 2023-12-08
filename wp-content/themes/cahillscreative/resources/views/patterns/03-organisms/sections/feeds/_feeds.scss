@@ -16,7 +16,7 @@
 
   &--tertiary {
     padding-top: 0;
-    padding-bottom: $space-quadruple * 2;
+    padding-bottom: $space-super;
     background-color: $c-tertiary;
 
     .c-related-posts__header {
@@ -156,7 +156,7 @@
   }
 
   &.has-footer-overlay {
-    padding-bottom: $space-quadruple * 2;
+    padding-bottom: $space-super;
     margin-bottom: calc(-95px - #{$space-quadruple});
   }
 }

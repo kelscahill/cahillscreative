@@ -96,6 +96,7 @@ if ( ! class_exists( 'StarterSite' ) ) {
       /* Menus */
       $context['primary_nav'] = new TimberMenu( 'Primary Navigation' );
       $context['footer_nav']  = new TimberMenu( 'Footer Navigation' );
+      $context['plans_nav']  = new TimberMenu( 'Plans Navigation' );
 
       /* WooCommerce */
       global $woocommerce;

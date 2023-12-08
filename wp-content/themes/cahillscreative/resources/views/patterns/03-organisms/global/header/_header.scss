@@ -10,7 +10,7 @@
     content: "";
     display: block;
     width: 100%;
-    height: 100%;
+    height: calc(100% - 30px);
     position: absolute;
     top: 0;
     left: 0;
@@ -30,6 +30,7 @@
     align-items: center;
     justify-content: space-between;
     padding: $space-half $space;
+    height: 70px;
 
     @include media('>large') {
       border-top-left-radius: 50px;

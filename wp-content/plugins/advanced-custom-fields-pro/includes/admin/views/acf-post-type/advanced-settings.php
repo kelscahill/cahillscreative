@@ -11,6 +11,10 @@ foreach ( acf_get_combined_post_type_settings_tabs() as $tab_key => $tab_label )
 		)
 	);
 
+	$wrapper_class = str_replace( '_', '-', $tab_key );
+
+	echo '<div class="acf-post-type-advanced-settings acf-post-type-' . esc_attr( $wrapper_class ) . '-settings">';
+
 	switch ( $tab_key ) {
 		case 'general':
 			$acf_available_supports = array(
@@ -687,6 +691,22 @@ foreach ( acf_get_combined_post_type_settings_tabs() as $tab_key => $tab_label )
 				'div',
 				'field'
 			);
+
+			acf_render_field_wrap(
+				array(
+					'type'         => 'text',
+					'name'         => 'enter_title_here',
+					'key'          => 'enter_title_here',
+					'prefix'       => 'acf_post_type',
+					'value'        => $acf_post_type['enter_title_here'],
+					'label'        => __( 'Title Placeholder', 'acf' ),
+					'instructions' => __( 'In the editor used as the placeholder of the title.', 'acf' ),
+					'placeholder'  => __( 'Add title', 'acf' ),
+				),
+				'div',
+				'field'
+			);
+
 			break;
 		case 'visibility':
 			acf_render_field_wrap(
@@ -863,7 +883,7 @@ foreach ( acf_get_combined_post_type_settings_tabs() as $tab_key => $tab_label )
 					'prefix'       => 'acf_post_type',
 					'value'        => $acf_post_type['exclude_from_search'],
 					'label'        => __( 'Exclude From Search', 'acf' ),
-					'instructions' => __( 'Sets whether posts should be excluded from search results.', 'acf' ),
+					'instructions' => __( 'Sets whether posts should be excluded from search results and taxonomy archive pages.', 'acf' ),
 					'ui'           => true,
 				)
 			);
@@ -1262,5 +1282,7 @@ foreach ( acf_get_combined_post_type_settings_tabs() as $tab_key => $tab_label )
 	}
 
 	do_action( "acf/post_type/render_settings_tab/{$tab_key}", $acf_post_type );
+
+	echo '</div>';
 }
 

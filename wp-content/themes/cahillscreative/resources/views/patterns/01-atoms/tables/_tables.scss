@@ -16,7 +16,7 @@ tr {
 th,
 .wp-block-table th {
   text-align: left;
-  padding: $space / 2;
+  padding: $space-half;
   background-color: $c-primary;
   color: white;
   vertical-align: middle;
@@ -26,7 +26,7 @@ th,
 
 td,
 .wp-block-table td {
-  padding: $space / 2;
+  padding: $space-half;
   vertical-align: middle;
   border: $border--standard;
 
@@ -60,7 +60,7 @@ td,
 
   th,
   td {
-    padding: $space / 2;
+    padding: $space-half;
   }
 
   th {
@@ -84,7 +84,7 @@ td,
     tr {
       border-bottom: 3px solid $c-gray;
       display: block;
-      margin-bottom: $space / 2;
+      margin-bottom: $space-half;
 
       &.this-is-active {
         td:not(:first-child) {
