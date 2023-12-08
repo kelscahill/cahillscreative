@@ -32,11 +32,20 @@
       const name = $el.val();
       const $keyInput = $('.acf_slugified_key');
 
-      // generate field key.
+      // Generate field key.
       if ($keyInput.val().trim() == '') {
         let slug = acf.strSanitize(name.trim()).replaceAll('_', '-');
         slug = acf.applyFilters('generate_internal_post_type_name', slug, this);
-        $keyInput.val(slug.substring(0, 20));
+        let slugLength = 0;
+        if ('taxonomy' === acf.get('screen')) {
+          slugLength = 32;
+        } else if ('post_type' === acf.get('screen')) {
+          slugLength = 20;
+        }
+        if (slugLength) {
+          slug = slug.substring(0, slugLength);
+        }
+        $keyInput.val(slug);
       }
     },
     initialize: function () {
@@ -48,15 +57,44 @@
         if ('undefined' === typeof selection.element) {
           return selection;
         }
+        const $parentSelect = $(selection.element.parentElement);
         const $selection = $('<span class="acf-selection"></span>');
         $selection.html(acf.escHtml(selection.element.innerHTML));
-        if (selection.id === 'taxonomy_key' || selection.id === 'post_type_key' || selection.id === 'default') {
+        let isDefault = false;
+        if ($parentSelect.filter('.acf-taxonomy-manage_terms, .acf-taxonomy-edit_terms, .acf-taxonomy-delete_terms').length && selection.id === 'manage_categories') {
+          isDefault = true;
+        } else if ($parentSelect.filter('.acf-taxonomy-assign_terms').length && selection.id === 'edit_posts') {
+          isDefault = true;
+        } else if (selection.id === 'taxonomy_key' || selection.id === 'post_type_key' || selection.id === 'default') {
+          isDefault = true;
+        }
+        if (isDefault) {
           $selection.append('<span class="acf-select2-default-pill">' + acf.__('Default') + '</span>');
         }
         $selection.data('element', selection.element);
         return $selection;
       };
       acf.newSelect2($('select.query_var'), {
+        field: false,
+        templateSelection: template,
+        templateResult: template
+      });
+      acf.newSelect2($('select.acf-taxonomy-manage_terms'), {
+        field: false,
+        templateSelection: template,
+        templateResult: template
+      });
+      acf.newSelect2($('select.acf-taxonomy-edit_terms'), {
+        field: false,
+        templateSelection: template,
+        templateResult: template
+      });
+      acf.newSelect2($('select.acf-taxonomy-delete_terms'), {
+        field: false,
+        templateSelection: template,
+        templateResult: template
+      });
+      acf.newSelect2($('select.acf-taxonomy-assign_terms'), {
         field: false,
         templateSelection: template,
         templateResult: template

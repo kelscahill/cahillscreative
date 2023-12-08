@@ -48,3 +48,13 @@ figcaption {
   display: block;
 }
 
+.o-figure__description {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  .o-kicker {
+    margin-left: 5px;
+  }
+}
+

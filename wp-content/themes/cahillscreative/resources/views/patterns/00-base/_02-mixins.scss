@@ -53,6 +53,16 @@ p {
   @include u-font--xs;
 }
 
+@mixin u-font--xxs {
+  font-family: $font-body;
+  font-size: $font-size-xxs;
+  line-height: $line-height;
+}
+
+.u-font--xs {
+  @include u-font--xxs;
+}
+
 /*
  * Clearfix.
  * Adds clearfix based on http://bourbon.io/docs/#clearfix.

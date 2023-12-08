@@ -47,7 +47,7 @@
         height: 8px;
         border-radius: 8px;
         background-color: $c-tertiary;
-        left: calc(-#{$space} - 4px);
+        left: calc((#{$space} - 4px) * -1);
         top: 0;
         bottom: 0;
         margin: auto;

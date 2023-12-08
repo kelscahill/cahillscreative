@@ -4,8 +4,8 @@ Donate link: https://perfmatters.io
 Tags: perfmatters
 Requires at least: 5.5
 Requires PHP: 7.0
-Tested up to: 6.2.2
-Stable tag: 2.1.1
+Tested up to: 6.3.2
+Stable tag: 2.1.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,62 @@ Perfmatters is a lightweight performance plugin developed to speed up your WordP
 Check out our [documentation](https://perfmatters.io/docs/) for more information on how to use Perfmatters.
 
 == Changelog ==
+
+= 2.1.8 - 10.13.2023 = 
+* Fixed a compatibility issue with local fonts and WordPress 6.3.2 that was causing an error when new font files were requested.
+
+= 2.1.7 - 09.29.2023 =
+* Added Delay JS quick exclusion for WP Forms.
+* Script Manager style updates to match some recent changes to the main settings UI.
+* Script Manager security updates to form submission handling.
+* Added logic to strip whitespace from input row text fields used for preloads, preconnects, and fetch priority options.
+* Adjusted CDN Regex slightly to account for certain subdirectory formats.
+* Added specification to lazyload exclusion to only skip the fetchpriority attribute when set to high.
+* Added Cornerstone request parameter to excluded page builders array.
+* Updated certain AJAX action names to be specific to Perfmatters to prevent conflicts.
+* Updated missing image dimension function to better handle images that have been prepped by lazy loaders outside of Perfmatters.
+* Added Novashare discount link to plugin settings UI for Perfmatters customers.
+* Fixed an issue where the database optimization process would not run correctly if selected toggles were not saved first.
+* Fixed an issue in MU Mode where core cookie constants were not set in a specific instance when checking for the current post ID.
+* Translation updates.
+
+= 2.1.6 - 08.31.2023 =
+* Fixed an issue that was preventing CodeMirror input fields from saving correctly.
+
+= 2.1.5 - 08.30.2023 =
+* Reworked the majority of the UI to use WordPress AJAX to save data and perform plugin actions.
+* Renamed Bricks Delay JS quick exclusion, as it can be used to target more than just their slider.
+* Adjusted clean_html utility function regex to better handle large inline data scripts.
+* Added skip-lazy class to built-in lazy loading exclusions.
+* Added right-to-left admin styles for better usability on RTL sites.
+* Fixed an issue where certain HTML characters would not print correctly when saved in a fetch priority selector input field.
+* Fixed an issue where fetch priority selectors would sometimes not get the correct priority applied when set to low.
+* Fixed a typo in the fetch priority tooltip.
+* Updated background processing library to version 1.1.1.
+* Translation updates.
+
+= 2.1.4 - 08.08.2023 =
+* Added new preload option to add the Fetch Priority attribute to different resources on the site to help improve LCP.
+* Added built-in lazy loading exclusion for fetchpriority attribute.
+* Added Delay JS quick exclusion for Termageddon + Usercentrics.
+* Switched individual JS delay to use the same inline script as delay all to take advantage of delayed triggering of event listeners.
+* Fixed an issue where an empty notice was appearing when a database optimization process completed.
+* Fixed an issue with critical image preloads where an image with an empty src attribute would prevent other similar ones from being added on the same URL.
+* UI improvements to input row sections.
+
+= 2.1.3 - 07.02.2023 =
+* Fixed an issue that was preventing existing Script Manager settings from showing up in certain instances.
+* Translation updates.
+
+= 2.1.2 - 06.29.2023 =
+* Added new lazy loading advanced option to Exclude Images by Parent Selector.
+* Added built-in exclusion to Delay JS for jqueryParams inline script to prevent load order issues.
+* Added additional built-in exclusions to Remove Unused CSS for better compatibility with Elementor.
+* Added HTTPS check to PERFMATTERS_CACHE_URL definition.
+* Updated Script Manager UI to sort plugins alphabetically by plugin name as well as assets inside each individual section alphabetically by script handle.
+* Fixed an issue where plugins without any enqueued scripts would not always show up in the Script Manager (MU Mode) after visiting the global view. 
+* Updated background processing library to version 1.1.0.
+* Translation updates.
 
 = 2.1.1 - 05.31.2023 =
 * Added WP-CLI support for managing plugin license key activation.

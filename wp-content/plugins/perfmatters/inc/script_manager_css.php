@@ -159,7 +159,7 @@ html, body {
 .pmsm-notice-warning {
 	border-color: #FFC14E;
 }
-#pmsm-disclaimer-close {
+#perfmatters-script-manager #pmsm-disclaimer-close {
 	float: right;
 	padding: 0px;
   width: 30px;
@@ -169,7 +169,7 @@ html, body {
   background: none;
   color: #787c82
 }
-#pmsm-disclaimer-close:hover {
+#perfmatters-script-manager #pmsm-disclaimer-close:hover {
 	color: #d63638;
 }
 #pmsm-notices .pmsm-notice:last-child {
@@ -199,7 +199,7 @@ html, body {
 	font-size: 13px;
 }
 .pmsm-category-container {
-	border-radius: 5px;
+	border-radius: 3px;
 	margin-top: 20px;
 	overflow: hidden;
 }
@@ -490,7 +490,6 @@ html, body {
 	bottom: 0px;
 	left: 0px;
 	right: 0px;
-	padding: 0px 20px;
 	background: #EEF2F5;
 	box-sizing: content-box;
 	z-index: 2
@@ -509,27 +508,25 @@ html, body {
 	padding: 10px 0px;
 	z-index: 2;
 }
-#perfmatters-script-manager input[type='submit'] {
+#perfmatters-script-manager button[type='submit'] {
 	background: #4a89dd;
 	color: #ffffff;
 	cursor: pointer;
 	border: none;
-	font-size: 14px;
+	font-size: 13px;
 	margin: 0px;
-	padding: 0px 20px;
+	padding: 0px 10px;
 	height: 35px;
 	line-height: 35px;
-	font-weight: 700;
 	width: auto;
-	border-radius: 0px;
 	text-transform: none;
 	outline: none;
-	border-radius: 5px;
+	border-radius: 3px;
 }
-#perfmatters-script-manager input[type='submit']:hover {
+#perfmatters-script-manager button[type='submit']:hover {
 	background: #5A93E0;
 }
-#perfmatters-script-manager input[type='submit']:disabled {
+#perfmatters-script-manager button[type='submit']:disabled {
 	opacity: 0.5;
 	cursor: default;
 }
@@ -552,13 +549,13 @@ html, body {
 	display: block;
 	visibility: hidden;
 	opacity: 0;
-	position: absolute;
+	/*position: absolute;
   bottom: 00px;
-  right: 10px;
-  background: #282E34;
-  color: #ffffff;
-  padding: 10px;
-  border-radius: 3px;
+  right: 10px;*/
+  /*background: #282E34;
+  color: #ffffff;*/
+  /*padding: 10px;
+  border-radius: 3px;*/
   z-index: 1; 
 	transition: all 500ms ease;
 }
@@ -815,12 +812,14 @@ html, body {
     bottom: 0;
     padding-top: 200px;
     width: 100%;
-    background: rgba(255,255,255,0.75);
+    background: rgba(255,255,255,0.9);
     text-align: center;
     z-index: 1;
 }
 #pmsm-loading-wrapper .pmsm-loading-text {
-	font-size: 24px; 
+	display: inline-flex;
+	align-items: center;
+	font-size: 18px; 
 }
 .pmsm-spinner {
 	background: url(/wp-admin/images/wpspin_light-2x.gif) no-repeat;
@@ -842,5 +841,13 @@ html, body {
 }
 .pmsm-locked {
 	opacity: 0.5;
+}
+@keyframes perfmatters-spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+        transform: rotate(360deg);
+  }
 }
 </style>";

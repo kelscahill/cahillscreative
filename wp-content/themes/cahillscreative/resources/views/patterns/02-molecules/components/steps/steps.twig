@@ -15,7 +15,7 @@
         "extra": bem_classes(base_class, 'header')
       }
     } %}
-    <div class="{{ bem_classes(base_class, 'items') }} u-spacing--double">
+    <div class="{{ bem_classes(base_class, 'items') }} u-spacing--quad">
       {% for step in steps.items %}
         <div class="{{ bem_classes(base_class, 'item') }}">
           <div class="{{ bem_classes(base_class, 'counter') }}{{ step.images|length <= 1 ? ' is-sticky' }}">
@@ -59,6 +59,10 @@
                           "src": Image(image).src|towebp|resize(500, 500),
                           "alt": Image(image).alt,
                           "caption": Image(image).caption
+                        },
+                        "link": {
+                          "url": Image(image).src|towebp|resize(1200),
+                          "extra": "js-gallery-step"
                         }
                       }
                     } %}
@@ -74,7 +78,12 @@
                         "srcset": Image(image).src|towebp|resize(800, auto) ~ ' 720w',
                         "src": Image(image).src|towebp|resize(500, auto),
                         "alt": Image(image).alt,
-                        "caption": Image(image).caption
+                        "caption": Image(image).caption,
+                        "description": image.description
+                      },
+                      "link": {
+                        "url": Image(image).src|towebp|resize(1200),
+                        "extra": "js-gallery-step"
                       }
                     }
                   } %}
@@ -83,7 +92,7 @@
             {% endif %}
           </div>
         </div>
-        {% if loop.index == 2 %}
+        {% if loop.index == 2 and ads != false %}
           {% include "@atoms/ads/ad.twig" with {
             "ad": {
               "snippet": options.ad_content_1,
@@ -91,7 +100,7 @@
             }
           } %}
         {% endif %}
-        {% if loop.index == 4 %}
+        {% if loop.index == 4 and ads != false %}
           {% include "@atoms/ads/ad.twig" with {
             "ad": {
               "snippet": options.ad_content_2,
@@ -99,7 +108,7 @@
             }
           } %}
         {% endif %}
-        {% if loop.index == 6 %}
+        {% if loop.index == 6 and ads != false %}
           {% include "@atoms/ads/ad.twig" with {
             "ad": {
               "snippet": options.ad_content_3,
@@ -107,7 +116,7 @@
             }
           } %}
         {% endif %}
-        {% if loop.index == 8 %}
+        {% if loop.index == 8 and ads != false %}
           {% include "@atoms/ads/ad.twig" with {
             "ad": {
               "snippet": options.ad_content_1,

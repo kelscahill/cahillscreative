@@ -1,6 +1,6 @@
 {% set base_class = header.base_class|default('c-header') %}
 
-{% include "@molecules/components/alert/alert.twig" %}
+{# {% include "@molecules/components/alert/alert.twig" %} #}
 <header id="c-header" role="banner" class="{{ bem_classes(base_class, header.element, header.modifiers, header.extra) }}">
   <div class="{{ base_class ~ '--inner' }}">
     {% include "@molecules/navigation/primary/primary-nav.twig" %}

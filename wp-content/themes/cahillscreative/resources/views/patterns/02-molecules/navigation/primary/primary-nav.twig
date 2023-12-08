@@ -1,61 +1,59 @@
 {% set base_class = primary_nav.base_class|default('c-primary-nav') %}
 
-{% if primary_nav.name == "Primary Navigation" %}
+{% if primary_nav.items %}
   <nav role="navigation" class="{{ bem_classes(base_class, primary_nav.element, primary_nav.modifiers, primary_nav.extra) }}">
     <div class="{{ bem_classes(base_class, 'menu-toggle') }} js-toggle" data-toggled="body" data-prefix="primary-nav" aria-label="Menu" role="button">
       <span></span>
       <span></span>
     </div>
-    {% if primary_nav.items %}
-      <ul class="{{ bem_classes(base_class, 'parent-list') }}">
-        {% for item in primary_nav.get_items %}
-          <li class="{{ bem_classes(base_class, 'parent-list-item') }}">
-            <div class="{{ bem_classes(base_class, 'link-wrap') }}">
-              {% include "@atoms/links/link.twig" with {
-                "link": {
-                  "text": item.title,
-                  "url": item.url,
-                  "target": item.target,
-                  "modifiers": "no-shadow",
+    <ul class="{{ bem_classes(base_class, 'parent-list') }}">
+      {% for item in primary_nav.items %}
+        <li class="{{ bem_classes(base_class, 'parent-list-item') }}">
+          <div class="{{ bem_classes(base_class, 'link-wrap') }}">
+            {% include "@atoms/links/link.twig" with {
+              "link": {
+                "text": item.title,
+                "url": item.url,
+                "target": item.target,
+                "modifiers": "no-shadow",
+                "extra": [
+                  bem_classes(base_class, 'link'),
+                  item.children ? 'has-children'
+                ],
+              }
+            } %}
+            {% if item.children %}
+              {% include "@atoms/images/icons/icon.twig" with {
+                "icon": {
+                  "title": "Arrow",
+                  "name": "arrow",
+                  "modifiers": "xsmall",
                   "extra": [
-                    bem_classes(base_class, 'link'),
-                    item.children ? 'has-children'
-                  ]|merge(item.classes),
+                    bem_classes(base_class, 'link-toggle'),
+                    "js-toggle-parent"
+                  ]
                 }
               } %}
-              {% if item.children %}
-                {% include "@atoms/images/icons/icon.twig" with {
-                  "icon": {
-                    "title": "Arrow",
-                    "name": "arrow",
-                    "modifiers": "xsmall",
-                    "extra": [
-                      bem_classes(base_class, 'link-toggle'),
-                      "js-toggle-parent"
-                    ]
-                  }
-                } %}
-              </div>
-              <ul class="{{ bem_classes(base_class, 'child-list') }}">
-                {% for item in item.children %}
-                  <li class="{{ bem_classes(base_class, 'child-list-item') }}">
-                    {% include "@atoms/links/link.twig" with {
-                      "link": {
-                        "text": item.title,
-                        "url": item.url,
-                        "target": item.target,
-                        "modifiers": "no-shadow",
-                        "extra": [bem_classes(base_class, 'link')]|merge(item.classes),
-                      }
-                    } %}
-                    </li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          {% endfor %}
-        </li>
-        {% include "@molecules/components/social/social-links/social-links.twig" %}
-      </ul>
-    {% endif %}
+            </div>
+            <ul class="{{ bem_classes(base_class, 'child-list') }}">
+              {% for item in item.children %}
+                <li class="{{ bem_classes(base_class, 'child-list-item') }}">
+                  {% include "@atoms/links/link.twig" with {
+                    "link": {
+                      "text": item.title,
+                      "url": item.url,
+                      "target": item.target,
+                      "modifiers": "no-shadow",
+                      "extra": [bem_classes(base_class, 'link')],
+                    }
+                  } %}
+                  </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endfor %}
+      </li>
+      {% include "@molecules/components/social/social-links/social-links.twig" %}
+    </ul>
   </nav>
 {% endif %}

@@ -42,3 +42,4 @@ if ($term) {
 }
 
 Timber::render(array('05-pages/post-types/single-product.twig'), $context);
+

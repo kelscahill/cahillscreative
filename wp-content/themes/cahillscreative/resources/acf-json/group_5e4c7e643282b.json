@@ -6,6 +6,7 @@
             "key": "field_60cfd598225fa",
             "label": "Product Accordion",
             "name": "product_accordion",
+            "aria-label": "",
             "type": "clone",
             "instructions": "",
             "required": 0,
@@ -41,5 +42,6 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1641860100
+    "show_in_rest": 0,
+    "modified": 1695000297
 }

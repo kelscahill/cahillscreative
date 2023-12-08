@@ -65,7 +65,7 @@ class CDN
         $extensions = implode('|', $extensions_array);
 
         //rewrite urls in html
-        $regEx = '#(?<=[(\"\']|&quot;)(?:' . $regExURL . ')?\/(?:(?:' . $directories . ')[^\"\')]+)\.(' . $extensions . ')[^\"\')]*(?=[\"\')]|&quot;)#';
+        $regEx = '#(?<=[(\"\']|&quot;)(?:' . $regExURL . ')?\/(?:[^\"\')]?)(?:(?:' . $directories . ')[^\"\')]+).(' . $extensions . ')[^\"\')]*(?=[\"\')]|&quot;)#';
 
         //base exclusions
         $exclusions = array('script-manager.js');

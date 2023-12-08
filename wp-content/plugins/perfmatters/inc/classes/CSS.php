@@ -31,6 +31,7 @@ class CSS
             add_action('admin_notices', array('Perfmatters\CSS', 'admin_notices'));
             add_action('admin_post_perfmatters_clear_used_css', array('Perfmatters\CSS', 'admin_bar_clear_used_css'));
         }
+        add_action('wp_ajax_perfmatters_clear_used_css', array('Perfmatters\CSS', 'clear_used_css_ajax'));
     }
 
     //queue functions
@@ -202,7 +203,7 @@ class CSS
 
                 $delay_check = !empty(apply_filters('perfmatters_delay_js', !empty(Config::$options['assets']['delay_js']))) && !Utilities::get_post_meta('perfmatters_exclude_delay_js');
 
-                if(!$delay_check || empty(Config::$options['assets']['delay_js_behavior']) || isset($_GET['perfmattersjsoff'])) {
+                if(!$delay_check || isset($_GET['perfmattersjsoff'])) {
                     $script = '<script type="text/javascript" id="perfmatters-delayed-styles-js">!function(){const e=["keydown","mousemove","wheel","touchmove","touchstart","touchend"];function t(){document.querySelectorAll("link[data-pmdelayedstyle]").forEach(function(e){e.setAttribute("href",e.getAttribute("data-pmdelayedstyle"))}),e.forEach(function(e){window.removeEventListener(e,t,{passive:!0})})}e.forEach(function(e){window.addEventListener(e,t,{passive:!0})})}();</script>';
                     $html = str_replace('</body>', $script . '</body>', $html);
                 }
@@ -313,6 +314,8 @@ class CSS
             '.dialog-type-lightbox',
             '.dialog-widget-content',
             '.lazyloaded',
+            '.elementor-motion-effects-container',
+            '.elementor-motion-effects-layer',
             '.ast-header-break-point', //astra
             '.dropdown-nav-special-toggle', //kadence
             'rs-fw-forcer' //rev slider
@@ -660,5 +663,17 @@ class CSS
         //go back to url where button was pressed
         wp_safe_redirect(esc_url_raw(wp_get_referer()));
         exit;
+    }
+
+    //clear used css ajax action
+    public static function clear_used_css_ajax() {
+
+        Ajax::security_check();
+
+        self::clear_used_css();
+
+        wp_send_json_success(array(
+            'message' => __('Used CSS cleared.', 'perfmatters'), 
+        ));
     }
 }

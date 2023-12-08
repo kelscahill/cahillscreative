@@ -35,7 +35,7 @@ function register_custom_taxonomy() {
     "rest_base" => "",
     "show_in_quick_edit" => true,
   );
-  register_taxonomy( "room", array( "post", "affiliate" ), $args );
+  register_taxonomy( "room", array( "post", "affiliate", "plans" ), $args );
 
   /**
    * Taxonomy: Cost.
@@ -61,7 +61,7 @@ function register_custom_taxonomy() {
     "rest_base" => "",
     "show_in_quick_edit" => true,
   );
-  register_taxonomy( "cost", array( "post" ), $args );
+  register_taxonomy( "cost", array( "post", "plans" ), $args );
 
   /**
    * Taxonomy: Projects.
@@ -87,7 +87,7 @@ function register_custom_taxonomy() {
     "rest_base" => "",
     "show_in_quick_edit" => true,
   );
-  register_taxonomy( "project", array( "post" ), $args );
+  register_taxonomy( "project", array( "post", "plans" ), $args );
 
   /**
    * Taxonomy: Skill Levels.
@@ -114,7 +114,7 @@ function register_custom_taxonomy() {
     "rest_base" => "",
     "show_in_quick_edit" => true,
   );
-  register_taxonomy( "skill_level", array( "post" ), $args );
+  register_taxonomy( "skill_level", array( "post", "plans" ), $args );
 
   /**
    * Taxonomy: Work Tags.
