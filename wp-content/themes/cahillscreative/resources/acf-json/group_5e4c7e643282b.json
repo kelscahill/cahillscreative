@@ -3,6 +3,37 @@
     "title": "Product Fields",
     "fields": [
         {
+            "key": "field_6575eb97235b8",
+            "label": "Related Plan",
+            "name": "related_plan",
+            "aria-label": "",
+            "type": "relationship",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "plans"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "filters": [
+                "search",
+                "post_type",
+                "taxonomy"
+            ],
+            "return_format": "object",
+            "min": "",
+            "max": 1,
+            "elements": "",
+            "bidirectional": 0,
+            "bidirectional_target": []
+        },
+        {
             "key": "field_60cfd598225fa",
             "label": "Product Accordion",
             "name": "product_accordion",
@@ -43,5 +74,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1695000297
+    "modified": 1702241201
 }

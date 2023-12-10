@@ -26,13 +26,30 @@
       {% if post._downloadable == 'yes' %}
         <p><small><strong>Instant Download:</strong> Your files will be available to download once payment is confirmed. You may download, save, and print as many times as you'd like, but please do not redistribute. For digital downloads, I don't accept returns, exchanges, or cancellations.</small></p>
       {% endif %}
-      {% include "@molecules/components/accordion/accordion.twig" with {
-        "accordion": {
-          "items": post.meta('accordion_items'),
-          "heading_size": "s",
-          "heading_type": "secondary"
-        }
-      } %}
+      {% if post.related_plan %}
+        {% include "@molecules/components/accordion/accordion.twig" with {
+          "accordion": {
+            "items": [
+              {
+                "title": "What You'll Receive",
+                "body": "<p>The printable PDF covers all necessary tools, cutting info, and step-by-step directions for a successful build. Plus, you'll receive access to the exact materials needed so there's no guesswork when gathering supplies - giving you peace of mind that this project is achievable from start to finish.</p>"
+              },
+              related_plan_accordion_items[0],
+              related_plan_accordion_items[1]
+            ],
+            "heading_size": "s",
+            "heading_type": "secondary"
+          }
+        } %}
+      {% else %}
+        {% include "@molecules/components/accordion/accordion.twig" with {
+          "accordion": {
+            "items": post.meta('accordion_items'),
+            "heading_size": "s",
+            "heading_type": "secondary"
+          }
+        } %}
+      {% endif %}
     </div>
     <div class="{{ bem_classes(base_class, 'intro-right') }}">
       {% if product.get_gallery_image_ids %}

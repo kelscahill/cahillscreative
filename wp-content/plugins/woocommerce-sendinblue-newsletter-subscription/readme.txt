@@ -169,6 +169,9 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 
 == Changelog ==
 
+= 4.0.6 =
+* Handle ORDER_FEES in Order Confirmation Template
+
 = 4.0.5 =
 * Improved error handling in endpoints
 

@@ -332,16 +332,18 @@ export default {
     /**
      * Print button
      */
-    document.getElementById('js-button-print').addEventListener('click', function(e) {
-      e.preventDefault();
-      // Scroll to the top of the page
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (document.getElementById('js-button-print')) {
+      document.getElementById('js-button-print').addEventListener('click', function(e) {
+        e.preventDefault();
+        // Scroll to the top of the page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // Initiate the print dialog after scrolling to the top
-      setTimeout(function() {
-        window.print();
-      }, 1000); // Adjust the delay time if needed
-    });
+        // Initiate the print dialog after scrolling to the top
+        setTimeout(function() {
+          window.print();
+        }, 1000); // Adjust the delay time if needed
+      });
+    }
 
     /*
      * Toggle Active Classes

@@ -21,6 +21,20 @@ if (get_the_terms($post->ID, 'affiliate_category')) {
   $term = NULL;
 }
 
+if (get_field('related_plan')) {
+  // Get the related plan post
+  $related_plan = new TimberPost(get_field('related_plan')[0]->ID);
+  // Parse the content into blocks
+  $blocks = parse_blocks($related_plan->post_content);
+  // Loop through each block
+  foreach ($blocks as $block) {
+    if ($block['blockName'] === 'acf/accordion') {
+      acf_setup_meta( $block['attrs']['data'], acf_get_block_id( $block['attrs']['data'] ), true );
+      $context['related_plan_accordion_items'] = get_field('accordion_items');
+    }
+  }
+}
+
 if ($term) {
   $context['term'] = $term[0];
 

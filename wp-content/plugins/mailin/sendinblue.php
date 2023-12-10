@@ -3,7 +3,7 @@
  * Plugin Name: Newsletter, SMTP, Email marketing and Subscribe forms by Brevo
  * Plugin URI: https://www.brevo.com/?r=wporg
  * Description: Manage your contact lists, subscription forms and all email and marketing-related topics from your wp panel, within one single plugin
- * Version: 3.1.71
+ * Version: 3.1.72
  * Author: Brevo
  * Author URI: https://www.brevo.com/?r=wporg
  * License: GPLv2 or later
@@ -1478,8 +1478,8 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 							<select id="sib_form_lang" name="sib_form_lang" data-selected="">
 								<?php
 								foreach ( $languages as $language ) {
-									$selected = ($language['code'] == $lang) ? 'selected' : '';
-									if ( $language['code'] == $lang && true === $parent ) {
+									$selected = (isset($language['code']) && ($language['code'] == $lang)) ? 'selected' : '';
+									if ( isset($language['code']) && $language['code'] == $lang && true === $parent ) {
 										$option_text = '<option value="" ' . $selected . '>' . $language['native_name'] . '</option>';
 									} else {
 										$exist = SIB_Forms_Lang::get_form_ID( $pID, $language['language_code'] );
@@ -1514,12 +1514,12 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 								<tr>
 									<?php
 									foreach ( $languages as $language ) {
-										if ( $language['code'] == $lang ) {
+										if ( isset($language['code']) && $language['code'] == $lang ) {
 											continue;
 										}
 										?>
 										<th style="text-align: center;"><img
-													src="<?php echo esc_url( $language['country_flag_url'] ); ?>" alt="Flag of <?php echo esc_attr( $language['country_name'] ); ?>"></th>
+													src="<?php echo esc_url( $language['country_flag_url'] ); ?>" alt="Flag of <?php echo esc_attr( $language['translated_name'] ); ?>"></th>
 										<?php
 									}
 									?>
@@ -1527,7 +1527,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 								<tr style="background-color: #EFF8FC;">
 									<?php
 									foreach ( $languages as $language ) {
-										if ( $language['code'] == $lang ) {
+										if ( isset($language['code']) && $language['code'] == $lang ) {
 											continue;
 										}
 										if ( '' === $pID ) {
@@ -1554,7 +1554,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 											}
 										}
 										?>
-										<td style="text-align: center;"><?php echo wp_kses($td, wp_kses_allowed_html()); ?></td>
+										<td style="text-align: center;"><?php echo wp_kses($td, wp_kses_allowed_html('post')); ?></td>
 										<?php
 									}
 									?>

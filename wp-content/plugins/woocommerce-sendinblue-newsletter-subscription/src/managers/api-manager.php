@@ -1242,25 +1242,10 @@ class ApiManager
             $order_download_link = ob_get_contents();
             ob_clean();
 
-            // Get order product details.
-            $order_detail = '<table style="padding-left: 0px;width: 100%;text-align: left;"><tr><th>' . __( 'Products', 'wc_sendinblue' ) . '</th><th>' . __( 'Quantity', 'wc_sendinblue' ) . '</th><th>' . __( 'Price', 'wc_sendinblue' ) . '</th></tr>';
-            foreach ( $items as $item ) {
-                if ( isset( $item['variation_id'] ) && ! empty( $item['variation_id'] ) ) {
-                    $product = new \WC_Product_Variation( $item['variation_id'] );
-                } else {
-                    $product = new \WC_Product( $item['product_id'] );
-                }
-                $product_name     = $item['name'];
-                $product_quantity = $item['qty'];
-                $sub_total        = (float) $product->get_price() * (int) $product_quantity;
-                if ( version_compare( get_option( 'woocommerce_db_version' ), '3.0', '>=' ) ) {
-                    $product_price = wc_price( $sub_total, array( 'currency' => $order->get_currency() ) );
-                } else {
-                    $product_price = wc_price( $sub_total, array( 'currency' => $order->order_currency ) );
-                }
-                $order_detail .= '<tr><td>' . $product_name . '</td><td>' . $product_quantity . '</td><td>' . $product_price . '</td></tr>';
-            }
-            $order_detail .= '</table>';
+            $order_detail = $this->getOrderProductDetails($order);
+
+            $fee_table = $this->getOrderFeeTable($order);
+
             if ( version_compare( get_option( 'woocommerce_db_version' ), '3.0', '>=' ) ) {
                 $orders = array(
                     'ORDER_ID'              => $order->get_order_number(),
@@ -1298,6 +1283,7 @@ class ApiManager
                     'ORDER_SUBTOTAL'        => wc_price( $order->get_subtotal(), array( 'currency' => $order->get_currency() ) ),
                     'ORDER_DOWNLOAD_LINK'   => $order_download_link,
                     'ORDER_PRODUCTS'        => $order_detail,
+                    'ORDER_FEES'            => $fee_table,
                     'PAYMENT_METHOD'        => $order->get_payment_method(),
                     'PAYMENT_METHOD_TITLE'  => $order->get_payment_method_title(),
                     'CUSTOMER_IP_ADDRESS'   => $order->get_customer_ip_address(),
@@ -1351,5 +1337,45 @@ class ApiManager
         }
 
         return $orders;
+    }
+
+    public function getOrderProductDetails($order)
+    {
+        $order_detail = '<table style="padding-left: 0px;width: 100%;text-align: left;"><tr><th>' . __('Products', 'wc_sendinblue') . '</th><th>' . __('Quantity', 'wc_sendinblue') . '</th><th>' . __('Price', 'wc_sendinblue') . '</th></tr>';
+        foreach ($order->get_items() as $item) {
+            if (isset($item['variation_id']) && !empty($item['variation_id'])) {
+                $product = new \WC_Product_Variation($item['variation_id']);
+            } else {
+                $product = new \WC_Product($item['product_id']);
+            }
+            $product_name = $item['name'];
+            $product_quantity = $item['qty'];
+            $sub_total = (float)$product->get_price() * (int)$product_quantity;
+            if (version_compare(get_option('woocommerce_db_version'), '3.0', '>=')) {
+                $product_price = wc_price($sub_total, array('currency' => $order->get_currency()));
+            } else {
+                $product_price = wc_price($sub_total, array('currency' => $order->order_currency));
+            }
+            $order_detail .= '<tr><td>' . $product_name . '</td><td>' . $product_quantity . '</td><td>' . $product_price . '</td></tr>';
+        }
+        $order_detail .= '</table>';
+        return $order_detail;
+    }
+
+    public function getOrderFeeTable($order)
+    {
+        try {
+            $fee_table = '<table style="padding-left: 0px;width: 100%;text-align: left;"><tr><th>' . __('Fees', 'wc_sendinblue') . '</th><th>' . __('Price', 'wc_sendinblue') . '</th></tr>';
+
+            $fees = $order->get_fees();
+            foreach ($fees as $fee) {
+                $fee_price = wc_price($fee->get_total(), array('currency' => $order->get_currency()));
+                $fee_table .= '<tr><td>' . $fee->get_name() . '</td><td>' . $fee_price . '</td></tr>';
+            }
+            $fee_table .= '</table>';
+            return $fee_table;
+        } catch (\Exception $e) {
+            return "";
+        }
     }
 }
