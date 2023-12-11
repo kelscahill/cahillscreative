@@ -4,6 +4,10 @@
 
 /* stylelint-disable */
 @media print {
+  .u-print-only {
+    display: block;
+  }
+
   @page {
     margin-top: 0.5in;
     margin-bottom: 0.5in;

@@ -217,6 +217,7 @@ select,
   }
 
   button {
+    @include o-button;
     white-space: nowrap;
     width: 160px;
     height: 45px;

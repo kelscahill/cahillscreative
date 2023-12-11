@@ -14,6 +14,7 @@ $post = new TimberPost();
 $context['post'] = $post;
 $context['is_single'] = true;
 $context['ads'] = false;
+$context['password_protected'] = post_password_required();
 
 Timber::render(array('05-pages/post-types/single-plans.twig'), $context);
 

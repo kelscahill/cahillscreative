@@ -2,6 +2,10 @@
     $DISPLAY STATES
 \*------------------------------------ */
 
+.u-print-only {
+  display: none;
+}
+
 .single-post .l-main {
   @include media("<=medium") {
     padding-left: 0;

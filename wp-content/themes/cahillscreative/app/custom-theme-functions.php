@@ -100,3 +100,5 @@ function change_posts_order($query) {
     $query->set('order', 'DESC');
   }
 }
+
+

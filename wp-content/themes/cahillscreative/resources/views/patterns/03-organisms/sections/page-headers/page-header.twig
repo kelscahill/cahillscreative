@@ -22,8 +22,8 @@
     } %}
     {% include "@atoms/text/heading/heading.twig" with {
       "heading": {
-        "level": "1",
-        "size": "xl",
+        "level": page_header.heading_level ? page_header.heading_level : "1",
+        "size": page_header.heading_size ? page_header.heading_size : "xl",
         "type": "primary",
         "text": page_header.heading,
         "extra": bem_classes(base_class, 'heading')

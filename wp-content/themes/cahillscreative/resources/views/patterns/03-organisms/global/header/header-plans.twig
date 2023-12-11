@@ -1,17 +1,21 @@
 {% set base_class = header.base_class|default('c-header') %}
 
-{% include "@molecules/components/alert/alert.twig" with {
-  "options": {
-    "alert_text": "Use code <strong>30OFF</strong> to get 30% off your next purchase!",
-  }
-} %}
+{% if password_protected != true %}
+  {% include "@molecules/components/alert/alert.twig" with {
+    "options": {
+      "alert_text": "Use code <strong>30OFF</strong> to get 30% off your next purchase!",
+    }
+  } %}
+{% endif %}
 <header id="c-header" role="banner" class="{{ bem_classes(base_class, header.element, header.modifiers, header.extra) }}">
   <div class="{{ base_class ~ '--inner' }}">
-    {% include "@molecules/navigation/primary/primary-nav.twig" with {
-      "primary_nav": {
-        "items": plans_nav.items
-      }
-    } %}
+    {% if password_protected != true %}
+      {% include "@molecules/navigation/primary/primary-nav.twig" with {
+        "primary_nav": {
+          "items": plans_nav.items
+        }
+      } %}
+    {% endif %}
     {% include "@atoms/images/logos/logo.twig" with {
       "logo": {
         "image": {
@@ -24,21 +28,23 @@
         "extra": bem_classes(base_class, 'logo')
       }
     } %}
-    <div class="{{ bem_classes(base_class, 'utility') }}">
-      {% include "@atoms/buttons/button.twig" with {
-        "button": {
-          "text": "Print Plans",
-          "url": "#",
-          "modifiers": [
-            "small",
-            "tertiary"
-          ],
-          "attributes": {
-            "id": "js-button-print"
-          },
-          "extra": bem_classes(base_class, 'button'),
-        }
-      } %}
-    </div>
+    {% if password_protected != true %}
+      <div class="{{ bem_classes(base_class, 'utility') }}">
+        {% include "@atoms/buttons/button.twig" with {
+          "button": {
+            "text": "Print Plans",
+            "url": "#",
+            "modifiers": [
+              "small",
+              "tertiary"
+            ],
+            "attributes": {
+              "id": "js-button-print"
+            },
+            "extra": bem_classes(base_class, 'button'),
+          }
+        } %}
+      </div>
+    {% endif %}
   </div>
 </header>

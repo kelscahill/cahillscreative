@@ -9,107 +9,128 @@
           "extra": bem_classes(base_class, 'header')
         }
       } %}
-      {% include "@molecules/components/stats/stats.twig" with {
-        "stats": {
-          "project": post.terms('project'),
-          "room": post.terms('room'),
-          "cost": post.terms('cost'),
-          "skill_level": post.terms('skill_level'),
-          "extra": bem_classes(base_class, 'stats')
-        }
-      } %}
-      {% include "@atoms/images/image/responsive-image.twig" with {
-        "image": {
-          "src": Image(post.thumbnail).src|towebp|resize(800, auto),
-          "alt": Image(post.thumbnail).alt,
-          "extra": bem_classes(base_class, 'image')
-        }
-      } %}
-      <div class="c-intro">
-        <p>Dear Fellow Woodworker,</p>
-        <p class="c-intro__body">I want to thank you for purchasing my plans. I do my best to provide easy step-by-step plans, however, if
-        you ever come across an error (I am human and sometimes make a mistake) or something does not make
-        sense, please don’t hesitate to reach out. I am happy to help make your build process smooth and hassle
-        free. Also, if you have any suggestions on how to improve the plans or would like to share your finished
-        piece, please send them my way! I will feature your picture on my social media page.</p>
-        <p>Best of luck,</p>
+      <p class="u-print-only l-container--s u-text-align--center u-space--zero--top">You can also view these plans online at <strong>{{ post.link }}</strong><br />Use password <strong>{{ post.id }}</strong> to unlock the content.</p>
+      {% if password_protected %}
+        {% if post.meta('related_product') %}
+          {% set related_product_text = '<br />If not, you can buy the plans <a href="'~ post.meta('related_product')[0].link ~'" class="o-link" target="_blank">here</a> to gain access.' %}
+        {% else %}
+        {% endif %}
+        {% include "@organisms/sections/page-headers/page-header.twig" with {
+          "page_header": {
+            "icon": {
+              "type": "svg",
+              "name": "locked"
+            },
+            "heading_level": "2",
+            "heading_size": "l",
+            "heading": "This content is locked",
+            "dek": '<p>If you\'ve bought the plans, input the password from the PDF.' ~ related_product_text ~ '</p>',
+            "extra": bem_classes(base_class, 'header')
+          }
+        } %}
+        <form action="{{ site.link }}/wp-login.php?action=postpass" class="post-password-form o-form--inline" method="post">
+          <input placeholder="Enter password" name="post_password" id="pwbox-{{ post.id }}" type="password" spellcheck="false" size="20"/>
+          <button type="submit" name="Submit" value="Submit">Submit</button>
+        </form>
+      {% else %}
+        {% include "@molecules/components/stats/stats.twig" with {
+          "stats": {
+            "project": post.terms('project'),
+            "room": post.terms('room'),
+            "cost": post.terms('cost'),
+            "skill_level": post.terms('skill_level'),
+            "extra": bem_classes(base_class, 'stats')
+          }
+        } %}
         {% include "@atoms/images/image/responsive-image.twig" with {
           "image": {
-            "src": "/wp-content/themes/cahillscreative/resources/assets/images/signature.png",
-            "alt": "Kelsey Ploransky",
-            "extra": "c-intro__signature"
+            "src": Image(post.thumbnail).src|towebp|resize(800, auto),
+            "alt": Image(post.thumbnail).alt,
+            "extra": bem_classes(base_class, 'image')
           }
         } %}
-        {% include "@atoms/links/link.twig" with {
-          "link": {
-            "url": "mailto:happyglamperco@gmail.com",
-            "text": "happyglamperco@gmail.com",
-            "target": "_blank",
-            "modifiers": "alt",
+        <div class="c-intro">
+          <p>Dear Fellow Woodworker,</p>
+          <p class="c-intro__body">Thank you so much for choosing my plans! If you encounter any hiccups or have questions, don't hesitate to reach out. I'm here to make your building experience as smooth as possible. Your suggestions for improvement or sharing your finished project would be fantastic—I'd love to showcase it on my social media!</p>
+          <p>Best of luck,</p>
+          {% include "@atoms/images/image/responsive-image.twig" with {
+            "image": {
+              "src": "/wp-content/themes/cahillscreative/resources/assets/images/signature.png",
+              "alt": "Kelsey Ploransky",
+              "extra": "c-intro__signature"
+            }
+          } %}
+          {% include "@atoms/links/link.twig" with {
+            "link": {
+              "url": "mailto:happyglamperco@gmail.com",
+              "text": "happyglamperco@gmail.com",
+              "target": "_blank",
+              "modifiers": "alt",
+              "icon": {
+                "name": "email",
+                "modifiers": "small",
+                "extra": "u-space--half--right"
+              },
+            }
+          } %}
+          {% include "@atoms/links/link.twig" with {
+            "link": {
+              "url": options.instagram_url,
+              "text": "@thehappyglamperco",
+              "target": "_blank",
+              "modifiers": "alt",
+              "icon": {
+                "name": "instagram",
+                "modifiers": "small",
+                "extra": "u-space--half--right"
+              },
+            }
+          } %}
+          {% include "@atoms/links/link.twig" with {
+            "link": {
+              "url": options.pinterest_url,
+              "text": "pinterest.com/thehappyglamperco",
+              "target": "_blank",
+              "modifiers": "alt",
+              "icon": {
+                "name": "pinterest",
+                "modifiers": "small",
+                "extra": "u-space--half--right"
+              },
+            }
+          } %}
+          {% include "@atoms/links/link.twig" with {
+            "link": {
+              "url": options.facebook_url,
+              "text": "facebook.com/thehappyglamperco",
+              "target": "_blank",
+              "modifiers": "alt",
+              "icon": {
+                "name": "facebook",
+                "modifiers": "small",
+                "extra": "u-space--half--right"
+              },
+            }
+          } %}
+        </div>
+        {% include "@organisms/sections/page-headers/page-header.twig" with {
+          "page_header": {
             "icon": {
-              "name": "email",
-              "modifiers": "small",
-              "extra": "u-space--half--right"
+              "type": "Name",
+              "name": "Plans"
             },
+            "heading": "Let's Begin",
+            "dek": "<strong>Helpful tips:</strong> Always work on a clean level surface, free of imperfections or debris. Always use straight boards. Check for square after each step. Always pre-drill holes before attaching with screws. Use glue with finish nails for a stronger hold. Wipe excess glue off bare wood for stained projects, as dried glue will not take stain. Be safe, have fun, and ask for help if you need it. Good luck!",
+            "extra": bem_classes(base_class, 'header')
           }
         } %}
-        {% include "@atoms/links/link.twig" with {
-          "link": {
-            "url": options.instagram_url,
-            "text": "@thehappyglamperco",
-            "target": "_blank",
-            "modifiers": "alt",
-            "icon": {
-              "name": "instagram",
-              "modifiers": "small",
-              "extra": "u-space--half--right"
-            },
+        {% include "@atoms/text/rich-text/rich-text.twig" with {
+          "rich_text": {
+            "text": post.content,
+            "extra": ["has-dropcap", bem_classes(base_class, 'body')],
           }
         } %}
-        {% include "@atoms/links/link.twig" with {
-          "link": {
-            "url": options.pinterest_url,
-            "text": "pinterest.com/thehappyglamperco",
-            "target": "_blank",
-            "modifiers": "alt",
-            "icon": {
-              "name": "pinterest",
-              "modifiers": "small",
-              "extra": "u-space--half--right"
-            },
-          }
-        } %}
-        {% include "@atoms/links/link.twig" with {
-          "link": {
-            "url": options.facebook_url,
-            "text": "facebook.com/thehappyglamperco",
-            "target": "_blank",
-            "modifiers": "alt",
-            "icon": {
-              "name": "facebook",
-              "modifiers": "small",
-              "extra": "u-space--half--right"
-            },
-          }
-        } %}
-      </div>
-      {% include "@organisms/sections/page-headers/page-header.twig" with {
-        "page_header": {
-          "icon": {
-            "type": "Name",
-            "name": "Plans"
-          },
-          "heading": "Let's Begin",
-          "dek": "<strong>Helpful tips:</strong> Always work on a clean level surface, free of imperfections or debris. Always use straight boards. Check for square after each step. Always pre-drill holes before attaching with screws. Use glue with finish nails for a stronger hold. Wipe excess glue off bare wood for stained projects, as dried glue will not take stain. Be safe, have fun, and ask for help if you need it. Good luck!",
-          "extra": bem_classes(base_class, 'header')
-        }
-      } %}
-      {% include "@atoms/text/rich-text/rich-text.twig" with {
-        "rich_text": {
-          "text": post.content,
-          "extra": ["has-dropcap", bem_classes(base_class, 'body')],
-        }
-      } %}
+      {% endif %}
     </div>
   </div>
 </article>
