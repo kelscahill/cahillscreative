@@ -19,7 +19,11 @@
             "post_type": [
                 "product"
             ],
-            "post_status": "",
+            "post_status": [
+                "publish",
+                "future",
+                "draft"
+            ],
             "taxonomy": [
                 "product_tag:woodworking-plans"
             ],
@@ -54,5 +58,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1702251730
+    "modified": 1702255317
 }

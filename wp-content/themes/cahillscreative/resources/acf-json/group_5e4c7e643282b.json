@@ -19,7 +19,11 @@
             "post_type": [
                 "plans"
             ],
-            "post_status": "",
+            "post_status": [
+                "publish",
+                "future",
+                "draft"
+            ],
             "taxonomy": "",
             "filters": [
                 "search",
@@ -74,5 +78,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1702241201
+    "modified": 1702255304
 }
