@@ -10,6 +10,8 @@
  */
 
 $context = Timber::context();
+$post = new TimberPost();
+$context['post'] = $post;
 $context['accordion']['header'] = get_field( 'accordion_header' );
 $context['accordion']['items'] = get_field( 'accordion_items' );
 $context['accordion']['expanded'] = get_field( 'accordion_expanded' );

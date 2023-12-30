@@ -52,13 +52,21 @@
               <div class="{{ bem_classes(base_class, 'images') }}">
                 <div class="{{ bem_classes(base_class, 'images-container') }} l-container--xl">
                   {% for image in step.images %}
+                    {% if post.post_type == 'plans' %}
+                      {% set image_srcset = Image(image).src|towebp|resize(800, auto) ~ ' 720w' %}
+                      {% set image_src = Image(image).src|towebp|resize(500, auto) %}
+                    {% else %}
+                      {% set image_srcset = Image(image).src|towebp|resize(720, 720) ~ ' 720w, ' ~ Image(image).src|towebp|resize(960, 960) ~ ' 960w' %}
+                      {% set image_src = Image(image).src|towebp|resize(500, 500) %}
+                    {% endif %}
                     {% include "@atoms/images/image/figure.twig" with {
                       "figure": {
                         "image": {
-                          "srcset": Image(image).src|towebp|resize(720, 720) ~ ' 720w, ' ~ Image(image).src|towebp|resize(960, 960) ~ ' 960w',
-                          "src": Image(image).src|towebp|resize(500, 500),
+                          "srcset": image_srcset,
+                          "src": image_src,
                           "alt": Image(image).alt,
-                          "caption": Image(image).caption
+                          "caption": Image(image).caption,
+                          "description": image.description
                         },
                         "link": {
                           "url": Image(image).src|towebp|resize(1200),
