@@ -73,6 +73,14 @@
     margin-right: calc(-50vw - #{$space-double} + 2.5px);
     overflow: hidden;
     margin-top: $space-double;
+
+    .single-plans & {
+      width: 100%;
+      left: 0;
+      right: 0;
+      margin-left: 0;
+      margin-right: 0;
+    }
   }
 
   &__images-container {
@@ -83,6 +91,15 @@
 
     figcaption {
       padding-left: $space;
+    }
+
+    .single-plans & {
+      grid-template-columns: repeat(1, 1fr);
+
+      img {
+        mix-blend-mode: multiply;
+        margin-top: $space-double;
+      }
     }
   }
 
