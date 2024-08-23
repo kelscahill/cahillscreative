@@ -88,6 +88,11 @@
     page-break-before: always;
   }
 
+  .c-accordion__item,
+  .o-figure {
+    page-break-inside: avoid;
+  }
+
   table {
     page-break-inside: avoid;
   }
