@@ -1,8 +1,8 @@
 /* eslint-disable */
-import inView from 'in-view';
-import header from '../util/header';
-import slick from '../util/slick.min.js';
-import magnificPopup from '../util/magnific-popup.min.js';
+import inView from "in-view";
+import header from "../util/header";
+import slick from "../util/slick.min.js";
+import magnificPopup from "../util/magnific-popup.min.js";
 
 export default {
   init() {
@@ -12,56 +12,63 @@ export default {
 
     // Set the app height for 100vh. Test
     const appHeight = () => {
-      const doc = document.documentElement
-      doc.style.setProperty('--app-height', `${window.innerHeight}px`)
-    }
-    window.addEventListener('resize', appHeight)
-    appHeight()
+      const doc = document.documentElement;
+      doc.style.setProperty("--app-height", `${window.innerHeight}px`);
+    };
+    window.addEventListener("resize", appHeight);
+    appHeight();
 
     // Add class if is mobile
     function isMobile() {
-      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      if (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        )
+      ) {
         return true;
       }
       return false;
     }
     // Add class if is mobile
     if (isMobile()) {
-      $('html').addClass(' touch');
-    } else if (!isMobile()){
-      $('html').addClass(' no-touch');
+      $("html").addClass(" touch");
+    } else if (!isMobile()) {
+      $("html").addClass(" no-touch");
     }
 
     // Convert lists with the classname of .c-checkbox-list to have checkboxes.
-    $('ul.c-checkbox-list li').each(function(index) {
-      var url = $(location).attr('href'),
-        parts = url.split('/'),
-        post_slug = parts[parts.length-2];
-      var id = 'checkbox-' + index;
+    $("ul.c-checkbox-list li").each(function (index) {
+      var url = $(location).attr("href"),
+        parts = url.split("/"),
+        post_slug = parts[parts.length - 2];
+      var id = "checkbox-" + index;
       var text = $(this).text();
-      var label = $('<label>').attr('for', id).text(text);
-      var input = $('<input type="checkbox">').attr({id: id, name: id});
-      var link = $(this).find('a').text('Buy here').attr('class', 'o-link o-link--small');
-      $(this).parent().attr('class', 'c-checkbox-list u-spacing--half');
-      if ($(this).has('a')) {
+      var label = $("<label>").attr("for", id).text(text);
+      var input = $('<input type="checkbox">').attr({ id: id, name: id });
+      var link = $(this)
+        .find("a")
+        .text("Buy here")
+        .attr("class", "o-link o-link--small");
+      $(this).parent().attr("class", "c-checkbox-list u-spacing--half");
+      if ($(this).has("a")) {
         label.append(link);
       }
-      $(this).attr('id', 'accordion-' + post_slug + '__' + index);
+      $(this).attr("id", "accordion-" + post_slug + "__" + index);
       $(this).empty();
       $(this).append(input);
       $(this).append(label);
-      $(this).find('span').remove();
+      $(this).find("span").remove();
     });
 
     // Checkbox list localstorage on checked.
-    $('.c-checkbox-list, .js-checkboxes').each(function() {
+    $(".c-checkbox-list, .js-checkboxes").each(function () {
       // Bind the change event handler.
-      $(this).on('change', 'input', function() {
-        var $item = $(this).parent().attr('id');
+      $(this).on("change", "input", function () {
+        var $item = $(this).parent().attr("id");
         if (this.checked) {
-          localStorage.setItem($item, 'checked');
+          localStorage.setItem($item, "checked");
         } else {
-          localStorage.removeItem($item, 'checked');
+          localStorage.removeItem($item, "checked");
         }
       });
     });
@@ -71,35 +78,35 @@ export default {
       var key = localStorage.key(i);
       var value = localStorage.getItem(key);
 
-      if (value == 'checked') {
-        $('#' + key + ' input').attr('checked', true);
+      if (value == "checked") {
+        $("#" + key + " input").attr("checked", true);
       }
     }
 
     // Shop filter.
-    $('.searchandfilter li').each(function() {
-      $(this).find('h4').addClass('js-toggle-parent');
+    $(".searchandfilter li").each(function () {
+      $(this).find("h4").addClass("js-toggle-parent");
     });
 
     // Copy link on button click.
-    $('.js-copy-link').click(function(e) {
+    $(".js-copy-link").click(function (e) {
       e.preventDefault();
       var $temp = $("<input>");
-      var $url = $(this).attr('href');
+      var $url = $(this).attr("href");
       $("body").append($temp);
       $temp.val($url).select();
       document.execCommand("copy");
       $temp.remove();
-      $(this).text('Link Copied!');
+      $(this).text("Link Copied!");
     });
 
     /**
-    * Add inview class on scroll if has-animation class.
-    */
+     * Add inview class on scroll if has-animation class.
+     */
     if (!isMobile()) {
-      inView('.js-inview').on('enter', function() {
-        $("*[data-animation]").each(function() {
-          var animation = $(this).attr('data-animation');
+      inView(".js-inview").on("enter", function () {
+        $("*[data-animation]").each(function () {
+          var animation = $(this).attr("data-animation");
           if (inView.is(this)) {
             $(this).addClass("is-inview");
             $(this).addClass(animation);
@@ -109,52 +116,66 @@ export default {
     }
 
     // Expires after one day
-    var setCookie = function(name, value) {
+    var setCookie = function (name, value) {
       var date = new Date(),
-          expires = 'expires=';
+        expires = "expires=";
       date.setDate(date.getDate() + 1);
       expires += date.toGMTString();
-      document.cookie = name + '=' + value + '; ' + expires + '; path=/; SameSite=Strict;';
-    }
+      document.cookie =
+        name + "=" + value + "; " + expires + "; path=/; SameSite=Strict;";
+    };
 
-    var getCookie = function(name) {
-      var allCookies = document.cookie.split(';'),
+    var getCookie = function (name) {
+      var allCookies = document.cookie.split(";"),
         cookieCounter = 0,
-        currentCookie = '';
-      for (cookieCounter = 0; cookieCounter < allCookies.length; cookieCounter++) {
+        currentCookie = "";
+      for (
+        cookieCounter = 0;
+        cookieCounter < allCookies.length;
+        cookieCounter++
+      ) {
         currentCookie = allCookies[cookieCounter];
-        while (currentCookie.charAt(0) === ' ') {
+        while (currentCookie.charAt(0) === " ") {
           currentCookie = currentCookie.substring(1, currentCookie.length);
         }
-        if (currentCookie.indexOf(name + '=') === 0) {
+        if (currentCookie.indexOf(name + "=") === 0) {
           return currentCookie.substring(name.length + 1, currentCookie.length);
         }
       }
       return false;
-    }
+    };
 
-    $('.c-modal__close').click(function(e) {
-      setCookie('modal', 'true');
+    $(".c-modal__close").click(function (e) {
+      setCookie("modal", "true");
     });
 
-    if (document.querySelector('.c-modal')) {
-      if (getCookie('modal')) {
-        $('body').removeClass('modal-is-active');
+    if (document.querySelector(".c-modal")) {
+      if (getCookie("modal")) {
+        $("body").removeClass("modal-is-active");
       } else {
-        $('body').addClass('modal-is-active');
+        $("body").addClass("modal-is-active");
       }
     }
 
     // Smooth scrolling on anchor clicks
-    $('a[href*="#"]:not([href="#"])').click(function() {
+    $('a[href*="#"]:not([href="#"])').click(function () {
       // $('.c-primary-nav, body').removeClass('primary-nav-is-active');
-      if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+      if (
+        location.pathname.replace(/^\//, "") ==
+          this.pathname.replace(/^\//, "") &&
+        location.hostname == this.hostname
+      ) {
         var target = $(this.hash);
-        target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+        target = target.length
+          ? target
+          : $("[name=" + this.hash.slice(1) + "]");
         if (target.length) {
-          $('html, body').animate({
-            scrollTop: target.offset().top - 75
-          }, 1000);
+          $("html, body").animate(
+            {
+              scrollTop: target.offset().top - 75,
+            },
+            1000
+          );
           return false;
         }
       }
@@ -163,7 +184,7 @@ export default {
     /**
      * Slick sliders
      */
-    $('.js-slick').slick({
+    $(".js-slick").slick({
       dots: true,
       autoplay: true,
       autoplaySpeed: 3000,
@@ -171,23 +192,23 @@ export default {
       infinite: true,
       speed: 300,
       fade: true,
-      cssEase: 'linear',
+      cssEase: "linear",
       adaptiveHeight: true,
       draggable: true,
     });
 
-    $('.js-slick-gallery').slick({
+    $(".js-slick-gallery").slick({
       dots: true,
       autoplay: false,
       arrows: true,
       infinite: true,
       speed: 300,
       fade: true,
-      cssEase: 'linear',
+      cssEase: "linear",
       draggable: true,
     });
 
-    $('.js-slick-posts').slick({
+    $(".js-slick-posts").slick({
       dots: false,
       infinite: false,
       speed: 300,
@@ -199,26 +220,26 @@ export default {
           settings: {
             slidesToShow: 3,
             slidesToScroll: 3,
-          }
+          },
         },
         {
           breakpoint: 720,
           settings: {
             slidesToShow: 2,
             slidesToScroll: 2,
-          }
+          },
         },
         {
           breakpoint: 500,
           settings: {
             slidesToShow: 1,
             slidesToScroll: 1,
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
-    $('.js-slick-products').slick({
+    $(".js-slick-products").slick({
       dots: false,
       infinite: false,
       speed: 300,
@@ -230,27 +251,27 @@ export default {
           settings: {
             slidesToShow: 3,
             slidesToScroll: 3,
-          }
+          },
         },
         {
           breakpoint: 500,
           settings: {
             slidesToShow: 2,
             slidesToScroll: 2,
-          }
+          },
         },
         {
           breakpoint: 320,
           settings: {
             slidesToShow: 1,
             slidesToScroll: 1,
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
-    var $slickGalleryImages = $('.js-product-gallery');
-    var $slickGalleryNav = $('.js-product-gallery-nav');
+    var $slickGalleryImages = $(".js-product-gallery");
+    var $slickGalleryNav = $(".js-product-gallery-nav");
     if ($slickGalleryImages.length) {
       $slickGalleryImages.slick({
         speed: 500,
@@ -259,7 +280,7 @@ export default {
         arrows: true,
         fade: true,
         dots: true,
-        asNavFor: $slickGalleryNav
+        asNavFor: $slickGalleryNav,
       });
 
       $slickGalleryNav.slick({
@@ -273,76 +294,76 @@ export default {
     }
 
     /**
-    * Magnigic Popup
-    */
-    if ($('.js-gallery').length) {
-      $('.js-gallery').each(function() {
-       $(this).magnificPopup({
-         delegate: 'a',
-         type: 'image',
-         gallery: {
-           enabled: true
-         }
-       });
+     * Magnigic Popup
+     */
+    if ($(".js-gallery").length) {
+      $(".js-gallery").each(function () {
+        $(this).magnificPopup({
+          delegate: "a",
+          type: "image",
+          gallery: {
+            enabled: true,
+          },
+        });
       });
     }
 
-    if ($('.js-gallery-accordion').length) {
-      $('.js-gallery-accordion').each(function() {
-       $(this).magnificPopup({
-         delegate: 'a.js-gallery-step',
-         type: 'image',
-         gallery: {
-           enabled: true
-         }
-       });
+    if ($(".js-gallery-accordion").length) {
+      $(".js-gallery-accordion").each(function () {
+        $(this).magnificPopup({
+          delegate: "a.js-gallery-step",
+          type: "image",
+          gallery: {
+            enabled: true,
+          },
+        });
       });
     }
 
     /**
      * General helper function to support toggle functions.
      */
-    var toggleClasses = function(element) {
+    var toggleClasses = function (element) {
       var $this = element,
-          $togglePrefix = $this.data('prefix') || 'this';
+        $togglePrefix = $this.data("prefix") || "this";
 
       // If the element you need toggled is relative to the toggle, add the
       // .js-this class to the parent element and "this" to the data-toggled attr.
-      if ($this.data('toggled') == "this") {
-        var $toggled = $this.closest('.js-this');
+      if ($this.data("toggled") == "this") {
+        var $toggled = $this.closest(".js-this");
+      } else {
+        var $toggled = $("." + $this.data("toggled"));
       }
-      else {
-        var $toggled = $('.' + $this.data('toggled'));
+      if ($this.attr("aria-expanded", "true")) {
+        $this.attr("aria-expanded", "true");
+      } else {
+        $this.attr("aria-expanded", "false");
       }
-      if ($this.attr('aria-expanded', 'true')) {
-        $this.attr('aria-expanded', 'true')
-      }
-      else {
-        $this.attr('aria-expanded', 'false')
-      }
-      $this.toggleClass($togglePrefix + '-is-active');
-      $toggled.toggleClass($togglePrefix + '-is-active');
+      $this.toggleClass($togglePrefix + "-is-active");
+      $toggled.toggleClass($togglePrefix + "-is-active");
 
       // Remove a class on another element, if needed.
-      if ($this.data('remove')) {
-        $('.' + $this.data('remove')).removeClass($this.data('remove'));
+      if ($this.data("remove")) {
+        $("." + $this.data("remove")).removeClass($this.data("remove"));
       }
     };
 
     /**
      * Print button
      */
-    if (document.getElementById('js-button-print')) {
-      document.getElementById('js-button-print').addEventListener('click', function(e) {
-        e.preventDefault();
-        // Scroll to the top of the page
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (document.getElementById("js-button-print")) {
+      document
+        .getElementById("js-button-print")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          // Scroll to the top of the page
+          window.scrollTo({ top: 0, behavior: "smooth" });
 
-        // Initiate the print dialog after scrolling to the top
-        setTimeout(function() {
-          window.print();
-        }, 1000); // Adjust the delay time if needed
-      });
+          // Initiate the print dialog after scrolling to the top
+          setTimeout(function () {
+            window.print();
+          }, 1000); // Adjust the delay time if needed
+        });
     }
 
     /*
@@ -360,38 +381,38 @@ export default {
      *  <div class="toggled-class">This element's class will be toggled</div>
      *
      */
-    $('.js-toggle').on('click', function(e) {
+    $(".js-toggle").on("click", function (e) {
       e.preventDefault();
       e.stopPropagation();
       toggleClasses($(this));
     });
 
     // Toggle parent class
-    $('.js-toggle-parent').on('click', function(e) {
+    $(".js-toggle-parent").on("click", function (e) {
       e.preventDefault();
       var $this = $(this);
-      $this.toggleClass('this-is-active');
-      $this.parent().toggleClass('this-is-active');
+      $this.toggleClass("this-is-active");
+      $this.parent().toggleClass("this-is-active");
     });
 
     // Prevent bubbling to the body. Add this class to the element (or element
     // container) that should allow the click event.
-    $('.js-stop-prop').on('click', function(e) {
+    $(".js-stop-prop").on("click", function (e) {
       e.stopPropagation();
     });
 
     // Toggle hovered classes
-    $('.js-hover').on('mouseenter mouseleave', function(e) {
+    $(".js-hover").on("mouseenter mouseleave", function (e) {
       e.preventDefault();
       e.stopPropagation();
       toggleClasses($(this));
     });
 
-    $('.js-hover-parent').on('mouseenter mouseleave', function(e) {
+    $(".js-hover-parent").on("mouseenter mouseleave", function (e) {
       e.preventDefault();
       var $this = $(this);
-      $this.toggleClass('this-is-active');
-      $this.parent().toggleClass('this-is-active');
+      $this.toggleClass("this-is-active");
+      $this.parent().toggleClass("this-is-active");
     });
   },
   finalize() {

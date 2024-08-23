@@ -13,6 +13,12 @@
     margin-bottom: 0.5in;
     margin-left: 0.5in;
     margin-right: 0.5in;
+
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      @include o-heading__secondary--s;
+      color: $c-secondary;
+    }
   }
 
   body {
