@@ -13,12 +13,6 @@
     margin-bottom: 0.5in;
     margin-left: 0.5in;
     margin-right: 0.5in;
-
-    @bottom-right {
-      content: "Page " counter(page) " of " counter(pages);
-      @include o-heading__secondary--s;
-      color: $c-secondary;
-    }
   }
 
   body {
@@ -90,22 +84,19 @@
   }
 
   .c-intro + .c-content-single-plans__header,
-  #material-list,
-  #instructions {
+  #material-list {
     page-break-before: always;
   }
 
+  #instructions {
+    page-break-inside: auto;
+  }
+
   .c-accordion__item,
-  .o-figure {
-    page-break-inside: avoid;
-  }
-
-  table {
-    page-break-inside: avoid;
-  }
-
+  .o-figure,
+  table,
   .c-steps__item {
-    page-break-after: always;
+    page-break-inside: avoid;
   }
 
   .c-intro {
