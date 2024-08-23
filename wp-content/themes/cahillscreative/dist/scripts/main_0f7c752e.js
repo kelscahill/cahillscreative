@@ -734,4 +734,3 @@ var e,t,o=this;if(!0===o.options.dots){for(o.$slider.addClass("slick-dotted"),t=
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=main.js.map
