@@ -61,7 +61,8 @@ class Equivalent_Posts
 		{
 			$broadcast_data = $this->broadcast()->get_parent_post_broadcast_data( $parent_blog, $parent_post );
 			$child = $broadcast_data->get_linked_post_on_this_blog();
-			$this->set( $parent_blog, $parent_post, $child_blog, $child );
+			if ( $child !== false )
+				$this->set( $parent_blog, $parent_post, $child_blog, $child );
 		}
 		return $this->equivalents[ $parent_blog ][ $parent_post ][ $child_blog ];
 	}

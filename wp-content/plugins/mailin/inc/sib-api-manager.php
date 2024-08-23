@@ -156,7 +156,7 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 			// get lists.
 			$lists = get_transient( 'sib_list_' . md5( SIB_Manager::$access_key ) );
 			if ( false === $lists || false == $lists ) {
-				
+
 				$mailin = new SendinblueApiClient();
 				$lists = array();
 				$list_data = $mailin->getAllLists();
@@ -459,7 +459,7 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 						'unlinkListIds' => $list_unlink,
 						'updateEnabled' => true
 					];
-				} else { 	
+				} else {
 						if($info['DOUBLE_OPT-IN'] == '1'){
 							$data = [
 								'email' => $email,
@@ -480,7 +480,7 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 								'unlinkListIds' => $list_unlink,
 								'updateEnabled' => true
 							];
-						}		
+						}
 				}
                 $mailin->createUser( $data );
                 $exist = $mailin->getLastResponseCode() == 204 ? 'success' : '' ;
@@ -702,9 +702,10 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
                     $unlinkedLists = $info['unlinkedLists'];
                     unset($info['unlinkedLists']);
                 }
-                if ( '1' == $current_form['isDopt'] )
+                if ( '1' == $current_form['isDopt'] && (isset($contact_info['doi_sent']) && $contact_info['doi_sent'] != 1 ))
                 {
                     SIB_API_Manager::send_comfirm_email( $email, 'confirm', $current_form['confirmID'], $info );
+                    SIB_Model_Users::make_doi_sent( $contact_info['email'] );
                 }
 
                 if( $unlinkedLists != null ) {
@@ -828,7 +829,7 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 		public static function create_default_dopt() {
 
 			$mailin = new SendinblueApiClient();
-			
+
 			// add attribute.
 			$isEmpty = false;
 			$ret = $mailin->getAttributes();

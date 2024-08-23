@@ -32,11 +32,13 @@ use Google\Ads\GoogleAds\V16\Services\Client\AssetServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\BillingSetupServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\CampaignBudgetServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\CampaignCriterionServiceClient;
+use Google\Ads\GoogleAds\V16\Services\Client\CampaignLabelServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\CampaignServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\ConversionActionServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\CustomerServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\CustomerUserAccessServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\ExtensionFeedItemServiceClient;
+use Google\Ads\GoogleAds\V16\Services\Client\LabelServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\ProductLinkInvitationServiceClient;
 
 /**
@@ -308,6 +310,26 @@ final class ResourceNames
     }
 
     /**
+     * Generates a resource name of campaign label type.
+     *
+     * @param string $customerId
+     * @param string $campaignId
+     * @param string $labelId
+     * @return string the campaign label resource name
+     */
+    public static function forCampaignLabel(
+        $customerId,
+        $campaignId,
+        $labelId
+    ): string {
+        return CampaignLabelServiceClient::campaignLabelName(
+            $customerId,
+            $campaignId,
+            $labelId
+        );
+    }
+
+    /**
      * Generates a resource name of conversion action type.
      *
      * @param string $customerId
@@ -383,6 +405,23 @@ final class ResourceNames
     ): string {
         return ExtensionFeedItemServiceClient::geoTargetConstantName(
             $criterionId
+        );
+    }
+
+    /**
+     * Generates a resource name of label type.
+     *
+     * @param string $customerId
+     * @param string $labelId
+     * @return string the label resource name
+     */
+    public static function forLabel(
+        $customerId,
+        $labelId
+    ): string {
+        return LabelServiceClient::labelName(
+            $customerId,
+            $labelId
         );
     }
 

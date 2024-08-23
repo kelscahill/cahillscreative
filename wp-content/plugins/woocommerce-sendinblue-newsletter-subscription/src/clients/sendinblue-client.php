@@ -31,6 +31,7 @@ class SendinblueClient
 	public const EMAIL_SEND                             = "/email_send?action=email_event";
 
 	public const PRODUCT_CREATED                        = '/products_sync?action=product_created';
+	public const PRODUCT_VIEWED                         = '/product_viewed';
 	public const PRODUCT_DELETED                        = '/products_sync?action=product_deleted';
 	public const CATEGORY_CREATED                       = '/collection_sync?action=collection_created';
 	public const CATEGORY_UPDATED                       = '/collection_sync?action=collection_updated';

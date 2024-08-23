@@ -168,6 +168,21 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 4. You can access your settings by clicking on “Settings” at the top right of the screen.
 
 == Changelog ==
+= 4.0.28 =
+* Include additional keys in order_completed event for shipping taxes, discount taxes, discount codes, and fee lines 
+
+= 4.0.27 =
+* Fixed bug related to total count of orders, products and categories
+
+= 4.0.26 =
+* Fixed bug related to product viewed events
+
+= 4.0.25 =
+* Improvement to fetch the right product images to send in the order_completed events
+
+= 4.0.24 =
+* Added new product_viewed track event that will fire each time products are viewed on the store by users. This can be used within Brevo automation for email campaigns
+
 = 4.0.23 =
 * Improvements to tracking guest checkouts
 

@@ -5,7 +5,6 @@ namespace Automattic\WooCommerce\GoogleListingsAndAds\Tracking;
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Ads\AdsService;
 use Automattic\WooCommerce\GoogleListingsAndAds\API\Google\MerchantMetrics;
-use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\Conditional;
 use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\Registerable;
 use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\Service;
 use Automattic\WooCommerce\GoogleListingsAndAds\Internal\ContainerAwareTrait;
@@ -18,7 +17,7 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\PluginHelper;
 
 /**
- * Include Google Listings and Ads data in the WC Tracker snapshot.
+ * Include Google for WooCommerce data in the WC Tracker snapshot.
  *
  * ContainerAware used to access:
  * - AdsService
@@ -28,20 +27,12 @@ use Automattic\WooCommerce\GoogleListingsAndAds\PluginHelper;
  *
  * @package Automattic\WooCommerce\GoogleListingsAndAds\Tracking
  */
-class TrackerSnapshot implements Conditional, ContainerAwareInterface, OptionsAwareInterface, Registerable, Service {
+class TrackerSnapshot implements ContainerAwareInterface, OptionsAwareInterface, Registerable, Service {
 
 	use ContainerAwareTrait;
 	use OptionsAwareTrait;
 	use PluginHelper;
 
-	/**
-	 * Not needed if allow_tracking is disabled.
-	 *
-	 * @return bool Whether the object is needed.
-	 */
-	public static function is_needed(): bool {
-		return 'yes' === get_option( 'woocommerce_allow_tracking', 'no' );
-	}
 
 	/**
 	 * Hook extension tracker data into the WC tracker data.
@@ -106,6 +97,7 @@ class TrackerSnapshot implements Conditional, ContainerAwareInterface, OptionsAw
 			'ads_setup_started'               => $ads_service->is_setup_started() ? 'yes' : 'no',
 			'ads_customer_id'                 => $this->options->get_ads_id(),
 			'ads_campaign_count'              => $merchant_metrics->get_campaign_count(),
+			'wpcom_api_authorized'            => $this->options->is_wpcom_api_authorized(),
 		];
 	}
 

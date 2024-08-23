@@ -236,7 +236,7 @@ class WC_Stripe_Order_Handler extends WC_Stripe_Payment_Gateway {
 		$result = new stdClass();
 		$order = wc_get_order( $order_id );
 
-		if ( 'stripe' === $order->get_payment_method() ) {
+		if ( WC_Stripe_Helper::payment_method_allows_manual_capture( $order->get_payment_method() ) ) {
 			$charge             = $order->get_transaction_id();
 			$captured           = $order->get_meta( '_stripe_charge_captured', true );
 			$is_stripe_captured = false;
@@ -271,7 +271,7 @@ class WC_Stripe_Order_Handler extends WC_Stripe_Payment_Gateway {
 							$order->update_status( 'failed', sprintf( __( 'Unable to capture charge! %s', 'woocommerce-gateway-stripe' ), $result->error->message ) );
 						} else {
 							$is_stripe_captured = true;
-							$result             = end( $result->charges->data );
+							$result             = $this->get_latest_charge_from_intent( $result );
 						}
 					} elseif ( 'succeeded' === $intent->status ) {
 						$is_stripe_captured = true;
@@ -340,7 +340,7 @@ class WC_Stripe_Order_Handler extends WC_Stripe_Payment_Gateway {
 	public function cancel_payment( $order_id ) {
 		$order = wc_get_order( $order_id );
 
-		if ( 'stripe' === $order->get_payment_method() ) {
+		if ( WC_Stripe_Helper::payment_method_allows_manual_capture( $order->get_payment_method() ) ) {
 			$captured = $order->get_meta( '_stripe_charge_captured', true );
 			if ( 'no' === $captured ) {
 				$this->process_refund( $order_id );

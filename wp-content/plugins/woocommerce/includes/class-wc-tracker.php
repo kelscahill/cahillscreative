@@ -946,7 +946,7 @@ class WC_Tracker {
 			'base_state'                            => WC()->countries->get_base_state(),
 			'base_postcode'                         => WC()->countries->get_base_postcode(),
 			'selling_locations'                     => WC()->countries->get_allowed_countries(),
-			'api_enabled'                           => get_option( 'woocommerce_api_enabled' ),
+			'api_enabled'                           => get_option( 'woocommerce_api_enabled', 'no' ),
 			'weight_unit'                           => get_option( 'woocommerce_weight_unit' ),
 			'dimension_unit'                        => get_option( 'woocommerce_dimension_unit' ),
 			'download_method'                       => get_option( 'woocommerce_file_download_method' ),
@@ -965,6 +965,7 @@ class WC_Tracker {
 			'hpos_transactions_enabled'             => get_option( 'woocommerce_use_db_transactions_for_custom_orders_table_data_sync' ),
 			'hpos_transactions_level'               => get_option( 'woocommerce_db_transactions_isolation_level_for_custom_orders_table_data_sync' ),
 			'show_marketplace_suggestions'          => get_option( 'woocommerce_show_marketplace_suggestions' ),
+			'admin_install_timestamp'               => get_option( 'woocommerce_admin_install_timestamp' ),
 		);
 	}
 
@@ -1162,5 +1163,3 @@ class WC_Tracker {
 		return get_option( 'woocommerce_mobile_app_usage' );
 	}
 }
-
-WC_Tracker::init();

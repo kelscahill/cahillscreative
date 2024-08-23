@@ -29,7 +29,6 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
 			//Check if table exists
 			$table_check_query = 'SHOW TABLES LIKE ' . "'" . $table_name .  "'" . ';';
 			$wpdb->query($table_check_query);
-			
 
 			//table doesnot exist
 			if (empty($wpdb->last_result)) {
@@ -63,6 +62,7 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
 				`cCaptchaType` int(1) NOT NULL DEFAULT 0,
 				`cCaptcha_secret` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
 				`cCaptcha_site` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+				`cCaptchaStyle` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
 				`termAccept` int(1) NOT NULL DEFAULT 0,
 				`termsURL` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
 				PRIMARY KEY (`id`)
@@ -80,15 +80,30 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
 				// check if select captcha type fields exist
 				$selectCaptchaType = 'selectCaptchaType';
 				$result = $wpdb->query( $wpdb->prepare( "SHOW COLUMNS FROM `$table_name` LIKE %s ", $selectCaptchaType ) ); // db call ok; no-cache ok.
-				
+				$queryExecuted = false;
 				if ( empty( $result ) ) {
 					$alter_query = "ALTER TABLE " . $table_name . "
-						ADD COLUMN selectCaptchaType int(1) NOT NULL DEFAULT 0 After gCaptcha_site,  
-						ADD COLUMN cCaptchaType int(1) NOT NULL DEFAULT 0 After selectCaptchaType,  
-						ADD COLUMN cCaptcha_secret varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci AFTER selectCaptchaType,
-						ADD COLUMN cCaptcha_site varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci AFTER cCaptcha_secret;  
+						ADD COLUMN selectCaptchaType int(1) NOT NULL DEFAULT 0 After gCaptcha_site,
+						ADD COLUMN cCaptchaType int(1) NOT NULL DEFAULT 0 After selectCaptchaType,
+						ADD COLUMN cCaptchaStyle varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci AFTER cCaptchaType,
+						ADD COLUMN cCaptcha_secret varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci AFTER cCaptchaStyle,
+						ADD COLUMN cCaptcha_site varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci AFTER cCaptcha_secret;
 					";
 					$wpdb->query( $alter_query );
+					$queryExecuted  = true;
+				}
+
+				if ($queryExecuted == false) {
+					// check if only the cCaptchaStyle type fields exist
+					$cCaptchaStyle = 'cCaptchaStyle';
+					$result = $wpdb->query( $wpdb->prepare( "SHOW COLUMNS FROM `$table_name` LIKE %s ", $cCaptchaStyle ) ); // db call ok; no-cache ok.
+					
+					if ( empty( $result ) ) {
+						$alter_query = "ALTER TABLE " . $table_name . "
+						ADD COLUMN cCaptchaStyle varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci AFTER cCaptcha_site;
+						";
+						$wpdb->query( $alter_query );
+					}
 				}
 			}
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -245,12 +260,12 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
             global $wpdb;
 
 			global $wpdb;
-            $query = 'INSERT INTO ' . $wpdb->prefix . self::TABLE_NAME.' (title,html,css,dependTheme,listID,templateID,confirmID,isOpt,isDopt,redirectInEmail,redirectInForm,successMsg,errorMsg,existMsg,invalidMsg,requiredMsg,attributes,date,gCaptcha,gCaptcha_secret,gCaptcha_site,termAccept,termsURL, selectCaptchaType, cCaptchaType, cCaptcha_secret,cCaptcha_site) VALUES ';
-            $query .= ' (%s, %s, %s, %d, %s, %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s, %s, %d, %s, %d, %d,%s, %s)';
+            $query = 'INSERT INTO ' . $wpdb->prefix . self::TABLE_NAME.' (title,html,css,dependTheme,listID,templateID,confirmID,isOpt,isDopt,redirectInEmail,redirectInForm,successMsg,errorMsg,existMsg,invalidMsg,requiredMsg,attributes,date,gCaptcha,gCaptcha_secret,gCaptcha_site,termAccept,termsURL, selectCaptchaType, cCaptchaType, cCaptcha_secret,cCaptcha_site, cCaptchaStyle) VALUES ';
+            $query .= ' (%s, %s, %s, %d, %s, %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s, %s, %d, %s, %d, %d,%s, %s, %s)';
 
             $query = $wpdb->prepare($query,array($formData['title'],$formData['html'],$formData['css'],$formData['dependTheme'],$formData['listID'],
                 $formData['templateID'],$formData['confirmID'],$formData['isOpt'],$formData['isDopt'],$formData['redirectInEmail'],$formData['redirectInForm'],
-                $formData['successMsg'],$formData['errorMsg'],$formData['existMsg'],$formData['invalidMsg'],$formData['requiredMsg'],$formData['attributes'],$current_date,$formData['gcaptcha'],$formData['gcaptcha_secret'] ,$formData['gcaptcha_site'],$formData['termAccept'],$formData['termsURL'], $formData['selectCaptchaType'], $formData['cCaptchaType'], $formData['ccaptcha_secret'], $formData['ccaptcha_site']));
+                $formData['successMsg'],$formData['errorMsg'],$formData['existMsg'],$formData['invalidMsg'],$formData['requiredMsg'],$formData['attributes'],$current_date,$formData['gcaptcha'],$formData['gcaptcha_secret'] ,$formData['gcaptcha_site'],$formData['termAccept'],$formData['termsURL'], $formData['selectCaptchaType'], $formData['cCaptchaType'], $formData['ccaptcha_secret'], $formData['ccaptcha_site'], $formData['cCaptchaStyle']));
 			
             $wpdb->query( $query ); // db call ok; no-cache ok.
             $index = $wpdb->get_var( 'SELECT LAST_INSERT_ID();' ); // db call ok; no-cache ok.
@@ -272,12 +287,12 @@ if ( ! class_exists( 'SIB_Forms' ) ) {
             global $wpdb;
 
             $query = 'UPDATE ' . $wpdb->prefix . self::TABLE_NAME ;
-            $query .= " set title = %s, html = %s, css = %s, dependTheme = %d, listID = %s, templateID = %d, confirmID = %d, isOpt = %d, isDopt = %d, redirectInEmail = %s, redirectInForm = %s, successMsg = %s, errorMsg = %s, existMsg = %s, invalidMsg = %s, requiredMsg = %s, attributes = %s, date = %s, gCaptcha = %d, gCaptcha_secret = %s, gCaptcha_site = %s, termAccept = %d, termsURL = %s, selectCaptchaType = %d, cCaptcha_secret = %s, cCaptcha_site = %s, cCaptchaType = %d";
+            $query .= " set title = %s, html = %s, css = %s, dependTheme = %d, listID = %s, templateID = %d, confirmID = %d, isOpt = %d, isDopt = %d, redirectInEmail = %s, redirectInForm = %s, successMsg = %s, errorMsg = %s, existMsg = %s, invalidMsg = %s, requiredMsg = %s, attributes = %s, date = %s, gCaptcha = %d, gCaptcha_secret = %s, gCaptcha_site = %s, termAccept = %d, termsURL = %s, selectCaptchaType = %d, cCaptcha_secret = %s, cCaptcha_site = %s, cCaptchaType = %d, cCaptchaStyle = %s";
             $query .= ' where id= %d';
 
             $query = $wpdb->prepare( $query ,array($formData['title'],$formData['html'],$formData['css'],$formData['dependTheme'],$formData['listID'],
                 $formData['templateID'],$formData['confirmID'],$formData['isOpt'],$formData['isDopt'],$formData['redirectInEmail'],$formData['redirectInForm'],
-                $formData['successMsg'],$formData['errorMsg'],$formData['existMsg'],$formData['invalidMsg'],$formData['requiredMsg'],$formData['attributes'],$current_date,$formData['gcaptcha'],$formData['gcaptcha_secret'] ,$formData['gcaptcha_site'],$formData['termAccept'],$formData['termsURL'],$formData['selectCaptchaType'],$formData['ccaptcha_secret'] ,$formData['ccaptcha_site'], $formData['cCaptchaType'], esc_sql($formID)));
+                $formData['successMsg'],$formData['errorMsg'],$formData['existMsg'],$formData['invalidMsg'],$formData['requiredMsg'],$formData['attributes'],$current_date,$formData['gcaptcha'],$formData['gcaptcha_secret'] ,$formData['gcaptcha_site'],$formData['termAccept'],$formData['termsURL'],$formData['selectCaptchaType'],$formData['ccaptcha_secret'] ,$formData['ccaptcha_site'], $formData['cCaptchaType'],$formData['cCaptchaStyle'], esc_sql($formID)));
 
             $wpdb->query( $query ); // db call ok; no-cache ok.
 

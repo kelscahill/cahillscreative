@@ -1,4 +1,59 @@
-*** WooCommerce Google Listings and Ads Changelog ***
+*** Google for WooCommerce Changelog ***
+
+= 2.8.3 - 2024-08-20 =
+* Fix - Return empty array props as empty objects in WCOM Proxy responses.
+* Tweak - Display additional context in error message when Google Ads account limit reached.
+* Tweak - Upgrade readme details in WPORG.
+
+= 2.8.2 - 2024-08-14 =
+* Fix - Disconnecting all accounts when WPCOM connection is not granted.
+* Fix - Error when Google Merchant Center account is undefined while checking the notification service enabled property.
+* Tweak - Label campaigns for the web version and the WooCommerce Mobile app.
+* Tweak - Update FAQS in Getting Started page.
+* Tweak - Update WP.org plugin FAQs.
+* Tweak - Update WPORG plugin page header image.
+* Tweak - Update get started page.
+* Tweak - WC 9.2.0 compatibility.
+* Update - Block validation to support error context.
+
+= 2.8.1 - 2024-08-06 =
+* Add - Enable labeling of Ads campaigns.
+* Tweak - Update doc links references.
+* Update - Enable Page Size Parameter in Campaigns Endpoint.
+
+= 2.8.0 - 2024-07-31 =
+* Add Google API Pull method.
+* Rebranding Google Listings and Ads with Google for WooCommerce.
+
+= 2.7.7 - 2024-07-24 =
+* Dev - Fix E2E tests failed with WC 9.1.
+* Tweak -   Make campaign preview card responsive.
+
+= 2.7.6 - 2024-07-09 =
+* Dev - Update connect server URL in test proxy configuration.
+* Tweak - WC 9.1 compatibility.
+* Tweak - WP 6.6 compatibility.
+
+= 2.7.5 - 2024-06-26 =
+* Add - Add an query parameter `campaign=saved` to the dashboard URL after the campaign was created.
+
+= 2.7.4 - 2024-06-25 =
+* Add - Integration with the WP Consent API plugin.
+* Dev - Add E2E tests for WP Consent API integration.
+* Tweak - Add docs note about WP Consent API integration.
+
+= 2.7.3 - 2024-06-18 =
+* Fix - Fatal error when loading campaign in the marketing overview section.
+* Tweak -  Replace woo.com references with woocommerce.com.
+
+= 2.7.2 - 2024-06-10 =
+* Add - Google Ads account invitation acceptance step to the connection process.
+* Fix - Show tracking snapshots in WPCLI.
+* Tweak - Adjust click event tracking when connecting, disconnecting, and opening billing setup for Google Ads account.
+* Tweak - Adjust event tracking for the creating and claim buttons of Google Ads account.
+* Tweak - WC 9.0 compatibility.
+* Update - Enable users to seamlessly set up conversion tracking, without having to set up merchant center first or requiring campaign creation.
+* Update - Move the Google Ads account connection process from step 4 to step 1 of the onboarding flow.
 
 = 2.7.1 - 2024-05-29 =
 * Dev - Add info about  Legacy Google Ads API Client Library  in Readme.
@@ -320,7 +375,7 @@
 * Add - Declare compatibility for High Performance Order Storage.
 * Dev - Selectively externalize bundled packages.
 * Fix - E2E Testing: Reduce the false positive rate and adjust the running events on GitHub Actions.
-* Fix - Move the order of Google Listings & Ads below the Coupons in the Marketing menu of WooCommerce admin page.
+* Fix - Move the order of Google Listings and Ads below the Coupons in the Marketing menu of WooCommerce admin page.
 * Fix - WC 6.9 compatibility: Shipping time settings should not appear after selecting the "complex" shipping option.
 * Fix - WC 6.9 compatibility: The free shipping threshold should be cleared after selecting the "No" free shipping option.
 * Fix - WC 6.9 compatibility: The selected free shipping option should be reset after setting all shipping rates to 0.
@@ -530,7 +585,7 @@
 = 1.12.0 - 2022-03-29 =
 * Add - Additional data points for tracker snapshot.
 * Add - Enables merchants to select multiple countries as their audience when creating a Google Ads campaign (Smart Shopping Campaign).
-* Add - Google Listings And Ads product attributes icon.
+* Add - Google Listings and Ads product attributes icon.
 * Add - Integration with WooCommerce Shipping Zone to automatically sync shipping settings to Merchant Center.
 * FIx - Show right link and message in Paid Campaigns report when there is no data available.
 * Fix - Cleanup synced products locally when disconnecting Merchant Center account.

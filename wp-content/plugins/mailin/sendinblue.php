@@ -3,7 +3,7 @@
  * Plugin Name: Newsletter, SMTP, Email marketing and Subscribe forms by Brevo
  * Plugin URI: https://www.brevo.com/?r=wporg
  * Description: Manage your contact lists, subscription forms and all email and marketing-related topics from your wp panel, within one single plugin
- * Version: 3.1.80
+ * Version: 3.1.85
  * Author: Brevo
  * Author URI: https://www.brevo.com/?r=wporg
  * License: GPLv2 or later
@@ -141,6 +141,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 				'data-require' => true,
 				'data-sitekey' => true,
  				'data-error-callback' => true,
+				'data-theme' => true,
 			),
 			'a' => array(
 				'href' => true,
@@ -289,6 +290,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
                 // add columns for old versions
                 SIB_Forms::alterTable();
 				SIB_Model_Users::add_user_added_date_column();
+				SIB_Model_Users::add_flag_doi_sent();
 			}
 
 			$use_api_version = get_option( 'sib_use_apiv2', '0' );
@@ -622,6 +624,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			$params["plugin_version"] = SendinblueApiClient::PLUGIN_VERSION;
 			$params["shop_url"] = get_home_url();
 			$params["active"] = true;
+			$params["connection"] = 27;
 			$response = $apiClient->createInstallationInfo($params);
 			if ( $apiClient->getLastResponseCode() === SendinblueApiClient::RESPONSE_CODE_CREATED )
 			{
@@ -783,11 +786,11 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
                 ) ?>&render=explicit" async defer></script>
 				<?php
 			} else if ('0' != $formData['gCaptcha'] && $formData['selectCaptchaType'] == 3) { ?>
-				
+
 				<script src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script>
-				
+
 			<?php } ?>
-			
+
 			<form id="sib_signup_form_<?php echo esc_attr( $frmID ); ?>" method="post" class="sib_signup_form">
 				<div class="sib_loader" style="display:none;"><img
 							src="<?php echo esc_url( includes_url() ); ?>images/spinner.gif" alt="loader"></div>
@@ -960,7 +963,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 					$verify = wp_remote_post(self::TURNSTILE_SITE_VERIFY, $headers);
 					$verify = wp_remote_retrieve_body($verify);
 					$response = json_decode($verify);
-			
+
 					if($response->success) {
 						$results['success'] = $response->success;
 					} else {
@@ -1089,6 +1092,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 					'listIDs' => maybe_serialize( $listIDs ),
 					'redirectUrl' => $redirectUrl,
 					'user_added_date' => $date,
+					'doi_sent' => 0,
 				);
 				SIB_Model_Users::add_record( $data );
 			} else {

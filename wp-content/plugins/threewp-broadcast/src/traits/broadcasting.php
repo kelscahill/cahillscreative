@@ -1043,7 +1043,7 @@ trait broadcasting
 	{
 		$bcd = $action->broadcasting_data;
 
-		if ( ! isset( $bcd->galleries ) )
+		if ( ! is_object( $bcd->galleries ) )
 			$bcd->galleries = ThreeWP_Broadcast()->collection();
 
 		// Return a collection of galleries for thie content id.

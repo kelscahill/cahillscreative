@@ -111,15 +111,6 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 
 		WC_Stripe_API::set_secret_key( $this->secret_key );
 
-		// Title shows the count of enabled payment methods in settings page only.
-		if ( isset( $_GET['page'] ) && 'wc-settings' === $_GET['page'] ) {
-			$enabled_payment_methods_count = count( WC_Stripe_Helper::get_legacy_enabled_payment_method_ids() );
-			$this->title                   = $enabled_payment_methods_count ?
-				/* translators: $1. Count of enabled payment methods. */
-				sprintf( _n( '%d payment method', '%d payment methods', $enabled_payment_methods_count, 'woocommerce-gateway-stripe' ), $enabled_payment_methods_count )
-				: $this->method_title;
-		}
-
 		// Hooks.
 		add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] );
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] );
@@ -136,6 +127,26 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 
 		// Note: display error is in the parent class.
 		add_action( 'admin_notices', [ $this, 'display_errors' ], 9999 );
+	}
+
+	/**
+	 * Gets the payment gateway's Title.
+	 *
+	 * On payment settings page the default title includes the number of legacy payment methods enabled.
+	 *
+	 * @return string The payment gateway's title.
+	 */
+	public function get_title() {
+		// Change the title on the payment methods settings page to include the number of enabled payment methods.
+		if ( isset( $_GET['page'] ) && 'wc-settings' === $_GET['page'] ) {
+			$enabled_payment_methods_count = count( WC_Stripe_Helper::get_legacy_enabled_payment_method_ids() );
+			$this->title                   = $enabled_payment_methods_count ?
+				/* translators: $1. Count of enabled payment methods. */
+				sprintf( _n( '%d payment method', '%d payment methods', $enabled_payment_methods_count, 'woocommerce-gateway-stripe' ), $enabled_payment_methods_count )
+				: $this->method_title;
+		}
+
+		return parent::get_title();
 	}
 
 	/**
@@ -408,6 +419,11 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 			$this->check_source( $prepared_source );
 			$this->save_source_to_order( $order, $prepared_source );
 
+			// Update the saved payment method to have the latest billing details.
+			if ( $prepared_source->source && $this->is_using_saved_payment_method() ) {
+				$this->update_saved_payment_method( $prepared_source->source, $order );
+			}
+
 			if ( 0 >= $order->get_total() ) {
 				return $this->complete_free_order( $order, $prepared_source, $force_save_source );
 			}
@@ -449,7 +465,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 
 			if ( ! empty( $intent ) ) {
 				// Use the last charge within the intent to proceed.
-				$response = end( $intent->charges->data );
+				$response = $this->get_latest_charge_from_intent( $intent );
 
 				// If the intent requires a 3DS flow, redirect to it.
 				if ( 'requires_action' === $intent->status ) {
@@ -656,6 +672,10 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	 * @return WC_Payment_Gateway[] The same list of gateways, but with the Stripe methods in the right order.
 	 */
 	public function reorder_available_payment_gateways( $gateways ) {
+		if ( ! is_array( $gateways ) ) {
+			return $gateways;
+		}
+
 		$ordered_available_stripe_methods = [];
 
 		// Keep a record of where Stripe was found in the $gateways array so we can insert the Stripe methods in the right place.
@@ -933,7 +953,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	 * @param stdClass $intent The Payment Intent object.
 	 */
 	protected function handle_intent_verification_success( $order, $intent ) {
-		$this->process_response( end( $intent->charges->data ), $order );
+		$this->process_response( $this->get_latest_charge_from_intent( $intent ), $order );
 		$this->maybe_process_subscription_early_renewal_success( $order, $intent );
 	}
 
@@ -1100,20 +1120,6 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	 */
 	public function get_required_settings_keys() {
 		return [ 'publishable_key', 'secret_key' ];
-	}
-
-	/**
-	 * Get the connection URL.
-	 *
-	 * @return string Connection URL.
-	 */
-	public function get_connection_url( $return_url = '' ) {
-		$api     = new WC_Stripe_Connect_API();
-		$connect = new WC_Stripe_Connect( $api );
-
-		$url = $connect->get_oauth_url( $return_url );
-
-		return is_wp_error( $url ) ? null : $url;
 	}
 
 	/**

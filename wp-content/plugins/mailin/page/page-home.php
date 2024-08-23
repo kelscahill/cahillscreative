@@ -823,6 +823,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 
 				$params["partnerName"] = "WORDPRESS";
 				$params["active"] = true;
+				$params["connection"] = 27;
 				$params["plugin_version"] = SendinblueApiClient::PLUGIN_VERSION;
 				if(!empty($wp_version))
 				{

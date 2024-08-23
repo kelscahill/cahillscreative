@@ -4,9 +4,9 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 8.0
-Stable tag: 50.09
+Stable tag: 50.13
 Tags: multipost, sharing, duplicate, syndication, marketing
-Tested up to: 6.5
+Tested up to: 6.6
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -318,11 +318,11 @@ The broadcast meta box, menu and columns in the post view can be hidden from use
 Below is a list of plugins that just will not work properly with Broadcast and / or its addons:
 
 * <a href="https://wordpress.org/plugins/cf-image-resizing/">Cloudflare Image Resizing</a> - Creates 404 errors for images.
-* <a href="https://wordpress.org/plugins/intuitive-custom-post-order/">Intuitive Custom Post Order</a> - Prevents broadcasting due to switch_to_blog() mismatch.
 * Post Type Switcher - Turns post types into attachments and vice versa.
 * <a href="https://wordpress.org/plugins/query-monitor/">Query Monitor</a> causes the queue data to increase exponentially.
 * Theia Smart Thumbnails Premium
 * <a href="http://intellywp.com/tracking-code-manager/">Tracking Code Manager</a> - prevents User & Blog Settings from working by inserting data into the _POST variable during a normal page GET. Very non-standard behavior.
+* <a href="https://wordpress.org/plugins/wp-security-audit-log/">WP Activity Log</a> - kills Wordpress when taxonomies are about to be synced.
 
 = Orphans? =
 
@@ -368,6 +368,21 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 50.13 20240711 =
+
+* Fix error when using the finding unlinked children bulk post action. Also effected the Link Before Broadcast add-on.
+
+= 50.12 20240706 =
+
+* Fix error 500 when broadcasting. The error was a variable in the broadcasting data that was not being set.
+
+= 50.11 20240706 =
+
+* Fix looping when broadcasting a related post that has just been broadcasted.
+* Fix: Added WP Activity Log to the list of incompatible plugins.
+* Dev: Fixed lots of PHP 8.2 warnings.
+* Dev: Add option in Gutenberg parse_blocks code to dump block content once. Prevents several add-ons from all dumping the same blocks.
 
 = 50.09 20240506 =
 

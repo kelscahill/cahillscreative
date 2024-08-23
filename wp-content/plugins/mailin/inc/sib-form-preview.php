@@ -20,6 +20,7 @@ wp_head();
         }
         
         $selectCaptchaTypeVal = isset($formData['selectCaptchaType']) ? $formData['selectCaptchaType'] : "";
+        $cCaptchaStyle = isset($formData['cCaptchaStyle']) ? $formData['cCaptchaStyle'] : "";
         
         if (isset($formData['gCaptcha']) && $formData['gCaptcha'] != 0) {
             if (isset($selectCaptchaTypeVal) && !in_array($selectCaptchaTypeVal, [1, 3])) {
@@ -70,6 +71,7 @@ wp_head();
                     function _turnstileCb() {
                         turnstile.render('.cf-turnstile', {
                             sitekey: siteKey,
+                            theme: <?php echo $cCaptchaStyle; ?>,
                             callback: function(token) {
                                 console.log("Challenge Success");
                             },

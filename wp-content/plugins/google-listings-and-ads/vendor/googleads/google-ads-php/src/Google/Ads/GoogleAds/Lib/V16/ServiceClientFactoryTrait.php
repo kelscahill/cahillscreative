@@ -36,6 +36,7 @@ use Google\Ads\GoogleAds\V16\Services\Client\AssetServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\BillingSetupServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\CampaignBudgetServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\CampaignCriterionServiceClient;
+use Google\Ads\GoogleAds\V16\Services\Client\CampaignLabelServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\CampaignServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\ConversionActionServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\CustomerServiceClient;
@@ -43,6 +44,7 @@ use Google\Ads\GoogleAds\V16\Services\Client\CustomerUserAccessServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\ExtensionFeedItemServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\GeoTargetConstantServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\GoogleAdsServiceClient;
+use Google\Ads\GoogleAds\V16\Services\Client\LabelServiceClient;
 use Google\Ads\GoogleAds\V16\Services\Client\ProductLinkInvitationServiceClient;
 use Google\ApiCore\GrpcSupportTrait;
 use Grpc\ChannelCredentials;
@@ -251,6 +253,14 @@ trait ServiceClientFactoryTrait
     }
 
     /**
+     * @return CampaignLabelServiceClient
+     */
+    public function getCampaignLabelServiceClient(): CampaignLabelServiceClient
+    {
+        return new CampaignLabelServiceClient($this->getGoogleAdsClientOptions());
+    }
+
+    /**
      * @return CampaignServiceClient
      */
     public function getCampaignServiceClient(): CampaignServiceClient
@@ -304,6 +314,14 @@ trait ServiceClientFactoryTrait
     public function getGoogleAdsServiceClient(): GoogleAdsServiceClient
     {
         return new GoogleAdsServiceClient($this->getGoogleAdsClientOptions());
+    }
+
+    /**
+     * @return LabelServiceClient
+     */
+    public function getLabelServiceClient(): LabelServiceClient
+    {
+        return new LabelServiceClient($this->getGoogleAdsClientOptions());
     }
 
     /**

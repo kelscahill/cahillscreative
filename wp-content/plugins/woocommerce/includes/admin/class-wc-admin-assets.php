@@ -220,6 +220,7 @@ if ( ! class_exists( 'WC_Admin_Assets', false ) ) :
 					'i18n_delete_product_notice'        => __( 'This product has produced sales and may be linked to existing orders. Are you sure you want to delete it?', 'woocommerce' ),
 					'i18n_remove_personal_data_notice'  => __( 'This action cannot be reversed. Are you sure you wish to erase personal data from the selected orders?', 'woocommerce' ),
 					'i18n_confirm_delete'               => __( 'Are you sure you wish to delete this item?', 'woocommerce' ),
+					'i18n_global_unique_id_error'       => __( 'Please enter only numbers and hyphens (-).', 'woocommerce' ),
 					'decimal_point'                     => $decimal,
 					'mon_decimal_point'                 => wc_get_price_decimal_separator(),
 					'ajax_url'                          => admin_url( 'admin-ajax.php' ),
@@ -231,7 +232,7 @@ if ( ! class_exists( 'WC_Admin_Assets', false ) ) :
 						'gateway_toggle' => current_user_can( 'manage_woocommerce' ) ? wp_create_nonce( 'woocommerce-toggle-payment-gateway-enabled' ) : null,
 					),
 					'urls'                              => array(
-						'add_product'     => Features::is_enabled( 'new-product-management-experience' ) || \Automattic\WooCommerce\Utilities\FeaturesUtil::feature_is_enabled( 'product_block_editor' ) ? esc_url_raw( admin_url( 'admin.php?page=wc-admin&path=/add-product' ) ) : null,
+						'add_product'     => \Automattic\WooCommerce\Utilities\FeaturesUtil::feature_is_enabled( 'product_block_editor' ) ? esc_url_raw( admin_url( 'admin.php?page=wc-admin&path=/add-product' ) ) : null,
 						'import_products' => current_user_can( 'import' ) ? esc_url_raw( admin_url( 'edit.php?post_type=product&page=product_importer' ) ) : null,
 						'export_products' => current_user_can( 'export' ) ? esc_url_raw( admin_url( 'edit.php?post_type=product&page=product_exporter' ) ) : null,
 					),
@@ -276,7 +277,7 @@ if ( ! class_exists( 'WC_Admin_Assets', false ) ) :
 			if ( in_array( $screen_id, array( 'product', 'edit-product' ) ) ) {
 				wp_enqueue_media();
 				wp_register_script( 'wc-admin-product-meta-boxes', WC()->plugin_url() . '/assets/js/admin/meta-boxes-product' . $suffix . '.js', array( 'wc-admin-meta-boxes', 'media-models' ), $version );
-				wp_register_script( 'wc-admin-variation-meta-boxes', WC()->plugin_url() . '/assets/js/admin/meta-boxes-product-variation' . $suffix . '.js', array( 'wc-admin-meta-boxes', 'serializejson', 'media-models', 'backbone', 'jquery-ui-sortable', 'wc-backbone-modal' ), $version );
+				wp_register_script( 'wc-admin-variation-meta-boxes', WC()->plugin_url() . '/assets/js/admin/meta-boxes-product-variation' . $suffix . '.js', array( 'wc-admin-meta-boxes', 'serializejson', 'media-models', 'backbone', 'jquery-ui-sortable', 'wc-backbone-modal', 'wp-data', 'wp-notices' ), $version );
 
 				wp_enqueue_script( 'wc-admin-product-meta-boxes' );
 				wp_enqueue_script( 'wc-admin-variation-meta-boxes' );
@@ -558,7 +559,7 @@ if ( ! class_exists( 'WC_Admin_Assets', false ) ) :
 			// Marketplace promotions.
 			if ( in_array( $screen_id, array( 'woocommerce_page_wc-admin' ), true ) ) {
 
-				$promotions = get_transient( WC_Admin_Marketplace_Promotions::TRANSIENT_NAME );
+				$promotions = WC_Admin_Marketplace_Promotions::get_active_promotions();
 
 				if ( false === $promotions ) {
 					return;

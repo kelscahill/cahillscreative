@@ -102,26 +102,81 @@ class ProductsManager
 
         if (!empty($data['category_ids'])) {
             $data['categories'] = [];
+            $data['category_names'] = '';
         }
 
         foreach ($data['category_ids'] as $key => $value) {
             $category = get_term_by('id', $value, 'product_cat');
             if (is_object($category)) {
                 $category->id = $category->term_id;
+                $data['category_names'] ? $data['category_names'] .= ", " : '';
+                $data['category_names'] .= $category->name;
                 array_push($data['categories'], $category);
             }
         }
 
         if (!empty($product->get_image_id())) {
             $data['images'] = [];
+            $data['main_image_src'] = '';
             $img_url = wp_get_attachment_image_src(get_post_thumbnail_id($data['id']), 'single-post-thumbnail')[0];
             $img_obj = (object) [
                 'id' => (int) $product->get_image_id(),
                 'src' => is_string($img_url) ? $img_url : ""
             ];
+            $data['main_image_src'] = $img_obj->src;
             array_push($data['images'],$img_obj);
         }
 
         return $data;
+    }
+
+    public function product_viewed($product_id = null)
+    {
+        $settings = $this->api_manager->get_settings();
+
+        if (empty($settings[SendinblueClient::IS_ABANDONED_CART_ENABLED]) ||
+            !$settings[SendinblueClient::IS_ABANDONED_CART_ENABLED]
+        ) {
+            return false;
+        }
+
+        global $product;
+        $email_id = $this->user_email();
+        if (empty($product) || empty($email_id)) {
+            return;
+        }
+        $id = !empty(wp_get_session_token()) ? wp_get_session_token() : hash('sha256', $email_id);
+
+        $item = $this->prepare_payload($product);
+        $item['url'] = $item['permalink'];
+        $item['category'] = $item['category_names'] ?? '';
+        $item['image'] = $item['main_image_src'] ?? '';
+        $data = [
+            'items' => $item,
+            'currency' => is_string(get_woocommerce_currency()) ? get_woocommerce_currency() : '',
+            'shop_name' => get_the_title(get_option('woocommerce_shop_page_id')),
+            'shop_url' => get_site_url(),
+            'email' => $email_id
+        ];
+
+        $client = new SendinblueClient();
+        $client->eventsSync(SendinblueClient::PRODUCT_VIEWED, ['id' => $id, 'data' => $data]);
+    }
+
+    private function user_email()
+    {
+        $user = wp_get_current_user();
+
+        if (!empty($user->user_email)) {
+            return $user->user_email;
+        }
+        if (isset($_COOKIE['email_id'])) {
+            return $_COOKIE['email_id'];
+        }
+        if (isset($_COOKIE['tracking_email'])) {
+            return  $_COOKIE['tracking_email'];
+        }
+
+        return null;
     }
 }

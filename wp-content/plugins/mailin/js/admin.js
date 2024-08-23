@@ -586,14 +586,14 @@ $jQ(document).ready(function(){
         /* without node.focus() IE will returns -1 when focus is not on node */
         if(node.selectionStart) return node.selectionStart;
         else if(!document.selection) return 0;
-        var c		= "\001";
-        var sel	= document.selection.createRange();
-        var dul	= sel.duplicate();
+        var c       = "\001";
+        var sel = document.selection.createRange();
+        var dul = sel.duplicate();
         dul.moveToElementText(node);
-        sel.text	= c;
-        var len		= (dul.text.indexOf(c));
+        sel.text    = c;
+        var len     = (dul.text.indexOf(c));
         sel.moveStart('character',-1);
-        sel.text	= "";
+        sel.text    = "";
         return len;
     }
     // set cursor position at top of text area
@@ -1189,11 +1189,13 @@ $jQ(document).ready(function(){
         {
             var site_key = $jQ('#sib_captcha_site_turnstile').val();
             var secret_key = $jQ('#sib_captcha_secret_turnstile').val();
+            var secret_key = $jQ('#sib_captcha_secret_turnstile').val();
+            var cCaptchaStyle = $jQ('input[name=turnstile_captcha_theme]:checked').val();
 
             var if_site_key_exists = $jQ('#cf-turnstile').val();
 
             if ((if_site_key_exists == '') || (if_site_key_exists != site_key)) {
-                field_html = '<div id="' + "cf-turnstile-"+site_key + '"' + ' class="cf-turnstile" data-error-callback="errorCallbackForTurnstileErrors" data-sitekey="'+site_key+'"></div>';
+                field_html = '<div id="' + "cf-turnstile-"+site_key + '"' + ' class="cf-turnstile" data-error-callback="errorCallbackForTurnstileErrors" data-sitekey="'+site_key+'"   data-theme="'+cCaptchaStyle+'"></div>';
             } else {
                 replacedHTML = html;
             }

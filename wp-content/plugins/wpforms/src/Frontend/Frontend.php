@@ -12,6 +12,13 @@ use WP_Post;
 class Frontend {
 
 	/**
+	 * Field format.
+	 *
+	 * @since 1.8.9
+	 */
+	const FIELD_FORMAT = 'wpforms-%d-field_%s';
+
+	/**
 	 * Render engine setting value.
 	 *
 	 * @since 1.8.1
@@ -130,7 +137,6 @@ class Frontend {
 		add_action( 'wp_footer', [ $this, 'assets_footer' ], 15 );
 		add_action( 'wp_footer', [ $this, 'missing_assets_error_js' ], 20 );
 		add_action( 'wp_footer', [ $this, 'footer_end' ], 99 );
-		add_action( 'wp_head' , [ $this, 'maybe_reload_page' ] );
 	}
 
 	/**
@@ -835,16 +841,16 @@ class Frontend {
 	public function get_field_attributes( $field, $form_data ): array {
 
 		$form_id    = absint( $form_data['id'] );
-		$field_id   = absint( $field['id'] );
+		$field_id   = wpforms_validate_field_id( $field['id'] );
 		$attributes = [
 			'field_class'       => [ 'wpforms-field', 'wpforms-field-' . sanitize_html_class( $field['type'] ) ],
-			'field_id'          => [ sprintf( 'wpforms-%d-field_%d-container', $form_id, $field_id ) ],
+			'field_id'          => [ sprintf( 'wpforms-%d-field_%s-container', $form_id, $field_id ) ],
 			'field_style'       => '',
 			'label_class'       => [ 'wpforms-field-label' ],
 			'label_id'          => '',
 			'description_class' => [ 'wpforms-field-description' ],
 			'description_id'    => [],
-			'input_id'          => [ sprintf( 'wpforms-%d-field_%d', $form_id, $field_id ) ],
+			'input_id'          => [ sprintf( self::FIELD_FORMAT, $form_id, $field_id ) ],
 			'input_class'       => [],
 			'input_data'        => [],
 		];
@@ -931,7 +937,7 @@ class Frontend {
 		list( $field, $attributes, $error ) = $this->prepare_get_field_properties( $field, $form_data, $attributes );
 
 		$form_id  = absint( $form_data['id'] );
-		$field_id = absint( $field['id'] );
+		$field_id = wpforms_validate_field_id( $field['id'] );
 
 		$properties = [
 			'container'   => [
@@ -944,7 +950,7 @@ class Frontend {
 			],
 			'label'       => [
 				'attr'     => [
-					'for' => sprintf( 'wpforms-%d-field_%d', $form_id, $field_id ),
+					'for' => sprintf( self::FIELD_FORMAT, $form_id, $field_id ),
 				],
 				'class'    => $attributes['label_class'],
 				'data'     => [],
@@ -969,7 +975,7 @@ class Frontend {
 			],
 			'error'       => [
 				'attr'  => [
-					'for' => sprintf( 'wpforms-%d-field_%d', $form_id, $field_id ),
+					'for' => sprintf( self::FIELD_FORMAT, $form_id, $field_id ),
 				],
 				'class' => [ 'wpforms-error' ],
 				'data'  => [],
@@ -1027,7 +1033,7 @@ class Frontend {
 		$attributes = empty( $attributes ) ? $this->get_field_attributes( $field, $form_data ) : $attributes;
 		$field      = $this->filter_field( $field, $form_data, $attributes );
 		$form_id    = absint( $form_data['id'] );
-		$field_id   = absint( $field['id'] );
+		$field_id   = wpforms_validate_field_id( $field['id'] );
 		$error      = ! empty( wpforms()->get( 'process' )->errors[ $form_id ][ $field_id ] ) ? wpforms()->get( 'process' )->errors[ $form_id ][ $field_id ] : '';
 
 		return [ $field, $attributes, $error ];
@@ -1490,15 +1496,21 @@ class Frontend {
 	}
 
 	/**
-	 * Load the necessary CSS for single pages/posts earlier if possible.
+	 * Load the necessary assets for single pages/posts earlier if possible.
 	 *
 	 * If we are viewing a singular page, then we can check the content early
 	 * to see if the shortcode was used. If not, we fall back and load the assets
 	 * later on during the page (widgets, archives, etc.).
 	 *
 	 * @since 1.0.0
+	 * @since 1.9.0 Added load JS assets.
 	 */
 	public function assets_header() {
+
+		// Force loading JS assets in the header.
+		if ( ! $this->load_script_in_footer() ) {
+			$this->assets_js();
+		}
 
 		/**
 		 * Allow loading assets in header on various pages.
@@ -1518,9 +1530,9 @@ class Frontend {
 		 *
 		 * @param bool $force_load Force loading assets in header, default `false`.
 		 */
-		$force_load = (bool) apply_filters( 'wpforms_frontend_assets_header_force_load', false );
+		$force_load_css = (bool) apply_filters( 'wpforms_frontend_assets_header_force_load', false );
 
-		if ( $force_load ) {
+		if ( $force_load_css ) {
 			$this->assets_css();
 
 			return;
@@ -1593,15 +1605,16 @@ class Frontend {
 		 */
 		do_action( 'wpforms_frontend_js', $this->forms );
 
-		$min = wpforms_get_min_suffix();
+		$min       = wpforms_get_min_suffix();
+		$in_footer = $this->load_script_in_footer();
 
 		// Load jQuery validation library - https://jqueryvalidation.org/.
 		wp_enqueue_script(
 			'wpforms-validation',
 			WPFORMS_PLUGIN_URL . 'assets/lib/jquery.validate.min.js',
 			[ 'jquery' ],
-			'1.20.0',
-			true
+			'1.20.1',
+			$in_footer
 		);
 
 		// Load jQuery input mask library - https://github.com/RobinHerbots/jquery.inputmask.
@@ -1614,8 +1627,8 @@ class Frontend {
 				'wpforms-maskedinput',
 				WPFORMS_PLUGIN_URL . 'assets/lib/jquery.inputmask.min.js',
 				[ 'jquery' ],
-				'5.0.7-beta.29',
-				true
+				'5.0.9',
+				$in_footer
 			);
 		}
 
@@ -1629,7 +1642,7 @@ class Frontend {
 				WPFORMS_PLUGIN_URL . 'assets/lib/mailcheck.min.js',
 				false,
 				'1.1.2',
-				true
+				$in_footer
 			);
 
 			wp_enqueue_script(
@@ -1637,7 +1650,7 @@ class Frontend {
 				WPFORMS_PLUGIN_URL . 'assets/lib/punycode.min.js',
 				[],
 				'1.0.0',
-				true
+				$in_footer
 			);
 		}
 
@@ -1646,7 +1659,7 @@ class Frontend {
 			WPFORMS_PLUGIN_URL . "assets/js/share/utils{$min}.js",
 			[ 'jquery' ],
 			WPFORMS_VERSION,
-			true
+			$in_footer
 		);
 
 		// Load base JS.
@@ -1655,7 +1668,7 @@ class Frontend {
 			WPFORMS_PLUGIN_URL . "assets/js/frontend/wpforms{$min}.js",
 			[ 'jquery' ],
 			WPFORMS_VERSION,
-			true
+			$in_footer
 		);
 
 		// Load JS additions needed in the Modern Markup mode.
@@ -1665,7 +1678,7 @@ class Frontend {
 				WPFORMS_PLUGIN_URL . "assets/js/frontend/wpforms-modern{$min}.js",
 				[ 'wpforms' ],
 				WPFORMS_VERSION,
-				true
+				$in_footer
 			);
 		}
 	}
@@ -1735,6 +1748,7 @@ class Frontend {
 
 		$form_data = (array) $form_data;
 		$min       = wpforms_get_min_suffix();
+		$in_footer = $this->load_script_in_footer();
 
 		// Base CSS only.
 		if ( (int) wpforms_setting( 'disable-css', '1' ) === 1 ) {
@@ -1753,7 +1767,7 @@ class Frontend {
 				WPFORMS_PLUGIN_URL . "assets/js/frontend/wpforms-confirmation{$min}.js",
 				[ 'jquery' ],
 				WPFORMS_VERSION,
-				true
+				$in_footer
 			);
 		}
 
@@ -1840,6 +1854,20 @@ class Frontend {
 			'val_inputmask_incomplete'   => wpforms_setting( 'validation-inputmask-incomplete', esc_html__( 'Please fill out the field in required format.', 'wpforms-lite' ) ),
 			'uuid_cookie'                => false,
 			'locale'                     => wpforms_get_language_code(),
+
+			/**
+			 * Filters the user's country code.
+			 *
+			 * Leave empty for most cases, it will be auto-detected.
+			 * If set it will make country recognition in wpforms.js frontend skipped.
+			 * Allows to test Phone Smart field with different countries.
+			 *
+			 * @since 1.9.0
+			 *
+			 * @param string|false $country Country code.
+			 */
+			'country'                    => apply_filters( 'wpforms_frontend_get_user_country_code', false ),
+			'country_list_label'         => esc_html__( 'Country list', 'wpforms-lite' ),
 			'wpforms_plugin_url'         => WPFORMS_PLUGIN_URL,
 			'gdpr'                       => wpforms_setting( 'gdpr' ),
 			'ajaxurl'                    => admin_url( 'admin-ajax.php' ),
@@ -2216,35 +2244,14 @@ class Frontend {
 	}
 
 	/**
-	 * Reload a webpage when it's loaded from the back/forward cache in the browser (Safari).
+	 * Whether to print the script in the footer.
 	 *
-	 * @since 1.8.8
+	 * @since 1.9.0
+	 *
+	 * @return bool
 	 */
-	public function maybe_reload_page() {
+	protected function load_script_in_footer(): bool {
 
-		/**
-		 * Allows developers to skip applying this solution due to conflicts or other reasons.
-		 *
-		 * @since 1.8.8
-		 *
-		 * @param bool $skip If true, return early and the solution will be ignored. By default, false.
-		 */
-		if ( (bool) apply_filters( 'wpforms_frontend_maybe_reload_page_skip', false ) ) {
-			return;
-		}
-		?>
-		<script>
-			( function() {
-				window.onpageshow = function( event ) {
-					// Defined window.wpforms means that a form exists on a page.
-					// If so and back/forward button has been clicked,
-					// force reload a page to prevent the submit button state stuck.
-					if ( typeof window.wpforms !== 'undefined' && event.persisted ) {
-						window.location.reload();
-					}
-				};
-			}() );
-		</script>
-		<?php
+		return ! wpforms_is_frontend_js_header_force_load();
 	}
 }

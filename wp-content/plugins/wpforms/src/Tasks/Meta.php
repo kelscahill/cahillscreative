@@ -39,6 +39,8 @@ class Meta extends WPForms_DB {
 	 */
 	public function __construct() {
 
+		parent::__construct();
+
 		$this->table_name = self::get_table_name();
 	}
 
@@ -103,7 +105,7 @@ class Meta extends WPForms_DB {
 
 		$charset_collate = $wpdb->get_charset_collate();
 
-		$sql = "CREATE TABLE IF NOT EXISTS $this->table_name (
+		$sql = "CREATE TABLE $this->table_name (
 			id bigint(20) NOT NULL AUTO_INCREMENT,
 			action varchar(255) NOT NULL,
 			data longtext NOT NULL,
@@ -155,7 +157,7 @@ class Meta extends WPForms_DB {
 	 * @param array  $data Column data.
 	 * @param string $type Optional. Data type context.
 	 *
-	 * @return int ID for the newly inserted record. 0 otherwise.
+	 * @return int ID for the newly inserted record. Zero otherwise.
 	 */
 	public function add( $data, $type = '' ) {
 
@@ -194,11 +196,10 @@ class Meta extends WPForms_DB {
 		}
 
 		/*
-		 * We are encoding the string representation of all the data
-		 * to make sure that nothing can harm the database.
+		 * We are encoding the string representation of all the data to make sure that nothing can harm the database.
 		 * This is not an encryption, and we need this data later "as is",
-		 * so we are using one of the fastest way to do that.
-		 * This data is removed from DB on a daily basis.
+		 * so we are using one of the fastest ways to do that.
+		 * This data is removed from DB daily.
 		 */
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		return base64_encode( $string );

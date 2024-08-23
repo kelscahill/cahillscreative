@@ -121,7 +121,7 @@ trait post_actions
 				$blogs []= \threewp_broadcast\broadcast_data\blog::from_blog_id( $requested_blog_id );
 		}
 
-		ThreeWP_Broadcast()->debug( 'Finding unlinked children for post %s on blogs %s', $post_id, $blogs );
+		ThreeWP_Broadcast()->debug( 'Finding unlinked children for post %s on blogs %s', $post_id, implode( ", ", array_keys( (array)$blogs ) ) );
 
 		$post = get_post( $post_id );
 
@@ -157,7 +157,7 @@ trait post_actions
 				count( $post_ids ),
 				implode( ",", $post_ids ),
 				$blog->id,
-				$args
+				json_encode( $args )
 			);
 
 			// An exact match was found.

@@ -67,6 +67,7 @@ abstract class FormSelector implements IntegrationInterface {
 		'containerShadowSize'   => CSSVars::CONTAINER_SHADOW_SIZE['none']['box-shadow'],
 		'customCss'             => '',
 		'copyPasteJsonValue'    => '',
+		'pageTitle'             => '',
 	];
 
 	/**
@@ -155,6 +156,8 @@ abstract class FormSelector implements IntegrationInterface {
 		$this->disable_css_setting = (int) wpforms_setting( 'disable-css', '1' );
 		$this->css_vars_obj        = wpforms()->get( 'css_vars' );
 
+		wpforms()->register_instance( 'formselector_themes_data', $this->themes_data_obj );
+
 		$this->hooks();
 	}
 
@@ -169,6 +172,25 @@ abstract class FormSelector implements IntegrationInterface {
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_block_editor_assets' ] );
 		add_action( 'wpforms_frontend_output_container_after', [ $this, 'replace_wpforms_frontend_container_class_filter' ] );
 		add_filter( 'wpforms_frontend_form_action', [ $this, 'form_action_filter' ], 10, 2 );
+		add_filter( 'wpforms_forms_anti_spam_v3_is_honeypot_enabled', [ $this, 'filter_is_honeypot_enabled' ] );
+	}
+
+	/**
+	 * Disable honeypot in Gutenberg/Block editor.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param bool|mixed $is_enabled True if the honeypot is enabled, false otherwise.
+	 *
+	 * @return bool Whether to disable the honeypot.
+	 */
+	public function filter_is_honeypot_enabled( $is_enabled ): bool {
+
+		if ( wpforms_is_rest() ) {
+			return false;
+		}
+
+		return (bool) $is_enabled;
 	}
 
 	/**
@@ -335,6 +357,9 @@ abstract class FormSelector implements IntegrationInterface {
 			'copyPasteJsonValue'    => [
 				'type' => 'string',
 			],
+			'pageTitle'             => [
+				'type' => 'string',
+			],
 		];
 
 		$this->register_styles();
@@ -373,7 +398,7 @@ abstract class FormSelector implements IntegrationInterface {
 		wp_register_style(
 			'wpforms-integrations',
 			WPFORMS_PLUGIN_URL . "assets/css/admin-integrations{$min}.css",
-			[],
+			[ 'dashicons' ],
 			WPFORMS_VERSION
 		);
 
@@ -639,6 +664,7 @@ abstract class FormSelector implements IntegrationInterface {
 			'page_break'                   => esc_html__( 'Page Break', 'wpforms-lite' ),
 			'rating'                       => esc_html__( 'Rating', 'wpforms-lite' ),
 			'heads_up'                     => esc_html__( 'Heads Up!', 'wpforms-lite' ),
+			'form_not_available_message'   => esc_html__( 'It looks like the form you had selected is in the Trash or has been permanently deleted.', 'wpforms-lite' ),
 		];
 
 		return [

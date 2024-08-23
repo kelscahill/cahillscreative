@@ -31,6 +31,15 @@ class WPForms_Field_Email extends WPForms_Field {
 	const RULES = 'rules';
 
 	/**
+	 * Restricted rules.
+	 *
+	 * @since 1.8.9
+	 *
+	 * @var array
+	 */
+	private $restricted_rules = [];
+
+	/**
 	 * Primary class constructor.
 	 *
 	 * @since 1.0.0
@@ -116,7 +125,7 @@ class WPForms_Field_Email extends WPForms_Field {
 	 */
 	public function confirmation_field_properties( $properties, $field, $form_data ) {
 		$form_id  = absint( $form_data['id'] );
-		$field_id = absint( $field['id'] );
+		$field_id = wpforms_validate_field_id( $field['id'] );
 
 		// Email confirmation setting enabled.
 		$props = [
@@ -574,7 +583,7 @@ class WPForms_Field_Email extends WPForms_Field {
 		wpforms()->get( 'process' )->fields[ $field_id ] = [
 			'name'  => sanitize_text_field( $name ),
 			'value' => sanitize_text_field( $this->decode_punycode( $value ) ),
-			'id'    => absint( $field_id ),
+			'id'    => wpforms_validate_field_id( $field_id ),
 			'type'  => $this->type,
 		];
 	}
@@ -585,7 +594,7 @@ class WPForms_Field_Email extends WPForms_Field {
 	 * @since 1.0.0
 	 *
 	 * @param int   $field_id     Field ID.
-	 * @param mixed $field_submit Field value that was submitted.
+	 * @param mixed $field_submit Submitted field value (raw data).
 	 * @param array $form_data    Form data and settings.
 	 */
 	public function validate( $field_id, $field_submit, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
@@ -709,7 +718,7 @@ class WPForms_Field_Email extends WPForms_Field {
 	 *
 	 * @return void
 	 */
-	private function ajax_sanitize( $type ) {
+	private function ajax_sanitize( $type ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Run a security check.
 		check_ajax_referer( 'wpforms-builder', 'nonce' );
@@ -720,6 +729,8 @@ class WPForms_Field_Email extends WPForms_Field {
 		if ( ! $content ) {
 			wp_send_json_error();
 		}
+
+		$this->restricted_rules = [];
 
 		switch ( $type ) {
 			case self::RULES:
@@ -750,6 +761,10 @@ class WPForms_Field_Email extends WPForms_Field {
 
 			default:
 				break;
+		}
+
+		if ( ! empty( $this->restricted_rules ) ) {
+			$content['restricted'] = count( $this->restricted_rules );
 		}
 
 		wp_send_json_success( $content );
@@ -938,6 +953,8 @@ class WPForms_Field_Email extends WPForms_Field {
 
 			if ( ! $email_pattern ) {
 				unset( $patterns[ $key ] );
+				$this->restricted_rules[] = $pattern;
+
 				continue;
 			}
 
@@ -1053,12 +1070,22 @@ class WPForms_Field_Email extends WPForms_Field {
 	 */
 	public function add_builder_strings( $strings, $form ) {
 
-		$strings['allow_deny_lists_intersect'] = esc_html__(
-			'We’ve detected the same text in your allowlist and denylist. To prevent a conflict, we’ve removed the following text from the list you’re currently viewing:',
-			'wpforms-lite'
-		);
+		$email_strings = [
+			'allow_deny_lists_intersect' => esc_html__(
+				'We’ve detected the same text in your allowlist and denylist. To prevent a conflict, we’ve removed the following text from the list you’re currently viewing:',
+				'wpforms-lite'
+			),
+			'restricted_rules'           => esc_html__(
+				'At least one of the emails in your list contained an error and has been removed.',
+				'wpforms-lite'
+			),
+			'restricted_default_email'   => esc_html__(
+				'The provided email is not valid.',
+				'wpforms-lite'
+			),
+		];
 
-		return $strings;
+		return array_merge( $strings, $email_strings );
 	}
 
 	/**

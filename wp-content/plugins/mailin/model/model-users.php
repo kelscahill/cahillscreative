@@ -246,6 +246,20 @@ class SIB_Model_Users {
 		}
 	}
 
+    /**
+     * add new column to the table which will reflect sent DOI flag
+     */
+    public static function add_flag_doi_sent() {
+        global $wpdb;
+        $doi_sent = 'doi_sent';
+        $result     = $wpdb->query( $wpdb->prepare( 'SHOW COLUMNS FROM ' . $wpdb->prefix . self::TABLE_NAME . ' LIKE %s ', $doi_sent ) ); // db call ok; no-cache ok.
+
+        if ( empty( $result ) ) {
+            $query = 'ALTER TABLE ' . $wpdb->prefix . self::TABLE_NAME . ' ADD COLUMN ' . $doi_sent . ' int(20) NOT NULL DEFAULT 0';
+            $wpdb->query( $query );
+        }
+    }
+
 	/** Update user data to the table */
 	public static function update_element( $data ) {
 		global $wpdb;
@@ -255,4 +269,14 @@ class SIB_Model_Users {
 		return true;
 	}
 
+    /**
+     * update to mark the DOI sent
+     */
+    public static function make_doi_sent($email) {
+        global $wpdb;
+        $query = $wpdb->prepare('update ' . $wpdb->prefix . self::TABLE_NAME . ' set doi_sent= %d where email= %s;', array(esc_sql(1), esc_sql($email) ));
+        $wpdb->query($query);
+
+        return true;
+    }
 }

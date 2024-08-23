@@ -23,6 +23,12 @@ class ThreeWP_Broadcast
 	use traits\savings_calculator;
 
 	/**
+		@brief		Are we busy fetching the real link?
+		@since		2024-06-10 22:54:15
+	**/
+	public $_is_getting_permalink = false;
+
+	/**
 		@brief		Has the JS been enqueued?
 		@since		2023-04-19 21:57:02
 	**/
@@ -39,6 +45,20 @@ class ThreeWP_Broadcast
 		@since		2023-04-19 21:56:37
 	**/
 	public $__plugin_pack;
+
+	/**
+		@brief		The URL of the site, used during broadcasting.
+		@details	Here for the php 8.2 warning.
+		@since		2024-05-11 21:12:56
+	**/
+	public $__siteurl;
+
+	/**
+		@brief		Stores the calculator data temporarily.
+		@details	Here for the php 8.2 warning.
+		@since		2024-05-11 21:15:02
+	**/
+	public $__threewp_broadcastsavings_calculatorDatasavings_calculator_data;
 
 	/**
 		@brief		A cache of broadcast data for various posts we encounter.
@@ -108,7 +128,6 @@ class ThreeWP_Broadcast
 	**/
 	public static $incompatible_plugins = [
 		'cf-image-resizing/cf-image-resizing.php',
-		'intuitive-custom-post-order/intuitive-custom-post-order.php',
 		'post-type-switcher/post-type-switcher.php',
 		/**
 			@brief		Causes Queue data to expand exponentially.
@@ -121,6 +140,11 @@ class ThreeWP_Broadcast
 			@since		2018-01-22 16:02:22
 		**/
 		'tracking-code-manager/index.php',
+		/**
+			@brief		Aborts Broadcast when syncing taxonomies.
+			@since		2024-05-30 19:02:15
+		**/
+		'wp-security-audit-log/wp-security-audit-log.php',
 	];
 
 	/**
@@ -380,7 +404,7 @@ class ThreeWP_Broadcast
 		if ( $_SERVER[ 'SCRIPT_NAME' ] == '/wp-admin/post.php' )
 			return $link;
 
-		if ( isset( $this->_is_getting_permalink ) )
+		if ( $this->_is_getting_permalink )
 			return $link;
 
 		$this->_is_getting_permalink = true;
@@ -401,7 +425,7 @@ class ThreeWP_Broadcast
 		$key = 'b' . $blog_id . '_p' . $post->ID . $link;
 		if ( property_exists( $this->permalink_cache, $key ) )
 		{
-			unset( $this->_is_getting_permalink );
+			$this->_is_getting_permalink = false;
 			return $this->permalink_cache->$key;
 		}
 
@@ -412,7 +436,7 @@ class ThreeWP_Broadcast
 		if ( $linked_parent === false)
 		{
 			$this->permalink_cache->$key = $link;
-			unset( $this->_is_getting_permalink );
+			$this->_is_getting_permalink = false;
 			return $link;
 		}
 
@@ -421,7 +445,7 @@ class ThreeWP_Broadcast
 		$parent_permalink = get_permalink( $post );
 		restore_current_blog();
 
-		unset( $this->_is_getting_permalink );
+		$this->_is_getting_permalink = false;
 
 		$action = new actions\override_child_permalink();
 		$action->child_permalink = $link;

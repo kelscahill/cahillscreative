@@ -68,6 +68,13 @@ class gutenberg
 	{
 		$options = array_merge( [
 			/**
+				@brief		Debug output the blocks for this content ID.
+				@details	Replace false with the id of the content, like "post_content".
+				@see		actions/preparse_content
+				@since		2024-06-19 21:42:54
+			**/
+			'dump_blocks_once' => false,
+			/**
 				@brief		Detect whether to stripslashes from the attributes.
 				@details	true = always
 							false = never
@@ -118,6 +125,21 @@ class gutenberg
 				'original' => $matches[ 0 ][ $index ],
 			];
 		}
+
+		if ( $options[ 'dump_blocks_once' ] !== false )
+			if ( count( $blocks ) > 0 )
+			{
+				$marker = $options[ 'dump_blocks_once' ];
+				$key = 'gutenberg_dump_block_once_' .  $marker;
+				// We store the dump marker in the broadcasting data.
+				// Fetch the latest broadcasting data.
+				$bcd = end( ThreeWP_Broadcast()->broadcasting );
+				if ( ! $bcd->dynamic_data->has( $key ) )
+				{
+					$bcd->dynamic_data->set( $key, true );
+					ThreeWP_Broadcast()->debug( 'Blocks in %s: %s', $marker, $blocks );
+				}
+			}
 		return $blocks;
 	}
 

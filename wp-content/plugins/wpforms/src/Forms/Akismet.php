@@ -122,14 +122,15 @@ class Akismet {
 	 * Get field content.
 	 *
 	 * @since 1.8.5
+	 * @since 1.8.9.3 Changed $field_id type from string to int|string.
 	 *
-	 * @param array $field    Field data.
-	 * @param array $entry    Entry data.
-	 * @param int   $field_id Field ID.
+	 * @param array      $field    Field data.
+	 * @param array      $entry    Entry data.
+	 * @param int|string $field_id Field ID.
 	 *
 	 * @return string
 	 */
-	private function get_field_content( array $field, array $entry, int $field_id ): string {
+	private function get_field_content( array $field, array $entry, $field_id ): string {
 
 		if ( ! isset( $entry['fields'][ $field_id ] ) ) {
 			return '';
@@ -197,6 +198,30 @@ class Akismet {
 		$request = $this->get_request_args( $form_data, $entry );
 
 		$response = $this->http_post( $request, 'submit-ham' );
+
+		// Yes, Akismet returns "Thanks for making the web a better place." as the response.
+		return ! empty( $response ) && isset( $response[1] ) && 'Thanks for making the web a better place.' === trim( $response[1] );
+	}
+
+	/**
+	 * Mark the entry as spam in Akismet.
+	 *
+	 * @since 1.8.9
+	 *
+	 * @param array $form_data Form data for the current form.
+	 * @param array $entry     Entry data for the current entry.
+	 *
+	 * @return bool
+	 */
+	public function submit_missed_spam( array $form_data, array $entry ) {
+
+		if ( ! self::is_configured() ) {
+			return false;
+		}
+
+		$request = $this->get_request_args( $form_data, $entry );
+
+		$response = $this->http_post( $request, 'submit-spam' );
 
 		// Yes, Akismet returns "Thanks for making the web a better place." as the response.
 		return ! empty( $response ) && isset( $response[1] ) && 'Thanks for making the web a better place.' === trim( $response[1] );

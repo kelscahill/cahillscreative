@@ -6,4 +6,5 @@
 .app-table-card-div .components-card__header h2{margin-right:8px}.app-table-card-div .components-card__header .woocommerce-table__actions{justify-content:flex-start}.app-table-card-div .components-card__body .woocommerce-table__table .components-base-control__field{margin-bottom:0}
 .gla-reports__tooltip-campaign-name .gla-tooltip__children-container{width:100%}
 .gla-sub-nav.subsubsub{float:none;margin:calc(var(--main-gap)*-1/3) 0 var(--main-gap) 0;text-align:left}
+.gla-rebranding-tour__heading{fill:var(--wp-admin-theme-color);align-items:center;display:flex;gap:8px}.gla-rebranding-tour .components-card__footer{padding-top:0}.gla-rebranding-tour .components-card__footer>*{display:none}
 .app-spinner{display:flex;justify-content:center;padding:var(--main-gap)}

@@ -313,16 +313,21 @@ class UpdatePluginManagers
     public function enable_ecommerce()
     {
         $settings = $this->api_manager->get_settings();
-        $last_call = get_option('ecommerce_called_time', 120);
-        if ((time() - $last_call) < 120) {
+        $last_call = get_option(SENDINBLUE_ECOMMERCE_CALLED_TIME, 120);
+        if ((time() - $last_call) < 120 || get_option(SENDINBLUE_WC_ECOMMERCE_REQ, false)) {
             return;
         }
 
-        if (empty($settings[SendinblueClient::IS_ECOMMERCE_ENABLED]) && !get_option(SENDINBLUE_WC_ECOMMERCE_REQ, false)) {
-            (get_option('ecommerce_called_time', null) !== null) ? update_option('ecommerce_called_time', time()) : add_option('ecommerce_called_time', time());
+        (get_option(SENDINBLUE_WC_ECOMMERCE_REQ, null) !== null) ? update_option(SENDINBLUE_WC_ECOMMERCE_REQ, true) : add_option(SENDINBLUE_WC_ECOMMERCE_REQ, true);
+
+        (get_option(SENDINBLUE_ECOMMERCE_CALLED_TIME, null) !== null) ? update_option(SENDINBLUE_ECOMMERCE_CALLED_TIME, time()) : add_option(SENDINBLUE_ECOMMERCE_CALLED_TIME, time());
+
+        if (empty($settings[SendinblueClient::IS_ECOMMERCE_ENABLED])) {
             $response = $this->client_manager->enableEcommerce();
             if (!empty($response) && $response['code'] == 201) {
-                add_option(SENDINBLUE_WC_ECOMMERCE_REQ, true);    
+                update_option(SENDINBLUE_WC_ECOMMERCE_REQ, true);
+            } else {
+                update_option(SENDINBLUE_WC_ECOMMERCE_REQ, false);
             }
         }
     }

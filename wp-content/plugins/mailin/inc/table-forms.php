@@ -196,6 +196,9 @@ class SIB_Forms_List extends WP_List_Table {
         $actions = array(
             'bulk-delete' => 'Delete'
         );
+		
+	$nonce = wp_create_nonce('mailin_bulk_action_nonce');
+    	echo '<input type="hidden" name="mailin_bulk_action_nonce" value="' . esc_attr($nonce) . '">';
 
         return $actions;
     }
@@ -246,7 +249,10 @@ class SIB_Forms_List extends WP_List_Table {
         if ( ( isset( $_POST['action'] ) && $_POST['action'] == 'bulk-delete' )
             || ( isset( $_POST['action2'] ) && $_POST['action2'] == 'bulk-delete' )
         ) {
-
+	    $bulk_action_nonce = isset($_REQUEST['mailin_bulk_action_nonce'] ) ? sanitize_text_field( $_REQUEST['mailin_bulk_action_nonce'] ) : "";
+	    if ( ! wp_verify_nonce( $bulk_action_nonce, 'mailin_bulk_action_nonce' ) ) {
+	        die( 'Go get a life script kiddies' );
+            }
             $delete_ids = array_map('intval', $_POST['bulk-delete']);
 
             // loop over the array of record IDs and delete them

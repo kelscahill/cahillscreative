@@ -13,7 +13,6 @@ use WPForms\Admin\Notice;
 use WPForms\Admin\Payments\Views\Overview\Helpers;
 use WPForms\Db\Payments\ValueValidator;
 use WPForms\Pro\Admin\Entries\Page;
-use WPForms\Pro\Forms\Fields\Layout\Helpers as LayoutHelpers;
 
 /**
  * Display information about a single form entry.
@@ -674,6 +673,8 @@ class WPForms_Entries_Single {
 		$this->entry = $entry;
 		$this->form  = $form;
 
+		wpforms()->get( 'process' )->fields = wpforms_decode( $entry->fields );
+
 		// Lastly, mark the entry as read if needed.
 		if ( $entry->viewed !== '1' && empty( $_GET['action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$is_success = $entry_handler->update(
@@ -749,8 +750,17 @@ class WPForms_Entries_Single {
 					return;
 				}
 
-				$entry     = $this->entry;
-				$form_data = wpforms_decode( $this->form->post_content );
+				$entry = $this->entry;
+
+				/**
+				 * Filters the form data for the entry.
+				 *
+				 * @since 1.8.9
+				 *
+				 * @param array  $form_data Form data.
+				 * @param object $entry     Entry.
+				 */
+				$form_data = apply_filters( 'wpforms_entries_single_details_form_data', wpforms_decode( $this->form->post_content ), $entry );
 
 				/**
 				 * Filters the form URL for the entry.
@@ -965,7 +975,7 @@ class WPForms_Entries_Single {
 					add_filter( 'wp_kses_allowed_html', [ $this, 'modify_allowed_tags_entry_field_value' ], 10, 2 );
 
 					// Content, Divider, HTML and layout fields must always be included because it's allowed to show and hide these fields.
-					$forced_allowed_fields = [ 'content', 'divider', 'html', 'layout', 'pagebreak' ];
+					$forced_allowed_fields = [ 'content', 'divider', 'html', 'layout', 'pagebreak', 'repeater' ];
 
 					$fields_layout = new WPForms_Field_Layout();
 					$fields        = $this->add_formatted_data( $fields );
@@ -993,12 +1003,13 @@ class WPForms_Entries_Single {
 								continue;
 							}
 
-							if ( $field_type === 'layout' ) {
+							if ( in_array( $field_type, [ 'repeater', 'layout' ], true ) ) {
 								$this->print_layout_field( $field, $form_data );
-							} else {
 
-								$this->print_field( $field, $form_data );
+								continue;
 							}
+
+							$this->print_field( $field, $form_data );
 						}
 
 					echo '</div>';
@@ -1049,7 +1060,11 @@ class WPForms_Entries_Single {
 			$field_value = $field['formatted_value'] ?? '';
 		}
 
-		$field_value = $this->is_choice_field( $field['type'] ) || $this->needs_unformatted_value( $field['type'] ) ? $field_value : $field['formatted_value'];
+		$field_value = ! $this->needs_unformatted_value( $field['type'] ) ? $field_value : $field['formatted_value'];
+
+		$field_value = $this->is_choice_field( $field['type'] ) ? wpforms_get_choices_value( $field, $form_data ) : $field_value;
+
+		$field_value = ! empty( $field['dynamic'] ) ? $field['value'] : $field_value;
 
 		/** This filter is documented in src/SmartTags/SmartTag/FieldHtmlId.php.*/
 		$field_value = apply_filters( 'wpforms_html_field_value', wp_kses_post( $field_value ), $field, $form_data, 'entry-single' ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
@@ -1091,105 +1106,29 @@ class WPForms_Entries_Single {
 	}
 
 	/**
-	 * Print layout fields.
+	 * Print layout and repeater fields.
 	 *
 	 * @since 1.8.3
+	 * @since 1.9.0 Added repeater field support.
 	 *
 	 * @param array $field     Field data.
 	 * @param array $form_data Form data.
 	 */
 	private function print_layout_field( array $field, array $form_data ) {
 
-		if ( isset( $field['display'] ) && $field['display'] === 'rows' ) {
-			$this->display_rows( $field, $form_data );
-		} else {
-			$this->display_columns( $field, $form_data );
-		}
-	}
+		$field_type = $field['type'] ?? '';
 
-	/**
-	 * Display rows layout.
-	 *
-	 * @since 1.8.8
-	 *
-	 * @param array $field     Field settings.
-	 * @param array $form_data Form data.
-	 */
-	private function display_rows( array $field, array $form_data ) {
-
-		$rows_html = '';
-		$rows      = isset( $field['columns'] ) && is_array( $field['columns'] ) ? LayoutHelpers::get_row_data( $field ) : [];
-
-		foreach ( $rows as $row ) {
-			$rows_html .= sprintf(
-				'<div class="wpforms-layout-row">%1$s</div>',
-				$this->get_column_row_content( $row, $form_data )
-			);
-		}
-
-		printf(
-			'<div class="wpforms-field-layout-rows">%1$s</div>',
-			$rows_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			"admin/entries/single-entry/{$field_type}",
+			[
+				'field'           => $field,
+				'form_data'       => $form_data,
+				'entries_single'  => $this,
+				'entry'           => $this->entry,
+				'is_hidden_by_cl' => isset( $field['id'] ) && wpforms_conditional_logic_fields()->field_is_hidden( $form_data, $field['id'] ),
+			],
+			true
 		);
-	}
-
-	/**
-	 * Display columns layout.
-	 *
-	 * @since 1.8.8
-	 *
-	 * @param array $field     Field settings.
-	 * @param array $form_data Form data.
-	 */
-	private function display_columns( array $field, array $form_data ) {
-
-		echo '<div class="wpforms-entry-field-layout">';
-		foreach ( $field['columns'] as $column ) {
-
-			$width = $this->get_layout_col_width( $column );
-
-			echo '<div class="wpforms-entry-field-layout-inner wpforms-field-layout-column" style="width: ' . esc_attr( $width ) . '%">';
-
-			foreach ( $column['fields'] as $child_field ) {
-				$this->print_field( $child_field, $form_data );
-			}
-
-			echo '</div>';
-		}
-		echo '</div>';
-	}
-
-	/**
-	 * Get column content HTML.
-	 *
-	 * @since 1.8.8
-	 *
-	 * @param array $row       Row data.
-	 * @param array $form_data Form data.
-	 *
-	 * @return string
-	 */
-	private function get_column_row_content( array $row, array $form_data ): string {
-
-		// Bail if we don't have the column fields data for some reason.
-		if ( empty( $form_data['fields'] ) || empty( $row ) ) {
-			return '';
-		}
-
-		ob_start();
-
-		foreach ( $row as $data ) {
-			$width = $this->get_layout_col_width( $data );
-
-			echo '<div class="wpforms-entry-field-layout-inner wpforms-field-layout-column" style="width: ' . esc_attr( $width ) . '%">';
-
-			if ( $data['field'] ) {
-				$this->print_field( $data['field'], $form_data );
-			}
-			echo '</div>';
-		}
-
-		return ob_get_clean();
 	}
 
 	/**
@@ -1201,10 +1140,9 @@ class WPForms_Entries_Single {
 	 *
 	 * @return float
 	 */
-	private function get_layout_col_width( array $column ): float {
+	public function get_layout_col_width( array $column ): float {
 
 		$preset_width = ! empty( $column['width_preset'] ) ? (int) $column['width_preset'] : 50;
-		$custom_width = ! empty( $column['width_custom'] ) ? (int) $column['width_custom'] : 50;
 
 		if ( $preset_width === 33 ) {
 			$preset_width = 33.33333;
@@ -1212,7 +1150,11 @@ class WPForms_Entries_Single {
 			$preset_width = 66.66666;
 		}
 
-		return (float) min( $preset_width, $custom_width );
+		if ( ! empty( $column['width_custom'] ) ) {
+			$preset_width = (int) $column['width_custom'];
+		}
+
+		return (float) $preset_width;
 	}
 
 	/**
@@ -1233,8 +1175,8 @@ class WPForms_Entries_Single {
 			echo ! empty( $field['formatted_label'] )
 				? esc_html( wp_strip_all_tags( $field['formatted_label'] ) )
 				: sprintf( /* translators: %d - field ID. */
-					esc_html__( 'Field ID #%d', 'wpforms' ),
-					absint( $field['id'] )
+					esc_html__( 'Field ID #%s', 'wpforms' ),
+					wpforms_validate_field_id( $field['id'] )
 				);
 			echo ! empty( $field_description )
 				? '<span class="wpforms-entry-field-description' . esc_attr( $hide ) . '">' . wp_kses_post( $field_description ) . '</span>'
@@ -1319,7 +1261,8 @@ class WPForms_Entries_Single {
 		];
 
 		$is_empty_quantity = isset( $field['quantity'] ) && ! $field['quantity'];
-		$is_empty          = ! isset( $field_value ) || wpforms_is_empty_string( trim( $field_value ) ) || $is_empty_quantity;
+		$is_empty_slider   = isset( $field['type'] ) && $field['type'] === 'number-slider' && ( $field['value'] ?? 0 ) === 0;
+		$is_empty          = ! isset( $field_value ) || wpforms_is_empty_string( trim( $field_value ) ) || $is_empty_quantity || $is_empty_slider;
 
 		if ( $is_empty ) {
 			$field_classes[] = 'empty';
@@ -1339,6 +1282,10 @@ class WPForms_Entries_Single {
 
 		if ( $is_hidden ) {
 			$field_classes[] = 'wpforms-hide';
+		}
+
+		if ( isset( $field['id'] ) && wpforms_conditional_logic_fields()->field_is_hidden( $this->form_data, $field['id'] ) ) {
+			$field_classes[] = 'wpforms-conditional-hidden';
 		}
 
 		return $field_classes;
@@ -1958,18 +1905,19 @@ class WPForms_Entries_Single {
 			$action_links['notifications'] = $this->add_notifications_action( $base, $form_data );
 		}
 
-		if ( (string) $entry->viewed === '1' ) {
-			$action_links['read'] = [
-				'url'   => $unread_url,
-				'icon'  => 'dashicons-hidden',
-				'label' => esc_html__( 'Mark Unread', 'wpforms' ),
-			];
-		}
 		$action_links['star'] = [
 			'url'   => $star_url,
 			'icon'  => $star_icon,
 			'label' => $star_text,
 		];
+
+		if ( (string) $entry->viewed === '1' ) {
+			$action_links['read'] = [
+				'url'   => $unread_url,
+				'icon'  => 'dashicons-hidden',
+				'label' => esc_html__( 'Mark as Unread', 'wpforms' ),
+			];
+		}
 
 		/**
 		 * Filters entry details sidebar action links.
@@ -2306,9 +2254,21 @@ class WPForms_Entries_Single {
 	 */
 	private function add_formatted_data( array $fields ): array {
 
-		$this->form_data = wpforms_decode( $this->form->post_content );
+		/**
+		 * Filters the form data for the single entry view.
+		 *
+		 * @since 1.8.9
+		 *
+		 * @param array $form_data Form data.
+		 * @param array $entry     Entry data.
+		 */
+		$this->form_data = apply_filters( 'wpforms_entries_single_form_data',  wpforms_decode( $this->form->post_content ), $this->entry );
 
 		foreach ( $fields as $key => $field ) {
+			if ( ! isset( $field['type'] ) ) {
+				continue;
+			}
+
 			if ( $field['type'] !== 'layout' ) {
 				$field['formatted_value'] = $this->get_formatted_field_value( $field );
 				$field['formatted_label'] = $this->get_formatted_field_label( $field );
@@ -2341,11 +2301,15 @@ class WPForms_Entries_Single {
 			return $field['content'] ?? '';
 		}
 
+		if ( $field['type'] === 'select' ) {
+			$field_value = wpforms_get_choices_value( $field, $this->form_data );
+		}
+
 		if (
 			! empty( $this->form_data['fields'][ $field['id'] ]['choices'] )
 			&& $this->is_choice_field( $field['type'] )
 		) {
-			return $this->get_choices_field_value( $field, $field_value );
+			return $this->get_choices_field_value( $field );
 		}
 
 		if ( wpforms_payment_has_quantity( $field, $this->form_data ) ) {
@@ -2394,7 +2358,7 @@ class WPForms_Entries_Single {
 	 */
 	private function is_structure_field( $type = '' ): bool {
 
-		return in_array( $type, [ 'divider', 'pagebreak', 'layout' ], true );
+		return in_array( $type, [ 'divider', 'pagebreak', 'layout', 'repeater' ], true );
 	}
 
 	/**
@@ -2430,14 +2394,13 @@ class WPForms_Entries_Single {
 	 *
 	 * @since 1.8.3
 	 *
-	 * @param array  $field       Entry field.
-	 * @param string $field_value HTML markup for the field.
+	 * @param array $field Entry field.
 	 *
 	 * @return string
 	 * @noinspection PhpMissingParamTypeInspection
 	 * @noinspection PhpUnusedParameterInspection
 	 */
-	private function get_choices_field_value( $field, $field_value ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	private function get_choices_field_value( $field ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		$choices_html    = '';
 		$choices         = $this->form_data['fields'][ $field['id'] ]['choices'];
@@ -2529,14 +2492,13 @@ class WPForms_Entries_Single {
 	 */
 	private function is_checked_choice( $field, $choice, $key, $is_dynamic ): bool { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		$is_payment  = strpos( $field['type'], 'payment-' ) === 0;
-		$separator   = $is_payment || $is_dynamic ? ',' : "\n";
-		$show_values = ! empty( $this->form_data['fields'][ $field['id'] ]['show_values'] );
-		$value       = $field['value_raw'] ?? ( $field['value'] ?? '' );
+		$is_payment = strpos( $field['type'], 'payment-' ) === 0;
+		$separator  = $is_payment || $is_dynamic ? ',' : "\n";
+		$value      = wpforms_get_choices_value( $field, $this->form_data );
 
-		// Case when field is using custom values, see 'wpforms_fields_show_options_setting' filter.
-		if ( $show_values && ! $is_dynamic ) {
-			$value = $field['value'] ?? '';
+		// Payments Choices have different logic for selected field.
+		if ( $is_payment ) {
+			$value = $field['value_raw'] ?? ( $field['value'] ?? '' );
 		}
 
 		$active_choices = explode( $separator, $value );
@@ -2553,10 +2515,14 @@ class WPForms_Entries_Single {
 			return in_array( $key, $active_choices, true );
 		}
 
-		$label = ! isset( $choice['label'] ) || wpforms_is_empty_string( $choice['label'] )
+		// Determine if Show Values is enabled.
+		$show_values      = $this->form_data['fields'][ $field['id'] ]['show_values'] ?? false;
+		$choice_value_key = ! wpforms_is_empty_string( $field['value_raw'] ?? '' ) && $show_values ? 'value' : 'label';
+
+		$label = wpforms_is_empty_string( $choice[ $choice_value_key ] )
 			/* translators: %s - choice number. */
 			? sprintf( esc_html__( 'Choice %s', 'wpforms' ), $key )
-			: sanitize_text_field( $choice['label'] );
+			: sanitize_text_field( $choice[ $choice_value_key ] );
 
 		return in_array( $label, $active_choices, true );
 	}
@@ -2578,7 +2544,7 @@ class WPForms_Entries_Single {
 		$settings = ! empty( $form_data['fields'] ) ? $form_data['fields'] : [];
 
 		// Content, Divider, HTML and layout fields must always be included because it's allowed to show and hide these fields.
-		$forced_allowed_fields = [ 'content', 'divider', 'html', 'layout', 'pagebreak' ];
+		$forced_allowed_fields = [ 'content', 'divider', 'html', 'layout', 'pagebreak', 'repeater' ];
 
 		// First order settings field and remove fields that we don't need.
 		foreach ( $settings as $key => $setting ) {

@@ -194,6 +194,8 @@ class Page {
 			'_wpnonce',
 			'read',
 			'unread',
+			'spam',
+			'unspam',
 			'unstarred',
 			'starred',
 			'deleted',
@@ -470,9 +472,9 @@ class Page {
 		// Get the screen first.
 		$screen = isset( $_REQUEST['page'] ) ? sanitize_key( $_REQUEST['page'] ) : '';
 
-		// The delete all functionality should only be available on the trash screen.
+		// The delete all functionality should only be available on the trash and spam screens.
 		// All other places the delete all button will be replaced by trash all button.
-		if ( $screen !== self::TRASH_ENTRY_STATUS ) {
+		if ( ! in_array( $screen, [ self::TRASH_ENTRY_STATUS, SpamEntry::ENTRY_STATUS ], true ) ) {
 			wp_send_json_error( esc_html__( 'Something went wrong while performing this action.', 'wpforms' ) );
 		}
 
@@ -497,6 +499,16 @@ class Page {
 		// Delete media if any.
 		// It must be done before removing the entry itself.
 		array_map( [ WPForms_Field_File_Upload::class, 'delete_uploaded_files_from_entry' ], $entry_ids );
+
+		/**
+		 * Allow performing additional actions before deleting entries.
+		 *
+		 * @since 1.8.9
+		 *
+		 * @param array $entry_ids Entry IDs.
+		 * @param int   $form_id   Form ID.
+		 */
+		do_action( 'wpforms_pro_admin_entries_page_empty_trash_before', $entry_ids, $form_id );
 
 		// Delete meta only if the related entry has been removed successfully.
 		if ( wpforms()->get( 'entry' )->delete_where_in( 'entry_id', $entry_ids ) ) {

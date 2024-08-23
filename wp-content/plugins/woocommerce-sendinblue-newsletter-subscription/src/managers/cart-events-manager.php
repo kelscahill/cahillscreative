@@ -320,6 +320,10 @@ class CartEventsManagers
             $product = wc_get_product($cartitem['product_id']);
             $image_id = $variation->get_image_id() ? $variation->get_image_id() : $product->get_image_id();
             $item['image'] = wp_get_attachment_image_url($image_id, 'full');
+            $dyn_img = $this->get_dynamic_img($cartitem['data']->get_image());
+            if (filter_var($dyn_img, FILTER_VALIDATE_URL)) {
+                $item['image'] = $dyn_img;
+            }
 
             $item['url'] = (!empty($cartitem['data']->get_permalink()) && is_string($cartitem['data']->get_permalink())) ? $cartitem['data']->get_permalink() : '';
             array_push($data['items'], $item);
@@ -425,6 +429,21 @@ class CartEventsManagers
         foreach ($order->get_shipping_methods() as $item_id => $shipping_item) {
             $data['shipping_method'] = $shipping_item->get_method_title();
         }
+
+        $data['shipping_tax'] = $order->get_shipping_tax() ?? "";
+        $data['discount_tax'] = $order->get_discount_tax() ?? "";
+        $data['discount_code'] = $order->get_coupon_codes() ?? "";
+        $data['fee_lines'] = [];
+        $fees = $order->get_fees() ?? "";
+
+        if (!empty($fees)) {
+            foreach ($fees as $key => $fee) {
+                $data['fee_lines'][$key]['fee_name'] = $fee->get_name() ?? "";
+                $data['fee_lines'][$key]['fee_total'] = $fee->get_total() ?? "";
+                $data['fee_lines'][$key]['fee_tax'] = $fee->get_total_tax() ?? "";
+            }
+        }
+
         $data_track = array(
             'email'     => $email,
             'event'     => 'order_completed',
@@ -505,5 +524,21 @@ class CartEventsManagers
     {
         $opt_in = isset($_POST['ws_opt_in']) ? true : false;
         update_post_meta($order_id, 'ws_opt_in', $opt_in);
+    }
+
+    private function get_dynamic_img($html_tags)
+    {
+        if (!class_exists("DOMDocument") || empty($html_tags)) {
+            return null;
+        }
+
+        $doc = new \DOMDocument();
+        $doc->loadHTML($html_tags);
+        $tags = $doc->getElementsByTagName('img');
+        foreach ($tags as $tag) {
+            return $tag->getAttribute('src');
+        }
+
+        return null;
     }
 }

@@ -25,6 +25,7 @@ use threewp_broadcast\broadcast_data\blog;
 	@since		20130530
 	@version	20131015
 **/
+#[\AllowDynamicProperties]
 class broadcasting_data
 {
 	/**
@@ -34,6 +35,13 @@ class broadcasting_data
 		@since		20130603
 	**/
 	public $_POST;
+
+	/**
+		@brief		[IN]: Create new taxonomies?
+		@details	Should new taxonomies be created on the child sites?
+		@since		2024-05-11 21:07:11
+	**/
+	public $add_new_taxonomies = true;
 
 	/**
 		@brief		Array of AttachmentData objects for this post.
@@ -100,12 +108,32 @@ class broadcasting_data
 	public $delete_attachments = true;
 
 	/**
+		@brief		A collection of misc data that people can use to store things.
+		@details	Used to avoid the unnecessary deprecated warnings of PHP 8.2.
+		@since		2024-06-19 21:52:55
+	**/
+	public $dynamic_data = false;
+
+	/**
 		@brief		Storage for equivalent post IDs on various blogs.
 		@details	Used as a "seen" lookup table to prevent looping.
 		@see		equivalent_posts
 		@since		2014-09-21 12:55:22
 	**/
-	public $equivalent_posts;
+	public static $equivalent_posts = null;
+
+	/**
+		@brief		A collection of galleries.
+		@details	Is initialized during traits / broadcasting.php
+		@since		2024-05-11 21:10:14
+	**/
+	public $galleries = false;
+
+	/**
+		@brief		[IN]: Does htis post have a thumbnail?
+		@since		2024-05-11 21:12:14
+	**/
+	public $has_thumbnail;
 
 	/**
 		@brief		Broadcast this right now, or is it OK if it gets broadcasted later?
@@ -131,6 +159,13 @@ class broadcasting_data
 		@since		20131015
 	**/
 	public $meta_box_data;
+
+	/**
+		@brief		The modified post data.
+		@details	Initialized during broadcasting and here only for the 8.2 warning.
+		@since		2024-05-11 21:13:44
+	**/
+	public $modified_post;
 
 	/**
 		@brief		Was a new child created on this blog?
@@ -178,11 +213,32 @@ class broadcasting_data
 	public $parent_post_id;
 
 	/**
+		@brief		[IN]: The taxonomies of the parent blog.
+		@details	An array of taxonomy_slug => taxonomy_data
+		@since		2024-05-11 21:08:00
+	**/
+	public $parent_blog_taxonomies = [];
+
+	/**
+		@brief		[IN]: The taxonomies of the parent post.
+		@details	Array of taxonomy_slug => [ taxonomy_terms ]
+		@since		2024-05-11 21:09:03
+	**/
+	public $parent_post_taxonomies = [];
+
+	/**
 		@brief		[IN]: The parent post WP_Post object.
 		@var		$post
 		@since		20130603
 	**/
 	public $post;
+
+	/**
+		@brief		OBSOLETE. Use $bcd->custom_fields->original instead.
+		@details	This is just here to get rid of the stupid php 8.2 warning.
+		@since		2024-05-11 21:11:03
+	**/
+	public $post_custom_fields = [];
 
 	/**
 		@brief		True if the post type supports a hierarchy.
@@ -284,6 +340,8 @@ class broadcasting_data
 			if ( property_exists( $this, $key ) )
 				$this->$key = $value;
 
+		$this->dynamic_data = ThreeWP_Broadcast()->collection();
+
 		// The custom fields object should be cloned.
 		if ( isset( $options[ 'custom_fields' ] ) )
 			if ( is_object( $this->custom_fields ) )
@@ -295,18 +353,9 @@ class broadcasting_data
 		if ( ! $this->parent_post_id )
 			throw new Exception( 'Specify the parent post ID property when creating the broadcasting_data object.' );
 
-		if ( $this->equivalent_posts === null )
+		if ( static::$equivalent_posts === null )
 		{
-			$broadcasts = ThreeWP_Broadcast()->broadcasting;
-			if ( count( $broadcasts ) < 1 )
-			{
-				$this->equivalent_posts = new broadcasting_data\Equivalent_Posts();
-			}
-			else
-			{
-				// Find the first available broadcasting_data, so that all subbroadcasts can use the existing equivalent posts.
-				$this->equivalent_posts = $broadcasts[ 0 ]->equivalent_posts;
-			}
+			static::$equivalent_posts = new broadcasting_data\Equivalent_Posts();
 		}
 
 		if ( $this->_POST === null )
@@ -428,7 +477,10 @@ class broadcasting_data
 	**/
 	public function equivalent_posts()
 	{
-		return $this->equivalent_posts;
+		if ( static::$equivalent_posts === null )
+			static::$equivalent_posts = new broadcasting_data\Equivalent_Posts();
+
+		return static::$equivalent_posts;
 	}
 
 	/**

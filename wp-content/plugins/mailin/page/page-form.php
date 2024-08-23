@@ -214,9 +214,9 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 						$selectCaptchaType = 2;
 					}
 				}
-
 				$cCaptchaType = isset($formData['cCaptchaType']) ?? $formData['cCaptchaType'];
-				
+				$cCaptchaStyle = isset($formData['cCaptchaStyle']) ? $formData['cCaptchaStyle'] : "auto";
+
 				?>
 				<div id="main-content" class="sib-content">
 					<form action="admin.php" class="" method="post" role="form">
@@ -540,6 +540,11 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 														echo '';
 													}
 													?>">
+												</div>
+												<div class="small-content2 sib-captcha-key-turnstile">
+													<input type="radio" name="turnstile_captcha_theme" class="sib-captcha-type" value="auto" <?php checked( $cCaptchaStyle, 'auto' ); ?>><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'Auto', 'mailin');?></label>
+													<input type="radio" name="turnstile_captcha_theme" class="sib-captcha-type" value="dark" <?php checked( $cCaptchaStyle, 'dark' ); ?>><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'Dark Theme', 'mailin');?></label>
+													<input type="radio" name="turnstile_captcha_theme" class="sib-captcha-type" value="light" <?php checked( $cCaptchaStyle, 'light' ); ?>><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'Light Theme', 'mailin');?></label>
 												</div>
 												<div class="small-content2">
 													<button type="button" id="sib_add_captcha_btn_turnstile"
@@ -968,7 +973,8 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
 			$cCaptchaSecret = isset( $_POST['sib_captcha_secret_turnstile'] ) ? sanitize_text_field( $_POST['sib_captcha_secret_turnstile'] ) : '';
 			$cCaptchaSite = isset( $_POST['sib_captcha_site_turnstile'] ) ? sanitize_text_field( $_POST['sib_captcha_site_turnstile'] ) : '';
 			$cCaptchaType = isset( $_POST['sib_recaptcha_type_turnstile'] ) ? sanitize_text_field( $_POST['sib_recaptcha_type_turnstile'] ) : '';
-			
+			$cCaptchaStyle = isset( $_POST['turnstile_captcha_theme'] ) ? sanitize_text_field( $_POST['turnstile_captcha_theme'] ) : '';
+
 			if ( $gCaptcha != '0' ) {
 				if ( $gCaptchaType == '0' ) {
 					$gCaptcha = '3';  // google recaptcha.
@@ -1042,6 +1048,7 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
 				'cCaptchaType' => $cCaptchaType,
 				'ccaptcha_secret' => $cCaptchaSecret,
 				'ccaptcha_site'   => $cCaptchaSite,
+				'cCaptchaStyle'   => $cCaptchaStyle,
 				'termAccept'      => $termAccept,
 				'termsURL'        => $termURL,
 			);
