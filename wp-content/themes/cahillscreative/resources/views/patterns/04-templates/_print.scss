@@ -90,6 +90,10 @@
 
   #instructions {
     page-break-inside: auto;
+
+    .c-accordion__heading {
+      display: none;
+    }
   }
 
   .c-accordion__item,
