@@ -14155,7 +14155,8 @@ img.mfp-img {
       display: -ms-inline-flexbox;
       display: inline-flex;
       text-decoration: none;
-      border: none; }
+      border: none;
+      text-align: left; }
   .c-accordion__heading::before, .c-accordion__heading::after {
     display: none; }
   .c-intro + .c-content-single-plans__header,
@@ -14172,7 +14173,25 @@ img.mfp-img {
   .c-intro__signature {
     max-width: 2in !important; }
   .c-intro .o-icon {
-    display: none; } }
+    display: none; }
+  .c-checkbox-list__item label {
+    page-break-inside: avoid;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: flex-start;
+    font-weight: 500; }
+    .c-checkbox-list__item label .o-link {
+      content: "";
+      font-weight: normal;
+      margin-top: -5px;
+      margin-left: 0;
+      font-style: italic;
+      font-size: 6pt;
+      text-align: left; } }
 
 /* ------------------------------------*\
     $HELPER/TRUMP CLASSES
