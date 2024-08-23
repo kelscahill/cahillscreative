@@ -31,6 +31,14 @@ class PosStore extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Googl
   /**
    * @var string
    */
+  public $matchingStatus;
+  /**
+   * @var string
+   */
+  public $matchingStatusHint;
+  /**
+   * @var string
+   */
   public $phoneNumber;
   /**
    * @var string
@@ -80,6 +88,34 @@ class PosStore extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Googl
   public function getKind()
   {
     return $this->kind;
+  }
+  /**
+   * @param string
+   */
+  public function setMatchingStatus($matchingStatus)
+  {
+    $this->matchingStatus = $matchingStatus;
+  }
+  /**
+   * @return string
+   */
+  public function getMatchingStatus()
+  {
+    return $this->matchingStatus;
+  }
+  /**
+   * @param string
+   */
+  public function setMatchingStatusHint($matchingStatusHint)
+  {
+    $this->matchingStatusHint = $matchingStatusHint;
+  }
+  /**
+   * @return string
+   */
+  public function getMatchingStatusHint()
+  {
+    return $this->matchingStatusHint;
   }
   /**
    * @param string

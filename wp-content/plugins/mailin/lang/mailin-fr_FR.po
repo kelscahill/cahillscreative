@@ -1184,16 +1184,16 @@ msgid "Bounces"
 msgstr ""
 
 #: ../page/page-statistics.php:157
-msgid "Email Campaigns"
-msgstr "Campagnes Email"
+msgid "View Statistics"
+msgstr "Afficher les statistiques"
 
 #: ../page/page-statistics.php:188
 msgid "Answeres"
 msgstr ""
 
 #: ../page/page-statistics.php:197
-msgid "SMS Campaigns"
-msgstr "Campagnes SMS"
+msgid "View SMS Statistics"
+msgstr "Afficher les statistiques SMS"
 
 #: ../sendinblue.php:369
 msgid "Please fill out valid email address"

@@ -134,6 +134,7 @@ class controller
 	{
 		$action->checks->add_check( new checks\broadcast_data\check );
 		$action->checks->add_check( new checks\simple_broadcast_data\check );
+		$action->checks->add_check( new checks\database_table_cleanup\check );
 		$action->checks->add_check( new checks\database_tools\check );
 		$action->checks->add_check( new checks\view_broadcast_data\check );
 		$action->checks->add_check( new checks\view_blog_access\check );

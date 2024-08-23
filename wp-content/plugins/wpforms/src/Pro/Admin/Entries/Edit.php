@@ -142,7 +142,7 @@ class Edit {
 
 		if ( $this->is_admin_entry_editing_ajax() ) {
 
-			remove_action( 'wp_ajax_wpforms_submit', [ wpforms()->process, 'ajax_submit' ] );
+			remove_action( 'wp_ajax_wpforms_submit', [ wpforms()->get( 'process' ), 'ajax_submit' ] );
 			// Submit action AJAX endpoint.
 			add_action( 'wp_ajax_wpforms_submit', [ $this, 'ajax_submit' ] );
 
@@ -293,7 +293,7 @@ class Edit {
 		// Load admin utils JS.
 		wp_enqueue_script(
 			'wpforms-admin-utils',
-			WPFORMS_PLUGIN_URL . "assets/js/admin-utils{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/admin/share/admin-utils{$min}.js",
 			[ 'jquery' ],
 			WPFORMS_VERSION,
 			true
@@ -310,7 +310,7 @@ class Edit {
 		if ( wpforms_has_field_type( 'richtext', $this->form ) ) {
 			wp_enqueue_script(
 				'wpforms-richtext-field',
-				WPFORMS_PLUGIN_URL . "assets/pro/js/fields/richtext{$min}.js",
+				WPFORMS_PLUGIN_URL . "assets/pro/js/frontend/fields/richtext{$min}.js",
 				[ 'jquery' ],
 				WPFORMS_VERSION,
 				true
@@ -319,7 +319,7 @@ class Edit {
 
 		wp_enqueue_script(
 			'wpforms-generic-utils',
-			WPFORMS_PLUGIN_URL . "assets/js/utils{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/share/utils{$min}.js",
 			[ 'jquery' ],
 			WPFORMS_VERSION,
 			true
@@ -328,7 +328,7 @@ class Edit {
 		// Load frontend base JS.
 		wp_enqueue_script(
 			'wpforms-frontend',
-			WPFORMS_PLUGIN_URL . "assets/js/wpforms{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/frontend/wpforms{$min}.js",
 			[ 'jquery' ],
 			WPFORMS_VERSION,
 			true
@@ -337,7 +337,7 @@ class Edit {
 		// Load admin JS.
 		wp_enqueue_script(
 			'wpforms-admin-edit-entry',
-			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/edit-entry{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/entries/edit-entry{$min}.js",
 			[ 'jquery' ],
 			WPFORMS_VERSION,
 			true
@@ -347,7 +347,7 @@ class Edit {
 		wp_localize_script(
 			'wpforms-frontend',
 			'wpforms_settings',
-			wpforms()->frontend->get_strings()
+			wpforms()->get( 'frontend' )->get_strings()
 		);
 
 		// Localize edit entry strings.
@@ -442,8 +442,15 @@ class Edit {
 			exit;
 		}
 
-		// Form data.
-		$form_data              = wpforms_decode( $form->post_content );
+		/**
+		 * Filter the form data before it's used in the entry edit page.
+		 *
+		 * @since 1.8.8
+		 *
+		 * @param array $form_data Form data.
+		 */
+		$form_data = apply_filters( 'wpforms_pro_admin_entries_edit_form_data', wpforms_decode( $form->post_content ) );
+
 		$form->form_entries_url = add_query_arg(
 			[
 				'page'    => 'wpforms-entries',
@@ -463,7 +470,7 @@ class Edit {
 
 		// Lastly, mark entry as read if needed.
 		if ( $entry->viewed !== '1' && empty( $_GET['action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
-			$is_success = wpforms()->entry->update(
+			$is_success = wpforms()->get( 'entry' )->update(
 				$entry->entry_id,
 				[
 					'viewed' => '1',
@@ -476,7 +483,7 @@ class Edit {
 			$this->add_entry_meta( esc_html__( 'Entry read.', 'wpforms' ) );
 
 			$this->entry->viewed     = '1';
-			$this->entry->entry_logs = wpforms()->entry_meta->get_meta(
+			$this->entry->entry_logs = wpforms()->get( 'entry_meta' )->get_meta(
 				[
 					'entry_id' => $entry->entry_id,
 					'type'     => 'log',
@@ -737,14 +744,16 @@ class Edit {
 
 		$entry_field = ! empty( $entry_fields[ $field_id ] ) ? $entry_fields[ $field_id ] : $this->get_empty_entry_field_data( $field );
 
-		$field_value = ! wpforms_is_empty_string( $entry_field['value'] ) ? $entry_field['value'] : '';
+		$value = $entry_field['value'] ?? '';
+
+		$field_value = ! wpforms_is_empty_string( $value ) ? $value : '';
 		$field_value = apply_filters( 'wpforms_html_field_value', wp_strip_all_tags( $field_value ), $entry_field, $form_data, 'entry-single' );
 
 		$field_class  = ! empty( $field['type'] ) ? sanitize_html_class( 'wpforms-edit-entry-field-' . $field['type'] ) : '';
 		$field_class .= wpforms_is_empty_string( $field_value ) ? ' empty' : '';
 		$field_class .= ! empty( $field['required'] ) ? ' wpforms-entry-field-required' : '';
 
-		$field_style = $hide_empty && wpforms_is_empty_string( $entry_field['value'] ) ? 'display:none;' : '';
+		$field_style = $hide_empty && wpforms_is_empty_string( $value ) ? 'display:none;' : '';
 
 		echo '<div class="wpforms-edit-entry-field ' . esc_attr( $field_class ) . '" style="' . esc_attr( $field_style ) . '">';
 
@@ -763,7 +772,7 @@ class Edit {
 		$field['css'] = '';
 
 		// Add properties to the field.
-		$field['properties'] = wpforms()->frontend->get_field_properties( $field, $form_data );
+		$field['properties'] = wpforms()->get( 'frontend' )->get_field_properties( $field, $form_data );
 
 		// Field output.
 		if ( $this->is_field_entries_output_editable( $field, $entry_fields, $form_data ) ) {
@@ -912,9 +921,9 @@ class Edit {
 
 		// Setup variables.
 		$this->fields = [];
-		$this->entry  = wpforms()->entry->get( $this->entry_id );
+		$this->entry  = wpforms()->get( 'entry' )->get( $this->entry_id );
 		$form_id      = $this->form_id;
-		$this->form   = wpforms()->form->get( $this->form_id, [ 'cap' => 'edit_entries_form_single' ] );
+		$this->form   = wpforms()->get( 'form' )->get( $this->form_id, [ 'cap' => 'edit_entries_form_single' ] );
 
 		// Validate form is real.
 		if ( ! $this->form ) {
@@ -949,8 +958,9 @@ class Edit {
 		$this->process_fields( $entry, 'validate' );
 
 		// Validation errors.
-		if ( ! empty( wpforms()->process->errors[ $form_id ] ) ) {
-			$this->errors = wpforms()->process->errors[ $form_id ];
+		if ( ! empty( wpforms()->get( 'process' )->errors[ $form_id ] ) ) {
+			$this->errors = wpforms()->get( 'process' )->errors[ $form_id ];
+
 			if ( empty( $this->errors['header'] ) ) {
 				$this->errors['header'] = esc_html__( 'Entry has not been saved, please see the fields errors.', 'wpforms' );
 			}
@@ -964,8 +974,16 @@ class Edit {
 		// This hook is for internal purposes and should not be leveraged.
 		do_action( 'wpforms_pro_admin_entries_edit_process_format_after', $this->form_data );
 
-		// Entries edit process hooks/filter.
-		$this->fields = apply_filters( 'wpforms_pro_admin_entries_edit_process_filter', wpforms()->process->fields, $entry, $this->form_data );
+		/**
+		 * Entries edit process hooks/filter.
+		 *
+		 * @since 1.6.0
+		 *
+		 * @param array $fields    Entry fields data.
+		 * @param array $entry     Entry data.
+		 * @param array $form_data Form data and settings.
+		 */
+		$this->fields = apply_filters( 'wpforms_pro_admin_entries_edit_process_filter', wpforms()->get( 'process' )->fields, $entry, $this->form_data );
 
 		do_action( 'wpforms_pro_admin_entries_edit_process', $this->fields, $entry, $this->form_data );
 		do_action( "wpforms_pro_admin_entries_edit_process_{$form_id}", $this->fields, $entry, $this->form_data );
@@ -1049,7 +1067,7 @@ class Edit {
 			'fields'        => wp_json_encode( $this->get_updated_entry_fields( $updated_fields ) ),
 			'date_modified' => $this->date_modified,
 		];
-		wpforms()->entry->update( $this->entry_id, $entry_data, '', 'edit_entry', [ 'cap' => 'edit_entry_single' ] );
+		wpforms()->get( 'entry' )->update( $this->entry_id, $entry_data, '', 'edit_entry', [ 'cap' => 'edit_entry_single' ] );
 
 		// Add record to entry meta.
 		$this->add_entry_meta( esc_html__( 'Entry edited.', 'wpforms' ) );
@@ -1058,9 +1076,12 @@ class Edit {
 
 		array_map( [ $this, 'add_removed_file_meta' ], $removed_files );
 
-		$datetime_offset = get_option( 'gmt_offset' ) * 3600;
-		$response        = [
-			'modified' => wpforms_datetime_format( $this->date_modified, '', true ),
+		$response = [
+			'modified' => sprintf( /* translators: %1$s - formatted date, %2$s - formatted time. */
+				__( '%1$s at %2$s', 'wpforms' ),
+				wpforms_date_format( $this->date_modified, 'M j, Y', true ),
+				wpforms_time_format( $this->date_modified, '', true )
+			),
 		];
 
 		do_action( 'wpforms_pro_admin_entries_edit_submit_completed', $this->form_data, $response, $updated_fields, $this->entry );
@@ -1098,7 +1119,7 @@ class Edit {
 			$dbdata_fields = array_map( 'get_object_vars', $dbdata_fields );
 		}
 
-		$this->date_modified = current_time( 'Y-m-d H:i:s' );
+		$this->date_modified = current_time( 'Y-m-d H:i:s', true );
 
 		foreach ( $this->fields as $field ) {
 			$save_field          = apply_filters( 'wpforms_entry_save_fields', $field, $this->form_data, $this->entry_id );
@@ -1332,7 +1353,7 @@ class Edit {
 		 * @param array $entry_fields Entry fields data.
 		 * @param array $form_data    Form data and settings.
 		 *
-		 * @return bool ____
+		 * @return bool
 		 */
 		return (bool) apply_filters(
 			'wpforms_pro_admin_entries_edit_field_output_editable',
@@ -1433,7 +1454,7 @@ class Edit {
 	private function add_entry_meta( $message ) {
 
 		// Add record to entry meta.
-		wpforms()->entry_meta->add(
+		wpforms()->get( 'entry_meta' )->add(
 			[
 				'entry_id' => (int) $this->entry_id,
 				'form_id'  => (int) $this->form_id,
@@ -1469,7 +1490,7 @@ class Edit {
 
 		global $wpdb;
 
-		$table_name = wpforms()->entry->table_name;
+		$table_name = wpforms()->get( 'entry' )->table_name;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching
 		$entries = $wpdb->get_row(
@@ -1488,7 +1509,7 @@ class Edit {
 
 			$this->date_modified = current_time( 'Y-m-d H:i:s' );
 
-			$entry = wpforms()->entry->get( $entry_id );
+			$entry = wpforms()->get( 'entry' )->get( $entry_id );
 
 			if ( empty( $entry ) ) {
 				continue;
@@ -1521,7 +1542,7 @@ class Edit {
 				'date_modified' => $this->date_modified,
 			];
 
-			wpforms()->entry->update(
+			wpforms()->get( 'entry' )->update(
 				$entry_id,
 				$entry_data,
 				'',
@@ -1590,7 +1611,7 @@ class Edit {
 
 		$this->add_removed_file_meta( $field_data['file_user_name'] );
 
-		$entry_fields = wpforms()->entry_fields->get_fields(
+		$entry_fields = wpforms()->get( 'entry_fields' )->get_fields(
 			[
 				'entry_id' => $entry_id,
 				'field_id' => $field_id,
@@ -1610,7 +1631,7 @@ class Edit {
 			return false;
 		}
 
-		wpforms()->entry_fields->update(
+		wpforms()->get( 'entry_fields' )->update(
 			(int) $dbdata_field_id[0]['id'],
 			[
 				'value' => '',

@@ -2,6 +2,9 @@
 
 namespace WPForms\Admin\Traits;
 
+use WPForms\Admin\Addons\Addons;
+use WPForms\Admin\Builder\Templates;
+
 /**
  * Form Templates trait.
  *
@@ -9,16 +12,14 @@ namespace WPForms\Admin\Traits;
  */
 trait FormTemplates {
 
-	// phpcs:disable WPForms.PHP.BackSlash.UseShortSyntax
 	/**
 	 * Addons data handler class instance.
 	 *
 	 * @since 1.7.7
 	 *
-	 * @var \WPForms\Admin\Addons\Addons
+	 * @var Addons
 	 */
 	private $addons_obj;
-	// phpcs:enable WPForms.PHP.BackSlash.UseShortSyntax
 
 	/**
 	 * Is addon templates available?
@@ -54,7 +55,41 @@ trait FormTemplates {
 	 */
 	private function output_templates_content() {
 
+		$templates_hash        = wpforms()->get( 'builder_templates' )->get_hash();
+		$templates_hash_option = get_option( Templates::TEMPLATES_HASH_OPTION, '' );
+
+		// Compare the current hash and the previous one to detect changes in the templates list.
+		if ( $templates_hash !== $templates_hash_option ) {
+			// Update the hash in the option.
+			update_option( Templates::TEMPLATES_HASH_OPTION, $templates_hash );
+
+			// Wipe both caches - for the admin page and for the Form Builder.
+			wpforms()->get( 'builder_templates_cache' )->wipe_content_cache();
+		}
+
+		// Attempt to get cached content.
+		$content = wpforms()->get( 'builder_templates_cache' )->get_content_cache();
+
+		if ( empty( $content ) ) {
+			$content = $this->generate_templates_content_cache();
+		}
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $content;
+	}
+
+	/**
+	 * Generate and save cached templates content.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @retur string
+	 */
+	public function generate_templates_content_cache() {
+
 		$this->prepare_templates_data();
+
+		ob_start();
 		?>
 
 		<div class="wpforms-setup-templates">
@@ -82,9 +117,18 @@ trait FormTemplates {
 						<?php esc_html_e( 'Sorry, we didn\'t find any templates that match your criteria.', 'wpforms-lite' ); ?>
 					</p>
 				</div>
+				<div class="wpforms-user-templates-empty-state wpforms-hidden">
+					<?php $this->user_template_empty_state(); ?>
+				</div>
 			</div>
 		</div>
 		<?php
+
+		$content = ob_get_clean();
+
+		wpforms()->get( 'builder_templates_cache' )->save_content_cache( $content );
+
+		return $content;
 	}
 
 	/**
@@ -99,6 +143,8 @@ trait FormTemplates {
 		if ( empty( $templates ) ) {
 			return;
 		}
+
+		wpforms()->get( 'builder_templates' )->update_favorites_list();
 
 		// Loop through each available template.
 		foreach ( $templates as $id => $template ) {
@@ -126,6 +172,7 @@ trait FormTemplates {
 
 		$generic_categories['favorites'] = esc_html__( 'Favorite Templates', 'wpforms-lite' );
 		$generic_categories['new']       = esc_html__( 'New Templates', 'wpforms-lite' );
+		$generic_categories['user']      = esc_html__( 'My Templates', 'wpforms-lite' );
 
 		$this->output_categories( $generic_categories, $templates_count );
 
@@ -167,19 +214,19 @@ trait FormTemplates {
 
 			if ( $slug === 'all' ) {
 				$class = ' class="active"';
-			} elseif ( empty( $templates_count[ $slug ] ) ) {
+			} elseif ( empty( $templates_count[ $slug ] ) && $slug !== 'user' ) { // WPForms user templates are always available.
 				$class = ' class="wpforms-hidden"';
 			}
 
-			$count = isset( $templates_count[ $slug ] ) ? $templates_count[ $slug ] : '0';
+			$count = $templates_count[ $slug ] ?? '0';
 
 			printf(
-				'<li data-category="%1$s"%2$s><div>%3$s<span>%4$s</span></div>%5$s</li>',
+				'<li data-category="%1$s"%2$s data-count="%4$s"><div>%3$s<span>%4$s</span><i class="fa fa-chevron-down chevron"></i></div>%5$s</li>',
 				esc_attr( $slug ),
 				$class, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				esc_html( $name ),
 				esc_html( $count ),
-				$this->output_subcategories( $all_subcategories, $slug ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$this->output_subcategories( $all_subcategories, $slug, $templates_count['subcategories'] ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			);
 		}
 	}
@@ -192,7 +239,7 @@ trait FormTemplates {
 	 * @param array $all_subcategories Subcategories list.
 	 * @param array $parent_slug       Parent category slug.
 	 */
-	private function output_subcategories( $all_subcategories, $parent_slug ) {
+	private function output_subcategories( $all_subcategories, $parent_slug, $subcategories_count ) {
 
 		$subcategories = [];
 		$output        = '';
@@ -207,10 +254,13 @@ trait FormTemplates {
 			$output .= '<ul class="wpforms-setup-templates-subcategories">';
 
 			foreach ( $subcategories as $slug => $subcategory ) {
+				$count = $subcategories_count[ $slug ] ?? '0';
+
 				$output .= sprintf(
-					'<li data-subcategory="%1$s"><i class="fa fa-angle-right"></i><span>%2$s</span></li>',
+					'<li data-subcategory="%1$s"><span>%2$s</span><span>%3$s</span></li>',
 					esc_attr( $slug ),
-					esc_html( $subcategory['name'] )
+					esc_html( $subcategory['name'] ),
+					esc_html( $count )
 				);
 			}
 
@@ -241,6 +291,17 @@ trait FormTemplates {
 	}
 
 	/**
+	 * Output user templates empty state.
+	 *
+	 * @since 1.8.8
+	 */
+	private function user_template_empty_state() {
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wpforms_render( 'admin/empty-states/no-user-templates' );
+	}
+
+	/**
 	 * Prepare arguments for rendering template item.
 	 *
 	 * @since 1.7.7
@@ -251,17 +312,18 @@ trait FormTemplates {
 	 */
 	private function prepare_template_render_arguments( $template ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
 
-		$template['plugin_dir'] = isset( $template['plugin_dir'] ) ? $template['plugin_dir'] : '';
+		$template['plugin_dir'] = $template['plugin_dir'] ?? '';
 		$template['source']     = $this->get_template_source( $template );
 		$template['url']        = ! empty( $template['url'] ) ? $template['url'] : '';
 		$template['has_access'] = ! empty( $template['license'] ) ? $template['has_access'] : true;
-		$template['favorite']   = isset( $template['favorite'] ) ? $template['favorite'] : wpforms()->get( 'builder_templates' )->is_favorite( $template['slug'] );
+		$template['favorite']   = $template['favorite'] ?? wpforms()->get( 'builder_templates' )->is_favorite( $template['slug'] );
 
 		$args = [];
 
 		$args['template_id']   = ! empty( $template['id'] ) ? $template['id'] : $template['slug'];
 		$args['categories']    = $this->get_template_categories( $template );
 		$args['subcategories'] = $this->get_template_subcategories( $template );
+		$args['fields']        = $this->get_template_fields( $template );
 		$args['demo_url']      = '';
 
 		if ( ! empty( $template['url'] ) ) {
@@ -294,6 +356,31 @@ trait FormTemplates {
 			$this->is_custom_templates_available = true;
 		}
 
+		$args['create_url']       = '';
+		$args['edit_url']         = '';
+		$args['edit_action_text'] = '';
+		$args['is_open']          = false;
+
+		$args['can_create'] = wpforms_current_user_can( 'create_forms' );
+		$args['can_edit']   = wpforms_current_user_can( 'edit_forms' );
+		$args['can_delete'] = wpforms_current_user_can( 'delete_forms' );
+		$args['post_id']    = ! empty( $template['post_id'] ) ? $template['post_id'] : '';
+
+		if ( $template['source'] === 'wpforms-user-template' ) {
+
+			$args['create_url']       = esc_url( $template['create_url'] );
+			$args['edit_url']         = esc_url( $template['edit_url'] );
+			$args['edit_action_text'] = $template['edit_action_text'];
+
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$args['is_open'] = wpforms_is_admin_page( 'builder' ) && isset( $_GET['form_id'] ) && (int) $_GET['form_id'] === $template['post_id'];
+
+			$ownership = get_current_user_id() === (int) get_post_field( 'post_author', $args['post_id'] ) ? 'own' : 'others';
+
+			$args['can_edit']   = wpforms_current_user_can( "edit_{$ownership}_forms", $args['post_id'] );
+			$args['can_delete'] = wpforms_current_user_can( "delete_{$ownership}_forms", $args['post_id'] );
+		}
+
 		$args['action_text'] = $this->get_action_button_text( $template );
 
 		if ( empty( $template['has_access'] ) ) {
@@ -309,11 +396,10 @@ trait FormTemplates {
 
 		$args['addons_attributes'] = $this->prepare_addons_attributes( $template );
 
-		$args['selected']       = ! empty( $this->form_data['meta']['template'] ) && $this->form_data['meta']['template'] === $args['template_id'];
-		$args['selected_class'] = $args['selected'] ? ' selected' : '';
-		$args['badge_text']     = $args['selected'] ? esc_html__( 'Selected', 'wpforms-lite' ) : $args['badge_text'];
-		$args['badge_class']    = ! empty( $args['badge_text'] ) ? ' badge' : '';
-		$args['template']       = $template;
+		$args['selected']    = ! empty( $this->form_data['meta']['template'] ) && $this->form_data['meta']['template'] === $args['template_id'];
+		$args['badge_text']  = $args['selected'] ? esc_html__( 'Selected', 'wpforms-lite' ) : $args['badge_text'];
+		$args['badge_class'] = ! empty( $args['badge_text'] ) ? ' badge' : '';
+		$args['template']    = $template;
 
 		return $args;
 	}
@@ -328,6 +414,10 @@ trait FormTemplates {
 	 * @return string
 	 */
 	private function get_action_button_text( $template ) {
+
+		if ( ! empty( $template['action_text'] ) ) {
+			return $template['action_text'];
+		}
 
 		if ( $template['slug'] === 'blank' ) {
 			return __( 'Create Blank Form', 'wpforms-lite' );
@@ -462,6 +552,31 @@ trait FormTemplates {
 	}
 
 	/**
+	 * Determine template fields.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @param array $template Template data.
+	 *
+	 * @return string Template fields, comma separated.
+	 */
+	private function get_template_fields( array $template ): string {
+
+		$fields = ! empty( $template['fields'] ) ? (array) $template['fields'] : [];
+
+		/**
+		 * Filter template fields.
+		 *
+		 * @since 1.8.6
+		 *
+		 * @param array $fields Template fields.
+		 */
+		$fields = (array) apply_filters( 'wpforms_setup_template_fields', $fields );
+
+		return implode( ',', $fields );
+	}
+
+	/**
 	 * Get categories templates count.
 	 *
 	 * @since 1.7.7
@@ -473,6 +588,7 @@ trait FormTemplates {
 		$all_categories            = [];
 		$available_templates_count = 0;
 		$favorites_templates_count = 0;
+		$user_templates_count      = 0;
 
 		foreach ( $this->prepared_templates as $template_data ) {
 
@@ -480,11 +596,15 @@ trait FormTemplates {
 			$categories = explode( ',', $template_data['categories'] );
 
 			if ( $template['has_access'] ) {
-				$available_templates_count ++;
+				++$available_templates_count;
 			}
 
 			if ( $template['favorite'] ) {
-				$favorites_templates_count++;
+				++$favorites_templates_count;
+			}
+
+			if ( $template['source'] === 'wpforms-user-template' ) {
+				++$user_templates_count;
 			}
 
 			if ( is_array( $categories ) ) {
@@ -495,11 +615,39 @@ trait FormTemplates {
 			$all_categories[] = $categories;
 		}
 
-		$categories_count              = array_count_values( $all_categories );
-		$categories_count['all']       = count( $this->prepared_templates );
-		$categories_count['available'] = $available_templates_count;
-		$categories_count['favorites'] = $favorites_templates_count;
+		$categories_count                  = array_count_values( $all_categories );
+		$categories_count['all']           = count( $this->prepared_templates );
+		$categories_count['available']     = $available_templates_count;
+		$categories_count['favorites']     = $favorites_templates_count;
+		$categories_count['user']          = $user_templates_count;
+		$categories_count['subcategories'] = $this->get_count_in_subcategories();
 
 		return $categories_count;
+	}
+
+	/**
+	 * Get subcategories templates count.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @return array
+	 */
+	private function get_count_in_subcategories(): array {
+
+		$all_subcategories = [];
+
+		foreach ( $this->prepared_templates as $template_data ) {
+
+			$subcategories = explode( ',', $template_data['subcategories'] );
+
+			if ( is_array( $subcategories ) ) {
+				array_push( $all_subcategories, ...$subcategories );
+				continue;
+			}
+
+			$all_subcategories[] = $subcategories;
+		}
+
+		return array_count_values( $all_subcategories );
 	}
 }

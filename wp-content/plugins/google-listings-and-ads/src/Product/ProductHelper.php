@@ -10,6 +10,7 @@ use Automattic\WooCommerce\GoogleListingsAndAds\MerchantCenter\TargetAudience;
 use Automattic\WooCommerce\GoogleListingsAndAds\PluginHelper;
 use Automattic\WooCommerce\GoogleListingsAndAds\Proxies\WC;
 use Automattic\WooCommerce\GoogleListingsAndAds\Value\ChannelVisibility;
+use Automattic\WooCommerce\GoogleListingsAndAds\Value\MCStatus;
 use Automattic\WooCommerce\GoogleListingsAndAds\Value\SyncStatus;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\Product as GoogleProduct;
 use WC_Product;
@@ -234,6 +235,30 @@ class ProductHelper implements Service {
 		if ( empty( $visibility ) ) {
 			$this->meta_handler->update_visibility( $product, ChannelVisibility::SYNC_AND_SHOW );
 		}
+	}
+
+	/**
+	 * Update a product's channel visibility.
+	 *
+	 * @param WC_Product $product
+	 * @param string     $visibility
+	 */
+	public function update_channel_visibility( WC_Product $product, string $visibility ): void {
+		try {
+			$product = $this->maybe_swap_for_parent( $product );
+		} catch ( InvalidValue $exception ) {
+			// The error has been logged within the call of maybe_swap_for_parent
+			return;
+		}
+
+		try {
+			$visibility = ChannelVisibility::cast( $visibility )->get();
+		} catch ( InvalidValue $exception ) {
+			do_action( 'woocommerce_gla_exception', $exception, __METHOD__ );
+			return;
+		}
+
+		$this->meta_handler->update_visibility( $product, $visibility );
 	}
 
 	/**
@@ -484,7 +509,8 @@ class ProductHelper implements Service {
 	 */
 	public function get_mc_status( WC_Product $wc_product ): ?string {
 		try {
-			return $this->meta_handler->get_mc_status( $this->maybe_swap_for_parent( $wc_product ) );
+			// If the mc_status is not set, return NOT_SYNCED.
+			return $this->meta_handler->get_mc_status( $this->maybe_swap_for_parent( $wc_product ) ) ?: MCStatus::NOT_SYNCED;
 		} catch ( InvalidValue $exception ) {
 			do_action(
 				'woocommerce_gla_debug_message',

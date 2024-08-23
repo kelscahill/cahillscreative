@@ -200,4 +200,37 @@ class WC_Stripe_Account {
 		$currencies = array_filter( array_column( $account['external_accounts']['data'], 'currency' ) );
 		return array_values( array_unique( $currencies ) );
 	}
+
+	/**
+	 * Gets the account default currency.
+	 *
+	 * @return string Currency code in lowercase.
+	 */
+	public function get_account_default_currency(): string {
+		$account = $this->get_cached_account_data();
+
+		return isset( $account['default_currency'] ) ? strtolower( $account['default_currency'] ) : '';
+	}
+
+	/**
+	 * Returns the Stripe account's card payment bank statement prefix.
+	 *
+	 * Merchants can set this in their Stripe settings at: https://dashboard.stripe.com/settings/public.
+	 *
+	 * @return string The Stripe Accounts card statement prefix.
+	 */
+	public function get_card_statement_prefix() {
+		$account = $this->get_cached_account_data();
+		return $account['settings']['card_payments']['statement_descriptor_prefix'] ?? '';
+	}
+
+	/**
+	 * Gets the account country.
+	 *
+	 * @return string Country.
+	 */
+	public function get_account_country() {
+		$account = $this->get_cached_account_data();
+		return $account['country'] ?? 'US';
+	}
 }

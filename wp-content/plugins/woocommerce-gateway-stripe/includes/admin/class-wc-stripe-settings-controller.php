@@ -18,14 +18,46 @@ class WC_Stripe_Settings_Controller {
 	private $account;
 
 	/**
+	 * The Stripe gateway instance.
+	 *
+	 * @var WC_Stripe_Payment_Gateway
+	 */
+	private $gateway;
+
+	/**
 	 * Constructor
 	 *
 	 * @param WC_Stripe_Account $account Stripe account
 	 */
-	public function __construct( WC_Stripe_Account $account ) {
+	public function __construct( WC_Stripe_Account $account, WC_Stripe_Payment_Gateway $gateway ) {
 		$this->account = $account;
+		$this->gateway = $gateway;
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
 		add_action( 'wc_stripe_gateway_admin_options_wrapper', [ $this, 'admin_options' ] );
+		add_action( 'woocommerce_order_item_add_action_buttons', [ $this, 'hide_refund_button_for_uncaptured_orders' ] );
+
+		// Priority 5 so we can manipulate the registered gateways before they are shown.
+		add_action( 'woocommerce_admin_field_payment_gateways', [ $this, 'hide_gateways_on_settings_page' ], 5 );
+
+		add_action( 'admin_init', [ $this, 'maybe_update_account_data' ] );
+	}
+
+	/**
+	* This replaces the refund button with a disabled 'Refunding unavailable' button in the same place for orders that have been authorized but not captured.
+	*
+	* A help tooltip explains that refunds are not available for orders which have not been captured yet.
+	*
+	* @param WC_Order $order The order that is being viewed.
+	*/
+	public function hide_refund_button_for_uncaptured_orders( $order ) {
+		$intent = $this->gateway->get_intent_from_order( $order );
+
+		if ( $intent && 'requires_capture' === $intent->status ) {
+			$no_refunds_button  = __( 'Refunding unavailable', 'woocommerce-gateway-stripe' );
+			$no_refunds_tooltip = __( 'Refunding via Stripe is unavailable because funds have not been captured for this order. Process order to take payment, or cancel to remove the pre-authorization.', 'woocommerce-gateway-stripe' );
+			echo '<style>.button.refund-items { display: none; }</style>';
+			echo '<span class="button button-disabled">' . $no_refunds_button . wc_help_tip( $no_refunds_tooltip ) . '</span>';
+		}
 	}
 
 	/**
@@ -110,10 +142,14 @@ class WC_Stripe_Settings_Controller {
 		);
 
 		$params = [
-			'time'                    => time(),
-			'i18n_out_of_sync'        => $message,
-			'is_upe_checkout_enabled' => WC_Stripe_Feature_Flags::is_upe_checkout_enabled(),
-			'stripe_oauth_url'        => $oauth_url,
+			'time'                      => time(),
+			'i18n_out_of_sync'          => $message,
+			'is_upe_checkout_enabled'   => WC_Stripe_Feature_Flags::is_upe_checkout_enabled(),
+			'stripe_oauth_url'          => $oauth_url,
+			'show_customization_notice' => get_option( 'wc_stripe_show_customization_notice', 'yes' ) === 'yes' ? true : false,
+			'is_test_mode'              => $this->gateway->is_in_test_mode(),
+			'plugin_version'            => WC_STRIPE_VERSION,
+			'account_country'           => $this->account->get_account_country(),
 		];
 		wp_localize_script(
 			'woocommerce_stripe_admin',
@@ -127,5 +163,63 @@ class WC_Stripe_Settings_Controller {
 
 		wp_enqueue_script( 'woocommerce_stripe_admin' );
 		wp_enqueue_style( 'woocommerce_stripe_admin' );
+	}
+
+	/**
+	 * Removes all Stripe alternative payment methods (eg Bancontact, giropay) on the WooCommerce Settings page.
+	 *
+	 * Note: This function is hooked onto `woocommerce_admin_field_payment_gateways` which is the hook used
+	 * to display the payment gateways on the WooCommerce Settings page.
+	 */
+	public static function hide_gateways_on_settings_page() {
+		$gateways_to_hide = [
+			// Hide all UPE payment methods.
+			WC_Stripe_UPE_Payment_Method::class,
+			// Hide all legacy payment methods.
+			WC_Gateway_Stripe_Alipay::class,
+			WC_Gateway_Stripe_Sepa::class,
+			WC_Gateway_Stripe_Giropay::class,
+			WC_Gateway_Stripe_Ideal::class,
+			WC_Gateway_Stripe_Bancontact::class,
+			WC_Gateway_Stripe_Eps::class,
+			WC_Gateway_Stripe_P24::class,
+			WC_Gateway_Stripe_Boleto::class,
+			WC_Gateway_Stripe_Oxxo::class,
+			WC_Gateway_Stripe_Sofort::class,
+			WC_Gateway_Stripe_Multibanco::class,
+		];
+
+		foreach ( WC()->payment_gateways->payment_gateways as $index => $payment_gateway ) {
+			foreach ( $gateways_to_hide as $gateway_to_hide ) {
+				if ( $payment_gateway instanceof $gateway_to_hide ) {
+					unset( WC()->payment_gateways->payment_gateways[ $index ] );
+					break; // Break the inner loop as we've already found a match and removed the gateway
+				}
+			}
+		}
+	}
+
+	/**
+	 * Updates the Stripe account data on the settings page.
+	 *
+	 * Some plugin settings (eg statement descriptions) require the latest update-to-date data from the Stripe Account to display
+	 * correctly. This function clears the account cache when the settings page is loaded to ensure the latest data is displayed.
+	 */
+	public function maybe_update_account_data() {
+
+		// Exit early if we're not on the payments settings page.
+		if ( ! isset( $_GET['page'], $_GET['tab'] ) || 'wc-settings' !== $_GET['page'] || 'checkout' !== $_GET['tab'] ) {
+			return;
+		}
+
+		if ( ! isset( $_GET['section'] ) || 'stripe' !== $_GET['section'] ) {
+			return;
+		}
+
+		if ( ! WC_Stripe::get_instance()->connect->is_connected() ) {
+			return [];
+		}
+
+		$this->account->clear_cache();
 	}
 }

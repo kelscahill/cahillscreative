@@ -14,13 +14,27 @@ use WPForms\Tasks\Tasks;
 abstract class CacheBase {
 
 	/**
+	 * Encrypt cached file.
+	 *
+	 * @since 1.8.7
+	 */
+	const ENCRYPT = false;
+
+	/**
+	 * Request lock time, min.
+	 *
+	 * @since 1.8.7
+	 */
+	const REQUEST_LOCK_TIME = 15;
+
+	/**
 	 * Indicates whether the cache was updated during the current run.
 	 *
 	 * @since 1.6.8
 	 *
 	 * @var bool
 	 */
-	protected static $updated = false;
+	protected $updated = false;
 
 	/**
 	 * Settings.
@@ -85,7 +99,7 @@ abstract class CacheBase {
 			return;
 		}
 
-		// Quit if settings wasn't provided.
+		// Quit if settings weren't provided.
 		if (
 			empty( $this->settings['remote_source'] ) ||
 			empty( $this->settings['cache_file'] )
@@ -137,6 +151,8 @@ abstract class CacheBase {
 			// Scheduled update action.
 			// For instance: 'wpforms_admin_addons_cache_update'.
 			'update_action' => '',
+			// Additional query args for the remote source URL.
+			'query_args'    => [],
 		];
 
 		$this->settings = wp_parse_args( $this->setup(), $default_settings );
@@ -152,31 +168,15 @@ abstract class CacheBase {
 	abstract protected function setup();
 
 	/**
-	 * Get cache directory path.
+	 * Get a cache directory path.
 	 *
 	 * @since 1.6.8
+	 *
+	 * @return string
 	 */
 	protected function get_cache_dir() {
 
-		static $cache_dir;
-
-		if ( $cache_dir ) {
-			/**
-			 * Since wpforms_upload_dir() relies on hooks, and hooks can be added unpredictably,
-			 * we need to cache the result of this method.
-			 * Otherwise, it is the risk to save cache file to one dir and try to get from another.
-			 */
-			return $cache_dir;
-		}
-
-		$upload_dir  = wpforms_upload_dir();
-		$upload_path = ! empty( $upload_dir['path'] )
-			? trailingslashit( wp_normalize_path( $upload_dir['path'] ) )
-			: trailingslashit( WP_CONTENT_DIR ) . 'uploads/wpforms/';
-
-		$cache_dir = $upload_path . 'cache/';
-
-		return $cache_dir;
+		return File::get_cache_dir();
 	}
 
 	/**
@@ -188,9 +188,13 @@ abstract class CacheBase {
 	 */
 	public function get() {
 
-		if ( $this->is_invalid_cache() || $this->is_expired_cache() ) {
-			$this->update();
+		$cache = $this->get_from_cache();
+
+		if ( ! empty( $cache ) && ! $this->is_expired_cache() ) {
+			return $cache;
 		}
+
+		$this->update();
 
 		return $this->get_from_cache();
 	}
@@ -202,21 +206,9 @@ abstract class CacheBase {
 	 *
 	 * @return bool
 	 */
-	private function is_expired_cache() {
+	private function is_expired_cache(): bool {
 
 		return $this->cache_time() + $this->settings['cache_ttl'] < time();
-	}
-
-	/**
-	 * Determine if the cache is expired.
-	 *
-	 * @since 1.8.2
-	 *
-	 * @return bool
-	 */
-	private function is_invalid_cache() {
-
-		return empty( $this->get_from_cache() );
 	}
 
 	/**
@@ -250,13 +242,20 @@ abstract class CacheBase {
 	 *
 	 * @return array
 	 */
-	private function get_from_cache() {
+	private function get_from_cache(): array {
 
 		if ( ! $this->exists() ) {
 			return [];
 		}
 
-		return (array) json_decode( file_get_contents( $this->cache_file ), true );
+		$content = File::get_contents( $this->cache_file );
+
+		// Do not decrypt non-encrypted legacy files, they will be encrypted on the scheduled update.
+		if ( static::ENCRYPT && ! wpforms_is_json( $content ) ) {
+			$content = Crypto::decrypt( $content );
+		}
+
+		return (array) json_decode( $content, true );
 	}
 
 	/**
@@ -268,11 +267,11 @@ abstract class CacheBase {
 	 *
 	 * @return bool
 	 */
-	public function update( $force = false ) {
+	public function update( bool $force = false ): bool {
 
 		if (
 			! $force &&
-			time() < $this->cache_time() + 15 * MINUTE_IN_SECONDS
+			time() < $this->cache_time() + self::REQUEST_LOCK_TIME * MINUTE_IN_SECONDS
 		) {
 			return false;
 		}
@@ -283,14 +282,20 @@ abstract class CacheBase {
 			return false;
 		}
 
-		$data = $this->perform_remote_request();
+		$data    = $this->perform_remote_request();
+		$content = wp_json_encode( $data );
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents
-		if ( file_put_contents( $this->cache_file, wp_json_encode( $data ) ) === false ) {
+		$this->maybe_update_transient( $data );
+
+		if ( static::ENCRYPT ) {
+			$content = Crypto::encrypt( $content );
+		}
+
+		if ( ! File::put_contents( $this->cache_file, $content ) ) {
 			return false;
 		}
 
-		self::$updated = true;
+		$this->updated = true;
 
 		return true;
 	}
@@ -336,29 +341,103 @@ abstract class CacheBase {
 	 *
 	 * @return array
 	 */
-	private function perform_remote_request() {
+	private function perform_remote_request(): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
 
 		$wpforms_key = wpforms()->is_pro() ? wpforms_get_license_key() : 'lite';
 
-		$request = wp_remote_get(
-			add_query_arg( 'tgm-updater-key', $wpforms_key, $this->settings['remote_source'] ),
+		$query_args = array_merge(
+			[ 'tgm-updater-key' => $wpforms_key ],
+			$this->settings['query_args'] ?? []
+		);
+
+		$request_url = add_query_arg( $query_args, $this->settings['remote_source'] );
+		$user_agent  = wpforms_get_default_user_agent();
+		$request     = wp_remote_get(
+			$request_url,
 			[
 				'timeout'    => 10,
-				'user-agent' => wpforms_get_default_user_agent(),
+				'user-agent' => $user_agent,
 			]
 		);
 
-		if ( is_wp_error( $request ) ) {
+		$request_url_log   = remove_query_arg( [ 'tgm-updater-key' ], $request_url );
+		$response          = $request['http_response'] ?? null;
+		$response_code     = $response ? $response->get_status() : '';
+		$response_headers  = wp_remote_retrieve_headers( $request )->getAll();
+		$response_body     = wp_remote_retrieve_body( $request );
+		$response_body_len = strlen( $response_body );
+		$response_body_log = $response_body_len > 1024 ? "(First 1 kB):\n" . substr( trim( $response_body ), 0, 1024 ) . '...' : trim( $response_body );
+		$response_body_log = esc_html( $response_body_log );
+		$is_wp_error       = is_wp_error( $request );
+
+		// Log the response details in debug mode.
+		if ( wpforms_debug() ) {
+			wpforms_log(
+				'Cached data: Response details',
+				[
+					'class'          => static::class,
+					'request_url'    => $request_url_log,
+					'code'           => $response_code,
+					'headers'        => $response_headers,
+					'content_length' => $response_body_len,
+					'body'           => $response_body_log,
+				],
+				[
+					'type' => [ 'log' ],
+				]
+			);
+		}
+
+		// Log the error if any.
+		if ( $response_code > 399 || $is_wp_error ) {
+			wpforms_log(
+				'Cached data: HTTP request error',
+				[
+					'class'          => static::class,
+					'request_url'    => $request_url_log,
+					'is_wp_error'    => $is_wp_error ? 'Yes' : 'No',
+					'error_message'  => $is_wp_error ? $request->get_error_message() : '',
+					'code'           => $response_code,
+					'headers'        => $response_headers,
+					'content_length' => $response_body_len,
+					'body'           => $response_body_log,
+					'error_data'     => $is_wp_error ? $request->get_all_error_data() : '',
+				],
+				[
+					'type' => [ 'error' ],
+				]
+			);
+
 			return [];
 		}
 
-		$json = wp_remote_retrieve_body( $request );
+		$json = trim( $response_body );
+		$data = json_decode( $json, true );
 
-		if ( empty( $json ) ) {
+		if ( empty( $data ) ) {
+			$message = $data === null ? 'Invalid JSON' : 'Empty JSON';
+
+			wpforms_log(
+				'Cached data: ' . $message,
+				[
+					'class'          => static::class,
+					'cache_file'     => $this->settings['cache_file'],
+					'remote_source'  => $this->settings['remote_source'],
+					'json_result'    => $message,
+					'code'           => $response_code,
+					'headers'        => $response_headers,
+					'content_length' => $response_body_len,
+					'body'           => $response_body_log,
+				],
+				[
+					'type' => [ 'error' ],
+				]
+			);
+
 			return [];
 		}
 
-		return $this->prepare_cache_data( json_decode( $json, true ) );
+		return $this->prepare_cache_data( $data );
 	}
 
 	/**
@@ -395,12 +474,24 @@ abstract class CacheBase {
 	 */
 	public function cache_dir_complete() {
 
-		if ( ! self::$updated ) {
+		if ( ! $this->updated ) {
 			return;
 		}
 
 		wpforms_create_upload_dir_htaccess_file();
+		wpforms_create_cache_dir_htaccess_file();
 		wpforms_create_index_html_file( $this->cache_dir );
+		wpforms_create_index_php_file( $this->cache_dir );
+	}
+
+	/**
+	 * Invalidate cache.
+	 *
+	 * @since 1.8.7
+	 */
+	public function invalidate_cache() {
+
+		Transient::delete( $this->cache_key );
 	}
 
 	/**
@@ -408,15 +499,32 @@ abstract class CacheBase {
 	 *
 	 * @since 1.6.8
 	 *
-	 * @param array $data Raw data received by the remote request.
+	 * @param array|mixed $data Raw data received by the remote request.
 	 *
 	 * @return array Prepared data for caching.
 	 */
-	protected function prepare_cache_data( $data ) {
+	protected function prepare_cache_data( $data ): array {
 
 		if ( empty( $data ) || ! is_array( $data ) ) {
 			return [];
 		}
+
+		return $data;
+	}
+
+	/**
+	 * Maybe update transient duration time.
+	 *
+	 * Allows updating transient duration time if it's less than expiration time.
+	 * To do this, overwrite this method in child classes.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param array $data Data received by the remote request.
+	 *
+	 * @return bool|array
+	 */
+	protected function maybe_update_transient( array $data ) {
 
 		return $data;
 	}

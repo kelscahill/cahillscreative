@@ -39,6 +39,7 @@ class SendinblueClient
 	public const ORDER_PAID                             = '/order_tracking?action=order_paid';
 	public const ORDER_REFUND                           = '/order_tracking?action=order_refund';
 	public const ORDER_CANCELLED                        = '/order_tracking?action=order_cancelled';
+	public const PLUGIN_UPDATED                         = '/plugin_updated';
 
 	public const IS_PAGE_TRACKING_ENABLED               = 'isPageTrackingEnabled';
 	public const IS_ABANDONED_CART_ENABLED              = 'isAbandonedCartTrackingEnabled';
@@ -86,13 +87,15 @@ class SendinblueClient
 	public const DISPLAY_OPT_IN_LOCATION                = "displayOptInLocation";
 	public const IS_PRODUCT_SYNC_ENABLED                = "isProductsAutoSyncEnabled";
 	public const IS_CATEGORY_SYNC_ENABLED               = "isCategoryAutoSyncEnabled";
-	public const IS_ORDERS_SYNC_ENABLED                  = "isOrdersAutoSyncEnabled";
+	public const IS_ORDERS_SYNC_ENABLED                 = "isOrdersAutoSyncEnabled";
+	public const IS_ECOMMERCE_ENABLED                   = "isEcommerceEnabled";
 
 	private const INTEGRATION_BACKEND_URL               = 'https://plugin.brevo.com/integrations/api';
 	private const HTTP_METHOD_GET                       = 'GET';
 	private const HTTP_METHOD_POST                      = 'POST';
 	private const INTEGRATION_MIGRATION_URL             = '/migrate/woocommerce';
 	private const USER_AGENT                            = 'sendinblue_plugins/woocommerce_common';
+	private const ECOMMERCE_PATH                        = '/ecommerce/';
 
 	private function post($endpoint, $data = array())
 	{
@@ -119,8 +122,12 @@ class SendinblueClient
 
 		$response               = wp_remote_request($url, $args);
 		$data                   = wp_remote_retrieve_body($response);
+		$response_code          = wp_remote_retrieve_response_code($response);
 
-		return json_decode($data, true);
+		return [
+			'data' => json_decode($data, true),
+			'code' => $response_code
+		];
 	}
 
 	public function eventsSync($event, $data = array())
@@ -144,5 +151,19 @@ class SendinblueClient
 	{
 		$endpoint = self::INTEGRATION_MIGRATION_URL;
 		return $this->post($endpoint, $data);
+	}
+
+	public function enableEcommerce()
+	{
+		$user_connection_id = get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null);
+		if (empty($user_connection_id)) {
+			return false;
+		}
+
+		$data = array(
+			"userConnectionId" => $user_connection_id
+		);
+
+		return $this->post(self::ECOMMERCE_PATH . $user_connection_id, $data);
 	}
 }

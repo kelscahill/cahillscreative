@@ -232,10 +232,27 @@ class Settings {
 		$settings['allowMarketplaceSuggestions']      = WC_Marketplace_Suggestions::allow_suggestions();
 		$settings['connectNonce']                     = wp_create_nonce( 'connect' );
 		$settings['wcpay_welcome_page_connect_nonce'] = wp_create_nonce( 'wcpay-connect' );
+		$settings['wc_helper_nonces']                 = array(
+			'refresh' => wp_create_nonce( 'refresh' ),
+		);
 
 		$settings['features'] = $this->get_features();
 
 		$settings['isWooPayEligible'] = WCPayPromotionInit::is_woopay_eligible();
+
+		$has_gutenberg     = is_plugin_active( 'gutenberg/gutenberg.php' );
+		$gutenberg_version = '';
+		if ( $has_gutenberg ) {
+			if ( defined( 'GUTENBERG_VERSION' ) ) {
+				$gutenberg_version = GUTENBERG_VERSION;
+			}
+
+			if ( ! $gutenberg_version ) {
+				$gutenberg_data    = get_plugin_data( WP_PLUGIN_DIR . '/gutenberg/gutenberg.php' );
+				$gutenberg_version = $gutenberg_data['Version'];
+			}
+		}
+		$settings['gutenberg_version'] = $has_gutenberg ? $gutenberg_version : 0;
 
 		return $settings;
 	}

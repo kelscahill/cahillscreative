@@ -1,10 +1,10 @@
 === Newsletter, SMTP, Email marketing and Subscribe forms by Brevo (formely Sendinblue) ===
-Contributors: neeraj_slit
+ Contributors: neeraj_slit
 Tags: Email Marketing, Newsletter, Sendinblue, Brevo, Forms, smtp, marketing automation, email campaign, WordPress smtp, subscription form, email, marketing, signup form
 Requires at least: 4.4
-Tested up to: 6.3
+Tested up to: 6.5.2
 Requires PHP: 5.6
-Stable tag: 3.1.72
+Stable tag: 3.1.80
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,30 @@ In order to create a signup form, you need to:
 2. Integrate the form in a sidebar using a widget from WP panel > Appearance > Widgets. The Brevo widget form should appear in your widgets list, you just to have to drag and drop the widget into the sidebar of your choice.
 
 == Changelog ==
+
+= 3.1.80 =
+* Plugin made compatible with Wordpress v6.5.2
+
+= 3.1.79 =
+* Enhancements in Brevo Forms
+
+= 3.1.78 =
+* Plugin enhancements related to security
+
+= 3.1.77 =
+* Rebranded plugin from old Sendinblue brand to new Brevo brand
+
+= 3.1.76 =
+* Added support for Cloudflare Turnstile Captcha to be used with Brevo Forms in the plugin
+
+= 3.1.75 =
+* Updated default sender for test emails to use customer’s domain instead of Brevo domain
+
+= 3.1.74 =
+* Plugin made compatible with Wordpress v6.4
+
+= 3.1.73 =
+* Plugin security enhancements
 
 = 3.1.72 =
 * Plugin Enhancements related to Multi Language support

@@ -77,7 +77,7 @@ class WPForms_Conditional_Logic_Core {
 		// JavaScript.
 		wp_enqueue_script(
 			'wpforms-builder-conditionals',
-			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/builder-conditional-logic-core{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/builder/conditional-logic-core{$min}.js",
 			[ 'jquery', 'wpforms-utils', 'wpforms-builder' ],
 			WPFORMS_VERSION,
 			false
@@ -532,7 +532,7 @@ class WPForms_Conditional_Logic_Core {
 												} else {
 
 													printf(
-														'<select name="%1$s[conditionals][%2$s][%3$s][value]" class="wpforms-conditional-value" %4$d>',
+														'<select name="%1$s[conditionals][%2$s][%3$s][value]" class="wpforms-conditional-value" %4$s>',
 														esc_attr( $field_name ),
 														esc_attr( $group_id ),
 														esc_attr( $rule_id ),

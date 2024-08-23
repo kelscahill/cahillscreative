@@ -194,8 +194,11 @@ class WCProductAdapter extends GoogleProduct implements Validatable {
 	 */
 	protected function map_product_categories() {
 		// set product type using merchants defined product categories
-		$base_product_id            = $this->is_variation() ? $this->parent_wc_product->get_id() : $this->wc_product->get_id();
-		$this->product_category_ids = wc_get_product_cat_ids( $base_product_id );
+		$base_product_id = $this->is_variation() ? $this->parent_wc_product->get_id() : $this->wc_product->get_id();
+
+		// Fetch only selected term ids without parents.
+		$this->product_category_ids = wc_get_product_term_ids( $base_product_id, 'product_cat' );
+
 		if ( ! empty( $this->product_category_ids ) ) {
 			$google_product_types = self::convert_product_types( $this->product_category_ids );
 			do_action(
@@ -207,6 +210,7 @@ class WCProductAdapter extends GoogleProduct implements Validatable {
 				),
 				__METHOD__
 			);
+			$google_product_types = array_slice( $google_product_types, 0, 10 );
 			$this->setProductTypes( $google_product_types );
 		}
 		return $this;
@@ -234,6 +238,7 @@ class WCProductAdapter extends GoogleProduct implements Validatable {
 	}
 
 	/**
+	 * Return category names including ancestors, separated by ">"
 	 *
 	 * @param int $category_id
 	 *
@@ -567,6 +572,12 @@ class WCProductAdapter extends GoogleProduct implements Validatable {
 		}
 
 		$weight = wc_get_weight( $this->wc_product->get_weight(), $unit );
+
+		// Use lb if the unit is lbs, since GMC uses lb.
+		if ( 'lbs' === $unit ) {
+			$unit = 'lb';
+		}
+
 		$this->setShippingWeight(
 			new GoogleProductShippingWeight(
 				[
@@ -900,7 +911,7 @@ class WCProductAdapter extends GoogleProduct implements Validatable {
 				 * @param WC_Product $wc_product      The WooCommerce product object.
 				 *
 				 * @see AttributeManager::ATTRIBUTES for the list of attributes that their values can be modified using this filter.
-				 * @see WCProductAdapter::override_attributes for the docuemntation of the `woocommerce_gla_product_attribute_values` filter.
+				 * @see WCProductAdapter::override_attributes for the documentation of the `woocommerce_gla_product_attribute_values` filter.
 				 */
 				$gla_attributes[ $attribute_id ] = apply_filters( "woocommerce_gla_product_attribute_value_{$attribute_id}", $attribute_value, $this->get_wc_product() );
 			}

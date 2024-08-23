@@ -309,5 +309,43 @@ class UpdatePluginManagers
 
         $this->api_manager->flush_option_keys(API_KEY_V3_OPTION_NAME);
     }
+
+    public function enable_ecommerce()
+    {
+        $settings = $this->api_manager->get_settings();
+        $last_call = get_option('ecommerce_called_time', 120);
+        if ((time() - $last_call) < 120) {
+            return;
+        }
+
+        if (empty($settings[SendinblueClient::IS_ECOMMERCE_ENABLED]) && !get_option(SENDINBLUE_WC_ECOMMERCE_REQ, false)) {
+            (get_option('ecommerce_called_time', null) !== null) ? update_option('ecommerce_called_time', time()) : add_option('ecommerce_called_time', time());
+            $response = $this->client_manager->enableEcommerce();
+            if (!empty($response) && $response['code'] == 201) {
+                add_option(SENDINBLUE_WC_ECOMMERCE_REQ, true);    
+            }
+        }
+    }
+
+    public function post_update()
+    {
+        $user_connection_id = get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null);
+        $sendinblue_version = get_option(SENDINBLUE_WC_VERSION_SENT, null);
+
+        if (empty($user_connection_id)) {
+            return false;
+        }
+
+        if (!empty($sendinblue_version) && ($sendinblue_version == SENDINBLUE_WC_PLUGIN_VERSION)) {
+            return false;
+        }
+
+        $data = array(
+            'plugin_version' => SENDINBLUE_WC_PLUGIN_VERSION,
+            'shop_version' => SENDINBLUE_WORDPRESS_SHOP_VERSION
+        );
+        $this->client_manager->eventsSync(SendinblueClient::PLUGIN_UPDATED, $data);
+        (get_option(SENDINBLUE_WC_VERSION_SENT, null) !== null) ? update_option(SENDINBLUE_WC_VERSION_SENT, SENDINBLUE_WC_PLUGIN_VERSION) : add_option(SENDINBLUE_WC_VERSION_SENT, SENDINBLUE_WC_PLUGIN_VERSION);
+    }
 }
 

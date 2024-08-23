@@ -7,8 +7,6 @@ namespace Automattic\WooCommerce\Internal\Features;
 
 use Automattic\WooCommerce\Internal\Admin\Analytics;
 use Automattic\WooCommerce\Admin\Features\Navigation\Init;
-use Automattic\WooCommerce\Admin\Features\NewProductManagementExperience;
-use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 use Automattic\WooCommerce\Internal\Traits\AccessiblePrivateMethods;
 use Automattic\WooCommerce\Proxies\LegacyProxy;
 use Automattic\WooCommerce\Utilities\ArrayUtil;
@@ -77,6 +75,13 @@ class FeaturesController {
 	 * @var bool
 	 */
 	private $force_allow_enabling_plugins = false;
+
+	/**
+	 * List of plugins excluded from feature compatibility warnings in UI.
+	 *
+	 * @var string[]
+	 */
+	private $plugins_excluded_from_compatibility_ui;
 
 	/**
 	 * Creates a new instance of the class.
@@ -167,7 +172,10 @@ class FeaturesController {
 				),
 				'new_navigation'       => array(
 					'name'            => __( 'Navigation', 'woocommerce' ),
-					'description'     => __( 'Add the new WooCommerce navigation experience to the dashboard', 'woocommerce' ),
+					'description'     => __(
+						'Add the new WooCommerce navigation experience to the dashboard',
+						'woocommerce'
+					),
 					'option_key'      => Init::TOGGLE_OPTION_NAME,
 					'is_experimental' => false,
 					'disable_ui'      => false,
@@ -179,14 +187,18 @@ class FeaturesController {
 					'is_experimental' => true,
 					'disable_ui'      => false,
 					'is_legacy'       => true,
-					'disabled'        => function() {
+					'disabled'        => function () {
 						return version_compare( get_bloginfo( 'version' ), '6.2', '<' );
 					},
-					'desc_tip'        => function() {
+					'desc_tip'        => function () {
 						$string = '';
 						if ( version_compare( get_bloginfo( 'version' ), '6.2', '<' ) ) {
-							$string = __( '⚠ This feature is compatible with WordPress version 6.2 or higher.', 'woocommerce' );
+							$string = __(
+								'⚠ This feature is compatible with WordPress version 6.2 or higher.',
+								'woocommerce'
+							);
 						}
+
 						return $string;
 					},
 				),
@@ -204,8 +216,21 @@ class FeaturesController {
 					),
 					'is_experimental'    => false,
 					'enabled_by_default' => true,
+					'disable_ui'         => true,
+					'is_legacy'          => true,
+				),
+				// Marked as a legacy feature to avoid compatibility checks, which aren't really relevant to this feature.
+				// https://github.com/woocommerce/woocommerce/pull/39701#discussion_r1376976959.
+				'order_attribution'    => array(
+					'name'               => __( 'Order Attribution', 'woocommerce' ),
+					'description'        => __(
+						'Enable this feature to track and credit channels and campaigns that contribute to orders on your site',
+						'woocommerce'
+					),
+					'enabled_by_default' => true,
 					'disable_ui'         => false,
 					'is_legacy'          => true,
+					'is_experimental'    => false,
 				),
 			);
 
@@ -244,6 +269,8 @@ class FeaturesController {
 	final public function init( LegacyProxy $proxy, PluginUtil $plugin_util ) {
 		$this->proxy       = $proxy;
 		$this->plugin_util = $plugin_util;
+
+		$this->plugins_excluded_from_compatibility_ui = $plugin_util->get_plugins_excluded_from_compatibility_ui();
 	}
 
 	/**
@@ -267,7 +294,7 @@ class FeaturesController {
 		if ( ! $include_experimental ) {
 			$features = array_filter(
 				$features,
-				function( $feature ) {
+				function ( $feature ) {
 					return ! $feature['is_experimental'];
 				}
 			);
@@ -404,7 +431,7 @@ class FeaturesController {
 	 * @param bool   $enabled_features_only True to return only names of enabled plugins.
 	 * @return array An array having a 'compatible' and an 'incompatible' key, each holding an array of feature ids.
 	 */
-	public function get_compatible_features_for_plugin( string $plugin_name, bool $enabled_features_only = false ) : array {
+	public function get_compatible_features_for_plugin( string $plugin_name, bool $enabled_features_only = false ): array {
 		$this->verify_did_woocommerce_init( __FUNCTION__ );
 
 		$features = $this->get_feature_definitions();
@@ -439,7 +466,7 @@ class FeaturesController {
 	 * @param bool   $active_only True to return only active plugins.
 	 * @return array An array having a 'compatible' and an 'incompatible' key, each holding an array of plugin names.
 	 */
-	public function get_compatible_plugins_for_feature( string $feature_id, bool $active_only = false ) : array {
+	public function get_compatible_plugins_for_feature( string $feature_id, bool $active_only = false ): array {
 		$this->verify_did_woocommerce_init( __FUNCTION__ );
 
 		$woo_aware_plugins = $this->plugin_util->get_woocommerce_aware_plugins( $active_only );
@@ -554,7 +581,7 @@ class FeaturesController {
 		$is_default_key            = preg_match( '/^woocommerce_feature_([a-zA-Z0-9_]+)_enabled$/', $option, $matches );
 		$features_with_custom_keys = array_filter(
 			$this->get_feature_definitions(),
-			function( $feature ) {
+			function ( $feature ) {
 				return ! empty( $feature['option_key'] );
 			}
 		);
@@ -631,13 +658,16 @@ class FeaturesController {
 
 		$features = $this->get_features( true );
 
-		$feature_ids              = array_keys( $features );
-		usort( $feature_ids, function( $feature_id_a, $feature_id_b ) use ( $features ) {
-			return ( $features[ $feature_id_b ]['order'] ?? 0 ) <=> ( $features[ $feature_id_a ]['order'] ?? 0 );
-		} );
+		$feature_ids = array_keys( $features );
+		usort(
+			$feature_ids,
+			function ( $feature_id_a, $feature_id_b ) use ( $features ) {
+				return ( $features[ $feature_id_b ]['order'] ?? 0 ) <=> ( $features[ $feature_id_a ]['order'] ?? 0 );
+			}
+		);
 		$experimental_feature_ids = array_filter(
 			$feature_ids,
-			function( $feature_id ) use ( $features ) {
+			function ( $feature_id ) use ( $features ) {
 				return $features[ $feature_id ]['is_experimental'] ?? false;
 			}
 		);
@@ -671,6 +701,10 @@ class FeaturesController {
 				continue;
 			}
 
+			if ( 'new_navigation' === $id && 'yes' !== get_option( $this->feature_enable_option_name( $id ), 'no' ) ) {
+				continue;
+			}
+
 			if ( isset( $features[ $id ]['disable_ui'] ) && $features[ $id ]['disable_ui'] ) {
 				continue;
 			}
@@ -688,19 +722,21 @@ class FeaturesController {
 			'id'   => empty( $experimental_feature_ids ) ? 'features_options' : 'experimental_features_options',
 		);
 
-		// Allow feature setting properties to be determined dynamically just before being rendered.
-		$feature_settings = array_map(
-			function( $feature_setting ) {
-				foreach ( $feature_setting as $prop => $value ) {
-					if ( is_callable( $value ) ) {
-						$feature_setting[ $prop ] = call_user_func( $value );
+		if ( $this->verify_did_woocommerce_init() ) {
+			// Allow feature setting properties to be determined dynamically just before being rendered.
+			$feature_settings = array_map(
+				function ( $feature_setting ) {
+					foreach ( $feature_setting as $prop => $value ) {
+						if ( is_callable( $value ) ) {
+							$feature_setting[ $prop ] = call_user_func( $value );
+						}
 					}
-				}
 
-				return $feature_setting;
-			},
-			$feature_settings
-		);
+					return $feature_setting;
+				},
+				$feature_settings
+			);
+		}
 
 		return $feature_settings;
 	}
@@ -733,25 +769,15 @@ class FeaturesController {
 			$disabled = true;
 			$desc_tip = __( 'WooCommerce Admin has been disabled', 'woocommerce' );
 		} elseif ( 'new_navigation' === $feature_id ) {
-			$disabled = ! $this->feature_is_enabled( $feature_id );
-
-			if ( $disabled ) {
-				$update_text = sprintf(
-					// translators: 1: line break tag.
-					__( '%1$s The development of this feature is currently on hold.', 'woocommerce' ),
-					'<br/>'
-				);
-			} else {
-				$update_text = sprintf(
-					// translators: 1: line break tag.
-					__(
-						'%1$s This navigation will soon become unavailable while we make necessary improvements.
-			             If you turn it off now, you will not be able to turn it back on.',
-						'woocommerce'
-					),
-					'<br/>'
-				);
-			}
+			$update_text = sprintf(
+				// translators: 1: line break tag.
+				__(
+					'%1$s This navigation will soon become unavailable while we make necessary improvements.
+									If you turn it off now, you will not be able to turn it back on.',
+					'woocommerce'
+				),
+				'<br/>'
+			);
 
 			$needs_update = version_compare( get_bloginfo( 'version' ), '5.6', '<' );
 			if ( $needs_update && current_user_can( 'update_core' ) && current_user_can( 'update_php' ) ) {
@@ -874,6 +900,8 @@ class FeaturesController {
 	private function get_incompatible_plugins( $feature_id, $list ) {
 		$incompatibles = array();
 
+		$list = array_diff_key( $list, array_flip( $this->plugins_excluded_from_compatibility_ui ) );
+
 		// phpcs:enable WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
 		foreach ( array_keys( $list ) as $plugin_name ) {
 			if ( ! $this->plugin_util->is_woocommerce_aware_plugin( $plugin_name ) || ! $this->proxy->call_function( 'is_plugin_active', $plugin_name ) ) {
@@ -883,7 +911,7 @@ class FeaturesController {
 			$compatibility     = $this->get_compatible_features_for_plugin( $plugin_name );
 			$incompatible_with = array_filter(
 				array_merge( $compatibility['incompatible'], $compatibility['uncertain'] ),
-				function( $feature_id ) {
+				function ( $feature_id ) {
 					return ! $this->is_legacy_feature( $feature_id );
 				}
 			);
@@ -921,12 +949,13 @@ class FeaturesController {
 		}
 
 		$incompatible_plugins = false;
+		$relevant_plugins     = array_diff( $this->plugin_util->get_woocommerce_aware_plugins( true ), $this->plugins_excluded_from_compatibility_ui );
 
-		foreach ( $this->plugin_util->get_woocommerce_aware_plugins( true ) as $plugin ) {
+		foreach ( $relevant_plugins as $plugin ) {
 			$compatibility     = $this->get_compatible_features_for_plugin( $plugin, true );
 			$incompatible_with = array_filter(
 				array_merge( $compatibility['incompatible'], $compatibility['uncertain'] ),
-				function( $feature_id ) {
+				function ( $feature_id ) {
 					return ! $this->is_legacy_feature( $feature_id );
 				}
 			);
@@ -1040,6 +1069,10 @@ class FeaturesController {
 	private function handle_plugin_list_rows( $plugin_file, $plugin_data ) {
 		global $wp_list_table;
 
+		if ( in_array( $plugin_file, $this->plugins_excluded_from_compatibility_ui, true ) ) {
+			return;
+		}
+
 		if ( 'incompatible_with_feature' !== ArrayUtil::get_value_or_default( $_GET, 'plugin_status' ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			return;
 		}
@@ -1058,7 +1091,7 @@ class FeaturesController {
 		$incompatible_features      = array_values(
 			array_filter(
 				$incompatible_features,
-				function( $feature_id ) {
+				function ( $feature_id ) {
 					return ! $this->is_legacy_feature( $feature_id );
 				}
 			)

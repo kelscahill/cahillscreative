@@ -49,6 +49,7 @@ class Recommendations extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendo
    * da, de, es, it, nl, no, pl, pt, pt, fi, sv, vi, tr, th, ko, zh-CN, zh-TW, ja,
    * id, hi
    * @return GenerateRecommendationsResponse
+   * @throws \Google\Service\Exception
    */
   public function generate($merchantId, $optParams = [])
   {
@@ -64,6 +65,7 @@ class Recommendations extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendo
    * report an interaction.
    * @param ReportInteractionRequest $postBody
    * @param array $optParams Optional parameters.
+   * @throws \Google\Service\Exception
    */
   public function reportInteraction($merchantId, ReportInteractionRequest $postBody, $optParams = [])
   {

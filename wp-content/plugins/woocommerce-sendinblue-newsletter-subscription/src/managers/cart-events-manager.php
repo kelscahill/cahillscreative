@@ -6,6 +6,8 @@ namespace SendinblueWoocommerce\Managers;
 use SendinblueWoocommerce\Clients\AutomationClient;
 use SendinblueWoocommerce\Managers\ApiManager;
 use SendinblueWoocommerce\Clients\SendinblueClient;
+use WP_REST_Response;
+
 
 require_once SENDINBLUE_WC_ROOT_PATH . '/src/clients/automation-client.php';
 require_once SENDINBLUE_WC_ROOT_PATH . '/src/managers/api-manager.php';
@@ -21,20 +23,96 @@ class CartEventsManagers
     private $automation_manager;
 
     private $api_manager;
-  
+
     function __construct()
     {
         $this->automation_manager = new AutomationClient();
         $this->api_manager = new ApiManager();
     }
 
-    public function get_email_id()
+    public function save_anonymous_user_as_blacklisted(){
+        $is_valid_call = $this->the_action_function();
+
+        if (!$is_valid_call) {
+            return false;
+        }
+
+        $tracking_email = sanitize_text_field($_POST['tracking_email']);
+        $email_id = $this->get_email_id($tracking_email);
+
+        $client = new SendinblueClient();
+        $client->eventsSync(SendinblueClient::CONTACT_CREATED, [
+            "subscribed"=>"false",
+            "email"=>$email_id,
+            "is_anonymous_user"=>true,
+        ]);
+    }
+
+    public function the_action_function()
+    {
+
+        if (!isset($_POST['tracking_email']) || empty($_POST['tracking_email'])) {
+            return false;
+        }
+
+        if (!(WC()->cart)) {
+            return false;
+        }
+
+        $settings = $this->api_manager->get_settings();
+
+        if (
+            empty($settings[SendinblueClient::MA_KEY]) ||
+            empty($settings[SendinblueClient::IS_ABANDONED_CART_ENABLED])
+        ) {
+            return false;
+        }
+
+        $ma_key = $settings[SendinblueClient::MA_KEY];
+
+        $tracking_email = sanitize_text_field($_POST['tracking_email']);
+        $email_id = $this->get_email_id($tracking_email);
+
+        if (empty($tracking_email) || empty($email_id)) {
+            return false;
+        }
+
+        return $this->trigger_cart_tracking_anonymous_users($email_id, $ma_key);
+    }
+
+    public function trigger_cart_tracking_anonymous_users($email_id, $ma_key)
+    {
+        try {
+            $tracking_event_data = array();
+            $cart_id = $this->get_wc_cart_id();
+
+            if (empty(WC()->cart->cart_contents) && !empty(WC()->cart->removed_cart_contents)) {
+                $tracking_event_data = $this->get_tracking_data_cart_deleted($cart_id);
+                $tracking_event_data['event'] = 'cart_deleted';
+            } elseif (!empty(WC()->cart->cart_contents)) {
+                $tracking_event_data = $this->get_tracking_data_cart($cart_id, $email_id);
+                $tracking_event_data['event'] = 'cart_updated';
+            }
+
+            $this->automation_manager->send($tracking_event_data, $ma_key);
+        } catch (Exception $e) {
+            return false;
+        }
+        return true;
+    }
+
+    public function get_email_id($tracking_email = "")
     {
         $current_user   = wp_get_current_user();
         $found_email_id = '';
         $cookie_email = '';
-        if (isset($_COOKIE['email_id'])) {
+
+        if (!empty($tracking_email)) {
+            $cookie_email = $tracking_email;
+        } else if (isset($_COOKIE['email_id'])) {
             $cookie_email = $_COOKIE['email_id'];
+        } else if (isset($_COOKIE['tracking_email'])) {
+            $cookie_email = $_COOKIE['tracking_email'];
         }
 
         if ($this->is_administrator($current_user) && $current_user->user_email == $cookie_email) {
@@ -89,17 +167,9 @@ class CartEventsManagers
 
     public function ws_cart_custom_fragment($cart_fragments)
     {
-        $settings = $this->api_manager->get_settings();
+        $ma_key = $this->get_ma_key();
 
-        if (
-            empty($settings[SendinblueClient::MA_KEY]) ||
-            empty($settings[SendinblueClient::IS_ABANDONED_CART_ENABLED])
-        ) {
-            return $cart_fragments;
-        }
-
-        $ma_key = $settings[SendinblueClient::MA_KEY];
-        if (empty($this->get_email_id()) || !$settings[SendinblueClient::IS_ABANDONED_CART_ENABLED]) {
+        if (empty($this->get_email_id()) || empty($ma_key)) {
             return $cart_fragments;
         }
 
@@ -109,9 +179,6 @@ class CartEventsManagers
         if (empty(WC()->cart->cart_contents) && !empty(WC()->cart->removed_cart_contents)) {
             $tracking_event_data = $this->get_tracking_data_cart_deleted($cart_id);
             $tracking_event_data['event'] = 'cart_deleted';
-        } elseif (!empty(WC()->cart->cart_contents)) {
-            $tracking_event_data = $this->get_tracking_data_cart($cart_id);
-            $tracking_event_data['event'] = 'cart_updated';
         } else {
             return $cart_fragments;
         }
@@ -120,7 +187,7 @@ class CartEventsManagers
         return $cart_fragments;
     }
 
-    public function ws_checkout_completed($order_id)
+    public function get_ma_key()
     {
         $settings = $this->api_manager->get_settings();
 
@@ -129,10 +196,41 @@ class CartEventsManagers
             empty($settings[SendinblueClient::IS_ABANDONED_CART_ENABLED]) ||
             !$settings[SendinblueClient::IS_ABANDONED_CART_ENABLED]
         ) {
+            return false;
+        }
+
+        return $settings[SendinblueClient::MA_KEY];
+    }
+
+    public function handle_cart_update_event($cart_updated)
+    {
+        $ma_key = $this->get_ma_key();
+
+        if (empty($this->get_email_id()) || empty($ma_key)) {
+            return $cart_updated;
+        }
+
+        $tracking_event_data = array();
+        $cart_id = $this->get_wc_cart_id();
+
+        if (!empty(WC()->cart->cart_contents)) {
+            $tracking_event_data = $this->get_tracking_data_cart($cart_id);
+            $tracking_event_data['event'] = 'cart_updated';
+        } else {
+            return $cart_updated;
+        }
+        $this->automation_manager->send($tracking_event_data, $ma_key);
+        return $cart_updated;
+    }
+
+    public function ws_checkout_completed($order_id)
+    {
+        $ma_key = $this->get_ma_key();
+
+        if (empty($ma_key)) {
             return;
         }
 
-        $ma_key = $settings[SendinblueClient::MA_KEY];
         if (!get_post_meta($order_id, '_thankyou_action_done', true)) {
             $order = wc_get_order($order_id);
             $order->update_meta_data('_thankyou_action_done', true, $order_id);
@@ -175,13 +273,20 @@ class CartEventsManagers
         return $data_track;
     }
 
-    public function get_tracking_data_cart($cart_id)
+    public function get_tracking_data_cart($cart_id, $email = "")
     {
         $data = array();
         $cartitems = WC()->cart->get_cart();
         $totals = WC()->cart->get_totals();
 
-        $email = !empty($this->get_email_id()) ? $this->get_email_id() : '';
+        if (empty($email)) {
+            $email = !empty($this->get_email_id()) ? $this->get_email_id() : '';
+        }
+
+        if ('' != $email){
+            $this->set_email_id_cookie($email);
+        }
+
         $data['affiliation'] = (!empty(get_bloginfo('name')) && is_string(get_bloginfo('name'))) ? get_bloginfo( 'name' ) : '';
         $data['subtotal'] = (!empty($totals['subtotal']) && is_numeric($totals['subtotal']) && !is_nan($totals['subtotal'])) ? $totals['subtotal'] : 0;
         $data['discount'] = (!empty($totals['discount_total']) && is_numeric($totals['discount_total']) && ! is_nan( $totals['discount_total'])) ? $totals['discount_total'] : 0;
@@ -213,7 +318,7 @@ class CartEventsManagers
             $item['price'] = (is_numeric($final_price) && !is_nan($final_price)) ? $final_price : 0;
 
             $product = wc_get_product($cartitem['product_id']);
-            $image_id = $product->get_image_id();
+            $image_id = $variation->get_image_id() ? $variation->get_image_id() : $product->get_image_id();
             $item['image'] = wp_get_attachment_image_url($image_id, 'full');
 
             $item['url'] = (!empty($cartitem['data']->get_permalink()) && is_string($cartitem['data']->get_permalink())) ? $cartitem['data']->get_permalink() : '';
@@ -255,7 +360,7 @@ class CartEventsManagers
         $data['discount'] = (!empty($order->get_total_discount()) && is_numeric($order->get_total_discount()) && !is_nan($order->get_total_discount())) ? $order->get_total_discount() : 0;
         $data['shipping'] = (!empty($order->get_shipping_total()) && is_numeric($order->get_shipping_total()) && !is_nan($order->get_shipping_total())) ? (float) $order->get_shipping_total() : 0;
         $data['total_before_tax'] = (float) ($data['subtotal'] - $data['discount']);
-        $data['tax'] = (!empty($order->get_total_tax()) && is_numeric($order->get_total_tax()) && !is_nan($order->get_total_tax())) ? (float) $order->get_total_tax() : 0;
+        $data['tax'] = (!empty($order->get_total_tax()) && is_numeric($order->get_total_tax()) && !is_nan($order->get_total_tax())) ? round($order->get_total_tax(), 2) : 0;
         $data['revenue'] = (!empty($order->get_total()) && is_numeric($order->get_total()) && !is_nan($order->get_total())) ? (float) $order->get_total() : 0;
         $data['currency'] = (!empty($order->get_currency()) && is_string($order->get_currency())) ? $order->get_currency() : '';
         $data['url'] = (!empty($order->get_checkout_order_received_url()) && is_string($order->get_checkout_order_received_url())) ? $order->get_checkout_order_received_url() : '';
@@ -277,10 +382,10 @@ class CartEventsManagers
             $attributes = $variation->get_attributes();
             $item['variant_name'] = is_array($attributes) ? implode(',', $attributes) : '';
             $item['price'] = (!empty($orderitem->get_total()) && is_numeric($orderitem->get_total()) && ! is_nan($orderitem->get_total())) ? round($orderitem->get_total(), 2) : '';
+            $item['tax'] = (!empty($orderitem->get_total_tax()) && is_numeric($orderitem->get_total_tax()) && ! is_nan($orderitem->get_total_tax())) ? round($orderitem->get_total_tax(), 2) : '';
             $item['quantity'] = (!empty($orderitem->get_quantity()) && is_numeric($orderitem->get_quantity()) && !is_nan($orderitem->get_quantity())) ? (int) $orderitem->get_quantity() : '';
-
             $product = wc_get_product($orderitem['product_id']);
-            $image_id = $product->get_image_id();
+            $image_id = $variation->get_image_id() ? $variation->get_image_id() : $product->get_image_id();
             $item['image'] = wp_get_attachment_image_url($image_id, 'full');
 
             $item['url'] = (!empty( $product->get_permalink()) && is_string($product->get_permalink())) ? $product->get_permalink() : '';
@@ -314,6 +419,12 @@ class CartEventsManagers
         $data['shipping_address']     = $shipping_address;
         $data['billing_address']      = $billing_address;
 
+        $data['payment_method']       = (!empty( $order->get_payment_method_title()) && is_string($order->get_payment_method_title())) ? $order->get_payment_method_title() : '';
+        $data['customer_note']        = (!empty( $order->get_customer_note()) && is_string($order->get_customer_note())) ? $order->get_customer_note() : '';
+        $data['shipping_method'] = '';
+        foreach ($order->get_shipping_methods() as $item_id => $shipping_item) {
+            $data['shipping_method'] = $shipping_item->get_method_title();
+        }
         $data_track = array(
             'email'     => $email,
             'event'     => 'order_completed',
@@ -334,7 +445,7 @@ class CartEventsManagers
 
     private function checkout_label($settings)
     {
-        $label = 'Add me to the newsletter';
+        $label = __('Add me to the newsletter', 'wc_sendinblue');
         if (!empty($settings[SendinblueClient::DISPLAY_OPT_IN_LABEL])) {
             $label = $settings[SendinblueClient::DISPLAY_OPT_IN_LABEL];
         }
@@ -387,21 +498,12 @@ class CartEventsManagers
             );
         }
 
-        if (strtoupper($_SERVER['REQUEST_METHOD']) === 'GET') {
-            ?>
-            <input type="hidden" class="ws_opt_in_nonce" name="ws_opt_in_nonce" value="<?php echo wp_create_nonce('order_checkout_nonce'); ?>">
-            <?php
-        }
-
         return $checkout_fields;
     }
 
     public function add_optin_order($order_id)
     {
-        $nonce = isset($_POST['ws_opt_in_nonce']) ? sanitize_text_field($_POST['ws_opt_in_nonce']) : '';
         $opt_in = isset($_POST['ws_opt_in']) ? true : false;
-        // Below is a hack to make customer creation work for some clients for which wp_verify_nonce is failing.
-        wp_verify_nonce($nonce, 'order_checkout_nonce');
         update_post_meta($order_id, 'ws_opt_in', $opt_in);
     }
 }

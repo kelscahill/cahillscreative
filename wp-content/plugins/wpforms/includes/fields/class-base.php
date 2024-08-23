@@ -2,6 +2,7 @@
 
 // phpcs:ignore WPForms.PHP.UseStatement.UnusedUseStatement
 use \WPForms\Forms\Fields\Base\Frontend as FrontendBase;
+use WPForms\Forms\Fields\Helpers\RequirementsAlerts;
 use WPForms\Forms\IconChoices;
 
 /**
@@ -163,6 +164,9 @@ abstract class WPForms_Field {
 		// Add fields tab.
 		add_filter( 'wpforms_builder_fields_buttons', [ $this, 'field_button' ], 15 );
 
+		// Add field keywords to the template fields.
+		add_filter( 'wpforms_setup_template_fields', [ $this, 'enhance_template_fields_with_keywords' ] );
+
 		// Field options tab.
 		add_action( "wpforms_builder_fields_options_{$this->type}", [ $this, 'field_options' ], 10 );
 
@@ -201,6 +205,9 @@ abstract class WPForms_Field {
 
 		// Exclude empty dynamic choices from Entry Preview.
 		add_filter( 'wpforms_pro_fields_entry_preview_print_entry_preview_exclude_field', [ $this, 'exclude_empty_dynamic_choices' ], 10, 3 );
+
+		// Add classes to the builder field preview.
+		add_filter( 'wpforms_field_preview_class', [ $this, 'preview_field_class' ], 10, 2 );
 	}
 
 	/**
@@ -603,7 +610,7 @@ abstract class WPForms_Field {
 		 */
 		// Do not populate if there are errors for that field.
 		/*
-		$errors = wpforms()->process->errors;
+		$errors = wpforms()->get( 'process' )->errors;
 		if ( ! empty( $errors[ $this->form_data['id'] ][ $field['id'] ] ) ) {
 			$allowed = false;
 		}
@@ -719,6 +726,48 @@ abstract class WPForms_Field {
 	}
 
 	/**
+	 * Enhances template fields by adding keywords.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @param array $template_fields List of template fields.
+	 *
+	 * @return array
+	 */
+	public function enhance_template_fields_with_keywords( array $template_fields ): array {
+
+		foreach ( $template_fields as $key => $field ) {
+			if ( $field === $this->type ) {
+				$template_fields[ $key ] = $this->name;
+
+				$this->add_keywords( $template_fields );
+			}
+		}
+
+		return array_unique( $template_fields );
+	}
+
+	/**
+	 * Adds keywords to the provided fields.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @param array $fields List of fields to which keywords will be added.
+	 *
+	 * @return void
+	 */
+	private function add_keywords( array &$fields ) {
+
+		if ( $this->keywords ) {
+			$keywords_list = explode( ',', $this->keywords );
+
+			foreach ( $keywords_list as $keyword ) {
+				$fields[] = trim( $keyword );
+			}
+		}
+	}
+
+	/**
 	 * Create the field options panel. Used by subclasses.
 	 *
 	 * @since 1.0.0
@@ -812,11 +861,17 @@ abstract class WPForms_Field {
 				$type        = ! empty( $args['type'] ) ? esc_attr( $args['type'] ) : 'text';
 				$placeholder = ! empty( $args['placeholder'] ) ? esc_attr( $args['placeholder'] ) : '';
 				$before      = ! empty( $args['before'] ) ? '<span class="before-input">' . esc_html( $args['before'] ) . '</span>' : '';
+				$after       = ! empty( $args['after'] ) ? '<span class="after-input sub-label">' . esc_html( $args['after'] ) . '</span>' : '';
 
 				if ( ! empty( $before ) ) {
 					$class .= ' has-before';
 				}
-				$output = sprintf( '%s<input type="%s" class="%s" id="wpforms-field-option-%d-%s" name="fields[%d][%s]" value="%s" placeholder="%s" %s>', $before, $type, $class, $id, $slug, $id, $slug, esc_attr( $args['value'] ), $placeholder, $attrs );
+
+				if ( ! empty( $after ) ) {
+					$class .= ' has-after';
+				}
+
+				$output = sprintf( '%s<input type="%s" class="%s" id="wpforms-field-option-%d-%s" name="fields[%d][%s]" value="%s" placeholder="%s" %s>%s', $before, $type, $class, $id, $slug, $id, $slug, esc_attr( $args['value'] ), $placeholder, $attrs, $after );
 				break;
 
 			// Textarea.
@@ -1734,6 +1789,10 @@ abstract class WPForms_Field {
 					'large'  => esc_html__( 'Large', 'wpforms-lite' ),
 				];
 
+				if ( ! empty( $args['exclude'] ) ) {
+					$options = array_diff_key( $options, array_flip( $args['exclude'] ) );
+				}
+
 				$output = $this->field_element(
 					'label',
 					$field,
@@ -2124,6 +2183,128 @@ abstract class WPForms_Field {
 					);
 				} // End if.
 				break;
+
+			/*
+			* Quantity.
+			*/
+			case 'quantity':
+				$is_allowed      = RequirementsAlerts::is_product_quantities_allowed();
+				$enable_quantity = $this->is_payment_quantities_enabled( $field );
+				$min_quantity    = isset( $field['min_quantity'] ) ? (int) $field['min_quantity'] : 0;
+				$max_quantity    = isset( $field['max_quantity'] ) ? (int) $field['max_quantity'] : 10;
+				$toggle_tooltip  = esc_html__( 'Enable quantity for this product to allow customers to purchase more than one.', 'wpforms-lite' );
+				$range_tooltip   = esc_html__( 'Set the minimum and maximum quantity for this product.', 'wpforms-lite' );
+				$hidden_class    = ! empty( $args['hidden'] ) ? 'wpforms-hidden' : '';
+
+				$toggle_data = [
+					'slug'    => 'enable_quantity',
+					'value'   => $enable_quantity,
+					'desc'    => esc_html__( 'Enable Quantity', 'wpforms-lite' ),
+					'tooltip' => $toggle_tooltip,
+				];
+
+				if ( ! $is_allowed ) {
+					$toggle_data['attrs']         = [ 'disabled' => 'disabled' ];
+					$toggle_data['control-class'] = 'wpforms-toggle-control-disabled';
+				}
+
+				$toggle = $this->field_element(
+					'toggle',
+					$field,
+					$toggle_data,
+					false
+				);
+
+				$output = $this->field_element(
+					'row',
+					$field,
+					[
+						'slug'    => 'enable_quantity',
+						'content' => $toggle,
+						'class'   => $hidden_class,
+					],
+					false
+				);
+
+				$min_has_error = $min_quantity > $max_quantity ? 'wpforms-error' : '';
+
+				$content  = $this->field_element(
+					'label',
+					$field,
+					[
+						'slug'    => 'quantity',
+						'value'   => esc_html__( 'Range', 'wpforms-lite' ),
+						'tooltip' => $range_tooltip,
+					],
+					false
+				);
+				$content .= '<div class="wpforms-field-options-quantity-columns">';
+				$content .= '<div class="wpforms-field-options-quantity-column">';
+				$content .= $this->field_element(
+					'text',
+					$field,
+					[
+						'slug'  => 'min_quantity',
+						'type'  => 'number',
+						'value' => $min_quantity,
+						'after' => esc_html__( 'Minimum', 'wpforms-lite' ),
+						'class' => [ 'wpforms-field-options-column', 'min-quantity-input', $min_has_error ],
+						'attrs' =>
+							[
+								'min'  => 0,
+								'step' => 1,
+							],
+					],
+					false
+				);
+				$content .= '</div>';
+				$content .= '<div class="wpforms-field-options-quantity-column">';
+				$content .= $this->field_element(
+					'text',
+					$field,
+					[
+						'slug'  => 'max_quantity',
+						'type'  => 'number',
+						'value' => $max_quantity,
+						'after' => esc_html__( 'Maximum', 'wpforms-lite' ),
+						'class' => [ 'wpforms-field-options-column', 'max-quantity-input' ],
+						'attrs' =>
+							[
+								'min'  => 1,
+								'step' => 1,
+							],
+					],
+					false
+				);
+				$content .= '</div>';
+				$content .= '</div>';
+
+				$range_hidden_class = $enable_quantity && empty( $args['hidden'] ) ? '' : 'wpforms-hidden';
+
+				$output .= $this->field_element(
+					'row',
+					$field,
+					[
+						'slug'    => 'quantity',
+						'content' => $content,
+						'class'   => [ $range_hidden_class, 'wpforms-field-quantity-option' ],
+					],
+					false
+				);
+
+				if ( ! $is_allowed ) {
+					$output .= $this->field_element(
+						'row',
+						$field,
+						[
+							'slug'    => 'quantities_alert',
+							'content' => RequirementsAlerts::get_product_quantities_alert(),
+							'class'   => $hidden_class,
+						],
+						false
+					);
+				}
+				break;
 		}
 
 		if ( ! $echo ) {
@@ -2201,10 +2382,11 @@ abstract class WPForms_Field {
 			case 'choices':
 				$fields_w_choices = [ 'checkbox', 'gdpr-checkbox', 'select', 'payment-select', 'radio', 'payment-multiple', 'payment-checkbox' ];
 
+				$slice_size   = in_array( $field['type'], [ 'payment-select', 'select' ], true ) ? 250 : 20;
 				$values       = ! empty( $field['choices'] ) ? $field['choices'] : $this->defaults;
 				$dynamic      = ! empty( $field['dynamic_choices'] ) ? $field['dynamic_choices'] : false;
 				$total        = count( $values );
-				$values       = array_slice( $values, 0, 20 );
+				$values       = array_slice( $values, 0, $slice_size );
 				$inline_style = '';
 
 				/*
@@ -2341,14 +2523,7 @@ abstract class WPForms_Field {
 						$default  = isset( $value['default'] ) ? (bool) $value['default'] : false;
 						$selected = ! empty( $placeholder ) && empty( $multiple ) ? '' : selected( true, $default, false );
 
-						$label = isset( $value['label'] ) ? trim( $value['label'] ) : '';
-
-						$label  = $label !== '' ?
-							$label :
-							sprintf( /* translators: %d - choice number. */
-								esc_html__( 'Choice %d', 'wpforms-lite' ),
-								(int) $key
-							);
+						$label  = $this->get_choices_label( $value['label'] ?? '', $key + 1 );
 						$label .= ! empty( $field['show_price_after_labels'] ) && isset( $value['value'] ) ? ' - ' . wpforms_format_amount( wpforms_sanitize_amount( $value['value'] ), true ) : '';
 
 						$output .= sprintf(
@@ -2391,14 +2566,7 @@ abstract class WPForms_Field {
 							wpforms_sanitize_classes( $item_class, true )
 						);
 
-						$label = isset( $value['label'] ) ? trim( $value['label'] ) : '';
-
-						$label  = $label !== '' ?
-							$label :
-							sprintf( /* translators: %d - choice number. */
-								esc_html__( 'Choice %d', 'wpforms-lite' ),
-								(int) $key
-							);
+						$label  = $this->get_choices_label( $value['label'] ?? '', $key + 1 );
 						$label .= ! empty( $field['show_price_after_labels'] ) && isset( $value['value'] ) ? ' - ' . wpforms_format_amount( wpforms_sanitize_amount( $value['value'] ), true ) : '';
 
 						if ( $with_images ) {
@@ -2477,22 +2645,38 @@ abstract class WPForms_Field {
 					$output .= '</ul>';
 
 					/*
-					 * Contains more than 20 items, include a note about a limited subset of results displayed.
+					 * Contains more than 20/250 items, include a note about a limited subset of results displayed.
 					*/
-					if ( $total > 20 ) {
+					if ( $total > $slice_size ) {
 						$output .= '<div class="wpforms-alert-dynamic wpforms-alert wpforms-alert-warning">';
 						$output .= sprintf(
 							wp_kses( /* translators: %s - total amount of choices. */
-								__( 'Showing the first 20 choices.<br> All %s choices will be displayed when viewing the form.', 'wpforms-lite' ),
+								__( 'Showing the first %1$s choices.<br> All %2$s choices will be displayed when viewing the form.', 'wpforms-lite' ),
 								[
 									'br' => [],
 								]
 							),
+							$slice_size,
 							$total
 						);
 						$output .= '</div>';
 					}
 				}
+				break;
+
+			case 'quantity':
+				$first_item = ! empty( $field['min_quantity'] ) ? $field['min_quantity'] : 0;
+				$class     .= $this->is_payment_quantities_enabled( $field ) ? '' : ' wpforms-hidden';
+
+				$output  = sprintf(
+					'<select class="quantity-input %1$s" readonly>',
+					esc_attr( $class )
+				);
+				$output .= sprintf(
+					'<option>%1$s</option>',
+					esc_html( $first_item )
+				);
+				$output .= '</select>';
 				break;
 		}
 
@@ -2768,7 +2952,7 @@ abstract class WPForms_Field {
 
 		// Basic required check - If field is marked as required, check for entry data.
 		if ( ! empty( $form_data['fields'][ $field_id ]['required'] ) && empty( $field_submit ) && '0' !== (string) $field_submit ) {
-			wpforms()->process->errors[ $form_data['id'] ][ $field_id ] = wpforms_get_required_label();
+			wpforms()->get( 'process' )->errors[ $form_data['id'] ][ $field_id ] = wpforms_get_required_label();
 		}
 	}
 
@@ -2793,7 +2977,7 @@ abstract class WPForms_Field {
 		// Sanitize but keep line breaks.
 		$value = wpforms_sanitize_textarea_field( $field_submit );
 
-		wpforms()->process->fields[ $field_id ] = [
+		wpforms()->get( 'process' )->fields[ $field_id ] = [
 			'name'  => $name,
 			'value' => $value,
 			'id'    => absint( $field_id ),
@@ -2814,6 +2998,10 @@ abstract class WPForms_Field {
 	 * @return string
 	 */
 	public function field_html_value( $value, $field, $form_data = [], $context = '' ) {
+
+		if ( wpforms_payment_has_quantity( $field, $form_data ) ) {
+			return wpforms_payment_format_quantity( $field );
+		}
 
 		// Only use HTML formatting for checkbox fields, with image choices
 		// enabled, and exclude the entry table display. Lastly, provides a
@@ -3027,6 +3215,33 @@ abstract class WPForms_Field {
 	}
 
 	/**
+	 * Whether a Choicesjs search area should be shown for quantity select.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param array $field Field data.
+	 *
+	 * @return bool
+	 */
+	protected function is_quantity_choicesjs_search_enabled( $field ) {
+
+		if ( ! isset( $field['max_quantity'] ) || ! isset( $field['min_quantity'] ) ) {
+			return false;
+		}
+
+		$choices_count = (int) $field['max_quantity'] - (int) $field['min_quantity'];
+
+		/**
+		 * We should auto hide/remove search, if less than 20 choices.
+		 *
+		 * @since 1.8.7
+		 *
+		 * @param int $limit Minimum limit.
+		 */
+		return $choices_count >= (int) apply_filters( 'wpforms_field_quantity_choicesjs_search_enabled_items_min', 20 );
+	}
+
+	/**
 	 * Get instance of the class connected to the current field,
 	 * and located in the `src/Forms/[Pro/]Fields/FieldType/Class.php` file.
 	 *
@@ -3182,5 +3397,165 @@ abstract class WPForms_Field {
 			'<div class="wpforms-alert wpforms-alert-warning">%s</div>',
 			esc_html( $this->get_empty_dynamic_choices_message( $field ) )
 		);
+	}
+
+	/**
+	 * Get checkbox, choices and select field options label.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @param string $label Choice option label.
+	 * @param int    $key   Choice number.
+	 *
+	 * @return string
+	 */
+	protected function get_choices_label( $label, int $key ) {
+
+		$label = trim( $label );
+
+		return $label === '0' || $label ?
+			$label :
+			sprintf( /* translators: %d - choice number. */
+				__( 'Choice %d', 'wpforms-lite' ),
+				$key
+			);
+	}
+
+	/**
+	 * Display quantity dropdown on the front.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param array $field Field data and settings.
+	 */
+	protected function display_quantity_dropdown( $field ) {
+
+		if ( ! $this->is_payment_quantities_enabled( $field ) ) {
+			return;
+		}
+
+		$field_id  = absint( $field['id'] );
+		$form_id   = absint( $this->form_data['id'] );
+		$container = [
+			'id'    => "wpforms-{$form_id}-field_{$field_id}-quantity",
+			'class' => [ 'wpforms-payment-quantity' ],
+			'attr'  => [
+				'name' => "wpforms[quantities][{$field_id}]",
+			],
+			'data'  => [],
+		];
+		$is_modern = ! empty( $field['style'] ) && $field['style'] === 'modern';
+
+		// Add a class for Choices.js initialization.
+		if ( $is_modern ) {
+			$container['class'][]                      = 'choicesjs-select';
+			$container['data']['size-class']           = 'wpforms-payment-quantity';
+			$container['data']['search-enabled']       = $this->is_quantity_choicesjs_search_enabled( $field );
+			$container['data']['remove-items-enabled'] = false;
+		}
+
+		// Add required attribute.
+		if ( ! empty( $field['required'] ) ) {
+			$container['attr']['required'] = 'required';
+		}
+
+		// Preselect default if no other choices were marked as default.
+		printf(
+			'<select %s>',
+			wpforms_html_attributes( $container['id'], $container['class'], $container['data'], $container['attr'] ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		);
+
+		// Reset Max quantity in case minimum is higher.
+		$field['max_quantity'] = max( (int) $field['min_quantity'], (int) $field['max_quantity'] );
+
+		$default = $field['properties']['quantity'] ?? $field['min_quantity'];
+
+		for ( $option = $field['min_quantity']; $option <= $field['max_quantity']; $option++ ) {
+			printf(
+				'<option value="%1$s" %2$s >%3$s</option>', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				esc_attr( $option ),
+				selected( $option, $default, false ),
+				esc_html( $option )
+			);
+		}
+
+		echo '</select>';
+	}
+
+	/**
+	 * Add class to the builder field preview.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param string $css   Class names.
+	 * @param array  $field Field properties.
+	 *
+	 * @return string
+	 */
+	public function preview_field_class( $css, $field ) {
+
+		if ( $field['type'] !== $this->type ) {
+			return $css;
+		}
+
+		if ( $this->is_payment_quantities_enabled( $field ) ) {
+			$css .= ' payment-quantity-enabled';
+		}
+
+		return $css;
+	}
+
+	/**
+	 * Determine if payment quantities enabled.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param array $field_settings Field settings.
+	 *
+	 * @return bool
+	 */
+	protected function is_payment_quantities_enabled( $field_settings ) {
+
+		if ( empty( $field_settings['enable_quantity'] ) ) {
+			return false;
+		}
+
+		// Quantity available only for `single` format of the Single payment field.
+		if ( $field_settings['type'] === 'payment-single' && $field_settings['format'] !== 'single' ) {
+			return false;
+		}
+
+		// Otherwise return true.
+		return true;
+	}
+
+	/**
+	 * Get field payment submitted quantity.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param array $field     Field data.
+	 * @param array $form_data Form data and settings.
+	 *
+	 * @return int
+	 */
+	protected function get_submitted_field_quantity( $field, $form_data ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		$has_submitted_quantity = isset( $_POST['wpforms']['quantities'][ $field['id'] ] );
+		$submitted_quantity     = $has_submitted_quantity ? (int) $_POST['wpforms']['quantities'][ $field['id'] ] : 0;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		if ( ! $has_submitted_quantity && isset( $form_data['quantities'][ $field['id'] ] ) ) {
+			$submitted_quantity = (int) $form_data['quantities'][ $field['id'] ];
+		}
+
+		$min_quantity = (int) $field['min_quantity'];
+		// Verify submitted quantity value.
+		if ( $submitted_quantity >= $min_quantity && $submitted_quantity <= (int) $field['max_quantity'] ) {
+			return $submitted_quantity;
+		}
+
+		// Otherwise return a minimum quantity.
+		return $min_quantity;
 	}
 }

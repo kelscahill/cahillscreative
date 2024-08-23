@@ -243,6 +243,31 @@ class Taxonomies
 		return $r;
 	}
 
+	/**
+		@brief		Remove the term from the BCD.
+		@since		2024-04-05 16:08:27
+	**/
+	public function forget_term_id( $term_id )
+	{
+		$bcd = $this->broadcasting_data;
+
+		ThreeWP_Broadcast()->debug( 'Taxonomies: Forgetting term %s', $term_id );
+
+		// Mark it as unused.
+		$this->unuse_term( $term_id );
+
+		// Remove it from the term index.
+		$this->get_term_index()
+			->forget( $term_id );
+
+		// And now from the post and blog taxonomies.
+		foreach( $bcd->parent_blog_taxonomies as $taxonomy => $taxonomy_data )
+			unset( $bcd->parent_blog_taxonomies[ $taxonomy ][ 'terms' ][ $term_id ] );
+		foreach( $bcd->parent_post_taxonomies as $taxonomy => $taxonomy_terms )
+			unset( $bcd->parent_post_taxonomies[ $taxonomy ][ $term_id ] );
+
+		return $this;
+	}
 
 	/**
 		@brief		Return the term index.
@@ -385,6 +410,19 @@ class Taxonomies
 				unset( $this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ][ 'terms' ][ $term_id ] );
 			}
 		}
+		return $this;
+	}
+
+	/**
+		@brief		Unmark the the term as used.
+		@since		2024-04-05 16:05:38
+	**/
+	public function unuse_term( $term_id )
+	{
+		$this->broadcasting_data
+			->taxonomy_data
+			->collection( 'used_terms' )
+			->forget( $term_id );
 		return $this;
 	}
 

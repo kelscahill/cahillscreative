@@ -58,7 +58,7 @@ class Help {
 
 		wp_enqueue_script(
 			'wpforms-builder-help',
-			WPFORMS_PLUGIN_URL . "assets/js/components/admin/builder/help{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/admin/builder/help{$min}.js",
 			[ 'wpforms-builder' ],
 			WPFORMS_VERSION,
 			true
@@ -229,6 +229,7 @@ class Help {
 			'providers/activecampaign'                => 'activecampaign',
 			'providers/campaign_monitor'              => 'campaign monitor',
 			'providers/constant_contact'              => 'constant contact',
+			'providers/convertkit'                    => 'convertkit',
 			'providers/drip'                          => 'drip',
 			'providers/getresponse'                   => 'getresponse',
 			'providers/getresponse_v3'                => 'getresponse',
@@ -1150,6 +1151,9 @@ class Help {
 			],
 			'constant contact'          => [
 				'/docs/how-to-connect-constant-contact-with-wpforms/',
+			],
+			'convertkit'                => [
+				'/docs/convertkit-addon/',
 			],
 			'drip'                      => [
 				'/docs/how-to-install-and-use-the-drip-addon-in-wpforms/',

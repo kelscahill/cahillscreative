@@ -647,7 +647,15 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 				}
 			}
 
-			if ( in_array( 'date_on_sale_from', $this->updated_props, true ) || in_array( 'date_on_sale_to', $this->updated_props, true ) || in_array( 'regular_price', $this->updated_props, true ) || in_array( 'sale_price', $this->updated_props, true ) || in_array( 'product_type', $this->updated_props, true ) ) {
+			/**
+			 * It's tempting to add a check for `_price` in the updated props, so that when `wc_scheduled_sales` is called, we don't have to rely on `date_on_sale_from` being present in the list of updated props.
+			 *
+			 * However, it has a side effect of overriding the `_price` meta value with the `_sale_price` meta value when product is in sale, or with `_regular_price` meta value when product is not in sale. This is not desirable, because `_price` can also be set as a temporary active price for a product, and we don't want to override it.
+			 *
+			 * If we want to preserve previous sales schedules, a better way would be to store them in dedicated meta keys as logs.
+			 */
+			$product_price_props = array( 'date_on_sale_from', 'date_on_sale_to', 'regular_price', 'sale_price', 'product_type' );
+			if ( count( array_intersect( $product_price_props, $this->updated_props ) ) > 0 ) {
 				if ( $product->is_on_sale( 'edit' ) ) {
 					update_post_meta( $product->get_id(), '_price', $product->get_sale_price( 'edit' ) );
 					$product->set_price( $product->get_sale_price( 'edit' ) );
@@ -1091,6 +1099,11 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 	 * @return int Matching variation ID or 0.
 	 */
 	public function find_matching_product_variation( $product, $match_attributes = array() ) {
+		if ( 'variation' === $product->get_type() ) {
+			// Can't get a variation of a variation.
+			return 0;
+		}
+
 		global $wpdb;
 
 		$meta_attribute_names = array();
@@ -1180,10 +1193,11 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 	 * @todo   Add to interface in 4.0.
 	 * @param  WC_Product $product Variable product.
 	 * @param  int        $limit Limit the number of created variations.
-	 * @param  array  	  $default_values Key value pairs to set on created variations.
+	 * @param  array      $default_values Key value pairs to set on created variations.
+	 * @param  array      $metadata Key value pairs to set as meta data on created variations.
 	 * @return int        Number of created variations.
 	 */
-	public function create_all_product_variations( $product, $limit = -1, $default_values = array() ) {
+	public function create_all_product_variations( $product, $limit = -1, $default_values = array(), $metadata = array() ) {
 		$count = 0;
 
 		if ( ! $product ) {
@@ -1213,6 +1227,9 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 			}
 			$variation = wc_get_product_object( 'variation' );
 			$variation->set_props( $default_values );
+			foreach ( $metadata as $meta ) {
+				$variation->add_meta_data( $meta['key'], $meta['value'] );
+			}
 			$variation->set_parent_id( $product->get_id() );
 			$variation->set_attributes( $possible_attribute );
 			$variation_id = $variation->save();

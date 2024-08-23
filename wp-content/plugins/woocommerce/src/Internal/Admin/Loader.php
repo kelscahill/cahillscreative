@@ -8,7 +8,6 @@ namespace Automattic\WooCommerce\Internal\Admin;
 use Automattic\WooCommerce\Admin\Features\Features;
 use Automattic\WooCommerce\Admin\PageController;
 use Automattic\WooCommerce\Admin\PluginsHelper;
-use Automattic\WooCommerce\Internal\Admin\BlockTemplateRegistry\BlockTemplatesController;
 use Automattic\WooCommerce\Internal\Admin\ProductReviews\Reviews;
 use Automattic\WooCommerce\Internal\Admin\ProductReviews\ReviewsCommentsOverrides;
 use Automattic\WooCommerce\Internal\Admin\Settings;
@@ -73,7 +72,6 @@ class Loader {
 
 		wc_get_container()->get( Reviews::class );
 		wc_get_container()->get( ReviewsCommentsOverrides::class );
-		wc_get_container()->get( BlockTemplatesController::class );
 
 		add_filter( 'admin_body_class', array( __CLASS__, 'add_admin_body_classes' ) );
 		add_filter( 'admin_title', array( __CLASS__, 'update_admin_title' ) );
@@ -92,34 +90,7 @@ class Loader {
 		*/
 		remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
 
-		add_action( 'admin_init', array( __CLASS__, 'deactivate_wc_admin_plugin' ) );
-
 		add_action( 'load-themes.php', array( __CLASS__, 'add_appearance_theme_view_tracks_event' ) );
-	}
-
-	/**
-	 * If WooCommerce Admin is installed and activated, it will attempt to deactivate and show a notice.
-	 */
-	public static function deactivate_wc_admin_plugin() {
-		$plugin_path = PluginsHelper::get_plugin_path_from_slug( 'woocommerce-admin' );
-		if ( is_plugin_active( $plugin_path ) ) {
-			$path = PluginsHelper::get_plugin_path_from_slug( 'woocommerce-admin' );
-			deactivate_plugins( $path );
-			$notice_action = is_network_admin() ? 'network_admin_notices' : 'admin_notices';
-			add_action(
-				$notice_action,
-				function() {
-					echo '<div class="error"><p>';
-					printf(
-						/* translators: %s: is referring to the plugin's name. */
-						esc_html__( 'The %1$s plugin has been deactivated as the latest improvements are now included with the %2$s plugin.', 'woocommerce' ),
-						'<code>WooCommerce Admin</code>',
-						'<code>WooCommerce</code>'
-					);
-					echo '</p></div>';
-				}
-			);
-		}
 	}
 
 	/**
@@ -153,12 +124,25 @@ class Loader {
 
 		$sections = self::get_embed_breadcrumbs();
 		$sections = is_array( $sections ) ? $sections : array( $sections );
+
+		$page_title      = '';
+		$pages_with_tabs = array( 'Settings', 'Reports', 'Status' );
+
+		if (
+			count( $sections ) > 2 &&
+			is_array( $sections[1] ) &&
+			in_array( $sections[1][1], $pages_with_tabs, true )
+		) {
+			$page_title = $sections[1][1];
+		} else {
+			$page_title = end( $sections );
+		}
 		?>
 		<div id="woocommerce-embedded-root" class="is-embed-loading">
 			<div class="woocommerce-layout">
 				<div class="woocommerce-layout__header is-embed-loading">
 					<h1 class="woocommerce-layout__header-heading">
-						<?php self::output_heading( end( $sections ) ); ?>
+						<?php self::output_heading( $page_title ); ?>
 					</h1>
 				</div>
 			</div>
@@ -322,7 +306,7 @@ class Loader {
 			$settings['orderStatuses'] = self::get_order_statuses( wc_get_order_statuses() );
 			$settings['stockStatuses'] = self::get_order_statuses( wc_get_product_stock_status_options() );
 			$settings['currency']      = self::get_currency_settings();
-			$settings['locale']        = [
+			$settings['locale']        = array(
 				'siteLocale'    => isset( $settings['siteLocale'] )
 					? $settings['siteLocale']
 					: get_locale(),
@@ -332,7 +316,7 @@ class Loader {
 				'weekdaysShort' => isset( $settings['l10n']['weekdaysShort'] )
 					? $settings['l10n']['weekdaysShort']
 					: array_values( $wp_locale->weekday_abbrev ),
-			];
+			);
 		}
 
 		$preload_data_endpoints = apply_filters( 'woocommerce_component_settings_preload_endpoints', array() );
@@ -356,7 +340,7 @@ class Loader {
 			$setting_options = new \WC_REST_Setting_Options_V2_Controller();
 			foreach ( $preload_settings as $group ) {
 				$group_settings   = $setting_options->get_group_settings( $group );
-				$preload_settings = [];
+				$preload_settings = array();
 				foreach ( $group_settings as $option ) {
 					if ( array_key_exists( 'id', $option ) && array_key_exists( 'value', $option ) ) {
 						$preload_settings[ $option['id'] ] = $option['value'];
@@ -403,7 +387,7 @@ class Loader {
 		if ( ! empty( $preload_data_endpoints ) ) {
 			$settings['dataEndpoints'] = isset( $settings['dataEndpoints'] )
 				? $settings['dataEndpoints']
-				: [];
+				: array();
 			foreach ( $preload_data_endpoints as $key => $endpoint ) {
 				// Handle error case: rest_do_request() doesn't guarantee success.
 				if ( empty( $preload_data[ $endpoint ] ) ) {

@@ -537,7 +537,7 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 				$sender_name = trim( get_bloginfo( 'name' ) );
 			}
 			if ( '' == $sender_email ) {
-				$sender_email = __( 'no-reply@brevo.com', 'mailin' );
+				$sender_email = __( 'no-reply@' . parse_url(get_site_url(), PHP_URL_HOST), 'mailin' );
 				$sender_name = __( 'Brevo', 'mailin' );
 			}
 

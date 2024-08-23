@@ -206,7 +206,7 @@ class Remote
                     if (version_compare($filtered_post['version'], '2.0b1', '<')) {
                         $return['error']    = 1;
                         $return['error_id'] = 'version_mismatch';
-                        $return             = serialize($return);
+                        $return             = json_encode($return);
                         return $this->http->end_ajax($return, false, true);
                     }
                 }
@@ -287,7 +287,7 @@ class Remote
         $return['beta_optin']             = BetaManager::has_beta_optin($this->settings);
         $return['firewall_plugins']       = $site_details['firewall_plugins'];
         $return                           = apply_filters('wpmdb_establish_remote_connection_data', $return);
-        $result                           = $this->http->end_ajax($return, false, true);
+        $result                           = $this->http->end_ajax(json_encode($return), false, true);
 
         return $result;
     }
@@ -397,9 +397,9 @@ class Remote
 
         UsageTracking::log_usage($state_data['intent'] . '-remote');
 
-        $state_data['site_details'] = Util::unserialize(
+        $state_data['site_details'] = json_decode(
             base64_decode($filtered_post['site_details']),
-            __METHOD__
+            true
         );
 
         // ***+=== @TODO - revisit usage of parse_migration_form_data

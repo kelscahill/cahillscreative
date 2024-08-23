@@ -14,6 +14,7 @@ use WPForms\Admin\Helpers\Datepicker;
 use WP_List_Table;
 use WP_Post;
 use WPForms\Pro\AntiSpam\SpamEntry;
+use WPForms_Entries_List;
 use WPForms_Entry_Handler;
 
 /**
@@ -136,6 +137,7 @@ class Table extends WP_List_Table {
 		$one_published_form = wpforms()->get( 'form' )->get(
 			'',
 			[
+				'post_type'              => wpforms()->get( 'form' )::POST_TYPES,
 				'fields'                 => 'ids',
 				'post_status'            => 'publish',
 				'numberposts'            => 1,
@@ -190,7 +192,13 @@ class Table extends WP_List_Table {
 
 		$name = ! empty( $form->post_title ) ? $form->post_title : $form->post_name;
 
-		return $this->get_form_entries_url( $form, $name );
+		$link = $this->get_form_entries_url( $form, $name );
+
+		if ( wpforms_is_form_template( $form ) ) {
+			$link .= _post_states( $form, false );
+		}
+
+		return $link;
 	}
 
 	/**
@@ -218,7 +226,7 @@ class Table extends WP_List_Table {
 	 */
 	public function column_last_entry( $form ) {
 
-		$last_entry = wpforms()->get( 'entry' )->get_last( $form->ID );
+		$last_entry = wpforms()->get( 'entry' )->get_last( $form->ID, '', 'date' );
 
 		if ( ! $last_entry ) {
 			return self::PLACEHOLDER;
@@ -490,6 +498,7 @@ class Table extends WP_List_Table {
 			'',
 			[
 				'orderby'                => 'post__in',
+				'post_type'              => wpforms()->get( 'form' )::POST_TYPES,
 				'post__in'               => $form_ids,
 				'update_post_meta_cache' => false,
 				'update_post_term_cache' => false,
@@ -526,9 +535,13 @@ class Table extends WP_List_Table {
 			$exclude = $this->sort_by_last_entry( $order );
 		}
 
-		$form_ids = (array) wpforms()->get( 'form' )->get(
+		$form_handler = wpforms()->get( 'form' );
+		$post_type    = wpforms()->get( 'entries_overview' )->overview_show_form_templates() ? $form_handler::POST_TYPES : [ 'wpforms' ];
+
+		$form_ids = (array) $form_handler->get(
 			'',
 			[
+				'post_type'              => $post_type,
 				'fields'                 => 'ids',
 				'order'                  => $order,
 				'orderby'                => $orderby,
@@ -592,7 +605,17 @@ class Table extends WP_List_Table {
 
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$form_ids = $wpdb->get_col(
-			"SELECT DISTINCT form_id FROM {$this->entry_handler->table_name} GROUP BY form_id ORDER BY entry_id {$order}"
+			$wpdb->prepare(
+				"SELECT form_id
+				FROM {$this->entry_handler->table_name}
+				WHERE status NOT IN ( %s, %s )
+				GROUP BY form_id
+				ORDER BY MAX(date) {$order}",
+				[
+					SpamEntry::ENTRY_STATUS,
+					WPForms_Entries_List::TRASH_ENTRY_STATUS,
+				]
+			)
 		);
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 

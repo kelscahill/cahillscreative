@@ -54,6 +54,7 @@ class Frontend {
 		add_action( 'wpforms_wp_footer', [ $this, 'enqueues' ] );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_assets' ] );
 		add_action( 'elementor/frontend/after_enqueue_styles', [ $this, 'elementor_enqueues' ] );
+		add_action( 'enqueue_block_assets', [ $this, 'enqueue_block_assets' ] );
 		add_filter( 'register_block_type_args', [ $this, 'register_block_type_args' ], 20, 2 );
 	}
 
@@ -104,17 +105,41 @@ class Frontend {
 	}
 
 	/**
+	 * Enqueue block editor assets.
+	 *
+	 * @since 1.8.6
+	 */
+	public function enqueue_block_assets() {
+
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		$this->enqueue_styles();
+	}
+
+	/**
 	 * Enqueue assets on the frontend.
 	 *
 	 * @since 1.8.2
 	 */
 	public function enqueue_assets() {
 
+		$min = wpforms_get_min_suffix();
+
 		if ( ! Helpers::has_stripe_keys() ) {
 			return;
 		}
 
 		$config = $this->api->get_config();
+
+		wp_enqueue_script(
+			'wpforms-generic-utils',
+			WPFORMS_PLUGIN_URL . "assets/js/share/utils{$min}.js",
+			[ 'jquery' ],
+			WPFORMS_VERSION,
+			true
+		);
 
 		wp_enqueue_script(
 			'stripe-js',
@@ -125,7 +150,7 @@ class Frontend {
 		wp_enqueue_script(
 			self::HANDLE,
 			$config['local_js_url'],
-			[ 'jquery', 'stripe-js' ],
+			[ 'jquery', 'stripe-js', 'wpforms-generic-utils' ],
 			WPFORMS_VERSION
 		);
 

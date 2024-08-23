@@ -1,5 +1,95 @@
 # Changelog
 
+## [1.29.1](https://github.com/googleapis/gax-php/compare/v1.29.0...v1.29.1) (2024-02-26)
+
+
+### Bug Fixes
+
+* Allow InsecureCredentialsWrapper::getAuthorizationHeaderCallback to return null ([#541](https://github.com/googleapis/gax-php/issues/541)) ([676f4f7](https://github.com/googleapis/gax-php/commit/676f4f7e3d8925d8aba00285616fdf89440b45f9))
+
+## [1.29.0](https://github.com/googleapis/gax-php/compare/v1.28.1...v1.29.0) (2024-02-26)
+
+
+### Features
+
+* Add InsecureCredentialsWrapper for Emulator connection ([#538](https://github.com/googleapis/gax-php/issues/538)) ([b5dbeaf](https://github.com/googleapis/gax-php/commit/b5dbeaf33594b300a0c678ffc6a6946b09fce7dd))
+
+## [1.28.1](https://github.com/googleapis/gax-php/compare/v1.28.0...v1.28.1) (2024-02-20)
+
+
+### Bug Fixes
+
+* Universe domain check for grpc transport ([#534](https://github.com/googleapis/gax-php/issues/534)) ([1026d8a](https://github.com/googleapis/gax-php/commit/1026d8aec73e0aad8949a86ee7575e3edb3d56be))
+
+## [1.28.0](https://github.com/googleapis/gax-php/compare/v1.27.2...v1.28.0) (2024-02-15)
+
+
+### Features
+
+* Allow setting of universe domain in environment variable ([#520](https://github.com/googleapis/gax-php/issues/520)) ([6e6603b](https://github.com/googleapis/gax-php/commit/6e6603b03285f3f8d1072776cd206720e3990f50))
+
+## [1.27.2](https://github.com/googleapis/gax-php/compare/v1.27.1...v1.27.2) (2024-02-14)
+
+
+### Bug Fixes
+
+* Typo in TransportOptions option name ([#530](https://github.com/googleapis/gax-php/issues/530)) ([6914fe0](https://github.com/googleapis/gax-php/commit/6914fe04554867bd827be6596fafc751a3d7621a))
+
+## [1.27.1](https://github.com/googleapis/gax-php/compare/v1.27.0...v1.27.1) (2024-02-14)
+
+
+### Bug Fixes
+
+* Issues in Options classes ([#528](https://github.com/googleapis/gax-php/issues/528)) ([aa9ba3a](https://github.com/googleapis/gax-php/commit/aa9ba3a6bac9324ad894d9677da0e897497ebab2))
+
+## [1.27.0](https://github.com/googleapis/gax-php/compare/v1.26.3...v1.27.0) (2024-02-07)
+
+
+### Features
+
+* Create ClientOptionsTrait ([#527](https://github.com/googleapis/gax-php/issues/527)) ([cfe2c60](https://github.com/googleapis/gax-php/commit/cfe2c60a36233f74259c96a6799d8492ed7c45d0))
+* Implement ProjectIdProviderInterface in CredentialsWrapper ([#523](https://github.com/googleapis/gax-php/issues/523)) ([b56a463](https://github.com/googleapis/gax-php/commit/b56a4635abfeeec08895202da8218e9ba915413e))
+* Update ArrayTrait to be consistent with Core ([#526](https://github.com/googleapis/gax-php/issues/526)) ([8e44185](https://github.com/googleapis/gax-php/commit/8e44185dd6f8f8f9ef5b136776cba61ec7a8b8f6))
+
+
+### Bug Fixes
+
+* Correct exception type for Guzzle promise ([#521](https://github.com/googleapis/gax-php/issues/521)) ([7129373](https://github.com/googleapis/gax-php/commit/712937339c134e1d92cab5fa736cfe1bbcd7f343))
+
+## [1.26.3](https://github.com/googleapis/gax-php/compare/v1.26.2...v1.26.3) (2024-01-18)
+
+
+### Bug Fixes
+
+* CallOptions should use transportOptions ([#513](https://github.com/googleapis/gax-php/issues/513)) ([2d45ee1](https://github.com/googleapis/gax-php/commit/2d45ee187cdc3619b30c51b653b508718baf3af4))
+
+## [1.26.2](https://github.com/googleapis/gax-php/compare/v1.26.1...v1.26.2) (2024-01-09)
+
+
+### Bug Fixes
+
+* Ensure modifyClientOptions is called for new surface clients ([#515](https://github.com/googleapis/gax-php/issues/515)) ([68231b8](https://github.com/googleapis/gax-php/commit/68231b896dec8efb86f8986aefba3d247d2a2d1c))
+
+## [1.26.1](https://github.com/googleapis/gax-php/compare/v1.26.0...v1.26.1) (2024-01-04)
+
+
+### Bug Fixes
+
+* Widen google/longrunning version ([#511](https://github.com/googleapis/gax-php/issues/511)) ([b93096d](https://github.com/googleapis/gax-php/commit/b93096d0e10bde14c50480ea9f0423c292fbd5a6))
+
+## [1.26.0](https://github.com/googleapis/gax-php/compare/v1.25.0...v1.26.0) (2024-01-03)
+
+
+### Features
+
+* Add support for universe domain ([#502](https://github.com/googleapis/gax-php/issues/502)) ([5a26fac](https://github.com/googleapis/gax-php/commit/5a26facad5c2e5c30945987c422bb78a3fffb9b1))
+* Interface and methods for middleware stack ([#473](https://github.com/googleapis/gax-php/issues/473)) ([766da7b](https://github.com/googleapis/gax-php/commit/766da7b369409ec1b29376b533e7f22ee7f745f4))
+
+
+### Bug Fixes
+
+* Accept throwable for retry settings ([#509](https://github.com/googleapis/gax-php/issues/509)) ([5af9c3c](https://github.com/googleapis/gax-php/commit/5af9c3c650419c8f1a590783e954cd11dc1f0d56))
+
 ## [1.25.0](https://github.com/googleapis/gax-php/compare/v1.24.0...v1.25.0) (2023-11-02)
 
 

@@ -2,8 +2,6 @@
 
 namespace threewp_broadcast\maintenance\checks\database_tools;
 
-use \threewp_broadcast\BroadcastData;
-
 /**
 	@brief		Various database tools.
 	@since		2017-10-18 09:09:07

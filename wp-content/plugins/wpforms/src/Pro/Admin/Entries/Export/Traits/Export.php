@@ -91,6 +91,9 @@ trait Export {
 			'checkbox',
 			'file-upload',
 			'likert_scale',
+			'payment-checkbox',
+			'payment-single',
+			'payment-select',
 		];
 
 		if ( ! in_array( $type, $available_types, true ) ) {
@@ -112,8 +115,13 @@ trait Export {
 			return true;
 		}
 
-		// The rest of the fields are multiple by default.
+		// The rest of the fields are multiple choice by default.
 		if ( in_array( $type, [ 'checkbox', 'payment-checkbox', 'likert_scale', 'address' ], true ) ) {
+			return true;
+		}
+
+		// Check if quantity is enabled.
+		if ( in_array( $type, [ 'payment-select', 'payment-single' ], true ) && $this->is_payment_quantities_enabled( $field ) ) {
 			return true;
 		}
 
@@ -168,5 +176,100 @@ trait Export {
 		);
 
 		return array_values( array_filter( $statuses ) );
+	}
+
+	/**
+	 * Get field ID from multiple field ID.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @param string $col_id Column ID.
+	 *
+	 * @return string
+	 */
+	private function get_multiple_field_id( string $col_id ): string {
+
+		// Get multiple field id. Contains field id and value id.
+		// See get_csv_cols method.
+		// $col_id: 'multiple_field_' . $field_id . '_' . $key.
+		$id = str_replace( 'multiple_field_', '', $col_id );
+
+		// Get field id and value id.
+		// $id: $field_id . '_' . $key.
+		$multiple_key = explode( '_', $id );
+
+		// The First element is field id.
+		return $multiple_key[0] ?? '';
+	}
+
+	/**
+	 * Check if value should be skipped.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @param string $value  Field value.
+	 * @param array  $fields Fields array.
+	 * @param string $col_id Column ID.
+	 *
+	 * @return bool
+	 */
+	private function is_skip_value( string $value, array $fields, string $col_id ): bool {
+
+		// No skip for AJAX requests.
+		if ( wpforms_is_ajax() ) {
+			return false;
+		}
+
+		$field = $fields[ $this->get_multiple_field_id( $col_id ) ] ?? [];
+
+		if ( empty( $field ) ) {
+			return false;
+		}
+
+		// Skip empty values only for available fields.
+		$available_types = [
+			'select',
+			'checkbox',
+			'payment-checkbox',
+		];
+
+		if ( ! in_array( $field['type'], $available_types, true ) ) {
+			return false;
+		}
+
+		/**
+		 * Filters whether to skip not selected choices for multiple fields.
+		 *
+		 * @since 1.8.6
+		 *
+		 * @param bool $skip_not_selected_choices Whether to skip not selected choices.
+		 */
+		$skip_not_selected_choices = apply_filters( 'wpforms_pro_admin_entries_export_skip_not_selected_choices', false ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+
+		return empty( $value ) && $skip_not_selected_choices;
+	}
+
+	/**
+	 * Determine if payment quantities enabled.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param array $field Field settings.
+	 *
+	 * @return bool
+	 */
+	private function is_payment_quantities_enabled( $field ) {
+
+		if ( empty( $field['enable_quantity'] ) ) {
+			return false;
+		}
+
+		// Quantity available only for `single` format of the Single payment field.
+		if ( $field['type'] === 'payment-single' && $field['format'] !== 'single' ) {
+			return false;
+		}
+
+		// Otherwise return true.
+		return true;
 	}
 }

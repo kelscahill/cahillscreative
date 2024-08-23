@@ -20,6 +20,12 @@ class SIB_Forms_List extends WP_List_Table {
         add_action( 'admin_head', array( &$this, 'admin_header' ) );
 
     }
+    const PAGES = [
+        'sib_page_form',
+        'sib_page_home',
+        'sib_page_scenarios',
+        'sib_page_statistics'
+    ];
     /**
      * Retrieve contacts data from the database
      *
@@ -97,11 +103,11 @@ class SIB_Forms_List extends WP_List_Table {
         $delete_nonce = wp_create_nonce( 'sib_delete_form' );
 
         $title = '<strong>' . $item['title'] . '</strong>';
-
+        $page = isset($_REQUEST['page']) && in_array(strtolower($_REQUEST['page']), self::PAGES) ? $_REQUEST['page'] : '';
         $actions = array(
-            'edit' => sprintf( '<a href="?page=%s&action=%s&id=%s">Edit</a>', sanitize_text_field( $_REQUEST['page'] ), 'edit', absint( $item['id'] ) ),
-            'duplicate' => sprintf( '<a href="?page=%s&action=%s&id=%s">Duplicate</a>', sanitize_text_field( $_REQUEST['page'] ), 'duplicate', absint( $item['id'] ) ),
-            'delete' => sprintf( '<a class="sib-form-delete" href="?page=%s&action=%s&id=%s&_wpnonce=%s">Delete</a>', sanitize_text_field( $_REQUEST['page'] ), 'delete', absint( $item['id'] ), $delete_nonce )
+            'edit' => sprintf( '<a href="?page=%s&action=%s&id=%s">Edit</a>', $page, 'edit', absint( $item['id'] ) ),
+            'duplicate' => sprintf( '<a href="?page=%s&action=%s&id=%s">Duplicate</a>', $page, 'duplicate', absint( $item['id'] ) ),
+            'delete' => sprintf( '<a class="sib-form-delete" href="?page=%s&action=%s&id=%s&_wpnonce=%s">Delete</a>', $page, 'delete', absint( $item['id'] ), $delete_nonce )
         );
 
         return $title . $this->row_actions( $actions );
@@ -116,17 +122,17 @@ class SIB_Forms_List extends WP_List_Table {
             foreach($languages as $language)
             {
                 $exist = SIB_Forms_Lang::get_form_ID($item['id'], $language['language_code']);
-
+                $page = isset($_REQUEST['page']) && in_array(strtolower($_REQUEST['page']), self::PAGES) ? $_REQUEST['page'] : '';
                 if($exist == null)
                 {
                     $img_src = plugins_url('img/add_translation.png', dirname(__FILE__));
 
-                    $href = sprintf( '<a href="?page=%s&action=%s&pid=%s&lang=%s" style="width: 20px; text-align: center;padding: 2px 1px;">', sanitize_text_field( $_REQUEST['page'] ), 'edit', absint( $item['id'] ), sanitize_text_field( $language['language_code'] ) );
+                    $href = sprintf( '<a href="?page=%s&action=%s&pid=%s&lang=%s" style="width: 20px; text-align: center;padding: 2px 1px;">', $page, 'edit', absint( $item['id'] ), sanitize_text_field( $language['language_code'] ) );
                     $results .= $href .'<img src="'.$img_src.'" style="margin:2px;"></a>';
                 }
                 else{
                     $img_src = plugins_url('img/edit_translation.png', dirname(__FILE__));
-                    $href = sprintf( '<a href="?page=%s&action=%s&id=%s&pid=%s&lang=%s" style="width: 20px; text-align: center;padding: 2px 1px;">', sanitize_text_field( $_REQUEST['page'] ), 'edit', absint( $exist ) , absint( $item['id']), sanitize_text_field( $language['language_code'] ) );
+                    $href = sprintf( '<a href="?page=%s&action=%s&id=%s&pid=%s&lang=%s" style="width: 20px; text-align: center;padding: 2px 1px;">', $page, 'edit', absint( $exist ) , absint( $item['id']), sanitize_text_field( $language['language_code'] ) );
                     $results .= $href .'<img src="'.$img_src.'" style="margin:2px;"></a>';
                 }
 

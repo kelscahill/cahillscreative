@@ -115,7 +115,7 @@ WPFormsEducation.proCore = window.WPFormsEducation.proCore || ( function( docume
 
 				$button.addClass( 'inactive' );
 
-				var $form = $button.closest( '.wpforms-addon-form, .wpforms-setting-row-education' ),
+				const $form = $button.closest( '.wpforms-addon-form, .wpforms-education-page' ),
 					buttonText = $button.text(),
 					plugin = $button.data( 'plugin' ),
 					state = $button.data( 'action' ),
@@ -142,6 +142,10 @@ WPFormsEducation.proCore = window.WPFormsEducation.proCore || ( function( docume
 								$( this ).remove();
 							} );
 						}, 5000 );
+					},
+					function( error ) {
+						// eslint-disable-next-line no-console
+						console.log( error.responseText );
 					} );
 			} );
 		},
@@ -320,7 +324,10 @@ WPFormsEducation.proCore = window.WPFormsEducation.proCore || ( function( docume
 					}
 
 					// In the case of error.
-					WPFormsEducation.core.errorModal( false, res.data );
+					const errorTitle = res.data.header ?? false,
+						errorMessage = res.data.msg ?? res.data;
+
+					WPFormsEducation.core.errorModal( errorTitle, errorMessage );
 				}
 			);
 		},

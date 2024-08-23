@@ -34,13 +34,14 @@ class AdminManager
         add_action('rest_api_init', array($this->api_manager, 'add_rest_endpoints'));
         add_action('wp_head', array($this, 'install_ma_and_chat_script'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_carts_fragment'));
+        add_action('wp_footer', array($this, 'brevo_hook_javascript_footer'));
     }
 
     public function adminMenu()
     {
         global $wp_roles; 
-	$wp_roles->add_cap( 'administrator', 'view_custom_menu' ); 
-	$wp_roles->add_cap( 'editor', 'view_custom_menu' );
+        $wp_roles->add_cap( 'administrator', 'view_custom_menu' ); 
+        $wp_roles->add_cap( 'editor', 'view_custom_menu' );
 
         add_submenu_page(
             'woocommerce',
@@ -54,7 +55,7 @@ class AdminManager
 
     public function adminOptions()
     {
-    	try {
+        try {
             $user_connection_id = get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null);
             if (!empty($user_connection_id)) {
                 $settingsUrl = SendinblueClient::INTEGRATION_URL . $user_connection_id . SendinblueClient::SETTINGS_URL;
@@ -66,17 +67,17 @@ class AdminManager
                 $automationUrl = SendinblueClient::AUTOMATION_URL;
                 $chatsUrl = SendinblueClient::CHAT;
                 $dashboardUrl = SendinblueClient::DASHBOARD_URL;
-				$conversationsUrl = SendinblueClient::CONVERSATIONS_URL;
+                $conversationsUrl = SendinblueClient::CONVERSATIONS_URL;
 
                 include SENDINBLUE_WC_ROOT_PATH . '/src/views/admin_menus.php';
 
                 return;
             }
 
-    		$key = $this->api_manager->get_key();
-	    	if (empty($key)) {
-	    		$key = $this->api_manager->create_key();
-	    	}
+            $key = $this->api_manager->get_key();
+            if (empty($key)) {
+                $key = $this->api_manager->create_key();
+            }
 
             $query_params['pluginVersion'] = SENDINBLUE_WC_PLUGIN_VERSION;
             $query_params['shopVersion'] = SENDINBLUE_WORDPRESS_SHOP_VERSION;
@@ -89,10 +90,24 @@ class AdminManager
             $connectUrl = SendinblueClient::INTEGRATION_URL . SendinblueClient::CONNECT_URL . '?' . http_build_query($query_params);
 
             include SENDINBLUE_WC_ROOT_PATH . '/src/views/admin_view.php';
-    		
-    	} catch (Exception $e) {
-    		wp_die(__($e->getMessage()));
-    	}
+            
+        } catch (Exception $e) {
+            wp_die(__($e->getMessage()));
+        }
+    }
+    
+    public function brevo_hook_javascript_footer()
+    {
+        $output = '<script type="text/javascript">for(var textFields=document.querySelectorAll(\'input[type="email"]\'),i=0;i<textFields.length;i++){textFields[i].addEventListener("blur",function(){const regexEmail = /^[#&*\/=?^{!}~\'_a-z0-9-\+]+([#&*\/=?^{!}~\'_a-z0-9-\+]+)*(\.[#&*\/=?^{!}~\'_a-z0-9-\+]+)*[.]?@[_a-z0-9-]+(\.[_a-z0-9-]+)*(\.[a-z0-9]{2,63})$/i;if(!regexEmail.test(textFields[i].value)){return false;}if(getCookieValueByName("tracking_email") == encodeURIComponent(textFields[i].value)){return false;}document.cookie="tracking_email="+encodeURIComponent(textFields[i].value)+"; path=/";
+            var xhrobj = new XMLHttpRequest();
+            xhrobj.open("POST","/wp-admin/admin-ajax.php");
+            var params = "action=the_ajax_hook&tracking_email="+ encodeURIComponent(textFields[i].value);
+            xhrobj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhrobj.send(params);
+        });break;}
+		function getCookieValueByName(name) {var match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));return match ? match[2] : "";}        
+		</script>';
+        echo $output;
     }
 
     public function install_ma_and_chat_script()

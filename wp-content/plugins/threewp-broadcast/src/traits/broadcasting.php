@@ -549,27 +549,30 @@ trait broadcasting
 					$this->debug( 'Taxonomies: Synced terms for %s.', $parent_taxonomy );
 
 					// Go through the original post's terms and compare each slug with the slug of the target terms.
-					$taxonomies_to_add_to = [];
+					$terms_to_add = [];
 
 					foreach( $terms as $term )
 					{
 						$new_term_id = $bcd->terms()->get( $term->term_id );
 						if ( $new_term_id > 0 )
 						{
-							$taxonomies_to_add_to[] = $new_term_id;
+							$terms_to_add[] = $new_term_id;
 							$this->debug( 'Found term %d for original term %d.', $new_term_id, $term->term_id );
 						}
 					}
 
-					if ( count( $taxonomies_to_add_to ) > 0 )
+					if ( count( $terms_to_add ) > 0 )
 					{
 						// This relates to the bug mentioned in the method $this->set_term_parent()
 						delete_option( $parent_taxonomy . '_children' );
 
 						if ( ! $syncing_parent_blog_taxonomies )
 						{
-							$this->debug( 'Setting taxonomies for %s: %s', $parent_taxonomy, $taxonomies_to_add_to );
-							wp_set_object_terms( $bcd->new_post( 'ID' ), $taxonomies_to_add_to, $parent_taxonomy );
+							$parse_content = $this->new_action( 'broadcasting_set_object_terms' );
+							$parse_content->broadcasting_data = $bcd;
+							$parse_content->taxonomy = $parent_taxonomy;
+							$parse_content->term_ids = $terms_to_add;
+							$parse_content->execute();
 						}
 					}
 					else

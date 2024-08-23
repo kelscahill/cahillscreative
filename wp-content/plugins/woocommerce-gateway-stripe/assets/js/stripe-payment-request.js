@@ -5,7 +5,8 @@ jQuery( function( $ ) {
 	var stripe = Stripe( wc_stripe_payment_request_params.stripe.key, {
 		locale: wc_stripe_payment_request_params.stripe.locale
 	} ),
-		paymentRequestType;
+		paymentRequestType,
+		showButtonsOnInit = wc_stripe_payment_request_params.product.validVariationSelected ?? true;
 
 	/**
 	 * Object to handle Stripe payment forms.
@@ -98,7 +99,7 @@ jQuery( function( $ ) {
 			var data     = {
 				_wpnonce:                  wc_stripe_payment_request_params.nonce.checkout,
 				billing_first_name:        name?.split( ' ' )?.slice( 0, 1 )?.join( ' ' ) ?? '',
-				billing_last_name:         name?.split( ' ' )?.slice( 1 )?.join( ' ' ) ?? '',
+				billing_last_name:         name?.split( ' ' )?.slice( 1 )?.join( ' ' ) || '-',
 				billing_company:           '',
 				billing_email:             null !== email   ? email : evt.payerEmail,
 				billing_phone:             null !== phone   ? phone : evt.payerPhone && evt.payerPhone.replace( '/[() -]/g', '' ),
@@ -136,6 +137,43 @@ jQuery( function( $ ) {
 				data.shipping_city       = shipping.city;
 				data.shipping_state      = shipping.region;
 				data.shipping_postcode   = shipping.postalCode;
+			}
+
+			data = wc_stripe_payment_request.getRequiredFieldDataFromCheckoutForm( data );
+
+			return data;
+		},
+
+		/**
+		 * Get required field values from the checkout form if they are filled and add to the order data.
+		 *
+		 * @param {Object} data Order data.
+		 *
+		 * @return {Object}
+		 */
+		getRequiredFieldDataFromCheckoutForm: function( data ) {
+			const requiredfields = $( 'form.checkout' ).find( '.validate-required' );
+
+			if ( requiredfields.length ) {
+				requiredfields.each( function() {
+					const field = $( this ).find( ':input' );
+					const value = field.val();
+					const name = field.attr( 'name' );
+					if ( value && name ) {
+						if ( ! data[ name ] ) {
+							data[ name ] = value;
+						}
+	
+						// if shipping same as billing is selected, copy the billing field to shipping field.
+						const shipToDiffAddress = $( '#ship-to-different-address' ).find( 'input' ).is( ':checked' );
+						if ( ! shipToDiffAddress ) {
+							var shippingFieldName = name.replace( 'billing_', 'shipping_' );
+							if ( ! data[ shippingFieldName ] && data[ name ] ) {
+								data[ shippingFieldName ] = data[ name ];
+							}
+						}
+					}
+				});
 			}
 
 			return data;
@@ -342,9 +380,12 @@ jQuery( function( $ ) {
 		 * @since 4.0.0
 		 * @version 4.8.0
 		 */
-		startPaymentRequest: function( cart ) {
+		startPaymentRequest: function( cart, showButtonsOnInit ) {
 			var paymentDetails,
 				options;
+
+			// Whether to show the payment request buttons on init. Set to true by default.
+			showButtonsOnInit = showButtonsOnInit ?? true;
 
 			if ( wc_stripe_payment_request_params.is_product_page ) {
 				options = wc_stripe_payment_request.getRequestOptionsFromLocal();
@@ -407,7 +448,10 @@ jQuery( function( $ ) {
 					}
 
 					wc_stripe_payment_request.attachPaymentRequestButtonEventListeners( prButton, paymentRequest );
-					wc_stripe_payment_request.showPaymentRequestButton( prButton );
+
+					if ( showButtonsOnInit ) {
+						wc_stripe_payment_request.showPaymentRequestButton( prButton );
+					}
 				} );
 
 				// Possible statuses success, fail, invalid_payer_name, invalid_payer_email, invalid_payer_phone, invalid_shipping_address.
@@ -674,33 +718,39 @@ jQuery( function( $ ) {
 				$( document.body ).trigger( 'wc_stripe_block_payment_request_button' );
 
 				$.when( wc_stripe_payment_request.getSelectedProductData() ).then( function ( response ) {
-					/**
-					 * If the customer canceled the payment request, we need to re-init the payment request buttons to ensure the shipping
-					 * options are fetched again. If the customer didn't close the payment request, and the product's shipping status is
-					 * consistent, we can simply update the payment request button with the new total and display items.
-					 */
-					if ( ! wc_stripe_payment_request.paymentCanceled && wc_stripe_payment_request_params.product.requestShipping === response.requestShipping ) {
-						$.when(
-							paymentRequest.update( {
-								total: response.total,
-								displayItems: response.displayItems,
-							} )
-						).then( function () {
-							$( document.body ).trigger( 'wc_stripe_unblock_payment_request_button' );
-						} );
+					if ( response.error ) {
+						$( document.body ).trigger( 'wc_stripe_unblock_payment_request_button' );
+						wc_stripe_payment_request.hidePaymentRequestButton();
 					} else {
 						/**
-						 * Re init the payment request button.
-						 *
-						 * This ensures that when the customer clicks on the payment button, the available shipping options are
-						 * refetched based on the selected variable product's data and the chosen address.
+						 * If the customer canceled the payment request, we need to re-init the payment request buttons to ensure the shipping
+						 * options are fetched again. If the customer didn't close the payment request, and the product's shipping status is
+						 * consistent, we can simply update the payment request button with the new total and display items.
 						 */
-						wc_stripe_payment_request_params.product.requestShipping = response.requestShipping;
-						wc_stripe_payment_request_params.product.total           = response.total;
-						wc_stripe_payment_request_params.product.displayItems    = response.displayItems;
+						if ( ! wc_stripe_payment_request.paymentCanceled && wc_stripe_payment_request_params.product.requestShipping === response.requestShipping ) {
+							$.when(
+								paymentRequest.update( {
+									total: response.total,
+									displayItems: response.displayItems,
+								} )
+							).then( function () {
+								$( document.body ).trigger( 'wc_stripe_unblock_payment_request_button' );
+								wc_stripe_payment_request.showPaymentRequestButton();
+							} );
+						} else {
+							/**
+							 * Re init the payment request button.
+							 *
+							 * This ensures that when the customer clicks on the payment button, the available shipping options are
+							 * refetched based on the selected variable product's data and the chosen address.
+							 */
+							wc_stripe_payment_request_params.product.requestShipping = response.requestShipping;
+							wc_stripe_payment_request_params.product.total           = response.total;
+							wc_stripe_payment_request_params.product.displayItems    = response.displayItems;
 
-						wc_stripe_payment_request.init();
-						$( document.body ).trigger( 'wc_stripe_unblock_payment_request_button' );
+							wc_stripe_payment_request.init();
+							$( document.body ).trigger( 'wc_stripe_unblock_payment_request_button' );
+						}
 					}
 				});
 			});
@@ -823,10 +873,11 @@ jQuery( function( $ ) {
 		 *
 		 * @since 4.0.0
 		 * @version 4.0.0
+		 * @param {boolean} showButtonsOnInit Whether to show the payment request buttons on init.
 		 */
-		init: function() {
+		init: function( showButtonsOnInit ) {
 			if ( wc_stripe_payment_request_params.is_product_page ) {
-				wc_stripe_payment_request.startPaymentRequest( '' );
+				wc_stripe_payment_request.startPaymentRequest( '', showButtonsOnInit );
 			} else {
 				wc_stripe_payment_request.getCartDetails();
 			}
@@ -835,7 +886,7 @@ jQuery( function( $ ) {
 		},
 	};
 
-	wc_stripe_payment_request.init();
+	wc_stripe_payment_request.init( showButtonsOnInit );
 
 	// We need to refresh payment request data when total is updated.
 	$( document.body ).on( 'updated_cart_totals', function() {

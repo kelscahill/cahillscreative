@@ -45,6 +45,7 @@ class Settlementtransactions extends \Automattic\WooCommerce\GoogleListingsAndAd
    * @opt_param string transactionIds The list of transactions to return. If not
    * set, all transactions will be returned.
    * @return SettlementtransactionsListResponse
+   * @throws \Google\Service\Exception
    */
   public function listSettlementtransactions($merchantId, $settlementId, $optParams = [])
   {

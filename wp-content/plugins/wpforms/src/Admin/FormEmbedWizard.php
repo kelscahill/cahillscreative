@@ -39,7 +39,7 @@ class FormEmbedWizard {
 		// Form Embed Wizard should load only in the Form Builder and on the Edit/Add Page screen.
 		if (
 			! wpforms_is_admin_page( 'builder' ) &&
-			! wp_doing_ajax() &&
+			! wpforms_is_admin_ajax() &&
 			! $this->is_form_embed_page()
 		) {
 			return;
@@ -101,7 +101,7 @@ class FormEmbedWizard {
 
 		wp_enqueue_script(
 			'wpforms-admin-form-embed-wizard',
-			WPFORMS_PLUGIN_URL . "assets/js/components/admin/form-embed-wizard{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/admin/form-embed-wizard{$min}.js",
 			[ 'jquery', 'underscore' ],
 			WPFORMS_VERSION
 		);

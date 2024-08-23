@@ -59,6 +59,14 @@ class ProductView extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Go
   /**
    * @var string
    */
+  public $clickPotential;
+  /**
+   * @var string
+   */
+  public $clickPotentialRank;
+  /**
+   * @var string
+   */
   public $condition;
   /**
    * @var string
@@ -250,6 +258,34 @@ class ProductView extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Go
   public function getChannel()
   {
     return $this->channel;
+  }
+  /**
+   * @param string
+   */
+  public function setClickPotential($clickPotential)
+  {
+    $this->clickPotential = $clickPotential;
+  }
+  /**
+   * @return string
+   */
+  public function getClickPotential()
+  {
+    return $this->clickPotential;
+  }
+  /**
+   * @param string
+   */
+  public function setClickPotentialRank($clickPotentialRank)
+  {
+    $this->clickPotentialRank = $clickPotentialRank;
+  }
+  /**
+   * @return string
+   */
+  public function getClickPotentialRank()
+  {
+    return $this->clickPotentialRank;
   }
   /**
    * @param string

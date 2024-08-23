@@ -205,6 +205,18 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 					$formData['termAccept'] = '0';
 				}
 
+				$selectCaptchaType = isset($formData['selectCaptchaType']) ? $formData['selectCaptchaType'] : "";
+				if (!$selectCaptchaType) {
+					$gCaptchaVal = isset($formData['gCaptcha']) ? $formData['gCaptcha'] : 0;
+					if ($gCaptchaVal == 0) {
+						$selectCaptchaType = 1;
+					} else if ($gCaptchaVal == 2 || $gCaptchaVal == 3) {
+						$selectCaptchaType = 2;
+					}
+				}
+
+				$cCaptchaType = isset($formData['cCaptchaType']) ?? $formData['cCaptchaType'];
+				
 				?>
 				<div id="main-content" class="sib-content">
 					<form action="admin.php" class="" method="post" role="form">
@@ -437,9 +449,21 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 												<input type="radio" name="sib_add_captcha" class="sib-add-captcha" value="1" <?php checked( $gCaptcha, '1' ); ?>><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'Yes', 'mailin' ); ?></label>
 												<input type="radio" name="sib_add_captcha" class="sib-add-captcha" value="0" <?php checked( $gCaptcha, '0' ); ?>><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'No', 'mailin' ); ?></label>
 											</div>
+											<!-- Captcha Select Box-->
+											<div id="sib_sel_captcha_area" class="small-content2" style="margin-top: 15px;" >
+												<select class="col-md-12 sib-captcha-select" name="sib-select-captcha-type"<?php
+											if ( '0' == $gCaptcha) {
+												echo("style='display: none;'");}
+											?>>
+													<option value="1" disabled="true" selected>Select the Captcha that you would like to use</option>
+													<option value="2" <?php echo ('2' == $selectCaptchaType) ? "selected" : ""; ?>>Google Captcha</option>
+													<option value="3" <?php echo ('3' == $selectCaptchaType) ? "selected" : ""; ?>>Cloudflare Captcha</option>
+												</select>
+											</div>
+											<!-- Google Captcha Start-->
 											<div class="small-content2 sib-captcha-key"
 											<?php
-											if ( '1' !== $gCaptcha ) {
+											if ( '1' !== $gCaptcha || $selectCaptchaType == 3) {
 												echo("style='display: none;'");}
 											?>
 											>
@@ -454,7 +478,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 											</div>
 											<div class="small-content2 sib-captcha-key"
 											<?php
-											if ( '1' !== $gCaptcha ) {
+											if ( '1' !== $gCaptcha || $selectCaptchaType == 3 ) {
 												echo("style='display: none;'");}
 											?>
 											>
@@ -469,8 +493,9 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 											</div>
 											<div class="small-content2 sib-captcha-key"
 												<?php
-												if ( '1' !== $gCaptcha ) {
+												if ( '1' !== $gCaptcha  || $selectCaptchaType == 3) {
 													echo("style='display: none;'");}
+					
 												?>
 											>
 												<input type="radio" name="sib_recaptcha_type" class="sib-captcha-type" value="0" <?php checked( $invisibleCaptcha, '0' ); ?>><label class="sib-radio-label">&nbsp;<?php esc_attr_e( 'Google Captcha', 'mailin');?></label>
@@ -478,17 +503,54 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 											</div>
 											<div class="small-content2 sib-captcha-key"
 											<?php
-											if ( '1' !== $gCaptcha ) {
+											if ( '1' !== $gCaptcha  || $selectCaptchaType == 3) {
 												echo("style='display: none;'");}
 											?>
 											>
 												<button type="button" id="sib_add_captcha_btn"
 														class="btn btn-success sib-add-to-form"><span
-														class="sib-large-icon"><</span> <?php esc_attr_e( 'Add to form', 'mailin' ); ?>
+														class="sib-large-icon"></span> <?php esc_attr_e( 'Add to form', 'mailin' ); ?>
 												</button>&nbsp;&nbsp;
 												<?php SIB_Page_Home::get_narration_script( __( 'Add Captcha', 'mailin' ), __( 'Please click where you want to insert the field and click on this button. By default, the new field will be added at top.', 'mailin' ) ); ?>
 											</div>
+											<!-- Google Captcha End-->
+											<!-- Turnstile Start-->
+											<div class="sib-captcha-key-turnstile"
+											<?php
+												if ($selectCaptchaType != 3 || $gCaptcha == 0 ) {
+													echo("style='display: none;'");}
+												?>
+											>
+												<div class="small-content2">
+													<i><?php esc_attr_e( 'Site Key', 'mailin' ); ?></i>&nbsp;
+													<input type="text" class="col-md-12" id="sib_captcha_site_turnstile" name="sib_captcha_site_turnstile" value="<?php
+													if ( isset( $formData['cCaptcha_site'] ) && ! empty( $formData['cCaptcha_site'] ) ) {
+														echo esc_attr( $formData['cCaptcha_site'] );
+													} else {
+														echo '';
+													}
+													?>">
+												</div>
+												<div class="small-content2 sib-captcha-key-turnstile" style="margin-bottom: 15px !important;">
+													<i><?php esc_attr_e( 'Secret Key', 'mailin' ); ?></i>&nbsp;
+													<input type="text" class="col-md-12" id="sib_captcha_secret_turnstile" name="sib_captcha_secret_turnstile" value="<?php
+													if ( isset( $formData['cCaptcha_secret'] ) && ! empty( $formData['cCaptcha_secret'] ) ) {
+														echo esc_attr( $formData['cCaptcha_secret'] );
+													} else {
+														echo '';
+													}
+													?>">
+												</div>
+												<div class="small-content2">
+													<button type="button" id="sib_add_captcha_btn_turnstile"
+															class="btn btn-success sib-add-to-form"><span
+															class="sib-large-icon"></span> <?php esc_attr_e( 'Add to form', 'mailin' ); ?>
+													</button>&nbsp;&nbsp;
+													<?php SIB_Page_Home::get_narration_script( __( 'Add Captcha', 'mailin' ), __( 'Please click where you want to insert the field and click on this button. By default, the new field will be added at top.', 'mailin' ) ); ?>
+												</div>
 											</div>
+											<!-- Turnstile End -->
+										</div>
 										<div id="sib_form_terms" class="card form-field"
 											 style="padding-bottom: 20px;">
 											<div class="alert alert-danger" style="margin:5px;display: none;"></div>
@@ -893,7 +955,6 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
 				$list_ids = array_filter($_POST['list_id'], 'intval');
 				$list_ids = maybe_serialize($list_ids);
 			}
-
 			// phpcs:enable
 			$dependTheme = isset( $_POST['sib_css_type'] ) ? sanitize_text_field( $_POST['sib_css_type'] ) : '';
 			$customCss = isset( $_POST['sib_form_css'] ) ? sanitize_text_field( $_POST['sib_form_css'] ) : '';
@@ -903,6 +964,11 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
 			$termAccept = isset( $_POST['sib_add_terms'] ) ? sanitize_text_field( $_POST['sib_add_terms'] ) : '0';
 			$termURL = isset( $_POST['sib_terms_url'] ) ? sanitize_text_field( $_POST['sib_terms_url'] ) : '';
 			$gCaptchaType = isset( $_POST['sib_recaptcha_type'] ) ? sanitize_text_field( $_POST['sib_recaptcha_type'] ) : '0';
+			$selectCaptchaType = isset( $_POST['sib-select-captcha-type'] ) ? sanitize_text_field( $_POST['sib-select-captcha-type'] ) : '1';
+			$cCaptchaSecret = isset( $_POST['sib_captcha_secret_turnstile'] ) ? sanitize_text_field( $_POST['sib_captcha_secret_turnstile'] ) : '';
+			$cCaptchaSite = isset( $_POST['sib_captcha_site_turnstile'] ) ? sanitize_text_field( $_POST['sib_captcha_site_turnstile'] ) : '';
+			$cCaptchaType = isset( $_POST['sib_recaptcha_type_turnstile'] ) ? sanitize_text_field( $_POST['sib_recaptcha_type_turnstile'] ) : '';
+			
 			if ( $gCaptcha != '0' ) {
 				if ( $gCaptchaType == '0' ) {
 					$gCaptcha = '3';  // google recaptcha.
@@ -972,9 +1038,14 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
 				'gcaptcha'   => $gCaptcha,
 				'gcaptcha_secret' => $gCaptchaSecret,
 				'gcaptcha_site'   => $gCaptchaSite,
+				'selectCaptchaType' => $selectCaptchaType,
+				'cCaptchaType' => $cCaptchaType,
+				'ccaptcha_secret' => $cCaptchaSecret,
+				'ccaptcha_site'   => $cCaptchaSite,
 				'termAccept'      => $termAccept,
 				'termsURL'        => $termURL,
 			);
+
 			if ( 'new' === $formID ) {
 				$formID = SIB_Forms::addForm( $formData );
 				if ( '' !== $pid ) {
@@ -1091,7 +1162,8 @@ For your information, you cannot select a template with the tag [DOUBLEOPTIN].',
 				'css' => isset( $_POST['frmCss'] ) ? sanitize_text_field($_POST['frmCss']) : '',
 				'dependTheme' => isset( $_POST['isDepend'] ) ? sanitize_text_field($_POST['isDepend']) : '',
 				'gCaptcha' => $gCaptcha,
-				'gCaptcha_site' => isset( $_POST['gCaptchaSite'] ) ? sanitize_text_field($_POST['gCaptchaSite']) : ''
+				'gCaptcha_site' => isset( $_POST['gCaptchaSite'] ) ? sanitize_text_field($_POST['gCaptchaSite']) : '',
+				'selectCaptchaType' => isset( $_POST['selectCaptchaType'] ) ? sanitize_text_field($_POST['selectCaptchaType']) : '',
 			);
 
 			update_option( SIB_Manager::PREVIEW_OPTION_NAME, $formData );

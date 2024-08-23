@@ -24,6 +24,10 @@ class ListRepricingRuleReportsResponse extends \Automattic\WooCommerce\GoogleLis
    * @var string
    */
   public $nextPageToken;
+  /**
+   * @var RepricingRuleReport[]
+   */
+  public $repricingRuleReports;
   protected $repricingRuleReportsType = RepricingRuleReport::class;
   protected $repricingRuleReportsDataType = 'array';
 

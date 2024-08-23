@@ -11,6 +11,34 @@ use WPForms\Admin\Notice;
 class WPForms_License {
 
 	/**
+	 * License update time option name.
+	 *
+	 * @since 1.8.6
+	 */
+	const LICENSE_UPDATE_TIME_OPTION = 'wpforms_license_updates';
+
+	/**
+	 * License ajax count option name.
+	 *
+	 * @since 1.8.7
+	 */
+	const LICENSE_AJAX_COUNT_OPTION = 'wpforms_license_ajax_count_';
+
+	/**
+	 * License ajax lock option name.
+	 *
+	 * @since 1.8.7
+	 */
+	const LICENSE_AJAX_LOCK_OPTION = 'wpforms_license_ajax_lock_';
+
+	/**
+	 * License ajax lock time (in minutes).
+	 *
+	 * @since 1.8.7
+	 */
+	const LOCK_TIME = 5;
+
+	/**
 	 * Store any license error messages.
 	 *
 	 * @since 1.0.0
@@ -114,6 +142,10 @@ class WPForms_License {
 			return false;
 		}
 
+		if ( $ajax ) {
+			$this->cache_ajax_request( 'verify-key' );
+		}
+
 		// Perform a request to verify the key.
 		$verify = $this->perform_remote_request( 'verify-key', [ 'tgm-updater-key' => $key ] );
 
@@ -184,34 +216,37 @@ class WPForms_License {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return void Return early if the transient has not expired yet.
+	 * @return void Return early if the license update time has not expired yet.
 	 */
 	public function maybe_validate_key() {
 
 		$key = $this->get();
 
 		if ( ! $key ) {
-			// Flush timestamp interval when key is missing or not available.
-			delete_option( 'wpforms_license_updates' );
+			// Prevent one extra DB request on delete_option() when it does not exist.
+			if ( false !== get_option( self::LICENSE_UPDATE_TIME_OPTION ) ) {
+				// Flush timestamp interval when key is missing or not available.
+				delete_option( self::LICENSE_UPDATE_TIME_OPTION );
+			}
 
 			return;
 		}
 
 		// Perform a request to validate the key once a day.
-		$timestamp = get_option( 'wpforms_license_updates' );
+		$time = time();
 
-		if ( ! $timestamp ) {
-			$timestamp = strtotime( '+24 hours' );
-			update_option( 'wpforms_license_updates', $timestamp );
+		if ( $time < (int) get_option( self::LICENSE_UPDATE_TIME_OPTION ) ) {
+			return;
+		}
+
+		$update = update_option( self::LICENSE_UPDATE_TIME_OPTION, strtotime( '+24 hours' ) );
+
+		// Get option again to check that update_option was successful, and the option was not altered by any filters.
+		if (
+			$update &&
+			$time < (int) get_option( self::LICENSE_UPDATE_TIME_OPTION )
+		) {
 			$this->validate_key( $key );
-		} else {
-			$current_timestamp = time();
-			if ( $current_timestamp < $timestamp ) {
-				return;
-			} else {
-				update_option( 'wpforms_license_updates', strtotime( '+24 hours' ) );
-				$this->validate_key( $key );
-			}
 		}
 	}
 
@@ -228,6 +263,10 @@ class WPForms_License {
 	 * @return string|bool
 	 */
 	public function validate_key( $key = '', $forced = false, $ajax = false, $return_status = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+
+		if ( $ajax ) {
+			$this->cache_ajax_request( 'validate-key' );
+		}
 
 		$validate = $this->perform_remote_request( 'validate-key', [ 'tgm-updater-key' => $key ] );
 
@@ -246,69 +285,42 @@ class WPForms_License {
 			return false;
 		}
 
-		$option = (array) get_option( 'wpforms_license' );
-		// If a key or author error is returned, the license no longer exists or the user has been deleted, so reset license.
-		if ( isset( $validate->key ) || isset( $validate->author ) ) {
-			$option['is_expired']  = false;
-			$option['is_disabled'] = false;
-			$option['is_invalid']  = true;
-			update_option( 'wpforms_license', $option );
-			if ( $ajax ) {
-				wp_send_json_error( esc_html__( 'Your license key for WPForms is invalid. The key no longer exists or the user associated with the key has been deleted. Please use a different key to continue receiving automatic updates.', 'wpforms' ) );
-			}
+		return $this->validate_from_response( $validate, $forced, $ajax, $return_status );
+	}
 
-			return $return_status ? 'invalid' : false;
+	/**
+	 * Validate a license key from the response.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param object $validate      Validation response.
+	 * @param bool   $forced        Force to set contextual messages (false by default).
+	 * @param bool   $ajax          Whether it is an AJAX request.
+	 * @param bool   $return_status Option to return the license status.
+	 *
+	 * @return string|bool
+	 */
+	public function validate_from_response( $validate, bool $forced, bool $ajax, bool $return_status ) {
+
+		$option = (array) get_option( 'wpforms_license' );
+
+		// If a key or author error is returned, the license no longer exists, or the user has been deleted.
+		// So, reset the license.
+		if ( isset( $validate->key ) || isset( $validate->author ) ) {
+			return $this->validate_as_invalid( $ajax, $return_status, $option );
 		}
 
 		// If the license has expired, set the transient and expired flag and return.
 		if ( isset( $validate->expired ) ) {
-			$option['is_expired']  = true;
-			$option['is_disabled'] = false;
-			$option['is_invalid']  = false;
-			update_option( 'wpforms_license', $option );
-			if ( $ajax ) {
-				wp_send_json_error( esc_html__( 'Your license key for WPForms has expired. Please renew your license key on WPForms.com to continue receiving automatic updates.', 'wpforms' ) );
-			}
-
-			return $return_status ? 'expired' : false;
+			return $this->validate_as_expired( $ajax, $return_status, $option );
 		}
 
 		// If the license is disabled, set the transient and disabled flag and return.
 		if ( isset( $validate->disabled ) ) {
-			$option['is_expired']  = false;
-			$option['is_disabled'] = true;
-			$option['is_invalid']  = false;
-			update_option( 'wpforms_license', $option );
-			if ( $ajax ) {
-				wp_send_json_error( esc_html__( 'Your license key for WPForms has been disabled. Please use a different key to continue receiving automatic updates.', 'wpforms' ) );
-			}
-
-			return $return_status ? 'disabled' : false;
+			return $this->validate_as_disabled( $ajax, $return_status, $option );
 		}
 
-		// Otherwise, our check has returned successfully. Set the transient and update our license type and flags.
-		$option['type']        = isset( $validate->type ) ? $validate->type : $option['type'];
-		$option['is_expired']  = false;
-		$option['is_disabled'] = false;
-		$option['is_invalid']  = false;
-
-		update_option( 'wpforms_license', $option );
-
-		// If forced, set a contextual success message.
-		if ( $forced ) {
-			$msg             = esc_html__( 'Your key has been refreshed successfully.', 'wpforms' );
-			$this->success[] = $msg;
-			if ( $ajax ) {
-				wp_send_json_success(
-					[
-						'type' => $option['type'],
-						'msg'  => $msg,
-					]
-				);
-			}
-		}
-
-		return $return_status ? 'valid' : true;
+		return $this->validate_as_valid( $validate, $forced, $ajax, $return_status, $option );
 	}
 
 	/**
@@ -497,18 +509,20 @@ class WPForms_License {
 		// If there is no license key, output nag about ensuring key is set for automatic updates.
 		if ( ! $key ) {
 			$notice = sprintf(
-				wp_kses( /* translators: %s - plugin settings page URL. */
-					__( 'Please <a href="%s">enter and activate</a> your license key for WPForms to enable automatic updates.', 'wpforms' ),
+				wp_kses( /* translators: %s - Link to the Settings > General screen in the plugin, where users can enter their license key. */
+					__( 'To access addons and enable automatic updates, please <a href="%s" target="_blank">enter and activate your license key.</a>', 'wpforms' ),
 					[
 						'a' => [
-							'href' => [],
+							'href'   => [],
+							'target' => [],
+							'rel'    => [],
 						],
 					]
 				),
-				esc_url( add_query_arg( [ 'page' => 'wpforms-settings' ], admin_url( 'admin.php' ) ) )
+				esc_url( admin_url( 'admin.php?page=wpforms-settings' ) )
 			);
 
-			Notice::info(
+			Notice::error(
 				$notice,
 				[ 'class' => $class ]
 			);
@@ -527,7 +541,7 @@ class WPForms_License {
 			'https://wpforms.com/account/licenses/'
 		);
 
-		// Set the learn more url.
+		// Set the "Learn more" url.
 		$learn_more_url = add_query_arg(
 			[
 				'utm_source'   => 'WordPress',
@@ -731,8 +745,9 @@ class WPForms_License {
 				'tgm-updater-action'      => $action,
 				'tgm-updater-key'         => $body['tgm-updater-key'],
 				'tgm-updater-wp-version'  => get_bloginfo( 'version' ),
-				'tgm-updater-php-version' => PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION,
+				'tgm-updater-php-version' => PHP_VERSION,
 				'tgm-updater-referer'     => site_url(),
+				'wpforms_refresh_key'     => (int) $this->is_validate_key_request( (string) $action ),
 			]
 		);
 
@@ -827,5 +842,221 @@ class WPForms_License {
 		$license = get_option( 'wpforms_license', false );
 
 		return ( isset( $license[ $status ] ) && $license[ $status ] );
+	}
+
+	/**
+	 * Cache ajax requests to prevent spamming the server.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param string $action Action name.
+	 * @param int    $tries  Number of tries.
+	 *
+	 * @noinspection PhpSameParameterValueInspection
+	 */
+	private function cache_ajax_request( string $action, int $tries = 5 ) {
+
+		$action = sanitize_key( $action );
+
+		$count_transient_name = self::LICENSE_AJAX_COUNT_OPTION . $action;
+		$lock_transient_name  = self::LICENSE_AJAX_LOCK_OPTION . $action;
+
+		$ajax_count = (int) Transient::get( $count_transient_name );
+		$ajax_lock  = (int) Transient::get( $lock_transient_name );
+
+		++$ajax_count;
+
+		if ( $ajax_count > $tries ) {
+			if ( $ajax_lock > time() ) {
+
+				$header = esc_html__( "You've Exceeded the Allowed License Verification Attempts", 'wpforms' );
+				$msg    = esc_html__( 'Double-check the license key in your account and try again later. If your license key is no longer valid, please renew or install the free version of WPForms.', 'wpforms' );
+				$text   = [
+					'header' => $header,
+					'msg'    => $msg,
+				];
+
+				wp_send_json_error( $text );
+			} else {
+
+				$ajax_count = 0;
+			}
+		}
+
+		Transient::set( $count_transient_name, $ajax_count, self::LOCK_TIME * MINUTE_IN_SECONDS );
+
+		if ( $ajax_count === $tries ) {
+			Transient::set(
+				$lock_transient_name,
+				time() + self::LOCK_TIME * MINUTE_IN_SECONDS,
+				self::LOCK_TIME * MINUTE_IN_SECONDS
+			);
+		}
+	}
+
+	/**
+	 * Handle case when validate response is invalid.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param bool  $ajax          AJAX.
+	 * @param bool  $return_status Option to return the license status.
+	 * @param array $option        License option.
+	 *
+	 * @return string|bool
+	 */
+	private function validate_as_invalid( bool $ajax, bool $return_status, array $option ) {
+
+		$option['is_expired']  = false;
+		$option['is_disabled'] = false;
+		$option['is_invalid']  = true;
+
+		update_option( 'wpforms_license', $option );
+
+		if ( $ajax ) {
+			wp_send_json_error( esc_html__( 'Your license key for WPForms is invalid. The key no longer exists or the user associated with the key has been deleted. Please use a different key to continue receiving automatic updates.', 'wpforms' ) );
+		}
+
+		return $return_status ? 'invalid' : false;
+	}
+
+	/**
+	 * Handle case when validate response is expired.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param bool  $ajax          AJAX.
+	 * @param bool  $return_status Option to return the license status.
+	 * @param array $option        License option.
+	 *
+	 * @return string|bool
+	 */
+	private function validate_as_expired( bool $ajax, bool $return_status, array $option ) {
+
+		$option['is_expired']  = true;
+		$option['is_disabled'] = false;
+		$option['is_invalid']  = false;
+
+		update_option( 'wpforms_license', $option );
+
+		if ( $ajax ) {
+			wp_send_json_error( esc_html__( 'Your license key for WPForms has expired. Please renew your license key on WPForms.com to continue receiving automatic updates.', 'wpforms' ) );
+		}
+
+		return $return_status ? 'expired' : false;
+	}
+
+	/**
+	 * Handle case when validate response is disabled.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param bool  $ajax          AJAX.
+	 * @param bool  $return_status Option to return the license status.
+	 * @param array $option        License option.
+	 *
+	 * @return string|bool
+	 */
+	private function validate_as_disabled( bool $ajax, bool $return_status, array $option ) {
+
+		$option['is_expired']  = false;
+		$option['is_disabled'] = true;
+		$option['is_invalid']  = false;
+
+		update_option( 'wpforms_license', $option );
+
+		if ( $ajax ) {
+			wp_send_json_error( esc_html__( 'Your license key for WPForms has been disabled. Please use a different key to continue receiving automatic updates.', 'wpforms' ) );
+		}
+
+		return $return_status ? 'disabled' : false;
+	}
+
+	/**
+	 * Handle case when validate response is valid.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param object $validate      Validation response.
+	 * @param bool   $forced        Force to set contextual messages (false by default).
+	 * @param bool   $ajax          AJAX.
+	 * @param bool   $return_status Option to return the license status.
+	 * @param array  $option        License option.
+	 *
+	 * @return string|bool|void
+	 */
+	private function validate_as_valid( $validate, bool $forced, bool $ajax, bool $return_status, array $option ) {
+
+		// Set transient and update license type and flags.
+		$option = $this->update_license_option( $validate, $option );
+
+		if ( ! $forced ) {
+			return $return_status ? 'valid' : true;
+		}
+
+		$msg             = esc_html__( 'Your key has been refreshed successfully.', 'wpforms' );
+		$this->success[] = $msg;
+
+		if ( ! $ajax ) {
+			return $return_status ? 'valid' : true;
+		}
+
+		wp_send_json_success(
+			[
+				'type' => $option['type'],
+				'msg'  => $msg,
+			]
+		);
+	}
+
+	/**
+	 * Check if this is an ajax request to validate the key.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @param string $action Action.
+	 *
+	 * @return bool
+	 */
+	private function is_validate_key_request( string $action ): bool {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		return $action === 'validate-key' &&
+			isset( $_REQUEST['action'] ) &&
+			$_REQUEST['action'] === 'wpforms_refresh_license';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+	}
+
+	/**
+	 * Updates the license option based on validation results.
+	 *
+	 * @since 1.8.8
+	 *
+	 * @param object $validate The validation object.
+	 * @param array  $option   The current option array.
+	 *
+	 * @return array
+	 */
+	private function update_license_option( $validate, array $option ): array {
+
+		// Otherwise, our check has returned successfully. Set the transient and update our license type and flags.
+		$option['type']        = $validate->type ?? $option['type'];
+		$option['is_expired']  = false;
+		$option['is_disabled'] = false;
+		$option['is_invalid']  = false;
+
+		if ( ! empty( $validate->expires ) ) {
+			// Note the `expires` value normally returns timestamp in string format;
+			// There could be a case when it returns "lifetime" string for licenses with no expiration date.
+			$option['expires'] = sanitize_text_field( $validate->expires );
+		}
+
+		if ( ! empty( $validate->sub_status ) ) {
+			// For users who have a license key but do not have a subscription, the `sub_status` value will be empty.
+			$option['sub_status'] = sanitize_text_field( $validate->sub_status );
+		}
+
+		update_option( 'wpforms_license', $option );
+
+		return $option;
 	}
 }

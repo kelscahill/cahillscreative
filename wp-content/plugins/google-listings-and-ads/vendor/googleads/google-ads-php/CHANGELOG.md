@@ -1,3 +1,109 @@
+## 22.1.0
+*   Added support for v16 of Google Ads API.
+*   Fixed dependabot alert in `examples/LaravelSampleApp/composer.lock`.
+*   Renamed `examples/Extensions` to `examples/Assets`. Removed some logic
+    related to the extensions.
+*   Renamed code examples:
+    * from AddLeadFormExtension to AddLeadFormAsset
+    * from AddSitelinksUsingAssets to AddSitelinks
+*   Updated code examples:
+    * AddConversionAction
+    * AddFlexibleRuleUserList
+    * GetAdGroupBidModifiers
+*   Removed code examples:
+    * AddAffiliateLocationExtensions
+    * AddBusinessProfileLocationExtensions
+    * AddGeoTarget
+    * AddImageExtension
+    * AddSitelinks (the old one that uses extensions)
+    * MigratePromotionFeedToAsset
+    * RemoveEntireSitelinkCampaignExtensionSetting
+    * UpdateSitelink
+    * UpdateSitelinkCampaignExtensionSetting
+
+## 22.0.0
+*   Removed support for v13 of Google Ads API.
+*   Added more methods to `ResourceNames` of v14 and v15.
+*   Updated `GoogleAdsFailuresInterceptorTest.php` and `GoogleAdsLoggingInterceptorTest` to make them work with the latest version of `google/gax`.
+*   Updated code examples:
+    * AddFlexibleRuleUserList
+    * AddShoppingProductAd
+    * UploadOfflineConversion
+
+## 21.1.0
+*   Added support for v15 of Google Ads API. The following code examples still use v14 because the services in the examples were removed in v15:
+    * ApproveMerchantCenterLink
+    * RejectMerchantCenterLink
+    * UploadImage
+    * UploadMediaBundle
+*   The GAPIC v2 service clients (`src/Google/Ads/GoogleAds/v15/Services/Client/<SERVICE_NAME>Client.php`) no longer rely on base classes (`src/Google/Ads/GoogleAds/v15/Services/Client/BaseClient/<SERVICE_NAME>BaseClient.php`). All functions and variables are now directly included in the service classes.
+*   Added support for `useCloudOrgForApiAccess` config. This is in preparation for the pilot that uses Google Cloud orgs for API Access levels.
+*   Updated
+    [`InfoRedactor`](https://github.com/googleads/google-ads-php/blob/main/src/Google/Ads/GoogleAds/Lib/V15/InfoRedactor.php) to redact fields of Local Services lead and Local Services lead
+conversation.
+*   Updated code examples:
+    * AddBillingSetup
+    * AddPerformanceMaxProductListingGroupTree
+    * AddCustomerMatchUserList
+    * UploadCallConversion
+    * UploadOfflineConversion
+    * UploadStoreSalesTransactions
+*   Renamed and updated code examples:
+    * UploadConversionWithIdentifiers to UploadEnhancedConversionsForLeads
+    * UploadConversionEnhancement to UploadEnhancedConversionsForWeb
+*   Fixed the following Shopping examples after the `ShoppingSetting::sales_country` field is
+    removed:
+    * AddMerchantCenterDynamicRemarketingCampaign
+    * AddPerformanceMaxRetailCampaign
+    * AddShoppingProductAd
+
+## 21.0.1
+*   Fixed #946 by adding `forTopicConstant()` to
+    [ResourceNames](https://github.com/googleads/google-ads-php/blob/main/src/Google/Ads/GoogleAds/Util/V14/ResourceNames.php).
+
+## 21.0.0
+*   Removed support for v12 of Google Ads API.
+*   Use [the GAPIC v2 source
+    code](https://developers.google.com/google-ads/api/docs/client-libs/php/gapic)
+    in `ResourceNames` and `ServiceClientFactoryTrait` of v14.
+*   Updated the source code to use PHP 8 features, e.g., named arguments,
+    private constants, constructor promotion, removing unused exception variables.
+*   Updated code examples:
+    * AddCampaigns
+    * GenerateKeywordIdeas
+*   Removed trivial code examples that can be easily obtained by changing small
+    parts of other code examples.
+
+## 20.1.0
+*   Added support for v14_1 of Google Ads API.
+*   Removed the `final` modifier from `GoogleAdsClient`. This fixes
+    https://github.com/googleads/google-ads-php/issues/347.
+*   Fixed https://github.com/googleads/google-ads-php/issues/902 by passing
+    `linked-customer-id` to the header of a request.
+*   Made `GoogleAdsCallLogger::getNextFinerLogLevel` aligned with PSR-3
+    `LogLevel` enum by returning a lowercase string. This fixes
+    https://github.com/googleads/google-ads-php/issues/849.
+*   Fixed the issue of the check for grpc versions in
+    `GoogleAdsClientBuilder::validate()`. It now supports the case when
+    the system-package version is not found.
+*   Added support for [the GAPIC v2 source
+    code](https://developers.google.com/google-ads/api/docs/client-libs/php/gapic).
+    * Added support for the `useGapicV2Source` configuration.
+    * Updated all code examples to show how to use the GAPIC v2 source code.
+*   Added code examples:
+    * GenerateForecastMetrics (new version that uses `KeywordPlanIdeaService`)
+    * GenerateHistoricalMetrics (new version that uses `KeywordPlanIdeaService`)
+*   Removed AddKeywordPlan example.
+
+## 20.0.0
+*   Updated `composer.json` to require the minimum PHP version of 8.0. See also
+    [README](README.md) for more details.
+*   Updated the minimum required version of `google/gax` to 1.19.1.
+*   Added a check for the versions of grpc installed by Composer and installed
+    as a platform package to `GoogleAdsClientBuilder::validate()`. This is a fix for
+    [#406](https://github.com/googleads/google-ads-php/issues/406).
+*   Fixed dependabot alert in `examples/LaravelSampleApp/composer.lock`.
+
 ## 19.2.0
 *   Added support for v14 of Google Ads API.
 *   Updated AddPerformanceMaxForTravelGoalsCampaign example.

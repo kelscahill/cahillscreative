@@ -19,6 +19,10 @@ namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Shop
 
 class RepricingRuleRestriction extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Model
 {
+  /**
+   * @var RepricingRuleRestrictionBoundary
+   */
+  public $floor;
   protected $floorType = RepricingRuleRestrictionBoundary::class;
   protected $floorDataType = '';
   /**

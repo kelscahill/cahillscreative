@@ -281,7 +281,7 @@ class Cli extends Export
 
         $verified_response = $this->verify_cli_response($response, 'ajax_verify_connection_to_remote_site()');
         if (!is_wp_error($verified_response)) {
-            $verified_response = apply_filters('wpmdbpro_cli_verify_connection_response', $verified_response);
+            $verified_response = apply_filters('wpmdbpro_cli_verify_connection_response', $verified_response, $profile);
         }
 
         return $verified_response;

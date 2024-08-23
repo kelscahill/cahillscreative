@@ -1,17 +1,20 @@
 # Google Ads API Client Library for PHP
 
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg)](https://www.php.net/supported-versions.php)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.0-8892BF.svg)](https://www.php.net/supported-versions.php)
 [![Latest Stable
 Version](https://img.shields.io/packagist/v/googleads/google-ads-php.svg)](https://packagist.org/packages/googleads/google-ads-php)
 [![Total Downloads](https://poser.pugx.org/googleads/google-ads-php/downloads.svg)](https://packagist.org/packages/googleads/google-ads-php)
 [![License](https://poser.pugx.org/googleads/google-ads-php/license.svg)](https://packagist.org/packages/googleads/google-ads-php)
-
-[![Build
-Status](https://travis-ci.org/googleads/google-ads-php.svg?branch=master)](https://travis-ci.org/googleads/google-ads-php)
 [![codecov](https://codecov.io/gh/googleads/google-ads-php/branch/master/graph/badge.svg)](https://codecov.io/gh/googleads/google-ads-php)
 
 This project hosts the PHP client library for the [Google Ads
 API](https://developers.google.com/google-ads/api/docs/start).
+It adheres to the [PHP sunset schedule]([url](https://www.php.net/supported-versions.php)) and updates the composer.json file _four_ to _five_ months after the minimum required PHP version reaches its end-of-life. Based on the existing supported PHP versions, the update occurs about once a year.
+
+**IMPORTANT** The Google Ads API client library for PHP has been updated to require PHP version 8 as the minimum version, as announced in [#880](https://github.com/googleads/google-ads-php/issues/880).
+This means that the final version of the library that supports PHP 7 is [v19.2.0](https://github.com/googleads/google-ads-php/releases/tag/v19.2.0), which supports Google Ads API v12 to v14.
+
+Google Ads API v14 is [scheduled to be sunset by the end of May 2024](https://developers.google.com/google-ads/api/docs/sunset-dates#timetable). Therefore, PHP 7 users have about *11 months* to migrate to PHP 8 in order to continue using the library without disruption.
 
 ## Features
 
@@ -139,7 +142,7 @@ Follow the below steps if you want to try our code examples.
 ### Instantiate a client
 
 To issue requests via the Google Ads API, you first need to create a
-[GoogleAdsClient](https://github.com/googleads/google-ads-php/blob/HEAD/src/Google/Ads/GoogleAds/Lib/V14/GoogleAdsClient.php).
+[GoogleAdsClient](https://github.com/googleads/google-ads-php/blob/HEAD/src/Google/Ads/GoogleAds/Lib/V16/GoogleAdsClient.php).
 
 For more information on how to configure a client when instantiating it, see the
 [configuration guide](https://developers.google.com/google-ads/api/docs/client-libs/php/configuration).
@@ -148,6 +151,12 @@ For more information on how to configure a client when instantiating it, see the
 
 Once you have an instance of `GoogleAdsClient`, you can obtain a service client
 for a particular service using one of the `get...ServiceClient()` methods.
+
+The created service client can be either GAPIC (Generated API Client) v1 or v2 source code, based
+on the value of the `useGapicV2Source` configuration.
+See [GAPIC](https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic)
+and [Configuration fields](https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/configuration#config-field)
+for details.
 
 ## Client configuration
 
@@ -205,4 +214,3 @@ See the [Performance guide](https://developers.google.com/google-ads/api/docs/cl
 
 *   [Thanet Knack Praneenararat](https://github.com/fiboknacky)
 *   [Mattia Tommasone](https://github.com/Raibaz)
-*   [Pierrick Voulet](https://github.com/PierrickVoulet)

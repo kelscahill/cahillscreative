@@ -3,10 +3,10 @@ Contributors: edward_plainview
 Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
-Requires PHP: 7.4
-Stable tag: 50.06
-Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
-Tested up to: 6.4
+Requires PHP: 8.0
+Stable tag: 50.09
+Tags: multipost, sharing, duplicate, syndication, marketing
+Tested up to: 6.5
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -100,7 +100,6 @@ The following add-ons add support for the plugin after which they are named:
 * <a href="https://broadcast.plainviewplugins.com/addon/inboundnow/">Inbound Now</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/intagrate/">Intagrate</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>
-* <a href="https://broadcast.plainviewplugins.com/addon/jetpack/">Jetpack</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/litespeed-cache/">LiteSpeed Cache</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/mailster/">Mailster</a>
@@ -126,7 +125,6 @@ The following add-ons add support for the plugin after which they are named:
 * <a href="https://broadcast.plainviewplugins.com/addon/tao-schedule-update/">Tao Schedule Update</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/the-events-calendar/">The Events Calendar</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/toolset/">Toolset</a>
-* <a href="https://broadcast.plainviewplugins.com/addon/translatepress/">TranslatePress</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/ubermenu/">UberMenu</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/ultimate-member/">Ultimate Member</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/unyson/">Unyson</a>
@@ -370,6 +368,21 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 50.09 20240506 =
+
+* New: Add database table cleanup maintenance tool, to remove orphaned tables from deleted sites.
+* Dev: Add $bcd->taxonomies()->forget_term_id() function to remove all traces of a term in the broadcasting_data.
+
+= 50.08 20240403 =
+
+* Output more debug information regarding attachments.
+* Update Tested with version
+
+= 50.07 20240210 =
+
+* Update SDK
+* Update Tested with
 
 = 50.06 20231108 =
 

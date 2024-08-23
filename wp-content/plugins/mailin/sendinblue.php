@@ -3,7 +3,7 @@
  * Plugin Name: Newsletter, SMTP, Email marketing and Subscribe forms by Brevo
  * Plugin URI: https://www.brevo.com/?r=wporg
  * Description: Manage your contact lists, subscription forms and all email and marketing-related topics from your wp panel, within one single plugin
- * Version: 3.1.72
+ * Version: 3.1.80
  * Author: Brevo
  * Author URI: https://www.brevo.com/?r=wporg
  * License: GPLv2 or later
@@ -84,6 +84,8 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 
 		const RECAPTCHA_API_TEMPLATE = 'https://www.google.com/recaptcha/api/siteverify?%s';
 
+		const TURNSTILE_SITE_VERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+
 		/** Installation id option name */
 		const INSTALLATION_ID = 'sib_installation_id';
 
@@ -138,6 +140,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 				'xml:lang' => true,
 				'data-require' => true,
 				'data-sitekey' => true,
+ 				'data-error-callback' => true,
 			),
 			'a' => array(
 				'href' => true,
@@ -725,7 +728,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 				return;
 			}
 			// Add Google recaptcha
-			if( '0' != $formData['gCaptcha'] ) {
+			if( '0' != $formData['gCaptcha'] && $formData['selectCaptchaType'] != 3) {
 				if( '1' == $formData['gCaptcha'] ) {   // For old forms.
 					$formData['html'] = preg_replace( '/([\s\S]*?)<div class="g-recaptcha"[\s\S]*?data-size="invisible"><\/div>/', '$1', $formData['html'] );
 				}
@@ -779,9 +782,12 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
                     $formData['gCaptcha'] == '2' ? 'onloadSibCallbackInvisible' : 'onloadSibCallback'
                 ) ?>&render=explicit" async defer></script>
 				<?php
-			}
-
-			?>
+			} else if ('0' != $formData['gCaptcha'] && $formData['selectCaptchaType'] == 3) { ?>
+				
+				<script src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script>
+				
+			<?php } ?>
+			
 			<form id="sib_signup_form_<?php echo esc_attr( $frmID ); ?>" method="post" class="sib_signup_form">
 				<div class="sib_loader" style="display:none;"><img
 							src="<?php echo esc_url( includes_url() ); ?>images/spinner.gif" alt="loader"></div>
@@ -864,11 +870,11 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 				$value = stripslashes($value);
 			});
 
-			if ( empty( $_POST['sib_security'] ) ) {
+			if ( empty( $_POST['sib_security'] )  || empty(wp_verify_nonce($_POST['sib_security'], 'sib_front_ajax_nonce'))) {
 				wp_send_json(
 					array(
 						'status' => 'sib_security',
-						'msg' => 'Token not found.',
+						'msg' => 'Invalid Token Provided.',
 					)
 				);
 			}
@@ -886,8 +892,9 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
                     )
                 );
             }
-
-			if ( '0' != $formData['gCaptcha'] ) {
+			$turnstileCaptcha = false;
+			if ( '0' != $formData['gCaptcha'] && 3 != $formData['selectCaptchaType']) {
+				$turnstileCaptcha = true;
 				if ( ! isset( $_POST['g-recaptcha-response'] ) || empty( $_POST['g-recaptcha-response'] ) ) {
 					wp_send_json(
 						array(
@@ -911,6 +918,56 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
                     $data = wp_remote_retrieve_body(wp_remote_request(sprintf(self::RECAPTCHA_API_TEMPLATE,  http_build_query($data)), $args));
                     $responseData = json_decode($data);
                     if ( ! $responseData->success ) {
+                        wp_send_json(
+                            array(
+                                'status' => 'gcaptchaFail',
+                                'msg' => 'Robot verification failed, please try again.',
+                            )
+                        );
+                    }
+                } catch (Exception $exception) {
+                    wp_send_json(
+                        array(
+                            'status' => 'gcaptchaFail',
+                            'msg' => $exception->getMessage(),
+                        )
+                    );
+                }
+			} else if ( '0' != $formData['gCaptcha'] && 3 == $formData['selectCaptchaType'] ) {
+				$turnstileCaptcha = true;
+				if ( ! isset( $_POST['cf-turnstile-response'] ) || empty( $_POST['cf-turnstile-response'] ) ) {
+					wp_send_json(
+						array(
+							'status' => 'gcaptchaEmpty',
+							'msg' => 'Captcha couldnot be verified. Please refresh the page.',
+						)
+					);
+				}
+				$secret = $formData['cCaptcha_secret'];
+
+                $args = [
+                    'method' => 'POST',
+                ];
+
+                try {
+
+					$headers = array(
+						'body' => [
+							'secret' => $secret,
+							'response' => sanitize_text_field( $_POST['cf-turnstile-response'] )
+						]
+					);
+					$verify = wp_remote_post(self::TURNSTILE_SITE_VERIFY, $headers);
+					$verify = wp_remote_retrieve_body($verify);
+					$response = json_decode($verify);
+			
+					if($response->success) {
+						$results['success'] = $response->success;
+					} else {
+						$results['success'] = false;
+					}
+
+                    if ( ! $response->success ) {
                         wp_send_json(
                             array(
                                 'status' => 'gcaptchaFail',
@@ -1000,6 +1057,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 					'status' => $result,
 					'msg' => $msg,
 					'redirect' => $redirectUrlInForm,
+					'turnstileCaptcha' => $turnstileCaptcha,
 				)
 			);
 		}

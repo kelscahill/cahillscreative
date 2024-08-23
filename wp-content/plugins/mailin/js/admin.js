@@ -538,28 +538,47 @@ $jQ(document).ready(function(){
 
     function update_preview(){
 
+        var selectCaptchaType = $jQ('.sib-captcha-select').val();
         var frmid = $jQ('#sib_form_id').val();
         var formHtml = $jQ('#sibformmarkup').val();
         var formCss = $jQ('#sibcssmarkup').val();
         var isDepend = $jQ('input[name=sib_css_type]:checked').val();
-        var gCaptcha = $jQ('input[name=sib_add_captcha]:checked').val();
-        var gCaptchaType = $jQ('input[name=sib_recaptcha_type]:checked').val();
-        var gCaptchaSite = $jQ('#sib_captcha_site').val();
-        var data = {
-            action:'sib_update_form_html',
-            security: ajax_sib_object.ajax_nonce,
-            frmid: frmid,
-            frmData: formHtml,
-            frmCss: formCss,
-            isDepend: isDepend,
-            gCaptcha: gCaptcha,
-            gCaptchaType: gCaptchaType,
-            gCaptchaSite: gCaptchaSite
-        };
+        if (selectCaptchaType == 3) {
+            var cCaptcha = $jQ('input[name=sib_add_captcha]:checked').val();
+            var cCaptchaSite = $jQ('#sib_captcha_site_turnstile').val();
+            var data = {
+                action:'sib_update_form_html',
+                security: ajax_sib_object.ajax_nonce,
+                frmid: frmid,
+                frmData: formHtml,
+                frmCss: formCss,
+                isDepend: isDepend,
+                selectCaptchaType: selectCaptchaType,
+                gCaptcha: cCaptcha,
+                cCaptchaSite: cCaptchaSite
+            };
+        } else if (selectCaptchaType != 3) {
+            var gCaptcha = $jQ('input[name=sib_add_captcha]:checked').val();
+            var gCaptchaType = $jQ('input[name=sib_recaptcha_type]:checked').val();
+            var gCaptchaSite = $jQ('#sib_captcha_site').val();
+            var data = {
+                action:'sib_update_form_html',
+                security: ajax_sib_object.ajax_nonce,
+                frmid: frmid,
+                frmData: formHtml,
+                frmCss: formCss,
+                isDepend: isDepend,
+                gCaptcha: gCaptcha,
+                gCaptchaType: gCaptchaType,
+                gCaptchaSite: gCaptchaSite,
+                selectCaptchaType: selectCaptchaType,
+            };
+        }
         $jQ.post(ajax_sib_object.ajax_url, data,function() {
             var preview_form = $jQ('#sib-preview-form');
             preview_form.attr('src', preview_form.attr('src') + '&action=update');
         });
+        
     }
     // get cursor posistion of text area
     function get_cursor_position(node) {
@@ -1049,14 +1068,43 @@ $jQ(document).ready(function(){
 
     });
     $jQ('.sib-add-captcha').on('click', function(){
+        var add_captcha = $jQ(this).val();
+        var selectCaptchaType = $jQ('.sib-captcha-select').val();
+         if(add_captcha == '1')
+         {
+             $jQ('.sib-captcha-select').show('slow');
+
+             if (selectCaptchaType == 2) {
+                $jQ('.sib-captcha-key').show('slow');
+             } else if (selectCaptchaType == 3) {
+                $jQ('.sib-captcha-key-turnstile').show('slow');
+             }
+         }
+         else
+         {
+             $jQ('.sib-captcha-select').hide('slow');
+             $jQ('.sib-captcha-key').hide('slow');
+             $jQ('.sib-captcha-key-turnstile').hide('slow');
+         }
+    });
+
+    //Captcha select
+    $jQ('.sib-captcha-select').on('change', function(){
        var add_captcha = $jQ(this).val();
         if(add_captcha == '1')
         {
+            $jQ('.sib-captcha-key-turnstile').hide('slow');
+            $jQ('.sib-captcha-key').hide('slow');
+        }
+        else if(add_captcha == '2')
+        {
+            $jQ('.sib-captcha-key-turnstile').hide('slow');
             $jQ('.sib-captcha-key').show('slow');
         }
-        else
+        else if (add_captcha == '3')
         {
             $jQ('.sib-captcha-key').hide('slow');
+            $jQ('.sib-captcha-key-turnstile').show('slow');
         }
     });
 
@@ -1084,6 +1132,12 @@ $jQ(document).ready(function(){
     $jQ('.sib-add-to-form').on('click', function(){
         var btn_id = $jQ(this).attr('id');
         var field_html = '';
+
+        var formMarkup = $jQ("#sibformmarkup");
+        var cursorPosition = get_cursor_position(formMarkup[0]);
+        var html = formMarkup.val();
+        var replacedHTML = "";
+
         if(btn_id == 'sib_add_to_form_btn')
         {
             let textToslice = $jQ("#sib_field_html").val();
@@ -1116,7 +1170,32 @@ $jQ(document).ready(function(){
 
             if(gCaptcha_type == '0')
             {
+                $jQ('.cf-turnstile').remove();
                 field_html = '<div id="sib_captcha"></div>';
+            }
+            
+            if(site_key == '')
+            {
+                $jQ('#sib_form_captcha .alert-danger').html('You should input <strong>Site Key</strong>').show(300);
+                return false;
+            }
+            else if(secret_key == '')
+            {
+                $jQ('#sib_form_captcha .alert-danger').html('You should input <strong>Secrete Key</strong>').show(300);
+                return false;
+            }
+        }
+        else if(btn_id == 'sib_add_captcha_btn_turnstile')
+        {
+            var site_key = $jQ('#sib_captcha_site_turnstile').val();
+            var secret_key = $jQ('#sib_captcha_secret_turnstile').val();
+
+            var if_site_key_exists = $jQ('#cf-turnstile').val();
+
+            if ((if_site_key_exists == '') || (if_site_key_exists != site_key)) {
+                field_html = '<div id="' + "cf-turnstile-"+site_key + '"' + ' class="cf-turnstile" data-error-callback="errorCallbackForTurnstileErrors" data-sitekey="'+site_key+'"></div>';
+            } else {
+                replacedHTML = html;
             }
             
             if(site_key == '')
@@ -1146,16 +1225,16 @@ $jQ(document).ready(function(){
             field_html = '<p>' + compliance_note + '</p>';
         }
 
-        var formMarkup = $jQ("#sibformmarkup");
+        replacedHTML = html.replace(/<div id="cf-turnstile.*?>(.*?)<\/div>/, '$1');
         
-        var cursorPosition = get_cursor_position(formMarkup[0]);
-        var html = formMarkup.val();
-        if(html.charCodeAt(cursorPosition) == 10 || html.charCodeAt(cursorPosition) == 13){ // 10 is value of new line
+        if(replacedHTML.charCodeAt(cursorPosition) == 10 || replacedHTML.charCodeAt(cursorPosition) == 13){ // 10 is value of new line
             field_html = "\n" + field_html;
         }else{
             field_html = field_html + "\n";
         }
-        var formData = [html.slice(0, cursorPosition), field_html, html.slice(cursorPosition)].join('');
+
+        var formData = [replacedHTML.slice(0, cursorPosition), field_html, replacedHTML.slice(cursorPosition)].join('');
+
         formMarkup.val(formData);
 
         // hide field edit after add the field to form

@@ -73,6 +73,8 @@ class MultisiteToolsAddonCli extends MultisiteToolsAddon
         add_filter('wpmdb_cli_filter_before_cli_initiate_migration', array($this, 'extend_mst_cli_migration'), 10, 2);
 
         add_filter('wpmdb_cli_filter_before_migration', [$this, 'update_prefix'], 10, 2);
+
+        add_filter('wpmdbpro_cli_verify_connection_response', array($this, 'filter_pull_migration_tables'), 10, 2);
     }
 
     /**
@@ -339,5 +341,40 @@ class MultisiteToolsAddonCli extends MultisiteToolsAddon
         }
 
         return $profile;
+    }
+
+    /**
+     * When pulling from a multisite subsite into a single site install,
+     * ensure correct tables are selected if --include-tables option not in use.
+     *
+     * @param array $remote_response
+     * @param array $profile
+     *
+     * @return array
+     */
+    public function filter_pull_migration_tables($remote_response, $profile)
+    {
+        if (
+            ! empty($profile['action']) &&
+            'pull' === $profile['action'] &&
+            ! is_multisite() &&
+            ! empty($profile['mst_select_subsite']) &&
+            ! empty($profile['mst_selected_subsite']) &&
+            (empty($profile['table_migrate_option']) || 'migrate_select' !== $profile['table_migrate_option']) &&
+            ! empty($remote_response['prefix']) &&
+            ! empty($remote_response['prefixed_tables'])
+        ) {
+            $filtered_tables = $this->filter_tables_for_subsite_id(
+                $profile['mst_selected_subsite'],
+                $remote_response['prefixed_tables'],
+                $remote_response['prefix']
+            );
+
+            if ( ! empty($filtered_tables)) {
+                $remote_response['prefixed_tables'] = $filtered_tables;
+            }
+        }
+
+        return $remote_response;
     }
 }

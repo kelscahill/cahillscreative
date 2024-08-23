@@ -48,12 +48,17 @@ class SiteHealth extends \WPForms\Admin\SiteHealth {
 	 */
 	public function license_check() {
 
-		$license = wpforms()->license;
+		$license = wpforms()->get( 'license' );
 
 		if ( empty( $license ) || ! $license->get() ) {
 			$status = __( 'not detected', 'wpforms' );
 		} else {
-			$status = $license->validate_key( $license->get(), false, false, true );
+			$from_cache = wpforms()->get( 'license_api_validate_key_cache' )->get();
+
+			$status =
+				! empty( $from_cache ) ?
+				$license->validate_from_response( (object) $from_cache, false, false, true ) :
+				$license->validate_key( $license->get(), false, false, true );
 		}
 
 		$result = [

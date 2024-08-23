@@ -8,6 +8,7 @@ use DateTime;
 use Exception;
 use WP_Post;
 use WPForms\Admin\Dashboard\Widget;
+use WPForms\Admin\Helpers\Datepicker;
 use WPForms\Pro\Reports\EntriesCount;
 
 /**
@@ -30,10 +31,11 @@ class DashboardWidget extends Widget {
 	 * Runtime values.
 	 *
 	 * @since 1.5.5
+	 * @deprecated 1.8.6
 	 *
 	 * @var array
 	 */
-	public $runtime_data;
+	public $runtime_data = [];
 
 	/**
 	 * Entries count.
@@ -81,8 +83,8 @@ class DashboardWidget extends Widget {
 		/**
 		 * Clear cache after PRO plugin deactivation.
 		 *
-		 * If user wants to switch to Lite version it needs to deactivate PRO plugin first.
-		 * After activation of Lite version, the cache will be cleared.
+		 * If a user wants to switch to the Lite version, it needs to deactivate PRO plugin first.
+		 * After activation of the Lite version, the cache will be cleared.
 		 */
 		add_action( 'deactivate_wpforms/wpforms.php', [ static::class, 'clear_widget_cache' ] );
 
@@ -108,10 +110,10 @@ class DashboardWidget extends Widget {
 
 		$this->settings = [
 
-			// Number of forms to display in the forms list before "Show More" button appears.
+			// Number of forms to display in the forms' list before the "Show More" button appears.
 			'forms_list_number_to_display'     => apply_filters( "wpforms_{$widget_slug}_forms_list_number_to_display", 5 ),
 
-			// Allow results caching to reduce DB load.
+			// Allow results caching to reduce a DB load.
 			'allow_data_caching'               => apply_filters( "wpforms_{$widget_slug}_allow_data_caching", true ),
 
 			// PHP DateTime supported string (http://php.net/manual/en/datetime.formats.php).
@@ -123,7 +125,8 @@ class DashboardWidget extends Widget {
 			// Determine if the days with no entries should appear on a chart. Once switched, the effect applies after cache expiration.
 			'display_chart_empty_entries'      => apply_filters( "wpforms_{$widget_slug}_display_chart_empty_entries", true ),
 
-			// Determine if the forms with no entries should appear in a forms list. Once switched, the effect applies after cache expiration.
+			// Determine if the forms with no entries should appear in a forms' list.
+			// Once switched, the effect applies after cache expiration.
 			'display_forms_list_empty_entries' => apply_filters( "wpforms_{$widget_slug}_display_forms_list_empty_entries", true ),
 		];
 
@@ -178,7 +181,7 @@ class DashboardWidget extends Widget {
 			'wpforms-chart',
 			WPFORMS_PLUGIN_URL . 'assets/lib/chart.min.js',
 			[ 'moment' ],
-			'2.7.2',
+			'2.9.4',
 			true
 		);
 
@@ -196,6 +199,7 @@ class DashboardWidget extends Widget {
 			[
 				'nonce'            => wp_create_nonce( 'wpforms_' . static::SLUG . '_nonce' ),
 				'slug'             => static::SLUG,
+				'date_format'      => sanitize_text_field( Datepicker::get_wp_date_format_for_momentjs() ),
 				'empty_chart_html' => $this->get_empty_chart_html(),
 				'chart_data'       => $this->get_entries_count_by(
 					'date',
@@ -240,6 +244,7 @@ class DashboardWidget extends Widget {
 
 		$sorted_dashboard = array_merge( $widget_instance, $normal_dashboard );
 
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
 	}
 
@@ -255,13 +260,26 @@ class DashboardWidget extends Widget {
 		$form_obj = wpforms()->get( 'form' );
 		$forms    = $form_obj ? $form_obj->get( '', [ 'fields' => 'ids' ] ) : [];
 
+		$hide_welcome        = $this->widget_meta( 'get', 'hide_welcome_block' );
+		$splash              = wpforms()->get( 'splash_screen' );
+		$is_splash_available = $splash && $splash->is_available_for_display();
+		$is_splash_allowed   = $splash && $splash->is_allow_splash();
+
 		echo '<div class="wpforms-dash-widget wpforms-pro">';
+
+		if ( $is_splash_available && $is_splash_allowed && ! $hide_welcome ) {
+			$this->welcome_block_html();
+		}
+
+		echo '<div class="wpforms-dash-widget-content">';
 
 		if ( empty( $forms ) ) {
 			$this->widget_content_no_forms_html();
 		} else {
 			$this->widget_content_html();
 		}
+
+		echo '</div><!-- .wpforms-dash-widget-content -->';
 
 		$plugin           = $this->get_recommended_plugin();
 		$hide_recommended = $this->widget_meta( 'get', 'hide_recommended_block' );
@@ -426,10 +444,12 @@ class DashboardWidget extends Widget {
 	 * @since 1.5.0
 	 *
 	 * @param array $forms Forms to display in the list.
+	 *
+	 * @noinspection HtmlUnknownTarget
 	 */
-	public function forms_list_block_html( $forms ) {
+	public function forms_list_block_html( $forms ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
 
-		// Number of forms to display in the forms list before "Show More" button appears.
+		// Number of forms to display in the forms' list before the "Show More" button appears.
 		$show_forms     = $this->settings['forms_list_number_to_display'];
 		$active_form_id = $this->widget_meta( 'get', 'active_form_id' );
 		$widget_slug    = static::SLUG;
@@ -438,7 +458,17 @@ class DashboardWidget extends Widget {
 		<table id="wpforms-dash-widget-forms-list-table" cellspacing="0">
 			<?php
 			echo wp_kses(
-				apply_filters( "wpforms_{$widget_slug}_forms_list_columns", '', $forms ),
+				/**
+				 * Allow modifying a forms' list table header.
+				 *
+				 * @since 1.5.4
+				 *
+				 * @param string $header Forms list table header.
+				 * @param array  $forms  Forms list data.
+				 *
+				 * @return string
+				 */
+				apply_filters( "wpforms_{$widget_slug}_forms_list_columns", '', $forms ), // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 				[
 					'tr' => [
 						'class' => [],
@@ -486,7 +516,7 @@ class DashboardWidget extends Widget {
 								 *
 								 * @return string
 								 */
-								apply_filters(
+								apply_filters( // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 									"wpforms_{$widget_slug}_forms_list_form_title",
 									$form['title'],
 									$form
@@ -513,7 +543,7 @@ class DashboardWidget extends Widget {
 						 *
 						 * @return string
 						 */
-						apply_filters(
+						apply_filters( // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 							"wpforms_{$widget_slug}_forms_list_additional_cells",
 							'',
 							$form
@@ -567,7 +597,7 @@ class DashboardWidget extends Widget {
 								 *
 								 * @return string
 								 */
-								apply_filters(
+								apply_filters( // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 									"wpforms_{$widget_slug}_forms_list_additional_buttons",
 									'',
 									$form
@@ -619,7 +649,7 @@ class DashboardWidget extends Widget {
 		);
 		?>
 
-		<div class="wpforms-dash-widget-recommended-plugin-block">
+		<div class="wpforms-dash-widget-block wpforms-dash-widget-recommended-plugin-block">
 			<span class="wpforms-dash-widget-recommended-plugin">
 				<span class="recommended"><?php esc_html_e( 'Recommended Plugin:', 'wpforms' ); ?></span>
 				<strong><?php echo esc_html( $plugin['name'] ); ?></strong>
@@ -632,11 +662,48 @@ class DashboardWidget extends Widget {
 					<a href="<?php echo esc_url( $plugin['more'] ); ?>?utm_source=wpformsplugin&utm_medium=link&utm_campaign=wpformsdashboardwidget"><?php esc_html_e( 'Learn More', 'wpforms' ); ?></a>
 				</span>
 			</span>
-			<button type="button" id="wpforms-dash-widget-dismiss-recommended-plugin-block" class="wpforms-dash-widget-dismiss-recommended-plugin-block" title="<?php esc_html_e( 'Dismiss recommended plugin', 'wpforms' ); ?>">
+			<button type="button" id="wpforms-dash-widget-dismiss-recommended-plugin-block" class="wpforms-dash-widget-dismiss-icon" title="<?php esc_html_e( 'Dismiss', 'wpforms' ); ?>" data-field="hide_recommended_block">
 				<span class="dashicons dashicons-no-alt"></span>
 			</button>
 		</div>
 		<?php
+	}
+
+	/**
+	 * The welcome block HTML.
+	 *
+	 * @since 1.8.7
+	 */
+	public function welcome_block_html() {
+
+		$welcome_message = sprintf(
+			wp_kses(
+				/* translators: %s - WPForms version. */
+				__( 'Welcome to <strong>WPForms %s</strong>', 'wpforms' ),
+				[
+					'strong' => [],
+				]
+			),
+			WPFORMS_VERSION
+		);
+
+		/**
+		 * Filters the welcome message in the Dashboard Widget.
+		 *
+		 * @since 1.8.7
+		 *
+		 * @param string $welcome_message Welcome message.
+		 */
+		$welcome_message = apply_filters( 'wpforms_pro_admin_dashboard_widget_welcome_block_html_message', $welcome_message );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wpforms_render(
+			'admin/dashboard/widget/welcome',
+			[
+				'welcome_message' => $welcome_message,
+			],
+			true
+		);
 	}
 
 	/**
@@ -672,6 +739,8 @@ class DashboardWidget extends Widget {
 	 * @return array
 	 * @noinspection PhpUnused
 	 * @noinspection PhpUnusedParameterInspection
+	 * @noinspection PhpMissingReturnTypeInspection
+	 * @noinspection ReturnTypeCanBeDeclaredInspection
 	 */
 	public function get_timespan_options_for( $element ) {
 
@@ -709,12 +778,6 @@ class DashboardWidget extends Widget {
 	 * @return array|false
 	 */
 	public function get_days_interval( $days = 0 ) {
-
-		if ( empty( $days ) ) {
-			$days = $this->runtime_data['days'];
-		} else {
-			$this->runtime_data['days'] = $days;
-		}
 
 		// PHP DateTime supported string (http://php.net/manual/en/datetime.formats.php).
 		$date_end_str  = $this->settings['date_end_str'];
@@ -756,36 +819,32 @@ class DashboardWidget extends Widget {
 	 * @return array
 	 * @throws Exception When dates management fails.
 	 */
-	public function get_entries_count_by( $param, $days = 0, $form_id = 0 ) {
+	public function get_entries_count_by( $param, $days = 0, $form_id = 0 ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		$widget_slug    = static::SLUG;
-		$allowed_params = [ 'date', 'form' ];
-
-		if ( ! in_array( $param, $allowed_params, true ) ) {
+		// Allow only 'date' and 'form' params.
+		if ( ! in_array( $param, [ 'date', 'form' ], true ) ) {
 			return [];
 		}
 
-		$dates = $this->get_days_interval( $days );
-		$cache = false;
-
-		// Allow results caching to reduce DB load.
-		$allow_caching  = $this->settings['allow_data_caching'];
-		$transient_name = "wpforms_{$widget_slug}_pro_entries_by_{$param}_{$days}";
-
-		$transient_name .= ! empty( $form_id ) ? '_' . $form_id : '';
+		// Allow results caching to reduce a DB load.
+		$allow_caching = $this->settings['allow_data_caching'];
 
 		if ( $allow_caching ) {
+			$widget_slug    = static::SLUG;
+			$transient_name = $this->get_entries_transient_name( $param, $days, $form_id );
+
 			$cache = get_transient( $transient_name );
 
 			// Filter the cache to clear or alter its data.
 			// phpcs:ignore WPForms.Comments.PHPDocHooks.RequiredHookDocumentation, WPForms.PHP.ValidateHooks.InvalidHookName
 			$cache = apply_filters( "wpforms_{$widget_slug}_cached_data", $cache, $param, $days, $form_id );
+
+			if ( is_array( $cache ) && count( $cache ) > 0 ) {
+				return $cache;
+			}
 		}
 
-		// is_array() detects cached empty searches.
-		if ( $allow_caching && is_array( $cache ) ) {
-			return $cache;
-		}
+		$dates = $this->get_days_interval( $days );
 
 		switch ( $param ) {
 			case 'date':
@@ -811,30 +870,30 @@ class DashboardWidget extends Widget {
 	}
 
 	/**
-	 * Get total number of form entries.
+	 * Get the total number of form entries.
 	 *
 	 * @since 1.7.4
 	 *
 	 * @return int
 	 * @throws Exception When dates management fails.
 	 */
-	private function get_total_entries() {
+	private function get_total_entries(): int {
 
 		$total = 0;
 		$forms = $this->get_entries_count_by( 'form' );
 
 		if ( ! empty( $forms ) ) {
 			foreach ( $forms as $form ) {
-				$total += $form['count'];
+				$total += (int) $form['count'];
 			}
 		}
 
-		return (int) $total;
+		return $total;
 	}
 
 	/**
 	 * Get entries count grouped by date.
-	 * In most cases it's better to use `get_entries_count_by( 'date' )` instead.
+	 * In most cases, it's better to use `get_entries_count_by( 'date' )` instead.
 	 * Doesn't cache the result.
 	 *
 	 * @since 1.5.0
@@ -848,7 +907,7 @@ class DashboardWidget extends Widget {
 	 * @return array
 	 * @throws Exception When dates are failing.
 	 */
-	public function get_entries_count_by_date_sql( $form_id = 0, $date_start = null, $date_end = null ) {
+	public function get_entries_count_by_date_sql( $form_id = 0, $date_start = null, $date_end = null ): array {
 
 		if ( ! empty( $form_id ) && ! wpforms_current_user_can( 'view_entries_form_single', $form_id ) ) {
 			return [];
@@ -865,7 +924,7 @@ class DashboardWidget extends Widget {
 
 	/**
 	 * Get entries count grouped by form.
-	 * In most cases it's better to use `get_entries_count_by( 'form' )` instead.
+	 * In most cases, it's better to use `get_entries_count_by( 'form' )` instead.
 	 * Doesn't cache the result.
 	 *
 	 * @since 1.5.0
@@ -877,7 +936,7 @@ class DashboardWidget extends Widget {
 	 *
 	 * @return array
 	 */
-	public function get_entries_count_by_form_sql( $form_id = 0, $date_start = null, $date_end = null ) {
+	public function get_entries_count_by_form_sql( $form_id = 0, $date_start = null, $date_end = null ): array {
 
 		if ( ! empty( $form_id ) && ! wpforms_current_user_can( 'view_entries_form_single', $form_id ) ) {
 			return [];
@@ -890,7 +949,8 @@ class DashboardWidget extends Widget {
 			$results[ $key ] = (object) $form;
 		}
 
-		// Determine if the forms with no entries should appear in a forms list. Once switched, the effect applies after cache expiration.
+		// Determine if the forms with no entries should appear in a forms' list.
+		// Once switched, the effect applies after cache expiration.
 		if ( $this->settings['display_forms_list_empty_entries'] ) {
 			$forms = $this->fill_forms_list_empty_entries_form_data( $results );
 		} else {
@@ -919,7 +979,7 @@ class DashboardWidget extends Widget {
 	 * @return array
 	 * @throws Exception DatePeriod may throw an exception.
 	 */
-	public function fill_chart_empty_entries( $results, $date_start, $date_end ) {
+	public function fill_chart_empty_entries( $results, $date_start, $date_end ): array {
 
 		if ( ! is_array( $results ) ) {
 			return [];
@@ -958,7 +1018,7 @@ class DashboardWidget extends Widget {
 	}
 
 	/**
-	 * Fill a forms list with the data needed for a frontend display.
+	 * Fill a forms' list with the data needed for a frontend display.
 	 *
 	 * @since 1.5.0
 	 *
@@ -966,7 +1026,7 @@ class DashboardWidget extends Widget {
 	 *
 	 * @return array
 	 */
-	public function fill_forms_list_form_data( $results ) {
+	public function fill_forms_list_form_data( $results ): array {
 
 		if ( ! is_array( $results ) ) {
 			return [];
@@ -994,7 +1054,7 @@ class DashboardWidget extends Widget {
 	}
 
 	/**
-	 * Fill a forms list with the data needed for a frontend display.
+	 * Fill a forms' list with the data needed for a frontend display.
 	 * Includes forms with zero entries.
 	 *
 	 * @since 1.5.0
@@ -1003,7 +1063,7 @@ class DashboardWidget extends Widget {
 	 *
 	 * @return array
 	 */
-	public function fill_forms_list_empty_entries_form_data( $results ) {
+	public function fill_forms_list_empty_entries_form_data( $results ): array {
 
 		if ( ! is_array( $results ) ) {
 			return [];
@@ -1040,7 +1100,7 @@ class DashboardWidget extends Widget {
 	 *
 	 * @return array
 	 */
-	public function get_formatted_forms_list_form_data( $form, $results ) {
+	public function get_formatted_forms_list_form_data( $form, $results ): array {
 
 		if ( ! ( $form instanceof WP_Post ) ) {
 			return [];
@@ -1088,7 +1148,7 @@ class DashboardWidget extends Widget {
 	}
 
 	/**
-	 * Get the data for a forms list using AJAX.
+	 * Get the data for a forms' list using AJAX.
 	 *
 	 * @since 1.5.0
 	 *
@@ -1121,5 +1181,24 @@ class DashboardWidget extends Widget {
 				'%wpforms_' . $wpdb->esc_like( static::SLUG ) . '_pro_entries_by_%'
 			)
 		);
+	}
+
+	/**
+	 * Get transient name for entries count by $param.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @param string $param   Possible value: 'date' or 'form'.
+	 * @param int    $days    Timespan (in days) to fetch the data for.
+	 * @param int    $form_id Form ID to fetch the data for.
+	 *
+	 * @return string
+	 */
+	private function get_entries_transient_name( $param, $days, $form_id ): string {
+
+		$widget_slug = static::SLUG;
+		$user_id     = get_current_user_id();
+
+		return "wpforms_{$widget_slug}_pro_entries_by_{$param}_{$days}_user_{$user_id}_form_{$form_id}";
 	}
 }

@@ -1,17 +1,25 @@
 <?php
 
+// phpcs:disable Generic.Commenting.DocComment.MissingShort
+/** @noinspection PhpIllegalPsrClassPathInspection */
+/** @noinspection AutoloadingIssuesInspection */
+// phpcs:enable Generic.Commenting.DocComment.MissingShort
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use WPForms\Admin\Notice;
 use WPForms\Admin\Payments\Views\Overview\Helpers;
 use WPForms\Db\Payments\ValueValidator;
+use WPForms\Pro\Admin\Entries\Page;
+use WPForms\Pro\Forms\Fields\Layout\Helpers as LayoutHelpers;
 
 /**
  * Display information about a single form entry.
  *
- * Previously list and single views were contained in a single class,
- * however were separated in v1.3.9.
+ * Previously, a list and single views were contained in a single class.
+ * They were separated in v1.3.9.
  *
  * @since 1.3.9
  */
@@ -36,7 +44,7 @@ class WPForms_Entries_Single {
 	public $abort = false;
 
 	/**
-	 * The human readable error message.
+	 * The human-readable error message.
 	 *
 	 * @since 1.6.5
 	 *
@@ -102,7 +110,6 @@ class WPForms_Entries_Single {
 
 		// Add hidden data to the entry.
 		add_filter( 'wpforms_entry_single_data', [ $this, 'add_hidden_data' ], 1010, 3 );
-
 	}
 
 	/**
@@ -134,13 +141,13 @@ class WPForms_Entries_Single {
 		$this->entry_view_settings = self::get_entry_view_settings();
 
 		// Entry processing and setup.
-		add_action( 'wpforms_entries_init', [ $this, 'process_star' ], 8, 1 );
-		add_action( 'wpforms_entries_init', [ $this, 'process_unread' ], 8, 1 );
-		add_action( 'wpforms_entries_init', [ $this, 'process_note_delete' ], 8, 1 );
-		add_action( 'wpforms_entries_init', [ $this, 'process_note_add' ], 8, 1 );
-		add_action( 'wpforms_entries_init', [ $this, 'process_notifications' ], 15, 1 );
-		add_action( 'wpforms_entries_init', [ $this, 'setup' ], 10, 1 );
-		add_action( 'wpforms_entries_init', [ $this, 'register_alerts' ], 20, 1 );
+		add_action( 'wpforms_entries_init', [ $this, 'process_star' ], 8 );
+		add_action( 'wpforms_entries_init', [ $this, 'process_unread' ], 8 );
+		add_action( 'wpforms_entries_init', [ $this, 'process_note_delete' ], 8 );
+		add_action( 'wpforms_entries_init', [ $this, 'process_note_add' ], 8 );
+		add_action( 'wpforms_entries_init', [ $this, 'process_notifications' ], 15 );
+		add_action( 'wpforms_entries_init', [ $this, 'setup' ] );
+		add_action( 'wpforms_entries_init', [ $this, 'register_alerts' ], 20 );
 
 		// phpcs:ignore WPForms.Comments.PHPDocHooks.RequiredHookDocumentation, WPForms.PHP.ValidateHooks.InvalidHookName
 		do_action( 'wpforms_entries_init', 'details' );
@@ -176,14 +183,22 @@ class WPForms_Entries_Single {
 
 		wp_enqueue_script(
 			'wpforms-admin-view-entry',
-			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/view-entry{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/entries/view-entry{$min}.js",
 			[ 'jquery' ],
 			WPFORMS_VERSION,
 			true
 		);
 
-		// Hook for addons.
-		do_action( 'wpforms_entries_enqueue', 'details', $this );
+		/**
+		 * Fires on enqueue single entry page assets.
+		 * Used for addons to enqueue their own assets.
+		 *
+		 * @since 1.4.2
+		 *
+		 * @param string                 $context        Current context.
+		 * @param WPForms_Entries_Single $entries_single WPForms_Entries_Single class instance.
+		 */
+		do_action( 'wpforms_entries_enqueue', 'details', $this ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 	}
 
 	/**
@@ -203,8 +218,10 @@ class WPForms_Entries_Single {
 			return;
 		}
 		require_once WPFORMS_PLUGIN_DIR . 'pro/includes/admin/entries/class-entries-export.php';
-		$export = new WPForms_Entries_Export();
+
+		$export             = new WPForms_Entries_Export();
 		$export->entry_type = absint( $_GET['export'] );
+
 		$export->export();
 	}
 
@@ -215,8 +232,9 @@ class WPForms_Entries_Single {
 	 * @since 1.5.7 Added creation entry note for Entry Star action.
 	 *
 	 * @todo Convert to AJAX
+	 * @noinspection NullPointerExceptionInspection
 	 */
-	public function process_star() {
+	public function process_star() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Security check.
 		if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpforms_entry_details_star' ) ) {
@@ -226,9 +244,8 @@ class WPForms_Entries_Single {
 		$redirect_url = '';
 
 		// Check for starring.
-		if ( ! empty( $_GET['entry_id'] ) && ! empty( $_GET['action'] ) && 'star' === $_GET['action'] ) {
-
-			wpforms()->entry->update(
+		if ( ! empty( $_GET['entry_id'] ) && ! empty( $_GET['action'] ) && $_GET['action'] === 'star' ) {
+			wpforms()->get( 'entry' )->update(
 				absint( $_GET['entry_id'] ),
 				[
 					'starred' => '1',
@@ -236,7 +253,7 @@ class WPForms_Entries_Single {
 			);
 
 			if ( ! empty( $_GET['form'] ) ) {
-				wpforms()->entry_meta->add(
+				wpforms()->get( 'entry_meta' )->add(
 					[
 						'entry_id' => absint( $_GET['entry_id'] ),
 						'form_id'  => absint( $_GET['form'] ),
@@ -258,9 +275,8 @@ class WPForms_Entries_Single {
 		}
 
 		// Check for unstarring.
-		if ( ! empty( $_GET['entry_id'] ) && ! empty( $_GET['action'] ) && 'unstar' === $_GET['action'] ) {
-
-			wpforms()->entry->update(
+		if ( ! empty( $_GET['entry_id'] ) && ! empty( $_GET['action'] ) && $_GET['action'] === 'unstar' ) {
+			wpforms()->get( 'entry' )->update(
 				absint( $_GET['entry_id'] ),
 				[
 					'starred' => '0',
@@ -268,7 +284,7 @@ class WPForms_Entries_Single {
 			);
 
 			if ( ! empty( $_GET['form'] ) ) {
-				wpforms()->entry_meta->add(
+				wpforms()->get( 'entry_meta' )->add(
 					[
 						'entry_id' => absint( $_GET['entry_id'] ),
 						'form_id'  => absint( $_GET['form'] ),
@@ -299,9 +315,10 @@ class WPForms_Entries_Single {
 	/**
 	 * Watch for and run entry unread toggle.
 	 *
-	 * @todo Convert to AJAX.
-	 *
 	 * @since 1.1.6
+	 *
+	 * @todo Convert to AJAX.
+	 * @noinspection NullPointerExceptionInspection
 	 */
 	public function process_unread() {
 
@@ -311,18 +328,18 @@ class WPForms_Entries_Single {
 		}
 
 		// Check for run switch.
-		if ( empty( $_GET['entry_id'] ) || empty( $_GET['action'] ) || 'unread' !== $_GET['action'] ) {
+		if ( empty( $_GET['entry_id'] ) || empty( $_GET['action'] ) || $_GET['action'] !== 'unread' ) {
 			return;
 		}
 
 		$entry_id = absint( $_GET['entry_id'] );
 
 		// Capability check.
-		if ( ! \wpforms_current_user_can( 'view_entry_single', $entry_id ) ) {
+		if ( ! wpforms_current_user_can( 'view_entry_single', $entry_id ) ) {
 			return;
 		}
 
-		$is_success = wpforms()->entry->update(
+		$is_success = wpforms()->get( 'entry' )->update(
 			$entry_id,
 			[
 				'viewed' => '0',
@@ -334,7 +351,7 @@ class WPForms_Entries_Single {
 		}
 
 		if ( ! empty( $_GET['form'] ) ) {
-			wpforms()->entry_meta->add(
+			wpforms()->get( 'entry_meta' )->add(
 				[
 					'entry_id' => $entry_id,
 					'form_id'  => absint( $_GET['form'] ),
@@ -360,7 +377,7 @@ class WPForms_Entries_Single {
 	 *
 	 * @since 1.1.6
 	 */
-	public function process_note_delete() {
+	public function process_note_delete() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Security check.
 		if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpforms_entry_details_deletenote' ) ) {
@@ -456,7 +473,7 @@ class WPForms_Entries_Single {
 
 		$note = wp_kses_post( wp_unslash( $_POST['entry_note'] ) );
 
-		// Bail if note has no content.
+		// Bail if the note has no content.
 		if ( empty( $note ) ) {
 			$this->alerts[] = [
 				'type'    => 'error',
@@ -508,11 +525,13 @@ class WPForms_Entries_Single {
 	 * Watch for and run single entry notifications.
 	 *
 	 * @since 1.1.6
+	 *
+	 * @noinspection NullPointerExceptionInspection
 	 */
 	public function process_notifications() {
 
 		// Check for run switch.
-		if ( empty( $_GET['action'] ) || 'notifications' !== $_GET['action'] ) {
+		if ( empty( $_GET['action'] ) || $_GET['action'] !== 'notifications' ) {
 			return;
 		}
 
@@ -529,7 +548,7 @@ class WPForms_Entries_Single {
 		$fields    = wpforms_decode( $this->entry->fields );
 		$form_data = wpforms_decode( $this->form->post_content );
 
-		wpforms()->process->entry_email( $fields, [], $form_data, $this->entry->entry_id );
+		wpforms()->get( 'process' )->entry_email( $fields, [], $form_data, $this->entry->entry_id );
 
 		$this->alerts[] = [
 			'type'    => 'success',
@@ -576,7 +595,7 @@ class WPForms_Entries_Single {
 		}
 
 		// Check if entry has trash status.
-		if ( $entry->status === WPForms_Entries_List::TRASH_ENTRY_STATUS ) {
+		if ( $entry->status === Page::TRASH_ENTRY_STATUS ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			$this->abort_message = esc_html__( 'You can\'t view this entry because it\'s in the trash.', 'wpforms' );
 			$this->abort         = true;
@@ -653,10 +672,9 @@ class WPForms_Entries_Single {
 
 		// Make public.
 		$this->entry = $entry;
-
 		$this->form  = $form;
 
-		// Lastly, mark entry as read if needed.
+		// Lastly, mark the entry as read if needed.
 		if ( $entry->viewed !== '1' && empty( $_GET['action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$is_success = $entry_handler->update(
 				$entry->entry_id,
@@ -757,7 +775,7 @@ class WPForms_Entries_Single {
 					<div class="wpforms-admin-single-navigation-text">
 						<?php
 						printf(
-							/* translators: %1$d - current number of entry, %2$d - total number of entries. */
+							/* translators: %1$d - current number of the entry, %2$d - total number of entries. */
 							esc_html__( 'Entry %1$d of %2$d', 'wpforms' ),
 							(int) $entry->entry_prev_count + 1,
 							(int) $entry->entry_count
@@ -789,7 +807,6 @@ class WPForms_Entries_Single {
 					</div>
 
 					<?php
-
 						echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							'admin/entries/single-entry/settings',
 							[ 'entry_view_settings' => $this->entry_view_settings ],
@@ -801,27 +818,42 @@ class WPForms_Entries_Single {
 			</h1>
 
 			<div class="wpforms-admin-content">
-
 				<div id="poststuff">
-
 					<div id="post-body" class="metabox-holder columns-2">
-
 						<!-- Left column -->
 						<div id="post-body-content" style="position: relative;">
-							<?php do_action( 'wpforms_entry_details_content', $entry, $form_data, $this ); ?>
+							<?php
+							/**
+							 * Fires when rendering body content.
+							 *
+							 * @since 1.3.9.1
+							 *
+							 * @param object                 $entry          Entry.
+							 * @param array                  $form_data      Form data.
+							 * @param WPForms_Entries_Single $entries_single WPForms_Entries_Single class instance.
+							 */
+							do_action( 'wpforms_entry_details_content', $entry, $form_data, $this );  // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+							?>
 						</div>
 
 						<!-- Right column -->
 						<div id="postbox-container-1" class="postbox-container">
-							<?php do_action( 'wpforms_entry_details_sidebar', $entry, $form_data, $this ); ?>
+							<?php
+							/**
+							 * Fires when rendering postbox container.
+							 *
+							 * @since 1.3.9.1
+							 *
+							 * @param object                 $entry          Entry.
+							 * @param array                  $form_data      Form data.
+							 * @param WPForms_Entries_Single $entries_single WPForms_Entries_Single class instance.
+							 */
+							do_action( 'wpforms_entry_details_sidebar', $entry, $form_data, $this );  // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+							?>
 						</div>
-
 					</div>
-
 				</div>
-
 			</div>
-
 		</div>
 		<?php
 	}
@@ -833,7 +865,7 @@ class WPForms_Entries_Single {
 	 *
 	 * @return array
 	 */
-	public static function get_entry_view_settings() {
+	public static function get_entry_view_settings(): array {
 
 		$defaults = [
 			'fields'  => [
@@ -886,20 +918,19 @@ class WPForms_Entries_Single {
 	 *
 	 * @param object $entry     Submitted entry values.
 	 * @param array  $form_data Form data and settings.
-	 */
+	 *
+	 * @noinspection NullPointerExceptionInspection*/
 	public function details_fields( $entry, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks
 
-		$form_title = isset( $form_data['settings']['form_title'] ) ? $form_data['settings']['form_title'] : '';
+		$form_title = $form_data['settings']['form_title'] ?? '';
 
 		if ( empty( $form_title ) ) {
 			$form = wpforms()->get( 'form' )->get( $entry->form_id );
 
-			$form_title = ! empty( $form )
-				? $form->post_title
-				: sprintf( /* translators: %d - form ID. */
-					esc_html__( 'Form (#%d)', 'wpforms' ),
-					$entry->form_id
-				);
+			$form_title = $form->post_title ?? sprintf( /* translators: %d - form ID. */
+				esc_html__( 'Form (#%d)', 'wpforms' ),
+				$entry->form_id
+			);
 		}
 
 		?>
@@ -916,16 +947,21 @@ class WPForms_Entries_Single {
 			<div class="inside">
 
 				<?php
-
-				$fields = apply_filters( 'wpforms_entry_single_data', wpforms_decode( $entry->fields ), $entry, $form_data );
+				/**
+				 * Filters entry fields.
+				 *
+				 * @since 1.3.9.1
+				 *
+				 * @param array  $fields    Entry fields.
+				 * @param object $entry     Entry.
+				 * @param array  $form_data Form data.
+				 */
+				$fields = (array) apply_filters( 'wpforms_entry_single_data', wpforms_decode( $entry->fields ), $entry, $form_data ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 
 				if ( empty( $fields ) ) {
-
 					// Whoops, no fields! This shouldn't happen under normal use cases.
 					echo '<p class="no-fields">' . esc_html__( 'This entry does not have any fields', 'wpforms' ) . '</p>';
-
 				} else {
-
 					add_filter( 'wp_kses_allowed_html', [ $this, 'modify_allowed_tags_entry_field_value' ], 10, 2 );
 
 					// Content, Divider, HTML and layout fields must always be included because it's allowed to show and hide these fields.
@@ -953,7 +989,7 @@ class WPForms_Entries_Single {
 							}
 
 							/** This filter is documented in /src/Pro/Admin/Entries/Edit.php */
-							if ( ! (bool) apply_filters( "wpforms_pro_admin_entries_edit_is_field_displayable_{$field_type}", true, $field, $form_data ) && ! in_array( $field_type, $forced_allowed_fields, true ) ) { // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+							if ( ! apply_filters( "wpforms_pro_admin_entries_edit_is_field_displayable_{$field_type}", true, $field, $form_data ) && ! in_array( $field_type, $forced_allowed_fields, true ) ) { // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 								continue;
 							}
 
@@ -977,11 +1013,11 @@ class WPForms_Entries_Single {
 	}
 
 	/**
-	 * Get view type for entries.
+	 * Get a view type for entries.
 	 *
 	 * @since 1.8.3
 	 */
-	public function get_view_type() {
+	public function get_view_type(): string {
 
 		if ( $this->entry_view_settings['display']['compact_view']['value'] === 1 ) {
 			return ' wpforms-entry-compact-layout';
@@ -992,7 +1028,6 @@ class WPForms_Entries_Single {
 		}
 
 		return '';
-
 	}
 	/**
 	 * Prints fields for the entry.
@@ -1005,14 +1040,16 @@ class WPForms_Entries_Single {
 	public function print_field( $field, $form_data ) {
 
 		// Get field default value.
-		$field_value = isset( $field['value'] ) ? $field['value'] : '';
+		$field_value = $field['value'] ?? '';
 		$is_hidden   = $this->is_field_hidden( $field ); // If we should hide the field by default or not.
 
 		// Set field value for HTML and Content fields.
 		if ( in_array( $field['type'], [ 'html', 'content' ], true ) ) {
 
-			$field_value = isset( $field['formatted_value'] ) ? $field['formatted_value'] : '';
+			$field_value = $field['formatted_value'] ?? '';
 		}
+
+		$field_value = $this->is_choice_field( $field['type'] ) || $this->needs_unformatted_value( $field['type'] ) ? $field_value : $field['formatted_value'];
 
 		/** This filter is documented in src/SmartTags/SmartTag/FieldHtmlId.php.*/
 		$field_value = apply_filters( 'wpforms_html_field_value', wp_kses_post( $field_value ), $field, $form_data, 'entry-single' ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
@@ -1021,7 +1058,7 @@ class WPForms_Entries_Single {
 		$field_classes = $this->get_field_classes( $field, $field_value, $is_hidden );
 
 		// Get field description.
-		$field_description = isset( $form_data['fields'][ $field['id'] ]['description'] ) ? $form_data['fields'][ $field['id'] ]['description'] : '';
+		$field_description = $form_data['fields'][ $field['id'] ]['description'] ?? '';
 
 		echo '<div class="wpforms-entry-field-item ' . wpforms_sanitize_classes( $field_classes, true ) . '">';
 
@@ -1031,22 +1068,22 @@ class WPForms_Entries_Single {
 			// Print the field value.
 			$this->print_field_value( $field, $field_value );
 
-			// Print the field meta data.
-			$this->print_field_hidden_data( $field, $field_value );
+			// Print the field meta-data.
+			$this->print_field_hidden_data( $field );
 
 		echo '</div>';
 	}
 
 	/**
-	 * Check if field should be hidden by default or not.
+	 * Check if the field should be hidden by default or not.
 	 *
 	 * @since 1.8.3
 	 *
 	 * @param array $field Field data.
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
-	private function is_field_hidden( $field ) {
+	private function is_field_hidden( $field ): bool {
 
 		return ( in_array( $field['type'], [ 'html', 'content' ], true ) && $this->entry_view_settings['fields']['show_html_fields']['value'] !== 1 ) ||
 			( $field['type'] === 'divider' && $this->entry_view_settings['fields']['show_section_dividers']['value'] !== 1 ) ||
@@ -1061,24 +1098,99 @@ class WPForms_Entries_Single {
 	 * @param array $field     Field data.
 	 * @param array $form_data Form data.
 	 */
-	 private function print_layout_field( $field, $form_data ) {
+	private function print_layout_field( array $field, array $form_data ) {
+
+		if ( isset( $field['display'] ) && $field['display'] === 'rows' ) {
+			$this->display_rows( $field, $form_data );
+		} else {
+			$this->display_columns( $field, $form_data );
+		}
+	}
+
+	/**
+	 * Display rows layout.
+	 *
+	 * @since 1.8.8
+	 *
+	 * @param array $field     Field settings.
+	 * @param array $form_data Form data.
+	 */
+	private function display_rows( array $field, array $form_data ) {
+
+		$rows_html = '';
+		$rows      = isset( $field['columns'] ) && is_array( $field['columns'] ) ? LayoutHelpers::get_row_data( $field ) : [];
+
+		foreach ( $rows as $row ) {
+			$rows_html .= sprintf(
+				'<div class="wpforms-layout-row">%1$s</div>',
+				$this->get_column_row_content( $row, $form_data )
+			);
+		}
+
+		printf(
+			'<div class="wpforms-field-layout-rows">%1$s</div>',
+			$rows_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		);
+	}
+
+	/**
+	 * Display columns layout.
+	 *
+	 * @since 1.8.8
+	 *
+	 * @param array $field     Field settings.
+	 * @param array $form_data Form data.
+	 */
+	private function display_columns( array $field, array $form_data ) {
 
 		echo '<div class="wpforms-entry-field-layout">';
-			foreach ( $field['columns'] as $column ) {
+		foreach ( $field['columns'] as $column ) {
 
-				$width = $this->get_layout_col_width( $column );
+			$width = $this->get_layout_col_width( $column );
 
-				echo '<div class="wpforms-entry-field-layout-inner wpforms-field-layout-column" style="width: ' . esc_attr( $width ) . '%">';
+			echo '<div class="wpforms-entry-field-layout-inner wpforms-field-layout-column" style="width: ' . esc_attr( $width ) . '%">';
 
-					foreach ( $column['fields'] as $child_field ) {
-						$this->print_field( $child_field, $form_data );
-					}
-
-				echo '</div>';
+			foreach ( $column['fields'] as $child_field ) {
+				$this->print_field( $child_field, $form_data );
 			}
-		echo '</div>';
 
-	 }
+			echo '</div>';
+		}
+		echo '</div>';
+	}
+
+	/**
+	 * Get column content HTML.
+	 *
+	 * @since 1.8.8
+	 *
+	 * @param array $row       Row data.
+	 * @param array $form_data Form data.
+	 *
+	 * @return string
+	 */
+	private function get_column_row_content( array $row, array $form_data ): string {
+
+		// Bail if we don't have the column fields data for some reason.
+		if ( empty( $form_data['fields'] ) || empty( $row ) ) {
+			return '';
+		}
+
+		ob_start();
+
+		foreach ( $row as $data ) {
+			$width = $this->get_layout_col_width( $data );
+
+			echo '<div class="wpforms-entry-field-layout-inner wpforms-field-layout-column" style="width: ' . esc_attr( $width ) . '%">';
+
+			if ( $data['field'] ) {
+				$this->print_field( $data['field'], $form_data );
+			}
+			echo '</div>';
+		}
+
+		return ob_get_clean();
+	}
 
 	/**
 	 * Get column width for the layout.
@@ -1087,9 +1199,9 @@ class WPForms_Entries_Single {
 	 *
 	 * @param array $column Column width data.
 	 *
-	 * @return int
+	 * @return float
 	 */
-	private function get_layout_col_width( $column ) {
+	private function get_layout_col_width( array $column ): float {
 
 		$preset_width = ! empty( $column['width_preset'] ) ? (int) $column['width_preset'] : 50;
 		$custom_width = ! empty( $column['width_custom'] ) ? (int) $column['width_custom'] : 50;
@@ -1100,7 +1212,7 @@ class WPForms_Entries_Single {
 			$preset_width = 66.66666;
 		}
 
-		return min( $preset_width, $custom_width );
+		return (float) min( $preset_width, $custom_width );
 	}
 
 	/**
@@ -1166,20 +1278,18 @@ class WPForms_Entries_Single {
 			return;
 		}
 
-		// Field value.
-		// Formatted value for choices have unselected options so sort them out.
 		$is_choices_field  = $this->is_choice_field( $field['type'] );
-		$no_format         = $this->needs_unformatted_value( $field['type'] );
-		$value             = $is_choices_field || $no_format ? $field_value : $field['formatted_value'];
 		$hide_choice_value = $is_choices_field && $this->entry_view_settings['fields']['show_unselected_choices']['value'] === 1 ? ' wpforms-hide' : '';
 
 		if ( $field['type'] === 'html' ) {
-			$value = force_balance_tags( $value );
+			$field_value = make_clickable( force_balance_tags( $field_value ) );
+		} else {
+			$field_value = nl2br( make_clickable( $field_value ) );
 		}
 
 		echo '<div class="wpforms-entry-field-value' . esc_attr( $hide_choice_value ) . '">';
-			echo ! wpforms_is_empty_string( $value )
-				? wp_kses_post( nl2br( make_clickable( $value ) ) )
+			echo ! wpforms_is_empty_string( $field_value )
+				? wp_kses_post( $field_value )
 				: esc_html__( 'Empty', 'wpforms' );
 		echo '</div>';
 	}
@@ -1195,10 +1305,10 @@ class WPForms_Entries_Single {
 	 *
 	 * @return array
 	 */
-	private function get_field_classes( $field, $field_value, $is_hidden ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_field_classes( $field, $field_value, $is_hidden ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		if ( $this->is_structure_field( $field['type'] ) && $field['type'] !== 'layout' ) {
-			$field_value = isset( $field['formatted_label'] ) ? $field['formatted_label'] : '';
+		if ( $field['type'] !== 'layout' && $this->is_structure_field( $field['type'] ) ) {
+			$field_value = $field['formatted_label'] ?? '';
 		}
 
 		$field_classes = [
@@ -1208,7 +1318,10 @@ class WPForms_Entries_Single {
 			"wpforms-field-entry-{$field['type']}",
 		];
 
-		if ( ! isset( $field_value ) || wpforms_is_empty_string( trim( $field_value ) ) ) {
+		$is_empty_quantity = isset( $field['quantity'] ) && ! $field['quantity'];
+		$is_empty          = ! isset( $field_value ) || wpforms_is_empty_string( trim( $field_value ) ) || $is_empty_quantity;
+
+		if ( $is_empty ) {
 			$field_classes[] = 'empty';
 		}
 
@@ -1220,7 +1333,7 @@ class WPForms_Entries_Single {
 			$field_classes[] = 'wpforms-field-entry-toggle';
 		}
 
-		if ( ( ! isset( $field_value ) || wpforms_is_empty_string( trim( $field_value ) ) ) && $this->entry_view_settings['fields']['show_empty_fields']['value'] !== 1 ) {
+		if ( $is_empty && $this->entry_view_settings['fields']['show_empty_fields']['value'] !== 1 ) {
 			$field_classes[] = 'wpforms-hide';
 		}
 
@@ -1236,12 +1349,14 @@ class WPForms_Entries_Single {
 	 *
 	 * @since 1.7.1
 	 *
-	 * @param array  $allowed_html List of allowed HTML.
-	 * @param string $context      Context name.
+	 * @param array|mixed $allowed_html List of allowed HTML.
+	 * @param string      $context      Context name.
 	 *
 	 * @return array
 	 */
-	public function modify_allowed_tags_entry_field_value( $allowed_html, $context ) {
+	public function modify_allowed_tags_entry_field_value( $allowed_html, string $context ): array {
+
+		$allowed_html = (array) $allowed_html;
 
 		if ( $context !== 'post' ) {
 			return $allowed_html;
@@ -1263,7 +1378,7 @@ class WPForms_Entries_Single {
 	 * @param object $entry     Submitted entry values.
 	 * @param array  $form_data Form data and settings.
 	 */
-	public function details_notes( $entry, $form_data ) {
+	public function details_notes( $entry, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$action_url = add_query_arg(
 			[
@@ -1319,11 +1434,13 @@ class WPForms_Entries_Single {
 					echo '<p class="no-notes">' . esc_html__( 'No notes.', 'wpforms' ) . '</p>';
 				} else {
 					echo '<div class="wpforms-entry-notes-list">';
+
 					$count = 1;
+
 					foreach ( $entry->entry_notes as $note ) {
-						$user        = get_userdata( $note->user_id );
-						$user_name   = ! empty( $user->display_name ) ? $user->display_name : $user->user_login;
-						$user_url    = add_query_arg(
+						$user      = get_userdata( $note->user_id );
+						$user_name = ! empty( $user->display_name ) ? $user->display_name : $user->user_login;
+						$user_url  = add_query_arg(
 							[
 								'user_id' => absint( $user->ID ),
 							],
@@ -1331,9 +1448,9 @@ class WPForms_Entries_Single {
 						);
 
 						$date  = wpforms_datetime_format( $note->date, '', true );
-						$class = 0 === $count % 2 ? 'even' : 'odd';
+						$class = $count % 2 === 0 ? 'even' : 'odd';
 
-						if ( \wpforms_current_user_can( 'edit_entries_form_single', $form_data['id'] ) ) {
+						if ( wpforms_current_user_can( 'edit_entries_form_single', $form_data['id'] ) ) {
 
 							$delete_url = wp_nonce_url(
 								add_query_arg(
@@ -1370,7 +1487,7 @@ class WPForms_Entries_Single {
 							<?php echo wp_kses_post( wp_unslash( $note->data ) ); ?>
 						</div>
 						<?php
-						$count++;
+						++$count;
 					}
 					echo '</div>';
 				}
@@ -1389,8 +1506,11 @@ class WPForms_Entries_Single {
 	 *
 	 * @param object $entry     Submitted entry values.
 	 * @param array  $form_data Form data and settings.
+	 *
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function details_log( $entry, $form_data ) {
+	public function details_log( $entry, $form_data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		?>
 		<!-- Entry Logs metabox -->
@@ -1438,7 +1558,7 @@ class WPForms_Entries_Single {
 							<?php echo wp_kses_post( wp_unslash( $log->data ) ); ?>
 						</div>
 						<?php
-						$count++;
+						++$count;
 					}
 					echo '</div>';
 				}
@@ -1500,7 +1620,7 @@ class WPForms_Entries_Single {
 	 * @param object $entry     Entry data.
 	 * @param array  $form_data Form data.
 	 */
-	public function details_meta( $entry, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function details_meta( $entry, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
 
 		$datetime = static function ( $date ) {
 			return sprintf( /* translators: %1$s - formatted date, %2$s - formatted time. */
@@ -1541,7 +1661,7 @@ class WPForms_Entries_Single {
 						$entry_post_id  = absint( $entry->post_id );
 						$entry_post_obj = get_post_type_object( get_post_type( $entry_post_id ) );
 
-						if ( $entry_post_obj instanceof \WP_Post_Type ) {
+						if ( $entry_post_obj instanceof WP_Post_Type ) {
 							?>
 							<p class="wpforms-entry-postid">
 								<span class="dashicons dashicons-edit"></span>
@@ -1600,22 +1720,51 @@ class WPForms_Entries_Single {
 						</p>
 					<?php endif; ?>
 
-					<?php if ( apply_filters( 'wpforms_entry_details_sidebar_details_status', false, $entry, $form_data ) ) : ?>
+					<?php
+					/**
+					 * Filters entry details sidebar details status.
+					 *
+					 * @since 1.3.9.1
+					 *
+					 * @param bool   $status    Details status.
+					 * @param object $entry     Entry.
+					 * @param array  $form_data Form data.
+					 */
+					if ( apply_filters( 'wpforms_entry_details_sidebar_details_status', false, $entry, $form_data ) ) {  // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+						?>
 						<p class="wpforms-entry-type">
 							<span class="dashicons dashicons-category"></span>
 							<?php esc_html_e( 'Type:', 'wpforms' ); ?>
 							<strong><?php echo ! empty( $entry->status ) && $entry->type !== 'payment' ? esc_html( ucwords( sanitize_text_field( $entry->status ) ) ) : esc_html__( 'Completed', 'wpforms' ); ?></strong>
 						</p>
-					<?php endif; ?>
+					<?php
+					}
+					?>
 
-					<?php do_action( 'wpforms_entry_details_sidebar_details', $entry, $form_data ); ?>
-
+					<?php
+					/**
+					 * Fires when rendering entry details sidebar details.
+					 *
+					 * @since 1.3.9.1
+					 *
+					 * @param object                 $entry          Entry.
+					 * @param array                  $form_data      Form data.
+					 */
+					do_action( 'wpforms_entry_details_sidebar_details', $entry, $form_data ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+					?>
 				</div>
 
 				<div id="major-publishing-actions">
-
 					<?php
-						do_action( 'wpforms_entry_details_sidebar_details_action',  $entry, $form_data );
+					/**
+					 * Fires when rendering entry details sidebar details actions.
+					 *
+					 * @since 1.3.9.1
+					 *
+					 * @param object $entry     Entry.
+					 * @param array  $form_data Form data.
+					 */
+					do_action( 'wpforms_entry_details_sidebar_details_action', $entry, $form_data ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 					?>
 
 					<?php
@@ -1646,9 +1795,7 @@ class WPForms_Entries_Single {
 
 					<div class="clear"></div>
 				</div>
-
 			</div>
-
 		</div>
 		<?php
 	}
@@ -1661,8 +1808,9 @@ class WPForms_Entries_Single {
 	 *
 	 * @param object $entry     Submitted entry values.
 	 * @param array  $form_data Form data and settings.
-	 */
-	public function details_payment( $entry, $form_data ) {
+	 *
+	 * @noinspection NullPointerExceptionInspection*/
+	public function details_payment( $entry, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( empty( $entry->type ) || $entry->type !== 'payment' ) {
 			return;
@@ -1718,8 +1866,11 @@ class WPForms_Entries_Single {
 	 *
 	 * @param object $entry     Submitted entry values.
 	 * @param array  $form_data Form data and settings.
+	 *
+	 * @noinspection HtmlUnknownTarget
+	 * @noinspection HtmlUnknownAttribute
 	 */
-	public function details_actions( $entry, $form_data ) {
+	public function details_actions( $entry, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
 
 		/**
 		 * Filters whether to allow the entry details actions.
@@ -1761,15 +1912,15 @@ class WPForms_Entries_Single {
 		$star_url  = wp_nonce_url(
 			add_query_arg(
 				[
-					'action' => '1' === $entry->starred ? 'unstar' : 'star',
+					'action' => $entry->starred === '1' ? 'unstar' : 'star',
 					'form'   => absint( $form_id ),
 				],
 				$base
 			),
 			'wpforms_entry_details_star'
 		);
-		$star_icon = '1' === $entry->starred ? 'dashicons-star-empty' : 'dashicons-star-filled';
-		$star_text = '1' === $entry->starred ? esc_html__( 'Unstar', 'wpforms' ) : esc_html__( 'Star', 'wpforms' );
+		$star_icon = $entry->starred === '1' ? 'dashicons-star-empty' : 'dashicons-star-filled';
+		$star_text = $entry->starred === '1' ? esc_html__( 'Unstar', 'wpforms' ) : esc_html__( 'Star', 'wpforms' );
 
 		// Unread URL.
 		$unread_url = wp_nonce_url(
@@ -1785,24 +1936,24 @@ class WPForms_Entries_Single {
 
 		$action_links = [];
 
-		$action_links['print']         = [
+		$action_links['print']       = [
 			'url'    => $print_url,
 			'target' => 'blank',
 			'icon'   => 'dashicons-media-text',
 			'label'  => esc_html__( 'Print', 'wpforms' ),
 		];
-		$action_links['export']        = [
+		$action_links['export']      = [
 			'url'   => $this->get_export_url( (int) $form_id, $entry->entry_id, 'csv' ),
 			'icon'  => 'dashicons-migrate',
 			'label' => esc_html__( 'Export (CSV)', 'wpforms' ),
 		];
-		$action_links['export_xlsx']   = [
+		$action_links['export_xlsx'] = [
 			'url'   => $this->get_export_url( (int) $form_id, $entry->entry_id, 'xlsx' ),
 			'icon'  => 'dashicons-media-spreadsheet',
 			'label' => esc_html__( 'Export (XLSX)', 'wpforms' ),
 		];
 
-		// If notifications are enabled, add the notifications action.
+		// If notifications are enabled, add the notification action.
 		if ( ! empty( $form_data['settings']['notification_enable'] ) ) {
 			$action_links['notifications'] = $this->add_notifications_action( $base, $form_data );
 		}
@@ -1820,7 +1971,16 @@ class WPForms_Entries_Single {
 			'label' => $star_text,
 		];
 
-		$action_links = apply_filters( 'wpforms_entry_details_sidebar_actions_link', $action_links, $entry, $form_data );
+		/**
+		 * Filters entry details sidebar action links.
+		 *
+		 * @since 1.3.9.1
+		 *
+		 * @param array  $action_links Action links.
+		 * @param object $entry        Entry.
+		 * @param array  $form_data    Form data.
+		 */
+		$action_links = apply_filters( 'wpforms_entry_details_sidebar_actions_link', $action_links, $entry, $form_data );  // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 
 		$delete_link = wp_nonce_url(
 			add_query_arg(
@@ -1897,7 +2057,15 @@ class WPForms_Entries_Single {
 						}
 					}
 
-					do_action( 'wpforms_entry_details_sidebar_actions', $entry, $form_data );
+					/**
+					 * Fires when rendering entry details sidebar.
+					 *
+					 * @since 1.3.9.1
+					 *
+					 * @param object                 $entry          Entry.
+					 * @param array                  $form_data      Form data.
+					 */
+					do_action( 'wpforms_entry_details_sidebar_actions', $entry, $form_data );  // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 					?>
 
 				</div>
@@ -1918,7 +2086,7 @@ class WPForms_Entries_Single {
 	 *
 	 * @return array The notifications action data.
 	 */
-	private function add_notifications_action( $base, $form_data ) {
+	private function add_notifications_action( $base, $form_data ): array {
 
 		$notifications_url = wp_nonce_url(
 			add_query_arg(
@@ -1978,16 +2146,16 @@ class WPForms_Entries_Single {
 	 *
 	 * @return string
 	 */
-	private function get_export_url( $form_id, $entry_id, $type ) {
+	private function get_export_url( $form_id, $entry_id, $type ): string {
 
 		return wp_nonce_url(
 			add_query_arg(
 				[
-					'page'     => 'wpforms-tools',
-					'view'     => 'export',
-					'action'   => 'wpforms_tools_single_entry_export_download',
-					'form'     => $form_id,
-					'entry_id' => $entry_id,
+					'page'           => 'wpforms-tools',
+					'view'           => 'export',
+					'action'         => 'wpforms_tools_single_entry_export_download',
+					'form'           => $form_id,
+					'entry_id'       => $entry_id,
 					'export_options' => [ $type ],
 				],
 				admin_url( 'admin.php' )
@@ -2004,8 +2172,11 @@ class WPForms_Entries_Single {
 	 *
 	 * @param object $entry     Submitted entry values.
 	 * @param array  $form_data Form data and settings.
+	 *
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function details_related( $entry, $form_data ) {
+	public function details_related( $entry, $form_data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		// Only display if we have related entries.
 		if ( empty( $entry->entry_related ) ) {
@@ -2067,7 +2238,7 @@ class WPForms_Entries_Single {
 		foreach ( $this->alerts as $alert ) {
 			$type = ! empty( $alert['type'] ) ? $alert['type'] : 'info';
 
-			\WPForms\Admin\Notice::add( $alert['message'], $type );
+			Notice::add( $alert['message'], $type );
 
 			if ( ! empty( $alert['abort'] ) ) {
 				$this->abort = true;
@@ -2086,7 +2257,7 @@ class WPForms_Entries_Single {
 	 * @param mixed $display Type(s) of the notice.
 	 * @param bool  $wrap    Whether to output the wrapper.
 	 */
-	public function display_alerts( $display = '', $wrap = false ) {
+	public function display_alerts( $display = '', $wrap = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		_deprecated_function( __METHOD__, '1.6.7.1 of the WPForms plugin' );
 
@@ -2133,7 +2304,7 @@ class WPForms_Entries_Single {
 	 *
 	 * @return array
 	 */
-	private function add_formatted_data( $fields ) {
+	private function add_formatted_data( array $fields ): array {
 
 		$this->form_data = wpforms_decode( $this->form->post_content );
 
@@ -2158,16 +2329,16 @@ class WPForms_Entries_Single {
 	 *
 	 * @return string
 	 */
-	private function get_formatted_field_value( $field ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_formatted_field_value( $field ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$field_value = isset( $field['value'] ) ? wp_strip_all_tags( $field['value'] ) : '';
 
 		if ( $field['type'] === 'html' ) {
-			return isset( $field['code'] ) ? $field['code'] : '';
+			return $field['code'] ?? '';
 		}
 
 		if ( $field['type'] === 'content' ) {
-			return isset( $field['content'] ) ? $field['content'] : '';
+			return $field['content'] ?? '';
 		}
 
 		if (
@@ -2175,6 +2346,10 @@ class WPForms_Entries_Single {
 			&& $this->is_choice_field( $field['type'] )
 		) {
 			return $this->get_choices_field_value( $field, $field_value );
+		}
+
+		if ( wpforms_payment_has_quantity( $field, $this->form_data ) ) {
+			return wpforms_payment_format_quantity( $field );
 		}
 
 		return $field_value;
@@ -2189,7 +2364,7 @@ class WPForms_Entries_Single {
 	 *
 	 * @return boolean
 	 */
-	private function is_choice_field( $type = '' ) {
+	private function is_choice_field( $type = '' ): bool {
 
 		return in_array( $type, [ 'radio', 'checkbox', 'payment-checkbox', 'payment-multiple' ], true );
 	}
@@ -2203,7 +2378,7 @@ class WPForms_Entries_Single {
 	 *
 	 * @return boolean
 	 */
-	private function needs_unformatted_value( $type = '' ) {
+	private function needs_unformatted_value( $type = '' ): bool {
 
 		return in_array( $type, [ 'richtext', 'file-upload', 'rating', 'signature', 'payment-coupon', 'number-slider' ], true );
 	}
@@ -2217,7 +2392,7 @@ class WPForms_Entries_Single {
 	 *
 	 * @return boolean
 	 */
-	private function is_structure_field( $type = '' ) {
+	private function is_structure_field( $type = '' ): bool {
 
 		return in_array( $type, [ 'divider', 'pagebreak', 'layout' ], true );
 	}
@@ -2231,9 +2406,9 @@ class WPForms_Entries_Single {
 	 *
 	 * @return string
 	 */
-	private function get_formatted_field_label( $field ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function get_formatted_field_label( $field ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		$field_label = isset( $field['name'] ) ? $field['name'] : '';
+		$field_label = $field['name'] ?? '';
 
 		if ( $field['type'] === 'divider' ) {
 			return isset( $field['label'] ) && ! wpforms_is_empty_string( $field['label'] ) ? $field['label'] : esc_html__( 'Section Divider', 'wpforms' );
@@ -2259,8 +2434,10 @@ class WPForms_Entries_Single {
 	 * @param string $field_value HTML markup for the field.
 	 *
 	 * @return string
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	private function get_choices_field_value( $field, $field_value ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_choices_field_value( $field, $field_value ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		$choices_html    = '';
 		$choices         = $this->form_data['fields'][ $field['id'] ]['choices'];
@@ -2312,7 +2489,7 @@ class WPForms_Entries_Single {
 	 *
 	 * @return string
 	 */
-	private function get_choice_label( $field, $choice, $key ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function get_choice_label( $field, $choice, $key ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$is_payment = strpos( $field['type'], 'payment-' ) === 0;
 
@@ -2323,7 +2500,7 @@ class WPForms_Entries_Single {
 				: $choice['label'];
 		}
 
-		$label = isset( $choice['label'] ) ? $choice['label'] : '';
+		$label = $choice['label'] ?? '';
 		/* translators: %s - item number. */
 		$label = $label !== '' ? $label : sprintf( esc_html__( 'Item %s', 'wpforms' ), $key );
 
@@ -2331,8 +2508,9 @@ class WPForms_Entries_Single {
 			return $label;
 		}
 
-		$value  = ! empty( $choice['value'] ) ? $choice['value'] : 0;
-		$amount = wpforms_format_amount( wpforms_sanitize_amount( $value ), true );
+		$value    = $choice['value'] ?? 0;
+		$currency = $field['currency'] ?? '';
+		$amount   = wpforms_format_amount( wpforms_sanitize_amount( $value, $currency ), true, $currency );
 
 		return $amount ? $label . ' - ' . $amount : $label;
 	}
@@ -2345,15 +2523,23 @@ class WPForms_Entries_Single {
 	 * @param array $field      Entry field.
 	 * @param array $choice     Choice settings.
 	 * @param int   $key        Choice number.
-	 * @param bool  $is_dynamic Is dynamic field.
+	 * @param bool  $is_dynamic Is a dynamic field.
 	 *
 	 * @return bool
 	 */
-	private function is_checked_choice( $field, $choice, $key, $is_dynamic ) {
+	private function is_checked_choice( $field, $choice, $key, $is_dynamic ): bool { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		$is_payment     = strpos( $field['type'], 'payment-' ) === 0;
-		$separator      = $is_payment || $is_dynamic ? ',' : "\n";
-		$active_choices = explode( $separator, $field['value_raw'] );
+		$is_payment  = strpos( $field['type'], 'payment-' ) === 0;
+		$separator   = $is_payment || $is_dynamic ? ',' : "\n";
+		$show_values = ! empty( $this->form_data['fields'][ $field['id'] ]['show_values'] );
+		$value       = $field['value_raw'] ?? ( $field['value'] ?? '' );
+
+		// Case when field is using custom values, see 'wpforms_fields_show_options_setting' filter.
+		if ( $show_values && ! $is_dynamic ) {
+			$value = $field['value'] ?? '';
+		}
+
+		$active_choices = explode( $separator, $value );
 
 		if ( $is_dynamic ) {
 			$active_choices = array_map( 'absint', $active_choices );
@@ -2385,15 +2571,16 @@ class WPForms_Entries_Single {
 	 * @param object $form_data Form data.
 	 *
 	 * @return array
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function add_hidden_data( $fields, $entry, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function add_hidden_data( $fields, $entry, $form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$settings = ! empty( $form_data['fields'] ) ? $form_data['fields'] : [];
 
 		// Content, Divider, HTML and layout fields must always be included because it's allowed to show and hide these fields.
 		$forced_allowed_fields = [ 'content', 'divider', 'html', 'layout', 'pagebreak' ];
 
-		// First order settings field and remove fields that we dont need.
+		// First order settings field and remove fields that we don't need.
 		foreach ( $settings as $key => $setting ) {
 
 			if ( empty( $setting['type'] ) ) {
@@ -2409,7 +2596,7 @@ class WPForms_Entries_Single {
 
 			// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
 			/** This filter is documented in /src/Pro/Admin/Entries/Edit.php */
-			if ( ! (bool) apply_filters( "wpforms_pro_admin_entries_edit_is_field_displayable_{$field_type}", true, $setting, $form_data ) ) {
+			if ( ! apply_filters( "wpforms_pro_admin_entries_edit_is_field_displayable_{$field_type}", true, $setting, $form_data ) ) {
 				unset( $settings[ $key ] );
 				continue;
 			}

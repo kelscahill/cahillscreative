@@ -172,6 +172,12 @@ div.sib-scenarios{
     margin-top: 15px;
     margin-bottom: 15px;
 }
+
+.sib-captcha-key-turnstile
+{
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
 /* ---------------------- */
 
 .popover.right > .arrow {

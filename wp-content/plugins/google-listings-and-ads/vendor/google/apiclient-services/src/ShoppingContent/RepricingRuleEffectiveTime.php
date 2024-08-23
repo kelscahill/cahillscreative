@@ -20,6 +20,10 @@ namespace Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Shop
 class RepricingRuleEffectiveTime extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Collection
 {
   protected $collection_key = 'fixedTimePeriods';
+  /**
+   * @var RepricingRuleEffectiveTimeFixedTimePeriod[]
+   */
+  public $fixedTimePeriods;
   protected $fixedTimePeriodsType = RepricingRuleEffectiveTimeFixedTimePeriod::class;
   protected $fixedTimePeriodsDataType = 'array';
 

@@ -66,7 +66,6 @@ class ShoppingContent extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendo
   public $productdeliverytime;
   public $products;
   public $productstatuses;
-  public $productstatuses_repricingreports;
   public $promotions;
   public $pubsubnotificationsettings;
   public $quotas;
@@ -74,8 +73,6 @@ class ShoppingContent extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendo
   public $regionalinventory;
   public $regions;
   public $reports;
-  public $repricingrules;
-  public $repricingrules_repricingreports;
   public $returnaddress;
   public $returnpolicy;
   public $returnpolicyonline;
@@ -83,6 +80,7 @@ class ShoppingContent extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendo
   public $settlementtransactions;
   public $shippingsettings;
   public $shoppingadsprogram;
+  public $rootUrlTemplate;
 
   /**
    * Constructs the internal representation of the ShoppingContent service.
@@ -95,6 +93,7 @@ class ShoppingContent extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendo
   {
     parent::__construct($clientOrConfig);
     $this->rootUrl = $rootUrl ?: 'https://shoppingcontent.googleapis.com/';
+    $this->rootUrlTemplate = $rootUrl ?: 'https://shoppingcontent.UNIVERSE_DOMAIN/';
     $this->servicePath = 'content/v2.1/';
     $this->batchPath = 'batch';
     $this->version = 'v2.1';
@@ -1482,6 +1481,20 @@ class ShoppingContent extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendo
                   'type' => 'string',
                 ],
               ],
+            ],'triggeraction' => [
+              'path' => '{merchantId}/merchantsupport/triggeraction',
+              'httpMethod' => 'POST',
+              'parameters' => [
+                'merchantId' => [
+                  'location' => 'path',
+                  'type' => 'string',
+                  'required' => true,
+                ],
+                'languageCode' => [
+                  'location' => 'query',
+                  'type' => 'string',
+                ],
+              ],
             ],
           ]
         ]
@@ -2445,51 +2458,6 @@ class ShoppingContent extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendo
           ]
         ]
     );
-    $this->productstatuses_repricingreports = new ShoppingContent\Resource\ProductstatusesRepricingreports(
-        $this,
-        $this->serviceName,
-        'repricingreports',
-        [
-          'methods' => [
-            'list' => [
-              'path' => '{merchantId}/productstatuses/{productId}/repricingreports',
-              'httpMethod' => 'GET',
-              'parameters' => [
-                'merchantId' => [
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ],
-                'productId' => [
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ],
-                'endDate' => [
-                  'location' => 'query',
-                  'type' => 'string',
-                ],
-                'pageSize' => [
-                  'location' => 'query',
-                  'type' => 'integer',
-                ],
-                'pageToken' => [
-                  'location' => 'query',
-                  'type' => 'string',
-                ],
-                'ruleId' => [
-                  'location' => 'query',
-                  'type' => 'string',
-                ],
-                'startDate' => [
-                  'location' => 'query',
-                  'type' => 'string',
-                ],
-              ],
-            ],
-          ]
-        ]
-    );
     $this->promotions = new ShoppingContent\Resource\Promotions(
         $this,
         $this->serviceName,
@@ -2782,142 +2750,6 @@ class ShoppingContent extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendo
                   'location' => 'path',
                   'type' => 'string',
                   'required' => true,
-                ],
-              ],
-            ],
-          ]
-        ]
-    );
-    $this->repricingrules = new ShoppingContent\Resource\Repricingrules(
-        $this,
-        $this->serviceName,
-        'repricingrules',
-        [
-          'methods' => [
-            'create' => [
-              'path' => '{merchantId}/repricingrules',
-              'httpMethod' => 'POST',
-              'parameters' => [
-                'merchantId' => [
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ],
-                'ruleId' => [
-                  'location' => 'query',
-                  'type' => 'string',
-                ],
-              ],
-            ],'delete' => [
-              'path' => '{merchantId}/repricingrules/{ruleId}',
-              'httpMethod' => 'DELETE',
-              'parameters' => [
-                'merchantId' => [
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ],
-                'ruleId' => [
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ],
-              ],
-            ],'get' => [
-              'path' => '{merchantId}/repricingrules/{ruleId}',
-              'httpMethod' => 'GET',
-              'parameters' => [
-                'merchantId' => [
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ],
-                'ruleId' => [
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ],
-              ],
-            ],'list' => [
-              'path' => '{merchantId}/repricingrules',
-              'httpMethod' => 'GET',
-              'parameters' => [
-                'merchantId' => [
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ],
-                'countryCode' => [
-                  'location' => 'query',
-                  'type' => 'string',
-                ],
-                'languageCode' => [
-                  'location' => 'query',
-                  'type' => 'string',
-                ],
-                'pageSize' => [
-                  'location' => 'query',
-                  'type' => 'integer',
-                ],
-                'pageToken' => [
-                  'location' => 'query',
-                  'type' => 'string',
-                ],
-              ],
-            ],'patch' => [
-              'path' => '{merchantId}/repricingrules/{ruleId}',
-              'httpMethod' => 'PATCH',
-              'parameters' => [
-                'merchantId' => [
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ],
-                'ruleId' => [
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ],
-              ],
-            ],
-          ]
-        ]
-    );
-    $this->repricingrules_repricingreports = new ShoppingContent\Resource\RepricingrulesRepricingreports(
-        $this,
-        $this->serviceName,
-        'repricingreports',
-        [
-          'methods' => [
-            'list' => [
-              'path' => '{merchantId}/repricingrules/{ruleId}/repricingreports',
-              'httpMethod' => 'GET',
-              'parameters' => [
-                'merchantId' => [
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ],
-                'ruleId' => [
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ],
-                'endDate' => [
-                  'location' => 'query',
-                  'type' => 'string',
-                ],
-                'pageSize' => [
-                  'location' => 'query',
-                  'type' => 'integer',
-                ],
-                'pageToken' => [
-                  'location' => 'query',
-                  'type' => 'string',
-                ],
-                'startDate' => [
-                  'location' => 'query',
-                  'type' => 'string',
                 ],
               ],
             ],

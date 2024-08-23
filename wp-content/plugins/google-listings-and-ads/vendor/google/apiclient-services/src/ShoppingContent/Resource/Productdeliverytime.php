@@ -38,6 +38,7 @@ class Productdeliverytime extends \Automattic\WooCommerce\GoogleListingsAndAds\V
    * @param ProductDeliveryTimeModel $postBody
    * @param array $optParams Optional parameters.
    * @return ProductDeliveryTimeModel
+   * @throws \Google\Service\Exception
    */
   public function create($merchantId, ProductDeliveryTimeModel $postBody, $optParams = [])
   {
@@ -53,6 +54,7 @@ class Productdeliverytime extends \Automattic\WooCommerce\GoogleListingsAndAds\V
    * @param string $productId Required. The Content API ID of the product, in the
    * form `channel:contentLanguage:targetCountry:offerId`.
    * @param array $optParams Optional parameters.
+   * @throws \Google\Service\Exception
    */
   public function delete($merchantId, $productId, $optParams = [])
   {
@@ -69,6 +71,7 @@ class Productdeliverytime extends \Automattic\WooCommerce\GoogleListingsAndAds\V
    * form `channel:contentLanguage:targetCountry:offerId`.
    * @param array $optParams Optional parameters.
    * @return ProductDeliveryTimeModel
+   * @throws \Google\Service\Exception
    */
   public function get($merchantId, $productId, $optParams = [])
   {

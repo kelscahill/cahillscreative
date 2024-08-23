@@ -1,7 +1,7 @@
 # bcmath_compat
 
 [![Software License][ico-license]](LICENSE.md)
-[![Build Status][ico-travis]][link-travis]
+[![CI Status](https://github.com/phpseclib/bcmath_compat/actions/workflows/ci.yml/badge.svg?branch=2.0&event=push "CI Status")](https://github.com/phpseclib/bcmath_compat/actions/workflows/ci.yml?query=branch%3A2.0)
 
 PHP 5.x-8.x polyfill for bcmath extension
 
@@ -11,16 +11,6 @@ With [Composer](https://getcomposer.org/):
 
 ```bash
 $ composer require phpseclib/bcmath_compat
-```
-
-## Installation On Heroku
-
-bcmath_compat does not install the normal way on Heroku / Composer < 2.0 because Heroku [uses modified composer.json's](https://github.com/phpseclib/bcmath_compat/issues/1#issuecomment-573112000). Composer 2 [makes this a non-issue](https://github.com/phpseclib/bcmath_compat/issues/1#issuecomment-618951036).
-
-In light of this the way to install this on Heroku with Composer < 2.0 is to do the following:
-
-```bash
-$ composer require phpseclib/bcmath_compat:1.0.4
 ```
 
 ## Limitations

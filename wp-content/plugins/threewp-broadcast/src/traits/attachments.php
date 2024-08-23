@@ -462,7 +462,10 @@ trait attachments
 				// Replace escaped URL
 				$content = str_replace( addslashes( $old_guid ), addslashes( $new_guid ), $content, $count );
 				if ( $count > 0 )
-					$this->debug( 'slashes: Modified slashed attachment guid in link: %s times', $count );
+					$this->debug( 'slashes: Modified slashed attachment guid %s with %s in link: %s times',
+						$old_guid,
+						$new_guid,
+						$count );
 
 				// Alternative escapes.
 				$slashed_old_guid = str_replace( '/', '\\/', $old_guid );

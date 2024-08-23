@@ -37,6 +37,7 @@ class Ordertrackingsignals extends \Automattic\WooCommerce\GoogleListingsAndAds\
    * @param OrderTrackingSignal $postBody
    * @param array $optParams Optional parameters.
    * @return OrderTrackingSignal
+   * @throws \Google\Service\Exception
    */
   public function create($merchantId, OrderTrackingSignal $postBody, $optParams = [])
   {

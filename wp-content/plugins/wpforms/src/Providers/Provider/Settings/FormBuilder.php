@@ -52,7 +52,7 @@ abstract class FormBuilder implements FormBuilderInterface {
 		$this->core = $core;
 
 		if ( ! empty( $_GET['form_id'] ) ) { // phpcs:ignore
-			$this->form_data = \wpforms()->form->get(
+			$this->form_data = wpforms()->get( 'form' )->get(
 				\absint( $_GET['form_id'] ), // phpcs:ignore
 				[
 					'content_only' => true,
@@ -267,7 +267,7 @@ abstract class FormBuilder implements FormBuilderInterface {
 
 		\wp_enqueue_script(
 			'wpforms-admin-builder-templates',
-			WPFORMS_PLUGIN_URL . "assets/js/components/admin/builder/templates{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/admin/builder/templates{$min}.js",
 			[ 'wp-util' ],
 			WPFORMS_VERSION,
 			true
@@ -275,7 +275,7 @@ abstract class FormBuilder implements FormBuilderInterface {
 
 		\wp_enqueue_script(
 			'wpforms-admin-builder-providers',
-			WPFORMS_PLUGIN_URL . "assets/js/components/admin/builder/providers{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/admin/builder/providers{$min}.js",
 			[ 'wpforms-utils', 'wpforms-builder', 'wpforms-admin-builder-templates' ],
 			WPFORMS_VERSION,
 			true

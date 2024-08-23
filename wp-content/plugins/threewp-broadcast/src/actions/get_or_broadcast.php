@@ -17,7 +17,7 @@ class get_or_broadcast
 	public $child_blog_id;
 
 	/**
-		@brief		OUT: The whole child post object.
+		@brief		[OUT]: The ID of the child post, if $broadcast_child_post is false;
 		@since		2020-09-29 07:05:48
 	**/
 	public $child_post_id;

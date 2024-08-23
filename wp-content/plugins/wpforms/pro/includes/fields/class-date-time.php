@@ -129,7 +129,7 @@ class WPForms_Field_Date_Time extends WPForms_Field {
 				'wpforms-field-date-time-date',
 				'wpforms-datepicker',
 				! empty( $field_required ) ? 'wpforms-field-required' : '',
-				! empty( wpforms()->process->errors[ $form_id ][ $field_id ]['date'] ) ? 'wpforms-error' : '',
+				! empty( wpforms()->get( 'process' )->errors[ $form_id ][ $field_id ]['date'] ) ? 'wpforms-error' : '',
 			],
 			'data'      => [
 				'date-format' => $date_format,
@@ -176,7 +176,7 @@ class WPForms_Field_Date_Time extends WPForms_Field {
 				'wpforms-field-date-time-time',
 				'wpforms-timepicker',
 				! empty( $field_required ) ? 'wpforms-field-required' : '',
-				! empty( wpforms()->process->errors[ $form_id ][ $field_id ]['time'] ) ? 'wpforms-error' : '',
+				! empty( wpforms()->get( 'process' )->errors[ $form_id ][ $field_id ]['time'] ) ? 'wpforms-error' : '',
 			],
 			'data'      => [
 				'time-format' => $time_format,
@@ -984,6 +984,7 @@ class WPForms_Field_Date_Time extends WPForms_Field {
 		$time_prop['data']['step']        = apply_filters( 'wpforms_datetime_time_interval', $time_prop['data']['step'], $form_data, $field );
 		$time_prop['data']['time-format'] = isset( $time_prop['data']['time-format'] ) ? $time_prop['data']['time-format'] : $this->defaults['time_format'];
 		$time_prop['data']['time-format'] = apply_filters( 'wpforms_datetime_time_format', $time_prop['data']['time-format'], $form_data, $field );
+		$time_prop['attr']['value']       = ! empty( $time_prop['attr']['value'] ) ? date( $time_prop['data']['time-format'], strtotime( $time_prop['attr']['value'] ) ) : ''; // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 
 		$field_required = ! empty( $field['required'] ) ? ' required' : '';
 		$field_format   = ! empty( $field['format'] ) ? $field['format'] : 'date-time';
@@ -1076,6 +1077,52 @@ class WPForms_Field_Date_Time extends WPForms_Field {
 	}
 
 	/**
+	 * Display field input sublabel if present.
+	 *
+	 * @since 1.8.8
+	 *
+	 * @param string $key      Input key.
+	 * @param string $position Sublabel position.
+	 * @param array  $field    Field data and settings.
+	 */
+	public function field_display_sublabel( $key, $position, $field ) {
+
+		if ( $key !== 'date' || empty( $field['date_type'] ) || $field['date_type'] !== 'dropdown' ) {
+			parent::field_display_sublabel( $key, $position, $field );
+
+			return;
+		}
+
+		if ( empty( $field['properties']['inputs'][ $key ]['sublabel']['value'] ) ) {
+			parent::field_display_sublabel( $key, $position, $field );
+
+			return;
+		}
+
+		$field_position = ! empty( $field['properties']['inputs'][ $key ]['sublabel']['position'] ) ? $field['properties']['inputs'][ $key ]['sublabel']['position'] : 'after';
+
+		// Used to prevent from displaying sublabel twice.
+		if ( $field_position !== $position ) {
+			return;
+		}
+
+		$classes = [
+			'wpforms-field-sublabel',
+			$field_position,
+		];
+
+		if ( ! empty( $field['properties']['inputs'][ $key ]['sublabel']['hidden'] ) ) {
+			$classes[] = 'wpforms-sublabel-hide';
+		}
+
+		printf(
+			'<label class="%1$s">%2$s</label>',
+			wpforms_sanitize_classes( $classes, true ),
+			esc_html( $field['properties']['inputs'][ $key ]['sublabel']['value'] )
+		);
+	}
+
+	/**
 	 * Display the date field using dropdowns.
 	 *
 	 * @since 1.3.0
@@ -1123,7 +1170,7 @@ class WPForms_Field_Date_Time extends WPForms_Field {
 			[
 				'months'       => range( 1, 12 ),
 				'days'         => range( 1, 31 ),
-				'years'        => range( date( 'Y' ), 1920 ), // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+				'years'        => range( date( 'Y' ) + 1, 1920 ), // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 				'months_label' => esc_html__( 'MM', 'wpforms' ),
 				'days_label'   => esc_html__( 'DD', 'wpforms' ),
 				'years_label'  => esc_html__( 'YYYY', 'wpforms' ),
@@ -1200,7 +1247,7 @@ class WPForms_Field_Date_Time extends WPForms_Field {
 		$atts['class']   = isset( $properties['class'] ) ? $properties['class'] : [];
 		$atts['class'][] = 'wpforms-field-date-time-date-' . $element;
 		$atts['class'][] = ! empty( $field_required ) ? 'wpforms-field-required' : '';
-		$atts['class'][] = ! empty( wpforms()->process->errors[ $form_id ][ $field['id'] ]['date'] ) ? 'wpforms-error' : '';
+		$atts['class'][] = ! empty( wpforms()->get( 'process' )->errors[ $form_id ][ $field['id'] ]['date'] ) ? 'wpforms-error' : '';
 
 		$atts['data'] = isset( $properties['data'] ) ? $properties['data'] : [];
 		$atts['attr'] = isset( $properties['attr'] ) ? $properties['attr'] : [];
@@ -1364,7 +1411,7 @@ class WPForms_Field_Date_Time extends WPForms_Field {
 				} else {
 					// So we are missing some of the values.
 					// We can't process date further, as we won't be able to retrieve its unix time.
-					wpforms()->process->fields[ $field_id ] = [
+					wpforms()->get( 'process' )->fields[ $field_id ] = [
 						'name'  => sanitize_text_field( $name ),
 						'value' => sanitize_text_field( $value ),
 						'id'    => absint( $field_id ),
@@ -1413,7 +1460,7 @@ class WPForms_Field_Date_Time extends WPForms_Field {
 			$unix = strtotime( trim( "$date $time" ) );
 		}
 
-		wpforms()->process->fields[ $field_id ] = [
+		wpforms()->get( 'process' )->fields[ $field_id ] = [
 			'name'  => sanitize_text_field( $name ),
 			'value' => sanitize_text_field( $value ),
 			'id'    => absint( $field_id ),

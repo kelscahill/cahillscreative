@@ -53,7 +53,7 @@ class ApiManager
         add_action('wp_footer', array($cart_events_manager, 'ws_cart_custom_fragment_load'));
         add_filter('woocommerce_add_to_cart_fragments', array($cart_events_manager, 'ws_cart_custom_fragment'), 10, 1);
         add_action('woocommerce_thankyou', array($cart_events_manager, 'ws_checkout_completed'));
-        add_action('woocommerce_order_status_changed', array( $this, 'on_order_status_changed' ), 10, 3);
+        add_action('woocommerce_order_status_changed', array($this, 'on_order_status_changed' ), 10, 3);
         add_action('woocommerce_order_status_refunded', array($this, 'on_order_status_refunded'), 10, 1);
         add_action('woocommerce_order_note_added', array($this, 'on_new_customer_note'), 10, 2);
         add_action('woocommerce_created_customer', array($this, 'on_new_customer_creation'), 10, 3);
@@ -65,6 +65,11 @@ class ApiManager
         add_action('woocommerce_order_status_changed', array($order_events_manager, 'order_events' ), 10, 3);
         add_action('woocommerce_new_order', array($order_events_manager, 'order_created' ), 10, 1);
         add_action('woocommerce_order_refunded', array($order_events_manager, 'order_created' ), 10, 1);
+        add_action('wp_ajax_nopriv_the_ajax_hook', array($cart_events_manager, 'save_anonymous_user_as_blacklisted' ));
+        add_action('wp_ajax_the_ajax_hook', array($cart_events_manager, 'the_action_function' ));
+        add_filter('woocommerce_update_cart_action_cart_updated', array($cart_events_manager, 'handle_cart_update_event' ), 10, 1);
+        add_filter('woocommerce_add_to_cart', array($cart_events_manager, 'handle_cart_update_event' ), 10, 1);
+        add_action('woocommerce_cart_item_removed', array($cart_events_manager, 'handle_cart_update_event' ), 10, 1 );
     }
 
     public function add_rest_endpoints()
@@ -145,6 +150,13 @@ class ApiManager
                 self::ROUTE_METHODS    => 'GET',
                 self::ROUTE_CALLBACK   => function () {
                     return $this->modify_response($this->get_products_count());
+                }
+            ),
+            array(
+                self::ROUTE_PATH       => '/customers/count',
+                self::ROUTE_METHODS    => 'GET',
+                self::ROUTE_CALLBACK   => function () {
+                    return $this->modify_response($this->get_customers_count());
                 }
             ),
             array(
@@ -356,7 +368,24 @@ class ApiManager
                 ), 500);
         }
     }
+    private function get_customers_count()
+    {
+        try {
+            $customer_data = count_users();
+            $customer_count = isset($customer_data['avail_roles']['customer'])? $customer_data['avail_roles']['customer'] : 0;
 
+            return new WP_REST_Response(
+                array(
+                    'count' => $customer_count
+                ), 200);
+        }
+        catch (\Throwable $t) {
+            return new WP_REST_Response(
+                array(
+                    'message' => $t->getMessage(), " in file: ", $t->getFile(), "at line no:", $t->getLine()
+                ), 500);
+        }
+    }
     private function get_product_update($request)
     {
         try {
@@ -473,24 +502,37 @@ class ApiManager
     private function get_file_contents()
     {
         $file_name = $_GET['file_name'];
-
-        if (empty($file_name)) {
+        $cleaned_file_name = basename($file_name);
+        $cleaned_file_name = preg_replace('/[^A-Za-z0-9\-\_\.]/', '', $cleaned_file_name);
+        if (empty($cleaned_file_name)) {
             return new WP_REST_Response(array('file_content' => ""), 404);
         }
-        $file_path = wp_upload_dir()['basedir'] .  self::FILE_UPLOADS_PATH . $file_name;
+
+        $file_path = wp_upload_dir()['basedir'] .  self::FILE_UPLOADS_PATH . $cleaned_file_name;
+        if (!file_exists($file_path)) {
+            return new WP_REST_Response(array('file_content' => ""), 404);
+        }
+
         $base64_file_data = base64_encode(file_get_contents($file_path));
+        if (empty($base64_file_data)) {
+            return new WP_REST_Response(array('file_content' => ""), 404);
+        }
+
         return new WP_REST_Response(array('file_content' => $base64_file_data), 200);
     }
 
     private function delete_attachment()
     {
         $file_name = $_GET['file_name'];
-        if ($file_name == "") {
+        $cleaned_file_name = basename($file_name);
+        $cleaned_file_name = preg_replace('/[^A-Za-z0-9\-\_\.]/', '', $cleaned_file_name);
+        $file_path = wp_upload_dir()['basedir'] . self::FILE_UPLOADS_PATH . $cleaned_file_name;
+        if ($cleaned_file_name == "" || !file_exists($file_path)) {
             return new WP_REST_Response([
                 'message' => 'File not found',
             ], 400);
         }
-        $file_path =wp_upload_dir()['basedir'] . self::FILE_UPLOADS_PATH . $file_name;
+
         wp_delete_file($file_path);
         return new WP_REST_Response([
                 'message' => 'File deleted successfully',
@@ -508,6 +550,7 @@ class ApiManager
         $this->flush_option_keys(SENDINBLUE_WC_SETTINGS);
         $this->flush_option_keys(SENDINBLUE_WC_EMAIL_SETTINGS);
         $this->flush_option_keys(SENDINBLUE_WOOCOMMERCE_UPDATE);
+        $this->flush_option_keys(SENDINBLUE_WC_ECOMMERCE_REQ);
         return new WP_REST_Response(array('success' => true), 200);
     }
 
@@ -569,11 +612,10 @@ class ApiManager
             return;
         }
 
-        $opt_in_checked = false;
-        $doi_enabled = !empty($settings[SendinblueClient::IS_SUBSCRIPTION_EMAIL_ENABLED]) && !empty($settings[SendinblueClient::SUBSCRIPTION_EMAIL_TYPE]) && $settings[SendinblueClient::SUBSCRIPTION_EMAIL_TYPE] == 1;
+        $opt_in_checked = "false";
 
-        if (empty($settings[SendinblueClient::IS_DISPLAY_OPT_IN_ENABLED]) || get_post_meta($id, 'ws_opt_in', true) || $doi_enabled) {
-            $opt_in_checked = true;
+        if (empty($settings[SendinblueClient::IS_DISPLAY_OPT_IN_ENABLED]) || get_post_meta($id, 'ws_opt_in', true)) {
+            $opt_in_checked = "true";
         }
 
         if (!empty($settings[SendinblueClient::IS_SUBSCRIBE_EVENT_ENABLED])
@@ -621,14 +663,17 @@ class ApiManager
         $customer_data['last_name'] = $customer_data['billing']['last_name'];
         $customer_data['email'] = $customer_data['billing']['email'];
         $customer_data['subscribed'] = "false";
+        $customer_data['is_customer'] = "false";
         if (!empty($customer_data['customer_id'])) {
             $main_customer = get_userdata($customer_data['customer_id']);
             $customer_data['date_created_gmt'] = $main_customer->user_registered;
             $customer_data['email'] = $main_customer->user_email;
             $customer_data['subscribed'] = "true";
-        } elseif ($opt_in_checked) {
+            $customer_data['is_customer'] = "true";
+        } elseif ($opt_in_checked == "true") {
             $customer_data['subscribed'] = "true";
         }
+        $customer_data['opt_in_checked'] = $opt_in_checked; //true when either no optin box or optin box is checked
         $customer_data['order_id'] = $order->get_order_number();
         $customer_data['order_date'] = gmdate('Y-m-d', strtotime($order->get_date_created()));
         $customer_data['order_price'] = $order->get_total();
@@ -669,6 +714,7 @@ class ApiManager
                 foreach ( $attachments as $key => $attachment ) {
                     $user_connection_id = get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null);
                     $temp_file_name = $user_connection_id . uniqid('_', false) . wp_basename($attachment);
+                    $temp_file_name = preg_replace('/[^A-Za-z0-9\-\_\.]/', '', $temp_file_name);
                     $file_path = $complete_file_path . $temp_file_name;
                     copy($attachment, $file_path);
                     $attachment_path[$i]['temp_file_name'] = $temp_file_name;
@@ -1343,14 +1389,9 @@ class ApiManager
     {
         $order_detail = '<table style="padding-left: 0px;width: 100%;text-align: left;"><tr><th>' . __('Products', 'wc_sendinblue') . '</th><th>' . __('Quantity', 'wc_sendinblue') . '</th><th>' . __('Price', 'wc_sendinblue') . '</th></tr>';
         foreach ($order->get_items() as $item) {
-            if (isset($item['variation_id']) && !empty($item['variation_id'])) {
-                $product = new \WC_Product_Variation($item['variation_id']);
-            } else {
-                $product = new \WC_Product($item['product_id']);
-            }
             $product_name = $item['name'];
-            $product_quantity = $item['qty'];
-            $sub_total = (float)$product->get_price() * (int)$product_quantity;
+            $product_quantity = $item['quantity'];
+            $sub_total = (float)$item['subtotal'];
             if (version_compare(get_option('woocommerce_db_version'), '3.0', '>=')) {
                 $product_price = wc_price($sub_total, array('currency' => $order->get_currency()));
             } else {

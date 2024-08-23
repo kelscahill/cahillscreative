@@ -40,6 +40,7 @@ class Collectionstatuses extends \Automattic\WooCommerce\GoogleListingsAndAds\Ve
    * CollectionId is the same as the REST ID of the collection.
    * @param array $optParams Optional parameters.
    * @return CollectionStatus
+   * @throws \Google\Service\Exception
    */
   public function get($merchantId, $collectionId, $optParams = [])
   {
@@ -62,6 +63,7 @@ class Collectionstatuses extends \Automattic\WooCommerce\GoogleListingsAndAds\Ve
    * page. All other parameters must match the original call that provided the
    * page token.
    * @return ListCollectionStatusesResponse
+   * @throws \Google\Service\Exception
    */
   public function listCollectionstatuses($merchantId, $optParams = [])
   {

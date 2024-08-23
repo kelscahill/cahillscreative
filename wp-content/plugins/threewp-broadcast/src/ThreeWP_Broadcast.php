@@ -173,6 +173,8 @@ class ThreeWP_Broadcast
 		// Don't want to break anyone's plugins.
 		$this->add_action( 'threewp_broadcast_broadcast_post' );
 
+		$this->add_action( 'threewp_broadcast_broadcasting_set_object_terms', 100 );
+
 		$this->add_action( 'threewp_broadcast_each_linked_post' );
 		$this->add_action( 'threewp_broadcast_get_user_writable_blogs', 100 );		// Allow other plugins to do this first.
 		$this->add_filter( 'threewp_broadcast_get_post_types', 5 );					// Add our custom post types to the array of broadcastable post types.
@@ -432,6 +434,44 @@ class ThreeWP_Broadcast
 		$this->permalink_cache->$key = $action->returned_permalink;
 
 		return $action->returned_permalink;
+	}
+
+	/**
+		@brief		Set the terms of an post.
+		@since		2024-04-07 20:24:53
+	**/
+	public function threewp_broadcast_broadcasting_set_object_terms( $action )
+	{
+		$bcd = $action->broadcasting_data;
+
+		if ( $action->use_sql )
+		{
+			global $wpdb;
+			$this->debug( 'Setting taxonomies for %s using SQL: %s',
+				$action->taxonomy,
+				implode( ", ", $action->term_ids )
+			);
+
+			foreach( $action->term_ids as $term_id )
+			{
+				$result = $wpdb->insert( $wpdb->term_relationships,
+					[
+						'object_id' => $bcd->new_post( 'ID' ),
+						'term_taxonomy_id' => $term_id,
+					]
+				);
+				if ( ! $result )
+					$this->debug( 'Failed setting term %s', $term_id );
+			}
+		}
+		else
+		{
+			$this->debug( 'Setting taxonomies for %s using wp_set_object_terms: %s',
+				$action->taxonomy,
+				implode( ", ", $action->term_ids )
+			);
+			wp_set_object_terms( $bcd->new_post( 'ID' ), $action->term_ids, $action->taxonomy );
+		}
 	}
 
 	/**

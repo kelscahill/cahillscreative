@@ -668,7 +668,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 				$fromname = $home_settings['from_name'];
 				$from_email = $home_settings['from_email'];
 			} else {
-				$from_email = __( 'no-reply@brevo.com', 'mailin' );
+				$from_email = __( 'no-reply@' . parse_url(get_site_url(), PHP_URL_HOST), 'mailin' );
 				$fromname = __( 'Brevo', 'mailin' );
 			}
 

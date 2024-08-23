@@ -29,6 +29,7 @@ use Psr\Log\LoggerInterface;
 trait ConfigurationTrait
 {
     private $developerToken;
+    private $useCloudOrgForApiAccess;
     private $loginCustomerId;
     private $linkedCustomerId;
     private $endpoint;
@@ -38,6 +39,7 @@ trait ConfigurationTrait
     private $proxy;
     private $transport;
     private $grpcChannelIsSecure;
+    private $useGapicV2Source;
 
     // The following configuration settings are based on complex objects. They cannot be set in
     // configuration files like the others but only dynamically.
@@ -54,6 +56,16 @@ trait ConfigurationTrait
     public function getDeveloperToken()
     {
         return $this->developerToken;
+    }
+
+    /**
+     * Returns true when this library is set to use Google Cloud organization for API access.
+     *
+     * @return bool
+     */
+    public function useCloudOrgForApiAccess()
+    {
+        return $this->useCloudOrgForApiAccess;
     }
 
     /**
@@ -154,6 +166,16 @@ trait ConfigurationTrait
     public function getGrpcChannelCredential()
     {
         return $this->grpcChannelCredential;
+    }
+
+    /**
+     * Returns true when this library is set to use GAPIC v2 source.
+     *
+     * @return bool
+     */
+    public function useGapicV2Source()
+    {
+        return $this->useGapicV2Source;
     }
 
     /**

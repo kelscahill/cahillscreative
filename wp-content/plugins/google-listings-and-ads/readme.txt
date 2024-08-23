@@ -1,11 +1,11 @@
 === Google Listings & Ads ===
 Contributors: automattic, google, woocommerce
-Tags: woocommerce, google, listings, ads
+Tags: woocommerce, google, product feed, ads, listings
 Requires at least: 5.9
-Tested up to: 6.4
+Tested up to: 6.5
 Requires PHP: 7.4
 Requires PHP Architecture: 64 Bits
-Stable tag: 2.5.13
+Stable tag: 2.7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -111,22 +111,18 @@ Yes, you can run both at the same time, and we recommend it! In the US, advertis
 
 == Changelog ==
 
-= 2.5.13 - 2023-12-06 =
-* Fix - Change Budget Recommendations values.
-* Tweak - Use a single daily budget instead of a range.
+= 2.7.1 - 2024-05-29 =
+* Dev - Add info about  Legacy Google Ads API Client Library  in Readme.
+* Fix - Prevent PHP Warning when Statistics is null.
+* Update - Implement Account Request Review Requests in the extension.
 
-= 2.5.12 - 2023-11-22 =
-* Dev - Fix E2E gtag events tests.
-* Dev - Update WordPress CS to 3.0.
-* Dev - Update phpunit polyfills to 1.1 for WP 6.4.
-* Tweak - Add filter to be able to build custom shipping method rate handers.
-* Tweak - Remove rewrite rules flush.
+= 2.7.0 - 2024-05-14 =
+* Fix - Convert `lbs` to `lb` when mapping WC products to Google products.
+* Fix - E2E tests
+* Tweak - WC 8.9 compatibility.
+* Update - Update Google API to V16.
 
-= 2.5.11 - 2023-11-07 =
-* Add - Record tracking events for moving steps on the campaign creation and editing pages.
-* Tweak - Add tracking for campaign count.
-* Tweak - WC 8.3 compatibility.
-* Tweak - WP 6.4 compatibility.
-* Update - Use new Woo.com domain.
+= 2.6.9 - 2024-05-07 =
+* Tweak - Confirm issues are present when retrieving product status.
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/google-listings-and-ads/trunk/changelog.txt).

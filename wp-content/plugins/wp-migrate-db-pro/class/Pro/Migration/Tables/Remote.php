@@ -167,9 +167,9 @@ class Remote
             return wp_send_json_error($state_data->get_error_message());
         }
 
-        $state_data['find_replace_pairs'] = unserialize(base64_decode($state_data['find_replace_pairs']));
+        $state_data['find_replace_pairs'] = json_decode(base64_decode($state_data['find_replace_pairs']), true);
         $state_data['form_data']          = base64_decode($state_data['form_data']);
-        $state_data['site_details']       = unserialize(base64_decode($state_data['site_details']));
+        $state_data['site_details']       = json_decode(base64_decode($state_data['site_details']), true);
         $state_data['primary_keys']       = base64_decode($state_data['primary_keys']);
         $state_data['source_prefix']      = base64_decode($state_data['source_prefix']);
         $state_data['destination_prefix'] = base64_decode($state_data['destination_prefix']);

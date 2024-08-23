@@ -208,7 +208,7 @@ class TransferManager extends Common_TransferManager
         $key   = $stage === 'media_files' ? 'mf' : 'tp';
 
         try {
-            list($resp, $meta) = $this->request_batch(base64_encode(str_rot13(serialize($batch))), $state_data, "wpmdb{$key}_transfers_send_file", $remote_url);
+            list($resp, $meta) = $this->request_batch(base64_encode(str_rot13(json_encode($batch))), $state_data, "wpmdb{$key}_transfers_send_file", $remote_url);
         } catch (\Exception $e) {
             $this->util->catch_general_error($e->getMessage());
         }

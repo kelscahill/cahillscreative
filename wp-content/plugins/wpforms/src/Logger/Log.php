@@ -60,8 +60,7 @@ class Log {
 			'wpforms-tools-logger',
 			WPFORMS_PLUGIN_URL . "assets/css/logger{$min}.css",
 			[],
-			WPFORMS_VERSION,
-			'all'
+			WPFORMS_VERSION
 		);
 	}
 
@@ -80,7 +79,7 @@ class Log {
 
 		wp_enqueue_script(
 			'wpforms-tools-logger',
-			WPFORMS_PLUGIN_URL . "assets/js/components/admin/logger/logger{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/admin/logger/logger{$min}.js",
 			[ 'jquery', 'jquery-confirm', 'wp-util' ],
 			WPFORMS_VERSION,
 			true
@@ -100,16 +99,17 @@ class Log {
 			'conditional_logic' => esc_html__( 'Conditional Logic', 'wpforms-lite' ),
 			'entry'             => esc_html__( 'Entries', 'wpforms-lite' ),
 			'error'             => esc_html__( 'Errors', 'wpforms-lite' ),
+			'log'               => esc_html__( 'Log', 'wpforms-lite' ),
 			'payment'           => esc_html__( 'Payment', 'wpforms-lite' ),
 			'provider'          => esc_html__( 'Providers', 'wpforms-lite' ),
 			'security'          => esc_html__( 'Security', 'wpforms-lite' ),
 			'spam'              => esc_html__( 'Spam', 'wpforms-lite' ),
-			'log'               => esc_html__( 'Log', 'wpforms-lite' ),
+			'translation'       => esc_html__( 'Translation', 'wpforms-lite' ),
 		];
 	}
 
 	/**
-	 * Determine if it a Logs page.
+	 * Determine if it is a Logs page.
 	 *
 	 * @since 1.6.3
 	 *
@@ -127,7 +127,7 @@ class Log {
 	 *
 	 * @param string       $title    Record title.
 	 * @param string       $message  Record message.
-	 * @param array|string $types    Array, string, or string separated by commas types.
+	 * @param array|string $types    Array, string, or string separated by comma types.
 	 * @param int          $form_id  Record form ID.
 	 * @param int          $entry_id Record entry ID.
 	 * @param int          $user_id  Record user ID.
@@ -138,11 +138,29 @@ class Log {
 	}
 
 	/**
+	 * Check if the database table exists.
+	 * Used in \WPForms_Install::maybe_create_tables() during plugin installation.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @return bool
+	 */
+	public function table_exists(): bool {
+
+		// phpcs:ignore WPForms.Formatting.EmptyLineBeforeReturn.RemoveEmptyLineBeforeReturnStatement
+		return $this->repository->table_exists();
+	}
+
+	/**
 	 * Create table for logs.
 	 *
 	 * @since 1.6.3
 	 */
 	public function create_table() {
+
+		if ( $this->table_exists() ) {
+			return;
+		}
 
 		$this->repository->create_table();
 	}

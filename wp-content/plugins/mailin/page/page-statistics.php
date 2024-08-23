@@ -112,111 +112,14 @@ if ( ! class_exists( 'SIB_Page_Statistics' ) ) {
 
 		/** Generate main page */
 		function generate_main_page() {
-			$client = new SendinblueApiClient();
-
-            $date = $this->get_selected_statistics_dates();
-			$data = [
-                'type' => 'classic',
-                'status' => 'sent',
-                'startDate' => $date['startDate'],
-                'endDate' => $date['endDate'],
-                'offset' => 0,
-            ];
-
-			$emailCampaigns = $client->getAllCampaignsByType(SendinblueApiClient::CAMPAIGN_TYPE_EMAIL, $data);
-            $smsCampaigns = $client->getAllCampaignsByType(SendinblueApiClient::CAMPAIGN_TYPE_SMS, $data);
             /**
              * Statistics on general options
              */
                 ?>
                 <h3 class="statistics_h3"><?php _e('Statistics', 'wc_sendinblue'); ?></h3>
-                <div id="sib-statistics-date-container">
-                    <form method="POST" id="sib-statistics-form">
-                        <label for="sib-statistics-date"><?php esc_attr_e( 'Date', 'mailin' );?>: </label>
-                        <?php if (strtotime($date['statisticsDate']) !== false) { ?>
-                        <input id="sib-statistics-date" name="sib-statistics-date" value="<?php echo esc_attr( $date['statisticsDate'] ); ?>" autocomplete="off" class="button show-settings">
-                        <?php } else { ?>
-                        <input id="sib-statistics-date" name="sib-statistics-date" value="<?php echo date('Y-m-d'); ?>" autocomplete="off" class="button show-settings">
-                        <?php } ?>
-                        <button id="apply-date-range" class="button action"><?php esc_attr_e( 'Apply', 'mailin'); ?></button>
-                        <span class="sib-spinner spinner"></span>
-                    </form>
-                </div>
-            
                 <table aria-describedby="statistic-table" id="ws_statistics_table" class="wc_shipping widefat wp-list-table">
-                    <thead>
-                    <tr>
-                        <th class="sort">&nbsp;</th>
-                        <th class=""><?php esc_attr_e( 'Name', 'mailin' );?></th>
-                        <th class=""><?php esc_attr_e('Recipients','mailin');?></th>
-                        <th class=""><?php esc_attr_e('Deliverability Rate','mailin');?></th>
-                        <th class=""><?php esc_attr_e('Opens','mailin');?></th>
-                        <th class=""><?php esc_attr_e('Clicks','mailin');?></th>
-                        <th class=""><?php esc_attr_e('Unsubscriptions','mailin');?></th>
-                        <th class=""><?php esc_attr_e('Bounces','mailin');?></th>
-                        <th class=""><?php esc_attr_e('Date','mailin');?></th>
-                    </tr>
-                    </thead>
                     <tbody class="ui-sortable">
-
-                        <h3 class="statistics_h3"><?php esc_attr_e( 'Email Campaigns', 'mailin' );?></h3>
-                    <?php
-                    if (!empty($emailCampaigns)) {
-                        foreach ($emailCampaigns as $campaign) { ?>
-                            <tr id="<?php echo str_replace(' ', '-', esc_attr( $campaign['name'] ));?>">
-                                <td width="1%" class="sort ui-sortable-handle">
-                                    <input type="hidden" name="method_order[flat_rate]" value="">
-                                </td>
-                                <td class=""><?php echo esc_attr( $campaign['name'] );?></td>
-                                <td class="sib-statistics-data-value"><?php echo esc_attr( $campaign['statistics']['globalStats']['sent'] );?></td>
-                                <td class="sib-statistics-data-value"><?php echo empty($campaign['statistics']['globalStats']['sent']) ? 0 : round(esc_attr( $campaign['statistics']['globalStats']['delivered'] ) * 100 / esc_attr( $campaign['statistics']['globalStats']['sent'] ), 2);?>%</td>
-                                <td class="sib-statistics-data-value"><?php echo !empty($campaign['statistics']['globalStats']['viewed']) ? esc_attr( $campaign['statistics']['globalStats']['viewed'] ) : 0;?></td>
-                                <td class="sib-statistics-data-value"><?php echo !empty($campaign['statistics']['globalStats']['clickers']) ? esc_attr( $campaign['statistics']['globalStats']['clickers'] ) : 0;?></td>
-                                <td class="sib-statistics-data-value"><?php echo !empty($campaign['statistics']['globalStats']['unsubscriptions']) ? esc_attr( $campaign['statistics']['globalStats']['unsubscriptions'] ) : 0; ?></td>
-                                <td class="sib-statistics-data-value"><?php echo esc_attr( $campaign['statistics']['globalStats']['softBounces'] ) + esc_attr( $campaign['statistics']['globalStats']['hardBounces'] );?></td>
-                                <td class="sib-statistics-data-value sib-last-column-value"><?php echo (new DateTime($campaign['sentDate']))->format('Y-m-d H:i:s');?></td>
-                            </tr>
-                        <?php } ?>
-                    <?php } else {  ?>
-                        <tr> <td colspan="9" style="text-align:center;"><?php esc_attr_e( 'No Stats Found', 'mailin' ); ?></td></tr>
-                    <?php } ?>
-                        </tbody>
-                    </table>
-                <table aria-describedby="statistic-table" id="ws_statistics_table" class="wc_shipping widefat wp-list-table" cellspacing="0">
-                    <thead>
-                    <tr>
-                        <th class="sort">&nbsp;</th>
-                        <th class=""><?php esc_attr_e( 'Name', 'mailin' );?></th>
-                        <th class=""><?php esc_attr_e('Recipients','mailin');?></th>
-                        <th class=""><?php esc_attr_e('Deliverability Rate','mailin');?></th>
-                        <th class=""><?php esc_attr_e('Answeres','mailin');?></th>
-                        <th class=""><?php esc_attr_e('Unsubscriptions','mailin');?></th>
-                        <th class=""><?php esc_attr_e('Bounces','mailin');?></th>
-                        <th class=""><?php esc_attr_e('Date','mailin');?></th>
-                    </tr>
-                    </thead>
-                    <tbody class="ui-sortable">
-
-                        <h3 class="statistics_h3"><?php esc_attr_e( 'SMS Campaigns', 'mailin' );?></h3>
-                    <?php
-                    if (!empty($smsCampaigns)) {
-                        foreach($smsCampaigns as $smsCampaign){ ?>
-                            <tr id="<?php echo str_replace(' ', '-', esc_attr( $smsCampaign['name'] ));?>">
-                                <td width="1%" class="sort ui-sortable-handle">
-                                    <input type="hidden" name="method_order[flat_rate]" value="">
-                                </td>
-                                <td class=""><?php echo esc_attr( $smsCampaign['name'] );?></td>
-                                <td class="sib-statistics-data-value"><?php echo esc_attr( $smsCampaign['statistics']['sent'] );?></td>
-                                <td class="sib-statistics-data-value"><?php echo empty($smsCampaign['statistics']['sent']) ? 0 : round(esc_attr( $smsCampaign['statistics']['delivered'] ) * 100 / esc_attr( $smsCampaign['statistics']['sent'] ), 2);?>%</td>
-                                <td class="sib-statistics-data-value"><?php echo !empty($smsCampaign['statistics']['answered']) ? esc_attr( $smsCampaign['statistics']['answered'] ) : 0;?></td>
-                                <td class="sib-statistics-data-value"><?php echo !empty($smsCampaign['statistics']['unsubscriptions']) ? esc_attr( $smsCampaign['statistics']['unsubscriptions'] ) : 0;?></td>
-                                <td class="sib-statistics-data-value"><?php echo esc_attr( $smsCampaign['statistics']['softBounces'] ) + esc_attr( $smsCampaign['statistics']['hardBounces'] );?></td>
-                                <td class="sib-statistics-data-value sib-last-column-value"><?php echo  (new DateTime($smsCampaign['sentDate']))->format('Y-m-d H:i:s');?></td>
-                            </tr>
-                        <?php } ?>
-                    <?php } else { ?>
-                        <tr> <td colspan="9" style="text-align:center;"><?php esc_attr_e( 'No Stats Found', 'mailin' ); ?></td></tr>
-                    <?php } ?>
+                        <h3 class="statistics_h3"> <a href="https://my.brevo.com/camp/message/stats/sms" class="btn btn-success" target="_blank" rel="noopener" style="margin: 2px 1px 8px 15px;"><?php esc_attr_e( 'View Statistics', 'mailin' );?></a></h3>
                     </tbody>
                 </table>
             <?php
@@ -229,40 +132,5 @@ if ( ! class_exists( 'SIB_Page_Statistics' ) ) {
 		<?php
 			SIB_Page_Home::print_disable_popup();
 		}
-
-		function get_selected_statistics_dates() {
-            $startDate = (new DateTime())->format(self::START_DATE_FORMAT);
-            $endDate = (new DateTime())->format(self::END_DATE_FORMAT_NOW);
-
-            if (empty($_POST['sib-statistics-date'])) {
-                $statisticsDate = date('Y-m-d');
-            } else {
-                $statisticsDate = sanitize_text_field($_POST['sib-statistics-date']);
-                $date = explode(' - ', $statisticsDate);
-
-                if (count($date) === 1) {
-                    $date[] = $date[0];
-                }
-
-                $startDate =  (new DateTime($date[0]));
-                $endDate =  (new DateTime($date[1]));
-                if ($date[0] >= date('Y-m-d') || $date[1] >= date('Y-m-d')) {
-                    $startDate = $startDate->format(self::START_DATE_FORMAT);
-                    $endDate =  (new DateTime())->format(self::END_DATE_FORMAT_NOW);
-                } elseif ($date[0] === $date[1]) {
-                    $startDate = $startDate->format(self::START_DATE_FORMAT);
-                    $endDate = $endDate->format(self::END_DATE_FORMAT);
-                } else {
-                    $startDate = $startDate->format(self::START_DATE_FORMAT);
-                    $endDate =  $endDate->format(self::END_DATE_FORMAT);
-                }
-            }
-
-            return [
-                    'statisticsDate' => $statisticsDate,
-                    'startDate' => $startDate,
-                    'endDate' => $endDate,
-            ];
-        }
 	}
 }

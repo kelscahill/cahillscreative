@@ -31,7 +31,7 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingCo
 class Reports extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\Resource
 {
   /**
-   * Retrieves merchant performance mertrics matching the search query and
+   * Retrieves merchant performance metrics matching the search query and
    * optionally segmented by selected dimensions. (reports.search)
    *
    * @param string $merchantId Required. Id of the merchant making the call. Must
@@ -39,6 +39,7 @@ class Reports extends \Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google
    * @param SearchRequest $postBody
    * @param array $optParams Optional parameters.
    * @return SearchResponse
+   * @throws \Google\Service\Exception
    */
   public function search($merchantId, SearchRequest $postBody, $optParams = [])
   {

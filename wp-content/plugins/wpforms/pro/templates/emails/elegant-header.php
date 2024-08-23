@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<meta name="color-scheme" content="light dark">
 	<title><?php echo esc_html( $title ); ?></title>
 </head>
-<body <?php echo is_rtl() ? 'rightmargin' : 'leftmargin'; ?>="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" bgcolor="#e9eaec">
+<body <?php echo is_rtl() ? 'rightmargin' : 'leftmargin'; ?>="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" bgcolor="#e9eaec" class="<?php echo is_rtl() ? 'rtl' : 'ltr'; ?>">
 <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" class="body" role="presentation">
 	<tr>
 		<td><!-- Deliberately empty to support consistent sizing and layout across multiple email clients. --></td>
@@ -35,14 +35,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<tr>
 						<td class="wrapper-inner" bgcolor="#ffffff">
 							<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
-								<?php if ( ! empty( $header_image['url'] ) ) : ?>
-								<tr>
-									<td align="center" valign="middle" class="header">
-										<div class="header-image has-image-size-<?php echo ! empty( $header_image['size'] ) ? esc_attr( $header_image['size'] ) : 'medium'; ?>">
-											<img src="<?php echo esc_url( $header_image['url'] ); ?>" <?php echo isset( $header_image['width'] ) ? 'width="' . absint( $header_image['width'] ) . '"' : ''; ?> alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" />
-										</div>
-									</td>
-								</tr>
+								<?php if ( ! empty( $header_image['url_dark'] ) ) : ?>
+									<tr class="header-wrapper dark-mode">
+										<td align="center" valign="middle" class="header">
+											<div class="header-image has-image-size-<?php echo ! empty( $header_image['size_dark'] ) ? esc_attr( $header_image['size_dark'] ) : 'medium'; ?>">
+												<img src="<?php echo esc_url( $header_image['url_dark'] ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" />
+											</div>
+										</td>
+									</tr>
+								<?php endif; ?>
+								<?php if ( ! empty( $header_image['url_light'] ) ) : ?>
+									<tr class="header-wrapper light-mode">
+										<td align="center" valign="middle" class="header">
+											<div class="header-image has-image-size-<?php echo ! empty( $header_image['size_light'] ) ? esc_attr( $header_image['size_light'] ) : 'medium'; ?>">
+												<img src="<?php echo esc_url( $header_image['url_light'] ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" />
+											</div>
+										</td>
+									</tr>
 								<?php endif; ?>
 								<tr>
 									<td valign="top" class="content">

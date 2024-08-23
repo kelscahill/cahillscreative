@@ -12,6 +12,24 @@ use WP_Query;
 class Templates {
 
 	/**
+	 * Templates hash option.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @var string
+	 */
+	const TEMPLATES_HASH_OPTION = 'wpforms_templates_hash';
+
+	/**
+	 * Favorite templates option.
+	 *
+	 * @since 1.7.7
+	 *
+	 * @var string
+	 */
+	const FAVORITE_TEMPLATES_OPTION = 'wpforms_favorite_templates';
+
+	/**
 	 * All templates data from API.
 	 *
 	 * @since 1.6.8
@@ -57,13 +75,22 @@ class Templates {
 	private $all_licenses;
 
 	/**
-	 * Favorite templates option.
+	 * Favorite templates list.
 	 *
-	 * @since 1.7.7
+	 * @since 1.8.6
+	 *
+	 * @var array
+	 */
+	private $favorits_list;
+
+	/**
+	 * Templates hash.
+	 *
+	 * @since 1.8.6
 	 *
 	 * @var string
 	 */
-	const FAVORITE_TEMPLATES_OPTION = 'wpforms_favorite_templates';
+	private $hash;
 
 	/**
 	 * Determine if the class is allowed to load.
@@ -138,24 +165,27 @@ class Templates {
 
 		wp_enqueue_script(
 			'wpforms-form-templates',
-			WPFORMS_PLUGIN_URL . "assets/js/components/admin/form-templates{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/admin/builder/form-templates{$min}.js",
 			[ 'listjs' ],
 			WPFORMS_VERSION,
 			true
 		);
 
 		$strings = [
-			'ajaxurl'               => admin_url( 'admin-ajax.php' ),
-			'admin_nonce'           => wp_create_nonce( 'wpforms-admin' ),
-			'nonce'                 => wp_create_nonce( 'wpforms-form-templates' ),
-			'can_install_addons'    => wpforms_can_install( 'addon' ),
-			'activating'            => esc_html__( 'Activating', 'wpforms-lite' ),
-			'cancel'                => esc_html__( 'Cancel', 'wpforms-lite' ),
-			'heads_up'              => esc_html__( 'Heads Up!', 'wpforms-lite' ),
-			'install_confirm'       => esc_html__( 'Yes, install and activate', 'wpforms-lite' ),
-			'ok'                    => esc_html__( 'Ok', 'wpforms-lite' ),
-			'template_addons_error' => esc_html__( 'Could not install OR activate all the required addons. Please download from wpforms.com and install them manually. Would you like to use the template anyway?', 'wpforms-lite' ),
-			'use_template'          => esc_html__( 'Yes, use template', 'wpforms-lite' ),
+			'ajaxurl'                 => admin_url( 'admin-ajax.php' ),
+			'admin_nonce'             => wp_create_nonce( 'wpforms-admin' ),
+			'nonce'                   => wp_create_nonce( 'wpforms-form-templates' ),
+			'can_install_addons'      => wpforms_can_install( 'addon' ),
+			'activating'              => esc_html__( 'Activating', 'wpforms-lite' ),
+			'cancel'                  => esc_html__( 'Cancel', 'wpforms-lite' ),
+			'heads_up'                => esc_html__( 'Heads Up!', 'wpforms-lite' ),
+			'install_confirm'         => esc_html__( 'Install and activate', 'wpforms-lite' ),
+			'ok'                      => esc_html__( 'Ok', 'wpforms-lite' ),
+			'template_addons_error'   => esc_html__( 'Could not install OR activate all the required addons. Please download from wpforms.com and install them manually. Would you like to use the template anyway?', 'wpforms-lite' ),
+			'use_template'            => esc_html__( 'Yes, use template', 'wpforms-lite' ),
+			'delete_template'         => esc_html__( 'Yes, Delete', 'wpforms-lite' ),
+			'delete_template_title'   => esc_html__( 'Delete Form Template', 'wpforms-lite' ),
+			'delete_template_content' => esc_html__( 'Are you sure you want to delete this form template? This cannot be undone.', 'wpforms-lite' ),
 		];
 
 		if ( $strings['can_install_addons'] ) {
@@ -372,6 +402,16 @@ class Templates {
 	}
 
 	/**
+	 * Update favorites templates list.
+	 *
+	 * @since 1.8.6
+	 */
+	public function update_favorites_list() {
+
+		$this->favorits_list = $this->get_favorites_list();
+	}
+
+	/**
 	 * Determine if template is marked as favorite.
 	 *
 	 * @since 1.7.7
@@ -382,13 +422,11 @@ class Templates {
 	 */
 	public function is_favorite( $template_slug ) {
 
-		static $favorites;
-
-		if ( ! $favorites ) {
-			$favorites = $this->get_favorites_list();
+		if ( ! $this->favorits_list ) {
+			$this->update_favorites_list();
 		}
 
-		return isset( $favorites[ $template_slug ] );
+		return isset( $this->favorits_list[ $template_slug ] );
 	}
 
 	/**
@@ -423,6 +461,9 @@ class Templates {
 		}
 
 		update_option( self::FAVORITE_TEMPLATES_OPTION, $favorites );
+
+		// Update and save the template content cache.
+		wpforms()->get( 'builder_templates_cache' )->wipe_content_cache();
 
 		wp_send_json_success();
 	}
@@ -510,7 +551,7 @@ class Templates {
 	 *
 	 * @return array
 	 */
-	public function get_templates() {
+	public function get_templates(): array {
 
 		static $templates = [];
 
@@ -543,7 +584,26 @@ class Templates {
 
 		$templates = array_merge( $core_templates, $additional_templates );
 
+		// Generate and store the templates' hash.
+		$this->hash = wp_hash( wp_json_encode( $templates ) );
+
 		return $templates;
+	}
+
+	/**
+	 * Get templates' hash.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @return string
+	 */
+	public function get_hash(): string {
+
+		if ( ! $this->hash ) {
+			$this->get_templates();
+		}
+
+		return $this->hash;
 	}
 
 	/**
@@ -663,7 +723,7 @@ class Templates {
 			return $args;
 		}
 
-		$template['data']['meta']['template'] = $template['id'];
+		$template['data']['meta']['template'] = $template['id'] ?? $template['slug'];
 
 		// Enable Notifications by default.
 		$template['data']['settings']['notification_enable'] = isset( $template['data']['settings']['notification_enable'] )
@@ -731,13 +791,21 @@ class Templates {
 		}
 
 		// Compile the new form data preserving needed data from the existing form.
-		$new                     = $template['data'];
-		$new['id']               = isset( $form['ID'] ) ? $form['ID'] : 0;
-		$new['field_id']         = isset( $form_data['field_id'] ) ? $form_data['field_id'] : 0;
-		$new['settings']         = isset( $form_data['settings'] ) ? $form_data['settings'] : [];
-		$new['payments']         = isset( $form_data['payments'] ) ? $form_data['payments'] : [];
-		$new['meta']             = isset( $form_data['meta'] ) ? $form_data['meta'] : [];
-		$new['meta']['template'] = $template['id'];
+		$new             = $template['data'];
+		$new['id']       = $form['ID'] ?? 0;
+		$new['field_id'] = $form_data['field_id'] ?? 0;
+		$new['settings'] = $form_data['settings'] ?? [];
+		$new['payments'] = $form_data['payments'] ?? [];
+		$new['meta']     = $form_data['meta'] ?? [];
+
+		$template_id = $template['id'] ?? '';
+
+		// Preserve template ID `wpforms-user-template-{$form_id}` when overwriting it with another template.
+		if ( wpforms_is_form_template( $form['ID'] ) ) {
+			$template_id = $form_data['meta']['template'] ?? '';
+		}
+
+		$new['meta']['template'] = $template_id;
 
 		/**
 		 * Allow modifying form data when a new template is applied.
@@ -748,7 +816,7 @@ class Templates {
 		 * @param array $form_data Current form data.
 		 * @param array $template  Template data.
 		 */
-		$new = (array) apply_filters( 'wpforms_admin_builder_templates_apply_to_existing_form_modify_data',  $new, $form_data, $template );
+		$new = (array) apply_filters( 'wpforms_admin_builder_templates_apply_to_existing_form_modify_data', $new, $form_data, $template );
 
 		// Update the form with new data.
 		$form['post_content'] = wpforms_encode( $new );

@@ -1,8 +1,8 @@
-=== Brevo (formely Sendinblue) for WooCommerce ===
+=== Brevo for WooCommerce ===
 Contributors: neeraj_slit
 Tags: email, marketing, newsletter, automation, chat, CRM, contacts, email marketing, marketing automation, analytics, woocommerce email, woocommerce SMS, woocommerce text message, woocommerce sendinblue, brevo, ecommerce email confirmation, ecommerce sms confirmation, ecommerce statistics, woocommerce Add-on, confirmation emails, confirmation text message, email autoresponder
 Requires at least: 4.3.1
-Tested up to: 6.3
+Tested up to: 6.5.2
 Requires PHP: 5.6
 Stable tag: trunk
 License: GNU General Public License v2.0 or later
@@ -36,7 +36,7 @@ Email marketing, marketing automation, live chat, CRM tool to design, manage, an
 </blockquote>
 
 <p>After you sync your historical and new WooCommerce store data with Brevo to better manage your customers and their orders,
-you can deploy effective email and SMS campaigns, improve transactional email deliverability, and track detailed metrics including delivery, open and click rates.</p> 
+you can deploy effective email and SMS campaigns, improve transactional email deliverability, and track detailed metrics including delivery, open and click rates.</p>
 
 ## <a href="https://www.brevo.com/features/email-marketing/?utm_medium=plugin&utm_source=woocommerce_plugin">Email Marketing</a>
 <p>Promote your brand and grow your business with beautifully designed emails. Our easy to use template builder allows you to create personalized messages and build meaningful relationships with your contacts.</p>
@@ -44,7 +44,7 @@ you can deploy effective email and SMS campaigns, improve transactional email de
 <p>Email Marketing features:</p>
 
 <ul>
-    <li>Create WooCommerce email templates that look great on every device.</br> 
+    <li>Create WooCommerce email templates that look great on every device.</br>
 Using our drag-and-drop email editor, you can quickly create beautiful, responsive emails and personalize them to showcase your business and keep subscribers in the loop about new product launches, promotions, blog posts, and more.</br>
         Choose one of Brevo’s 40+ pre-designed <a href="https://www.brevo.com/blog/newsletter-templates/?utm_medium=plugin&utm_source=woocommerce_plugin">templates</a> — all you have to do is add your content and send.</i>
     <li>Send personalized newsletters and promotional email campaigns to your subscribers.</i>
@@ -88,7 +88,7 @@ Learn more with the free Brevo Email Marketing academy and these hands-on tutori
 
 
 ## <a href="https://www.brevo.com/conversations//?utm_medium=plugin&utm_source=woocommerce_plugin">Conversations</a>
-<p>Live Chat and messaging platform for sales and support</p> 
+<p>Live Chat and messaging platform for sales and support</p>
 
 <p>Find new customers and provide instant customer service via a chat widget on your website, or use Facebook Messenger, Instagram Direct, and WhatsApp to drive traffic to your site, increase sales and average order value through live conversations.</p>
 
@@ -106,7 +106,7 @@ Learn more with the free Brevo Email Marketing academy and these hands-on tutori
 ## <a href="https://www.brevo.com/gdpr/?utm_medium=plugin&utm_source=woocommerce_plugin">GDPR</a>
 
 <blockquote>
-GDPR compliance, in itself, is never truly finished. It’s an ongoing process that requires regular monitoring and confirmation. 
+GDPR compliance, in itself, is never truly finished. It’s an ongoing process that requires regular monitoring and confirmation.
 
 Brevo is proud to be continuously working to maintain GDPR compliance in order to remain a trusted third-party software provider for our users.
 </blockquote>
@@ -118,9 +118,9 @@ Brevo is proud to be continuously working to maintain GDPR compliance in order t
 = Follow Us =
 
 * **Our Official Website** - [https://www.brevo.com](https://www.brevo.com)
-* **LinkedIn** - [https://www.linkedin.com/company/sendinblue](https://www.linkedin.com/company/sendinblue)
-* **Our Facebook Page** - [https://www.facebook.com/sendinblue](https://www.facebook.com/sendinblue)
-* **Our Twitter Account** - [https://twitter.com/sendinblue](https://twitter.com/sendinblue)
+* **LinkedIn** - [https://www.linkedin.com/company/brevo](https://www.linkedin.com/company/brevo)
+* **Our Facebook Page** - [https://www.facebook.com/brevo.official](https://www.facebook.com/brevo.official)
+* **Our Twitter Account** - [https://twitter.com/brevo_official](https://twitter.com/brevo_official)
 
 = Credits =
 This plugin was created by <a href="http://www.brevo.com?utm_medium=plugin&utm_source=woocommerce_plugin" title="Brevo">Brevo</a>.
@@ -151,7 +151,7 @@ The Brevo for WooCommerce plugin uses Brevo’s API to synchronize contacts, sen
 
 = Do I have to pay to use the plugin and send emails? =
 No, the plugin is totally free and Brevo offers a free forever plan with 9,000 emails per month. Additionally, Brevo comes with unlimited contacts (including on the free plan), so there is no hidden cost.
-If you need to send more than 300 emails / day, check out our pricing. Paid plans start at $25 / month to send up to 10 000 emails / month with no daily sending limit. 
+If you need to send more than 300 emails / day, check out our pricing. Paid plans start at $25 / month to send up to 10 000 emails / month with no daily sending limit.
 
 = How do I synchronize my lists? =
 You have nothing to do – synchronization is automatic! It doesn’t matter whether your lists were uploaded on your WordPress interface or on your Brevo account: they will always remain up-to-date on both sides.
@@ -165,9 +165,66 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 1. Click on “Connect your account” to link WooCommerce and your Brevo account.
 2. Once it’s done, you can click on “Go to dashboard” to directly land on your Brevo account.
 3. Click on the relevant button to see your campaigns, your workflows, and your conversations.
-4. You can access your settings by clicking on “Settings” at the top right of the screen. 
+4. You can access your settings by clicking on “Settings” at the top right of the screen.
 
 == Changelog ==
+= 4.0.23 =
+* Improvements to tracking guest checkouts
+
+= 4.0.22 =
+* Plugin made compatible with Wordpress v6.5.2
+
+= 4.0.21 =
+* Resolve compatibility issues and conflicts with WooPayment plugin
+
+= 4.0.20 =
+* Included product variant image in payload of cart_updated and order_completed events to be available for use in Brevo Automation
+* Use line_items price from WooCommerce instead of product price in order confirmation email-templates
+* Plugin code enhancements
+
+= 4.0.19 =
+* Improvements to resolve security vulnerability in the plugin
+
+= 4.0.18 =
+* Improvements to resolve security vulnerability in the plugin
+* Additional fields added to order_completed event payload in Brevo
+
+= 4.0.17 =
+* Plugin enhancements to more accurately detect current version
+
+= 4.0.16 =
+* Improvements to tracking abandoned cart users
+
+= 4.0.15 =
+* Fix for undefined variable message
+
+= 4.0.14 =
+* Resolved issue of cart_updated event firing multiple times without any changes to the cart
+* Resolved issue of cart_updated event firing for non cart related actions
+
+= 4.0.13 =
+* Resolved issue of cart_updated event firing multiple times without any changes to the cart
+* Resolved issue of cart_updated event firing for non cart related actions
+
+= 4.0.12 =
+* Plugin made compatible with Wordpress v6.4.3 and WooCoommerce v8.6.0
+* Removed max execution time limit
+
+= 4.0.11 =
+* Included tax and shipping details in order completed events generated by the Plugin
+* Updated Social Media Links
+
+= 4.0.10 =
+* Plugin enhancements to include cart events tracking for guest checkouts
+
+= 4.0.9 =
+* Fix related to php warning message
+
+= 4.0.8 =
+* Plugin enhancements to detect customers’ email addresses from the checkout flow
+
+= 4.0.7 =
+* Plugin Improvements to enable ecommerce analytics by default
 
 = 4.0.6 =
 * Handle ORDER_FEES in Order Confirmation Template
@@ -359,13 +416,13 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 * Improved the monitoring of the plugin.
 
 = 2.0.5 =
-* Fixed false triggering of cart_deleted events in Automation. 
-* Improved phone number validation. 
+* Fixed false triggering of cart_deleted events in Automation.
+* Improved phone number validation.
 * Improved plugin stability and performance.
 
 = 2.0.4 =
-* Added order synchronisation feature and creation of global calculated values for Sendinblue account. 
-* Improved monitoring of plugin technical performance 
+* Added order synchronisation feature and creation of global calculated values for Sendinblue account.
+* Improved monitoring of plugin technical performance
 * Updated WordPress Repository content by adding FAQ section
 
 = 2.0.3 =

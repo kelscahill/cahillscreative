@@ -11,6 +11,15 @@ trait WC_Stripe_Subscriptions_Trait {
 	use WC_Stripe_Subscriptions_Utilities_Trait;
 
 	/**
+	 * Stores a flag to indicate if the subscription integration hooks have been attached.
+	 *
+	 * The callbacks attached as part of maybe_init_subscriptions() only need to be attached once to avoid duplication.
+	 *
+	 * @var bool False by default, true once the callbacks have been attached.
+	 */
+	private static $has_attached_integration_hooks = false;
+
+	/**
 	 * Initialize subscription support and hooks.
 	 *
 	 * @since 5.6.0
@@ -38,18 +47,33 @@ trait WC_Stripe_Subscriptions_Trait {
 
 		add_action( 'woocommerce_scheduled_subscription_payment_' . $this->id, [ $this, 'scheduled_subscription_payment' ], 10, 2 );
 		add_action( 'woocommerce_subscription_failing_payment_method_updated_' . $this->id, [ $this, 'update_failing_payment_method' ], 10, 2 );
-		add_action( 'wcs_resubscribe_order_created', [ $this, 'delete_resubscribe_meta' ], 10 );
-		add_action( 'wcs_renewal_order_created', [ $this, 'delete_renewal_meta' ], 10 );
+
 		add_action( 'wc_stripe_payment_fields_' . $this->id, [ $this, 'display_update_subs_payment_checkout' ] );
 		add_action( 'wc_stripe_add_payment_method_' . $this->id . '_success', [ $this, 'handle_add_payment_method_success' ], 10, 2 );
-		add_action( 'woocommerce_subscriptions_change_payment_before_submit', [ $this, 'differentiate_change_payment_method_form' ] );
 
 		// Display the payment method used for a subscription in the "My Subscriptions" table.
 		add_filter( 'woocommerce_my_subscriptions_payment_method', [ $this, 'maybe_render_subscription_payment_method' ], 10, 2 );
 
 		// Allow store managers to manually set Stripe as the payment method on a subscription.
 		add_filter( 'woocommerce_subscription_payment_meta', [ $this, 'add_subscription_payment_meta' ], 10, 2 );
+
+		// Validate the payment method meta data set on a subscription.
 		add_filter( 'woocommerce_subscription_validate_payment_meta', [ $this, 'validate_subscription_payment_meta' ], 10, 2 );
+
+		/**
+		 * The callbacks attached below only need to be attached once. We don't need each gateway instance to have its own callback.
+		 * Therefore we only attach them once on the main `stripe` gateway and store a flag to indicate that they have been attached.
+		 */
+		if ( self::$has_attached_integration_hooks || WC_Gateway_Stripe::ID !== $this->id ) {
+			return;
+		}
+
+		self::$has_attached_integration_hooks = true;
+
+		add_action( 'woocommerce_subscriptions_change_payment_before_submit', [ $this, 'differentiate_change_payment_method_form' ] );
+		add_action( 'wcs_resubscribe_order_created', [ $this, 'delete_resubscribe_meta' ], 10 );
+		add_action( 'wcs_renewal_order_created', [ $this, 'delete_renewal_meta' ], 10 );
+
 		add_filter( 'wc_stripe_display_save_payment_method_checkbox', [ $this, 'display_save_payment_method_checkbox' ] );
 
 		// Add the necessary information to create a mandate to the payment intent.
@@ -303,7 +327,12 @@ trait WC_Stripe_Subscriptions_Trait {
 
 						return $this->process_subscription_payment( $amount, $renewal_order, true, $response->error );
 					} else {
-						$localized_message = __( 'Sorry, we are unable to process your payment at this time. Please retry later.', 'woocommerce-gateway-stripe' );
+						$localized_message = sprintf(
+							/* translators: 1) error message from Stripe; 2) request log URL */
+							__( 'Sorry, we are unable to process the payment at this time. Reason: %1$s %2$s', 'woocommerce-gateway-stripe' ),
+							$response->error->message,
+							isset( $response->error->request_log_url ) ? make_clickable( $response->error->request_log_url ) : ''
+						);
 						$renewal_order->add_order_note( $localized_message );
 						throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
 					}
@@ -320,6 +349,10 @@ trait WC_Stripe_Subscriptions_Trait {
 					);
 				} else {
 					$localized_message = isset( $localized_messages[ $response->error->type ] ) ? $localized_messages[ $response->error->type ] : $response->error->message;
+				}
+
+				if ( isset( $response->error->request_log_url ) ) {
+					$localized_message .= ' ' . make_clickable( $response->error->request_log_url );
 				}
 
 				$renewal_order->add_order_note( $localized_message );
@@ -386,8 +419,12 @@ trait WC_Stripe_Subscriptions_Trait {
 	 * Updates other subscription sources.
 	 *
 	 * @since 5.6.0
+	 *
+	 * @param WC_Order $order              The order object.
+	 * @param string   $source_id          The source ID.
+	 * @param string   $payment_gateway_id The payment method ID. eg 'stripe.
 	 */
-	public function maybe_update_source_on_subscription_order( $order, $source ) {
+	public function maybe_update_source_on_subscription_order( $order, $source, $payment_gateway_id = '' ) {
 		if ( ! $this->is_subscriptions_enabled() ) {
 			return;
 		}
@@ -404,13 +441,17 @@ trait WC_Stripe_Subscriptions_Trait {
 		}
 
 		foreach ( $subscriptions as $subscription ) {
-			$subscription_id = $subscription->get_id();
 			$subscription->update_meta_data( '_stripe_customer_id', $source->customer );
 
 			if ( ! empty( $source->payment_method ) ) {
 				$subscription->update_meta_data( '_stripe_source_id', $source->payment_method );
 			} else {
 				$subscription->update_meta_data( '_stripe_source_id', $source->source );
+			}
+
+			// Update the payment method.
+			if ( ! empty( $payment_gateway_id ) ) {
+				$subscription->set_payment_method( $payment_gateway_id );
 			}
 
 			$subscription->save();
@@ -560,31 +601,87 @@ trait WC_Stripe_Subscriptions_Trait {
 		$mandate = $order->get_meta( '_stripe_mandate_id', true );
 		if ( isset( $request['confirm'] ) && filter_var( $request['confirm'], FILTER_VALIDATE_BOOL ) && ! empty( $mandate ) ) {
 			$request['mandate'] = $mandate;
+			unset( $request['setup_future_usage'] );
 			return $request;
 		}
 
-		$renewals = wcs_get_subscriptions_for_renewal_order( $order );
-		if ( 1 === count( $renewals ) ) {
-			$renewal_order   = reset( $renewals );
-			$parent_order_id = $renewal_order->get_parent_id();
-			$parent_order    = wc_get_order( $parent_order_id );
+		$subscriptions_for_renewal_order = wcs_get_subscriptions_for_renewal_order( $order );
 
-			if ( $parent_order ) {
-				$mandate = $parent_order->get_meta( '_stripe_mandate_id', true );
-				if ( ! empty( $mandate ) ) {
-					$request['mandate'] = $mandate;
-					return $request;
-				}
+		// Check if mandate already exists.
+		if ( 1 === count( $subscriptions_for_renewal_order ) ) {
+			$subscription_order = reset( $subscriptions_for_renewal_order );
+			$mandate            = $this->get_mandate_for_subscription( $subscription_order, isset( $request['payment_method'] ) ? $request['payment_method'] : '' );
+
+			if ( ! empty( $mandate ) ) {
+				$request['confirm'] = 'true';
+				$request['mandate'] = $mandate;
+				unset( $request['setup_future_usage'] );
+				return $request;
 			}
 		}
 
-		// Otherwise add the parameters required to create a mandate.
+		// Add mandate options to request to create new mandate if mandate id does not already exist in a previous renewal or parent order.
+		$mandate_options = $this->create_mandate_options_for_order( $order, $subscriptions_for_renewal_order );
+		if ( ! empty( $mandate_options ) ) {
+			$request['payment_method_options']['card']['mandate_options'] = $mandate_options;
+		}
 
-		$subscriptions = wcs_get_subscriptions_for_order( $order );
+		return $request;
+	}
+
+	/**
+	 * Find the mandate id for a subscription renewal from a previous renewal order. Return the mandate id
+	 * if it exists and the amount matches the renewal order amount, return empty otherwise to indicate that a
+	 * new mandate should be created.
+	 *
+	 * @param WC_Order $order The subscription order.
+	 * @return string the mandate id or empty string if no valid mandate id is found.
+	 */
+	private function get_mandate_for_subscription( $order, $payment_method ) {
+		$renewal_order_ids = $order->get_related_orders( 'ids' );
+
+		foreach ( $renewal_order_ids as $renewal_order_id ) {
+			$renewal_order = wc_get_order( $renewal_order_id );
+			if ( ! $renewal_order instanceof WC_Order ) {
+				continue;
+			}
+
+			$mandate                      = $renewal_order->get_meta( '_stripe_mandate_id', true );
+			$renewal_order_payment_method = $renewal_order->get_meta( '_stripe_source_id', true );
+
+			// Return from the most recent renewal order with a valid mandate. Mandate is created against a payment method
+			// in Stripe so the payment method should also match to reuse the mandate.
+			if ( ! empty( $mandate ) && $renewal_order_payment_method === $payment_method ) {
+				return $mandate;
+			}
+		}
+		return '';
+	}
+
+	/**
+	 * Create mandate options for a subscription order to be added to the payment intent request.
+	 *
+	 * @param WC_Order $order The renewal order.
+	 * @param WC_Order $subscriptions Subscriptions for the renewal order.
+	 * @return array the mandate_options for the subscription order.
+	 */
+	private function create_mandate_options_for_order( $order, $subscriptions ) {
+		$mandate_options = [];
+		$currency        = strtolower( $order->get_currency() );
+
+		// India recurring payment mandates can only be requested for the following currencies.
+		if ( ! in_array( $currency, [ 'inr', 'usd', 'eur', 'gbp', 'sgd', 'cad', 'chf', 'sek', 'aed', 'jpy', 'nok', 'myr', 'hkd' ], true ) ) {
+			return [];
+		}
+
+		// If this is the first order, not a renewal, then get the subscriptions for the parent order.
+		if ( empty( $subscriptions ) ) {
+			$subscriptions = wcs_get_subscriptions_for_order( $order );
+		}
 
 		// If there are no subscriptions we just return since mandates aren't required.
 		if ( 0 === count( $subscriptions ) ) {
-			return $request;
+			return [];
 		}
 
 		$sub_amount = 0;
@@ -595,29 +692,29 @@ trait WC_Stripe_Subscriptions_Trait {
 		// If the amount is 0 we don't need to create a mandate since we won't be charging anything.
 		// And there won't be any renewal for this free subscription.
 		if ( 0 === $sub_amount ) {
-			return $request;
+			return [];
 		}
 
 		// Get the first subscription associated with this order.
 		$sub = reset( $subscriptions );
 
 		if ( 1 === count( $subscriptions ) ) {
-			$request['payment_method_options']['card']['mandate_options']['amount_type']    = 'fixed';
-			$request['payment_method_options']['card']['mandate_options']['interval']       = $sub->get_billing_period();
-			$request['payment_method_options']['card']['mandate_options']['interval_count'] = $sub->get_billing_interval();
+			$mandate_options['amount_type']    = 'fixed';
+			$mandate_options['interval']       = strtolower( $sub->get_billing_period() );
+			$mandate_options['interval_count'] = $sub->get_billing_interval();
 		} else {
 			// If there are multiple subscriptions the amount_type becomes 'maximum' so we can charge anything
 			// less than the order total, and the interval is sporadic so we don't have to follow a set interval.
-			$request['payment_method_options']['card']['mandate_options']['amount_type'] = 'maximum';
-			$request['payment_method_options']['card']['mandate_options']['interval']    = 'sporadic';
+			$mandate_options['amount_type'] = 'maximum';
+			$mandate_options['interval']    = 'sporadic';
 		}
 
-		$request['payment_method_options']['card']['mandate_options']['amount']          = $sub_amount;
-		$request['payment_method_options']['card']['mandate_options']['reference']       = $order->get_id();
-		$request['payment_method_options']['card']['mandate_options']['start_date']      = $sub->get_time( 'start' );
-		$request['payment_method_options']['card']['mandate_options']['supported_types'] = [ 'india' ];
+		$mandate_options['amount']          = $sub_amount;
+		$mandate_options['reference']       = $order->get_id();
+		$mandate_options['start_date']      = time();
+		$mandate_options['supported_types'] = [ 'india' ];
 
-		return $request;
+		return $mandate_options;
 	}
 
 	/**

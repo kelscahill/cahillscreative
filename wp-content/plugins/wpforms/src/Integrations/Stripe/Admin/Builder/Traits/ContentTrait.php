@@ -199,15 +199,19 @@ trait ContentTrait {
 		$label = __( 'Add New Plan', 'wpforms-lite' );
 
 		if ( Helpers::is_allowed_license_type() ) {
-			$addon_info = wpforms()->get( 'addons' )->get_addon( 'wpforms-stripe' );
+			$addon = wpforms()->get( 'addons' )->get_addon( 'wpforms-stripe' );
+
+			if ( empty( $addon ) ) {
+				return;
+			}
 
 			echo '<a
 				href="#"
 				class="wpforms-panel-content-section-payment-button wpforms-panel-content-section-payment-button-add-plan education-modal"
-				data-action="' . esc_attr( $addon_info['action'] ) . '"
-				data-path="' . esc_attr( $addon_info['path'] ) . '"
-				data-slug="' . esc_attr( $addon_info['slug'] ) . '"
-				data-url="' . esc_url( $addon_info['url'] ) . '"
+				data-action="' . esc_attr( $addon['action'] ) . '"
+				data-path="' . esc_attr( $addon['path'] ) . '"
+				data-slug="' . esc_attr( $addon['slug'] ) . '"
+				data-url="' . esc_url( $addon['url'] ) . '"
 				data-nonce="' . esc_attr( wp_create_nonce( 'wpforms-admin' ) ) . '"
 				data-name="' . esc_attr__( 'Stripe Pro', 'wpforms-lite' ) . '"
 			>' . esc_html( $label ) . '</a>';
@@ -393,6 +397,8 @@ trait ContentTrait {
 			false
 		);
 
+		$content .= $this->get_customer_name_panel_field();
+		$content .= $this->get_address_panel_fields();
 		$content .= $this->single_payments_conditional_logic_section();
 
 		return $content;
@@ -466,6 +472,8 @@ trait ContentTrait {
 			false
 		);
 
+		$content .= $this->get_customer_name_panel_field( $plan_id );
+		$content .= $this->get_address_panel_fields( $plan_id );
 		$content .= $this->recurring_payments_conditional_logic_section( $plan_id );
 
 		return $content;
@@ -499,5 +507,93 @@ trait ContentTrait {
 			esc_url( wpforms_utm_link( 'https://wpforms.com/docs/how-to-install-and-use-the-stripe-addon-with-wpforms/', 'builder-payments', 'Stripe Documentation' ) ),
 			esc_html__( 'Learn more about our Stripe integration.', 'wpforms-lite' )
 		);
+	}
+
+	/**
+	 * Get Customer name panel field.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @param string|null $plan_id Plan ID.
+	 *
+	 * @return string
+	 */
+	private function get_customer_name_panel_field( $plan_id = null ) {
+
+		$args = [
+			'parent'      => 'payments',
+			'field_map'   => [ 'name' ],
+			'placeholder' => esc_html__( '--- Select Name ---', 'wpforms-lite' ),
+			'tooltip'     => esc_html__( 'Select the field that contains the customer\'s name. This is optional but recommended.', 'wpforms-lite' ),
+		];
+
+		if ( ! is_null( $plan_id ) ) {
+			$args['subsection'] = 'recurring';
+			$args['index']      = $plan_id;
+		}
+
+		return wpforms_panel_field(
+			'select',
+			$this->slug,
+			'customer_name',
+			$this->form_data,
+			esc_html__( 'Customer Name', 'wpforms-lite' ),
+			$args,
+			false
+		);
+	}
+
+	/**
+	 * Get address panel fields.
+	 *
+	 * @since 1.8.8
+	 *
+	 * @param string|null $plan_id Plan ID.
+	 *
+	 * @return string
+	 */
+	private function get_address_panel_fields( $plan_id = null ): string {
+
+		$args = [
+			'parent'      => 'payments',
+			'field_map'   => [ 'address' ],
+			'placeholder' => esc_html__( '--- Select Address ---', 'wpforms-lite' ),
+			'tooltip'     => esc_html__( 'Select the field that contains the customer\'s address. This is optional but required for some regions.', 'wpforms-lite' ),
+		];
+
+		$is_subscription = ! is_null( $plan_id );
+
+		if ( $is_subscription ) {
+			$args['subsection'] = 'recurring';
+			$args['index']      = $plan_id;
+		}
+
+		$output = wpforms_panel_field(
+			'select',
+			$this->slug,
+			'customer_address',
+			$this->form_data,
+			esc_html__( 'Customer Address', 'wpforms-lite' ),
+			$args,
+			false
+		);
+
+		if ( $is_subscription ) {
+			return $output;
+		}
+
+		$args['tooltip'] = esc_html__( 'Select the field that contains the shipping address. This is optional but required for some regions.', 'wpforms-lite' );
+
+		$output .= wpforms_panel_field(
+			'select',
+			$this->slug,
+			'shipping_address',
+			$this->form_data,
+			esc_html__( 'Shipping Address', 'wpforms-lite' ),
+			$args,
+			false
+		);
+
+		return $output;
 	}
 }

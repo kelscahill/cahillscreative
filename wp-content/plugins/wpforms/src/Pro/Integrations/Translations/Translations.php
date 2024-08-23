@@ -6,6 +6,7 @@ use stdClass;
 use Language_Pack_Upgrader;
 use Automatic_Upgrader_Skin;
 use WPForms\Integrations\IntegrationInterface;
+use WPForms\Admin\Addons\AddonsCache;
 
 /**
  * Main Translations library.
@@ -23,6 +24,15 @@ class Translations implements IntegrationInterface {
 	 * @var array
 	 */
 	private $plugins = [];
+
+	/**
+	 * List of wpforms addons.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @var array
+	 */
+	private $addons = [];
 
 	/**
 	 * List of installed translations.
@@ -146,7 +156,27 @@ class Translations implements IntegrationInterface {
 	 */
 	private function is_wpforms_plugin( $slug ) {
 
-		return strpos( $slug, 'wpforms' ) === 0 && $slug !== 'wpforms-lite';
+		if ( empty( $this->addons ) ) {
+			$this->addons = $this->get_addons();
+		}
+
+		return array_key_exists( $slug, $this->addons ) || $slug === 'wpforms';
+	}
+
+	/**
+	 * Get a list of all WPForms addons.
+	 *
+	 * @since 1.8.7
+	 *
+	 * @return array List of addons.
+	 */
+	private function get_addons(): array {
+
+		$addons = new AddonsCache();
+
+		$addons->init();
+
+		return $addons->get();
 	}
 
 	/**
@@ -318,6 +348,12 @@ class Translations implements IntegrationInterface {
 		}
 
 		set_site_transient( $this->get_cache_key( $slug ), $translations );
+
+		wpforms_log(
+			'Fetched translations',
+			[ 'slug' => $slug ],
+			[ 'type' => 'translation' ]
+		);
 
 		return $translations;
 	}
