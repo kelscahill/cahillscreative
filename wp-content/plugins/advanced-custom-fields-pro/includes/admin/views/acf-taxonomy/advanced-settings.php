@@ -137,8 +137,8 @@ foreach ( acf_get_combined_taxonomy_settings_tabs() as $tab_key => $tab_label ) 
 			break;
 		case 'labels':
 			echo '<div class="acf-field acf-regenerate-labels-bar">';
-			echo '<span class="acf-btn acf-btn-sm acf-btn-clear acf-regenerate-labels"><i class="acf-icon acf-icon-regenerate"></i>' . __( 'Regenerate', 'acf' ) . '</span>';
-			echo '<span class="acf-btn acf-btn-sm acf-btn-clear acf-clear-labels"><i class="acf-icon acf-icon-trash"></i>' . __( 'Clear', 'acf' ) . '</span>';
+			echo '<span class="acf-btn acf-btn-sm acf-btn-clear acf-regenerate-labels"><i class="acf-icon acf-icon-regenerate"></i>' . esc_html__( 'Regenerate', 'acf' ) . '</span>';
+			echo '<span class="acf-btn acf-btn-sm acf-btn-clear acf-clear-labels"><i class="acf-icon acf-icon-trash"></i>' . esc_html__( 'Clear', 'acf' ) . '</span>';
 			echo '<span class="acf-tip acf-labels-tip"><i class="acf-icon acf-icon-help acf-js-tooltip" title="' . esc_attr__( 'Regenerate all labels using the Singular and Plural labels', 'acf' ) . '"></i></span>';
 			echo '</div>';
 
@@ -802,7 +802,7 @@ foreach ( acf_get_combined_taxonomy_settings_tabs() as $tab_key => $tab_label ) 
 					'prefix'       => 'acf_taxonomy',
 					'value'        => $acf_taxonomy['meta_box_cb'],
 					'label'        => __( 'Register Meta Box Callback', 'acf' ),
-					'instructions' => __( 'A PHP function name to be called to handle the content of a meta box on your taxonomy.', 'acf' ),
+					'instructions' => __( 'A PHP function name to be called to handle the content of a meta box on your taxonomy. For security, this callback will be executed in a special context without access to any superglobals like $_POST or $_GET.', 'acf' ),
 					'conditions'   => array(
 						'field'    => 'meta_box',
 						'operator' => '==',
@@ -1034,7 +1034,7 @@ foreach ( acf_get_combined_taxonomy_settings_tabs() as $tab_key => $tab_label ) 
 					'default'      => 1,
 					'hide_search'  => true,
 					'class'        => 'query_var',
-					'conditions' => array(
+					'conditions'   => array(
 						'field'    => 'publicly_queryable',
 						'operator' => '==',
 						'value'    => 1,

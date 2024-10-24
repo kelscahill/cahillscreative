@@ -1,5 +1,19 @@
 <?php
-global $acf_ui_options_page;
+global $acf_ui_options_page, $acf_parent_page_options;
+
+$acf_duplicate_options_page = acf_get_ui_options_page_from_request_args( 'acfduplicate' );
+
+if ( acf_is_ui_options_page( $acf_duplicate_options_page ) ) {
+	// Reset vars that likely have to be changed.
+	$acf_duplicate_options_page['key']        = uniqid( 'ui_options_page_' );
+	$acf_duplicate_options_page['title']      = '';
+	$acf_duplicate_options_page['page_title'] = '';
+	$acf_duplicate_options_page['menu_title'] = '';
+	$acf_duplicate_options_page['menu_slug']  = '';
+
+	// Rest of the vars can be reused.
+	$acf_ui_options_page = $acf_duplicate_options_page;
+}
 
 acf_render_field_wrap(
 	array(
@@ -42,7 +56,7 @@ acf_render_field_wrap(
 		'class'    => 'acf-options-page-parent_slug',
 		'prefix'   => 'acf_ui_options_page',
 		'value'    => $acf_ui_options_page['parent_slug'],
-		'choices'  => ACF_Admin_UI_Options_Page::get_parent_page_choices( $acf_ui_options_page['menu_slug'] ),
+		'choices'  => $acf_parent_page_options,
 		'required' => true,
 	),
 	'div',
