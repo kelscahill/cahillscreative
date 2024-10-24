@@ -57,7 +57,11 @@ class Equivalent_Posts
 		if ( $child_blog === null )
 			$child_blog = get_current_blog_id();
 
-		if ( ! isset( $this->equivalents[ $parent_blog ][ $parent_post ][ $child_blog ] ) )
+		if (
+			( ! isset( $this->equivalents[ $parent_blog ][ $parent_post ] ) )
+			||
+			( ! isset( $this->equivalents[ $parent_blog ][ $parent_post ][ $child_blog ] ) )
+		)
 		{
 			$broadcast_data = $this->broadcast()->get_parent_post_broadcast_data( $parent_blog, $parent_post );
 			$child = $broadcast_data->get_linked_post_on_this_blog();

@@ -4,7 +4,7 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 8.0
-Stable tag: 50.13
+Stable tag: 50.15
 Tags: multipost, sharing, duplicate, syndication, marketing
 Tested up to: 6.6
 
@@ -70,6 +70,7 @@ The following add-ons add support for the plugin after which they are named:
 * <a href="https://broadcast.plainviewplugins.com/addon/avia-layout-builder/">Avia Layout Builder</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/bbpress/">bbPress</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/beaver-builder/">Beaver Builder</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/bricks-builder/">Bricks Builder</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/caldera-forms/">Caldera Forms</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/calendarize-it/">Calendarize It</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/category-order-and-taxonomy-terms-order/">Category Order and Taxonomy Terms Order</a>
@@ -368,6 +369,17 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+* 50.15 20241012 =
+
+* Fix: Remove warning from Equivalent_Posts debug code that warns of an equivalent post not existing.
+* Tweak: Workaround define BROADCAST_PP_SSL_WORKAROUND removed since Wordpress no longer allows https transport workarounds.
+
+= 50.14 20240824 =
+
+* New add-on:<a href="https://broadcast.plainviewplugins.com/addon/bricks-builder/">Bricks Builder</a>: Adds support for the <a href="https://bricksbuilder.io/">Bricks Builder page editor</a>.
+* Fix: In the "Database table cleanup" maintenance tool, ignore base tables that contain numbers in their names.
+* Dev: Add get_attachment_id_from_url() function to help find image IDs based on URL.
 
 = 50.13 20240711 =
 

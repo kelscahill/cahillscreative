@@ -669,9 +669,9 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 									<span id="sib_disclaim_smtp"
 										  style="display: none;"><?php _e( 'Confirmation emails will be sent through your own email server, but you have no guarantees on their deliverability. <br/> <a href="https://app-smtp.brevo.com/" target="_blank" rel="noopener">Click here</a> to send your emails through Brevo in order to improve your deliverability and get statistics', 'mailin' ); ?></span>
 									<span id="sib_disclaim_do_template"
-										  style="display: none;"><?php _e( 'The template you selected does not include a link [DOUBLEOPTIN] to allow subscribers to confirm their subscription. <br/> Please edit the template to include a link with [DOUBLEOPTIN] as URL.', 'mailin' ); ?></span>
+										  style="display: none;"><?php _e( 'The template you selected does not include a link {{DOUBLEOPTIN}} to allow subscribers to confirm their subscription. <br/> Please edit the template to include a link with {{DOUBLEOPTIN}} as URL.', 'mailin' ); ?></span>
                                     <span id="sib_disclaim_confirm_template"
-                                          style="display: none;"><?php _e( 'You cannot select a template with the tag [DOUBLEOPTIN]', 'mailin' ); ?></span>
+                                          style="display: none;"><?php _e( 'You cannot select a template with the tag {{DOUBLEOPTIN}}', 'mailin' ); ?></span>
 								</div>
 
 								<!-- Linked List -->
@@ -773,7 +773,7 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
 								</div>
                                 <div class="row sib-small-content mt-3" id="sib_final_confirm_template_area">
 									<span class="col-md-3"><?php esc_attr_e( 'Select final confirmation email template', 'mailin' ); ?><?php echo esc_html( SIB_Page_Home::get_narration_script( __( 'Final confirmation', 'mailin' ), __( 'This is the final confirmation email your contacts will receive once they click on the double opt-in confirmation link. You can select one of the default templates we have created for you, e.g. \'Default template - Final confirmation\'.
-For your information, you cannot select a template with the tag [DOUBLEOPTIN].', 'mailin' ) ) ); ?></span>
+For your information, you cannot select a template with the tag {{DOUBLEOPTIN}}.', 'mailin' ) ) ); ?></span>
                                     <div class="row col-md-8">
                                         <input type="hidden" id="sib_selected_confirm_template_id" value="<?php echo esc_attr( $formData['confirmID'] );?>">
                                         <div class="col-md-5" id="sib_final_confirm_template_id_area">

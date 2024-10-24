@@ -114,6 +114,15 @@ class WPForms_Updater {
 	private $addons_cache;
 
 	/**
+	 * Whether the class is allowed.
+	 *
+	 * @since 1.9.1.1
+	 *
+	 * @var bool|null
+	 */
+	private $is_allowed;
+
+	/**
 	 * Primary class constructor.
 	 *
 	 * @since 1.5.4.2
@@ -134,23 +143,58 @@ class WPForms_Updater {
 		];
 
 		foreach ( $accepted_args as $arg ) {
-			$this->$arg = $config[ $arg ];
+			$this->$arg = $config[ $arg ] ?? false;
 		}
 
-		// If the user cannot update plugins, stop processing here.
-		// In WP-CLI context, there is no user available, so we should ignore this check in CLI.
-		if ( ! current_user_can( 'update_plugins' ) && ! wpforms_doing_wp_cli() ) {
+		// Init class.
+		$this->init();
+	}
+
+	/**
+	 * Init class.
+	 *
+	 * @since 1.9.1
+	 *
+	 * @return void
+	 */
+	private function init() {
+
+		// Proceed on selected admin pages, cron or cli only.
+		if ( ! $this->allow_load() ) {
 			return;
 		}
 
-		$this->core_cache = wpforms()->get( 'core_info_cache' );
-		$this->core_cache = $this->core_cache instanceof stdClass ? null : $this->core_cache;
+		$this->core_cache   = wpforms()->obj( 'core_info_cache' );
+		$this->addons_cache = wpforms()->obj( 'addons' );
 
-		$this->addons_cache = wpforms()->get( 'addons' );
-		$this->addons_cache = $this->addons_cache instanceof stdClass ? null : $this->addons_cache;
+		if ( $this->plugin_path && $this->version ) {
+			$this->hooks();
 
-		// Load the updater hooks and filters.
-		$this->hooks();
+			return;
+		}
+
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . '/wp-admin/includes/plugin.php';
+		}
+
+		// Plugin path and versions are not set for addons, so we need to extract them from the WP Core.
+		$plugins = get_plugins();
+
+		foreach ( $plugins as $plugin_path => $plugin ) {
+			$slug = explode( '/', $plugin_path )[0];
+
+			if ( $slug !== $this->plugin_slug ) {
+				continue;
+			}
+
+			$this->plugin_path = $plugin_path;
+			$this->version     = $plugin['Version'];
+		}
+
+		// Load the updater hooks and filters if the plugin path and version are set.
+		if ( $this->version ) {
+			$this->hooks();
+		}
 	}
 
 	/**
@@ -181,10 +225,6 @@ class WPForms_Updater {
 			return $update_obj;
 		}
 
-		if ( ! $this->is_transient_update_allowed() ) {
-			return $update_obj;
-		}
-
 		if ( $this->is_core_plugin() ) {
 			$this->update = $this->get_core_update();
 		} else {
@@ -201,7 +241,7 @@ class WPForms_Updater {
 		}
 
 		// Infuse the update object with our data if the version from the remote API is newer.
-		if ( isset( $this->update->new_version ) && version_compare( $this->version, $this->update->new_version, '<' ) ) {
+		if ( $this->version && isset( $this->update->new_version ) && version_compare( $this->version, $this->update->new_version, '<' ) ) {
 
 			// The $this->update object contains new_version, package, slug and last_update keys.
 			$this->update->version                      = $this->version;
@@ -602,31 +642,67 @@ class WPForms_Updater {
 	}
 
 	/**
-	 * Check if we should allow transient update.
+	 * Determine if the class is allowed to load.
 	 *
 	 * @since 1.9.0
 	 *
 	 * @return bool
 	 */
-	private function is_transient_update_allowed(): bool {
+	private function allow_load(): bool {
 
-		static $is_allowed;
-
-		if ( ! is_null( $is_allowed ) ) {
-			return $is_allowed;
+		if ( $this->is_allowed !== null ) {
+			return $this->is_allowed;
 		}
+
+		if ( wp_doing_cron() || wpforms_doing_wp_cli() ) {
+			$this->is_allowed = true;
+
+			return true;
+		}
+
+		// If a user cannot update plugins, stop processing here.
+		if ( ! current_user_can( 'update_plugins' ) ) {
+			$this->is_allowed = false;
+
+			return false;
+		}
+
+		$this->is_allowed = $this->is_update();
+
+		return $this->is_allowed;
+	}
+
+	/**
+	 * Whether is an update page or action.
+	 *
+	 * @since 1.9.1
+	 *
+	 * @return bool
+	 */
+	private function is_update(): bool {
 
 		global $pagenow;
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$is_update_action = isset( $_POST['action'], $_POST['slug'] ) && $_POST['action'] === 'update-plugin' && $_POST['slug'] === $this->plugin_slug;
-		$is_updates_page  = in_array( $pagenow, [ 'update-core.php', 'plugins.php', 'admin-ajax.php', 'update.php' ], true );
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		$action = isset( $_POST['action'] ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
+		$slug   = isset( $_POST['slug'] ) ? sanitize_text_field( wp_unslash( $_POST['slug'] ) ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		$is_update_action = $pagenow === 'admin-ajax.php' && $action === 'update-plugin' && $slug === $this->plugin_slug;
+		$is_update_page   = in_array(
+			$pagenow ?? '',
+			[
+				'update-core.php',
+				'plugins.php',
+				'plugin-install.php',
+				'update.php',
+			],
+			true
+		);
 
 		// We should only run the update check on the update-core.php or plugins.php page,
 		// or when the user is updating the plugin.
-		$is_allowed = $is_updates_page || $is_update_action;
-
-		return $is_allowed;
+		return $is_update_page || $is_update_action;
 	}
 
 	/**

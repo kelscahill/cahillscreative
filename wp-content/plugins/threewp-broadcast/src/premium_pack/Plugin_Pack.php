@@ -33,36 +33,6 @@ abstract class Plugin_Pack
 	// ----------------------------------------- EDD Updater
 	// --------------------------------------------------------------------------------------------
 
-	/**
-		@brief		Show some text about the SSL workaround.
-		@since		2016-04-14 14:01:01
-	**/
-	public function edd_admin_license_tab_text()
-	{
-		$status = $this->edd_get_cached_license_status();
-		if ( in_array( $status->license, [ 'deactivated', 'valid' ] ) )
-			return;
-		$r = $this->p(
-			__( "If the pack is not activating as it should due to an SSL error, add this to your wp-config.php file: %s", 'threewp-broadcast' ),
-			"<code>define( 'BROADCAST_PP_SSL_WORKAROUND', true );</code>"
-		);
-		$r .= $this->p(
-			__( "If even that doesn't work, try using the %sBroadcast license download tool%s together with your license key.", 'threewp-broadcast' ),
-			'<a href="https://broadcast.plainviewplugins.com/download/">',
-			'</a>'
-		);
-		return $r;
-	}
-
-	/**
-		@brief		edd_enable_ssl_workaround
-		@since		2016-04-14 12:24:30
-	**/
-	public function edd_enable_ssl_workaround()
-	{
-		return defined( 'BROADCAST_PP_SSL_WORKAROUND' );
-	}
-
 	public abstract function edd_get_item_name();
 
 	/**

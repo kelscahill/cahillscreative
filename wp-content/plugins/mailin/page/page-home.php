@@ -52,7 +52,10 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 		 */
 		function Init() {
 			if ( ( isset( $_GET['sib_action'] ) ) && ( 'logout' === sanitize_text_field($_GET['sib_action'] )) ) {
-				$this->logout();
+				$logout_nonce =  $_GET['_wpnonce'] ?? null;
+				if( wp_verify_nonce($logout_nonce , 'brevo_logout_url' ) ) {
+					$this->logout();
+				}
 			}
 		}
 
@@ -233,8 +236,18 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 										}
 									}
 									?>
-									<a class="text-decoration-none" href="<?php echo esc_url( add_query_arg( 'sib_action', 'logout' ) ); ?>"><i class="fa fa-angle-right"></i>&nbsp;<?php esc_attr_e( 'Log out', 'mailin' ); ?></a>
-								</p>
+									
+									<a class="text-decoration-none" href="<?php
+										$nonce = wp_create_nonce( 'brevo_logout_url' );
+										echo esc_url(
+											add_query_arg(array(
+												'page'	=> 'sib_page_home',
+												'sib_action' => 'logout',
+												'_wpnonce' => $nonce
+											), "")
+									 	);?>" >
+										<i class="fa fa-angle-right"></i>&nbsp;<?php esc_attr_e( 'Log out', 'mailin' ); ?></a>
+									</p>
 							</div>
 
 							<span><b><?php esc_attr_e( 'Contacts', 'mailin' ); ?></b></span>

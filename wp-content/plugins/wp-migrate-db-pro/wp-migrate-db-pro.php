@@ -4,7 +4,7 @@ Plugin Name: WP Migrate
 Plugin URI: https://deliciousbrains.com/wp-migrate-db-pro/
 Description: Migrate between any two environments. Push, pull, and export full sites. Find and replace content including serialized data. Import and back up the database.
 Author: WP Engine
-Version: 2.6.13
+Version: 2.7.0
 Author URI: https://deliciousbrains.com
 Network: True
 Text Domain: wp-migrate-db

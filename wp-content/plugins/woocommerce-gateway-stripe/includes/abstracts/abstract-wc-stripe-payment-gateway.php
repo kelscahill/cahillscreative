@@ -30,7 +30,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	 * @return string[]
 	 */
 	public function get_upe_enabled_payment_method_ids() {
-		return [ 'card' ];
+		return [ WC_Stripe_Payment_Methods::CARD ];
 	}
 
 	/**
@@ -39,7 +39,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	 * @return string[]
 	 */
 	public function get_upe_available_payment_methods() {
-		return [ 'card' ];
+		return [ WC_Stripe_Payment_Methods::CARD ];
 	}
 
 	/**
@@ -265,12 +265,12 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 		// NOTE: updates to this function should be added to are_keys_set()
 		// in includes/payment-methods/class-wc-stripe-payment-request.php
 
-		if ( $this->testmode ) {
-			return preg_match( '/^pk_test_/', $this->publishable_key )
-				&& preg_match( '/^[rs]k_test_/', $this->secret_key );
+		if ( $this->testmode ) { // @phpstan-ignore-line (testmode is defined in the classes that use this class)
+			return preg_match( '/^pk_test_/', $this->publishable_key ) // @phpstan-ignore-line (publishable_key is defined in the classes that use this class)
+				&& preg_match( '/^[rs]k_test_/', $this->secret_key ); // @phpstan-ignore-line (secret_key is defined in the classes that use this class)
 		} else {
-			return preg_match( '/^pk_live_/', $this->publishable_key )
-				&& preg_match( '/^[rs]k_live_/', $this->secret_key );
+			return preg_match( '/^pk_live_/', $this->publishable_key ) // @phpstan-ignore-line (publishable_key is defined in the classes that use this class)
+				&& preg_match( '/^[rs]k_live_/', $this->secret_key ); // @phpstan-ignore-line (secret_key is defined in the classes that use this class)
 		}
 	}
 
@@ -337,22 +337,22 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 		return apply_filters(
 			'wc_stripe_payment_icons',
 			[
-				'alipay'     => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/alipay.svg" class="stripe-alipay-icon stripe-icon" alt="Alipay" />',
-				'wechat'     => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/wechat.svg" class="stripe-wechat-icon stripe-icon" alt="Wechat Pay" />',
-				'bancontact' => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/bancontact.svg" class="stripe-bancontact-icon stripe-icon" alt="Bancontact" />',
-				'ideal'      => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/ideal.svg" class="stripe-ideal-icon stripe-icon" alt="iDEAL" />',
-				'p24'        => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/p24.svg" class="stripe-p24-icon stripe-icon" alt="P24" />',
-				'giropay'    => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/giropay.svg" class="stripe-giropay-icon stripe-icon" alt="giropay" />',
-				'klarna'     => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/klarna.svg" class="stripe-klarna-icon stripe-icon" alt="klarna" />',
-				'affirm'     => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/affirm.svg" class="stripe-affirm-icon stripe-icon" alt="affirm" />',
-				'eps'        => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/eps.svg" class="stripe-eps-icon stripe-icon" alt="EPS" />',
-				'multibanco' => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/multibanco.svg" class="stripe-multibanco-icon stripe-icon" alt="Multibanco" />',
-				'sofort'     => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/sofort.svg" class="stripe-sofort-icon stripe-icon" alt="Sofort" />',
-				'sepa'       => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/sepa.svg" class="stripe-sepa-icon stripe-icon" alt="SEPA" />',
-				'boleto'     => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/boleto.svg" class="stripe-boleto-icon stripe-icon" alt="Boleto" />',
-				'oxxo'       => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/oxxo.svg" class="stripe-oxxo-icon stripe-icon" alt="OXXO" />',
-				'cards'      => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/cards.svg" class="stripe-cards-icon stripe-icon" alt="credit / debit card" />',
-				'cashapp'    => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/cashapp.svg" class="stripe-cashapp-icon stripe-icon" alt="Cash App Pay" />',
+				WC_Stripe_Payment_Methods::ALIPAY      => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/alipay.svg" class="stripe-alipay-icon stripe-icon" alt="Alipay" />',
+				WC_Stripe_Payment_Methods::WECHAT_PAY  => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/wechat.svg" class="stripe-wechat-icon stripe-icon" alt="Wechat Pay" />',
+				WC_Stripe_Payment_Methods::BANCONTACT  => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/bancontact.svg" class="stripe-bancontact-icon stripe-icon" alt="Bancontact" />',
+				WC_Stripe_Payment_Methods::IDEAL       => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/ideal.svg" class="stripe-ideal-icon stripe-icon" alt="iDEAL" />',
+				WC_Stripe_Payment_Methods::P24         => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/p24.svg" class="stripe-p24-icon stripe-icon" alt="P24" />',
+				WC_Stripe_Payment_Methods::GIROPAY     => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/giropay.svg" class="stripe-giropay-icon stripe-icon" alt="giropay" />',
+				WC_Stripe_Payment_Methods::KLARNA      => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/klarna.svg" class="stripe-klarna-icon stripe-icon" alt="klarna" />',
+				WC_Stripe_Payment_Methods::AFFIRM      => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/affirm.svg" class="stripe-affirm-icon stripe-icon" alt="affirm" />',
+				WC_Stripe_Payment_Methods::EPS         => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/eps.svg" class="stripe-eps-icon stripe-icon" alt="EPS" />',
+				WC_Stripe_Payment_Methods::MULTIBANCO  => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/multibanco.svg" class="stripe-multibanco-icon stripe-icon" alt="Multibanco" />',
+				WC_Stripe_Payment_Methods::SOFORT      => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/sofort.svg" class="stripe-sofort-icon stripe-icon" alt="Sofort" />',
+				WC_Stripe_Payment_Methods::SEPA        => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/sepa.svg" class="stripe-sepa-icon stripe-icon" alt="SEPA" />',
+				WC_Stripe_Payment_Methods::BOLETO      => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/boleto.svg" class="stripe-boleto-icon stripe-icon" alt="Boleto" />',
+				WC_Stripe_Payment_Methods::OXXO        => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/oxxo.svg" class="stripe-oxxo-icon stripe-icon" alt="OXXO" />',
+				'cards'                                => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/cards.svg" class="stripe-cards-icon stripe-icon" alt="credit / debit card" />',
+				WC_Stripe_Payment_Methods::CASHAPP_PAY => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/cashapp.svg" class="stripe-cashapp-icon stripe-icon" alt="Cash App Pay" />',
 			]
 		);
 	}
@@ -379,11 +379,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	 * @version 4.0.0
 	 */
 	public function get_transaction_url( $order ) {
-		if ( $this->testmode ) {
-			$this->view_transaction_url = 'https://dashboard.stripe.com/test/payments/%s';
-		} else {
-			$this->view_transaction_url = 'https://dashboard.stripe.com/payments/%s';
-		}
+		$this->view_transaction_url = WC_Stripe_Helper::get_transaction_url( $this->testmode );
 
 		return parent::get_transaction_url( $order );
 	}
@@ -442,7 +438,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	 * @return array()
 	 */
 	public function generate_payment_request( $order, $prepared_payment_method ) {
-		$settings                              = get_option( 'woocommerce_stripe_settings', [] );
+		$settings                              = WC_Stripe_Helper::get_stripe_settings();
 		$is_short_statement_descriptor_enabled = ! empty( $settings['is_short_statement_descriptor_enabled'] ) && 'yes' === $settings['is_short_statement_descriptor_enabled'];
 		$capture                               = ! empty( $settings['capture'] ) && 'yes' === $settings['capture'] ? true : false;
 		$post_data                             = [];
@@ -626,13 +622,32 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	 * @since 3.1.0
 	 * @version 4.0.0
 	 * @param int $order_id
-	 * @return null
+	 * @param array $status_update Optional. Use fields 'to' and 'from' to provide context
+	 *    when a status change has occurred for the order.
+	 * @return void
 	 */
-	public function send_failed_order_email( $order_id ) {
+	public function send_failed_order_email( $order_id, $status_update = [] ) {
 		$emails = WC()->mailer()->get_emails();
-		if ( ! empty( $emails ) && ! empty( $order_id ) && isset( $emails['WC_Email_Failed_Order'] ) ) {
-			$emails['WC_Email_Failed_Order']->trigger( $order_id );
+
+		if ( empty( $emails ) || empty( $order_id ) || ! isset( $emails['WC_Email_Failed_Order'] ) ) {
+			return;
 		}
+
+		// To prevent duplicate failed order emails, check if a status update
+		// will trigger its own failed order email.
+		if (
+			isset( $status_update['to'], $status_update['from'] ) &&
+			'failed' === $status_update['to'] &&
+			in_array( $status_update['from'], [ 'on-hold', 'pending' ], true )
+		) {
+			$callback  = [ $emails['WC_Email_Failed_Order'], 'trigger' ];
+			$hook_name = "woocommerce_order_status_{$status_update['from']}_to_failed_notification";
+			if ( has_action( $hook_name, $callback ) ) {
+				return;
+			}
+		}
+
+		$emails['WC_Email_Failed_Order']->trigger( $order_id );
 	}
 
 	/**
@@ -874,7 +889,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 			$maybe_saved_card = isset( $_POST[ 'wc-' . $payment_method . '-new-payment-method' ] ) && ! empty( $_POST[ 'wc-' . $payment_method . '-new-payment-method' ] );
 
 			// This is true if the user wants to store the card to their account.
-			if ( ( $user_id && $this->saved_cards && $maybe_saved_card ) || $force_save_source ) {
+			if ( ( $user_id && $this->saved_cards && $maybe_saved_card ) || $force_save_source ) { // @phpstan-ignore-line (saved_cards is defined in the classes that use this class)
 				$response = $customer->attach_source( $stripe_token );
 
 				if ( ! empty( $response->error ) ) {
@@ -1059,7 +1074,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	 * @param  int $order_id
 	 * @param  float $amount
 	 *
-	 * @return bool
+	 * @return bool True or false based on success.
 	 * @throws Exception Throws exception when charge wasn't captured.
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
@@ -1124,8 +1139,11 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 					if ( ! empty( $result->error ) ) {
 						$response = $result;
 					} else {
-						$charge   = $this->get_latest_charge_from_intent( $result );
-						$response = end( $charge->refunds->data );
+						$charge = $this->get_charge_object( $result->latest_charge, [ 'expand' => [ 'refunds' ] ] );
+
+						if ( isset( $charge->refunds->data ) ) {
+							$response = end( $charge->refunds->data );
+						}
 					}
 				}
 			}
@@ -1146,7 +1164,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 			);
 		}
 
-		if ( ! empty( $response->error ) ) {
+		if ( ! empty( $response->error ) ) { // @phpstan-ignore-line (return statement is added)
 			WC_Stripe_Logger::log( 'Error: ' . $response->error->message );
 
 			return new WP_Error(
@@ -1317,9 +1335,9 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 		// The request for a charge contains metadata for the intent.
 		$full_request = $this->generate_payment_request( $order, $prepared_source );
 
-		$payment_method_types = [ 'card' ];
+		$payment_method_types = [ WC_Stripe_Payment_Methods::CARD ];
 		if ( WC_Stripe_Feature_Flags::is_upe_checkout_enabled() ) {
-			$payment_method_types = $this->get_upe_enabled_at_checkout_payment_method_ids();
+			$payment_method_types = $this->get_upe_enabled_at_checkout_payment_method_ids(); // @phpstan-ignore-line (get_upe_enabled_at_checkout_payment_method_ids is defined in the classes that use this class)
 		} elseif ( isset( $prepared_source->source_object->type ) ) {
 			$payment_method_types = [ $prepared_source->source_object->type ];
 		}
@@ -1494,7 +1512,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 			$request['customer'] = $prepared_source->customer;
 		}
 
-		$request['payment_method_types'] = [ 'card' ];
+		$request['payment_method_types'] = [ WC_Stripe_Payment_Methods::CARD ];
 
 		if ( $this->has_subscription( $order->get_id() ) ) {
 			// If this is a failed subscription order payment, the intent should be
@@ -1702,7 +1720,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	public function setup_intent( $order, $prepared_source ) {
 		// SEPA Direct Debit payments do not require any customer action after the source has been created.
 		// Once the customer has provided their IBAN details and accepted the mandate, no further action is needed and the resulting source is directly chargeable.
-		if ( 'sepa_debit' === $prepared_source->source_object->type ) {
+		if ( WC_Stripe_Payment_Methods::SEPA_DEBIT === $prepared_source->source_object->type ) {
 			return;
 		}
 
@@ -1739,7 +1757,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 		// The request for a charge contains metadata for the intent.
 		$full_request = $this->generate_payment_request( $order, $prepared_source );
 
-		$payment_method_types = [ 'card' ];
+		$payment_method_types = [ WC_Stripe_Payment_Methods::CARD ];
 
 		if ( isset( $prepared_source->source_object->type ) ) {
 			$payment_method_types = [ $prepared_source->source_object->type ];
@@ -1757,8 +1775,8 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 			'capture_method'       => 'automatic',
 		];
 
-		if ( isset( $full_request['statement_descriptor'] ) ) {
-			$request['statement_descriptor'] = $full_request['statement_descriptor'];
+		if ( isset( $full_request['statement_descriptor_suffix'] ) ) {
+			$request['statement_descriptor_suffix'] = $full_request['statement_descriptor_suffix'];
 		}
 
 		if ( isset( $full_request['customer'] ) ) {
@@ -1936,7 +1954,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 			&& ! $this->is_valid_pay_for_order_endpoint()
 			&& ! is_add_payment_method_page()
 			&& ! isset( $_GET['change_payment_method'] ) // wpcs: csrf ok.
-			&& ! ( ! empty( get_query_var( 'view-subscription' ) ) && is_callable( 'WCS_Early_Renewal_Manager::is_early_renewal_via_modal_enabled' ) && WCS_Early_Renewal_Manager::is_early_renewal_via_modal_enabled() )
+			&& ! ( ! empty( get_query_var( 'view-subscription' ) ) && is_callable( 'WCS_Early_Renewal_Manager::is_early_renewal_via_modal_enabled' ) && WCS_Early_Renewal_Manager::is_early_renewal_via_modal_enabled() ) // @phpstan-ignore-line (Class WCS_Early_Renewal_Manager is checked already)
 			|| ( is_order_received_page() )
 		) {
 			return;
@@ -2021,7 +2039,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 
 		$stripe_params = [
 			'title'                    => $this->title,
-			'key'                      => $this->publishable_key,
+			'key'                      => $this->publishable_key, // @phpstan-ignore-line (publishable_key is defined in the classes that use this class)
 			'i18n_terms'               => __( 'Please accept the terms and conditions first', 'woocommerce-gateway-stripe' ),
 			'i18n_required_fields'     => __( 'Please fill in required checkout fields first', 'woocommerce-gateway-stripe' ),
 			'updateFailedOrderNonce'   => wp_create_nonce( 'wc_stripe_update_failed_order_nonce' ),
@@ -2068,7 +2086,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 		$stripe_params['return_url']                  = $this->get_stripe_return_url();
 		$stripe_params['ajaxurl']                     = WC_AJAX::get_endpoint( '%%endpoint%%' );
 		$stripe_params['stripe_nonce']                = wp_create_nonce( '_wc_stripe_nonce' );
-		$stripe_params['statement_descriptor']        = $this->statement_descriptor;
+		$stripe_params['statement_descriptor']        = $this->statement_descriptor; // @phpstan-ignore-line (statement_descriptor is defined in the classes that use this class)
 		$stripe_params['elements_options']            = apply_filters( 'wc_stripe_elements_options', [] );
 		$stripe_params['sepa_elements_options']       = $sepa_elements_options;
 		$stripe_params['invalid_owner_name']          = __( 'Billing First Name and Last Name are required.', 'woocommerce-gateway-stripe' );
@@ -2136,7 +2154,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	 * @return bool True if SSL is needed but not set.
 	 */
 	private function needs_ssl_setup() {
-		return ! $this->testmode && ! is_ssl();
+		return ! $this->testmode && ! is_ssl(); // @phpstan-ignore-line (testmode is defined in the classes that use this class)
 	}
 
 	/**
@@ -2258,7 +2276,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	 * @return bool True if the source was successfully attached to the customer.
 	 */
 	private function maybe_attach_source_to_customer( $source, $customer = null ) {
-		if ( ! isset( $source->type ) || 'sepa_debit' !== $source->type ) {
+		if ( ! isset( $source->type ) || WC_Stripe_Payment_Methods::SEPA_DEBIT !== $source->type ) {
 			return false;
 		}
 
@@ -2278,5 +2296,24 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Retrieves the balance transaction ID from the Stripe charge.
+	 *
+	 * @param stdClass $charge The charge object.
+	 *
+	 * @return string|null The balance transaction ID.
+	 */
+	public function get_balance_transaction_id_from_charge( $charge ) {
+		$balance_transaction_id = null;
+
+		if ( ! empty( $charge->balance_transaction->id ) ) {
+			$balance_transaction_id = $charge->balance_transaction->id;
+		} elseif ( ! empty( $charge->balance_transaction ) && is_string( $charge->balance_transaction ) ) {
+			$balance_transaction_id = $charge->balance_transaction;
+		}
+
+		return $balance_transaction_id;
 	}
 }

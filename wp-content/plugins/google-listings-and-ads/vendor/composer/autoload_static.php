@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit7db25264f4a0a09574df8fec5df96b81
+class ComposerStaticInitdc1c866ff5a5faf503e7f4899f251f63
 {
     public static $files = array (
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
@@ -683,7 +683,6 @@ class ComposerStaticInit7db25264f4a0a09574df8fec5df96b81
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Menu\\Settings' => __DIR__ . '/../..' . '/src/Menu/Settings.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Menu\\SetupAds' => __DIR__ . '/../..' . '/src/Menu/SetupAds.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Menu\\SetupMerchantCenter' => __DIR__ . '/../..' . '/src/Menu/SetupMerchantCenter.php',
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Menu\\WooAdminNavigationTrait' => __DIR__ . '/../..' . '/src/Menu/WooAdminNavigationTrait.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\MerchantCenter\\AccountService' => __DIR__ . '/../..' . '/src/MerchantCenter/AccountService.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\MerchantCenter\\ContactInformation' => __DIR__ . '/../..' . '/src/MerchantCenter/ContactInformation.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\MerchantCenter\\MerchantCenterAwareInterface' => __DIR__ . '/../..' . '/src/MerchantCenter/MerchantCenterAwareInterface.php',
@@ -4412,9 +4411,9 @@ class ComposerStaticInit7db25264f4a0a09574df8fec5df96b81
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit7db25264f4a0a09574df8fec5df96b81::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit7db25264f4a0a09574df8fec5df96b81::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit7db25264f4a0a09574df8fec5df96b81::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitdc1c866ff5a5faf503e7f4899f251f63::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitdc1c866ff5a5faf503e7f4899f251f63::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitdc1c866ff5a5faf503e7f4899f251f63::$classMap;
 
         }, null, ClassLoader::class);
     }

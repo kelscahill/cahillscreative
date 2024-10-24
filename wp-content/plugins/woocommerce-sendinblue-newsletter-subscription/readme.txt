@@ -2,7 +2,7 @@
 Contributors: neeraj_slit
 Tags: email, marketing, newsletter, automation, chat, CRM, contacts, email marketing, marketing automation, analytics, woocommerce email, woocommerce SMS, woocommerce text message, woocommerce sendinblue, brevo, ecommerce email confirmation, ecommerce sms confirmation, ecommerce statistics, woocommerce Add-on, confirmation emails, confirmation text message, email autoresponder
 Requires at least: 4.3.1
-Tested up to: 6.5.2
+Tested up to: 6.6.2
 Requires PHP: 5.6
 Stable tag: trunk
 License: GNU General Public License v2.0 or later
@@ -168,6 +168,12 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 4. You can access your settings by clicking on “Settings” at the top right of the screen.
 
 == Changelog ==
+= 4.0.30 =
+* Plugin made compatible with Wordpress v6.6.2
+
+= 4.0.29 =
+* Plugin made compatible with Wordpress v6.6.2
+
 = 4.0.28 =
 * Include additional keys in order_completed event for shipping taxes, discount taxes, discount codes, and fee lines 
 

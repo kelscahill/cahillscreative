@@ -104,8 +104,7 @@ class PluginList {
 
 		$this->plugin_slug      = defined( 'WPFORMS_PLUGIN_DIR' ) ? plugin_basename( WPFORMS_PLUGIN_DIR ) : 'wpforms';
 		$this->plugin_path      = $this->plugin_slug . '/wpforms.php';
-		$this->addons_cache_obj = wpforms()->get( 'addons_cache' );
-		$this->addons_cache_obj = $this->addons_cache_obj instanceof stdClass ? null : $this->addons_cache_obj;
+		$this->addons_cache_obj = wpforms()->obj( 'addons_cache' );
 
 		$this->hooks();
 	}
@@ -711,9 +710,9 @@ class PluginList {
 		// We use it to get the latest version of WPForms Pro.
 		// We have a hook on `pre_set_site_transient_update_plugins` in the `WPForms_Updater` class
 		// that checks the remote API and adds the update for WPForms Pro to this transient.
-		$option = get_site_option( '_site_transient_update_plugins' );
+		$transient = get_site_transient( 'update_plugins' );
 
-		$this->remote_latest_version = $option->response[ $this->plugin_path ]->new_version ?? WPFORMS_VERSION;
+		$this->remote_latest_version = $transient->response[ $this->plugin_path ]->new_version ?? WPFORMS_VERSION;
 
 		return $this->remote_latest_version;
 	}

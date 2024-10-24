@@ -227,7 +227,7 @@ class WC_REST_Stripe_Settings_Controller extends WC_Stripe_REST_Base_Controller 
 				/* Settings > Payments accepted on checkout */
 				'enabled_payment_method_ids'            => array_values( array_intersect( $enabled_payment_method_ids, $available_payment_method_ids ) ), // only fetch enabled payment methods that are available.
 				'available_payment_method_ids'          => $available_payment_method_ids,
-				'ordered_payment_method_ids'            => array_values( array_diff( $ordered_payment_method_ids, [ 'link' ] ) ), // exclude Link from this list as it is a express methods.
+				'ordered_payment_method_ids'            => array_values( array_diff( $ordered_payment_method_ids, [ WC_Stripe_Payment_Methods::LINK ] ) ), // exclude Link from this list as it is a express methods.
 				'individual_payment_method_settings'    => $is_upe_enabled ? WC_Stripe_Helper::get_upe_individual_payment_method_settings( $this->gateway ) : WC_Stripe_Helper::get_legacy_individual_payment_method_settings(),
 
 				/* Settings > Express checkouts */
@@ -301,7 +301,7 @@ class WC_REST_Stripe_Settings_Controller extends WC_Stripe_REST_Base_Controller 
 		} else {
 			$ordered_payment_method_ids = array_map(
 				function ( $id ) {
-					if ( 'card' === $id ) {
+					if ( WC_Stripe_Payment_Methods::CARD === $id ) {
 						return 'stripe';
 					}
 					return 'stripe_' . $id;
@@ -311,6 +311,8 @@ class WC_REST_Stripe_Settings_Controller extends WC_Stripe_REST_Base_Controller 
 
 			$this->gateway->update_option( 'stripe_legacy_method_order', $ordered_payment_method_ids );
 		}
+
+		WC_Stripe_Helper::add_stripe_methods_in_woocommerce_gateway_order( $ordered_payment_method_ids );
 
 		return new WP_REST_Response( [], 200 );
 	}
@@ -452,9 +454,15 @@ class WC_REST_Stripe_Settings_Controller extends WC_Stripe_REST_Base_Controller 
 			return;
 		}
 
-		$settings = get_option( 'woocommerce_stripe_settings', [] );
+		$settings = WC_Stripe_Helper::get_stripe_settings();
+
+		// If the new UPE is enabled, we need to remove the flag to ensure legacy SEPA tokens are updated flag.
+		if ( $is_upe_enabled && ! WC_Stripe_Feature_Flags::is_upe_checkout_enabled() ) {
+			delete_option( 'woocommerce_stripe_subscriptions_legacy_sepa_tokens_updated' );
+		}
+
 		$settings[ WC_Stripe_Feature_Flags::UPE_CHECKOUT_FEATURE_ATTRIBUTE_NAME ] = $is_upe_enabled ? 'yes' : 'disabled';
-		update_option( 'woocommerce_stripe_settings', $settings );
+		WC_Stripe_Helper::update_main_stripe_settings( $settings );
 
 		// including the class again because otherwise it's not present.
 		if ( WC_Stripe_Inbox_Notes::are_inbox_notes_supported() ) {
@@ -464,6 +472,8 @@ class WC_REST_Stripe_Settings_Controller extends WC_Stripe_REST_Base_Controller 
 			require_once WC_STRIPE_PLUGIN_PATH . '/includes/notes/class-wc-stripe-upe-stripelink-note.php';
 			WC_Stripe_UPE_StripeLink_Note::possibly_delete_note();
 		}
+
+		WC_Stripe_Helper::add_stripe_methods_in_woocommerce_gateway_order();
 	}
 
 	/**
@@ -558,7 +568,7 @@ class WC_REST_Stripe_Settings_Controller extends WC_Stripe_REST_Base_Controller 
 				'description' => $description,
 			];
 
-			if ( in_array( $payment_method_id, [ 'boleto' ], true ) ) {
+			if ( in_array( $payment_method_id, [ WC_Stripe_Payment_Methods::BOLETO ], true ) ) {
 				$settings['expiration'] = sanitize_text_field( $request->get_param( 'expiration' ) );
 			}
 
@@ -574,7 +584,7 @@ class WC_REST_Stripe_Settings_Controller extends WC_Stripe_REST_Base_Controller 
 		$mapped_legacy_method_id = ( 'stripe_' . $payment_method_id );
 
 		// In legacy mode (when UPE is disabled), Stripe gateway refers to card as payment method id.
-		if ( 'card' === $payment_method_id ) {
+		if ( WC_Stripe_Payment_Methods::CARD === $payment_method_id ) {
 			$this->gateway->update_option( 'title', $title );
 			$this->gateway->update_option( 'description', $description );
 			return new WP_REST_Response( [], 200 );

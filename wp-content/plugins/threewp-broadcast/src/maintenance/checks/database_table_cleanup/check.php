@@ -108,12 +108,17 @@ class check
 			$blog_id = str_replace( $base_prefix, '', $table );
 			$blog_id = preg_replace( '/_.*/', '', $blog_id );
 
-
 			// Ignore base tables.
 			if( intval( $blog_id ) < 1 )
 				continue;
 
 			if ( isset( $ids[ $blog_id ] ) )
+				continue;
+
+			$string_blog_id = intval( $blog_id ) . '';
+
+			// Ignore base tables that contain numbers.
+			if ( strlen( $string_blog_id ) != strlen( $blog_id ) )
 				continue;
 
 			$r->collection( 'tables' )
