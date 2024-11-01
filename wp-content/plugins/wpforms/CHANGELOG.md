@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file and formatted via [this recommendation](https://keepachangelog.com/).
 
+## [1.9.1.6] - 2024-10-28
+### Fixed
+- The Dropdown field placeholder was disabled on the Divi Builder preview screen.
+- When sending a form with an incorrect nonce field, no error was displayed.
+- An extra field was displayed when a form was embedded using a shortcode in the Footer.
+
 ## [1.9.1.5] - 2024-10-23
 ### Fixed
 - Order Summary table ignored some payment fields on multi-page forms.

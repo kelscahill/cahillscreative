@@ -3,9 +3,9 @@
  * Plugin Name: WooCommerce Stripe Gateway
  * Plugin URI: https://wordpress.org/plugins/woocommerce-gateway-stripe/
  * Description: Take credit card payments on your store using Stripe.
- * Author: WooCommerce
- * Author URI: https://woocommerce.com/
- * Version: 8.8.0
+ * Author: Stripe
+ * Author URI: https://stripe.com/
+ * Version: 8.8.1
  * Requires Plugins: woocommerce
  * Requires at least: 6.4
  * Tested up to: 6.6
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Required minimums and constants
  */
-define( 'WC_STRIPE_VERSION', '8.8.0' ); // WRCS: DEFINED_VERSION.
+define( 'WC_STRIPE_VERSION', '8.8.1' ); // WRCS: DEFINED_VERSION.
 define( 'WC_STRIPE_MIN_PHP_VER', '7.3.0' );
 define( 'WC_STRIPE_MIN_WC_VER', '7.4' );
 define( 'WC_STRIPE_FUTURE_MIN_WC_VER', '7.5' );
@@ -457,6 +457,11 @@ function woocommerce_gateway_stripe() {
 
 					$methods = array_merge( $methods, $upe_payment_methods );
 				} else {
+					// APMs are deprecated as of Oct, 29th 2024 for the legacy checkout.
+					if ( WC_Stripe_Feature_Flags::are_apms_deprecated() ) {
+						return $methods;
+					}
+
 					// These payment gateways will not be included in the gateway list when UPE is enabled:
 					$methods[] = WC_Gateway_Stripe_Alipay::class;
 					$methods[] = WC_Gateway_Stripe_Sepa::class;
