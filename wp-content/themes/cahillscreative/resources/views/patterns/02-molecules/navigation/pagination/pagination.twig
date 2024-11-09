@@ -8,7 +8,8 @@
         "url": posts.pagination.prev.link,
         "target": "_self",
         "modifiers": "alt",
-        "extra": bem_classes(base_class, 'nav', 'prev')
+        "extra": bem_classes(base_class, 'nav', 'prev'),
+        "attributes": posts.pagination.prev.link == '' ? "disabled",
       }
     } %}
     {% if posts.pagination.pages %}
@@ -32,7 +33,8 @@
         "url": posts.pagination.next.link,
         "target": "_self",
         "modifiers": "alt",
-        "extra": bem_classes(base_class, 'nav', 'next')
+        "extra": bem_classes(base_class, 'nav', 'next'),
+        "attributes": posts.pagination.next.link == '' ? "disabled",
       }
     } %}
   </div>

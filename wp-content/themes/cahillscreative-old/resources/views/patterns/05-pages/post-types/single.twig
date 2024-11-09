@@ -1,0 +1,44 @@
+{% extends "@templates/_layout.twig" %}
+
+{% block sections_before %}
+  {% include "@organisms/sections/heroes/hero-media.twig" with {
+    "hero_media": {
+      "video": {
+        "src": post.hero_video ? Post(post.hero_video).guid,
+        "attributes": {
+          "playsinline": "true",
+          "autoplay": "true",
+          "muted": "true",
+          "loop": "true"
+        }
+      },
+      "figure": {
+        "image": {
+          "srcset": Image(post.hero_image).src|towebp|resize(500, 281.25) ~ ' 500w, ' ~ Image(post.hero_image).src|towebp|resize(720, 405) ~ ' 720w, ' ~ Image(post.hero_image).src|towebp|resize(960, 540) ~ ' 960w, ' ~ Image(post.hero_image).src|towebp|resize(1200, 675) ~ ' 1200w, ' ~ Image(post.hero_image).src|towebp|resize(1600, 900) ~ ' 1440w',
+          "src": Image(post.hero_image).src|towebp,
+          "alt": Image(post.hero_image).alt
+        }
+      }
+    }
+  } %}
+{% endblock %}
+
+{% block content %}
+  {% include ['@organisms/content/content-single-' ~ post.post_type|replace({'_': '-'}) ~ '.twig', '@organisms/content/content-single.twig'] %}
+{% endblock %}
+
+{% block sections_after %}
+  {% include "@organisms/sections/feeds/related-posts.twig" with {
+    "related_posts": {
+      "heading": "Read this next",
+      "posts": related_blog_posts,
+      "modifiers": "tertiary",
+      "extra": options.single_post_promo.promo ? "u-padding--quad--bottom"
+    }
+  } %}
+  {% include "@organisms/sections/promo/promo.twig" with {
+    "promo": {
+      "items": options.single_post_promo.promo
+    }
+  } %}
+{% endblock %}

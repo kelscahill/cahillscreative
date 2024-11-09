@@ -12,7 +12,7 @@
 $context = Timber::context();
 
 $templates = array(
-  '/wp-content/themes/cahillscreative/resources/views/patterns/02-molecules/components/newsletter-signup/newsletter-signup-banner.twig',
-  get_stylesheet_directory() . '/views/patterns/02-molecules/components/newsletter-signup/newsletter-signup-banner.twig',
+  '/resources/views/patterns/02-molecules/components/newsletter-signup/newsletter-signup-banner.twig',
+  get_stylesheet_directory() . '/resources/views/patterns/02-molecules/components/newsletter-signup/newsletter-signup-banner.twig',
 );
 Timber::render( $templates, $context );

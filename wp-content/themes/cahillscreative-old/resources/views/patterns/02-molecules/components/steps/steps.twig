@@ -1,0 +1,138 @@
+{% set base_class = steps.base_class|default('c-steps') %}
+
+{% if steps.items %}
+  <section{{ steps.anchor ? ' id="' ~ steps.anchor ~ '"'}} class="{{ bem_classes(base_class, steps.element, steps.modifiers, steps.extra) }} u-spacing--double">
+    {% include "@organisms/sections/page-headers/page-header.twig" with {
+      "page_header": {
+        "icon": {
+          "type": steps.header.icon_type,
+          "name": steps.header.icon_name,
+          "image": steps.header.icon_image
+        },
+        "kicker": steps.header.kicker,
+        "heading": steps.header.title,
+        "dek": steps.header.description,
+        "extra": bem_classes(base_class, 'header')
+      }
+    } %}
+    <div class="{{ bem_classes(base_class, 'items') }} u-spacing--quad">
+      {% for step in steps.items %}
+        <div class="{{ bem_classes(base_class, 'item') }}">
+          <div class="{{ bem_classes(base_class, 'counter') }}{{ step.images|length <= 1 ? ' is-sticky' }}">
+           <span class="{{ bem_classes(base_class, 'counter-index') }}">
+             {{ loop.index }}
+           </span>
+           {% include "@atoms/text/heading/heading.twig" with {
+             "heading": {
+               "level": "6",
+               "size": "s",
+               "type": "secondary",
+               "text": "Step",
+               "extra": bem_classes(base_class, 'counter-step')
+             }
+           } %}
+          </div>
+          <div class="{{ bem_classes(base_class, 'body') }} u-spacing">
+            {% include "@atoms/text/heading/heading.twig" with {
+              "heading": {
+                "level": "3",
+                "size": "m",
+                "type": "primary",
+                "text": step.title,
+                "extra": bem_classes(base_class, 'heading')
+              }
+            } %}
+            {% include "@atoms/text/rich-text/rich-text.twig" with {
+              "rich_text": {
+                "text": step.body,
+                "extra": [bem_classes(base_class, 'rich-text'), step.images|length != 1 ? 'no-images']
+              }
+            } %}
+            {% if step.images and step.images|length > 1 %}
+              <div class="{{ bem_classes(base_class, 'images') }}">
+                <div class="{{ bem_classes(base_class, 'images-container') }} l-container--xl">
+                  {% for image in step.images %}
+                    {% if post.post_type == 'plans' %}
+                      {% set image_srcset = Image(image).src|towebp|resize(800, auto) ~ ' 720w' %}
+                      {% set image_src = Image(image).src|towebp|resize(500, auto) %}
+                    {% else %}
+                      {% set image_srcset = Image(image).src|towebp|resize(720, 720) ~ ' 720w, ' ~ Image(image).src|towebp|resize(960, 960) ~ ' 960w' %}
+                      {% set image_src = Image(image).src|towebp|resize(500, 500) %}
+                    {% endif %}
+                    {% include "@atoms/images/image/figure.twig" with {
+                      "figure": {
+                        "image": {
+                          "srcset": image_srcset,
+                          "src": image_src,
+                          "alt": Image(image).alt,
+                          "caption": Image(image).caption,
+                          "description": image.description
+                        },
+                        "link": {
+                          "url": Image(image).src|towebp|resize(1200),
+                          "extra": "js-gallery-step"
+                        }
+                      }
+                    } %}
+                  {% endfor %}
+                </div>
+              </div>
+            {% elseif step.images %}
+              <div class="{{ bem_classes(base_class, 'image') }}">
+                {% for image in step.images %}
+                  {% include "@atoms/images/image/figure.twig" with {
+                    "figure": {
+                      "image": {
+                        "srcset": Image(image).src|towebp|resize(800, auto) ~ ' 720w',
+                        "src": Image(image).src|towebp|resize(500, auto),
+                        "alt": Image(image).alt,
+                        "caption": Image(image).caption,
+                        "description": image.description
+                      },
+                      "link": {
+                        "url": Image(image).src|towebp|resize(1200),
+                        "extra": "js-gallery-step"
+                      }
+                    }
+                  } %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        {% if loop.index == 2 and ads != false %}
+          {% include "@atoms/ads/ad.twig" with {
+            "ad": {
+              "snippet": options.ad_content_1,
+              "modifiers": "step"
+            }
+          } %}
+        {% endif %}
+        {% if loop.index == 4 and ads != false %}
+          {% include "@atoms/ads/ad.twig" with {
+            "ad": {
+              "snippet": options.ad_content_2,
+              "modifiers": "step"
+            }
+          } %}
+        {% endif %}
+        {% if loop.index == 6 and ads != false %}
+          {% include "@atoms/ads/ad.twig" with {
+            "ad": {
+              "snippet": options.ad_content_3,
+              "modifiers": "step"
+            }
+          } %}
+        {% endif %}
+        {% if loop.index == 8 and ads != false %}
+          {% include "@atoms/ads/ad.twig" with {
+            "ad": {
+              "snippet": options.ad_content_1,
+              "modifiers": "step"
+            }
+          } %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}

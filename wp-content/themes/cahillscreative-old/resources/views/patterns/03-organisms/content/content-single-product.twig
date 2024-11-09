@@ -1,0 +1,85 @@
+{% set base_class = content.base_class|default('c-content-single-product') %}
+<article class="{{ bem_classes(base_class, content_single.element, content_single.modifiers, content_single.extra) }} u-spacing--double">
+  <div class="{{ bem_classes(base_class, 'intro') }}">
+    <div class="{{ bem_classes(base_class, 'intro-left') }} u-spacing">
+      {% include "@organisms/sections/page-headers/page-header.twig" with {
+        "page_header": {
+          "kicker": term.name,
+          "heading": post.title,
+          "extra": bem_classes(base_class, 'header')
+        }
+      } %}
+      {% include "@atoms/text/rich-text/rich-text.twig" with {
+        "rich_text": {
+          "text": post.post_content|wpautop,
+          "extra": bem_classes(base_class, 'body'),
+        }
+      } %}
+      <div class="{{ bem_classes(base_class, 'actions') }}">
+        {% if product.get_available_variations %}
+          {% do action('woocommerce_variable_add_to_cart') %}
+        {% else %}
+          {% include "@atoms/woocommerce/add-to-cart.twig" %}
+        {% endif %}
+        {% include "@atoms/text/price/price.twig" %}
+      </div>
+      {% if post._downloadable == 'yes' %}
+        <p><small><strong>Instant Download:</strong> Your files will be available to download once payment is confirmed. You may download, save, and print as many times as you'd like, but please do not redistribute. For digital downloads, I don't accept returns, exchanges, or cancellations.</small></p>
+      {% endif %}
+      {% if post.related_plan %}
+        {% include "@molecules/components/accordion/accordion.twig" with {
+          "accordion": {
+            "items": [
+              {
+                "title": "What You'll Receive",
+                "body": "<p>The printable PDF covers all necessary tools, cutting info, and step-by-step directions for a successful build. Plus, you'll receive access to the exact materials needed so there's no guesswork when gathering supplies - giving you peace of mind that this project is achievable from start to finish.</p>"
+              },
+              related_plan_accordion_items[0],
+              related_plan_accordion_items[1],
+              {
+                "title": "Terms of use",
+                "body": '<p>All plans are&nbsp;<a href="'~ site.link ~'" target="_blank" rel="noopener">'~ site.name ~'</a> originals and copyright protected. This file is for PERSONAL use only. It shall not be shared, sold, or distributed commercially without my permission.</p>'
+              }
+            ],
+            "heading_size": "s",
+            "heading_type": "secondary"
+          }
+        } %}
+      {% else %}
+        {% include "@molecules/components/accordion/accordion.twig" with {
+          "accordion": {
+            "items": post.meta('accordion_items'),
+            "heading_size": "s",
+            "heading_type": "secondary"
+          }
+        } %}
+      {% endif %}
+    </div>
+    <div class="{{ bem_classes(base_class, 'intro-right') }}">
+      {% if product.get_gallery_image_ids %}
+        <div class="c-product-gallery">
+          <div class="c-product-gallery__image">
+            <div class="js-product-gallery">
+              {% for image in product.get_gallery_image_ids %}
+                <div class="o-gallery-item">
+                  <img src="{{ Image(image).src|towebp|resize(900,900) }}" alt="{{ Image(image).alt }}" />
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="c-product-gallery__nav">
+            <div class="js-product-gallery-nav">
+              {% for image in product.get_gallery_image_ids %}
+                <div class="o-gallery-item">
+                  <img src="{{ Image(image).src|towebp|resize(175,175) }}" alt="{{ Image(image).alt }}" />
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% elseif post.thumbnail %}
+        <img src="{{ post.thumbnail.src|towebp|resize(900,900) }}" alt="{{ post.thumbnail.alt }}" />
+      {% endif %}
+    </div>
+  </div>
+</article>

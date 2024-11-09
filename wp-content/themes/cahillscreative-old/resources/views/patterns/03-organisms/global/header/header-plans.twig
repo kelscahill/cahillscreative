@@ -1,0 +1,50 @@
+{% set base_class = header.base_class|default('c-header') %}
+
+{% if password_protected != true %}
+  {% include "@molecules/components/alert/alert.twig" with {
+    "options": {
+      "alert_text": "Use code <strong>30OFF</strong> to get 30% off your next purchase!",
+    }
+  } %}
+{% endif %}
+<header id="c-header" role="banner" class="{{ bem_classes(base_class, header.element, header.modifiers, header.extra) }}">
+  <div class="{{ base_class ~ '--inner' }}">
+    {% if password_protected != true %}
+      {% include "@molecules/navigation/primary/primary-nav.twig" with {
+        "primary_nav": {
+          "items": plans_nav.items
+        }
+      } %}
+    {% endif %}
+    {% include "@atoms/images/logos/logo.twig" with {
+      "logo": {
+        "image": {
+          "src": Image(options.logo_horizontal).src,
+          "alt": site.name,
+          "width": "230px",
+          "height": "14px"
+        },
+        "link": site.link,
+        "extra": bem_classes(base_class, 'logo')
+      }
+    } %}
+    {% if password_protected != true %}
+      <div class="{{ bem_classes(base_class, 'utility') }}">
+        {% include "@atoms/buttons/button.twig" with {
+          "button": {
+            "text": "Print Plans",
+            "url": "#",
+            "modifiers": [
+              "small",
+              "tertiary"
+            ],
+            "attributes": {
+              "id": "js-button-print"
+            },
+            "extra": bem_classes(base_class, 'button'),
+          }
+        } %}
+      </div>
+    {% endif %}
+  </div>
+</header>

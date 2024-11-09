@@ -1,0 +1,7 @@
+{% set base_class = disclaimer.base_class|default('o-disclaimer') %}
+
+{% if disclaimer or disclaimer.text %}
+  <div class="{{ bem_classes(base_class) }}">
+    {{ disclaimer }}
+  </div>
+{% endif %}

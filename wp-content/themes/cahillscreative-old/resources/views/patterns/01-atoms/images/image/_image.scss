@@ -1,0 +1,60 @@
+img,
+picture {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+figure {
+  margin: 0;
+}
+
+figcaption {
+  display: block;
+  margin-top: $space-half;
+}
+
+.o-picture {
+  img {
+    width: 100%;
+    height: auto;
+  }
+
+  &--round {
+    border-radius: 50%;
+    overflow: hidden;
+
+    @include aspect-ratio(1, 1);
+  }
+
+  &--square {
+    @include aspect-ratio(1, 1);
+  }
+
+  &--16x9 {
+    @include aspect-ratio(16, 9);
+  }
+
+  &--4x3 {
+    @include aspect-ratio(4, 3);
+  }
+}
+
+.o-background-image {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.o-figure__link {
+  display: block;
+}
+
+.o-figure__description {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  .o-kicker {
+    margin-left: 5px;
+  }
+}
+

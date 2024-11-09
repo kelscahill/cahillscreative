@@ -5,8 +5,8 @@
   &__link {
     padding-top: $space;
     padding-bottom: $space;
-    margin-top: -$space;
-    margin-bottom: -$space;
+    margin-top: calc($space * -1);
+    margin-bottom: calc($space * -1);
 
     &:hover,
     &:focus {

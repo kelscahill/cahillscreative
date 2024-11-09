@@ -1,6 +1,6 @@
 .o-disclaimer {
   padding: $space;
-  background-color: white;
+  background-color: white !important;
   max-width: $max-width-m;
   text-align: center;
   @include align-center;

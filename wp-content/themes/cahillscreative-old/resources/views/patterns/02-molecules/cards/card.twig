@@ -1,0 +1,101 @@
+{% if card %}
+  {% set base_class = card.base_class|default('c-card') %}
+
+  <div class="{{ bem_classes(base_class, card.element, card.modifiers, card.extra) }}" {{ add_attributes(card.attributes) }}>
+    {% include "@atoms/images/image/figure.twig" with {
+      "figure": {
+        "link": {
+          "url": card.link
+        },
+        "image": {
+          "src": card.thumbnail.src|towebp|resize(500,500),
+          "alt": card.thumbnail.alt
+        },
+        "extra": bem_classes(base_class, 'image')
+      }
+    } %}
+    <div class="{{ bem_classes(base_class, 'content') }} u-spacing--half">
+      {% if Image(card.icon).src %}
+        <div class="{{ bem_classes(base_class, 'icon') }}">
+          {% include "@atoms/images/image/image.twig" with {
+            "image": {
+              "src": Image(card.icon).src,
+              "alt": Image(card.icon).alt
+            }
+          } %}
+        </div>
+      {% endif %}
+      {% include "@atoms/text/kicker/kicker.twig" with {
+        "kicker": {
+          "text": card.kicker ? card.kicker : card.category,
+          "link": card.category.link,
+          "extra": bem_classes(base_class, 'kicker')
+        }
+      } %}
+      {% include "@atoms/text/heading/heading.twig" with {
+        "heading": {
+          "level": "2",
+          "size": "l",
+          "type": "primary",
+          "text": card.title,
+          "link": {
+            "url": card.link,
+          },
+          "extra": bem_classes(base_class, 'heading')
+        }
+      } %}
+      {% if card.hr %}
+        {% include "@atoms/hr/hr.twig" with {
+          "hr": {
+            "modifiers": card.hr,
+            "extra": bem_classes(base_class, 'hr')
+          }
+        } %}
+      {% endif %}
+      {% include "@atoms/text/dek/dek.twig" with {
+        "dek": {
+          "text": card.dek ? card.dek : card.preview.length(20).read_more(false),
+          "extra": bem_classes(base_class, 'dek')
+        }
+      } %}
+    </div>
+    <div class="{{ bem_classes(base_class, 'footer') }}">
+      {% if card.button.url %}
+        {% include "@atoms/buttons/button.twig" with {
+          "button": {
+            "url": card.button.url,
+            "text": card.button.text,
+            "target": card.button.target,
+            "modifiers": "center",
+            "extra": bem_classes(base_class, 'button')
+          }
+        } %}
+      {% else %}
+        {% if card.post_type == 'post' %}
+          {% set link_text = 'Read More'%}
+        {% elseif card.post_type == 'affiliate' %}
+          {% set link_text = 'Buy Now' %}
+        {% else %}
+          {% set link_text = 'View More' %}
+        {% endif %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "url": card.link,
+            "text": link_text,
+            "modifiers": "alt",
+            "attributes": {
+              "aria-label": card.title ~ " - " ~ link_text
+            },
+            "extra": bem_classes(base_class, 'link')
+          }
+        } %}
+        {% include "@atoms/text/meta/meta.twig" with {
+          "meta": {
+            "date": card.post_type != "page" ? card.date,
+            "extra": bem_classes(base_class, 'meta')
+          }
+        } %}
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

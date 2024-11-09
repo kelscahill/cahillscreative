@@ -6,6 +6,10 @@
   &__main {
     padding-top: calc((#{$footer-logo} + #{$space-double}) / 2 + #{$space-double});
     padding-bottom: $space-double;
+
+    [bp="grid"] {
+      grid-column-gap: 0;
+    }
   }
 
   &__legal {
@@ -64,8 +68,8 @@
       height: calc(#{$footer-logo} + #{$space-double});
       border-radius: calc(#{$footer-logo} + #{$space-double});
       position: absolute;
-      top: -$space;
-      left: -$space;
+      top: calc($space * -1);
+      left: calc($space * -1);
       background-color: $c-black;
       z-index: 0;
     }

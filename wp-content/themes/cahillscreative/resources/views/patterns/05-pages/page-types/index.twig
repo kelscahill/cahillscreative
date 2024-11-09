@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block sections_after %}
-  {% if post.filter_id %}
+  {% if post.meta('shortcodes') %}
     {% include "@organisms/sections/feeds/post-filter.twig" %}
   {% else %}
     {% include "@organisms/sections/feeds/post-grid.twig" with {

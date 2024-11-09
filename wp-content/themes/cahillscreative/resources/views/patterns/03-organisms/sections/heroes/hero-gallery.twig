@@ -6,35 +6,35 @@
       <div class="{{ bem_classes(base_class, 'item') }}">
         {% include "@atoms/buttons/button.twig" with {
           "button": {
-            "url": Image(image).src|towebp|resize(1200),
+            "url": get_image(image).src|towebp|resize(1200),
             "text": "Enlarge Gallery",
             "modifiers": ["secondary", "enlarge"],
             "attributes": {
-              "title": Image(image).caption
+              "title": get_image(image).caption
             }
           }
         } %}
         <style>
-          .o-background-image--{{ Image(image).id }} {
-            background-image: url('{{ Image(image).src|towebp|resize(720, 720) }}');
+          .o-background-image--{{ get_image(image).id }} {
+            background-image: url('{{ get_image(image).src|towebp|resize(720, 720) }}');
           }
           @media(min-width: 720px) {
-            .o-background-image--{{ Image(image).id }} {
-              background-image: url('{{ Image(image).src|towebp|resize(960, 540) }}');
+            .o-background-image--{{ get_image(image).id }} {
+              background-image: url('{{ get_image(image).src|towebp|resize(960, 540) }}');
             }
           }
           @media(min-width: 960px) {
-            .o-background-image--{{ Image(image).id }} {
-              background-image: url('{{ Image(image).src|towebp|resize(1200, 675) }}');
+            .o-background-image--{{ get_image(image).id }} {
+              background-image: url('{{ get_image(image).src|towebp|resize(1200, 675) }}');
             }
           }
           @media(min-width: 1200px) {
-            .o-background-image--{{ Image(image).id }} {
-              background-image: url('{{ Image(image).src|towebp|resize(1600, 900) }}');
+            .o-background-image--{{ get_image(image).id }} {
+              background-image: url('{{ get_image(image).src|towebp|resize(1600, 900) }}');
             }
           }
         </style>
-        <div class="{{ bem_classes(base_class, 'image') }} o-background-image o-background-image--{{ Image(image).id }}"></div>
+        <div class="{{ bem_classes(base_class, 'image') }} o-background-image o-background-image--{{ get_image(image).id }}"></div>
       </div>
     {% endfor %}
   </div>

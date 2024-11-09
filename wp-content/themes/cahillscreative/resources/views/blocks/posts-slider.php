@@ -17,7 +17,7 @@ if (!empty($block['anchor'])) {
 }
 
 $templates = array(
-  '/wp-content/themes/cahillscreative/resources/views/patterns/03-organisms/sections/feeds/posts-slider.twig',
-  get_stylesheet_directory() . '/views/patterns/03-organisms/sections/feeds/posts-slider.twig',
+  '/resources/views/patterns/03-organisms/sections/feeds/posts-slider.twig',
+  get_stylesheet_directory() . '/resources/views/patterns/03-organisms/sections/feeds/posts-slider.twig',
 );
 Timber::render( $templates, $context );

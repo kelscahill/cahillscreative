@@ -9,8 +9,8 @@
  * @since    Timber 0.1
  */
 
-$context = Timber::get_context();
-$post = Timber::query_post();
+$context = Timber::context();
+$post = Timber::get_post();
 $context['post'] = $post;
 $context['is_single'] = true;
 $context['yoast_meta_description'] = substr(get_post_meta($post->ID, '_yoast_wpseo_metadesc', true), 0, 100);
@@ -41,7 +41,7 @@ if ($term) {
       ),
     ),
   );
-  $context['related_blog_posts'] = Timber::query_posts($related_blog_posts);
+  $context['related_blog_posts'] = Timber::get_posts($related_blog_posts);
 
   $related_work = array(
     'post_type' => 'work',
@@ -58,7 +58,7 @@ if ($term) {
       ),
     ),
   );
-  $context['related_work'] = Timber::query_posts($related_work);
+  $context['related_work'] = Timber::get_posts($related_work);
 }
 
 Timber::render(array(

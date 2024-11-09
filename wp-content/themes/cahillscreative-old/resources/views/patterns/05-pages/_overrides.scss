@@ -1,0 +1,242 @@
+/* ------------------------------------*\
+    $HELPER/TRUMP CLASSES
+\*------------------------------------ */
+
+body .search-filter-base,
+body .search-filter-component-popup {
+  --search-filter-description-background-color: transparent !important;
+  --search-filter-description-color: $c-black !important;
+  --search-filter-description-margin: 0 0 $space-half 0 !important;
+  --search-filter-description-scale: 0 !important;
+  --search-filter-input-active-icon-color: $c-primary !important;
+  --search-filter-input-background-color: white !important;
+  --search-filter-input-border-accent-color: $c-secondary !important;
+  --search-filter-input-border-color: $c-border !important;
+  --search-filter-input-border-focus-color: $c-primary !important;
+  --search-filter-input-border-hover-color: $c-primary !important;
+  --search-filter-input-clear-color: $c-black !important;
+  --search-filter-input-clear-hover-color: $c-secondary !important;
+  --search-filter-input-color:  $c-black !important;
+  --search-filter-input-icon-color: $c-primary !important;
+  --search-filter-input-inactive-icon-color: $c-tertiary !important;
+  --search-filter-input-interactive-color: $c-black !important;
+  --search-filter-input-interactive-hover-color: $c-secondary !important;
+  --search-filter-input-margin: $space-half 0px $space-half 0px !important;
+  --search-filter-input-margin-left: 0px !important;
+  --search-filter-input-margin-right: 0px !important;
+  --search-filter-input-placeholder-color: $c-tertiary !important;
+  --search-filter-input-scale: 1 !important;
+  --search-filter-input-selected-background-color: $c-primary !important;
+  --search-filter-input-selected-color: $c-white !important;
+  --search-filter-input-selection-background-color: $c-primary !important;
+  --search-filter-input-selection-color: $c-white !important;
+  --search-filter-label-background-color: transparent !important;
+  --search-filter-label-color: $c-black !important;
+  --search-filter-label-icon-color: $c-black !important;
+  --search-filter-label-margin: 0 0 $space-half 0 !important;
+  --search-filter-label-scale: 1 !important;
+  --search-filter-spinner-background-color: transparent !important;
+  --search-filter-spinner-foreground-color: $c-black !important;
+}
+
+body .search-filter {
+
+  &-label {
+    @include o-heading__secondary--s;
+
+    + .search-filter-description {
+      margin-top: calc($space-half * -1);
+    }
+  }
+
+  &-description {
+    @include u-font--xs;
+    font-style: italic;
+  }
+
+  &-component-combobox {
+    &:hover {
+      background-color: $c-white;
+    }
+  }
+
+  &-label[aria-expanded="false"] {
+    margin-bottom: 0;
+  }
+
+  &-label[aria-expanded="false"] + .search-filter-description {
+    margin-top: 0;
+  }
+
+  &-input-checkbox__label,
+  &-input-radio__label {
+    @include u-font--xs;
+  }
+
+  &-input-checkbox__container,
+  &-input-radio__container {
+    align-items: flex-start !important;
+  }
+
+  &-input-checkbox__control,
+  &-input-radio__control {
+    fill: $c-primary;
+  }
+
+  &-field--control-type-submit > button {
+    @include o-button;
+    box-shadow: none;
+
+    &:hover {
+      color: $c-black !important;
+      background-color: $c-tertiary !important;
+      border-color: $c-tertiary !important;
+    }
+  }
+
+  &-field--control-type-reset > button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    @include o-link--simple;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  &-input-checkbox__label,
+  &-input-radio__label {
+    font-weight: normal;
+  }
+
+  &-input-checkbox__count {
+    color: $c-gray--dark;
+    @include u-font--xs;
+  }
+
+  &-component-combobox {
+    margin-top: $space-half;
+  }
+
+  &-component-combobox__selection-item {
+    background-color: $c-tertiary !important;
+    color: $c-black !important;
+  }
+
+  &-component-combobox__selection-remove svg {
+    fill: $c-black !important;
+  }
+}
+
+#wpadminbar {
+  z-index: 1;
+}
+
+/**
+ * Completely remove from the flow but leave available to screen readers.
+ */
+.is-vishidden,
+.visually-hidden {
+  position: absolute !important;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+/**
+ * Hide elements only present and necessary for js enabled browsers.
+ */
+.no-js {
+  &-hide {
+    display: none;
+  }
+}
+
+.js-toggle,
+.js-toggle-parent {
+  cursor: pointer;
+}
+
+/**
+ * Misc
+ */
+
+.u-border--top--black {
+  border-top: 3px solid $c-black;
+}
+
+.u-border--thick--white {
+  border: 10px solid $c-white;
+}
+
+.u-border--med--white {
+  border: 3px solid $c-white;
+}
+
+.u-hover--bw-to-color {
+  filter: grayscale(100%);
+  transition: all 0.5s ease-in-out;
+
+  &:hover,
+  &:focus {
+    filter: grayscale(0);
+  }
+}
+
+.u-background-cover {
+  background-size: cover;
+  background-position: center center;
+}
+
+.u-gradient--top--white {
+  background: linear-gradient(white, $c-white);
+}
+
+/**
+ * Center block
+ */
+.u-text-align--center {
+  text-align: center;
+}
+
+.u-center-block {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.u-reversed-out {
+  color: $c-white;
+
+  p,
+  h1 a,
+  h2 a,
+  h3 a {
+    color: $c-white;
+  }
+}
+
+.u-no-spacing {
+  padding: 0;
+  margin: 0;
+}
+
+.u-rounded {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.u-text-transform--upper {
+  text-transform: uppercase;
+}

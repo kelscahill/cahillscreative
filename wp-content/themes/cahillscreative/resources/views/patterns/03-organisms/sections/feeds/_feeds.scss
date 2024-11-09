@@ -29,7 +29,7 @@
       }
     }
 
-    &.u-padding--quad--bottom {
+    &.u-padding__quad--bottom {
       padding-bottom: $space-quadruple;
     }
   }
@@ -86,7 +86,7 @@
     padding-top: $space-quadruple;
     margin-top: $space-quadruple;
     overflow: hidden;
-    background: linear-gradient(to bottom, white, rgba(255, 255, 255, 0));
+    background: linear-gradient(to bottom, white, rgb(255 255 255 / 0%));
   }
 
   &__wrap {
@@ -163,8 +163,8 @@
 
 .js-slick-products.slick-slider {
   overflow: visible;
-  margin-left: -$space-half;
-  margin-right: -$space-half;
+  margin-left: calc($space-half * -1);
+  margin-right: calc($space-half * -1);
 
   .slick-list {
     overflow: visible;
@@ -216,8 +216,8 @@
   z-index: 999;
   width: 100vw;
   background-color: $c-white;
-  margin-left: -$space;
-  margin-right: -$space;
+  margin-left: calc($space * -1);
+  margin-right: calc($space * -1);
   overflow: hidden;
 
   @include media('>medium') {
@@ -265,7 +265,7 @@
 
       .o-icon {
         position: relative;
-        top: -4px;
+        //top: -4px;
       }
     }
 
@@ -314,115 +314,11 @@
       border-radius: 10px;
       background-color: white;
     }
-  }
 
-  .searchandfilter {
-    h4 {
-      position: relative;
-      display: flex;
-      align-items: center;
-      width: 100%;
-      padding: 0;
-
-      &::before {
-        content: "";
-        display: block;
-        background: url('data:image/svg+xml,%3Csvg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.5 8.7"%3E%3Cpath d="M6.5,8.3c0.4,0.4,1,0.5,1.4,0.1c0,0,0.1-0.1,0.1-0.1l6.5-7L13,0L7.2,6.2L1.5,0L0,1.3L6.5,8.3z" fill="%23333" /%3E%3C/svg%3E') center center no-repeat;
-        background-size: 10px 10px;
-        width: 30px;
-        height: 30px;
-        border-radius: 30px;
-        border: $border--standard;
-        transform: rotate(0);
-        transition: $transition-all;
-        margin-right: $space-half;
-
-        @include media('>medium') {
-          transform: rotate(180deg);
-        }
-      }
-
-      + ul {
-        margin-left: 15px !important;
-        padding-left: $space;
-        border-left: $border--standard;
-        opacity: 0;
-        visibility: hidden;
-        max-height: 0;
-        overflow: hidden;
-
-        @include media('>medium') {
-          opacity: 1;
-          visibility: visible;
-          height: auto;
-          max-height: none;
-          margin-bottom: $space-half;
-        }
-      }
-
-      &.this-is-active {
-        &::before {
-          transform: rotate(180deg);
-        }
-
-        + ul {
-          opacity: 1;
-          visibility: visible;
-          height: auto;
-          max-height: none;
-          margin-bottom: $space-half;
-        }
-
-        @include media('>medium') {
-          &::before {
-            transform: rotate(0);
-          }
-
-          + ul {
-            opacity: 0;
-            visibility: hidden;
-            max-height: 0;
-            overflow: hidden;
-          }
-        }
-      }
-    }
-
-    ul li {
-      padding: $space-one-fourth 0;
-    }
-
-    .sf-field-reset {
-      text-decoration: underline;
-
-      @include media('>medium') {
-        position: absolute;
-        top: 3px;
-        right: 0;
-      }
-
-      &:hover,
-      &:focus {
-        color: $c-secondary;
-      }
-    }
-
-    .sf-field-search {
-      padding: $space-half 0;
-
-      @include media('>medium') {
-        padding: $space 0;
-      }
-
-      label {
-        width: 100%;
-      }
-
-      input {
-        border-radius: 50px;
-        background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17.67 21'%3E%3Cpath d='M17.56,20.19,13.05,14.4a8.06,8.06,0,1,0-.82.57l4.54,5.84a.53.53,0,0,0,.4.19.45.45,0,0,0,.3-.11A.49.49,0,0,0,17.56,20.19ZM1,8.07a7.07,7.07,0,1,1,7.07,7.07A7.08,7.08,0,0,1,1,8.07Z' fill='%23000'/%3E%3C/svg%3E") right $space center no-repeat;
-        background-size: 20px 20px;
-      }
+    > *:not(:first-child) {
+      margin-top: $space-half;
+      padding-top: $space-half;
+      border-top: $border--standard;
     }
   }
 }

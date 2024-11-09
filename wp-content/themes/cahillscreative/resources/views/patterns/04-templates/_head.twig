@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="pingback" href="{{ site.pingback_url }}" />
   {% if options.favicon %}
-    <link rel="shortcut icon" href="{{ Image(options.favicon).src|towebp|resize(30, 30) }}" />
+    <link rel="shortcut icon" href="{{ get_image(options.favicon).src|towebp|resize(30, 30) }}" />
   {% endif %}
   {% if theme.path %}
     {{ function('wp_head') }}
@@ -23,9 +23,9 @@
     }
   </style>
   {% if post.thumbnail %}
-    <meta property="og:image" content="{{ Image(post.thumbnail).src|towebp|resize(1200, auto) }}" />
+    <meta property="og:image" content="{{ get_image(post.thumbnail).src|towebp|resize(1200, auto) }}" />
   {% endif %}
   {% if post.hero_image %}
-    <meta property="og:image" content="{{ Image(post.hero_image).src|towebp|resize(1200, auto) }}" />
+    <meta property="og:image" content="{{ get_image(post.hero_image).src|towebp|resize(1200, auto) }}" />
   {% endif %}
 </head>

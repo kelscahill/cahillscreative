@@ -23,25 +23,24 @@ figcaption {
   &--round {
     border-radius: 50%;
     overflow: hidden;
-
-    @include aspect-ratio(1, 1);
+    aspect-ratio: 1 / 1;
   }
 
   &--square {
-    @include aspect-ratio(1, 1);
+    aspect-ratio: 1 / 1;
   }
 
   &--16x9 {
-    @include aspect-ratio(16, 9);
+    aspect-ratio: 16 / 9;
   }
 
   &--4x3 {
-    @include aspect-ratio(4, 3);
+    aspect-ratio: 4 / 3;
   }
 }
 
 .o-background-image {
-  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
 }
 
 .o-figure__link {

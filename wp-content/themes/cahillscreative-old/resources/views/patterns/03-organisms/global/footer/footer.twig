@@ -1,0 +1,50 @@
+{% set base_class = footer.base_class|default('c-footer') %}
+
+<footer class="{{ bem_classes(base_class) }}" role="contentinfo">
+  {% include "@atoms/images/logos/logo.twig" with {
+    "logo": {
+      "image": {
+        "src": Image(options.logo_full).src,
+        "alt": site.name,
+        "width": "150px",
+        "height": "149px"
+      },
+      "link": site.link,
+      "extra": bem_classes(base_class, 'logo')
+    }
+  } %}
+  <div class="{{ bem_classes(base_class, 'main') }} u-background-color--black u-color--white">
+    <div class="l-wrap l-container" bp="grid">
+      <div class="{{ bem_classes(base_class, 'nav') }}" bp="5@md">
+        {% include "@molecules/navigation/footer/footer-nav.twig" %}
+      </div>
+      <div class="{{ bem_classes(base_class, 'social') }}" bp="2@md">
+        {% include "@molecules/components/social/social-links/social-links.twig" %}
+      </div>
+      <div class="{{ bem_classes(base_class, 'newsletter') }}" bp="5@md">
+        {% include "@molecules/components/newsletter-signup/newsletter-signup-footer.twig" %}
+      </div>
+    </div>
+  </div>
+  <div class="{{ bem_classes(base_class, 'legal') }} u-background-color--black u-color--tertiary">
+    <div class="l-wrap l-container" bp="grid">
+      <div class="{{ bem_classes(base_class, 'copyright') }}" bp="6@md">
+        <small>© {{ "now"|date( 'Y' ) }} {{ site.name }} | All Rights Reserved</small>
+      </div>
+      <div class="{{ bem_classes(base_class, 'credit') }}" bp="6@md">
+        <small>
+          Designed & Developed by
+          {% include "@atoms/links/link.twig" with {
+            "link": {
+              "text": "Cahill's Creative",
+              "url": "https://cahillscreative.com",
+              "target": "_blank",
+              "modifiers": "no-shadow",
+              "extra": "o-small"
+            }
+          } %}
+        </small>
+      </div>
+    </div>
+  </div>
+</footer>

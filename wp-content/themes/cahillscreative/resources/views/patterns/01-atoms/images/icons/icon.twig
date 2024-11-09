@@ -4,8 +4,8 @@
   {% if icon.type == "Image" %}
     {% include "@atoms/images/image/image.twig" with {
       "image": {
-        "src": Image(icon.image).src|towebp,
-        "alt": Image(icon.image).alt
+        "src": get_image(icon.image).src|towebp,
+        "alt": get_image(icon.image).alt
       }
     } %}
   {% else %}

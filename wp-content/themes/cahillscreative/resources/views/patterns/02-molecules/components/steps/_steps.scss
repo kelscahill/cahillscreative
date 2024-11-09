@@ -12,7 +12,9 @@
     align-items: center;
     flex-direction: column;
     min-height: 200px;
-    min-width: 30px;
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
     margin-right: $space;
     justify-content: space-between;
     z-index: 2;
@@ -65,14 +67,19 @@
   }
 
   &__images {
-    position: relative;
-    width: 100vw;
-    left: 50%;
-    right: 50%;
-    margin-left: calc(-50vw - #{$space-double} + 2.5px);
-    margin-right: calc(-50vw - #{$space-double} + 2.5px);
+    @include l-container--full;
     overflow: hidden;
     margin-top: $space-double;
+    transform: translateX(-90px);
+
+    @include media("<=medium") {
+      left: 50vw;
+      right: 50vw;
+    }
+
+    @include media(">medium") {
+      transform: translateX(-45px);
+    }
 
     .single-plans & {
       width: 100%;

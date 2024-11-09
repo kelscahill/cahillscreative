@@ -1,0 +1,15 @@
+{% extends "@templates/_layout.twig" %}
+
+{% block content %}
+  {% include "@organisms/content/content.twig" %}
+{% endblock %}
+
+{% block sections_after %}
+  {% include "@organisms/sections/feeds/post-filter.twig" %}
+  {% include "@atoms/ads/ad.twig" with {
+    "ad": {
+      "snippet": options.ad_bottom_of_page,
+      "modifiers": "banner"
+    }
+  } %}
+{% endblock %}

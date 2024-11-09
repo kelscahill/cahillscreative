@@ -21,9 +21,9 @@
  * @since    Timber 0.1
  */
 global $wp_query;
-$context = Timber::get_context();
+$context = Timber::context();
 $context['search_found_posts'] = $wp_query->found_posts;
 $context['search_query'] = get_search_query();;
-$post = new TimberPost();
+$post = Timber::get_post();
 $context['post'] = $post;
 Timber::render(array('05-pages/page-types/search.twig'), $context);

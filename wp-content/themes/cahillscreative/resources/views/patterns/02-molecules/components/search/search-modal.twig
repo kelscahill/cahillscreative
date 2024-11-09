@@ -3,7 +3,7 @@
 <div class="{{ bem_classes(base_class, search_modal.element, search_modal.modifiers, search_modal.extra) }}">
   <style>
     .{{ bem_classes(base_class) }}::after {
-      background-image: url({{ Image(options.logo_full).src }});
+      background-image: url({{ get_image(options.logo_full).src }});
     }
   </style>
   {% include "@atoms/buttons/button.twig" with {

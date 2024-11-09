@@ -10,7 +10,7 @@
  */
 
 $context = Timber::context();
-$post = new TimberPost();
+$post = Timber::get_post();
 $context['post'] = $post;
 $product = wc_get_product($post->ID);
 $context['product'] = $product;
@@ -23,7 +23,7 @@ if (get_the_terms($post->ID, 'affiliate_category')) {
 
 if (get_field('related_plan')) {
   // Get the related plan post
-  $related_plan = new TimberPost(get_field('related_plan')[0]->ID);
+  $related_plan = Timber::get_post(get_field('related_plan')[0]->ID);
   // Parse the content into blocks
   $blocks = parse_blocks($related_plan->post_content);
   // Loop through each block
@@ -52,7 +52,7 @@ if ($term) {
       ),
     ),
   );
-  $context['related_products'] = Timber::query_posts($related_products_posts);
+  $context['related_products'] = Timber::get_posts($related_products_posts);
 }
 
 Timber::render(array('05-pages/post-types/single-product.twig'), $context);

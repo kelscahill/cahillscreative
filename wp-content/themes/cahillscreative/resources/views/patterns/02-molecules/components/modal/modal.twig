@@ -24,8 +24,8 @@
         {% if options.modal_image %}
           {% include "@atoms/images/image/responsive-image.twig" with {
             "image": {
-              "src": Image(options.modal_image).src|towebp|resize(auto, 500),
-              "alt": Image(options.modal_image).alt
+              "src": get_image(options.modal_image).src|towebp|resize(auto, 500),
+              "alt": get_image(options.modal_image).alt
             },
             "picture": {
               "extra": bem_classes(base_class, 'image')

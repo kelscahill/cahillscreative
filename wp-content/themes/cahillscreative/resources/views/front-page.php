@@ -9,10 +9,9 @@
  * @since    Timber 0.1
  */
 
-$context = Timber::get_context();
-$post = new TimberPost();
-$context['post']['title'] = NULL;
-$context['post']['content'] = $post->content;
+$context = Timber::context();
+$post = Timber::get_post();
+$context['is_front_page'] = true;
 
 $latest_blog_posts = array(
   'post_type' => 'post',
@@ -20,7 +19,7 @@ $latest_blog_posts = array(
   'post_status' => 'publish',
   'order' => 'DESC',
 );
-$context['latest_blog_posts'] = Timber::query_posts($latest_blog_posts);
+$context['latest_blog_posts'] = Timber::get_posts($latest_blog_posts);
 
 Timber::render(array(
   '05-pages/page-types/page-' . $post->post_name . '.twig',

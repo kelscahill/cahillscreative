@@ -15,12 +15,12 @@
       }
     } %}
     <div class="{{ bem_classes(base_class, 'content') }} u-spacing--half">
-      {% if Image(card.icon).src %}
+      {% if get_image(card.icon).src %}
         <div class="{{ bem_classes(base_class, 'icon') }}">
           {% include "@atoms/images/image/image.twig" with {
             "image": {
-              "src": Image(card.icon).src,
-              "alt": Image(card.icon).alt
+              "src": get_image(card.icon).src,
+              "alt": get_image(card.icon).alt
             }
           } %}
         </div>
@@ -54,7 +54,7 @@
       {% endif %}
       {% include "@atoms/text/dek/dek.twig" with {
         "dek": {
-          "text": card.dek ? card.dek : card.preview.length(20).read_more(false),
+          "text": card.dek ? card.dek : card.excerpt.length(20).read_more(false),
           "extra": bem_classes(base_class, 'dek')
         }
       } %}

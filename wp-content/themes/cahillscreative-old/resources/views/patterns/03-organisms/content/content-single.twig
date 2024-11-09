@@ -1,0 +1,72 @@
+{% set base_class = content_single.base_class|default('c-content-single') %}
+
+{% embed "@molecules/components/content-modal/content-modal.twig" %}
+  {% block content_modal_body %}
+    {% include "@atoms/images/image/figure.twig" with {
+      "figure" : {
+        "image": {
+          "output_tag": true,
+          "src": Image(post.hero_image).src|towebp|resize(1200),
+          "alt": Image(post.hero_image).alt,
+          "caption": Image(post.hero_image).caption
+        }
+      }
+    } %}
+  {% endblock %}
+{% endembed %}
+
+<article class="{{ bem_classes(base_class, content_single.element, content_single.modifiers, content_single.extra) }} l-container">
+  <div class="{{ bem_classes(base_class, 'meta') }} u-spacing">
+    {% include "@atoms/text/meta/meta.twig" with {
+      "meta": {
+        "date": post.date
+      }
+    } %}
+    {% include "@molecules/components/social/social-share/social-share.twig" with {
+      "social_share": {
+        "modifiers": "stacked"
+      }
+    } %}
+  </div>
+  <div class="{{ bem_classes(base_class, 'wrap') }} l-container--l">
+    <div class="{{ bem_classes(base_class, 'container') }} l-container--m u-spacing--double">
+      {% include "@organisms/sections/page-headers/page-header.twig" with {
+        "page_header": {
+          "kicker": term.name,
+          "heading": post.title,
+          "extra": bem_classes(base_class, 'header')
+        }
+      } %}
+      {% include "@molecules/components/stats/stats.twig" with {
+        "stats": {
+          "project": post.terms('project'),
+          "room": post.terms('room'),
+          "cost": post.terms('cost'),
+          "skill_level": post.terms('skill_level'),
+          "extra": bem_classes(base_class, 'stats')
+        }
+      } %}
+      {% include "@atoms/ads/ad.twig" with {
+        "ad": {
+          "snippet": options.ad_top_of_page,
+          "modifiers": "banner"
+        }
+      } %}
+      {% include "@atoms/text/rich-text/rich-text.twig" with {
+        "rich_text": {
+          "text": post.content,
+          "extra": ["has-dropcap", bem_classes(base_class, 'body')],
+        }
+      } %}
+      {% include "@molecules/navigation/tags/tags.twig" with {
+        "tags": post.terms('post_tag')
+      } %}
+    </div>
+    {% include "@atoms/ads/ad.twig" with {
+      "ad": {
+        "snippet": options.ad_bottom_of_page,
+        "modifiers": "banner"
+      }
+    } %}
+  </div>
+</article>

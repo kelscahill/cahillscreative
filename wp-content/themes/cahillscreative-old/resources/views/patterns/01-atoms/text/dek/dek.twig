@@ -1,0 +1,7 @@
+{% if dek.text %}
+  {% set base_class = dek.base_class|default('o-dek') %}
+
+  <div class="{{ bem_classes(base_class, dek.element, dek.modifiers, dek.extra) }}">
+    {{ dek.text }}
+  </div>
+{% endif %}

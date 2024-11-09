@@ -1,0 +1,30 @@
+{% set base_class = content.base_class|default('c-content-search') %}
+
+<article class="{{ bem_classes(base_class) }} l-container u-spacing--double">
+  {% include "@organisms/sections/page-headers/page-header.twig" with {
+    "page_header": {
+      "icon": {
+        "name": "search"
+      },
+      "kicker": search_query ? "Searched for '" ~ search_query ~ "'",
+      "heading": "Search Results",
+      "dek": search_found_posts > 10 ? "Showing 10 of " ~ search_found_posts ~ " results" : "Showing " ~ search_found_posts ~ " results",
+      "extra": bem_classes(base_class, 'header')
+    }
+  } %}
+  {% include "@molecules/components/search/search-form.twig" with {
+    "search_form": {
+      "modifiers": "small"
+    }
+  } %}
+  {% include "@organisms/sections/feeds/post-grid.twig" with {
+    "post_grid": {
+      "posts": posts,
+      "pagination": {
+        "next": posts.pagination.next,
+        "prev": posts.pagination.prev,
+        "pages": posts.pagination.pages,
+      }
+    }
+  } %}
+</article>

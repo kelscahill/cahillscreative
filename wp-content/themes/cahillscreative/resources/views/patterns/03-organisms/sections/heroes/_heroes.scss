@@ -102,7 +102,7 @@
       cursor: pointer;
 
       @include media(">small") {
-        cursor: url('../images/arrow-next.png'), zoom-in;
+        cursor: url('~@images/arrow-next.png'), zoom-in;
       }
     }
 
@@ -112,7 +112,7 @@
       cursor: pointer;
 
       @include media(">small") {
-        cursor: url('../images/arrow-prev.png'), zoom-in;
+        cursor: url('~@images/arrow-prev.png'), zoom-in;
       }
     }
   }
@@ -182,7 +182,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -$space-triple;
+    bottom: calc($space-triple * -1);
     margin: 0 auto;
   }
 

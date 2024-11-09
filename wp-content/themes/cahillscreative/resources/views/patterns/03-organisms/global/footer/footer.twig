@@ -4,7 +4,7 @@
   {% include "@atoms/images/logos/logo.twig" with {
     "logo": {
       "image": {
-        "src": Image(options.logo_full).src,
+        "src": get_image(options.logo_full).src,
         "alt": site.name,
         "width": "150px",
         "height": "149px"

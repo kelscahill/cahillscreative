@@ -14,10 +14,10 @@
  */
 
 global $query;
-$context = Timber::get_context();
+$context = Timber::context();
 $term = get_queried_object();
 $context['term'] = $term;
-$context['posts'] = new Timber\PostQuery();
+$context['posts'] = Timber::get_posts();
 
 if (is_tax('renovation_category')) {
   $context['post']['icon_name'] = 'camper';
@@ -39,7 +39,7 @@ if (is_category() || is_tag() || is_tax()) {
   $context['post']['title'] = $term->name;
   $context['post']['content'] = $term->description;
 } else {
-  $context['post'] = new TimberPost(get_option('page_for_posts'));
+  $context['post'] = Timber::get_post(get_option('page_for_posts'));
 }
 
 $templates = array(

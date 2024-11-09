@@ -1,0 +1,41 @@
+{% if table %}
+  {% set base_class = table.base_class|default('o-table') %}
+
+  <table class="{{ bem_classes(base_class, table.element, table.modifiers, table.extra) }}">
+    {% if table.heading.rows %}
+      <thead>
+        {% for row in table.heading.rows %}
+          <tr>
+            {% for cell in row.cells %}
+              <th class="{{ bem_classes(base_class, 'heading-cell') }}" {% if cell.colspan %}colspan="{{ cell.colspan }}"{% endif %}>{{ cell.text }}</th>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </thead>
+    {% endif %}
+
+    {% if table.body %}
+      <tbody>
+        {% for row in table.body.rows %}
+          <tr>
+            {% for cell in row.cells %}
+              <td class="{{ bem_classes(base_class, 'cell') }}"{% if cell.colspan %}colspan="{{ cell.colspan }}"{% endif %}>{{ cell.text }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    {% endif %}
+
+    {% if table.footer %}
+      <tfoot>
+        {% for row in table.footer.rows %}
+          <tr>
+            {% for cell in row.cells %}
+              <th class="{{ bem_classes(base_class, 'footer-cell') }}" {% if cell.colspan %}colspan="{{ cell.colspan }}"{% endif %}>{{ cell.text }}</th>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tfoot>
+    {% endif %}
+  </table>
+{% endif %}

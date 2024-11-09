@@ -1,7 +1,7 @@
 {% set base_class = social_share.base_class|default('c-social-share') %}
 
 {% if social_share %}
-  {% set pinterest_share_image = post.hero_image ? Image(post.hero_image).src|towebp|resize(1200, auto) : Image(post.thumbnail).src|towebp|resize(1200, auto) %}
+  {% set pinterest_share_image = post.hero_image ? get_image(post.hero_image).src|towebp|resize(1200, auto) : get_image(post.thumbnail).src|towebp|resize(1200, auto) %}
   {% set social_share_links = [
     {
       "name": "pinterest",

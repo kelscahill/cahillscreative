@@ -24,7 +24,7 @@
   > h5,
   > h6 {
     padding-top: $space;
-    margin-bottom: -$space-half;
+    margin-bottom: calc($space-half * -1);
   }
 
   h2:empty,

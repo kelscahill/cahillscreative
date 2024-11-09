@@ -1,0 +1,16 @@
+@mixin o-blockquote {
+  font-style: italic;
+  padding: 0 $space;
+  letter-spacing: $letter-spacing-1;
+  font-size: $font-size-m;
+
+  cite {
+    display: block;
+    margin-top: $space;
+    font-size: $font-size-s;
+  }
+}
+
+.o-blockquote {
+  @include o-blockquote;
+}

@@ -10,7 +10,7 @@
  */
 
 $context = Timber::context();
-$post = new TimberPost();
+$post = Timber::get_post();
 $context['post'] = $post;
 $context['is_single'] = true;
 $context['ads'] = false;

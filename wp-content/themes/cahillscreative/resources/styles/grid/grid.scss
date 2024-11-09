@@ -1,0 +1,146 @@
+@use 'sass:math';
+
+@mixin column-generator($suffix) {
+  @for $i from 1 through $grid-columns {
+    // implicit columns
+    [#{$grid-prefix}~='grid'][#{$grid-prefix}~='#{$i}\@#{$suffix}'] {
+      grid-template-columns: repeat(math.div($grid-columns, $i), 1fr);
+    }
+
+    // explicit columns
+    [#{$grid-prefix}~='#{$i}\@#{$suffix}'] {
+      grid-column: span $i / span $i;
+    }
+  }
+
+  @for $i from 1 through $grid-columns {
+    [#{$grid-prefix}~='offset-#{$i}\@#{$suffix}'] {
+      grid-column-start: $i;
+    }
+  }
+
+  [#{$grid-prefix}~='hide\@#{$suffix}'] {
+    display: none !important;
+  }
+
+  [#{$grid-prefix}~='show\@#{$suffix}'] {
+    display: initial !important;
+  }
+
+  [#{$grid-prefix}~='first\@#{$suffix}'] {
+    order: -1;
+  }
+
+  [#{$grid-prefix}~='last\@#{$suffix}'] {
+    order: $grid-columns;
+  }
+}
+
+// grid modifiers
+[#{$grid-prefix}~='grid'] {
+  display: grid !important;
+  grid-gap: $grid-gutter;
+  grid-template-columns: repeat($grid-columns, 1fr);
+}
+
+[#{$grid-prefix}~='vertical-start'] {
+  align-items: start;
+}
+
+[#{$grid-prefix}~='vertical-center'] {
+  align-items: center;
+}
+
+[#{$grid-prefix}~='vertical-end'] {
+  align-items: end;
+}
+
+[#{$grid-prefix}~='between'] {
+  justify-content: center;
+}
+
+[#{$grid-prefix}~='gap-none'] {
+  grid-gap: 0;
+  margin-bottom: 0;
+}
+
+[#{$grid-prefix}~='gap-column-none'] {
+  grid-column-gap: 0;
+}
+
+[#{$grid-prefix}~='gap-row-none'] {
+  grid-row-gap: 0;
+  margin-bottom: 0;
+}
+
+// column modifiers
+[#{$grid-prefix}~='first'] {
+   order: -1;
+}
+
+[#{$grid-prefix}~='last'] {
+  order: $grid-columns;
+}
+
+[#{$grid-prefix}~='hide'] {
+  display: none !important;
+}
+
+[#{$grid-prefix}~='show'] {
+  display: initial !important;
+}
+
+// implicit columns
+[#{$grid-prefix}~='grid'][#{$grid-prefix}*='\@'] {
+  grid-template-columns: #{$grid-columns}fr;
+}
+
+// explicit columns default
+[#{$grid-prefix}~='grid'][#{$grid-prefix}*='\@sm'], [#{$grid-prefix}~='grid'][#{$grid-prefix}*='\@md'], [#{$grid-prefix}~='grid'][#{$grid-prefix}*='\@lg'], [#{$grid-prefix}~='grid'][#{$grid-prefix}*='\@xl'] {
+  grid-template-columns: #{$grid-columns}fr;
+}
+
+%full-width-columns-explicit {
+  grid-column: span $grid-columns;
+}
+
+@for $i from 1 through $grid-columns {
+  // explicit columns default
+  [#{$grid-prefix}~='#{$i}\@sm'], [#{$grid-prefix}~='#{$i}\@md'], [#{$grid-prefix}~='#{$i}\@lg'], [#{$grid-prefix}~='#{$i}\@xl'] {
+    @extend %full-width-columns-explicit;
+  }
+}
+
+@for $i from 1 through $grid-columns {
+  // implicit columns
+  [#{$grid-prefix}~='grid'][#{$grid-prefix}~='#{$i}'] {
+    grid-template-columns: repeat(math.div($grid-columns, $i), 1fr);
+  }
+
+  // explicit columns
+  [#{$grid-prefix}~='#{$i}'] {
+    grid-column: span $i / span $i;
+  }
+}
+
+@for $i from 1 through $grid-columns {
+  [#{$grid-prefix}~='offset-#{$i}'] {
+    grid-column-start: $i;
+  }
+}
+
+@media (min-width: $breakpoint-sm) {
+  @include column-generator('sm');
+}
+
+@media (min-width: $breakpoint-md) {
+  @include column-generator('md');
+}
+
+@media (min-width: $breakpoint-lg) {
+  @include column-generator('lg');
+}
+
+@media (min-width: $breakpoint-xl) {
+  @include column-generator('xl');
+}

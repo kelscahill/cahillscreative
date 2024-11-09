@@ -6,9 +6,9 @@
       "figure" : {
         "image": {
           "output_tag": true,
-          "src": Image(post.hero_image).src|towebp|resize(1200),
-          "alt": Image(post.hero_image).alt,
-          "caption": Image(post.hero_image).caption
+          "src": get_image(post.hero_image).src|towebp|resize(1200),
+          "alt": get_image(post.hero_image).alt,
+          "caption": get_image(post.hero_image).caption
         }
       }
     } %}

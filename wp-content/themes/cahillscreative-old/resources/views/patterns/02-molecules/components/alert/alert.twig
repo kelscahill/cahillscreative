@@ -1,0 +1,17 @@
+{% set base_class = alert.base_class|default('c-alert') %}
+{% if options.alert_text or options.alert_link %}
+  <div class="{{ bem_classes(base_class) }}">
+    <div class="{{ bem_classes(base_class, 'content') }}">
+      {{ options.alert_text }}
+      {% include "@atoms/links/link.twig" with {
+        "link": {
+          "text": options.alert_link.title,
+          "url": options.alert_link.url,
+          "target": options.alert_link.target,
+          "modifiers": "simple",
+          "extra": bem_classes(base_class, 'link')
+        }
+      } %}
+    </div>
+  </div>
+{% endif %}

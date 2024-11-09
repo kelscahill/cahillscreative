@@ -1,0 +1,34 @@
+{% set base_class = price.base_class|default('o-price') %}
+
+{% if post._sale_price %}
+  {% set price_modifiers = ['sale'] %}
+{% else %}
+  {% set price_modifiers = price.modifiers %}
+{% endif %}
+
+{% if post._regular_price or post._sale_price or post._price %}
+  <div class="{{ bem_classes(base_class, price.element, price_modifiers, price.extra) }}">
+    {% if post._regular_price and post._sale_price %}
+      <span class="{{ bem_classes(base_class, 'sale') }}">{{ '$' ~ post._sale_price }}</span>
+      <span class="{{ bem_classes(base_class, 'regular') }} u-space--quarter--left"><s>{{ '$' ~ post._regular_price }}</s></span>
+      <span class="{{ bem_classes(base_class, 'discount-percent') }}">
+        {% set per = 100 - (post._price / post._regular_price * 100)|round %}
+        {{ '(' ~ per ~ '% off)' }}
+      </span>
+    {% elseif post._price is iterable or post.get_variation_price %}
+      <span class="{{ bem_classes(base_class, 'regular') }}">
+        {% if post.get_variation_price %}
+          {% set price = '$' ~ post.get_variation_price('min') ~ ' – $' ~ post.get_variation_price('max') %}
+        {% else %}
+          {% set price = '$' ~ min(post._price) ~ ' – $' ~ max(post._price) %}
+        {% endif %}
+        {{ price }}
+      </span>
+    {% else %}
+      <span class="{{ bem_classes(base_class, 'regular') }}">{{ '$' ~ post._price }}</span>
+    {% endif %}
+    {% if post._stock_status == 'outofstock' %}
+      <small class="{{ bem_classes(base_class, 'stock') }}"><em>(Out of Stock)</em></small>
+    {% endif %}
+  </div>
+{% endif %}

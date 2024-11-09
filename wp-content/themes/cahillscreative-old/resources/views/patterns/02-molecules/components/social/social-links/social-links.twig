@@ -1,0 +1,45 @@
+{% set base_class = social_links.base_class|default('c-social-links') %}
+
+{% set social_links = [
+  {
+    "name": "instagram",
+    "url": options.instagram_url
+  },
+  {
+    "name": "facebook",
+    "url": options.facebook_url
+  },
+  {
+    "name": "twitter",
+    "url": options.twitter_url
+  },
+  {
+    "name": "pinterest",
+    "url": options.pinterest_url
+  }
+] %}
+
+{% if options.facebook_url or options.twitter_url or options.instagram_url or options.pinterest_url %}
+  <div class="{{ bem_classes(base_class, social_links.element, social_links.modifiers, social_links.extra) }}">
+    {% for link in social_links %}
+      {% if link.url %}
+        {% include "@atoms/links/link.twig" with {
+          "link": {
+            "url": link.url,
+            "target": "_blank",
+            "extra": [
+              bem_classes(base_class, 'item', link.name)
+            ],
+            "icon": {
+              "name": link.name,
+              "modifiers": "small"
+            },
+            "attributes": {
+              "aria-label": link.name|capitalize
+            }
+          }
+        } %}
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}

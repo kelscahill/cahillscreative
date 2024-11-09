@@ -2,7 +2,7 @@
   &__items {
     padding-top: 35px;
     grid-row-gap: $space-quadruple;
-    grid-column-gap: $gutter;
+    grid-column-gap: $grid-gutter;
 
     @include media('>large') {
       grid-column-gap: $space-double;

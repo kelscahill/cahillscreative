@@ -102,7 +102,7 @@
     width: 100vw;
     position: absolute;
     top: 50px;
-    left: -$space;
+    left: calc($space * -1);
     z-index: 999;
     padding: $space;
     border-top: $border--standard;
@@ -189,7 +189,6 @@
     visibility: hidden;
     opacity: 0;
     height: 0;
-    padding-left: $space;
     width: 100%;
     border-left: $border--standard;
 
@@ -198,8 +197,8 @@
       left: 0;
       top: $space-double;
       background-color: white;
-      padding: $space-half;
-      min-width: 150px;
+      padding: $space-half 0;
+      min-width: min-content;
     }
   }
 
@@ -211,7 +210,7 @@
       width: 100%;
       text-align: left;
       display: block;
-      padding: $space-one-fourth;
+      padding: $space-one-fourth $space;
       white-space: nowrap;
 
       &::before {
@@ -222,17 +221,13 @@
         height: 8px;
         border-radius: 8px;
         background-color: $c-secondary;
-        left: calc((#{$space} - 4.5px) * -1);
+        left: -4.75px;
         top: 0;
         bottom: 0;
         margin: auto;
         opacity: 0;
         visibility: hidden;
         transition: $transition-all;
-
-        @include media('>large') {
-          left: calc((#{$space-half} - 4.5px) * -1);
-        }
       }
 
       &.current-menu-item {

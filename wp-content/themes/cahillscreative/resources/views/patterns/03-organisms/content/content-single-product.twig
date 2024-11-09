@@ -62,7 +62,7 @@
             <div class="js-product-gallery">
               {% for image in product.get_gallery_image_ids %}
                 <div class="o-gallery-item">
-                  <img src="{{ Image(image).src|towebp|resize(900,900) }}" alt="{{ Image(image).alt }}" />
+                  <img src="{{ get_image(image).src|towebp|resize(900,900) }}" alt="{{ get_image(image).alt }}" />
                 </div>
               {% endfor %}
             </div>
@@ -71,7 +71,7 @@
             <div class="js-product-gallery-nav">
               {% for image in product.get_gallery_image_ids %}
                 <div class="o-gallery-item">
-                  <img src="{{ Image(image).src|towebp|resize(175,175) }}" alt="{{ Image(image).alt }}" />
+                  <img src="{{ get_image(image).src|towebp|resize(175,175) }}" alt="{{ get_image(image).alt }}" />
                 </div>
               {% endfor %}
             </div>

@@ -1,0 +1,107 @@
+/* ------------------------------------ *\
+  $BREAKPOINT/MEDIA QUERY TESTS
+\* ------------------------------------ */
+
+@if $tests == true {
+  body {
+    &::before {
+      display: block;
+      position: fixed;
+      z-index: 99999;
+      background: black;
+      bottom: 0;
+      right: 0;
+      padding: 0.5em 1em;
+      content: "No Media Query";
+      color: rgba(#fff, 0.25);
+      border-top-left-radius: 10px;
+      font-size: calc(12 / 16) + em;
+
+      @media print {
+        display: none;
+      }
+    }
+
+    &::after {
+      display: block;
+      position: fixed;
+      height: 5px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 99999;
+      content: "";
+      background: black;
+
+      @media print {
+        display: none;
+      }
+    }
+
+    @include media(">xsmall") {
+      &::before {
+        content: "xsmall: #{$breakpoint-xs}";
+      }
+
+      &::after,
+      &::before {
+        background: dodgerblue;
+      }
+    }
+
+    @include media(">small") {
+      &::before {
+        content: "small: #{$breakpoint-sm}";
+      }
+
+      &::after,
+      &::before {
+        background: darkseagreen;
+      }
+    }
+
+    @include media(">medium") {
+      &::before {
+        content: "medium: #{$breakpoint-md}";
+      }
+
+      &::after,
+      &::before {
+        background: lightcoral;
+      }
+    }
+
+    @include media(">large") {
+      &::before {
+        content: "large: #{$breakpoint-lg}";
+      }
+
+      &::after,
+      &::before {
+        background: mediumvioletred;
+      }
+    }
+
+    @include media(">xlarge") {
+      &::before {
+        content: "xlarge: #{$breakpoint-xl}";
+      }
+
+      &::after,
+      &::before {
+        background: hotpink;
+      }
+    }
+
+    @include media(">xxlarge") {
+      &::before {
+        content: "xxlarge: #{$breakpoint-xxl}";
+      }
+
+      &::after,
+      &::before {
+        background: orangered;
+      }
+    }
+  }
+}

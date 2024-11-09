@@ -10,7 +10,7 @@
  */
 
 $context = Timber::context();
-$post = new TimberPost();
+$post = Timber::get_post();
 $context['post'] = $post;
 $context['accordion']['header'] = get_field( 'accordion_header' );
 $context['accordion']['items'] = get_field( 'accordion_items' );
@@ -20,7 +20,7 @@ if (!empty($block['anchor'])) {
 }
 
 $templates = array(
-  '/wp-content/themes/cahillscreative/resources/views/patterns/02-molecules/components/accordion/accordion.twig',
-  get_stylesheet_directory() . '/views/patterns/02-molecules/components/accordion/accordion.twig',
+  '/resources/views/patterns/02-molecules/components/accordion/accordion.twig',
+  get_stylesheet_directory() . '/resources/views/patterns/02-molecules/components/accordion/accordion.twig',
 );
 Timber::render( $templates, $context );
