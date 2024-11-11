@@ -15,8 +15,8 @@ if (!empty($block['anchor'])) {
   $context['promo']['anchor'] = $block['anchor'];
 }
 
-$templates = array(
-  '/resources/views/patterns/03-organisms/sections/promo/promo.twig',
-  get_stylesheet_directory() . '/resources/views/patterns/03-organisms/sections/promo/promo.twig',
-);
-Timber::render( $templates, $context );
+// $templates = array(
+//   '/resources/views/patterns/03-organisms/sections/promo/promo.twig',
+//   get_stylesheet_directory() . '/resources/views/patterns/03-organisms/sections/promo/promo.twig',
+// );
+// Timber::render( $templates, $context );
