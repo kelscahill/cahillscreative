@@ -1,1 +1,0 @@
-<button class="search-filter-input-button<?php if ( $data['isPressed'] === true ) { ?> search-filter-input-button--is-pressed<?php }else { ?><?php } ?>"><?php echo $data['label']; ?></button>
