@@ -1,7 +1,26 @@
 {
     "key": "group_60b030ed76dc5",
     "title": "Newsletter",
-    "fields": [],
+    "fields": [
+        {
+            "key": "field_673296fffaf41",
+            "label": "Newsletter",
+            "name": "",
+            "aria-label": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "Displays newsletter signup form.",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        }
+    ],
     "location": [
         [
             {
@@ -19,5 +38,6 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1622163460
+    "show_in_rest": 0,
+    "modified": 1731368732
 }
