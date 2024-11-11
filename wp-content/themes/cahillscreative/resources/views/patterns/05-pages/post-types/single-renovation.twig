@@ -18,13 +18,13 @@
   {% include "@organisms/sections/feeds/featured-products.twig" with {
     "featured_products": {
       "heading": "More products you may love",
-      "posts": get_post(post.featured_products)
+      "posts": get_posts(post.featured_products)
     }
   } %}
   {% include "@organisms/sections/feeds/related-posts.twig" with {
     "related_posts": {
       "heading": "Read this next",
-      "posts": get_post(post.related_posts)
+      "posts": get_posts(post.related_posts)
     }
   } %}
 {% endblock %}
