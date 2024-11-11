@@ -30,7 +30,7 @@
             } %}
           </div>
           <div class="{{ bem_classes(base_class, 'posts') }} js-slick-products">
-            {% for post in get_post(section.products) %}
+            {% for post in get_posts(section.products) %}
               {% include "@molecules/cards/card-product.twig" with {
                 "card": post
               } %}
