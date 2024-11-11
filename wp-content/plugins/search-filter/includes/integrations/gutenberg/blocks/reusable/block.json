@@ -1,0 +1,26 @@
+{
+	"category": "search-filter",
+	"usesContext": [],
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"className": false
+	},
+	"textdomain": "search-filter",
+	"name": "search-filter/reusable-field",
+	"title": "Reusable Field",
+	"description": "Insert a Reusable Field",
+	"attributes": {
+		"fieldId": {
+			"default": "",
+			"type": "string"
+		},
+		"alignment": {
+			"default": "",
+			"type": "string"
+		}
+	}
+}
