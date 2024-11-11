@@ -4,5 +4,5 @@ node_modules
 *.log
 *.lock
 package-lock.json
-vendor
-public
+# vendor
+# public
