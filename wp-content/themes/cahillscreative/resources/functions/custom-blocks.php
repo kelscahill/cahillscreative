@@ -21,7 +21,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'list-view',
         'keywords'        => array( 'accordion', 'section' ),
-        'render_template' => __DIR__ . '/resources/views/blocks/accordion.php',
+        'render_template' => get_template_directory() . '/resources/views/blocks/accordion.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
@@ -38,7 +38,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'grid-view',
         'keywords'        => array( 'cards', 'blocks'),
-        'render_template' => __DIR__ . '/resources/views/blocks/cards.php',
+        'render_template' => get_template_directory() . '/resources/views/blocks/cards.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
@@ -55,7 +55,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'format-gallery',
         'keywords'        => array( 'image', 'row', 'section'),
-        'render_template' => __DIR__ . '/resources/views/blocks/image-row.php',
+        'render_template' => get_template_directory() . '/resources/views/blocks/image-row.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
@@ -72,7 +72,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'email',
         'keywords'        => array( 'newsletter', 'blocks'),
-        'render_template' => __DIR__ . '/resources/views/blocks/newsletter.php',
+        'render_template' => get_template_directory() . '/resources/views/blocks/newsletter.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
@@ -89,7 +89,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'slides',
         'keywords'        => array( 'posts', 'slider' ),
-        'render_template' => __DIR__ . '/resources/views/blocks/posts-slider.php',
+        'render_template' => get_template_directory() . '/resources/views/blocks/posts-slider.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
@@ -106,7 +106,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'megaphone',
         'keywords'        => array( 'promo', 'section'),
-        'render_template' => __DIR__ . '/resources/views/blocks/promo.php',
+        'render_template' => get_template_directory() . '/resources/views/blocks/promo.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
@@ -123,7 +123,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'editor-ol',
         'keywords'        => array( 'steps', 'blocks'),
-        'render_template' => __DIR__ . '/resources/views/blocks/steps.php',
+        'render_template' => get_template_directory() . '/resources/views/blocks/steps.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
@@ -140,7 +140,7 @@ function register_custom_block_types() {
         'category'        => 'custom',
         'icon'            => 'warning',
         'keywords'        => array( 'disclaimer', 'text'),
-        'render_template' => __DIR__ . '/resources/views/blocks/disclaimer.php',
+        'render_template' => get_template_directory() . '/resources/views/blocks/disclaimer.php',
         'mode'            => 'edit',
         'supports'        => array(
           'mode' => false,
