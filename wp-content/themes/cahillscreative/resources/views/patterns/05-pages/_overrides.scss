@@ -166,6 +166,13 @@ body .search-filter {
   }
 }
 
+.c-search-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: center;
+}
+
 #wpadminbar {
   z-index: 1;
 }

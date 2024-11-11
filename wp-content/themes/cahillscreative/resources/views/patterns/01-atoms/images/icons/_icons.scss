@@ -14,6 +14,12 @@
     height: 100%;
   }
 
+  &--xxsmall,
+  &--xxsmall svg {
+    width: $icon-xxsmall;
+    height: $icon-xxsmall;
+  }
+
   &--xsmall,
   &--xsmall svg {
     width: $icon-xsmall;

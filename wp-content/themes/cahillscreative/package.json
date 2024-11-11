@@ -27,9 +27,9 @@
   },
   "dependencies": {
     "fast-glob": "^3.2.12",
-    "stylelint-config-standard": "^33.0.0",
-    "stylelint-scss": "^5.0.0",
     "in-view": "^0.6.1",
-    "jquery": "^3.3.1"
+    "jquery": "^3.3.1",
+    "stylelint-config-standard": "^33.0.0",
+    "stylelint-scss": "^5.0.0"
   }
 }
