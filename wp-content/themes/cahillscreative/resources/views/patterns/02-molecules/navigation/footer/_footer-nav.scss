@@ -31,13 +31,13 @@
   }
 
   &__child-list {
-    padding-left: $space;
     border-left: 1px solid $c-tertiary;
   }
 
   &__child-list-item {
     a {
       position: relative;
+      padding-left: $space;
 
       &::before {
         position: absolute;
@@ -47,7 +47,7 @@
         height: 8px;
         border-radius: 8px;
         background-color: $c-tertiary;
-        left: calc((#{$space} - 4px) * -1);
+        left: -4px;
         top: 0;
         bottom: 0;
         margin: auto;
