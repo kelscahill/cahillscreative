@@ -1,0 +1,39 @@
+{% set base_class = search_modal.base_class|default('c-search-modal') %}
+
+<div class="{{ bem_classes(base_class, search_modal.element, search_modal.modifiers, search_modal.extra) }}">
+  <style>
+    .{{ bem_classes(base_class) }}::after {
+      background-image: url({{ get_image(options.logo_full).src }});
+    }
+  </style>
+  {% include "@atoms/buttons/button.twig" with {
+    "button": {
+      "modifiers": "icon",
+      "extra": [
+        bem_classes(base_class, 'close'),
+        "js-toggle"
+      ],
+      "icon": {
+        "name": "close",
+        "modifiers": "medium"
+      },
+      "attributes": {
+        "aria-label": "Close",
+        "data-toggled": "body",
+        "data-prefix": "search",
+        "data-ga-event-category": "menu",
+        "data-ga-event-on": "click",
+        "data-ga-event-action": "mainNav",
+        "data-ga-event-label": "/"
+      }
+    }
+  } %}
+  <div class="{{ bem_classes(base_class, 'form') }} l-container--small">
+    {% include "@molecules/components/search/search-form.twig" with {
+      "search_form": {
+        "legal": true,
+        "results": false
+      }
+    } %}
+  </div>
+</div>

@@ -1,0 +1,18 @@
+.c-tags {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  color: $c-black;
+
+  @include u-font--s;
+
+  &__heading {
+    &::after {
+      content: "|";
+      display: inline-block;
+      color: $c-gray;
+      margin-right: $space-one-fourth;
+    }
+  }
+}

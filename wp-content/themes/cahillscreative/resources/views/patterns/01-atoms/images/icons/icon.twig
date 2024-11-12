@@ -1,0 +1,16 @@
+{% set base_class = icon.base_class|default('o-icon') %}
+
+{% if icon %}
+  {% if icon.type == "Image" %}
+    {% include "@atoms/images/image/image.twig" with {
+      "image": {
+        "src": get_image(icon.image).src|towebp,
+        "alt": get_image(icon.image).alt
+      }
+    } %}
+  {% else %}
+    <span class="{{ bem_classes(base_class, icon.element, icon.modifiers, icon.extra) }}" data-pin-nopin="true">
+      {% include '@atoms/images/icons/' ~ icon.name|lower|replace({' ' : '-'}) ~ '.twig' %}
+    </span>
+  {% endif %}
+{% endif %}

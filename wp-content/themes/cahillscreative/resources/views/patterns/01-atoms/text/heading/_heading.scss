@@ -1,0 +1,50 @@
+/*
+ * Generic header styles:
+ * All arguments are optional. If not defined, the defaults below will be used
+*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+/*
+ * Primary Headings
+*/
+
+.o-heading__primary--xxl,
+h1 {
+  @include o-heading__primary--xxl;
+}
+
+.o-heading__primary--xl,
+h2 {
+  @include o-heading__primary--xl;
+}
+
+.o-heading__primary--l,
+h3 {
+  @include o-heading__primary--l;
+}
+
+/*
+ * Secondary Headings
+*/
+.o-heading__secondary--m,
+h4 {
+  @include o-heading__secondary--m;
+}
+
+.o-heading__secondary--s,
+h5 {
+  @include o-heading__secondary--s;
+}
+
+.o-heading__secondary--xs,
+h6 {
+  @include o-heading__secondary--xs;
+}

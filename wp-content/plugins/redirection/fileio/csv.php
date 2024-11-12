@@ -14,7 +14,7 @@ class Red_Csv_File extends Red_FileIO {
 	}
 
 	public function get_data( array $items, array $groups ) {
-		$lines = [ implode( ',', array( 'source', 'target', 'regex', 'type', 'code', 'match', 'hits', 'title' ) ) ];
+		$lines = [ implode( ',', array( 'source', 'target', 'regex', 'code', 'type', 'hits', 'title', 'status' ) ) ];
 
 		foreach ( $items as $line ) {
 			$lines[] = $this->item_as_csv( $line );
@@ -25,17 +25,26 @@ class Red_Csv_File extends Red_FileIO {
 
 	public function item_as_csv( $item ) {
 		$data = $item->match->get_data();
-		$data = isset( $data['url'] ) ? $data = $data['url'] : '*';
+
+		if ( isset( $data['url'] ) ) {
+			$data = $data['url'];
+		} else {
+			$data = '/unknown';
+		}
+
+		if ( $item->get_action_code() > 400 && $item->get_action_code() < 500 ) {
+			$data = '';
+		}
 
 		$csv = array(
 			$item->get_url(),
 			$data,
 			$item->is_regex() ? 1 : 0,
-			$item->get_action_type(),
 			$item->get_action_code(),
 			$item->get_action_type(),
 			$item->get_hits(),
 			$item->get_title(),
+			$item->is_enabled() ? 'active' : 'disabled',
 		);
 
 		$csv = array_map( array( $this, 'escape_csv' ), $csv );
@@ -43,17 +52,16 @@ class Red_Csv_File extends Red_FileIO {
 	}
 
 	public function escape_csv( $item ) {
+		if ( is_numeric( $item ) ) {
+			return $item;
+		}
+
 		return '"' . str_replace( '"', '""', $item ) . '"';
 	}
 
 	public function load( $group, $filename, $data ) {
-		ini_set( 'auto_detect_line_endings', true );
-
 		$file = fopen( $filename, 'r' );
 
-		ini_set( 'auto_detect_line_endings', false );
-
-		$count = 0;
 		if ( $file ) {
 			$separators = [
 				',',
@@ -75,13 +83,22 @@ class Red_Csv_File extends Red_FileIO {
 	}
 
 	public function load_from_file( $group_id, $file, $separator ) {
+		global $wpdb;
+
 		$count = 0;
+		$group = Red_Group::get( $group_id );
+		if ( ! $group ) {
+			return 0;
+		}
 
 		while ( ( $csv = fgetcsv( $file, 5000, $separator ) ) ) {
-			$item = $this->csv_as_item( $csv, $group_id );
+			$item = $this->csv_as_item( $csv, $group );
 
-			if ( $item ) {
+			if ( $item && $this->item_is_valid( $item ) ) {
 				$created = Red_Item::create( $item );
+
+				// The query log can use up all the memory
+				$wpdb->queries = [];
 
 				if ( ! is_wp_error( $created ) ) {
 					$count++;
@@ -92,6 +109,18 @@ class Red_Csv_File extends Red_FileIO {
 		return $count;
 	}
 
+	private function item_is_valid( array $csv ) {
+		if ( strlen( $csv['url'] ) === 0 ) {
+			return false;
+		}
+
+		if ( $csv['action_data']['url'] === $csv['url'] ) {
+			return false;
+		}
+
+		return true;
+	}
+
 	private function get_valid_code( $code ) {
 		if ( get_status_header_desc( $code ) !== '' ) {
 			return intval( $code, 10 );
@@ -100,16 +129,27 @@ class Red_Csv_File extends Red_FileIO {
 		return 301;
 	}
 
-	public function csv_as_item( $csv, $group ) {
+	private function get_action_type( $code ) {
+		if ( $code > 400 && $code < 500 ) {
+			return 'error';
+		}
+
+		return 'url';
+	}
+
+	public function csv_as_item( $csv, Red_Group $group ) {
 		if ( count( $csv ) > 1 && $csv[ self::CSV_SOURCE ] !== 'source' && $csv[ self::CSV_TARGET ] !== 'target' ) {
+			$code = isset( $csv[ self::CSV_CODE ] ) ? $this->get_valid_code( $csv[ self::CSV_CODE ] ) : 301;
+
 			return array(
 				'url'         => trim( $csv[ self::CSV_SOURCE ] ),
 				'action_data' => array( 'url' => trim( $csv[ self::CSV_TARGET ] ) ),
 				'regex'       => isset( $csv[ self::CSV_REGEX ] ) ? $this->parse_regex( $csv[ self::CSV_REGEX ] ) : $this->is_regex( $csv[ self::CSV_SOURCE ] ),
-				'group_id'    => $group,
+				'group_id'    => $group->get_id(),
 				'match_type'  => 'url',
-				'action_type' => 'url',
-				'action_code' => isset( $csv[ self::CSV_CODE ] ) ? $this->get_valid_code( $csv[ self::CSV_CODE ] ) : 301,
+				'action_type' => $this->get_action_type( $code ),
+				'action_code' => $code,
+				'status'      => $group->is_enabled() ? 'enabled' : 'disabled',
 			);
 		}
 

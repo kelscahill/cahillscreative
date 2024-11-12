@@ -1,0 +1,7 @@
+{% if rich_text.text %}
+  {% set base_class = rich_text.base_class|default('o-rich-text') %}
+
+  <div class="{{ bem_classes(base_class, rich_text.element, rich_text.modifiers, rich_text.extra) }}" {{ add_attributes(rich_text.attributes) }}>
+    {{ rich_text.text }}
+  </div>
+{% endif %}

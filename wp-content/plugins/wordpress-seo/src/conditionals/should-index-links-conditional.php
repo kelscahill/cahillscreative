@@ -28,7 +28,7 @@ class Should_Index_Links_Conditional implements Conditional {
 	/**
 	 * Returns `true` when the links on this website should be indexed.
 	 *
-	 * @returns boolean `true` when the links on this website should be indexed.
+	 * @return bool `true` when the links on this website should be indexed.
 	 */
 	public function is_met() {
 		$should_index_links = $this->options_helper->get( 'enable_text_link_counter' );
@@ -36,7 +36,7 @@ class Should_Index_Links_Conditional implements Conditional {
 		/**
 		 * Filter: 'wpseo_should_index_links' - Allows disabling of Yoast's links indexation.
 		 *
-		 * @api bool To disable the indexation, return false.
+		 * @param bool $enable To disable the indexation, return false.
 		 */
 		return \apply_filters( 'wpseo_should_index_links', $should_index_links );
 	}

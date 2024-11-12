@@ -15,6 +15,10 @@ class Breadcrumb extends Abstract_Schema_Piece {
 	 * @return bool
 	 */
 	public function is_needed() {
+		if ( $this->context->indexable->object_type === 'unknown' ) {
+			return false;
+		}
+
 		if ( $this->context->indexable->object_type === 'system-page' && $this->context->indexable->object_sub_type === '404' ) {
 			return false;
 		}
@@ -34,13 +38,18 @@ class Breadcrumb extends Abstract_Schema_Piece {
 		$list_elements = [];
 
 		// In case of pagination, replace the last breadcrumb, because it only contains "Page [number]" and has no URL.
-		if ( $this->helpers->current_page->is_paged() || ( $this->context->indexable->number_of_pages > 1 ) ) {
+		if (
+			(
+				$this->helpers->current_page->is_paged()
+				|| $this->context->indexable->number_of_pages > 1
+			) && (
+				// Do not replace the last breadcrumb on static post pages.
+				! $this->helpers->current_page->is_static_posts_page()
+				// Do not remove the last breadcrumb if only one exists (bugfix for custom paginated frontpages).
+				&& \count( $breadcrumbs ) > 1
+			)
+		) {
 			\array_pop( $breadcrumbs );
-
-			$breadcrumbs[] = [
-				'url'  => $this->context->canonical,
-				'text' => $this->context->title,
-			];
 		}
 
 		// Only output breadcrumbs that are not hidden.
@@ -77,6 +86,9 @@ class Breadcrumb extends Abstract_Schema_Piece {
 			}
 		}
 
+		$breadcrumbs = \array_filter( $breadcrumbs, [ $this, 'not_empty_text' ] );
+		$breadcrumbs = \array_values( $breadcrumbs );
+
 		// Create intermediate breadcrumbs.
 		foreach ( $breadcrumbs as $index => $breadcrumb ) {
 			$list_elements[] = $this->create_breadcrumb( $index, $breadcrumb );
@@ -98,35 +110,30 @@ class Breadcrumb extends Abstract_Schema_Piece {
 	 * @return array A breadcrumb listItem.
 	 */
 	private function create_breadcrumb( $index, $breadcrumb ) {
-		return [
+		$crumb = [
 			'@type'    => 'ListItem',
 			'position' => ( $index + 1 ),
-			'item'     => [
-				'@type' => 'WebPage',
-				'@id'   => $breadcrumb['url'],
-				'url'   => $breadcrumb['url'], // For future proofing, we're trying to change the standard for this.
-				'name'  => $this->helpers->schema->html->smart_strip_tags( $breadcrumb['text'] ),
-			],
+			'name'     => $this->helpers->schema->html->smart_strip_tags( $breadcrumb['text'] ),
 		];
+
+		if ( ! empty( $breadcrumb['url'] ) ) {
+			$crumb['item'] = $breadcrumb['url'];
+		}
+
+		return $crumb;
 	}
 
 	/**
-	 * Creates the last breadcrumb in the breadcrumb list.
-	 * Provides a fallback for the URL and text:
-	 *  - URL falls back to the canonical of current page.
-	 *  - text falls back to the title of current page.
+	 * Creates the last breadcrumb in the breadcrumb list, omitting the URL per Google's spec.
+	 *
+	 * @link https://developers.google.com/search/docs/data-types/breadcrumb
 	 *
 	 * @param array $breadcrumb The position in the list.
 	 *
 	 * @return array The last of the breadcrumbs.
 	 */
 	private function format_last_breadcrumb( $breadcrumb ) {
-		if ( empty( $breadcrumb['url'] ) ) {
-			$breadcrumb['url'] = $this->context->canonical;
-		}
-		if ( empty( $breadcrumb['text'] ) ) {
-			$breadcrumb['text'] = $this->helpers->schema->html->smart_strip_tags( $this->context->title );
-		}
+		unset( $breadcrumb['url'] );
 
 		return $breadcrumb;
 	}
@@ -143,7 +150,7 @@ class Breadcrumb extends Abstract_Schema_Piece {
 	 */
 	private function is_broken( $breadcrumb ) {
 		// A breadcrumb is broken if it is not an array.
-		if ( ! is_array( $breadcrumb ) ) {
+		if ( ! \is_array( $breadcrumb ) ) {
 			return true;
 		}
 
@@ -164,5 +171,16 @@ class Breadcrumb extends Abstract_Schema_Piece {
 	 */
 	private function not_hidden( $breadcrumb ) {
 		return empty( $breadcrumb['hide_in_schema'] );
+	}
+
+	/**
+	 * Checks whether the breadcrumb has a not empty text.
+	 *
+	 * @param array $breadcrumb The breadcrumb array.
+	 *
+	 * @return bool If the breadcrumb has a not empty text.
+	 */
+	private function not_empty_text( $breadcrumb ) {
+		return ! empty( $breadcrumb['text'] );
 	}
 }

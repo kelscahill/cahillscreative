@@ -17,21 +17,21 @@ class WPSEO_Sitemaps_Cache_Validator {
 	 *
 	 * @var string
 	 */
-	const STORAGE_KEY_PREFIX = 'yst_sm_';
+	public const STORAGE_KEY_PREFIX = 'yst_sm_';
 
 	/**
 	 * Name of the option that holds the global validation value.
 	 *
 	 * @var string
 	 */
-	const VALIDATION_GLOBAL_KEY = 'wpseo_sitemap_cache_validator_global';
+	public const VALIDATION_GLOBAL_KEY = 'wpseo_sitemap_cache_validator_global';
 
 	/**
 	 * The format which creates the key of the option that holds the type validation value.
 	 *
 	 * @var string
 	 */
-	const VALIDATION_TYPE_KEY_FORMAT = 'wpseo_sitemap_%s_cache_validator';
+	public const VALIDATION_TYPE_KEY_FORMAT = 'wpseo_sitemap_%s_cache_validator';
 
 	/**
 	 * Get the cache key for a certain type and page.
@@ -42,7 +42,7 @@ class WPSEO_Sitemaps_Cache_Validator {
 	 *
 	 * @since 3.2
 	 *
-	 * @param null|string $type The type to get the key for. Null or self::SITEMAP_INDEX_TYPE for index cache.
+	 * @param string|null $type The type to get the key for. Null or self::SITEMAP_INDEX_TYPE for index cache.
 	 * @param int         $page The page of cache to get the key for.
 	 *
 	 * @return bool|string The key where the cache is stored on. False if the key could not be generated.
@@ -131,7 +131,7 @@ class WPSEO_Sitemaps_Cache_Validator {
 	 *
 	 * @since 3.2
 	 *
-	 * @param null|string $type The type to get the key for. Null for all caches.
+	 * @param string|null $type The type to get the key for. Null for all caches.
 	 *
 	 * @return void
 	 */
@@ -161,8 +161,8 @@ class WPSEO_Sitemaps_Cache_Validator {
 	 *
 	 * @since 3.2
 	 *
-	 * @param null|string $type      The type of sitemap to clear cache for.
-	 * @param null|string $validator The validator to clear cache of.
+	 * @param string|null $type      The type of sitemap to clear cache for.
+	 * @param string|null $validator The validator to clear cache of.
 	 *
 	 * @return void
 	 */
@@ -189,8 +189,15 @@ class WPSEO_Sitemaps_Cache_Validator {
 		$where[] = sprintf( "option_name LIKE '%s'", addcslashes( '_transient_timeout_' . $like, '_' ) );
 
 		// Delete transients.
-		$query = sprintf( 'DELETE FROM %1$s WHERE %2$s', $wpdb->options, implode( ' OR ', $where ) );
-		$wpdb->query( $query );
+		//phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- We need to use a direct query here.
+		//phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: No relevant caches.
+		$wpdb->query(
+			$wpdb->prepare(
+			//phpcs:disable WordPress.DB.PreparedSQLPlaceholders -- %i placeholder is still not recognized.
+				'DELETE FROM %i WHERE ' . implode( ' OR ', array_fill( 0, count( $where ), '%s' ) ),
+				array_merge( [ $wpdb->options ], $where )
+			)
+		);
 
 		wp_cache_delete( 'alloptions', 'options' );
 	}
@@ -207,7 +214,7 @@ class WPSEO_Sitemaps_Cache_Validator {
 	 *
 	 * @param string $type Provide a type for a specific type validator, empty for global validator.
 	 *
-	 * @return null|string The validator for the supplied type.
+	 * @return string|null The validator for the supplied type.
 	 */
 	public static function get_validator( $type = '' ) {
 
@@ -278,9 +285,9 @@ class WPSEO_Sitemaps_Cache_Validator {
 	/**
 	 * Encode to base61 format.
 	 *
-	 * @since 3.2
-	 *
 	 * This is base64 (numeric + alpha + alpha upper case) without the 0.
+	 *
+	 * @since 3.2
 	 *
 	 * @param int $base10 The number that has to be converted to base 61.
 	 *

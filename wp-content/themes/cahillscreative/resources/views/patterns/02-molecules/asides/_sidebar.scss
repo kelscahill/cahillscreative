@@ -1,0 +1,7 @@
+.c-sidebar {
+  position: relative;
+
+  &:empty {
+    display: none;
+  }
+}

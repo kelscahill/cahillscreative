@@ -1,0 +1,34 @@
+.c-stats {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-top: $border--standard;
+  padding-top: $space-one-fourth;
+
+  @include media('>medium') {
+    flex-direction: row;
+    border-bottom: $border--standard;
+    padding: $space 0;
+  }
+
+  &__item {
+    padding: $space-one-fourth 0;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: $border--standard;
+    margin-bottom: $space-one-fourth;
+
+    @include media('>medium') {
+      flex-direction: column;
+      padding: 0 $space-double;
+      margin-bottom: 0;
+      border: 0;
+    }
+  }
+
+  &__heading {
+    padding-bottom: $space-one-fourth;
+  }
+}

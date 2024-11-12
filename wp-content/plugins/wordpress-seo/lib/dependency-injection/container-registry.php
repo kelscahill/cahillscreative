@@ -29,7 +29,7 @@ class Container_Registry {
 		self::$containers[ $name ] = $container;
 	}
 
-    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- PHPCS doesn't take into account exceptions thrown in called methods.
+	// phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- PHPCS doesn't take into account exceptions thrown in called methods.
 
 	/**
 	 * Get an instance from a specific container.
@@ -38,7 +38,7 @@ class Container_Registry {
 	 * @param string $id                The ID of the service.
 	 * @param int    $invalid_behaviour The behaviour when the service could not be found.
 	 *
-	 * @return object The service.
+	 * @return object|null The service.
 	 *
 	 * @throws ServiceCircularReferenceException When a circular reference is detected.
 	 * @throws ServiceNotFoundException          When the service is not defined.
@@ -53,7 +53,7 @@ class Container_Registry {
 		return self::$containers[ $name ]->get( $id, $invalid_behaviour );
 	}
 
-    // phpcs:enable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
+	// phpcs:enable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 
 	/**
 	 * Attempts to find a given service ID in all registered containers.

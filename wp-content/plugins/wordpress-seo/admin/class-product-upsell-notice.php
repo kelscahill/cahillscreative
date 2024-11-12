@@ -17,14 +17,14 @@ class WPSEO_Product_Upsell_Notice {
 	 *
 	 * @var string
 	 */
-	const USER_META_DISMISSED = 'wpseo-remove-upsell-notice';
+	public const USER_META_DISMISSED = 'wpseo-remove-upsell-notice';
 
 	/**
 	 * Holds the option name.
 	 *
 	 * @var string
 	 */
-	const OPTION_NAME = 'wpseo';
+	public const OPTION_NAME = 'wpseo';
 
 	/**
 	 * Holds the options.
@@ -42,6 +42,8 @@ class WPSEO_Product_Upsell_Notice {
 
 	/**
 	 * Checks if the notice should be added or removed.
+	 *
+	 * @return void
 	 */
 	public function initialize() {
 		$this->remove_notification();
@@ -49,6 +51,8 @@ class WPSEO_Product_Upsell_Notice {
 
 	/**
 	 * Sets the upgrade notice.
+	 *
+	 * @return void
 	 */
 	public function set_upgrade_notice() {
 
@@ -62,16 +66,26 @@ class WPSEO_Product_Upsell_Notice {
 
 	/**
 	 * Listener for the upsell notice.
+	 *
+	 * @return void
 	 */
 	public function dismiss_notice_listener() {
-		if ( filter_input( INPUT_GET, 'yoast_dismiss' ) !== 'upsell' ) {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reason: We are validating a nonce here.
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'dismiss-5star-upsell' ) ) {
+			return;
+		}
+
+		$dismiss_upsell = isset( $_GET['yoast_dismiss'] ) && is_string( $_GET['yoast_dismiss'] ) ? sanitize_text_field( wp_unslash( $_GET['yoast_dismiss'] ) ) : '';
+
+		if ( $dismiss_upsell !== 'upsell' ) {
 			return;
 		}
 
 		$this->dismiss_notice();
 
-		wp_safe_redirect( admin_url( 'admin.php?page=wpseo_dashboard' ) );
-		exit;
+		if ( wp_safe_redirect( admin_url( 'admin.php?page=wpseo_dashboard' ) ) ) {
+			exit;
+		}
 	}
 
 	/**
@@ -85,6 +99,8 @@ class WPSEO_Product_Upsell_Notice {
 
 	/**
 	 * Checks if the options has a first activated on date value.
+	 *
+	 * @return bool
 	 */
 	protected function has_first_activated_on() {
 		return $this->options['first_activated_on'] !== false;
@@ -92,6 +108,8 @@ class WPSEO_Product_Upsell_Notice {
 
 	/**
 	 * Sets the first activated on.
+	 *
+	 * @return void
 	 */
 	protected function set_first_activated_on() {
 		$this->options['first_activated_on'] = strtotime( '-2weeks' );
@@ -101,6 +119,8 @@ class WPSEO_Product_Upsell_Notice {
 
 	/**
 	 * Adds a notification to the notification center.
+	 *
+	 * @return void
 	 */
 	protected function add_notification() {
 		$notification_center = Yoast_Notification_Center::get();
@@ -109,6 +129,8 @@ class WPSEO_Product_Upsell_Notice {
 
 	/**
 	 * Removes a notification to the notification center.
+	 *
+	 * @return void
 	 */
 	protected function remove_notification() {
 		$notification_center = Yoast_Notification_Center::get();
@@ -156,7 +178,7 @@ class WPSEO_Product_Upsell_Notice {
 
 		$message .= $this->get_premium_upsell_section() . "\n\n";
 
-		$message .= '<a class="button" href="' . admin_url( '?page=' . WPSEO_Admin::PAGE_IDENTIFIER . '&yoast_dismiss=upsell' ) . '">' . __( 'Please don\'t show me this notification anymore', 'wordpress-seo' ) . '</a>';
+		$message .= '<a class="button" href="' . wp_nonce_url( admin_url( '?page=' . WPSEO_Admin::PAGE_IDENTIFIER . '&yoast_dismiss=upsell' ), 'dismiss-5star-upsell' ) . '">' . __( 'Please don\'t show me this notification anymore', 'wordpress-seo' ) . '</a>';
 
 		$notification = new Yoast_Notification(
 			$message,
@@ -174,7 +196,7 @@ class WPSEO_Product_Upsell_Notice {
 	/**
 	 * Dismisses the notice.
 	 *
-	 * @return string
+	 * @return bool
 	 */
 	protected function is_notice_dismissed() {
 		return get_user_meta( get_current_user_id(), self::USER_META_DISMISSED, true ) === '1';
@@ -182,6 +204,8 @@ class WPSEO_Product_Upsell_Notice {
 
 	/**
 	 * Dismisses the notice.
+	 *
+	 * @return void
 	 */
 	protected function dismiss_notice() {
 		update_user_meta( get_current_user_id(), self::USER_META_DISMISSED, true );
@@ -190,7 +214,7 @@ class WPSEO_Product_Upsell_Notice {
 	/**
 	 * Returns the set options.
 	 *
-	 * @return mixed|void
+	 * @return mixed
 	 */
 	protected function get_options() {
 		return get_option( self::OPTION_NAME );
@@ -198,6 +222,8 @@ class WPSEO_Product_Upsell_Notice {
 
 	/**
 	 * Saves the options to the database.
+	 *
+	 * @return void
 	 */
 	protected function save_options() {
 		update_option( self::OPTION_NAME, $this->options );

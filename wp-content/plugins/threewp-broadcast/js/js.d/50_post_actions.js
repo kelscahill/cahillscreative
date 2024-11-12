@@ -19,7 +19,7 @@
 
                 $this.submitted = false;
 
-                $this.unbind( 'click' );
+                $this.off( 'click' );
 
                 $this.on( 'click', function()
                 {
@@ -54,7 +54,7 @@
 
 					// Take over the submit button.
 					var $form = $( '#broadcast_post_action_form' );
-					$( 'input.submit', $form ).on( 'click', function()
+					$( 'button.submit', $form ).on( 'click', function()
  					{
  						$this.submitted = true;
 						// Assemble the form.

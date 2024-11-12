@@ -95,7 +95,7 @@
  * @apiParam {Integer} group_id The group this redirect belongs to
  * @apiParam {String} action_type What to do when the URL is matched
  * @apiParam {Integer} action_code The HTTP code to return
- * @apiParam {String} action_data Any data associated with the `action_type` and `match_type`. For example, the target URL
+ * @apiParam {Object} action_data Any data associated with the `action_type` and `match_type`. For example, the target URL
  */
 
 /**
@@ -174,7 +174,7 @@ class Redirection_Api_Redirect extends Redirection_Api_Filter_Route {
 	/**
 	 * Redirect API endpoint constructor
 	 *
-	 * @param String $namespace Namespace.
+	 * @param string $namespace Namespace.
 	 */
 	public function __construct( $namespace ) {
 		$orders = [ 'source', 'last_count', 'last_access', 'position', 'id', '' ];
@@ -289,6 +289,8 @@ class Redirection_Api_Redirect extends Redirection_Api_Filter_Route {
 
 			foreach ( $unique as $url ) {
 				$params['url'] = $url;
+
+				// Data is sanitized in the create function
 				$redirect = Red_Item::create( $params );
 
 				if ( is_wp_error( $redirect ) ) {
@@ -331,7 +333,7 @@ class Redirection_Api_Redirect extends Redirection_Api_Filter_Route {
 	 */
 	public function route_bulk( WP_REST_Request $request ) {
 		$params = $request->get_params();
-		$action = $request['bulk'];
+		$action = sanitize_text_field( $request['bulk'] );
 
 		if ( isset( $params['items'] ) && is_array( $params['items'] ) ) {
 			$items = $params['items'];
@@ -354,6 +356,7 @@ class Redirection_Api_Redirect extends Redirection_Api_Filter_Route {
 				}
 			}
 		} elseif ( isset( $params['global'] ) && $params['global'] ) {
+			// Params are sanitized in the filter class
 			if ( $action === 'delete' ) {
 				Red_Item::delete_all( $params );
 			} elseif ( $action === 'reset' ) {
@@ -376,7 +379,7 @@ class Redirection_Api_Redirect extends Redirection_Api_Filter_Route {
 		global $wpdb;
 
 		$params = $request->get_params();
-		$search = $params['text'];
+		$search = sanitize_text_field( $params['text'] );
 		$results = [];
 
 		$posts = $wpdb->get_results(

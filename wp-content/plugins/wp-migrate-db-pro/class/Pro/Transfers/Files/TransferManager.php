@@ -2,289 +2,419 @@
 
 namespace DeliciousBrains\WPMDB\Pro\Transfers\Files;
 
+use DeliciousBrains\WPMDB\Common\FullSite\FullSiteExport;
 use DeliciousBrains\WPMDB\Common\Http\Helper;
-use DeliciousBrains\WPMDB\Pro\Queue\Manager;
+use DeliciousBrains\WPMDB\Common\Http\Http;
+use DeliciousBrains\WPMDB\Common\Properties\DynamicProperties;
+use DeliciousBrains\WPMDB\Common\Queue\Manager;
+use DeliciousBrains\WPMDB\Common\Transfers\Files\Util;
 use DeliciousBrains\WPMDB\Pro\Transfers\Receiver;
 use DeliciousBrains\WPMDB\Pro\Transfers\Sender;
+use DeliciousBrains\WPMDB\Common\Transfers\Files\TransferManager as Common_TransferManager;
 
 /**
  * Class TransferManager
  *
  * @package WPMDB\Transfers\Files
  */
-class TransferManager extends \DeliciousBrains\WPMDB\Pro\Transfers\Abstracts\TransferManagerAbstract {
+class TransferManager extends Common_TransferManager
+{
 
-	/**
-	 * TransferManager constructor.
-	 *
-	 * @param $wpmdb
-	 */
+    /**
+     * TransferManager constructor.
+     *
+     * @param $wpmdb
+     */
 
-	public $queueManager;
-	public $payload;
-	public $util;
-	/**
-	 * @var Helper
-	 */
-	private $http_helper;
-	/**
-	 * @var Receiver
-	 */
-	private $receiver;
-	/**
-	 * @var Sender
-	 */
-	private $sender;
+    public $queueManager;
+    public $payload;
+    public $util;
+    /**
+     * @var Helper
+     */
+    private $http_helper;
+    /**
+     * @var Receiver
+     */
+    private $receiver;
+    /**
+     * @var Sender
+     */
+    private $sender;
+    /**
+     * @var Http
+     */
+    private $http;
 
-	public function __construct(
-		Manager $manager,
-		Payload $payload,
-		Util $util,
-		Helper $http_helper,
-		Receiver $receiver,
-		Sender $sender
-	) {
-		parent::__construct( $manager, $payload, $util );
-		$this->queueManager = $manager;
-		$this->payload      = $payload;
-		$this->util         = $util;
-		$this->http_helper  = $http_helper;
-		$this->receiver     = $receiver;
-		$this->sender       = $sender;
-	}
+    /**
+     * @var SizeControllerInterface
+     */
+    private $size_controller;
 
-	/**
-	 *
-	 * Logic to handle pushes or pulls of files
-	 *
-	 * @param string $remote_url
-	 * @param array  $processed  list of files to transfer
-	 * @param array  $state_data MDB's array of $_POST[] items
-	 *
-	 * @see $this->ajax_initiate_file_migration
-	 *
-	 * @return mixed
-	 */
-	public function manage_file_transfer( $remote_url, $processed, $state_data ) {
-		if ( 'pull' === $state_data['intent'] ) {
-			return $this->handle_pull( $processed, $state_data, $remote_url );
-		}
+    /**
+     * @var DynamicProperties
+     */
+    private $dynamic_props;
 
-		return $this->handle_push( $processed, $state_data, $remote_url );
-	}
+    public function __construct(
+        Manager $manager,
+        Payload $payload,
+        Util $util,
+        SizeControllerInterface $size_controller,
+        Helper $http_helper,
+        Http $http,
+        Receiver $receiver,
+        Sender $sender,
+        FullSiteExport $full_site_export
+    ) {
+        parent::__construct($manager, $util, $http, $full_site_export);
+        $this->queueManager    = $manager;
+        $this->payload         = $payload;
+        $this->util            = $util;
+        $this->http_helper     = $http_helper;
+        $this->receiver        = $receiver;
+        $this->sender          = $sender;
+        $this->http            = $http;
+        $this->size_controller = $size_controller;
+        $this->dynamic_props   = DynamicProperties::getInstance();
+    }
 
-	/**
-	 * @param array  $processed
-	 * @param array  $state_data
-	 * @param string $remote_url
-	 *
-	 * @return array
-	 */
-	public function handle_push( $processed, $state_data, $remote_url ) {
-		$actual_bottleneck = min(
-			$state_data['site_details']['remote']['max_request_size'], // Slider on remote's settings tab
-			$state_data['site_details']['remote']['transfer_bottleneck'] //Actual PHP values for post_max_size and max_upload_size
-		);
+    /**
+     * @param array  $processed
+     * @param array  $state_data
+     * @param string $remote_url
+     *
+     * @return array
+     */
+    public function handle_push($processed, $state_data, $remote_url)
+    {
+        $transfer_max                = $state_data['site_details']['remote']['transfer_bottleneck'];
+        $actual_bottleneck           = $state_data['site_details']['remote']['max_request_size'];
+        $high_performance_transfers  = $state_data['site_details']['remote']['high_performance_transfers'];
+        $force_performance_transfers = isset($state_data['forceHighPerformanceTransfers']) ? $state_data['forceHighPerformanceTransfers'] : false;
+        $force_performance_transfers = apply_filters('wpmdb_force_high_performance_transfers', $force_performance_transfers, $state_data);
 
-		// Max of 1MB for post requests as we're chunking anyway
-		$bottleneck = apply_filters( 'wpmdb_transfers_push_bottleneck', min( 1000000, $actual_bottleneck ) );
+        $bottleneck                 = apply_filters('wpmdb_transfers_push_bottleneck',
+            $actual_bottleneck); //Use slider value
+        $fallback_payload_size = 1000000;
 
-		// Remove 1KB from the bottleneck as some hosts have a 1MB bottleneck
-		$bottleneck -= 1000;
+        $bottleneck = $this->maybeUseHighPerformanceTransfers($bottleneck, $high_performance_transfers, $force_performance_transfers, $transfer_max,
+            $fallback_payload_size, $state_data);
 
-		$batch      = [];
-		$total_size = 0;
+        // Remove 1KB from the bottleneck as some hosts have a 1MB bottleneck
+        $bottleneck -= 1000;
 
-		// Get subset of files to combine into a payload
-		foreach ( $processed as $key => $file ) {
-			$batch[] = $file;
+        $batch      = [];
+        $total_size = 0;
 
-			// This is a loose enforcement, actual payload size limit is implemented in Payload::create_payload()
-			if ( ( $total_size + $file['size'] ) >= $bottleneck ) {
-				break;
-			}
+        // Get subset of files to combine into a payload
+        foreach ($processed as $key => $file) {
+            $batch[] = $file;
 
-			$total_size += $file['size'];
-		}
+            // This is a loose enforcement, actual payload size limit is implemented in Payload::create_payload()
+            if (($total_size + $file['size']) >= $bottleneck) {
+                break;
+            }
 
-		list( $count, $sent, $handle, $chunked ) = $this->payload->create_payload( $batch, $state_data, $bottleneck );
+            $total_size += $file['size'];
+        }
 
-		// If we're not chunking OR chunking is complete, remove file(s) from queue
-		if ( empty( $chunked )
-		     || isset( $chunked['file']['percent_transferred'] ) && 1 === (int) $chunked['file']['percent_transferred'] ) {
-			$this->queueManager->delete_data_from_queue( $count );
-		}
+        list($count, $sent, $handle, $chunked, $file, $chunk_data) = $this->payload->create_payload($batch, $state_data, $bottleneck);
 
-		$transfer_status = $this->attempt_post( $state_data, $remote_url, $handle );
-		$code            = $transfer_status->status_code;
+        $transfer_status = $this->attempt_post($state_data, $remote_url, $handle);
+        $code            = $transfer_status->status_code;
 
-		if ( ! $transfer_status || 200 !== $code ) {
-			return $this->util->fire_transfer_errors( sprintf( __( 'Payload transfer failed with code %s: %s', 'wp-migrate-db' ), $code, $transfer_status->body ) );
-		}
+        if (!$transfer_status || 200 !== $code) {
+            return $this->util->fire_transfer_errors(sprintf(__('Payload transfer failed with code %s: %s', 'wp-migrate-db'), $code, $transfer_status->body));
+        }
 
-		list( $total_sent, $sent_copy ) = $this->process_sent_data_push( $sent, $chunked );
+        list($total_sent, $sent_copy) = $this->process_sent_data_push($sent, $chunked);
 
-		// Convert 'file data' to 'folder data', as that's how the UI/Client displays progress
-		return $this->util->process_queue_data( $sent_copy, $state_data, $total_sent );
-	}
+        // Convert 'file data' to 'folder data', as that's how the UI/Client displays progress
+        $result = $this->util->process_queue_data($sent_copy, $state_data, $total_sent);
 
-	/**
-	 * @param array  $processed
-	 * @param array  $state_data
-	 * @param string $remote_url
-	 *
-	 * @return array
-	 */
-	public function handle_pull( $processed, $state_data, $remote_url ) {
-		$bottleneck = apply_filters( 'wpmdb_transfers_pull_bottleneck', 2500000 ); //2.5 MB default
-		$batch      = [];
-		$total_size = 0;
-		$count      = 0;
+        // If we're not chunking
+        if ( empty( $chunked ) ) {
+            $this->queueManager->delete_data_from_queue($count);
+        }
 
-		// Assign bottleneck to state data so remote can use it when assembling the payload
-		$state_data['bottleneck'] = $bottleneck;
+        if ( ! empty( $chunked ) ) {
+            $chunk_option_name = 'wpmdb_file_chunk_' . $state_data['migration_state_id'];
 
-		foreach ( $processed AS $key => $file ) {
-			if ( $file['size'] > $bottleneck ) {
-				$batch[] = $file;
-				break;
-			}
+            //chunking is complete, remove file(s) from queue and clean up the file chunk option
+            if ( (int) $chunked['bytes_offset'] === $file['size'] ) {
+                delete_site_option( $chunk_option_name );
+                $file['chunking_done'] = true;
 
-			$batch[] = $file;
-			$count ++;
+                $this->queueManager->delete_data_from_queue($count);
+            } else {
+                // Record chunk data to DB for next iteration
+                update_site_option( $chunk_option_name, $chunk_data );
+            }
+        }
 
-			$total_size += $file['size'];
-		}
+        $result['fallback_payload_size'] = $fallback_payload_size;
 
-		try {
-			list( $resp, $meta ) = $this->request_batch( base64_encode( str_rot13( serialize( $batch ) ) ), $state_data, 'wpmdb_transfers_send_file', $remote_url );
-		} catch ( \Exception $e ) {
-			$this->util->catch_general_error( $e->getMessage() );
-		}
+        if ($this->canUseHighPerformanceTransfers($high_performance_transfers, $force_performance_transfers)) {
+            $result['current_payload_size']     = $this->size_controller->get_current_size();
+            $result['reached_max_payload_size'] = $this->size_controller->is_at_max_size();
+        }
 
-		//Delete data from queue
-		$this->queueManager->delete_data_from_queue( $meta['count'] );
+        return $result;
+    }
 
-		$total_sent = 0;
+    /**
+     * @param array  $processed
+     * @param array  $state_data
+     * @param string $remote_url
+     *
+     * @return array
+     */
+    public function handle_pull($processed, $state_data, $remote_url)
+    {
+        $transfer_max                = $this->util->get_transfer_bottleneck();
+        $actual_bottleneck           = $state_data['site_details']['local']['max_request_size'];
+        $high_performance_transfers  = $state_data['site_details']['local']['high_performance_transfers'];
+        $force_performance_transfers = isset($state_data['forceHighPerformanceTransfers']) ? $state_data['forceHighPerformanceTransfers'] : false;
+        $force_performance_transfers = apply_filters('wpmdb_force_high_performance_transfers', $force_performance_transfers, $state_data);
 
-		foreach ( $meta['sent'] as $sent ) {
-			$total_sent += $sent['size'];
-		}
+        $bottleneck                 = apply_filters('wpmdb_transfers_pull_bottleneck',
+            $actual_bottleneck); //Use slider value
+        $fallback_payload_size = 2500000;
 
-		// Convert 'file data' to 'folder data', as that's how the UI/Client displays progress
-		return $this->util->process_queue_data( $meta['sent'], $state_data, $total_sent );
-	}
+        $bottleneck = $this->maybeUseHighPerformanceTransfers($bottleneck, $high_performance_transfers, $force_performance_transfers, $transfer_max,
+            $fallback_payload_size, $state_data);
 
-	/**
-	 * @param string $payload
-	 * @param array  $state_data
-	 * @param string $action
-	 * @param string $remote_url
-	 *
-	 * @return \Requests_Response
-	 * @throws \Exception
-	 */
-	public function post( $payload, $state_data, $action, $remote_url ) {
+        $batch      = [];
+        $total_size = 0;
+        $count      = 0;
 
-		$data = [
-			'action'          => $action,
-			'remote_state_id' => $state_data['remote_state_id'],
-			'intent'          => $state_data['intent'],
-			'stage'           => $state_data['stage'],
-		];
+        // Assign bottleneck to state data so remote can use it when assembling the payload
+        $state_data['bottleneck'] = $bottleneck;
 
-		$sig_data = $data;
+        foreach ($processed as $key => $file) {
+            if ($file['size'] > $bottleneck) {
+                $batch[] = $file;
+                break;
+            }
 
-		$data['sig']     = $this->http_helper->create_signature( $sig_data, $state_data['key'] );
-		$data['content'] = $payload;
-		$ajax_url        = trailingslashit( $remote_url ) . 'wp-admin/admin-ajax.php';
+            $batch[] = $file;
+            $count++;
 
-		$response = $this->sender->post_payload( $data, $ajax_url );
+            $total_size += $file['size'];
+        }
 
-		$decoded = json_decode( $response->body );
+        $stage = $state_data['stage'];
+        $key   = $stage === 'media_files' ? 'mf' : 'tp';
 
-		if ( isset( $decoded->wpmdb_error ) ) {
-			throw new \Exception( $decoded->msg );
-		}
+        try {
+            list($resp, $meta) = $this->request_batch(base64_encode(str_rot13(json_encode($batch))), $state_data, "wpmdb{$key}_transfers_send_file", $remote_url);
+        } catch (\Exception $e) {
+            $this->util->catch_general_error($e->getMessage());
+        }
 
-		// Returns response directly
-		return $response;
-	}
+        //Delete data from queue
+        $this->queueManager->delete_data_from_queue($meta['count']);
 
-	/**
-	 * @param string $batch
-	 * @param array  $state_data
-	 * @param string $action
-	 * @param string $remote_url
-	 *
-	 * @return array
-	 * @throws \Exception
-	 */
-	public function request_batch( $batch, $state_data, $action, $remote_url ) {
-		$data = [
-			'action'          => $action,
-			'remote_state_id' => $state_data['remote_state_id'],
-			'intent'          => $state_data['intent'],
-			'stage'           => $state_data['stage'],
-			'bottleneck'      => $state_data['bottleneck'],
-		];
+        $total_sent = 0;
 
-		$sig_data      = $data;
-		$data['sig']   = $this->http_helper->create_signature( $sig_data, $state_data['key'] );
-		$ajax_url      = trailingslashit( $remote_url ) . 'wp-admin/admin-ajax.php';
-		$data['batch'] = $batch;
+        foreach ($meta['sent'] as $sent) {
+            $total_sent += $sent['size'];
+        }
 
-		try {
-			$response = $this->receiver->send_request( $data, $ajax_url );
-		} catch ( \Exception $e ) {
-			$this->util->catch_general_error( $e->getMessage() );
-		}
+        // Convert 'file data' to 'folder data', as that's how the UI/Client displays progress
+        $result = $this->util->process_queue_data($meta['sent'], $state_data, $total_sent);
 
-		return $this->receiver->receive_stream_batch( $response, $state_data );
-	}
+        $result['fallback_payload_size'] = $fallback_payload_size;
 
-	/**
-	 * @param array $sent
-	 * @param array $chunked
-	 *
-	 * @return array
-	 */
-	public function process_sent_data_push( $sent, $chunked ) {
-		$total_sent = 0;
-		$filtered   = [];
+        if ($this->canUseHighPerformanceTransfers($high_performance_transfers, $force_performance_transfers)) {
+            $result['current_payload_size']     = $this->size_controller->get_current_size();
+            $result['reached_max_payload_size'] = $this->size_controller->is_at_max_size();
+        }
 
-		foreach ( $sent as $files_sent ) {
-			$item_size = $files_sent['size'];
+        return $result;
+    }
 
-			if ( isset( $chunked['chunked'] ) && $chunked['chunked'] ) {
-				$item_size = $chunked['chunk_size'];
-			}
+    /**
+     * @param string $payload
+     * @param array  $state_data
+     * @param string $action
+     * @param string $remote_url
+     *
+     * @return \Requests_Response
+     * @throws \Exception
+     */
+    public function post($payload, $state_data, $action, $remote_url)
+    {
+        $sig_data = [
+            'action'          => $action,
+            'remote_state_id' => $state_data['migration_state_id'],
+            'intent'          => $state_data['intent'],
+            'stage'           => $state_data['stage'],
+        ];
 
-			$total_sent               += $item_size;
-			$files_sent['chunk_size'] = $item_size;
-			$filtered[]               = $files_sent;
-		}
+        $state_data['sig'] = $this->http_helper->create_signature($sig_data, $state_data['key']);
 
-		return array( $total_sent, $filtered );
-	}
+        $state_data['action']          = $action;
+        $state_data['remote_state_id'] = $state_data['migration_state_id'];
+        $ajax_url                      = trailingslashit($remote_url) . 'wp-admin/admin-ajax.php';
 
-	/**
-	 * @param array    $state_data
-	 * @param string   $remote_url
-	 * @param resource $handle
-	 *
-	 * @return \Requests_Response
-	 */
-	public function attempt_post( $state_data, $remote_url, $handle ) {
-		rewind( $handle );
-		$stream_contents = base64_encode( gzencode( stream_get_contents( $handle ) ) );
+        $response = $this->sender->post_payload($payload, $state_data, $ajax_url);
 
-		try {
-			$transfer_status = $this->post( $stream_contents, $state_data, 'wpmdb_transfers_receive_file', $remote_url );
-		} catch ( \Exception $e ) {
-			$this->util->catch_general_error( $e->getMessage() );
-		}
+        $decoded = json_decode($response->body);
 
-		return $transfer_status;
-	}
+        if (isset($decoded->wpmdb_error)) {
+            throw new \Exception($decoded->msg);
+        }
+
+        if (isset($decoded->success) && $decoded->success === false) {
+            return $this->http->end_ajax(new \WP_Error('wpmdb_transfer_failed', $decoded->data));
+        }
+
+        // Returns response directly
+        return $response;
+    }
+
+    /**
+     * @param string $batch
+     * @param array  $state_data
+     * @param string $action
+     * @param string $remote_url
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function request_batch($batch, $state_data, $action, $remote_url)
+    {
+        $data = [
+            'action'     => $action,
+            'intent'     => $state_data['intent'],
+            'stage'      => $state_data['stage'],
+            'bottleneck' => $state_data['bottleneck'],
+        ];
+
+        $sig_data      = $data;
+        $data['sig']   = $this->http_helper->create_signature($sig_data, $state_data['key']);
+        $ajax_url      = trailingslashit($remote_url) . 'wp-admin/admin-ajax.php';
+        $data['batch'] = $batch;
+
+        try {
+            $response = $this->receiver->send_request($data, $ajax_url);
+        } catch (\Exception $e) {
+            $this->util->catch_general_error($e->getMessage());
+        }
+
+        return $this->receiver->receive_stream_batch($response, $state_data);
+    }
+
+    /**
+     * @param array $sent
+     * @param array $chunked
+     *
+     * @return array
+     */
+    public function process_sent_data_push($sent, $chunked)
+    {
+        $total_sent = 0;
+        $filtered   = [];
+
+        foreach ($sent as $files_sent) {
+            $item_size = $files_sent['size'];
+
+            if (isset($chunked['chunked']) && $chunked['chunked']) {
+                $item_size = $chunked['chunk_size'];
+            }
+
+            $total_sent               += $item_size;
+            $files_sent['chunk_size'] = $item_size;
+            $filtered[]               = $files_sent;
+        }
+
+        return array($total_sent, $filtered);
+    }
+
+    /**
+     * @param array    $state_data
+     * @param string   $remote_url
+     * @param resource $handle
+     *
+     * @return \Requests_Response
+     */
+    public function attempt_post($state_data, $remote_url, $handle)
+    {
+        rewind($handle);
+        $stage           = $state_data['stage'];
+        $key             = $stage === 'media_files' ? 'mf' : 'tp';
+
+        try {
+            $transfer_status = $this->post($handle, $state_data, "wpmdb{$key}_transfers_receive_file", $remote_url);
+        } catch (\Exception $e) {
+            $this->util->catch_general_error($e->getMessage());
+        }
+
+        return $transfer_status;
+    }
+
+    /**
+     * Calculates the high performance mode bottleneck size.
+     *
+     * @param array $state_data
+     *
+     * @return int
+     */
+    private function calculatePayLoadSize($state_data)
+    {
+        if ($state_data['stabilizePayloadSize'] !== true) {
+
+            if ($state_data['stepDownSize'] === true) {
+                return $this->size_controller->step_down_size($state_data['retries']);
+            }
+
+            return $this->size_controller->step_up_size();
+        }
+
+        return $this->size_controller->get_current_size();
+    }
+
+    /**
+     * If high performance mode can be used for current migration, the bottleneck value will be modified.
+     * Otherwise, the passed bottleneck will be returned unmodified.
+     *
+     * @param int $bottleneck
+     * @param bool $high_performance_transfers
+     * @param bool $force_performance_transfers
+     * @param int $transfer_max
+     * @param int $fallback
+     * @param array $state_data
+     *
+     * @return int
+     */
+    private function maybeUseHighPerformanceTransfers(
+        $bottleneck,
+        $high_performance_transfers,
+        $force_performance_transfers,
+        $transfer_max,
+        $fallback,
+        $state_data
+    ) {
+        if ($this->canUseHighPerformanceTransfers($high_performance_transfers, $force_performance_transfers)) {
+            $this->size_controller->initialize($transfer_max, $fallback, isset($state_data['payloadSize']) ? $state_data['payloadSize'] : null);
+            $bottleneck = apply_filters('wpmdb_high_performance_transfers_bottleneck',
+                $this->calculatePayLoadSize($state_data), $state_data['intent']);
+        }
+
+        return $bottleneck;
+    }
+
+    /**
+     * Checks if high performance mode can be enabled for current migration.
+     *
+     * @param bool $high_performance_transfers
+     * @param bool $force_performance_transfers
+     * @return bool
+     */
+    private function canUseHighPerformanceTransfers($high_performance_transfers, $force_performance_transfers)
+    {
+        return (true === $high_performance_transfers || true === $force_performance_transfers) && ! $this->dynamic_props->doing_cli_migration;
+    }
 }

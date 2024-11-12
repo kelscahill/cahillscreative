@@ -36,7 +36,7 @@
  * @apiSuccess {String} settings.expire_redirect
  * @apiSuccess {String} settings.token
  * @apiSuccess {String} settings.monitor_post
- * @apiSuccess {String} settings.monitor_types
+ * @apiSuccess {String[]} settings.monitor_types
  * @apiSuccess {String} settings.associated_redirect
  * @apiSuccess {String} settings.auto_target
  * @apiSuccess {String} settings.expire_redirect
@@ -50,7 +50,7 @@
  * @apiSuccess {String} settings.https
  * @apiSuccess {String} settings.headers
  * @apiSuccess {String} settings.database
- * @apiSuccess {String} settings.relcoate Relocate this site to the specified domain (and path)
+ * @apiSuccess {String} settings.relocate Relocate this site to the specified domain (and path)
  * @apiSuccess {String="www","nowww",""} settings.preferred_domain Preferred canonical domain
  * @apiSuccess {String[]} settings.aliases Array of domains that will be redirected to the current WordPress site
  * @apiSuccess {Object[]} groups An array of groups
@@ -111,7 +111,7 @@ class Redirection_Api_Settings extends Redirection_Api_Route {
 
 		if ( isset( $params['location'] ) && strlen( $params['location'] ) > 0 ) {
 			$module = Red_Module::get( 2 );
-			$result = $module->can_save( $params['location'] );
+			$result = $module->can_save( sanitize_text_field( $params['location'] ) );
 		}
 
 		red_set_options( $params );

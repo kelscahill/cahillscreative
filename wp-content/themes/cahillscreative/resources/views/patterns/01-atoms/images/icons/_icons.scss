@@ -1,0 +1,69 @@
+.o-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  use,
+  path {
+    fill: currentcolor;
+  }
+
+  &#{&}--quotes {
+    margin-bottom: $space-half;
+    width: 100%;
+    height: 100%;
+  }
+
+  &--xxsmall,
+  &--xxsmall svg {
+    width: $icon-xxsmall;
+    height: $icon-xxsmall;
+  }
+
+  &--xsmall,
+  &--xsmall svg {
+    width: $icon-xsmall;
+    height: $icon-xsmall;
+  }
+
+  &--small,
+  &--small svg {
+    width: $icon-small;
+    height: $icon-small;
+  }
+
+  &--medium,
+  &--medium svg {
+    width: $icon-medium;
+    height: $icon-medium;
+  }
+
+  &--large,
+  &--large svg {
+    width: $icon-large;
+    height: $icon-large;
+  }
+
+  &--xlarge,
+  &--xlarge svg {
+    width: $icon-xlarge;
+    height: $icon-xlarge;
+  }
+
+  &--xxlarge,
+  &--xxlarge svg {
+    width: $icon-xxlarge;
+    height: $icon-xxlarge;
+  }
+}
+
+.o-arrow {
+  display: inline-flex;
+  margin-left: $space-one-half;
+  line-height: 1;
+  font-size: 22px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top: -3px;
+}

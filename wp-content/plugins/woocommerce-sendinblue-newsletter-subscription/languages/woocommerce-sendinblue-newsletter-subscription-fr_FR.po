@@ -1,0 +1,125 @@
+# Copyright (C) 2022 
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Sendinblue - WooCommerce Email Marketing 3.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woocommerce-"
+"sendinblue-newsletter-subscription\n"
+"POT-Creation-Date: 2022-10-12T11:15:34+00:00\n"
+"PO-Revision-Date: 2023-07-14 00:37+0530\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.3.2\n"
+"X-Domain: woocommerce-sendinblue-newsletter-subscription\n"
+
+#. Plugin Name of the plugin
+msgid "Brevo - WooCommerce Email Marketing"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+msgid "https://www.sendinblue.com/?r=wporg"
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"Allow users to subscribe to your newsletter via the checkout page and a "
+"client to send SMS campaign."
+msgstr ""
+
+#: src/views/admin_menus.php:729 src/views/admin_view.php:726
+msgid "for WooCommerce"
+msgstr "pour Woocommerce"
+
+#: src/views/admin_menus.php:745
+msgid "Settings"
+msgstr "Réglages"
+
+#: src/views/admin_menus.php:759
+msgid "You’re all set!"
+msgstr "C’est fait !"
+
+#: src/views/admin_menus.php:760
+msgid "The connection between Woocommerce and Brevo works!"
+msgstr "Woocommerce et Brevo sont maintenant connectés !"
+
+#: src/views/admin_menus.php:769
+msgid "Go to dashboard"
+msgstr "Voir sur mon tableau de bord"
+
+#: src/views/admin_menus.php:806 src/views/admin_view.php:827
+msgid "Email Marketing"
+msgstr "Email Marketing"
+
+#: src/views/admin_menus.php:808 src/views/admin_view.php:829
+msgid "Sell more with sleek email messages that you can design in no time"
+msgstr "Vendez davantage grâce à des emails élégants et faciles à concevoir"
+
+#: src/views/admin_menus.php:818
+msgid "See my campaigns"
+msgstr "Voir mes campagnes"
+
+#: src/views/admin_menus.php:838 src/views/admin_view.php:846
+msgid "Automation"
+msgstr "Automation"
+
+#: src/views/admin_menus.php:840 src/views/admin_view.php:848
+msgid "Save time and boost performance by automating your marketing messages"
+msgstr "Automatisez votre segmentation et vos messages marketing"
+
+#: src/views/admin_menus.php:849
+msgid "See my workflows"
+msgstr "Voir mes scénarios"
+
+#: src/views/admin_menus.php:870 src/views/admin_view.php:865
+msgid "Conversations"
+msgstr "Conversations"
+
+#: src/views/admin_menus.php:872 src/views/admin_view.php:867
+msgid ""
+"Be there for customers instantly when they have a question\n"
+"                  while browsing your site"
+msgstr ""
+"Installez un chat et répondez instantanément aux clients qui visitent "
+"votre site"
+
+#: src/views/admin_menus.php:882
+msgid "See my conversations"
+msgstr "Voir mes conversations"
+
+#: src/views/admin_menus.php:892 src/views/admin_view.php:875
+msgid "Connect to your favorite plugins"
+msgstr "Connectez vos plugins favoris"
+
+#: src/views/admin_view.php:767
+msgid "Prepare for"
+msgstr "Préparez-vous au"
+
+#: src/views/admin_view.php:770
+msgid "takeoff."
+msgstr "décollage."
+
+#: src/views/admin_view.php:773
+msgid "WooCommerce marketing tools for small"
+msgstr "Outils marketing WooCommerce pour PME"
+
+#: src/views/admin_view.php:774
+msgid "businesses. Email marketing, automations,"
+msgstr "Email marketing, automation,"
+
+#: src/views/admin_view.php:775
+msgid "chat, forms, sales CRM and more"
+msgstr "chat, formulaires, sales CRM et plus"
+
+#: src/views/admin_view.php:784
+msgid "Connect your account"
+msgstr "Connectez votre compte"
+
+#: src/views/admin_view.php:812
+msgid "Do it all with Brevo"
+msgstr "Brevo, l’outil tout-en-un"

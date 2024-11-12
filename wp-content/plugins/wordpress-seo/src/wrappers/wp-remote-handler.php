@@ -46,9 +46,9 @@ class WP_Remote_Handler {
 			$args['timeout'] = ( $options['timeout'] * 1000 );
 		}
 
-		$raw_response = \wp_remote_request( $request->getUri(), $args );
+		$raw_response = \wp_remote_request( (string) $request->getUri(), $args );
 		if ( \is_wp_error( $raw_response ) ) {
-			$exception = new Exception( $raw_response->get_error_message(), $raw_response->get_error_code() );
+			$exception = new Exception( $raw_response->get_error_message() );
 			return new RejectedPromise( $exception );
 		}
 

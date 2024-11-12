@@ -1,0 +1,19 @@
+{% if button.url or button.text or button.icon %}
+  {% set button_block_class = button.block_class|default('o-button') %}
+  {% set button_tag = 'button' %}
+  {% if button.url %}
+    {% set button_tag = 'a' %}
+  {% endif %}
+
+  <{{ button_tag }} role="button" class="{{ bem_classes(button_block_class, button.element, button.modifiers, button.extra) }}" {{ button.url ? 'href="' ~ button.url ~ '"' }} {{ button.target == '_blank' ? ' target="_blank" rel="noreferrer"' }} {{ add_attributes(button.attributes) }}>
+    {% if button.icon %}
+      {% include "@atoms/images/icons/icon.twig" with button %}
+    {% endif %}
+    {% if button.text %}
+      <span>{{ button.text }}</span>
+    {% endif %}
+    {% if button.arrow %}
+      <span class="o-arrow">→</span>
+    {% endif %}
+  </{{ button_tag }}>
+{% endif %}

@@ -73,8 +73,6 @@ class Table {
 	 * @param array   $options The options.
 	 *
 	 * @throws Exception If invalid arguments are passed.
-	 *
-	 * @return Table
 	 */
 	public function __construct( $adapter, $name, $options = [] ) {
 		// Sanity checks.
@@ -108,6 +106,8 @@ class Table {
 	 * @param string $column_name The column name.
 	 * @param string $type        The column type.
 	 * @param array  $options     The options.
+	 *
+	 * @return void
 	 */
 	public function column( $column_name, $type, $options = [] ) {
 		// If there is already a column by the same name then silently fail and continue.
@@ -138,6 +138,8 @@ class Table {
 	 *
 	 * @param string $created_column_name Created at column name.
 	 * @param string $updated_column_name Updated at column name.
+	 *
+	 * @return void
 	 */
 	public function timestamps( $created_column_name = 'created_at', $updated_column_name = 'updated_at' ) {
 		$this->column( $created_column_name, 'datetime' );
@@ -174,10 +176,11 @@ class Table {
 	/**
 	 * Table definition
 	 *
-	 * @param boolean $wants_sql Whether or not to return SQL or execute the query. Defaults to false.
+	 * @param bool $wants_sql Whether or not to return SQL or execute the query. Defaults to false.
+	 *
+	 * @return bool|string
 	 *
 	 * @throws Exception If the table definition has not been intialized.
-	 * @return boolean | string
 	 */
 	public function finish( $wants_sql = false ) {
 		if ( ! $this->initialized ) {
@@ -187,13 +190,11 @@ class Table {
 		if ( \is_array( $this->options ) && \array_key_exists( 'options', $this->options ) ) {
 			$opt_str = $this->options['options'];
 		}
+		elseif ( isset( $this->adapter->db_info['charset'] ) ) {
+			$opt_str = ' DEFAULT CHARSET=' . $this->adapter->db_info['charset'];
+		}
 		else {
-			if ( isset( $this->adapter->db_info['charset'] ) ) {
-				$opt_str = ' DEFAULT CHARSET=' . $this->adapter->db_info['charset'];
-			}
-			else {
-				$opt_str = ' DEFAULT CHARSET=utf8';
-			}
+			$opt_str = ' DEFAULT CHARSET=utf8';
 		}
 		$close_sql        = \sprintf( ') %s;', $opt_str );
 		$create_table_sql = $this->sql;
@@ -225,14 +226,13 @@ class Table {
 	 * @return string The SQL.
 	 */
 	private function columns_to_str() {
-		$str    = '';
 		$fields = [];
 		$len    = \count( $this->columns );
 		for ( $i = 0; $i < $len; $i++ ) {
 			$c        = $this->columns[ $i ];
 			$fields[] = $c->__toString();
 		}
-		return \join( ",\n", $fields );
+		return \implode( ",\n", $fields );
 	}
 
 	/**
@@ -240,6 +240,8 @@ class Table {
 	 *
 	 * @param string $name    The name.
 	 * @param array  $options The options.
+	 *
+	 * @return void
 	 */
 	private function init_sql( $name, $options ) {
 		// Are we forcing table creation? If so, drop it first.

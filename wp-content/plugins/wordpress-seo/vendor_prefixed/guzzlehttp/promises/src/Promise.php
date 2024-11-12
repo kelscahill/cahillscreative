@@ -1,11 +1,14 @@
 <?php
 
+declare (strict_types=1);
 namespace YoastSEO_Vendor\GuzzleHttp\Promise;
 
 /**
  * Promises/A+ implementation that avoids recursion when possible.
  *
- * @link https://promisesaplus.com/
+ * @see https://promisesaplus.com/
+ *
+ * @final
  */
 class Promise implements \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface
 {
@@ -24,7 +27,7 @@ class Promise implements \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface
         $this->waitFn = $waitFn;
         $this->cancelFn = $cancelFn;
     }
-    public function then(callable $onFulfilled = null, callable $onRejected = null)
+    public function then(callable $onFulfilled = null, callable $onRejected = null) : \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface
     {
         if ($this->state === self::PENDING) {
             $p = new \YoastSEO_Vendor\GuzzleHttp\Promise\Promise(null, [$this, 'cancel']);
@@ -35,35 +38,37 @@ class Promise implements \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface
         }
         // Return a fulfilled promise and immediately invoke any callbacks.
         if ($this->state === self::FULFILLED) {
-            return $onFulfilled ? promise_for($this->result)->then($onFulfilled) : promise_for($this->result);
+            $promise = \YoastSEO_Vendor\GuzzleHttp\Promise\Create::promiseFor($this->result);
+            return $onFulfilled ? $promise->then($onFulfilled) : $promise;
         }
         // It's either cancelled or rejected, so return a rejected promise
         // and immediately invoke any callbacks.
-        $rejection = rejection_for($this->result);
+        $rejection = \YoastSEO_Vendor\GuzzleHttp\Promise\Create::rejectionFor($this->result);
         return $onRejected ? $rejection->then(null, $onRejected) : $rejection;
     }
-    public function otherwise(callable $onRejected)
+    public function otherwise(callable $onRejected) : \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface
     {
         return $this->then(null, $onRejected);
     }
-    public function wait($unwrap = \true)
+    public function wait(bool $unwrap = \true)
     {
         $this->waitIfPending();
-        $inner = $this->result instanceof \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface ? $this->result->wait($unwrap) : $this->result;
+        if ($this->result instanceof \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface) {
+            return $this->result->wait($unwrap);
+        }
         if ($unwrap) {
-            if ($this->result instanceof \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface || $this->state === self::FULFILLED) {
-                return $inner;
-            } else {
-                // It's rejected so "unwrap" and throw an exception.
-                throw exception_for($inner);
+            if ($this->state === self::FULFILLED) {
+                return $this->result;
             }
+            // It's rejected so "unwrap" and throw an exception.
+            throw \YoastSEO_Vendor\GuzzleHttp\Promise\Create::exceptionFor($this->result);
         }
     }
-    public function getState()
+    public function getState() : string
     {
         return $this->state;
     }
-    public function cancel()
+    public function cancel() : void
     {
         if ($this->state !== self::PENDING) {
             return;
@@ -76,24 +81,23 @@ class Promise implements \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface
                 $fn();
             } catch (\Throwable $e) {
                 $this->reject($e);
-            } catch (\Exception $e) {
-                $this->reject($e);
             }
         }
         // Reject the promise only if it wasn't rejected in a then callback.
+        /** @psalm-suppress RedundantCondition */
         if ($this->state === self::PENDING) {
             $this->reject(new \YoastSEO_Vendor\GuzzleHttp\Promise\CancellationException('Promise has been cancelled'));
         }
     }
-    public function resolve($value)
+    public function resolve($value) : void
     {
         $this->settle(self::FULFILLED, $value);
     }
-    public function reject($reason)
+    public function reject($reason) : void
     {
         $this->settle(self::REJECTED, $reason);
     }
-    private function settle($state, $value)
+    private function settle(string $state, $value) : void
     {
         if ($this->state !== self::PENDING) {
             // Ignore calls with the same resolution.
@@ -117,24 +121,24 @@ class Promise implements \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface
         }
         // If the value was not a settled promise or a thenable, then resolve
         // it in the task queue using the correct ID.
-        if (!\method_exists($value, 'then')) {
+        if (!\is_object($value) || !\method_exists($value, 'then')) {
             $id = $state === self::FULFILLED ? 1 : 2;
             // It's a success, so resolve the handlers in the queue.
-            queue()->add(static function () use($id, $value, $handlers) {
+            \YoastSEO_Vendor\GuzzleHttp\Promise\Utils::queue()->add(static function () use($id, $value, $handlers) : void {
                 foreach ($handlers as $handler) {
                     self::callHandler($id, $value, $handler);
                 }
             });
-        } elseif ($value instanceof \YoastSEO_Vendor\GuzzleHttp\Promise\Promise && $value->getState() === self::PENDING) {
+        } elseif ($value instanceof \YoastSEO_Vendor\GuzzleHttp\Promise\Promise && \YoastSEO_Vendor\GuzzleHttp\Promise\Is::pending($value)) {
             // We can just merge our handlers onto the next promise.
             $value->handlers = \array_merge($value->handlers, $handlers);
         } else {
             // Resolve the handlers when the forwarded promise is resolved.
-            $value->then(static function ($value) use($handlers) {
+            $value->then(static function ($value) use($handlers) : void {
                 foreach ($handlers as $handler) {
                     self::callHandler(1, $value, $handler);
                 }
-            }, static function ($reason) use($handlers) {
+            }, static function ($reason) use($handlers) : void {
                 foreach ($handlers as $handler) {
                     self::callHandler(2, $reason, $handler);
                 }
@@ -147,21 +151,27 @@ class Promise implements \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface
      * @param int   $index   1 (resolve) or 2 (reject).
      * @param mixed $value   Value to pass to the callback.
      * @param array $handler Array of handler data (promise and callbacks).
-     *
-     * @return array Returns the next group to resolve.
      */
-    private static function callHandler($index, $value, array $handler)
+    private static function callHandler(int $index, $value, array $handler) : void
     {
         /** @var PromiseInterface $promise */
         $promise = $handler[0];
         // The promise may have been cancelled or resolved before placing
         // this thunk in the queue.
-        if ($promise->getState() !== self::PENDING) {
+        if (\YoastSEO_Vendor\GuzzleHttp\Promise\Is::settled($promise)) {
             return;
         }
         try {
             if (isset($handler[$index])) {
-                $promise->resolve($handler[$index]($value));
+                /*
+                 * If $f throws an exception, then $handler will be in the exception
+                 * stack trace. Since $handler contains a reference to the callable
+                 * itself we get a circular reference. We clear the $handler
+                 * here to avoid that memory leak.
+                 */
+                $f = $handler[$index];
+                unset($handler);
+                $promise->resolve($f($value));
             } elseif ($index === 1) {
                 // Forward resolution values as-is.
                 $promise->resolve($value);
@@ -171,11 +181,9 @@ class Promise implements \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface
             }
         } catch (\Throwable $reason) {
             $promise->reject($reason);
-        } catch (\Exception $reason) {
-            $promise->reject($reason);
         }
     }
-    private function waitIfPending()
+    private function waitIfPending() : void
     {
         if ($this->state !== self::PENDING) {
             return;
@@ -184,21 +192,22 @@ class Promise implements \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface
         } elseif ($this->waitList) {
             $this->invokeWaitList();
         } else {
-            // If there's not wait function, then reject the promise.
+            // If there's no wait function, then reject the promise.
             $this->reject('Cannot wait on a promise that has ' . 'no internal wait function. You must provide a wait ' . 'function when constructing the promise to be able to ' . 'wait on a promise.');
         }
-        queue()->run();
+        \YoastSEO_Vendor\GuzzleHttp\Promise\Utils::queue()->run();
+        /** @psalm-suppress RedundantCondition */
         if ($this->state === self::PENDING) {
             $this->reject('Invoking the wait callback did not resolve the promise');
         }
     }
-    private function invokeWaitFn()
+    private function invokeWaitFn() : void
     {
         try {
             $wfn = $this->waitFn;
             $this->waitFn = null;
             $wfn(\true);
-        } catch (\Exception $reason) {
+        } catch (\Throwable $reason) {
             if ($this->state === self::PENDING) {
                 // The promise has not been resolved yet, so reject the promise
                 // with the exception.
@@ -210,21 +219,17 @@ class Promise implements \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface
             }
         }
     }
-    private function invokeWaitList()
+    private function invokeWaitList() : void
     {
         $waitList = $this->waitList;
         $this->waitList = null;
         foreach ($waitList as $result) {
-            while (\true) {
+            do {
                 $result->waitIfPending();
-                if ($result->result instanceof \YoastSEO_Vendor\GuzzleHttp\Promise\Promise) {
-                    $result = $result->result;
-                } else {
-                    if ($result->result instanceof \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface) {
-                        $result->result->wait(\false);
-                    }
-                    break;
-                }
+                $result = $result->result;
+            } while ($result instanceof \YoastSEO_Vendor\GuzzleHttp\Promise\Promise);
+            if ($result instanceof \YoastSEO_Vendor\GuzzleHttp\Promise\PromiseInterface) {
+                $result->wait(\false);
             }
         }
     }

@@ -131,7 +131,7 @@ body.folded .revisions .loading-indicator {
 }
 
 .revisions-controls .author-card .date {
-	color: #787c82;
+	color: #646970;
 }
 
 .revisions-controls .author-card.autosave {
@@ -184,10 +184,6 @@ body.folded .revisions .loading-indicator {
 .post-revisions li img,
 #revisions-meta-restored img {
 	vertical-align: middle;
-}
-
-table.diff tbody tr td:nth-child(2) {
-	width: 4%;
 }
 
 table.diff {
@@ -562,7 +558,6 @@ div.revisions-controls > .wp-slider > .ui-slider-handle {
  * HiDPI Displays
  */
 @media print,
-  (-webkit-min-device-pixel-ratio: 1.25),
   (min-resolution: 120dpi) {
 	.revision-tick.completed-false {
 		background-image: url(../images/spinner-2x.gif);

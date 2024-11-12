@@ -1,0 +1,18 @@
+.c-work {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: $space-quadruple;
+  margin-bottom: $space-quadruple;
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    img {
+      mix-blend-mode: multiply;
+    }
+  }
+}

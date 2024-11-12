@@ -69,8 +69,9 @@ trait terms_and_taxonomies
 		] );
 		foreach( $new_terms as $new_term )
 		{
-			unset( $wanted_terms[ $new_term->term_id ] );
-			$o->terms[ $new_term->term_id ] = $new_term;
+			$term_id = $new_term->term_id;
+			unset( $wanted_terms[ $term_id ] );
+			$o->terms[ $term_id ] = $new_term;
 		}
 
 		if ( count( $wanted_terms ) > 0 )
@@ -173,6 +174,8 @@ trait terms_and_taxonomies
 		$action->taxonomy = $taxonomy;
 		$action->execute();
 
+		$bcd->synced_taxonomies()->add( $taxonomy );
+
 		// Clean up the terms.
 		foreach( $bcd->parent_blog_taxonomies[ $taxonomy ][ 'terms' ] as $index => $term )
 			if ( ! $term )
@@ -184,18 +187,16 @@ trait terms_and_taxonomies
 			$bcd->parent_blog_taxonomies[ $taxonomy ][ 'equivalent_terms' ] = [];
 
 		// Select only those terms that exist in the blog. We select them by slugs.
-		$needed_slugs = [];
-		foreach( $source_terms as $source_term )
-			$needed_slugs[ $source_term->slug ] = true;
 		$target_terms = get_terms( [
-			'slug' => array_keys( $needed_slugs ),
 			'hide_empty' => false,
 			'taxonomy' => $taxonomy,
 		] );
 		$target_terms = $this->array_rekey( $target_terms, 'term_id' );
 
 		if ( count( $target_terms ) < 100 )
-			$this->debug( 'Target terms: %s', $target_terms );
+		{
+			$this->debug( 'Target terms: %s', $bcd->taxonomies()->build_nice_terms_list( $target_terms ) );
+		}
 		else
 			$this->debug( 'Target terms: %d of them', count( $target_terms ) );
 
@@ -232,7 +233,10 @@ trait terms_and_taxonomies
 		// These sources were not found. Add them.
 		if ( isset( $bcd->add_new_taxonomies ) && $bcd->add_new_taxonomies )
 		{
-			$this->debug( '%s terms are missing on this blog: %s', count( $unfound_sources ), array_keys( $unfound_sources ) );
+			if ( count( $unfound_sources ) > 0 )
+				$this->debug( '%s terms are missing on this blog: %s', count( $unfound_sources ), array_keys( $unfound_sources ) );
+			else
+				$this->debug( 'All terms found on this blog.' );
 			foreach( $unfound_sources as $unfound_source_id => $unfound_source )
 			{
 				// We need to clone because we will be modifying the source.
@@ -329,10 +333,7 @@ trait terms_and_taxonomies
 		if ( $refresh_cache )
 		{
 			delete_option( $taxonomy . '_children' );
-			clean_term_cache( '', $taxonomy );
 		}
-
-		$bcd->synced_taxonomies()->add( $taxonomy );
 
 		// Tell everyone we've just synced this taxonomy.
 		$action = $this->new_action( 'synced_taxonomy' );
@@ -398,7 +399,7 @@ trait terms_and_taxonomies
 
 		foreach( $bcd->parent_blog_taxonomies as $parent_blog_taxonomy => $taxonomy )
 		{
-			if ( isset( $bcd->post->ID ) )
+			if ( isset( $bcd->post->ID ) && ( $bcd->post->ID > 0 ) )
 				$taxonomy_terms = get_the_terms( $bcd->post->ID, $parent_blog_taxonomy );
 			else
 				$taxonomy_terms = get_terms( [
@@ -412,6 +413,13 @@ trait terms_and_taxonomies
 
 			$bcd->parent_post_taxonomies[ $parent_blog_taxonomy ] = $this->array_rekey( $taxonomy_terms, 'term_id' );
 
+			// Add the terms to the index.
+			$index_count = $bcd->taxonomies()
+				->get_term_index()
+				->add_terms( $taxonomy_terms )
+				->count();
+			$this->debug( '%s terms indexed.', $index_count );
+
 			// Parent blog taxonomy terms are used for creating missing target term ancestors
 			$o = (object)[];
 			$o->taxonomy = $taxonomy;
@@ -424,9 +432,26 @@ trait terms_and_taxonomies
 				'terms'    => $o->terms,
 			];
 
+
+			// Don't show debug info if there are a lot of terms.
+			// A lot is 6, let's say.
+			$show_debug = count( $o->terms ) < 6;
+
 			// Store the term meta.
 			foreach( $o->terms as $term )
 			{
+				// Preparse the description so that shortcodes and what not can be picked up.
+				$key = 'term_description_' . $term->term_id;
+				$preparse_content = $this->new_action( 'preparse_content' );
+				$preparse_content->broadcasting_data = $bcd;
+				$preparse_content->content = $term->description;
+				$preparse_content->id = $key;
+
+				if ( $show_debug )
+					$this->debug( 'Preparsing description %s', $key );
+
+				$preparse_content->execute();
+
 				$meta = get_term_meta( $term->term_id );
 				if ( ! is_array( $meta ) )
 					$meta = [];
@@ -448,7 +473,6 @@ trait terms_and_taxonomies
 					->set( $term->term_id, $meta );
 			}
 		}
-		$this->debug( 'Taxonomy term meta: %s', $bcd->taxonomy_term_meta->collection( $bcd->parent_blog_id )->collection( 'terms' ) );
 	}
 
 	/**
@@ -512,6 +536,15 @@ trait terms_and_taxonomies
 		$this->debug( 'wp_update_term: %s', $action->new_term );
 		$update = true;
 
+		$key = 'term_description_' . $action->old_term->term_id;
+		$parse_content = $this->new_action( 'parse_content' );
+		$parse_content->broadcasting_data = $bcd;
+		$parse_content->content = $action->new_term->description;
+		$parse_content->id = $key;
+		$this->debug( 'Parsing description %s', $key );
+		$parse_content->execute();
+		$action->new_term->description = $parse_content->content;
+
 		// If we are given an old term, then we have a chance of checking to see if there should be an update called at all.
 		if ( $action->has_old_term() )
 		{
@@ -528,6 +561,7 @@ trait terms_and_taxonomies
 		if ( $update )
 		{
 			$this->debug( 'Updating the term %s.', $action->new_term->name );
+
 			wp_update_term( $action->new_term->term_id, $action->taxonomy, array(
 				'description' => $action->new_term->description,
 				'name' => $action->new_term->name,
@@ -554,8 +588,8 @@ trait terms_and_taxonomies
 					// Is this term protected?
 					if ( $bcd->taxonomies()->protectlist_has( $action->taxonomy, $action->new_term->slug, $key ) )
 					{
-						$current_value = get_term_meta( $new_term_id, $key, true);
-						if ( $current_value )
+						$values = get_term_meta( $new_term_id, $key );
+						if ( count( $values ) > 0 )
 						{
 							$this->debug( 'Taxonomy term %s (%s) already has a %s term meta value. Skipping.', $action->new_term->slug, $action->new_term->term_id, $key );
 							continue;

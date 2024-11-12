@@ -31,7 +31,7 @@ class WPSEO_Taxonomy_Sitemap_Provider implements WPSEO_Sitemap_Provider {
 		/**
 		 * Filter - Allows excluding images from the XML sitemap.
 		 *
-		 * @param bool unsigned True to include, false to exclude.
+		 * @param bool $include True to include, false to exclude.
 		 */
 		$this->include_images = apply_filters( 'wpseo_xml_sitemap_include_images', true );
 	}
@@ -41,7 +41,7 @@ class WPSEO_Taxonomy_Sitemap_Provider implements WPSEO_Sitemap_Provider {
 	 *
 	 * @param string $type Type string to check for.
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function handles_type( $type ) {
 
@@ -73,11 +73,12 @@ class WPSEO_Taxonomy_Sitemap_Provider implements WPSEO_Sitemap_Provider {
 		$taxonomies     = array_intersect_key( $taxonomies, array_flip( $taxonomy_names ) );
 
 		// Retrieve all the taxonomies and their terms so we can do a proper count on them.
+
 		/**
 		 * Filter the setting of excluding empty terms from the XML sitemap.
 		 *
-		 * @param boolean $exclude        Defaults to true.
-		 * @param array   $taxonomy_names Array of names for the taxonomies being processed.
+		 * @param bool  $exclude        Defaults to true.
+		 * @param array $taxonomy_names Array of names for the taxonomies being processed.
 		 */
 		$hide_empty = apply_filters( 'wpseo_sitemap_exclude_empty_terms', true, $taxonomy_names );
 
@@ -87,16 +88,17 @@ class WPSEO_Taxonomy_Sitemap_Provider implements WPSEO_Sitemap_Provider {
 			/**
 			 * Filter the setting of excluding empty terms from the XML sitemap for a specific taxonomy.
 			 *
-			 * @param boolean $exclude       Defaults to the sitewide setting.
-			 * @param string  $taxonomy_name The name of the taxonomy being processed.
+			 * @param bool   $exclude       Defaults to the sitewide setting.
+			 * @param string $taxonomy_name The name of the taxonomy being processed.
 			 */
 			$hide_empty_tax = apply_filters( 'wpseo_sitemap_exclude_empty_terms_taxonomy', $hide_empty, $taxonomy_name );
 
 			$term_args      = [
+				'taxonomy'   => $taxonomy_name,
 				'hide_empty' => $hide_empty_tax,
 				'fields'     => 'ids',
 			];
-			$taxonomy_terms = get_terms( $taxonomy_name, $term_args );
+			$taxonomy_terms = get_terms( $term_args );
 
 			if ( count( $taxonomy_terms ) > 0 ) {
 				$all_taxonomies[ $taxonomy_name ] = $taxonomy_terms;
@@ -122,7 +124,7 @@ class WPSEO_Taxonomy_Sitemap_Provider implements WPSEO_Sitemap_Provider {
 
 			for ( $page_counter = 0; $page_counter < $max_pages; $page_counter++ ) {
 
-				$current_page = ( $max_pages > 1 ) ? ( $page_counter + 1 ) : '';
+				$current_page = ( $page_counter === 0 ) ? '' : ( $page_counter + 1 );
 
 				if ( ! is_array( $tax->object_type ) || count( $tax->object_type ) === 0 ) {
 					continue;
@@ -172,9 +174,9 @@ class WPSEO_Taxonomy_Sitemap_Provider implements WPSEO_Sitemap_Provider {
 	 * @param int    $max_entries  Entries per sitemap.
 	 * @param int    $current_page Current page of the sitemap.
 	 *
-	 * @throws OutOfBoundsException When an invalid page is requested.
-	 *
 	 * @return array
+	 *
+	 * @throws OutOfBoundsException When an invalid page is requested.
 	 */
 	public function get_sitemap_links( $type, $max_entries, $current_page ) {
 		global $wpdb;
@@ -210,24 +212,28 @@ class WPSEO_Taxonomy_Sitemap_Provider implements WPSEO_Sitemap_Provider {
 
 		$post_statuses = array_map( 'esc_sql', WPSEO_Sitemaps::get_post_statuses() );
 
-		// Grab last modified date.
-		$sql = "
-			SELECT MAX(p.post_modified_gmt) AS lastmod
-			FROM	$wpdb->posts AS p
-			INNER JOIN $wpdb->term_relationships AS term_rel
-				ON		term_rel.object_id = p.ID
-			INNER JOIN $wpdb->term_taxonomy AS term_tax
-				ON		term_tax.term_taxonomy_id = term_rel.term_taxonomy_id
-				AND		term_tax.taxonomy = %s
-				AND		term_tax.term_id = %d
-			WHERE	p.post_status IN ('" . implode( "','", $post_statuses ) . "')
-				AND		p.post_password = ''
-		";
+		$replacements = array_merge(
+			[
+				'post_modified_gmt',
+				$wpdb->posts,
+				$wpdb->term_relationships,
+				'object_id',
+				'ID',
+				$wpdb->term_taxonomy,
+				'term_taxonomy_id',
+				'term_taxonomy_id',
+				'taxonomy',
+				'term_id',
+				'post_status',
+			],
+			$post_statuses,
+			[ 'post_password' ]
+		);
 
 		/**
 		 * Filter: 'wpseo_exclude_from_sitemap_by_term_ids' - Allow excluding terms by ID.
 		 *
-		 * @api array $terms_to_exclude The terms to exclude.
+		 * @param array $terms_to_exclude The terms to exclude.
 		 */
 		$terms_to_exclude = apply_filters( 'wpseo_exclude_from_sitemap_by_term_ids', [] );
 
@@ -245,13 +251,37 @@ class WPSEO_Taxonomy_Sitemap_Provider implements WPSEO_Sitemap_Provider {
 				continue;
 			}
 
-			$url['loc'] = WPSEO_Taxonomy_Meta::get_term_meta( $term, $term->taxonomy, 'canonical' );
+			$canonical  = WPSEO_Taxonomy_Meta::get_term_meta( $term, $term->taxonomy, 'canonical' );
+			$url['loc'] = get_term_link( $term, $term->taxonomy );
 
-			if ( ! is_string( $url['loc'] ) || $url['loc'] === '' ) {
-				$url['loc'] = get_term_link( $term, $term->taxonomy );
+			if ( is_string( $canonical ) && $canonical !== '' && $canonical !== $url['loc'] ) {
+				continue;
 			}
 
-			$url['mod'] = $wpdb->get_var( $wpdb->prepare( $sql, $term->taxonomy, $term->term_id ) );
+			$current_replacements = $replacements;
+			array_splice( $current_replacements, 9, 0, $term->taxonomy );
+			array_splice( $current_replacements, 11, 0, $term->term_id );
+
+			//phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- We need to use a direct query here.
+			//phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: No relevant caches.
+			$url['mod'] = $wpdb->get_var(
+				//phpcs:disable WordPress.DB.PreparedSQLPlaceholders -- %i placeholder is still not recognized.
+				$wpdb->prepare(
+					'
+			SELECT MAX(p.%i) AS lastmod
+			FROM	%i AS p
+			INNER JOIN %i AS term_rel
+				ON		term_rel.%i = p.%i
+			INNER JOIN %i AS term_tax
+				ON		term_tax.%i = term_rel.%i
+				AND		term_tax.%i = %s
+				AND		term_tax.%i = %d
+			WHERE	p.%i IN (' . implode( ', ', array_fill( 0, count( $post_statuses ), '%s' ) ) . ")
+				AND		p.%i = ''
+			",
+					$current_replacements
+				)
+			);
 
 			if ( $this->include_images ) {
 				$url['images'] = $this->get_image_parser()->get_term_images( $term );
@@ -285,7 +315,7 @@ class WPSEO_Taxonomy_Sitemap_Provider implements WPSEO_Sitemap_Provider {
 			return false;
 		}
 
-		if ( in_array( $taxonomy_name, [ 'link_category', 'nav_menu' ], true ) ) {
+		if ( in_array( $taxonomy_name, [ 'link_category', 'nav_menu', 'wp_pattern_category' ], true ) ) {
 			return false;
 		}
 
@@ -296,8 +326,8 @@ class WPSEO_Taxonomy_Sitemap_Provider implements WPSEO_Sitemap_Provider {
 		/**
 		 * Filter to exclude the taxonomy from the XML sitemap.
 		 *
-		 * @param boolean $exclude       Defaults to false.
-		 * @param string  $taxonomy_name Name of the taxonomy to exclude..
+		 * @param bool   $exclude       Defaults to false.
+		 * @param string $taxonomy_name Name of the taxonomy to exclude..
 		 */
 		if ( apply_filters( 'wpseo_sitemap_exclude_taxonomy', false, $taxonomy_name ) ) {
 			return false;

@@ -73,9 +73,11 @@ trait misc
 	**/
 	public function enqueue_js()
 	{
-		if ( isset( $this->_js_enqueued ) )
+		if ( $this->_js_enqueued === true )
 			return;
-		wp_enqueue_script( 'threewp_broadcast', $this->paths[ 'url' ] . '/js/js.js', '', $this->plugin_version );
+		$file_dir = dirname( $this->paths[ '__FILE__' ] ) . '/js/js.js';
+		$file_url = trailingslashit( $this->paths[ 'url' ] ) . 'js/js.js';
+		wp_enqueue_script( 'threewp_broadcast', $file_url, '', filemtime( $file_dir ) );
 		$this->_js_enqueued = true;
 	}
 
@@ -178,9 +180,9 @@ trait misc
 				{
 					$function_name = $function[ 0 ];
 					if ( is_object( $function_name ) )
-						$function_name = sprintf( '%s::%s', get_class( $function_name ), $function[ 1 ] );
+						$function_name = sprintf( '%s %s::%s', $priority, get_class( $function_name ), $function[ 1 ] );
 					else
-						$function_name = sprintf( '%s::%s', $function_name, $function[ 1 ] );
+						$function_name = sprintf( '%s %s::%s', $priority, $function_name, $function[ 1 ] );
 				}
 				if ( is_a( $function, 'Closure' ) )
 					$function_name = '[Anonymous function]';
@@ -481,6 +483,17 @@ trait misc
 	}
 
 	/**
+		@brief		Set the status of a post using the DB.
+		@since		2021-07-21 19:18:59
+	**/
+	public function set_post_status( $post_id, $post_status )
+	{
+		global $wpdb;
+		$this->debug( 'Forcing post_status to %s', $post_status );
+		$wpdb->update( $wpdb->posts, [ 'post_status' => $post_status ], [ 'ID' => $post_id ] );
+	}
+
+	/**
 		@brief		The site options we store.
 		@since		2018-01-25 21:07:47
 	**/
@@ -496,6 +509,16 @@ trait misc
 			'blogs_hide_overview' => 5,							// Use a summary in the overview if more than this amount of children / siblings.
 			'blog_selector_position' => 'bottom',				// Where to place the blog selector line in the meta box.
 			'canonical_url' => true,							// Override the canonical URLs with the parent post's.
+			/**
+				@brief		Which post types to use the canonical URL on.
+				@since		2023-02-24 08:26:18
+			**/
+			'canonical_limit_post_types' => '',
+			/**
+				@brief		Which post types to skip the canonical.
+				@since		2023-02-24 08:26:18
+			**/
+			'canonical_skip_post_types' => '',
 			'clear_post' => true,								// Clear the post before broadcasting.
 			'custom_field_blacklist' => '',						// Internal custom fields that should not be broadcasted.
 			'custom_field_protectlist' => '',					// Internal custom fields that should not be overwritten on broadcast

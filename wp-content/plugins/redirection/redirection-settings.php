@@ -7,6 +7,7 @@ define( 'REDIRECTION_API_JSON_RELATIVE', 3 );
 
 function red_get_plugin_data( $plugin ) {
 	if ( ! function_exists( 'get_plugin_data' ) ) {
+		/** @psalm-suppress MissingFile */
 		include_once ABSPATH . '/wp-admin/includes/plugin.php';
 	}
 
@@ -20,7 +21,7 @@ function red_get_post_types( $full = true ) {
 		'label' => __( 'Trash', 'default' ),
 	);
 
-	$post_types = array();
+	$post_types = [];
 	foreach ( $types as $type ) {
 		if ( $type->name === 'attachment' ) {
 			continue;
@@ -58,7 +59,9 @@ function red_get_default_options() {
 		'modules'             => [],
 		'newsletter'          => false,
 		'redirect_cache'      => 1,   // 1 hour
-		'ip_logging'          => 1,   // Full IP logging
+		'ip_logging'          => 0,   // No IP logging
+		'ip_headers'          => [],
+		'ip_proxy'            => [],
 		'last_group_id'       => 0,
 		'rest_api'            => REDIRECTION_API_JSON,
 		'https'               => false,
@@ -83,12 +86,37 @@ function red_get_default_options() {
  * @param array $settings Partial settings.
  * @return array
  */
-function red_set_options( array $settings = array() ) {
+function red_set_options( array $settings = [] ) {
 	$options = red_get_options();
-	$monitor_types = array();
+	$monitor_types = [];
 
 	if ( isset( $settings['database'] ) ) {
-		$options['database'] = $settings['database'];
+		$options['database'] = sanitize_text_field( $settings['database'] );
+	}
+
+	if ( array_key_exists( 'database_stage', $settings ) ) {
+		if ( $settings['database_stage'] === false ) {
+			unset( $options['database_stage'] );
+		} else {
+			$options['database_stage'] = $settings['database_stage'];
+		}
+	}
+
+	if ( isset( $settings['ip_proxy'] ) && is_array( $settings['ip_proxy'] ) ) {
+		$options['ip_proxy'] = array_map( function( $ip ) {
+			$ip = new Redirection_IP( $ip );
+			return $ip->get();
+		}, $settings['ip_proxy'] );
+
+		$options['ip_proxy'] = array_values( array_filter( $options['ip_proxy'] ) );
+	}
+
+	if ( isset( $settings['ip_headers'] ) && is_array( $settings['ip_headers'] ) ) {
+		$available = Redirection_Request::get_ip_headers();
+		$options['ip_headers'] = array_filter( $settings['ip_headers'], function( $header ) use ( $available ) {
+			return in_array( $header, $available, true );
+		} );
+		$options['ip_headers'] = array_values( $options['ip_headers'] );
 	}
 
 	if ( isset( $settings['rest_api'] ) && in_array( intval( $settings['rest_api'], 10 ), array( 0, 1, 2, 3, 4 ), true ) ) {
@@ -107,7 +135,7 @@ function red_set_options( array $settings = array() ) {
 		$options['monitor_types'] = $monitor_types;
 	}
 
-	if ( isset( $settings['associated_redirect'] ) ) {
+	if ( isset( $settings['associated_redirect'] ) && is_string( $settings['associated_redirect'] ) ) {
 		$options['associated_redirect'] = '';
 
 		if ( strlen( $settings['associated_redirect'] ) > 0 ) {
@@ -131,8 +159,8 @@ function red_set_options( array $settings = array() ) {
 		}
 	}
 
-	if ( isset( $settings['auto_target'] ) ) {
-		$options['auto_target'] = $settings['auto_target'];
+	if ( isset( $settings['auto_target'] ) && is_string( $settings['auto_target'] ) ) {
+		$options['auto_target'] = sanitize_text_field( $settings['auto_target'] );
 	}
 
 	if ( isset( $settings['last_group_id'] ) ) {
@@ -144,8 +172,8 @@ function red_set_options( array $settings = array() ) {
 		}
 	}
 
-	if ( isset( $settings['token'] ) ) {
-		$options['token'] = $settings['token'];
+	if ( isset( $settings['token'] ) && is_string( $settings['token'] ) ) {
+		$options['token'] = sanitize_text_field( $settings['token'] );
 	}
 
 	if ( isset( $settings['token'] ) && trim( $options['token'] ) === '' ) {
@@ -181,7 +209,9 @@ function red_set_options( array $settings = array() ) {
 
 	if ( isset( $settings['location'] ) && ( ! isset( $options['location'] ) || $options['location'] !== $settings['location'] ) ) {
 		$module = Red_Module::get( 2 );
-		$options['modules'][2] = $module->update( $settings );
+		if ( $module ) {
+			$options['modules'][2] = $module->update( $settings );
+		}
 	}
 
 	if ( ! empty( $options['monitor_post'] ) && count( $options['monitor_types'] ) === 0 ) {
@@ -191,7 +221,7 @@ function red_set_options( array $settings = array() ) {
 	}
 
 	if ( isset( $settings['plugin_update'] ) && in_array( $settings['plugin_update'], [ 'prompt', 'admin' ], true ) ) {
-		$options['plugin_update'] = $settings['plugin_update'];
+		$options['plugin_update'] = sanitize_text_field( $settings['plugin_update'] );
 	}
 
 	$flags = new Red_Source_Flags();
@@ -214,21 +244,28 @@ function red_set_options( array $settings = array() ) {
 	}
 
 	if ( isset( $settings['aliases'] ) && is_array( $settings['aliases'] ) ) {
+		$options['aliases'] = array_map( 'sanitize_text_field', $settings['aliases'] );
 		$options['aliases'] = array_values( array_filter( array_map( 'red_parse_domain_only', $settings['aliases'] ) ) );
 		$options['aliases'] = array_slice( $options['aliases'], 0, 20 ); // Max 20
 	}
 
 	if ( isset( $settings['permalinks'] ) && is_array( $settings['permalinks'] ) ) {
-		$options['permalinks'] = array_values( array_filter( array_map( 'trim', $settings['permalinks'] ) ) );
+		$options['permalinks'] = array_map(
+			function ( $permalink ) {
+				return sanitize_option( 'permalink_structure', $permalink );
+			},
+			$settings['permalinks']
+		);
+		$options['permalinks'] = array_values( array_filter( array_map( 'trim', $options['permalinks'] ) ) );
 		$options['permalinks'] = array_slice( $options['permalinks'], 0, 10 ); // Max 10
 	}
 
 	if ( isset( $settings['preferred_domain'] ) && in_array( $settings['preferred_domain'], [ '', 'www', 'nowww' ], true ) ) {
-		$options['preferred_domain'] = $settings['preferred_domain'];
+		$options['preferred_domain'] = sanitize_text_field( $settings['preferred_domain'] );
 	}
 
-	if ( isset( $settings['relocate'] ) ) {
-		$options['relocate'] = red_parse_domain_path( $settings['relocate'] );
+	if ( isset( $settings['relocate'] ) && is_string( $settings['relocate'] ) ) {
+		$options['relocate'] = red_parse_domain_path( sanitize_text_field( $settings['relocate'] ) );
 
 		if ( strlen( $options['relocate'] ) > 0 ) {
 			$options['preferred_domain'] = '';
@@ -251,7 +288,7 @@ function red_set_options( array $settings = array() ) {
 
 	if ( isset( $settings['update_notice'] ) ) {
 		$major_version = explode( '-', REDIRECTION_VERSION )[0];   // Remove any beta suffix
-		$major_version = implode( '.', array_slice( explode( '.', REDIRECTION_VERSION ), 0, 2 ) );
+		$major_version = implode( '.', array_slice( explode( '.', $major_version ), 0, 2 ) );
 		$options['update_notice'] = $major_version;
 	}
 
@@ -304,17 +341,18 @@ function red_is_disabled() {
  */
 function red_get_options() {
 	$options = get_option( REDIRECTION_OPTION );
-
-	if ( is_array( $options ) && red_is_disabled() ) {
-		$options['https'] = false;
-	}
+	$fresh_install = false;
 
 	if ( $options === false ) {
-		// Default flags for new installs - ignore case and trailing slashes
-		$options = [
-			'flags_case' => true,
-			'flags_trailing' => true,
-		];
+		$fresh_install = true;
+	}
+
+	if ( ! is_array( $options ) ) {
+		$options = [];
+	}
+
+	if ( red_is_disabled() ) {
+		$options['https'] = false;
 	}
 
 	$defaults = red_get_default_options();
@@ -325,14 +363,20 @@ function red_get_options() {
 		}
 	}
 
+	if ( $fresh_install ) {
+		// Default flags for new installs - ignore case and trailing slashes
+		$options['flag_case'] = true;
+		$options['flag_trailing'] = true;
+	}
+
 	// Back-compat. If monitor_post is set without types then it's from an older Redirection
 	if ( $options['monitor_post'] > 0 && count( $options['monitor_types'] ) === 0 ) {
 		$options['monitor_types'] = [ 'post' ];
 	}
 
 	// Remove old options not in red_get_default_options()
-	foreach ( $options as $key => $value ) {
-		if ( ! isset( $defaults[ $key ] ) ) {
+	foreach ( array_keys( $options ) as $key ) {
+		if ( ! isset( $defaults[ $key ] ) && $key !== 'database_stage' ) {
 			unset( $options[ $key ] );
 		}
 	}
@@ -340,6 +384,10 @@ function red_get_options() {
 	// Back-compat fix
 	if ( $options['rest_api'] === false || ! in_array( $options['rest_api'], [ REDIRECTION_API_JSON, REDIRECTION_API_JSON_INDEX, REDIRECTION_API_JSON_RELATIVE ], true ) ) {
 		$options['rest_api'] = REDIRECTION_API_JSON;
+	}
+
+	if ( isset( $options['modules'] ) && isset( $options['modules']['2'] ) && isset( $options['modules']['2']['location'] ) ) {
+		$options['location'] = $options['modules']['2']['location'];
 	}
 
 	return $options;
@@ -362,7 +410,8 @@ function red_get_rest_api( $type = false ) {
 	if ( $type === REDIRECTION_API_JSON_INDEX ) {
 		$url = home_url( '/?rest_route=/' );
 	} elseif ( $type === REDIRECTION_API_JSON_RELATIVE ) {
-		$relative = wp_parse_url( $url, PHP_URL_PATH );
+		/** @psalm-suppress TooManyArguments, InvalidCast */
+		$relative = (string) wp_parse_url( $url, PHP_URL_PATH );
 
 		if ( $relative ) {
 			$url = $relative;

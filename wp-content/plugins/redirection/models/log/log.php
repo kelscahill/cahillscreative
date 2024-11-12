@@ -113,7 +113,7 @@ abstract class Red_Log {
 	 * Get's the table name for this log object
 	 *
 	 * @param Object $wpdb WPDB object.
-	 * @return String
+	 * @return string
 	 */
 	protected static function get_table_name( $wpdb ) {
 		return '';
@@ -173,7 +173,7 @@ abstract class Red_Log {
 	/**
 	 * Convert a log entry to JSON
 	 *
-	 * @return Array
+	 * @return array
 	 */
 	public function to_json() {
 		return [
@@ -195,7 +195,7 @@ abstract class Red_Log {
 	 * Get filtered log entries
 	 *
 	 * @param array $params Filters.
-	 * @return Array{items: Array, total: integer}
+	 * @return array{items: Array, total: integer}
 	 */
 	public static function get_filtered( array $params ) {
 		global $wpdb;
@@ -234,7 +234,7 @@ abstract class Red_Log {
 	 *
 	 * @param string $group Group type.
 	 * @param array  $params Filter params.
-	 * @return Array{items: mixed, total: integer}
+	 * @return array{items: mixed, total: integer}
 	 */
 	public static function get_grouped( $group, array $params ) {
 		global $wpdb;
@@ -280,7 +280,7 @@ abstract class Red_Log {
 	 * Convert a set of filters to a SQL query.
 	 *
 	 * @param array $params Filters.
-	 * @return Array{orderby: string, direction: string, limit: integer, offset: integer, where: string}
+	 * @return array{orderby: string, direction: string, limit: integer, offset: integer, where: string}
 	 */
 	public static function get_query( array $params ) {
 		$query = [
@@ -366,7 +366,13 @@ abstract class Red_Log {
 		}
 
 		if ( isset( $filter['agent'] ) ) {
-			$where[] = $wpdb->prepare( 'agent LIKE %s', '%' . $wpdb->esc_like( trim( $filter['agent'] ) ) . '%' );
+			$agent = trim( $filter['agent'] );
+
+			if ( empty( $agent ) ) {
+				$where[] = $wpdb->prepare( 'agent = %s', $agent );
+			} else {
+				$where[] = $wpdb->prepare( 'agent LIKE %s', '%' . $wpdb->esc_like( $agent ) . '%' );
+			}
 		}
 
 		if ( isset( $filter['http'] ) ) {
@@ -390,10 +396,11 @@ abstract class Red_Log {
 	 * @return array
 	 */
 	protected static function sanitize_create( $domain, $url, $ip, array $details = [] ) {
+		$url = urldecode( $url );
 		$insert = [
-			'url' => substr( $url, 0, self::MAX_URL_LENGTH ),
-			'domain' => substr( $domain, 0, self::MAX_DOMAIN_LENGTH ),
-			'ip' => substr( $ip, 0, self::MAX_IP_LENGTH ),
+			'url' => substr( sanitize_text_field( $url ), 0, self::MAX_URL_LENGTH ),
+			'domain' => substr( sanitize_text_field( $domain ), 0, self::MAX_DOMAIN_LENGTH ),
+			'ip' => substr( sanitize_text_field( $ip ), 0, self::MAX_IP_LENGTH ),
 			'created' => current_time( 'mysql' ),
 		];
 
@@ -413,11 +420,11 @@ abstract class Red_Log {
 		}
 
 		if ( isset( $insert['agent'] ) ) {
-			$insert['agent'] = substr( $insert['agent'], 0, self::MAX_AGENT_LENGTH );
+			$insert['agent'] = substr( sanitize_text_field( $insert['agent'] ), 0, self::MAX_AGENT_LENGTH );
 		}
 
 		if ( isset( $insert['referrer'] ) ) {
-			$insert['referrer'] = substr( $insert['referrer'], 0, self::MAX_REFERRER_LENGTH );
+			$insert['referrer'] = substr( sanitize_text_field( $insert['referrer'] ), 0, self::MAX_REFERRER_LENGTH );
 		}
 
 		if ( isset( $insert['request_data'] ) ) {
@@ -429,7 +436,7 @@ abstract class Red_Log {
 		}
 
 		if ( isset( $insert['request_method'] ) ) {
-			$insert['request_method'] = strtoupper( $insert['request_method'] );
+			$insert['request_method'] = strtoupper( sanitize_text_field( $insert['request_method'] ) );
 
 			if ( ! in_array( $insert['request_method'], static::$supported_methods, true ) ) {
 				$insert['request_method'] = '';
@@ -482,6 +489,10 @@ abstract class Red_Log {
 
 		// phpcs:ignore
 		$stdout = fopen( 'php://output', 'w' );
+		if ( ! $stdout ) {
+			return;
+		}
+
 		fputcsv( $stdout, static::get_csv_header() );
 
 		global $wpdb;

@@ -18,6 +18,12 @@ class data
 	public $blog_id;
 
 	/**
+		@brief		The broadcast data (link data) of the post.
+		@since		2023-04-19 21:52:54
+	**/
+	public $broadcast_data;
+
+	/**
 		@brief		OUTPUT: Collection of CSS files that should be loaded.
 		@since		20131010
 		@var		$css
@@ -39,11 +45,23 @@ class data
 	public $html;
 
 	/**
+		@brief		A collection of inputs to convert to html later.
+		@since		2023-04-19 21:53:46
+	**/
+	public $inputs_to_convert_later;
+
+	/**
 		@brief		OUTPUT: Collection of JS files that should be loaded.
 		@since		20131010
 		@var		$js
 	**/
 	public $js;
+
+	/**
+		@brief		The last used settings.
+		@since		2023-04-19 21:52:17
+	**/
+	public $last_used_settings;
 
 	/**
 		@brief		INPUT: The Wordpress Post object for this meta box.

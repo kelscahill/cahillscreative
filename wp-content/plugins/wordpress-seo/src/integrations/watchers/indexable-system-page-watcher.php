@@ -31,6 +31,8 @@ class Indexable_System_Page_Watcher implements Integration_Interface {
 
 	/**
 	 * Returns the conditionals based on which this loadable should be active.
+	 *
+	 * @return array
 	 */
 	public static function get_conditionals() {
 		return [ Migrations_Conditional::class ];
@@ -51,6 +53,8 @@ class Indexable_System_Page_Watcher implements Integration_Interface {
 	 * Initializes the integration.
 	 *
 	 * This is the place to register hooks and filters.
+	 *
+	 * @return void
 	 */
 	public function register_hooks() {
 		\add_action( 'update_option_wpseo_titles', [ $this, 'check_option' ], 10, 2 );

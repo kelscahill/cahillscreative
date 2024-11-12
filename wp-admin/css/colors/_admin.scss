@@ -2,6 +2,10 @@
 @import 'variables';
 @import 'mixins';
 
+/**
+ * This function name uses British English to maintain backward compatibility, as developers
+ * may use the function in their own admin CSS files. See #56811.
+ */
 @function url-friendly-colour( $color ) {
 	@return '%23' + str-slice( '#{ $color }', 2, -1 );
 }
@@ -286,12 +290,12 @@ textarea:focus {
 #adminmenu .wp-submenu,
 #adminmenu .wp-has-current-submenu .wp-submenu,
 #adminmenu .wp-has-current-submenu.opensub .wp-submenu,
-.folded #adminmenu .wp-has-current-submenu .wp-submenu,
 #adminmenu a.wp-has-current-submenu:focus + .wp-submenu {
 	background: $menu-submenu-background;
 }
 
-#adminmenu li.wp-has-submenu.wp-not-current-submenu.opensub:hover:after {
+#adminmenu li.wp-has-submenu.wp-not-current-submenu.opensub:hover:after,
+#adminmenu li.wp-has-submenu.wp-not-current-submenu:focus-within:after {
 	border-right-color: $menu-submenu-background;
 }
 
@@ -301,7 +305,6 @@ textarea:focus {
 
 #adminmenu .wp-submenu a,
 #adminmenu .wp-has-current-submenu .wp-submenu a,
-.folded #adminmenu .wp-has-current-submenu .wp-submenu a,
 #adminmenu a.wp-has-current-submenu:focus + .wp-submenu a,
 #adminmenu .wp-has-current-submenu.opensub .wp-submenu a {
 	color: $menu-submenu-text;
@@ -351,6 +354,7 @@ ul#adminmenu > li.current > a.current:after {
 
 /* Admin Menu: bubble */
 
+#adminmenu .menu-counter,
 #adminmenu .awaiting-mod,
 #adminmenu .update-plugins {
 	color: $menu-bubble-text;

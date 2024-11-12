@@ -133,7 +133,7 @@ class check
 
 		// Reload the current page.
 		$r = file_get_contents( __DIR__ . '/js.js' );
-		$r .= sprintf( '<div class="next_step_link"><a href="%s">Continue to next step.</a></div>', remove_query_arg( 'ignore' ) );
+		$r .= sprintf( '<div class="next_step_link"><a href="%s">Continue to next step.</a></div>', esc_url( remove_query_arg( 'ignore' ) ) );
 
 		return $r;
 	}

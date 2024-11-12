@@ -53,7 +53,7 @@ trait options
 		$args = func_get_args();
 		// First arg is the value, and not wanted.
 		array_shift( $args );
-		$result = call_user_func_array( 'sprintf', $args );
+		$result = call_user_func_array( [ $this->form(), 'sprintf' ], $args );
 		if ( $result == '' )
 			$result = $label;
 		$o->label = $result;
@@ -223,8 +223,16 @@ trait options
 		foreach ( $values as $value )
 			foreach( $this->get_options() as $option )
 			{
-				if ( $option->get_value() == $value )
-					$option->check();
+				if ( is_array( $value ) )
+				{
+					if ( in_array( $option->get_value(), $value ) )
+						$option->check();
+				}
+				else
+				{
+					if ( $option->get_value() == $value )
+						$option->check();
+				}
 			}
 		return $this;
 	}

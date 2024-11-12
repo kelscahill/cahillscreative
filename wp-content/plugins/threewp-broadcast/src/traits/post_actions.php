@@ -18,6 +18,7 @@ trait post_actions
 	**/
 	public function post_actions_init()
 	{
+		$this->add_action( 'threewp_broadcast_find_unlinked_children_post_action' );
 		$this->add_action( 'threewp_broadcast_get_post_actions' );
 		$this->add_action( 'threewp_broadcast_get_post_bulk_actions' );
 		$this->add_action( 'threewp_broadcast_manage_posts_custom_column', 5 );
@@ -31,6 +32,7 @@ trait post_actions
 		$this->add_action( 'untrash_post' );
 		$this->add_action( 'untrashed_post', 'untrash_post' );
 		$this->add_action( 'wp_trash_post', 'trash_post' );
+		$this->add_action( 'threewp_broadcast_trash_untrash_delete_post' );
 	}
 
 	/**
@@ -69,8 +71,12 @@ trait post_actions
 		@brief		Find unlinked children of the post on the specified blogs.
 		@since		2020-12-17 11:03:02
 	**/
-	public function find_unlinked_children_post_action( $post_id, $requested_blogs = null )
+	public function threewp_broadcast_find_unlinked_children_post_action( $action )
 	{
+		$post_action = $action->post_action;
+		$post_id = $post_action->post_id;
+		$requested_blogs = $action->requested_blogs;
+
 		$blog_id = get_current_blog_id();
 		$broadcast_data = ThreeWP_Broadcast()->get_post_broadcast_data( $blog_id, $post_id );
 
@@ -79,8 +85,16 @@ trait post_actions
 		if ( $linked_parent )
 		{
 			ThreeWP_Broadcast()->debug( 'Post %s has a linked parent on %s (%s)', $post_id, $linked_parent[ 'blog_id' ], $linked_parent[ 'post_id' ] );
+
 			switch_to_blog( $linked_parent[ 'blog_id' ] );
-			$this->find_unlinked_children_post_action( $linked_parent[ 'post_id' ], $requested_blogs );
+
+			$find_unlinked_children_post_action = $this->new_action( 'find_unlinked_children_post_action' );
+			// We need to overwrite the post_id, but not in the original action.
+			$find_unlinked_children_post_action->post_action = clone( $post_action );
+			$find_unlinked_children_post_action->post_action->post_id = $linked_parent[ 'post_id' ];
+			$find_unlinked_children_post_action->requested_blogs = $requested_blogs;
+			$find_unlinked_children_post_action->execute();
+
 			restore_current_blog();
 			return;
 		}
@@ -107,7 +121,7 @@ trait post_actions
 				$blogs []= \threewp_broadcast\broadcast_data\blog::from_blog_id( $requested_blog_id );
 		}
 
-		ThreeWP_Broadcast()->debug( 'Finding unlinked children for post %s on blogs %s', $post_id, $blogs );
+		ThreeWP_Broadcast()->debug( 'Finding unlinked children for post %s on blogs %s', $post_id, implode( ", ", array_keys( (array)$blogs ) ) );
 
 		$post = get_post( $post_id );
 
@@ -128,21 +142,28 @@ trait post_actions
 				'post_status' => $post->post_status,
 			];
 
-			$posts = get_posts( $args );
+			$action->posts = get_posts( $args );
+
+			foreach( $action->post_get_posts_callbacks as $callback )
+			{
+				$callback( $action );
+			}
+
 			$post_ids = [];
-			foreach( $posts as $post )
+			foreach( $action->posts as $post )
 				$post_ids []= $post->ID;
+
 			ThreeWP_Broadcast()->debug( 'Found %d posts (%s) on blog %s: %s',
 				count( $post_ids ),
 				implode( ",", $post_ids ),
 				$blog->id,
-				$args
+				json_encode( $args )
 			);
 
 			// An exact match was found.
-			if ( count( $posts ) == 1 )
+			if ( count( $action->posts ) == 1 )
 			{
-				$unlinked = reset( $posts );
+				$unlinked = reset( $action->posts );
 
 				$child_broadcast_data = ThreeWP_Broadcast()->get_post_broadcast_data( $blog->id, $unlinked->ID );
 				if ( $child_broadcast_data->get_linked_parent() === false )
@@ -342,6 +363,37 @@ trait post_actions
 	}
 
 	/**
+		@brief		Run a post command on a post.
+		@since		2022-09-12 21:44:54
+	**/
+	public function threewp_broadcast_trash_untrash_delete_post( $action )
+	{
+		if ( $action->is_finished() )
+			return;
+
+		$key = 'trash_untrash_delete_post_' . $action->child_blog_id . '_' . $action->child_post_id;
+		if ( isset( $this->$key ) )
+			return;
+
+		$this->$key = true;
+
+		$this->debug( 'Running trash_untrash_delete_post command %s on blog %s, post %s',
+			$action->command,
+			$action->child_blog_id,
+			$action->child_post_id
+		);
+
+		switch_to_blog( $action->child_blog_id );
+
+		$command = $action->command;
+		$command( $action->child_post_id );
+
+		restore_current_blog();
+
+		unset( $this->$key );
+	}
+
+	/**
 		@brief		Execute an action on a post.
 		@since		2014-11-02 16:35:27
 	**/
@@ -380,7 +432,11 @@ trait post_actions
 				$api->delete_children( $post_id, $action->blogs );
 			break;
 			case 'find_unlinked':
-				$this->find_unlinked_children_post_action( $post_id, $action->blogs );
+				$find_unlinked_children_post_action = $this->new_action( 'find_unlinked_children_post_action' );;
+				$find_unlinked_children_post_action->post_action = $action;
+				if ( count( $action->blogs ) > 0 )
+					$find_unlinked_children_post_action->requested_blogs = $action->blogs;
+				$find_unlinked_children_post_action->execute();
 			break;
 			// Restore children
 			case 'restore':
@@ -399,7 +455,7 @@ trait post_actions
 
 	public function trash_post( $post_id )
 	{
-		ThreeWP_Broadcast()->debug( 'BC trash post' );
+		ThreeWP_Broadcast()->debug( 'trash_post %s', $post_id );
 		$this->trash_untrash_delete_post( 'wp_trash_post', $post_id );
 	}
 
@@ -410,10 +466,26 @@ trait post_actions
 	 */
 	private function trash_untrash_delete_post( $command, $post_id )
 	{
-		global $blog_id;
+		if ( ! $post_id )
+			return;
+
+		$blog_id = get_current_blog_id();
+
+		// Check whether we are currently doing this command.
+		$key = 'trash_untrash_delete_post_' . $blog_id . '_' . $post_id;
+		if ( isset( $this->$key ) )
+			return;
+
+		$this->$key = true;
+
 		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post_id );
 
-		$this->debug( 'Intercepted %s on blog %s, post %s', $command, $blog_id, $post_id );
+		$this->debug( 'Intercepted %s on blog %s, post %s. Set %s',
+			$command,
+			$blog_id,
+			$post_id,
+			$key
+		);
 
 		if ( $broadcast_data->has_linked_children() )
 		{
@@ -424,10 +496,12 @@ trait post_actions
 					// Delete the broadcast data of this child
 					$this->delete_post_broadcast_data( $childBlog, $childPost );
 				}
-				switch_to_blog( $childBlog);
-				$this->debug( 'Running %s on blog %s, post %s', $command, $childBlog, $childPost );
-				$command( $childPost);
-				restore_current_blog();
+				$action = $this->new_action( 'trash_untrash_delete_post' );
+				$action->broadcast_data = $broadcast_data;
+				$action->command = $command;
+				$action->child_blog_id = $childBlog;
+				$action->child_post_id = $childPost;
+				$action->execute();
 			}
 		}
 
@@ -447,6 +521,9 @@ trait post_actions
 
 			$this->delete_post_broadcast_data( $blog_id, $post_id );
 		}
+
+		$this->debug( 'Unsetting %s', $key );
+		unset( $this->$key );
 	}
 
 	public function untrash_post( $post_id )
@@ -519,6 +596,7 @@ trait post_actions
 		$form->hidden_input( 'nonce', $nonce );
 		$form->hidden_input( 'post_id', $post_id );
 		$form->id( 'broadcast_post_action_form' );
+		$form->no_automatic_nonce();
 		$json = new ajax\json();
 		$json->html = '';
 		$has_links = false;

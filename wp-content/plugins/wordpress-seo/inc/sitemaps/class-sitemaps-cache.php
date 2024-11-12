@@ -47,22 +47,24 @@ class WPSEO_Sitemaps_Cache {
 
 		add_action( 'init', [ $this, 'init' ] );
 
-		add_action( 'deleted_term_relationships', [ __CLASS__, 'invalidate' ] );
+		add_action( 'deleted_term_relationships', [ self::class, 'invalidate' ] );
 
-		add_action( 'update_option', [ __CLASS__, 'clear_on_option_update' ] );
+		add_action( 'update_option', [ self::class, 'clear_on_option_update' ] );
 
-		add_action( 'edited_terms', [ __CLASS__, 'invalidate_helper' ], 10, 2 );
-		add_action( 'clean_term_cache', [ __CLASS__, 'invalidate_helper' ], 10, 2 );
-		add_action( 'clean_object_term_cache', [ __CLASS__, 'invalidate_helper' ], 10, 2 );
+		add_action( 'edited_terms', [ self::class, 'invalidate_helper' ], 10, 2 );
+		add_action( 'clean_term_cache', [ self::class, 'invalidate_helper' ], 10, 2 );
+		add_action( 'clean_object_term_cache', [ self::class, 'invalidate_helper' ], 10, 2 );
 
-		add_action( 'user_register', [ __CLASS__, 'invalidate_author' ] );
-		add_action( 'delete_user', [ __CLASS__, 'invalidate_author' ] );
+		add_action( 'user_register', [ self::class, 'invalidate_author' ] );
+		add_action( 'delete_user', [ self::class, 'invalidate_author' ] );
 
-		add_action( 'shutdown', [ __CLASS__, 'clear_queued' ] );
+		add_action( 'shutdown', [ self::class, 'clear_queued' ] );
 	}
 
 	/**
 	 * Setup context for static calls.
+	 *
+	 * @return void
 	 */
 	public function init() {
 
@@ -74,7 +76,7 @@ class WPSEO_Sitemaps_Cache {
 	 *
 	 * @since 3.2
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function is_enabled() {
 
@@ -94,7 +96,7 @@ class WPSEO_Sitemaps_Cache {
 	 * @param string $type Sitemap type.
 	 * @param int    $page Page number to retrieve.
 	 *
-	 * @return string|boolean
+	 * @return string|bool
 	 */
 	public function get_sitemap( $type, $page ) {
 
@@ -112,7 +114,7 @@ class WPSEO_Sitemaps_Cache {
 	 * @param string $type Sitemap type.
 	 * @param int    $page Page number to retrieve.
 	 *
-	 * @return null|WPSEO_Sitemap_Cache_Data Null on no cache found otherwise object containing sitemap and meta data.
+	 * @return WPSEO_Sitemap_Cache_Data|null Null on no cache found otherwise object containing sitemap and meta data.
 	 */
 	public function get_sitemap_data( $type, $page ) {
 
@@ -122,9 +124,15 @@ class WPSEO_Sitemaps_Cache {
 			return null;
 		}
 
-		// Unserialize Cache Data object (is_serialized doesn't recognize classes).
+		/*
+		 * Unserialize Cache Data object as is_serialized() doesn't recognize classes in C format.
+		 * This work-around should no longer be needed once the minimum PHP version has gone up to PHP 7.4,
+		 * as the `WPSEO_Sitemap_Cache_Data` class uses O format serialization in PHP 7.4 and higher.
+		 *
+		 * @link https://wiki.php.net/rfc/custom_object_serialization
+		 */
 		if ( is_string( $sitemap ) && strpos( $sitemap, 'C:24:"WPSEO_Sitemap_Cache_Data"' ) === 0 ) {
-
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Can't be avoided due to how WP stores options.
 			$sitemap = unserialize( $sitemap );
 		}
 
@@ -288,6 +296,8 @@ class WPSEO_Sitemaps_Cache {
 
 	/**
 	 * Invalidate storage for cache types queued to clear.
+	 *
+	 * @return void
 	 */
 	public static function clear_queued() {
 
@@ -314,6 +324,8 @@ class WPSEO_Sitemaps_Cache {
 	 *
 	 * @param string $option Option name.
 	 * @param string $type   Sitemap type.
+	 *
+	 * @return void
 	 */
 	public static function register_clear_on_option_update( $option, $type = '' ) {
 

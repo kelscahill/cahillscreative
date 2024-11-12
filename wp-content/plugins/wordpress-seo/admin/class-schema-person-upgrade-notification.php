@@ -6,7 +6,8 @@
  */
 
 /**
- * Notifies the user to update the Person on the publish entity in the Configuration Wizard.
+ * Notifies the user to update the Search Appearance settings when the site is set to represent a Person,
+ * but no person (name) has been chosen.
  */
 class WPSEO_Schema_Person_Upgrade_Notification implements WPSEO_WordPress_Integration {
 
@@ -21,6 +22,8 @@ class WPSEO_Schema_Person_Upgrade_Notification implements WPSEO_WordPress_Integr
 
 	/**
 	 * Handles if the notification should be added or removed.
+	 *
+	 * @return void
 	 */
 	public function handle_notification() {
 		$company_or_person_user_id = WPSEO_Options::get( 'company_or_person_user_id', false );
@@ -34,6 +37,8 @@ class WPSEO_Schema_Person_Upgrade_Notification implements WPSEO_WordPress_Integr
 
 	/**
 	 * Adds a notification to the notification center.
+	 *
+	 * @return void
 	 */
 	protected function add_notification() {
 		$notification_center = Yoast_Notification_Center::get();
@@ -42,6 +47,8 @@ class WPSEO_Schema_Person_Upgrade_Notification implements WPSEO_WordPress_Integr
 
 	/**
 	 * Removes a notification to the notification center.
+	 *
+	 * @return void
 	 */
 	protected function remove_notification() {
 		$notification_center = Yoast_Notification_Center::get();
@@ -55,9 +62,9 @@ class WPSEO_Schema_Person_Upgrade_Notification implements WPSEO_WordPress_Integr
 	 */
 	protected function get_notification() {
 		$message = sprintf(
-			/* translators: %1$s is a link start tag to the Configuration Wizard, %2$s is the link closing tag. */
+			/* translators: %1$s is a link start tag to the Search Appearance settings, %2$s is the link closing tag. */
 			__( 'You have previously set your site to represent a person. We’ve improved our functionality around Schema and the Knowledge Graph, so you should go in and %1$scomplete those settings%2$s.', 'wordpress-seo' ),
-			'<a href="' . esc_url( admin_url( 'admin.php?page=wpseo_titles' ) ) . '">',
+			'<a href="' . esc_url( admin_url( 'admin.php?page=wpseo_page_settings#/site-representation' ) ) . '">',
 			'</a>'
 		);
 

@@ -1,0 +1,3 @@
+﻿Cet e-mail a été envoyé via Brevo SMTP.
+Félicitation, votre module Brevo SMTP est bien configuré.
+L'équipe de Brevo 

@@ -1,0 +1,28 @@
+.o-link {
+  @include o-link;
+
+  &--xsmall {
+    @include o-link--xsmall;
+  }
+
+  &--small {
+    @include o-link--small;
+  }
+
+  &--alt {
+    @include o-link--alt;
+  }
+
+  &--simple {
+    @include o-link--simple;
+  }
+
+  &--no-shadow {
+    box-shadow: none;
+
+    &:hover,
+    &:focus {
+      box-shadow: none;
+    }
+  }
+}

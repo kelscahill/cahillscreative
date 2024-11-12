@@ -30,10 +30,10 @@ class Disable_Core_Sitemaps implements Initializer_Interface {
 	/**
 	 * Sitemaps_Enabled_Conditional constructor.
 	 *
+	 * @codeCoverageIgnore
+	 *
 	 * @param Options_Helper  $options  The options helper.
 	 * @param Redirect_Helper $redirect The redirect helper.
-	 *
-	 * @codeCoverageIgnore
 	 */
 	public function __construct( Options_Helper $options, Redirect_Helper $redirect ) {
 		$this->options  = $options;
@@ -42,6 +42,8 @@ class Disable_Core_Sitemaps implements Initializer_Interface {
 
 	/**
 	 * Disable the WP core XML sitemaps.
+	 *
+	 * @return void
 	 */
 	public function initialize() {
 		// This needs to be on priority 15 as that is after our options initialize.

@@ -15,14 +15,18 @@ class Red_Http_Headers {
 			$location = 'redirect';
 		}
 
-		$name = $this->sanitize( isset( $header['headerName'] ) ? $header['headerName'] : '' );
-		$type = $this->sanitize( isset( $header['type'] ) ? $header['type'] : '' );
-		$value = $this->sanitize( isset( $header['headerValue'] ) ? $header['headerValue'] : '' );
+		$name = $this->sanitize( isset( $header['headerName'] ) ? sanitize_text_field( $header['headerName'] ) : '' );
+		$type = $this->sanitize( isset( $header['type'] ) ? sanitize_text_field( $header['type'] ) : '' );
+		$value = $this->sanitize( isset( $header['headerValue'] ) ? sanitize_text_field( $header['headerValue'] ) : '' );
 		$settings = [];
 
 		if ( isset( $header['headerSettings'] ) && is_array( $header['headerSettings'] ) ) {
 			foreach ( $header['headerSettings'] as $key => $setting_value ) {
-				$settings[ $this->sanitize( $key ) ] = $this->sanitize( $setting_value );
+				if ( is_array( $setting_value ) && isset( $setting_value['value'] ) ) {
+					$settings[ $this->sanitize( sanitize_text_field( $key ) ) ] = $this->sanitize( $setting_value['value'] );
+				} else {
+					$settings[ $this->sanitize( sanitize_text_field( $key ) ) ] = $this->sanitize( $setting_value );
+				}
 			}
 		}
 

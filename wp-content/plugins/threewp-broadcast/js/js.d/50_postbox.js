@@ -142,7 +142,6 @@
 				}
 
 				// GROUP functionality: Allow blogs to be mass selected, unselected.
-				var $parent = $this;
 				$( ".blog_groups select", $this ).on( 'change', function()
 				{
 					var $groups = $( this );
@@ -150,17 +149,13 @@
 					for ( var counter=0; counter < blogs.length; counter++)
 					{
 						var $blog = $( "#plainview_sdk_broadcast_form2_inputs_checkboxes_blogs_" + blogs[counter], $this.$blogs_container );
-						// Switch selection.
-						if ( $blog.prop( 'checked' ) )
-							$blog.prop( 'checked', false );
-						else
-							$blog.prop( 'checked', true );
+						$blog.trigger( 'click' );
 					}
 
 					// If the blog list is closed, then expand and then close again to show the newly selected blogs.
 					if ( $this.$blogs_container.hasClass( 'closed' ) )
 						$this.$show_hide.trigger( 'click' ).trigger( 'click' );
-				} ).change();
+				} ).trigger( 'change' );
 
 				// Unchecked child blogs
 				var $unchecked_child_blogs_div = $( ".form_item_plainview_sdk_broadcast_form2_inputs_select_unchecked_child_blogs", $this ).hide();

@@ -1,0 +1,35 @@
+{% set base_class = hero_work.base_class|default('c-hero-work') %}
+<style>
+  .o-background-image--{{ get_image(post.featured_banner_image).id }} {
+    background-image: url('{{ get_image(post.featured_banner_image).src|towebp|resize(500, 281) }}');
+  }
+  @media (min-width: 500px) {
+    .o-background-image--{{ get_image(post.featured_banner_image).id }} {
+      background-image: url('{{ get_image(post.featured_banner_image).src|towebp|resize(720, 405) }}');
+    }
+  }
+  @media (min-width: 720px) {
+    .o-background-image--{{ get_image(post.featured_banner_image).id }} {
+      background-image: url('{{ get_image(post.featured_banner_image).src|towebp|resize(960, 540) }}');
+    }
+  }
+  @media (min-width: 960px) {
+    .o-background-image--{{ get_image(post.featured_banner_image).id }} {
+      background-image: url('{{ get_image(post.featured_banner_image).src|towebp|resize(1200, 675) }}');
+    }
+  }
+  @media (min-width: 1200px) {
+    .o-background-image--{{ get_image(post.featured_banner_image).id }} {
+      background-image: url('{{ get_image(post.featured_banner_image).src|towebp|resize(1600, 900) }}');
+    }
+  }
+</style>
+<div class="{{ bem_classes(base_class, hero_work.element, hero_work.modifiers, hero_work.extra) }} l-wrap o-background-image o-background-image--{{ get_image(post.featured_banner_image).id }}">
+  {% include "@atoms/images/image/responsive-image.twig" with {
+    "image": {
+      "src": get_image(post.featured_work_image).src|towebp|resize(auto, 500),
+      "alt": get_image(post.featured_work_image).alt,
+      "extra": bem_classes(base_class, 'image')
+    }
+  } %}
+</div>

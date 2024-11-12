@@ -1,0 +1,12 @@
+{% if blockquote %}
+  {% set base_class = blockquote.base_class|default('o-blockquote') %}
+
+  <blockquote class="{{ bem_classes(base_class, blockquote.element, blockquote.modifiers, blockquote.extra) }}" >
+    {% if blockquote.text %}
+      {{ blockquote.text }}
+    {% endif %}
+    {% if blockquote.cite %}
+      <cite>{{ blockquote.cite }}</cite>
+    {% endif %}
+  </blockquote>
+{% endif %}

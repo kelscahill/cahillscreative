@@ -57,6 +57,12 @@ class each_linked_post
 	public $on_parent = true;
 
 	/**
+		@brief		[IN]: If called on a child, run the code on the calling child also?
+		@since		2021-10-25 13:57:52
+	**/
+	public $on_source_child = false;
+
+	/**
 		@brief		IN: The ID of the post.
 		@since		2015-05-02 21:40:01
 	**/
@@ -64,6 +70,7 @@ class each_linked_post
 
 	/**
 		@brief		Convenience method to add a callback to the callback array.
+		@details	The callback is called with an $options parameter. $option->action contains this action, in case you want to pass data to the callback.
 		@since		2015-05-02 21:30:56
 	**/
 	public function add_callback( $callback )

@@ -1,0 +1,21 @@
+.c-checkbox-list {
+  list-style: none;
+  margin-left: 0 !important;
+
+  @include media(">small") {
+    column-gap: $space;
+    column-count: 2;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    .o-link {
+      margin-left: $space-half;
+      position: relative;
+      @include u-font--xxs;
+    }
+  }
+}

@@ -246,24 +246,40 @@ trait meta_boxes
 
 		// Preselect those children that this post has.
 		$linked_children = $meta_box_data->broadcast_data->get_linked_children();
-		foreach( $linked_children as $blog_id => $ignore )
+		foreach( $linked_children as $blog_id => $post_id )
 		{
 			$blog = $blogs->get( $blog_id );
 			if ( ! $blog )
 				continue;
 			$blog->linked()->selected();
+			$edit_url = $blog->get_edit_url( $post_id );
+			$blog->set_edit_url( $edit_url );
 		}
 
 		foreach( $blogs as $blog )
 		{
+			// This is a "workaround" for the More Children add-on that would otherwise allow the child (parent) to broadcast to itself.
+			if ( $blog->id == $meta_box_data->broadcast_data->blog_id )
+				continue;
+
 			$label = $form::unfilter_text( $blog->get_name() );
 			if ( $label == '' )
 				$label = $blog->domain;
 
+			$label_raw = '';
+			if ( $blog->is_linked() )
+			{
+				$title = sprintf( __( 'Edit the child post on blog %s', 'threewp-broadcast' ), htmlspecialchars( $label ) );
+				$label_raw .= sprintf( '<a class="child_edit_link" href="%s" title="%s"><span class="dashicons dashicons-admin-links"></span></a>',
+					$blog->get_edit_url(),
+					$title
+				);
+			}
+
 			$blogs_input->option( $label, $blog->id );
 			$input_name = 'blogs_' . $blog->id;
 			$option = $blogs_input->input( $input_name );
-			$option->get_label()->content = htmlspecialchars( $label );
+			$option->get_label()->content = htmlspecialchars( $label ) . $label_raw;
 			$option->css_class( 'blog ' . $blog->id );
 			$option->attribute( 'data-url', $blog->siteurl );
 			$option->title( 'ID: %s', $blog->id );

@@ -1,135 +1,103 @@
 <?php
 
+/**
+ * Theme setup.
+ */
+
 namespace App;
 
-use Roots\Sage\Container;
-use Roots\Sage\Assets\JsonManifest;
-use Roots\Sage\Template\Blade;
-use Roots\Sage\Template\BladeProvider;
+use function Roots\bundle;
 
 /**
- * Theme assets
+ * Register the theme assets.
+ *
+ * @return void
  */
 add_action('wp_enqueue_scripts', function () {
-    wp_enqueue_style('sage/main.css', asset_path('styles/main.css'), false, null);
-    wp_enqueue_script('sage/main.js', asset_path('scripts/main.js'), ['jquery'], null, true);
-
-    if (is_single() || is_page()) {
-        wp_enqueue_script('sage/magnific-popup.js', asset_path('scripts/magnific-popup.js'), ['jquery'], null, true);
-    }
+    bundle('app')->enqueue();
 }, 100);
 
 /**
- * Theme setup
+ * Register the theme assets with the block editor.
+ *
+ * @return void
+ */
+add_action('enqueue_block_editor_assets', function () {
+    bundle('editor')->enqueue();
+}, 100);
+
+/**
+ * Register the initial theme setup.
+ *
+ * @return void
  */
 add_action('after_setup_theme', function () {
     /**
-     * Enable features from Soil when plugin is activated
-     * @link https://roots.io/plugins/soil/
+     * Disable full-site editing support.
+     *
+     * @link https://wptavern.com/gutenberg-10-5-embeds-pdfs-adds-verse-block-color-options-and-introduces-new-patterns
      */
-    add_theme_support('soil-clean-up');
-    add_theme_support('soil-jquery-cdn');
-    add_theme_support('soil-nav-walker');
-    add_theme_support('soil-nice-search');
-    add_theme_support('soil-relative-urls');
+    remove_theme_support('block-templates');
 
     /**
-     * Enable plugins to manage the document title
+     * Register the navigation menus.
+     *
+     * @link https://developer.wordpress.org/reference/functions/register_nav_menus/
+     */
+    register_nav_menus([
+      'primary_navigation' => __('Primary Navigation', 'northright'),
+      'footer_navigation' => __('Footer Navigation', 'northright')
+    ]);
+
+    /**
+     * Disable the default block patterns.
+     *
+     * @link https://developer.wordpress.org/block-editor/developers/themes/theme-support/#disabling-the-default-block-patterns
+     */
+    remove_theme_support('core-block-patterns');
+
+    /**
+     * Enable plugins to manage the document title.
+     *
      * @link https://developer.wordpress.org/reference/functions/add_theme_support/#title-tag
      */
     add_theme_support('title-tag');
 
     /**
-     * Register navigation menus
-     * @link https://developer.wordpress.org/reference/functions/register_nav_menus/
-     */
-    register_nav_menus([
-        'primary_nav_left' => __('Primary Navigation Left', 'sage'),
-        'primary_nav_right' => __('Primary Navigation Right', 'sage'),
-        'footer_nav_col_1' => __('Footer Navigation General', 'sage'),
-        'footer_nav_col_2' => __('Footer Navigation Shop', 'sage')
-    ]);
-
-    /**
-     * Enable post thumbnails
+     * Enable post thumbnail support.
+     *
      * @link https://developer.wordpress.org/themes/functionality/featured-images-post-thumbnails/
      */
     add_theme_support('post-thumbnails');
 
     /**
-     * Enable HTML5 markup support
-     * @link https://developer.wordpress.org/reference/functions/add_theme_support/#html5
+     * Enable responsive embed support.
+     *
+     * @link https://developer.wordpress.org/block-editor/how-to-guides/themes/theme-support/#responsive-embedded-content
      */
-    add_theme_support('html5', ['caption', 'comment-form', 'comment-list', 'gallery', 'search-form']);
+    add_theme_support('responsive-embeds');
 
     /**
-     * Enable selective refresh for widgets in customizer
-     * @link https://developer.wordpress.org/themes/advanced-topics/customizer-api/#theme-support-in-sidebars
+     * Enable HTML5 markup support.
+     *
+     * @link https://developer.wordpress.org/reference/functions/add_theme_support/#html5
+     */
+    add_theme_support('html5', [
+        'caption',
+        'comment-form',
+        'comment-list',
+        'gallery',
+        'search-form',
+        'script',
+        'style',
+    ]);
+
+    /**
+     * Enable selective refresh for widgets in customizer.
+     *
+     * @link https://developer.wordpress.org/reference/functions/add_theme_support/#customize-selective-refresh-widgets
      */
     add_theme_support('customize-selective-refresh-widgets');
 
-    /**
-     * Use main stylesheet for visual editor
-     * @see resources/assets/styles/layouts/_tinymce.scss
-     */
-    add_editor_style(asset_path('styles/main.css'));
+    add_theme_support('automatic-feed-links');
 }, 20);
-
-/**
- * Register sidebars
- */
-add_action('widgets_init', function () {
-    $config = [
-        'before_widget' => '<section class="widget %1$s %2$s">',
-        'after_widget'  => '</section>',
-        'before_title'  => '<h3>',
-        'after_title'   => '</h3>'
-    ];
-    register_sidebar([
-        'name'          => __('Primary', 'sage'),
-        'id'            => 'sidebar-primary'
-    ] + $config);
-    register_sidebar([
-        'name'          => __('Footer', 'sage'),
-        'id'            => 'sidebar-footer'
-    ] + $config);
-});
-
-/**
- * Updates the `$post` variable on each iteration of the loop.
- * Note: updated value is only available for subsequently loaded views, such as partials
- */
-add_action('the_post', function ($post) {
-    sage('blade')->share('post', $post);
-});
-
-/**
- * Setup Sage options
- */
-add_action('after_setup_theme', function () {
-    /**
-     * Add JsonManifest to Sage container
-     */
-    sage()->singleton('sage.assets', function () {
-        return new JsonManifest(config('assets.manifest'), config('assets.uri'));
-    });
-
-    /**
-     * Add Blade to Sage container
-     */
-    sage()->singleton('sage.blade', function (Container $app) {
-        $cachePath = config('view.compiled');
-        if (!file_exists($cachePath)) {
-            wp_mkdir_p($cachePath);
-        }
-        (new BladeProvider($app))->register();
-        return new Blade($app['view']);
-    });
-
-    /**
-     * Create @asset() Blade directive
-     */
-    sage('blade')->compiler()->directive('asset', function ($asset) {
-        return "<?= " . __NAMESPACE__ . "\\asset_path({$asset}); ?>";
-    });
-});

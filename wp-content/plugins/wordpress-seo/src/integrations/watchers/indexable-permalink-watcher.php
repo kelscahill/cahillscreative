@@ -86,6 +86,8 @@ class Indexable_Permalink_Watcher implements Integration_Interface {
 
 	/**
 	 * Resets the permalinks for everything that is related to the permalink structure.
+	 *
+	 * @return void
 	 */
 	public function reset_permalinks() {
 
@@ -111,6 +113,8 @@ class Indexable_Permalink_Watcher implements Integration_Interface {
 	 * Resets the permalink for the given post type.
 	 *
 	 * @param string $post_type The post type to reset.
+	 *
+	 * @return void
 	 */
 	public function reset_permalinks_post_type( $post_type ) {
 		$this->indexable_helper->reset_permalink_indexables( 'post', $post_type );
@@ -120,11 +124,13 @@ class Indexable_Permalink_Watcher implements Integration_Interface {
 	/**
 	 * Resets the term indexables when the base has been changed.
 	 *
-	 * @param string $old  Unused. The old option value.
-	 * @param string $new  Unused. The new option value.
-	 * @param string $type The option name.
+	 * @param string $old_value Unused. The old option value.
+	 * @param string $new_value Unused. The new option value.
+	 * @param string $type      The option name.
+	 *
+	 * @return void
 	 */
-	public function reset_permalinks_term( $old, $new, $type ) {
+	public function reset_permalinks_term( $old_value, $new_value, $type ) {
 		$subtype = $type;
 
 		$reason = Indexing_Reasons::REASON_PERMALINK_SETTINGS;
@@ -269,23 +275,5 @@ class Indexable_Permalink_Watcher implements Integration_Interface {
 		}
 
 		\wp_clear_scheduled_hook( 'wpseo_permalink_structure_check' );
-	}
-
-	/* ********************* DEPRECATED METHODS ********************* */
-
-	/**
-	 * Resets the permalinks of the indexables.
-	 *
-	 * @deprecated 15.1
-	 * @codeCoverageIgnore
-	 *
-	 * @param string      $type    The type of the indexable.
-	 * @param null|string $subtype The subtype. Can be null.
-	 * @param string      $reason  The reason that the permalink has been changed.
-	 */
-	public function reset_permalink_indexables( $type, $subtype = null, $reason = Indexing_Reasons::REASON_PERMALINK_SETTINGS ) {
-		\_deprecated_function( __METHOD__, 'WPSEO 15.1', 'Indexable_Helper::reset_permalink_indexables' );
-
-		$this->indexable_helper->reset_permalink_indexables( $type, $subtype, $reason );
 	}
 }

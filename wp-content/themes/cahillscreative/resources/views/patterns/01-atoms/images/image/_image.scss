@@ -1,0 +1,59 @@
+img,
+picture {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+figure {
+  margin: 0;
+}
+
+figcaption {
+  display: block;
+  margin-top: $space-half;
+}
+
+.o-picture {
+  img {
+    width: 100%;
+    height: auto;
+  }
+
+  &--round {
+    border-radius: 50%;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+  }
+
+  &--square {
+    aspect-ratio: 1 / 1;
+  }
+
+  &--16x9 {
+    aspect-ratio: 16 / 9;
+  }
+
+  &--4x3 {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+.o-background-image {
+  image-rendering: optimize-contrast;
+}
+
+.o-figure__link {
+  display: block;
+}
+
+.o-figure__description {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  .o-kicker {
+    margin-left: 5px;
+  }
+}
+

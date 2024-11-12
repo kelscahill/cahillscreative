@@ -1,0 +1,101 @@
+.c-newsletter-signup-form {
+  &--inline {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+
+    input {
+      background-color: transparent;
+      border-color: $c-black;
+      border-radius: 45px;
+      height: 45px;
+      padding: 0 160px 0 $space;
+
+      &::placeholder {
+        color: $c-black;
+      }
+    }
+
+    button {
+      white-space: nowrap;
+      width: 160px;
+      position: absolute;
+      right: 0;
+      top: 0;
+
+      &:hover,
+      &:focus {
+        background-color: $c-secondary;
+        color: white;
+      }
+    }
+  }
+}
+
+.c-newsletter-signup-footer {
+  input {
+    border-radius: 50px;
+    background-color: transparent;
+    border: 1px solid white;
+    line-height: 1;
+    color: white;
+    padding: 15px;
+
+    &:focus {
+      outline: 0;
+      border-color: $c-tertiary;
+    }
+
+    &::placeholder {
+      color: $c-white;
+    }
+  }
+}
+
+.c-newsletter-signup-banner {
+  &__container {
+    padding-top: $space-quadruple;
+    padding-bottom: $space-quadruple;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    @include media('>medium') {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+    }
+  }
+
+  &__icon {
+    margin-bottom: $space;
+
+    @include media('>medium') {
+      margin-bottom: 0;
+      margin-right: $space-double;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    margin-bottom: $space;
+
+    @include media('>medium') {
+      margin-bottom: 0;
+      margin-right: $space;
+    }
+  }
+
+  &__form {
+    @include media('>medium') {
+      min-width: 320px;
+    }
+
+    @include media('>xlarge') {
+      min-width: 400px;
+    }
+  }
+}

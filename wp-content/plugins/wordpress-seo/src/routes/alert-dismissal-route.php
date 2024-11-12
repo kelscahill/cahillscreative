@@ -20,21 +20,21 @@ class Alert_Dismissal_Route implements Route_Interface {
 	 *
 	 * @var string
 	 */
-	const ROUTE_PREFIX = 'alerts';
+	public const ROUTE_PREFIX = 'alerts';
 
 	/**
 	 * Represents the dismiss route.
 	 *
 	 * @var string
 	 */
-	const DISMISS_ROUTE = self::ROUTE_PREFIX . '/dismiss';
+	public const DISMISS_ROUTE = self::ROUTE_PREFIX . '/dismiss';
 
 	/**
 	 * Represents the full dismiss route.
 	 *
 	 * @var string
 	 */
-	const FULL_DISMISS_ROUTE = Main::API_V1_NAMESPACE . '/' . self::DISMISS_ROUTE;
+	public const FULL_DISMISS_ROUTE = Main::API_V1_NAMESPACE . '/' . self::DISMISS_ROUTE;
 
 	/**
 	 * Represents the alert dismissal action.
@@ -96,7 +96,7 @@ class Alert_Dismissal_Route implements Route_Interface {
 	/**
 	 * Whether or not the current user is allowed to dismiss alerts.
 	 *
-	 * @return boolean Whether or not the current user is allowed to dismiss alerts.
+	 * @return bool Whether or not the current user is allowed to dismiss alerts.
 	 */
 	public function can_dismiss() {
 		return \current_user_can( 'edit_posts' );

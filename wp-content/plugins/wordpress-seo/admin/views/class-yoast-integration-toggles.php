@@ -63,30 +63,28 @@ class Yoast_Integration_Toggles {
 	protected function load_toggles() {
 		$integration_toggles = [
 			(object) [
-				/* translators: %s: 'SEMrush' */
-				'name'            => sprintf( __( '%s integration', 'wordpress-seo' ), 'SEMrush' ),
+				/* translators: %s: 'Semrush' */
+				'name'            => sprintf( __( '%s integration', 'wordpress-seo' ), 'Semrush' ),
 				'setting'         => 'semrush_integration_active',
 				'label'           => sprintf(
-					/* translators: %s: 'SEMrush' */
+					/* translators: %s: 'Semrush' */
 					__( 'The %s integration offers suggestions and insights for keywords related to the entered focus keyphrase.', 'wordpress-seo' ),
-					'SEMrush'
+					'Semrush'
 				),
 				'order'           => 10,
 			],
 			(object) [
-				/* translators: %s: Ryte */
-				'name'            => sprintf( __( '%s integration', 'wordpress-seo' ), 'Ryte' ),
-				'setting'         => 'ryte_indexability',
-				'label'           => sprintf(
-				/* translators: 1: Ryte, 2: Yoast SEO */
-					__( '%1$s will check weekly if your site is still indexable by search engines and %2$s will notify you when this is not the case.', 'wordpress-seo' ),
-					'Ryte',
-					'Yoast SEO'
-				),
-				/* translators: %s: Ryte */
-				'read_more_label' => sprintf( __( 'Read more about how %s works.', 'wordpress-seo' ), 'Ryte ' ),
-				'read_more_url'   => 'https://yoa.st/2an',
-				'order'           => 20,
+				/* translators: %s: Algolia. */
+				'name'               => sprintf( esc_html__( '%s integration', 'wordpress-seo' ), 'Algolia' ),
+				'premium'            => true,
+				'setting'            => 'algolia_integration_active',
+				'label'              => __( 'Improve the quality of your site search! Automatically helps your users find your cornerstone and most important content in your internal search results. It also removes noindexed posts & pages from your site’s search results.', 'wordpress-seo' ),
+				/* translators: %s: Algolia. */
+				'read_more_label'    => sprintf( __( 'Find out more about our %s integration.', 'wordpress-seo' ), 'Algolia' ),
+				'read_more_url'      => 'https://yoa.st/4eu',
+				'premium_url'        => 'https://yoa.st/4ex',
+				'premium_upsell_url' => 'https://yoa.st/get-algolia-integration',
+				'order'              => 25,
 			],
 		];
 
@@ -126,12 +124,16 @@ class Yoast_Integration_Toggles {
 	/**
 	 * Callback for sorting integration toggles by their order.
 	 *
+	 * {@internal Once the minimum PHP version goes up to PHP 7.0, the logic in the function
+	 * can be replaced with the spaceship operator `<=>`.}
+	 *
 	 * @param Yoast_Feature_Toggle $feature_a Feature A.
 	 * @param Yoast_Feature_Toggle $feature_b Feature B.
 	 *
-	 * @return bool Whether order for feature A is bigger than for feature B.
+	 * @return int An integer less than, equal to, or greater than zero indicating respectively
+	 *             that feature A is considered to be less than, equal to, or greater than feature B.
 	 */
 	protected function sort_toggles_callback( Yoast_Feature_Toggle $feature_a, Yoast_Feature_Toggle $feature_b ) {
-		return ( $feature_a->order > $feature_b->order );
+		return ( $feature_a->order - $feature_b->order );
 	}
 }

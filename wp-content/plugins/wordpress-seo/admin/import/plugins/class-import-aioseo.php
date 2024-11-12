@@ -1,12 +1,12 @@
 <?php
 /**
- * File with the class to handle data from All in One SEO Pack.
+ * File with the class to handle data from All in One SEO Pack, versions 3 and under.
  *
  * @package WPSEO\Admin\Import\Plugins
  */
 
 /**
- * Class with functionality to import & clean All in One SEO Pack post metadata.
+ * Class with functionality to import & clean All in One SEO Pack post metadata, versions 3 and under.
  */
 class WPSEO_Import_AIOSEO extends WPSEO_Plugin_Importer {
 
@@ -96,6 +96,8 @@ class WPSEO_Import_AIOSEO extends WPSEO_Plugin_Importer {
 	 * Imports the OpenGraph and Twitter settings for a single post.
 	 *
 	 * @param int $post_id Post ID.
+	 *
+	 * @return void
 	 */
 	private function import_post_opengraph( $post_id ) {
 		$meta = get_post_meta( $post_id, '_aioseop_opengraph_settings', true );

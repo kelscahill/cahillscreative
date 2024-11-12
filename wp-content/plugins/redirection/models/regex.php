@@ -17,7 +17,7 @@ class Red_Regex {
 	 *
 	 * Note: if the pattern is invalid it will not match
 	 *
-	 * @param string $target Text to match the regex against
+	 * @param string $target Text to match the regex against.
 	 * @return boolean match
 	 */
 	public function is_match( $target ) {
@@ -37,12 +37,13 @@ class Red_Regex {
 	 *
 	 * Note: if the pattern is invalid it will return $target
 	 *
-	 * @param string $replace_pattern The regex replace pattern
-	 * @param string $target Text to match the regex against
+	 * @param string $replace_pattern The regex replace pattern.
+	 * @param string $target Text to match the regex against.
 	 * @return string Replaced text
 	 */
 	public function replace( $replace_pattern, $target ) {
-		$result = @preg_replace( $this->get_regex(), $replace_pattern, $target );
+		$regex = $this->get_regex();
+		$result = @preg_replace( $regex, $replace_pattern, $target );
 
 		if ( is_null( $result ) ) {
 			return $target;

@@ -11,23 +11,29 @@ use Yoast\WP\SEO\Presenters\Abstract_Indexable_Tag_Presenter;
 final class Locale_Presenter extends Abstract_Indexable_Tag_Presenter {
 
 	/**
+	 * The tag key name.
+	 *
+	 * @var string
+	 */
+	protected $key = 'og:locale';
+
+	/**
 	 * The tag format including placeholders.
 	 *
 	 * @var string
 	 */
-	protected $tag_format = '<meta property="og:locale" content="%s" />';
+	protected $tag_format = self::META_PROPERTY_CONTENT;
 
 	/**
 	 * Run the locale through the `wpseo_og_locale` filter.
 	 *
-	 * @return string $locale The filtered locale.
+	 * @return string The filtered locale.
 	 */
 	public function get() {
 		/**
 		 * Filter: 'wpseo_og_locale' - Allow changing the Yoast SEO Open Graph locale.
 		 *
-		 * @api string The locale string
-		 *
+		 * @param string                 $locale       The locale string
 		 * @param Indexable_Presentation $presentation The presentation of an indexable.
 		 */
 		return (string) \trim( \apply_filters( 'wpseo_og_locale', $this->presentation->open_graph_locale, $this->presentation ) );

@@ -18,10 +18,19 @@ class Compatibility {
 	protected $default_whitelisted_plugins;
 
 	public function __construct() {
-
 		$this->muplugin_class_dir = plugin_dir_path( __FILE__ );
 		$this->muplugin_dir       = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
 
+		
+	}
+
+	/**
+	 * Registers action and filter hooks
+	 *
+	 * @return void
+	 **/
+	public function register()
+	{
 		add_action( 'admin_init', array( $this, 'wpmdbc_tgmpa_compatibility' ), 1 );
 		add_filter( 'option_active_plugins', array( $this, 'wpmdbc_include_plugins' ) );
 		add_filter( 'site_option_active_sitewide_plugins', array( $this, 'wpmdbc_include_site_plugins' ) );
@@ -66,7 +75,7 @@ class Compatibility {
 		$force_enable_theme = apply_filters( 'wpmdb_compatibility_enable_theme', false );
 
 		if ( $this->wpmdbc_is_compatibility_mode_request() && ! $force_enable_theme ) {
-			$theme_dir  = realpath( dirname( __FILE__ ) . '/../compatibility' );
+			$theme_dir  = realpath( dirname( __FILE__ ) . '/../Compatibility' );
 			$stylesheet = 'temp-theme';
 			$theme_root = "$theme_dir/$stylesheet";
 
@@ -214,6 +223,52 @@ class Compatibility {
 		return $this->is_wpmdb_ajax_call();
 	}
 
+    /**
+     * Checks if the current request is a WPMDB REST API migration request.
+     *
+     * Uses `$_SERVER` global since we're attempting to grab the current
+     * route _before_ `rest_api_init` is fired by WordPress core.
+     *
+     * @return bool
+     */
+	public function wpmdbc_is_wpmdb_rest_request() {
+	    $api_base    = 'mdb-api/v1/';
+	    $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+
+	    if (false === strpos($request_uri, $api_base)) {
+            return false;
+	    }
+
+	    $current_endpoint = explode($api_base, $request_uri);
+	    $current_endpoint = end($current_endpoint);
+
+	    $migration_endpoints = apply_filters(
+            'wpmdb_compatibility_mode_api_endpoints',
+            [
+                'initiate-migration',
+                'verify-connection',
+                'finalize-migration',
+                'cancel-migration',
+                'mf-initiate-file-migration',
+                'mf-get-queue-items',
+                'mf-transfer-files',
+                'tpf-initiate-file-migration',
+                'tpf-get-queue-items',
+                'tpf-transfer-files',
+                'prepare-upload',
+                'upload-file',
+                'import-file',
+            ]
+        );
+
+        // Checks that the current API call is a MDB migration request.
+        if (in_array($current_endpoint, $migration_endpoints)) {
+            return true;
+        }
+
+        return false;
+    }
+
 	/**
 	 * @return bool
 	 */
@@ -234,7 +289,11 @@ class Compatibility {
 	 * @return bool
 	 */
 	public function wpmdbc_is_compatibility_mode_request() {
-		//Requests that shouldn't be handled by compatibility mode
+		if ($this->wpmdbc_is_wpmdb_rest_request()) {
+			return true;
+		}
+
+		// Requests that shouldn't be handled by compatibility mode.
 		if ( ! $this->wpmdbc_is_wpmdb_ajax_call() || in_array( $_POST['action'], array(
 				'wpmdb_get_log',
 				'wpmdb_maybe_collect_data',
@@ -242,6 +301,7 @@ class Compatibility {
 				'wpmdb_remote_flush',
 				'wpmdb_get_themes',
 				'wpmdb_get_plugins',
+				'wpmdb_verify_connection_to_remote_site'
 			) ) ) {
 			return false;
 		}

@@ -2,6 +2,7 @@
 
 namespace threewp_broadcast;
 
+use Exception;
 use \threewp_broadcast\broadcast_data\blog;
 
 class ThreeWP_Broadcast
@@ -20,6 +21,50 @@ class ThreeWP_Broadcast
 	use traits\post_actions;
 	use traits\terms_and_taxonomies;
 	use traits\savings_calculator;
+
+	/**
+		@brief		Are we busy fetching the real link?
+		@since		2024-06-10 22:54:15
+	**/
+	public $_is_getting_permalink = false;
+
+	/**
+		@brief		Has the JS been enqueued?
+		@since		2023-04-19 21:57:02
+	**/
+	public $_js_enqueued = false;
+
+	/**
+		@brief		Has Broadcast finished loading?
+		@since		2023-04-19 21:57:49
+	**/
+	public $__loaded = false;
+
+	/**
+		@brief		Instance of the plugin pack.
+		@since		2023-04-19 21:56:37
+	**/
+	public $__plugin_pack;
+
+	/**
+		@brief		The URL of the site, used during broadcasting.
+		@details	Here for the php 8.2 warning.
+		@since		2024-05-11 21:12:56
+	**/
+	public $__siteurl;
+
+	/**
+		@brief		Stores the calculator data temporarily.
+		@details	Here for the php 8.2 warning.
+		@since		2024-05-11 21:15:02
+	**/
+	public $__threewp_broadcastsavings_calculatorDatasavings_calculator_data;
+
+	/**
+		@brief		A cache of broadcast data for various posts we encounter.
+		@since		2023-04-19 21:55:26
+	**/
+	public $broadcast_data_cache = null;
 
 	/**
 		@brief		Broadcasting stack.
@@ -82,7 +127,7 @@ class ThreeWP_Broadcast
 		@since		2017-01-16 17:14:35
 	**/
 	public static $incompatible_plugins = [
-		'intuitive-custom-post-order/intuitive-custom-post-order.php',
+		'cf-image-resizing/cf-image-resizing.php',
 		'post-type-switcher/post-type-switcher.php',
 		/**
 			@brief		Causes Queue data to expand exponentially.
@@ -95,6 +140,11 @@ class ThreeWP_Broadcast
 			@since		2018-01-22 16:02:22
 		**/
 		'tracking-code-manager/index.php',
+		/**
+			@brief		Aborts Broadcast when syncing taxonomies.
+			@since		2024-05-30 19:02:15
+		**/
+		'wp-security-audit-log/wp-security-audit-log.php',
 	];
 
 	/**
@@ -147,6 +197,8 @@ class ThreeWP_Broadcast
 		// Don't want to break anyone's plugins.
 		$this->add_action( 'threewp_broadcast_broadcast_post' );
 
+		$this->add_action( 'threewp_broadcast_broadcasting_set_object_terms', 100 );
+
 		$this->add_action( 'threewp_broadcast_each_linked_post' );
 		$this->add_action( 'threewp_broadcast_get_user_writable_blogs', 100 );		// Allow other plugins to do this first.
 		$this->add_filter( 'threewp_broadcast_get_post_types', 5 );					// Add our custom post types to the array of broadcastable post types.
@@ -173,6 +225,9 @@ class ThreeWP_Broadcast
 
 	public function activate()
 	{
+		if ( ! is_multisite() )
+			throw new Exception( 'Broadcast requires a Wordpress network install. It does not support single installs.' );
+
 		if ( !$this->is_network )
 			return;
 
@@ -349,7 +404,7 @@ class ThreeWP_Broadcast
 		if ( $_SERVER[ 'SCRIPT_NAME' ] == '/wp-admin/post.php' )
 			return $link;
 
-		if ( isset( $this->_is_getting_permalink ) )
+		if ( $this->_is_getting_permalink )
 			return $link;
 
 		$this->_is_getting_permalink = true;
@@ -370,7 +425,7 @@ class ThreeWP_Broadcast
 		$key = 'b' . $blog_id . '_p' . $post->ID . $link;
 		if ( property_exists( $this->permalink_cache, $key ) )
 		{
-			unset( $this->_is_getting_permalink );
+			$this->_is_getting_permalink = false;
 			return $this->permalink_cache->$key;
 		}
 
@@ -381,7 +436,7 @@ class ThreeWP_Broadcast
 		if ( $linked_parent === false)
 		{
 			$this->permalink_cache->$key = $link;
-			unset( $this->_is_getting_permalink );
+			$this->_is_getting_permalink = false;
 			return $link;
 		}
 
@@ -390,7 +445,7 @@ class ThreeWP_Broadcast
 		$parent_permalink = get_permalink( $post );
 		restore_current_blog();
 
-		unset( $this->_is_getting_permalink );
+		$this->_is_getting_permalink = false;
 
 		$action = new actions\override_child_permalink();
 		$action->child_permalink = $link;
@@ -403,6 +458,44 @@ class ThreeWP_Broadcast
 		$this->permalink_cache->$key = $action->returned_permalink;
 
 		return $action->returned_permalink;
+	}
+
+	/**
+		@brief		Set the terms of an post.
+		@since		2024-04-07 20:24:53
+	**/
+	public function threewp_broadcast_broadcasting_set_object_terms( $action )
+	{
+		$bcd = $action->broadcasting_data;
+
+		if ( $action->use_sql )
+		{
+			global $wpdb;
+			$this->debug( 'Setting taxonomies for %s using SQL: %s',
+				$action->taxonomy,
+				implode( ", ", $action->term_ids )
+			);
+
+			foreach( $action->term_ids as $term_id )
+			{
+				$result = $wpdb->insert( $wpdb->term_relationships,
+					[
+						'object_id' => $bcd->new_post( 'ID' ),
+						'term_taxonomy_id' => $term_id,
+					]
+				);
+				if ( ! $result )
+					$this->debug( 'Failed setting term %s', $term_id );
+			}
+		}
+		else
+		{
+			$this->debug( 'Setting taxonomies for %s using wp_set_object_terms: %s',
+				$action->taxonomy,
+				implode( ", ", $action->term_ids )
+			);
+			wp_set_object_terms( $bcd->new_post( 'ID' ), $action->term_ids, $action->taxonomy );
+		}
 	}
 
 	/**
@@ -432,6 +525,8 @@ class ThreeWP_Broadcast
 				{
 					switch_to_blog( $parent[ 'blog_id' ] );
 					$o = (object)[];
+					$o->action = $action;
+					$o->blog_id = $parent[ 'blog_id' ];
 					$o->post_id = $parent[ 'post_id' ];
 					$o->post = get_post( $o->post_id );
 					$this->debug( $prefix . '' );
@@ -445,7 +540,15 @@ class ThreeWP_Broadcast
 			$broadcast_data = $this->get_post_broadcast_data( $parent[ 'blog_id' ], $parent[ 'post_id' ] );
 		}
 		else
-			$this->debug( $prefix . 'No linked parent.' );
+		{
+			$this->debug( $prefix . 'On the parent.' );
+			$o = (object)[];
+			$o->post_id = $action->post_id;
+			$o->post = get_post( $o->post_id );
+			$this->debug( $prefix . '' );
+			foreach( $action->callbacks as $callback )
+				$callback( $o );
+		}
 
 		if ( $action->on_children )
 		{
@@ -454,11 +557,16 @@ class ThreeWP_Broadcast
 			{
 				// Do not bother eaching this child if we started here.
 				if ( $blog_id == $action->blog_id )
-					continue;
+				{
+					if ( ! $action->on_source_child )
+						continue;
+				}
 				if ( ! $this->blog_exists( $blog_id ) )
 					continue;
 				switch_to_blog( $blog_id );
 				$o = (object)[];
+				$o->action = $action;
+				$o->blog_id = $blog_id;
 				$o->post_id = $post_id;
 				$o->post = get_post( $post_id );
 				$this->debug( $prefix . 'Executing callbacks on child post %s on blog %s.', $post_id, $blog_id );
@@ -542,33 +650,83 @@ class ThreeWP_Broadcast
 	**/
 	public function wp_head()
 	{
-		// Only override the canonical if we're looking at a single post.
-		$override = false;
-		$override |= is_single();
-		$override |= is_page();
-		$override = apply_filters( 'broadcast_override_canonical_url', $override );
-		if ( ! $override )
-			return;
+        $post_type = get_post_type();
 
-		global $post;
-		global $blog_id;
+        // Make sure post type isn't skipped
+        $canonical_skip_post_types = $this->get_site_option( 'canonical_skip_post_types' );
+        $canonical_skipped_post_types = explode( ' ', $canonical_skip_post_types );
+        if ( in_array( $post_type, $canonical_skipped_post_types ) )
+        {
+        	if ( $this->debugging() )
+        		echo sprintf ("<!-- Broadcast SEO settings are configured to skip this post type: $post_type. --> \n", $post_type );
+            return;
+        }
 
-		// Find the parent, if any.
-		$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
-		$linked_parent = $broadcast_data->get_linked_parent();
-		if ( $linked_parent === false)
-			return;
+        // A linked parent is required for the replacement canonical.
+        global $blog_id;
+        global $post;
+        $broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
+        $linked_parent = $broadcast_data->get_linked_parent();
+        if ( $linked_parent === false)
+        {
+        	if ( $this->debugging() )
+        		echo sprintf ("<!-- Broadcast could not find a linked parent for the canonical. --> \n");
+            return;
+        }
+
+        // Check if post types are limited
+        $canonical_limit_post_types = $this->get_site_option( 'canonical_limit_post_types' );
+        $canonical_limited_post_types = explode( ' ', $canonical_limit_post_types );
+
+        // If post type limit is not defined, we can update any single post type or page.
+        // If defined, post type must be in approved list.
+        if ( $canonical_limit_post_types == '' || in_array( $post_type, $canonical_limited_post_types ) )
+        {
+			$override = false;
+			$override |= is_single();
+			$override |= is_page();
+			$override = apply_filters( 'broadcast_override_canonical_url', $override );
+
+            // If this is an archive page, then exit
+            if ( ! $override )
+            {
+            	if ( $this->debugging() )
+	                echo sprintf ( "<!-- Broadcast is not replacing the canonical after the broadcast_override_canonical_url filter. -->\n" );
+                return;
+            }
+        }
+        // This post type wasn't on the list
+        else
+        {
+            if ( $this->debugging() )
+            	echo sprintf ("<!-- Broadcast SEO settings limit post types to $canonical_limit_post_types which does not include $post_type. -->\n");
+            return;
+        }
 
 		// Post has a parent. Get the parent's permalink.
 		switch_to_blog( $linked_parent[ 'blog_id' ] );
 		$url = get_permalink( $linked_parent[ 'post_id' ] );
 		restore_current_blog();
 
-		echo sprintf( '<link rel="canonical" href="%s" />', $url );
-		echo "\n";
+		// Set the parent's permalink as the canonical
+		$action = $this->new_action( 'canonical_url' );
+		$action->post = $post;
+		$action->url = $url;
+		$action->execute();
 
-		// Prevent Wordpress from outputting its own canonical.
-		remove_action( 'wp_head', 'rel_canonical' );
+		if ( ! $action->url )
+			return;
+
+		if ( $action->html_tag )
+		{
+            if ( $this->debugging() )
+            	echo sprintf ("<!-- Broadcast canonical -->\n");
+			echo sprintf( $action->html_tag, $action->url );
+		}
+
+		if ( $action->disable_rel_canonical )
+			// Prevent Wordpress from outputting its own canonical.
+			remove_action( 'wp_head', 'rel_canonical' );
 
 		// Remove Canonical Link Added By Yoast WordPress SEO Plugin
 		if ( class_exists( '\\WPSEO_Frontend' ) )

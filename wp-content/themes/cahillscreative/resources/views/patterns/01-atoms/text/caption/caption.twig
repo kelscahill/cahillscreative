@@ -1,0 +1,7 @@
+{% if caption %}
+  {% set base_class = caption.base_class|default('o-caption') %}
+
+  <span class="{{ bem_classes(base_class, caption.element, caption.modifiers, caption.extra) }}" >
+    {{ caption.text }}
+  </span>
+{% endif %}

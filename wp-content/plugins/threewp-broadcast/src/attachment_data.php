@@ -13,7 +13,7 @@ use \Exception;
 	- @b 2013-02-21 Added post excerpt, guid, id
 	- @b 2013-02-14 Added extra attachment data from werk@haha.nl: post_title and menu_order
  */
-
+#[\AllowDynamicProperties]
 class attachment_data
 {
 	use \plainview\sdk_broadcast\traits\method_chaining;

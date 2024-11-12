@@ -1,0 +1,31 @@
+<head>
+  <meta charset="{{ site.charset }}" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="pingback" href="{{ site.pingback_url }}" />
+  {% if options.favicon %}
+    <link rel="shortcut icon" href="{{ get_image(options.favicon).src|towebp|resize(30, 30) }}" />
+  {% endif %}
+  {% if theme.path %}
+    {{ function('wp_head') }}
+  {% endif %}
+
+  <style type="text/css">
+    :root {
+      --c-primary: {{ options.primary_color }};
+      --c-secondary: {{ options.secondary_color }};
+      --c-tertiary: {{ options.tertiary_color }};
+      --c-white: {{ options.white }};
+      --c-black: {{ options.black }};
+      --font-primary: "GT Walsheim", Arial, Helvetica, sans-serif;
+      --font-secondary: "Voster", Arial, Helvetica, sans-serif;
+    }
+  </style>
+  {% if post.thumbnail %}
+    <meta property="og:image" content="{{ get_image(post.thumbnail).src|towebp|resize(1200, auto) }}" />
+  {% endif %}
+  {% if post.hero_image %}
+    <meta property="og:image" content="{{ get_image(post.hero_image).src|towebp|resize(1200, auto) }}" />
+  {% endif %}
+</head>

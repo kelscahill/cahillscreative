@@ -2,8 +2,10 @@
 
 namespace Yoast\WP\SEO\Integrations;
 
+use WP_HTML_Tag_Processor;
 use WPSEO_Replace_Vars;
 use Yoast\WP\SEO\Conditionals\Front_End_Conditional;
+use Yoast\WP\SEO\Context\Meta_Tags_Context;
 use Yoast\WP\SEO\Helpers\Options_Helper;
 use Yoast\WP\SEO\Memoizers\Meta_Tags_Context_Memoizer;
 use Yoast\WP\SEO\Presenters\Abstract_Indexable_Presenter;
@@ -92,12 +94,13 @@ class Front_End_Integration implements Integration_Interface {
 		'Open_Graph\Article_Published_Time',
 		'Open_Graph\Article_Modified_Time',
 		'Open_Graph\Image',
+		'Meta_Author',
 	];
 
 	/**
 	 * The Open Graph specific presenters that should be output on error pages.
 	 *
-	 * @var array
+	 * @var array<string>
 	 */
 	protected $open_graph_error_presenters = [
 		'Open_Graph\Locale',
@@ -108,7 +111,7 @@ class Front_End_Integration implements Integration_Interface {
 	/**
 	 * The Twitter card specific presenters.
 	 *
-	 * @var string[]
+	 * @var array<string>
 	 */
 	protected $twitter_card_presenters = [
 		'Twitter\Card',
@@ -122,7 +125,7 @@ class Front_End_Integration implements Integration_Interface {
 	/**
 	 * The Slack specific presenters.
 	 *
-	 * @var string[]
+	 * @var array<string>
 	 */
 	protected $slack_presenters = [
 		'Slack\Enhanced_Data',
@@ -131,7 +134,7 @@ class Front_End_Integration implements Integration_Interface {
 	/**
 	 * The Webmaster verification specific presenters.
 	 *
-	 * @var string[]
+	 * @var array<string>
 	 */
 	protected $webmaster_verification_presenters = [
 		'Webmaster\Baidu',
@@ -144,9 +147,10 @@ class Front_End_Integration implements Integration_Interface {
 	/**
 	 * Presenters that are only needed on singular pages.
 	 *
-	 * @var string[]
+	 * @var array<string>
 	 */
 	protected $singular_presenters = [
+		'Meta_Author',
 		'Open_Graph\Article_Author',
 		'Open_Graph\Article_Publisher',
 		'Open_Graph\Article_Published_Time',
@@ -158,16 +162,30 @@ class Front_End_Integration implements Integration_Interface {
 	/**
 	 * The presenters we want to be last in our output.
 	 *
-	 * @var string[]
+	 * @var array<string>
 	 */
 	protected $closing_presenters = [
 		'Schema',
 	];
 
 	/**
+	 * The next output.
+	 *
+	 * @var string
+	 */
+	protected $next;
+
+	/**
+	 * The prev output.
+	 *
+	 * @var string
+	 */
+	protected $prev;
+
+	/**
 	 * Returns the conditionals based on which this loadable should be active.
 	 *
-	 * @return array The conditionals.
+	 * @return array<string> The conditionals.
 	 */
 	public static function get_conditionals() {
 		return [ Front_End_Conditional::class ];
@@ -176,13 +194,13 @@ class Front_End_Integration implements Integration_Interface {
 	/**
 	 * Front_End_Integration constructor.
 	 *
+	 * @codeCoverageIgnore It sets dependencies.
+	 *
 	 * @param Meta_Tags_Context_Memoizer $context_memoizer  The meta tags context memoizer.
 	 * @param ContainerInterface         $service_container The DI container.
 	 * @param Options_Helper             $options           The options helper.
 	 * @param Helpers_Surface            $helpers           The helpers surface.
 	 * @param WPSEO_Replace_Vars         $replace_vars      The replace vars helper.
-	 *
-	 * @codeCoverageIgnore It sets dependencies.
 	 */
 	public function __construct(
 		Meta_Tags_Context_Memoizer $context_memoizer,
@@ -203,11 +221,17 @@ class Front_End_Integration implements Integration_Interface {
 	 *
 	 * Removes some actions to remove metadata that WordPress shows on the frontend,
 	 * to avoid duplicate and/or mismatched metadata.
+	 *
+	 * @return void
 	 */
 	public function register_hooks() {
+		\add_filter( 'render_block', [ $this, 'query_loop_next_prev' ], 1, 2 );
+
 		\add_action( 'wp_head', [ $this, 'call_wpseo_head' ], 1 );
 		// Filter the title for compatibility with other plugins and themes.
 		\add_filter( 'wp_title', [ $this, 'filter_title' ], 15 );
+		// Filter the title for compatibility with block-based themes.
+		\add_filter( 'pre_get_document_title', [ $this, 'filter_title' ], 15 );
 
 		// Removes our robots presenter from the list when wp_robots is handling this.
 		\add_filter( 'wpseo_frontend_presenter_classes', [ $this, 'filter_robots_presenter' ] );
@@ -220,11 +244,14 @@ class Front_End_Integration implements Integration_Interface {
 		\remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head' );
 		\remove_action( 'wp_head', 'noindex', 1 );
 		\remove_action( 'wp_head', '_wp_render_title_tag', 1 );
+		\remove_action( 'wp_head', '_block_template_render_title_tag', 1 );
 		\remove_action( 'wp_head', 'gutenberg_render_title_tag', 1 );
 	}
 
 	/**
 	 * Filters the title, mainly used for compatibility reasons.
+	 *
+	 * @return string
 	 */
 	public function filter_title() {
 		$context = $this->context_memoizer->for_current_page();
@@ -236,22 +263,86 @@ class Front_End_Integration implements Integration_Interface {
 		$title_presenter->replace_vars = $this->replace_vars;
 		$title_presenter->helpers      = $this->helpers;
 
-		return \esc_html( $title_presenter->get() );
+		\remove_filter( 'pre_get_document_title', [ $this, 'filter_title' ], 15 );
+		$title = \esc_html( $title_presenter->get() );
+		\add_filter( 'pre_get_document_title', [ $this, 'filter_title' ], 15 );
+
+		return $title;
+	}
+
+	/**
+	 * Filters the next and prev links in the query loop block.
+	 *
+	 * @param string                   $html  The HTML output.
+	 * @param array<string|array|null> $block The block.
+	 * @return string The filtered HTML output.
+	 */
+	public function query_loop_next_prev( $html, $block ) {
+		if ( $block['blockName'] === 'core/query' ) {
+			// Check that the query does not inherit the main query.
+			if ( isset( $block['attrs']['query']['inherit'] ) && ! $block['attrs']['query']['inherit'] ) {
+				\add_filter( 'wpseo_adjacent_rel_url', [ $this, 'adjacent_rel_url' ], 1, 3 );
+			}
+		}
+
+		if ( $block['blockName'] === 'core/query-pagination-next' ) {
+			$this->next = $html;
+		}
+
+		if ( $block['blockName'] === 'core/query-pagination-previous' ) {
+			$this->prev = $html;
+		}
+
+		return $html;
+	}
+
+	/**
+	 * Returns correct adjacent pages when Query loop block does not inherit query from template.
+	 *
+	 * @param string                      $link         The current link.
+	 * @param string                      $rel          Link relationship, prev or next.
+	 * @param Indexable_Presentation|null $presentation The indexable presentation.
+	 *
+	 * @return string The correct link.
+	 */
+	public function adjacent_rel_url( $link, $rel, $presentation = null ) {
+		if ( $link === \home_url( '/' ) ) {
+			return $link;
+		}
+
+		if ( ( $rel === 'next' || $rel === 'prev' ) && ( ! \is_null( $this->$rel ) ) ) {
+			// Reconstruct url if it's relative.
+			if ( \class_exists( WP_HTML_Tag_Processor::class ) ) {
+				$processor = new WP_HTML_Tag_Processor( $this->$rel );
+				while ( $processor->next_tag( [ 'tag_name' => 'a' ] ) ) {
+					$href = $processor->get_attribute( 'href' );
+					if ( $href && \strpos( $href, '/' ) === 0 ) {
+						return $presentation->permalink . \substr( $href, 1 );
+					}
+				}
+			}
+		}
+
+		return $link;
 	}
 
 	/**
 	 * Filters our robots presenter, but only when wp_robots is attached to the wp_head action.
 	 *
-	 * @param array $presenters The presenters for current page.
+	 * @param array<string> $presenters The presenters for current page.
 	 *
-	 * @return array The filtered presenters.
+	 * @return array<string> The filtered presenters.
 	 */
 	public function filter_robots_presenter( $presenters ) {
-		if ( ! function_exists( 'wp_robots' ) ) {
+		if ( ! \function_exists( 'wp_robots' ) ) {
 			return $presenters;
 		}
 
 		if ( ! \has_action( 'wp_head', 'wp_robots' ) ) {
+			return $presenters;
+		}
+
+		if ( \wp_is_serving_rest_request() ) {
 			return $presenters;
 		}
 
@@ -262,6 +353,8 @@ class Front_End_Integration implements Integration_Interface {
 	 * Presents the head in the front-end. Resets wp_query if it's not the main query.
 	 *
 	 * @codeCoverageIgnore It just calls a WordPress function.
+	 *
+	 * @return void
 	 */
 	public function call_wpseo_head() {
 		global $wp_query;
@@ -278,15 +371,18 @@ class Front_End_Integration implements Integration_Interface {
 
 	/**
 	 * Echoes all applicable presenters for a page.
+	 *
+	 * @return void
 	 */
 	public function present_head() {
 		$context    = $this->context_memoizer->for_current_page();
-		$presenters = $this->get_presenters( $context->page_type );
+		$presenters = $this->get_presenters( $context->page_type, $context );
 
 		/**
 		 * Filter 'wpseo_frontend_presentation' - Allow filtering the presentation used to output our meta values.
 		 *
-		 * @api Indexable_Presention The indexable presentation.
+		 * @param Indexable_Presention $presentation The indexable presentation.
+		 * @param Meta_Tags_Context    $context      The meta tags context for the current page.
 		 */
 		$presentation = \apply_filters( 'wpseo_frontend_presentation', $context->presentation, $context );
 
@@ -298,6 +394,7 @@ class Front_End_Integration implements Integration_Interface {
 
 			$output = $presenter->present();
 			if ( ! empty( $output ) ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput -- Presenters are responsible for correctly escaping their output.
 				echo "\t" . $output . \PHP_EOL;
 			}
 		}
@@ -307,14 +404,19 @@ class Front_End_Integration implements Integration_Interface {
 	/**
 	 * Returns all presenters for this page.
 	 *
-	 * @param string $page_type The page type.
+	 * @param string                 $page_type The page type.
+	 * @param Meta_Tags_Context|null $context   The meta tags context for the current page.
 	 *
 	 * @return Abstract_Indexable_Presenter[] The presenters.
 	 */
-	public function get_presenters( $page_type ) {
+	public function get_presenters( $page_type, $context = null ) {
+		if ( \is_null( $context ) ) {
+			$context = $this->context_memoizer->for_current_page();
+		}
+
 		$needed_presenters = $this->get_needed_presenters( $page_type );
 
-		$callback   = function( $presenter ) {
+		$callback   = static function ( $presenter ) {
 			if ( ! \class_exists( $presenter ) ) {
 				return null;
 			}
@@ -325,15 +427,16 @@ class Front_End_Integration implements Integration_Interface {
 		/**
 		 * Filter 'wpseo_frontend_presenters' - Allow filtering the presenter instances in or out of the request.
 		 *
-		 * @api Abstract_Indexable_Presenter[] List of presenter instances.
+		 * @param Abstract_Indexable_Presenter[] $presenters List of presenter instances.
+		 * @param Meta_Tags_Context              $context    The meta tags context for the current page.
 		 */
-		$presenter_instances = \apply_filters( 'wpseo_frontend_presenters', $presenters );
+		$presenter_instances = \apply_filters( 'wpseo_frontend_presenters', $presenters, $context );
 
 		if ( ! \is_array( $presenter_instances ) ) {
 			$presenter_instances = $presenters;
 		}
 
-		$is_presenter_callback = function ( $presenter_instance ) {
+		$is_presenter_callback = static function ( $presenter_instance ) {
 			return $presenter_instance instanceof Abstract_Indexable_Presenter;
 		};
 		$presenter_instances   = \array_filter( $presenter_instances, $is_presenter_callback );
@@ -355,12 +458,9 @@ class Front_End_Integration implements Integration_Interface {
 	private function get_needed_presenters( $page_type ) {
 		$presenters = $this->get_presenters_for_page_type( $page_type );
 
-		if ( ! \get_theme_support( 'title-tag' ) && ! $this->options->get( 'forcerewritetitle', false ) ) {
-			// Remove the title presenter if the theme is hardcoded to output a title tag so we don't have two title tags.
-			$presenters = \array_diff( $presenters, [ 'Title' ] );
-		}
+		$presenters = $this->maybe_remove_title_presenter( $presenters );
 
-		$callback   = function ( $presenter ) {
+		$callback   = static function ( $presenter ) {
 			return "Yoast\WP\SEO\Presenters\\{$presenter}_Presenter";
 		};
 		$presenters = \array_map( $callback, $presenters );
@@ -368,9 +468,10 @@ class Front_End_Integration implements Integration_Interface {
 		/**
 		 * Filter 'wpseo_frontend_presenter_classes' - Allow filtering presenters in or out of the request.
 		 *
-		 * @api array List of presenters.
+		 * @param array  $presenters List of presenters.
+		 * @param string $page_type  The current page type.
 		 */
-		$presenters = \apply_filters( 'wpseo_frontend_presenter_classes', $presenters );
+		$presenters = \apply_filters( 'wpseo_frontend_presenter_classes', $presenters, $page_type );
 
 		return $presenters;
 	}
@@ -401,6 +502,11 @@ class Front_End_Integration implements Integration_Interface {
 			$presenters = \array_diff( $presenters, $this->singular_presenters );
 		}
 
+		// Filter out `twitter:data` presenters for static home pages.
+		if ( $page_type === 'Static_Home_Page' ) {
+			$presenters = \array_diff( $presenters, $this->slack_presenters );
+		}
+
 		return $presenters;
 	}
 
@@ -422,5 +528,35 @@ class Front_End_Integration implements Integration_Interface {
 		}
 
 		return \array_merge( $presenters, $this->closing_presenters );
+	}
+
+	/**
+	 * Whether the title presenter should be removed.
+	 *
+	 * @return bool True when the title presenter should be removed, false otherwise.
+	 */
+	public function should_title_presenter_be_removed() {
+		return ! \get_theme_support( 'title-tag' ) && ! $this->options->get( 'forcerewritetitle', false );
+	}
+
+	/**
+	 * Checks if the Title presenter needs to be removed.
+	 *
+	 * @param string[] $presenters The presenters.
+	 *
+	 * @return string[] The presenters.
+	 */
+	private function maybe_remove_title_presenter( $presenters ) {
+		// Do not remove the title if we're on a REST request.
+		if ( \wp_is_serving_rest_request() ) {
+			return $presenters;
+		}
+
+		// Remove the title presenter if the theme is hardcoded to output a title tag so we don't have two title tags.
+		if ( $this->should_title_presenter_be_removed() ) {
+			$presenters = \array_diff( $presenters, [ 'Title' ] );
+		}
+
+		return $presenters;
 	}
 }

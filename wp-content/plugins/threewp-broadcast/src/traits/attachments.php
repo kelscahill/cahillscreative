@@ -72,6 +72,59 @@ trait attachments
 	}
 
 	/**
+		@brief		Find an attachment ID from its URL.
+		@see		https://wpscholar.com/blog/get-attachment-id-from-wp-image-url/
+		@since		2022-09-29 19:24:06
+	**/
+	public static function get_attachment_id_from_url( $url )
+	{
+
+		$attachment_id = 0;
+
+		$dir = wp_upload_dir();
+
+		if ( false !== strpos( $url, $dir['baseurl'] . '/' ) ) { // Is URL in uploads directory?
+			$file = basename( $url );
+
+			$query_args = array(
+				'post_type'   => 'attachment',
+				'post_status' => 'inherit',
+				'fields'      => 'ids',
+				'meta_query'  => array(
+					array(
+						'value'   => $file,
+						'compare' => 'LIKE',
+						'key'     => '_wp_attachment_metadata',
+					),
+				)
+			);
+
+			$query = new \WP_Query( $query_args );
+
+			if ( $query->have_posts() ) {
+
+				foreach ( $query->posts as $post_id ) {
+
+					$meta = wp_get_attachment_metadata( $post_id );
+
+					$original_file       = basename( $meta['file'] );
+					$cropped_image_files = wp_list_pluck( $meta['sizes'], 'file' );
+
+					if ( $original_file === $file || in_array( $file, $cropped_image_files ) ) {
+						$attachment_id = $post_id;
+						break;
+					}
+
+				}
+
+			}
+
+		}
+
+		return $attachment_id;
+	}
+
+	/**
 		@brief		threewp_broadcast_apply_existing_attachment_action
 		@since		2015-11-16 14:10:32
 	**/
@@ -244,7 +297,6 @@ trait attachments
 				if ( ! is_array( $terms ) )
 					continue;
 				delete_option( $taxonomy . '_children' );
-				clean_term_cache( '', $taxonomy );
 				$object_terms = [];
 				foreach( $terms as $term )
 					$object_terms []= $term->name;
@@ -463,7 +515,10 @@ trait attachments
 				// Replace escaped URL
 				$content = str_replace( addslashes( $old_guid ), addslashes( $new_guid ), $content, $count );
 				if ( $count > 0 )
-					$this->debug( 'slashes: Modified slashed attachment guid in link: %s times', $count );
+					$this->debug( 'slashes: Modified slashed attachment guid %s with %s in link: %s times',
+						$old_guid,
+						$new_guid,
+						$count );
 
 				// Alternative escapes.
 				$slashed_old_guid = str_replace( '/', '\\/', $old_guid );

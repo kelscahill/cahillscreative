@@ -45,12 +45,12 @@ class Indexable_Post_Type_Presentation extends Indexable_Presentation {
 	/**
 	 * Indexable_Post_Type_Presentation constructor.
 	 *
+	 * @codeCoverageIgnore
+	 *
 	 * @param Post_Type_Helper  $post_type  The post type helper.
 	 * @param Date_Helper       $date       The date helper.
 	 * @param Pagination_Helper $pagination The pagination helper.
 	 * @param Post_Helper       $post       The post helper.
-	 *
-	 * @codeCoverageIgnore
 	 */
 	public function __construct(
 		Post_Type_Helper $post_type,
@@ -74,7 +74,7 @@ class Indexable_Post_Type_Presentation extends Indexable_Presentation {
 			return $this->model->canonical;
 		}
 
-		$permalink = $this->get_permalink();
+		$permalink = $this->permalink;
 
 		// Fix paginated pages canonical, but only if the page is truly paginated.
 		$current_page = $this->pagination->get_current_post_page_number();
@@ -184,14 +184,20 @@ class Indexable_Post_Type_Presentation extends Indexable_Presentation {
 		}
 
 		if ( empty( $open_graph_description ) ) {
+			// The helper applies a filter, but we don't have a default value at this stage so we pass an empty string.
+			$open_graph_description = $this->values_helper->get_open_graph_description( '', $this->model->object_type, $this->model->object_sub_type );
+		}
+
+		if ( empty( $open_graph_description ) ) {
 			$open_graph_description = $this->meta_description;
 		}
 
 		if ( empty( $open_graph_description ) ) {
 			$open_graph_description = $this->post->get_the_excerpt( $this->model->object_id );
+			$open_graph_description = $this->post->strip_shortcodes( $open_graph_description );
 		}
 
-		return $this->post->strip_shortcodes( $open_graph_description );
+		return $open_graph_description;
 	}
 
 	/**
@@ -262,9 +268,8 @@ class Indexable_Post_Type_Presentation extends Indexable_Presentation {
 			/**
 			 * Filter: 'wpseo_opengraph_show_publish_date' - Allow showing publication date for other post types.
 			 *
+			 * @param bool   $show      Whether or not to show publish date.
 			 * @param string $post_type The current URL's post type.
-			 *
-			 * @api bool Whether or not to show publish date.
 			 */
 			if ( ! \apply_filters( 'wpseo_opengraph_show_publish_date', false, $this->post->get_post_type( $this->source ) ) ) {
 				return '';
@@ -380,9 +385,9 @@ class Indexable_Post_Type_Presentation extends Indexable_Presentation {
 		$twitter_creator = \ltrim( \trim( \get_the_author_meta( 'twitter', $this->source->post_author ) ), '@' );
 
 		/**
-		 * Filter: 'wpseo_twitter_creator_account' - Allow changing the Twitter account as output in the Twitter card by Yoast SEO.
+		 * Filter: 'wpseo_twitter_creator_account' - Allow changing the X account as output in the X card by Yoast SEO.
 		 *
-		 * @api string $twitter The twitter account name string.
+		 * @param string $twitter The twitter account name string.
 		 */
 		$twitter_creator = \apply_filters( 'wpseo_twitter_creator_account', $twitter_creator );
 
@@ -401,12 +406,12 @@ class Indexable_Post_Type_Presentation extends Indexable_Presentation {
 	/**
 	 * Wraps the get_paginated_url pagination helper method.
 	 *
+	 * @codeCoverageIgnore A wrapper method.
+	 *
 	 * @param string $url  The un-paginated URL of the current archive.
 	 * @param string $page The page number to add on to $url for the $link tag.
 	 *
 	 * @return string The paginated URL.
-	 *
-	 * @codeCoverageIgnore A wrapper method.
 	 */
 	protected function get_paginated_url( $url, $page ) {
 		return $this->pagination->get_paginated_url( $url, $page, false );

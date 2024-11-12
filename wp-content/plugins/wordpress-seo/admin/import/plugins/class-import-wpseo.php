@@ -174,7 +174,7 @@ class WPSEO_Import_WPSEO extends WPSEO_Plugin_Importer {
 	/**
 	 * Gets the wpSEO robot value and map this to Yoast SEO values.
 	 *
-	 * @param integer $post_id The post id of the current post.
+	 * @param int $post_id The post id of the current post.
 	 *
 	 * @return void
 	 */
@@ -193,7 +193,12 @@ class WPSEO_Import_WPSEO extends WPSEO_Plugin_Importer {
 	 * @return void
 	 */
 	private function import_taxonomy_metas() {
-		$terms    = get_terms( get_taxonomies(), [ 'hide_empty' => false ] );
+		$terms    = get_terms(
+			[
+				'taxonomy'   => get_taxonomies(),
+				'hide_empty' => false,
+			]
+		);
 		$tax_meta = get_option( 'wpseo_taxonomy_meta' );
 
 		foreach ( $terms as $term ) {
@@ -291,7 +296,13 @@ class WPSEO_Import_WPSEO extends WPSEO_Plugin_Importer {
 	 * @return void
 	 */
 	private function cleanup_term_meta() {
-		$terms = get_terms( get_taxonomies(), [ 'hide_empty' => false ] );
+		$terms = get_terms(
+			[
+				'taxonomy'   => get_taxonomies(),
+				'hide_empty' => false,
+			]
+		);
+
 		foreach ( $terms as $term ) {
 			$this->delete_taxonomy_metas( $term->taxonomy, $term->term_id );
 		}

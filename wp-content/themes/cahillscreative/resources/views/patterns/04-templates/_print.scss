@@ -1,0 +1,132 @@
+/* ------------------------------------*\
+    $PRINT STYLES
+\*------------------------------------ */
+
+/* stylelint-disable */
+@media print {
+  .u-print-only {
+    display: block;
+  }
+
+  @page {
+    margin-top: 0.5in;
+    margin-bottom: 0.5in;
+    margin-left: 0.5in;
+    margin-right: 0.5in;
+  }
+
+  body {
+    max-height: fit-content;
+    background: white;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  main {
+    overflow: hidden;
+    background-color: $c-white;
+  }
+
+  .c-content-single-plans {
+    background: white;
+    margin-top: 0;
+  }
+
+  .c-content-single-plans__container {
+    > .c-page-header {
+      margin-bottom: $space !important;
+    }
+  }
+
+  nav {
+    display: none;
+  }
+
+  .c-header {
+    position: relative;
+
+    &::before {
+      background-color: $c-white;
+    }
+  }
+
+  .c-stats + picture {
+    max-width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .o-dek {
+    @include body-copy;
+    max-width: 75%;
+  }
+
+  .o-link--small {
+    text-decoration: none;
+
+    &::after {
+      content: ": " attr(href);
+      color: $c-black;
+      display: inline-flex;
+      text-decoration: none;
+      border: none;
+      text-align: left;
+    }
+  }
+
+  .c-accordion__heading {
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+
+  .c-intro + .c-content-single-plans__header,
+  #material-list {
+    page-break-before: always;
+  }
+
+  #instructions {
+    page-break-inside: auto;
+
+    .c-accordion__heading {
+      display: none;
+    }
+  }
+
+  .c-accordion__item,
+  .o-figure,
+  table,
+  .c-steps__item {
+    page-break-inside: avoid;
+  }
+
+  .c-intro {
+    &__signature {
+      max-width: 2in !important;
+    }
+
+    .o-icon {
+      display: none;
+    }
+  }
+
+  .c-checkbox-list__item label {
+    page-break-inside: avoid;
+    flex-direction: column;
+    align-items: flex-start;
+    font-weight: 500;
+
+    .o-link {
+      content: "";
+      font-weight: normal;
+      margin-top: -5px;
+      margin-left: 0;
+      font-style: italic;
+      font-size: 6pt;
+      text-align: left;
+    }
+  }
+}

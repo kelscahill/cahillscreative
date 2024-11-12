@@ -5,6 +5,8 @@
  * @package WPSEO\Admin\Menu
  */
 
+use Yoast\WP\SEO\Promotions\Application\Promotion_Manager;
+
 /**
  * Admin menu base class.
  */
@@ -36,10 +38,10 @@ abstract class WPSEO_Base_Menu implements WPSEO_WordPress_Integration {
 	/**
 	 * Creates a submenu formatted array.
 	 *
-	 * @param string     $page_title Page title to use.
-	 * @param string     $page_slug  Page slug to use.
-	 * @param callable   $callback   Optional. Callback which handles the page request.
-	 * @param callable[] $hook       Optional. Hook to trigger when the page is registered.
+	 * @param string          $page_title Page title to use.
+	 * @param string          $page_slug  Page slug to use.
+	 * @param callable|null   $callback   Optional. Callback which handles the page request.
+	 * @param callable[]|null $hook       Optional. Hook to trigger when the page is registered.
 	 *
 	 * @return array Formatted submenu.
 	 */
@@ -92,12 +94,6 @@ abstract class WPSEO_Base_Menu implements WPSEO_WordPress_Integration {
 
 		// Loop through submenu pages and add them.
 		array_walk( $submenu_pages, [ $this, 'register_submenu_page' ] );
-
-		// Set the first submenu title to the title of the first submenu page.
-		global $submenu;
-		if ( isset( $submenu[ $this->get_page_identifier() ] ) && $this->check_manage_capability() ) {
-			$submenu[ $this->get_page_identifier() ][0][0] = $submenu_pages[0][2];
-		}
 	}
 
 	/**
@@ -137,7 +133,7 @@ abstract class WPSEO_Base_Menu implements WPSEO_WordPress_Integration {
 			$submenu_page[4],
 			$submenu_page[5],
 			$this->get_icon_svg(),
-			'99.31337'
+			99
 		);
 
 		// If necessary, add hooks for the submenu page.
@@ -186,9 +182,6 @@ abstract class WPSEO_Base_Menu implements WPSEO_WordPress_Integration {
 		}
 
 		$page_title .= ' - Yoast SEO';
-
-		// Force the general manage capability to be used.
-		$submenu_page[3] = $this->get_manage_capability();
 
 		// Register submenu page.
 		$hook_suffix = add_submenu_page(
@@ -264,7 +257,11 @@ abstract class WPSEO_Base_Menu implements WPSEO_WordPress_Integration {
 		static $title = null;
 
 		if ( $title === null ) {
-			$title = __( 'Premium', 'wordpress-seo' );
+			$title = __( 'Upgrades', 'wordpress-seo' );
+		}
+
+		if ( YoastSEO()->classes->get( Promotion_Manager::class )->is( 'black-friday-2024-promotion' ) && ! YoastSEO()->helpers->product->is_premium() ) {
+			$title = __( 'Upgrades', 'wordpress-seo' ) . '<span class="yoast-menu-bf-sale-badge">' . __( '30% OFF', 'wordpress-seo' ) . '</span>';
 		}
 
 		return $title;

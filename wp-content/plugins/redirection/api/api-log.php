@@ -104,7 +104,7 @@ class Redirection_Api_Log extends Redirection_Api_Filter_Route {
 	/**
 	 * Log API endpoint constructor
 	 *
-	 * @param String $namespace Namespace.
+	 * @param string $namespace Namespace.
 	 */
 	public function __construct( $namespace ) {
 		$orders = [ 'url', 'ip', 'total', 'count', '' ];
@@ -179,7 +179,7 @@ class Redirection_Api_Log extends Redirection_Api_Filter_Route {
 					$delete_by = 'url-exact';
 
 					if ( in_array( $params['groupBy'], [ 'ip', 'agent' ], true ) ) {
-						$delete_by = $params['groupBy'];
+						$delete_by = sanitize_text_field( $params['groupBy'] );
 					}
 
 					Red_Redirect_Log::delete_all( [ 'filterBy' => [ $delete_by => $item ] ] );
@@ -194,7 +194,7 @@ class Redirection_Api_Log extends Redirection_Api_Filter_Route {
 
 	private function get_logs( array $params ) {
 		if ( isset( $params['groupBy'] ) && in_array( $params['groupBy'], [ 'ip', 'url', 'agent' ], true ) ) {
-			return Red_Redirect_Log::get_grouped( $params['groupBy'], $params );
+			return Red_Redirect_Log::get_grouped( sanitize_text_field( $params['groupBy'] ), $params );
 		}
 
 		return Red_Redirect_Log::get_filtered( $params );

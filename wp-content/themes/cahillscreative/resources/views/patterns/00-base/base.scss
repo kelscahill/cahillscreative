@@ -1,0 +1,76 @@
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+body {
+  font-family: $font-body;
+  font-size: $body-font-size;
+  font-weight: 300;
+  background: $c-white;
+  color: $c-black;
+  overflow-x: hidden;
+
+  &::before {
+    content: "";
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    opacity: 0;
+    visibility: hidden;
+    background: white;
+    z-index: 99;
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    transition: $transition-all;
+  }
+
+  &::after {
+    content: "";
+    display: block;
+    width: 1px;
+    height: 100vh;
+    background-color: $c-gray;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    z-index: -1;
+  }
+}
+
+body a {
+  text-decoration: none;
+  transition: $transition-all;
+  color: inherit;
+
+  svg path {
+    fill: currentcolor;
+  }
+}
+
+img,
+video,
+object,
+svg,
+iframe {
+  max-width: 100%;
+  border: none;
+  display: block;
+}
+
+strong,
+b {
+  font-weight: 500;
+}

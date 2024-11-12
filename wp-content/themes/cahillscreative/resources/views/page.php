@@ -21,8 +21,15 @@
  * @since    Timber 0.1
  */
 
-$context = Timber::get_context();
-$post = new TimberPost();
+$context = Timber::context();
+$post = Timber::get_post();
 $context['post'] = $post;
-$context['posts'] = false;
-Timber::render(array('04-pages/page-' . $post->post_name . '.twig', '04-pages/page.twig'), $context);
+
+if (get_field('title')) {
+  $context['heading'] = get_field('title', $post->ID);
+}
+
+Timber::render(array(
+  '05-pages/page-types/page-' . $post->post_name . '.twig',
+  '05-pages/page-types/page.twig'
+), $context);

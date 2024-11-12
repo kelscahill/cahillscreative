@@ -9,12 +9,71 @@ namespace threewp_broadcast;
 class gutenberg
 {
 	/**
+		@brief		The default block parsing options.
+		@since		2023-02-15 22:01:58
+	**/
+	public $parse_options = [];
+
+	/**
+		@brief		The default block rendering options.
+		@since		2023-02-16 18:42:02
+	**/
+	public $render_options = [];
+
+	/**
+		@brief		Constructor.
+		@since		2023-02-15 22:02:09
+	**/
+	public function __construct()
+	{
+		$this->parse_options = [
+			/**
+				@brief		Detect whether to stripslashes from the attributes.
+				@details	true = always
+							false = never
+							null = detect
+				@since		2020-02-13 16:00:06
+			**/
+			'stripslashes' => null,
+		];
+
+		$this->render_options = [
+			'force_json_options' => false,
+			'json_options' => JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT,
+		];
+	}
+
+	/**
+		@brief		Convenience method to find all blocks of a specific type.
+		@since		2023-02-15 22:00:12
+	**/
+	public function find_blocks_by_name( String $name, $content )
+	{
+		$blocks = static::parse_blocks( $content, $this->parse_options );
+
+		foreach( $blocks as $index => $block )
+		{
+			if ( $block[ 'blockName' ] != $name )
+				unset( $blocks[ $index ] );
+		}
+
+		return $blocks;
+	}
+
+	/**
 		@brief		Return an array of gutenberg blocks.
 		@since		2019-07-19 16:44:16
 	**/
 	public static function parse_blocks( $content, $options = [] )
 	{
 		$options = array_merge( [
+			/**
+				@brief		Debug output the blocks for this content ID.
+				@details	Replace false with the id of the content, like "post_content".
+				@see		actions/preparse_content
+				@since		2024-06-19 21:42:54
+			**/
+			'dump_blocks_once' => false,
 			/**
 				@brief		Detect whether to stripslashes from the attributes.
 				@details	true = always
@@ -66,6 +125,21 @@ class gutenberg
 				'original' => $matches[ 0 ][ $index ],
 			];
 		}
+
+		if ( $options[ 'dump_blocks_once' ] !== false )
+			if ( count( $blocks ) > 0 )
+			{
+				$marker = $options[ 'dump_blocks_once' ];
+				$key = 'gutenberg_dump_block_once_' .  $marker;
+				// We store the dump marker in the broadcasting data.
+				// Fetch the latest broadcasting data.
+				$bcd = end( ThreeWP_Broadcast()->broadcasting );
+				if ( ! $bcd->dynamic_data->has( $key ) )
+				{
+					$bcd->dynamic_data->set( $key, true );
+					ThreeWP_Broadcast()->debug( 'Blocks in %s: %s', $marker, $blocks );
+				}
+			}
 		return $blocks;
 	}
 
@@ -77,6 +151,7 @@ class gutenberg
 	public static function render_block( $block, $options = [] )
 	{
 		$options = array_merge( [
+			'force_json_options' => false,
 			'json_options' => JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT,
 		], $options );
 		$options = ( object ) $options;
@@ -93,7 +168,7 @@ class gutenberg
 
 		// Fancy encode?
 		$json_options = 0;
-		if ( static::string_has_unicode( $block[ 'original' ] ) )
+		if ( $options->force_json_options || static::string_has_unicode( $block[ 'original' ] ) )
 			$json_options = $options->json_options;
 
 		return sprintf( "<!-- wp:%s %s -->",

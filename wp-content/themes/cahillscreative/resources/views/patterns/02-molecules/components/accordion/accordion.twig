@@ -1,0 +1,99 @@
+{% set base_class = accordion.base_class|default('c-accordion') %}
+
+{% if accordion.items %}
+  <section{{ accordion.anchor ? ' id="' ~ accordion.anchor ~ '"'}} class="{{ bem_classes(base_class, accordion.element, accordion.modifiers, accordion.extra) }} u-spacing{{ accordion.expanded or user_logged_in ? ' is-open' }}">
+    {% include "@organisms/sections/page-headers/page-header.twig" with {
+      "page_header": {
+        "icon": {
+          "type": accordion.header.icon_type,
+          "name": accordion.header.icon_name,
+          "image": accordion.header.icon_image
+        },
+        "kicker": accordion.header.kicker,
+        "heading": accordion.header.title,
+        "dek": accordion.header.description,
+        "extra": bem_classes(base_class, 'header')
+      }
+    } %}
+    <div class="{{ bem_classes(base_class, 'items') }} l-container--m">
+      {% for item in accordion.items %}
+        <div {{ item.title ? 'id="' ~ item.title|lower|replace({' ':'-','/':'-','\'':''}) ~ '" ' }}class="{{ bem_classes(base_class, 'item') }} {{ 'c-accordion__item--' ~ loop.index }}">
+          {% include "@atoms/text/heading/heading.twig" with {
+            "heading": {
+              "level": "3",
+              "size": accordion.heading_size ? accordion.heading_size : "m",
+              "type": accordion.heading_type ? accordion.heading_type : "primary",
+              "text": item.title,
+              "extra": [bem_classes(base_class, 'heading'), "js-toggle-parent"]
+            }
+          } %}
+          <div class="{{ bem_classes(base_class, 'body') }} u-spacing js-gallery-accordion">
+            {% if loop.index == 2 and ads != false %}
+              {% include "@atoms/ads/ad.twig" with {
+                "ad": {
+                  "snippet": options.ad_sidebar_1,
+                  "modifiers": "sidebar"
+                }
+              } %}
+            {% endif %}
+            {% if loop.index  == 4 and ads != false %}
+              {% include "@atoms/ads/ad.twig" with {
+                "ad": {
+                  "snippet": options.ad_sidebar_2,
+                  "modifiers": "sidebar"
+                }
+              } %}
+            {% endif %}
+            {% include "@atoms/text/rich-text/rich-text.twig" with {
+              "rich_text": {
+                "text": item.body
+              }
+            } %}
+            {% if item.checkboxes_style == 'table' %}
+              {% include "@molecules/components/checkbox-table/checkbox-table.twig" with {
+                "checkbox_table_header": item.checkboxes_table_header,
+                "checkbox_table": item.checkboxes,
+                "id": 'accordion-' ~ post.slug ~ '-' ~ loop.index
+              } %}
+            {% else %}
+              {% include "@molecules/components/checkbox-list/checkbox-list.twig" with {
+                "checkbox_list": item.checkboxes,
+                "id": 'accordion-' ~ post.slug ~ '-' ~ loop.index
+              } %}
+            {% endif %}
+            {% include "@molecules/components/steps/steps.twig" with {
+              "steps": {
+                "items": item.steps
+              }
+            } %}
+            {% if loop.index  == 1 and ads != false %}
+              {% include "@atoms/ads/ad.twig" with {
+                "ad": {
+                  "snippet": options.ad_content_1,
+                  "modifiers": "step"
+                }
+              } %}
+            {% endif %}
+            {% if loop.index  == 3 and ads != false %}
+              {% include "@atoms/ads/ad.twig" with {
+                "ad": {
+                  "snippet": options.ad_content_3,
+                  "modifiers": "step"
+                }
+              } %}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% include "@atoms/buttons/button.twig" with {
+      "button": {
+        "text": cards.header.button.title,
+        "url": cards.header.button.url,
+        "target": cards.header.button.target,
+        "extra": bem_classes(base_class, 'button'),
+        "modifiers": ["secondary", "center"]
+      }
+    } %}
+  </section>
+{% endif %}

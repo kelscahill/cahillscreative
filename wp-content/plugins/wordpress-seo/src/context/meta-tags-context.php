@@ -6,6 +6,7 @@ use WP_Block_Parser_Block;
 use WP_Post;
 use WPSEO_Replace_Vars;
 use Yoast\WP\SEO\Config\Schema_IDs;
+use Yoast\WP\SEO\Config\Schema_Types;
 use Yoast\WP\SEO\Helpers\Image_Helper;
 use Yoast\WP\SEO\Helpers\Indexable_Helper;
 use Yoast\WP\SEO\Helpers\Options_Helper;
@@ -24,25 +25,36 @@ use Yoast\WP\SEO\Repositories\Indexable_Repository;
  *
  * Class that contains all relevant data for rendering the meta tags.
  *
- * @property string       $canonical
- * @property string       $title
- * @property string       $description
- * @property string       $id
- * @property string       $site_name
- * @property string       $wordpress_site_name
- * @property string       $site_url
- * @property string       $company_name
- * @property int          $company_logo_id
- * @property int          $site_user_id
- * @property string       $site_represents
- * @property array|false  $site_represents_reference
- * @property string       schema_page_type
- * @property string       $main_schema_id
- * @property string|array $main_entity_of_page
- * @property bool         $open_graph_enabled
- * @property string       $open_graph_publisher
- * @property string       $twitter_card
- * @property string       $page_type
+ * @property string          $canonical
+ * @property string          $permalink
+ * @property string          $title
+ * @property string          $description
+ * @property string          $id
+ * @property string          $site_name
+ * @property string          $alternate_site_name
+ * @property string          $wordpress_site_name
+ * @property string          $site_url
+ * @property string          $company_name
+ * @property string          $company_alternate_name
+ * @property int             $company_logo_id
+ * @property array           $company_logo_meta
+ * @property int             $person_logo_id
+ * @property array           $person_logo_meta
+ * @property int             $site_user_id
+ * @property string          $site_represents
+ * @property array|false     $site_represents_reference
+ * @property string|string[] $schema_page_type
+ * @property string|string[] $schema_article_type      Represents the type of article.
+ * @property string          $main_schema_id
+ * @property string|array    $main_entity_of_page
+ * @property bool            $open_graph_enabled
+ * @property string          $open_graph_publisher
+ * @property string          $twitter_card
+ * @property string          $page_type
+ * @property bool            $has_article
+ * @property bool            $has_image
+ * @property int             $main_image_id
+ * @property string          $main_image_url
  */
 class Meta_Tags_Context extends Abstract_Presentation {
 
@@ -75,11 +87,11 @@ class Meta_Tags_Context extends Abstract_Presentation {
 	public $presentation;
 
 	/**
-	 * Whether or not the indexable has an image.
+	 * Determines whether we have an Article piece. Set to true by the Article piece itself.
 	 *
 	 * @var bool
 	 */
-	public $has_image = false;
+	public $has_article = false;
 
 	/**
 	 * The options helper.
@@ -217,6 +229,19 @@ class Meta_Tags_Context extends Abstract_Presentation {
 	}
 
 	/**
+	 * Generates the permalink.
+	 *
+	 * @return string
+	 */
+	public function generate_permalink() {
+		if ( ! \is_search() ) {
+			return $this->presentation->permalink;
+		}
+
+		return \add_query_arg( 's', \rawurlencode( \get_search_query() ), \trailingslashit( $this->site_url ) );
+	}
+
+	/**
 	 * Generates the id.
 	 *
 	 * @return string the id
@@ -237,6 +262,15 @@ class Meta_Tags_Context extends Abstract_Presentation {
 		}
 
 		return \get_bloginfo( 'name' );
+	}
+
+	/**
+	 * Generates the alternate site name.
+	 *
+	 * @return string The alternate site name.
+	 */
+	public function generate_alternate_site_name() {
+		return (string) $this->options->get( 'alternate_website_name', '' );
 	}
 
 	/**
@@ -272,9 +306,65 @@ class Meta_Tags_Context extends Abstract_Presentation {
 		/**
 		 * Filter: 'wpseo_schema_company_name' - Allows filtering company name
 		 *
-		 * @api string $company_name.
+		 * @param string $company_name.
 		 */
-		return \apply_filters( 'wpseo_schema_company_name', $this->options->get( 'company_name' ) );
+		$company_name = \apply_filters( 'wpseo_schema_company_name', $this->options->get( 'company_name' ) );
+
+		if ( empty( $company_name ) ) {
+			$company_name = $this->site_name;
+		}
+
+		return $company_name;
+	}
+
+	/**
+	 * Generates the alternate company name.
+	 *
+	 * @return string
+	 */
+	public function generate_company_alternate_name() {
+		return (string) $this->options->get( 'company_alternate_name' );
+	}
+
+	/**
+	 * Generates the person logo id.
+	 *
+	 * @return int|bool The company logo id.
+	 */
+	public function generate_person_logo_id() {
+		$person_logo_id = $this->image->get_attachment_id_from_settings( 'person_logo' );
+
+		if ( empty( $person_logo_id ) ) {
+			$person_logo_id = $this->fallback_to_site_logo();
+		}
+
+		/**
+		 * Filter: 'wpseo_schema_person_logo_id' - Allows filtering person logo id.
+		 *
+		 * @param int $person_logo_id.
+		 */
+		return \apply_filters( 'wpseo_schema_person_logo_id', $person_logo_id );
+	}
+
+	/**
+	 * Retrieve the person logo meta.
+	 *
+	 * @return array<string|array<int>>|bool
+	 */
+	public function generate_person_logo_meta() {
+		$person_logo_meta = $this->image->get_attachment_meta_from_settings( 'person_logo' );
+
+		if ( empty( $person_logo_meta ) ) {
+			$person_logo_id   = $this->fallback_to_site_logo();
+			$person_logo_meta = $this->image->get_best_attachment_variation( $person_logo_id );
+		}
+
+		/**
+		 * Filter: 'wpseo_schema_person_logo_meta' - Allows filtering person logo meta.
+		 *
+		 * @param string $person_logo_meta.
+		 */
+		return \apply_filters( 'wpseo_schema_person_logo_meta', $person_logo_meta );
 	}
 
 	/**
@@ -285,12 +375,32 @@ class Meta_Tags_Context extends Abstract_Presentation {
 	public function generate_company_logo_id() {
 		$company_logo_id = $this->image->get_attachment_id_from_settings( 'company_logo' );
 
+		if ( empty( $company_logo_id ) ) {
+			$company_logo_id = $this->fallback_to_site_logo();
+		}
+
 		/**
-		 * Filter: 'wpseo_schema_company_logo_id' - Allows filtering company logo id
+		 * Filter: 'wpseo_schema_company_logo_id' - Allows filtering company logo id.
 		 *
-		 * @api integer $company_logo_id.
+		 * @param int $company_logo_id.
 		 */
 		return \apply_filters( 'wpseo_schema_company_logo_id', $company_logo_id );
+	}
+
+	/**
+	 * Retrieve the company logo meta.
+	 *
+	 * @return array<string|array<int>>|bool
+	 */
+	public function generate_company_logo_meta() {
+		$company_logo_meta = $this->image->get_attachment_meta_from_settings( 'company_logo' );
+
+		/**
+		 * Filter: 'wpseo_schema_company_logo_meta' - Allows filtering company logo meta.
+		 *
+		 * @param string $company_logo_meta.
+		 */
+		return \apply_filters( 'wpseo_schema_company_logo_meta', $company_logo_meta );
 	}
 
 	/**
@@ -339,7 +449,7 @@ class Meta_Tags_Context extends Abstract_Presentation {
 	/**
 	 * Returns the site represents reference.
 	 *
-	 * @return array|bool The site represents reference. False if none.
+	 * @return array<string>|bool The site represents reference. False if none.
 	 */
 	public function generate_site_represents_reference() {
 		if ( $this->site_represents === 'person' ) {
@@ -383,13 +493,13 @@ class Meta_Tags_Context extends Abstract_Presentation {
 	 * @return string The twitter card type.
 	 */
 	public function generate_twitter_card() {
-		return $this->options->get( 'twitter_card_type' );
+		return 'summary_large_image';
 	}
 
 	/**
 	 * Returns the schema page type.
 	 *
-	 * @return string|array The schema page type.
+	 * @return string|array<string> The schema page type.
 	 */
 	public function generate_schema_page_type() {
 		switch ( $this->indexable->object_type ) {
@@ -431,7 +541,7 @@ class Meta_Tags_Context extends Abstract_Presentation {
 		/**
 		 * Filter: 'wpseo_schema_webpage_type' - Allow changing the WebPage type.
 		 *
-		 * @api string|array $type The WebPage type.
+		 * @param string|array $type The WebPage type.
 		 */
 		return \apply_filters( 'wpseo_schema_webpage_type', $type );
 	}
@@ -439,12 +549,30 @@ class Meta_Tags_Context extends Abstract_Presentation {
 	/**
 	 * Returns the schema article type.
 	 *
-	 * @return string|array The schema article type.
+	 * @return string|array<string> The schema article type.
 	 */
 	public function generate_schema_article_type() {
 		$additional_type = $this->indexable->schema_article_type;
 		if ( \is_null( $additional_type ) ) {
 			$additional_type = $this->options->get( 'schema-article-type-' . $this->indexable->object_sub_type );
+		}
+
+		/** This filter is documented in inc/options/class-wpseo-option-titles.php */
+		$allowed_article_types = \apply_filters( 'wpseo_schema_article_types', Schema_Types::ARTICLE_TYPES );
+
+		if ( ! \array_key_exists( $additional_type, $allowed_article_types ) ) {
+			$additional_type = $this->options->get_title_default( 'schema-article-type-' . $this->indexable->object_sub_type );
+		}
+
+		// If the additional type is a subtype of Article, we're fine, and we can bail here.
+		if ( \stripos( $additional_type, 'Article' ) !== false ) {
+			/**
+			 * Filter: 'wpseo_schema_article_type' - Allow changing the Article type.
+			 *
+			 * @param string|string[] $type      The Article type.
+			 * @param Indexable       $indexable The indexable.
+			 */
+			return \apply_filters( 'wpseo_schema_article_type', $additional_type, $this->indexable );
 		}
 
 		$type = 'Article';
@@ -461,12 +589,7 @@ class Meta_Tags_Context extends Abstract_Presentation {
 			$type = [ $type, $additional_type ];
 		}
 
-		/**
-		 * Filter: 'wpseo_schema_article_type' - Allow changing the Article type.
-		 *
-		 * @param string|string[] $type      The Article type.
-		 * @param Indexable       $indexable The indexable.
-		 */
+		// Filter documented on line 499 above.
 		return \apply_filters( 'wpseo_schema_article_type', $type, $this->indexable );
 	}
 
@@ -474,15 +597,85 @@ class Meta_Tags_Context extends Abstract_Presentation {
 	 * Returns the main schema id.
 	 *
 	 * The main schema id.
+	 *
+	 * @return string
 	 */
 	public function generate_main_schema_id() {
-		return $this->canonical . Schema_IDs::WEBPAGE_HASH;
+		return $this->permalink;
+	}
+
+	/**
+	 * Retrieves the main image URL. This is the featured image by default.
+	 *
+	 * @return string|null The main image URL.
+	 */
+	public function generate_main_image_url() {
+		if ( $this->main_image_id !== null ) {
+			return $this->image->get_attachment_image_url( $this->main_image_id, 'full' );
+		}
+
+		if ( \wp_is_serving_rest_request() ) {
+			return $this->get_main_image_url_for_rest_request();
+		}
+
+		if ( ! \is_singular() ) {
+			return null;
+		}
+
+		$url = $this->image->get_post_content_image( $this->id );
+		if ( $url === '' ) {
+			return null;
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Generates the main image ID.
+	 *
+	 * @return int|null The main image ID.
+	 */
+	public function generate_main_image_id() {
+		if ( \wp_is_serving_rest_request() ) {
+			return $this->get_main_image_id_for_rest_request();
+		}
+
+		switch ( true ) {
+			case \is_singular():
+				return $this->get_singular_post_image( $this->id );
+			case \is_author():
+			case \is_tax():
+			case \is_tag():
+			case \is_category():
+			case \is_search():
+			case \is_date():
+			case \is_post_type_archive():
+				if ( ! empty( $GLOBALS['wp_query']->posts ) ) {
+					if ( $GLOBALS['wp_query']->get( 'fields', 'all' ) === 'ids' ) {
+						return $this->get_singular_post_image( $GLOBALS['wp_query']->posts[0] );
+					}
+
+					return $this->get_singular_post_image( $GLOBALS['wp_query']->posts[0]->ID );
+				}
+				return null;
+			default:
+				return null;
+		}
+	}
+
+	/**
+	 * Determines whether the current indexable has an image.
+	 *
+	 * @return bool Whether the current indexable has an image.
+	 */
+	public function generate_has_image() {
+		return $this->main_image_url !== null;
 	}
 
 	/**
 	 * Strips all nested dependencies from the debug info.
 	 *
-	 * @return array
+	 * @return array<Indexable,Indexable_Presentation>
 	 */
 	public function __debugInfo() {
 		return [
@@ -491,31 +684,80 @@ class Meta_Tags_Context extends Abstract_Presentation {
 		];
 	}
 
-	/* ********************* DEPRECATED METHODS ********************* */
+	/**
+	 * Retrieve the site logo ID from WordPress settings.
+	 *
+	 * @return false|int
+	 */
+	public function fallback_to_site_logo() {
+		$logo_id = \get_option( 'site_logo' );
+		if ( ! $logo_id ) {
+			$logo_id = \get_theme_mod( 'custom_logo', false );
+		}
+
+		return $logo_id;
+	}
 
 	/**
-	 * Generates whether or not breadcrumbs are enabled.
+	 * Get the ID for a post's featured image.
 	 *
-	 * @codeCoverageIgnore
+	 * @param int $id Post ID.
 	 *
-	 * @return bool Whether or not breadcrumbs are enabled.
-	 *
-	 * @deprecated 15.8
+	 * @return int|null
 	 */
-	public function generate_breadcrumbs_enabled() {
-		_deprecated_function( __METHOD__, 'WPSEO 15.8' );
-		$breadcrumbs_enabled = \current_theme_supports( 'yoast-seo-breadcrumbs' );
-		if ( ! $breadcrumbs_enabled ) {
-			$breadcrumbs_enabled = $this->options->get( 'breadcrumbs-enable', false );
+	private function get_singular_post_image( $id ) {
+		if ( \has_post_thumbnail( $id ) ) {
+			$thumbnail_id = \get_post_thumbnail_id( $id );
+			// Prevent returning something else than an int or null.
+			if ( \is_int( $thumbnail_id ) && $thumbnail_id > 0 ) {
+				return $thumbnail_id;
+			}
 		}
 
-		if ( ! empty( $this->blocks['yoast-seo/breadcrumbs'] ) ) {
-			$breadcrumbs_enabled = true;
+		if ( \is_singular( 'attachment' ) ) {
+			return \get_query_var( 'attachment_id' );
 		}
 
-		return $breadcrumbs_enabled;
+		return null;
+	}
+
+	/**
+	 * Gets the main image ID for REST requests.
+	 *
+	 * @return int|null The main image ID.
+	 */
+	private function get_main_image_id_for_rest_request() {
+		switch ( $this->page_type ) {
+			case 'Post_Type':
+				if ( $this->post instanceof WP_Post ) {
+					return $this->get_singular_post_image( $this->post->ID );
+				}
+				return null;
+			default:
+				return null;
+		}
+	}
+
+	/**
+	 * Gets the main image URL for REST requests.
+	 *
+	 * @return string|null The main image URL.
+	 */
+	private function get_main_image_url_for_rest_request() {
+		switch ( $this->page_type ) {
+			case 'Post_Type':
+				if ( $this->post instanceof WP_Post ) {
+					$url = $this->image->get_post_content_image( $this->post->ID );
+					if ( $url === '' ) {
+						return null;
+					}
+					return $url;
+				}
+				return null;
+			default:
+				return null;
+		}
 	}
 }
 
 \class_alias( Meta_Tags_Context::class, 'WPSEO_Schema_Context' );
-

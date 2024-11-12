@@ -1,0 +1,15 @@
+.c-checkbox-table {
+  input[type="checkbox"]  {
+    margin: auto;
+  }
+
+  .o-link {
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  th:first-of-type,
+  td:first-of-type {
+    width: calc(#{$space} * 2 + 2px);
+  }
+}

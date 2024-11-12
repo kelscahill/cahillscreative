@@ -42,11 +42,11 @@ class Red_Group {
 	/**
 	 * Constructor
 	 *
-	 * @param String|Object $values Values.
+	 * @param string|Object $values Values.
 	 */
 	public function __construct( $values = '' ) {
 		if ( is_object( $values ) ) {
-			$this->name = $values->name;
+			$this->name = sanitize_text_field( $values->name );
 			$this->id = intval( $values->id, 10 );
 
 			if ( isset( $values->module_id ) ) {
@@ -97,10 +97,17 @@ class Red_Group {
 	 * @return Red_Group|boolean
 	 */
 	public static function get( $id ) {
+		static $groups = [];
 		global $wpdb;
 
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT {$wpdb->prefix}redirection_groups.*,COUNT( {$wpdb->prefix}redirection_items.id ) AS items,SUM( {$wpdb->prefix}redirection_items.last_count ) AS redirects FROM {$wpdb->prefix}redirection_groups LEFT JOIN {$wpdb->prefix}redirection_items ON {$wpdb->prefix}redirection_items.group_id={$wpdb->prefix}redirection_groups.id WHERE {$wpdb->prefix}redirection_groups.id=%d GROUP BY {$wpdb->prefix}redirection_groups.id", $id ) );
+		if ( isset( $groups[ $id ] ) ) {
+			$row = $groups[ $id ];
+		} else {
+			$row = $wpdb->get_row( $wpdb->prepare( "SELECT {$wpdb->prefix}redirection_groups.*,COUNT( {$wpdb->prefix}redirection_items.id ) AS items,SUM( {$wpdb->prefix}redirection_items.last_count ) AS redirects FROM {$wpdb->prefix}redirection_groups LEFT JOIN {$wpdb->prefix}redirection_items ON {$wpdb->prefix}redirection_items.group_id={$wpdb->prefix}redirection_groups.id WHERE {$wpdb->prefix}redirection_groups.id=%d GROUP BY {$wpdb->prefix}redirection_groups.id", $id ) );
+		}
+
 		if ( $row ) {
+			$groups[ $id ] = $row;
 			return new Red_Group( $row );
 		}
 
@@ -171,7 +178,8 @@ class Red_Group {
 	public static function create( $name, $module_id, $enabled = true ) {
 		global $wpdb;
 
-		$name = trim( substr( $name, 0, 50 ) );
+		$name = trim( wp_kses( sanitize_text_field( $name ), 'strip' ) );
+		$name = substr( $name, 0, 50 );
 		$module_id = intval( $module_id, 10 );
 
 		if ( $name !== '' && Red_Module::is_valid_id( $module_id ) ) {
@@ -196,7 +204,8 @@ class Red_Group {
 		global $wpdb;
 
 		$old_id = $this->module_id;
-		$this->name = trim( wp_kses( $data['name'], array() ) );
+		$this->name = trim( wp_kses( sanitize_text_field( $data['name'] ), 'strip' ) );
+		$this->name = substr( $this->name, 0, 50 );
 
 		if ( Red_Module::is_valid_id( intval( $data['moduleId'], 10 ) ) ) {
 			$this->module_id = intval( $data['moduleId'], 10 );
@@ -360,6 +369,9 @@ class Red_Group_Filters {
 		global $wpdb;
 
 		foreach ( $filter_params as $filter_by => $filter ) {
+			$filter_by = sanitize_text_field( $filter_by );
+			$filter = sanitize_text_field( $filter );
+
 			if ( $filter_by === 'status' ) {
 				if ( $filter === 'enabled' ) {
 					$this->filters[] = "status='enabled'";

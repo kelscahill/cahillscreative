@@ -10,11 +10,18 @@ use Yoast\WP\SEO\Presenters\Abstract_Indexable_Tag_Presenter;
 class Article_Modified_Time_Presenter extends Abstract_Indexable_Tag_Presenter {
 
 	/**
+	 * The tag key name.
+	 *
+	 * @var string
+	 */
+	protected $key = 'article:modified_time';
+
+	/**
 	 * The tag format including placeholders.
 	 *
 	 * @var string
 	 */
-	protected $tag_format = '<meta property="article:modified_time" content="%s" />';
+	protected $tag_format = self::META_PROPERTY_CONTENT;
 
 	/**
 	 * Gets the raw value of a presentation.

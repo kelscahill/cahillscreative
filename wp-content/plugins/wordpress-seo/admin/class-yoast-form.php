@@ -6,6 +6,7 @@
  */
 
 use Yoast\WP\SEO\Presenters\Admin\Light_Switch_Presenter;
+use Yoast\WP\SEO\Presenters\Admin\Sidebar_Presenter;
 
 /**
  * Admin form class.
@@ -17,7 +18,7 @@ class Yoast_Form {
 	/**
 	 * Instance of this class
 	 *
-	 * @var object
+	 * @var Yoast_Form
 	 * @since 2.0
 	 */
 	public static $instance;
@@ -62,6 +63,8 @@ class Yoast_Form {
 	 * @param string $option           The short name of the option to use for the current page.
 	 * @param bool   $contains_files   Whether the form should allow for file uploads.
 	 * @param bool   $option_long_name Group name of the option.
+	 *
+	 * @return void
 	 */
 	public function admin_header( $form = true, $option = 'wpseo', $contains_files = false, $option_long_name = false ) {
 		if ( ! $option_long_name ) {
@@ -79,6 +82,7 @@ class Yoast_Form {
 		require_once ABSPATH . 'wp-admin/options-head.php';
 		?>
 		<h1 id="wpseo-title"><?php echo esc_html( get_admin_page_title() ); ?></h1>
+		<div id="yst-settings-header-root"></div>
 		<div class="wpseo_content_wrapper">
 		<div class="wpseo_content_cell" id="wpseo_content_top">
 		<?php
@@ -95,12 +99,12 @@ class Yoast_Form {
 				$hidden_fields_cb = 'settings_fields';
 			}
 
-			echo '<form action="' .
-				esc_url( $action_url ) .
-				'" method="post" id="wpseo-conf"' .
-				$enctype . ' accept-charset="' .
-				esc_attr( get_bloginfo( 'charset' ) ) .
-				'" novalidate="novalidate">';
+			echo '<form action="'
+				. esc_url( $action_url )
+				. '" method="post" id="wpseo-conf"'
+				. $enctype . ' accept-charset="' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- nothing to escape.
+				. esc_attr( get_bloginfo( 'charset' ) )
+				. '" novalidate="novalidate">';
 			call_user_func( $hidden_fields_cb, $option_long_name );
 		}
 		$this->set_option( $option );
@@ -112,6 +116,8 @@ class Yoast_Form {
 	 * @since 2.0
 	 *
 	 * @param string $option_name Option key.
+	 *
+	 * @return void
 	 */
 	public function set_option( $option_name ) {
 		$this->option_name = $option_name;
@@ -129,6 +135,8 @@ class Yoast_Form {
 	 *
 	 * @param bool $submit       Whether or not a submit button and form end tag should be shown.
 	 * @param bool $show_sidebar Whether or not to show the banner sidebar - used by premium plugins to disable it.
+	 *
+	 * @return void
 	 */
 	public function admin_footer( $submit = true, $show_sidebar = true ) {
 		if ( $submit ) {
@@ -180,6 +188,8 @@ class Yoast_Form {
 	 * Generates the sidebar for admin pages.
 	 *
 	 * @since 2.0
+	 *
+	 * @return void
 	 */
 	public function admin_sidebar() {
 		// No banners in Premium.
@@ -188,7 +198,9 @@ class Yoast_Form {
 			return;
 		}
 
-		require_once 'views/sidebar.php';
+		$sidebar_presenter = new Sidebar_Presenter();
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output escaped in presenter.
+		echo $sidebar_presenter->present();
 	}
 
 	/**
@@ -196,8 +208,10 @@ class Yoast_Form {
 	 *
 	 * @since 2.0
 	 *
-	 * @param string $text Label text string.
+	 * @param string $text Label text string, which can contain escaped html.
 	 * @param array  $attr HTML attributes set.
+	 *
+	 * @return void
 	 */
 	public function label( $text, $attr ) {
 		$defaults = [
@@ -213,6 +227,7 @@ class Yoast_Form {
 			$aria_label = ' aria-label="' . esc_attr( $attr['aria_label'] ) . '"';
 		}
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output escaped before. Specifically, the $text variable can contain escaped html.
 		echo "<label class='" . esc_attr( $attr['class'] ) . "' for='" . esc_attr( $attr['for'] ) . "'$aria_label>$text";
 		if ( $attr['close'] ) {
 			echo '</label>';
@@ -226,6 +241,8 @@ class Yoast_Form {
 	 *
 	 * @param string $text Legend text string.
 	 * @param array  $attr HTML attributes set.
+	 *
+	 * @return void
 	 */
 	public function legend( $text, $attr ) {
 		$defaults = [
@@ -235,7 +252,8 @@ class Yoast_Form {
 		$attr     = wp_parse_args( $attr, $defaults );
 
 		$id = ( $attr['id'] === '' ) ? '' : ' id="' . esc_attr( $attr['id'] ) . '"';
-		echo '<legend class="yoast-form-legend ' . esc_attr( $attr['class'] ) . '"' . $id . '>' . $text . '</legend>';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output escaped before.
+		echo '<legend class="' . esc_attr( 'yoast-form-legend ' . $attr['class'] ) . '"' . $id . '>' . $text . '</legend>';
 	}
 
 	/**
@@ -243,13 +261,15 @@ class Yoast_Form {
 	 *
 	 * @since 2.0
 	 *
-	 * @param string $var        The variable within the option to create the checkbox for.
+	 * @param string $variable   The variable within the option to create the checkbox for.
 	 * @param string $label      The label to show for the variable.
 	 * @param bool   $label_left Whether the label should be left (true) or right (false).
 	 * @param array  $attr       Extra attributes to add to the checkbox.
+	 *
+	 * @return void
 	 */
-	public function checkbox( $var, $label, $label_left = false, $attr = [] ) {
-		$val = $this->get_field_value( $var, false );
+	public function checkbox( $variable, $label, $label_left = false, $attr = [] ) {
+		$val = $this->get_field_value( $variable, false );
 
 		$defaults = [
 			'disabled' => false,
@@ -262,19 +282,19 @@ class Yoast_Form {
 
 		$class = '';
 		if ( $label_left !== false ) {
-			$this->label( $label_left, [ 'for' => $var ] );
+			$this->label( $label_left, [ 'for' => $variable ] );
 		}
 		else {
 			$class = 'double';
 		}
 
-		$disabled_attribute = $this->get_disabled_attribute( $var, $attr );
+		$disabled_attribute = $this->get_disabled_attribute( $variable, $attr );
 
 		// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: $disabled_attribute output is hardcoded and all other output is properly escaped.
-		echo '<input class="checkbox ', esc_attr( $class ), '" type="checkbox" id="', esc_attr( $var ), '" name="', esc_attr( $this->option_name ), '[', esc_attr( $var ), ']" value="on"', checked( $val, 'on', false ), $disabled_attribute, '/>';
+		echo '<input class="', esc_attr( 'checkbox ' . $class ), '" type="checkbox" id="', esc_attr( $variable ), '" name="', esc_attr( $this->option_name . '[' . $variable . ']' ), '" value="on"', checked( $val, 'on', false ), $disabled_attribute, '/>';
 
 		if ( ! empty( $label ) ) {
-			$this->label( $label, [ 'for' => $var ] );
+			$this->label( $label, [ 'for' => $variable ] );
 		}
 
 		echo '<br class="clear" />';
@@ -285,9 +305,11 @@ class Yoast_Form {
 	 *
 	 * @since 12.8
 	 *
-	 * @param string $variable    The variables within the option to create the checkbox list for.
-	 * @param string $labels      The labels to show for the variable.
-	 * @param array  $attr        Extra attributes to add to the checkbox list.
+	 * @param string $variable The variables within the option to create the checkbox list for.
+	 * @param string $labels   The labels to show for the variable.
+	 * @param array  $attr     Extra attributes to add to the checkbox list.
+	 *
+	 * @return void
 	 */
 	public function checkbox_list( $variable, $labels, $attr = [] ) {
 		$defaults = [
@@ -301,7 +323,7 @@ class Yoast_Form {
 			printf(
 				'<input class="checkbox double" id="%1$s" type="checkbox" name="%2$s" %3$s %5$s value="%4$s"/>',
 				esc_attr( $variable . '-' . $name ),
-				esc_attr( $this->option_name ) . '[' . esc_attr( $variable ) . '][' . $name . ']',
+				esc_attr( $this->option_name . '[' . $variable . '][' . $name . ']' ),
 				checked( ! empty( $values[ $name ] ), true, false ),
 				esc_attr( $name ),
 				disabled( ( isset( $attr['disabled'] ) && $attr['disabled'] ), true, false )
@@ -321,16 +343,19 @@ class Yoast_Form {
 	 *
 	 * @since 3.1
 	 *
-	 * @param string $var     The variable within the option to create the checkbox for.
-	 * @param string $label   The visual label text for the toggle.
-	 * @param array  $buttons Array of two visual labels for the buttons (defaults Disabled/Enabled).
-	 * @param bool   $reverse Reverse order of buttons (default true).
-	 * @param string $help    Inline Help that will be printed out before the toggle.
-	 * @param bool   $strong  Whether the visual label is displayed in strong text. Default is false.
-	 * @param array  $attr    Extra attributes to add to the light switch.
+	 * @param string $variable The variable within the option to create the checkbox for.
+	 * @param string $label    The visual label text for the toggle.
+	 * @param array  $buttons  Array of two visual labels for the buttons (defaults Disabled/Enabled).
+	 * @param bool   $reverse  Reverse order of buttons (default true).
+	 * @param string $help     Inline Help that will be printed out before the toggle.
+	 * @param bool   $strong   Whether the visual label is displayed in strong text. Default is false.
+	 *                         Starting from Yoast SEO 16.5, the visual label is forced to bold via CSS.
+	 * @param array  $attr     Extra attributes to add to the light switch.
+	 *
+	 * @return void
 	 */
-	public function light_switch( $var, $label, $buttons = [], $reverse = true, $help = '', $strong = false, $attr = [] ) {
-		$val = $this->get_field_value( $var, false );
+	public function light_switch( $variable, $label, $buttons = [], $reverse = true, $help = '', $strong = false, $attr = [] ) {
+		$val = $this->get_field_value( $variable, false );
 
 		$defaults = [
 			'disabled' => false,
@@ -341,13 +366,13 @@ class Yoast_Form {
 			$val = 'on';
 		}
 
-		$disabled_attribute = $this->get_disabled_attribute( $var, $attr );
+		$disabled_attribute = $this->get_disabled_attribute( $variable, $attr );
 
 		$output = new Light_Switch_Presenter(
-			$var,
+			$variable,
 			$label,
 			$buttons,
-			$this->option_name . '[' . $var . ']',
+			$this->option_name . '[' . $variable . ']',
 			$val,
 			$reverse,
 			$help,
@@ -365,11 +390,13 @@ class Yoast_Form {
 	 * @since 2.0
 	 * @since 2.1 Introduced the `$attr` parameter.
 	 *
-	 * @param string       $var   The variable within the option to create the text input field for.
-	 * @param string       $label The label to show for the variable.
-	 * @param array|string $attr  Extra attributes to add to the input field. Can be class, disabled, autocomplete.
+	 * @param string       $variable The variable within the option to create the text input field for.
+	 * @param string       $label    The label to show for the variable.
+	 * @param array|string $attr     Extra attributes to add to the input field. Can be class, disabled, autocomplete.
+	 *
+	 * @return void
 	 */
-	public function textinput( $var, $label, $attr = [] ) {
+	public function textinput( $variable, $label, $attr = [] ) {
 		$type = 'text';
 		if ( ! is_array( $attr ) ) {
 			$attr = [
@@ -383,7 +410,7 @@ class Yoast_Form {
 			'class'       => '',
 		];
 		$attr     = wp_parse_args( $attr, $defaults );
-		$val      = $this->get_field_value( $var, '' );
+		$val      = $this->get_field_value( $variable, '' );
 		if ( isset( $attr['type'] ) && $attr['type'] === 'url' ) {
 			$val  = urldecode( $val );
 			$type = 'url';
@@ -393,22 +420,122 @@ class Yoast_Form {
 		$this->label(
 			$label,
 			[
-				'for'   => $var,
+				'for'   => $variable,
 				'class' => 'textinput',
 			]
 		);
 
-		$has_input_error = Yoast_Input_Validation::yoast_form_control_has_error( $var );
-		$aria_attributes = Yoast_Input_Validation::get_the_aria_invalid_attribute( $var );
+		$aria_attributes = Yoast_Input_Validation::get_the_aria_invalid_attribute( $variable );
 
-		Yoast_Input_Validation::set_error_descriptions();
-		$aria_attributes .= Yoast_Input_Validation::get_the_aria_describedby_attribute( $var );
+		$aria_attributes .= Yoast_Input_Validation::get_the_aria_describedby_attribute( $variable );
 
-		$disabled_attribute = $this->get_disabled_attribute( $var, $attr );
+		$disabled_attribute = $this->get_disabled_attribute( $variable, $attr );
 
 		// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: $disabled_attribute output is hardcoded and all other output is properly escaped.
-		echo '<input' . $attributes . $aria_attributes . ' class="textinput ' . esc_attr( $attr['class'] ) . '" placeholder="' . esc_attr( $attr['placeholder'] ) . '" type="' . $type . '" id="', esc_attr( $var ), '" name="', esc_attr( $this->option_name ), '[', esc_attr( $var ), ']" value="', esc_attr( $val ), '"', $disabled_attribute, '/>', '<br class="clear" />';
-		echo Yoast_Input_Validation::get_the_error_description( $var );
+		echo '<input', $attributes, $aria_attributes, ' class="', esc_attr( 'textinput ' . $attr['class'] ), '" placeholder="', esc_attr( $attr['placeholder'] ), '" type="', $type, '" id="', esc_attr( $variable ), '" name="', esc_attr( $this->option_name . '[' . $variable . ']' ), '" value="', esc_attr( $val ), '"', $disabled_attribute, '/>', '<br class="clear" />';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output escaped in getter.
+		echo Yoast_Input_Validation::get_the_error_description( $variable );
+	}
+
+	/**
+	 * Create a Number input field.
+	 *
+	 * @param string       $variable The variable within the option to create the text input field for.
+	 * @param string       $label    The label to show for the variable.
+	 * @param array|string $attr     Extra attributes to add to the input field. Can be class, disabled, autocomplete.
+	 *
+	 * @return void
+	 */
+	public function number( $variable, $label, $attr = [] ) {
+		$type     = 'number';
+		$defaults = [
+			'placeholder' => '',
+			'class'       => 'number',
+			'disabled'    => false,
+			'min'         => 0,
+			'max'         => 100,
+		];
+		$attr     = wp_parse_args( $attr, $defaults );
+		$val      = $this->get_field_value( $variable, 0 );
+
+		$this->label(
+			$label,
+			[
+				'for'   => $variable,
+				'class' => 'textinput ' . $attr['class'],
+			]
+		);
+
+		$aria_attributes  = Yoast_Input_Validation::get_the_aria_invalid_attribute( $variable );
+		$aria_attributes .= Yoast_Input_Validation::get_the_aria_describedby_attribute( $variable );
+
+		$disabled_attribute = $this->get_disabled_attribute( $variable, $attr );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: $disabled_attribute output is hardcoded and all other output is properly escaped.
+		echo '<input' . $aria_attributes . ' class="' . esc_attr( $attr['class'] ) . '" type="' . $type . '" id="', esc_attr( $variable ), '" min="', esc_attr( $attr['min'] ), '" max="', esc_attr( $attr['max'] ), '" name="', esc_attr( $this->option_name . '[' . $variable . ']' ), '" value="', esc_attr( $val ), '"', $disabled_attribute, '/>', '<br class="clear" />';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output escaped in getter.
+		echo Yoast_Input_Validation::get_the_error_description( $variable );
+	}
+
+	/**
+	 * Creates a text input field with with the ability to add content after the label.
+	 *
+	 * @param string $variable The variable within the option to create the text input field for.
+	 * @param string $label    The label to show for the variable.
+	 * @param array  $attr     Extra attributes to add to the input field.
+	 *
+	 * @return void
+	 */
+	public function textinput_extra_content( $variable, $label, $attr = [] ) {
+		$type = 'text';
+
+		$defaults = [
+			'class'       => 'yoast-field-group__inputfield',
+			'disabled'    => false,
+		];
+
+		$attr = wp_parse_args( $attr, $defaults );
+		$val  = $this->get_field_value( $variable, '' );
+
+		if ( isset( $attr['type'] ) && $attr['type'] === 'url' ) {
+			$val  = urldecode( $val );
+			$type = 'url';
+		}
+
+		echo '<div class="yoast-field-group__title">';
+		$this->label(
+			$label,
+			[
+				'for'   => $variable,
+				'class' => $attr['class'] . '--label',
+			]
+		);
+
+		if ( isset( $attr['extra_content'] ) ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: may contain HTML that should not be escaped.
+			echo $attr['extra_content'];
+		}
+		echo '</div>';
+
+		$aria_attributes  = Yoast_Input_Validation::get_the_aria_invalid_attribute( $variable );
+		$aria_attributes .= Yoast_Input_Validation::get_the_aria_describedby_attribute( $variable );
+
+		// phpcs:disable WordPress.Security.EscapeOutput -- Reason: output is properly escaped or hardcoded.
+		printf(
+			'<input type="%1$s" name="%2$s" id="%3$s" class="%4$s"%5$s%6$s%7$s value="%8$s"%9$s>',
+			$type,
+			esc_attr( $this->option_name . '[' . $variable . ']' ),
+			esc_attr( $variable ),
+			esc_attr( $attr['class'] ),
+			isset( $attr['placeholder'] ) ? ' placeholder="' . esc_attr( $attr['placeholder'] ) . '"' : '',
+			isset( $attr['autocomplete'] ) ? ' autocomplete="' . esc_attr( $attr['autocomplete'] ) . '"' : '',
+			$aria_attributes,
+			esc_attr( $val ),
+			$this->get_disabled_attribute( $variable, $attr )
+		);
+		// phpcs:enable
+		// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: output is properly escaped.
+		echo Yoast_Input_Validation::get_the_error_description( $variable );
 	}
 
 	/**
@@ -416,11 +543,13 @@ class Yoast_Form {
 	 *
 	 * @since 2.0
 	 *
-	 * @param string       $var   The variable within the option to create the textarea for.
-	 * @param string       $label The label to show for the variable.
-	 * @param string|array $attr  The CSS class or an array of attributes to assign to the textarea.
+	 * @param string       $variable The variable within the option to create the textarea for.
+	 * @param string       $label    The label to show for the variable.
+	 * @param string|array $attr     The CSS class or an array of attributes to assign to the textarea.
+	 *
+	 * @return void
 	 */
-	public function textarea( $var, $label, $attr = [] ) {
+	public function textarea( $variable, $label, $attr = [] ) {
 		if ( ! is_array( $attr ) ) {
 			$attr = [
 				'class' => $attr,
@@ -434,20 +563,20 @@ class Yoast_Form {
 			'disabled' => false,
 		];
 		$attr     = wp_parse_args( $attr, $defaults );
-		$val      = $this->get_field_value( $var, '' );
+		$val      = $this->get_field_value( $variable, '' );
 
 		$this->label(
 			$label,
 			[
-				'for'   => $var,
+				'for'   => $variable,
 				'class' => 'textinput',
 			]
 		);
 
-		$disabled_attribute = $this->get_disabled_attribute( $var, $attr );
+		$disabled_attribute = $this->get_disabled_attribute( $variable, $attr );
 
 		// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: $disabled_attribute output is hardcoded and all other output is properly escaped.
-		echo '<textarea cols="' . esc_attr( $attr['cols'] ) . '" rows="' . esc_attr( $attr['rows'] ) . '" class="textinput ' . esc_attr( $attr['class'] ) . '" id="' . esc_attr( $var ) . '" name="' . esc_attr( $this->option_name ) . '[' . esc_attr( $var ) . ']"', $disabled_attribute, '>' . esc_textarea( $val ) . '</textarea><br class="clear" />';
+		echo '<textarea cols="' . esc_attr( $attr['cols'] ) . '" rows="' . esc_attr( $attr['rows'] ) . '" class="' . esc_attr( 'textinput ' . $attr['class'] ) . '" id="' . esc_attr( $variable ) . '" name="' . esc_attr( $this->option_name . '[' . $variable . ']' ), '"', $disabled_attribute, '>' . esc_textarea( $val ) . '</textarea><br class="clear" />';
 	}
 
 	/**
@@ -455,20 +584,26 @@ class Yoast_Form {
 	 *
 	 * @since 2.0
 	 *
-	 * @param string $var The variable within the option to create the hidden input for.
-	 * @param string $id  The ID of the element.
+	 * @param string $variable The variable within the option to create the hidden input for.
+	 * @param string $id       The ID of the element.
+	 * @param mixed  $val      Optional. The value to set in the input field. Otherwise the value from the options will be used.
+	 *
+	 * @return void
 	 */
-	public function hidden( $var, $id = '' ) {
-		$val = $this->get_field_value( $var, '' );
+	public function hidden( $variable, $id = '', $val = null ) {
+		if ( is_null( $val ) ) {
+			$val = $this->get_field_value( $variable, '' );
+		}
+
 		if ( is_bool( $val ) ) {
 			$val = ( $val === true ) ? 'true' : 'false';
 		}
 
 		if ( $id === '' ) {
-			$id = 'hidden_' . $var;
+			$id = 'hidden_' . $variable;
 		}
 
-		echo '<input type="hidden" id="' . esc_attr( $id ) . '" name="' . esc_attr( $this->option_name ) . '[' . esc_attr( $var ) . ']" value="' . esc_attr( $val ) . '"/>';
+		echo '<input type="hidden" id="' . esc_attr( $id ) . '" name="' . esc_attr( $this->option_name . '[' . $variable . ']' ), '" value="' . esc_attr( $val ) . '"/>';
 	}
 
 	/**
@@ -476,15 +611,17 @@ class Yoast_Form {
 	 *
 	 * @since 2.0
 	 *
-	 * @param string $var            The variable within the option to create the select for.
+	 * @param string $variable       The variable within the option to create the select for.
 	 * @param string $label          The label to show for the variable.
 	 * @param array  $select_options The select options to choose from.
 	 * @param string $styled         The select style. Use 'styled' to get a styled select. Default 'unstyled'.
 	 * @param bool   $show_label     Whether or not to show the label, if not, it will be applied as an aria-label.
 	 * @param array  $attr           Extra attributes to add to the select.
 	 * @param string $help           Optional. Inline Help HTML that will be printed after the label. Default is empty.
+	 *
+	 * @return void
 	 */
-	public function select( $var, $label, array $select_options, $styled = 'unstyled', $show_label = true, $attr = [], $help = '' ) {
+	public function select( $variable, $label, array $select_options, $styled = 'unstyled', $show_label = true, $attr = [], $help = '' ) {
 		if ( empty( $select_options ) ) {
 			return;
 		}
@@ -498,22 +635,22 @@ class Yoast_Form {
 			$this->label(
 				$label,
 				[
-					'for'   => $var,
+					'for'   => $variable,
 					'class' => 'select',
 				]
 			);
 			echo $help; // phpcs:ignore WordPress.Security.EscapeOutput -- Reason: The help contains HTML.
 		}
 
-		$select_name       = esc_attr( $this->option_name ) . '[' . esc_attr( $var ) . ']';
-		$active_option     = $this->get_field_value( $var, '' );
+		$select_name       = esc_attr( $this->option_name ) . '[' . esc_attr( $variable ) . ']';
+		$active_option     = $this->get_field_value( $variable, '' );
 		$wrapper_start_tag = '';
 		$wrapper_end_tag   = '';
 
-		$select = new Yoast_Input_Select( $var, $select_name, $select_options, $active_option );
+		$select = new Yoast_Input_Select( $variable, $select_name, $select_options, $active_option );
 		$select->add_attribute( 'class', 'select' );
 
-		if ( $this->is_control_disabled( $var )
+		if ( $this->is_control_disabled( $variable )
 			|| ( isset( $attr['disabled'] ) && $attr['disabled'] ) ) {
 			$select->add_attribute( 'disabled', 'disabled' );
 		}
@@ -527,8 +664,10 @@ class Yoast_Form {
 			$wrapper_end_tag   = '</span>';
 		}
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output escaped before.
 		echo $wrapper_start_tag;
 		$select->output_html();
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output escaped before.
 		echo $wrapper_end_tag;
 		echo '<br class="clear"/>';
 	}
@@ -538,12 +677,14 @@ class Yoast_Form {
 	 *
 	 * @since 2.0
 	 *
-	 * @param string $var   The variable within the option to create the file upload field for.
-	 * @param string $label The label to show for the variable.
-	 * @param array  $attr  Extra attributes to add to the file upload input.
+	 * @param string $variable The variable within the option to create the file upload field for.
+	 * @param string $label    The label to show for the variable.
+	 * @param array  $attr     Extra attributes to add to the file upload input.
+	 *
+	 * @return void
 	 */
-	public function file_upload( $var, $label, $attr = [] ) {
-		$val = $this->get_field_value( $var, '' );
+	public function file_upload( $variable, $label, $attr = [] ) {
+		$val = $this->get_field_value( $variable, '' );
 		if ( is_array( $val ) ) {
 			$val = $val['url'];
 		}
@@ -553,16 +694,16 @@ class Yoast_Form {
 		];
 		$attr     = wp_parse_args( $attr, $defaults );
 
-		$var_esc = esc_attr( $var );
+		$var_esc = esc_attr( $variable );
 		$this->label(
 			$label,
 			[
-				'for'   => $var,
+				'for'   => $variable,
 				'class' => 'select',
 			]
 		);
 
-		$disabled_attribute = $this->get_disabled_attribute( $var, $attr );
+		$disabled_attribute = $this->get_disabled_attribute( $variable, $attr );
 
 		// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: $disabled_attribute output is hardcoded and all other output is properly escaped.
 		echo '<input type="file" value="' . esc_attr( $val ) . '" class="textinput" name="' . esc_attr( $this->option_name ) . '[' . $var_esc . ']" id="' . $var_esc . '"', $disabled_attribute, '/>';
@@ -580,16 +721,23 @@ class Yoast_Form {
 	 * Media input.
 	 *
 	 * @since 2.0
+	 * @deprecated 23.5
+	 * @codeCoverageIgnore
 	 *
-	 * @param string $var   Option name.
-	 * @param string $label Label message.
-	 * @param array  $attr  Extra attributes to add to the media input and buttons.
+	 * @param string $variable Option name.
+	 * @param string $label    Label message.
+	 * @param array  $attr     Extra attributes to add to the media input and buttons.
+	 *
+	 * @return void
 	 */
-	public function media_input( $var, $label, $attr = [] ) {
-		$val      = $this->get_field_value( $var, '' );
-		$id_value = $this->get_field_value( $var . '_id', '' );
+	public function media_input( $variable, $label, $attr = [] ) {
 
-		$var_esc = esc_attr( $var );
+		_deprecated_function( __METHOD__, 'Yoast SEO 23.5' );
+
+		$val      = $this->get_field_value( $variable, '' );
+		$id_value = $this->get_field_value( $variable . '_id', '' );
+
+		$var_esc = esc_attr( $variable );
 
 		$defaults = [
 			'disabled' => false,
@@ -599,43 +747,26 @@ class Yoast_Form {
 		$this->label(
 			$label,
 			[
-				'for'   => 'wpseo_' . $var,
+				'for'   => 'wpseo_' . $variable,
 				'class' => 'select',
 			]
 		);
 
 		$id_field_id = 'wpseo_' . $var_esc . '_id';
 
-		$disabled_attribute = $this->get_disabled_attribute( $var, $attr );
-
 		echo '<span>';
 			echo '<input',
 				' class="textinput"',
-				' id="wpseo_', $var_esc, '"',
+				' id="wpseo_', $var_esc, '"', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output escaped before.
 				' type="text" size="36"',
-				' name="', esc_attr( $this->option_name ), '[', $var_esc, ']"',
+				' name="', esc_attr( $this->option_name ), '[', $var_esc, ']"', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output escaped before.
 				' value="', esc_attr( $val ), '"',
 				' readonly="readonly"',
 				' /> ';
 			echo '<input',
-				' id="wpseo_', $var_esc, '_button"',
-				' class="wpseo_image_upload_button button"',
-				' type="button"',
-				' value="', esc_attr__( 'Upload Image', 'wordpress-seo' ), '"',
-				' data-target-id="', esc_attr( $id_field_id ), '"',
-				// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: $disabled_attribute output is hardcoded.
-				$disabled_attribute,
-				' /> ';
-			echo '<input',
-				' class="wpseo_image_remove_button button"',
-				' type="button"',
-				' value="', esc_attr__( 'Clear Image', 'wordpress-seo' ), '"',
-				// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: $disabled_attribute output is hardcoded.
-				$disabled_attribute,
-				' />';
-			echo '<input',
 				' type="hidden"',
 				' id="', esc_attr( $id_field_id ), '"',
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output escaped before.
 				' name="', esc_attr( $this->option_name ), '[', $var_esc, '_id]"',
 				' value="', esc_attr( $id_value ), '"',
 				' />';
@@ -648,25 +779,28 @@ class Yoast_Form {
 	 *
 	 * @since 2.0
 	 *
-	 * @param string $var         The variable within the option to create the radio button for.
+	 * @param string $variable    The variable within the option to create the radio button for.
 	 * @param array  $values      The radio options to choose from.
 	 * @param string $legend      Optional. The legend to show for the field set, if any.
 	 * @param array  $legend_attr Optional. The attributes for the legend, if any.
 	 * @param array  $attr        Extra attributes to add to the radio button.
+	 *
+	 * @return void
 	 */
-	public function radio( $var, $values, $legend = '', $legend_attr = [], $attr = [] ) {
+	public function radio( $variable, $values, $legend = '', $legend_attr = [], $attr = [] ) {
 		if ( ! is_array( $values ) || $values === [] ) {
 			return;
 		}
-		$val = $this->get_field_value( $var, false );
+		$val = $this->get_field_value( $variable, false );
 
-		$var_esc = esc_attr( $var );
+		$var_esc = esc_attr( $variable );
 
 		$defaults = [
 			'disabled' => false,
 		];
 		$attr     = wp_parse_args( $attr, $defaults );
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output escaped before.
 		echo '<fieldset class="yoast-form-fieldset wpseo_radio_block" id="' . $var_esc . '">';
 
 		if ( is_string( $legend ) && $legend !== '' ) {
@@ -686,13 +820,13 @@ class Yoast_Form {
 			$aria_label = '';
 
 			if ( is_array( $value ) ) {
-				$label      = isset( $value['label'] ) ? $value['label'] : '';
-				$aria_label = isset( $value['aria_label'] ) ? $value['aria_label'] : '';
+				$label      = ( $value['label'] ?? '' );
+				$aria_label = ( $value['aria_label'] ?? '' );
 			}
 
 			$key_esc = esc_attr( $key );
 
-			$disabled_attribute = $this->get_disabled_attribute( $var, $attr );
+			$disabled_attribute = $this->get_disabled_attribute( $variable, $attr );
 
 			// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: $disabled_attribute output is hardcoded and all other output is properly escaped.
 			echo '<input type="radio" class="radio" id="' . $var_esc . '-' . $key_esc . '" name="' . esc_attr( $this->option_name ) . '[' . $var_esc . ']" value="' . $key_esc . '" ' . checked( $val, $key_esc, false ) . $disabled_attribute . ' />';
@@ -713,15 +847,17 @@ class Yoast_Form {
 	 *
 	 * @since 3.1
 	 *
-	 * @param string $var    The variable within the option to create the radio buttons for.
-	 * @param array  $values Associative array of on/off keys and their values to be used as
-	 *                       the label elements text for the radio buttons. Optionally, each
-	 *                       value can be an array of visible label text and screen reader text.
-	 * @param string $label  The visual label for the radio buttons group, used as the fieldset legend.
-	 * @param string $help   Inline Help that will be printed out before the visible toggles text.
-	 * @param array  $attr   Extra attributes to add to the toggle switch.
+	 * @param string $variable The variable within the option to create the radio buttons for.
+	 * @param array  $values   Associative array of on/off keys and their values to be used as
+	 *                         the label elements text for the radio buttons. Optionally, each
+	 *                         value can be an array of visible label text and screen reader text.
+	 * @param string $label    The visual label for the radio buttons group, used as the fieldset legend.
+	 * @param string $help     Inline Help that will be printed out before the visible toggles text.
+	 * @param array  $attr     Extra attributes to add to the toggle switch.
+	 *
+	 * @return void
 	 */
-	public function toggle_switch( $var, $values, $label, $help = '', $attr = [] ) {
+	public function toggle_switch( $variable, $values, $label, $help = '', $attr = [] ) {
 		if ( ! is_array( $values ) || $values === [] ) {
 			return;
 		}
@@ -731,7 +867,12 @@ class Yoast_Form {
 		];
 		$attr     = wp_parse_args( $attr, $defaults );
 
-		$val = $this->get_field_value( $var, false );
+		if ( isset( $attr['preserve_disabled_value'] ) && $attr['preserve_disabled_value'] ) {
+			$this->hidden( $variable );
+			$variable .= '_disabled';
+		}
+
+		$val = $this->get_field_value( $variable, false );
 		if ( $val === true ) {
 			$val = 'on';
 		}
@@ -741,12 +882,27 @@ class Yoast_Form {
 
 		$help_class = ! empty( $help ) ? ' switch-container__has-help' : '';
 
-		$var_esc = esc_attr( $var );
+		$has_premium_upsell = ( isset( $attr['show_premium_upsell'] ) && $attr['show_premium_upsell'] && isset( $attr['premium_upsell_url'] ) && ! empty( $attr['premium_upsell_url'] ) );
+		$upsell_class       = ( $has_premium_upsell ) ? ' premium-upsell' : '';
 
-		printf( '<div class="%s">', esc_attr( 'switch-container' . $help_class ) );
+		$var_esc = esc_attr( $variable );
+
+		printf( '<div class="%s">', esc_attr( 'switch-container' . $help_class . $upsell_class ) );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output escaped before.
 		echo '<fieldset id="', $var_esc, '" class="fieldset-switch-toggle"><legend>', $label, '</legend>', $help;
 
-		echo $this->get_disabled_note( $var );
+		// Show disabled note if attribute does not exists or does exist and is set to true.
+		if ( ! isset( $attr['show_disabled_note'] ) || ( $attr['show_disabled_note'] === true ) ) {
+			if ( isset( $attr['note_when_disabled'] ) ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output escaped before.
+				echo $this->get_disabled_note( $variable, $attr['note_when_disabled'] );
+			}
+			else {
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output escaped before.
+				echo $this->get_disabled_note( $variable );
+			}
+		}
+
 		echo '<div class="switch-toggle switch-candy switch-yoast-seo">';
 
 		foreach ( $values as $key => $value ) {
@@ -760,46 +916,58 @@ class Yoast_Form {
 
 			$key_esc            = esc_attr( $key );
 			$for                = $var_esc . '-' . $key_esc;
-			$disabled_attribute = $this->get_disabled_attribute( $var, $attr );
+			$disabled_attribute = $this->get_disabled_attribute( $variable, $attr );
 
 			// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: $disabled_attribute output is hardcoded and all other output is properly escaped.
 			echo '<input type="radio" id="' . $for . '" name="' . esc_attr( $this->option_name ) . '[' . $var_esc . ']" value="' . $key_esc . '" ' . checked( $val, $key_esc, false ) . $disabled_attribute . ' />',
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output escaped before.
 			'<label for="', $for, '">', esc_html( $value ), $screen_reader_text_html, '</label>';
 		}
 
-		echo '<a></a></div></fieldset><div class="clear"></div></div>' . PHP_EOL . PHP_EOL;
+		$upsell_button = '';
+		if ( $has_premium_upsell ) {
+			$upsell_button = '<a class="yoast-button yoast-button--buy yoast-button--small" data-action="load-nfd-ctb" data-ctb-id="f6a84663-465f-4cb5-8ba5-f7a6d72224b2" href='
+							. esc_url( $attr['premium_upsell_url'] ) . ' target="_blank">'
+							. esc_html__( 'Unlock with Premium!', 'wordpress-seo' )
+							/* translators: Hidden accessibility text. */
+							. '<span class="screen-reader-text">' . esc_html__( '(Opens in a new browser tab)', 'wordpress-seo' ) . '</span>'
+							. '<span aria-hidden="true" class="yoast-button--buy__caret"></span></a>';
+		}
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- All variable output is escaped above.
+		echo '<a></a></div></fieldset><div class="clear"></div>' . $upsell_button . '</div>' . PHP_EOL . PHP_EOL;
 	}
 
 	/**
 	 * Creates a toggle switch to define whether an indexable should be indexed or not.
 	 *
-	 * @param string $var   The variable within the option to create the radio buttons for.
-	 * @param string $label The visual label for the radio buttons group, used as the fieldset legend.
-	 * @param string $help  Inline Help that will be printed out before the visible toggles text.
-	 * @param array  $attr  Extra attributes to add to the index switch.
+	 * @param string $variable The variable within the option to create the radio buttons for.
+	 * @param string $label    The visual label for the radio buttons group, used as the fieldset legend.
+	 * @param string $help     Inline Help that will be printed out before the visible toggles text.
+	 * @param array  $attr     Extra attributes to add to the index switch.
 	 *
 	 * @return void
 	 */
-	public function index_switch( $var, $label, $help = '', $attr = [] ) {
+	public function index_switch( $variable, $label, $help = '', $attr = [] ) {
 		$defaults = [
 			'disabled' => false,
 		];
 		$attr     = wp_parse_args( $attr, $defaults );
 
 		$index_switch_values = [
-			'off' => __( 'Yes', 'wordpress-seo' ),
-			'on'  => __( 'No', 'wordpress-seo' ),
+			'off' => __( 'On', 'wordpress-seo' ),
+			'on'  => __( 'Off', 'wordpress-seo' ),
 		];
 
-		$is_disabled = ( isset( $attr['disabled'] ) && $attr['disabled'] ) ? true : false;
+		$is_disabled = ( isset( $attr['disabled'] ) && $attr['disabled'] );
 
 		$this->toggle_switch(
-			$var,
+			$variable,
 			$index_switch_values,
 			sprintf(
 				/* translators: %s expands to an indexable object's name, like a post type or taxonomy */
 				esc_html__( 'Show %s in search results?', 'wordpress-seo' ),
-				'<strong>' . esc_html( $label ) . '</strong>'
+				$label
 			),
 			$help,
 			[ 'disabled' => $is_disabled ]
@@ -809,7 +977,7 @@ class Yoast_Form {
 	/**
 	 * Creates a toggle switch to show hide certain options.
 	 *
-	 * @param string $var          The variable within the option to create the radio buttons for.
+	 * @param string $variable     The variable within the option to create the radio buttons for.
 	 * @param string $label        The visual label for the radio buttons group, used as the fieldset legend.
 	 * @param bool   $inverse_keys Whether or not the option keys need to be inverted to support older functions.
 	 * @param string $help         Inline Help that will be printed out before the visible toggles text.
@@ -817,7 +985,7 @@ class Yoast_Form {
 	 *
 	 * @return void
 	 */
-	public function show_hide_switch( $var, $label, $inverse_keys = false, $help = '', $attr = [] ) {
+	public function show_hide_switch( $variable, $label, $inverse_keys = false, $help = '', $attr = [] ) {
 		$defaults = [
 			'disabled' => false,
 		];
@@ -827,14 +995,14 @@ class Yoast_Form {
 		$off_key = ( $inverse_keys ) ? 'on' : 'off';
 
 		$show_hide_switch = [
-			$on_key  => __( 'Show', 'wordpress-seo' ),
-			$off_key => __( 'Hide', 'wordpress-seo' ),
+			$on_key  => __( 'On', 'wordpress-seo' ),
+			$off_key => __( 'Off', 'wordpress-seo' ),
 		];
 
-		$is_disabled = ( isset( $attr['disabled'] ) && $attr['disabled'] ) ? true : false;
+		$is_disabled = ( isset( $attr['disabled'] ) && $attr['disabled'] );
 
 		$this->toggle_switch(
-			$var,
+			$variable,
 			$show_hide_switch,
 			$label,
 			$help,
@@ -845,8 +1013,8 @@ class Yoast_Form {
 	/**
 	 * Retrieves the value for the form field.
 	 *
-	 * @param string $field_name    The field name to retrieve the value for.
-	 * @param string $default_value The default value, when field has no value.
+	 * @param string      $field_name    The field name to retrieve the value for.
+	 * @param string|null $default_value The default value, when field has no value.
 	 *
 	 * @return mixed|null The retrieved value.
 	 */
@@ -862,41 +1030,46 @@ class Yoast_Form {
 	/**
 	 * Checks whether a given control should be disabled.
 	 *
-	 * @param string $var The variable within the option to check whether its control should be disabled.
+	 * @param string $variable The variable within the option to check whether its control should be disabled.
 	 *
 	 * @return bool True if control should be disabled, false otherwise.
 	 */
-	protected function is_control_disabled( $var ) {
+	protected function is_control_disabled( $variable ) {
 		if ( $this->option_instance === null ) {
 			return false;
 		}
 
 		// Disable the Usage tracking feature for multisite subsites.
-		if ( $this->is_tracking_on_subsite( $var ) ) {
+		if ( $this->is_tracking_on_subsite( $variable ) ) {
 			return true;
 		}
 
-		return $this->option_instance->is_disabled( $var );
+		return $this->option_instance->is_disabled( $variable );
 	}
 
 	/**
 	 * Gets the explanation note to print if a given control is disabled.
 	 *
-	 * @param string $var The variable within the option to print a disabled note for.
+	 * @param string $variable    The variable within the option to print a disabled note for.
+	 * @param string $custom_note An optional custom note to print instead.
 	 *
 	 * @return string Explanation note HTML string, or empty string if no note necessary.
 	 */
-	protected function get_disabled_note( $var ) {
-		if ( ! $this->is_control_disabled( $var ) ) {
+	protected function get_disabled_note( $variable, $custom_note = '' ) {
+		if ( $custom_note === '' && ! $this->is_control_disabled( $variable ) ) {
 			return '';
 		}
-
 		$disabled_message = esc_html__( 'This feature has been disabled by the network admin.', 'wordpress-seo' );
 
 		// The explanation to show when disabling the Usage tracking feature for multisite subsites.
-		if ( $this->is_tracking_on_subsite( $var ) ) {
+		if ( $this->is_tracking_on_subsite( $variable ) ) {
 			$disabled_message = esc_html__( 'This feature has been disabled since subsites never send tracking data.', 'wordpress-seo' );
 		}
+
+		if ( $custom_note ) {
+			$disabled_message = esc_html( $custom_note );
+		}
+
 		return '<p class="disabled-note">' . $disabled_message . '</p>';
 	}
 
@@ -906,7 +1079,7 @@ class Yoast_Form {
 	 *
 	 * @param string $feature_setting The feature setting.
 	 *
-	 * @return boolean True if we are dealing with the Usage tracking feature on a multisite subsite.
+	 * @return bool True if we are dealing with the Usage tracking feature on a multisite subsite.
 	 */
 	protected function is_tracking_on_subsite( $feature_setting ) {
 		return ( $feature_setting === 'tracking' && ! is_network_admin() && ! is_main_site() );
@@ -915,13 +1088,13 @@ class Yoast_Form {
 	/**
 	 * Returns the disabled attribute HTML.
 	 *
-	 * @param string $var  The variable within the option of the related form element.
-	 * @param array  $attr Extra attributes added to the form element.
+	 * @param string $variable The variable within the option of the related form element.
+	 * @param array  $attr     Extra attributes added to the form element.
 	 *
 	 * @return string The disabled attribute HTML.
 	 */
-	protected function get_disabled_attribute( $var, $attr ) {
-		if ( $this->is_control_disabled( $var ) || ( isset( $attr['disabled'] ) && $attr['disabled'] ) ) {
+	protected function get_disabled_attribute( $variable, $attr ) {
+		if ( $this->is_control_disabled( $variable ) || ( isset( $attr['disabled'] ) && $attr['disabled'] ) ) {
 			return ' disabled';
 		}
 

@@ -27,7 +27,7 @@ class WPSEO_Admin_Editor_Specific_Replace_Vars {
 		// Taxonomies.
 		'category'                 => [ 'term_title', 'term_description', 'category_description', 'parent_title', 'term_hierarchy' ],
 		'post_tag'                 => [ 'term_title', 'term_description', 'tag_description' ],
-		'post_format'              => [],
+		'post_format'              => [ 'term_title' ],
 		// Custom taxonomy.
 		'term-in-custom-taxonomy'  => [ 'term_title', 'term_description', 'category_description', 'parent_title', 'term_hierarchy' ],
 
@@ -59,7 +59,7 @@ class WPSEO_Admin_Editor_Specific_Replace_Vars {
 		/**
 		 * Filter: Adds the possibility to add extra editor specific replacement variables.
 		 *
-		 * @api array $replacement_variables Array of editor specific replace vars.
+		 * @param array $replacement_variables Array of editor specific replace vars.
 		 */
 		$replacement_variables = apply_filters(
 			'wpseo_editor_specific_replace_vars',

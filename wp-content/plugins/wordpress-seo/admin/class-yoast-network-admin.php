@@ -8,21 +8,21 @@
 /**
  * Multisite utility class for network admin functionality.
  */
-class Yoast_Network_Admin implements WPSEO_WordPress_Integration, WPSEO_WordPress_AJAX_Integration {
+class Yoast_Network_Admin implements WPSEO_WordPress_AJAX_Integration, WPSEO_WordPress_Integration {
 
 	/**
 	 * Action identifier for updating plugin network options.
 	 *
 	 * @var string
 	 */
-	const UPDATE_OPTIONS_ACTION = 'yoast_handle_network_options';
+	public const UPDATE_OPTIONS_ACTION = 'yoast_handle_network_options';
 
 	/**
 	 * Action identifier for restoring a site.
 	 *
 	 * @var string
 	 */
-	const RESTORE_SITE_ACTION = 'yoast_restore_site';
+	public const RESTORE_SITE_ACTION = 'yoast_restore_site';
 
 	/**
 	 * Gets the available sites as choices, e.g. for a dropdown.
@@ -100,7 +100,17 @@ class Yoast_Network_Admin implements WPSEO_WordPress_Integration, WPSEO_WordPres
 	 * @return void
 	 */
 	public function handle_update_options_request() {
-		$option_group = filter_input( INPUT_POST, 'network_option_group', FILTER_SANITIZE_STRING );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Reason: Nonce verification will happen in verify_request below.
+		if ( ! isset( $_POST['network_option_group'] ) || ! is_string( $_POST['network_option_group'] ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Reason: Nonce verification will happen in verify_request below.
+		$option_group = sanitize_text_field( wp_unslash( $_POST['network_option_group'] ) );
+
+		if ( empty( $option_group ) ) {
+			return;
+		}
 
 		$this->verify_request( "{$option_group}-network-options" );
 
@@ -117,7 +127,7 @@ class Yoast_Network_Admin implements WPSEO_WordPress_Integration, WPSEO_WordPres
 		foreach ( $whitelist_options as $option_name ) {
 			$value = null;
 			if ( isset( $_POST[ $option_name ] ) ) {
-				// Adding sanitize_text_field around this will break the saving of settings because it expects a string: https://github.com/Yoast/wordpress-seo/issues/12440.
+				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reason: Adding sanitize_text_field around this will break the saving of settings because it expects a string: https://github.com/Yoast/wordpress-seo/issues/12440.
 				$value = wp_unslash( $_POST[ $option_name ] );
 			}
 
@@ -189,7 +199,7 @@ class Yoast_Network_Admin implements WPSEO_WordPress_Integration, WPSEO_WordPres
 	 */
 	public function enqueue_assets() {
 		$asset_manager = new WPSEO_Admin_Asset_Manager();
-		$asset_manager->enqueue_script( 'network-admin-script' );
+		$asset_manager->enqueue_script( 'network-admin' );
 
 		$translations = [
 			/* translators: %s: success message */
@@ -198,7 +208,7 @@ class Yoast_Network_Admin implements WPSEO_WordPress_Integration, WPSEO_WordPres
 			'error_prefix'   => __( 'Error: %s', 'wordpress-seo' ),
 		];
 		$asset_manager->localize_script(
-			'network-admin-script',
+			'network-admin',
 			'wpseoNetworkAdminGlobalL10n',
 			$translations
 		);

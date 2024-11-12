@@ -5,6 +5,8 @@
  * @package WPSEO\Suggested_Plugins
  */
 
+use Yoast\WP\SEO\Conditionals\Conditional;
+
 /**
  * Class WPSEO_Suggested_Plugins
  */
@@ -57,43 +59,40 @@ class WPSEO_Suggested_Plugins implements WPSEO_WordPress_Integration {
 		$plugins = $checker->get_plugins_with_dependencies();
 
 		foreach ( $plugins as $plugin_name => $plugin ) {
+			$notification_id = 'wpseo-suggested-plugin-' . $plugin_name;
+
 			if ( ! $checker->dependencies_are_satisfied( $plugin ) ) {
+				$this->notification_center->remove_notification_by_id( $notification_id );
+
 				continue;
 			}
 
-			$dependency_names = $checker->get_dependency_names( $plugin );
-			$notification     = $this->get_yoast_seo_suggested_plugins_notification( $plugin_name, $plugin, $dependency_names[0] );
-
-			if ( ! $checker->is_installed( $plugin ) || ! $checker->is_active( $plugin['slug'] ) ) {
+			if ( ! $checker->is_installed( $plugin ) ) {
+				$notification = $this->get_yoast_seo_suggested_plugins_notification( $notification_id, $plugin );
 				$this->notification_center->add_notification( $notification );
 
 				continue;
 			}
 
-			$this->notification_center->remove_notification( $notification );
+			$this->notification_center->remove_notification_by_id( $notification_id );
 		}
 	}
 
 	/**
 	 * Build Yoast SEO suggested plugins notification.
 	 *
-	 * @param string $name            The plugin name to use for the unique ID.
-	 * @param array  $plugin          The plugin to retrieve the data from.
-	 * @param string $dependency_name The name of the dependency.
+	 * @param string                                                $notification_id The id of the notification to be created.
+	 * @param array<string, string|bool|array<string, Conditional>> $plugin          The plugin to retrieve the data from.
 	 *
 	 * @return Yoast_Notification The notification containing the suggested plugin.
 	 */
-	protected function get_yoast_seo_suggested_plugins_notification( $name, $plugin, $dependency_name ) {
-		$message = $this->create_install_suggested_plugin_message( $plugin, $dependency_name );
-
-		if ( $this->availability_checker->is_installed( $plugin ) && ! $this->availability_checker->is_active( $plugin['slug'] ) ) {
-			$message = $this->create_activate_suggested_plugin_message( $plugin, $dependency_name );
-		}
+	protected function get_yoast_seo_suggested_plugins_notification( $notification_id, $plugin ) {
+		$message = $this->create_install_suggested_plugin_message( $plugin );
 
 		return new Yoast_Notification(
 			$message,
 			[
-				'id'           => 'wpseo-suggested-plugin-' . $name,
+				'id'           => $notification_id,
 				'type'         => Yoast_Notification::WARNING,
 				'capabilities' => [ 'install_plugins' ],
 			]
@@ -103,22 +102,22 @@ class WPSEO_Suggested_Plugins implements WPSEO_WordPress_Integration {
 	/**
 	 * Creates a message to suggest the installation of a particular plugin.
 	 *
-	 * @param array $suggested_plugin   The suggested plugin.
-	 * @param array $third_party_plugin The third party plugin that we have a suggested plugin for.
+	 * @param array $suggested_plugin The suggested plugin.
 	 *
 	 * @return string The install suggested plugin message.
 	 */
-	protected function create_install_suggested_plugin_message( $suggested_plugin, $third_party_plugin ) {
-		/* translators: %1$s expands to Yoast SEO, %2$s expands to the dependency name, %3$s expands to the install link, %4$s expands to the more info link. */
-		$message      = __( '%1$s and %2$s can work together a lot better by adding a helper plugin. Please install %3$s to make your life better. %4$s.', 'wordpress-seo' );
+	protected function create_install_suggested_plugin_message( $suggested_plugin ) {
+		/* translators: %1$s expands to an opening strong tag, %2$s expands to the dependency name, %3$s expands to a closing strong tag, %4$s expands to an opening anchor tag, %5$s expands to a closing anchor tag. */
+		$message      = __( 'It looks like you aren\'t using our %1$s%2$s addon%3$s. %4$sUpgrade today%5$s to unlock more tools and SEO features to make your products stand out in search results.', 'wordpress-seo' );
 		$install_link = WPSEO_Admin_Utils::get_install_link( $suggested_plugin );
 
 		return sprintf(
 			$message,
-			'Yoast SEO',
-			$third_party_plugin,
+			'<strong>',
 			$install_link,
-			$this->create_more_information_link( $suggested_plugin['url'], $suggested_plugin['title'] )
+			'</strong>',
+			$this->create_more_information_link( $suggested_plugin['url'], $suggested_plugin['title'] ),
+			'</a>'
 		);
 	}
 
@@ -132,32 +131,10 @@ class WPSEO_Suggested_Plugins implements WPSEO_WordPress_Integration {
 	 */
 	protected function create_more_information_link( $url, $name ) {
 		return sprintf(
-			'<a href="%s" aria-label="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+			'<a href="%s" aria-label="%s" target="_blank" rel="noopener noreferrer">',
 			$url,
-			/* translators: %1$s expands to the dependency name. */
-			sprintf( __( 'More information about %1$s', 'wordpress-seo' ), $name ),
-			__( 'More information', 'wordpress-seo' )
-		);
-	}
-
-	/**
-	 * Creates a message to suggest the activation of a particular plugin.
-	 *
-	 * @param array $suggested_plugin   The suggested plugin.
-	 * @param array $third_party_plugin The third party plugin that we have a suggested plugin for.
-	 *
-	 * @return string The activate suggested plugin message.
-	 */
-	protected function create_activate_suggested_plugin_message( $suggested_plugin, $third_party_plugin ) {
-		/* translators: %1$s expands to Yoast SEO, %2$s expands to the dependency name, %3$s expands to activation link. */
-		$message        = __( '%1$s and %2$s can work together a lot better by adding a helper plugin. Please activate %3$s to make your life better.', 'wordpress-seo' );
-		$activation_url = WPSEO_Admin_Utils::get_activation_url( $suggested_plugin['slug'] );
-
-		return sprintf(
-			$message,
-			'Yoast SEO',
-			$third_party_plugin,
-			sprintf( '<a href="%s">%s</a>', $activation_url, $suggested_plugin['title'] )
+			/* translators: Hidden accessibility text; %1$s expands to the dependency name */
+			sprintf( __( 'More information about %1$s', 'wordpress-seo' ), $name )
 		);
 	}
 }

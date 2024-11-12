@@ -69,6 +69,9 @@
 				$optgroup.prop( 'label', broadcast_strings.broadcast );
 				$optgroup.appendTo( $select );
 
+				// We use this to prevent the popup from activating twice on ACF forms.
+				$this.data( 'popup_active', false );
+
 				// Take over the apply buttons
 				$( '.button.action' )
 				.on( 'click', function()
@@ -94,12 +97,23 @@
 						return false;
 					}
 
+					if ( $this.data( 'popup_active' ) == true )
+						return false;
+
+					$this.data( 'popup_active', true );
+
 					// Retrieve the action.
 					var value = $selected.prop( 'value' );
 					var action = broadcast_bulk_post_actions[ value ];
 					// Use the callback.
 					$this.busy( true );
 					action.callback( $this );
+
+					setTimeout( function()
+					{
+						$this.data( 'popup_active', false );
+					}, 1000 );
+
 					return false;
 				} );
 

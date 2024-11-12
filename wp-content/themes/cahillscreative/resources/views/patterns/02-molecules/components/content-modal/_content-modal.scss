@@ -1,0 +1,84 @@
+.c-content-modal {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: $c-overlay;
+  opacity: 0;
+  visibility: hidden;
+  z-index: -1;
+  pointer-events: none;
+  transition: opacity 0.25s $transition-effect, visibility 0.25s $transition-effect;
+  padding-top: 50px;
+
+  &__close {
+    padding: $space;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    background: transparent;
+    color: white;
+
+    .o-icon {
+      transition: $transition-all;
+      transform: scale(1);
+
+      @include media("<=small") {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    &:hover,
+    &:focus {
+      color: $c-white;
+      background-color: transparent;
+
+      svg {
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  &__content {
+    padding: $space;
+  }
+
+  &__body {
+    padding: $space;
+    max-width: $max-width;
+    max-height: calc(100vh - 100px);
+    overflow: auto;
+
+    @include align-center;
+
+    img {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  &.is-active {
+    pointer-events: all;
+    opacity: 1;
+    visibility: visible;
+    z-index: 99999;
+  }
+}
+
+body.content-modal-is-active {
+  overflow: hidden;
+
+  .c-content-modal {
+    pointer-events: all;
+    opacity: 1;
+    visibility: visible;
+    z-index: 999999;
+  }
+}

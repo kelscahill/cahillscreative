@@ -41,6 +41,8 @@ class Woocommerce_Permalinks implements Integration_Interface {
 	 * Registers the hooks.
 	 *
 	 * @codeCoverageIgnore
+	 *
+	 * @return void
 	 */
 	public function register_hooks() {
 		\add_filter( 'wpseo_post_types_reset_permalinks', [ $this, 'filter_product_from_post_types' ] );
@@ -63,11 +65,13 @@ class Woocommerce_Permalinks implements Integration_Interface {
 	/**
 	 * Resets the indexables for WooCommerce based on the changed permalink fields.
 	 *
-	 * @param array $old The old value.
-	 * @param array $new The new value.
+	 * @param array $old_value The old value.
+	 * @param array $new_value The new value.
+	 *
+	 * @return void
 	 */
-	public function reset_woocommerce_permalinks( $old, $new ) {
-		$changed_options = \array_diff( $old, $new );
+	public function reset_woocommerce_permalinks( $old_value, $new_value ) {
+		$changed_options = \array_diff( $old_value, $new_value );
 
 		if ( \array_key_exists( 'product_base', $changed_options ) ) {
 			$this->indexable_helper->reset_permalink_indexables( 'post', 'product' );

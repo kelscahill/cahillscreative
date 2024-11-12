@@ -1,0 +1,22 @@
+{% set base_class = search_form.base_class|default('c-search-form') %}
+
+<form class="{{ bem_classes(base_class, search_form.element, search_form.modifiers, search_form.extra) }} l-container--s" action="{{ site.url }}" method="get" role="search">
+  <label class="o-form-item__label is-vishidden">Search</label>
+  <input class="o-form-item__search" name="s" type="text" placeholder="Search...">
+  {% include "@atoms/buttons/button.twig" with {
+    "button": {
+      "text": "Search",
+      "extra": [
+        "o-form-item__button"
+      ],
+      "icon": {
+        "title": "Search",
+        "name": "search",
+        "modifiers": "large"
+      },
+      "attributes": {
+        "aria-label": "Search"
+      }
+    }
+  } %}
+</form>

@@ -1,0 +1,25 @@
+{% set base_class = newsletter_signup.base_class|default('c-newsletter-signup-footer') %}
+
+{% if options.mailchimp_url %}
+  <div class="{{ bem_classes(base_class, newsletter_signup.element, newsletter_signup.modifiers, newsletter_signup.extra) }} u-spacing">
+    <div class="{{ bem_classes(base_class, 'heading') }} u-spacing--half">
+      {% include "@atoms/text/heading/heading.twig" with {
+        "heading": {
+          "level": "3",
+          "size": "s",
+          "type": "secondary",
+          "text": options.newsletter_title,
+          "extra": bem_classes(base_class, 'title')
+        }
+      } %}
+      <p>{{ options.newsletter_description }}</p>
+    </div>
+    <div class="{{ bem_classes(base_class, 'form') }}">
+      {% include "@molecules/components/newsletter-signup/newsletter-signup-form.twig" with {
+        "newsletter_signup": {
+          "extra": "u-spacing"
+        }
+      } %}
+    </div>
+  </div>
+{% endif %}

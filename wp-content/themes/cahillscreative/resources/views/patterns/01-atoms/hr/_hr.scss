@@ -1,0 +1,15 @@
+hr {
+  @include o-hr;
+}
+
+.o-hr {
+  @include o-hr;
+
+  &--responsive {
+    @include o-hr--responsive;
+  }
+
+  &--small {
+    @include o-hr--small;
+  }
+}

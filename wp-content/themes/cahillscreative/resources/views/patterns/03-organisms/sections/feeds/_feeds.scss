@@ -1,0 +1,324 @@
+.c-post-grid {
+  &__posts {
+    width: 100%;
+  }
+
+  .search & {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.c-related-posts,
+.c-posts-slider {
+  position: relative;
+  margin-top: $space-quadruple;
+
+  &--tertiary {
+    padding-top: 0;
+    padding-bottom: $space-super;
+    background-color: $c-tertiary;
+
+    .c-related-posts__header {
+      background-color: transparent;
+
+      .c-page-header__icon {
+        background-color: $c-tertiary;
+        border: none;
+        margin-top: -40px;
+      }
+    }
+
+    &.u-padding__quad--bottom {
+      padding-bottom: $space-quadruple;
+    }
+  }
+
+  &__wrap {
+    max-width: calc(#{$max-width-xxl} + #{$space-double});
+  }
+
+  &__posts {
+    position: relative;
+  }
+
+  .slick-list {
+    margin: 0 $space;
+  }
+
+  .slick-arrow {
+    @include o-heading__secondary--s;
+    position: absolute;
+    text-indent: 0;
+    padding: 0;
+    z-index: 2;
+    width: 80px;
+    height: 40px;
+    line-height: 40px;
+    display: block;
+    overflow: visible;
+    color: $c-black;
+
+    &:hover,
+    &:focus {
+      background-color: transparent;
+      color: $c-secondary;
+    }
+
+    &::before {
+      display: none;
+    }
+
+    &.slick-prev {
+      left: -35px;
+      transform: rotate(-90deg);
+    }
+
+    &.slick-next {
+      right: -35px;
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.c-related-products {
+  &__row {
+    padding-top: $space-quadruple;
+    margin-top: $space-quadruple;
+    overflow: hidden;
+    background: linear-gradient(to bottom, white, rgb(255 255 255 / 0%));
+  }
+
+  &__wrap {
+    position: relative;
+  }
+
+  &__header {
+    display: flex;
+
+    @include media('<=small') {
+      width: 50%;
+    }
+
+    .o-link {
+      margin-left: $space;
+      flex-direction: row-reverse;
+      color: $c-secondary;
+      white-space: nowrap;
+
+
+      @include media('>large') {
+        margin-left: $space-double;
+      }
+
+      &:hover,
+      &:focus {
+        text-decoration: underline;
+      }
+
+      .o-icon {
+        transform: rotate(-90deg);
+        margin-left: $space-one-fourth;
+      }
+
+      svg path {
+        fill: $c-secondary;
+      }
+    }
+  }
+}
+
+.c-related-posts--tertiary + .c-footer,
+.c-posts-slider--tertiary + .c-footer {
+  position: relative;
+  margin-top: -175px;
+}
+
+.c-promo + .c-footer {
+  margin-top: $space-double;
+
+  @include media('>medium') {
+    position: relative;
+    margin-top: -55px;
+  }
+}
+
+.c-featured-products {
+  padding-top: $space-quadruple;
+  padding-bottom: $space-quadruple;
+  margin-top: $space-quadruple;
+  overflow: hidden;
+
+  &__header {
+    @include media('<=small') {
+      width: 50%;
+    }
+  }
+
+  &.has-footer-overlay {
+    padding-bottom: $space-super;
+    margin-bottom: calc(-95px - #{$space-quadruple});
+  }
+}
+
+.js-slick-products.slick-slider {
+  overflow: visible;
+  margin-left: calc($space-half * -1);
+  margin-right: calc($space-half * -1);
+
+  .slick-list {
+    overflow: visible;
+  }
+
+  .slick-arrow {
+    position: absolute;
+    top: -60px;
+    right: $space-half;
+    z-index: 999;
+    background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80.5 20.71"%3E%3Cpath d="M80.35,10.71l-10,10-.7-.71,9.14-9.15H0v-1H78.79L69.65.71l.7-.71,10,10A.5.5,0,0,1,80.35,10.71Z" fill="%23000"/%3E%3C/svg%3E') no-repeat;
+    background-size: 60px 20px;
+    width: 60px;
+    height: 20px;
+
+    @include media('>medium') {
+      background-size: 80px 20px;
+      width: 80px;
+    }
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .slick-prev {
+    right: 90px;
+    transform: rotate(180deg);
+    background-position: left center;
+
+    @include media('>medium') {
+      right: 110px;
+    }
+  }
+
+  .slick-next {
+    background-position: right center;
+  }
+}
+
+.c-post-filter {
+  padding-top: $space-double;
+}
+
+.c-filter {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  width: 100vw;
+  background-color: $c-white;
+  margin-left: calc($space * -1);
+  margin-right: calc($space * -1);
+  overflow: hidden;
+
+  @include media('>medium') {
+    position: relative;
+    width: auto;
+    margin-left: 0;
+    margin-right: 0;
+    z-index: 1;
+  }
+
+  &.this-is-active {
+    .c-filter__bar {
+      &::after {
+        transform: rotate(180deg);
+      }
+    }
+
+    .c-filter__content {
+      opacity: 1;
+      visibility: visible;
+      max-height: calc(100vh - 50px);
+      padding: $space;
+    }
+  }
+
+  &__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: $header-height;
+    border-bottom: $border--standard;
+    padding: 0 $space;
+
+    @include media('>medium') {
+      border: none;
+      height: auto;
+      padding: 0;
+      pointer-events: none;
+    }
+
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+
+      .o-icon {
+        position: relative;
+        //top: -4px;
+      }
+    }
+
+    &::after {
+      content: "";
+      display: block;
+      background: url('data:image/svg+xml,%3Csvg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.5 8.7"%3E%3Cpath d="M6.5,8.3c0.4,0.4,1,0.5,1.4,0.1c0,0,0.1-0.1,0.1-0.1l6.5-7L13,0L7.2,6.2L1.5,0L0,1.3L6.5,8.3z" fill="%23333" /%3E%3C/svg%3E') center center no-repeat;
+      background-size: 15px 15px;
+      width: 15px;
+      height: 15px;
+      transform: rotate(0);
+      transition: $transition-all;
+
+      @include media('>medium') {
+        display: none;
+      }
+    }
+  }
+
+  &__content {
+    opacity: 0;
+    visibility: hidden;
+    overflow: auto;
+    max-height: 0;
+    background-color: $c-white;
+
+    @include media('>medium') {
+      opacity: 1;
+      visibility: visible;
+      overflow: inherit;
+      max-height: none;
+    }
+
+    &::-webkit-scrollbar {
+      width: 10px;
+      border-radius: 10px;
+      background-color: $c-gray;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: $c-primary;
+    }
+
+    &::-webkit-scrollbar-track {
+      border-radius: 10px;
+      background-color: white;
+    }
+
+    > *:not(:first-child) {
+      margin-top: $space-half;
+      padding-top: $space-half;
+      border-top: $border--standard;
+    }
+  }
+}

@@ -1,8 +1,0 @@
-{% if post.filter_id %}
-  <section class="section section__filter spacing--double">
-    <div class="layout-container narrow narrow--xl">
-      {{ function('do_shortcode', '[searchandfilter slug="'~ post.filter_id ~'"]') }}
-      {{ function('do_shortcode', '[searchandfilter slug="'~ post.filter_id ~'" show="results"]') }}
-    </div>
-  </section>
-{% endif %}

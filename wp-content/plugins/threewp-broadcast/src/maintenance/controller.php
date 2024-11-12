@@ -13,6 +13,7 @@ class controller
 	public function __construct()
 	{
 		$this->broadcast = \threewp_broadcast\ThreeWP_Broadcast::instance();
+		add_action( 'threewp_broadcast_maintenance_populate_checks', [ $this, 'threewp_broadcast_maintenance_populate_checks' ] );
 	}
 
 	public function __toString()
@@ -84,7 +85,7 @@ class controller
 			$check->next_step( 'start' );
 			$row = $table->body()->row();
 			$name = sprintf( '<a href="%s">%s</a>',
-				add_query_arg( [ 'do_check' => $check->get_id() ] ),
+				esc_url( add_query_arg( [ 'do_check' => $check->get_id() ] ) ),
 				$check->get_name()
 			);
 			$row->td()->text( $name );
@@ -117,9 +118,28 @@ class controller
 	**/
 	public function get_action_url( $check, $action_name )
 	{
-		return add_query_arg( [
+		$r = add_query_arg( [
 			'check' => $check->get_id(),
 			'action' => $action_name,
 		] );
+		$r = esc_url( $r );
+		return $r;
+	}
+
+	/**
+		@brief		threewp_broadcast_maintenance_populate_checks
+		@since		2022-09-19 20:45:05
+	**/
+	public function threewp_broadcast_maintenance_populate_checks( $action )
+	{
+		$action->checks->add_check( new checks\broadcast_data\check );
+		$action->checks->add_check( new checks\simple_broadcast_data\check );
+		$action->checks->add_check( new checks\database_table_cleanup\check );
+		$action->checks->add_check( new checks\database_tools\check );
+		$action->checks->add_check( new checks\view_broadcast_data\check );
+		$action->checks->add_check( new checks\view_blog_access\check );
+		$action->checks->add_check( new checks\view_post_info\check );
+		$action->checks->add_check( new checks\view_taxonomy_info\check );
+		$action->checks->add_check( new checks\view_user_info\check );
 	}
 }

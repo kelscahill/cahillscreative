@@ -1,0 +1,13 @@
+name: cahillscreative
+domain: local.host
+proxy:
+  appserver:
+    - cahillscreative.local.host
+    - thehappyglamper.local.host
+recipe: wordpress
+config:
+  webroot: .
+  php: '8.1'
+excludes:
+  - wp-content/themes/cahillscreative/vendor
+  - wp-content/themes/cahillscreative/node_modules

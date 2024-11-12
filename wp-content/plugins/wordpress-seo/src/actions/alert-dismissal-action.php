@@ -9,7 +9,7 @@ use Yoast\WP\SEO\Helpers\User_Helper;
  */
 class Alert_Dismissal_Action {
 
-	const USER_META_KEY = '_yoast_alerts_dismissed';
+	public const USER_META_KEY = '_yoast_alerts_dismissed';
 
 	/**
 	 * Holds the user helper instance.
@@ -32,7 +32,7 @@ class Alert_Dismissal_Action {
 	 *
 	 * @param string $alert_identifier Alert identifier.
 	 *
-	 * @return boolean Whether the dismiss was successful or not.
+	 * @return bool Whether the dismiss was successful or not.
 	 */
 	public function dismiss( $alert_identifier ) {
 		$user_id = $this->user->get_current_user_id();
@@ -66,7 +66,7 @@ class Alert_Dismissal_Action {
 	 *
 	 * @param string $alert_identifier Alert identifier.
 	 *
-	 * @return boolean Whether the reset was successful or not.
+	 * @return bool Whether the reset was successful or not.
 	 */
 	public function reset( $alert_identifier ) {
 		$user_id = $this->user->get_current_user_id();
@@ -134,7 +134,8 @@ class Alert_Dismissal_Action {
 	/**
 	 * Returns an object with all alerts dismissed by current user.
 	 *
-	 * @return array An array with the keys of all Alerts that have been dismissed by the current user.
+	 * @return array|false An array with the keys of all Alerts that have been dismissed
+	 *                     by the current user or `false`.
 	 */
 	public function all_dismissed() {
 		$user_id = $this->user->get_current_user_id();
@@ -195,7 +196,7 @@ class Alert_Dismissal_Action {
 		/**
 		 * Filter: 'wpseo_allowed_dismissable_alerts' - List of allowed dismissable alerts.
 		 *
-		 * @api string[] $allowed_dismissable_alerts Allowed dismissable alerts list.
+		 * @param string[] $allowed_dismissable_alerts Allowed dismissable alerts list.
 		 */
 		$allowed_dismissable_alerts = \apply_filters( 'wpseo_allowed_dismissable_alerts', [] );
 

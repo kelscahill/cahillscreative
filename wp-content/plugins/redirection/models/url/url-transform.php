@@ -9,8 +9,8 @@ class Red_Url_Transform {
 	 *
 	 * From the distant Redirection past. Undecided whether to keep
 	 *
-	 * @param String $url Target URL.
-	 * @return String
+	 * @param string $url Target URL.
+	 * @return string
 	 */
 	public function transform( $url ) {
 		// Deprecated number post ID
@@ -28,7 +28,7 @@ class Red_Url_Transform {
 
 		remove_all_shortcodes();
 
-		$shortcodes = [
+		$shortcodes = apply_filters( 'redirection_shortcodes', [
 			'userid',
 			'userlogin',
 			'unixtime',  // Also replaces $dec$
@@ -39,7 +39,7 @@ class Red_Url_Transform {
 			'lower',
 			'dashes',
 			'underscores',
-		];
+		] );
 
 		foreach ( $shortcodes as $code ) {
 			add_shortcode( $code, [ $this, 'do_shortcode' ] );
@@ -69,10 +69,10 @@ class Red_Url_Transform {
 
 		switch ( $tag ) {
 			case 'userid':
-				return (string) ( $user->ID || 0 );
+				return (string) $user->ID;
 
 			case 'userlogin':
-				return $user->ID ? $user->user_login : '';
+				return $user->ID > 0 ? $user->user_login : '';
 
 			case 'unixtime':
 				return (string) time();

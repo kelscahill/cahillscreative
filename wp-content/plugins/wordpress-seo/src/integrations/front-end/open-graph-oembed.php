@@ -35,6 +35,13 @@ class Open_Graph_OEmbed implements Integration_Interface {
 	private $post_id;
 
 	/**
+	 * The post meta.
+	 *
+	 * @var Meta|false
+	 */
+	private $post_meta;
+
+	/**
 	 * Returns the conditionals based in which this loadable should be active.
 	 *
 	 * @return array
@@ -69,29 +76,35 @@ class Open_Graph_OEmbed implements Integration_Interface {
 	 * address the concern where some social channels/subscribed use oEmebed data over Open Graph data
 	 * if both are present.
 	 *
+	 * @link https://developer.wordpress.org/reference/hooks/oembed_response_data/ for hook info.
+	 *
 	 * @param array   $data The oEmbed data.
 	 * @param WP_Post $post The current Post object.
 	 *
-	 * @return array $filter_data - An array of oEmbed data with modified values where appropriate.
-	 * @link https://developer.wordpress.org/reference/hooks/oembed_response_data/ for hook info.
+	 * @return array An array of oEmbed data with modified values where appropriate.
 	 */
 	public function set_oembed_data( $data, $post ) {
 		// Data to be returned.
-		$this->data    = $data;
-		$this->post_id = $post->ID;
+		$this->data      = $data;
+		$this->post_id   = $post->ID;
+		$this->post_meta = $this->meta->for_post( $this->post_id );
 
-		$this->set_title();
-		$this->set_description();
-		$this->set_image();
+		if ( ! empty( $this->post_meta ) ) {
+			$this->set_title();
+			$this->set_description();
+			$this->set_image();
+		}
 
 		return $this->data;
 	}
 
 	/**
 	 * Sets the OpenGraph title if configured.
+	 *
+	 * @return void
 	 */
 	protected function set_title() {
-		$opengraph_title = $this->meta->for_post( $this->post_id )->open_graph_title;
+		$opengraph_title = $this->post_meta->open_graph_title;
 
 		if ( ! empty( $opengraph_title ) ) {
 			$this->data['title'] = $opengraph_title;
@@ -100,9 +113,11 @@ class Open_Graph_OEmbed implements Integration_Interface {
 
 	/**
 	 * Sets the OpenGraph description if configured.
+	 *
+	 * @return void
 	 */
 	protected function set_description() {
-		$opengraph_description = $this->meta->for_post( $this->post_id )->open_graph_description;
+		$opengraph_description = $this->post_meta->open_graph_description;
 
 		if ( ! empty( $opengraph_description ) ) {
 			$this->data['description'] = $opengraph_description;
@@ -111,16 +126,19 @@ class Open_Graph_OEmbed implements Integration_Interface {
 
 	/**
 	 * Sets the image if it has been configured.
+	 *
+	 * @return void
 	 */
 	protected function set_image() {
-		$images = $this->meta->for_post( $this->post_id )->open_graph_images;
-		$image  = \reset( $images );
+		$images = $this->post_meta->open_graph_images;
 
-		if ( empty( $image ) ) {
+		if ( ! \is_array( $images ) ) {
 			return;
 		}
 
-		if ( ! isset( $image['url'] ) ) {
+		$image = \reset( $images );
+
+		if ( empty( $image ) || ! isset( $image['url'] ) ) {
 			return;
 		}
 

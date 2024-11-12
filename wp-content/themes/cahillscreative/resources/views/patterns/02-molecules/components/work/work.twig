@@ -1,0 +1,32 @@
+{% set base_class = work.base_class|default('c-work') %}
+
+{% if post.meta('work') %}
+  <div class="{{ bem_classes(base_class, work.element, work.modifiers, work.extra) }} l-container--m u-spacing--quad">
+    {% for item in post.meta('work') %}
+      <div class="{{ bem_classes(base_class, 'item') }} u-spacing--double">
+        {% include "@atoms/text/heading/heading.twig" with {
+          "heading": {
+            "level": "6",
+            "size": "s",
+            "type": "secondary",
+            "text": item.work_section_title,
+            "extra": bem_classes(base_class, 'heading')
+          }
+        } %}
+        <hr class="o-hr--small" />
+        {% for image in item.work_section_images %}
+          {% include "@atoms/images/image/figure.twig" with {
+            "figure": {
+              "image": {
+                "srcset": get_image(image).src|towebp|resize(500) ~ ' 500w, ' ~ get_image(image).src|towebp|resize(720) ~ ' 720w, ' ~ get_image(image).src|towebp|resize(960) ~ ' 960w',
+                "src": get_image(image).src|towebp,
+                "alt": get_image(image).alt,
+                "caption": get_image(image).caption
+              }
+            }
+          } %}
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}

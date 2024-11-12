@@ -3,10 +3,10 @@ Contributors: edward_plainview
 Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
-Requires PHP: 5.4
-Stable tag: 47.03
-Tags: multipost, sharing, duplicate, franchise, syndication, marketing, news, hub
-Tested up to: 5.7
+Requires PHP: 8.0
+Stable tag: 50.15
+Tags: multipost, sharing, duplicate, syndication, marketing
+Tested up to: 6.6
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -60,7 +60,7 @@ There are several <a href="https://broadcast.plainviewplugins.com/">Broadcast ad
 3rd party pack
 --------------
 
-The following add-ons add support for the plugin after which they are named.
+The following add-ons add support for the plugin after which they are named:
 
 * <a href="https://broadcast.plainviewplugins.com/addon/activity-monitor/">Activity Monitor</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">Advanced Custom Fields</a>
@@ -70,6 +70,7 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/avia-layout-builder/">Avia Layout Builder</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/bbpress/">bbPress</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/beaver-builder/">Beaver Builder</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/bricks-builder/">Bricks Builder</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/caldera-forms/">Caldera Forms</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/calendarize-it/">Calendarize It</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/category-order-and-taxonomy-terms-order/">Category Order and Taxonomy Terms Order</a>
@@ -96,9 +97,10 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/h5p/">H5P</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/image-map-pro/">Image Map Pro</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/imagify/">Imagify</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/inboundnow/">Inbound Now</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/intagrate/">Intagrate</a>
-* <a href="https://broadcast.plainviewplugins.com/addon/jetpack/">Jetpack</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/litespeed-cache/">LiteSpeed Cache</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/mailster/">Mailster</a>
@@ -111,6 +113,9 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/pods/">Pods</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/polylang/">Polylang</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/post-expirator/">Post Expirator</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/rank-math-seo/">Rank Math SEO</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/search-and-filter/">Search And Filter</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/search-exclude/">Search Exclude</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/sensei/">Sensei</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/simple-custom-post-order/">Simple Custom Post Order</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/siteorigin-page-builder/">SiteOrigin Page Builder</a>
@@ -121,7 +126,6 @@ The following add-ons add support for the plugin after which they are named.
 * <a href="https://broadcast.plainviewplugins.com/addon/tao-schedule-update/">Tao Schedule Update</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/the-events-calendar/">The Events Calendar</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/toolset/">Toolset</a>
-* <a href="https://broadcast.plainviewplugins.com/addon/translatepress/">TranslatePress</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/ubermenu/">UberMenu</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/ultimate-member/">Ultimate Member</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/unyson/">Unyson</a>
@@ -143,7 +147,7 @@ If you don't see your plugin in this list, it <a href="https://broadcast.plainvi
 Control pack
 ------------
 
-These add-ons give you extra control of what you broadcast and how.
+These add-ons give you extra control of what you broadcast and how:
 
 * <a href="https://broadcast.plainviewplugins.com/addon/all-blogs/">All Blogs</a> gives all users access to all of the blogs in the network.
 * <a href="https://broadcast.plainviewplugins.com/addon/all-blogs/">All Blogs Superadmin</a> allows only superadmins to broadcast to all blogs in the network without having to be a user of the blog.
@@ -169,13 +173,18 @@ These add-ons give you extra control of what you broadcast and how.
 * <a href="https://broadcast.plainviewplugins.com/addon/per-blog-taxonomies/">Per Blog Taxonomies</a> allows individual control of specific taxonomies for each child post.
 * <a href="https://broadcast.plainviewplugins.com/addon/permalinks/">Permalinks</a> provides more precise control of permalinks for both parents and children.
 * <a href="https://broadcast.plainviewplugins.com/addon/protect-child-properties/">Protect Child Properties</a> prevents various properties of child posts from being overwritten.
+* <a href="https://broadcast.plainviewplugins.com/addon/rebroadcaster/">Rebroadcaster</a>: Periodically and automatically rebroadcast specific posts.
+* <a href="https://broadcast.plainviewplugins.com/addon/rebroadcast-parent-here/"Rebroadcast Parent Here</a>: Rebroadcast the parent to this linked child.
 * <a href="https://broadcast.plainviewplugins.com/addon/redirect-all-children/">Redirect All Children</a> redirects single post views from visitors of child posts to the parent post.
 * <a href="https://broadcast.plainviewplugins.com/addon/redirect-parent/">Redirect Parent</a> redirect all views of a parent post to the first child post.
+* <a href="https://broadcast.plainviewplugins.com/addon/relink-to-parent/">Relink To Parent</a>: Relink an unlinked child to the parent.
+* <a href="https://broadcast.plainviewplugins.com/addon/same-post-id/">Same post ID</a>: Create a new post on several blogs with the same post ID.
 * <a href="https://broadcast.plainviewplugins.com/addon/search-and-replace/">Search And Replace</a> finds and replaces texts in posts during broadcast.
 * <a href="https://broadcast.plainviewplugins.com/addon/shortcode-attachments/">Shortcode Attachments</a> modifies attachment IDs found in shortcodes to match their equivalent attachments on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/shortcode-menus/">Shortcode Menus</a> modifies menu IDs found in shortcodes to match their equivalent menus on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/shortcode-posts/">Shortcode Posts</a> modifies post IDs found in shortcodes to match their equivalent posts on each blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/shortcode-terms/">Shortcode Terms</a> automatically translates taxonomy term IDs found in shortcodes when broadcasting.
+* <a href="https://broadcast.plainviewplugins.com/addon/term-meta-attachments//">Term Meta Attachments</a>: Allow taxonomy term meta containing attachment IDs to be broadcasted correctly.
 * <a href="https://broadcast.plainviewplugins.com/addon/thumbnail-sizes/">Thumbnail Sizes</a> allows for different additional thumbnail sizes on a per-blog basis.
 * <a href="https://broadcast.plainviewplugins.com/addon/update-attachments/">Update Attachments</a> updates existing attachments by copying over the files to the child blogs.
 * <a href="https://broadcast.plainviewplugins.com/addon/update-family/">Update Family</a> updates the parent post and siblings when editing a child post.
@@ -186,25 +195,30 @@ These add-ons give you extra control of what you broadcast and how.
 Efficiency pack
 ---------------
 
-These add-ons allow you to broadcast more efficiently, saving you even more time.
+These add-ons allow you to broadcast more efficiently, saving you even more time:
 
 * <a href="https://broadcast.plainviewplugins.com/addon/blog-groups-2/">Blog Groups 2</a> provides a means of groups blogs together, in order to be able to quickly select and unselect blogs from the Broadcast meta box.
+* <a href="https://broadcast.plainviewplugins.com/addon/blog-search/">Blog Search</a>: Search and filter the blog list in the editor meta box.
 * <a href="https://broadcast.plainviewplugins.com/addon/duplicate-attachments/">Duplicate Attachments</a> will duplicate the attachment and thumbnails, instead of letting WordPress regenerate them.
 * <a href="https://broadcast.plainviewplugins.com/addon/find-some-unlinked-children/">Find Some Unlinked Children</a> can selectively link orphans / unlinked posts to parents, instead of automatically linking all found children.
 * <a href="https://broadcast.plainviewplugins.com/addon/new-blog/">New Blog Broadcast</a> automatically broadcasts posts when creating a new blog.
 * <a href="https://broadcast.plainviewplugins.com/addon/purge-children/">Purge Children</a> removes children and their attached files from child blogs.
 * <a href="https://broadcast.plainviewplugins.com/addon/queue/">Queue</a> adds a broadcast queue which helps to broadcast posts to tens / hundreds / thousands of blogs.
 * <a href="https://broadcast.plainviewplugins.com/addon/rebroadcast/">Rebroadcast</a> updates selected parent posts by using a bulk action.
+* <a href="https://broadcast.plainviewplugins.com/addon/rebroadcaster/">Rebroadcaster</a>: Periodically and automatically rebroadcast specific posts.
 * <a href="https://broadcast.plainviewplugins.com/addon/send-to-many/">Send To Many</a> allows mass broadcast of several posts to blogs at once.
 
 Utilities pack
 --------------
 
-These add-ons do things semi-related to broadcasting, but are good to have none-the-less.
+These add-ons do things semi-related to broadcasting, but are good to have none-the-less:
 
 * <a href="https://broadcast.plainviewplugins.com/addon/bulk-cloner/">Bulk Cloner</a> creates clones of existing blogs on the network.
 * <a href="https://broadcast.plainviewplugins.com/addon/cdn-workaround/">CDN Workaround</a> works around faulty CDNs that do not report the correct URL for attachments.
+* <a href="https://broadcast.plainviewplugins.com/addon/code-snippets/"></a>: Run code snippets on specific blogs.
 * <a href="https://broadcast.plainviewplugins.com/addon/copy-options/">Copy options</a> copies blog options / settings between blogs.
+* <a href="https://broadcast.plainviewplugins.com/addon/cron-everywhere/"></a>: Runs WordPress cron periodically on all sites of the network.
+* <a href="https://broadcast.plainviewplugins.com/addon/custom-field-cleanup/">Custom Field Cleanup</a>: Cleans up the custom fields of a post.
 * <a href="https://broadcast.plainviewplugins.com/addon/lock-post/">Lock Post</a> allows users to lock editing of posts / pages to only themselves and super admins.
 * <a href="https://broadcast.plainviewplugins.com/addon/manual-post-actions/">Manual Post Actions</a> manually runs bulk post actions on posts.
 * <a href="https://broadcast.plainviewplugins.com/addon/media-cleanup/">Media Cleanup</a>: cleans up unused media by looking for unused items in the database and on disk.
@@ -304,11 +318,12 @@ The broadcast meta box, menu and columns in the post view can be hidden from use
 
 Below is a list of plugins that just will not work properly with Broadcast and / or its addons:
 
-* <a href="https://wordpress.org/plugins/intuitive-custom-post-order/">Intuitive Custom Post Order</a> - Prevents broadcasting due to switch_to_blog() mismatch.
+* <a href="https://wordpress.org/plugins/cf-image-resizing/">Cloudflare Image Resizing</a> - Creates 404 errors for images.
 * Post Type Switcher - Turns post types into attachments and vice versa.
 * <a href="https://wordpress.org/plugins/query-monitor/">Query Monitor</a> causes the queue data to increase exponentially.
 * Theia Smart Thumbnails Premium
 * <a href="http://intellywp.com/tracking-code-manager/">Tracking Code Manager</a> - prevents User & Blog Settings from working by inserting data into the _POST variable during a normal page GET. Very non-standard behavior.
+* <a href="https://wordpress.org/plugins/wp-security-audit-log/">WP Activity Log</a> - kills Wordpress when taxonomies are about to be synced.
 
 = Orphans? =
 
@@ -355,301 +370,172 @@ If your products have variations, a product image gallery, you want to sync stoc
 
 == Changelog ==
 
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/all-in-one-seo/">All In One SEO</a> adds support for the <a href="https://wordpress.org/plugins/all-in-one-seo-pack/">All in One SEO</a> plugin.
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/generatepress/">GeneratePress</a> adds support for the <a href="https://generatepress.com/">GeneratePress</a> theme / plugin.
-* Fix: Update javascript to be compatible with new Wordpress JQuery version.
-* Fix: Remove warning when checking for the taxonomy protect list.
+* 50.15 20241012 =
 
-= 47.02 20210216 =
+* Fix: Remove warning from Equivalent_Posts debug code that warns of an equivalent post not existing.
+* Tweak: Workaround define BROADCAST_PP_SSL_WORKAROUND removed since Wordpress no longer allows https transport workarounds.
 
-* Code: SDK update to fix checkbox values not correctly reported when saving. Fix mainly for code that uses get_post_value() instead of is_checked().
+= 50.14 20240824 =
 
-= 47.01 20210210 =
+* New add-on:<a href="https://broadcast.plainviewplugins.com/addon/bricks-builder/">Bricks Builder</a>: Adds support for the <a href="https://bricksbuilder.io/">Bricks Builder page editor</a>.
+* Fix: In the "Database table cleanup" maintenance tool, ignore base tables that contain numbers in their names.
+* Dev: Add get_attachment_id_from_url() function to help find image IDs based on URL.
 
-* <a href="https://broadcast.plainviewplugins.com/addon/permalink-manager/">Permalink Manager</a>: Adds support for the <a href="https://wordpress.org/plugins/permalink-manager/">Permalink Manager</a> plugin.
-* Code: SDK update.
+= 50.13 20240711 =
 
-= 46.19 20210127 =
+* Fix error when using the finding unlinked children bulk post action. Also effected the Link Before Broadcast add-on.
 
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/litespeed-cache/">LiteSpeed Cache</a>: Adds support for the <a href="https://wordpress.org/plugins/litespeed-cache/">LiteSpeed Cache</a> plugin.</li>
-* Fix: Broken time savings data.
-* Code: Add sync_taxonomy_start action.
-* Code: SDK update.
+= 50.12 20240706 =
 
-= 46.18 20201229 =
+* Fix error 500 when broadcasting. The error was a variable in the broadcasting data that was not being set.
 
-* Fix: Clear taxonomy cache for all taxonomies, not just categories.
-* Code: Update API to allow for low_priority() calls.
-* Code: Added broadcasting_after_modify_post action.
+= 50.11 20240706 =
 
-= 46.17 20201209 =
+* Fix looping when broadcasting a related post that has just been broadcasted.
+* Fix: Added WP Activity Log to the list of incompatible plugins.
+* Dev: Fixed lots of PHP 8.2 warnings.
+* Dev: Add option in Gutenberg parse_blocks code to dump block content once. Prevents several add-ons from all dumping the same blocks.
 
-* Fix: Prevent fatal error when programmatically broadcasting and the user does not have enough broadcasting permission.
+= 50.09 20240506 =
 
-= 46.16 20201203 =
+* New: Add database table cleanup maintenance tool, to remove orphaned tables from deleted sites.
+* Dev: Add $bcd->taxonomies()->forget_term_id() function to remove all traces of a term in the broadcasting_data.
 
-* Tweak: The custom field and taxonomies checkboxes in the Broadcast meta box in the editor are now selected by default and hidden.
+= 50.08 20240403 =
 
-So by default the custom fields and taxonomies are now automatically broadcasted. This should be fine for 99% of users.
+* Output more debug information regarding attachments.
+* Update Tested with version
 
-If your users need the checkboxes visible so that your users can uncheck the boxes, there's a setting for that: Admin > Broadcast > Settings tab > Misc subtab > Show extra checkboxes
+= 50.07 20240210 =
 
-See image here: <a href="https://broadcast.plainviewplugins.com/wp-content/uploads/2020/12/show-extra-checkboxes.png">https://broadcast.plainviewplugins.com/wp-content/uploads/2020/12/show-extra-checkboxes.png</a>
+* Update SDK
+* Update Tested with
 
-= 46.15 20201111 =
+= 50.06 20231108 =
 
-* New: Unlink posts on blogs that are being deleted.
-* Fix: Warning when overriding a link to a post that doesn't exist.
+* Fix: Added Cloudflare Image Resizing plugin to the list of incompatible plugins.
+* Tweak: Don't show "Preparsing" debug text if there are more than 5 terms in the taxonomy.
+* Dev: Add get_user_writable_blogs::remove_access() method.
 
-= 46.14 20201002 =
+= 50.05 20230918 =
 
-* Fix: Allow cron (user 0) to use Broadcast.
-* New: Add get_or_broadcast action for use with <a href="https://broadcast.plainviewplugins.com/snippet/do-not-broadcast-equivalent-posts/">this snippet</a>.
+* Fix: Fix error message when clicking on things in the broadcasted column. The problem was a double nonce - one form nonce is enough.
 
-= 46.13 20200922 =
+= 50.04 20230913 =
 
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/modern-events/">Modern Events</a> adds support for the <a href="https://wordpress.org/plugins/modern-events-calendar-lite/">Modern Events plugin</a>.
-* Fix: Scheduling for future posts.
+* Fix: Remove "attachment" as a broadcastable post type in the settings. Attachments can only really be broadcasted by being used in posts.
+* Tweak: Tested with 6.3
+* Tweak: Added hook priority info in info table.
 
-= 46.12 20200810 =
+= 50.01 20230407 =
 
-* Version bump for upcoming WP v5.5
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/create/">Create</a> adds support for the <a href="https://wordpress.org/plugins/mediavine-create/">Create</a> plugin from Mediavine.
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/soliloquy/">Soliloquy</a> adds support for the <a href="https://soliloquywp.com/">Soliloquy plugin</a>.
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/same-post-id/">Same post ID</a>: Create a new post on several blogs with the same post ID.
+* Code: SDK update for PHP 8.2 compatibility.
 
-= 46.10 20200714 =
+= 50 20230407 =
 
-* Fix: Escape image URLs when replacing them in the content.
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/parent-pull/">Parent Pull</a> allows content to be pulled from (parent) blogs.
-* New use-case: <a href="https://broadcast.plainviewplugins.com/2020/07/12/on-demand-content-syndication-with-broadcast-parent-pull/">On-Demand Content Syndication with Broadcast Parent Pull</a>
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/skip-if-unlinked/">Skip If Unlinked</a>: Do not broadcast to blogs that have an existing, unlinked post.
+* Code: Add API support for finding equivalent image IDs on blogs. See the api() get_equivalent_image_id() and get_equivalent_image_ids() functions./
 
-= 46.09 20200708 =
+= 49.07	20230325 =
 
-* Fix: Use the same mime type for attachments when copying them.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/category-order-and-taxonomy-terms-order/">Category Order and Taxonomy Terms Order</a>: Adds support for the <a href="https://wordpress.org/plugins/taxonomy-terms-order/">Category Order and Taxonomy Terms Order plugin</a>.
-* Tweak: Added Query Monitor to the list of incompatible plugins.
-* Tweak: Removed Category Order and Taxonomy Terms Order plugin from list of incompatible plugins.
+* Code: SDK update for PHP 8.1 compatibility.  No other changes.
 
-= 46.07 20200605 =
+= 49.06	20230303 =
 
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/wp-rocket/">WP Rocket</a>: Adds support for the <a href="https://wp-rocket.me/">WP Rocket</a> plugin.
-* New documentation: <a href="https://broadcast.plainviewplugins.com/doc/plugins-that-dont-require-special-add-ons/">Plugins that don't require special add-ons</a>, such as <a href="https://broadcast.plainviewplugins.com/2020/05/19/broadcasting-gutenberg-reusable-blocks/">Gutenberg Reusable Blocks</a> and Visual Composer / WP Bakery.
-* Fix: Removed warning "Undefined index: save_post" in misc trait.
+* New: Custom post type inclusion and exclusion lists added. Thanks to @jblifestyles from @hivedigital.
+* Code: Add Gutenberg helper functions.
 
-= 46.06 20200411 =
+= 49.05	20230210 =
 
-* Fix: Allow multiple term meta values per key.
-* Fix: Better finding of unlinked children. Removed the post hierarchical check that was previously required.
-* New doc: <a href="https://broadcast.plainviewplugins.com/snippet/network-media-library-fixing-broken-thumbnails/">Network Media Library: Fixing broken thumbnails</a>
+* Code: find_unlinked_children post action now accepts a list of blogs to link to. Affects the API and the Bulk CLoner and Find Some Unlinked Children add-ons.
 
-= 46.05 20200325 =
+= 49.04	20230127 =
 
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-protect/">Gutenberg Protect</a>: Protects specific Gutenberg blocks from being overwritten during broadcasting.
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/translatepress/">TranslatePress</a>: Adds support for the <a href="https://wordpress.org/plugins/translatepress-multilingual/">TranslatePress</a> plugin.
-* New doc: <a href="https://broadcast.plainviewplugins.com/merging-single-wordpress-installs-into-a-wordpress-network/">Merging single WordPress installs into a WordPress network</a>
-* Fix: Decrease broadcasting counter when aborting broadcasting.
-* Fix: Better parent post link override when working with TranslatePress links.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/search-exclude/">Search Exclude</a>: Adds support for the <a href="https://wordpress.org/plugins/search-exclude/">Search Exclude</a> plugin.
+* Fix: Featured image (_thumbnail_id) handler now obeys custom field protect list, allowing the featured image to be protected.
+* Fix: Fix javascript path for Windows installs.
 
-= 46.04 20200310 =
+= 49.02	20230104 =
 
-* Fix: Force Wordpress to set the date of scheduled posts.
+* Fix: Fix javascript for post actions.
+* Code: Mark parent terms as used also, so that they get synced (and allow add-ons to handle the terms also).
+* Code: More php 8.1 fixed
 
-= 46.03 20200224 =
+= 49.01	20221225 =
 
-* Fix: Unslash the child post content.
-* Fix: Properly decode Gutenberg blocks using unicode number encoding. \u0022.
-* Dev: Added attachment_matches filter to allow the attachments to be modified before matching them.
+* Code: Add broadcast_menu_target filter to allow the displayed menu override: all settings, broadcast info or no menu at all.
 
-= 46.02 20200212 =
+= 48.15 20221031 =
 
-* Fix: Delete broadcast data of posts on deleted blogs, preventing warnings in the post overview.
-* New snippet: <a href="https://broadcast.plainviewplugins.com/snippet/wpml-broadcasting-from-non-wpml-to-wpml-blogs/">WPML: Broadcasting from non-WPML to WPML blogs</a>
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/vimeography/">Vimeography</a>: Adds support for the <a href="https://wordpress.org/plugins/vimeography/">Vimeography</a> plugin.
+* Code: Broadcast now requires at least php 7.4
+* Code: Increase compatibility with php 8.1.
 
-= 46.01 20200116 =
+= 48.15 20221031 =
 
-* Fix: Keep track of synced taxonomies per blog, to allow for multisyncing of taxonomies. This internal API change allows ACF taxonomy fields to reference other taxonomies and still sync correctly.
+* Version bump for WP 6.1
+* Fix: Allow for PHP 7.2 again. I just needed to remove a comma in the code.
 
-= 45.07 20191211 =
+= 48.14 20221008 =
 
-* Fix: Try resyncing taxonomies that are empty. Some plugins block the display of taxonomies that are shared between post types. This change fixes some Post Expirator categories.
+* Fix: During maybe_sync_taxonomy(), mark the taxonomy as synced as soon as possible. This is to prevent looping in add-ons such as ACF, where taxonomies can be referred to by other taxonomies.
+* Fix: When trashing parent and child posts, avoid doing the work double.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/blog-search/">Blog Search</a>: Search and filter the blog list in the editor meta box.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Adds support for <a href="https://crocoblock.com/plugins/jetengine/custom-post-type/">JetEngine custom post types</a>.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/rebroadcast-parent-here/"Rebroadcast Parent Here</a>: Rebroadcast the parent to this linked child.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/relink-to-parent/">Relink To Parent</a>: Relink an unlinked child to the parent.
+* Code: Add trash_untrash_delete_post action.
+* Code: Link the post directly after creating it, instead of waiting until all attachments and taxonomies are synced.
 
-= 45.06 20191116 =
+= 48.12 20220727 =
 
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/update-family/">Update Family</a>: Update the parent post and siblings when editing a child post.
-* New: Add option to select where to show the select all / none blog selector. Admin > Broadcast > Settings > Misc
-* Fix: Do not resync already syncing taxonomies. Prevents looping in some cases.
-* Fix: Save equivalent taxonomy terms earlier. This fixes a syncing bug when taxonomies refer to other taxonomies.
+* Dev: Add helper methods to prepare_meta_box action.
 
-= 45.05 20191016 =
+= 48.11 20220525 =
 
-* Fix: All taxonomy terms being set when none are set.
+* Version bump for WP 6.0
 
-= 45.04 20191006 =
+= 48.09 20220418 =
 
-* Fix: Content and title changing to 0.
+* Fix: Exception when being activated on single installs.
 
-= 45.03 20191004 =
+= 48.07 20220226 =
 
-* <a href="https://broadcast.plainviewplugins.com/addon/fliphtml5/">Flip HTML5</a>: Adds support for <a href="http://fliphtml5.com/">Flip HTML5</a> plugin.
-* Fix: Replace attachment IDs in data-wp-pid attribute.
+* Fix: Prevent Wordpress from removing iframe tags in the post content.
+* Fix: Prevent Broadcast from being activated on single installs. Fixed the activate() on null error.
 
-= 45.02 20180919 =
+= 48.06 20220129 =
 
-* Fix: Replace the image URLs in post content later, to allow the various shortcode add-ons to correctly replace image IDs.
-* Fix: Replace attachment IDs in data-id attributes and ?attachment_id=123 URLs.
-* Fix: Add support for parsing multiline Gutenberg blocks.
-* Fix: Increase compatibility with add-ons that require syncing of extra taxonomies.
-* Fix: Linking API cache update, in case the same post is used to unlink and then link in the same request.
+* Tweak: Compatible with WP 5.9
+* Fix: Increase compatibility with PHP 8.1 by renaming the SDK's form class "readonly" trait.
 
-= 45.01 20180828 =
+= 48.05 20220106 =
 
-* Fix: Clean up missing taxonomies before trying to sync them. Fixes warnings in terms_and_taxonomies trait and fatal errors.
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-attachments/">Gutenberg Attachments</a>: Modify attachment IDs found in Gutenberg blocks to match their equivalent attachments on each blog.
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-menus/">Gutenberg Menus</a>: Modify menu IDs found in Gutenberg blocks to match their equivalent attachments on each blog.
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-posts/">Gutenberg Posts</a>: Modify post IDs found in Gutenberg blocks to match their equivalent attachments on each blog.
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/gutenberg-terms/">Gutenberg Terms</a>: Modify taxonomy term IDs found in Gutenberg blocks to match their equivalent attachments on each blog.
-* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/wp-ultimo/">WP Ultimo</a>: Adds support for the <a href="https://wpultimo.com/">WP Ultimo</a> plugin.
-* Dev: Add new broadcasting_data->try_add_attachment() to add attachments without throwing exceptions.
-* Dev: Added <a href="https://broadcast.plainviewplugins.com/doc/developer-api/">Linking API</a>.
+Happy new year!
 
-= 44.05 20190715 =
+* Fix: Mark taxonomies as synced earlier, preventing an infinite loop when a taxonomy has ACF fields that refer back to itself.
+* Fix: Execute the each_linked_post action on the parent post itself when called from the parent post.
 
-* New: Attachment taxonomies are copied. This adds support for the Responsive Lightbox & Gallery plugin's media folder functionality.
-* Fix: Find Unlinked Children now works with pages that have the same slug as other pages.
-* Fix: get_user_writeable_blogs now checks that the blog in the add_access() call is valid. Prevents a bunch of warnings.
-* Fix: Force non-publish post statuses via SQL change. This fixes a bug when drafts would not convert to scheduled.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/custom-field-terms/">Custom Field Terms</a>: Allow post custom field containing taxonomy term IDs to be broadcasted correctly.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/download-manager/">Download Manager</a>: Adds support for the <a href="https://wordpress.org/plugins/download-manager/">Download Manager</a> plugin.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/wpforms/">WPForms</a>: Adds support for the <a href="https://wpforms.com/">WPForms</a> plugin.
+= 48.04 20211118 =
 
-= 44.02 20190505 =
+* Fix: Correctly detect true/false term meta values when trying to protect them.
+* Fix: Remove warning about the Term Index get() function not matching.
+* Code: Add canonical_url action to allow for more flexible canonical URL handling.
 
-* Fix: Custom fields are first stripped (blacklisted fields removed) before being stored and readied for broadcast. Fixes featured images being broadcasted when they should be ignored.
+= 48.03 20211112 =
 
-= 44.01 20190415 =
+* Fix: Selected taxonomy terms lost their parents if the parents weren't also selected.
 
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/caldera-forms/">Caldera Forms</a> adds support for the <a href="https://wordpress.org/plugins/caldera-forms/">Caldera Forms</a> plugin.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/manual-post-actions/">Manual Post Actions</a> manually runs bulk post actions on posts.
-* SDK update.
+= 48.02 20211110 =
 
-= 43.17 20190316 =
+* Fix: Add extra compatibility with PHP 7.2 (which has not been supported for a year, btw). Please upgrade!
 
-* Fix: Settings are not saved for some configs due to overzealous Wordpress internal caching.
+= 48.01 20211105 =
 
-= 43.16 20190222 =
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/code-snippets/">Code Snippets</a>: Run code snippets on specific blogs.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/cron-everywhere/">Cron Everywhere</a>: Runs WordPress cron periodically on all sites of the network.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/rebroadcaster/">Rebroadcaster</a>: Periodically and automatically rebroadcast specific posts.
+* Tweak: Only used taxonomies are synced now. This prevents the child from receiving all of the taxonomies of the parent when extra taxonomies are synced via the Custom field / Gutenberg / Shortcode Terms add-ons, for example. Anything that uses taxonomies()->also_sync().
+* Code: Add equivalent_posts() sharing, so that subbroadcasts have access to the same equivalent_posts().
+* Code: Add broadcasting_data->equivalent_posts()->broadcast_once() method to broadcast a post once and then use the existing child ID.
 
-* New: Add support for Gutenberg standard image blocks: wp:image {"id":1780}. The image ID will be modified on each child post if the image is attached to the post.
-* Fix: Use the site's URL in the broadcast meta box if the site's name is empty.
-
-= 43.15 20190212 =
-
-* Fix: Watch trash and untrash post actions more carefully. (now also watching untrashed_post and wp_trash_post actions).
-* Dev: Add API command: find_unlinked_children.
-
-= 43.14 20190102 =
-
-* Dev: Add add_access() method to get_user_writable_blogs action. Example use is in this <a href="https://broadcast.plainviewplugins.com/doc/add-access-to-a-blog/">snippet</a>.
-* Dev: Add API commands: restore_children, trash_children and unlink.
-
-= 43.10 20181018 =
-
-* Fix: Ignore invalid taxonomies during the get_current_blog_taxonomy_terms() function.
-* Fix: Escape when saving child custom fields. Fixes JSON objects breaking on child posts. More specifically: prevents Cornerstone Page Builder data from breaking.
-* Tweak: Default value for "keep attachments" for new installs is "yes". It's a good setting to enable.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/simple-custom-post-order/">Simple Custom Post Order</a> adds support for the <a href="https://wordpress.org/plugins/simple-custom-post-order/">Simple Custom Post Order</a> plugin.
-
-= 43.9 20180922 =
-
-* Fix: Existing attachments are to be counted as copied attachments. Improves URL and ID translation of existing images in the post content.
-* New: Also parse post title and excerpt, giving actions and add-ons a change to modify those post fields during broadcasting.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/custom-field-posts/">Custom Field Posts</a>: Allow post custom field containing post IDs to be broadcasted correctly.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/formidable-forms/">Formidable Forms</a>: Adds support for the <a href="https://wordpress.org/plugins/formidable/">Formidable</a> plugin.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/unlink-on-edit/">Unlink On Edit</a>: Unlinks child posts when they are modified.
-* Dev: Add broadcast_override_canonical_url filter.
-* Dev: Add siteurl to broadcast_data blog object.
-
-= 43.8 20180821 =
-
-* New: "Keep Attachments" option added. This prevents the automatic housekeeping Broadcast does when broadcasting: normally all the attachments of a child post are deleted and then the new attachments are recopied. This prevents the automatic deletion.
-* Dev: override_child_permalink action now has $child_post property.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/user-access-manager/">User Access Manager</a>: Adds support for the <a href="https://wordpress.org/plugins/user-access-manager/">User Access Manager</a> plugin.
-
-= 43.7 20180724 =
-
-* Fix: Store attachment data for each blog separately. This is to prevent attachment ID conflicts when using the Queue add-on.
-* New: Display blog ID in meta box when hovering over the blog's name.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/ubermenu/">UberMenu</a>: Adds support for the <a href="https://wpmegamenu.com/">UberMenu</a> menu plugin.
-
-= 43.6 20180625 =
-
-* Fix: Hide broadcast box when user does not have correct role.
-* Fix: Workaround added for plugins that misbehave, hiding the Broadcast meta box when editing pages, even though the user has Broadcast access.
-* Fix: Even better modifying of image caption shortcodes.
-* SDK update to fix static calls on object stores.
-
-= 43.5 20180530 =
-
-* Fix: Better replacement of attachment ID in caption shortcodes.
-* Fix: Plugin list link to Broadcast settings.
-New add-on: <a href="https://broadcast.plainviewplugins.com/addon/cm-tooltip-glossary/">CM Tooltip Glossary</a>: Adds support for the <a href="https://wordpress.org/plugins/enhanced-tooltipglossary/">CM Tooltip Glossary</a> plugin.
-New add-on: <a href="https://broadcast.plainviewplugins.com/addon/copy-options/">Copy options</a>: Copies blog options / settings between blogs.
-
-= 43.4 20180505 =
-
-* New: Add ThreeWP_Broadcast_debug_text filter to allow for modification of debug text.
-* Fix: Fix HTML tables not working due to _() function conflict on some very specific installs.
-
-= 43.3 20180413 =
-
-* Allow for Wordpress internationalization (i18n) tools.
-* New snippet: <a href="https://broadcast.plainviewplugins.com/snippet/modify-allowed-post-statuses/">Modify allowed post statuses</a>
-
-= 43.2 20180403 =
-
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/google-maps-pro/">Google Maps Pro</a>: Adds support for the <a href="https://premium.wpmudev.org/project/wordpress-google-maps-plugin">Google Maps Pro</a> plugin.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/inboundnow/">Inbound Now</a>: Adds support for the <a href="https://www.inboundnow.com/">Inboundnow Marketing Suite</a>.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/onesignal/">OneSignal</a>: Adds support for the <a href="https://wordpress.org/plugins/onesignal-free-web-push-notifications/">OneSignal – Free Web Push Notifications</a> plugin.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/shortcode-posts/"</a>: Modifies post IDs found in shortcodes to match their equivalent posts on each blog.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/sitemaps/">Sitemaps</a>: Generates network-aware sitemaps and robots.txt.
-* Code: Added api()->delete_children() method.
-
-= 43 20180226 =
-
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/bulk-cloner/">Bulk Cloner</a> creates clones of existing blogs on the network.
-* New snippet: <a href="https://broadcast.plainviewplugins.com/snippet/change-the-name-of-a-blog/">Change the name of a blog</a>
-* New snippet: <a href="https://broadcast.plainviewplugins.com/snippet/faking-a-shortcode-to-broadcast-an-item/">Faking a shortcode to broadcast an item</a>
-* New snippet: <a href="https://broadcast.plainviewplugins.com/snippet/modify-the-hreflang-links/">Modify the hreflang links</a>
-* Code: SDK update.
-
-= 42.4 20180129 =
-
-* New: Option to show all sites on a multinetwork setup, instead of defaulting to just the sites on the current network.
-* Fix: Do not broadcast non-existent posts using the API.
-* Fix: Speed up post editing when user has access to a _large_ amount of blogs by caching the blog names. Best used in conjunction with the <a href="https://broadcast.plainviewplugins.com/addon/all-blogs/">All-Blogs add-ons</a>.
-* Fix: Adding Tracking Code Manager plugin to list of incompatible plugins.
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/h5p/">H5P</a>: Adds support for the <a href="https://wordpress.org/plugins/h5p/">H5P Interactive Content</a> plugin.
-
-= 42.3 20180115 =
-
-* Fix: Also sync term_order setting when syncing terms.
-* Fix: Do not overwrite attachment's _wp_attached_file property, which otherwise would prevent the attachment from being seen. Sometimes.
-
-= 42.2 20171213 =
-
-* Fix: GMT dates on draft posts were being incorrectly set from 0000-00-00 (a very invalid date in itself, btw).
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/goodlayers/">GoodLayers</a>: Adds support for the <a href="https://goodlayers.com/">GoodLayers family of themes</a>.
-
-= 42.1 20171130 =
-
-* Fix fatal error for PHP v5.6 installs.
-
-= 42 20171130 =
-
-* New snippet: <a href="https://broadcast.plainviewplugins.com/snippet/sync-taxonomies-programmatically/">Sync taxonomies programmatically</a>
-* New snippet: <a href="https://broadcast.plainviewplugins.com/snippet/media-cleanup-delete-only-image-files/">Media Cleanup – Delete only image files</a>
-* New snippet: <a href="https://broadcast.plainviewplugins.com/snippet/media-cleanup-modify-search-regexps/">Media Cleanup – Modify search regexps</a>
-* New add-on. <a href="https://broadcast.plainviewplugins.com/addon/media-cleanup/">Media Cleanup</a>: cleans up unused media by looking for unused items in the database and on disk.
-* Code: Added synced_taxonomy action.
-* Code: Simplified handling of taxonomies during broadcast.
-* Code: Start using new_action() convenience method to generate actions.

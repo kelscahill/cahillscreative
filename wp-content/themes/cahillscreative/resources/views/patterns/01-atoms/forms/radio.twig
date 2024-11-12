@@ -1,0 +1,8 @@
+{% if radio %}
+  {% set base_class = radio.base_class|default('o-form-item') %}
+
+  <div class="{{ bem_classes(base_class, '', 'radio', radio.extra) }}" {{ add_attributes(radio.attributes) }}>
+    <input id="radio-{{ radio.id }}" type="radio" name="{{ radio.name }}"{% if radio.checked %} checked="checked"{% endif %} {{ add_attributes(radio.input.attributes) }}>
+    <label for="radio-{{ radio.id }}" aria-label="{{ radio.text }}">{{ radio.text }}</label>
+  </div>
+{% endif %}

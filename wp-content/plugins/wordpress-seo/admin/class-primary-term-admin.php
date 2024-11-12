@@ -12,6 +12,8 @@ class WPSEO_Primary_Term_Admin implements WPSEO_WordPress_Integration {
 
 	/**
 	 * Constructor.
+	 *
+	 * @return void
 	 */
 	public function register_hooks() {
 		add_filter( 'wpseo_content_meta_section_content', [ $this, 'add_input_fields' ] );
@@ -19,19 +21,19 @@ class WPSEO_Primary_Term_Admin implements WPSEO_WordPress_Integration {
 		add_action( 'admin_footer', [ $this, 'wp_footer' ], 10 );
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
-
-		add_action( 'save_post', [ $this, 'save_primary_terms' ] );
 	}
 
 	/**
 	 * Gets the current post ID.
 	 *
-	 * @return integer The post ID.
+	 * @return int The post ID.
 	 */
 	protected function get_current_id() {
-		$post_id = filter_input( INPUT_GET, 'post', FILTER_SANITIZE_NUMBER_INT );
-		if ( empty( $post_id ) && isset( $GLOBALS['post_ID'] ) ) {
-			$post_id = filter_var( $GLOBALS['post_ID'], FILTER_SANITIZE_NUMBER_INT );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reason: We are not processing form information, We are casting to an integer.
+		$post_id = isset( $_GET['post'] ) && is_string( $_GET['post'] ) ? (int) wp_unslash( $_GET['post'] ) : 0;
+
+		if ( $post_id === 0 && isset( $GLOBALS['post_ID'] ) ) {
+			$post_id = (int) $GLOBALS['post_ID'];
 		}
 
 		return $post_id;
@@ -94,6 +96,8 @@ class WPSEO_Primary_Term_Admin implements WPSEO_WordPress_Integration {
 
 	/**
 	 * Adds primary term templates.
+	 *
+	 * @return void
 	 */
 	public function wp_footer() {
 		$taxonomies = $this->get_primary_term_taxonomies();
@@ -136,24 +140,6 @@ class WPSEO_Primary_Term_Admin implements WPSEO_WordPress_Integration {
 	}
 
 	/**
-	 * Saves all selected primary terms.
-	 *
-	 * @param int $post_id Post ID to save primary terms for.
-	 */
-	public function save_primary_terms( $post_id ) {
-		// Bail if this is a multisite installation and the site has been switched.
-		if ( is_multisite() && ms_is_switched() ) {
-			return;
-		}
-
-		$taxonomies = $this->get_primary_term_taxonomies( $post_id );
-
-		foreach ( $taxonomies as $taxonomy ) {
-			$this->save_primary_term( $post_id, $taxonomy );
-		}
-	}
-
-	/**
 	 * Gets the id of the primary term.
 	 *
 	 * @param string $taxonomy_name Taxonomy name for the term.
@@ -169,7 +155,7 @@ class WPSEO_Primary_Term_Admin implements WPSEO_WordPress_Integration {
 	/**
 	 * Returns all the taxonomies for which the primary term selection is enabled.
 	 *
-	 * @param int $post_id Default current post ID.
+	 * @param int|null $post_id Default current post ID.
 	 * @return array
 	 */
 	protected function get_primary_term_taxonomies( $post_id = null ) {
@@ -191,25 +177,11 @@ class WPSEO_Primary_Term_Admin implements WPSEO_WordPress_Integration {
 
 	/**
 	 * Includes templates file.
+	 *
+	 * @return void
 	 */
 	protected function include_js_templates() {
 		include_once WPSEO_PATH . 'admin/views/js-templates-primary-term.php';
-	}
-
-	/**
-	 * Saves the primary term for a specific taxonomy.
-	 *
-	 * @param int     $post_id  Post ID to save primary term for.
-	 * @param WP_Term $taxonomy Taxonomy to save primary term for.
-	 */
-	protected function save_primary_term( $post_id, $taxonomy ) {
-		$primary_term = filter_input( INPUT_POST, WPSEO_Meta::$form_prefix . 'primary_' . $taxonomy->name . '_term', FILTER_SANITIZE_NUMBER_INT );
-
-		// We accept an empty string here because we need to save that if no terms are selected.
-		if ( $primary_term && check_admin_referer( 'save-primary-term', WPSEO_Meta::$form_prefix . 'primary_' . $taxonomy->name . '_nonce' ) !== null ) {
-			$primary_term_object = new WPSEO_Primary_Term( $taxonomy->name, $post_id );
-			$primary_term_object->set_primary_term( $primary_term );
-		}
 	}
 
 	/**
@@ -227,8 +199,7 @@ class WPSEO_Primary_Term_Admin implements WPSEO_WordPress_Integration {
 		/**
 		 * Filters which taxonomies for which the user can choose the primary term.
 		 *
-		 * @api array    $taxonomies An array of taxonomy objects that are primary_term enabled.
-		 *
+		 * @param array  $taxonomies     An array of taxonomy objects that are primary_term enabled.
 		 * @param string $post_type      The post type for which to filter the taxonomies.
 		 * @param array  $all_taxonomies All taxonomies for this post types, even ones that don't have primary term
 		 *                               enabled.
@@ -263,7 +234,21 @@ class WPSEO_Primary_Term_Admin implements WPSEO_WordPress_Integration {
 			$primary_term = '';
 		}
 
-		$terms = get_terms( $taxonomy->name );
+		$terms = get_terms(
+			[
+				'taxonomy'               => $taxonomy->name,
+				'update_term_meta_cache' => false,
+				'fields'                 => 'id=>name',
+			]
+		);
+
+		$mapped_terms_for_js = [];
+		foreach ( $terms as $id => $name ) {
+			$mapped_terms_for_js[] = [
+				'id'   => $id,
+				'name' => $name,
+			];
+		}
 
 		return [
 			'title'         => $taxonomy->labels->singular_name,
@@ -272,21 +257,7 @@ class WPSEO_Primary_Term_Admin implements WPSEO_WordPress_Integration {
 			'singularLabel' => $taxonomy->labels->singular_name,
 			'fieldId'       => $this->generate_field_id( $taxonomy->name ),
 			'restBase'      => ( $taxonomy->rest_base ) ? $taxonomy->rest_base : $taxonomy->name,
-			'terms'         => array_map( [ $this, 'map_terms_for_js' ], $terms ),
-		];
-	}
-
-	/**
-	 * Returns an array suitable for use in the javascript.
-	 *
-	 * @param stdClass $term The term to map.
-	 *
-	 * @return array The mapped terms.
-	 */
-	private function map_terms_for_js( $term ) {
-		return [
-			'id'   => $term->term_id,
-			'name' => $term->name,
+			'terms'         => $mapped_terms_for_js,
 		];
 	}
 

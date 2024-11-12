@@ -354,7 +354,7 @@ img.mfp-img {
       text-align: center;
       padding: 0; } }
 
-@media all and (max-width: 900px) {
+@media (max-width: 900px) {
   .mfp-arrow {
     -webkit-transform: scale(0.75);
     transform: scale(0.75); }
@@ -398,7 +398,8 @@ img.mfp-img {
     position: relative; }
     #threewp_broadcast.postbox .blogs.html_section .show_hide {
       cursor: pointer;
-      text-align: right; }
+      position: absolute;
+      right: 0; }
     #threewp_broadcast.postbox .blogs.html_section legend {
       margin-bottom: 0.5em;
       font-style: italic; }
@@ -407,8 +408,9 @@ img.mfp-img {
       background-repeat: no-repeat;
       margin-bottom: 0.25em;
       margin-top: 0.25em; }
-      #threewp_broadcast.postbox .blogs.html_section .form_item_checkbox.linked {
-        background-image: url("../images/link-16.png"); }
+      #threewp_broadcast.postbox .blogs.html_section .form_item_checkbox a.child_edit_link {
+        float: right;
+        text-decoration: none; }
       #threewp_broadcast.postbox .blogs.html_section .form_item_checkbox.disabled {
         color: #aaa; }
       #threewp_broadcast.postbox .blogs.html_section .form_item_checkbox.required {

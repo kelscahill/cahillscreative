@@ -6,6 +6,12 @@ class blog
 {
 	use \plainview\sdk_broadcast\traits\method_chaining;
 
+	/**
+		@brief		Temporary property.
+		@since		2023-04-19 21:51:33
+	**/
+	public $__edit_url;
+
 	public $id;
 
 	/**
@@ -31,6 +37,12 @@ class blog
 	public $path;
 
 	public $required = false;
+
+	/**
+		@brief		The site URL.
+		@since		2023-04-19 21:50:39
+	**/
+	public $siteurl = false;
 
 	public $selected = false;
 
@@ -70,6 +82,23 @@ class blog
 		$blog = reset( $blog );
 		$blog = static::make( $blog );
 		return $blog;
+	}
+
+	/**
+		@brief		Return the edit URL for the post on this blog.
+		@details	Prime the cache by first requesting the URL for the post ID, after which you can call the function without the parameter to get the stored URL.
+		@since		2021-08-17 13:22:52
+	**/
+	public function get_edit_url( $post_id = null )
+	{
+		if ( isset( $this->__edit_url ) )
+			return $this->__edit_url;
+
+		switch_to_blog( $this->id );
+		$this->__edit_url = get_edit_post_link( $post_id );
+		restore_current_blog();
+
+		return $this->__edit_url;
 	}
 
 	/**
@@ -139,7 +168,7 @@ class blog
 		}
 		if ( property_exists( $r, 'blog_id' ) )
 			$r->id = intval( $r->blog_id );
-		if ( ! property_exists( $r, 'siteurl' ) )
+		if ( $r->siteurl === false )
 			$r->siteurl = get_blog_option( $r->id, 'home' );
 		if ( ! property_exists( $r, 'blogname' ) )
 			$r->blogname = '';
@@ -158,6 +187,15 @@ class blog
 	public function selected( $selected = true )
 	{
 		return $this->set_boolean( 'selected', $selected );
+	}
+
+	/**
+		@brief		Set the edit URL for this blog / post pair.
+		@since		2021-08-17 13:25:03
+	**/
+	public function set_edit_url( $edit_url )
+	{
+		$this->__edit_url = $edit_url;
 	}
 
 	public function switch_to()

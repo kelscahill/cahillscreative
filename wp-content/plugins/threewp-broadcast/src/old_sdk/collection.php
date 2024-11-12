@@ -4,6 +4,7 @@ namespace plainview\sdk\collections;
 
 use ArrayIterator;
 use Closure;
+use Traversable;
 
 /**
 	@brief		Collection / array class.
@@ -68,7 +69,7 @@ implements
 	/**
 	 * Collapse the collection items into a single array.
 	 *
-	 * @return \plainview\sdk\collections\collection
+	 * @return \plainview\sdk_broadcast\collections\collection
 	 */
 	public function collapse()
 	{
@@ -83,11 +84,23 @@ implements
 	}
 
 	/**
+		@brief		Return a collection using this key.
+		@details	Think of this method as recursive collections. If the key is not set, a new collection is created and returned.
+		@since		2015-02-09 13:17:44
+	**/
+	public function collection( $key )
+	{
+		if ( ! $this->has( $key ) )
+			$this->set( $key, new static() );
+		return $this->get( $key );
+	}
+
+	/**
 	 * Count the number of items in the collection.
 	 *
 	 * @return int
 	 */
-	public function count()
+	public function count() : int
 	{
 		return count( $this->items );
 	}
@@ -96,7 +109,7 @@ implements
 	 * Execute a callback over each item.
 	 *
 	 * @param  Closure  $callback
-	 * @return \plainview\sdk\collections\collection
+	 * @return \plainview\sdk_broadcast\collections\collection
 	 */
 	public function each( Closure $callback )
 	{
@@ -109,7 +122,7 @@ implements
 	 * Fetch a nested element of the collection.
 	 *
 	 * @param  string  $key
-	 * @return \plainview\sdk\collections\collection
+	 * @return \plainview\sdk_broadcast\collections\collection
 	 */
 	public function fetch( $key )
 	{
@@ -120,7 +133,7 @@ implements
 	 * Run a filter over each of the items.
 	 *
 	 * @param  Closure  $callback
-	 * @return \plainview\sdk\collections\collection
+	 * @return \plainview\sdk_broadcast\collections\collection
 	 */
 	public function filter( Closure $callback )
 	{
@@ -154,6 +167,7 @@ implements
 	public function flush()
 	{
 		$this->items = [];
+		return $this;
 	}
 
 	/**
@@ -165,6 +179,7 @@ implements
 	public function forget( $key )
 	{
 		unset( $this->items[ $key ] );
+		return $this;
 	}
 
 	/**
@@ -186,7 +201,7 @@ implements
 	 *
 	 * @return ArrayIterator
 	 */
-	public function getIterator()
+	public function getIterator() : Traversable
 	{
 		return new ArrayIterator( $this->items );
 	}
@@ -215,6 +230,15 @@ implements
 	}
 
 	/**
+		@brief		Check whether there is an item with this value.
+		@since		2018-11-07 21:31:19
+	**/
+	public function has_value( $value )
+	{
+		return in_array( $value, $this->items );
+	}
+
+	/**
 	 * Concatenate values of a given key as a string.
 	 *
 	 * @param  string  $value
@@ -226,6 +250,15 @@ implements
 		if ( is_null( $glue ) ) return implode( $this->lists( $value ) );
 
 		return implode( $glue, $this->lists( $value ) );
+	}
+
+	/**
+		@brief		Import this array.
+		@since		2018-07-08 09:49:39
+	**/
+	public function import_array( $array )
+	{
+		$this->items = $array;
 	}
 
 	public function insert_after( $key, $item )
@@ -350,7 +383,7 @@ implements
 	 * Create a new collection instance if the value isn't one already.
 	 *
 	 * @param  mixed  $items
-	 * @return \plainview\sdk\collections\collection
+	 * @return \plainview\sdk_broadcast\collections\collection
 	 */
 	public static function make( $items )
 	{
@@ -377,8 +410,8 @@ implements
 	/**
 	 * Merge items with the collection items.
 	 *
-	 * @param  \plainview\sdk\collections\collection|array  $items
-	 * @return \plainview\sdk\collections\collection
+	 * @param  \plainview\sdk_broadcast\collections\collection|array  $items
+	 * @return \plainview\sdk_broadcast\collections\collection
 	 */
 	public function merge( $items )
 	{
@@ -396,7 +429,7 @@ implements
 	 * @param  mixed  $key
 	 * @return bool
 	 */
-	public function offsetExists( $key )
+	public function offsetExists( $key ) : bool
 	{
 		return array_key_exists( $key, $this->items );
 	}
@@ -407,7 +440,7 @@ implements
 	 * @param  mixed  $key
 	 * @return mixed
 	 */
-	public function offsetGet( $key )
+	public function offsetGet( $key ) : mixed
 	{
 		return $this->items[ $key ];
 	}
@@ -419,7 +452,7 @@ implements
 	 * @param  mixed  $value
 	 * @return void
 	 */
-	public function offsetSet( $key, $value )
+	public function offsetSet( $key, $value ) : void
 	{
 		if ( is_null( $key ) )
 			$this->items[] = $value;
@@ -433,7 +466,7 @@ implements
 	 * @param  string  $key
 	 * @return void
 	 */
-	public function offsetUnset( $key )
+	public function offsetUnset( $key ) : void
 	{
 		unset( $this->items[ $key ] );
 	}
@@ -457,6 +490,7 @@ implements
 	public function push( $value )
 	{
 		array_unshift( $this->items, $value );
+		return $this;
 	}
 
 	/**
@@ -475,7 +509,7 @@ implements
 	/**
 	 * Reverse items order.
 	 *
-	 * @return \plainview\sdk\collections\collection
+	 * @return \plainview\sdk_broadcast\collections\collection
 	 */
 	public function reverse()
 	{
@@ -503,7 +537,7 @@ implements
 	 * @param  int   $offset
 	 * @param  int   $length
 	 * @param  bool  $preserveKeys
-	 * @return \plainview\sdk\collections\collection
+	 * @return \plainview\sdk_broadcast\collections\collection
 	 */
 	public function slice( $offset, $length = null, $preserveKeys = false )
 	{
@@ -514,7 +548,7 @@ implements
 	 * Sort through each item with a callback.
 	 *
 	 * @param  Closure  $callback
-	 * @return \plainview\sdk\collections\collection
+	 * @return \plainview\sdk_broadcast\collections\collection
 	 */
 	public function sort( Closure $callback )
 	{
@@ -527,7 +561,7 @@ implements
 	 * Sort the collection using the given Closure.
 	 *
 	 * @param  \Closure  $callback
-	 * @return \plainview\sdk\collections\collection
+	 * @return \plainview\sdk_broadcast\collections\collection
 	 */
 	public function sortBy( Closure $callback )
 	{
@@ -574,7 +608,7 @@ implements
 	 * Take the first or last {$limit} items.
 	 *
 	 * @param  int  $limit
-	 * @return \plainview\sdk\collections\collection
+	 * @return \plainview\sdk_broadcast\collections\collection
 	 */
 	public function take( $limit = null )
 	{
@@ -590,7 +624,15 @@ implements
 	 */
 	public function toArray()
 	{
-		return $this->items;
+		$items = $this->items;
+		foreach( $items as $index => $item )
+		{
+			if ( ! is_object( $item ) )
+				continue;
+			if ( is_a( $item, __CLASS__ ) )
+				$items[ $index ] = $item->to_array();
+		}
+		return $items;
 	}
 
 	/**
@@ -625,7 +667,7 @@ implements
 	/**
 	 * Reset the keys on the underlying array.
 	 *
-	 * @return \plainview\sdk\collections\collection
+	 * @return \plainview\sdk_broadcast\collections\collection
 	 */
 	public function values()
 	{

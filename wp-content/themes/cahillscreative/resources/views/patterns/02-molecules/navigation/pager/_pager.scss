@@ -1,0 +1,29 @@
+.c-pager {
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+
+  &__inner {
+    margin: 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  &__current {
+    margin: auto $space-half;
+  }
+
+  &__nav {
+    font-size: $font-size-m;
+    padding: 0 $space-half;
+
+    &--prev::before {
+      content: "←";
+    }
+
+    &--next::before {
+      content: "→";
+    }
+  }
+}
