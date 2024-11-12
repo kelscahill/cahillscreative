@@ -1,7 +1,0 @@
-{% if dropcap %}
-  {% set base_class = dropcap.base_class|default('has-dropcap') %}
-
-  <div class="{{ bem_classes(base_class) }}" >
-    <p>{{ dropcap.text }}</p>
-  </div>
-{% endif %}
