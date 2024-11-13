@@ -130,6 +130,10 @@ class Plugin_Installer {
 	 */
 	public function install_package( $package_data ) {
 
+		if ( ! function_exists( '\request_filesystem_credentials' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+
 		if ( ! class_exists( 'Plugin_Upgrader' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 		}

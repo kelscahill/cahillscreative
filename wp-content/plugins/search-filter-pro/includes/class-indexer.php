@@ -228,12 +228,17 @@ final class Indexer extends Task_Runner {
 			'dependsOn' => array(
 				'relation' => 'AND',
 				'action'   => 'hide',
-				// TODO - remove the rule, so we can support this in search fields.
 				'rules'    => array(
 					array(
 						'store'   => 'query',
 						'option'  => 'useIndexer',
 						'value'   => 'yes',
+						'compare' => '=',
+					),
+					// TODO - remove the rule, so we can support this in search fields.
+					array(
+						'option'  => 'type',
+						'value'   => 'choice',
 						'compare' => '=',
 					),
 				),
@@ -254,9 +259,11 @@ final class Indexer extends Task_Runner {
 
 
 	public static function get_field_setting_support( $setting_support, $type, $input_type ) {
+
 		// Add show count + hide empty to choice fields, for indexed queries.
 		$order_options_matrix = array(
 			'choice' => array( 'select', 'radio', 'checkbox', 'button' ),
+			'search' => array( 'autocomplete' ),
 		);
 		// Build conditions for non taxonomy options.
 		if ( isset( $order_options_matrix[ $type ] ) && in_array( $input_type, $order_options_matrix[ $type ], true ) ) {
@@ -270,6 +277,11 @@ final class Indexer extends Task_Runner {
 						'compare' => '=',
 					),
 					array(
+						'option'  => 'dataPostAttribute',
+						'value'   => 'default',
+						'compare' => '!=',
+					),
+					array(
 						'store'   => 'query',
 						'option'  => 'useIndexer',
 						'value'   => 'yes',
@@ -279,7 +291,7 @@ final class Indexer extends Task_Runner {
 			);
 
 			$setting_support['inputOptionsOrder'] = array(
-				'conditions' => Field::add_setting_support_condition( $setting_support, 'inputOptionsOrder', $order_options_conditions ),
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'inputOptionsOrder', $order_options_conditions, false ),
 			);
 		}
 
@@ -789,8 +801,8 @@ final class Indexer extends Task_Runner {
 		$values = array();
 
 		$type = $field->get_attribute( 'type' );
-		if ( $type === 'search' ) {
-			// Don't do anything with search.
+		if ( $type === 'search' || $type === 'control' ) {
+			// Don't do anything with search or control.
 			return;
 		}
 
@@ -1533,6 +1545,15 @@ final class Indexer extends Task_Runner {
 
 		// Update the indexer progress.
 		$indexer_progress = self::get_progress_data();
+		$default          = array(
+			'current' => 0,
+			'total'   => 0,
+			'time'    => time(),
+		);
+		if ( ! $indexer_progress ) {
+			$indexer_progress = $default;
+		}
+
 		$indexer_progress['current']++;
 		self::update_progress_data( $indexer_progress );
 	}

@@ -9,16 +9,9 @@
 
 namespace Search_Filter_Pro\Integrations;
 
-use Search_Filter\Core\Exception;
-use Search_Filter\Fields\Choice;
-use Search_Filter\Fields\Field;
-use Search_Filter\Integrations;
+use Search_Filter\Core\Dependants;
 use Search_Filter\Fields\Settings as Fields_Settings;
 use Search_Filter\Integrations\Settings as Integrations_Settings;
-use Search_Filter\Queries\Query;
-use Search_Filter_Pro\Fields;
-use Search_Filter_Pro\Indexer\Database\Index_Query;
-use Search_Filter\Util;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -61,12 +54,16 @@ class Relevanssi {
 			return;
 		}
 
-		$relevanssi_integration->update(
-			array(
-				'comingSoon' => false,
-				'disabled'   => self::relevanssi_enabled() ? false : true,
-			)
+		$is_relevanssi_enabled       = self::relevanssi_enabled();
+		$update_integration_settings = array(
+			'isPluginEnabled'      => $is_relevanssi_enabled,
+			'isExtensionInstalled' => true,
 		);
+		if ( $is_relevanssi_enabled ) {
+			$update_integration_settings['isPluginInstalled'] = true;
+		}
+
+		$relevanssi_integration->update( $update_integration_settings );
 
 		if ( ! self::relevanssi_enabled() ) {
 			return;
@@ -130,7 +127,7 @@ class Relevanssi {
 				),
 			),
 		);
-		$data_type_setting->add_option( $relevanssi_data_type_option );
+		$data_type_setting->add_option( $relevanssi_data_type_option, array( 'after' => 'search' ) );
 	}
 
 	/**

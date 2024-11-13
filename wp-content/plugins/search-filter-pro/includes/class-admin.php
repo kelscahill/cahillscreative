@@ -14,6 +14,7 @@ use Search_Filter_Pro\Core\Dependencies;
 use Search_Filter_Pro\Core\Plugin_Installer;
 use Search_Filter_Pro\Core\Scripts;
 use Search_Filter\Util;
+use Search_Filter_Pro\Core\Update_Manager;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -76,7 +77,30 @@ class Admin {
 		add_filter( 'search-filter/admin/screens/get_pages', array( $this, 'menu_pages' ) );
 
 		// Plugin updater.
-		add_action( 'admin_init', array( $this, 'update_plugin_check' ), 20 );
+		Update_Manager::add(
+			array(
+				'file'    => SEARCH_FILTER_PRO_BASE_FILE,
+				'id'      => 526297,
+				'version' => $this->version,
+				'license' => 'search-filter-extension-free',
+			)
+		);
+
+		// Handle base plugin updates via the update manager.
+		if ( version_compare( SEARCH_FILTER_VERSION, '3.0.6-beta', '>=' ) ) {
+			// Unhook the existing plugin updater.
+			remove_action( 'admin_init', array( \Search_Filter\Admin::class, 'update_plugin' ), 20 );
+			// Add it to the update manager instead.
+			Update_Manager::add(
+				array(
+					'file'    => SEARCH_FILTER_BASE_FILE,
+					'id'      => 514539,
+					'version' => SEARCH_FILTER_VERSION,
+					'license' => 'search-filter-extension-free',
+				)
+			);
+
+		}
 	}
 
 	/**
@@ -186,28 +210,6 @@ class Admin {
 				wp_enqueue_script( $handle );
 			}
 		}
-
-	}
-
-	/**
-	 * Check for plugin updates.
-	 *
-	 * @since    3.0.0
-	 */
-	public function update_plugin_check() {
-
-		// Setup the updater.
-		$edd_updater = new \Search_Filter_Pro\Core\Plugin_Updater(
-			'https://searchandfilter.com',
-			SEARCH_FILTER_PRO_BASE_FILE,
-			array(
-				'version' => $this->version,
-				'license' => 'search-filter-extension-free',
-				'item_id' => 526297,
-				'author'  => 'Search & Filter',
-				'beta'    => false,
-			)
-		);
 	}
 
 	/**
@@ -255,17 +257,18 @@ class Admin {
 		$nonce   = sanitize_key( wp_unslash( $_REQUEST['_wpnonce'] ) );
 		$referer = wp_get_referer() ? wp_get_referer() : admin_url();
 
+		$plugin_file = 'search-filter/search-filter.php';
+
 		if ( $action === 'install-plugin' ) {
 			if ( current_user_can( 'install_plugins' ) && wp_verify_nonce( $nonce, 'install-plugin_search-filter/search-filter.php' ) ) {
 				$plugin_installer = new Plugin_Installer();
 
 				// Free S&F from searchandfilter.com.
-				$plugin_file = 'search-filter/search-filter.php';
-				$result      = $plugin_installer->install_package_from_api( 514539 );
+
+				$result = $plugin_installer->install_package_from_api( 514539 );
 
 				// TODO - change to .org version once the free version goes live on .org.
 				// Installing from wp.org.
-				// $plugin_file = 'search-filter/search-filter.php';
 				// $result      = $plugin_installer->install_package_from_wp_org( 'search-filter' );
 				if ( $result['status'] === 'success' && current_user_can( 'activate_plugins' ) ) {
 					activate_plugin( $plugin_file );
@@ -273,7 +276,7 @@ class Admin {
 			}
 		} elseif ( $action === 'activate-plugin' ) {
 			if ( current_user_can( 'activate_plugins' ) && wp_verify_nonce( $nonce, 'activate-plugin_search-filter/search-filter.php' ) ) {
-				activate_plugin( 'search-filter/search-filter.php' );
+				activate_plugin( $plugin_file );
 			}
 		}
 		// Redirect back to the page that initiated the action.
@@ -364,7 +367,7 @@ class Admin {
 		// If the verion is outdated, show a notice about which version is required.
 		if ( $is_search_filter_enabled && ! $is_search_filter_required_version ) {
 			?>
-			<div class="notice notice-warning is-dismissible">
+			<div class="notice notice-error is-dismissible">
 				<p>
 					<?php
 					printf(

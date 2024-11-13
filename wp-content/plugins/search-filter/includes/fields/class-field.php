@@ -19,6 +19,7 @@ use Search_Filter\Styles;
 use Search_Filter\Styles\Style;
 use Search_Filter\Record_Base;
 use Search_Filter\Core\Exception;
+use Search_Filter\Queries;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -144,6 +145,13 @@ class Field extends Record_Base {
 	private $html_attributes = array();
 
 	/**
+	 * The html classes to be added to the field.
+	 *
+	 * @var array
+	 */
+	private $html_classes = array();
+
+	/**
 	 * Options for fields that have multiple choice
 	 *
 	 * @var array
@@ -239,13 +247,6 @@ class Field extends Record_Base {
 	public $labels = array();
 
 	/**
-	 * Array of classes to be added to the field.
-	 *
-	 * @var array
-	 */
-	private $render_classes = array();
-
-	/**
 	 * Handlers for the field class.
 	 *
 	 * A way to extend the field with custom functionality.
@@ -310,7 +311,34 @@ class Field extends Record_Base {
 	 * @return array
 	 */
 	public static function get_setting_support() {
-		return apply_filters( 'search-filter/field/get_setting_support', static::$setting_support, static::$type, static::$input_type );
+		$parsed_setting_support = array();
+
+		foreach ( static::$setting_support as $setting_name => $support ) {
+			$parsed_setting_support[ $setting_name ] = array();
+
+			// We can have `values` and `conditions` keys, or it can just be true or false.
+			if ( is_bool( $support ) ) {
+				$parsed_setting_support[ $setting_name ] = $support;
+			} elseif ( isset( $support['conditions'] ) ) {
+				// Always wrap the conditions in an OR relation, so we can insert alternative
+				// routes when we extend the conditions.
+				// And always wrap the current set conditions in an AND relation as all of them
+				// should be met.
+				$parsed_setting_support[ $setting_name ]['conditions'] = array(
+					'relation' => 'OR',
+					'rules'    => array(
+						array(
+							'relation' => 'AND',
+							'rules'    => $support['conditions'],
+						),
+					),
+				);
+			} elseif ( isset( $support['values'] ) ) {
+				$parsed_setting_support[ $setting_name ]['values'] = $support['values'];
+			}
+		}
+
+		return apply_filters( 'search-filter/field/get_setting_support', $parsed_setting_support, static::$type, static::$input_type );
 	}
 
 	/**
@@ -318,7 +346,7 @@ class Field extends Record_Base {
 	 * to extend it by new conditions.
 	 *
 	 * TODO - we should refactor this logic, handling it within the field class, so we can
-	 * call `addSettingSupport` and it will automatically handel this.
+	 * call `addSettingSupport` and it will automatically handle this.
 	 *
 	 * @param array  $setting_support The setting support to add the conditions to.
 	 * @param string $setting_name    The setting name to add the conditions to.
@@ -326,30 +354,33 @@ class Field extends Record_Base {
 	 *
 	 * @return array The updated setting support.
 	 */
-	public static function add_setting_support_condition( $setting_support, $setting_name, $new_conditions ) {
+	public static function add_setting_support_condition( $setting_support, $setting_name, $new_conditions, $is_required = true ) {
 
-		$existing_conditions = array();
+		$conditions = array(
+			'relation' => 'OR',
+			'rules'    => array(
+				array(
+					'relation' => 'AND',
+					'rules'    => array(), // Push here o add required conditions
+				),
+				// Push here to add alternative logic routes.
+			),
+		);
+
 		if ( isset( $setting_support[ $setting_name ] ) ) {
-			if ( is_array( $setting_support[ $setting_name ] ) ) {
-				$existing_conditions = $setting_support[ $setting_name ];
-				// If we are using the subprop `conditions` use that instead.
-				if ( isset( $setting_support[ $setting_name ]['conditions'] ) ) {
-					$existing_conditions = $setting_support[ $setting_name ]['conditions'];
-				}
+			if ( is_array( $setting_support[ $setting_name ] ) && isset( $setting_support[ $setting_name ]['conditions'] ) ) {
+				$conditions = $setting_support[ $setting_name ]['conditions'];
 			}
 		}
 
-		if ( empty( $existing_conditions ) ) {
-			return $new_conditions;
+		if ( $is_required ) {
+			$conditions['rules'][0]['rules'][] = $new_conditions;
 		} else {
-			return array(
-				'relation' => 'OR',
-				'rules'    => array(
-					$existing_conditions,
-					$new_conditions,
-				),
-			);
+			$conditions['rules'][] = $new_conditions;
 		}
+
+		return $conditions;
+
 	}
 	/**
 	 * Init the field from already loaded attributes.
@@ -367,17 +398,14 @@ class Field extends Record_Base {
 			$this->url_name = $this->get_url_name();
 		}
 
-		// Reset class attribute.
-		$this->html_attributes['class'] = '';
-
 		// Set the field values.
 		$this->values = array();
 
+		// Init classes.
+		$this->set_html_classes();
+
 		// Attributes needs has_init to be true so we can use `get_values`.
 		$this->set_html_attributes();
-
-		// Add user defined custom classes.
-		$this->add_class( $this->get_attribute( 'addClass' ) );
 
 		// Setup values from the URL.
 		$this->parse_url_value();
@@ -523,54 +551,69 @@ class Field extends Record_Base {
 	 *
 	 * @since    3.0.0
 	 */
-	private function set_html_attributes() {
+	private function set_html_classes() {
 
-		$classes = array();
+		$this->html_classes = array();
 
-		array_push( $classes, 'search-filter-base' );
-		array_push( $classes, 'search-filter-field' );
-		array_push( $classes, 'search-filter-field--id-' . $this->get_id() );
+		$this->html_classes[] = 'search-filter-base';
+		$this->html_classes[] = 'search-filter-field';
+		$this->html_classes[] = 'search-filter-field--id-' . $this->get_id();
 
 		$field_type   = $this->get_attribute( 'type' );
 		$input_type   = $this->get_attribute( 'inputType' );
 		$control_type = $this->get_attribute( 'controlType' );
 
-		array_push( $classes, 'search-filter-field--type-' . $field_type );
+		$this->html_classes[] = 'search-filter-field--type-' . $field_type;
 
 		if ( $field_type === 'control' ) {
-			array_push( $classes, 'search-filter-field--control-type-' . $control_type );
+			$this->html_classes[] = 'search-filter-field--control-type-' . $control_type;
 
 		} else {
 			// TODO - this is getting a bit messy, get_input_type will return something like:
 			// `select` but the get_attribute will return `select-checkbox` or `select-radio`.
 			// we need to unify this instead of adding in edge cases and extra calc.
-			array_push( $classes, 'search-filter-field--input-type-' . self::get_input_type() );
+			$this->html_classes[] = 'search-filter-field--input-type-' . self::get_input_type();
 
 		}
 
-		array_push( $classes, 'search-filter-style--id-' . $this->get_calc_styles_id() );
+		$this->html_classes[] = 'search-filter-style--id-' . $this->get_calc_styles_id();
 		// TODO - seperating controls and input types like this is more.
-		$resolved_input_type = $field_type === 'control' ? $control_type : $input_type;
-		array_push( $classes, 'search-filter-style--' . $field_type . '-' . $resolved_input_type );
+		$resolved_input_type  = $field_type === 'control' ? $control_type : $input_type;
+		$this->html_classes[] = 'search-filter-style--' . $field_type . '-' . $resolved_input_type;
 
 		if ( isset( $this->attributes['width'] ) && ! empty( $this->attributes['width'] ) ) {
-			array_push( $classes, 'search-filter-field--width-' . $this->get_attribute( 'width' ) );
+			$this->html_classes[] = 'search-filter-field--width-' . $this->get_attribute( 'width' );
 		}
 		if ( isset( $this->attributes['alignment'] ) && ! empty( $this->attributes['alignment'] ) ) {
-			array_push( $classes, 'search-filter-field--align-text-' . $this->get_attribute( 'alignment' ) );
+			$this->html_classes[] = 'search-filter-field--align-text-' . $this->get_attribute( 'alignment' );
 		}
 
 		// Add block editor class.
 		if ( isset( $this->attributes['align'] ) && ! empty( $this->attributes['align'] ) ) {
-			array_push( $classes, 'search-filter-field--align-' . $this->get_attribute( 'align' ) );
-			// array_push( $classes, 'align' . esc_attr( $this->attributes['align'] ) );
+			$this->html_classes[] = 'search-filter-field--align-' . $this->get_attribute( 'align' );
 		}
 
-		// TODO: add query id class.
-		$this->html_attributes['class']                  = implode( ' ', $classes );
-		$this->html_attributes['data-search-filter-uid'] = $this->uid;
+		// Add user defined custom classes.
+		$add_class = $this->get_attribute( 'addClass' );
+		if ( $add_class ) {
+			$this->html_classes[] = $add_class;
+		}
 
-		$this->html_attributes = apply_filters( 'search-filter/fields/field/html_attributes', $this->html_attributes, $this );
+		$this->html_classes = apply_filters( 'search-filter/fields/field/html_classes', $this->html_classes, $this );
+	}
+	/**
+	 * Sets the `attributes` var, which are used in the container markup.
+	 *
+	 * @since    3.0.0
+	 */
+	private function set_html_attributes() {
+
+		// Reset class attribute.
+		$this->html_attributes['class'] = '';
+
+		// TODO: add query id class.
+		$this->html_attributes['data-search-filter-id'] = $this->get_id();
+		$this->html_attributes                          = apply_filters( 'search-filter/fields/field/html_attributes', $this->html_attributes, $this );
 	}
 
 	/**
@@ -580,26 +623,6 @@ class Field extends Record_Base {
 	 */
 	public function get_uid() {
 		return $this->uid;
-	}
-	/**
-	 * Get the classes to be added to the field.
-	 *
-	 * @return array
-	 *
-	 * @since    3.0.0
-	 */
-	public function get_render_classes() {
-		return $this->render_classes;
-	}
-	/**
-	 * Add a class to the field.
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param string $class_name The class name.
-	 */
-	public function add_render_class( $class_name ) {
-		$this->render_classes[] = $class_name;
 	}
 	/**
 	 * Get a style attribute.
@@ -640,19 +663,18 @@ class Field extends Record_Base {
 	}
 
 	/**
-	 * Add a class to the filter
+	 * Add a class to the field
 	 *
-	 * @param string $class_names Class names seperated by spaces.
+	 * @param string $class_name Class name.
 	 *
 	 * @since    3.0.0
 	 */
-	protected function add_class( $class_names ) {
-
-		if ( empty( $class_names ) ) {
-			return;
+	public function add_html_class( $class_name, $position = 'after' ) {
+		if ( $position === 'after' ) {
+			$this->html_classes[] = $class_name;
+		} else {
+			array_unshift( $this->html_classes, $class_name );
 		}
-
-		$this->html_attributes['class'] = trim( $this->html_attributes['class'] ) . ' ' . $class_names;
 	}
 	/**
 	 * Add a html attribute to the filter - expects unescaped input
@@ -666,12 +688,21 @@ class Field extends Record_Base {
 		$this->html_attributes[ $attribute_name ] = $attribute_value;
 	}
 	/**
-	 * Get the attributes
+	 * Get the html attributes
 	 *
 	 * @since    3.0.0
 	 */
 	public function get_html_attributes() {
 		return $this->html_attributes;
+	}
+
+	/**
+	 * Get the html classes
+	 *
+	 * @since    3.0.4
+	 */
+	public function get_html_classes() {
+		return $this->html_classes;
 	}
 
 
@@ -736,9 +767,13 @@ class Field extends Record_Base {
 	 */
 	public function get_render_data( $attributes = null ) {
 		if ( $attributes === null ) {
-			$attributes = $this->attributes;
+			$attributes = $this->get_attributes();
 		}
-		return array(
+
+		// Resolve the styles ID if its set to default.
+		$attributes['stylesId'] = $this->get_calc_styles_id();
+
+		$render_data = array(
 			'attributes'    => $attributes,
 			'options'       => $this->get_options(),
 			'values'        => $this->values,
@@ -746,10 +781,11 @@ class Field extends Record_Base {
 			'urlName'       => $this->url_name,
 			'icons'         => $this->get_icons(),
 			'url'           => $this->get_url(),
-			'dbid'          => $this->get_id(),
+			'id'            => $this->get_id(),
 			'connectedData' => $this->connected_data,
 			'supports'      => $this->supports,
 		);
+		return apply_filters( 'search-filter/fields/field/render_data', $render_data, $this );
 	}
 
 	/**
@@ -791,11 +827,9 @@ class Field extends Record_Base {
 		$this->init_render_data();
 
 		// Trigger action when starting.
-		do_action( 'search-filter/fields/field/before_render', $attributes, $this->name );
-		do_action( "search-filter/fields/{$this->name}/before_render", $attributes );
+		do_action( 'search-filter/fields/field/render/before', $attributes, $this->name );
+		do_action( "search-filter/fields/{$this->name}/render/before", $attributes );
 
-		// Update the live styles ID.
-		$attributes['stylesId'] = $this->get_calc_styles_id();
 		// Modify args before render.
 		$attributes = apply_filters( 'search-filter/fields/field/render/attributes', $attributes, $this->name );
 		$attributes = apply_filters( "search-filter/fields/{$this->name}/render/attributes", $attributes );
@@ -805,32 +839,32 @@ class Field extends Record_Base {
 		);
 
 		if ( $this->get_query_id() !== 0 ) {
-			Fields::register_active_query( $this->get_query_id() );
+			Queries::register_active_query( $this->get_query_id() );
 		}
 
 		ob_start();
-		$html_attributes = $this->get_html_attributes();
-		// Add any render classes.
-		$render_classes = $this->get_render_classes();
-		if ( ! empty( $render_classes ) && is_array( $render_classes ) ) {
-			$html_attributes['class'] = implode( ' ', $render_classes ) . ' ' . $html_attributes['class'];
-		}
+
+		$html_attributes = apply_filters( 'search-filter/fields/field/render/html_attributes', $this->get_html_attributes(), $this );
+		$html_classes    = apply_filters( 'search-filter/fields/field/render/html_classes', $this->get_html_classes(), $this );
+
+		$html_attributes['class'] = implode( ' ', $html_classes );
+
 		echo '<div ' . Util::get_attributes_html( $html_attributes ) . '>';
 		echo $this->build();
 		echo '</div>';
 		$output = ob_get_clean();
 
 		// Modify output html.
-		$output = apply_filters( 'search-filter/fields/field/render_output', $output, $this->name, $attributes );
-		$output = apply_filters( "search-filter/fields/{$this->name}/render_output", $output, $attributes );
+		$output = apply_filters( 'search-filter/fields/field/render/output', $output, $this->name, $attributes );
+		$output = apply_filters( "search-filter/fields/{$this->name}/render/output", $output, $attributes );
 
 		if ( ! $return ) {
 			echo $output;
 		}
 
 		// Trigger action when finished.
-		do_action( 'search-filter/fields/field/after_render', $attributes, $this->name );
-		do_action( "search-filter/fields/{$this->name}/after_render", $attributes );
+		do_action( 'search-filter/fields/field/render/after', $attributes, $this->name );
+		do_action( "search-filter/fields/{$this->name}/render/after", $attributes );
 
 		if ( $return ) {
 			return $output;
@@ -1185,6 +1219,13 @@ class Field extends Record_Base {
 		$css .= $styles_class . '{';
 		// Now try to parse any styles attributes.
 		$css .= CSS_Loader::clean_css( Style::create_attributes_css( $this->get_attributes() ) );
+		// Normally we only generate CSS vars for style attributes, but setting the margin
+		// upfront on any field overrides block spacing, so lets only set the margin if it
+		// the property is set.
+
+		if ( $this->get_attribute( 'fieldMargin' ) ) {
+			$css .= 'margin: var(--search-filter-field-margin, inherit );';
+		}
 		$css .= '}';
 
 		return $css;

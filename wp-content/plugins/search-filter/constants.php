@@ -13,7 +13,7 @@ if ( ! defined( 'SEARCH_FILTER_SLUG' ) ) {
 }
 
 if ( ! defined( 'SEARCH_FILTER_VERSION' ) ) {
-	define( 'SEARCH_FILTER_VERSION', '3.0.5' );
+	define( 'SEARCH_FILTER_VERSION', '3.0.6' );
 }
 
 if ( ! defined( 'SEARCH_FILTER_URL' ) ) {

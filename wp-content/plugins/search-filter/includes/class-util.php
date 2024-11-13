@@ -240,9 +240,9 @@ class Util {
 						return (int) $a->$property < (int) $b->$property ? 1 : -1;
 					}
 				} elseif ( $order_direction === 'asc' ) {
-						return strcmp( $a->$property, $b->$property );
+						return strcasecmp( $a->$property, $b->$property );
 				} else {
-					return strcmp( $b->$property, $a->$property );
+					return strcasecmp( $b->$property, $a->$property );
 				}
 			}
 		);
@@ -276,9 +276,9 @@ class Util {
 					$val_a = isset( $a[ $property ] ) ? $a[ $property ] : '';
 					$val_b = isset( $b[ $property ] ) ? $b[ $property ] : '';
 					if ( $order_direction === 'asc' ) {
-						return strcmp( $val_a, $val_b );
+						return strcasecmp( $val_a, $val_b );
 					} else {
-						return strcmp( $val_b, $val_a );
+						return strcasecmp( $val_b, $val_a );
 					}
 				}
 			}

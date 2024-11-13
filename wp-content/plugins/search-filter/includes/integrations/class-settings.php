@@ -9,6 +9,8 @@
 
 namespace Search_Filter\Integrations;
 
+use Search_Filter\Core\Dependants;
+
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -65,4 +67,35 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 	 * The setting section name
 	 */
 	protected static $section = 'integrations';
+
+
+	/**
+	 * Init the settings.
+	 *
+	 * @param    array $settings    The settings to add.
+	 * @param    array $groups    The groups to add.
+	 */
+	public static function init( $settings = array(), $groups = array() ) {
+
+		$parsed_settings = array();
+		foreach ( $settings as $setting ) {
+
+			// Update isPluginInstalled based on  the file supplied.
+			if ( array_key_exists( 'pluginFile', $setting ) ) {
+				if ( is_array( $setting['pluginFile'] ) ) {
+					foreach ( $setting['pluginFile'] as $plugin_file ) {
+						if ( Dependants::is_plugin_installed( $plugin_file ) ) {
+							$setting['isPluginInstalled'] = true;
+							// Bail at the first match.
+							break;
+						}
+					}
+				}
+			}
+
+			$parsed_settings[] = $setting;
+		}
+
+		parent::init( $parsed_settings, $groups );
+	}
 }

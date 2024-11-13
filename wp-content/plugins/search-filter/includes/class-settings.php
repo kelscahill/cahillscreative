@@ -299,4 +299,33 @@ class Settings {
 
 		return $post_types;
 	}
+
+	/**
+	 * Get the available taxonomy terms for a particular taxonomy as
+	 *
+	 * @param string $taxonomy The taxonomy name.
+	 * @return array
+	 */
+	public static function create_taxonomy_terms_options( $taxonomy ) {
+		if ( ! taxonomy_exists( $taxonomy ) ) {
+			return array();
+		}
+
+		$terms = get_terms(
+			array(
+				'taxonomy'   => $taxonomy,
+				'hide_empty' => false,
+			)
+		);
+
+		$options = array();
+		foreach ( $terms as $term ) {
+			$item = array(
+				'value' => $term->term_id,
+				'label' => $term->name,
+			);
+			array_push( $options, $item );
+		}
+		return $options;
+	}
 }

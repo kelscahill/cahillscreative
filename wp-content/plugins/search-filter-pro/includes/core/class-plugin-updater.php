@@ -79,6 +79,15 @@ class Plugin_Updater {
 	private $wp_override = false;
 
 	/**
+	 * Force check for updates.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var bool
+	 */
+	private $force_check = false;
+
+	/**
 	 * The cache key.
 	 *
 	 * @since 3.0.0
@@ -86,6 +95,15 @@ class Plugin_Updater {
 	 * @var string
 	 */
 	private $cache_key = '';
+
+	/**
+	 * The API request cache key.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var string
+	 */
+	private $api_request_cache_key = '';
 
 	/**
 	 * The beta version.
@@ -119,14 +137,18 @@ class Plugin_Updater {
 
 		global $edd_plugin_data;
 
-		$this->api_url     = trailingslashit( $_api_url );
-		$this->api_data    = $_api_data;
-		$this->name        = plugin_basename( $_plugin_file );
-		$this->slug        = basename( $_plugin_file, '.php' );
-		$this->version     = $_api_data['version'];
-		$this->wp_override = isset( $_api_data['wp_override'] ) ? (bool) $_api_data['wp_override'] : false;
-		$this->beta        = ! empty( $this->api_data['beta'] ) ? true : false;
-		$this->cache_key   = 'edd_sl_' . md5( serialize( $this->slug . $this->api_data['license'] . $this->beta ) );
+		$this->api_url               = trailingslashit( $_api_url );
+		$this->api_data              = $_api_data;
+		$this->name                  = plugin_basename( $_plugin_file );
+		$this->slug                  = basename( $_plugin_file, '.php' );
+		$this->version               = isset( $_api_data['version'] ) ? $_api_data['version'] : '0.0.0';
+		$this->wp_override           = isset( $_api_data['wp_override'] ) ? (bool) $_api_data['wp_override'] : false;
+		$this->beta                  = ! empty( $this->api_data['beta'] ) ? true : false;
+		$this->cache_key             = 'edd_sl_' . md5( serialize( $this->slug . $this->api_data['license'] . $this->beta ) );
+		$this->api_request_cache_key = 'edd_api_request_' . md5( serialize( $this->slug . $this->api_data['license'] . $this->beta ) );
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$this->force_check = isset( $_REQUEST['force-check'] ) ? true : false; // When a user is on `update-core` and presses `force check` make sure we bypass our cache too.
 
 		$edd_plugin_data[ $this->slug ] = $this->api_data;
 
@@ -142,6 +164,17 @@ class Plugin_Updater {
 		// Set up hooks.
 		$this->init();
 
+	}
+
+	/**
+	 * Gets the name used for the updater.
+	 *
+	 * @since 3.0.5
+	 *
+	 * @return string
+	 */
+	public function get_name() {
+		return $this->name;
 	}
 
 	/**
@@ -186,13 +219,14 @@ class Plugin_Updater {
 			return $_transient_data;
 		}
 
-		if ( ! empty( $_transient_data->response ) && ! empty( $_transient_data->response[ $this->name ] ) && false === $this->wp_override ) {
+		if ( ! empty( $_transient_data->response ) && ! empty( $_transient_data->response[ $this->name ] ) && false === $this->wp_override && false === $this->force_check ) {
 			return $_transient_data;
 		}
 
 		$version_info = $this->get_cached_version_info();
 
-		if ( false === $version_info ) {
+		$refreshed_cache = false;
+		if ( false === $version_info || $this->force_check ) {
 			$version_info = $this->api_request(
 				'plugin_latest_version',
 				array(
@@ -202,18 +236,28 @@ class Plugin_Updater {
 			);
 
 			$this->set_version_info_cache( $version_info );
-
+			$refreshed_cache = true;
 		}
 
 		if ( false !== $version_info && is_object( $version_info ) && isset( $version_info->new_version ) ) {
 
 			if ( version_compare( $this->version, $version_info->new_version, '<' ) ) {
 
+				// Only trigger the found update action if we just refreshed the cache.
+				if ( $refreshed_cache ) {
+					do_action( 'search-filter-pro/core/plugin-updater/found_update', $this->name );
+				}
+
 				$_transient_data->response[ $this->name ] = $version_info;
 
 				// Make sure the plugin property is set to the plugin's name/location. See issue 1463 on Software Licensing's GitHub repo.
 				$_transient_data->response[ $this->name ]->plugin = $this->name;
 
+			} else {
+				// Only trigger the no update action if we just refreshed the cache.
+				if ( $refreshed_cache ) {
+					do_action( 'search-filter-pro/core/plugin-updater/no_update', $this->name );
+				}
 			}
 
 			$_transient_data->last_checked           = time();
@@ -380,7 +424,7 @@ class Plugin_Updater {
 			),
 		);
 
-		$cache_key = 'edd_api_request_' . md5( serialize( $this->slug . $this->api_data['license'] . $this->beta ) );
+		$cache_key = $this->api_request_cache_key;
 
 		// Get the transient where we store the api request for this plugin for 24 hours.
 		$edd_api_request_transient = $this->get_cached_version_info( $cache_key );
@@ -682,6 +726,7 @@ class Plugin_Updater {
 
 		if ( empty( $cache_key ) ) {
 			$cache_key = $this->cache_key;
+			do_action( 'search-filter-pro/core/plugin-updater/refresh_cache', $this->name );
 		}
 
 		$data = array(
@@ -691,6 +736,14 @@ class Plugin_Updater {
 
 		update_option( $cache_key, $data, 'no' );
 
+	}
+
+	/**
+	 * Delete the cached version info.
+	 */
+	public function delete_caches() {
+		delete_option( $this->cache_key );
+		delete_option( $this->api_request_cache_key );
 	}
 
 	/**

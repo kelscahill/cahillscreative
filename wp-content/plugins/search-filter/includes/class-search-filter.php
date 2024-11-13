@@ -233,7 +233,7 @@ class Search_Filter {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
 		// Plugin updater.
-		$this->loader->add_action( 'admin_init', $plugin_admin, 'update_plugin_check', 20 );
+		add_action( 'admin_init', array( \Search_Filter\Admin::class, 'update_plugin' ), 20 );
 
 		// Data.
 
@@ -266,8 +266,10 @@ class Search_Filter {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_frontend, 'enqueue_scripts', 20 );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_frontend, 'add_js_data', 21 );
 
-		add_action( 'wp_footer', 'Search_Filter\\Core\\SVG_Loader::output', 10 );
-		add_action( 'wp_footer', array( $plugin_frontend, 'data' ), 10 );
+		// Use a really low priority so that we load after other plugins, eg Elementor loads popups in
+		// `wp_footer` and we want to load after them just in case they have S&F fields.
+		add_action( 'wp_footer', 'Search_Filter\\Core\\SVG_Loader::output', 100 );
+		add_action( 'wp_footer', array( $plugin_frontend, 'data' ), 100 );
 	}
 
 	/**

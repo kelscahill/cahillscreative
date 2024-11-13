@@ -146,6 +146,22 @@ class Frontend {
 			),
 		);
 
+		$should_mount = apply_filters( 'search-filter/frontend/register_scripts/should_mount', true );
+		if ( $should_mount ) {
+			$should_mount = "
+			/*
+			* Use ready state change instead of DOM Content loaded to avoid issues with Cloudflare's
+			* rocket loader.
+			*/
+			document.addEventListener('readystatechange', (event) => {
+				if (document.readyState === 'interactive') {
+					window.searchAndFilter.frontend.mount();
+				}
+			} );
+			";
+			wp_add_inline_script( $this->plugin_name, $should_mount, 'after' );
+		}
+
 		$this->registered_scripts = apply_filters( 'search-filter/frontend/register_scripts', $this->registered_scripts );
 
 		foreach ( $this->registered_scripts as $handle => $args ) {
@@ -195,19 +211,23 @@ class Frontend {
 	 * Gets the initial JS data for the page.
 	 */
 	public function get_js_data() {
+		// Due to the way webpack externals works, these need to exist
+		// in the page load even though we populate them later.
 		$data = array(
-			'fields'     => (object) array(),
-			'queries'    => (object) array(),
-			'components' => (object) array(),
-			'modules'    => (object) array(),
+			'fields'    => (object) array(),
+			'queries'   => (object) array(),
+			'library'   => (object) array(
+				'fields'     => (object) array(),
+				'components' => (object) array(),
+			),
 			/**
 			 * Custom nonce verification doesn't work in the rest api endpoint (which we need for
 			 * things like autocomplete suggestions, eg, mostly pro features), unless we first set
 			 * the X-WP-Nonce header in the api request, which means we also need to create a
 			 * `wp_rest` to pass the header check.
 			 */
-			'restNonce'  => wp_create_nonce( 'wp_rest' ),
-			'homeUrl'    => home_url(),
+			'restNonce' => wp_create_nonce( 'wp_rest' ),
+			'homeUrl'   => home_url(),
 		);
 
 		$data = apply_filters( 'search-filter/frontend/enqueue_scripts/data', $data );
@@ -235,7 +255,7 @@ class Frontend {
 	public function data() {
 		$data = array(
 			'fields'  => Fields::get_active_fields(),
-			'queries' => Fields::get_active_queries(),
+			'queries' => Queries::get_active_queries(),
 		);
 		// Add filter to modify the data.
 		$data    = apply_filters( 'search-filter/frontend/data', $data );

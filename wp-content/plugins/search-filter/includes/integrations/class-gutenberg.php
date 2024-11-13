@@ -85,6 +85,15 @@ class Gutenberg {
 	private static $extended_block_attributes = array();
 
 	/**
+	 * A backup of the global WP_Query object.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var \WP_Query
+	 */
+	private static $global_wp_query_backup = null;
+
+	/**
 	 * Init
 	 *
 	 * @since    3.0.0
@@ -94,7 +103,7 @@ class Gutenberg {
 			// Gutenberg is not active.
 			return;
 		}
-		add_action( 'search-filter/settings/init', '\\Search_Filter\\Integrations\\Gutenberg::setup', 10 );
+		add_action( 'search-filter/settings/init', array( __CLASS__, 'setup' ), 10 );
 	}
 
 	/**
@@ -114,23 +123,23 @@ class Gutenberg {
 		 * Admin facing.
 		 */
 		// Needs a low priority to get added before editor_script. TODO.
-		add_action( 'enqueue_block_editor_assets', '\\Search_Filter\\Integrations\\Gutenberg::editor_assets', 20 );
+		add_action( 'enqueue_block_editor_assets', array( __CLASS__, 'editor_assets' ), 20 );
 		add_action( 'init', array( __CLASS__, 'register_extended_attributes' ), 20 );
-		add_action( 'init', '\\Search_Filter\\Integrations\\Gutenberg::register_blocks', 20 );
-		add_action( 'block_editor_rest_api_preload_paths', '\\Search_Filter\\Integrations\\Gutenberg::get_preload_api_paths', 10 );
+		add_action( 'init', array( __CLASS__, 'register_blocks' ), 20 );
+		add_action( 'block_editor_rest_api_preload_paths', array( __CLASS__, 'get_preload_api_paths' ), 10 );
 		add_action( 'block_type_metadata', array( __CLASS__, 'block_type_metadata' ), 10, 1 );
 
 		// Update fields when blocks are updated.
-		add_action( 'save_post', '\\Search_Filter\\Integrations\\Gutenberg::save_post', 20, 2 );
+		add_action( 'save_post', array( __CLASS__, 'save_post' ), 20, 2 );
 		// When a post is deleted, remove entries from our tables.
-		add_filter( 'delete_post', '\\Search_Filter\\Integrations\\Gutenberg::delete_post', 10, 1 );
+		add_filter( 'delete_post', array( __CLASS__, 'delete_post' ), 10, 1 );
 
-		add_action( 'rest_save_sidebar', '\\Search_Filter\\Integrations\\Gutenberg::save_sidebar', 20 );
-		add_action( 'rest_after_save_widget', '\\Search_Filter\\Integrations\\Gutenberg::save_widget', 20, 3 );
-		add_action( 'rest_delete_widget', '\\Search_Filter\\Integrations\\Gutenberg::delete_widget', 20, 1 );
+		add_action( 'rest_save_sidebar', array( __CLASS__, 'save_sidebar' ), 20 );
+		add_action( 'rest_after_save_widget', array( __CLASS__, 'save_widget' ), 20, 3 );
+		add_action( 'rest_delete_widget', array( __CLASS__, 'delete_widget' ), 20, 1 );
 
 		// Add custom category to block inserter.
-		add_filter( 'block_categories_all', '\\Search_Filter\\Integrations\\Gutenberg::block_categories', 10 );
+		add_filter( 'block_categories_all', array( __CLASS__, 'block_categories' ), 10 );
 
 		// TODO - need to handle FSE and template parts (in edit-post), eg cover the contexts - edit-post, edit-widgets, edit-site.
 
@@ -138,9 +147,9 @@ class Gutenberg {
 		 * Frontend facing.
 		 */
 		// Add support for filtering the Query Loop block.
-		add_filter( 'pre_render_block', '\\Search_Filter\\Integrations\\Gutenberg::pre_render_query_block', 10, 2 );
-		add_filter( 'render_block', '\\Search_Filter\\Integrations\\Gutenberg::render_query_block', 10, 2 );
-		add_filter( 'render_block_data', array( __CLASS__, 'render_block_data' ), -10, 2 );
+		add_filter( 'pre_render_block', array( __CLASS__, 'pre_render_query_block' ), 10, 2 );
+		add_filter( 'render_block', array( __CLASS__, 'render_query_block' ), 10, 2 );
+		add_filter( 'render_block_data', array( __CLASS__, 'render_query_block_data' ), 100, 2 );
 	}
 	/**
 	 * Add custom category to block inserter.
@@ -396,7 +405,7 @@ class Gutenberg {
 			echo esc_html( $e->getMessage() );
 		}
 		if ( $field ) {
-			$field->add_render_class( 'wp-block-search-filter-' . $block_attributes['type'] );
+			$field->add_html_class( 'wp-block-search-filter-' . $block_attributes['type'], 'before' );
 			$field->render();
 		}
 		$output = ob_get_clean();
@@ -696,6 +705,14 @@ class Gutenberg {
 			'search-filter/advanced',
 			'search-filter/control',
 		);
+
+		$block_types_to_attribute_type = array(
+			'search-filter/search'   => 'search',
+			'search-filter/choice'   => 'choice',
+			'search-filter/range'    => 'range',
+			'search-filter/advanced' => 'advanced',
+			'search-filter/control'  => 'control',
+		);
 		// Track which fields are in use.
 		$updated_field_ids = array();
 		foreach ( $blocks as $block ) {
@@ -714,7 +731,7 @@ class Gutenberg {
 						// Based on depends on conditions, get the settings for this field.
 						// This will handle the issue of block attributes being missing when they're
 						// set to the default value as well as popuplate anything thats missing.
-						$args               = array(
+						$args = array(
 							'filters' => array(
 								array(
 									'type'  => 'context',
@@ -722,7 +739,10 @@ class Gutenberg {
 								),
 							),
 						);
-						$processed_settings = Fields_Settings::get_processed_settings( $field->get_attributes(), $args );
+
+						$attributes['type'] = $block_types_to_attribute_type[ $block['blockName'] ];
+
+						$processed_settings = Fields_Settings::get_processed_settings( $attributes, $args );
 						$new_attributes     = $processed_settings->get_attributes();
 
 						$field->set_attributes( wp_parse_args( $attributes, $new_attributes ), true );
@@ -982,6 +1002,7 @@ class Gutenberg {
 		if ( isset( $block['attrs']['namespace'] ) && $block['attrs']['namespace'] !== '' ) {
 			return $pre_render;
 		}
+		// echo "PRE RENDER, try to connect....\r\n";
 		self::try_connect_to_query_loop( $block );
 		return $pre_render;
 	}
@@ -997,7 +1018,7 @@ class Gutenberg {
 	 * @param array $block      The block config.
 	 * @return array
 	 */
-	public static function render_block_data( $block_data, $block ) {
+	public static function render_query_block_data( $block_data, $block ) {
 		$block_type = $block['blockName'];
 
 		if ( $block_type !== 'core/query' ) {
@@ -1020,10 +1041,17 @@ class Gutenberg {
 			return $block_data;
 		}
 		$block_data['attrs']['query']['perPage'] = (string) $posts_per_page;
-		$block_data['attrs']['query']['inherit'] = false;
-
 		return $block_data;
 	}
+
+	private static function needs_query_block_global_query_override( $block_data ) {
+		$is_assigned_to_search_filter = isset( $block_data['attrs']['searchFilterQueryId'] ) && absint( $block_data['attrs']['searchFilterQueryId'] ) !== 0;
+		if ( $block_data['attrs']['query']['inherit'] === true && $is_assigned_to_search_filter ) {
+			return true;
+		}
+		return false;
+	}
+
 
 	/**
 	 * Try to connect a query block to our query.
@@ -1036,12 +1064,39 @@ class Gutenberg {
 	 */
 	public static function try_connect_to_query_loop( $block, $query_integration_name = 'query_block' ) {
 		if ( $block['blockName'] !== 'core/query' ) {
-			return false;
+			return;
 		}
 
 		// Return early if we're already tracking a query (don't allow query blocks inside of query blocks).
 		if ( self::$is_tracking_query ) {
-			return false;
+			return;
+		}
+
+		/*
+		 * First check to see if the query has specifically been assigned to this query block.
+		 * If so that's the simplest case and we can return early.
+		 */
+		if ( self::needs_query_block_global_query_override( $block ) ) {
+			Util::error_log( "Found a query loop that we can't reach, its set to 'default' but should be set to 'custom'." );
+			return;
+		}
+
+		$query_search_filter_id = isset( $block['attrs']['searchFilterQueryId'] ) ? absint( $block['attrs']['searchFilterQueryId'] ) : 0;
+		if ( $query_search_filter_id !== 0 ) {
+			// Then we can connect this query to the query block.
+			$query = Query::find( array( 'id' => $query_search_filter_id ) );
+			if ( ! is_wp_error( $query ) ) {
+				$pagination_key = isset( $block['attrs']['queryId'] ) ? 'query-' . $block['attrs']['queryId'] . '-page' : 'query-page';
+				$query->set_render_config_value( 'paginationKey', $pagination_key );
+				self::$current_query_data = array(
+					'connected_queries' => array( $query ),
+				);
+				self::$is_tracking_query  = true;
+
+				// We're getting here too much??
+				self::attach_query_vars_filter();
+				return;
+			}
 		}
 
 		if ( ! is_singular() ) {
@@ -1049,7 +1104,6 @@ class Gutenberg {
 			// We have a different implementation for accessing the archives.
 			return false;
 		}
-
 		// Get current post ID.
 		$post_id = get_queried_object_id();
 
@@ -1096,18 +1150,19 @@ class Gutenberg {
 
 			// Now we need to check, if the query is set to "single".
 			$integration_type = $query->get_attribute( 'integrationType' );
-			if ( $integration_type !== 'single' ) {
+			if ( $integration_type !== 'single' && $integration_type !== 'dynamic' ) {
 				continue;
 			}
+			$is_single = $integration_type === 'single';
 
-			// Then check to make sure it is set to the current post ID, or "dynamic".
+			// Stop if we're using single integration and the post IDs don't match.
 			$single_location = $query->get_attribute( 'singleLocation' );
-			if ( ( absint( $single_location ) !== absint( $post_id ) ) && $single_location !== 'dynamic' ) {
+			if ( $is_single && ( absint( $single_location ) !== absint( $post_id ) ) ) {
 				continue;
 			}
 
-			$single_integration = $query->get_attribute( 'singleIntegration' );
-			if ( $single_integration !== $query_integration_name ) {
+			$query_integration = $query->get_attribute( 'queryIntegration' );
+			if ( $query_integration !== $query_integration_name ) {
 				continue;
 			}
 
@@ -1121,7 +1176,7 @@ class Gutenberg {
 			 * If field does have an ID, it needs to match the query loop ID in order to affect
 			 * the loop.
 			 */
-			if ( $query_loop_autodetect === 'yes' || $query->get_id() === $query_search_filter_id ) {
+			if ( $query_loop_autodetect === 'yes' ) {
 				// Blocks have their own unique pagination key, so lets set that in the S&F query.
 				$pagination_key = isset( $block['attrs']['queryId'] ) ? 'query-' . $block['attrs']['queryId'] . '-page' : 'query-page';
 				$query->set_render_config_value( 'paginationKey', $pagination_key );
@@ -1132,8 +1187,14 @@ class Gutenberg {
 			'connected_queries' => $connected_queries,
 		);
 		if ( count( $connected_queries ) > 0 ) {
-			add_action( 'query_loop_block_query_vars', '\\Search_Filter\\Integrations\\Gutenberg::query_loop_block_query_vars', 20, 3 );
+			self::attach_query_vars_filter();
 		}
+	}
+	private static function attach_query_vars_filter() {
+		add_action( 'query_loop_block_query_vars', array( __CLASS__, 'query_loop_block_query_vars' ), 20, 3 );
+	}
+	private static function detach_query_vars_filter() {
+		remove_action( 'query_loop_block_query_vars', array( __CLASS__, 'query_loop_block_query_vars' ), 20, 3 );
 	}
 	/**
 	 * Get the IDs of the active queries.
@@ -1170,7 +1231,7 @@ class Gutenberg {
 			return $block_content;
 		}
 
-		self::cleanup_query_block();
+		self::cleanup_query_block( $block );
 		return $block_content;
 	}
 
@@ -1179,13 +1240,14 @@ class Gutenberg {
 	 *
 	 * @since 3.0.0
 	 */
-	public static function cleanup_query_block() {
+	public static function cleanup_query_block( $block ) {
 
 		if ( ! self::$is_tracking_query ) {
 			return;
 		}
+
 		// Reset hooks and associated data.
-		remove_action( 'query_loop_block_query_vars', '\\Search_Filter\\Integrations\\Gutenberg::query_loop_block_query_vars', 20, 3 );
+		self::detach_query_vars_filter();
 
 		self::$is_tracking_query  = false;
 		self::$current_query_data = array(

@@ -39,7 +39,7 @@ class Shortcodes {
 		add_action( 'search-filter/settings/init', array( __CLASS__, 'add_shortcode_integration_settings' ), 1 );
 
 		// Handle the ajax attributes automatically.
-		add_filter( 'search-filter/queries/query/get_attributes', array( __CLASS__, 'update_single_query_attributes' ), 10, 2 );
+		add_filter( 'search-filter/queries/query/get_attributes', array( __CLASS__, 'update_query_attributes' ), 10, 2 );
 
 		// Hide CSS selector options from query editor.
 		add_action( 'search-filter/settings/init', array( __CLASS__, 'hide_css_selector_options' ), 10 );
@@ -53,11 +53,26 @@ class Shortcodes {
 	public static function add_shortcode_integration_settings() {
 
 		// Get the single integration setting and add the shortcode integration type to it.
-		$integration_type_setting = Queries_Settings::get_setting( 'singleIntegration' );
+		$integration_type_setting = Queries_Settings::get_setting( 'queryIntegration' );
 		if ( $integration_type_setting ) {
 			$integration_type_option = array(
-				'label' => __( 'Results shortcode', 'search-filter' ),
-				'value' => 'results_shortcode',
+				'label'     => __( 'Results shortcode', 'search-filter' ),
+				'value'     => 'results_shortcode',
+				'dependsOn' => array(
+					'relation' => 'OR',
+					'rules'    => array(
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'single',
+						),
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'dynamic',
+						),
+					),
+				),
 			);
 			$integration_type_setting->add_option( $integration_type_option );
 		}
@@ -66,18 +81,13 @@ class Shortcodes {
 		$setting = array(
 			'name'      => 'resultsShortcode',
 			'label'     => __( 'Results Shortcode', 'search-filter' ),
-			'group'     => 'integration',
+			'group'     => 'location',
 			'inputType' => 'Info',
 			'dependsOn' => array(
 				'relation' => 'AND',
 				'rules'    => array(
 					array(
-						'option'  => 'integrationType',
-						'compare' => '=',
-						'value'   => 'single',
-					),
-					array(
-						'option'  => 'singleIntegration',
+						'option'  => 'queryIntegration',
 						'compare' => '=',
 						'value'   => 'results_shortcode',
 					),
@@ -94,7 +104,7 @@ class Shortcodes {
 		$setting_args = array(
 			'position' => array(
 				'placement' => 'after',
-				'setting'   => 'singleIntegration',
+				'setting'   => 'queryIntegration',
 			),
 		);
 		Queries_Settings::add_setting( $setting, $setting_args );
@@ -122,26 +132,16 @@ class Shortcodes {
 	 * @param string $id The query ID.
 	 * @return array The attributes.
 	 */
-	public static function update_single_query_attributes( $attributes, $query ) {
+	public static function update_query_attributes( $attributes, $query ) {
 
 		$id = $query->get_id();
 		// We want `queryContainer` and `paginationSelector` to be set automatically.
-		if ( ! isset( $attributes['integrationType'] ) ) {
-			return $attributes;
-		}
-		$integration_type = $attributes['integrationType'];
-
-		if ( $integration_type !== 'single' ) {
+		if ( ! isset( $attributes['queryIntegration'] ) ) {
 			return $attributes;
 		}
 
-		if ( ! isset( $attributes['singleIntegration'] ) ) {
-			return $attributes;
-		}
-
-		$single_integration = $attributes['singleIntegration'];
-
-		if ( $single_integration !== 'results_shortcode' ) {
+		$query_integration = $attributes['queryIntegration'];
+		if ( $query_integration !== 'results_shortcode' ) {
 			return $attributes;
 		}
 
@@ -160,35 +160,13 @@ class Shortcodes {
 	public static function hide_css_selector_options() {
 
 			$depends_conditions = array(
-				'relation' => 'OR',
+				'relation' => 'AND',
 				'action'   => 'hide',
 				'rules'    => array(
 					array(
-						'relation' => 'AND',
-						'action'   => 'hide',
-						'rules'    => array(
-							array(
-								'option'  => 'integrationType',
-								'compare' => '=',
-								'value'   => 'single',
-							),
-							array(
-								'option'  => 'singleIntegration',
-								'compare' => '!=',
-								'value'   => 'results_shortcode',
-							),
-						),
-					),
-					array(
-						'relation' => 'AND',
-						'action'   => 'hide',
-						'rules'    => array(
-							array(
-								'option'  => 'integrationType',
-								'compare' => '!=',
-								'value'   => 'single',
-							),
-						),
+						'option'  => 'queryIntegration',
+						'compare' => '!=',
+						'value'   => 'results_shortcode',
 					),
 				),
 			);

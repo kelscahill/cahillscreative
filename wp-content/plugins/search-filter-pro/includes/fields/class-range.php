@@ -578,8 +578,6 @@ class Range extends \Search_Filter\Fields\Range {
 		$attributes['rangeMin'] = $min_max['min'];
 		$attributes['rangeMax'] = $min_max['max'];
 
-		return $attributes;
-
 		// TODO - move this into the WooCommerce integration class.
 		if ( $record->get_attribute( 'dataType' ) === 'woocommerce' ) {
 			$data_woocommerce = $record->get_attribute( 'dataWoocommerce' );

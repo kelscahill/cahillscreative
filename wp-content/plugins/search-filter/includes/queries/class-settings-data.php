@@ -23,8 +23,8 @@ class Settings_Data {
 	public static function get_groups() {
 		$groups_data = array(
 			array(
-				'name'  => 'integration',
-				'label' => __( 'Integration', 'search-filter' ),
+				'name'  => 'location',
+				'label' => __( 'Location', 'search-filter' ),
 			),
 			array(
 				'name'  => 'query',
@@ -48,15 +48,18 @@ class Settings_Data {
 			// Integration group.
 			array(
 				'name'      => 'integrationType',
-				// 'label'     => __( 'Location', 'search-filter' ),
-				'label'     => __( 'Integration type', 'search-filter' ),
-				'group'     => 'integration',
+				'label'     => __( 'Location', 'search-filter' ),
+				'group'     => 'location',
 				'type'      => 'string',
 
 				'help'      => __( 'Choose the location of your query and results.', 'search-filter' ),
-				'default'   => 'single',
+				'default'   => '',
 				'inputType' => 'Select',
 				'options'   => array(
+					array(
+						'label' => __( 'Dynamic', 'search-filter' ),
+						'value' => 'dynamic',
+					),
 					array(
 						'value' => 'single',
 						'label' => __( 'Single Post / Page / CPT', 'search-filter' ),
@@ -71,26 +74,14 @@ class Settings_Data {
 						'value' => 'search',
 						'label' => __( 'Search (default)', 'search-filter' ),
 					),
-
-					/*
-					array(
-						'value' => 'basic',
-						'label' => __( 'Basic (no query) ', 'search-filter' ),
-					),*/
-					/*
-					array(
-						'value' => 'custom',
-						'label' => 'Manual'
-					),*/
 				),
 			),
 			array(
 				'name'      => 'archiveType',
 				'label'     => __( 'Archive type', 'search-filter' ),
-				'group'     => 'integration',
+				'group'     => 'location',
 				'type'      => 'string',
 				'default'   => 'post_type',
-				// 'inputType' => 'Radio',
 				'inputType' => 'ButtonGroup',
 				'options'   => array(
 					array(
@@ -118,7 +109,7 @@ class Settings_Data {
 				'label'     => __( 'Post type', 'search-filter' ),
 				'help'      => __( "If you don't see your post type, check that `public` and `has_archive` are enabled.", 'search-filter' ),
 				'type'      => 'string',
-				'group'     => 'integration',
+				'group'     => 'location',
 				'inputType' => 'Select',
 				'default'   => 'post',
 				'options'   => array(),
@@ -147,7 +138,7 @@ class Settings_Data {
 				'label'     => __( 'Include taxonomy archives', 'search-filter' ),
 				'help'      => __( 'Enables filtering in the related taxonomy archives.', 'search-filter' ),
 				'type'      => 'string',
-				'group'     => 'integration',
+				'group'     => 'location',
 				'inputType' => 'Toggle',
 				'default'   => 'no',
 				'options'   => array(
@@ -182,7 +173,7 @@ class Settings_Data {
 				'help'      => __( "If you don't see your taxonomy, ensure `public` is enabled", 'search-filter' ),
 				'default'   => 'category',
 				'type'      => 'string',
-				'group'     => 'integration',
+				'group'     => 'location',
 				'inputType' => 'Select',
 				'dependsOn' => array(
 					'relation' => 'AND',
@@ -205,103 +196,11 @@ class Settings_Data {
 			),
 
 			array(
-				'name'        => 'resultsUrlPostTypeArchive',
-				'type'        => 'info',
-				'default'     => '',
-				'group'       => 'integration',
-				'inputType'   => 'Info',
-
-				'label'       => __( 'Results link', 'search-filter' ),
-				'help'        => __( 'This is where the results will be shown', 'search-filter' ),
-				'loadingText' => __( 'Fetching...', 'search-filter' ),
-
-				'store'       => array(
-					'route' => '/settings/results-url',
-					'args'  => array(
-						'integrationType',
-						'archiveType',
-						'postType',
-					),
-				),
-				'dependsOn'   => array(
-					'relation' => 'AND',
-					'rules'    => array(
-						array(
-							'option'  => 'integrationType',
-							'compare' => '=',
-							'value'   => 'archive',
-						),
-						array(
-							'option'  => 'archiveType',
-							'compare' => '=',
-							'value'   => 'post_type',
-						),
-					),
-				),
-			),
-			array(
-				'name'        => 'resultsUrlTaxonomyArchive',
-				'type'        => 'info',
-				'group'       => 'integration',
-				'label'       => __( 'Term link', 'search-filter' ),
-				'help'        => __( 'Taxonomy term archives use this base URL.', 'search-filter' ),
-				'loadingText' => __( 'Fetching...', 'search-filter' ),
-				'inputType'   => 'Info',
-				'store'       => array(
-					'route' => '/settings/results-url',
-					'args'  => array(
-						'integrationType',
-						'archiveType',
-						'taxonomy',
-					),
-				),
-				'dependsOn'   => array(
-					'relation' => 'AND',
-					'rules'    => array(
-						array(
-							'option'  => 'integrationType',
-							'compare' => '=',
-							'value'   => 'archive',
-						),
-						array(
-							'option'  => 'archiveType',
-							'compare' => '=',
-							'value'   => 'taxonomy',
-						),
-					),
-				),
-			),
-			array(
-				'name'        => 'resultsUrlSearch',
-				'type'        => 'info',
-				'group'       => 'integration',
-				'label'       => __( 'Results link', 'search-filter' ),
-				'help'        => __( 'This is where the results will be shown', 'search-filter' ),
-				'loadingText' => __( 'Fetching...', 'search-filter' ),
-				'inputType'   => 'Info',
-				'store'       => array(
-					'route' => '/settings/results-url',
-					'args'  => array(
-						'integrationType',
-					),
-				),
-				'dependsOn'   => array(
-					'relation' => 'AND',
-					'rules'    => array(
-						array(
-							'option'  => 'integrationType',
-							'compare' => '=',
-							'value'   => 'search',
-						),
-					),
-				),
-			),
-			array(
 				'name'        => 'singleLocation',
 				'label'       => __( 'Single Post / Page / CPT', 'search-filter' ),
-				'group'       => 'integration',
+				'group'       => 'location',
 				'type'        => 'string',
-				'default'     => 'dynamic',
+				'default'     => '',
 				'inputType'   => 'PostSelect',
 				'placeholder' => __( 'Search for a post, page or CPT', 'search-filter' ),
 				'dependsOn'   => array(
@@ -315,36 +214,62 @@ class Settings_Data {
 					),
 				),
 			),
+
 			array(
-				'name'      => 'singleIntegration',
-				'label'     => __( 'Query', 'search-filter' ),
-				'help'      => __( 'Unlock more methods with the Pro add-on', 'search-filter' ),
-				'group'     => 'integration',
-				'type'      => 'string',
-				'default'   => '',
-				'inputType' => 'Select',
-				'options'   => array(
+				'name'        => 'queryIntegration',
+				'label'       => __( 'Query', 'search-filter' ),
+				'help'        => __( 'Unlock more methods with the Pro add-on', 'search-filter' ),
+				'group'       => 'location',
+				'type'        => 'string',
+				'default'     => '',
+				'inputType'   => 'Select',
+				'options'     => array(
 					array(
-						'value' => 'query_block',
-						'label' => __( 'Query Loop block', 'search-filter' ),
-					),
-				),
-				'dependsOn' => array(
-					'relation' => 'AND',
-					'rules'    => array(
-						array(
-							'option'  => 'integrationType',
-							'compare' => '=',
-							'value'   => 'single',
+						'value'     => 'query_block',
+						'label'     => __( 'Query Loop block', 'search-filter' ),
+						'dependsOn' => array(
+							'relation' => 'OR',
+							'rules'    => array(
+								array(
+									'option'  => 'integrationType',
+									'compare' => '=',
+									'value'   => 'single',
+								),
+								array(
+									'option'  => 'integrationType',
+									'compare' => '=',
+									'value'   => 'archive',
+								),
+								array(
+									'option'  => 'integrationType',
+									'compare' => '=',
+									'value'   => 'search',
+								),
+								array(
+									'option'  => 'integrationType',
+									'compare' => '=',
+									'value'   => 'dynamic',
+								),
+							),
 						),
 					),
+				),
+				'supports'    => array(
+					'dependantOptions' => true,
+					'hideWhenEmpty'    => true,
+				),
+				'updateValue' => array(
+					'integrationType',
+					'archiveType',
+					'postType',
+					'taxonomy',
 				),
 			),
 
 			array(
 				'name'      => 'queryLoopAutodetect',
 				'label'     => __( 'Autodetect query loop', 'search-filter' ),
-				'group'     => 'integration',
+				'group'     => 'location',
 				'type'      => 'string',
 				'help'      => __( 'Attempts to auto detect any query loops on the current page.', 'search-filter' ),
 				'inputType' => 'Toggle',
@@ -360,57 +285,17 @@ class Settings_Data {
 					),
 				),
 				'dependsOn' => array(
-					'relation' => 'AND',
+					'relation' => 'OR',
 					'rules'    => array(
 						array(
-							'option'  => 'integrationType',
-							'compare' => '=',
-							'value'   => 'single',
-						),
-						array(
-							'option'  => 'singleIntegration',
+							'option'  => 'queryIntegration',
 							'compare' => '=',
 							'value'   => 'query_block',
 						),
 					),
 				),
 			),
-			array(
-				'name'        => 'resultsUrlSingle',
-				'type'        => 'info',
-				'group'       => 'integration',
-				'label'       => __( 'Results link', 'search-filter' ),
-				'help'        => __( 'This is where the results will be shown', 'search-filter' ),
-				'loadingText' => __( 'Fetching...', 'search-filter' ),
-				'inputType'   => 'Info',
-				'store'       => array(
-					'route' => '/settings/results-url',
-					'args'  => array(
-						'integrationType',
-						'singleLocation',
-					),
-				),
-				'dependsOn'   => array(
-					'relation' => 'AND',
-					'rules'    => array(
-						array(
-							'option'  => 'integrationType',
-							'compare' => '=',
-							'value'   => 'single',
-						),
-						array(
-							'option'  => 'singleLocation',
-							'compare' => '!=',
-							'value'   => 'dynamic',
-						),
-						array(
-							'option'  => 'singleLocation',
-							'compare' => '!=',
-							'value'   => '',
-						),
-					),
-				),
-			),
+
 			array(
 				'name'      => 'postTypes',
 				'label'     => __( 'Posts Types', 'search-filter' ),
@@ -428,7 +313,7 @@ class Settings_Data {
 					'route' => '/settings/options/query_post_types',
 					'args'  => array(
 						'integrationType',
-						'singleIntegration',
+						'queryIntegration',
 						'archiveType',
 						'postType',
 						'taxonomy',
@@ -550,7 +435,7 @@ class Settings_Data {
 					),
 					array(
 						'value' => 'show',
-						'label' => __( 'Show Sticky Posts', 'search-filter' ),
+						'label' => __( 'Show', 'search-filter' ),
 					),
 					array(
 						'value' => 'exclude',
@@ -587,7 +472,7 @@ class Settings_Data {
 				'type'      => 'string',
 				'group'     => 'query',
 				'inputType' => 'Toggle',
-				'default'   => 'no',
+				'default'   => 'yes',
 				'options'   => array(
 					array(
 						'value' => 'yes',
@@ -617,6 +502,129 @@ class Settings_Data {
 				),
 			),
 
+			array(
+				'name'        => 'resultsUrlPostTypeArchive',
+				'type'        => 'info',
+				'default'     => '',
+				'group'       => 'location',
+				'inputType'   => 'Info',
+
+				'label'       => __( 'Results link', 'search-filter' ),
+				'help'        => __( 'This is where the results will be shown', 'search-filter' ),
+				'loadingText' => __( 'Fetching...', 'search-filter' ),
+
+				'store'       => array(
+					'route' => '/settings/results-url',
+					'args'  => array(
+						'integrationType',
+						'archiveType',
+						'postType',
+					),
+				),
+				'dependsOn'   => array(
+					'relation' => 'AND',
+					'rules'    => array(
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'archive',
+						),
+						array(
+							'option'  => 'archiveType',
+							'compare' => '=',
+							'value'   => 'post_type',
+						),
+					),
+				),
+			),
+			array(
+				'name'        => 'resultsUrlTaxonomyArchive',
+				'type'        => 'info',
+				'group'       => 'location',
+				'label'       => __( 'Term link', 'search-filter' ),
+				'help'        => __( 'Taxonomy term archives use this base URL.', 'search-filter' ),
+				'loadingText' => __( 'Fetching...', 'search-filter' ),
+				'inputType'   => 'Info',
+				'store'       => array(
+					'route' => '/settings/results-url',
+					'args'  => array(
+						'integrationType',
+						'archiveType',
+						'taxonomy',
+					),
+				),
+				'dependsOn'   => array(
+					'relation' => 'AND',
+					'rules'    => array(
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'archive',
+						),
+						array(
+							'option'  => 'archiveType',
+							'compare' => '=',
+							'value'   => 'taxonomy',
+						),
+					),
+				),
+			),
+			array(
+				'name'        => 'resultsUrlSearch',
+				'type'        => 'info',
+				'group'       => 'location',
+				'label'       => __( 'Results link', 'search-filter' ),
+				'help'        => __( 'This is where the results will be shown', 'search-filter' ),
+				'loadingText' => __( 'Fetching...', 'search-filter' ),
+				'inputType'   => 'Info',
+				'store'       => array(
+					'route' => '/settings/results-url',
+					'args'  => array(
+						'integrationType',
+					),
+				),
+				'dependsOn'   => array(
+					'relation' => 'AND',
+					'rules'    => array(
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'search',
+						),
+					),
+				),
+			),
+			array(
+				'name'        => 'resultsUrlSingle',
+				'type'        => 'info',
+				'group'       => 'location',
+				'label'       => __( 'Results link', 'search-filter' ),
+				'help'        => __( 'This is where the results will be shown', 'search-filter' ),
+				'loadingText' => __( 'Fetching...', 'search-filter' ),
+				'inputType'   => 'Info',
+				'store'       => array(
+					'route' => '/settings/results-url',
+					'args'  => array(
+						'integrationType',
+						'singleLocation',
+					),
+				),
+				'dependsOn'   => array(
+					'relation' => 'AND',
+					'rules'    => array(
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'single',
+						),
+						array(
+							'option'  => 'singleLocation',
+							'compare' => '!=',
+							'value'   => '',
+						),
+					),
+				),
+			),
 			/*
 			array(
 				'name'      => 'excludeIds',

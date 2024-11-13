@@ -44,10 +44,18 @@ class Fields {
 		'control'  => array(),
 	);
 
+	/**
+	 * The indexable record statuses.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var array
+	 */
 	private static $indexable_stati = array(
 		'enabled',
 		'disabled',
 	);
+
 	/**
 	 * The field defaults.
 	 *
@@ -138,6 +146,9 @@ class Fields {
 		add_action( 'search-filter/settings/register/fields', array( __CLASS__, 'register_field_settings' ), 10 );
 		add_action( 'search-filter/settings/init', array( __CLASS__, 'register_url_arg_setting' ), 20 );
 		add_filter( 'search-filter/field/url_name', array( __CLASS__, 'add_url_arg_name' ), 20, 2 );
+		add_filter( 'search-filter/fields/field/render/html_classes', array( __CLASS__, 'add_html_render_classes' ), 20, 2 );
+		add_filter( 'search-filter/fields/field/render/html_attributes', array( __CLASS__, 'add_html_render_attributes' ), 20, 2 );
+		add_filter( 'search-filter/fields/field/render_data', array( __CLASS__, 'update_field_render_data' ), 20, 2 );
 
 		// Author attributes and settings.
 		add_action( 'search-filter/settings/register/fields', array( __CLASS__, 'add_author_attributes_and_settings' ), 10 );
@@ -229,26 +240,19 @@ class Fields {
 		);
 		if ( isset( $count_supported_matrix[ $type ] ) && in_array( $input_type, $count_supported_matrix[ $type ], true ) ) {
 			$indexed_fields_conditions = array(
-				'conditions' => array(
-					'relation' => 'OR',
-					'rules'    => array(
-						array(
-							'option'  => 'dataType',
-							'compare' => '=',
-							'value'   => 'taxonomy',
-						),
-						array(
-							'store'   => 'query',
-							'option'  => 'useIndexer',
-							'compare' => '=',
-							'value'   => 'yes',
-						),
-					),
-				),
+				'store'   => 'query',
+				'option'  => 'useIndexer',
+				'compare' => '=',
+				'value'   => 'yes',
 			);
 
-			$setting_support['showCount'] = $indexed_fields_conditions;
-			$setting_support['hideEmpty'] = $indexed_fields_conditions;
+			$setting_support['showCount'] = array(
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'showCount', $indexed_fields_conditions, false ),
+			);
+			$setting_support['hideEmpty'] = array(
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'hideEmpty', $indexed_fields_conditions, false ),
+			);
+
 		}
 
 		return $setting_support;
@@ -885,6 +889,33 @@ class Fields {
 
 		Fields_Settings::add_setting( $setting, $add_setting_args );
 
+		$setting = array(
+			'name'      => 'hideFieldWhenEmpty',
+			'label'     => __( 'Hide field when empty', 'search-filter' ),
+			'help'      => __( 'Hides the field when it has no options available.', 'search-filter' ),
+			'group'     => 'input',
+			'tab'       => 'settings',
+			'type'      => 'string',
+			// Important - default must be an empty string '' so it will be overriden, but if not set
+			// it was cause react to throw an error related to controlled/uncontrolled inputs.
+			'default'   => 'no',
+			'inputType' => 'Toggle',
+			'context'   => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
+			'dependsOn' => array(
+				'relation' => 'AND',
+				'action'   => 'hide',
+				'rules'    => array(
+					array(
+						'option'  => 'type',
+						'value'   => 'choice',
+						'compare' => '=',
+					),
+				),
+			),
+		);
+
+		Fields_Settings::add_setting( $setting, $add_setting_args );
+
 		/*
 		 Fields_Settings::add_group(
 			array(
@@ -1072,6 +1103,83 @@ class Fields {
 	}
 
 	/**
+	 * Check if the field should be hidden.
+	 *
+	 * @param Field $field The field to check.
+	 * @return boolean
+	 */
+	private static function should_hide_field( $field ) {
+		if ( $field->get_attribute( 'type' ) !== 'choice' ) {
+			return false;
+		}
+
+		$hide_field_when_empty_attribute = $field->get_attribute( 'hideFieldWhenEmpty' ) === 'yes';
+		if ( ! $hide_field_when_empty_attribute ) {
+			return false;
+		}
+
+		if ( count( $field->get_options() ) > 0 ) {
+			return false;
+		}
+
+		return true;
+	}
+	/**
+	 * Add classes to the field based on the hide field when empty setting.
+	 *
+	 * @param string $classes    The classes to add.
+	 * @param Field  $field       The field to add the classes to.
+	 * @return string    The classes to add.
+	 */
+	public static function add_html_render_classes( $classes, $field ) {
+
+		if ( ! self::should_hide_field( $field ) ) {
+			return $classes;
+		}
+
+		$classes[] = 'search-filter-field--hidden';
+
+		return $classes;
+	}
+
+	/**
+	 * Add the aria-hidden attribute to the field.
+	 *
+	 * @param array $attributes The attributes to add.
+	 * @param Field $field      The field to add the attributes to.
+	 * @return array The attributes to add.
+	 */
+	public static function add_html_render_attributes( $attributes, $field ) {
+		if ( ! self::should_hide_field( $field ) ) {
+			return $attributes;
+		}
+
+		$attributes['aria-hidden'] = 'true';
+
+		return $attributes;
+	}
+
+	/**
+	 * Set the render data for the field.
+	 *
+	 * @param array $render_data The render data to update.
+	 * @param Field $field       The field to update the render data for.
+	 * @return array The updated render data.
+	 */
+	public static function update_field_render_data( $render_data, $field ) {
+
+		if ( ! self::should_hide_field( $field ) ) {
+			return $render_data;
+		}
+
+		// If a field is  aria-hidden it should not be tabbable, so we need to
+		// disable the interactivity which does this for us.
+		$render_data['isInteractive'] = false;
+
+		return $render_data;
+	}
+
+	/**
 	 * Register the custom field settings.
 	 *
 	 * @since 3.0.0
@@ -1206,30 +1314,12 @@ class Fields {
 			return $options;
 		}
 
-		$custom_field_key       = $field->get_attribute( 'dataCustomField' );
-		$custom_field_order     = $field->get_attribute( 'inputOptionsOrder' );
-		$custom_field_order_dir = $field->get_attribute( 'inputOptionsOrderDir' );
-
-		$query_order = 'ASC';
-		if ( $custom_field_order_dir === 'asc' ) {
-			$query_order = 'ASC';
-		} elseif ( $custom_field_order_dir === 'desc' ) {
-			$query_order = 'DESC';
-		}
+		$custom_field_key = $field->get_attribute( 'dataCustomField' );
 
 		global $wpdb;
 		$options = array();
-		$order   = '';
 		$where   = $wpdb->prepare( " WHERE meta_key=%s AND meta_value!='' ", $custom_field_key );
-
-		if ( $custom_field_order === 'alphabetical' ) {
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$order = " ORDER BY `meta_value` {$query_order}";
-		} elseif ( $custom_field_order === 'numerical' ) {
-			// Allow negatives so cast to signed.
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$order = " ORDER BY CAST(`meta_value` AS SIGNED) {$query_order}";
-		}
+		$order   = self::build_sql_order_by( $field, 'meta_value' );
 
 		$query_result = $wpdb->get_results(
 			"SELECT DISTINCT(`meta_value`) 
@@ -1251,6 +1341,46 @@ class Fields {
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Build the SQL order by clause from a fields settings.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param Field  $field The field to get the order by for.
+	 * @param string $property The property to order by.
+	 * @return string The SQL order by clause.
+	 */
+	public static function build_sql_order_by( $field, $property ) {
+
+		$field_order     = $field->get_attribute( 'inputOptionsOrder' );
+		$field_order_dir = $field->get_attribute( 'inputOptionsOrderDir' );
+
+		if ( $field_order === 'inherit' ) {
+			return '';
+		}
+
+		$query_order = 'ASC';
+		if ( $field_order_dir === 'asc' ) {
+			$query_order = 'ASC';
+		} elseif ( $field_order_dir === 'desc' ) {
+			$query_order = 'DESC';
+		}
+
+		global $wpdb;
+		$order = $wpdb->prepare( " ORDER BY %s {$query_order}", $property );
+
+		if ( $field_order === 'alphabetical' ) {
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$order = $wpdb->prepare( " ORDER BY %s {$query_order}", $property );
+		} elseif ( $field_order === 'numerical' ) {
+			// Allow negatives so cast to signed.
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$order = $wpdb->prepare( " ORDER BY CAST(%s AS SIGNED) {$query_order}", $property );
+		}
+
+		return $order;
 	}
 
 	/**
@@ -1517,6 +1647,23 @@ class Fields {
 			return false;
 		}
 		return $query->get_attribute( 'useIndexer' ) === 'yes' && in_array( $query->get_status(), self::$indexable_stati, true );
+	}
+
+	/**
+	 * Check if the field should be indexed.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param    Field $field    The field to check.
+	 * @return   bool    True if the field should be indexed.
+	 */
+	public static function field_is_connected_to_indexer( $field ) {
+
+		$query = self::get_field_query( $field );
+		if ( ! $query ) {
+			return false;
+		}
+		return $query->get_attribute( 'useIndexer' ) === 'yes';
 	}
 
 	/**

@@ -339,7 +339,7 @@ class Queries {
 			array(
 				'name'  => 'results',
 				'label' => __(
-					'Dynamic Update',
+					'Live Search',
 					'search-filter-pro'
 				),
 			)
@@ -415,7 +415,7 @@ class Queries {
 
 		$setting = array(
 			'name'      => 'resultsDynamicUpdate',
-			'label'     => __( 'Dynamic update', 'search-filter' ),
+			'label'     => __( 'Live search', 'search-filter' ),
 			'help'      => __( 'Loads new results without refreshing the page.', 'search-filter' ),
 			'group'     => 'results',
 			'type'      => 'string',
@@ -436,74 +436,6 @@ class Queries {
 
 		Queries_Settings::add_setting( $setting );
 
-		/*
-		 $setting      = array(
-			'name'      => 'archiveUseMainQuery',
-			'label'     => __( 'Use main query', 'search-filter' ),
-			'help'      => __( 'Whether to use the default main query for the archive or not.', 'search-filter' ),
-			'group'     => 'integration',
-			'type'      => 'string',
-			'default'   => '',
-			'inputType' => 'Toggle',
-			'options'   => array(
-				array(
-					'value' => 'yes',
-					'label' => __( 'Yes', 'search-filter' ),
-				),
-				array(
-					'value' => 'no',
-					'label' => __( 'No', 'search-filter' ),
-				),
-			),
-			'dependsOn' => array(
-				'relation' => 'AND',
-				'rules'    => array(
-				array(
-					'option'  => 'integrationType',
-					'compare' => '=',
-					'value'   => 'archive',
-				),
-			),
-		);
-		$setting_args = array(
-			'position' => array(
-				'placement' => 'after',
-				'setting'   => 'taxonomy',
-			),
-		);
-		Queries_Settings::add_setting( $setting, $setting_args ); */
-
-		$setting      = array(
-			'name'      => 'archiveIntegration',
-			'label'     => __( 'Integration', 'search-filter' ),
-			'group'     => 'integration',
-			'type'      => 'string',
-			'default'   => '',
-			'inputType' => 'Select',
-			'options'   => array(
-				array(
-					'value' => 'main_query',
-					'label' => __( 'Main query', 'search-filter' ),
-				),
-			),
-			'dependsOn' => array(
-				'relation' => 'AND',
-				'rules'    => array(
-					array(
-						'option'  => 'integrationType',
-						'compare' => '=',
-						'value'   => 'archive',
-					),
-				),
-			),
-		);
-		$setting_args = array(
-			'position' => array(
-				'placement' => 'after',
-				'setting'   => 'taxonomy',
-			),
-		);
-		Queries_Settings::add_setting( $setting, $setting_args );
 		// Add dummy custom field setting.
 		$setting = array(
 			'name'      => 'metaQuery',
@@ -1509,7 +1441,7 @@ class Queries {
 	 */
 	public static function add_single_integrations() {
 		// Get the object for the data_type setting for its options.
-		$integration_type_setting = Queries_Settings::get_setting( 'singleIntegration' );
+		$integration_type_setting = Queries_Settings::get_setting( 'queryIntegration' );
 		if ( ! $integration_type_setting ) {
 			return;
 		}
@@ -1523,10 +1455,57 @@ class Queries {
 
 		// Add custom display method.
 		$custom_integration_type_option = array(
-			'label' => __( 'Custom', 'search-filter' ),
-			'value' => 'custom',
+			'label'     => __( 'Custom', 'search-filter' ),
+			'value'     => 'custom',
+			'dependsOn' => array(
+				'relation' => 'OR',
+				'rules'    => array(
+					array(
+						'option'  => 'integrationType',
+						'compare' => '=',
+						'value'   => 'single',
+					),
+					array(
+						'option'  => 'integrationType',
+						'compare' => '=',
+						'value'   => 'archive',
+					),
+					array(
+						'option'  => 'integrationType',
+						'compare' => '=',
+						'value'   => 'search',
+					),
+					array(
+						'option'  => 'integrationType',
+						'compare' => '=',
+						'value'   => 'dynamic',
+					),
+				),
+			),
 		);
 		$integration_type_setting->add_option( $custom_integration_type_option );
+
+		// Add main query integration type option for archives.
+		$main_query_integration_type_option = array(
+			'value'     => 'main_query',
+			'label'     => __( 'Main query', 'search-filter-pro' ),
+			'dependsOn' => array(
+				'relation' => 'OR',
+				'rules'    => array(
+					array(
+						'option'  => 'integrationType',
+						'compare' => '=',
+						'value'   => 'archive',
+					),
+					array(
+						'option'  => 'integrationType',
+						'compare' => '=',
+						'value'   => 'search',
+					),
+				),
+			),
+		);
+		$integration_type_setting->add_option( $main_query_integration_type_option, array( 'position' => 'first' ) );
 	}
 	/**
 	 * Upgrade the sort order setting.

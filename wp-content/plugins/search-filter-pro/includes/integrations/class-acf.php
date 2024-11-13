@@ -16,6 +16,7 @@ use Search_Filter\Integrations;
 use Search_Filter\Fields\Settings as Fields_Settings;
 use Search_Filter\Integrations\Settings as Integrations_Settings;
 use Search_Filter\Queries\Query;
+use Search_Filter\Settings;
 use Search_Filter_Pro\Fields;
 use Search_Filter_Pro\Indexer\Database\Index_Query;
 use Search_Filter\Util;
@@ -94,6 +95,7 @@ class Acf {
 			'button',
 			'post_object',
 			'relationship',
+			'taxonomy',
 		),
 		'range'    => array(
 			'number',
@@ -140,7 +142,6 @@ class Acf {
 		add_filter( 'search-filter/field/url_name', array( __CLASS__, 'add_custom_field_url_name' ), 10, 2 );
 	}
 
-
 	/**
 	 * Update the ACF integration in the integrations section.
 	 *
@@ -152,12 +153,20 @@ class Acf {
 		if ( ! $acf_integration ) {
 			return;
 		}
-		$acf_integration->update(
-			array(
-				'comingSoon' => false,
-				'disabled'   => self::acf_enabled() ? false : true,
-			)
+		$is_acf_enabled = self::acf_enabled();
+
+		$update_integration_settings = array(
+			'isPluginEnabled'      => $is_acf_enabled,
+			'isExtensionInstalled' => true,
 		);
+
+		// If we detect ACF is enabled, then lets also set the plugin installed
+		// property to true - in case someone renamed the folder.
+		if ( $is_acf_enabled ) {
+			$update_integration_settings['isPluginInstalled'] = true;
+		}
+
+		$acf_integration->update( $update_integration_settings );
 
 		if ( ! self::acf_enabled() ) {
 			return;
@@ -181,6 +190,7 @@ class Acf {
 		add_action( 'rest_api_init', array( __CLASS__, 'add_routes' ) );
 		add_filter( 'search-filter-pro/field/search/autocomplete/suggestions', array( __CLASS__, 'get_autocomplete_suggestions' ), 10, 3 );
 		add_filter( 'search-filter/field/search/wp_query_args', array( __CLASS__, 'get_search_wp_query_args' ), 10, 2 );
+		add_filter( 'search-filter-pro/indexer/query/search/should_enable', array( __CLASS__, 'enable_indexer_search' ), 10, 2 );
 		add_filter( 'search-filter/field/choice/wp_query_args', array( __CLASS__, 'get_choice_wp_query_args' ), 10, 2 );
 		add_filter( 'search-filter/field/range/wp_query_args', array( __CLASS__, 'get_range_wp_query_args' ), 10, 2 );
 		add_filter( 'search-filter/field/choice/options', array( __CLASS__, 'add_field_choice_options' ), 10, 2 );
@@ -498,7 +508,6 @@ class Acf {
 			$acf_fields = \acf_get_fields( $group['key'] );
 			$options    = array_merge( $options, self::get_acf_nested_group_fields_options( $acf_fields ) );
 		}
-
 		return $options;
 	}
 
@@ -673,16 +682,41 @@ class Acf {
 			return $suggestions;
 		}
 
-		$field_meta_key = self::generate_field_key( $field_key );
-
-		// Now do a WP DB query on the post meta table for the field meta key using the search term to partially match the beginning of the value.
 		global $wpdb;
 
-		$results = array();
+		// TODO.
+		if ( Fields::field_is_connected_to_indexer( $field ) ) {
+			$new_suggestions = array();
+			// Then lets get the suggestions from the indexer directly.
+			$table_name = $wpdb->prefix . 'search_filter_index';
+			$order      = Fields::build_sql_order_by( $field, 'value' );
+
+			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedPlaceholder, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+			$results = $wpdb->get_results( $wpdb->prepare( 'SELECT DISTINCT value FROM %i WHERE field_id = %d AND value LIKE %s', $table_name, $field->get_id(), $search_term . '%' ) . $order );
+
+			if ( $results === null ) {
+				return array();
+			}
+
+			foreach ( $results as $result_item ) {
+				$new_suggestions[] = $result_item->value;
+			}
+
+			return $new_suggestions;
+		}
+
+		// Now do a WP DB query on the post meta table for the field meta key using the search term to partially match the beginning of the value.
+		$field_meta_key = self::generate_field_key( $field_key );
+		$order          = Fields::build_sql_order_by( $field, 'meta_value' );
+
 		if ( self::field_key_has_repeater_parent( $field_key ) ) {
-			$results = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT meta_value FROM $wpdb->postmeta WHERE meta_key LIKE %s AND meta_value LIKE %s", $field_meta_key, $search_term . '%' ) );
+			$results = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT meta_value FROM $wpdb->postmeta WHERE meta_key LIKE %s AND meta_value LIKE %s", $field_meta_key, $search_term . '%' ) . $order );
 		} else {
-			$results = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT meta_value FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value LIKE %s", $field_meta_key, $search_term . '%' ) );
+			$results = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT meta_value FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value LIKE %s", $field_meta_key, $search_term . '%' ) . $order );
+		}
+
+		if ( $results === null ) {
+			return array();
 		}
 
 		$new_suggestions = array();
@@ -690,7 +724,32 @@ class Acf {
 		foreach ( $results as $result ) {
 			$new_suggestions[] = $result->meta_value;
 		}
+
 		return $new_suggestions;
+	}
+
+	/**
+	 * Enable the indexer search for search fields connected to ACF
+	 * data types.
+	 */
+	public static function enable_indexer_search( $should_enable, $field ) {
+
+		$data_type = $field->get_attribute( 'dataType' );
+		if ( $data_type !== 'acf_field' ) {
+			return $should_enable;
+		}
+
+		$field_key = $field->get_attribute( 'dataAcfField' );
+		if ( ! $field_key || $field_key === '' ) {
+			return $should_enable;
+		}
+
+		// Support using the indexer for search fields with ACF.
+		if ( ! Fields::field_is_connected_to_indexer( $field ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -703,6 +762,7 @@ class Acf {
 	 * @return array    The WP query args.
 	 */
 	public static function get_search_wp_query_args( $query_args, $field ) {
+
 		if ( ! self::acf_enabled() ) {
 			return $query_args;
 		}
@@ -713,8 +773,13 @@ class Acf {
 		}
 
 		$field_key = $field->get_attribute( 'dataAcfField' );
-
 		if ( ! $field_key || $field_key === '' ) {
+			return $query_args;
+		}
+
+		// Support using the indexer for search fields with ACF,
+		// so return early and disable the wp_query args.
+		if ( Fields::field_is_connected_to_indexer( $field ) ) {
 			return $query_args;
 		}
 
@@ -1009,11 +1074,16 @@ class Acf {
 		}
 
 		if ( $acf_field['type'] === 'post_object' || $acf_field['type'] === 'relationship' ) {
-			$options = self::get_relationship_options( $field, $acf_field );
+			$options = self::get_post_relationship_options( $field, $acf_field );
 			return $options;
 		}
 
-		// If the field didn't have choices and it wasn't a relationship, lets assume its a
+		if ( $acf_field['type'] === 'taxonomy' ) {
+			$options = self::get_taxonomy_relationship_options( $field, $acf_field );
+			return $options;
+		}
+
+		// If the field didn't have choices and it wasn't a relationship or taxonomy, lets assume its a
 		// single value string (ie text input).
 		$options = self::get_single_value_options( $field, $acf_field );
 		return $options;
@@ -1028,7 +1098,7 @@ class Acf {
 	 * @param array $acf_field    The ACF field to get the options for.
 	 * @return array    The options for the field.
 	 */
-	public static function get_relationship_options( $field, $acf_field ) {
+	public static function get_post_relationship_options( $field, $acf_field ) {
 
 		$options         = array();
 		$order           = $field->get_attribute( 'inputOptionsOrder' );
@@ -1114,6 +1184,89 @@ class Acf {
 					'value' => (string) $post->ID,
 					'label' => $post->post_title,
 				),
+				$field->get_id()
+			);
+		}
+		return $options;
+	}
+	/**
+	 * Get the options for a relationship field.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param Field $field    The field to get the options for.
+	 * @param array $acf_field    The ACF field to get the options for.
+	 * @return array    The options for the field.
+	 */
+	public static function get_taxonomy_relationship_options( $field, $acf_field ) {
+
+		$options         = array();
+		$order           = $field->get_attribute( 'inputOptionsOrder' );
+		$order_direction = $field->get_attribute( 'inputOptionsOrderDir' ) ? $field->get_attribute( 'inputOptionsOrderDir' ) : 'asc';
+
+		if ( self::field_uses_indexer( $field ) && $field->get_id() !== 0 ) {
+
+			$cache_key = Fields::get_field_options_cache_key( $field );
+
+			$cached_field_terms = wp_cache_get( $cache_key, 'search-filter-pro' );
+
+			if ( $cached_field_terms === false ) {
+				$query = new Index_Query(
+					array(
+						'fields'   => 'value',
+						'groupby'  => 'value',
+						'field_id' => $field->get_id(),
+						'number'   => 0,
+					)
+				);
+
+				if ( is_wp_error( $query ) ) {
+					return $options;
+				}
+				$ids = $query->items;
+
+				// Array map the IDs, and run $wpdb->prepare with the number placehold on each item.
+				$ids     = array_map( 'absint', $ids );
+				$ids_sql = '(' . implode( ',', $ids ) . ')';
+				// Use $wpdb to get post titles only based on the IDs.
+				global $wpdb;
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+				$cached_field_terms = $wpdb->get_results(
+					$wpdb->prepare(
+						// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedPlaceholder, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+						"SELECT term_id, name FROM %i WHERE term_id IN $ids_sql",
+						$wpdb->terms
+					)
+				);
+				wp_cache_set( $cache_key, $cached_field_terms, 'search-filter-pro' );
+			}
+
+			$cached_field_terms = Util::sort_objects_by_property( $cached_field_terms, 'name', $order, $order_direction );
+
+			foreach ( $cached_field_terms as $term ) {
+				Choice::add_option_to_array(
+					$options,
+					array(
+						'value' => (string) $term->term_id,
+						'label' => $term->name,
+					),
+					$field->get_id()
+				);
+			}
+
+			return $options;
+		}
+
+		// We should only get here in field previews, or unsaved fields which have
+		// no index yet.
+		$taxonomy     = $acf_field['taxonomy'];
+		$term_options = Settings::create_taxonomy_terms_options( $taxonomy );
+		$term_options = Util::sort_assoc_array_by_property( $term_options, 'label', $order, $order_direction );
+
+		foreach ( $term_options as $term_option ) {
+			Choice::add_option_to_array(
+				$options,
+				$term_option,
 				$field->get_id()
 			);
 		}

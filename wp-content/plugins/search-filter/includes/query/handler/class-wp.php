@@ -12,6 +12,7 @@
 
 namespace Search_Filter\Query\Handler;
 
+use Search_Filter\Queries;
 use Search_Filter\Util;
 
 // If this file is called directly, abort.
@@ -56,6 +57,8 @@ class Wp {
 			$attached_query_ids = array();
 			foreach ( $queries as $query ) {
 
+				Queries::register_active_query( $query->get_id() );
+
 				$is_wp_query = apply_filters( 'search-filter/query/is_wp_query', true, $query );
 
 				if ( $is_wp_query === false ) {
@@ -65,8 +68,12 @@ class Wp {
 				$query_args           = $query->apply_wp_query_args( $query_args );
 				$query_args           = $this->apply_field_wp_query_args( $query_args, $query->get_fields() );
 				$attached_query_ids[] = $query->get_id();
+
 				// Add filter to customise the query args further.
-				// TODO - the naming of this does not match convention.
+
+				// The naming of this hook does not match convention - but, its used in multiple places
+				// the indexer and here so it probably shouldn't belong to the single query class, ie
+				// `search-filter/queries/query...` it should be an exception.
 				$query_args = apply_filters( 'search-filter/query/query_args', $query_args, $query );
 			}
 

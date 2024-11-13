@@ -310,10 +310,10 @@ abstract class Task_Runner {
 		}
 
 		$status = self::get_status();
+
 		if ( $status !== 'processing' ) {
 			return;
 		}
-
 		$new_lock_time = self::get_new_process_lock_time();
 
 		// Check if there are any issues with the lock time.
@@ -876,6 +876,8 @@ abstract class Task_Runner {
 	 * @since 3.0.0
 	 */
 	public static function try_clear_status() {
+		wp_using_ext_object_cache( false );
+
 		// Don't clear the status if we're in progress or paused.
 		if ( self::get_status() === 'processing' ) {
 			return;

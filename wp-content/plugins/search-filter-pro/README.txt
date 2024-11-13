@@ -4,7 +4,7 @@ Tags: search, filter, taxonomy, tag, category, product, shop, post type
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 5.3
-Stable tag: 3.0.4
+Stable tag: 3.0.5
 
 Create powerful search and filtering experiences for your users and customers.
 
@@ -21,6 +21,23 @@ Create powerful search and filtering experiences for your users and customers.
 
 
 == Changelog ==
+
+= 3.0.5 =
+* New - add option to hide fields when they don't have any choices available.
+* New - improve text search for ACF fields and add support for searching inside ACF repeater fields.
+* New - add support for ACF taxonomy fields.
+* New - allow integration plugins to be downloaded directly from the integrations screen.
+* New - add ordering parameters to autocomplete fields (order suggestions alphabetically, ascending and descending)
+* Improvement - when checking for updates ensure all related plugin updates are also available.
+* Improvement - increase specificity of our range slider CSS classes for better consistency.
+* Change - JavaScript APIs have been restructured and renamed.
+* Fix - remove debugging tools warnings when using auto submit on fields.
+* Fix - load more button was not being affected by the width settings.
+* Fix - fields are now properly restored when they are inside a dynamic update section.
+* Fix - auto detect min/max for ranges was causing an error in admin screens.
+* Fix - indexer status was not correctly updated.
+* Fix - the search field would cause a double submit when the auto submit setting was enabled.
+
 
 = 3.0.4 =
 * New - Fields - added "show count numbers" and "hide options with no results" to fields for post types, post statuses and post authors.
@@ -58,23 +75,6 @@ Create powerful search and filtering experiences for your users and customers.
 * Fix - an issue where custom fields were showing a limited number of options.
 
 = 3.0.0 =
+* Release version 3.0.0.
 * Fix - issue  with the loading icon position.
 * Fix - issue with count formatting.
-
-= 3.0.0-beta-4 =
-* Update - platform updates to support page builder integrations.
-
-= 3.0.0-beta-3 =
-* Fix - an issue with the cache table not being created correctly.
-
-= 3.0.0-beta-2 =
-* New - indexer & dynamic fields.
-* New - WooCommerce fields and integration options.
-* New - support for ACF repeater fields, flexible content, group and relationship fields.
-* New - add support for authors in fields.
-* Fix - issue with custom fields not working correctly.
-* Fix - issues with ACF fields not working correctly.
-* Fix - issue with custom field urls not working for taxonomy fields.
-
-= 3.0.0-beta-1 =
-* Initial release.

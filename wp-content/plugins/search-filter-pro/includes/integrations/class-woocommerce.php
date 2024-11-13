@@ -211,71 +211,66 @@ class WooCommerce {
 		// Ordering options to stock status and on sale.
 		$meta_ordering_matrix = array(
 			'choice' => array( 'select', 'radio', 'checkbox', 'button' ),
+			'search' => array( 'autocomplete' ),
 		);
 
 		// Build conditions for non taxonomy options.
 		if ( isset( $meta_ordering_matrix[ $type ] ) && in_array( $input_type, $meta_ordering_matrix[ $type ], true ) ) {
 			// For now, also make it so `inputOptionsOrderDir` only appears when stock status + backorder is set
 			// otherwise stock_status and on_sale only have one option anyway.
+
+			// Add the exclude condition.
 			$meta_ordering_conditions                = array(
-				'relation' => 'OR',
+				'option'  => 'dataType',
+				'value'   => 'woocommerce',
+				'compare' => '!=',
+			);
+			$setting_support['inputOptionsOrderDir'] = array(
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'inputOptionsOrderDir', $meta_ordering_conditions, true ),
+			);
+
+			// Then add the alternative condition to enable it with WC.
+			$meta_ordering_conditions = array(
+				'relation' => 'AND',
+				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'dataType',
 						'value'   => 'woocommerce',
-						'compare' => '!=',
+						'compare' => '=',
 					),
 					array(
-						'relation' => 'AND',
+						'relation' => 'OR',
 						'action'   => 'hide',
 						'rules'    => array(
 							array(
-								'option'  => 'dataType',
-								'value'   => 'woocommerce',
+								'option'  => 'dataWoocommerce',
+								'value'   => 'on_sale',
 								'compare' => '=',
 							),
 							array(
-								'relation' => 'OR',
-								'action'   => 'hide',
-								'rules'    => array(
-									array(
-										'option'  => 'dataWoocommerce',
-										'value'   => 'on_sale',
-										'compare' => '=',
-									),
-									array(
-										'option'  => 'dataWoocommerce',
-										'value'   => 'stock_status',
-										'compare' => '=',
-									),
-								),
+								'option'  => 'dataWoocommerce',
+								'value'   => 'stock_status',
+								'compare' => '=',
 							),
 						),
 					),
 				),
 			);
+
 			$setting_support['inputOptionsOrderDir'] = array(
-				'conditions' => Field::add_setting_support_condition( $setting_support, 'inputOptionsOrderDir', $meta_ordering_conditions ),
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'inputOptionsOrderDir', $meta_ordering_conditions, false ),
 			);
 
 			// Hide from fields for any WC data type.
-			$options_order_conditions             = array(
-				'relation' => 'AND',
-				'rules'    => array(
-					array(
-						'option'  => 'dataType',
-						'value'   => 'woocommerce',
-						'compare' => '!=',
-					),
-					array(
-						'option'  => 'dataType',
-						'value'   => 'post_attribute',
-						'compare' => '!=',
-					),
-				),
+			$options_order_conditions = array(
+				'option'  => 'dataType',
+				'value'   => 'woocommerce',
+				'compare' => '!=',
 			);
+
 			$setting_support['inputOptionsOrder'] = array(
-				'conditions' => Field::add_setting_support_condition( $setting_support, 'inputOptionsOrder', $options_order_conditions ),
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'inputOptionsOrder', $options_order_conditions, true ),
 			);
 		}
 
@@ -474,17 +469,17 @@ class WooCommerce {
 		}
 		$integration_type = $attributes['integrationType'];
 
-		if ( ! isset( $attributes['singleIntegration'] ) ) {
+		if ( ! isset( $attributes['queryIntegration'] ) ) {
 			return $attributes;
 		}
-		$single_integration = $attributes['singleIntegration'];
+		$query_integration = $attributes['queryIntegration'];
 
-		if ( $integration_type === 'single' && $single_integration === 'woocommerce/products_query_block' ) {
+		if ( $query_integration === 'woocommerce/products_query_block' ) {
 
 			$attributes['queryContainer']          = '.search-filter-query--id-' . absint( $id );
 			$attributes['queryPaginationSelector'] = '.search-filter-query--id-' . absint( $id ) . ' .wp-block-query-pagination a';
 
-		} elseif ( $integration_type === 'single' && $single_integration === 'woocommerce/products_shortcode' ) {
+		} elseif ( $query_integration === 'woocommerce/products_shortcode' ) {
 
 			$attributes['queryContainer']          = '.search-filter-query--id-' . absint( $id );
 			$attributes['queryPaginationSelector'] = '.search-filter-query--id-' . absint( $id ) . ' .woocommerce-pagination a';
@@ -528,49 +523,20 @@ class WooCommerce {
 			'relation' => 'AND',
 			'action'   => 'hide',
 			'rules'    => array(
-				// Don't show setting if integration type is set to woocommerce/products_query_block.
+				// Don't show setting if integration type is set to woocommerce/products_query_block or shortcode.
 				array(
-					'relation' => 'OR',
+					'relation' => 'AND',
 					'action'   => 'hide',
 					'rules'    => array(
 						array(
-							'relation' => 'AND',
-							'action'   => 'hide',
-							'rules'    => array(
-								array(
-									'option'  => 'integrationType',
-									'compare' => '=',
-									'value'   => 'single',
-								),
-								array(
-									'relation' => 'AND',
-									'action'   => 'hide',
-									'rules'    => array(
-										array(
-											'option'  => 'singleIntegration',
-											'compare' => '!=',
-											'value'   => 'woocommerce/products_query_block',
-										),
-										array(
-											'option'  => 'singleIntegration',
-											'compare' => '!=',
-											'value'   => 'woocommerce/products_shortcode',
-										),
-									),
-								),
-
-							),
+							'option'  => 'queryIntegration',
+							'compare' => '!=',
+							'value'   => 'woocommerce/products_query_block',
 						),
 						array(
-							'relation' => 'AND',
-							'action'   => 'hide',
-							'rules'    => array(
-								array(
-									'option'  => 'integrationType',
-									'compare' => '!=',
-									'value'   => 'single',
-								),
-							),
+							'option'  => 'queryIntegration',
+							'compare' => '!=',
+							'value'   => 'woocommerce/products_shortcode',
 						),
 					),
 				),

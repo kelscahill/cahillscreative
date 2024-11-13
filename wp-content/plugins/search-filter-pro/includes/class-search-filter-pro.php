@@ -20,6 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Search_Filter_Pro\Compatibility;
 use Search_Filter_Pro\Core\Dependencies;
 use Search_Filter_Pro\Core\Dependencies\Stubs;
+use Search_Filter_Pro\Core\Extensions;
+use Search_Filter_Pro\Core\Update_Manager;
 use Search_Filter_Pro\Core\Upgrader;
 use Search_Filter_Pro\Features;
 use Search_Filter_Pro\Indexer;
@@ -160,6 +162,8 @@ class Search_Filter_Pro {
 			return;
 		}
 
+		$this->init_dependencies();
+
 		// Correctly load public / admin classes & hooks.
 		if ( ( ! is_admin() ) || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 			$this->init_frontend();
@@ -169,7 +173,6 @@ class Search_Filter_Pro {
 
 		// Hooks that are shared across both frontend and backend.
 		$this->define_global_hooks();
-		$this->init_dependencies();
 		$this->load_rest_api();
 
 	}
@@ -180,7 +183,9 @@ class Search_Filter_Pro {
 	public function add_outdated_notice() {
 		// Add notice to our admin screen.
 		// Note: do not add this class via a user directive, because the base plugin might not be enabled.
-		\Search_Filter\Core\Notices::add_notice( $this->strings['outdated_version'], 'warning', 'search-filter-pro-missing-required-version' );
+		$manage_plugins_link = sprintf( '<a href="%s">%s</a>.', esc_url( admin_url( 'plugins.php' ) ), esc_html__( 'Manage plugins', 'search-filter-pro' ) );
+		\Search_Filter\Core\Notices::add_notice( $this->strings['outdated_version'] . ' ' . $manage_plugins_link, 'warning', 'search-filter-pro-missing-required-version' );
+
 	}
 
 	/**
@@ -243,6 +248,8 @@ class Search_Filter_Pro {
 		Indexer::init();
 
 		Upgrader::init();
+		Update_Manager::init();
+		Extensions::init();
 	}
 
 	/**

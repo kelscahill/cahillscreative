@@ -9,7 +9,7 @@
  */
 
 if ( ! defined( 'SEARCH_FILTER_PRO_VERSION' ) ) {
-	define( 'SEARCH_FILTER_PRO_VERSION', '3.0.4' );
+	define( 'SEARCH_FILTER_PRO_VERSION', '3.0.5' );
 }
 
 if ( ! defined( 'SEARCH_FILTER_PRO_URL' ) ) {
@@ -26,7 +26,7 @@ if ( ! defined( 'SEARCH_FILTER_PRO_DEBUG' ) ) {
 
 // The required version number of the Search & Filter base plugin.
 if ( ! defined( 'SEARCH_FILTER_PRO_REQUIRED_BASE_VERSION' ) ) {
-	define( 'SEARCH_FILTER_PRO_REQUIRED_BASE_VERSION', '3.0.4' );
+	define( 'SEARCH_FILTER_PRO_REQUIRED_BASE_VERSION', '3.0.6' );
 }
 
 // Define exception codes.

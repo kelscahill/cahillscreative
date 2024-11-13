@@ -11,6 +11,7 @@
 namespace Search_Filter\Integrations\WooCommerce;
 
 use Search_Filter\Integrations\WooCommerce;
+use Search_Filter\Settings;
 use WP_REST_Request;
 
 // If this file is called directly, abort.
@@ -65,7 +66,7 @@ class Rest_API {
 			return rest_ensure_response( array( 'options' => array() ) );
 		}
 
-		$options = self::create_taxonomy_terms_options( $taxonomy );
+		$options = Settings::create_taxonomy_terms_options( $taxonomy );
 		$json    = array(
 			'options' => $options,
 		);
@@ -79,33 +80,5 @@ class Rest_API {
 	 */
 	public static function permissions() {
 		return current_user_can( 'manage_options' );
-	}
-	/**
-	 * Get the available taxonomy terms for a particular taxonomy as
-	 *
-	 * @param string $taxonomy The taxonomy name.
-	 * @return array
-	 */
-	public static function create_taxonomy_terms_options( $taxonomy ) {
-		if ( ! taxonomy_exists( $taxonomy ) ) {
-			return array();
-		}
-
-		$terms = get_terms(
-			array(
-				'taxonomy'   => $taxonomy,
-				'hide_empty' => false,
-			)
-		);
-
-		$options = array();
-		foreach ( $terms as $term ) {
-			$item = array(
-				'value' => $term->term_id,
-				'label' => $term->name,
-			);
-			array_push( $options, $item );
-		}
-		return $options;
 	}
 }

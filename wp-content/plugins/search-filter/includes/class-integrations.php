@@ -62,6 +62,8 @@ class Integrations {
 		// Run the integrations.
 		self::init_integrations();
 		do_action( 'search-filter/integrations/init' );
+
+		add_action( 'shutdown', array( __CLASS__, 'validate_integrations' ) );
 	}
 
 	/**
@@ -141,5 +143,47 @@ class Integrations {
 		}
 		$integrations = self::get_enabled_integrations();
 		return in_array( $integration, $integrations );
+	}
+
+	/**
+	 * Enable an integration.
+	 *
+	 * @since 3.0.6
+	 *
+	 * @param string $integration The integration to enable.
+	 */
+	public static function enable( $integration, $bypass_hook = false ) {
+		$integrations                 = self::get_integrations();
+		$integrations[ $integration ] = true;
+		Options::update_option_value( 'integrations', $integrations );
+		if ( ! $bypass_hook ) {
+			do_action( 'search-filter/integrations/enable', $integration );
+		}
+	}
+
+	/**
+	 * Disable an integration.
+	 *
+	 * @since 3.0.6
+	 *
+	 * @param string $integration The integration to disable.
+	 */
+	public static function disable( $integration, $bypass_hook = false ) {
+		$integrations                 = self::get_integrations();
+		$integrations[ $integration ] = false;
+		Options::update_option_value( 'integrations', $integrations );
+		if ( ! $bypass_hook ) {
+			do_action( 'search-filter/integrations/disable', $integration );
+		}
+	}
+
+	/**
+	 * Validate the integrations.
+	 *
+	 * @since 3.0.6
+	 */
+	public static function validate_integrations() {
+		// TODO: Validate the integrations.
+		do_action( 'search-filter/integrations/validate' );
 	}
 }

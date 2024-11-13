@@ -38,7 +38,6 @@ class Sort extends Control {
 	);
 
 	public static $setting_support = array(
-
 		'showLabel'     => true,
 		'placeholder'   => true,
 		'inputShowIcon' => true,

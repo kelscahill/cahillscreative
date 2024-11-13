@@ -535,12 +535,14 @@ class Query {
 	 */
 	public function field_query( $field ) {
 		$field_type = $field->get_attribute( 'type' );
-		if ( $field_type === 'choice' ) {
-			return $this->choice_query( $field );
+		if ( $field_type === 'search' ) {
+			return $this->search( $field );
+		} elseif ( $field_type === 'choice' ) {
+			return $this->choice( $field );
 		} elseif ( $field_type === 'range' ) {
-			return $this->range_query( $field );
+			return $this->range( $field );
 		} elseif ( $field_type === 'advanced' ) {
-			return $this->advanced_query( $field );
+			return $this->advanced( $field );
 		}
 		// Return null so we know there was no field query.
 		return null;
@@ -554,7 +556,53 @@ class Query {
 	 * @param Field $field The field to run the query for.
 	 * @return array  The result IDs.
 	 */
-	public function choice_query( $field ) {
+	public function search( $field ) {
+
+		// For now, lets not support using the indexer for searching by default, we can enable it
+		// on a case by case basis if needed.
+		$should_enable = apply_filters( 'search-filter-pro/indexer/query/search/should_enable', false, $field );
+		if ( ! $should_enable ) {
+			return null;
+		}
+
+		$field_value = $field->get_value();
+		$query_id    = $field->get_query_id();
+		$field_id    = $field->get_id();
+
+		// $this->init_field_values_ids( $query_id, $field_id, array( $field_value ) );
+
+		if ( empty( $field_value ) ) {
+			return array();
+		}
+
+		$field_post_ids = array();
+
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'search_filter_index';
+		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedPlaceholder, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$results = $wpdb->get_results( $wpdb->prepare( 'SELECT object_id FROM %i WHERE field_id = %d AND value LIKE %s', $table_name, $field_id, '%' . $field_value . '%' ) );
+
+		if ( $results === null ) {
+			return array();
+		}
+
+		foreach ( $results as $result_item ) {
+			$field_post_ids[] = $result_item->object_id;
+		}
+
+		$this->field_result_ids[ $field_id ] = $field_post_ids;
+
+		return $field_post_ids;
+	}
+	/**
+	 * Run the choice field query.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param Field $field The field to run the query for.
+	 * @return array  The result IDs.
+	 */
+	public function choice( $field ) {
 
 		$field_values = $field->get_values();
 		$query_id     = $field->get_query_id();
@@ -680,7 +728,7 @@ class Query {
 	 * @param Field $field The field to run the query for.
 	 * @return array  The result IDs.
 	 */
-	public function range_query( $field ) {
+	public function range( $field ) {
 		$field_values = $field->get_values();
 
 		if ( empty( $field_values ) ) {
@@ -729,7 +777,7 @@ class Query {
 	 * @param Field $field The field to run the query for.
 	 * @return array  The result IDs.
 	 */
-	public function advanced_query( $field ) {
+	public function advanced( $field ) {
 		$field_values = $field->get_values();
 
 		if ( empty( $field_values ) ) {
@@ -883,6 +931,7 @@ class Query {
 
 		foreach ( $fields as $field ) {
 			$type = $field->get_attribute( 'type' );
+
 			if ( $type === 'search' ) {
 				$values = $field->get_values();
 				if ( ! empty( $values ) ) {

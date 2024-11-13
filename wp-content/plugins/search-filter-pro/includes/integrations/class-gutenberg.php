@@ -86,18 +86,18 @@ class Gutenberg {
 	public static function update_query_attributes( $attributes, $query ) {
 
 		$id = $query->get_id();
+
 		// We want `queryContainer` and `queryPaginationSelector` to be set automatically.
 		if ( ! isset( $attributes['integrationType'] ) ) {
 			return $attributes;
 		}
-		$integration_type = $attributes['integrationType'];
 
-		if ( ! isset( $attributes['singleIntegration'] ) ) {
+		if ( ! isset( $attributes['queryIntegration'] ) ) {
 			return $attributes;
 		}
-		$single_integration = $attributes['singleIntegration'];
+		$query_integration = $attributes['queryIntegration'];
 
-		if ( $integration_type === 'single' && $single_integration === 'query_block' ) {
+		if ( $query_integration === 'query_block' ) {
 			$attributes['queryContainer']          = '.search-filter-query--id-' . $id;
 			$attributes['queryPostsContainer']     = '.search-filter-query--id-' . $id . ' .wp-block-post-template';
 			$attributes['queryPaginationSelector'] = '.search-filter-query--id-' . $id . ' .wp-block-query-pagination a';
@@ -114,35 +114,13 @@ class Gutenberg {
 	public static function register_settings() {
 
 		$depends_conditions = array(
-			'relation' => 'OR',
+			'relation' => 'AND',
 			'action'   => 'hide',
 			'rules'    => array(
 				array(
-					'relation' => 'AND',
-					'action'   => 'hide',
-					'rules'    => array(
-						array(
-							'option'  => 'integrationType',
-							'compare' => '=',
-							'value'   => 'single',
-						),
-						array(
-							'option'  => 'singleIntegration',
-							'compare' => '!=',
-							'value'   => 'query_block',
-						),
-					),
-				),
-				array(
-					'relation' => 'AND',
-					'action'   => 'hide',
-					'rules'    => array(
-						array(
-							'option'  => 'integrationType',
-							'compare' => '!=',
-							'value'   => 'single',
-						),
-					),
+					'option'  => 'queryIntegration',
+					'compare' => '!=',
+					'value'   => 'query_block',
 				),
 			),
 		);
@@ -152,6 +130,11 @@ class Gutenberg {
 		if ( $query_container ) {
 			// TODO - when we choose WC block, we still don't see the queryContainer option in the list.
 			$query_container->add_depends_condition( $depends_conditions );
+		}
+
+		$query_posts_container = Queries_Settings::get_setting( 'queryPostsContainer' );
+		if ( $query_posts_container ) {
+			$query_posts_container->add_depends_condition( $depends_conditions );
 		}
 
 		$pagination_selector = Queries_Settings::get_setting( 'queryPaginationSelector' );

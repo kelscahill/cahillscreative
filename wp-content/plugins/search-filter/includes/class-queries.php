@@ -24,6 +24,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * A controller for managing all things to do with saved queries
  */
 class Queries {
+
+	/**
+	 * Keeps track of which query IDs will be needed on the page.
+	 *
+	 * @var array
+	 */
+	private static $active_queries_ids = array();
+
 	/**
 	 * Initialise styles.
 	 *
@@ -163,5 +171,60 @@ class Queries {
 		}
 
 		return $css;
+	}
+
+
+
+	/**
+	 * Keep track of active queries to preload their data.
+	 *
+	 * TODO - we are currently collecting the query IDs when a field is rendered,
+	 * but we might need to include queries that are not used in fields, ie, if the current page
+	 * is a search page, or a has a query block that we integrate with.
+	 *
+	 * @param array $query_id The query ID.
+	 */
+	public static function register_active_query( $query_id ) {
+		self::$active_queries_ids[] = $query_id;
+	}
+
+	/**
+	 * Get the active query IDs.
+	 */
+	public static function get_active_query_ids() {
+		return self::$active_queries_ids;
+	}
+	/**
+	 * Keep track of active fields to preload their data.
+	 *
+	 * @return array $active_fields Array of active fields.
+	 */
+	public static function get_active_queries() {
+		$active_queries_ids = array_unique( self::$active_queries_ids );
+		$active_queries     = array();
+		foreach ( $active_queries_ids as $query_id ) {
+			// We only want to deal with enabled queries.
+			$query = Query::find(
+				array(
+					'id'     => $query_id,
+					'status' => 'enabled',
+				)
+			);
+
+			if ( is_wp_error( $query ) ) {
+				continue;
+			}
+
+			$query_data                  = array(
+				'id'         => $query_id,
+				'attributes' => $query->get_attributes(),
+				'settings'   => $query->get_render_settings(),
+				'url'        => $query->get_results_url(),
+				// TODO - only add this if debugging features are enabled?
+				'name'       => $query->get_name(),
+			);
+			$active_queries[ $query_id ] = $query_data;
+		}
+		return $active_queries;
 	}
 }

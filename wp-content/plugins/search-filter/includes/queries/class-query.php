@@ -311,8 +311,8 @@ class Query extends Record_Base {
 		if ( $override_url ) {
 			return $override_url;
 		}
-
 		$integration_type = $this->attributes['integrationType'];
+
 		switch ( $integration_type ) {
 			case 'basic':
 				break;
@@ -344,14 +344,44 @@ class Query extends Record_Base {
 			case 'single':
 				$location  = isset( $this->attributes['singleLocation'] ) ? $this->attributes['singleLocation'] : false;
 				$permalink = false;
-				if ( $location === 'dynamic' && ! is_admin() && is_singular() ) {
-					global $post;
-					$permalink = get_permalink( $post->ID );
-				} elseif ( $location !== '' ) {
+				if ( $location !== '' ) {
 					$permalink = get_permalink( $location );
 				}
 				if ( $permalink ) {
 					return $permalink;
+				}
+				break;
+			case 'dynamic':
+				if ( is_home() ) {
+					if ( is_front_page() ) {
+						return get_home_url();
+					}
+					$permalink = get_permalink( get_option( 'page_for_posts' ) );
+					if ( $permalink ) {
+						return $permalink;
+					}
+					return get_home_url();
+
+				} elseif ( is_singular() ) {
+					global $post;
+					$permalink = get_permalink( $post->ID );
+					if ( $permalink ) {
+						return $permalink;
+					}
+				} elseif ( is_post_type_archive() ) {
+					return get_post_type_archive_link( get_queried_object()->name );
+				} elseif ( is_tag() ) {
+					return get_tag_link( get_queried_object()->term_id );
+				} elseif ( is_category() ) {
+					return get_category_link( get_queried_object()->term_id );
+				} elseif ( is_tax() ) {
+					return get_term_link( get_queried_object()->term_id );
+				} elseif ( is_date() ) {
+					return get_year_link( get_query_var( 'year' ) );
+				} elseif ( is_author() ) {
+					return get_author_posts_url( get_query_var( 'author' ) );
+				} elseif ( is_search() ) {
+					return add_query_arg( 's', '', trailingslashit( get_home_url() ) );
 				}
 				break;
 		}
@@ -719,14 +749,14 @@ class Query extends Record_Base {
 		// Eg, get all queries that are connected to the query loop block, etc.
 		$integration_type    = $this->get_attribute( 'integrationType' ) !== null ? $this->get_attribute( 'integrationType' ) : '';
 		$single_location     = $this->get_attribute( 'singleLocation' ) !== null ? $this->get_attribute( 'singleLocation' ) : '';
-		$single_integration  = $this->get_attribute( 'singleIntegration' ) !== null ? $this->get_attribute( 'singleIntegration' ) : '';
+		$query_integration   = $this->get_attribute( 'queryIntegration' ) !== null ? $this->get_attribute( 'queryIntegration' ) : '';
 		$archive_type        = $this->get_attribute( 'archiveType' ) !== null ? $this->get_attribute( 'archiveType' ) : '';
 		$archive_integration = $this->get_attribute( 'archiveIntegration' ) !== null ? $this->get_attribute( 'archiveIntegration' ) : '';
 		$archive_post_type   = $this->get_attribute( 'archivePostType' ) !== null ? $this->get_attribute( 'archivePostType' ) : '';
 
 		self::update_meta( $id, 'integration_type', $integration_type );
 		self::update_meta( $id, 'single_location', $single_location );
-		self::update_meta( $id, 'single_integration', $single_integration );
+		self::update_meta( $id, 'query_integration', $query_integration );
 		self::update_meta( $id, 'archive_type', $archive_type );
 		self::update_meta( $id, 'archive_integration', $archive_integration );
 		self::update_meta( $id, 'archive_post_type', $archive_post_type );
@@ -784,11 +814,7 @@ class Query extends Record_Base {
 	public function get_attributes( $unfiltered = false ) {
 		$attributes = parent::get_attributes( $unfiltered );
 		if ( ! $unfiltered ) {
-			if ( defined( 'SEARCH_FILTER_PRO_VERSION' ) && version_compare( SEARCH_FILTER_PRO_VERSION, '3.0.4', '<' ) ) {
-				$attributes = apply_filters( 'search-filter/queries/query/get_attributes', $attributes, $this->get_id() );
-			} else {
-				$attributes = apply_filters( 'search-filter/queries/query/get_attributes', $attributes, $this );
-			}
+			$attributes = apply_filters( 'search-filter/queries/query/get_attributes', $attributes, $this );
 		}
 		return $attributes;
 	}

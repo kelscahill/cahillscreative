@@ -42,11 +42,11 @@ class Search extends Search_Base {
 		// Handle the built in data types.
 		$data_type = $this->get_attribute( 'dataType' );
 		$value     = $this->get_value();
-
 		if ( $data_type === 'post_attribute' || empty( $data_type ) ) {
 			$attribute_data_type = $this->get_attribute( 'dataPostAttribute' );
 			if ( ( $attribute_data_type === 'default' ) || ( $attribute_data_type === '' ) ) {
 				$query_args['s'] = $this->get_value();
+
 				// If we have ordering by relevance set in the query, then override the orderby
 				// completely.  Relevance doesn't work when combined with multiple order parameter,
 				// and it should be the only one set when searching.
@@ -188,7 +188,6 @@ class Search extends Search_Base {
 		}
 
 		$query_post_types = $query->get_attribute( 'postTypes' );
-
 		foreach ( $query_post_types as $query_post_type ) {
 			$post_type = get_post_type_object( $query_post_type );
 			// Check to see if the post type label starts with the search term.

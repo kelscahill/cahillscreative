@@ -9,13 +9,12 @@
 
 namespace Search_Filter\Integrations;
 
-use Search_Filter\Core\WP_Data;
-use Search_Filter\Fields\Data\Taxonomy_Options;
 use Search_Filter\Fields\Field;
 use Search_Filter\Integrations;
 use Search_Filter\Queries\Settings as Queries_Settings;
 use Search_Filter\Fields\Settings as Fields_Settings;
 use Search_Filter\Integrations\WooCommerce\Rest_API;
+use Search_Filter\Integrations\Settings as Integrations_Settings;
 use Search_Filter\Queries\Query;
 
 // If this file is called directly, abort.
@@ -45,6 +44,8 @@ class WooCommerce {
 	 */
 	public static function init() {
 
+		add_action( 'search-filter/settings/init', array( __CLASS__, 'update_integration' ), 10 );
+
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			return;
 		}
@@ -54,6 +55,33 @@ class WooCommerce {
 
 		// Need to update field support before field settings are setup.
 		add_action( 'search-filter/integrations/init', array( __CLASS__, 'hook_into_field_support' ), 10 );
+	}
+	/**
+	 * Update the WooCommerce integration in the integrations section.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function update_integration() {
+		// We want to disable coming soon notice and enable the integration toggle.
+		$woocommerce_integration = Integrations_Settings::get_setting( 'woocommerce' );
+		if ( ! $woocommerce_integration ) {
+			return;
+		}
+
+		$woocommerce_enabled         = class_exists( 'WooCommerce' );
+		$update_integration_settings = array(
+			'isPluginEnabled'      => $woocommerce_enabled,
+			'isExtensionInstalled' => true,
+		);
+		// If we detect WC is enabled, then lets also set the pluign installed
+		// property to true - because a plugin could be installed using a different
+		// folder name and it we would initially detect is as not installed by using
+		// by using `plugin_exists()` which is unreliable.
+		if ( $woocommerce_enabled ) {
+			$update_integration_settings['isPluginInstalled'] = true;
+		}
+
+		$woocommerce_integration->update( $update_integration_settings );
 	}
 
 	/**
@@ -176,7 +204,7 @@ class WooCommerce {
 			return $block_content;
 		}
 
-		\Search_Filter\Integrations\Gutenberg::cleanup_query_block();
+		\Search_Filter\Integrations\Gutenberg::cleanup_query_block( $block );
 		return $block_content;
 	}
 
@@ -221,7 +249,8 @@ class WooCommerce {
 		self::add_single_integrations();
 		self::add_taxonomy_settings();
 		self::add_results_setting();
-		self::modify_results_url();
+		self::add_shop_integration_type();
+		self::modify_query_integration();
 	}
 
 	/**
@@ -458,31 +487,31 @@ class WooCommerce {
 			'choice' => array( 'select', 'radio', 'checkbox', 'button' ),
 		);
 
-		// Build conditions for all taxonomy attributes.
-		$wc_tax_attributes   = \wc_get_attribute_taxonomies();
-		$taxonomy_conditions = array(
-			array(
-				'option'  => 'dataWoocommerce',
-				'value'   => 'product_tag',
-				'compare' => '=',
-			),
-			array(
-				'option'  => 'dataWoocommerce',
-				'value'   => 'product_cat',
-				'compare' => '=',
-			),
-
-		);
-		foreach ( $wc_tax_attributes as $attribute ) {
-			$taxonomy_conditions[] = array(
-				'option'  => 'dataWoocommerce',
-				'value'   => 'attribute:' . $attribute->attribute_name,
-				'compare' => '=',
-			);
-		}
-
 		if ( isset( $taxonomy_supported_matrix[ $type ] ) && in_array( $input_type, $taxonomy_supported_matrix[ $type ], true ) ) {
-			$taxonomy_field_conditions                        = array(
+
+			// Build conditions for all taxonomy attributes.
+			$wc_tax_attributes   = \wc_get_attribute_taxonomies();
+			$taxonomy_conditions = array(
+				array(
+					'option'  => 'dataWoocommerce',
+					'value'   => 'product_tag',
+					'compare' => '=',
+				),
+				array(
+					'option'  => 'dataWoocommerce',
+					'value'   => 'product_cat',
+					'compare' => '=',
+				),
+
+			);
+			foreach ( $wc_tax_attributes as $attribute ) {
+				$taxonomy_conditions[] = array(
+					'option'  => 'dataWoocommerce',
+					'value'   => 'attribute:' . $attribute->attribute_name,
+					'compare' => '=',
+				);
+			}
+			$taxonomy_field_conditions = array(
 				'relation' => 'AND',
 				'rules'    => array(
 					array(
@@ -497,33 +526,83 @@ class WooCommerce {
 					),
 				),
 			);
-			$setting_support['showCount']                     = array(
-				'conditions' => Field::add_setting_support_condition( $setting_support, 'showCount', $taxonomy_field_conditions ),
+
+			$setting_support['showCount']            = array(
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'showCount', $taxonomy_field_conditions, false ),
 			);
-			$setting_support['hideEmpty']                     = array(
-				'conditions' => Field::add_setting_support_condition( $setting_support, 'hideEmpty', $taxonomy_field_conditions ),
+			$setting_support['hideEmpty']            = array(
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'hideEmpty', $taxonomy_field_conditions, false ),
 			);
-			$setting_support['taxonomyHierarchical']          = array(
-				'conditions' => Field::add_setting_support_condition( $setting_support, 'taxonomyHierarchical', $taxonomy_field_conditions ),
+			$setting_support['taxonomyHierarchical'] = array(
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'taxonomyHierarchical', $taxonomy_field_conditions, false ),
 			);
+
+		}
+
+		// Add show count + hide empty to choice fields, for indexed queries.
+		$taxonomy_ordering_supported_matrix = array(
+			'choice' => array( 'select', 'radio', 'checkbox', 'button' ),
+			'search' => array( 'autocomplete' ),
+		);
+
+		if ( isset( $taxonomy_ordering_supported_matrix[ $type ] ) && in_array( $input_type, $taxonomy_ordering_supported_matrix[ $type ], true ) ) {
+
+			// Build conditions for all taxonomy attributes.
+			$wc_tax_attributes   = \wc_get_attribute_taxonomies();
+			$taxonomy_conditions = array(
+				array(
+					'option'  => 'dataWoocommerce',
+					'value'   => 'product_tag',
+					'compare' => '=',
+				),
+				array(
+					'option'  => 'dataWoocommerce',
+					'value'   => 'product_cat',
+					'compare' => '=',
+				),
+
+			);
+			foreach ( $wc_tax_attributes as $attribute ) {
+				$taxonomy_conditions[] = array(
+					'option'  => 'dataWoocommerce',
+					'value'   => 'attribute:' . $attribute->attribute_name,
+					'compare' => '=',
+				);
+			}
+			$taxonomy_field_conditions = array(
+				'relation' => 'AND',
+				'rules'    => array(
+					array(
+						'option'  => 'dataType',
+						'value'   => 'woocommerce',
+						'compare' => '=',
+					),
+					array(
+						'relation' => 'OR',
+						'action'   => 'hide',
+						'rules'    => $taxonomy_conditions,
+					),
+				),
+			);
+
 			$setting_support['woocommerceTaxOrderBy']         = array(
-				'conditions' => Field::add_setting_support_condition( $setting_support, 'woocommerceTaxOrderBy', $taxonomy_field_conditions ),
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'woocommerceTaxOrderBy', $taxonomy_field_conditions, true ),
 			);
 			$setting_support['woocommerceTaxOrderDir']        = array(
-				'conditions' => Field::add_setting_support_condition( $setting_support, 'woocommerceTaxOrderDir', $taxonomy_field_conditions ),
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'woocommerceTaxOrderDir', $taxonomy_field_conditions, true ),
 			);
 			$setting_support['woocommerceTaxTermsConditions'] = array(
-				'conditions' => Field::add_setting_support_condition( $setting_support, 'woocommerceTaxTermsConditions', $taxonomy_field_conditions ),
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'woocommerceTaxTermsConditions', $taxonomy_field_conditions, true ),
 			);
 			$setting_support['woocommerceTaxTerms']           = array(
-				'conditions' => Field::add_setting_support_condition( $setting_support, 'woocommerceTaxTerms', $taxonomy_field_conditions ),
+				'conditions' => Field::add_setting_support_condition( $setting_support, 'woocommerceTaxTerms', $taxonomy_field_conditions, true ),
 			);
 		}
 
 		return $setting_support;
 	}
 
-	
+
 	/**
 	 * Add the WC shop URL as the results link.
 	 *
@@ -633,15 +712,15 @@ class WooCommerce {
 	 */
 	public static function get_query_post_types( $query_post_types, $params ) {
 
-		$integration_type   = isset( $params['integrationType'] ) ? $params['integrationType'] : '';
-		$single_integration = isset( $params['singleIntegration'] ) ? $params['singleIntegration'] : '';
+		$integration_type  = isset( $params['integrationType'] ) ? $params['integrationType'] : '';
+		$query_integration = isset( $params['queryIntegration'] ) ? $params['queryIntegration'] : '';
 
-		if ( $integration_type === 'single' && $single_integration === 'woocommerce/products_query_block' ) {
+		if ( $query_integration === 'woocommerce/products_query_block' ) {
 			$query_post_types = array(
 				'disabled' => true,
 				'value'    => array( 'product' ),
 			);
-		} elseif ( $integration_type === 'single' && $single_integration === 'woocommerce/products_shortcode' ) {
+		} elseif ( $query_integration === 'woocommerce/products_shortcode' ) {
 			$query_post_types = array(
 				'disabled' => true,
 				'value'    => array( 'product' ),
@@ -651,7 +730,7 @@ class WooCommerce {
 				'disabled' => true,
 				// 'value'    => array( 'product', 'product_variation' ),
 				'value'    => array( 'product' ),
-				// 'message'  => __( 'The WooCommerce Shop only supports the "Product" and "Product Variation" post types.', 'search-filter' ),
+			// 'message'  => __( 'The WooCommerce Shop only supports the "Product" and "Product Variation" post types.', 'search-filter' ),
 			);
 		}
 		return $query_post_types;
@@ -664,8 +743,8 @@ class WooCommerce {
 	public static function add_results_setting() {
 		$setting = array(
 			'name'        => 'resultsUrlWoocommerce',
-			'type'        => 'info', // TODO - this can't be right.
-			'group'       => 'integration',
+			'type'        => 'info',
+			'group'       => 'location',
 			'label'       => __( 'Shop link', 'search-filter' ),
 			'help'        => __( 'This is your WooCommerce shop URL', 'search-filter' ),
 			'loadingText' => __( 'Fetching...', 'search-filter' ),
@@ -849,7 +928,7 @@ class WooCommerce {
 	 *
 	 * @since    3.0.0
 	 */
-	public static function modify_results_url() {
+	public static function add_shop_integration_type() {
 		// Get the object for the data_type setting so we can grab its options.
 		$integration_type_setting = Queries_Settings::get_setting( 'integrationType' );
 		if ( $integration_type_setting ) {
@@ -886,17 +965,57 @@ class WooCommerce {
 	 */
 	public static function add_single_integrations() {
 		// get the object for the data_type setting so we can grab its options.
-		$integration_type_setting = Queries_Settings::get_setting( 'singleIntegration' );
+		$integration_type_setting = Queries_Settings::get_setting( 'queryIntegration' );
 		if ( $integration_type_setting ) {
 			$wc_integration_type_option = array(
-				'label' => __( 'WooCommerce Products block', 'search-filter' ),
-				'value' => 'woocommerce/products_query_block',
+				'label'     => __( 'WooCommerce Products block', 'search-filter' ),
+				'value'     => 'woocommerce/products_query_block',
+				'dependsOn' => array(
+					'relation' => 'OR',
+					'rules'    => array(
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'single',
+						),
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'archive',
+						),
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'dynamic',
+						),
+					),
+				),
 			);
 			$integration_type_setting->add_option( $wc_integration_type_option );
 
 			$wc_integration_type_option = array(
-				'label' => __( 'WooCommerce Products Shortcode', 'search-filter' ),
-				'value' => 'woocommerce/products_shortcode',
+				'label'     => __( 'WooCommerce Products Shortcode', 'search-filter' ),
+				'value'     => 'woocommerce/products_shortcode',
+				'dependsOn' => array(
+					'relation' => 'OR',
+					'rules'    => array(
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'single',
+						),
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'archive',
+						),
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'dynamic',
+						),
+					),
+				),
 			);
 			$integration_type_setting->add_option( $wc_integration_type_option );
 		}
@@ -928,8 +1047,35 @@ class WooCommerce {
 			$data_type_setting->add_option( $wc_data_type_option );
 		}
 	}
+	/**
+	 * Add WC as a data type
+	 *
+	 * @since    3.0.0
+	 */
+	public static function modify_query_integration() {
+		// get the object for the data_type setting so we can grab its options.
+		$query_integration_setting = Queries_Settings::get_setting( 'queryIntegration' );
+		if ( ! $query_integration_setting ) {
+			return;
+		}
 
+		$setting_data = $query_integration_setting->get_data();
+		$depends_on   = array(
+			'relation' => 'OR',
+			'rules'    => array(),
+		);
+		if ( isset( $setting_data['dependsOn'] ) ) {
+			$depends_on = $setting_data['dependsOn'];
+		}
 
+		$depends_on['rules'][]     = array(
+			'option'  => 'integrationType',
+			'compare' => '!=',
+			'value'   => 'woocommerce/shop',
+		);
+		$setting_data['dependsOn'] = $depends_on;
+		$query_integration_setting->update( $setting_data );
+	}
 	/**
 	 * Gets the options for our data type field.
 	 *

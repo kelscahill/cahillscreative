@@ -45,7 +45,8 @@ class Debug_Bar {
 		// Load script + styles for menu functionality.
 		wp_enqueue_style( 'search-filter-debug', \Search_Filter\Core\Scripts::get_frontend_assets_url() . 'css/frontend/debug.css', array(), SEARCH_FILTER_VERSION );
 
-		wp_enqueue_script( 'search-filter-debug', \Search_Filter\Core\Scripts::get_frontend_assets_url() . 'js/frontend/debug.js', array(), SEARCH_FILTER_VERSION, true );
+		wp_enqueue_script( 'search-filter-debug', \Search_Filter\Core\Scripts::get_frontend_assets_url() . 'js/frontend/debug.js', array( 'wp-hooks' ), SEARCH_FILTER_VERSION, true );
+
 		wp_localize_script(
 			'search-filter-debug',
 			'searchFilterDebug',
@@ -84,7 +85,7 @@ class Debug_Bar {
 			'queried_object_id'                 => get_queried_object_id(),
 			'is_archive'                        => is_archive() ? 'true' : 'false',
 			'is_search'                         => is_search() ? 'true' : 'false',
-			'is_home'                           => is_home() ? 'true' : 'false',
+			'is_home (blog)'                    => is_home() ? 'true' : 'false',
 			'is_front_page'                     => is_front_page() ? 'true' : 'false',
 			'is_singular'                       => is_singular() ? 'true' : 'false',
 			'is_page'                           => is_page() ? 'true' : 'false',

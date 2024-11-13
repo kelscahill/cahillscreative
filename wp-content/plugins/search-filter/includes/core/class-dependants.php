@@ -55,6 +55,45 @@ class Dependants {
 		return isset( $plugins[ $plugin_path ] );
 	}
 
+	/**
+	 * Check if a plugin is enabled.
+	 *
+	 * @param string $plugin_path The path to the plugin.
+	 * @return bool
+	 */
+	public static function is_plugin_enabled( $plugin_path ) {
+		return is_plugin_active( $plugin_path );
+	}
+
+	/**
+	 * Enable a plugin.
+	 *
+	 * @param string $plugin_path The path to the plugin.
+	 * @return void
+	 */
+	public static function enable_plugin( $plugin_path ) {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+		\activate_plugin( $plugin_path );
+	}
+
+	/**
+	 * Disable a plugin.
+	 *
+	 * @param string $plugin_path The path to the plugin.
+	 * @return void
+	 */
+	public static function disable_plugin( $plugin_path ) {
+		if ( ! current_user_can( 'deactivate_plugins' ) ) {
+			return;
+		}
+		\deactivate_plugins( $plugin_path );
+	}
+
+	/**
+	 * Enable the Search Filter Pro plugin.
+	 */
 	public static function enable_search_filter_pro() {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return;

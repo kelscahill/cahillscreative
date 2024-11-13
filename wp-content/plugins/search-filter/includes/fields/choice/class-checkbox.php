@@ -50,66 +50,84 @@ class Checkbox extends Choice {
 		'showLabel'               => true,
 		'multipleMatchMethod'     => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '!=',
-				'value'   => 'post_attribute',
+				array(
+					'option'  => 'dataType',
+					'compare' => '!=',
+					'value'   => 'post_attribute',
+				),
 			),
 		),
 		'dataLimitOptionsCount'   => true,
 		'taxonomyHierarchical'    => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'taxonomyOrderBy'         => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'taxonomyOrderDir'        => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'taxonomyTermsConditions' => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'taxonomyTerms'           => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'inputOptionsOrder'       => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '!=',
-				'value'   => 'post_attribute',
+				array(
+					'option'  => 'dataType',
+					'compare' => '!=',
+					'value'   => 'post_attribute',
+				),
 			),
 		),
 		'hideEmpty'               => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'showCount'               => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'showCountPosition'       => true,

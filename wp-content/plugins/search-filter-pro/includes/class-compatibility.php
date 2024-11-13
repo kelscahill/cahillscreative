@@ -24,7 +24,7 @@ class Compatibility {
 
 	public static function init() {
 		self::wpengine();
-		self::querymonitor();
+		self::query_monitor();
 	}
 	/**
 	 * Add a notice for WP Engine users if the long query governor is enabled.
@@ -58,8 +58,12 @@ class Compatibility {
 
 	/**
 	 * Stop Query Monitor from running when our frontend JSON API is being called.
+	 *
+	 * Removing query monitor is not really needed anymore due to the updates
+	 * to output buffering, but seen as the api requests can't be tracked by
+	 * Query Monitor, we may aswell disable it to improve performance.
 	 */
-	public static function querymonitor() {
+	public static function query_monitor() {
 		if ( ! class_exists( '\QM_Activation' ) ) {
 			return;
 		}

@@ -71,3 +71,4 @@ Upgrader::register_upgrade( '3.0.0-beta-12', '\Search_Filter\Core\Upgrader\Upgra
 Upgrader::register_upgrade( '3.0.0-beta-16', '\Search_Filter\Core\Upgrader\Upgrade_3_0_0_Beta_16' );
 Upgrader::register_upgrade( '3.0.2', '\Search_Filter\Core\Upgrader\Upgrade_3_0_2' );
 Upgrader::register_upgrade( '3.0.4', '\Search_Filter\Core\Upgrader\Upgrade_3_0_4' );
+Upgrader::register_upgrade( '3.0.6', '\Search_Filter\Core\Upgrader\Upgrade_3_0_6' );

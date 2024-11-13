@@ -11,6 +11,7 @@
 namespace Search_Filter_Pro;
 
 use Search_Filter\Fields;
+use Search_Filter\Queries;
 use Search_Filter\Queries\Query_Render_Store;
 use Search_Filter_Pro\Core\Scripts;
 use Search_Filter\Util;
@@ -20,8 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-global $search_filter_pro_output_buffer_enabled;
-$search_filter_pro_output_buffer_enabled = false;
+// Don't wait for plugins_loaded hook, start the output buffer as soon as possible.
+Frontend::output_buffer();
 
 /**
  * The main class for initialising all things for the frontend.
@@ -40,8 +41,9 @@ class Frontend {
 		\Search_Filter_Pro\Fields::init();
 		\Search_Filter_Pro\Queries::init();
 
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_debug_script' ) );
+
 		if ( isset( $_GET['search-filter-api'] ) ) {
-			add_action( 'template_redirect', array( $this, 'output_buffer_start' ), 0 );
 
 			// We need to remove `search-filter-api` from all pagination links.
 			add_filter( 'get_pagenum_link', array( $this, 'remove_api_arg_pagination' ), 100 );
@@ -54,17 +56,10 @@ class Frontend {
 
 			// If we're doing an API request, we should send no-cache headers and no-index for SEO.
 			// Uses WP send_headers hook.
-			add_action( 'send_headers', array( $this, 'send_no_cache_headers' ), 20 );
+			add_action( 'send_headers', array( __CLASS__, 'send_headers' ), 20 );
 		}
 	}
-	/**
-	 * Send no-cache and no-index headers for API requests.
-	 */
-	public function send_no_cache_headers() {
-		header( 'Cache-Control: no-cache, no-store, must-revalidate' );
-		header( 'Expires: 0' );
-		header( 'X-Robots-Tag: noindex, nofollow' );
-	}
+
 	/**
 	 * Replace the frontend script with the pro version.
 	 *
@@ -79,6 +74,7 @@ class Frontend {
 				$scripts[ $handle ]['src'] = Scripts::get_frontend_assets_url() . 'js/frontend/frontend.' . Util::get_file_ext( 'js' );
 			}
 		}
+
 		return $scripts;
 	}
 	/**
@@ -98,99 +94,14 @@ class Frontend {
 		return $styles;
 	}
 	/**
-	 * Register the JavaScript for the frontend
+	 * Register the debug app JavaScript for the frontend
 	 *
 	 * @since    3.0.0
 	 */
-	public function enqueue_scripts() {
-
-	}
-
-	/**
-	 * Start the output buffer.
-	 *
-	 * We want to wrap the regular html response into a json object.
-	 *
-	 * @since 3.0.0
-	 */
-	public function output_buffer_start() {
-
-		$levels = ob_get_level();
-		for ( $i = 0; $i < $levels; $i++ ) {
-			ob_end_clean();
-		}
-
-		// TOOD: This is a bit hacky, we never want to run this twice so
-		// we'll use a global in case this class gets instantiated twice.
-		// It probably means this shouldn't be be here and should be in
-		// some other (singleton) class.
-		global $search_filter_pro_output_buffer_enabled;
-		if ( $search_filter_pro_output_buffer_enabled ) {
-			return;
-		}
-		$search_filter_pro_output_buffer_enabled = true;
-		header( 'Content-Type: application/json; charset=utf-8' );
-		ob_start( array( $this, 'update_output_buffer' ) );
-	}
-
-	/**
-	 * Update the output buffer.
-	 *
-	 * Tidy up the content before exporting via our JSON response.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param string $content    The content to update.
-	 */
-	public function update_output_buffer( $content ) {
-		// Get the page title.
-		$title = wp_strip_all_tags( html_entity_decode( wp_get_document_title(), ENT_QUOTES, 'UTF-8' ) );
-
-		// Simplify the content / document before exporting via our JSON response.
-
-		// Get only the body tag, we don't need anything else.
-		// Note - need to include the body tag itself so CSS selectors that specify the body
-		// will continue to work.
-
-		// TODO: some CSS selectors start at the html tag - need to document this.
-
-		$matches = array();
-		// TODO: we might need to add a way to extract other parts of the document.  There is
-		// a use case with Elementor, on a page with no results, lots of the CSS and JS for
-		// the loop grid template is not loaded (as a template is never loaded), so we need to
-		// load them in when navigating to a page/search with results (otherwise templates are
-		// loaded without their necessary css/js - even more true for external plugins.
-		// Probably also applicable with the query loop.
-		preg_match( '/<body[^>]*>(.*?)<\/body>/si', $content, $matches );
-		if ( count( $matches ) > 0 ) {
-			$content = $matches[0];
-		}
-
-		// Remove all remaining script tags.
-		$content = preg_replace( '/<script\b[^>]*>(.*?)<\/script>/is', '', $content );
-
-		/**
-		 * Only allow tags that are allowed in post content.
-		 * TODO - does some strange things to the content dumped in the footer, so
-		 * maybe don't do this. Also: technically all the output has already been
-		 * run through the various esc_* functions, so this is probably not necessary.
-		 * $content = wp_kses_post( $content );
-		 */
-		$query_settings = array();
-		foreach ( Fields::get_active_query_ids() as $query_id ) {
-			$render_data = Query_Render_Store::get_render_data( $query_id );
-			if ( $render_data ) {
-				$query_settings[ $query_id ] = $render_data;
-			}
-		}
-
-		$api_response = array(
-			'title'   => $title,
-			'fields'  => Fields::get_active_fields(),
-			'queries' => $query_settings,
-			'results' => $content,
-		);
-		return wp_json_encode( $api_response );
+	public function enqueue_debug_script() {
+		// Because we use `search-filter-debug` as a dependency, we don't need to do any additional
+		// checks to see we should load this or not.
+		wp_enqueue_script( 'search-filter-pro-debug', \Search_Filter_Pro\Core\Scripts::get_frontend_assets_url() . 'js/frontend/debug.js', array( 'search-filter-debug' ), SEARCH_FILTER_PRO_VERSION, true );
 	}
 
 	/**
@@ -241,5 +152,93 @@ class Frontend {
 	public function remove_api_arg_pagination( $url ) {
 		$url = remove_query_arg( 'search-filter-api', $url );
 		return $url;
+	}
+
+	/**
+	 * Start the output buffer.
+	 *
+	 * We want to wrap the regular html response into a json object.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function output_buffer() {
+
+		if ( ! isset( $_GET['search-filter-api'] ) ) {
+			return;
+		}
+
+		$level = ob_get_level();
+		for ( $i = 0; $i < $level; $i++ ) {
+			ob_end_clean();
+		}
+
+		ob_start( array( __CLASS__, 'update_output_buffer' ), 0, PHP_OUTPUT_HANDLER_STDFLAGS ^ PHP_OUTPUT_HANDLER_REMOVABLE ^ PHP_OUTPUT_HANDLER_FLUSHABLE ^ PHP_OUTPUT_HANDLER_CLEANABLE );
+	}
+
+	/**
+	 * Update the output buffer.
+	 *
+	 * Tidy up the content before exporting via our JSON response.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $content    The content to update.
+	 */
+	public static function update_output_buffer( $content ) {
+		// Get the page title.
+		$title = wp_strip_all_tags( html_entity_decode( wp_get_document_title(), ENT_QUOTES, 'UTF-8' ) );
+
+		// Simplify the content / document before exporting via our JSON response.
+
+		// Get only the body tag, we don't need anything else.
+		// Note - need to include the body tag itself so CSS selectors that specify the body
+		// will continue to work.
+
+		// TODO: some CSS selectors start at the html tag - need to document this.
+
+		$matches = array();
+		// TODO: we might need to add a way to extract other parts of the document.  There is
+		// a use case with Elementor, on a page with no results, lots of the CSS and JS for
+		// the loop grid template is not loaded (as a template is never loaded), so we need to
+		// load them in when navigating to a page/search with results (otherwise templates are
+		// loaded without their necessary css/js - even more true for external plugins.
+		// Probably also applicable with the query loop.
+		preg_match( '/<body[^>]*>(.*?)<\/body>/si', $content, $matches );
+		if ( count( $matches ) > 0 ) {
+			$content = $matches[0];
+		}
+
+		// Remove all remaining script tags.
+		// TODO - is this necessary? Does it add unecessary overhead?
+		$content = preg_replace( '/<script\b[^>]*>(.*?)<\/script>/is', '', $content );
+
+		$query_settings = array();
+		foreach ( Queries::get_active_query_ids() as $query_id ) {
+			$render_data = Query_Render_Store::get_render_data( $query_id );
+			if ( $render_data ) {
+				$query_settings[ $query_id ] = $render_data;
+			}
+		}
+
+		$api_response = array(
+			'title'   => $title,
+			'fields'  => Fields::get_active_fields(),
+			'queries' => $query_settings,
+			'results' => $content,
+		);
+
+		// Need to re-send the headers in case something else sent them in the page load.
+		// Caching plugins often do this, so we need to set content type back to JSON.
+		self::send_headers();
+		return wp_json_encode( $api_response );
+	}
+	/**
+	 * Send no-cache and no-index headers for API requests.
+	 */
+	public static function send_headers() {
+		header( 'Content-Type: application/json; charset=utf-8' );
+		header( 'Cache-Control: no-cache, no-store, must-revalidate' );
+		header( 'Expires: 0' );
+		header( 'X-Robots-Tag: noindex, nofollow' );
 	}
 }

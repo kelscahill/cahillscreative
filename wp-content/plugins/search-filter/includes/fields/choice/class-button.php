@@ -51,90 +51,107 @@ class Button extends Choice {
 		'multiple'                => true,
 		'multipleMatchMethod'     => array(
 			'conditions' => array(
-				'relation' => 'AND',
-				'rules'    => array(
-					array(
-						'option'  => 'dataType',
-						'compare' => '!=',
-						'value'   => 'post_attribute',
-					),
-					array(
-						'option'  => 'multiple',
-						'compare' => '=',
-						'value'   => 'yes',
-					),
+				array(
+					'option'  => 'dataType',
+					'compare' => '!=',
+					'value'   => 'post_attribute',
+				),
+				array(
+					'option'  => 'multiple',
+					'compare' => '=',
+					'value'   => 'yes',
 				),
 			),
 		),
 		'dataLimitOptionsCount'   => true,
 		'taxonomyHierarchical'    => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'taxonomyOrderBy'         => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'taxonomyOrderDir'        => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'taxonomyTermsConditions' => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'taxonomyTerms'           => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'inputOptionsOrder'       => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '!=',
-				'value'   => 'post_attribute',
+				array(
+					'option'  => 'dataType',
+					'compare' => '!=',
+					'value'   => 'post_attribute',
+				),
 			),
 		),
 		'inputOptionsAddDefault'  => array(
 			'conditions' => array(
-				'option'  => 'multiple',
-				'compare' => '!=',
-				'value'   => 'yes',
+				array(
+					'option'  => 'multiple',
+					'compare' => '!=',
+					'value'   => 'yes',
+				),
 			),
 		),
 		'taxonomyFilterArchive'   => array(
 			'conditions' => array(
-				'option'  => 'multiple',
-				'compare' => '!=',
-				'value'   => 'yes',
+				array(
+					'option'  => 'multiple',
+					'compare' => '!=',
+					'value'   => 'yes',
+				),
 			),
 		),
 		'hideEmpty'               => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'showCount'               => array(
 			'conditions' => array(
-				'option'  => 'dataType',
-				'compare' => '=',
-				'value'   => 'taxonomy',
+				array(
+					'option'  => 'dataType',
+					'compare' => '=',
+					'value'   => 'taxonomy',
+				),
 			),
 		),
 		'showCountPosition'       => false,

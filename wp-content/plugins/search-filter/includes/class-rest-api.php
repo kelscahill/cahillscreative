@@ -133,8 +133,6 @@ class Rest_API {
 			 * fields with bad data, and we won't be sending bad requests
 			 * to this endpoint.
 			 */
-
-			// return rest_ensure_response( array( 'error' => $e->getMessage() ) );
 			return rest_ensure_response(
 				array(
 					'options' => array(),
@@ -648,27 +646,27 @@ class Rest_API {
 				'methods'             => array( \WP_REST_Server::READABLE ),
 				'callback'            => array( $this, 'query_post_types' ),
 				'args'                => array(
-					'integrationType'   => array(
+					'integrationType'  => array(
 						'type'              => 'string',
 						'required'          => true,
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'archiveType'       => array(
+					'archiveType'      => array(
 						'type'              => 'string',
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'singleIntegration' => array(
+					'queryIntegration' => array(
 						'type'              => 'string',
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'taxonomy'          => array(
+					'taxonomy'         => array(
 						'type'              => 'string',
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_key',
 					),
-					'postType'          => array(
+					'postType'         => array(
 						'type'              => 'string',
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_key',
@@ -973,12 +971,13 @@ class Rest_API {
 	 * Get the available taxonomy terms for a particular taxonomy.
 	 *
 	 * @param WP_REST_Request $request
-	 * @return void
+	 *
+	 * @return string The request result as JSON.
 	 */
 	public function get_taxonomy_terms_options( WP_REST_Request $request ) {
 		$taxonomy = $request->get_param( 'dataTaxonomy' );
 
-		$options = $this->create_taxonomy_terms_options( $taxonomy );
+		$options = Settings::create_taxonomy_terms_options( $taxonomy );
 		$json    = array(
 			'options' => $options,
 		);
@@ -986,34 +985,6 @@ class Rest_API {
 		return rest_ensure_response( $json );
 	}
 
-	/**
-	 * Get the available taxonomy terms for a particular taxonomy as
-	 *
-	 * @param string $taxonomy The taxonomy name.
-	 * @return array
-	 */
-	public function create_taxonomy_terms_options( $taxonomy ) {
-		if ( ! taxonomy_exists( $taxonomy ) ) {
-			return array();
-		}
-
-		$terms = get_terms(
-			array(
-				'taxonomy'   => $taxonomy,
-				'hide_empty' => false,
-			)
-		);
-
-		$options = array();
-		foreach ( $terms as $term ) {
-			$item = array(
-				'value' => $term->term_id,
-				'label' => $term->name,
-			);
-			array_push( $options, $item );
-		}
-		return $options;
-	}
 
 	/**
 	 * Get the available post types based on the current query settings.

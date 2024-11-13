@@ -568,13 +568,13 @@ class Admin {
 	 *
 	 * @since 3.0.0
 	 */
-	public function update_plugin_check() {
+	public static function update_plugin() {
 		// Setup the updater.
 		$edd_updater = new \Search_Filter\Core\Plugin_Updater(
 			'https://searchandfilter.com',
 			SEARCH_FILTER_BASE_FILE,
 			array(
-				'version' => $this->version,
+				'version' => SEARCH_FILTER_VERSION,
 				'license' => 'search-filter-extension-free',
 				'item_id' => 514539,
 				'author'  => 'Search & Filter',

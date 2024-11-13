@@ -348,8 +348,6 @@ class Field_Queries {
 		return absint( $count );
 	}
 
-
-
 	/**
 	 * Filters a field option to add counts or hide it.
 	 *
@@ -365,11 +363,9 @@ class Field_Queries {
 		if ( ! isset( $option['value'] ) || empty( $option['value'] ) ) {
 			return $option;
 		}
-
 		if ( ! isset( self::$fields[ $field_id ] ) ) {
 			return $option;
 		}
-
 		$hide_empty          = self::$fields[ $field_id ]['hideEmpty'];
 		$show_count          = self::$fields[ $field_id ]['showCount'];
 		$show_count_brackets = self::$fields[ $field_id ]['showCountBrackets'];
@@ -381,7 +377,6 @@ class Field_Queries {
 		if ( self::$fields[ $field_id ]['useIndexer'] !== 'yes' ) {
 			return $option;
 		}
-
 		// If an option is in the selected field values, then we don't want to hide it,
 		// otherwise the option dissapears and the user can no longer deselect it.
 		$in_values           = in_array( $option_value, $field->get_values(), true );
@@ -403,7 +398,6 @@ class Field_Queries {
 			}
 			return $option;
 		}
-
 		// Use index_value in case the database stored value is different from the field value.
 		$index_value = isset( $option['indexValue'] ) ? $option['indexValue'] : $option['value'];
 		// Use the already stored value from the query.
@@ -418,15 +412,15 @@ class Field_Queries {
 			}
 			return $option;
 		}
-
 		// We shouldn't get here, but if we do assume the count is 0.
 		if ( $can_hide ) {
 			return null;
 		}
-		if ( $show_count ) {
-			$option['count'] = self::format_count( 0, $show_count_brackets );
-		}
 
+		$option['count'] = 0;
+		if ( $show_count ) {
+			$option['countLabel'] = self::format_count( 0, $show_count_brackets );
+		}
 		return $option;
 	}
 
