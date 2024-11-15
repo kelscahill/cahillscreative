@@ -1,7 +1,6 @@
 .DS_Store
 *.log
 *.lock
-.htaccess
 wp-config.php
 wp-config-local.php
 wp-content/advanced-cache.php
