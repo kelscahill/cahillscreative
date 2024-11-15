@@ -1,5 +1,14 @@
 *** Google for WooCommerce Changelog ***
 
+= 2.8.7 - 2024-11-14 =
+* Dev - WordPress 6.7 Compatibility: Fix the issue that E2E test can't log in to wp-admin.
+* Fix - Remove a Google Ads API vendor file that prints php information.
+* Fix - WordPress 6.7 Compatibility: Avoid the block toolbar appearing when interacting blockified product editor.
+* Tweak - WC 9.4 compatibility.
+* Tweak - WP 6.7 compatibility.
+* Tweak - WordPress 6.7 Compatibility: Adjust the layout of the radio control to align well with the extended content.
+* Tweak - WordPress 6.7 Compatibility: Avoid errors in the database where a TEXT type can't have a default value.
+
 = 2.8.6 - 2024-10-02 =
 * Dev - Fix missing blueprint dependency.
 * Tweak - Adjust WP Proxy Response to force the string type for the price fields.

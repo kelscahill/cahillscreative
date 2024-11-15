@@ -2,10 +2,10 @@
 Contributors: automattic, google, woocommerce
 Tags: woocommerce, google, product feed, ads, listings
 Requires at least: 5.9
-Tested up to: 6.6
+Tested up to: 6.7
 Requires PHP: 7.4
 Requires PHP Architecture: 64 Bits
-Stable tag: 2.8.6
+Stable tag: 2.8.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -140,6 +140,15 @@ To allow your products to appear in all relevant locations, make sure you’ve c
 
 == Changelog ==
 
+= 2.8.7 - 2024-11-14 =
+* Dev - WordPress 6.7 Compatibility: Fix the issue that E2E test can't log in to wp-admin.
+* Fix - Remove a Google Ads API vendor file that prints php information.
+* Fix - WordPress 6.7 Compatibility: Avoid the block toolbar appearing when interacting blockified product editor.
+* Tweak - WC 9.4 compatibility.
+* Tweak - WP 6.7 compatibility.
+* Tweak - WordPress 6.7 Compatibility: Adjust the layout of the radio control to align well with the extended content.
+* Tweak - WordPress 6.7 Compatibility: Avoid errors in the database where a TEXT type can't have a default value.
+
 = 2.8.6 - 2024-10-02 =
 * Dev - Fix missing blueprint dependency.
 * Tweak - Adjust WP Proxy Response to force the string type for the price fields.
@@ -151,18 +160,5 @@ To allow your products to appear in all relevant locations, make sure you’ve c
 * Fix - Log exceptions triggered by assets being enqueued before being registered.
 * Tweak - Use remote-site-status to check the WPCOM Auth status.
 * Tweak - WC 9.3.0 compatibility.
-
-= 2.8.4 - 2024-08-28 =
-* Dev - Align namespaces for unit tests.
-* Dev - Avoid accidentally using the event object to reset the asset group values in the CampaignAssetsForm component.
-* Dev - Migrate jest tests to use Node.js 20.
-* Dev - Rewrite the replacer of JSON.stringify in getReportKey to ensure it returns the same key regardless of the query keys' order.
-* Dev - Upgrade to use Node.js 20 and bump npm dependencies.
-* Dev - Use a fixed SKU number when testing product adapter.
-* Fix - issue with comma separators for Shipping Rates.
-* Tweak - Connect Test Page errors when WPCOM token is not connected.
-* Tweak - Make the Tooltip use the new placement prop when WordPress >= 6.4.
-* Tweak - Replace deprecated event.keyCode with event.code for the verification code inputs in the contact information setting.
-* Tweak - Update the copy in the "Linked accounts" of the accounts connection setting to include Google Ads account.
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/google-listings-and-ads/trunk/changelog.txt).
