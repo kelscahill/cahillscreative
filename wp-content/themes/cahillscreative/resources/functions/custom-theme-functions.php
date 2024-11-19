@@ -7,13 +7,22 @@
  * @package WordPress
  */
 
- add_action('template_redirect', function () {
-  if (isset($_GET['_s']) && strpos($_GET['_s'], '-') !== false) {
-      // Replace hyphens with spaces
-      $search = str_replace('-', ' ', $_GET['_s']);
-      // Redirect to the URL with spaces encoded as %20
-      wp_redirect('/shop/?_s=' . rawurlencode($search), 301);
-      exit;
+add_action('template_redirect', function () {
+  if (isset($_GET['_s'])) {
+    $search = $_GET['_s'];
+
+    // Remove trailing slash, if present
+    $search = rtrim($search, '/');
+
+    // Replace hyphens with spaces
+    $search = str_replace('-', ' ', $search);
+
+    // Encode apostrophes as %27
+    $search = str_replace("'", '%27', $search);
+
+    // Redirect with properly encoded query
+    wp_redirect('/shop/?_s=' . rawurlencode($search), 301);
+    exit;
   }
 });
 
