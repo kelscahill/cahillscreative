@@ -7,6 +7,14 @@
  * @package WordPress
  */
 
+add_action('template_redirect', function () {
+  if (isset($_GET['_s'])) {
+      $search = str_replace('-', ' ', $_GET['_s']);
+      wp_redirect('/shop/?_s=' . urlencode($search), 301);
+      exit;
+  }
+});
+
 /**
  * ACF Save json files
  */
