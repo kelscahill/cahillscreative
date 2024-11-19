@@ -544,7 +544,10 @@ trait broadcasting
 						if ( $bcd->broadcast_data->has_linked_child_on_this_blog() )
 							wp_set_object_terms( $bcd->new_post( 'ID' ), [], $parent_taxonomy );
 
-					$this->debug( 'Taxonomies: Syncing terms for %s.', $parent_taxonomy );
+					$this->debug( 'Taxonomies: Syncing terms (%s) for %s.',
+						count( $bcd->parent_blog_taxonomies[ $parent_taxonomy ][ 'terms' ] ),
+						$parent_taxonomy,
+					);
 					$this->sync_terms( $bcd, $parent_taxonomy );
 					$this->debug( 'Taxonomies: Synced terms for %s.', $parent_taxonomy );
 

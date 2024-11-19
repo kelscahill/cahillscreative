@@ -10,6 +10,8 @@
 
 namespace Search_Filter;
 
+use Search_Filter\Core\Dependants;
+use Search_Filter\Core\Notices;
 use Search_Filter\Integrations\Gutenberg;
 use Search_Filter\Integrations\Legacy;
 use Search_Filter\Integrations\WooCommerce;
@@ -64,6 +66,7 @@ class Integrations {
 		do_action( 'search-filter/integrations/init' );
 
 		add_action( 'shutdown', array( __CLASS__, 'validate_integrations' ) );
+		add_action( 'search-filter/core/notices/get_notices', array( __CLASS__, 'add_notices' ) );
 	}
 
 	/**
@@ -183,7 +186,110 @@ class Integrations {
 	 * @since 3.0.6
 	 */
 	public static function validate_integrations() {
-		// TODO: Validate the integrations.
+		// Only validate in the admin.
+		if ( ! is_admin() ) {
+			return;
+		}
 		do_action( 'search-filter/integrations/validate' );
+	}
+
+	/**
+	 * Track which integrations the user has installed.
+	 *
+	 * Useful for showing notices to the user about which integrations they might want
+	 * to enable.
+	 */
+	public static function get_integrations_can_be_enabled() {
+
+		$integrations_data = Options::get_option_value( 'integrations' );
+		$all_integrations  = Integrations_Settings::get();
+
+		$integrations_notices = array();
+		foreach ( $all_integrations as $integration_slug => $integration_setting ) {
+			// Default to true.
+			$plugin_files = $integration_setting->get_prop( 'pluginFile' );
+
+			// Skip any integrations that don't need installing / have files.
+			if ( empty( $plugin_files ) ) {
+				continue;
+			}
+
+			// Start with the assumption that the integration plugin is not installed.
+			$plugin_status = 'not_installed';
+
+			// Now check to see if the plugin is installed or not.
+			foreach ( $plugin_files as $plugin_file ) {
+				if ( Dependants::is_plugin_installed( $plugin_file ) ) {
+					$plugin_status = 'installed';
+
+					// Now check to see if the plugin is enabled.
+					if ( Dependants::is_plugin_enabled( $plugin_file ) ) {
+						$plugin_status = 'enabled';
+						break;
+					}
+				}
+			}
+
+			// Now check to see if the plugin is enabled, but the integration is not.
+			if ( $plugin_status === 'enabled' && ( ! isset( $integrations_data[ $integration_slug ] ) || ! $integrations_data[ $integration_slug ] ) ) {
+				// The we can add a notice for it prompting the user to enable the integration.
+				$integrations_notices[] = $integration_slug;
+			}
+		}
+
+		return $integrations_notices;
+	}
+	/**
+	 * Add notices for integrations.
+	 *
+	 * We might want to show a notice when a plugin has been enabled,
+	 * encouraging the user to enable an integration.
+	 */
+	public static function add_notices() {
+
+		$integrations_which_can_be_enabled = self::get_integrations_can_be_enabled();
+
+		foreach ( $integrations_which_can_be_enabled as $integration_slug ) {
+			// Check to make sure the integration notice has not been dismissed.
+			if ( Notices::is_notice_dismissed( 'search-filter-integration-available-' . $integration_slug ) ) {
+				continue;
+			}
+
+			// Get the integration setting so we can get the nice label:
+			$integration_setting = Integrations_Settings::get_setting( $integration_slug );
+
+			if ( ! $integration_setting ) {
+				continue;
+			}
+
+			$integration_label = $integration_setting->get_prop( 'label' );
+
+			// Add notice to our admin screen.
+			$manage_plugins_link = sprintf( '<a href="%s">%s</a>.', esc_url( admin_url( 'plugins.php' ) ), esc_html__( 'Manage plugins', 'search-filter-pro' ) );
+
+			$notice_text = sprintf(
+				// Translators: 1: Integration name, ie "WooCommerce".
+				esc_html__( "Looks like you're using %s, enable the integration?", 'search-filter-pro' ),
+				'<strong>' . $integration_label . '</strong>'
+			);
+
+			$actions = array(
+				'enable'  => array(
+					'label'         => esc_html__( 'Enable', 'search-filter-pro' ),
+					'type'          => 'enable_integration',
+					'integration'   => $integration_slug,
+					'shouldDismiss' => true,
+				),
+				'manage'  => array(
+					'label'    => esc_html__( 'Manage integrations', 'search-filter-pro' ),
+					'type'     => 'navigate',
+					'location' => '?page=search-filter&section=integrations',
+					'variant'  => 'tertiary',
+				),
+				'dismiss' => true,
+			);
+
+			Notices::add_notice( $notice_text, 'notice', 'search-filter-integration-available-' . $integration_slug, $actions );
+		}
 	}
 }

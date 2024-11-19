@@ -4,6 +4,7 @@ namespace threewp_broadcast\maintenance;
 
 use TypeError;
 
+#[\AllowDynamicProperties]
 class data
 {
 	public $checks;

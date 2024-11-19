@@ -9,7 +9,7 @@
  */
 
 if ( ! defined( 'SEARCH_FILTER_PRO_VERSION' ) ) {
-	define( 'SEARCH_FILTER_PRO_VERSION', '3.0.5' );
+	define( 'SEARCH_FILTER_PRO_VERSION', '3.0.6' );
 }
 
 if ( ! defined( 'SEARCH_FILTER_PRO_URL' ) ) {
@@ -18,10 +18,6 @@ if ( ! defined( 'SEARCH_FILTER_PRO_URL' ) ) {
 
 if ( ! defined( 'SEARCH_FILTER_PRO_PATH' ) ) {
 	define( 'SEARCH_FILTER_PRO_PATH', plugin_dir_path( __FILE__ ) );
-}
-
-if ( ! defined( 'SEARCH_FILTER_PRO_DEBUG' ) ) {
-	define( 'SEARCH_FILTER_PRO_DEBUG', false );
 }
 
 // The required version number of the Search & Filter base plugin.

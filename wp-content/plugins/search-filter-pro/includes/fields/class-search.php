@@ -255,7 +255,27 @@ class Search extends Search_Base {
 		$matched_terms = array();
 
 		global $wpdb;
-		$query_result = $wpdb->get_results( $wpdb->prepare( "SELECT {$wpdb->terms}.name, {$wpdb->terms}.slug FROM {$wpdb->terms} LEFT JOIN {$wpdb->term_taxonomy} ON {$wpdb->terms}.term_id = {$wpdb->term_taxonomy}.term_id WHERE {$wpdb->term_taxonomy}.taxonomy = %s AND {$wpdb->terms}.name LIKE %s", $taxonomy_name, $search_term . '%' ) );
+
+		$terms_conditions = $this->get_attribute( 'taxonomyTermsConditions' );
+		$terms            = $this->get_attribute( 'taxonomyTerms' );
+
+		// Enforce the terms to be numbers.
+		$terms = array_map( 'absint', $terms );
+
+		$terms_sql = '';
+		if ( $terms_conditions === 'include_terms' ) {
+			$terms_sql = $wpdb->prepare( " AND {$wpdb->terms}.term_id IN (%d)", implode( ',', $terms ) );
+		} elseif ( $terms_conditions === 'exclude_terms' ) {
+			$terms_sql = $wpdb->prepare( " AND {$wpdb->terms}.term_id NOT IN (%d)", implode( ',', $terms ) );
+		}
+
+		$search_query = $wpdb->prepare( "SELECT {$wpdb->terms}.name, {$wpdb->terms}.slug FROM {$wpdb->terms} LEFT JOIN {$wpdb->term_taxonomy} ON {$wpdb->terms}.term_id = {$wpdb->term_taxonomy}.term_id WHERE {$wpdb->term_taxonomy}.taxonomy = %s AND {$wpdb->terms}.name LIKE %s", $taxonomy_name, $search_term . '%' );
+		if ( ! empty( $terms_sql ) ) {
+			$search_query .= $terms_sql;
+		}
+
+		$query_result = $wpdb->get_results( $search_query );
+
 		foreach ( $query_result as $term ) {
 			if ( $return === 'name' ) {
 				$matched_terms[] = $term->name;

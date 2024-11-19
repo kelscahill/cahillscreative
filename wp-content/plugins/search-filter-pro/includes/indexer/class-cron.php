@@ -1,6 +1,7 @@
 <?php
 namespace Search_Filter_Pro\Indexer;
 
+use Search_Filter_Pro\Core\Dependencies;
 use Search_Filter_Pro\Util;
 use Search_Filter_Pro\Indexer;
 
@@ -85,6 +86,12 @@ class Cron {
 	 * @since 3.0.0
 	 */
 	public static function run_task() {
+		// Cron jobs are added on activate, even if the base plugin is
+		// disabled, so make sure it's enabled before running anything
+		// that might depend on it.
+		if ( ! Dependencies::is_search_filter_enabled() ) {
+			return;
+		}
 		// Maybe spawn a new process.
 		Indexer::validate_process();
 		Async::hook_dispatch_request();

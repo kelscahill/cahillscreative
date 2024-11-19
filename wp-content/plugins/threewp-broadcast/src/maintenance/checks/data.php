@@ -6,6 +6,7 @@ namespace threewp_broadcast\maintenance\checks;
 	@brief		Data object for a check.
 	@since		20131104
 **/
+#[\AllowDynamicProperties]
 class data
 {
 }

@@ -1575,15 +1575,49 @@ final class Indexer extends Task_Runner {
 	 * Run the indexer process.
 	 *
 	 * @since 3.0.0
+	 *
+	 * @param string $process_key Optional process key to run.
 	 */
-	public static function run_processing() {
+	public static function run_processing( $process_key = null ) {
+
+		$index_method = self::get_method();
 
 		self::set_status( 'processing' );
 
-		$process_key = self::create_process_key();
-		if ( $process_key ) {
-			return self::spawn_run_process( $process_key, true );
+		if ( $process_key === null ) {
+			$process_key = self::create_process_key();
 		}
+
+		if ( $process_key ) {
+			$index_method = self::get_method();
+
+			if ( $index_method === 'background' ) {
+				self::spawn_run_process( $process_key );
+			} else {
+				// Run manually.
+				self::run_tasks( $process_key );
+				self::reset_process_locks();
+			}
+		}
+	}
+
+	/**
+	 * Get the indexer processing method.
+	 *
+	 * @since 3.0.6
+	 *
+	 * @return string The indexer method.
+	 */
+	public static function get_method() {
+
+		$default_method = 'background';
+
+		$indexer_options_value = Options::get_option_value( 'indexer' );
+		if ( $indexer_options_value && isset( $indexer_options_value['useBackgroundProcessing'] ) ) {
+			return $indexer_options_value['useBackgroundProcessing'] === 'yes' ? 'background' : 'manual';
+		}
+
+		return $default_method;
 	}
 
 	/**
@@ -1592,9 +1626,8 @@ final class Indexer extends Task_Runner {
 	 * @since 3.0.0
 	 *
 	 * @param string $process_key The process key to spawn.
-	 * @param bool   $is_initial_process    The initiating process should be non blocking so set a really low timeout.
 	 */
-	public static function spawn_run_process( $process_key, $is_initial_process = false ) {
+	public static function spawn_run_process( $process_key ) {
 
 		$headers = array(
 			'Cache-Control' => 'no-cache',

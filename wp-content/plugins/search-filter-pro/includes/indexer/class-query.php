@@ -938,6 +938,9 @@ class Query {
 					$this->has_search = true;
 				}
 				$query_args = $field->apply_wp_query_args( $query_args );
+			} elseif ( $type === 'control' ) {
+				// Most controls do not apply query args, but some do.
+				$query_args = $field->apply_wp_query_args( $query_args );
 			}
 		}
 		return $query_args;

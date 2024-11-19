@@ -242,6 +242,11 @@ class Style extends Record_Base {
 		return $css;
 	}
 
+	/**
+	 * Generates the default attributes for the style preset.
+	 *
+	 * @return array The default attributes.
+	 */
 	public static function generate_default_attributes() {
 		$input_type_matrix  = Field_Factory::get_field_input_types();
 		$default_attributes = array();
@@ -335,44 +340,61 @@ class Style extends Record_Base {
 			'--search-filter-description-color'            => 'descriptionColor',
 			'--search-filter-description-background-color' => 'descriptionBackgroundColor',
 			'--search-filter-input-color'                  => 'inputColor',
-			'--search-filter-input-placeholder-color'      => 'inputColor',
 			'--search-filter-input-background-color'       => 'inputBackgroundColor',
 			'--search-filter-input-border-color'           => 'inputBorderColor',
 			'--search-filter-input-border-hover-color'     => 'inputBorderHoverColor',
 			'--search-filter-input-border-focus-color'     => 'inputBorderFocusColor',
-			'--search-filter-input-border-accent-color'    => 'inputBorderFocusColor',
 			'--search-filter-input-icon-color'             => 'inputIconColor',
 			'--search-filter-input-clear-color'            => 'inputClearColor',
 			'--search-filter-input-clear-hover-color'      => 'inputClearHoverColor',
 			'--search-filter-input-selected-color'         => 'inputSelectedColor',
 			'--search-filter-input-selected-background-color' => 'inputSelectedBackgroundColor',
 			'--search-filter-input-selection-color'        => 'inputSelectedColor',
-			'--search-filter-input-selection-background-color' => 'inputSelectedBackgroundColor',
 			'--search-filter-input-active-icon-color'      => 'inputActiveIconColor',
 			'--search-filter-input-inactive-icon-color'    => 'inputInactiveIconColor',
 			'--search-filter-input-interactive-color'      => 'inputInteractiveColor',
 			'--search-filter-input-interactive-hover-color' => 'inputInteractiveHoverColor',
 		);
-		$modifiers       = array(
-			'--search-filter-input-placeholder-color'   => 'AA',
-			'--search-filter-input-border-accent-color' => '77',
-			'--search-filter-input-selection-background-color' => 'CC',
+		$modified_colors = array(
+			// Use colormix to add transparency to the existing css variable color...
+			'--search-filter-input-placeholder-color'   => array(
+				'rule'       => 'color-mix(in srgb, var(--search-filter-input-color) 67%, transparent)',
+				'depends_on' => '--search-filter-input-color',
+			),
+			'--search-filter-input-border-accent-color' => array(
+				'rule'       => 'color-mix(in srgb, var(--search-filter-input-border-focus-color) 47%, transparent)',
+				'depends_on' => '--search-filter-input-border-focus-color',
+			),
+			'--search-filter-input-selection-background-color' => array(
+				'rule'       => 'color-mix(in srgb, var(--search-filter-input-selected-background-color) 80%, transparent)',
+				'depends_on' => '--search-filter-input-selected-background-color',
+			),
 		);
 
-		$css = '';
-
+		$css              = '';
+		$found_color_vars = array();
 		foreach ( $mapped_css_vars as $css_var => $attribute_key ) {
-			if ( isset( $attributes[ $attribute_key ] ) ) {
-				// TODO - we need to handle the different color type... not only hex...
-				$css .= $css_var . ':' . Sanitize::sanitize_hex_color_with_opacity( $attributes[ $attribute_key ] );
-				if ( isset( $modifiers[ $css_var ] ) ) {
-					$css .= $modifiers[ $css_var ];
-				}
-				$css .= ';';
+			if ( ! isset( $attributes[ $attribute_key ] ) ) {
+				continue;
 			}
+			$css               .= safecss_filter_attr( $css_var . ':' . $attributes[ $attribute_key ] );
+			$css               .= ';';
+			$found_color_vars[] = $css_var;
 		}
 
-		// Handle the rest of the attributes:
+		foreach ( $modified_colors as $css_var => $css_config ) {
+			// Don't add the modifier colors if the source var wasn't found based on the attributes.
+			if ( ! in_array( $css_config['depends_on'], $found_color_vars, true ) ) {
+				continue;
+			}
+			// safecss_filter_attr doesn't support color-mix, but considering our rule is not coming
+			// from user input, it should be fine not to sanitize here. It's possible to add a custom
+			// filter to allow it though - https://core.trac.wordpress.org/ticket/62353 .
+			$css .= $css_var . ':' . $css_config['rule'];
+			$css .= ';';
+		}
+
+		// Handle the rest of the attributes.
 		$mapped_css_vars = array(
 			'--search-filter-label-scale'       => 'labelScale',
 			'--search-filter-description-scale' => 'descriptionScale',

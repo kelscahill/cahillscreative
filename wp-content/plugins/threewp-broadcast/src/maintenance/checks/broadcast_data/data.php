@@ -9,7 +9,7 @@ use \plainview\sdk_broadcast\collections\collection;
 	@since		20131104
 **/
 class data
-extends \threewp_broadcast\maintenance\checks\data
+	extends \threewp_broadcast\maintenance\checks\data
 {
 	public static $rows_per_step = 500;
 

@@ -129,7 +129,7 @@ class Search_Filter {
 		 *
 		 * Important, until we seperate out the CSS files, styles must be loaded
 		 * before fields, so the field classes have priority over the styles.
-		 * CSS is generate based on order registerd with the CSS_Loader (we could
+		 * CSS is generated based on order registered with the CSS_Loader (we could
 		 * also add a priority to the CSS_Loader but we'll need to break out the
 		 * the files at some stage anyway).
 		 */
@@ -157,7 +157,8 @@ class Search_Filter {
 		\Search_Filter\Integrations::init();
 		/**
 		 * Important, Styles need to be loaded after the fields, because their settings
-		 * depend on the fields settings being loaded already.
+		 * depend on the fields settings being loaded already (styles options are extracted
+		 * from the fields settings).
 		 */
 		\Search_Filter\Fields::init();
 		\Search_Filter\Styles::init();

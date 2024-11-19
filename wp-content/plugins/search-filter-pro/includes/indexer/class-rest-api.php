@@ -208,8 +208,16 @@ class Rest_API {
 			)
 		);
 
-		// Then run the process.
-		Indexer::run_processing();
+		// Only if we're doing background processing should we launch the process.
+		// otherwise, lets just return the updated indexer data and wait for the next tick
+		// to start the processing.
+		if ( Indexer::get_method() === 'background' ) {
+			// Then run the process.
+			Indexer::run_processing();
+		} else {
+			// Set the status to processing so the next request knows to run.
+			Indexer::set_status( 'processing' );
+		}
 		return rest_ensure_response( self::get_indexer_data() );
 	}
 
@@ -293,14 +301,7 @@ class Rest_API {
 		// Check if there are any tasks left to run.
 		if ( ! Indexer::has_finished_tasks() ) {
 			Util::error_log( 'REST API: process_tasks | spawning new process', 'notice' );
-
-			// TODO - there is an issue when changing a query or field, where the index
-			// status is cleared, but the process never continues because there is no status.
-			// We're setting procssing here, but I think we need to address the `try_clear_status`
-			// logic in the field + query classes which call it.
-			Indexer::set_status( 'processing' );
-			// Then spawn a new process via wp_remote_post.
-			Indexer::spawn_run_process( $process_key );
+			Indexer::run_processing( $process_key );
 		}
 	}
 

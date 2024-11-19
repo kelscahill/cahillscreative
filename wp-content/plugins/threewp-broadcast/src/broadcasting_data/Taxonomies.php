@@ -73,9 +73,15 @@ class Taxonomies
 	public function also_sync( $post_type, $taxonomy )
 	{
 		// If no post type is specified, absolutely force syncing of the taxonomy.
-		if ( ! $post_type )
-			if ( isset( $this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ] ) )
-				unset( $this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ] );
+		if ( isset( $this->broadcasting_data->already_also_synced_taxonomies ) )
+		{
+			if ( ! $this->broadcasting_data->already_also_synced_taxonomies->has( $taxonomy ) )
+			{
+				if ( ! $post_type )
+					if ( isset( $this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ] ) )
+						unset( $this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ] );
+			}
+		}
 
 		$this->also_sync_taxonomy( [
 			'post_type' => $post_type,
@@ -115,6 +121,7 @@ class Taxonomies
 		}
 		else
 			$this->broadcasting_data->already_also_synced_taxonomies = $bc->collection();
+
 		$this->broadcasting_data->already_also_synced_taxonomies->set( $options->taxonomy, true );
 
 		// Nothing set? Try to resync.
@@ -182,12 +189,14 @@ class Taxonomies
 		$this->broadcasting_data->post = $options->post;
 
 		if ( $options->post_id < 1 )
-			unset( $this->post->ID );		// This is so that collect_post_type_taxonomies returns ALL the terms, not just those from the non-existent post.
+			unset( $options->post->ID );		// This is so that collect_post_type_taxonomies returns ALL the terms, not just those from the non-existent post.
 
 		$bc->collect_post_type_taxonomies( $this->broadcasting_data );
 
+		// Extract the new taxonomy data.
 		$new_taxonomy_data = $this->broadcasting_data->parent_blog_taxonomies[ $options->taxonomy ];
 
+		// Restore the old values.
 		foreach( $values_to_save as $key )
 			$this->broadcasting_data->$key = $old_values[ $key ];
 
@@ -440,8 +449,15 @@ class Taxonomies
 			->collection( 'used_terms' )
 			->set( $term_id, $term_id );
 
-		$ti = $this->get_term_index();
-		$term = $ti->get( $term_id );
+		$term = get_term( $term_id );
+		$taxonomy = $term->taxonomy;
+
+		// Put this term into the parent_blog_taxonomies array, if not already there.
+		if ( ! isset( $this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ][ 'terms' ][ $term_id ] ) )
+		{
+			ThreeWP_Broadcast()->debug( 'Using new, unsynced %s term %s', $taxonomy, $term_id );
+			$this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ][ 'terms' ][ $term_id ] = $term;
+		}
 		if ( $term->parent > 0 )
 		{
 			$parent_id = $term->parent;

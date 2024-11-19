@@ -61,26 +61,6 @@ class Sanitize {
 	}
 
 	/**
-	 * Sanitize hex color with opacity.
-	 *
-	 * Accepts hex color with 3 or 4 (with alpha) or 6 or 8 (with alpha) hex digits.
-	 *
-	 * @param string $color The color to sanitize.
-	 * @return string
-	 */
-	public static function sanitize_hex_color_with_opacity( $color ) {
-		if ( '' === $color ) {
-			return '';
-		}
-
-		// 3 or 4 (with alpha) or 6 or 8 (with alpha) hex digits, or the empty string.
-		if ( preg_match( '/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/', $color ) ) {
-			return $color;
-		}
-		return '';
-	}
-
-	/**
 	 * Pass through function for field options, use sparingly.
 	 *
 	 * Used for optimisation to avoid repeating loops but it could be

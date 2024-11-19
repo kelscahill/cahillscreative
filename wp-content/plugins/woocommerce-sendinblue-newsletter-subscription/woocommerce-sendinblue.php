@@ -6,7 +6,7 @@
  * Author: Brevo
  * Text Domain: woocommerce-sendinblue-newsletter-subscription
  * Domain Path: /languages
- * Version: 4.0.30
+ * Version: 4.0.31
  * Author URI: https://www.brevo.com/?r=wporg
  * Requires at least: 4.3
  * Tested up to: 6.6.2

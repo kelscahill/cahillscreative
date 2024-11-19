@@ -120,7 +120,15 @@ class Search_Filter_Pro {
 
 		$this->set_locale();
 		Dependencies::init();
-		Compatibility::init();
+
+		// Check to see if S&F legacy version from .org is installed - bail otherwise we'll get
+		// a fatal error.
+		if ( Dependencies::has_legacy_base_plugin() ) {
+			// Add notice to WP admin screens.
+			$plugin_admin = new \Search_Filter_Pro\Admin( $this->get_plugin_name(), $this->get_version() );
+			add_action( 'admin_notices', array( $plugin_admin, 'search_filter_is_legacy_version' ) );
+			return;
+		}
 
 		if ( ! Dependencies::is_search_filter_enabled() ) {
 			if ( is_admin() && ! wp_doing_ajax() ) {
@@ -136,6 +144,9 @@ class Search_Filter_Pro {
 				return;
 			}
 		}
+
+		Compatibility::init();
+
 		// Check for the existence of the main plugin, and return early if it doesn't exist or match the required version.
 		if ( ! Dependencies::is_search_filter_required_version() ) {
 

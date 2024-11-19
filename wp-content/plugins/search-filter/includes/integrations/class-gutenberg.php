@@ -220,7 +220,7 @@ class Gutenberg {
 		// When on the frontend, we're actually doing this twice, once via the frontend init
 		// and again here. Needs to be refactored.
 		$plugin_frontend = new \Search_Filter\Frontend( SEARCH_FILTER_SLUG, SEARCH_FILTER_VERSION );
-		$plugin_frontend->enqueue_scripts();
+		$plugin_frontend->register_scripts();
 		$plugin_frontend->add_js_data();
 		// Instantiate the frontend so we can register the styles.
 		$plugin_frontend->register_styles();

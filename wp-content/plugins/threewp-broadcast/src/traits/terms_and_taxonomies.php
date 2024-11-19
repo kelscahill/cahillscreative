@@ -432,7 +432,6 @@ trait terms_and_taxonomies
 				'terms'    => $o->terms,
 			];
 
-
 			// Don't show debug info if there are a lot of terms.
 			// A lot is 6, let's say.
 			$show_debug = count( $o->terms ) < 6;

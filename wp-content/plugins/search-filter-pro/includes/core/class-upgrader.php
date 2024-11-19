@@ -145,3 +145,4 @@ class Upgrader {
 // so that the upgrades can be run in the correct order.
 Upgrader::register_upgrade( '3.0.4', '\Search_Filter_Pro\Core\Upgrader\Upgrade_3_0_4', '3.0.4' );
 Upgrader::register_upgrade( '3.0.5', '\Search_Filter_Pro\Core\Upgrader\Upgrade_3_0_5', '3.0.5' );
+Upgrader::register_upgrade( '3.0.6', '\Search_Filter_Pro\Core\Upgrader\Upgrade_3_0_6', '3.0.6' );

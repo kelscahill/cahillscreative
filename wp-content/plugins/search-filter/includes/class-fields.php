@@ -36,7 +36,7 @@ class Fields {
 	 * @var array
 	 */
 	private static $active_fields = array();
-	
+
 	/**
 	 * Initialize the class
 	 *
@@ -147,7 +147,7 @@ class Fields {
 	public static function get_active_fields() {
 		return self::$active_fields;
 	}
-	
+
 	/**
 	 * Find multiple fields by conditions
 	 *

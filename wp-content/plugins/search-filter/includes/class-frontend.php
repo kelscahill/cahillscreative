@@ -146,22 +146,6 @@ class Frontend {
 			),
 		);
 
-		$should_mount = apply_filters( 'search-filter/frontend/register_scripts/should_mount', true );
-		if ( $should_mount ) {
-			$should_mount = "
-			/*
-			* Use ready state change instead of DOM Content loaded to avoid issues with Cloudflare's
-			* rocket loader.
-			*/
-			document.addEventListener('readystatechange', (event) => {
-				if (document.readyState === 'interactive') {
-					window.searchAndFilter.frontend.mount();
-				}
-			} );
-			";
-			wp_add_inline_script( $this->plugin_name, $should_mount, 'after' );
-		}
-
 		$this->registered_scripts = apply_filters( 'search-filter/frontend/register_scripts', $this->registered_scripts );
 
 		foreach ( $this->registered_scripts as $handle => $args ) {
@@ -253,9 +237,12 @@ class Frontend {
 	 * Outputs the JSON object for the active fields (inital render data), queries and template data.
 	 */
 	public function data() {
-		$data = array(
-			'fields'  => Fields::get_active_fields(),
-			'queries' => Queries::get_active_queries(),
+
+		$should_mount = apply_filters( 'search-filter/frontend/register_scripts/should_mount', true );
+		$data         = array(
+			'fields'      => Fields::get_active_fields(),
+			'queries'     => Queries::get_active_queries(),
+			'shouldMount' => $should_mount,
 		);
 		// Add filter to modify the data.
 		$data    = apply_filters( 'search-filter/frontend/data', $data );

@@ -3,7 +3,7 @@
  * Plugin Name: Newsletter, SMTP, Email marketing and Subscribe forms by Brevo
  * Plugin URI: https://www.brevo.com/?r=wporg
  * Description: Manage your contact lists, subscription forms and all email and marketing-related topics from your wp panel, within one single plugin
- * Version: 3.1.88
+ * Version: 3.1.89
  * Author: Brevo
  * Author URI: https://www.brevo.com/?r=wporg
  * License: GPLv2 or later
@@ -689,12 +689,13 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 					$ma_email = $current_user->user_email;
 				}
 				$ma_key = sanitize_text_field($general_settings['ma_key']);
-				$output = '<script type="text/javascript">
-							(function() {
-								window.sib ={equeue:[],client_key:"'. $ma_key .'"};/* OPTIONAL: email for identify request*/
-							window.sib.email_id = "'. sanitize_email($ma_email) .'";
-							window.sendinblue = {}; for (var j = [\'track\', \'identify\', \'trackLink\', \'page\'], i = 0; i < j.length; i++) { (function(k) { window.sendinblue[k] = function() { var arg = Array.prototype.slice.call(arguments); (window.sib[k] || function() { var t = {}; t[k] = arg; window.sib.equeue.push(t);})(arg[0], arg[1], arg[2]);};})(j[i]);}var n = document.createElement("script"),i = document.getElementsByTagName("script")[0]; n.type = "text/javascript", n.id = "sendinblue-js", n.async = !0, n.src = "https://sibautomation.com/sa.js?plugin=wordpress&key=" + window.sib.client_key, i.parentNode.insertBefore(n, i), window.sendinblue.page();})();
-							</script>';
+				$output = '<script src="https://cdn.brevo.com/js/sdk-loader.js" async></script>';
+				$output .= '<script>window.Brevo = window.Brevo || [];
+								Brevo.push([
+									"init",
+								{
+									client_key:"' . $ma_key .'",';
+				$output .= 'email_id : "' . sanitize_email($ma_email) . '",},]);</script>';
 				echo html_entity_decode($output);
 			} else {
                 self::uninstall_service_worker_script();

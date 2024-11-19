@@ -222,6 +222,7 @@ class Settings_Data {
 				'inputType'   => 'Text',
 				'placeholder' => __( 'Enter a Label', 'search-filter' ),
 				'context'     => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
+
 			),
 			array(
 				'name'      => 'showLabel',
@@ -1465,7 +1466,7 @@ class Settings_Data {
 				'group'     => 'data',
 				'tab'       => 'settings',
 				'default'   => 'all',
-				'context'   => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'context'   => array( 'admin/field', 'admin/field/search', 'block/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
 				'options'   => array(
 					array(
 						'label' => __( 'Show all terms', 'search-filter' ),
@@ -1496,7 +1497,7 @@ class Settings_Data {
 				'tab'       => 'settings',
 				'options'   => array(),
 				'default'   => array(),
-				'context'   => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'context'   => array( 'admin/field', 'admin/field/search', 'block/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
 				'dependsOn' => array(
 					'relation' => 'OR',
 					'rules'    => array(

@@ -875,7 +875,7 @@ class WooCommerce {
 			),
 			array(
 				'name'      => 'woocommerceTaxTerms',
-				'label'     => __( 'Taxonomy terms', 'search-filter' ),
+				'label'     => __( 'Options', 'search-filter' ),
 				'type'      => 'array',
 				'items'     => array(
 					'type' => 'number',

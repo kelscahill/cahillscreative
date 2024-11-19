@@ -9,8 +9,7 @@
 
 namespace Search_Filter_Pro\Indexer;
 
-use Search_Filter\Core\Data_Store;
-use Search_Filter\Options;
+use Search_Filter_Pro\Core\Dependencies;
 use Search_Filter_Pro\Indexer\Cache\Query;
 use Search_Filter_Pro\Indexer\Cache\Row;
 use Search_Filter_Pro\Util;
@@ -434,6 +433,13 @@ class Query_Cache {
 	 * @since 3.0.0
 	 */
 	public static function cron_run_task() {
+		// Cron jobs are added on activate, even if the base plugin is
+		// disabled, so make sure it's enabled before running anything
+		// that might depend on it.
+		if ( ! Dependencies::is_search_filter_enabled() ) {
+			return;
+		}
+
 		// Hook the task into shutdown so we don't affect the request.
 		add_action( 'shutdown', array( __CLASS__, 'clear_expired_cache_items' ) );
 	}

@@ -2,6 +2,8 @@
 
 namespace Search_Filter\Core;
 
+use Search_Filter\Options;
+
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -26,15 +28,19 @@ class Notices {
 	 * @param string $type    The type of notice.
 	 * @param string $id      The ID of the notice.
 	 */
-	public static function add_notice( $message, $status, $id = '' ) {
+	public static function add_notice( $message, $status, $id = '', $actions = array() ) {
+
 		if ( empty( $id ) ) {
 			$id = self::get_new_id();
 		}
+
+		$actions_keys = array_keys( $actions );
+
 		self::$notices[] = array(
-			'message'       => $message,
-			'status'        => $status,
-			'id'            => $id,
-			'isDismissible' => false,
+			'message' => $message,
+			'status'  => $status,
+			'id'      => $id,
+			'actions' => $actions,
 		);
 	}
 	/**
@@ -53,5 +59,26 @@ class Notices {
 	 */
 	private static function get_new_id() {
 		return md5( time() );
+	}
+
+	/**
+	 * Check if a notice has been dismissed.
+	 *
+	 * @param string $id The ID of the notice.
+	 * @return bool True if dismissed, false if not.
+	 */
+	public static function is_notice_dismissed( $id ) {
+		$dismissed_notices = Options::get_option_value( 'dismissed-notices' );
+		return isset( $dismissed_notices[ $id ] ) && $dismissed_notices[ $id ];
+	}
+	/**
+	 * Dismiss a notice.
+	 *
+	 * @param string $id The ID of the notice.
+	 */
+	public static function dismiss_notice( $id ) {
+		$dismissed_notices        = Options::get_option_value( 'dismissed-notices' );
+		$dismissed_notices[ $id ] = true;
+		Options::update_option_value( 'dismissed-notices', $dismissed_notices );
 	}
 }

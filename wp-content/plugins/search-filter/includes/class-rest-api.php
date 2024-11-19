@@ -374,11 +374,22 @@ class Rest_API {
 	 *
 	 * @since 3.0.0
 	 */
-	public function get_admin_notices( WP_REST_Request $request ) {
+	public function get_admin_notices( \WP_REST_Request $request ) {
 		$notices = Notices::get_notices();
 		return rest_ensure_response( $notices );
 	}
 
+	/**
+	 * Dismiss a notice.
+	 *
+	 * @param \WP_REST_Request $request
+	 * @return void
+	 */
+	public function dismiss_admin_notice( \WP_REST_Request $request ) {
+		$id = $request->get_param( 'id' );
+		Notices::dismiss_notice( $id );
+		return rest_ensure_response( true );
+	}
 	/**
 	 * Get the context fields IDs.
 	 *
@@ -599,6 +610,24 @@ class Rest_API {
 				'callback'            => array( $this, 'get_admin_notices' ),
 				'permission_callback' => array( $this, 'permissions' ),
 			)
+		);
+		register_rest_route(
+			'search-filter/v1',
+			'/admin/notices/(?P<id>\S+)',
+			array(
+				'args' => array(
+					'id' => array(
+						'description'       => __( 'Unique identifier for the resource.', 'search-filter' ),
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				array(
+					'methods'             => \WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'dismiss_admin_notice' ),
+					'permission_callback' => array( $this, 'permissions' ),
+				),
+			),
 		);
 
 		register_rest_route(

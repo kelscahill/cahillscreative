@@ -26,7 +26,7 @@ class Term_Index
 	**/
 	public function add_terms( $terms )
 	{
-		foreacH( $terms as $term )
+		foreach( $terms as $term )
 			$this->add( $term );
 		return $this;
 	}

@@ -80,7 +80,7 @@ class Settings_Data {
 				'isPro'                => true,
 				'isPluginInstalled'    => false,
 				'isPluginEnabled'      => false,
-				'pluginFile'           => array( 'advanced-custom-fields/acf.php' ),
+				'pluginFile'           => array( 'advanced-custom-fields/acf.php', 'advanced-custom-fields-pro/acf.php' ),
 				'isExtensionInstalled' => true,
 				'comingSoon'           => false,
 			),

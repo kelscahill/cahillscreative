@@ -3,7 +3,7 @@
  * Plugin Name:       Search & Filter
  * Plugin URI:        http://searchandfilter.com
  * Description:       Build powerful search experiences for your website or store.
- * Version:           3.0.6
+ * Version:           3.0.7
  * Author:            Code Amp
  * Author URI:        http://codeamp.com
  * License:           GPL-2.0+

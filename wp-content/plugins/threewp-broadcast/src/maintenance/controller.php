@@ -2,6 +2,7 @@
 
 namespace threewp_broadcast\maintenance;
 
+#[\AllowDynamicProperties]
 class controller
 {
 	/**

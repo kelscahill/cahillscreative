@@ -4,7 +4,7 @@ Tags: search, filter, taxonomy, tag, category, product, shop, post type
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 5.3
-Stable tag: 3.0.5
+Stable tag: 3.0.6
 
 Create powerful search and filtering experiences for your users and customers.
 
@@ -21,6 +21,14 @@ Create powerful search and filtering experiences for your users and customers.
 
 
 == Changelog ==
+
+= 3.0.6 =
+* Improvement - allow option for the indexer to build when loopback requests fail - enable via -> `settings` -> `indexer` -> disable `use background process`
+* Fix - an issue with some optimization plugins stripping out our initialisation JS.
+* Fix - the sort order field was not working when the indexer was enabled.
+* Fix - an issue when showing available meta keys.
+* Fix - prevent activating the Search & Filter base plugin if its a really old version (1.x).
+* Fix - some tables were not being uninstalled when the option to remove all data was enabled.
 
 = 3.0.5 =
 * New - add option to hide fields when they don't have any choices available.

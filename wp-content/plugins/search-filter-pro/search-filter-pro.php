@@ -3,7 +3,7 @@
  * Plugin Name:       Search & Filter Pro
  * Plugin URI:        http://searchandfilter.com
  * Description:       Build powerful search experiences for your website or store with powerful pro features.
- * Version:           3.0.5
+ * Version:           3.0.6
  * Author:            Code Amp
  * Author URI:        https://codeamp.com
  * Update URI:        https://searchandfilter.com
@@ -56,4 +56,6 @@ function run_search_filter_pro() {
 	new Search_Filter_Pro();
 }
 run_search_filter_pro();
+
+
 

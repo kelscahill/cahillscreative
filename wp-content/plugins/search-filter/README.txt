@@ -4,7 +4,7 @@ Tags: search, filter, taxonomy, tag, category, product, shop, post type
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.2
-Stable tag: 3.0.6
+Stable tag: 3.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,9 +30,19 @@ Create powerful search and filtering experiences for your users and customers.
 
 == Changelog ==
 
+= 3.0.7 =
+* New - add notices to suggest enabling integrations when they are detected.
+* Change - remove beta feedback form.
+* Fix - select input types were not showing their placeholders on mobile and multiselect were not showing selections properly.
+* Fix - issues when using CSS variable colors from block editor themes.
+* Fix - an issue with the new query modal throwing an error in the block editor.
+* Fix - issues with the Main Query option not being available for archives.
+* Fix - stop enqueuing uncessary JS in admin screens.
+
 = 3.0.6 =
 * New - New `dynamic` query integration location, replaces the dynamic toggle.
 * New - improvements to the integrations screen - install extensions with a single click!
+* New - Duplicate fields, queries & styles from the admin UI
 * Improvement - JavaScript APIs have been restructured and renamed.
 * Improvement - change the JS initialisation to improve compatibility.
 * Improvement - added ID column to admin tables - check the column view dropdown menu to enable it.

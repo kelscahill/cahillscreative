@@ -1484,28 +1484,6 @@ class Queries {
 			),
 		);
 		$integration_type_setting->add_option( $custom_integration_type_option );
-
-		// Add main query integration type option for archives.
-		$main_query_integration_type_option = array(
-			'value'     => 'main_query',
-			'label'     => __( 'Main query', 'search-filter-pro' ),
-			'dependsOn' => array(
-				'relation' => 'OR',
-				'rules'    => array(
-					array(
-						'option'  => 'integrationType',
-						'compare' => '=',
-						'value'   => 'archive',
-					),
-					array(
-						'option'  => 'integrationType',
-						'compare' => '=',
-						'value'   => 'search',
-					),
-				),
-			),
-		);
-		$integration_type_setting->add_option( $main_query_integration_type_option, array( 'position' => 'first' ) );
 	}
 	/**
 	 * Upgrade the sort order setting.
@@ -1519,8 +1497,6 @@ class Queries {
 		if ( ! $sort_order_setting ) {
 			return;
 		}
-
-		$setting_data = $sort_order_setting->get_data();
 
 		$custom_field_option = array(
 			'label' => __( 'Custom Field', 'search-filter' ),

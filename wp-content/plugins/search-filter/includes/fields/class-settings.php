@@ -163,7 +163,6 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 		return self::$extended_blocks;
 	}
 
-
 	/**
 	 * Build the style conditions based on the style support settings.
 	 *

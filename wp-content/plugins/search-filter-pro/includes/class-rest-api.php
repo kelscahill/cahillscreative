@@ -112,7 +112,7 @@ class Rest_API {
 
 		$where = '';
 		if ( $search_term !== '' ) {
-			$where = $wpdb->prepare( " WHERE meta_key LIKE '%s' ", '%' . $search_term . '%' );
+			$where = $wpdb->prepare( " WHERE meta_key LIKE '%s' ", $search_term . '%' );
 		}
 
 		$query = $wpdb->query(

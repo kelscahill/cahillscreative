@@ -28,9 +28,15 @@ class Activator {
 	 * @since    3.0.0
 	 */
 	public static function activate() {
+
 		\Search_Filter_Pro\Indexer\Cron::init();
 		\Search_Filter_Pro\Indexer\Query_Cache::init_cron();
 		do_action( 'search-filter-pro/core/activator/activate' );
+
+		// Check to see if S&F old version from .org is installed - bail if so.
+		if ( Dependencies::has_legacy_base_plugin() ) {
+			return;
+		}
 
 		// Install the free version of S&F from searchandfilter.com if
 		// it is not already installed, and if it is, activate it.
@@ -47,6 +53,10 @@ class Activator {
 		} elseif ( ! Dependencies::is_search_filter_enabled() ) {
 			// If it is installed, then activate it.
 			activate_plugin( $plugin_file );
+		}
+
+		if ( ! Dependencies::is_search_filter_enabled() ) {
+			return;
 		}
 	}
 

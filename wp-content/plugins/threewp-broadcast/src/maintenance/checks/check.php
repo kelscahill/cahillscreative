@@ -6,6 +6,7 @@ namespace threewp_broadcast\maintenance\checks;
 	@brief		A maintenance check.
 	@since		20131101
 **/
+#[\AllowDynamicProperties]
 class check
 {
 	/**

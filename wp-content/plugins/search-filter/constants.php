@@ -13,7 +13,7 @@ if ( ! defined( 'SEARCH_FILTER_SLUG' ) ) {
 }
 
 if ( ! defined( 'SEARCH_FILTER_VERSION' ) ) {
-	define( 'SEARCH_FILTER_VERSION', '3.0.6' );
+	define( 'SEARCH_FILTER_VERSION', '3.0.7' );
 }
 
 if ( ! defined( 'SEARCH_FILTER_URL' ) ) {
@@ -22,10 +22,6 @@ if ( ! defined( 'SEARCH_FILTER_URL' ) ) {
 
 if ( ! defined( 'SEARCH_FILTER_PATH' ) ) {
 	define( 'SEARCH_FILTER_PATH', plugin_dir_path( __FILE__ ) );
-}
-
-if ( ! defined( 'SEARCH_FILTER_DEBUG' ) ) {
-	define( 'SEARCH_FILTER_DEBUG', false );
 }
 
 if ( ! defined( 'SEARCH_FILTER_QUERY_DEBUG' ) ) {

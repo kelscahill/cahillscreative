@@ -47,16 +47,16 @@ class Features {
 	 */
 	public static function init_features() {
 		$setting = array(
-			'name'        => 'indexer',
-			'label'       => __( 'Indexer', 'search-filter-pro' ),
-			'description' => __( 'The indexer enables support for dynamic fields and options, advanced field types and improves query performance on the frontend.', 'search-filter' ),
-			'default'     => true,
-			// 'settingsGroup' => 'indexer',
-			'type'        => 'string',
-			'inputType'   => 'SettingToggle',
-			// 'link'        => 'https://searchandfilter.com/documentation/indexer/',
-			'icon'        => 'wordpress',
-			'iconColor'   => '#0073aa',
+			'name'          => 'indexer',
+			'label'         => __( 'Indexer', 'search-filter-pro' ),
+			'description'   => __( 'The indexer enables support for dynamic fields and options, advanced field types and improves query performance on the frontend.', 'search-filter' ),
+			'default'       => true,
+			'settingsGroup' => 'indexer',
+			'type'          => 'string',
+			'inputType'     => 'SettingToggle',
+			// 'link'          => 'https://searchandfilter.com/documentation/indexer/',
+			'icon'          => 'wordpress',
+			'iconColor'     => '#0073aa',
 		);
 
 		$setting_args = array(

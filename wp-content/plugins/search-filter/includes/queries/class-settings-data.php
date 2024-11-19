@@ -225,6 +225,25 @@ class Settings_Data {
 				'inputType'   => 'Select',
 				'options'     => array(
 					array(
+						'value'     => 'main_query',
+						'label'     => __( 'Main query', 'search-filter-pro' ),
+						'dependsOn' => array(
+							'relation' => 'OR',
+							'rules'    => array(
+								array(
+									'option'  => 'integrationType',
+									'compare' => '=',
+									'value'   => 'archive',
+								),
+								array(
+									'option'  => 'integrationType',
+									'compare' => '=',
+									'value'   => 'search',
+								),
+							),
+						),
+					),
+					array(
 						'value'     => 'query_block',
 						'label'     => __( 'Query Loop block', 'search-filter' ),
 						'dependsOn' => array(

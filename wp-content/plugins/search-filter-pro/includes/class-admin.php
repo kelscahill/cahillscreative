@@ -289,6 +289,41 @@ class Admin {
 	 *
 	 * @since 3.0.0
 	 */
+	public function search_filter_is_legacy_version() {
+
+		// Only show on the dashboard and plugins screen.
+		$current_screen = \get_current_screen();
+		$screen_name    = $current_screen->id;
+		if ( $screen_name !== 'dashboard' && $screen_name !== 'plugins' ) {
+			return;
+		}
+		?>
+		<div class="notice notice-error is-dismissible">
+			<p>
+				<?php
+					echo sprintf(
+						// Translators: 1: Search & Filter.
+						esc_html__( 'The %1$s base plugin needs to be updated.', 'search-filter-pro' ),
+						'<strong>' . esc_html__( 'Search & Filter', 'search-filter-pro' ) . '</strong>'
+					);
+				?>
+				
+			</p>
+			<p>
+				<a href="https://searchandfilter.com/version-3/" target="_blank">
+					<?php
+						echo esc_html__( 'Download it here.', 'search-filter-pro' );
+					?>
+				</a>
+			</p>
+		</div>
+		<?php
+	}
+	/**
+	 * Display a notice if the free version is outdated or missing or not activated.
+	 *
+	 * @since 3.0.0
+	 */
 	public function search_filter_missing_notice() {
 
 		// Only show on the dashboard and plugins screen.

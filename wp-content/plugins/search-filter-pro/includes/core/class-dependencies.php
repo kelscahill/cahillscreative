@@ -78,7 +78,10 @@ class Dependencies {
 	 * @return   boolean
 	 */
 	public static function is_plugin_installed( $plugin_path ) {
-		$plugins = get_plugins();
+		if ( ! function_exists( '\get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$plugins = \get_plugins();
 		return isset( $plugins[ $plugin_path ] );
 	}
 
@@ -89,9 +92,12 @@ class Dependencies {
 	 *
 	 * @return   string
 	 */
-	public static function wp_get_plugin_version() {
+	public static function get_base_plugin_version() {
+		if ( ! function_exists( '\get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
 		// Use get_plugins to get the plugin version (so we can get the version even if it's not activated).
-		$plugins     = get_plugins();
+		$plugins     = \get_plugins();
 		$plugin_path = 'search-filter/search-filter.php';
 		if ( ! isset( $plugins[ $plugin_path ] ) ) {
 			return false;
@@ -100,6 +106,16 @@ class Dependencies {
 		return $search_filter_version;
 	}
 
+	/**
+	 * Check if the base plugin is a legacy version.
+	 *
+	 * @since    3.0.0
+	 *
+	 * @return   boolean
+	 */
+	public static function has_legacy_base_plugin() {
+		return version_compare( self::get_base_plugin_version(), '2.0.0', '<' );
+	}
 	/**
 	 * Ensure we can't disable the free plugin, while the pro plugin is active.
 	 *

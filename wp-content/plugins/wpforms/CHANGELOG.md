@@ -1,6 +1,10 @@
-
 # Changelog
 All notable changes to this project will be documented in this file and formatted via [this recommendation](https://keepachangelog.com/).
+
+## [1.9.2.2] - 2024-11-18
+### Fixed
+- Fixed _load_textdomain_just_in_time notice with WordPress 6.7.
+- Some translations were empty with WordPress 6.5+.
 
 ## [1.9.2.1] - 2024-11-06
 ### Fixed
@@ -27,6 +31,7 @@ All notable changes to this project will be documented in this file and formatte
 - Updated Chart.js library to v4.4.4.
 - Smart tags are no longer processed in WordPress builders, such as Gutenberg, Elementor, Divi Builder, etc.
 - Spam entries flagged through the Country & Keyword filters are now stored.
+- Improved handling of duplicate stripe webhooks.
 
 ### Fixed
 - Cloned Repeater fields were not visible in form confirmations when Ajax form submission was disabled.

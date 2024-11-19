@@ -34,7 +34,7 @@ class Tasks_Meta_Table extends \Search_Filter\Database\Engine\Table {
 	 * @since 1.0.0
 	 * @var   string
 	 */
-	protected $db_version_key = 'search_filter_taskmeta_table_version';
+	protected $db_version_key = 'search_filter_pro_taskmeta_table_version';
 
 	/**
 	 * Optional description.

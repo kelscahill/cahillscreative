@@ -35,20 +35,25 @@ class Settings_Data {
 	public static function get() {
 
 		$settings_data = array(
-			/*
-			 array(
-				'name'      => 'indexMethod',
-				'label'     => __( 'Index method', 'search-filter-pro' ),
-				'help'      => __( '', 'search-filter-pro' ),
-				'notice'    => __( '', 'search-filter' ),
-				'default'   => 'wp_cron',
+			array(
+				'name'      => 'useBackgroundProcessing',
+				'label'     => __( 'Use background processing', 'search-filter-pro' ),
+				'help'      => __( 'If enabled, the indexer will run in the background. Otherwise, you will need to keep the dashboard open until the indexing process completes.', 'search-filter-pro' ),
+				'default'   => 'yes',
 				'type'      => 'string',
-				'inputType' => 'Select',
+				'inputType' => 'Toggle',
 				'options'   => array(
-
+					array(
+						'value' => 'yes',
+						'label' => __( 'Yes', 'search-filter-pro' ),
+					),
+					array(
+						'value' => 'no',
+						'label' => __( 'No', 'search-filter-pro' ),
+					),
 				),
-				// 'link'        => 'https://searchandfilter.com/documentation/using-the-block-editor/',
-			),*/
+			   // 'link'        => '',
+			),
 		);
 		return $settings_data;
 	}
