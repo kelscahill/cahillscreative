@@ -8,12 +8,27 @@
  */
 
 add_action('template_redirect', function () {
-  if (isset($_GET['_s']) && strpos($_GET['_s'], '-') !== false) {
+  // Check if the _s query parameter exists and has a hyphen or trailing slash
+  if (isset($_GET['_s']) && (strpos($_GET['_s'], '-') !== false || strpos($_GET['_s'], "'") !== false || substr($_GET['_s'], -1) === '/')) {
+    $search = $_GET['_s'];
+
+    // Remove trailing slash, if present
+    $search = rtrim($search, '/');
+
     // Replace hyphens with spaces
-    $search = str_replace('-', ' ', $_GET['_s']);
-    // Redirect to the URL with spaces encoded as %20
-    wp_redirect('/shop/?_s=' . rawurlencode($search), 301);
-    exit;
+    $search = str_replace('-', ' ', $search);
+
+    // Encode apostrophes as %27
+    $search = str_replace("'", '%27', $search);
+
+    // Build the corrected query string
+    $corrected_url = '/shop/?_s=' . rawurlencode($search);
+
+    // Check if the current URL already matches the corrected URL to avoid loops
+    if ($_SERVER['REQUEST_URI'] !== $corrected_url) {
+      wp_redirect($corrected_url, 301);
+      exit;
+    }
   }
 });
 
