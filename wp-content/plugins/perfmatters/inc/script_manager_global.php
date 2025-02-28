@@ -1,5 +1,6 @@
 <?php
 echo '<input type="hidden" name="tab" value="global" />';
+wp_nonce_field('pmsm_global', 'pmsm_global_nonce');
 
 //title bar
 echo '<div class="perfmatters-script-manager-title-bar">';

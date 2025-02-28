@@ -3,7 +3,7 @@
 Plugin Name: Perfmatters MU
 Plugin URI: https://perfmatters.io/
 Description: Perfmatters is a lightweight performance plugin developed to speed up your WordPress site.
-Version: 2.0.2
+Version: 2.1.8
 Author: forgemedia
 Author URI: https://forgemedia.io/
 License: GPLv2 or later
@@ -22,12 +22,12 @@ function perfmatters_mu_disable_plugins($plugins) {
     }
 
     //only filter GET requests
-    if(!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'GET') {
+    if((!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'GET') && !isset($_GET['perfmatters'])) {
         return $plugins;
     }
 
     //dont filter if its a rest or ajax request
-    if((defined('REST_REQUEST') && REST_REQUEST) || (function_exists('wp_is_json_request') && wp_is_json_request()) || wp_doing_ajax() || wp_doing_cron()) {
+    if((defined('REST_REQUEST') && REST_REQUEST) || (defined('WP_CLI') && WP_CLI) || (function_exists('wp_is_json_request') && wp_is_json_request()) || wp_doing_ajax() || wp_doing_cron()) {
         return $plugins;
     }
 
@@ -81,6 +81,7 @@ function perfmatters_mu_disable_plugins($plugins) {
 
     //testing mode check
     if(!empty($pmsm_settings['testing_mode'])) {
+        wp_cookie_constants();
         require_once(wp_normalize_path(ABSPATH) . 'wp-includes/pluggable.php');
         if(!function_exists('wp_get_current_user') || !current_user_can('manage_options')) {
             return $plugins;
@@ -94,11 +95,10 @@ function perfmatters_mu_disable_plugins($plugins) {
 
     //make sure mu hasn't run already
     global $mu_run_flag;
+    global $mu_plugins;
     if($mu_run_flag) {
-        return $plugins;
+        return $mu_plugins;
     }
-
-    $mu_run_flag = true;
 
     //get script manager configuration
     $pmsm = get_option('perfmatters_script_manager');
@@ -159,6 +159,7 @@ function perfmatters_mu_disable_plugins($plugins) {
 
                 //remove plugin from list
                 $m_array = preg_grep('/^' . $handle . '.*/', $plugins);
+                $single_array = array();
                 if(!empty($m_array) && is_array($m_array)) {
                     if(count($m_array) > 1) {
                         $single_array = preg_grep('/' . $handle . '\.php/', $m_array);
@@ -174,6 +175,9 @@ function perfmatters_mu_disable_plugins($plugins) {
         }
     }
 
+    $mu_run_flag = true;
+    $mu_plugins = $plugins;
+
     return $plugins;
 }
 
@@ -187,9 +191,7 @@ add_action('plugins_loaded', 'perfmatters_mu_remove_filters', 1);
 function perfmatters_mu_get_current_ID() {
 
     //load necessary parts for url_to_postid
-    if(!defined('LOGGED_IN_COOKIE')) {
-        wp_cookie_constants();
-    }
+    wp_cookie_constants();
     require_once(wp_normalize_path(ABSPATH) . 'wp-includes/pluggable.php');
     global $wp_rewrite;
     global $wp;
@@ -402,7 +404,7 @@ function perfmatters_url_to_postid($url) {
                 }
  
                 $post_status_obj = get_post_status_object( $page->post_status );
-                if ( ! $post_status_obj->public && ! $post_status_obj->protected
+                if (is_object($post_status_obj) && ! $post_status_obj->public && ! $post_status_obj->protected
                     && ! $post_status_obj->private && $post_status_obj->exclude_from_search ) {
                     continue;
                 }
@@ -463,9 +465,11 @@ function perfmatters_url_to_postid($url) {
             *************************************************************************/
 
             // Taken from class-wp.php
-            foreach ( $GLOBALS['wp_post_types'] as $post_type => $t ) {
-                if ( $t->query_var ) {
-                    $post_type_query_vars[ $t->query_var ] = $post_type;
+            if(!empty($GLOBALS['wp_post_types'])) {
+                foreach ( $GLOBALS['wp_post_types'] as $post_type => $t ) {
+                    if ( $t->query_var ) {
+                        $post_type_query_vars[ $t->query_var ] = $post_type;
+                    }
                 }
             }
 
@@ -533,9 +537,9 @@ function perfmatters_url_to_postid($url) {
                 * custom query_var set ie query_var => 'acme_books'.
                 *************************************************************************/
 
-                if(isset($post_types)){
+                if(isset($post_types)) {
 
-                    foreach ($rewrite as $key => $value) {
+                    foreach($rewrite as $key => $value) {
 
                         if(!is_string($value)) {
                             continue;
@@ -543,27 +547,30 @@ function perfmatters_url_to_postid($url) {
 
                         if(preg_match('/\?([^&]+)=([^&]+)/i', $value, $matched)) {
 
-                            if(isset($matched[1]) && !in_array($matched[1], $post_types)) {
+                            if(isset($matched[1]) && !in_array($matched[1], $post_types) && array_key_exists($matched[1], $query_vars)) {
 
-                                if(array_key_exists($matched[1], $query_vars)) {
-                                    $arg_name = $query_vars[$matched[1]];
+                                $post_types[] = $matched[1];
+
+                                $args = array(
+                                    'name'      => $query_vars[$matched[1]],
+                                    'post_type' => $matched[1],
+                                    'showposts' => 1,
+                                );
+
+                                if($post = get_posts($args)) {
+                                    return $post[0]->ID;
                                 }
-                                elseif(!empty($query_vars['name'])) {
-                                    $arg_name = $query_vars['name'];
-                                }
+                            }
+                            elseif(isset($matched[1]) && in_array($matched[1], $post_types) && !empty($query_vars['name'])) {
 
-                                if(!empty($arg_name)) {
-                                    $post_types[] = $matched[1];
+                                $args = array(
+                                    'name'      => $query_vars['name'],
+                                    'post_type' => $matched[1],
+                                    'showposts' => 1,
+                                );
 
-                                    $args = array(
-                                            'name'      => $arg_name,
-                                            'post_type' => $matched[1],
-                                            'showposts' => 1,
-                                        );
-
-                                    if ( $post = get_posts( $args ) ) {
-                                        return $post[0]->ID;
-                                    }
+                                if($post = get_posts($args)) {
+                                    return $post[0]->ID;
                                 }
                             }
                         }

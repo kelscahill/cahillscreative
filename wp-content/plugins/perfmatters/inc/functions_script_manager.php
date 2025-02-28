@@ -129,6 +129,7 @@ function perfmatters_script_manager_scripts() {
 	$pmsm = array(
 		'currentID' => perfmatters_get_current_ID(),
 		'ajaxURL'   => admin_url('admin-ajax.php'),
+		'nonce'     => wp_create_nonce('pmsm_nonce'),
 		'messages'  => array(
 			'buttonSave'     => __('Save', 'perfmatters'),
 			'buttonSaving'   => __('Saving', 'perfmatters'),
@@ -197,7 +198,7 @@ function perfmatters_script_manager_load_master_array() {
 
 			foreach($plug_org_scripts as $key => $val) {
 
-				$src = $data['scripts']->registered[$val]->src;
+				$src = $data['scripts']->registered[$val]->src ?? '';
 
 				if(strpos($src, "/wp-content/plugins/") !== false) {
 					$explode = explode("/wp-content/plugins/", $src);
@@ -265,6 +266,31 @@ function perfmatters_script_manager_load_master_array() {
 	//don't show perfmatters in the list
 	if(isset($master_array['plugins']['perfmatters'])) {
 		unset($master_array['plugins']['perfmatters']);
+	}
+
+	//sorting function
+	function perfmatters_compare_array_items(&$items, $key) {
+		uasort($items, function($a, $b) use ($key) {
+			return strcmp($a[$key], $b[$key]);
+		});
+	}
+
+	//sort plugins + themes by name
+	perfmatters_compare_array_items($master_array['plugins'], 'name');
+	perfmatters_compare_array_items($master_array['themes'], 'name');
+
+	//sort assets by handle in each category
+	foreach($master_array as $category => $data) {
+		if($category !== 'misc') {
+			foreach($data as $key => $details) {
+				if(!empty($details['assets'])) {
+					perfmatters_compare_array_items($master_array[$category][$key]['assets'], 'handle');
+				}
+			}
+		}
+		elseif(!empty($details['assets'])) {
+			perfmatters_compare_array_items($master_array[$category]['assets'], 'handle');
+		}
 	}
 
 	$master_array = array('resources' => $master_array, 'requires' => $requires);
@@ -364,7 +390,7 @@ function perfmatters_script_manager_print_script($category, $group, $details) {
 	//Check for disables already set
 	if(!empty($perfmatters_disables)) {
 		foreach($perfmatters_disables as $key => $val) {
-			if(strpos($data["scripts"]->registered[$details['handle']]->src, $val) !== false) {
+			if(!empty($data["scripts"]->registered[$details['handle']]->src) && strpos($data["scripts"]->registered[$details['handle']]->src, $val) !== false) {
 				return;
 			}
 		}
@@ -505,7 +531,7 @@ function perfmatters_script_manager_print_status($type, $handle) {
 		echo "</select>";
 	}
 	else {
-		echo "<div class='pmsm-checkbox-container'>";
+		echo "<div class='pmsm-checkbox-container' style='display: flex;'>";
 			echo "<input type='hidden' name='pmsm_status[" . $type . "][" . $handle . "]' value='enabled' />";
 	        echo "<label for='pmsm_status_" . $type . "_" . $handle . "' class='perfmatters-script-manager-switch'>";
 	        	echo "<input type='checkbox' id='pmsm_status_" . $type . "_" . $handle . "' name='pmsm_status[" . $type . "][" . $handle . "]' value='disabled' " . ($statusDisabled ? "checked" : "") . " class='perfmatters-status-toggle'>";
@@ -859,6 +885,8 @@ function perfmatters_script_manager_print_enable($type, $handle) {
 
 //script manager update funciton triggered by ajax call
 function perfmatters_script_manager_update() {
+
+	Perfmatters\Ajax::security_check('pmsm_nonce');
 
 	if(!empty($_POST['pmsm_data'])) {
 
@@ -1223,7 +1251,7 @@ function pmsm_settings_update_process($old_value, $value) {
 
 	//trigger success popup message
 	add_action('shutdown', function() {
-		echo "<script>pmsmPopupMessage('" . __('Settings saved successfully!', 'perfmatters') . "');</script>";    
+		echo "<script>pmsmPopupMessage({text:'" . __('Settings saved successfully!', 'perfmatters') . "',color:'green'});</script>";    
 	}, 9999);
 
 	//mu mode was enabled
@@ -1264,7 +1292,7 @@ function pmsm_settings_update_process($old_value, $value) {
 //dequeue scripts based on script manager configuration
 function perfmatters_dequeue_scripts($src, $handle) {
 	
-	if(is_admin() || isset($_GET['perfmatters']) || isset($_GET['perfmattersoff']) || perfmatters_is_page_builder()) {
+	if(is_admin() || isset($_GET['perfmatters']) || isset($_GET['perfmattersoff']) || perfmatters_is_page_builder() || empty($src)) {
 		return $src;
 	}
 

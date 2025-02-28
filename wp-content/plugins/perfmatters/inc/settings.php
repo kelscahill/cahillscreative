@@ -11,7 +11,7 @@ function perfmatters_settings() {
 
     /* options primary section
     /**********************************************************/
-    add_settings_section('perfmatters_options', __('Options', 'perfmatters'), 'perfmatters_options_callback', 'perfmatters_options');
+    add_settings_section('perfmatters_options', __('General', 'perfmatters'), '__return_false', 'perfmatters_options');
 
     //disable emojis
     add_settings_field(
@@ -489,7 +489,7 @@ function perfmatters_settings() {
             'perfmatters_woocommerce', 
             array(
                 'id' => 'disable_woocommerce_cart_fragmentation',
-                'tooltip' => __('Completely disables WooCommerce cart fragmentation script.', 'perfmatters')
+                'tooltip' => __('Disables WooCommerce cart fragmentation script when there are no items in the cart.', 'perfmatters')
             )
         );
 
@@ -568,7 +568,7 @@ function perfmatters_settings() {
             'section' => 'assets',
             'confirmation' => __('Many plugins and themes require jQuery. We recommend either testing jQuery deferral separately or leaving this option turned off.', 'perfmatters'),
             'tooltip' => __('Allow jQuery core to be deferred. We recommend testing this separately or leaving it off.', 'perfmatters'),
-            'class' => 'assets-defer_js' . (empty($perfmatters_options['assets']['defer_js']) ? ' hidden' : '')
+            'class' => 'assets-defer_js' . (empty($perfmatters_options['assets']['defer_js']) ? ' hidden' : '') . ' pm-advanced-option'
         )
     );
 
@@ -643,6 +643,21 @@ function perfmatters_settings() {
         )
     );
 
+    //delay js quick exclusions
+    add_settings_field(
+        'delay_js_quick_exclusions', 
+        perfmatters_title(__('Quick Exclusions', 'perfmatters'), 'delay_js_quick_exclusions', 'https://perfmatters.io/docs/delay-javascript/#quick-exclusions'), 
+        'perfmatters_print_quick_exclusions', 
+        'perfmatters_options', 
+        'assets_js', 
+        array(
+            'id' => 'delay_js_quick_exclusions',
+            'section' => 'assets',
+            'tooltip' => __('Exclude scripts for popular plugins and themes based on our predefined lists of common exclusions.', 'perfmatters'),
+            'class' => 'assets-delay_js assets-delay_js_behavior perfmatters-select-control-all' . (empty($perfmatters_options['assets']['delay_js_behavior'])  || empty($perfmatters_options['assets']['delay_js']) ? ' hidden' : '') . ' delay_js_quick_exclusions'
+        )
+    );
+
     //delay js exclusions
     add_settings_field(
         'delay_js_exclusions', 
@@ -676,38 +691,35 @@ function perfmatters_settings() {
         )
     );
 
-    if(!empty($perfmatters_tools['show_advanced'])) {
+    //disable click delay
+    add_settings_field(
+        'disable_click_delay', 
+        perfmatters_title(__('Disable Click Delay', 'perfmatters'), 'disable_click_delay', 'https://perfmatters.io/docs/delay-javascript/#disable-click-delay'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'assets_js', 
+        array(
+            'id' => 'disable_click_delay',
+            'section' => 'assets',
+            'tooltip' => __('Prevents the first click from being delayed until JavaScript has finished loading. This can be helpful if you are excluding scripts for interactive elements manually.', 'perfmatters'),
+            'class' => 'assets-delay_js' . (empty($perfmatters_options['assets']['delay_js']) ? ' hidden' : ''). ' pm-advanced-option'
+        )
+    );
 
-        //disable click delay
-        add_settings_field(
-            'disable_click_delay', 
-            perfmatters_title(__('Disable Click Delay', 'perfmatters'), 'disable_click_delay', 'https://perfmatters.io/docs/delay-javascript/#disable-click-delay'), 
-            'perfmatters_print_input', 
-            'perfmatters_options', 
-            'assets_js', 
-            array(
-                'id' => 'disable_click_delay',
-                'section' => 'assets',
-                'tooltip' => __('Prevents the first click from being delayed until JavaScript has finished loading. This can be helpful if you are excluding scripts for interactive elements manually.', 'perfmatters'),
-                'class' => 'assets-delay_js' . (empty($perfmatters_options['assets']['delay_js']) ? ' hidden' : '')
-            )
-        );
-
-        //fastclick
-        add_settings_field(
-            'fastclick', 
-            perfmatters_title(__('Enable FastClick', 'perfmatters'), 'fastclick', 'https://perfmatters.io/docs/delay-javascript/#fastclick'), 
-            'perfmatters_print_input', 
-            'perfmatters_options', 
-            'assets_js', 
-            array(
-                'id' => 'fastclick',
-                'section' => 'assets',
-                'tooltip' => __('Load the FastClick library locally to fix the double-click issue on iOS.', 'perfmatters'),
-                'class' => 'assets-delay_js' . (empty($perfmatters_options['assets']['delay_js']) ? ' hidden' : '')
-            )
-        );
-    }
+    //fastclick
+    add_settings_field(
+        'fastclick', 
+        perfmatters_title(__('Enable FastClick', 'perfmatters'), 'fastclick', 'https://perfmatters.io/docs/delay-javascript/#fastclick'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'assets_js', 
+        array(
+            'id' => 'fastclick',
+            'section' => 'assets',
+            'tooltip' => __('Load the FastClick library locally to fix the double-click issue on iOS.', 'perfmatters'),
+            'class' => 'assets-delay_js' . (empty($perfmatters_options['assets']['delay_js']) ? ' hidden' : ''). ' pm-advanced-option'
+        )
+    );
 
     //assets css section
     add_settings_section('assets_css', __('CSS', 'perfmatters'), '__return_false', 'perfmatters_options');
@@ -802,25 +814,22 @@ function perfmatters_settings() {
         )
     );
 
-    if(!empty($perfmatters_tools['show_advanced'])) {
-
-        //cdn url
-        add_settings_field(
-            'rucss_cdn_url', 
-            perfmatters_title(__('CDN URL', 'perfmatters'), 'rucss_cdn_url', 'https://perfmatters.io/docs/remove-unused-css/#cdn-url'), 
-            'perfmatters_print_input', 
-            'perfmatters_options', 
-            'assets_css', 
-            array(
-                'id' => 'rucss_cdn_url',
-                'section' => 'assets',
-                'input' => 'text',
-                'tooltip' => __('Provide your CDN URL if you are using a CDN rewrite outside of Perfmatters.', 'perfmatters'),
-                'placeholder' => 'https://cdn.example.com',
-                'class' => 'assets-remove_unused_css' . (empty($perfmatters_options['assets']['remove_unused_css']) ? ' hidden' : '')
-            )
-        );
-    }
+    //cdn url
+    add_settings_field(
+        'rucss_cdn_url', 
+        perfmatters_title(__('CDN URL', 'perfmatters'), 'rucss_cdn_url', 'https://perfmatters.io/docs/remove-unused-css/#cdn-url'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'assets_css', 
+        array(
+            'id' => 'rucss_cdn_url',
+            'section' => 'assets',
+            'input' => 'text',
+            'tooltip' => __('Provide your CDN URL if you are using a CDN rewrite outside of Perfmatters.', 'perfmatters'),
+            'placeholder' => 'https://cdn.example.com',
+            'class' => 'assets-remove_unused_css' . (empty($perfmatters_options['assets']['remove_unused_css']) ? ' hidden' : ''). ' pm-advanced-option'
+        )
+    );
 
     //clear used css
     add_settings_field(
@@ -833,6 +842,7 @@ function perfmatters_settings() {
             'section' => 'assets',
             'id' => 'clear_used_css',
             'input' => 'button',
+            'action' => 'clear_used_css',
             'title' => __('Clear Used CSS', 'perfmatters'),
             'class' => 'assets-remove_unused_css' . (empty($perfmatters_options['assets']['remove_unused_css']) ? ' hidden' : ''),
             'tooltip' => __('Remove all existing unused CSS files that have been generated.', 'perfmatters')
@@ -911,24 +921,10 @@ function perfmatters_settings() {
         )
     );
 
-    //preload
-    add_settings_field(
-        'preload', 
-        perfmatters_title(__('Preload', 'perfmatters'), 'preload', 'https://perfmatters.io/docs/preload/'), 
-        'perfmatters_print_preload', 
-        'perfmatters_options', 
-        'preload', 
-        array(
-            'id' => 'preload',
-            'section' => 'preload',
-            'tooltip' => __('Preload allows you to specify resources (such as fonts or CSS) needed right away during a page load. This helps fix render-blocking resource warnings. Format: https://example.com/font.woff2', 'perfmatters')
-        )
-    );
-
     //preload critical images
     add_settings_field(
         'critical_images', 
-        perfmatters_title(__('Preload Critical Images', 'perfmatters') . '<span class="perfmatters-beta">BETA</span>', 'critical_images', 'https://perfmatters.io/docs/preload/#critical-images'), 
+        perfmatters_title(__('Preload Critical Images', 'perfmatters'), 'critical_images', 'https://perfmatters.io/docs/preload/#critical-images'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'preload', 
@@ -944,7 +940,35 @@ function perfmatters_settings() {
                 '4' => '4',
                 '5' => '5'
             ),
-            'tooltip' => __('Automatically preload leading images to help decrease Largest Contentful Paint (LCP).', 'perfmatters')
+            'tooltip' => __('Automatically preload leading images to help improve Largest Contentful Paint (LCP).', 'perfmatters')
+        )
+    );
+
+    //preload
+    add_settings_field(
+        'preload', 
+        perfmatters_title(__('Preload', 'perfmatters'), 'preload', 'https://perfmatters.io/docs/preload/'), 
+        'perfmatters_print_input_rows', 
+        'perfmatters_options', 
+        'preload', 
+        array(
+            'id' => 'preload',
+            'section' => 'preload',
+            'tooltip' => __('Preload allows you to specify resources (such as fonts or CSS) needed right away during a page load. This helps fix render-blocking resource warnings. Format: https://example.com/font.woff2', 'perfmatters')
+        )
+    );
+
+    //fetch priority
+    add_settings_field(
+        'fetch_priority', 
+        perfmatters_title(__('Fetch Priority', 'perfmatters'), 'fetch_priority', 'https://perfmatters.io/docs/fetch-priority/'), 
+        'perfmatters_print_input_rows', 
+        'perfmatters_options', 
+        'preload', 
+        array(
+            'id' => 'fetch_priority',
+            'section' => 'preload',
+            'tooltip' => __('Add the fetchpriority HTML attribute to a resource to proritize it higher or lower. This can help improve Largest Contentful Paint (LCP).', 'perfmatters')
         )
     );
 
@@ -952,7 +976,7 @@ function perfmatters_settings() {
     add_settings_field(
         'preconnect', 
         perfmatters_title(__('Preconnect', 'perfmatters'), 'preconnect', 'https://perfmatters.io/docs/preconnect/'), 
-        'perfmatters_print_preconnect', 
+        'perfmatters_print_input_rows', 
         'perfmatters_options', 
         'preload', 
         array(
@@ -1069,6 +1093,24 @@ function perfmatters_settings() {
         )
     );
 
+    //lazy load parent exclusions
+    add_settings_field(
+        'lazy_loading_parent_exclusions', 
+        perfmatters_title(__('Exclude by Parent Selector', 'perfmatters'), 'lazy_loading_parent_exclusions', 'https://perfmatters.io/docs/lazy-load-wordpress/#exclude-parent-selector'),
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'lazyload', 
+        array(
+            'section' => 'lazyload',
+            'id' => 'lazy_loading_parent_exclusions',
+            'input' => 'textarea',
+            'textareatype' => 'oneperline',
+            'placeholder' => 'example-div-class',
+            'tooltip' => __('Exclude specific images from lazy loading by adding any unique portion of an attribute string (class="example") from a parent container. Format: one per line', 'perfmatters'),
+            'class' => 'pm-advanced-option'
+        )
+    );
+
     //threshold
     add_settings_field(
         'threshold', 
@@ -1165,18 +1207,18 @@ function perfmatters_settings() {
     /**********************************************************/
     add_settings_section('perfmatters_fonts', __('Fonts', 'perfmatters'), '__return_false', 'perfmatters_options');
 
-    //disable google fonts
+    //local google fonts
     add_settings_field(
-        'disable_google_fonts', 
-        perfmatters_title(__('Disable Google Fonts', 'perfmatters'), 'disable_google_fonts', 'https://perfmatters.io/docs/disable-google-fonts/'), 
+        'local_google_fonts', 
+        perfmatters_title(__('Local Google Fonts', 'perfmatters'), 'local_google_fonts', 'https://perfmatters.io/docs/host-google-fonts-locally/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_fonts', 
         array(
             'section' => 'fonts',
-            'id' => 'disable_google_fonts',
-            'class' => 'perfmatters-input-controller',
-            'tooltip' => __('Removes any instances of Google Fonts being loaded across your entire site.', 'perfmatters')
+            'id' => 'local_google_fonts',
+            'class' => 'perfmatters-input-controller fonts-disable_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) ? ' hidden' : ''),
+            'tooltip' => __('Host Google Font files locally on your server or CDN.', 'perfmatters')
         )
     );
 
@@ -1195,21 +1237,6 @@ function perfmatters_settings() {
         )
     );
 
-    //local google fonts
-    add_settings_field(
-        'local_google_fonts', 
-        perfmatters_title(__('Local Google Fonts', 'perfmatters'), 'local_google_fonts', 'https://perfmatters.io/docs/host-google-fonts-locally/'), 
-        'perfmatters_print_input', 
-        'perfmatters_options', 
-        'perfmatters_fonts', 
-        array(
-            'section' => 'fonts',
-            'id' => 'local_google_fonts',
-            'class' => 'fonts-disable_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) ? ' hidden' : ''),
-            'tooltip' => __('Host Google Font files locally on your server or CDN.', 'perfmatters')
-        )
-    );
-
     //cdn url
     add_settings_field(
         'cdn_url', 
@@ -1221,7 +1248,7 @@ function perfmatters_settings() {
             'section' => 'fonts',
             'id' => 'cdn_url',
             'input' => 'text',
-            'class' => 'fonts-disable_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) ? ' hidden' : ''),
+            'class' => 'fonts-disable_google_fonts fonts-local_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) || empty($perfmatters_options['fonts']['local_google_fonts']) ? ' hidden' : ''),
             'placeholder' => 'https://cdn.example.com',
             'tooltip' => __('Use your CDN URL when referencing Google Font files inside a parent stylesheet. Example: https://cdn.example.com', 'perfmatters')
         )
@@ -1238,9 +1265,40 @@ function perfmatters_settings() {
             'section' => 'fonts',
             'id' => 'clear_fonts',
             'input' => 'button',
+            'action' => 'clear_local_fonts',
             'title' => __('Clear Local Fonts', 'perfmatters'),
-            'class' => 'fonts-disable_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) ? ' hidden' : ''),
+            'class' => 'fonts-disable_google_fonts fonts-local_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) || empty($perfmatters_options['fonts']['local_google_fonts']) ? ' hidden' : ''),
             'tooltip' => __('Remove all existing local Google Font files and stylesheets.', 'perfmatters')
+        )
+    );
+
+    //async
+    add_settings_field(
+        'async', 
+        perfmatters_title(__('Load Asynchronously', 'perfmatters'), 'async', 'https://perfmatters.io/docs/host-google-fonts-locally/#async'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'perfmatters_fonts', 
+        array(
+            'section' => 'fonts',
+            'id' => 'async',
+            'class' => 'fonts-disable_google_fonts fonts-local_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) || empty($perfmatters_options['fonts']['local_google_fonts']) ? ' hidden' : '') . ' pm-advanced-option',
+            'tooltip' => __('Load local font stylesheets asynchronously. Preloading individual font files is recommended when this option is enabled.', 'perfmatters')
+        )
+    );
+
+    //disable google fonts
+    add_settings_field(
+        'disable_google_fonts', 
+        perfmatters_title(__('Disable Google Fonts', 'perfmatters'), 'disable_google_fonts', 'https://perfmatters.io/docs/disable-google-fonts/'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'perfmatters_fonts', 
+        array(
+            'section' => 'fonts',
+            'id' => 'disable_google_fonts',
+            'class' => 'perfmatters-input-controller',
+            'tooltip' => __('Removes any instances of Google Fonts being loaded across your entire site.', 'perfmatters')
         )
     );
 
@@ -1378,7 +1436,8 @@ function perfmatters_settings() {
                 'gtagv4' => 'gtag.js v4',
                 'gtag' => 'gtag.js',
                 'minimal' => __('Minimal', 'perfmatters'),
-                'minimal_inline' => __('Minimal Inline', 'perfmatters')
+                'minimal_inline' => __('Minimal Inline', 'perfmatters'),
+                'minimalv4' => __('Minimal v4', 'perfmatters')
             ),
             'class' => 'perfmatters-input-controller',
             'tooltip' => __('Choose which script method you would like to use.', 'perfmatters')
@@ -1410,7 +1469,7 @@ function perfmatters_settings() {
         array(
             'section' => 'analytics',
             'id' => 'anonymize_ip',
-            'class' => 'analytics-script_type perfmatters-select-control-gtagv4 perfmatters-control-reverse' . (!empty($perfmatters_options['analytics']['script_type']) && $perfmatters_options['analytics']['script_type'] == 'gtagv4' ? ' hidden' : ''),
+            'class' => 'analytics-script_type perfmatters-select-control-gtagv4 perfmatters-select-control-minimalv4 perfmatters-control-reverse' . (!empty($perfmatters_options['analytics']['script_type']) && ($perfmatters_options['analytics']['script_type'] == 'gtagv4' || $perfmatters_options['analytics']['script_type'] == 'minimalv4') ? ' hidden' : ''),
             'tooltip' => __('Shorten visitor IP to comply with privacy restrictions in some countries.', 'perfmatters')
         )
     );
@@ -1487,7 +1546,7 @@ function perfmatters_settings() {
         array(
             'section' => 'analytics',
             'id' => 'enable_amp',
-            'class' => 'analytics-script_type perfmatters-select-control-gtagv4 perfmatters-control-reverse' . (!empty($perfmatters_options['analytics']['script_type']) && $perfmatters_options['analytics']['script_type'] == 'gtagv4' ? ' hidden' : ''),
+            'class' => 'analytics-script_type perfmatters-select-control-gtagv4 perfmatters-select-control-minimalv4 perfmatters-control-reverse' . (!empty($perfmatters_options['analytics']['script_type']) && ($perfmatters_options['analytics']['script_type'] == 'gtagv4' || $perfmatters_options['analytics']['script_type'] == 'minimalv4') ? ' hidden' : ''),
             'tooltip' => __('Enable support for analytics tracking on AMP sites. This is not a local script, but a native AMP script.', 'perfmatters')
         )
     );
@@ -1526,7 +1585,7 @@ function perfmatters_settings() {
     register_setting('perfmatters_options', 'perfmatters_options', 'perfmatters_sanitize_options');
 
     //tools plugin section
-    add_settings_section('plugin', __('Plugin', 'perfmatters'), '__return_false', 'perfmatters_tools');
+    add_settings_section('plugin', __('Tools', 'perfmatters'), '__return_false', 'perfmatters_tools');
 
     if(!is_multisite()) {
 
@@ -1600,6 +1659,7 @@ function perfmatters_settings() {
         array(
             'id'      => 'restore_defaults',
             'input'   => 'button',
+            'action'  => 'restore_defaults',
             'title'   => __('Restore Default Options', 'perfmatters'),
             'confirmation' => __('Are you sure? This will remove all existing plugin options and restore them to their default states.', 'perfmatters'),
             'option'  => 'perfmatters_tools',
@@ -1634,6 +1694,7 @@ function perfmatters_settings() {
         array(
             'id' => 'export_settings',
             'input' => 'button',
+            'action' => 'export_settings',
             'title' => __('Export Plugin Settings', 'perfmatters'),
             'option' => 'perfmatters_tools',
             'tooltip' => __('Export your Perfmatters settings for this site as a .json file. This lets you easily import the configuration into another site.', 'perfmatters')
@@ -1654,6 +1715,24 @@ function perfmatters_settings() {
 
     //database section
     add_settings_section('database', __('Database', 'perfmatters'), '__return_false', 'perfmatters_tools');
+
+    //optimize database
+    add_settings_field(
+        'scan_database', 
+        perfmatters_title(__('Scan Database', 'perfmatters'), 'scan_database', '...'), 
+        'perfmatters_print_input',
+        'perfmatters_tools', 
+        'database', 
+        array(
+            'id' => 'scan_database',
+            'input' => 'button',
+            'action' => 'scan_database',
+            'title' => __('Scan Now', 'perfmatters'),
+            'option' => 'perfmatters_tools',
+            'section' => 'database',
+            'tooltip' => __('...', 'perfmatters')
+        )
+    );
 
     //post revisions
     add_settings_field(
@@ -1785,6 +1864,7 @@ function perfmatters_settings() {
         array(
             'id' => 'optimize_database',
             'input' => 'button',
+            'action' => 'optimize_database',
             'title' => __('Optimize Now', 'perfmatters'),
             'option' => 'perfmatters_tools',
             'section' => 'database',
@@ -1887,11 +1967,11 @@ function perfmatters_network_defaults(&$defaults, $option) {
 }
 
 //print settings section
-function perfmatters_settings_section($page, $section) {
+function perfmatters_settings_section($page, $section, $dashicon = '', $class = '') {
     global $wp_settings_sections;
     if(!empty($wp_settings_sections[$page][$section])) {
         echo '<div class="perfmatters-settings-section">';
-            echo '<h2>' . __($wp_settings_sections[$page][$section]['title'], 'perfmatters') . '</h2>';
+            echo '<h2>' . ($dashicon ? '<span class="dashicons ' . $dashicon . '"></span>' : '') . __($wp_settings_sections[$page][$section]['title'], 'perfmatters') . '</h2>';
             echo '<table class="form-table">';
                 echo '<tbody>';
                     do_settings_fields($page, $section);
@@ -1954,13 +2034,7 @@ function perfmatters_print_input($args) {
 
     //button
     elseif(!empty($args['input']) && $args['input'] == 'button') {
-        echo "<button id='" . $selection_id . "' name='" . $option . "[" . $args['id'] . "]' value='1' class='button button-secondary'";
-            if(!empty($args['confirmation'])) {
-                echo " onClick=\"return confirm('" . $args['confirmation'] . "');\"";
-            }
-        echo ">";
-            echo $args['title'];
-        echo "</button>";
+        perfmatters_action_button($args['action'] ?? '', $args['title'], 'secondary', $args['confirmation'] ?? '');
     }
 
     //text area
@@ -1996,10 +2070,11 @@ function perfmatters_print_input($args) {
                echo "<div class='perfmatters-slider'></div>";
            echo "</label>";
         }
-    }
 
-    //print option data
-    perfmatters_print_option_data($option, $args['id']);
+        if(!empty($args['section']) && $args['section'] == 'database') {
+            echo '<span class="perfmatters-option-data"></span>';
+        }
+    }
 
     //tooltip
 	if(!empty($args['tooltip'])) {
@@ -2007,36 +2082,95 @@ function perfmatters_print_input($args) {
 	}
 }
 
-//print preload
-function perfmatters_print_preload($args) {
-    $perfmatters_options = get_option('perfmatters_options');
- 
-    echo "<div class='perfmatters-input-row-wrapper'>";
-        echo "<div class='perfmatters-input-row-container'>";
+//print simple exclusions
+function perfmatters_print_quick_exclusions($args) {
 
-            $rowCount = 0;
+    $options = get_option('perfmatters_options');
 
-            if(!empty($perfmatters_options['preload']['preload']) && is_array($perfmatters_options['preload']['preload'])) {
+    //master exclusions array
+    $master = Perfmatters\JS::get_quick_exclusions_master();
 
-                foreach($perfmatters_options['preload']['preload'] as $line) {
+    //local exclusions
+    $exclusions = array(
+        'plugins' => array(
+            'title' => __('Plugins', 'perfmatters'),
+            'items' => array(),
+            'dashicon' => 'admin-plugins'
+        ),
+        'themes' => array(
+            'title' => __('Themes', 'perfmatters'),
+            'items' => array(),
+            'dashicon' => 'admin-appearance'
+        )
+    );
 
-                    perfmatters_print_preload_row($rowCount, $line);
+    //add any active plugin sets to list
+    $active_plugins = (array) get_option('active_plugins', array());
 
-                    $rowCount++;
+    if(is_multisite()) {
+        $active_plugins = array_merge($active_plugins, array_keys((array) get_site_option('active_sitewide_plugins', array())));
+    }
+
+    foreach($master['plugins'] as $key => $exclusion_set) {
+        if(in_array($exclusion_set['id'], $active_plugins)) {
+            $exclusions['plugins']['items'][] = $key;
+        }
+    }
+
+    //add any active theme sets to list
+    $theme = wp_get_theme();
+    $parent = $theme->get_template();
+    $active_theme = strtolower(!empty($parent) ? $parent : $theme->get('Name'));
+
+    foreach($master['themes'] as $key => $exclusion_set) {
+        if($exclusion_set['id'] == $active_theme) {
+            $exclusions['themes']['items'][] = $key;
+        }
+    }
+
+    //quick exclusions ui
+    echo '<div class="perfmatters-input-row-wrapper">';
+        echo '<div class="perfmatters-input-row-container">';
+
+            if(empty($exclusions['plugins']['items']) && empty($exclusions['themes']['items'])) {
+                echo '<style>.delay_js_quick_exclusions { display: none; }</style>';
+            }
+
+            foreach($exclusions as $type => $data) {
+
+                if(!empty($data['items'])) {
+
+                    $opened = !empty($options['assets']['delay_js_quick_exclusions'][$type]) ? ' perfmatters-opened' : '';
+
+                    //quick exclusion section
+                    echo '<div class="perfmatters-quick-exclusion' . $opened . '">';
+
+                        //title bar
+                        echo '<div class="perfmatters-quick-exclusion-title-bar" style="display: flex; justify-content: space-between;">';
+                            echo '<div style="display: flex; align-items: center;">';
+                                echo '<span class="dashicons dashicons-' . $data['dashicon'] . '" style="margin-right: 5px;"></span>';
+                                echo $data['title'];
+                            echo '</div>';
+
+                            echo '<span class="perfmatters-quick-exclusion-toggle dashicons dashicons-plus"></span>';
+                            echo '<span class="perfmatters-quick-exclusion-toggle dashicons dashicons-minus"></span>';
+                        echo '</div>';
+
+                        //exclusions
+                        echo '<div class="perfmatters-quick-exclusion-items">';
+                            foreach($data['items'] as $item) {
+                                echo '<div style="margin-top: 5px;">';
+                                    echo '<input type="checkbox" name="perfmatters_options[assets][delay_js_quick_exclusions][' . $type . '][' . $item . ']" value="1" ' . (!empty($options['assets'][$args['id']][$type][$item]) ? 'checked ' : '') . '/>';
+                                    echo $master[$type][$item]['title'];
+                                echo '</div >';
+                            }
+                        echo '</div>';
+
+                    echo '</div>';
                 }
             }
-            else {
-
-                //print empty row at the end
-                perfmatters_print_preload_row($rowCount, '');
-            }
-
-        echo "</div>";
-
-        //add new row
-        echo "<a href='#' class='perfmatters-add-input-row' rel='" . ($rowCount > 0 ? $rowCount - 1 : 0) . "'>" . __('Add New', 'perfmatters') . "</a>";
-
-    echo "</div>";
+        echo '</div>';
+    echo '</div>';
 
     //tooltip
     if(!empty($args['tooltip'])) {
@@ -2044,77 +2178,21 @@ function perfmatters_print_preload($args) {
     }
 }
 
-function perfmatters_print_preload_row($rowCount = 0, $line = array()) {
-    echo "<div class='perfmatters-input-row'>";
+//input rows ui
+function perfmatters_print_input_rows($args) {
 
-        echo "<div style='display: flex; width: 100%; align-items: center; margin-bottom: 5px;'>";
-            echo "<input type='text' id='preload-" . $rowCount . "-url' name='perfmatters_options[preload][preload][" . $rowCount . "][url]' value='" . (isset($line['url']) ? $line['url'] : "") . "' placeholder='https://example.com/font.woff2' style='' />";
-            echo "<a href='#' class='perfmatters-delete-input-row' title='" . __('Remove', 'perfmatters') . "'><span class='dashicons dashicons-no'></span></a>";
-        echo "</div>";
-
-        $types = array(
-            'audio'    => 'Audio',
-            'document' => 'Document',
-            'embed'    => 'Embed',
-            'fetch'    => 'Fetch',
-            'font'     => 'Font',
-            'image'    => 'Image',
-            'object'   => 'Object',
-            'script'   => 'Script',
-            'style'    => 'Style',
-            'track'    => 'Track',
-            'worker'   => 'Worker',
-            'video'    => 'Video'
-        );
-
-        echo "<select id='preload-" . $rowCount . "-as' name='perfmatters_options[preload][preload][" . $rowCount . "][as]' style=''>";
-            echo "<option value=''>" . __('Select Type', 'perfmatters') . "</option>";
-            foreach($types as $value => $label) {
-                echo "<option value='" . $value . "'" . (isset($line['as']) && $line['as'] == $value ? " selected='selected'" : "") . ">" . $label . "</option>";
-            }
-        echo "</select>";
-
-        echo "<select id='preload-" . $rowCount . "-device' name='perfmatters_options[preload][preload][" . $rowCount . "][device]' style='margin-left: 5px;'>";
-            echo "<option value=''>" . __('All Devices', 'perfmatters') . "</option>";
-            echo "<option value='desktop'" . (isset($line['device']) && $line['device'] == 'desktop' ? " selected='selected'" : "") . ">" . __('Desktop', 'perfmatters') . "</option>";
-            echo "<option value='mobile'" . (isset($line['device']) && $line['device'] == 'mobile' ? " selected='selected'" : "") . ">" . __('Mobile', 'perfmatters') . "</option>";
-        echo "</select>";
-
-        echo "<label class='perfmatters-inline-label-input' style='flex-grow: 1;'><span>" . __('Location', 'perfmatters') . "</span>";
-            echo "<input type='text' id='preload-" . $rowCount . "-locations' name='perfmatters_options[preload][preload][" . $rowCount . "][locations]' value='" . (isset($line['locations']) ? $line['locations'] : "") . "' placeholder='23,19,blog' style='min-width: auto; padding-left: 74px;' />";
-        echo "</label>";
-
-        echo "<label for='preload-" . $rowCount . "-crossorigin'>";
-            echo "<input type='checkbox' id='preload-" . $rowCount . "-crossorigin' name='perfmatters_options[preload][preload][" . $rowCount . "][crossorigin]' " . (!empty($line['crossorigin']) ? "checked" : "") . " value='1' /> CrossOrigin";
-        echo "</label>";
-    echo "</div>";
-}
-
-//print preconnect
-function perfmatters_print_preconnect($args) {
     $perfmatters_options = get_option('perfmatters_options');
  
-    echo "<div id='perfmatters-preconnect-wrapper' class='perfmatters-input-row-wrapper'>";
-        echo "<div class='perfmatters-input-row-container'>";
+    echo '<div class="perfmatters-input-row-wrapper">';
+        echo '<div class="perfmatters-input-row-container">';
 
             $rowCount = 0;
 
-            if(!empty($perfmatters_options['preload']['preconnect'])) {
+            if(!empty($perfmatters_options[$args['section']][$args['id']]) && is_array($perfmatters_options[$args['section']][$args['id']])) {
 
-                foreach($perfmatters_options['preload']['preconnect'] as $line) {
+                foreach($perfmatters_options[$args['section']][$args['id']] as $line) {
 
-                    //check for previous vs new format
-                    if(is_array($line)) {
-                        $url = $line['url'];
-                        $crossorigin = isset($line['crossorigin']) ? $line['crossorigin'] : 0;
-                    }
-                    else {
-                        $url = $line;
-                        $crossorigin = 1;
-                    }
-
-                    //print row
-                    perfmatters_print_preconnect_row($rowCount, $line);
+                    call_user_func('perfmatters_print_' . $args['id'] . '_row', $rowCount, $line);
 
                     $rowCount++;
                 }
@@ -2122,40 +2200,148 @@ function perfmatters_print_preconnect($args) {
             else {
 
                 //print empty row at the end
-                perfmatters_print_preconnect_row($rowCount, array('url' => ''));
+                call_user_func('perfmatters_print_' . $args['id'] . '_row', $rowCount);
             }
 
-        echo "</div>";
+        echo '</div>';
 
         //add new row
-        echo "<a href='#' id='perfmatters-add-preconnect' class='perfmatters-add-input-row' rel='" . ($rowCount > 0 ? $rowCount - 1 : 0) . "'>" . __('Add New', 'perfmatters') . "</a>";
+        echo '<a href="#" class="perfmatters-add-input-row button button-secondary" rel="' . $rowCount . '"><span class="dashicons dashicons-plus"></span>' . __('Add New', 'perfmatters') . '</a>';
 
-    echo "</div>";
+    echo '</div>';
 
     //tooltip
     if(!empty($args['tooltip'])) {
-    	perfmatters_tooltip($args['tooltip']);
+        perfmatters_tooltip($args['tooltip']);
     }
 }
 
+//preload input row
+function perfmatters_print_preload_row($rowCount = 0, $line = array()) {
+
+    echo '<div class="perfmatters-input-row"' . (empty($line['url']) ? ' style="display: none;"' : '') . '>';
+
+        echo '<div style="display: flex; width: 100%; align-items: center;">';
+            echo '<input type="text" id="preload-' . $rowCount . '-url" name="perfmatters_options[preload][preload][' . $rowCount . '][url]" value="' . (isset($line['url']) ? $line['url'] : '') . '" placeholder="https://example.com/font.woff2" />';
+
+            $types = array(
+                'audio'    => 'Audio',
+                'document' => 'Document',
+                'embed'    => 'Embed',
+                'fetch'    => 'Fetch',
+                'font'     => 'Font',
+                'image'    => 'Image',
+                'object'   => 'Object',
+                'script'   => 'Script',
+                'style'    => 'Style',
+                'track'    => 'Track',
+                'worker'   => 'Worker',
+                'video'    => 'Video'
+            );
+
+            echo '<select id="preload-' . $rowCount . '-as" name="perfmatters_options[preload][preload][' . $rowCount . '][as]" style="margin-left: 5px;">';
+                echo '<option value="">' . __('Select Type', 'perfmatters') . '</option>';
+                foreach($types as $value => $label) {
+                    echo '<option value="' . $value . '"' . (isset($line['as']) && $line['as'] == $value ? ' selected="selected"' : '') . '>' . $label . '</option>';
+                }
+            echo '</select>';
+
+            echo '<a href="#" class="perfmatters-expand-input-row" title="' . __('Settings', 'perfmatters') . '" style="margin-left: 8px; text-decoration: none;"><span class="dashicons dashicons-admin-generic"></span></a>';
+            echo '<a href="#" class="perfmatters-delete-input-row" title="' . __('Remove', 'perfmatters') . '"><span class="dashicons dashicons-trash"></span></a>';
+        echo '</div>';
+
+        echo '<div class="perfmatters-input-row-extra">';
+
+            echo '<select id="preload-' . $rowCount . '-device" name="perfmatters_options[preload][preload][' . $rowCount . '][device]">';
+                echo '<option value="">' . __('All Devices', 'perfmatters') . '</option>';
+                echo '<option value="desktop"' . (isset($line['device']) && $line['device'] == 'desktop' ? ' selected="selected"' : '') . '>' . __('Desktop', 'perfmatters') . '</option>';
+                echo '<option value="mobile"' . (isset($line['device']) && $line['device'] == 'mobile' ? ' selected="selected"' : '') . '>' . __('Mobile', 'perfmatters') . '</option>';
+            echo '</select>';
+
+            echo '<label class="perfmatters-inline-label-input"><span>' . __('Location', 'perfmatters') . '</span>';
+                echo '<input type="text" id="preload-' . $rowCount . '-locations" name="perfmatters_options[preload][preload][' . $rowCount . '][locations]" value="' . (isset($line['locations']) ? $line['locations'] : '') . '" placeholder="23,19,blog" style="min-width: auto; padding-left: 74px;" />';
+            echo '</label>';
+
+            echo '<label for="preload-' . $rowCount . '-crossorigin">';
+                echo '<input type="checkbox" id="preload-' . $rowCount . '-crossorigin" name="perfmatters_options[preload][preload][' . $rowCount . '][crossorigin]"' . (!empty($line['crossorigin']) ? ' checked' : '') . ' value="1" /> CrossOrigin';
+            echo '</label>';
+
+        echo '</div>';
+    echo "</div>";
+}
+
+//fetch priority input row
+function perfmatters_print_fetch_priority_row($rowCount = 0, $line = array()) {
+
+    echo '<div class="perfmatters-input-row"' . (empty($line['selector']) ? ' style="display: none;"' : '') . '>';
+
+        echo '<div style="display: flex; width: 100%; align-items: center;">';
+            echo '<input type="text" id="fetch-priority-' . $rowCount . '-url" name="perfmatters_options[preload][fetch_priority][' . $rowCount . '][selector]" value="' . (isset($line['selector']) ? esc_attr($line['selector']) : '') . '" placeholder="example-class" style="" />';
+
+            $types = array(
+                'high' => 'High',
+                'low'  => 'Low'
+            );
+
+            echo '<select id="fetch-priority-' . $rowCount . '-as" name="perfmatters_options[preload][fetch_priority][' . $rowCount . '][priority]" style="margin-left: 5px;">';
+                echo '<option value="">' . __('Select Priority', 'perfmatters') . '</option>';
+                foreach($types as $value => $label) {
+                    echo '<option value="' . $value . '"' . (isset($line['priority']) && $line['priority'] == $value ? ' selected="selected"' : '') . '>' . $label . '</option>';
+                }
+            echo '</select>';
+
+            echo '<a href="#" class="perfmatters-expand-input-row" title="' . __('Settings', 'perfmatters') . '" style="margin-left: 8px; text-decoration: none;"><span class="dashicons dashicons-admin-generic"></span></a>';
+
+            echo '<a href="#" class="perfmatters-delete-input-row" title="' . __('Remove', 'perfmatters') . '"><span class="dashicons dashicons-trash"></span></a>';
+
+        echo '</div>';
+
+        echo '<div class="perfmatters-input-row-extra">';
+
+            echo '<select id="fetch-priority-' . $rowCount . '-device" name="perfmatters_options[preload][fetch_priority][' . $rowCount . '][device]" style="">';
+                echo '<option value="">' . __('All Devices', 'perfmatters') . '</option>';
+                echo '<option value="desktop"' . (isset($line['device']) && $line['device'] == 'desktop' ? ' selected="selected"' : '') . '>' . __('Desktop', 'perfmatters') . '</option>';
+                echo '<option value="mobile"' . (isset($line['device']) && $line['device'] == 'mobile' ? ' selected="selected"' : '') . '>' . __('Mobile', 'perfmatters') . '</option>';
+            echo '</select>';
+
+            echo '<label class="perfmatters-inline-label-input" style="margin-left: 5px;"><span>' . __('Location', 'perfmatters') . '</span>';
+                echo '<input type="text" id="fetch-priority-' . $rowCount . '-locations" name="perfmatters_options[preload][fetch_priority][' . $rowCount . '][locations]" value="' . (isset($line['locations']) ? $line['locations'] : '') . '" placeholder="23,19,blog" style="min-width: auto; padding-left: 74px;" />';
+            echo '</label>';
+
+            echo '<label for="fetch-priority-' . $rowCount . '-parent">';
+                echo '<input type="checkbox" id="fetch-priority-' . $rowCount . '-parent" name="perfmatters_options[preload][fetch_priority][' . $rowCount . '][parent]"' . (!empty($line['parent']) ? ' checked' : '') . ' value="1" /> Search by Parent Selector';
+            echo '</label>';
+
+        echo '</div>';
+    echo '</div>';
+}
+
+//preconnect input row
 function perfmatters_print_preconnect_row($rowCount = 0, $line = '') {
+
+    //check for previous vs new format
     if(is_array($line)) {
         $url = $line['url'];
         $crossorigin = isset($line['crossorigin']) ? $line['crossorigin'] : 0;
     }
-    else {
+    elseif(!empty($line)) {
         $url = $line;
         $crossorigin = 1;
     }
 
     //print row
-    echo "<div class='perfmatters-input-row'>";
-        echo "<input type='text' id='preconnect-" . $rowCount . "-url' name='perfmatters_options[preload][preconnect][" . $rowCount . "][url]' value='" . $url . "' placeholder='https://example.com' />";
-        echo "<label for='preconnect-" . $rowCount . "-crossorigin'>";
-            echo "<input type='checkbox' id='preconnect-" . $rowCount . "-crossorigin' name='perfmatters_options[preload][preconnect][" . $rowCount . "][crossorigin]' " . ($crossorigin == 1 ? "checked" : "") . " value='1' /> CrossOrigin";
-        echo "</label>";
-        echo "<a href='#' class='perfmatters-delete-input-row' title='" . __('Remove', 'perfmatters') . "'><span class='dashicons dashicons-no'></span></a>";
-    echo "</div>";
+    echo '<div class="perfmatters-input-row"' . (empty($url) ? ' style="display: none;"' : '') . '>';
+        echo '<div class="perfmatters-input-row-hero">';
+            echo '<input type="text" id="preconnect-' . $rowCount . '-url" name="perfmatters_options[preload][preconnect][' . $rowCount . '][url]" value="' . ($url ?? ''). '" placeholder="https://example.com" />';
+            echo '<a href="#" class="perfmatters-expand-input-row" title="' . __('Settings', 'perfmatters') . '" style="margin-left: 8px; text-decoration: none;"><span class="dashicons dashicons-admin-generic"></span></a>';
+            echo '<a href="#" class="perfmatters-delete-input-row" title="' . __('Remove', 'perfmatters') . '"><span class="dashicons dashicons-trash"></span></a>';
+        echo '</div>';
+        echo '<div class="perfmatters-input-row-extra">';
+            echo '<label for="preconnect-' . $rowCount . '-crossorigin" style="margin-left: 0px;">';
+                echo "<input type='checkbox' id='preconnect-" . $rowCount . "-crossorigin' name='perfmatters_options[preload][preconnect][" . $rowCount . "][crossorigin]' " . (!empty($crossorigin) ? "checked" : "") . " value='1' /> CrossOrigin";
+            echo '</label>';
+        echo '</div>';
+    echo '</div>';
 }
 
 //print purge meta options
@@ -2163,7 +2349,7 @@ function perfmatters_print_purge_meta($args) {
 
     //input + button
     $meta_options = array('perfmatters_exclude_defer_js' => 'Defer JavaScript', 'perfmatters_exclude_delay_js' => 'Delay JavaScript', 'perfmatters_exclude_lazy_loading' => 'Lazy Loading', 'perfmatters_exclude_instant_page' => 'Instant Page');
-    echo "<div style='margin-bottom: 10px;'>";
+    echo "<div style='margin-bottom: 10px;' id='perfmatters-purge-meta'>";
         foreach($meta_options as $key => $name) {
             echo "<label for='perfmatters-purge-meta-" . $key . "' style='margin-right: 10px;'>";
                 echo "<input type='checkbox' name='perfmatters_tools_temp[purge_meta_options][]' id='perfmatters-purge-meta-" . $key . "' value='" . $key . "' />";
@@ -2171,11 +2357,7 @@ function perfmatters_print_purge_meta($args) {
             echo "</label>";
         }
     echo "</div>";
-    echo "<button id='import_settings' name='perfmatters_tools[purge_meta]' value='1' class='button button-secondary'";
-        if(!empty($args['confirmation'])) {
-            echo " onClick=\"return confirm('" . $args['confirmation'] . "');\"";
-        }
-    echo ">" . __("Purge Meta Options", 'perfmatters') . "</button>";
+    perfmatters_action_button('purge_meta', __('Purge Meta Options', 'perfmatters'), 'secondary', $args['confirmation'] ?? '');
 
     //tooltip
     if(!empty($args['tooltip'])) {
@@ -2187,8 +2369,8 @@ function perfmatters_print_purge_meta($args) {
 function perfmatters_print_import_settings($args) {
 
 	//input + button
-    echo "<input type='file' name='perfmatters_import_settings_file' /><br />";
-    echo "<button id='import_settings' name='perfmatters_tools[import_settings]' value='1' class='button button-secondary'>" . __("Import Plugin Settings", 'perfmatters') . "</button>";
+    echo "<input type='file' id='perfmatters-import-settings-file' name='perfmatters_import_settings_file' /><br />";
+    perfmatters_action_button('import_settings', __('Import Plugin Settings', 'perfmatters'), 'secondary');
 
     //tooltip
     if(!empty($args['tooltip'])) {
@@ -2203,6 +2385,7 @@ function perfmatters_sanitize_options($values) {
     $sections_one_per_line = array(
         'lazyload' => array(
             'lazy_loading_exclusions',
+            'lazy_loading_parent_exclusions',
             'css_background_selectors'
         ),
         'assets' => array(
@@ -2225,21 +2408,30 @@ function perfmatters_sanitize_options($values) {
         }
     }
 
-    if(!empty($values['preload']['preload'])) {
-        foreach($values['preload']['preload'] as $key => $line) {
-            if(empty(trim($line['url']))) {
-                unset($values['preload']['preload'][$key]);
+    //input rows
+    $sections_input_rows = array(
+        'preload' => array(
+            'preload' => 'url',
+            'preconnect' => 'url',
+            'fetch_priority' => 'selector'
+        )
+    );
+
+    foreach($sections_input_rows as $section => $options) {
+        foreach($options as $id => $field) {
+            if(!empty($values[$section][$id])) {
+                foreach($values[$section][$id] as $key => $line) {
+                    $val = trim($line[$field]);
+                    if(empty($val)) {
+                        unset($values[$section][$id][$key]);
+                    }
+                    else {
+                        $values[$section][$id][$key][$field] = $val;
+                    }
+                }
+                $values[$section][$id] = array_values($values[$section][$id]);
             }
         }
-        $values['preload']['preload'] = array_values($values['preload']['preload']);
-    }
-    if(!empty($values['preload']['preconnect'])) {
-        foreach($values['preload']['preconnect'] as $key => $line) {
-            if(empty(trim($line['url']))) {
-                unset($values['preload']['preconnect'][$key]);
-            }
-        }
-        $values['preload']['preconnect'] = array_values($values['preload']['preconnect']);
     }
 
     return $values;
@@ -2299,64 +2491,13 @@ function perfmatters_title($title, $id = false, $link = false) {
     }
 }
 
-//calculate and print out data to display along with option input
-function perfmatters_print_option_data($option, $id) {
-
-    switch($option) {
-
-        case 'perfmatters_tools[database]' :
-
-            global $wpdb;
-
-            switch($id) {
-
-                case 'post_revisions' :
-                    $data = $wpdb->get_var("SELECT COUNT(ID) FROM $wpdb->posts WHERE post_type = 'revision'") . ' ' . __('Revisions Found', 'perfmatters');
-                    break;
-
-                case 'post_auto_drafts' :
-                    $data = $wpdb->get_var("SELECT COUNT(ID) FROM $wpdb->posts WHERE post_status = 'auto-draft'") . ' ' . __('Auto-Drafts Found', 'perfmatters');
-                    break;
-
-                case 'trashed_posts' :
-                    $data = $wpdb->get_var("SELECT COUNT(ID) FROM $wpdb->posts WHERE post_status = 'trash'") . ' ' . __('Trashed Posts Found', 'perfmatters');
-                    break;
-
-                case 'spam_comments':
-                    $data = $wpdb->get_var("SELECT COUNT(comment_ID) FROM $wpdb->comments WHERE comment_approved = 'spam'") . ' ' . __('Spam Comments Found', 'perfmatters');
-                        break;
-            
-                case 'trashed_comments':
-                    $data = $wpdb->get_var("SELECT COUNT(comment_ID) FROM $wpdb->comments WHERE (comment_approved = 'trash' OR comment_approved = 'post-trashed')") . ' ' . __('Trashed Comments Found', 'perfmatters');
-                    break;
-
-                case 'expired_transients':
-                    $time = isset($_SERVER['REQUEST_TIME']) ? (int) $_SERVER['REQUEST_TIME'] : time();
-                    $data = $wpdb->get_var($wpdb->prepare("SELECT COUNT(option_name) FROM $wpdb->options WHERE option_name LIKE %s AND option_value < %d", $wpdb->esc_like('_transient_timeout') . '%', $time)) . ' ' . __('Expired Transients Found', 'perfmatters');
-                    break;
-
-                case 'all_transients':
-                    $data = $wpdb->get_var($wpdb->prepare("SELECT COUNT(option_id) FROM $wpdb->options WHERE option_name LIKE %s OR option_name LIKE %s", $wpdb->esc_like('_transient_') . '%', $wpdb->esc_like('_site_transient_') . '%')) . ' ' . __('Transients Found', 'perfmatters');
-                    break;
-
-                case 'tables':
-                    $data = $wpdb->get_var("SELECT COUNT(table_name) FROM information_schema.tables WHERE table_schema = '" . DB_NAME . "' and Engine <> 'InnoDB' and data_free > 0") . ' ' . __('Unoptimized Tables Found', 'perfmatters');
-                    break;
-
-                case 'optimize_schedule' : 
-                    $data = "<span id='perfmatters-optimize-schedule-warning' style='display: none;'>" . __('Setting a new schedule will run the database optimization process immediately after saving your changes.', 'perfmatters') . "</span>";
-                    break;
-
-                default :
-                    break;
-            }
-
-        default :
-            break;
-    }
-
-    //print data
-    if(!empty($data)) {
-        echo "<span class='perfmatters-option-data' style='margin-left: 5px; font-size: 12px;'>" . $data . "</span>";
-    }
+//action button
+function perfmatters_action_button($action, $label, $type = 'primary', $confirmation = '') {
+    echo '<div class="perfmatters-button-container">';
+        echo '<button name="submit" id="submit" class="button button-' . $type . '" data-pm-action="' . $action . '"' . (!empty($confirmation) ? ' data-pm-confirmation="' . $confirmation . '"' : '') . ' style="display: flex; align-items: center;">';
+            echo '<span class="perfmatters-button-text">' . $label . '</span>';
+            echo '<svg class="perfmatters-button-spinner" viewBox="0 0 100 100" role="presentation" focusable="false" style="background: rgba(0,0,0,.1); border-radius: 100%; width: 16px; height: 28px; margin: 0px 2px; overflow: visible; opacity: 1; background-color: transparent; display: none;"><circle cx="50" cy="50" r="50" vector-effect="non-scaling-stroke" style="fill: transparent; stroke-width: 1.5px; stroke: #fff;"></circle><path d="m 50 0 a 50 50 0 0 1 50 50" vector-effect="non-scaling-stroke" style="fill: transparent; stroke-width: 1.5px; stroke: #4A89DD; stroke-linecap: round; transform-origin: 50% 50%; animation: 1.4s linear 0s infinite normal both running perfmatters-spinner;"></path></svg>';
+        echo '</button>';
+        echo '<div class="perfmatters-button-message" style="display: none; margin-left: 10px; "></div>';
+    echo '</div>';
 }

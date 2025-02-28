@@ -6,6 +6,13 @@ class CDN
     //initialize cdn
     public static function init() 
     {
+        add_action('wp', array('Perfmatters\CDN', 'queue'));
+    }
+
+    //queue functions
+    public static function queue() 
+    {
+
         //add cdn rewrite to the buffer
         if(!empty(Config::$options['cdn']['enable_cdn']) && !empty(Config::$options['cdn']['cdn_url'])) {
             add_action('perfmatters_output_buffer_template_redirect', array('Perfmatters\CDN', 'rewrite'));
@@ -15,6 +22,7 @@ class CDN
     //rewrite urls in html
     public static function rewrite($html) 
     {
+
         //filter check
         if(!apply_filters('perfmatters_cdn', true)) {
             return $html;
@@ -57,7 +65,7 @@ class CDN
         $extensions = implode('|', $extensions_array);
 
         //rewrite urls in html
-        $regEx = '#(?<=[(\"\']|&quot;)(?:' . $regExURL . ')?\/(?:(?:' . $directories . ')[^\"\')]+)\.(' . $extensions . ')[^\"\')]*(?=[\"\')]|&quot;)#';
+        $regEx = '#(?<=[(\"\']|&quot;)(?:' . $regExURL . ')?\/(?:[^\"\')]?)(?:(?:' . $directories . ')[^\"\')]+).(' . $extensions . ')[^\"\')]*(?=[\"\')]|&quot;)#';
 
         //base exclusions
         $exclusions = array('script-manager.js');
@@ -69,7 +77,7 @@ class CDN
         }
 
         //set cdn url
-        $cdnURL = Config::$options['cdn']['cdn_url'];
+        $cdnURL = untrailingslashit(Config::$options['cdn']['cdn_url']);
 
         //replace urls
         $html = preg_replace_callback($regEx, function($url) use ($siteURL, $cdnURL, $exclusions) {
