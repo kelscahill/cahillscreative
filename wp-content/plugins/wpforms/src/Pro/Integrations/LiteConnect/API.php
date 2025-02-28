@@ -16,7 +16,7 @@ class API extends \WPForms\Integrations\LiteConnect\API {
 	 *
 	 * @var int
 	 */
-	const LITE_CONNECT_BATCH_SIZE = 500;
+	const LITE_CONNECT_BATCH_SIZE = 250;
 
 	/**
 	 * Retrieve site entries from the Lite Connect API.

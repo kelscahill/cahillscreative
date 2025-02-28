@@ -48,14 +48,15 @@ class Theme_Styles {
 	 * @since 3.0.0
 	 */
 	public static function init() {
-		self::maybe_setup_theme_styles();
+		// Needs to run after i18n is loaded.
+		add_action( 'init', array( __CLASS__, 'maybe_setup_theme_styles' ), 2 );
 		add_action( 'after_switch_theme', 'Search_Filter\\Theme_Styles::after_theme_changes' );
 	}
 	public static function after_theme_changes() {
 		self::disable_theme_style();
 	}
 	// Check if we need to setup a new record for the theme.
-	private static function maybe_setup_theme_styles() {
+	public static function maybe_setup_theme_styles() {
 
 		self::maybe_create_theme_style();
 		self::check_theme_style_version();
@@ -317,9 +318,8 @@ class Theme_Styles {
 				if ( '' !== $parent_theme_json_file ) {
 					$parent_theme_json_data    = static::read_json_file( $parent_theme_json_file );
 					$parent_plugin_styles_data = static::get_plugin_styles_from_theme_json( $parent_theme_json_data );
+					static::$plugin_styles     = array_replace_recursive( $parent_plugin_styles_data, static::$plugin_styles );
 				}
-
-				static::$plugin_styles = array_replace_recursive( $parent_plugin_styles_data, static::$plugin_styles );
 			}
 		}
 

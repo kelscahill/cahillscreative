@@ -182,7 +182,7 @@ class Fields {
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_records_section_counts' ),
 				'args'                => array(
-					'query' => array(
+					'query_id' => array(
 						'required'          => false,
 						'description'       => __( 'Foreign ID.', 'search-filter' ),
 						'type'              => 'number',
@@ -207,7 +207,7 @@ class Fields {
 		$params = $request->get_params();
 		// TODO - we don't want to get the query ID here - add a hook to apply it conditionally based on section
 		// TODO - same with context, we need a filter for this.
-		$query_id = isset( $params['query'] ) ? $params['query'] : 0;
+		$query_id = isset( $params['query_id'] ) ? $params['query_id'] : 0;
 		$query    = new Fields_Query();
 
 		$args = array();
@@ -215,12 +215,12 @@ class Fields {
 		if ( $query_id !== 0 ) {
 			$args['query_id'] = $query_id;
 		}
-		$count_data = get_records_section_status_counts( $query, $args );
+		$count_data = Util::get_records_section_status_counts( $query, $args );
 		return rest_ensure_response( $count_data );
 	}
 
 	/**
-	 * Fetch records ( queries / fields /styles )
+	 * Fetch Field records.
 	 */
 	public function get_records( \WP_REST_Request $request ) {
 		$params     = $request->get_params();
@@ -231,9 +231,9 @@ class Fields {
 				'context_path' => '',
 			)
 		);
-		$query_args = apply_filters( 'search-filter/rest-api/records/fields/get_records/query_args', $query_args );
+		$query_args = apply_filters( 'search-filter/rest-api/records/fields/get_records/query_args', $query_args, $request );
 
-		$query_args  = get_records_query_args( $query_args );
+		$query_args  = Util::get_records_query_args( $query_args );
 		$query       = new Fields_Query( $query_args );
 		$query_items = $query->items;
 		$records     = array();
@@ -241,36 +241,38 @@ class Fields {
 		if ( $query ) {
 
 			// $records_data->max_num_pages = $query->max_num_pages;
-			foreach ( $query_items as $record ) {
-				$query_record = array(
-					'id'            => $record->get_id(),
-					'name'          => $record->get_name(),
-					'status'        => $record->get_status(),
-					'attributes'    => $record->get_attributes(),
-					'date_created'  => $record->get_date_created(),
-					'date_modified' => $record->get_date_modified(),
-					'context'       => $record->get_context(),
-					'context_path'  => $record->get_context_path(),
+			foreach ( $query_items as $query_item ) {
+				$record = array(
+					'id'            => $query_item->get_id(),
+					'name'          => $query_item->get_name(),
+					'status'        => $query_item->get_status(),
+					'attributes'    => $query_item->get_attributes(),
+					'date_created'  => $query_item->get_date_created(),
+					'date_modified' => $query_item->get_date_modified(),
+					'context'       => $query_item->get_context(),
+					'context_path'  => $query_item->get_context_path(),
 				);
 
 				// Then we want to add the associated query to the record.
 				// lookup the query:
-				if ( isset( $query_record['attributes']['queryId'] ) ) {
-					$query_id        = absint( $query_record['attributes']['queryId'] );
+				if ( isset( $record['attributes']['queryId'] ) ) {
+					$query_id        = absint( $record['attributes']['queryId'] );
 					$connected_query = Query::find( array( 'id' => $query_id ) );
 					if ( ! is_wp_error( $connected_query ) ) {
-						$query_record['query'] = array(
+						$record['query'] = array(
 							'id'   => $connected_query->get_id(),
 							'name' => $connected_query->get_name(),
 						);
 						// TODO - figure out we want to pass the whole query object or just the id and name.
 					}
 				}
-				array_push( $records, $query_record );
+
+				$record = apply_filters( 'search-filter/rest-api/records/fields/get_records/record', $record, $query_item, $request );
+				array_push( $records, $record );
 			}
 		}
 
-		$records = apply_filters( 'search-filter/rest-api/records/fields/get_records/records', $records );
+		$records = apply_filters( 'search-filter/rest-api/records/fields/get_records/records', $records, $request );
 
 		$records_response = rest_ensure_response( $records );
 
@@ -300,12 +302,10 @@ class Fields {
 		$section_instance->set_context( $context );
 		$section_instance->set_context_path( $context_path );
 
-		$section_instance = apply_filters( 'search-filter/rest-api/fields/create_record/instance', $section_instance, 'fields', $params );
-
 		// Save to DB.
 		$result_id = $section_instance->save();
 
-		do_action( 'search-filter/rest-api/fields/create_record', $section_instance );
+		do_action( 'search-filter/rest-api/fields/create_record', $section_instance, $params, $request );
 
 		return rest_ensure_response( $section_instance->get_record() );
 	}
@@ -335,8 +335,7 @@ class Fields {
 		}
 
 		$result = $section_instance->save();
-
-		do_action( 'search-filter/rest-api/fields/update_record', $section_instance );
+		do_action( 'search-filter/rest-api/fields/update_record', $section_instance, $params, $request );
 
 		// Return the complete updated record for the query.
 		return rest_ensure_response( $section_instance->get_record() );
@@ -351,11 +350,7 @@ class Fields {
 		$id     = $params['id'];
 
 		$section_instance = new Field( $id );
-		do_action( 'search-filter/admin/delete_record', $id, $params, 'fields' );
-
 		$section_instance->delete();
-
-		do_action( 'search-filter/rest-api/fields/delete_record', $section_instance );
 
 		// Return the complete updated record for the query.
 		$response = array( 'id' => $id );
@@ -388,7 +383,7 @@ class Fields {
 		$id     = $params['id'];
 
 		// Then this won't be a real record...
-		$record = apply_filters( 'search-filter/admin/get_record/pre_lookup', false, $id, 'fields' );
+		$record = apply_filters( 'search-filter/admin/get_record/pre_lookup', false, $id, 'fields', $request );
 		if ( $record && ! is_wp_error( $record ) ) {
 			$response = array(
 				'code' => 'success',
@@ -401,7 +396,7 @@ class Fields {
 
 		// Bail if nothing found.
 		if ( is_wp_error( $instance ) ) {
-			return rest_convert_error_to_response( new \WP_Error( 'not_found', 'Not found.' ) );
+			return rest_convert_error_to_response( new \WP_Error( 'not_found', 'Not found.', array( 'status' => 404 ) ) );
 		}
 
 		// Create the field using its attributes.
@@ -419,7 +414,7 @@ class Fields {
 			'context_path'  => $item->get_context_path(),
 		);
 
-		$record = apply_filters( 'search-filter/admin/get_record/fields/record', $record, $id, $item );
+		$record = apply_filters( 'search-filter/admin/get_record/fields/record', $record, $id, $item, $request );
 
 		// TODO - We need to find a way to properly send an error response
 		return rest_ensure_response( $record );

@@ -43,16 +43,16 @@ class Settings_Data {
 	public static function get_groups() {
 		$groups_data = array(
 			array(
+				'name'  => 'general',
+				'label' => __( 'General', 'search-filter' ),
+			),
+			array(
 				'name'  => 'query',
 				'label' => __( 'Query integration', 'search-filter' ),
 			),
 			array(
 				'name'  => 'styles',
 				'label' => __( 'Styles', 'search-filter' ),
-			),
-			array(
-				'name'  => 'general',
-				'label' => __( 'General', 'search-filter' ),
 			),
 			array(
 				'name'  => 'data',
@@ -118,6 +118,10 @@ class Settings_Data {
 				'label' => __( 'Dimensions', 'search-filter' ),
 			),
 			array(
+				'name'  => 'behaviour',
+				'label' => __( 'Behaviour', 'search-filter' ),
+			),
+			array(
 				'name'  => 'advanced',
 				'label' => __( 'Advanced', 'search-filter' ),
 			),
@@ -136,20 +140,21 @@ class Settings_Data {
 			*/
 
 			array(
-				'name'        => 'queryId',
-				'label'       => __( 'Query', 'search-filter' ),
-				'group'       => 'query',
-				'tab'         => 'settings',
-				'default'     => '',
-				'help'        => __( 'Connect with a query. The query settings may affect available options.', 'search-filter' ),
-				'type'        => 'string',
-				'inputType'   => 'QuerySelect',
-				'placeholder' => __( 'Choose a saved query', 'search-filter' ),
-				'context'     => array( 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
-				'store'       => array(
-					'route' => '/settings/options/queries',
+				'name'         => 'queryId',
+				'label'        => __( 'Query', 'search-filter' ),
+				'group'        => 'query',
+				'tab'          => 'settings',
+				'default'      => '',
+				'help'         => __( 'Connect with a query. The query settings may affect available options.', 'search-filter' ),
+				'type'         => 'string',
+				'inputType'    => 'QuerySelect',
+				'placeholder'  => __( 'Choose a saved query', 'search-filter' ),
+				'context'      => array( 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
+				'dataProvider' => array(
+					'route'   => '/settings/options/queries',
+					'preload' => true,
 				),
-				'supports'    => array(
+				'supports'     => array(
 					'previewAPI' => true,
 				),
 			),
@@ -173,7 +178,7 @@ class Settings_Data {
 				'group'       => 'general',
 				'tab'         => 'settings',
 				'type'        => 'string',
-				'inputType'   => 'ButtonGroup',
+				'inputType'   => 'Hidden',
 				'default'     => 'choice',
 				'placeholder' => __( 'Select a Field Type', 'search-filter' ),
 				'help'        => __( 'Changing this option will reset your data and input attributes.', 'search-filter' ),
@@ -253,7 +258,7 @@ class Settings_Data {
 				'allowEmpty'       => true,
 				'type'             => 'number',
 				'inputType'        => 'Range',
-				'context'          => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'context'          => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
 				'placeholder'      => __( 'Choose a scale', 'search-filter' ),
 				'isShownByDefault' => false,
 				'min'              => 1,
@@ -280,7 +285,7 @@ class Settings_Data {
 				'type'          => 'string',
 				'inputType'     => 'ColorPicker',
 				'clearable'     => 'true',
-				'context'       => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'context'       => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
 				'dependsOn'     => array(
 					'relation' => 'AND',
 					'rules'    => array(
@@ -302,7 +307,7 @@ class Settings_Data {
 				'type'          => 'string',
 				'inputType'     => 'ColorPicker',
 				'clearable'     => 'true',
-				'context'       => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'context'       => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
 				'dependsOn'     => array(
 					'relation' => 'AND',
 					'rules'    => array(
@@ -373,7 +378,7 @@ class Settings_Data {
 				'default'    => 'no',
 				'type'       => 'string',
 				'inputType'  => 'Toggle',
-				'context'    => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'context'    => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
 				'options'    => array(
 					array(
 						'value' => 'yes',
@@ -391,11 +396,11 @@ class Settings_Data {
 				'label'       => __( 'Description', 'search-filter' ),
 				'group'       => 'description',
 				'tab'         => 'settings',
-				'default'     => __( '', 'search-filter' ),
+				'default'     => '',
 				'type'        => 'string',
 				'inputType'   => 'Text',
 				'placeholder' => __( 'Enter a description', 'search-filter' ),
-				'context'     => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'context'     => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
 				'dependsOn'   => array(
 					'relation' => 'AND',
 					'rules'    => array(
@@ -417,7 +422,7 @@ class Settings_Data {
 				'allowEmpty'       => true,
 				'type'             => 'number',
 				'inputType'        => 'Range',
-				'context'          => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'context'          => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
 				'placeholder'      => __( 'Choose a scale', 'search-filter' ),
 				'min'              => 1,
 				'isShownByDefault' => false,
@@ -443,7 +448,7 @@ class Settings_Data {
 				'allowEmpty' => true,
 				'type'       => 'object',
 				'inputType'  => 'Dimension',
-				'context'    => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'context'    => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
 				'dependsOn'  => array(
 					'relation' => 'AND',
 					'rules'    => array(
@@ -494,7 +499,7 @@ class Settings_Data {
 				'type'          => 'string',
 				'inputType'     => 'ColorPicker',
 				'clearable'     => 'true',
-				'context'       => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'context'       => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
 				'dependsOn'     => array(
 					'relation' => 'AND',
 					'rules'    => array(
@@ -516,7 +521,7 @@ class Settings_Data {
 				'type'          => 'string',
 				'inputType'     => 'ColorPicker',
 				'clearable'     => 'true',
-				'context'       => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'context'       => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
 				'dependsOn'     => array(
 					'relation' => 'AND',
 					'rules'    => array(
@@ -651,23 +656,23 @@ class Settings_Data {
 				),
 			),
 			array(
-				'name'        => 'dataTaxonomy',
-				'label'       => __( 'Taxonomy', 'search-filter' ),
-				'help'        => __( "If you don't see your taxonomy - check that it is set to public and it is available for your post type.", 'search-filter' ),
-				'group'       => 'data',
-				'tab'         => 'settings',
-				'type'        => 'string',
-				'inputType'   => 'Select',
-				'placeholder' => __( 'Choose a Taxonomy', 'search-filter' ),
-				'context'     => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
-				'options'     => array(),
-				'store'       => array(
+				'name'         => 'dataTaxonomy',
+				'label'        => __( 'Taxonomy', 'search-filter' ),
+				'help'         => __( "If you don't see your taxonomy - check that it is set to public and it is available for your post type.", 'search-filter' ),
+				'group'        => 'data',
+				'tab'          => 'settings',
+				'type'         => 'string',
+				'inputType'    => 'Select',
+				'placeholder'  => __( 'Choose a Taxonomy', 'search-filter' ),
+				'context'      => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'options'      => array(),
+				'dataProvider' => array(
 					'route' => '/settings/options/taxonomies',
 					'args'  => array(
 						'queryId',
 					),
 				),
-				'dependsOn'   => array(
+				'dependsOn'    => array(
 					'relation' => 'AND',
 					'rules'    => array(
 						array(
@@ -677,8 +682,8 @@ class Settings_Data {
 						),
 					),
 				),
-				'isDataType'  => true,
-				'supports'    => array(
+				'isDataType'   => true,
+				'supports'     => array(
 					'previewAPI' => true,
 				),
 			),
@@ -716,7 +721,7 @@ class Settings_Data {
 				'help'        => __( 'Choose the type of input control.', 'search-filter' ) . "\n" . __( 'Your data settings will affect the input types that are available', 'search-filter' ),
 				'group'       => 'input',
 				'tab'         => 'settings',
-				// 'default'     => '',
+				'default'     => '',
 				'type'        => 'string',
 				'inputType'   => 'Select',
 				'placeholder' => __( 'Select an Input Type', 'search-filter' ),
@@ -1087,7 +1092,7 @@ class Settings_Data {
 						'value' => 'asc',
 					),
 					array(
-						'label' => __( 'Descending', 'search-filte' ),
+						'label' => __( 'Descending', 'search-filter' ),
 						'value' => 'desc',
 					),
 				),
@@ -1346,7 +1351,7 @@ class Settings_Data {
 				'name'      => 'taxonomyFilterArchive',
 				'label'     => __( 'Use archive URL', 'search-filter' ),
 				'help'      => __( 'Enabling this option will use the taxonomy archive URL', 'search-filter' ),
-				'group'     => 'data',
+				'group'     => 'behaviour',
 				'tab'       => 'settings',
 				'default'   => 'no',
 				'type'      => 'string',
@@ -1363,30 +1368,35 @@ class Settings_Data {
 					),
 				),
 				'dependsOn' => array(
-					'relation' => 'AND',
+					'relation' => 'OR',
 					'rules'    => array(
 						array(
-							'option'  => 'dataType',
-							'compare' => '=',
-							'value'   => 'taxonomy',
-						),
-						array(
-							'store'   => 'query',
-							'option'  => 'integrationType',
-							'compare' => '=',
-							'value'   => 'archive',
-						),
-						array(
-							'store'   => 'query',
-							'option'  => 'archiveType',
-							'compare' => '=',
-							'value'   => 'post_type',
-						),
-						array(
-							'store'   => 'query',
-							'option'  => 'archiveFilterTaxonomies',
-							'compare' => '=',
-							'value'   => 'yes',
+							'relation' => 'AND',
+							'rules'    => array(
+								array(
+									'option'  => 'dataType',
+									'compare' => '=',
+									'value'   => 'taxonomy',
+								),
+								array(
+									'store'   => 'query',
+									'option'  => 'integrationType',
+									'compare' => '=',
+									'value'   => 'archive',
+								),
+								array(
+									'store'   => 'query',
+									'option'  => 'archiveType',
+									'compare' => '=',
+									'value'   => 'post_type',
+								),
+								array(
+									'store'   => 'query',
+									'option'  => 'archiveFilterTaxonomies',
+									'compare' => '=',
+									'value'   => 'yes',
+								),
+							),
 						),
 					),
 				),
@@ -1486,19 +1496,19 @@ class Settings_Data {
 				),
 			),
 			array(
-				'name'      => 'taxonomyTerms',
-				'label'     => __( 'Taxonomy terms', 'search-filter' ),
-				'type'      => 'array',
-				'items'     => array(
+				'name'         => 'taxonomyTerms',
+				'label'        => __( 'Taxonomy terms', 'search-filter' ),
+				'type'         => 'array',
+				'items'        => array(
 					'type' => 'number',
 				),
-				'inputType' => 'MultiSelect',
-				'group'     => 'data',
-				'tab'       => 'settings',
-				'options'   => array(),
-				'default'   => array(),
-				'context'   => array( 'admin/field', 'admin/field/search', 'block/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
-				'dependsOn' => array(
+				'inputType'    => 'MultiSelect',
+				'group'        => 'data',
+				'tab'          => 'settings',
+				'options'      => array(),
+				'default'      => array(),
+				'context'      => array( 'admin/field', 'admin/field/search', 'block/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'dependsOn'    => array(
 					'relation' => 'OR',
 					'rules'    => array(
 						array(
@@ -1513,13 +1523,13 @@ class Settings_Data {
 						),
 					),
 				),
-				'store'     => array(
+				'dataProvider' => array(
 					'route' => '/settings/options/taxonomy-terms',
 					'args'  => array(
 						'dataTaxonomy',
 					),
 				),
-				'supports'  => array(
+				'supports'     => array(
 					'previewAPI' => true,
 				),
 			),
@@ -1531,24 +1541,21 @@ class Settings_Data {
 	public static function get_post_type_choice_settings() {
 		$settings = array(
 			array(
-				// Block.json attributes.
-				'name'        => 'dataPostTypes',
-				'type'        => 'array',
-				'items'       => array(
+				'name'         => 'dataPostTypes',
+				'type'         => 'array',
+				'items'        => array(
 					'type' => 'string',
 				),
-				'default'     => array(),
-				'inputType'   => 'MultiSelect',
-				// End block.json attributes
-				'tab'         => 'settings',
-				'label'       => __( 'Posts Types', 'search-filter' ),
-				// 'placeholder' => __( 'All available post types', 'search-filter' ),
-				'placeholder' => __( 'Choose post types', 'search-filter' ),
-				'help'        => __( 'Leave empty to choose all available post types.  Available post types are controlled by your query settings.', 'search-filter' ),
-				'group'       => 'data',
-				'context'     => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
-				'options'     => array(),
-				'dependsOn'   => array(
+				'default'      => array(),
+				'inputType'    => 'MultiSelect',
+				'tab'          => 'settings',
+				'label'        => __( 'Posts Types', 'search-filter' ),
+				'placeholder'  => __( 'Choose post types', 'search-filter' ),
+				'help'         => __( 'Leave empty to choose all available post types.  Available post types are controlled by your query settings.', 'search-filter' ),
+				'group'        => 'data',
+				'context'      => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'options'      => array(),
+				'dependsOn'    => array(
 					'relation' => 'AND',
 					'rules'    => array(
 						array(
@@ -1563,13 +1570,13 @@ class Settings_Data {
 						),
 					),
 				),
-				'store'       => array(
+				'dataProvider' => array(
 					'route' => '/settings/options/post-types',
 					'args'  => array(
 						'queryId',
 					),
 				),
-				'supports'    => array(
+				'supports'     => array(
 					'previewAPI' => true,
 				),
 			),
@@ -1580,19 +1587,19 @@ class Settings_Data {
 	public static function get_post_status_choice_settings() {
 		$settings = array(
 			array(
-				'name'      => 'dataPostStati',
-				'label'     => __( 'Post Status', 'search-filter' ),
-				'type'      => 'array',
-				'items'     => array(
+				'name'         => 'dataPostStati',
+				'label'        => __( 'Post Status', 'search-filter' ),
+				'type'         => 'array',
+				'items'        => array(
 					'type' => 'string',
 				),
-				'inputType' => 'MultiSelect',
-				'group'     => 'data',
-				'tab'       => 'settings',
-				'options'   => array(),
-				'default'   => array( 'publish' ),
-				'context'   => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
-				'dependsOn' => array(
+				'inputType'    => 'MultiSelect',
+				'group'        => 'data',
+				'tab'          => 'settings',
+				'options'      => array(),
+				'default'      => array( 'publish' ),
+				'context'      => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+				'dependsOn'    => array(
 					'relation' => 'AND',
 					'rules'    => array(
 						array(
@@ -1607,13 +1614,13 @@ class Settings_Data {
 						),
 					),
 				),
-				'store'     => array(
+				'dataProvider' => array(
 					'route' => '/settings/options/post-stati',
 					'args'  => array(
 						'queryId',
 					),
 				),
-				'supports'  => array(
+				'supports'     => array(
 					'previewAPI' => true,
 				),
 			),
@@ -1794,18 +1801,19 @@ class Settings_Data {
 
 		$settings = array(
 			array(
-				'name'        => 'stylesId',
-				'label'       => __( 'Styles preset', 'search-filter' ),
-				'group'       => 'styles',
-				'tab'         => 'styles',
-				'default'     => '0',
-				'help'        => __( 'Styles are inherited from the selected preset.', 'search-filter' ),
-				'type'        => 'string',
-				'inputType'   => 'StylesSelect',
-				'context'     => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
-				'placeholder' => __( 'Select styles to apply', 'search-filter' ),
-				'store'       => array(
-					'route' => '/settings/options/styles',
+				'name'         => 'stylesId',
+				'label'        => __( 'Styles preset', 'search-filter' ),
+				'group'        => 'styles',
+				'tab'          => 'styles',
+				'default'      => '0',
+				'help'         => __( 'Styles are inherited from the selected preset.', 'search-filter' ),
+				'type'         => 'string',
+				'inputType'    => 'StylesSelect',
+				'context'      => array( 'admin/field', 'block/field/search', 'admin/field/search', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/control', 'block/field/control' ),
+				'placeholder'  => __( 'Select styles to apply', 'search-filter' ),
+				'dataProvider' => array(
+					'route'   => '/settings/options/styles',
+					'preload' => true,
 				),
 			),
 			array(
@@ -1881,7 +1889,7 @@ class Settings_Data {
 								array(
 									'option'  => 'type',
 									'compare' => '=',
-									'value'   => 'choice',
+									'value'   => 'advanced',
 								),
 								array(
 									'option'  => 'type',

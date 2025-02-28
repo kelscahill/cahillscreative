@@ -498,9 +498,10 @@ const WPFormsRepeaterField = window.WPFormsRepeaterField || ( function( document
 			app.initNumberSlider( $clone );
 			wpforms.loadDatePicker( $clone );
 			wpforms.loadTimePicker( $clone );
-			wpforms.loadSmartPhoneField( $clone );
+			window.WPFormsPhoneField?.loadSmartField?.( $clone );
 			wpforms.loadChoicesJS( $clone );
 			wpforms.loadInputMask( $clone );
+			wpforms.loadValidationGroups( $clone );
 			window.WPFormsTextLimit?.initHint( '#' + $clone.attr( 'id' ) );
 			window.WPForms?.FrontendModern?.updateGBBlockRatingColor( $clone );
 			window.WPForms?.FrontendModern?.updateGBBlockIconChoicesColor( $clone );
@@ -534,7 +535,7 @@ const WPFormsRepeaterField = window.WPFormsRepeaterField || ( function( document
 			$cloneBlocks.each( function() {
 				const $clone = $( this );
 				const $repeaterField = $clone.closest( '.wpforms-field-repeater' );
-				const $originalRichTextFields = $repeaterField.find( '> .wpforms-field-repeater-display-rows .wp-editor-area' );
+				const $originalRichTextFields = $repeaterField.find( '> .wpforms-field-repeater-display-rows .wp-editor-area, > .wpforms-field-repeater-display-blocks .wp-editor-area' );
 
 				$clone.find( '.wp-editor-area' ).each( function( i ) {
 					app.initClonedRichTextField(

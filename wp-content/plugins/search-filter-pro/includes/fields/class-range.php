@@ -10,9 +10,9 @@
 
 namespace Search_Filter_Pro\Fields;
 
-use Search_Filter\Fields\Field;
 use Search_Filter\Fields\Settings as Fields_Settings;
 use Search_Filter\Queries\Query;
+use Search_Filter\Util;
 use Search_Filter_Pro\Indexer\Database\Index_Query;
 
 // If this file is called directly, abort.
@@ -55,10 +55,10 @@ class Range extends \Search_Filter\Fields\Range {
 		if ( self::$has_registered ) {
 			return;
 		}
-		add_action( 'search-filter/settings/register/fields', array( __CLASS__, 'setup' ), 2 );
+		add_action( 'search-filter/settings/fields/init', array( __CLASS__, 'setup' ), 2 );
 
 		// Register the min/max values if auto detect is enabled.
-		add_action( 'search-filter/record/set_attributes', array( __CLASS__, 'set_auto_detect_attributes' ), 1, 3 );
+		add_filter( 'search-filter/fields/field/get_attributes', array( __CLASS__, 'set_auto_detect_attributes' ), 1, 2 );
 		self::$has_registered = true;
 	}
 
@@ -72,6 +72,37 @@ class Range extends \Search_Filter\Fields\Range {
 		$add_setting_args = array(
 			'extend_block_types' => array( 'range' ),
 		);
+
+		// Custom field setting for choosing a post meta key.
+		$setting = array(
+			'name'      => 'dataMaxRangeOptionsNotice',
+			'content'   => __( 'There is an upper limit of 200 options that can be generated.', 'search-filter-pro' ),
+			'group'     => 'input',
+			'tab'       => 'settings',
+			'type'      => 'string',
+			'inputType' => 'Notice',
+			'status'    => 'warning',
+			'context'   => array( 'admin/field', 'admin/field/range', 'block/field/range' ),
+			'dependsOn' => array(
+				'relation' => 'OR',
+				'action'   => 'hide',
+				'rules'    => array(
+					array(
+						'option'  => 'inputType',
+						'value'   => 'select',
+						'compare' => '=',
+					),
+					array(
+						'option'  => 'inputType',
+						'value'   => 'radio',
+						'compare' => '=',
+					),
+				),
+			),
+		);
+
+		Fields_Settings::add_setting( $setting, $add_setting_args );
+
 
 		$setting = array(
 			'name'      => 'rangeAutodetectMin',
@@ -418,14 +449,12 @@ class Range extends \Search_Filter\Fields\Range {
 
 		$attributes = wp_parse_args( $attributes, $default_attributes );
 
-		// TODO - use the indexer tables if the query is using the indexer, but not if we're in admin
-		// as we don't know if the field has been indexed yet.
 		$return_values = array(
 			'min' => $attributes['rangeMin'],
 			'max' => $attributes['rangeMax'],
 		);
 
-		// TODO we need to cache these queries locally so we don't keep running queries.
+		// TODO - we need to cache these queries locally so we don't keep running find() queries.
 		$query = Query::find( array( 'id' => $query_id ) );
 		if ( is_wp_error( $query ) ) {
 			return $return_values;
@@ -440,46 +469,21 @@ class Range extends \Search_Filter\Fields\Range {
 				$decimal_places = absint( $attributes['rangeDecimalPlaces'] );
 			}
 			$cast_type = self::get_cast_type_from_decimal_places( $decimal_places );
+			global $wpdb;
 
 			// Run the query for min/max on the index table.
 			if ( $attributes['rangeAutodetectMin'] === 'yes' ) {
-				// TODO - these could be more efficient queries by using MIN() and MAX() in the sql.
-				$min_query = new Index_Query(
-					array(
-						'fields'   => array( 'value' ),
-						'groupby'  => 'value',
-						'field_id' => $field_id,
-						'number'   => 1,
-						'orderby'  => 'value',
-						'orderas'  => $cast_type,
-						'order'    => 'ASC',
-					)
-				);
-				if ( count( $min_query->items ) === 0 ) {
-					return $return_values;
+				$min = $wpdb->get_var( $wpdb->prepare( "SELECT MIN( CAST( value AS $cast_type ) ) FROM {$wpdb->prefix}search_filter_index WHERE field_id = %d AND value != '' ", $field_id ) );
+				if ( $min !== null ) {
+					$return_values['min'] = $min;
 				}
-				$return_values['min'] = (string) $min_query->items[0]->value;
 			}
 
 			if ( $attributes['rangeAutodetectMax'] === 'yes' ) {
-				// TODO - these could be more efficient queries by using MIN() and MAX() in the sql.
-				$max_query = new Index_Query(
-					array(
-						'fields'   => array( 'value' ),
-						'groupby'  => 'value',
-						'field_id' => $field_id,
-						'number'   => 1,
-						'orderby'  => 'value',
-						'orderas'  => $cast_type,
-						'order'    => 'DESC',
-					)
-				);
-				if ( count( $max_query->items ) === 0 ) {
-					return $return_values;
+				$max = $wpdb->get_var( $wpdb->prepare( "SELECT MAX( CAST( value AS $cast_type ) ) FROM {$wpdb->prefix}search_filter_index WHERE field_id = %d AND value != '' ", $field_id ) );
+				if ( $max !== null ) {
+					$return_values['max'] = $max;
 				}
-
-				$return_values['max'] = (string) $max_query->items[0]->value;
-
 			}
 
 			return $return_values;
@@ -548,7 +552,9 @@ class Range extends \Search_Filter\Fields\Range {
 	 *
 	 * If the decimal places are 0, then cast to SIGNED.
 	 * If the decimal places are greater than 0, then cast to DECIMAL.
-
+	 *
+	 * Important, this must be SQL safe before returning.
+	 *
 	 * @param mixed $decimal_places
 	 * @return string
 	 */
@@ -563,36 +569,37 @@ class Range extends \Search_Filter\Fields\Range {
 		return $cast_type;
 	}
 
-	public static function set_auto_detect_attributes( $attributes, $record_type, $record ) {
-		if ( $record_type !== 'field' ) {
+	public static function set_auto_detect_attributes( $attributes, $field ) {
+
+		// Using `get_attribute()` will trigger an infinite loop, so unhook before
+		// interacting with the field.
+		remove_filter( 'search-filter/fields/field/get_attributes', array( __CLASS__, 'set_auto_detect_attributes' ), 1, 2 );
+		if ( $field->get_attribute( 'type' ) !== 'range' ) {
+			add_filter( 'search-filter/fields/field/get_attributes', array( __CLASS__, 'set_auto_detect_attributes' ), 1, 2 );
 			return $attributes;
 		}
 
-		if ( $record->get_attribute( 'type' ) !== 'range' ) {
-			return $attributes;
-		}
+		$query_id = $field->get_attribute( 'queryId' );
 
-		$query_id = $record->get_attribute( 'queryId' );
-
-		$min_max                = self::get_auto_detected_min_max( $record->get_attributes(), $query_id, $record->get_id() );
+		$min_max                = self::get_auto_detected_min_max( $field->get_attributes(), $query_id, $field->get_id() );
 		$attributes['rangeMin'] = $min_max['min'];
 		$attributes['rangeMax'] = $min_max['max'];
 
 		// TODO - move this into the WooCommerce integration class.
-		if ( $record->get_attribute( 'dataType' ) === 'woocommerce' ) {
-			$data_woocommerce = $record->get_attribute( 'dataWoocommerce' );
-
+		if ( $field->get_attribute( 'dataType' ) === 'woocommerce' ) {
+			$data_woocommerce = $field->get_attribute( 'dataWoocommerce' );
 			if ( $data_woocommerce !== 'price' ) {
+				add_filter( 'search-filter/fields/field/get_attributes', array( __CLASS__, 'set_auto_detect_attributes' ), 1, 2 );
 				return $attributes;
 			}
 
-			$custom_field_key       = '_price';
-			$query_id               = $record->get_attribute( 'queryId' );
-			$min_max                = self::get_auto_detected_min_max( $record->get_attributes(), $query_id, $record->get_id() );
+			$query_id               = $field->get_attribute( 'queryId' );
+			$min_max                = self::get_auto_detected_min_max( $field->get_attributes(), $query_id, $field->get_id() );
 			$attributes['rangeMin'] = $min_max['min'];
 			$attributes['rangeMax'] = $min_max['max'];
 		}
 
+		add_filter( 'search-filter/fields/field/get_attributes', array( __CLASS__, 'set_auto_detect_attributes' ), 1, 2 );
 		return $attributes;
 	}
 
@@ -705,26 +712,17 @@ class Range extends \Search_Filter\Fields\Range {
 	 */
 	public function parse_url_value() {
 		$url_param_name = self::url_prefix() . $this->get_url_name();
-		$values         = isset( $_GET[ $url_param_name ] ) ? urldecode_deep( sanitize_text_field( wp_unslash( $_GET[ $url_param_name ] ) ) ) : '';
+
+		// Compat
+		if ( ! method_exists( '\Search_Filter\Util', 'get_request_var' ) ) {
+			return;
+		}
+		// Notice: the request var has not been sanitized yet, its the raw value from the either $_GET or $_POST.
+		$request_var = Util::get_request_var( $url_param_name );
+		$values      = $request_var !== null ? urldecode_deep( sanitize_text_field( wp_unslash( $request_var ) ) ) : '';
 		if ( $values !== '' ) {
 			$this->set_values( explode( ',', $values ) );
 		}
-	}
-
-	/**
-	 * Gets the URL name for the field.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @return string
-	 */
-	public function get_url_name() {
-		if ( ! $this->has_init() ) {
-			return parent::get_url_name();
-		}
-		$url_name = '';
-		$url_name = apply_filters( 'search-filter/field/url_name', $url_name, $this );
-		return $url_name;
 	}
 
 	/**

@@ -12,17 +12,12 @@ namespace Search_Filter_Pro;
 
 use Search_Filter\Fields;
 use Search_Filter\Queries;
-use Search_Filter\Queries\Query_Render_Store;
 use Search_Filter_Pro\Core\Scripts;
-use Search_Filter\Util;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-// Don't wait for plugins_loaded hook, start the output buffer as soon as possible.
-Frontend::output_buffer();
 
 /**
  * The main class for initialising all things for the frontend.
@@ -42,6 +37,7 @@ class Frontend {
 		\Search_Filter_Pro\Queries::init();
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_debug_script' ) );
+		add_action( 'search-filter/frontend/enqueue_scripts/data', array( $this, 'add_script_data' ) );
 
 		if ( isset( $_GET['search-filter-api'] ) ) {
 
@@ -53,11 +49,17 @@ class Frontend {
 			// so the URLs are not filterable: https://github.com/WordPress/gutenberg/issues/54423
 			// So we'll use the `render_block` filter to modify the output.
 			add_filter( 'render_block', array( $this, 'modify_block_pagination_urls' ), 10, 3 );
+			add_filter( 'wp_robots', array( $this, 'modify_robots_for_api' ), 1000, 1 );
 
-			// If we're doing an API request, we should send no-cache headers and no-index for SEO.
-			// Uses WP send_headers hook.
-			add_action( 'send_headers', array( __CLASS__, 'send_headers' ), 20 );
+			// Remove the existing data action and override it with our own.
+			remove_action( 'wp_footer', array( \Search_Filter\Frontend::class, 'data' ), 100 );
+			add_action( 'wp_footer', array( $this, 'add_api_request_data' ), 100 );
 		}
+	}
+
+	public function add_script_data( $data ) {
+		$data['isPro'] = true;
+		return $data;
 	}
 
 	/**
@@ -71,7 +73,7 @@ class Frontend {
 	public function update_scripts( $scripts ) {
 		foreach ( $scripts as $handle => $args ) {
 			if ( $handle === 'search-filter' ) {
-				$scripts[ $handle ]['src'] = Scripts::get_frontend_assets_url() . 'js/frontend/frontend.' . Util::get_file_ext( 'js' );
+				$scripts[ $handle ]['src'] = Scripts::get_frontend_assets_url() . 'js/frontend/frontend.js';
 			}
 		}
 
@@ -88,7 +90,7 @@ class Frontend {
 	public function update_styles( $styles ) {
 		foreach ( $styles as $handle => $args ) {
 			if ( $handle === 'search-filter' ) {
-				$styles[ $handle ]['src'] = Scripts::get_frontend_assets_url() . 'css/frontend/frontend.' . Util::get_file_ext( 'css' );
+				$styles[ $handle ]['src'] = Scripts::get_frontend_assets_url() . 'css/frontend/frontend.css';
 			}
 		}
 		return $styles;
@@ -141,6 +143,11 @@ class Frontend {
 		return $block_content;
 	}
 
+	public function modify_robots_for_api( $robots ) {
+		$robots['noindex'] = true;
+		return $robots;
+	}
+
 	/**
 	 * Remove the API arg from pagination URLs.
 	 *
@@ -154,91 +161,26 @@ class Frontend {
 		return $url;
 	}
 
-	/**
-	 * Start the output buffer.
-	 *
-	 * We want to wrap the regular html response into a json object.
-	 *
-	 * @since 3.0.0
-	 */
-	public static function output_buffer() {
+	public function add_api_request_data() {
+		$queries = array();
+		if ( method_exists( '\Search_Filter\Queries', 'get_used_queries' ) ) {
+			$queries = \Search_Filter\Queries::get_used_queries();
 
-		if ( ! isset( $_GET['search-filter-api'] ) ) {
-			return;
+		} else if ( method_exists( '\Search_Filter\Queries', 'get_active_queries' ) ) {
+			// Backward compat.
+			$queries = \Search_Filter\Queries::get_active_queries();
 		}
-
-		$level = ob_get_level();
-		for ( $i = 0; $i < $level; $i++ ) {
-			ob_end_clean();
-		}
-
-		ob_start( array( __CLASS__, 'update_output_buffer' ), 0, PHP_OUTPUT_HANDLER_STDFLAGS ^ PHP_OUTPUT_HANDLER_REMOVABLE ^ PHP_OUTPUT_HANDLER_FLUSHABLE ^ PHP_OUTPUT_HANDLER_CLEANABLE );
-	}
-
-	/**
-	 * Update the output buffer.
-	 *
-	 * Tidy up the content before exporting via our JSON response.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param string $content    The content to update.
-	 */
-	public static function update_output_buffer( $content ) {
-		// Get the page title.
-		$title = wp_strip_all_tags( html_entity_decode( wp_get_document_title(), ENT_QUOTES, 'UTF-8' ) );
-
-		// Simplify the content / document before exporting via our JSON response.
-
-		// Get only the body tag, we don't need anything else.
-		// Note - need to include the body tag itself so CSS selectors that specify the body
-		// will continue to work.
-
-		// TODO: some CSS selectors start at the html tag - need to document this.
-
-		$matches = array();
-		// TODO: we might need to add a way to extract other parts of the document.  There is
-		// a use case with Elementor, on a page with no results, lots of the CSS and JS for
-		// the loop grid template is not loaded (as a template is never loaded), so we need to
-		// load them in when navigating to a page/search with results (otherwise templates are
-		// loaded without their necessary css/js - even more true for external plugins.
-		// Probably also applicable with the query loop.
-		preg_match( '/<body[^>]*>(.*?)<\/body>/si', $content, $matches );
-		if ( count( $matches ) > 0 ) {
-			$content = $matches[0];
-		}
-
-		// Remove all remaining script tags.
-		// TODO - is this necessary? Does it add unecessary overhead?
-		$content = preg_replace( '/<script\b[^>]*>(.*?)<\/script>/is', '', $content );
-
-		$query_settings = array();
-		foreach ( Queries::get_active_query_ids() as $query_id ) {
-			$render_data = Query_Render_Store::get_render_data( $query_id );
-			if ( $render_data ) {
-				$query_settings[ $query_id ] = $render_data;
-			}
-		}
-
-		$api_response = array(
-			'title'   => $title,
-			'fields'  => Fields::get_active_fields(),
-			'queries' => $query_settings,
-			'results' => $content,
+		$data         = array(
+			'fields'       => Fields::get_active_fields(),
+			'queries'      => $queries,
+			'shouldMount'  => false,
+			'isApiRequest' => true,
 		);
+		// Add filter to modify the data.
+		$data    = apply_filters( 'search-filter/frontend/data', $data );
+		?>
+		<span id="search-filter-data-json" data-search-filter-data="<?php echo esc_attr( wp_json_encode( $data ) ); ?>"></span>
+		<?php
+	}
 
-		// Need to re-send the headers in case something else sent them in the page load.
-		// Caching plugins often do this, so we need to set content type back to JSON.
-		self::send_headers();
-		return wp_json_encode( $api_response );
-	}
-	/**
-	 * Send no-cache and no-index headers for API requests.
-	 */
-	public static function send_headers() {
-		header( 'Content-Type: application/json; charset=utf-8' );
-		header( 'Cache-Control: no-cache, no-store, must-revalidate' );
-		header( 'Expires: 0' );
-		header( 'X-Robots-Tag: noindex, nofollow' );
-	}
 }

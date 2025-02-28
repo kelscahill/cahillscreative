@@ -12,15 +12,10 @@ defined( 'ABSPATH' ) || exit;
  */
 class AdsCampaignQuery extends AdsQuery {
 
-	use ReportQueryTrait;
-
-
 	/**
-	 * Query constructor.
-	 *
-	 * @param array $args Query arguments.
+	 * AdsCampaignQuery constructor.
 	 */
-	public function __construct( $args = [] ) {
+	public function __construct() {
 		parent::__construct( 'campaign' );
 		$this->columns(
 			[
@@ -32,7 +27,5 @@ class AdsCampaignQuery extends AdsQuery {
 				'campaign_budget.amount_micros',
 			]
 		);
-
-		$this->handle_query_args( $args );
 	}
 }

@@ -3,15 +3,9 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Internal\DependencyManagement;
 
+use Automattic\WooCommerce\Admin\Marketing\MarketingChannels;
 use Automattic\WooCommerce\GoogleListingsAndAds\ActionScheduler\ActionScheduler;
-use Automattic\WooCommerce\GoogleListingsAndAds\Admin\Redirect;
 use Automattic\WooCommerce\GoogleListingsAndAds\Admin\Admin;
-use Automattic\WooCommerce\GoogleListingsAndAds\Admin\BulkEdit\BulkEditInitializer;
-use Automattic\WooCommerce\GoogleListingsAndAds\Admin\BulkEdit\CouponBulkEdit;
-use Automattic\WooCommerce\GoogleListingsAndAds\Admin\MetaBox\ChannelVisibilityMetaBox;
-use Automattic\WooCommerce\GoogleListingsAndAds\Admin\MetaBox\CouponChannelVisibilityMetaBox;
-use Automattic\WooCommerce\GoogleListingsAndAds\Admin\MetaBox\MetaBoxInitializer;
-use Automattic\WooCommerce\GoogleListingsAndAds\Admin\MetaBox\MetaBoxInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Admin\Product\Attributes\AttributesTab;
 use Automattic\WooCommerce\GoogleListingsAndAds\Admin\Product\Attributes\VariationsAttributes;
 use Automattic\WooCommerce\GoogleListingsAndAds\Admin\Product\ChannelVisibilityBlock;
@@ -31,7 +25,6 @@ use Automattic\WooCommerce\GoogleListingsAndAds\API\Site\RESTControllers;
 use Automattic\WooCommerce\GoogleListingsAndAds\API\WP\OAuthService;
 use Automattic\WooCommerce\GoogleListingsAndAds\Assets\AssetsHandler;
 use Automattic\WooCommerce\GoogleListingsAndAds\Assets\AssetsHandlerInterface;
-use Automattic\WooCommerce\GoogleListingsAndAds\ConnectionTest;
 use Automattic\WooCommerce\GoogleListingsAndAds\Coupon\CouponHelper;
 use Automattic\WooCommerce\GoogleListingsAndAds\Coupon\CouponMetaHandler;
 use Automattic\WooCommerce\GoogleListingsAndAds\Coupon\CouponSyncer;
@@ -53,18 +46,8 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\ViewFactory;
 use Automattic\WooCommerce\GoogleListingsAndAds\Installer;
 use Automattic\WooCommerce\GoogleListingsAndAds\Internal\DeprecatedFilters;
 use Automattic\WooCommerce\GoogleListingsAndAds\Internal\InstallTimestamp;
-use Automattic\WooCommerce\GoogleListingsAndAds\Internal\Interfaces\FirstInstallInterface;
-use Automattic\WooCommerce\GoogleListingsAndAds\Internal\Interfaces\InstallableInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Jobs\ProductSyncStats;
 use Automattic\WooCommerce\GoogleListingsAndAds\Logging\DebugLogger;
-use Automattic\WooCommerce\GoogleListingsAndAds\Menu\AttributeMapping;
-use Automattic\WooCommerce\GoogleListingsAndAds\Menu\Dashboard;
-use Automattic\WooCommerce\GoogleListingsAndAds\Menu\GetStarted;
-use Automattic\WooCommerce\GoogleListingsAndAds\Menu\ProductFeed;
-use Automattic\WooCommerce\GoogleListingsAndAds\Menu\Reports;
-use Automattic\WooCommerce\GoogleListingsAndAds\Menu\Settings;
-use Automattic\WooCommerce\GoogleListingsAndAds\Menu\SetupAds;
-use Automattic\WooCommerce\GoogleListingsAndAds\Menu\SetupMerchantCenter;
 use Automattic\WooCommerce\GoogleListingsAndAds\MerchantCenter\AccountService;
 use Automattic\WooCommerce\GoogleListingsAndAds\MerchantCenter\AccountService as MerchantAccountService;
 use Automattic\WooCommerce\GoogleListingsAndAds\MerchantCenter\ContactInformation;
@@ -126,9 +109,8 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Utility\AddressUtility;
 use Automattic\WooCommerce\GoogleListingsAndAds\Utility\DateTimeUtility;
 use Automattic\WooCommerce\GoogleListingsAndAds\Utility\ImageUtility;
 use Automattic\WooCommerce\GoogleListingsAndAds\Utility\ISOUtility;
+use Automattic\WooCommerce\GoogleListingsAndAds\Utility\WPCLIMigrationGTIN;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\League\ISO3166\ISO3166DataProvider;
-use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Container\ContainerInterface;
-use Automattic\WooCommerce\GoogleListingsAndAds\View\PHPViewFactory;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use wpdb;
 
@@ -144,36 +126,25 @@ class CoreServiceProvider extends AbstractServiceProvider {
 	 */
 	protected $provides = [
 		Installer::class                 => true,
-		Redirect::class                  => true,
-		Admin::class                     => true,
 		AddressUtility::class            => true,
-		Reports::class                   => true,
 		AssetsHandlerInterface::class    => true,
-		BulkEditInitializer::class       => true,
 		ContactInformationNote::class    => true,
 		CompleteSetupTask::class         => true,
 		CompleteSetupNote::class         => true,
-		CouponBulkEdit::class            => true,
 		CouponHelper::class              => true,
 		CouponMetaHandler::class         => true,
 		CouponSyncer::class              => true,
-		Dashboard::class                 => true,
 		DateTimeUtility::class           => true,
 		EventTracking::class             => true,
-		GetStarted::class                => true,
 		GlobalSiteTag::class             => true,
 		ISOUtility::class                => true,
 		SiteVerificationEvents::class    => true,
 		OptionsInterface::class          => true,
 		TransientsInterface::class       => true,
-		ProductFeed::class               => true,
 		ReconnectWordPressNote::class    => true,
 		ReviewAfterClicksNote::class     => true,
 		RESTControllers::class           => true,
 		Service::class                   => true,
-		Settings::class                  => true,
-		SetupAds::class                  => true,
-		SetupMerchantCenter::class       => true,
 		SetupCampaignNote::class         => true,
 		SetupCampaign2Note::class        => true,
 		SetupCouponSharingNote::class    => true,
@@ -188,8 +159,6 @@ class CoreServiceProvider extends AbstractServiceProvider {
 		BatchProductHelper::class        => true,
 		ProductFilter::class             => true,
 		ProductRepository::class         => true,
-		MetaBoxInterface::class          => true,
-		MetaBoxInitializer::class        => true,
 		ViewFactory::class               => true,
 		DebugLogger::class               => true,
 		MerchantStatuses::class          => true,
@@ -213,14 +182,14 @@ class CoreServiceProvider extends AbstractServiceProvider {
 		ShippingZone::class              => true,
 		AdsAccountService::class         => true,
 		MerchantAccountService::class    => true,
-		AttributeMapping::class          => true,
 		MarketingChannelRegistrar::class => true,
 		OAuthService::class              => true,
+		WPCLIMigrationGTIN::class        => true,
 	];
 
 	/**
 	 * Use the register method to register items with the container via the
-	 * protected $this->leagueContainer property or the `getLeagueContainer` method
+	 * protected $this->container property or the `getContainer` method
 	 * from the ContainerAwareTrait.
 	 *
 	 * @return void
@@ -238,13 +207,13 @@ class CoreServiceProvider extends AbstractServiceProvider {
 
 		// Set up Options, and inflect classes that need options.
 		$this->share_concrete( OptionsInterface::class, Options::class );
-		$this->getLeagueContainer()
+		$this->getContainer()
 			->inflector( OptionsAwareInterface::class )
 			->invokeMethod( 'set_options_object', [ OptionsInterface::class ] );
 
 		// Share helper classes, and inflect classes that need it.
 		$this->share_with_tags( GoogleHelper::class, WC::class );
-		$this->getLeagueContainer()
+		$this->getContainer()
 			->inflector( GoogleHelperAwareInterface::class )
 			->invokeMethod( 'set_google_helper_object', [ GoogleHelper::class ] );
 
@@ -260,30 +229,20 @@ class CoreServiceProvider extends AbstractServiceProvider {
 		// Set up OAuthService service.
 		$this->share_with_tags( OAuthService::class );
 
-		$this->getLeagueContainer()
+		$this->getContainer()
 			->inflector( MerchantCenterAwareInterface::class )
 			->invokeMethod( 'set_merchant_center_object', [ MerchantCenterService::class ] );
 
 		// Set up Ads service, and inflect classes that need it.
 		$this->share_with_tags( AdsAccountState::class );
 		$this->share_with_tags( AdsService::class, AdsAccountState::class );
-		$this->getLeagueContainer()
+		$this->getContainer()
 			->inflector( AdsAwareInterface::class )
 			->invokeMethod( 'set_ads_object', [ AdsService::class ] );
 		$this->share_with_tags( AssetSuggestionsService::class, WP::class, WC::class, ImageUtility::class, wpdb::class, AdsAssetGroupAsset::class );
 
 		// Set up the installer.
-		$installer_definition = $this->share_with_tags(
-			Installer::class,
-			InstallableInterface::class,
-			FirstInstallInterface::class,
-			WP::class
-		);
-		$installer_definition->setConcrete(
-			function ( ...$arguments ) {
-				return new Installer( ...$arguments );
-			}
-		);
+		$this->share_with_tags( Installer::class, WP::class );
 
 		// Share utility classes
 		$this->share_with_tags( AddressUtility::class );
@@ -292,33 +251,16 @@ class CoreServiceProvider extends AbstractServiceProvider {
 		$this->share_with_tags( ISOUtility::class, ISO3166DataProvider::class );
 
 		// Share our regular service classes.
-		$this->conditionally_share_with_tags(
-			Admin::class,
-			AssetsHandlerInterface::class,
-			PHPViewFactory::class,
-			MerchantCenterService::class,
-			AdsService::class
-		);
-		$this->conditionally_share_with_tags( Redirect::class, WP::class );
-		$this->conditionally_share_with_tags( GetStarted::class );
-		$this->conditionally_share_with_tags( SetupMerchantCenter::class );
-		$this->conditionally_share_with_tags( SetupAds::class );
-		$this->conditionally_share_with_tags( Dashboard::class );
-		$this->conditionally_share_with_tags( Reports::class );
-		$this->conditionally_share_with_tags( ProductFeed::class );
-		$this->conditionally_share_with_tags( AttributeMapping::class );
-		$this->conditionally_share_with_tags( Settings::class );
 		$this->share_with_tags( TrackerSnapshot::class );
-		$this->conditionally_share_with_tags( EventTracking::class, ContainerInterface::class );
-		$this->conditionally_share_with_tags( RESTControllers::class, ContainerInterface::class );
-		$this->conditionally_share_with_tags( ConnectionTest::class, ContainerInterface::class );
+		$this->share_with_tags( EventTracking::class );
+		$this->share_with_tags( RESTControllers::class );
 		$this->share_with_tags( CompleteSetupTask::class );
 		$this->conditionally_share_with_tags( GlobalSiteTag::class, AssetsHandlerInterface::class, GoogleGtagJs::class, ProductHelper::class, WC::class, WP::class );
 		$this->share_with_tags( SiteVerificationMeta::class );
 		$this->conditionally_share_with_tags( MerchantSetupCompleted::class );
 		$this->conditionally_share_with_tags( AdsSetupCompleted::class );
-		$this->conditionally_share_with_tags( AdsAccountService::class, ContainerInterface::class );
-		$this->conditionally_share_with_tags( MerchantAccountService::class, ContainerInterface::class );
+		$this->share_with_tags( AdsAccountService::class, AdsAccountState::class );
+		$this->share_with_tags( MerchantAccountService::class, MerchantAccountState::class );
 
 		// Inbox Notes
 		$this->share_with_tags( ContactInformationNote::class );
@@ -388,20 +330,9 @@ class CoreServiceProvider extends AbstractServiceProvider {
 		);
 
 		// Set up inflector for tracks classes.
-		$this->getLeagueContainer()
+		$this->getContainer()
 			->inflector( TracksAwareInterface::class )
 			->invokeMethod( 'set_tracks', [ TracksInterface::class ] );
-
-		// Share admin meta boxes
-		$this->conditionally_share_with_tags( ChannelVisibilityMetaBox::class, Admin::class, ProductMetaHandler::class, ProductHelper::class, MerchantCenterService::class );
-		$this->conditionally_share_with_tags( CouponChannelVisibilityMetaBox::class, Admin::class, CouponMetaHandler::class, CouponHelper::class, MerchantCenterService::class, TargetAudience::class );
-		$this->conditionally_share_with_tags( MetaBoxInitializer::class, Admin::class, MetaBoxInterface::class );
-
-		// Share bulk edit views
-		$this->share_with_tags( CouponBulkEdit::class, CouponMetaHandler::class, MerchantCenterService::class, TargetAudience::class );
-		$this->share_with_tags( BulkEditInitializer::class );
-
-		$this->share_with_tags( PHPViewFactory::class );
 
 		// Share other classes.
 		$this->share_with_tags( ActivatedEvents::class, $_SERVER );
@@ -427,9 +358,12 @@ class CoreServiceProvider extends AbstractServiceProvider {
 		// Share Attribute Mapping related classes
 		$this->share_with_tags( AttributeMappingHelper::class );
 
-		if ( defined( 'WC_MCM_EXISTS' ) ) {
+		if ( class_exists( MarketingChannels::class ) ) {
 			$this->share_with_tags( GLAChannel::class, MerchantCenterService::class, AdsCampaign::class, Ads::class, MerchantStatuses::class, ProductSyncStats::class );
 			$this->share_with_tags( MarketingChannelRegistrar::class, GLAChannel::class, WC::class );
 		}
+
+		// ClI Classes
+		$this->conditionally_share_with_tags( WPCLIMigrationGTIN::class, ProductRepository::class, AttributeManager::class );
 	}
 }

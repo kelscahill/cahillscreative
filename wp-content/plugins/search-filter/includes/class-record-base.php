@@ -564,7 +564,7 @@ abstract class Record_Base {
 
 		// Bail if nothing found.
 		if ( empty( $query->items ) ) {
-			return new \WP_Error( 'search_filter_not_found', __( 'Record not found.', 'search-filter' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'search_filter_not_found', __( 'Record not found.', 'search-filter' ), array( 'status' => 404 ) );
 		}
 
 		if ( $return_type === 'record' ) {

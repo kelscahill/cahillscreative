@@ -21,7 +21,6 @@ class Upgrade_3_0_0_Beta_12 {
 			'records'
 		);
 		foreach ( $fields as $field ) {
-
 			// Update filter type to choice.
 			$attributes = $field->get_attributes();
 			if ( isset( $attributes['type'] ) && $attributes['type'] === 'filter' ) {

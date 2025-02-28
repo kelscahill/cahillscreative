@@ -52,7 +52,7 @@ class controller
 				$this->data->save();
 			}
 			else
-				wp_die( sprintf( 'Check %s does not exist!', $id ) );
+				wp_die( sprintf( 'Check %s does not exist!', htmlspecialchars( $id ) ) );
 		}
 		else
 			$r = $this->get_table();

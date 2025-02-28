@@ -31,11 +31,11 @@ class Queries {
 	 * @since    3.0.0
 	 */
 	public static function init() {
-		add_action( 'search-filter/settings/register/queries', array( __CLASS__, 'register_query_settings' ), 1 );
-		add_action( 'search-filter/settings/register/queries', array( __CLASS__, 'register_spinner_settings' ), 1 );
-		add_action( 'search-filter/settings/register/queries', array( __CLASS__, 'register_groups' ), 1 );
-		add_action( 'search-filter/settings/register/queries', array( __CLASS__, 'add_single_integrations' ), 1 );
-		add_action( 'search-filter/settings/register/queries', array( __CLASS__, 'upgrade_sort_order' ), 1 );
+		add_action( 'search-filter/settings/queries/init', array( __CLASS__, 'register_query_settings' ), 1 );
+		add_action( 'search-filter/settings/queries/init', array( __CLASS__, 'register_spinner_settings' ), 1 );
+		add_action( 'search-filter/settings/queries/init', array( __CLASS__, 'register_groups' ), 1 );
+		add_action( 'search-filter/settings/queries/init', array( __CLASS__, 'add_single_integrations' ), 1 );
+		add_action( 'search-filter/settings/queries/init', array( __CLASS__, 'upgrade_sort_order' ), 1 );
 
 		// Check if a queries data has updated, and if we need to resync the data.
 		add_action( 'search-filter/record/pre_save', array( __CLASS__, 'query_check_for_indexer_changes' ), 10, 2 );
@@ -415,7 +415,7 @@ class Queries {
 
 		$setting = array(
 			'name'      => 'resultsDynamicUpdate',
-			'label'     => __( 'Live search', 'search-filter' ),
+			'label'     => __( 'Live Search', 'search-filter' ),
 			'help'      => __( 'Loads new results without refreshing the page.', 'search-filter' ),
 			'group'     => 'results',
 			'type'      => 'string',
@@ -481,7 +481,7 @@ class Queries {
 
 		$setting = array(
 			'name'      => 'resultsShowSpinner',
-			'label'     => __( 'Show loading icon', 'search-filter' ),
+			'label'     => __( 'Show Loading Icon', 'search-filter' ),
 			'help'      => __( 'Show the loading icon when fetching new results.', 'search-filter' ),
 			'group'     => 'results',
 			'type'      => 'string',
@@ -514,7 +514,7 @@ class Queries {
 
 		$setting = array(
 			'name'      => 'resultsFadeResults',
-			'label'     => __( 'Fade results', 'search-filter' ),
+			'label'     => __( 'Fade Results', 'search-filter' ),
 			'help'      => __( 'Fade out the results when loading.', 'search-filter' ),
 			'group'     => 'results',
 			'type'      => 'string',
@@ -546,7 +546,7 @@ class Queries {
 		Queries_Settings::add_setting( $setting );
 
 		/*
-				/* array(
+			array(
 				'name'      => 'offset',
 				'label'     => __( 'Offset', 'search-filter' ),
 				'type'      => 'number',
@@ -579,7 +579,7 @@ class Queries {
 
 		$setting = array(
 			'name'      => 'queryContainer',
-			'label'     => __( 'Results container', 'search-filter' ),
+			'label'     => __( 'Results Container', 'search-filter' ),
 			'help'      => __( 'The CSS selector that contains your results.', 'search-filter' ),
 			'group'     => 'results',
 			'type'      => 'string',
@@ -600,8 +600,8 @@ class Queries {
 
 		$setting = array(
 			'name'      => 'dynamicSections',
-			'label'     => __( 'Dynamic sections', 'search-filter' ),
-			'help'      => __( 'Additional CSS selector(s) that that also needs to be updated dynamically.  Must be unique.', 'search-filter' ),
+			'label'     => __( 'Dynamic Sections', 'search-filter' ),
+			'help'      => __( 'Additional CSS selector(s) that also need to be updated dynamically.  Must be unique.', 'search-filter' ),
 			'group'     => 'results',
 			'type'      => 'string',
 			'inputType' => 'Text',
@@ -622,7 +622,7 @@ class Queries {
 
 		$setting = array(
 			'name'      => 'additionalDynamicSections',
-			'label'     => __( 'Additional Dynamic sections', 'search-filter' ),
+			'label'     => __( 'Additional Dynamic Sections', 'search-filter' ),
 			'group'     => 'results',
 			'type'      => 'string',
 			'inputType' => 'hidden',
@@ -643,7 +643,7 @@ class Queries {
 
 		$setting = array(
 			'name'      => 'resultsScrollTo',
-			'label'     => __( 'Scroll to', 'search-filter' ),
+			'label'     => __( 'Scroll To', 'search-filter' ),
 			'help'      => __( 'Scroll the window after fetching new results.', 'search-filter' ),
 			'group'     => 'results',
 			'type'      => 'string',
@@ -665,7 +665,7 @@ class Queries {
 
 		$setting = array(
 			'name'      => 'resultsPaginationType',
-			'label'     => __( 'Pagination type', 'search-filter' ),
+			'label'     => __( 'Pagination Type', 'search-filter' ),
 			'group'     => 'results',
 			'type'      => 'string',
 			'inputType' => 'Select',
@@ -701,7 +701,7 @@ class Queries {
 
 		$setting = array(
 			'name'      => 'queryPostsContainer',
-			'label'     => __( 'Posts container', 'search-filter' ),
+			'label'     => __( 'Posts Container', 'search-filter' ),
 			'help'      => __( 'The container that only contains the posts (no other query data).', 'search-filter' ),
 			'group'     => 'results',
 			'type'      => 'string',
@@ -1120,10 +1120,8 @@ class Queries {
 		if ( $scroll_parts[0] === 'top' ) {
 			$scroll_to_selector = 'body';
 		} elseif ( $scroll_parts[0] === 'query' ) {
-			// TODO - finalise these class names.
 			$scroll_to_selector = '.search-filter-query--id-' . absint( $record->get_id() );
 		} elseif ( $scroll_parts[0] === 'field' ) {
-			// TODO - finalise these class names.
 			$scroll_to_selector = '.search-filter-field--id-' . absint( $scroll_parts[1] );
 		} elseif ( $scroll_parts[0] === 'custom' ) {
 			$scroll_to_selector = $scroll_parts[1];
@@ -1207,6 +1205,7 @@ class Queries {
 			if ( ! in_array( $meta_query_item['type'], $allowed_types, true ) ) {
 				continue;
 			}
+
 			$valid_queries++;
 			$new_item       = array(
 				'key'     => sanitize_text_field( $meta_query_item['key'] ),
@@ -1222,9 +1221,11 @@ class Queries {
 			return $query_args;
 		}
 
-		$query_args['meta_query'] = array(
-			'relation' => 'AND',
-		);
+		if ( ! isset( $query_args['meta_query'] ) ) {
+			$query_args['meta_query'] = array(
+				'relation' => 'AND',
+			);
+		}
 		$query_args['meta_query'] = array_merge( $query_args['meta_query'], $meta_queries );
 
 		return $query_args;

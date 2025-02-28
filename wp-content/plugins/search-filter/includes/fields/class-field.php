@@ -255,6 +255,19 @@ class Field extends Record_Base {
 	 */
 	public static $handlers = array();
 
+
+	/**
+	 * The render attributes.
+	 */
+	private $render_attributes = array();
+
+	/**
+	 * Query type to use for the field.
+	 *
+	 * @var string
+	 */
+	private $query_type = 'wp_query';
+
 	/**
 	 * Get the generated CSS.
 	 *
@@ -345,8 +358,8 @@ class Field extends Record_Base {
 	 * Checks if the setting already has support conditions, then creates a wrapper
 	 * to extend it by new conditions.
 	 *
-	 * TODO - we should refactor this logic, handling it within the field class, so we can
-	 * call `addSettingSupport` and it will automatically handle this.
+	 * TODO - we should refactor this logic so we can call `addSettingSupport` and
+	 * it will automatically handle this.
 	 *
 	 * @param array  $setting_support The setting support to add the conditions to.
 	 * @param string $setting_name    The setting name to add the conditions to.
@@ -361,7 +374,7 @@ class Field extends Record_Base {
 			'rules'    => array(
 				array(
 					'relation' => 'AND',
-					'rules'    => array(), // Push here o add required conditions
+					'rules'    => array(), // Push here to add required conditions
 				),
 				// Push here to add alternative logic routes.
 			),
@@ -380,7 +393,6 @@ class Field extends Record_Base {
 		}
 
 		return $conditions;
-
 	}
 	/**
 	 * Init the field from already loaded attributes.
@@ -442,8 +454,8 @@ class Field extends Record_Base {
 	 *
 	 * @return string The name to be used in the URL
 	 */
-	public function get_url() {
-		return '';
+	public function get_url_template() {
+		return apply_filters( 'search-filter/field/url_template', array(), $this );
 	}
 
 	/**
@@ -451,10 +463,22 @@ class Field extends Record_Base {
 	 */
 	public function parse_url_value() {
 		$url_param_name = self::url_prefix() . $this->get_url_name();
-		if ( ! isset( $_GET[ $url_param_name ] ) ) {
+
+		// Allow override via hook.
+		$values = apply_filters( 'search-filter/field/parse_url_value', '', $this );
+		if ( ! empty( $values ) ) {
+			$this->set_values( explode( ',', $values ) );
+		}
+
+		// Notice: the request var has not been sanitized yet, its the raw value from the either $_GET or $_POST.
+		$request_var = Util::get_request_var( $url_param_name );
+
+		// Proceed as normal by trying to get the value from the URL.
+		if ( $request_var === null ) {
 			return;
 		}
-		$values = sanitize_text_field( wp_unslash( $_GET[ $url_param_name ] ) );
+
+		$values = sanitize_text_field( wp_unslash( $request_var ) );
 
 		if ( $values !== '' ) {
 			$this->set_values( explode( ',', $values ) );
@@ -712,7 +736,7 @@ class Field extends Record_Base {
 	 * @since    3.0.0
 	 */
 	public function get_values() {
-		return $this->values;
+		return apply_filters( 'search-filter/fields/field/values', $this->values, $this );
 	}
 
 	/**
@@ -756,7 +780,7 @@ class Field extends Record_Base {
 	 * @return array The related data.
 	 */
 	public function get_connected_data() {
-		return $this->connected_data;
+		return apply_filters( 'search-filter/fields/field/connected_data', $this->connected_data, $this );
 	}
 	/**
 	 * Gets the JS data for rendering the field.
@@ -765,29 +789,56 @@ class Field extends Record_Base {
 	 *
 	 * @return array The JSON data.
 	 */
-	public function get_render_data( $attributes = null ) {
-		if ( $attributes === null ) {
-			$attributes = $this->get_attributes();
-		}
+	public function get_render_data() {
 
+		// TODO - we are mixing up terms. We have a variable called
+		// render_data, which is used in 'build()' and ultimately
+		// 'render()', but then we have this function, 'get_render_data()'
+		// which doesn't use that variable at all, and is used for
+		// building the JS data.
+		// We also _now_ have 'get_render_attributes()' as a way to pass
+		// in custom attributes only at the time of building the JS data.
+		$attributes = $this->get_render_attributes();
 		// Resolve the styles ID if its set to default.
 		$attributes['stylesId'] = $this->get_calc_styles_id();
 
 		$render_data = array(
 			'attributes'    => $attributes,
 			'options'       => $this->get_options(),
-			'values'        => $this->values,
-			'uid'           => $this->uid,
-			'urlName'       => $this->url_name,
+			'values'        => $this->get_values(),
+			'uid'           => $this->get_uid(),
+			'urlName'       => $this->get_url_name(),
 			'icons'         => $this->get_icons(),
-			'url'           => $this->get_url(),
+			'urlTemplate'   => $this->get_url_template(),
 			'id'            => $this->get_id(),
-			'connectedData' => $this->connected_data,
+			'connectedData' => $this->get_connected_data(),
 			'supports'      => $this->supports,
 		);
+
 		return apply_filters( 'search-filter/fields/field/render_data', $render_data, $this );
 	}
 
+	/**
+	 * Get the attributes for the render data.
+	 *
+	 * @since 3.1.3
+	 */
+	public function get_render_attributes() {
+		if ( empty( $this->render_attributes ) ) {
+			return $this->get_attributes();
+		}
+		return $this->render_attributes;
+	}
+	/**
+	 * Set the attributes for the render data.
+	 *
+	 * @since 3.1.3
+	 *
+	 * @param array $attributes The attributes to set.
+	 */
+	public function set_render_attributes( $attributes ) {
+		$this->render_attributes = $attributes;
+	}
 	/**
 	 * Add the options to the json data object.
 	 *
@@ -816,11 +867,11 @@ class Field extends Record_Base {
 	/**
 	 * Display the HTML output of the filter
 	 *
-	 * @param string $return   Whether to echo or return the output.
+	 * @param string $return_output   Whether to echo or return the output.
 	 *
 	 * @since    3.0.0
 	 */
-	public function render( $return = false ) {
+	public function render( $return_output = false ) {
 		// We don't want to modify the internal values.
 		$attributes = $this->get_attributes();
 
@@ -834,12 +885,13 @@ class Field extends Record_Base {
 		$attributes = apply_filters( 'search-filter/fields/field/render/attributes', $attributes, $this->name );
 		$attributes = apply_filters( "search-filter/fields/{$this->name}/render/attributes", $attributes );
 
-		Fields::register_active_field(
-			$this->get_render_data( $attributes ),
-		);
+		// Copy the modified attributes to the render data object to keep
+		// in sync with the JSON data.
+		$this->set_render_attributes( $attributes );
+		Fields::register_active_field( $this );
 
 		if ( $this->get_query_id() !== 0 ) {
-			Queries::register_active_query( $this->get_query_id() );
+			Queries::register_connected_query( $this->get_query_id() );
 		}
 
 		ob_start();
@@ -858,7 +910,7 @@ class Field extends Record_Base {
 		$output = apply_filters( 'search-filter/fields/field/render/output', $output, $this->name, $attributes );
 		$output = apply_filters( "search-filter/fields/{$this->name}/render/output", $output, $attributes );
 
-		if ( ! $return ) {
+		if ( ! $return_output ) {
 			echo $output;
 		}
 
@@ -866,7 +918,7 @@ class Field extends Record_Base {
 		do_action( 'search-filter/fields/field/render/after', $attributes, $this->name );
 		do_action( "search-filter/fields/{$this->name}/render/after", $attributes );
 
-		if ( $return ) {
+		if ( $return_output ) {
 			return $output;
 		}
 	}
@@ -887,6 +939,7 @@ class Field extends Record_Base {
 		$this->options_init = true;
 		$this->options      = $options;
 	}
+
 	/**
 	 * Gets a fields options.
 	 */
@@ -908,6 +961,17 @@ class Field extends Record_Base {
 	public function set_render_data( $data ) {
 		$this->render_data = $data;
 	}
+	/**
+	 * Updates the render data.
+	 *
+	 * @param array $data An associative array of data.
+	 */
+	/*
+	public function update_render_data( $data ) {
+		$existing_data = $this->get_render_data();
+		$combined_data = wp_parse_args( $data, $existing_data );
+		$this->set_render_data( $combined_data );
+	} */
 	/**
 	 * Sets the callbacks to be used for escaping the render data.
 	 *
@@ -1114,7 +1178,9 @@ class Field extends Record_Base {
 	 *
 	 * @param array  $conditions  Column name => value pairs.
 	 * @param string $return_type  Whether to return the object or the record.
-	 * @return self|Row|WP_Error
+	 * @return self|\Search_Filter\Database\Rows\Field|\WP_Error
+	 *
+	 * @throws Exception If the conditions are not an array.
 	 */
 	public static function find( $conditions, $return_type = 'object' ) {
 		// If conditions are not an array then throw an exception.
@@ -1137,7 +1203,7 @@ class Field extends Record_Base {
 
 		// Bail if nothing found.
 		if ( empty( $query->items ) ) {
-			return new \WP_Error( 'search_filter_field_not_found', __( 'Field not found.', 'search-filter' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'search_filter_field_not_found', __( 'Field not found.', 'search-filter' ), array( 'status' => 404 ) );
 		}
 
 		if ( $return_type === 'record' ) {
@@ -1203,6 +1269,25 @@ class Field extends Record_Base {
 		$this->css = $this->generate_css();
 	}
 
+
+	/**
+	 * Gets the query mode for the field.
+	 *
+	 * @return string The query mode.
+	 */
+	public function get_query_type() {
+		return apply_filters( 'search-filter/fields/field/get_query_type', $this->query_type, $this );
+	}
+
+	/**
+	 * Sets the query mode for the field.
+	 *
+	 * @param string $query_type The query mode.
+	 */
+	public function set_query_type( $query_type ) {
+		$this->query_type = $query_type;
+	}
+
 	/**
 	 * Generates the CSS for the style preset.
 	 *
@@ -1222,7 +1307,6 @@ class Field extends Record_Base {
 		// Normally we only generate CSS vars for style attributes, but setting the margin
 		// upfront on any field overrides block spacing, so lets only set the margin if it
 		// the property is set.
-
 		if ( $this->get_attribute( 'fieldMargin' ) ) {
 			$css .= 'margin: var(--search-filter-field-margin, inherit );';
 		}
@@ -1230,6 +1314,7 @@ class Field extends Record_Base {
 
 		return $css;
 	}
+
 	/**
 	 * Parses the attributes into CSS styles (variables).
 	 *
@@ -1248,7 +1333,6 @@ class Field extends Record_Base {
 		$css = apply_filters( 'search-filter/styles/style/create_attributes_css', $css, $attributes );
 		return $css;
 	}
-
 
 	/**
 	 * Gets the attributes as an array.
@@ -1283,7 +1367,7 @@ class Field extends Record_Base {
 	/**
 	 * Get the label for the input type.
 	 *
-	 * @return void
+	 * @return string The label.
 	 */
 	public static function get_label() {
 		return '';

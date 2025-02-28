@@ -718,7 +718,7 @@ class WPForms_License {
 			return [];
 		}
 
-		Transient::set( 'addons', $addons, DAY_IN_SECONDS );
+		Transient::set( 'addons', $addons, 12 * HOUR_IN_SECONDS );
 
 		return $addons;
 	}
@@ -753,10 +753,13 @@ class WPForms_License {
 
 		$args = [
 			'headers' => $headers,
+			'timeout' => 30,
 		];
 
+		$remote_url = WPFORMS_UPDATER_API . '/' . $action;
+
 		// Perform the query and retrieve the response.
-		$response      = wp_remote_get( add_query_arg( $query_params, WPFORMS_UPDATER_API ), $args );
+		$response      = wp_remote_get( add_query_arg( $query_params, $remote_url ), $args );
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$response_body = wp_remote_retrieve_body( $response );
 

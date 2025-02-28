@@ -348,15 +348,13 @@ class Addons {
 		echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			'admin/addons-item',
 			[
-				'addon'                 => $addon,
-				'image'                 => WPFORMS_PLUGIN_URL . 'assets/images/' . $image,
-				'url'                   => $url,
-				'button'                => $this->get_addon_button_html( $addon ),
-				'has_settings_link'     => $this->has_settings_link( $addon['slug'] ),
-				'settings_url'          => $this->get_settings_link( $addon['slug'] ),
-				'is_version_compatible' => wpforms()->obj( 'plugin_list' )::is_wpforms_version_compatible( $addon['required_versions']['wpforms'] ?? '' ),
-				'upgrade_url'           => esc_url( admin_url( 'update-core.php' ) ),
-				'has_cap'               => current_user_can( 'manage_options' ),
+				'addon'             => $addon,
+				'image'             => WPFORMS_PLUGIN_URL . 'assets/images/' . $image,
+				'url'               => $url,
+				'button'            => $this->get_addon_button_html( $addon ),
+				'has_settings_link' => $this->has_settings_link( $addon['slug'] ),
+				'settings_url'      => $this->get_settings_link( $addon['slug'] ),
+				'has_cap'           => current_user_can( 'manage_options' ),
 			],
 			true
 		);
@@ -386,8 +384,7 @@ class Addons {
 			);
 		}
 
-		$is_version_compatible = wpforms()->obj( 'plugin_list' )::is_wpforms_version_compatible( $addon['required_versions']['wpforms'] ?? '' );
-		$is_active             = in_array( $addon['status'], [ 'active', 'incompatible' ], true );
+		$is_active = $addon['status'] === 'active';
 
 		ob_start();
 
@@ -406,7 +403,6 @@ class Addons {
 					name="wpforms-addons-toggle"
 					value="1"
 					<?php echo checked( $is_active ); ?>
-					<?php echo $is_active ? '' : disabled( ! $is_version_compatible ); ?>
 				>
 				<label class="wpforms-toggle-control-icon" for="wpforms-addons-toggle-<?php echo esc_attr( $addon['slug'] ); ?>"></label>
 			</span>

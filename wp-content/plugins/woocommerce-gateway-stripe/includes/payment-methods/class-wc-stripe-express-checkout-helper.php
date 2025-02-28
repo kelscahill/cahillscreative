@@ -37,7 +37,7 @@ class WC_Stripe_Express_Checkout_Helper {
 	 */
 	public function __construct() {
 		$this->stripe_settings = WC_Stripe_Helper::get_stripe_settings();
-		$this->testmode        = ( ! empty( $this->stripe_settings['testmode'] ) && 'yes' === $this->stripe_settings['testmode'] ) ? true : false;
+		$this->testmode        = WC_Stripe_Mode::is_test();
 		$this->total_label     = ! empty( $this->stripe_settings['statement_descriptor'] ) ? WC_Stripe_Helper::clean_statement_descriptor( $this->stripe_settings['statement_descriptor'] ) : '';
 
 		$this->total_label = str_replace( "'", '', $this->total_label ) . apply_filters( 'wc_stripe_payment_request_total_label_suffix', ' (via WooCommerce)' );
@@ -50,16 +50,13 @@ class WC_Stripe_Express_Checkout_Helper {
 	 * @return bool
 	 */
 	public function is_authentication_required() {
-		// If guest checkout is disabled and account creation upon checkout is not possible, authentication is required.
-		if ( 'no' === get_option( 'woocommerce_enable_guest_checkout', 'yes' ) && ! $this->is_account_creation_possible() ) {
-			return true;
-		}
-		// If cart contains subscription and account creation upon checkout is not posible, authentication is required.
-		if ( $this->has_subscription_product() && ! $this->is_account_creation_possible() ) {
-			return true;
+		// If guest checkout is enabled, authentication is not required.
+		if ( 'yes' === get_option( 'woocommerce_enable_guest_checkout', 'yes' ) ) {
+			return false;
 		}
 
-		return false;
+		// If guest checkout is disabled and account creation upon checkout is not possible, authentication is required.
+		return 'no' === get_option( 'woocommerce_enable_guest_checkout', 'yes' ) && ! $this->is_account_creation_possible();
 	}
 
 	/**
@@ -68,13 +65,18 @@ class WC_Stripe_Express_Checkout_Helper {
 	 * @return bool
 	 */
 	public function is_account_creation_possible() {
-		// If automatically generate username/password are disabled, we can not include any of those fields,
-		// during express checkout. So account creation is not possible.
-		return (
-			'yes' === get_option( 'woocommerce_enable_signup_and_login_from_checkout', 'no' ) &&
+		// Check if account creation is allowed on checkout.
+		$is_signup_on_checkout_allowed =
+			'yes' === get_option( 'woocommerce_enable_signup_and_login_from_checkout', 'no' ) ||
+			( $this->has_subscription_product() &&
+				'yes' === get_option( 'woocommerce_enable_signup_from_checkout_for_subscriptions', 'no' ) );
+
+		// Account creation is not possible for express checkout if we cannot automatically generate the username and password.
+		$username_password_generation_enabled =
 			'yes' === get_option( 'woocommerce_registration_generate_username', 'yes' ) &&
-			'yes' === get_option( 'woocommerce_registration_generate_password', 'yes' )
-		);
+			'yes' === get_option( 'woocommerce_registration_generate_password', 'yes' );
+
+		return $is_signup_on_checkout_allowed && $username_password_generation_enabled;
 	}
 
 	/**
@@ -147,7 +149,7 @@ class WC_Stripe_Express_Checkout_Helper {
 	 * @param bool|null $is_deposit      Whether this is a deposit.
 	 * @param int       $deposit_plan_id Deposit plan ID.
 	 *
-	 * @return integer Total price.
+	 * @return float Total price.
 	 */
 	public function get_product_price( $product, $is_deposit = null, $deposit_plan_id = 0 ) {
 		// If prices should include tax, using tax inclusive price.
@@ -180,10 +182,10 @@ class WC_Stripe_Express_Checkout_Helper {
 
 		// Add subscription sign-up fees to product price.
 		if ( in_array( $product->get_type(), [ 'subscription', 'subscription_variation' ] ) && class_exists( 'WC_Subscriptions_Product' ) ) {
-			$product_price = $product_price + WC_Subscriptions_Product::get_sign_up_fee( $product );
+			$product_price = (float) $product_price + (float) WC_Subscriptions_Product::get_sign_up_fee( $product );
 		}
 
-		return $product_price;
+		return (float) $product_price;
 	}
 
 	/**
@@ -224,10 +226,10 @@ class WC_Stripe_Express_Checkout_Helper {
 			}
 		}
 
-		$data     = [];
-		$items    = [];
-		$price    = $this->get_product_price( $product );
-		$currency = get_woocommerce_currency();
+		$data      = [];
+		$items     = [];
+		$price     = $this->get_product_price( $product );
+		$currency  = get_woocommerce_currency();
 		$total_tax = 0;
 
 		$items[] = [
@@ -257,8 +259,8 @@ class WC_Stripe_Express_Checkout_Helper {
 
 		$data['displayItems'] = $items;
 		$data['total']        = [
-			'label'  => apply_filters( 'wc_stripe_payment_request_total_label', $this->total_label ),
-			'amount' => WC_Stripe_Helper::get_stripe_amount( $price + $total_tax, $currency ),
+			'label'   => apply_filters( 'wc_stripe_payment_request_total_label', $this->total_label ),
+			'amount'  => WC_Stripe_Helper::get_stripe_amount( $price + $total_tax, $currency ),
 			'pending' => true,
 		];
 
@@ -320,13 +322,34 @@ class WC_Stripe_Express_Checkout_Helper {
 	public function get_normalized_postal_code( $postcode, $country ) {
 		/**
 		 * Currently, Apple Pay truncates the UK and Canadian postal codes to the first 4 and 3 characters respectively
+		 * Apple Pay also truncates Canadian postal codes to the first 4 characters.
 		 * when passing it back from the shippingcontactselected object. This causes WC to invalidate
 		 * the postal code and not calculate shipping zones correctly.
 		 */
 		if ( 'GB' === $country ) {
-			// Replaces a redacted string with something like LN10***.
-			return str_pad( preg_replace( '/\s+/', '', $postcode ), 7, '*' );
+			// UK Postcodes returned from Apple Pay can be alpha numeric 2 chars, 3 chars, or 4 chars long will optionally have a trailing space,
+			// depending on whether the customer put a space in their postcode between the outcode and incode part.
+			// See https://assets.publishing.service.gov.uk/media/5a7b997d40f0b62826a049e0/ILRSpecification2013_14Appendix_C_Dec2012_v1.pdf for more details.
+
+			// Here is a table showing the functionality by example:
+			//  Original  | Apple Pay |  Normalized
+			// 'LN10 1AA' |  'LN10 '  |  'LN10 ***'
+			// 'LN101AA'  |  'LN10'   |  'LN10 ***'
+			// 'W10 2AA'  |  'W10 '   |  'W10 ***'
+			// 'W102AA'   |  'W10'    |  'W10 ***'
+			// 'N2 3AA    |  'N2 '    |  'N2 ***'
+			// 'N23AA     |  'N2'     |  'N2 ***'
+
+			$spaceless_postcode = preg_replace( '/\s+/', '', $postcode );
+
+			if ( strlen( $spaceless_postcode ) < 5 ) {
+				// Always reintroduce the space so that Shipping Zones regex like 'N1 *' work to match N1 postcodes like N1 1AA, but don't match N10 postcodes like N10 1AA
+				return $spaceless_postcode . ' ***';
+			}
+
+			return $postcode; // 5 or more chars means it probably wasn't redacted and will likely validate unchanged.
 		}
+
 		if ( 'CA' === $country ) {
 			// Replaces a redacted string with something like L4Y***.
 			return str_pad( preg_replace( '/\s+/', '', $postcode ), 6, '*' );
@@ -368,9 +391,9 @@ class WC_Stripe_Express_Checkout_Helper {
 			return false;
 		}
 
-		// If the cart is not available we don't have any unsupported products in the cart, so we
+		// If the cart is not available or if the cart is empty we don't have any unsupported products in the cart, so we
 		// return true. This can happen e.g. when loading the cart or checkout blocks in Gutenberg.
-		if ( is_null( WC()->cart ) ) {
+		if ( is_null( WC()->cart ) || WC()->cart->is_empty() ) {
 			return true;
 		}
 
@@ -544,12 +567,14 @@ class WC_Stripe_Express_Checkout_Helper {
 
 		// If no SSL bail.
 		if ( ! $this->testmode && ! is_ssl() ) {
-			WC_Stripe_Logger::log( 'Stripe Express Checkout live mode requires SSL.' );
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
+			WC_Stripe_Logger::log( 'Stripe Express Checkout live mode requires SSL. ' . print_r( [ 'url' => get_permalink() ], true ) );
 			return false;
 		}
 
 		$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
 		if ( ! isset( $available_gateways['stripe'] ) ) {
+			WC_Stripe_Logger::log( 'Stripe Express Checkout requires the Stripe gateway to be enabled.' );
 			return false;
 		}
 
@@ -559,26 +584,31 @@ class WC_Stripe_Express_Checkout_Helper {
 			WC_Stripe_Helper::has_cart_or_checkout_on_current_page()
 			&& ! $this->allowed_items_in_cart()
 		) {
+			WC_Stripe_Logger::log( 'Some items in cart are not compatible with Stripe Express Checkout. ' );
 			return false;
 		}
 
 		// Don't show on cart if disabled.
 		if ( is_cart() && ! $this->should_show_ece_on_cart_page() ) {
+			WC_Stripe_Logger::log( 'Stripe Express Checkout buttons display on cart is disabled. ' );
 			return false;
 		}
 
 		// Don't show on checkout if disabled.
 		if ( is_checkout() && ! $this->should_show_ece_on_checkout_page() ) {
+			WC_Stripe_Logger::log( 'Stripe Express Checkout buttons display on checkout is disabled. ' );
 			return false;
 		}
 
 		// Don't show if product page ECE is disabled.
 		if ( $this->is_product() && ! $this->should_show_ece_on_product_pages() ) {
+			WC_Stripe_Logger::log( 'Stripe Express Checkout buttons display on product pages is disabled. ' );
 			return false;
 		}
 
 		// Don't show if product on current page is not supported.
 		if ( $this->is_product() && ! $this->is_product_supported( $this->get_product() ) ) {
+			WC_Stripe_Logger::log( 'Product is not supported by Stripe Express Checkout. Product ID: ' . $this->get_product()->get_id() );
 			return false;
 		}
 
@@ -587,6 +617,7 @@ class WC_Stripe_Express_Checkout_Helper {
 		if ( ( ! ( $this->is_pay_for_order_page() || $this->is_product() ) && isset( WC()->cart ) && 0.0 === (float) WC()->cart->get_total( false ) )
 			|| ( $this->is_product() && 0.0 === (float) $this->get_product()->get_price() )
 		) {
+			WC_Stripe_Logger::log( 'Stripe Express Checkout does not support free products.' );
 			return false;
 		}
 
@@ -594,6 +625,7 @@ class WC_Stripe_Express_Checkout_Helper {
 			$stock_availability = array_column( $this->get_product()->get_available_variations(), 'is_in_stock' );
 			// Don't show if all product variations are out-of-stock.
 			if ( ! in_array( true, $stock_availability, true ) ) {
+				WC_Stripe_Logger::log( 'Stripe Express Checkout is hidden due product variations being out of stock. Product ID: ' . $this->get_product()->get_id() );
 				return false;
 			}
 		}
@@ -603,11 +635,12 @@ class WC_Stripe_Express_Checkout_Helper {
 			! $this->is_pay_for_order_page() &&
 			(
 				( is_product() && ! $this->product_needs_shipping( $this->get_product() ) ) ||
-				( ( is_cart() || is_checkout() ) && ! WC()->cart->needs_shipping() )
+				( ( is_cart() || is_checkout() ) && ( ! WC()->cart || ! WC()->cart->needs_shipping() ) )
 			) &&
 			wc_tax_enabled() &&
 			in_array( get_option( 'woocommerce_tax_based_on' ), [ 'billing', 'shipping' ], true )
 		) {
+			WC_Stripe_Logger::log( 'Stripe Express Checkout is hidden due product/cart not requiring shipping and tax being based on customer\'s billing or shipping address.' );
 			return false;
 		}
 
@@ -1127,12 +1160,12 @@ class WC_Stripe_Express_Checkout_Helper {
 	public function get_button_settings() {
 		$button_type = $this->get_button_type();
 		return [
-			'type'         => $button_type,
-			'theme'        => $this->get_button_theme(),
-			'height'       => $this->get_button_height(),
-			'radius'       => $this->get_button_radius(),
+			'type'   => $button_type,
+			'theme'  => $this->get_button_theme(),
+			'height' => $this->get_button_height(),
+			'radius' => $this->get_button_radius(),
 			// Default format is en_US.
-			'locale'       => apply_filters( 'wc_stripe_payment_request_button_locale', substr( get_locale(), 0, 2 ) ),
+			'locale' => apply_filters( 'wc_stripe_payment_request_button_locale', substr( get_locale(), 0, 2 ) ),
 		];
 	}
 
@@ -1287,7 +1320,7 @@ class WC_Stripe_Express_Checkout_Helper {
 		$message      = __( 'To complete your transaction with **the selected payment method**, you must log in or create an account with our site.', 'woocommerce-gateway-stripe' );
 		$redirect_url = add_query_arg(
 			[
-				'_wpnonce'                               => wp_create_nonce( 'wc-stripe-set-redirect-url' ),
+				'_wpnonce'                                => wp_create_nonce( 'wc-stripe-set-redirect-url' ),
 				'wc_stripe_express_checkout_redirect_url' => rawurlencode( home_url( add_query_arg( [] ) ) ), // Current URL to redirect to after login.
 			],
 			home_url()
@@ -1321,14 +1354,43 @@ class WC_Stripe_Express_Checkout_Helper {
 	}
 
 	/**
-	 * Returns whether Stripe express checkout element is enabled.
-	 *
-	 * This option defines whether Apple Pay and Google Pay buttons are enabled.
+	 * Returns whether any of the Stripe express checkout element is enabled.=
 	 *
 	 * @return boolean
 	 */
 	public function is_express_checkout_enabled() {
+		return $this->is_payment_request_enabled() || $this->is_amazon_pay_enabled() || WC_Stripe_UPE_Payment_Method_Link::is_link_enabled();
+	}
+
+	/**
+	 * Checks if Apple Pay and Google Pay buttons are enabled.
+	 *
+	 * @return boolean
+	 */
+	public function is_payment_request_enabled() {
 		return isset( $this->stripe_settings['payment_request'] ) && 'yes' === $this->stripe_settings['payment_request'];
+	}
+
+	/**
+	 * Returns whether Amazon Pay is enabled.
+	 *
+	 * @return boolean
+	 */
+	public function is_amazon_pay_enabled() {
+		return WC_Stripe_Feature_Flags::is_amazon_pay_available() &&
+			isset( $this->stripe_settings['amazon_pay'] ) && 'yes' === $this->stripe_settings['amazon_pay'];
+	}
+
+	/**
+	 * Returns whether Stripe express checkout element should use the Blocks API.
+	 *
+	 * @return boolean
+	 *
+	 * @deprecated 9.2.0 Feature flag enable by default.
+	 */
+	public function use_blocks_api() {
+		_deprecated_function( __METHOD__, '9.2.0' );
+		return isset( $this->stripe_settings['express_checkout_use_blocks_api'] ) && 'yes' === $this->stripe_settings['express_checkout_use_blocks_api'];
 	}
 
 	/**

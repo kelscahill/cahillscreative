@@ -126,6 +126,8 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 	 */
 	protected static function prepare_setting( $setting, $args = array() ) {
 
+		$setting = apply_filters( 'search-filter/fields/settings/prepare_setting/before', $setting, $args );
+
 		// Update the dependsOn conditions based on field support.
 		// Build the conditions based on the various supporting properties.
 		$setting_name = $setting['name'];
@@ -149,7 +151,14 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 				if ( ! array_key_exists( $type, self::$extended_blocks ) ) {
 					self::$extended_blocks[ $type ] = array();
 				}
-				self::$extended_blocks[ $type ][] = $setting;
+				$modified_setting = $setting;
+
+				// Unset defaults for block editor attributes.  In our blocks we
+				// have tons of extra attributes that may or may not be needed.
+				if ( isset( $modified_setting['default'] ) ) {
+					unset( $modified_setting['default'] );
+				}
+				self::$extended_blocks[ $type ][] = $modified_setting;
 			}
 		}
 		$setting = parent::prepare_setting( $setting );

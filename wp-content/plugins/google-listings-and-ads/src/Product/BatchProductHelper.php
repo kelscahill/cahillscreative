@@ -229,7 +229,7 @@ class BatchProductHelper implements Service {
 
 					do_action(
 						'woocommerce_gla_debug_message',
-						sprintf( 'Skipping product (ID: %s) because it does not pass validation: %s', $product->get_id(), json_encode( $validation_result ) ),
+						sprintf( 'Skipping product (ID: %s) because it does not pass validation: %s', $product->get_id(), wp_json_encode( $validation_result ) ),
 						__METHOD__
 					);
 

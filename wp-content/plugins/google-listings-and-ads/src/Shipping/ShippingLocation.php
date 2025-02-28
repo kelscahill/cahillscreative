@@ -45,7 +45,7 @@ class ShippingLocation {
 	 * @param string|null         $state
 	 * @param ShippingRegion|null $shipping_region
 	 */
-	public function __construct( int $google_id, string $country, ?string $state = null, ShippingRegion $shipping_region = null ) {
+	public function __construct( int $google_id, string $country, ?string $state = null, ?ShippingRegion $shipping_region = null ) {
 		$this->google_id       = $google_id;
 		$this->country         = $country;
 		$this->state           = $state;

@@ -42,7 +42,7 @@ class Heartbeat {
 			return;
 		}
 		// Now check the status of the indexer.
-		Indexer::validate_process();
+		Indexer::check_for_errors();
 	}
 
 }

@@ -149,7 +149,7 @@
 						}
 
 						if ( $field.is( ':checked' ) ) {
-							$field.prop( 'checked', false ).triggerHandler( 'change' );
+							$field.prop( 'checked', false ).trigger( 'change' );
 						}
 						break;
 					case 'select':
@@ -252,7 +252,7 @@
 				// Remove all selected choices or items.
 				if ( selectedChoices && selectedChoices.length ) {
 					choicesjsInstance.removeActiveItems();
-					this.$field.triggerHandler( 'change' );
+					this.$field.trigger( 'change' );
 				}
 
 				// Show a placeholder input for a modern multiple select.
@@ -283,7 +283,7 @@
 					selectedIndex = placeholder.length ? 0 : -1; // The value -1 indicates that no element is selected.
 
 				if ( selectedIndex !== this.$field.prop( 'selectedIndex' ) ) {
-					this.$field.prop( 'selectedIndex', selectedIndex ).triggerHandler( 'change' );
+					this.$field.prop( 'selectedIndex', selectedIndex ).trigger( 'change' );
 				}
 			},
 		},
@@ -321,7 +321,7 @@
 					case 'radio':
 						if ( defval === 'checked' ) {
 							$field.prop( 'checked', true ).closest( 'li' ).addClass( 'wpforms-selected' );
-							$field.triggerHandler( 'change' );
+							$field.trigger( 'change' );
 						}
 						break;
 					case 'select':
@@ -332,7 +332,7 @@
 						// Determine if it modern select.
 						if ( ! choicesjsInstance ) {
 							if ( $field.val() !== defval ) {
-								$field.val( defval ).triggerHandler( 'change' );
+								$field.val( defval ).trigger( 'change' );
 							}
 
 						} else {
@@ -344,7 +344,7 @@
 
 							if ( choicesjsInstance.getValue( true ) !== defval ) {
 								choicesjsInstance.setChoiceByValue( defval );
-								$field.triggerHandler( 'change' );
+								$field.trigger( 'change' );
 							}
 						}
 						break;
@@ -511,7 +511,7 @@
 				} else {
 					if (
 						$this.closest( '.wpforms-field' ).attr( 'id' ) !== $fieldContainer.attr( 'id' ) &&
-						$fieldContainer.hasClass( 'wpforms-conditional-hide' )
+						$fieldContainer.hasClass( 'wpforms-conditional-hide' ) && ! $fieldContainer.hasClass( 'wpforms-field-layout' )
 					) {
 						WPFormsConditionals.resetToDefaults( $fieldContainer );
 					}

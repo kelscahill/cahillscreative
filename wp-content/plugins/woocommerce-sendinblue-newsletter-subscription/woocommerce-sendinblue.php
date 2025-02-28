@@ -6,7 +6,7 @@
  * Author: Brevo
  * Text Domain: woocommerce-sendinblue-newsletter-subscription
  * Domain Path: /languages
- * Version: 4.0.31
+ * Version: 4.0.37
  * Author URI: https://www.brevo.com/?r=wporg
  * Requires at least: 4.3
  * Tested up to: 6.6.2
@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 use SendinblueWoocommerce\Managers\AdminManager;
 use SendinblueWoocommerce\Managers\ApiManager;
 use SendinblueWoocommerce\Managers\UpdatePluginManagers;
+use SendinblueWoocommerce\Managers\CartEventsManagers;
 
 define('SENDINBLUE_WC_ROOT_PATH', dirname(__FILE__));
 define('SENDINBLUE_WC_TEXTDOMAIN', 'woocommerce-sendinblue-newsletter-subscription');
@@ -46,7 +47,7 @@ define('SENDINBLUE_WC_SETTINGS', 'sendinblue_woocommerce_user_connection_setting
 define('SENDINBLUE_WC_EMAIL_SETTINGS', 'sendinblue_woocommerce_email_options_settings');
 define('SENDINBLUE_WC_VERSION_SENT', 'sendinblue_woocommerce_version_sent');
 define('API_KEY_V3_OPTION_NAME', 'sib_wc_api_key_v3');
-define('SENDINBLUE_WC_PLUGIN_VERSION', '4.0.29');
+define('SENDINBLUE_WC_PLUGIN_VERSION', '4.0.37');
 define('SENDINBLUE_WORDPRESS_SHOP_VERSION', $GLOBALS['wp_version']);
 define('SENDINBLUE_WOOCOMMERCE_UPDATE', 'sendinblue_plugin_update_call_apiv3');
 define('SENDINBLUE_REDIRECT', 'sendinblue_woocommerce_redirect');
@@ -128,12 +129,21 @@ function sendinblue_woocommerce_load()
     $api_manager = new ApiManager();
     $api_manager->add_hooks();
     update_woocom_email_settings();
+
+    $checkout_block_class_exists = class_exists( 'Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFields' );
+    if ($checkout_block_class_exists && (\Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils::is_checkout_block_default())) {
+        $cart_events_manager = new CartEventsManagers();
+        $cart_events_manager->add_optin_wc_checkout_block();
+    } else {
+        $api_manager->add_conditional_hooks();
+    }
 }
 
-//Declare HPOS Compatibility
+//Declare HPOS, Cart Checkout Blocks Compatibility
 add_action( 'before_woocommerce_init', function() {
 	if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
 		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('cart_checkout_blocks', __FILE__, true);
 	}
 } );
 

@@ -30,5 +30,6 @@ class Process {
 		add_filter( 'wpforms_emails_notifications_form_data', [ Helpers::class, 'reorder_fields_within_rows' ], 30 );
 		add_filter( 'wpforms_pro_admin_entries_edit_form_data', [ Helpers::class, 'reorder_fields_within_rows' ], 30 );
 		add_filter( 'wpforms_entry_preview_form_data', [ Helpers::class, 'reorder_fields_within_rows' ], 30 );
+		add_filter( 'wpforms_forms_fields_payment_total_field_display_form_data', [ Helpers::class, 'reorder_fields_within_rows' ], 30 );
 	}
 }

@@ -17,6 +17,7 @@ use Search_Filter\Util;
 use Search_Filter\Core\Icons;
 use Search_Filter\Fields\Field;
 use Search_Filter\Queries\Query;
+use Search_Filter\Styles\Style;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -91,19 +92,19 @@ class Admin {
 
 		$registered_styles = array(
 			$this->plugin_name . '-flatpickr' => array(
-				'src'     => Scripts::get_admin_assets_url() . 'css/vendor/flatpickr.' . Util::get_file_ext( 'css' ),
+				'src'     => Scripts::get_admin_assets_url() . 'css/vendor/flatpickr.min.css',
 				'deps'    => array(),
 				'version' => $this->version,
 				'media'   => 'all',
 			),
 			$this->plugin_name . '-screen'    => array(
-				'src'     => Scripts::get_admin_assets_url() . 'css/admin/app.' . Util::get_file_ext( 'css' ),
+				'src'     => Scripts::get_admin_assets_url() . 'css/admin/app.css',
 				'deps'    => array( 'wp-components' ),
 				'version' => $this->version,
 				'media'   => 'all',
 			),
 			$this->plugin_name . '-admin'     => array(
-				'src'     => Scripts::get_admin_assets_url() . 'css/admin/admin.' . Util::get_file_ext( 'css' ),
+				'src'     => Scripts::get_admin_assets_url() . 'css/admin/admin.css',
 				'deps'    => array( 'wp-components', 'wp-block-editor' ),
 				'version' => $this->version,
 				'media'   => 'all',
@@ -150,7 +151,7 @@ class Admin {
 		$paged   = '';
 		$id      = -1;
 
-		$preload_paths     = array(
+		$preload_paths = array(
 			'/search-filter/v1/admin/data',
 			'/search-filter/v1/admin/pages',
 			'/search-filter/v1/integrations',
@@ -161,13 +162,14 @@ class Admin {
 			'/search-filter/v1/admin/settings?section=fields',
 			'/search-filter/v1/admin/settings?section=styles',
 			'/search-filter/v1/admin/settings?section=features',
+			'/search-filter/v1/admin/settings?section=debugger',
 			'/search-filter/v1/settings?section=features', // This is the new endpoint to load the data.
+			'/search-filter/v1/settings?section=debugger',
 			'/search-filter/v1/admin/settings?section=integrations',
 			'/search-filter/v1/admin/screen/options',
 			'/search-filter/v1/admin/screen/dashboard',
 			'/search-filter/v1/admin/notices',
 		);
-		$new_preload_paths = array();
 
 		// Parse URL args.
 		$rest_args = array();
@@ -229,90 +231,109 @@ class Admin {
 		// The initial dropdown for the query filter on the fields list screen.
 		$preload_paths[] = '/search-filter/v1/records/queries?per_page=20&search=';
 
-		if ( 'queries' === $section || 'fields' === $section || 'styles' === $section ) {
-			if ( -1 === $id ) {
-				// TODO - preload ?search for all screens and ?query_id (for fields screen)
-			} elseif ( $id > 0 ) {
-				$new_preload_paths = array(
-					'/search-filter/v1/records/' . $section . '/' . $id,
-					'/search-filter/v1/settings/options/post-types',
-					'/search-filter/v1/settings/options/taxonomies',
+		$preload_paths[] = '/search-filter/v1/settings/options/post-types';
+		$preload_paths[] = '/search-filter/v1/settings/options/taxonomies';
+		$preload_paths[] = '/search-filter/v1/settings/options/post-stati';
+		$preload_paths[] = '/search-filter/v1/settings/results-url?integrationType=search';
+		$preload_paths[] = '/search-filter/v1/settings/options/queries';
+		$preload_paths[] = '/search-filter/v1/settings/options/styles';
+		$preload_paths[] = '/search-filter/v1/data/post-types';
 
-					'/search-filter/v1/settings/options/post-stati',
-					'/search-filter/v1/settings/results-url?integrationType=search',
-					'/search-filter/v1/settings/options/queries',
-					'/search-filter/v1/settings/options/styles',
-					'/search-filter/v1/data/post-types',
-				);
-				if ( 'queries' === $section ) {
-					// Then lets preload the connected fields.
-					array_push( $new_preload_paths, '/search-filter/v1/settings/options/post-types?queryId=' . absint( $id ) );
-					array_push( $new_preload_paths, '/search-filter/v1/settings/options/taxonomies?queryId=' . absint( $id ) );
+		// Preload the first query in list of options as that's what's used for new fields.
+		$preload_paths[] = '/search-filter/v1/settings/options/queries';
 
-					$query = Query::find( array( 'id' => $id ) );
-					if ( ! is_wp_error( $query ) ) {
-						$integration_type = $query->get_attribute( 'integrationType' );
-						if ( $integration_type === 'single' ) {
-							$selected_post_id = absint( $query->get_attribute( 'singleLocation' ) );
-							if ( $selected_post_id > 0 ) {
-								array_push( $new_preload_paths, '/search-filter/v1/data/post?id=' . absint( $selected_post_id ) );
-								array_push( $new_preload_paths, '/search-filter/v1/settings/results-url?integrationType=single&singleLocation=' . absint( $selected_post_id ) );
-							}
-						} elseif ( $integration_type === 'archive' ) {
-							$archive_type = $query->get_attribute( 'archiveType' );
-							if ( $archive_type === 'post_type' ) {
-								$post_type = $query->get_attribute( 'postType' );
-								if ( $post_type && $post_type !== '' ) {
-									array_push( $new_preload_paths, "/search-filter/v1/settings/results-url?integrationType={$integration_type}&archiveType={$archive_type}&postType={$post_type}" );
-								}
-							} elseif ( $archive_type === 'taxonomy' ) {
-								$taxonomy = $query->get_attribute( 'taxonomy' );
-								if ( $taxonomy && $taxonomy !== '' ) {
-									array_push( $new_preload_paths, "/search-filter/v1/settings/results-url?integrationType={$integration_type}&archiveType={$archive_type}&taxonomy={$taxonomy}" );
-								}
-							}
+		$first_query_id = Queries::get_queries_list_first_id();
+		if ( $first_query_id > 0 ) {
+			$preload_paths[] = '/search-filter/v1/records/queries/' . $first_query_id;
+		}
+
+		if ( $id > 0 ) {
+			$preload_paths[] = '/search-filter/v1/records/' . $section . '/' . $id;
+		}
+
+		if ( 'queries' === $section && $id > 0 ) {
+			// Then lets preload the connected fields.
+			$preload_paths[] = '/search-filter/v1/settings/options/post-types?queryId=' . absint( $id );
+			$preload_paths[] = '/search-filter/v1/settings/options/taxonomies?queryId=' . absint( $id );
+
+			$query = Query::find( array( 'id' => $id ) );
+			if ( ! is_wp_error( $query ) ) {
+				$integration_type = $query->get_attribute( 'integrationType' );
+				if ( $integration_type === 'single' ) {
+					$selected_post_id = absint( $query->get_attribute( 'singleLocation' ) );
+					if ( $selected_post_id > 0 ) {
+						$preload_paths[] = '/search-filter/v1/data/post?id=' . absint( $selected_post_id );
+						$preload_paths[] = '/search-filter/v1/settings/results-url?integrationType=single&singleLocation=' . absint( $selected_post_id );
+					}
+				} elseif ( $integration_type === 'archive' ) {
+					$archive_type = $query->get_attribute( 'archiveType' );
+					if ( $archive_type === 'post_type' ) {
+						$post_type = $query->get_attribute( 'postType' );
+						if ( $post_type && $post_type !== '' ) {
+							$preload_paths[] = "/search-filter/v1/settings/results-url?integrationType={$integration_type}&archiveType={$archive_type}&postType={$post_type}";
+						}
+					} elseif ( $archive_type === 'taxonomy' ) {
+						$taxonomy = $query->get_attribute( 'taxonomy' );
+						if ( $taxonomy && $taxonomy !== '' ) {
+							$preload_paths[] = "/search-filter/v1/settings/results-url?integrationType={$integration_type}&archiveType={$archive_type}&taxonomy={$taxonomy}";
 						}
 					}
-				} elseif ( 'fields' === $section ) {
-					// TODO - Check if a query is set, and if so, preload the other api requests relating to taxonomies and post types settings.
-					// Always preload the default style.
-					$default_style_id = Styles::get_default_styles_id();
-					array_push( $new_preload_paths, '/search-filter/v1/records/styles/' . $default_style_id );
-					// Preload the currently connected style.
-
-					$field = Field::find( array( 'id' => absint( $id ) ), 'record' );
-					if ( ! is_wp_error( $field ) ) {
-						$field_attributes = $field->get_attributes();
-						$styles_id        = isset( $field_attributes['stylesId'] ) ? absint( $field_attributes['stylesId'] ) : 0;
-						if ( $styles_id !== 0 ) {
-							array_push( $new_preload_paths, '/search-filter/v1/records/styles/' . $styles_id );
-						}
-						// Preload the currently connected query.
-						$query_id = isset( $field_attributes['queryId'] ) ? absint( $field_attributes['queryId'] ) : 0;
-						if ( $query_id !== 0 ) {
-							array_push( $new_preload_paths, '/search-filter/v1/records/queries/' . $query_id );
-							array_push( $new_preload_paths, '/search-filter/v1/settings/options/post-types?queryId=' . absint( $query_id ) );
-							array_push( $new_preload_paths, '/search-filter/v1/settings/options/taxonomies?queryId=' . absint( $query_id ) );
-						}
+				}
+			}
+		} elseif ( 'fields' === $section ) {
+			// Always preload the default style.
+			$default_style_id = Styles::get_default_styles_id();
+			$preload_paths[]  = '/search-filter/v1/records/styles/' . $default_style_id;
+			// Preload the currently connected style.
+			if ( $id > 0 ) {
+				$style = Field::find( array( 'id' => absint( $id ) ), 'record' );
+				if ( ! is_wp_error( $style ) ) {
+					$style_attributes = $style->get_attributes();
+					$styles_id        = isset( $style_attributes['stylesId'] ) ? absint( $style_attributes['stylesId'] ) : 0;
+					if ( $styles_id !== 0 ) {
+						$preload_paths[] = '/search-filter/v1/records/styles/' . $styles_id;
 					}
-				} elseif ( 'styles' === $section ) {
-					array_push( $new_preload_paths, '/search-filter/v1/admin/styles/default' );
+					// Preload the currently connected query.
+					$query_id = isset( $style_attributes['queryId'] ) ? absint( $style_attributes['queryId'] ) : 0;
+					if ( $query_id !== 0 ) {
+						$preload_paths[] = '/search-filter/v1/records/queries/' . $query_id;
+						$preload_paths[] = '/search-filter/v1/settings/options/post-types?queryId=' . absint( $query_id );
+						$preload_paths[] = '/search-filter/v1/settings/options/taxonomies?queryId=' . absint( $query_id );
+					}
+				}
+			}
+		} elseif ( 'styles' === $section ) {
+			$preload_paths[] = '/search-filter/v1/admin/styles/default';
+			if ( $id > 0 ) {
+				$style = Style::find( array( 'id' => absint( $id ) ), 'record' );
+				if ( ! is_wp_error( $style ) ) {
+					$styles_id = $style->get_id();
+					if ( $styles_id !== 0 ) {
+						$preload_paths[] = '/search-filter/v1/records/styles/' . $styles_id;
+					}
 				}
 			}
 		}
 
-		$preload_paths = array_unique( array_merge( $preload_paths, $new_preload_paths ) );
 		$preload_paths = apply_filters( 'search-filter/admin/get_preload_api_paths', $preload_paths );
 
 		return $preload_paths;
 	}
+	public function plugin_action_links( $links, $plugin_file ) {
+		if ( $plugin_file !== 'search-filter/search-filter.php' ) {
+			return $links;
+		}
 
+		$links['settings'] = '<a href="' . esc_url( admin_url( 'admin.php?page=search-filter' ) ) . '">' . esc_html__( 'Settings', 'search-filter' ) . '</a>';
+		return $links;
+	}
 	/**
 	 * Register the JavaScript for the admin area.
 	 *
 	 * @since    3.0.0
 	 */
 	public function enqueue_scripts() {
+
 		if ( ! Screens::is_search_filter_screen() ) {
 			return;
 		}
@@ -327,7 +348,7 @@ class Admin {
 
 		$registered_scripts = array(
 			'search-filter-admin' => array(
-				'src'     => Scripts::get_admin_assets_url() . 'js/admin/app.' . Util::get_file_ext( 'js' ),
+				'src'     => Scripts::get_admin_assets_url() . 'js/admin/app.js',
 				'deps'    => $asset['dependencies'],
 				'version' => $asset['version'],
 				'footer'  => true,
@@ -571,7 +592,7 @@ class Admin {
 	public static function update_plugin() {
 		// Setup the updater.
 		$edd_updater = new \Search_Filter\Core\Plugin_Updater(
-			'https://searchandfilter.com',
+			'https://license.searchandfilter.com',
 			SEARCH_FILTER_BASE_FILE,
 			array(
 				'version' => SEARCH_FILTER_VERSION,

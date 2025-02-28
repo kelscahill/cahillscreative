@@ -13,7 +13,7 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
-
+global $wpdb;
 if ( is_multisite() ) {
 	// Get all blogs in the network and deactivate plugin on each one.
 	$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
@@ -70,7 +70,7 @@ function search_filter_pro_uninstall() {
 	foreach ( $tables_to_remove as $table ) {
 		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}search_filter_{$table}" );
 		// Delete version info in the options table.
-		delete_option( "search_filter_pro_{$table}_table_version" );
+		delete_option( "search_filter_pro_{$table}_table_version", );
 	}
 
 	global $wp_rewrite;

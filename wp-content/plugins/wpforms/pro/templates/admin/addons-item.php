@@ -11,12 +11,11 @@
  * @var string $button                Button HTML.
  * @var bool   $has_settings_link     Flag for addons with settings link.
  * @var string $settings_url          Addon settings link.
- * @var string $is_version_compatible Is addon version compatible with WPForms version.
- * @var string $upgrade_url           Addon upgrade URL.
  * @var bool   $has_cap               Check is user has capability to manage addon.
  */
 
 use WPForms\Admin\Education\Helpers;
+use WPForms\Requirements\Requirements;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -66,27 +65,33 @@ $item_classes = [
 
 	<?php if ( $has_cap ) : ?>
 		<div class="wpforms-addons-list-item-footer wpforms-addons-list-item-footer-<?php echo esc_attr( $addon['status'] ); ?>" data-plugin="<?php echo esc_attr( $addon['status'] === 'missing' ? $addon['url'] : $addon['path'] ); ?>" data-type="addon">
-			<div>
-				<?php if ( $addon['action'] === 'upgrade' ) : ?>
-					<?php Helpers::print_badge( $minimum_required_license, 'lg' ); ?>
-				<?php endif; ?>
+			<?php if ( $addon['status'] === 'incompatible' ) : ?>
+				<div class="wpforms-addons-list-item-error">
+					<div class="wpforms-addons-list-item-error-msg">
+						<?php esc_html_e( 'This addon is not compatible.', 'wpforms' ); ?>
+					</div>
 
-				<?php if ( $has_settings_link && $addon['action'] !== 'upgrade' ) : ?>
-					<a href="<?php echo esc_url( $settings_url ); ?>" class="wpforms-addons-list-item-footer-settings-link">
-						<?php esc_html_e( 'Settings', 'wpforms' ); ?>
-					</a>
-				<?php endif; ?>
+					<div class="wpforms-addons-list-item-error-desc">
+						<?php echo wp_kses_post( Requirements::get_instance()->get_addon_compatible_message( $addon['path'] ) ); ?>
+					</div>
+				</div>
+			<?php else : ?>
+				<div>
+					<?php if ( $addon['action'] === 'upgrade' ) : ?>
+						<?php Helpers::print_badge( $minimum_required_license, 'lg' ); ?>
+					<?php endif; ?>
 
-				<?php if ( ! $is_version_compatible && in_array( $addon['action'], [ 'active', 'incompatible' ], true ) ) : ?>
-					<a href="<?php echo esc_url( $upgrade_url ); ?>" class="wpforms-addons-list-item-footer-upgrade-link">
-						<?php esc_html_e( 'Update Required', 'wpforms' ); ?>
-					</a>
-				<?php endif; ?>
-			</div>
+					<?php if ( $has_settings_link && $addon['action'] !== 'upgrade' ) : ?>
+						<a href="<?php echo esc_url( $settings_url ); ?>" class="wpforms-addons-list-item-footer-settings-link">
+							<?php esc_html_e( 'Settings', 'wpforms' ); ?>
+						</a>
+					<?php endif; ?>
+				</div>
 
-			<div class="wpforms-addons-list-item-footer-actions">
-				<?php echo $button; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-			</div>
+				<div class="wpforms-addons-list-item-footer-actions">
+					<?php echo $button; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				</div>
+			<?php endif; ?>
 		</div>
 	<?php endif; ?>
 </div>

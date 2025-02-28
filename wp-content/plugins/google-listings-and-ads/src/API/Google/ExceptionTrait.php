@@ -54,9 +54,9 @@ trait ExceptionTrait {
 	 * The following are the example sources of ApiException, GoogleServiceException,
 	 * and other Exception in order:
 	 *
-	 * @link https://github.com/googleads/google-ads-php/blob/v19.2.0/src/Google/Ads/GoogleAds/V16/Services/Gapic/CustomerServiceGapicClient.php#L391
-	 * @link https://github.com/googleapis/google-api-php-client/blob/v2.15.0/src/Http/REST.php#L119-L135
-	 * @link https://github.com/googleapis/google-api-php-client/blob/v2.15.0/src/Service/Resource.php#L86-L175
+	 * @link https://github.com/googleads/google-ads-php/blob/v25.0.0/src/Google/Ads/GoogleAds/V18/Services/Client/CustomerServiceClient.php#L303
+	 * @link https://github.com/googleapis/google-api-php-client/blob/v2.16.1/src/Http/REST.php#L119-L135
+	 * @link https://github.com/googleapis/google-api-php-client/blob/v2.16.1/src/Service/Resource.php#L86-L174
 	 *
 	 * @param ApiException|GoogleServiceException|Exception $exception Exception to check.
 	 *

@@ -65,7 +65,7 @@ class Migration20211228T1640692399 extends AbstractMigration {
 
 			if ( isset( $mc_settings['offers_free_shipping'] ) && false !== boolval( $mc_settings['offers_free_shipping'] ) && isset( $mc_settings['free_shipping_threshold'] ) ) {
 				// Move the free shipping threshold from the options to the shipping rate table.
-				$options_json = json_encode( [ 'free_shipping_threshold' => (float) $mc_settings['free_shipping_threshold'] ] );
+				$options_json = wp_json_encode( [ 'free_shipping_threshold' => (float) $mc_settings['free_shipping_threshold'] ] );
 
 				// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
 				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared

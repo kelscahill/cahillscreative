@@ -2,8 +2,8 @@
 
 namespace WPForms\Pro\Integrations\Divi;
 
-use WPForms_Field_Phone;
-use WPForms_Field_File_Upload;
+use WPForms\Forms\Fields\Phone\Field;
+use WPForms\Pro\Forms\Fields\FileUpload\Field as FileUploadField;
 
 /**
  * Class Divi.
@@ -30,14 +30,14 @@ class Divi extends \WPForms\Integrations\Divi\Divi {
 			'wpforms-dropzone',
 			WPFORMS_PLUGIN_URL . "assets/pro/css/integrations/divi/dropzone{$min}.css",
 			[],
-			WPForms_Field_File_Upload::DROPZONE_VERSION
+			FileUploadField::DROPZONE_VERSION
 		);
 
 		wp_enqueue_style(
 			'wpforms-smart-phone-field',
 			WPFORMS_PLUGIN_URL . "assets/pro/css/integrations/divi/intl-tel-input{$min}.css",
 			[],
-			WPForms_Field_Phone::INTL_VERSION
+			Field::INTL_VERSION
 		);
 
 		wp_enqueue_style(

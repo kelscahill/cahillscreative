@@ -85,7 +85,36 @@ class Rest_API {
 		$this->features     = new \Search_Filter\Rest_API\Features();
 		$this->integrations = new \Search_Filter\Rest_API\Integrations();
 
+		add_action( 'rest_pre_serve_request', array( $this, 'add_rest_api_request_action' ), 10, 4 );
+
 		add_action( 'rest_api_init', array( $this, 'add_routes' ) );
+	}
+
+	/**
+	 * Add the rest api request action.
+	 *
+	 * @param bool            $served The served status.
+	 * @param mixed           $result The result.
+	 * @param WP_REST_Request $request The request object.
+	 * @param WP_REST_Server  $server The server object.
+	 * @return bool The served status.
+	 */
+	public function add_rest_api_request_action( $served, $result, $request, $server ) {
+		// if route starts with `/search-filter/v1/` then we need to add the action.
+		$routes                 = array( '/search-filter/', '/search-filter-pro/' );
+		$is_search_filter_route = false;
+		foreach ( $routes as $route ) {
+			if ( strpos( $request->get_route(), $route ) === 0 ) {
+				$is_search_filter_route = true;
+				break;
+			}
+		}
+
+		if ( $is_search_filter_route ) {
+			do_action( 'search-filter/rest-api/request', $request );
+		}
+
+		return $served;
 	}
 	/**
 	 * Gets a saved field
@@ -180,12 +209,12 @@ class Rest_API {
 				'isInstalled'       => \Search_Filter\Core\Dependants::is_search_filter_pro_installed(),
 				'enableNonce'       => wp_create_nonce( self::ENABLE_PRO_NONCE ),
 			),
-			'site' =>
-				array(
-					'url'   => home_url(),
-					'email' => wp_get_current_user()->user_email,
-				),
+			'site' => array(
+				'url'   => home_url(),
+				'email' => wp_get_current_user()->user_email,
+			),
 		);
+		$admin_data = apply_filters( 'search-filter/rest-api/get_admin_data', $admin_data );
 		return rest_ensure_response( $admin_data );
 	}
 
@@ -627,7 +656,7 @@ class Rest_API {
 					'callback'            => array( $this, 'dismiss_admin_notice' ),
 					'permission_callback' => array( $this, 'permissions' ),
 				),
-			),
+			)
 		);
 
 		register_rest_route(
@@ -665,6 +694,7 @@ class Rest_API {
 					),
 				),
 				'permission_callback' => array( $this, 'permissions' ),
+				'allow_batch'         => true,
 			)
 		);
 
@@ -702,6 +732,7 @@ class Rest_API {
 					),
 				),
 				'permission_callback' => array( $this, 'permissions' ),
+				'allow_batch'         => true,
 			)
 		);
 
@@ -719,6 +750,7 @@ class Rest_API {
 					),
 				),
 				'permission_callback' => array( $this, 'permissions' ),
+				'allow_batch'         => true,
 			)
 		);
 
@@ -736,6 +768,7 @@ class Rest_API {
 					),
 				),
 				'permission_callback' => array( $this, 'permissions' ),
+				'allow_batch'         => true,
 			)
 		);
 
@@ -753,6 +786,7 @@ class Rest_API {
 					),
 				),
 				'permission_callback' => array( $this, 'permissions' ),
+				'allow_batch'         => true,
 			)
 		);
 		register_rest_route(
@@ -805,6 +839,7 @@ class Rest_API {
 					),
 				),
 				'permission_callback' => array( $this, 'permissions' ),
+				'allow_batch'         => true,
 			)
 		);
 
@@ -824,11 +859,89 @@ class Rest_API {
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_styles_options' ),
 				'permission_callback' => array( $this, 'permissions' ),
+				'allow_batch'         => true,
+			)
+		);
+
+		register_rest_route(
+			'search-filter/v1',
+			'/settings/batch',
+			array(
+				'methods'             => \WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'get_batched_requests' ),
+				'permission_callback' => array( $this, 'permissions' ),
+				'args'                => array(
+					'requests' => array(
+						'required' => true,
+						'type'     => 'array',
+						// 'maxItems' => $this->get_max_batch_size(),
+						'items'    => array(
+							'type'       => 'object',
+							'properties' => array(
+								'method'  => array(
+									'type'              => 'string',
+									'enum'              => array( 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ),
+									'default'           => 'GET',
+									'sanitize_callback' => 'sanitize_text_field',
+								),
+								'path'    => array(
+									'type'              => 'string',
+									'required'          => true,
+									'sanitize_callback' => 'sanitize_text_field',
+								),
+								'body'    => array(
+									'type'                 => 'object',
+									'properties'           => array(),
+									'additionalProperties' => true,
+									'sanitize_callback'    => 'Search_Filter\\Core\\Sanitize::deep_clean',
+								),
+								'headers' => array(
+									'type'                 => 'object',
+									'properties'           => array(),
+									'additionalProperties' => array(
+										'type'  => array( 'string', 'array' ),
+										'items' => array(
+											'type' => 'string',
+										),
+									),
+									'sanitize_callback'    => 'Search_Filter\\Core\\Sanitize::deep_clean',
+								),
+							),
+						),
+					),
+				),
 			)
 		);
 	}
 
+	/**
+	 * Get the batched requests.
+	 *
+	 * @param \WP_REST_Request $request The request.
+	 */
+	public function get_batched_requests( \WP_REST_Request $request ) {
+		$requests = $request->get_param( 'requests' );
 
+		$responses = array();
+
+		foreach ( $requests as $request ) {
+
+			// If path doesn't start with /search-filter/v1, then skip it.
+			if ( strpos( $request['path'], '/search-filter/v1' ) !== 0 ) {
+				continue;
+			}
+
+			$responses = rest_preload_api_request(
+				$responses,
+				array(
+					'path'   => $request['path'],
+					'method' => $request['method'],
+				)
+			);
+		}
+
+		return rest_ensure_response( $responses );
+	}
 
 	/**
 	 * Get the post types availabe for the query editor.
@@ -880,7 +993,7 @@ class Rest_API {
 					if ( $taxonomy ) {
 						$post_type_data = array(
 							'disabled' => true,
-							'value'    => $taxonomy->object_type,
+							'value'    => is_array( $taxonomy->object_type ) ? array_values( $taxonomy->object_type ) : array( $taxonomy->object_type ),
 							'message'  => __( 'This option is restricted by the Taxonomy Archive you have selected.', 'search-filter' ),
 						);
 					} else {
@@ -891,10 +1004,7 @@ class Rest_API {
 				}
 				break;
 			case 'search':
-				$post_type_data = array(
-					'disabled' => false,
-					'value'    => array( 'post' ),
-				);
+				$post_type_data = array();
 
 				break;
 		}
@@ -915,7 +1025,7 @@ class Rest_API {
 		$post_type_data = $this->get_query_post_types( $display_params );
 
 		$data = array(
-			'options' => Settings::get_post_types(),
+			'options' => Settings::get_post_types( array( 'publicly_queryable' => true ), 'or' ),
 		);
 		$json = array_merge( $data, $post_type_data );
 		return rest_ensure_response( $json );
@@ -1137,16 +1247,12 @@ class Rest_API {
 	 * @return string The request result as JSON.
 	 */
 	public function get_queries_options( WP_REST_Request $request ) {
-		$params = $request->get_params();
 
-		$defaults   = array(
-			'no_found_rows' => true,
-			'status'        => 'enabled',
-		);
-		$query_args = wp_parse_args( $params, $defaults );
-		$query      = new \Search_Filter\Database\Queries\Queries( $query_args );
-		$queries    = array();
-		foreach ( $query->items as $item ) {
+		// Important: always use this function to get the list, so we can
+		// reliably get the first query ID for preloading.
+		$queries_list = Queries::get_queries_list();
+		$queries      = array();
+		foreach ( $queries_list as $item ) {
 			$query_data = array(
 				'value' => strval( $item->id ),
 				'label' => $item->name,
@@ -1154,13 +1260,13 @@ class Rest_API {
 
 			array_push( $queries, $query_data );
 		}
-		// TODO - reformat response, don't use `data` props, just return
-		// the data or send an error.
 		$return = array(
 			'options' => $queries,
 		);
 		return rest_ensure_response( $return );
 	}
+
+
 	/**
 	 * Gets the list of saved styles.
 	 *

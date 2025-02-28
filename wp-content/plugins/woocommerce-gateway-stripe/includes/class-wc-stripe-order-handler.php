@@ -28,6 +28,8 @@ class WC_Stripe_Order_Handler extends WC_Stripe_Payment_Gateway {
 		add_filter( 'woocommerce_tracks_event_properties', [ $this, 'woocommerce_tracks_event_properties' ], 10, 2 );
 
 		add_action( 'woocommerce_cancel_unpaid_order', [ $this, 'prevent_cancelling_orders_awaiting_action' ], 10, 2 );
+
+		add_action( 'woocommerce_admin_order_totals_after_total', [ $this, 'show_warning_for_uncaptured_orders' ] );
 	}
 
 	/**
@@ -38,6 +40,37 @@ class WC_Stripe_Order_Handler extends WC_Stripe_Payment_Gateway {
 	 */
 	public static function get_instance() {
 		return self::$_this;
+	}
+
+	/**
+	 * Shows a warning message about editing uncaptured orders.
+	 *
+	 * @param $order_id
+	 */
+	public function show_warning_for_uncaptured_orders( $order_id ) {
+		$order = wc_get_order( $order_id );
+		// Bail if payment method is not manual capture supporting stripe method.
+		if ( ! WC_Stripe_Helper::payment_method_allows_manual_capture( $order->get_payment_method() ) ) {
+			return;
+		}
+
+		$gateway = WC_Stripe::get_instance()->get_main_stripe_gateway();
+
+		// Bail if the order is already captured or if manual capture is disabled.
+		if ( 'yes' === $order->get_meta( '_stripe_charge_captured', true ) || $gateway->is_automatic_capture_enabled() ) {
+			return;
+		}
+
+		try {
+			$intent = $this->get_intent_from_order( $order );
+			if ( $intent && WC_Stripe_Intent_Status::REQUIRES_CAPTURE === $intent->status ) {
+				$capture_notice = __( 'Attempting to capture more than the authorized amount will fail with an error.', 'woocommerce-gateway-stripe' );
+				$capture_tooltip = __( 'You may edit the order to have a total less than or equal to the original authorized amount.', 'woocommerce-gateway-stripe' );
+				echo esc_html( $capture_notice ) . wc_help_tip( $capture_tooltip );
+			}
+		} catch ( Exception $e ) {
+			WC_Stripe_Logger::log( 'Error getting intent from order: ' . $e->getMessage() );
+		}
 	}
 
 	/**
@@ -268,7 +301,7 @@ class WC_Stripe_Order_Handler extends WC_Stripe_Payment_Gateway {
 					if ( ! empty( $intent->error ) ) {
 						/* translators: error message */
 						$order->add_order_note( sprintf( __( 'Unable to capture charge! %s', 'woocommerce-gateway-stripe' ), $intent->error->message ) );
-					} elseif ( 'requires_capture' === $intent->status ) {
+					} elseif ( WC_Stripe_Intent_Status::REQUIRES_CAPTURE === $intent->status ) {
 						$level3_data = $this->get_level3_data_from_order( $order );
 						$result      = WC_Stripe_API::request_with_level3_data(
 							[
@@ -287,7 +320,7 @@ class WC_Stripe_Order_Handler extends WC_Stripe_Payment_Gateway {
 							$is_stripe_captured = true;
 							$result             = $this->get_latest_charge_from_intent( $result );
 						}
-					} elseif ( 'succeeded' === $intent->status ) {
+					} elseif ( WC_Stripe_Intent_Status::SUCCEEDED === $intent->status ) {
 						$is_stripe_captured = true;
 					}
 				} else {
@@ -400,15 +433,8 @@ class WC_Stripe_Order_Handler extends WC_Stripe_Payment_Gateway {
 			return $properties;
 		}
 
-		// Due diligence done. Collect the metadata.
-		$is_live         = true;
-		$stripe_settings = WC_Stripe_Helper::get_stripe_settings();
-		if ( array_key_exists( 'testmode', $stripe_settings ) ) {
-			$is_live = 'no' === $stripe_settings['testmode'];
-		}
-
 		$properties['admin_email']                        = get_option( 'admin_email' );
-		$properties['is_live']                            = $is_live;
+		$properties['is_live']                            = WC_Stripe_Mode::is_live();
 		$properties['woocommerce_gateway_stripe_version'] = WC_STRIPE_VERSION;
 		$properties['woocommerce_default_country']        = get_option( 'woocommerce_default_country' );
 

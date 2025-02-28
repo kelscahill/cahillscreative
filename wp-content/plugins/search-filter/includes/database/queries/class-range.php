@@ -539,7 +539,9 @@ class Range extends Base {
 		// Straight value compare.
 		if ( isset( $query['value'] ) ) {
 			$cast_type = 'SIGNED';
-			if ( isset( $query['decimals'] ) ) {
+			if ( isset( $query['type'] ) ) {
+				$cast_type = sanitize_text_field( $query['type'] );
+			} elseif ( isset( $query['decimals'] ) ) {
 				$decimal_places = absint( $query['decimals'] );
 				if ( $decimal_places > 0 ) {
 					$cast_type = "DECIMAL(10, $decimal_places)";

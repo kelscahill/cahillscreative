@@ -23,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Date_Picker extends Advanced {
 	public $icons             = array(
 		'event',
+		'clear',
 	);
 	public static $input_type = 'date_picker';
 	public static $type       = 'advanced';
@@ -40,6 +41,18 @@ class Date_Picker extends Advanced {
 		'inputInteractiveHoverColor',
 		'inputClearColor',
 		'inputClearHoverColor',
+
+		'labelColor',
+		'labelBackgroundColor',
+		'labelPadding',
+		'labelMargin',
+		'labelScale',
+
+		'descriptionColor',
+		'descriptionBackgroundColor',
+		'descriptionPadding',
+		'descriptionMargin',
+		'descriptionScale',
 	);
 
 	public static $data_support = array(
@@ -119,6 +132,15 @@ class Date_Picker extends Advanced {
 	 * Gets the WP_Query args based on the field value.
 	 */
 	public function apply_wp_query_args( $query_args = array() ) {
+
+		if ( $this->get_attribute( 'dataType' ) !== 'post_attribute' ) {
+			return parent::apply_wp_query_args( $query_args );
+		}
+
+		if ( $this->get_attribute( 'dataPostAttribute' ) !== 'post_published_date' ) {
+			return parent::apply_wp_query_args( $query_args );
+		}
+
 		$value = $this->get_value();
 		$date  = explode( '-', $value );
 		if ( count( $date ) !== 3 ) {

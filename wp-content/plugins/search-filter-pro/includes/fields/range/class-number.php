@@ -59,6 +59,18 @@ class Number extends Range {
 		'inputInactiveIconColor',
 		'inputClearColor',
 		'inputClearHoverColor',
+
+		'labelColor',
+		'labelBackgroundColor',
+		'labelPadding',
+		'labelMargin',
+		'labelScale',
+
+		'descriptionColor',
+		'descriptionBackgroundColor',
+		'descriptionPadding',
+		'descriptionMargin',
+		'descriptionScale',
 	);
 
 	/**
@@ -129,17 +141,5 @@ class Number extends Range {
 		$this->set_render_escape_callbacks( $esc_callbacks );
 
 	}
-	/**
-	 * Gets the URL name for the field.
-	 *
-	 * @return string
-	 */
-	public function get_url_name() {
-		if ( ! $this->has_init() ) {
-			return parent::get_url_name();
-		}
-		$url_name = '';
-		$url_name = apply_filters( 'search-filter/field/url_name', $url_name, $this );
-		return $url_name;
-	}
+
 }

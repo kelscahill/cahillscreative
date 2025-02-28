@@ -4,7 +4,7 @@ Tags: search, filter, taxonomy, tag, category, product, shop, post type
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.2
-Stable tag: 3.0.7
+Stable tag: 3.1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,65 @@ Create powerful search and filtering experiences for your users and customers.
 
 == Changelog ==
 
+= 3.1.6 =
+* Improvement - platform updates to support extensions.
+* Improvement - update integrations list.
+* Improvement - show ID column by default in admin.
+
+= 3.1.5 =
+* Fix - an issue with rendering field previews in admin screens.
+
+= 3.1.4 =
+* Fix - issue with the taxonomies tab not displaying correctly in the query editor.
+* Fix - issue when using past end of life database servers (MySQL version < 5.7 or MariaDB version < 10.2) when creating the options table.
+* Fix - error when queries are loaded in admin screens and trying to access `is_archive()`.
+* Fix - issue showing incorrect field counts in the query editor.
+
+= 3.1.3 =
+* New - added hooks to support new pro features.
+* New - reworked WPML integration.
+* Improvement - logging and debugging tweaks.
+* Improvement - support publicly queryable post types in fields and queries.
+* Improvement - better performance in admins settings screens.
+* Improvement - better compatibility with the WooCommerce collections block.
+* Improvement - update license server URL.
+* Change - renamed the query and fields `remove()` function to `unload()`.
+* Fix - JavaScript issues in the block editor when using WooCommerce.
+* Fix - an issue detecting default post types to display.
+* Fix - an issue setting post types when using the Search location.
+
+= 3.1.2 =
+* Improvement - stop using `getmypid()` when its not available (some hosting companies like Kinsta disable this function).
+* Fix - an issue with setting the correct post type for archives & WooCommerce shop.
+* Fix - issue with WooCommerce attributes that were not used for variations.
+* Fix - issue with the datepicker not clearing correctly after using a reset button.
+* Fix - number formatting issues when using the range slider.
+* Fix - show the "all options" default option as selected when no other options are selected.
+* Fix - an issue with the admin fields not rendering on a clean install.
+
+= 3.1.1 =
+* New - added hooks to our rest api requests to prevent caching.
+* Fix - hotfix to remove the HPOS warning when using WooCommerce.
+* Fix - issues with field previews on new sites, when no queries have been created.
+
+= 3.1.0 =
+* New - add support for WooCommerce Product Brands.
+* New - enable filtering on WooCommerce product archives option when using the shop integration.
+* New - `has_active_fields()` PHP method for queries.
+* New - added debugging options and logging levels.
+* Improvement - add plugin action link to the settings page.
+* Improvement - better detection of current page URL.
+* Improvement - add option values as data attributes for easier targetting with CSS.
+* Improvement - reliability with some hosts when generating our CSS file on the server.
+* Improvement - batch api requests in the block editor and admin screens.
+* Fix - a fatal error caused when using certain themes.
+* Fix - issues with WP 6.7 and loading translations too early.
+* Fix - an issue in the query editor when choosing taxonomy archives, causing the query tab to throw an error.
+* Fix - issues generating hierarchical taxonomy term URLs.
+* Fix - admin JS issues when navigating between templates in FSE.
+* Fix - styling issues with the sort fields label.
+* Fix - an issue with hierarchical taxonomies not showing posts only assigned to parents.
+
 = 3.0.7 =
 * New - add notices to suggest enabling integrations when they are detected.
 * Change - remove beta feedback form.
@@ -37,7 +96,7 @@ Create powerful search and filtering experiences for your users and customers.
 * Fix - issues when using CSS variable colors from block editor themes.
 * Fix - an issue with the new query modal throwing an error in the block editor.
 * Fix - issues with the Main Query option not being available for archives.
-* Fix - stop enqueuing uncessary JS in admin screens.
+* Fix - stop enqueuing unnecessary JS in admin screens.
 
 = 3.0.6 =
 * New - New `dynamic` query integration location, replaces the dynamic toggle.

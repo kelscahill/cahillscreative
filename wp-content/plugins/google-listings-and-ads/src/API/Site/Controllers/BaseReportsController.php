@@ -3,9 +3,9 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds\API\Site\Controllers;
 
-use Automattic\WooCommerce\GoogleListingsAndAds\Proxies\RESTServer;
+use Automattic\WooCommerce\GoogleListingsAndAds\Internal\ContainerAwareTrait;
+use Automattic\WooCommerce\GoogleListingsAndAds\Internal\Interfaces\ContainerAwareInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Proxies\WP;
-use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Psr\Container\ContainerInterface;
 use DateTime;
 use WP_REST_Request as Request;
 
@@ -14,24 +14,14 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class BaseReportsController
  *
+ * ContainerAware used for:
+ * - WP
+ *
  * @package Automattic\WooCommerce\GoogleListingsAndAds\API\Site\Controllers
  */
-abstract class BaseReportsController extends BaseController {
+abstract class BaseReportsController extends BaseController implements ContainerAwareInterface {
 
-	/**
-	 * @var ContainerInterface
-	 */
-	protected $container;
-
-	/**
-	 * BaseReportsController constructor.
-	 *
-	 * @param ContainerInterface $container
-	 */
-	public function __construct( ContainerInterface $container ) {
-		$this->container = $container;
-		parent::__construct( $container->get( RESTServer::class ) );
-	}
+	use ContainerAwareTrait;
 
 	/**
 	 * Get the query params for collections.

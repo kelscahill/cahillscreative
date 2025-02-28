@@ -44,6 +44,13 @@ class broadcasting_data
 	public $add_new_taxonomies = true;
 
 	/**
+	 * Keep track of which taxonomies we have synced.
+	 *
+	 * @since		2025-02-04 11:43:20
+	 **/
+	public $already_also_synced_taxonomies = null;
+
+	/**
 		@brief		Array of AttachmentData objects for this post.
 		@var		$attachment_data
 		@since		20130603
@@ -105,7 +112,7 @@ class broadcasting_data
 		@details	This is normally only a problem when several posts share the exact same attachments between them.
 		@since		2014-06-20 11:58:18
 	**/
-	public $delete_attachments = true;
+	public $delete_attachments = null;
 
 	/**
 		@brief		A collection of misc data that people can use to store things.
@@ -341,6 +348,9 @@ class broadcasting_data
 				$this->$key = $value;
 
 		$this->dynamic_data = ThreeWP_Broadcast()->collection();
+
+		if ( $this->already_also_synced_taxonomies === null )
+			$this->already_also_synced_taxonomies = ThreeWP_Broadcast()->collection();
 
 		// The custom fields object should be cloned.
 		if ( isset( $options[ 'custom_fields' ] ) )

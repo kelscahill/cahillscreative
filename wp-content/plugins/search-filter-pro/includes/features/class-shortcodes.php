@@ -27,9 +27,6 @@ class Shortcodes {
 			return;
 		}
 
-		// TODO - this is essentially only handling if the results shortcode setting is enabled,
-		// but we should also include the logic for the regular shortcodes.
-
 		Rest_API::init();
 
 		// Hook into the shortcode and display the results if the `results` attribute is set.
@@ -79,11 +76,11 @@ class Shortcodes {
 
 		// Add the results shortcode setting to the query settings.
 		$setting = array(
-			'name'      => 'resultsShortcode',
-			'label'     => __( 'Results Shortcode', 'search-filter' ),
-			'group'     => 'location',
-			'inputType' => 'Info',
-			'dependsOn' => array(
+			'name'         => 'resultsShortcode',
+			'label'        => __( 'Results Shortcode', 'search-filter' ),
+			'group'        => 'location',
+			'inputType'    => 'Info',
+			'dependsOn'    => array(
 				'relation' => 'AND',
 				'rules'    => array(
 					array(
@@ -93,10 +90,10 @@ class Shortcodes {
 					),
 				),
 			),
-			'supports'  => array(
+			'supports'     => array(
 				'previewAPI' => true,
 			),
-			'store'     => array(
+			'dataProvider' => array(
 				'route' => '/settings/results-shortcode',
 			),
 		);
@@ -146,8 +143,11 @@ class Shortcodes {
 		}
 
 		$attributes['queryContainer'] = '.search-filter-query--id-' . $id;
-		// TODO - check pagination class name.
 		$attributes['queryPaginationSelector'] = '.search-filter-query--id-' . $id . ' a.page-numbers';
+		
+		if ( empty( $attributes['queryPostsContainer'] ) ) {
+			$attributes['queryPostsContainer'] = '.search-filter-query--id-' . $id . ' .search-filter-query-posts';
+		}
 
 		return $attributes;
 	}
@@ -159,27 +159,27 @@ class Shortcodes {
 	 */
 	public static function hide_css_selector_options() {
 
-			$depends_conditions = array(
-				'relation' => 'AND',
-				'action'   => 'hide',
-				'rules'    => array(
-					array(
-						'option'  => 'queryIntegration',
-						'compare' => '!=',
-						'value'   => 'results_shortcode',
-					),
+		$depends_conditions = array(
+			'relation' => 'AND',
+			'action'   => 'hide',
+			'rules'    => array(
+				array(
+					'option'  => 'queryIntegration',
+					'compare' => '!=',
+					'value'   => 'results_shortcode',
 				),
-			);
+			),
+		);
 
-			$query_container = \Search_Filter\Queries\Settings::get_setting( 'queryContainer' );
-			if ( $query_container ) {
-				$query_container->add_depends_condition( $depends_conditions );
-			}
+		$query_container = \Search_Filter\Queries\Settings::get_setting( 'queryContainer' );
+		if ( $query_container ) {
+			$query_container->add_depends_condition( $depends_conditions );
+		}
 
-			$pagination_selector = \Search_Filter\Queries\Settings::get_setting( 'queryPaginationSelector' );
-			if ( $pagination_selector ) {
-				$pagination_selector->add_depends_condition( $depends_conditions );
-			}
+		$pagination_selector = \Search_Filter\Queries\Settings::get_setting( 'queryPaginationSelector' );
+		if ( $pagination_selector ) {
+			$pagination_selector->add_depends_condition( $depends_conditions );
+		}
 	}
 
 
@@ -208,31 +208,41 @@ class Shortcodes {
 		}
 
 		$query_id       = absint( $attributes['query'] );
-		$found_template = locate_template( 'search-filter/' . $query_id . '.php' );
 
 		$theme_template_paths = array(
 			'search-filter/' . $query_id . '.php',
 			'search-filter/results.php',
 		);
 
-		$found_template = '';
+		$results_template_path = '';
 
 		// Look for a theme template.
 		foreach ( $theme_template_paths as $theme_template_path ) {
-			$found_template = locate_template( $theme_template_path );
-			if ( $found_template ) {
+			$results_template_path = locate_template( $theme_template_path );
+			if ( $results_template_path ) {
 				break;
 			}
 		}
-
+		
 		// If no theme template was found, look for the plugin template.
-		if ( empty( $found_template ) ) {
-			$found_template = plugin_dir_path( SEARCH_FILTER_PRO_BASE_FILE ) . 'includes/features/shortcodes/template.php';
+		if ( empty( $results_template_path ) ) {
+			$results_template_path = plugin_dir_path( SEARCH_FILTER_PRO_BASE_FILE ) . 'includes/features/shortcodes/template.php';
 		}
 
+		$results_template_path = apply_filters( 'search-filter-pro/shortcodes/results/template_path', $results_template_path, $query_id );
+
+		// Get paged variable.  `paged` is used for for most archives.
+		// $page is used for static homepage / single pages.
+		$paged = 1;
+		if ( get_query_var( 'paged' ) ) {
+			$paged = get_query_var( 'paged' );
+		} elseif ( get_query_var( 'page' ) ) {
+			$paged = get_query_var( 'page' );
+		}
+		
 		$args = array(
 			'post_type'              => 'post',
-			'paged'                  => get_query_var( 'paged' ) ? get_query_var( 'paged' ) : 1,
+			'paged'                  => $paged,
 			'search_filter_query_id' => absint( $query_id ),
 		);
 
@@ -250,7 +260,7 @@ class Shortcodes {
 		$output = '<div class="search-filter-query ' . esc_attr( 'search-filter-query--id-' . $query_id ) . '">';
 
 		// Now the query & functions are ready, include the template.
-		if ( file_exists( $found_template ) ) {
+		if ( file_exists( $results_template_path ) ) {
 
 			$template_functions = plugin_dir_path( SEARCH_FILTER_PRO_BASE_FILE ) . 'includes/features/shortcodes/functions.php';
 			if ( file_exists( $template_functions ) ) {
@@ -259,7 +269,7 @@ class Shortcodes {
 
 			ob_start();
 			// Include the template.
-			include $found_template;
+			include $results_template_path;
 			$output .= ob_get_clean();
 		}
 

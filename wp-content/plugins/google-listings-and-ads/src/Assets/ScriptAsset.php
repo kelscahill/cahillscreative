@@ -52,7 +52,7 @@ class ScriptAsset extends BaseAsset {
 		string $uri,
 		array $dependencies = [],
 		string $version = '',
-		callable $enqueue_condition_callback = null,
+		?callable $enqueue_condition_callback = null,
 		bool $in_footer = false
 	) {
 		$this->in_footer = $in_footer;
@@ -124,7 +124,7 @@ class ScriptAsset extends BaseAsset {
 			}
 
 			foreach ( $this->inline_scripts as $variable_name => $data_array ) {
-				$inline_script = "var $variable_name = " . json_encode( $data_array );
+				$inline_script = "var $variable_name = " . wp_json_encode( $data_array );
 				wp_add_inline_script( $this->handle, $inline_script, 'before' );
 			}
 

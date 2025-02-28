@@ -318,4 +318,26 @@ class WP {
 	public function wp_remote_get( string $url, array $args = [] ) {
 		return wp_remote_get( $url, $args );
 	}
+
+	/**
+	 * Adds extra code to a registered script.
+	 *
+	 * @param string $handle   Name of the script to add the inline script to.
+	 * @param string $data     String containing the JavaScript to be added.
+	 * @param string $position Whether to add the inline script before the handle or after. Default 'after'.
+	 * @return boolean
+	 */
+	public function wp_add_inline_script( string $handle, string $data, string $position = 'after' ): bool {
+		return wp_add_inline_script( $handle, $data, $position );
+	}
+
+	/**
+	 * Prints an inline script tag.
+	 *
+	 * @param string $data       Data for script tag: JavaScript, importmap, speculationrules, etc.
+	 * @param array  $attributes Key-value pairs representing <script> tag attributes. Default:array()
+	 */
+	public function wp_print_inline_script_tag( string $data, array $attributes = [] ) {
+		return wp_print_inline_script_tag( $data, $attributes );
+	}
 }

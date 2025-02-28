@@ -57,18 +57,15 @@ class WP_Data {
 	 *
 	 * @return array
 	 */
-	public static function get_post_types() {
+	public static function get_post_types( $args = array(), $operator = 'and' ) {
 
-		if ( empty( self::$post_types ) ) {
-			$args = array();
-			if ( ! SEARCH_FILTER_SHOW_ALL_POST_TYPES ) {
-				$args['public'] = true;
-			}
-			// 'publicly_queryable ' => true,
-			self::$post_types = get_post_types( $args, 'objects' );
+		$default_args = array( 'public' => true );
+		$args         = wp_parse_args( $args, $default_args );
+		$key          = md5( serialize( $args ) ) . '_' . $operator;
+		if ( ! isset( self::$post_types[ $key ] ) ) {
+			self::$post_types[ $key ] = get_post_types( $args, 'objects', $operator );
 		}
-
-		return self::$post_types;
+		return self::$post_types[ $key ];
 	}
 	/**
 	 * A wrapper for the WP function `get_post_stati`
@@ -127,10 +124,7 @@ class WP_Data {
 	 */
 	public static function get_taxonomies() {
 		if ( empty( self::$taxonomies ) ) {
-			$args = array();
-			if ( ! SEARCH_FILTER_SHOW_ALL_TAXONOMIES ) {
-				$args['public'] = true;
-			}
+			$args             = array();
 			self::$taxonomies = get_taxonomies( $args, 'objects' );
 		}
 

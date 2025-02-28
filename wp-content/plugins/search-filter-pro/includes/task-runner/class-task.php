@@ -262,7 +262,7 @@ class Task {
 			$this->id = $query->add_item( $record );
 		}
 
-		// TODO - we need to update the local record and the Data_Store..
+		// TODO - we need to update the local record and the Data_Store.
 		$this->record = $query->get_item( $this->id );
 
 		do_action( 'search-filter/task/save', $this );

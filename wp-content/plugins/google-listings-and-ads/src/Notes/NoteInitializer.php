@@ -44,7 +44,7 @@ class NoteInitializer implements Activateable, Deactivateable, InstallableInterf
 	protected $action_scheduler;
 
 	/**
-	 * Cron constructor.
+	 * NoteInitializer constructor.
 	 *
 	 * @param ActionSchedulerInterface $action_scheduler
 	 */

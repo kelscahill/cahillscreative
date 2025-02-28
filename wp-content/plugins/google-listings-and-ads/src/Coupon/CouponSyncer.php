@@ -142,7 +142,7 @@ class CouponSyncer implements Service {
 				sprintf(
 					'Skipping coupon (ID: %s) because it does not pass validation: %s',
 					$coupon->get_id(),
-					json_encode( $validation_result )
+					wp_json_encode( $validation_result )
 				),
 				__METHOD__
 			);
@@ -156,7 +156,7 @@ class CouponSyncer implements Service {
 				sprintf(
 					'Start to upload coupon (ID: %s) as promotion structure: %s',
 					$coupon->get_id(),
-					json_encode( $adapted_coupon )
+					wp_json_encode( $adapted_coupon )
 				),
 				__METHOD__
 			);
@@ -172,7 +172,7 @@ class CouponSyncer implements Service {
 				'woocommerce_gla_debug_message',
 				sprintf(
 					"Submitted promotion:\n%s",
-					json_encode( $adapted_coupon )
+					wp_json_encode( $adapted_coupon )
 				),
 				__METHOD__
 			);
@@ -195,7 +195,7 @@ class CouponSyncer implements Service {
 				'woocommerce_gla_debug_message',
 				sprintf(
 					"Promotion failed to sync with Merchant Center:\n%s",
-					json_encode( $invalid_promotion )
+					wp_json_encode( $invalid_promotion )
 				),
 				__METHOD__
 			);
@@ -261,7 +261,7 @@ class CouponSyncer implements Service {
 					sprintf(
 						'Start to delete coupon (ID: %s) as promotion structure: %s',
 						$coupon->get_wc_coupon_id(),
-						json_encode( $adapted_coupon )
+						wp_json_encode( $adapted_coupon )
 					),
 					__METHOD__
 				);
@@ -310,7 +310,7 @@ class CouponSyncer implements Service {
 				sprintf(
 					"Failed to delete %s promotions from Merchant Center:\n%s",
 					count( $invalid_promotions ),
-					json_encode( $invalid_promotions )
+					wp_json_encode( $invalid_promotions )
 				),
 				__METHOD__
 			);
@@ -329,7 +329,7 @@ class CouponSyncer implements Service {
 			sprintf(
 				"Deleted %s promoitons:\n%s",
 				count( $deleted_promotions ),
-				json_encode( $deleted_promotions )
+				wp_json_encode( $deleted_promotions )
 			),
 			__METHOD__
 		);

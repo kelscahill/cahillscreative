@@ -1,6 +1,6 @@
 <?php
 /**
- * ACF Integration Class
+ * Elementor Integration Class
  *
  * @link       https://searchandfilter.com
  * @since      3.0.0
@@ -38,7 +38,7 @@ class Elementor {
 
 
 	/**
-	 * Update the ACF integration in the integrations section.
+	 * Update the Elementor integration in the integrations section.
 	 *
 	 * @since 3.0.0
 	 */

@@ -46,21 +46,7 @@ if ( LayoutHelpers::is_layout_empty( $field ) ) {
 	<div class="print-item field wpforms-field-layout">
 		<?php
 		foreach ( $field['columns'] as $column ) {
-
-			$preset_width = ! empty( $column['width_preset'] ) ? (int) $column['width_preset'] : 50;
-
-			if ( $preset_width === 33 ) {
-				$preset_width = 33.33333;
-			}
-
-			if ( $preset_width === 67 ) {
-				$preset_width = 66.66666;
-			}
-
-			if ( ! empty( $column['width_custom'] ) ) {
-				$preset_width = (int) $column['width_custom'];
-			}
-
+			$preset_width   = wpforms_get_column_width( $column );
 			$column_classes = [ 'wpforms-field-layout-column' ];
 
 			if ( LayoutHelpers::is_column_empty( $column ) ) {

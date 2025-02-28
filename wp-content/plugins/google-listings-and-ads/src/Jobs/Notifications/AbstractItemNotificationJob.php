@@ -44,7 +44,7 @@ abstract class AbstractItemNotificationJob extends AbstractNotificationJob {
 		} catch ( InvalidValue $e ) {
 			do_action(
 				'woocommerce_gla_error',
-				sprintf( 'Error sending Notification for - Item ID: %s - Topic: %s - Data %s. Product was deleted from the database before the notification was sent.', $item, $topic, json_encode( $data ) ),
+				sprintf( 'Error sending Notification for - Item ID: %s - Topic: %s - Data %s. Product was deleted from the database before the notification was sent.', $item, $topic, wp_json_encode( $data ) ),
 				__METHOD__
 			);
 		}

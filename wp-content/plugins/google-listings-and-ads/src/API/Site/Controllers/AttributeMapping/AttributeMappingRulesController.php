@@ -33,7 +33,7 @@ class AttributeMappingRulesController extends BaseOptionsController {
 	private AttributeMappingHelper $attribute_mapping_helper;
 
 	/**
-	 * AttributeMappingController constructor.
+	 * AttributeMappingRulesController constructor.
 	 *
 	 * @param RESTServer                 $server
 	 * @param AttributeMappingHelper     $attribute_mapping_helper

@@ -3,69 +3,64 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Jobs;
 
-use Automattic\WooCommerce\GoogleListingsAndAds\Exception\ValidateInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\Service;
+use Automattic\WooCommerce\GoogleListingsAndAds\Internal\ContainerAwareTrait;
+use Automattic\WooCommerce\GoogleListingsAndAds\Internal\Interfaces\ContainerAwareInterface;
+use Exception;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Class JobRepository
  *
+ * ContainerAware used for:
+ * - JobInterface
+ *
  * @package Automattic\WooCommerce\GoogleListingsAndAds\Jobs
  */
-class JobRepository implements Service {
+class JobRepository implements ContainerAwareInterface, Service {
 
-	use ValidateInterface;
+	use ContainerAwareTrait;
 
 	/**
-	 * @var JobInterface[]
+	 * @var JobInterface[] indexed by class name.
 	 */
 	protected $jobs = [];
 
 	/**
-	 * @var string[]
-	 */
-	protected $jobs_class_name_map = [];
-
-	/**
-	 * JobRepository constructor.
+	 * Fetch all jobs from Container.
 	 *
-	 * @param JobInterface[] $jobs
-	 */
-	public function __construct( array $jobs ) {
-		foreach ( $jobs as $job ) {
-			$this->validate_instanceof( $job, JobInterface::class );
-
-			$job_name                                = $job->get_name();
-			$job_class                               = get_class( $job );
-			$this->jobs[ $job_name ]                 = $job;
-			$this->jobs_class_name_map[ $job_class ] = $job_name;
-		}
-	}
-
-	/**
 	 * @return JobInterface[]
 	 */
 	public function list(): array {
+		foreach ( $this->container->get( JobInterface::class ) as $job ) {
+			$this->jobs[ get_class( $job ) ] = $job;
+		}
+
 		return $this->jobs;
 	}
 
 	/**
-	 * @param string $name Job name or class
+	 * Fetch job from Container (or cache if previously fetched).
+	 *
+	 * @param string $classname Job class name.
 	 *
 	 * @return JobInterface
 	 *
 	 * @throws JobException If the job is not found.
 	 */
-	public function get( string $name ): JobInterface {
-		if ( ! isset( $this->jobs[ $name ] ) && ! empty( $this->jobs_class_name_map[ $name ] ) ) {
-			$name = $this->jobs_class_name_map[ $name ];
+	public function get( string $classname ): JobInterface {
+		if ( ! isset( $this->jobs[ $classname ] ) ) {
+			try {
+				$job = $this->container->get( $classname );
+			} catch ( Exception $e ) {
+				throw JobException::job_does_not_exist( $classname );
+			}
+
+			$classname                = get_class( $job );
+			$this->jobs[ $classname ] = $job;
 		}
 
-		if ( ! isset( $this->jobs[ $name ] ) ) {
-			throw JobException::job_does_not_exist( $name );
-		}
-
-		return $this->jobs[ $name ];
+		return $this->jobs[ $classname ];
 	}
 }

@@ -89,6 +89,7 @@ class Field extends WPForms_Field {
 		'square',
 		'authorize_net',
 		'internal-information',
+        'gdpr-checkbox',
 	];
 
 	/**
@@ -194,6 +195,7 @@ class Field extends WPForms_Field {
 			'name'    => $name,
 			'value'   => $value,
 			'id'      => wpforms_validate_field_id( $field_id ),
+			'display' => ! empty( $form_data['fields'][ $field_id ]['display'] ) ? $form_data['fields'][ $field_id ]['display'] : 'rows',
 			'columns' => ! empty( $form_data['fields'][ $field_id ]['columns'] ) ? $form_data['fields'][ $field_id ]['columns'] : [],
 			'preset'  => ! empty( $form_data['fields'][ $field_id ]['preset'] ) ? $form_data['fields'][ $field_id ]['preset'] : '100',
 			'label'   => ! empty( $form_data['fields'][ $field_id ]['label'] ) ? $form_data['fields'][ $field_id ]['label'] : '',

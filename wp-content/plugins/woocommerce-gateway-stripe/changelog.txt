@@ -1,5 +1,123 @@
 *** Changelog ***
 
+= 9.2.0 - 2025-02-13 =
+* Fix - Fix missing product_id parameter for the express checkout add-to-cart operation.
+* Fix - Fix the quantity parameter for the express checkout add-to-cart API call.
+* Dev - Replaces part of the StoreAPI call code for the cart endpoints to use the newly introduced filter.
+* Fix - Clear cart first when using express checkout inside the product page.
+* Fix - Avoid Stripe timeouts for the express checkout click event.
+* Fix - Switch booking products back to using non-StoreAPI add-to-cart methods.
+* Dev - Add new E2E tests for Link express checkout.
+* Add - Add Amazon Pay to block cart and block checkout.
+* Fix - Remove intentional delay when displaying tax-related notice for express checkout, causing click event to time out.
+* Fix - Fixes an issue when saving Bancontact and iDEAL methods with SEPA Direct Debit disabled.
+* Dev - Introduces new payment method constants for the express methods: Google Pay, Apple Pay, Link, and Amazon Pay.
+* Fix - Prevent an express checkout element's load errors from affecting other express checkout elements.
+* Tweak - Process ECE cart requests using the Blocks (Store) API.
+* Add - Adds a new setting to toggle saving of Bancontact and iDEAL methods as SEPA Debit.
+* Add - Wrap Amazon Pay in feature flag.
+* Fix - Allow the saving of Bancontact tokens when SEPA is disabled.
+* Tweak - Use WC Core's rate limiter on "Add payment method" page.
+* Add - New Amazon Pay payment method in the Stripe Express Checkout Element for the classic, shortcode (classic) checkout, product, and cart pages.
+* Dev - Introduces new payment intent status constants for the frontend.
+* Fix - Fix Stripe customer creation when using the Blocks API for express checkout.
+* Add - Add new payment processing flow using confirmation tokens.
+* Dev - Adds new logs to identify why express payment methods are not being displayed.
+* Fix - Fixes a fatal error when editing the shortcode checkout page with an empty cart on PHP 8.4.
+* Fix - Fixes processing of orders through the Pay for Order page when using ECE with Blocks (Store) API.
+* Add - Enables the use of Blocks API for Express Checkout Element orders by default.
+* Add - Adds a new filter to allow changing the user attributed to an order when paying for it through the Order Pay page.
+* Fix - Fixes an error with the fingerprint property setting when using the legacy checkout.
+* Fix - Fixes order attribution data for the Express Checkout Element when using the Blocks API to process.
+* Tweak - Process ECE orders using the Blocks API.
+* Fix - Fixes incorrect error message for card failures due insufficient funds on the shortcode checkout page (legacy).
+* Fix - Fixes deprecation warnings related to nullable method parameters when using PHP 8.4, and increases the minimum PHP version Code Sniffer considers to 7.4.
+* Fix - Adds support for the Reunion country when checking out using the new checkout experience.
+* Add - Support zero-amount refunds.
+* Fix - A potential fix to prevent duplicate charges.
+* Fix - Prevent empty settings screen when cancelling changes to the payment methods display order.
+* Fix - Improve product page caching when Express Payment buttons are not enabled.
+* Fix - Allow editing uncaptured orders but show a warning about the possible failure scenario.
+* Fix - Fetch the payment intent status on order edit page only for unpaid orders if manual capture is enabled.
+* Fix - Error when changing subscription payment method to a 3D Secure card while using a custom checkout endpoint.
+* Fix - Fixes the webhook order retrieval by intent charges by adding an array check.
+* Add - Add total tax amount to metadata.
+* Update - Update the translation for payment requests settings section notice.
+* Add - Add Amazon Pay to settings express checkout section.
+* Add - Add Amazon Pay customize express checkout page.
+* Fix - Improve the appearance of Stripe elements in checkout pages to match the store theme.
+* Fix - Hide ECE button for synced subscription variations.
+* Fix - Use the original shipping address for Amazon Pay pay for orders.
+* Tweak - Improve slow query for legacy SEPA subscriptions on WC status tools page by caching the data.
+* Tweak - Improve settings page load by delaying oauth URL generation.
+* Tweak - Update the Woo logo in the Configure connection modal
+* Add - Add currency restriction pill on Amazon Pay.
+* Fix - Express checkout methods dependency.
+
+= 9.1.1 - 2025-01-10 =
+* Fix - Fixes the webhook order retrieval by intent charges. The processed event is an object, not an array.
+* Fix - Payment request button fails to display when the legacy checkout experience is enabled.
+* Fix - Resolves the payment element loading issue in the legacy checkout experience.
+
+= 9.1.0 - 2025-01-09 =
+* Fix - Fixes the new checkout experience not being enabled by default due to conflict with a migration.
+* Fix - Prevents duplicated credit cards to be added to the customer's account through the My Account page, the shortcode checkout and the block checkout.
+* Fix - Return to the correct page when redirect-based payment method fails.
+* Fix - Show default recipient for Payment Authentication Requested email.
+* Fix - Correctly handles IPP failed payments webhook calls by extracting the order ID from the payment intent metadata.
+* Dev - Fix lint issues raised by WordPress code standards.
+* Fix - Fix ECE crash in classic cart and checkout pages for non-English language sites.
+* Fix - Correctly handles UK postcodes redacted by Apple Pay.
+* Tweak - Avoid re-sending Processing Order customer email when merchant wins dispute.
+* Fix - Allow the saving of iDEAL tokens when SEPA is disabled.
+* Fix - Fixes the incompatibility notice in editor due missing style property when instantiating Stripe payment methods.
+* Dev - Updates the GitHub caching action (`actions/cache`) to v4 due deprecation.
+* Fix - Don't update canceled order status to on-hold when a dispute is opened.
+* Fix - Correctly sets the dispute opened note when a dispute does not require any further action.
+* Add - Display Multibanco payment instruction details in Order Received page and Order Confirmation email.
+* Tweak - Add the transaction limit information to the Afterpay/Clearpay method when listing payment methods.
+* Tweak - Add transaction threshold information to Affirm when listing payment methods.
+* Fix - Handles additional fields when checking out using ECE on the block checkout.
+* Dev - Introduces new payment method name constants for the frontend.
+* Dev - Improves the missing intent params error log by appending the payment information array.
+* Tweak - Improve error message displayed when payment method creation fails in classic checkout.
+* Tweak - Display email address for Link saved payment methods.
+* Fix - Only update order status for a Radar review closed event when the order was already captured.
+* Dev - Introduces a new class with payment intent statuses constants.
+* Add - Correctly handles charge expired webhook events, setting the order status to failed and adding a note.
+* Fix - Allow account creation on checkout, if enabled, when purchasing subscriptions using ECE.
+* Tweak - Add empty check for cart when checking for allowed products for express checkout.
+* Tweak - Improve webhook status related messages on the settings page.
+* Update - Prevent editing of orders awaiting payment capture.
+* Add - Introduce locking and unlocking in refund flow to prevent double refund due to race condition.
+* Dev - Add a GitHub Action workflow to run QIT E2E Integrations tests.
+* Fix - Check billing interval and period to set in mandate options.
+* Fix - Check order currency on pay for order page to display supported payment methods.
+* Update - Migrate payment request settings data to express checkout settings data.
+* Update - Make the new Stripe Express Checkout Element enabled by default in all accounts.
+* Fix - Duplicate emails when enabling the gateway.
+* Fix - Prevent empty settings screen when cancelling changes to the payment methods display order.
+
+= 9.0.0 - 2024-12-12 =
+* Fix - Fix 404 that happens when using ECE and 3D Secure auth is triggered.
+* Fix - Set correct payment method when using Link and a card that is 3D Secure authenticated.
+* Fix - Fix total calculation for custom product types when using the Payment Request Button.
+* Fix - Fix order attribution metadata not included in PRBs or Express Checkout Element.
+* Add - Pre-fill user email and phone number for Link in the Payment Element.
+* Remove - Remove Link autofill modal feature.
+* Update - Improve accuracy of webhook status information displayed in settings page.
+* Tweak - Standardize ECE Express payment buttons on Pay for Order page to match cart and checkout itemization behavior.
+* Tweak - Remove duplicate notice about the new checkout experience.
+* Tweak - Include page URL information in the SSL-required log for the Stripe Express Checkout Element.
+* Fix - Fix ECE modal not loading on pay for order page when coupon is applied.
+* Fix - Do not load express payment buttons on switch subscription page.
+* Fix - Resolve a fatal error by casting product price and subscription sign up fee to 'float' while adding them.
+* Fix - Return 'is_live' as true in account summary response when test mode is disabled in gateway settings and charge is enabled in Stripe account.
+* Fix - Prevents notices being displayed on WordPress 6.7 due to loading translations too early (only shown on stores with WP_DEBUG enabled).
+* Fix - Prevent showing the shipping options on express checkout modal for virtual product variations.
+* Fix - Do not assume payment is using a saved card when retrying a failed payment.
+* Tweak - Update links to plugin documentation and Stripe documentation.
+
 = 8.9.0 - 2024-11-14 =
 * Update - Enhance webhook processing to enable retrieving orders using payment_intent metadata.
 * Dev - Minor updates to the webhook handler class related to payment method names constants.
@@ -1347,7 +1465,7 @@
 * Add support for changing a subscription's recurring amount
 
 = 1.5.0 - 2013-01-18 =
-* Supports Stripe Checkout https://stripe.com/docs/checkout
+* Supports Stripe Checkout https://docs.stripe.com/payments/checkout
 
 = 1.4.0 - 2013-01-18 =
 * WC 2.0 Compat

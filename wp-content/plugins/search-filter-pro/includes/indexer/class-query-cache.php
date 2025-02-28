@@ -226,8 +226,8 @@ class Query_Cache {
 
 		$query->delete_items( $delete_where );
 
-		// TODO - this won't work unless all the args are supplied the same...
-		// Might need to rethink this when local items when only the field_id is supplied.
+		// TODO - this won't work unless all the args are supplied the same.
+		// Might need to rethink this when when only the field_id is supplied.
 		self::delete_local_item( $delete_where );
 	}
 
@@ -246,6 +246,7 @@ class Query_Cache {
 		$cache_key = $item->get_cache_key();
 		$query_id  = $item->get_query_id();
 		$field_id  = $item->get_field_id();
+		$type      = $item->get_type();
 
 		if ( ! isset( self::$local[ $query_id ] ) ) {
 			self::$local[ $query_id ] = array();
@@ -253,8 +254,10 @@ class Query_Cache {
 		if ( ! isset( self::$local[ $query_id ][ $field_id ] ) ) {
 			self::$local[ $query_id ][ $field_id ] = array();
 		}
-
-		self::$local[ $query_id ][ $field_id ][ $cache_key ] = $item;
+		if ( ! isset( self::$local[ $query_id ][ $field_id ][ $type ] ) ) {
+			self::$local[ $query_id ][ $field_id ][ $type ] = array();
+		}
+		self::$local[ $query_id ][ $field_id ][ $type ][ $cache_key ] = $item;
 	}
 
 	/**
@@ -269,6 +272,7 @@ class Query_Cache {
 			'cache_key' => '',
 			'query_id'  => 0,
 			'field_id'  => 0,
+			'type'      => '',
 		);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -276,6 +280,7 @@ class Query_Cache {
 		$cache_key = $args['cache_key'];
 		$query_id  = $args['query_id'];
 		$field_id  = $args['field_id'];
+		$type      = $args['type'];
 
 		if ( ! isset( self::$local[ $query_id ] ) ) {
 			return;
@@ -284,12 +289,14 @@ class Query_Cache {
 		if ( ! isset( self::$local[ $query_id ][ $field_id ] ) ) {
 			return;
 		}
-
-		if ( ! isset( self::$local[ $query_id ][ $field_id ][ $cache_key ] ) ) {
+		if ( ! isset( self::$local[ $query_id ][ $field_id ][ $type ] ) ) {
+			return;
+		}
+		if ( ! isset( self::$local[ $query_id ][ $field_id ][ $type ][ $cache_key ] ) ) {
 			return;
 		}
 
-		unset( self::$local[ $query_id ][ $field_id ][ $cache_key ] );
+		unset( self::$local[ $query_id ][ $field_id ][ $type ][ $cache_key ] );
 	}
 
 	/**
@@ -306,6 +313,7 @@ class Query_Cache {
 			'cache_key' => '',
 			'query_id'  => 0,
 			'field_id'  => 0,
+			'type'      => '',
 		);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -313,6 +321,7 @@ class Query_Cache {
 		$cache_key = $args['cache_key'];
 		$query_id  = $args['query_id'];
 		$field_id  = $args['field_id'];
+		$type      = $args['type'];
 
 		if ( ! isset( self::$local[ $query_id ] ) ) {
 			return null;
@@ -322,11 +331,15 @@ class Query_Cache {
 			return null;
 		}
 
-		if ( ! isset( self::$local[ $query_id ][ $field_id ][ $cache_key ] ) ) {
+		if ( ! isset( self::$local[ $query_id ][ $field_id ][ $type ] ) ) {
 			return null;
 		}
 
-		return self::$local[ $query_id ][ $field_id ][ $cache_key ];
+		if ( ! isset( self::$local[ $query_id ][ $field_id ][ $type ][ $cache_key ] ) ) {
+			return null;
+		}
+
+		return self::$local[ $query_id ][ $field_id ][ $type ][ $cache_key ];
 	}
 
 	/**
@@ -418,7 +431,7 @@ class Query_Cache {
 			// This means our scheduled event has been missed by more then 1 day.
 			// So lets run manually and reschedule.
 			self::cron_run_task();
-			Util::error_log( 'Expired query cache cron job found, running and rescheduling.' );
+			Util::error_log( 'Expired query cache cron job found, running and rescheduling.', 'error' );
 			wp_clear_scheduled_hook( 'search-filter-pro/indexer/query_cache/cron' );
 			wp_schedule_event( time(), 'search_filter_pro_30minutes', 'search-filter-pro/indexer/query_cache/cron' );
 		}

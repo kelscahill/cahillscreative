@@ -233,6 +233,16 @@ trait broadcasting
 		else
 			$this->debug( 'Will not broadcast custom fields.' );
 
+		if ( $bcd->delete_attachments === null )
+		{
+			$keep_attachments = $this->get_site_option( 'keep_attachments' );
+			if ( $keep_attachments )
+				$bcd->delete_attachments = false;
+			$this->debug( 'Set delete_attachments to %d', $bcd->delete_attachments );
+		}
+		else
+			$this->debug( 'Keeping delete_attachments as %d', $bcd->delete_attachments );
+
 		// Handle sticky status. This can be done in two ways: by _POST and by the options.
 		// If the user is using the nromal editor, look in the post.
 		if ( isset( $_POST[ '_wp_http_referer' ] ) )
@@ -669,7 +679,16 @@ trait broadcasting
 				{
 					// Protected = ignore.
 					if ( isset( $protected_field[ $meta_key ] ) )
+					{
+						$this->debug( 'Skipping protected field %s', $meta_key );
 						continue;
+					}
+
+					if ( $bcd->custom_fields()->blacklist_has( $meta_key ) )
+					{
+						$this->debug( 'Skipping blacklisted field %s', $meta_key );
+						continue;
+					}
 
 					if ( is_array( $meta_value ) )
 					{
@@ -784,6 +803,18 @@ trait broadcasting
 	}
 
 	/**
+	 * Return how many nested broadcasts we are in.
+	 *
+	 * Returning 0 = "not in a nested broadcast".
+	 *
+	 * @since		2024-12-11 17:40:49
+	 **/
+	public function get_nested_broadcasting()
+	{
+		return count( $this->broadcasting ) - 1;
+	}
+
+	/**
 		@brief		Are we in the middle of a broadcast?
 		@return		bool		True if we're broadcasting.
 		@since		20130926
@@ -791,6 +822,18 @@ trait broadcasting
 	public function is_broadcasting()
 	{
 		return count( $this->broadcasting ) > 0;
+	}
+
+	/**
+	 * Is broadcast in a nested broadcast?
+	 *
+	 * This happens when an add-on requests another post be broadcasted during a broadcast.
+	 *
+	 * @since		2024-12-11 17:39:39
+	 **/
+	public function is_nested_broadcasting()
+	{
+		return $this->get_nested_broadcasting() > 0;
 	}
 
 	public function save_post( $post_id )
@@ -973,9 +1016,12 @@ trait broadcasting
 			$bcd->taxonomies = true;
 		}
 
-		$keep_attachments = $this->get_site_option( 'keep_attachments' );
-		if ( $keep_attachments )
-			$bcd->delete_attachments = false;
+		if ( $bcd->delete_attachments === null )
+		{
+			$keep_attachments = $this->get_site_option( 'keep_attachments' );
+			if ( $keep_attachments )
+				$bcd->delete_attachments = false;
+		}
 
 		// Handle the unchecking of the linked children.
 		// We could do this earlier, when foreaching the blogs_input, but it makes the code look uglier. Therefore we keep it separate.

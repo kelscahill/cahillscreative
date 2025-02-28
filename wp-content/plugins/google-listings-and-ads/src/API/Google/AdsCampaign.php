@@ -17,16 +17,16 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\TransientsInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Proxies\WC;
 use Google\Ads\GoogleAds\Util\FieldMasks;
-use Google\Ads\GoogleAds\Util\V16\ResourceNames;
-use Google\Ads\GoogleAds\V16\Common\MaximizeConversionValue;
-use Google\Ads\GoogleAds\V16\Enums\AdvertisingChannelTypeEnum\AdvertisingChannelType;
-use Google\Ads\GoogleAds\V16\Resources\Campaign;
-use Google\Ads\GoogleAds\V16\Resources\Campaign\ShoppingSetting;
-use Google\Ads\GoogleAds\V16\Services\Client\CampaignServiceClient;
-use Google\Ads\GoogleAds\V16\Services\CampaignOperation;
-use Google\Ads\GoogleAds\V16\Services\GoogleAdsRow;
-use Google\Ads\GoogleAds\V16\Services\MutateGoogleAdsRequest;
-use Google\Ads\GoogleAds\V16\Services\MutateOperation;
+use Google\Ads\GoogleAds\Util\V18\ResourceNames;
+use Google\Ads\GoogleAds\V18\Common\MaximizeConversionValue;
+use Google\Ads\GoogleAds\V18\Enums\AdvertisingChannelTypeEnum\AdvertisingChannelType;
+use Google\Ads\GoogleAds\V18\Resources\Campaign;
+use Google\Ads\GoogleAds\V18\Resources\Campaign\ShoppingSetting;
+use Google\Ads\GoogleAds\V18\Services\Client\CampaignServiceClient;
+use Google\Ads\GoogleAds\V18\Services\CampaignOperation;
+use Google\Ads\GoogleAds\V18\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V18\Services\MutateGoogleAdsRequest;
+use Google\Ads\GoogleAds\V18\Services\MutateOperation;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\ValidationException;
 use Exception;
@@ -108,35 +108,37 @@ class AdsCampaign implements ContainerAwareInterface, OptionsAwareInterface {
 	 *
 	 * @param bool  $exclude_removed Exclude removed campaigns (default true).
 	 * @param bool  $fetch_criterion Combine the campaign data with criterion data (default true).
-	 * @param array $args Arguments for the Ads Campaign Query for example: per_page for limiting the number of results.
-	 * @param bool  $return_pagination_params Whether to return pagination params (default false).
+	 * @param array $args Arguments for fetching campaigns, for example: per_page for limiting the number of results.
 	 *
 	 * @return array
 	 * @throws ExceptionWithResponseData When an ApiException is caught.
 	 */
-	public function get_campaigns( bool $exclude_removed = true, bool $fetch_criterion = true, $args = [], $return_pagination_params = false ): array {
+	public function get_campaigns( bool $exclude_removed = true, bool $fetch_criterion = true, array $args = [] ): array {
 		try {
-			$query = ( new AdsCampaignQuery( $args ) )->set_client( $this->client, $this->options->get_ads_id() );
+			$query = ( new AdsCampaignQuery() )->set_client( $this->client, $this->options->get_ads_id() );
 
 			if ( $exclude_removed ) {
 				$query->where( 'campaign.status', 'REMOVED', '!=' );
 			}
 
-			$campaign_count      = 0;
+			$count               = 0;
 			$campaign_results    = $query->get_results();
 			$converted_campaigns = [];
 
-			/** @var Page $page */
-			$page = $campaign_results->getPage();
-
-			foreach ( $page->getIterator()  as $row ) {
-				++$campaign_count;
+			foreach ( $campaign_results->iterateAllElements() as $row ) {
+				++$count;
 				$campaign                               = $this->convert_campaign( $row );
 				$converted_campaigns[ $campaign['id'] ] = $campaign;
+
+				// Break early if we request a limited result.
+				if ( ! empty( $args['per_page'] ) && $count >= $args['per_page'] ) {
+					break;
+				}
 			}
 
 			if ( $exclude_removed ) {
 				// Cache campaign count.
+				$campaign_count = $campaign_results->getPage()->getResponseObject()->getTotalResultsCount();
 				$this->container->get( TransientsInterface::class )->set(
 					TransientsInterface::ADS_CAMPAIGN_COUNT,
 					$campaign_count,
@@ -148,16 +150,6 @@ class AdsCampaign implements ContainerAwareInterface, OptionsAwareInterface {
 				$converted_campaigns = $this->combine_campaigns_and_campaign_criterion_results( $converted_campaigns );
 			}
 
-			if ( $return_pagination_params ) {
-				// Total results across all pages.
-				$total_results   = $page->getResponseObject()->getTotalResultsCount();
-				$next_page_token = $page->getNextPageToken();
-				return [
-					'campaigns'       => array_values( $converted_campaigns ),
-					'total_results'   => $total_results,
-					'next_page_token' => $next_page_token,
-				];
-			}
 			return array_values( $converted_campaigns );
 		} catch ( ApiException $e ) {
 			do_action( 'woocommerce_gla_ads_client_exception', $e, __METHOD__ );
@@ -183,14 +175,14 @@ class AdsCampaign implements ContainerAwareInterface, OptionsAwareInterface {
 	 */
 	public function get_campaign( int $id ): array {
 		try {
-			$campaign_results = ( new AdsCampaignQuery( [ 'per_page' => 1 ] ) )->set_client( $this->client, $this->options->get_ads_id() )
+			$campaign_results = ( new AdsCampaignQuery() )->set_client( $this->client, $this->options->get_ads_id() )
 				->where( 'campaign.id', $id, '=' )
 				->get_results();
 
 			$converted_campaigns = [];
 
 			// Get only the first element from campaign results
-			foreach ( $campaign_results->getPage()->getIterator() as $row ) {
+			foreach ( $campaign_results->iterateAllElements() as $row ) {
 				$campaign                               = $this->convert_campaign( $row );
 				$converted_campaigns[ $campaign['id'] ] = $campaign;
 				break;
@@ -470,7 +462,7 @@ class AdsCampaign implements ContainerAwareInterface, OptionsAwareInterface {
 				'status'                    => CampaignStatus::number( 'enabled' ),
 				'campaign_budget'           => $this->budget->temporary_resource_name(),
 				'maximize_conversion_value' => new MaximizeConversionValue(),
-				'url_expansion_opt_out'     => true,
+				'url_expansion_opt_out'     => false,
 				'shopping_setting'          => new ShoppingSetting(
 					[
 						'merchant_id' => $this->options->get_merchant_id(),

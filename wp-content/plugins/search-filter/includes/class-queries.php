@@ -11,6 +11,7 @@
 namespace Search_Filter;
 
 use Search_Filter\Core\CSS_Loader;
+use Search_Filter\Core\Deprecations;
 use Search_Filter\Database\Queries\Queries as Queries_Query;
 use Search_Filter\Queries\Query;
 use Search_Filter\Queries\Settings as Queries_Settings;
@@ -26,11 +27,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Queries {
 
 	/**
-	 * Keeps track of which query IDs will be needed on the page.
+	 * Keeps track of which query IDs have run on a page.
 	 *
 	 * @var array
 	 */
 	private static $active_queries_ids = array();
+
+	/**
+	 * Keeps track of which query IDs will be needed on the page,
+	 * for example if a field is loaded it will require its connected
+	 * query data to be loaded.
+	 *
+	 * @var array
+	 */
+	private static $connected_queries_ids = array();
 
 	/**
 	 * Initialise styles.
@@ -42,7 +52,7 @@ class Queries {
 	public static function init() {
 
 		add_action( 'search-filter/record/save', 'Search_Filter\\Queries::save_css', 10, 2 );
-		self::register_settings();
+		add_action( 'init', array( __CLASS__, 'register_settings' ), 2 );
 	}
 	/**
 	 * Register the CSS handler.
@@ -61,7 +71,6 @@ class Queries {
 	public static function register_settings() {
 		// Register settings.
 		Queries_Settings::init( Settings_Data::get(), Settings_Data::get_groups() );
-		do_action( 'search-filter/settings/register/queries' );
 	}
 	/**
 	 * Find multiple styles by conditions
@@ -178,14 +187,13 @@ class Queries {
 	/**
 	 * Keep track of active queries to preload their data.
 	 *
-	 * TODO - we are currently collecting the query IDs when a field is rendered,
-	 * but we might need to include queries that are not used in fields, ie, if the current page
-	 * is a search page, or a has a query block that we integrate with.
-	 *
 	 * @param array $query_id The query ID.
 	 */
 	public static function register_active_query( $query_id ) {
 		self::$active_queries_ids[] = $query_id;
+	}
+	public static function register_connected_query( $query_id ) {
+		self::$connected_queries_ids[] = $query_id;
 	}
 
 	/**
@@ -194,15 +202,45 @@ class Queries {
 	public static function get_active_query_ids() {
 		return self::$active_queries_ids;
 	}
+
+	/**
+	 * Get the connected query IDs.
+	 */
+	public static function get_connected_query_ids() {
+		return self::$connected_queries_ids;
+	}
+
+	/**
+	 * Get the required query IDs.
+	 *
+	 * @return array
+	 */
+	public static function get_used_query_ids() {
+		$required_query_ids = array_unique( array_merge( self::$active_queries_ids, self::$connected_queries_ids ) );
+		return $required_query_ids;
+	}
+
+	/**
+	 * Is the query an active query.
+	 *
+	 * @return bool
+	 */
+	private static function is_active_query( $query ) {
+		return in_array( $query->get_id(), self::$active_queries_ids, true );
+	}
+
+	/**
+	 * Get the connected query IDs.
+	 */
 	/**
 	 * Keep track of active fields to preload their data.
 	 *
 	 * @return array $active_fields Array of active fields.
 	 */
-	public static function get_active_queries() {
-		$active_queries_ids = array_unique( self::$active_queries_ids );
-		$active_queries     = array();
-		foreach ( $active_queries_ids as $query_id ) {
+	public static function get_used_queries() {
+		$used_queries_ids = self::get_used_query_ids();
+		$used_queries     = array();
+		foreach ( $used_queries_ids as $query_id ) {
 			// We only want to deal with enabled queries.
 			$query = Query::find(
 				array(
@@ -215,16 +253,59 @@ class Queries {
 				continue;
 			}
 
-			$query_data                  = array(
+			$query_data                = array(
 				'id'         => $query_id,
 				'attributes' => $query->get_attributes(),
 				'settings'   => $query->get_render_settings(),
 				'url'        => $query->get_results_url(),
+				'isActive'   => self::is_active_query( $query ),
 				// TODO - only add this if debugging features are enabled?
 				'name'       => $query->get_name(),
 			);
-			$active_queries[ $query_id ] = $query_data;
+			$used_queries[ $query_id ] = $query_data;
 		}
-		return $active_queries;
+		return $used_queries;
+	}
+
+	/**
+	 * Backwards compatibility to support older versions.
+	 *
+	 * @return array
+	 */
+	public static function get_active_queries() {
+		Deprecations::add( 'Using outdated method `get_active_queries` which will be deprecated soon.  Update Search & Filter and extensions to remove this notice.' );
+		return self::get_used_queries();
+	}
+
+
+	/**
+	 * Gets the list of saved queries - used for displaying in dropdowns in our
+	 * admin UI.
+	 *
+	 * @return array The list of saved queries.
+	 */
+	public static function get_queries_list() {
+		$defaults   = array(
+			'no_found_rows' => true,
+			'status'        => 'enabled',
+		);
+		$query_args = wp_parse_args( $defaults );
+		$query      = new \Search_Filter\Database\Queries\Queries( $query_args );
+		return $query->items;
+	}
+
+	/**
+	 * Gets the first query ID from the list.
+	 *
+	 * Helps when preloading the query data in our admin UI.
+	 *
+	 * @return int The first query ID.
+	 */
+	public static function get_queries_list_first_id() {
+		$queries_list = self::get_queries_list();
+		if ( count( $queries_list ) > 0 ) {
+			return $queries_list[0]->id;
+		}
+		return 0;
 	}
 }

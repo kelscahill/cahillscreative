@@ -379,9 +379,9 @@ class WPForms_Updater {
 			'new_version'      => $plugin_info['version'] ?? $this->version,
 			'tested'           => '',
 			'requires'         => $plugin_info['required_versions']['wp'] ?? '5.5',
-			'requires_php'     => $plugin_info['required_versions']['php'] ?? '7.0',
+			'requires_php'     => $plugin_info['required_versions']['php'] ?? '7.1',
 			'requires_wpforms' => $plugin_info['required_versions']['wpforms'] ?? WPFORMS_VERSION,
-			'active_installs'  => 5 * 1000 * 1000,
+			'active_installs'  => 6 * 1000 * 1000,
 			'package'          => '',
 			'download_url'     => '',
 			'changelog'        => implode( '', $plugin_info['changelog'] ?? [] ),
@@ -609,10 +609,13 @@ class WPForms_Updater {
 		// Setup variable for wp_remote_post.
 		$args = [
 			'headers' => $headers,
+			'timeout' => 30,
 		];
 
+		$remote_url = $this->remote_url . '/' . $action;
+
 		// Perform the query and retrieve the response.
-		$response      = wp_remote_get( add_query_arg( $query_params, $this->remote_url ), $args );
+		$response      = wp_remote_get( add_query_arg( $query_params, $remote_url ), $args );
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$response_body = wp_remote_retrieve_body( $response );
 

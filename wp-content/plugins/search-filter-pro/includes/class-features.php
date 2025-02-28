@@ -13,8 +13,6 @@ namespace Search_Filter_Pro;
 use Search_Filter\Features\Settings as Features_Settings;
 
 use Search_Filter_Pro\Features\Shortcodes;
-use Search_Filter_Pro\Features\Shortcodes\Settings as Shortcodes_Settings;
-use Search_Filter_Pro\Features\Shortcodes\Settings_Data as Shortcodes_Settings_Data;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -37,7 +35,7 @@ class Features {
 	 * @since    3.0.0
 	 */
 	public static function init() {
-		add_action( 'search-filter/settings/register/features', array( __CLASS__, 'init_features' ), 10 );
+		add_action( 'search-filter/settings/features/init', array( __CLASS__, 'init_features' ), 10 );
 	}
 
 	/**

@@ -54,5 +54,4 @@ return array(
     'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Google\\' => array($vendorDir . '/google/apiclient/src'),
     'Automattic\\WooCommerce\\GoogleListingsAndAds\\Util\\' => array($baseDir . '/bin'),
     'Automattic\\WooCommerce\\GoogleListingsAndAds\\' => array($baseDir . '/src'),
-    'Automattic\\Jetpack\\Autoloader\\' => array($vendorDir . '/automattic/jetpack-autoloader/src'),
 );

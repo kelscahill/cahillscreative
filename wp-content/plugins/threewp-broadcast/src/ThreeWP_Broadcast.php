@@ -5,6 +5,7 @@ namespace threewp_broadcast;
 use Exception;
 use \threewp_broadcast\broadcast_data\blog;
 
+#[\AllowDynamicProperties]
 class ThreeWP_Broadcast
 	extends \plainview\sdk_broadcast\wordpress\base
 {

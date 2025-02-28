@@ -14,6 +14,10 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class ReportsController
  *
+ * ContainerAware used for:
+ * - MerchantReport
+ * - WP (in parent class)
+ *
  * @package Automattic\WooCommerce\GoogleListingsAndAds\API\Site\Controllers\MerchantCenter
  */
 class ReportsController extends BaseReportsController {

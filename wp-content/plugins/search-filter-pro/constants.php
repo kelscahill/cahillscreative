@@ -9,7 +9,7 @@
  */
 
 if ( ! defined( 'SEARCH_FILTER_PRO_VERSION' ) ) {
-	define( 'SEARCH_FILTER_PRO_VERSION', '3.0.6' );
+	define( 'SEARCH_FILTER_PRO_VERSION', '3.1.7' );
 }
 
 if ( ! defined( 'SEARCH_FILTER_PRO_URL' ) ) {
@@ -22,7 +22,12 @@ if ( ! defined( 'SEARCH_FILTER_PRO_PATH' ) ) {
 
 // The required version number of the Search & Filter base plugin.
 if ( ! defined( 'SEARCH_FILTER_PRO_REQUIRED_BASE_VERSION' ) ) {
-	define( 'SEARCH_FILTER_PRO_REQUIRED_BASE_VERSION', '3.0.6' );
+	define( 'SEARCH_FILTER_PRO_REQUIRED_BASE_VERSION', '3.1.0' );
+}
+
+// The recommended version number of the Search & Filter base plugin.
+if ( ! defined( 'SEARCH_FILTER_PRO_RECOMMENDED_BASE_VERSION' ) ) {
+	define( 'SEARCH_FILTER_PRO_RECOMMENDED_BASE_VERSION', '3.1.3' );
 }
 
 // Define exception codes.

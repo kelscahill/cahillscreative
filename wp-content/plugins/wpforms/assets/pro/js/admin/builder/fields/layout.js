@@ -830,7 +830,7 @@ WPForms.Admin.Builder.FieldLayout = WPForms.Admin.Builder.FieldLayout || ( funct
 			}
 
 			const columnsData = app.getFieldColumnsData( layoutFieldId ),
-				newLayoutFieldID = WPFormsBuilder.fieldDuplicateRoutine( layoutFieldId ),
+				newLayoutFieldID = WPFormsBuilder.fieldDuplicateRoutine( layoutFieldId, true ),
 				$newLayoutField = $( `#wpforms-field-${ newLayoutFieldID }` ),
 				$newLayoutFieldOptions = $( `#wpforms-field-option-${ newLayoutFieldID }` ),
 				$newLayoutFieldColumn = $newLayoutField.find( '.wpforms-layout-column' ),
@@ -863,7 +863,7 @@ WPForms.Admin.Builder.FieldLayout = WPForms.Admin.Builder.FieldLayout || ( funct
 						return;
 					}
 
-					const newFieldID = WPFormsBuilder.fieldDuplicateRoutine( fieldId ),
+					const newFieldID = WPFormsBuilder.fieldDuplicateRoutine( fieldId, false ),
 						$newField = $( `#wpforms-field-${ newFieldID }` ).detach().removeClass( 'active' ),
 						$newFieldOptions = $( `#wpforms-field-option-${ newFieldID }` );
 
@@ -958,7 +958,7 @@ WPForms.Admin.Builder.FieldLayout = WPForms.Admin.Builder.FieldLayout || ( funct
 			);
 
 			app.reorderLayoutFieldsOptions(
-				$column.closest( '.wpforms-field-layout' )
+				$column.closest( '.wpforms-field-layout, .wpforms-field-repeater' )
 			);
 		},
 

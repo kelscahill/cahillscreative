@@ -2,6 +2,7 @@
 namespace Search_Filter_Pro\License;
 
 use Search_Filter\Options;
+use Search_Filter_Pro\Core\License_Server;
 use Search_Filter_Pro\Util;
 use WP_REST_Response;
 use WP_Error;
@@ -18,9 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Rest_API {
 
-	const PLUGIN_ITEM_NAME = 'Search & Filter Pro (beta)';
 	const PLUGIN_ITEM_ID   = 526297;
-	const PLUGIN_STORE_URL = 'https://searchandfilter.com';
 	/**
 	 * Init the cron class.
 	 *
@@ -94,6 +93,19 @@ class Rest_API {
 				),
 			)
 		);
+
+		register_rest_route(
+			'search-filter-pro/v1',
+			'/license/test-connection',
+			array(
+				'args' => array(),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( __CLASS__, 'test_connection' ),
+					'permission_callback' => array( __CLASS__, 'permissions' ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -104,42 +116,14 @@ class Rest_API {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public static function get_status() {
-		$license_data = self::get_license_data();
+		$license_data = License_Server::get_license_data();
 		if ( self::is_license_key_connected( $license_data ) ) {
 			$license_data['license'] = self::obfuscate_license_key( $license_data['license'] );
 		}
 		return rest_ensure_response( $license_data );
 	}
 
-	/**
-	 * Get the indexer data for the indexer widget.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @return array    The indexer data.
-	 */
-	public static function get_license_data() {
-
-		$default_license_data = array(
-			'status'       => '',
-			'expires'      => '',
-			'license'      => '',
-			'error'        => '',
-			'errorMessage' => '',
-		);
-
-		$license_data = Options::get_option_value( 'license-data' );
-
-		if ( $license_data ) {
-			$license_data = wp_parse_args( $license_data, $default_license_data );
-		} else {
-			$license_data = $default_license_data;
-		}
-
-		// 9be824d93c66bc655f4684f2101f971a
-
-		return $license_data;
-	}
+	
 
 	/**
 	 * Check whether the license data object seems to be connected.
@@ -192,20 +176,22 @@ class Rest_API {
 			'license'    => $license,
 			'item_id'    => self::PLUGIN_ITEM_ID,
 			'url'        => home_url(),
+			'info'       => License_Server::get_site_info(),
 		);
 
 		// Call the custom API.
-		$response = wp_remote_get(
-			add_query_arg( $api_params, self::PLUGIN_STORE_URL ),
+		$response = wp_remote_post(
+			License_Server::get_endpoint(),
 			array(
 				'timeout'   => 15,
 				'sslverify' => false,
+				'body'      => $api_params,
 			)
 		);
 
 		// Make sure the response came back okay
 		if ( is_wp_error( $response ) ) {
-			$license_data['errorMessage'] = __( "Couldn't retreive license information - `wp_remote_get` failed.", 'search-filter-pro' );
+			$license_data['errorMessage'] = __( "Couldn't retreive license information - `wp_remote_post` failed.", 'search-filter-pro' );
 			return rest_ensure_response( $license_data );
 		}
 
@@ -255,29 +241,30 @@ class Rest_API {
 	 */
 	public static function disconnect( \WP_REST_Request $request ) {
 
-		$license_data = self::get_license_data();
+		$license_data = License_Server::get_license_data();
 		$license      = $license_data['license'];
 		// data to send in our API request
 		$api_params = array(
 			'edd_action' => 'deactivate_license',
 			'license'    => $license,
 			'item_id'    => self::PLUGIN_ITEM_ID,
-			// 'item_name'  => urlencode( self::PLUGIN_ITEM_NAME ), // the name of our product in EDD
 			'url'        => home_url(),
+			'info'       => License_Server::get_site_info(),
 		);
 
 		// Call the custom API.
-		$response = wp_remote_get(
-			add_query_arg( $api_params, self::PLUGIN_STORE_URL ),
+		$response = wp_remote_post(
+			License_Server::get_endpoint(),
 			array(
 				'timeout'   => 15,
 				'sslverify' => false,
+				'body'      => $api_params,
 			)
 		);
 
 		// make sure the response came back okay
 		if ( is_wp_error( $response ) ) {
-			$license_data['errorMessage'] = __( "Couldn't disconnect license - `wp_remote_get` failed.", 'search-filter-pro' );
+			$license_data['errorMessage'] = __( "Couldn't disconnect license - `wp_remote_post` failed.", 'search-filter-pro' );
 			return rest_ensure_response( $license_data );
 		}
 
@@ -285,7 +272,7 @@ class Rest_API {
 		$remote_license_data = json_decode( wp_remote_retrieve_body( $response ) );
 
 		// $license_data->license will be either "deactivated" or "failed".
-		if ( $remote_license_data->license === 'deactivated' ) {
+		if ( $remote_license_data->license === 'deactivated' || $remote_license_data->license === 'failed' ) {
 			$license_data = array(
 				'status'       => '',
 				'expires'      => '',
@@ -312,7 +299,7 @@ class Rest_API {
 	 * @param \WP_REST_Request $request The request object.
 	 */
 	public static function refresh( \WP_REST_Request $request ) {
-		$license_data = self::get_license_data();
+		$license_data = License_Server::get_license_data();
 		if ( self::is_license_key_connected( $license_data ) ) {
 			$license_data['license'] = self::obfuscate_license_key( $license_data['license'] );
 		}
@@ -343,5 +330,15 @@ class Rest_API {
 
 		$obfuscated_key = '************' . substr( $key, $length - 4 );
 		return $obfuscated_key;
+	}
+
+	/**
+	 * Test the license server connection.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function test_connection() {
+		$result = License_Server::check_server_health();
+		return rest_ensure_response( $result );
 	}
 }

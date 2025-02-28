@@ -3,9 +3,10 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds;
 
-use Automattic\WooCommerce\GoogleListingsAndAds\Exception\ValidateInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\Registerable;
 use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\Service;
+use Automattic\WooCommerce\GoogleListingsAndAds\Internal\ContainerAwareTrait;
+use Automattic\WooCommerce\GoogleListingsAndAds\Internal\Interfaces\ContainerAwareInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Internal\Interfaces\FirstInstallInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Internal\Interfaces\InstallableInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsAwareInterface;
@@ -20,21 +21,11 @@ defined( 'ABSPATH' ) || exit;
  *
  * @package Automattic\WooCommerce\GoogleListingsAndAds
  */
-class Installer implements OptionsAwareInterface, Service, Registerable {
+class Installer implements ContainerAwareInterface, OptionsAwareInterface, Registerable, Service {
 
+	use ContainerAwareTrait;
 	use OptionsAwareTrait;
 	use PluginHelper;
-	use ValidateInterface;
-
-	/**
-	 * @var InstallableInterface[]
-	 */
-	protected $installables;
-
-	/**
-	 * @var FirstInstallInterface[]
-	 */
-	protected $first_installers;
 
 	/**
 	 * @var WP
@@ -44,16 +35,10 @@ class Installer implements OptionsAwareInterface, Service, Registerable {
 	/**
 	 * Installer constructor.
 	 *
-	 * @param InstallableInterface[]  $installables
-	 * @param FirstInstallInterface[] $first_installers
-	 * @param WP                      $wp
+	 * @param WP $wp
 	 */
-	public function __construct( array $installables, array $first_installers, WP $wp ) {
-		$this->installables     = $installables;
-		$this->first_installers = $first_installers;
-		$this->wp               = $wp;
-		$this->validate_installables();
-		$this->validate_first_installers();
+	public function __construct( WP $wp ) {
+		$this->wp = $wp;
 	}
 
 	/**
@@ -99,7 +84,10 @@ class Installer implements OptionsAwareInterface, Service, Registerable {
 		$old_version = $this->get_db_version();
 		$new_version = $this->get_version();
 
-		foreach ( $this->installables as $installable ) {
+		/** @var InstallableInterface[] */
+		$installables = $this->container->get( InstallableInterface::class );
+
+		foreach ( $installables as $installable ) {
 			$installable->install( $old_version, $new_version );
 		}
 	}
@@ -117,7 +105,10 @@ class Installer implements OptionsAwareInterface, Service, Registerable {
 	 * Runs on the first install of GLA.
 	 */
 	protected function first_install(): void {
-		foreach ( $this->first_installers as $installer ) {
+		/** @var FirstInstallInterface[] $first_installers */
+		$first_installers = $this->container->get( FirstInstallInterface::class );
+
+		foreach ( $first_installers as $installer ) {
 			$installer->first_install();
 		}
 	}
@@ -138,23 +129,5 @@ class Installer implements OptionsAwareInterface, Service, Registerable {
 	 */
 	protected function get_file_version(): string {
 		return $this->options->get( OptionsInterface::FILE_VERSION, '' );
-	}
-
-	/**
-	 * Validate that each of the installable items is of the correct interface.
-	 */
-	protected function validate_installables() {
-		foreach ( $this->installables as $installable ) {
-			$this->validate_instanceof( $installable, InstallableInterface::class );
-		}
-	}
-
-	/**
-	 * Validate that each of the first installers is of the correct interface.
-	 */
-	protected function validate_first_installers() {
-		foreach ( $this->first_installers as $installer ) {
-			$this->validate_instanceof( $installer, FirstInstallInterface::class );
-		}
 	}
 }

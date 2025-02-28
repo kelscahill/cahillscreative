@@ -105,10 +105,10 @@ class ProductHelper implements Service, HelperNotificationInterface {
 		$google_ids         = array_unique( array_merge( $current_google_ids, [ $google_product->getTargetCountry() => $google_product->getId() ] ) );
 		$this->meta_handler->update_google_ids( $product, $google_ids );
 
-		// check if product is synced completely and remove any previous errors if it is
+		// check if product is synced for main target country and remove any previous errors if it is
 		$synced_countries = array_keys( $google_ids );
 		$target_countries = $this->target_audience->get_target_countries();
-		if ( count( $synced_countries ) === count( $target_countries ) && empty( array_diff( $synced_countries, $target_countries ) ) ) {
+		if ( empty( array_diff( $synced_countries, $target_countries ) ) ) {
 			$this->meta_handler->delete_errors( $product );
 			$this->meta_handler->delete_failed_sync_attempts( $product );
 			$this->meta_handler->delete_sync_failed_at( $product );
@@ -310,10 +310,11 @@ class ProductHelper implements Service, HelperNotificationInterface {
 		$mc_product_id_tokens = explode( ':', $mc_product_id );
 		$mc_product_id        = end( $mc_product_id_tokens );
 
+		// Support a fully numeric ID both with and without the `gla_` prefix.
 		$wc_product_id = 0;
-		$pattern       = '/' . preg_quote( $this->get_slug(), '/' ) . '_(\d+)$/';
+		$pattern       = '/^(' . preg_quote( $this->get_slug(), '/' ) . '_)?(\d+)$/';
 		if ( preg_match( $pattern, $mc_product_id, $matches ) ) {
-			$wc_product_id = (int) $matches[1];
+			$wc_product_id = (int) $matches[2];
 		}
 
 		/**

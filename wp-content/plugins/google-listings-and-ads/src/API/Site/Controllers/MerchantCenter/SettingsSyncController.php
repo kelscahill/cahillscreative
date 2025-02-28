@@ -29,7 +29,7 @@ class SettingsSyncController extends BaseController {
 	protected $settings;
 
 	/**
-	 * BaseController constructor.
+	 * SettingsSyncController constructor.
 	 *
 	 * @param RESTServer $server
 	 * @param Settings   $settings

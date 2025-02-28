@@ -95,7 +95,6 @@ class Field_Queries {
 		$query_id = absint( $field->get_attribute( 'queryId' ) );
 
 		// Try to get the query in advance.
-		// TODO - we need to re-use queries...
 		$source_query = Data_Store::get( 'query', $query_id );
 		// Now we know we're using an indexer query, init the field.
 		self::$fields[ $field_id ] = array(
@@ -120,8 +119,8 @@ class Field_Queries {
 
 		if ( $indexer_query === null && $query_id !== 0 ) {
 
-			// TODO - this is really inefficient, we need to store the queries
-			// in an object and reuse them...
+			// TODO - this is inefficient, we need to store the queries
+			// in an object and reuse them.
 			$query = Query::find( array( 'id' => $query_id ) );
 			if ( is_wp_error( $query ) ) {
 				return;
@@ -181,42 +180,66 @@ class Field_Queries {
 				// Figure out which IDs we need to compare against.
 				$result_ids = self::get_field_value_matched_ids( $field, $filtered_result_ids, $unfiltered_result_ids, $field_relationship, $indexer_query );
 
-				$query = new Index_Query(
-					array(
-						'number'        => 0,
-						'count'         => true,
-						'groupby'       => 'value',
-						'field_id'      => $field_id,
-						'object_id__in' => $result_ids,
-					)
-				);
+				$result_ids_string = implode( ',', array_map( 'absint', $result_ids ) );
+				$field_id          = absint( $field_id );
 
-				$item_data = array(
-					'query_id'    => $query_id,
-					'field_id'    => $field_id,
-					'type'        => 'count',
-					'cache_key'   => $cache_key,
-					'cache_value' => wp_json_encode( $query->items ),
-				);
-
-				// If there is a search term, don't hold on to the cache for
-				// too long to prevent huge tables.
-				if ( $indexer_query->has_search() ) {
-					$item_data['expires'] = time() + HOUR_IN_SECONDS;
+				// Whether to collapse children into parents when counting, this
+				// means a count for a child object is the same as its parent.
+				$collapse_children_into_parents = apply_filters( 'search-filter-pro/indexer/query/collapse_children', false, $indexer_query->get_query() );
+				$count_select_sql               = 'COUNT(object_id)';
+				if ( $collapse_children_into_parents ) {
+					$count_select_sql = 'COUNT(DISTINCT CASE 
+						WHEN object_parent_id = 0 THEN object_id 
+						ELSE object_parent_id 
+					END)';
 				}
+
+				if ( empty( $result_ids_string ) ) {
+					// Then we have no results to combine with, use ID of 0 to force
+					// no matches.
+					$result_ids_string = 0;
+				}
+
+				global $wpdb;
+				$table_name = $wpdb->prefix . 'search_filter_index';
+				$sql        = $wpdb->prepare(
+					"SELECT value, 
+						$count_select_sql as count
+					FROM %i 
+					WHERE field_id = %d 
+					AND object_id IN ($result_ids_string) 
+					GROUP BY value",
+					$table_name,
+					$field_id
+				);
+
+				$count_items = $wpdb->get_results( $sql, ARRAY_A );
 
 				if ( self::$enable_caching ) {
+
+					$item_data = array(
+						'query_id'    => $query_id,
+						'field_id'    => $field_id,
+						'type'        => 'count',
+						'cache_key'   => $cache_key,
+						'cache_value' => wp_json_encode( $count_items ),
+					);
+
+					// If there is a search term, don't hold on to the cache for
+					// too long to prevent huge tables.
+					if ( $indexer_query->has_search() ) {
+						$item_data['expires'] = time() + HOUR_IN_SECONDS;
+					}
+
 					Query_Cache::update_item( $item_data );
 				}
-
-				$count_items = $query->items;
 			} else {
 				$count_items = json_decode( $count_items, true );
 			}
 
 			if ( $count_items ) {
 				foreach ( $count_items as $item ) {
-					self::$fields[ $field_id ]['counts'][ $item['value'] ] = $item['count'];
+					self::$fields[ $field_id ]['counts'][ $item['value'] ] = absint( $item['count'] );
 				}
 			}
 		}
@@ -387,7 +410,6 @@ class Field_Queries {
 		if ( $field_id === 0 ) {
 			// Then we're likely in a preview, so we'll have to generate
 			// random count numbers for now.
-			// TODO - can we improve this?
 			$count = wp_rand( 1, 100 );
 			if ( $can_hide && $count === 0 ) {
 				return null;

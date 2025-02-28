@@ -4,7 +4,7 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 8.0
-Stable tag: 51.01
+Stable tag: 51.03
 Tags: multipost, sharing, duplicate, syndication, marketing
 Tested up to: 6.7
 
@@ -369,6 +369,18 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+* 51.03 20250216 =
+
+* More PHP 8.2 warning fixes.
+* Dev: broadcasting_data assuming nothing to be done with deleting attachments. This affects broadcasting using manually-created broadcasting_data.
+* Dev: Added ThreeWP_Broadcast()->get_nested_broadcasting() and is_nested_broadcasting() functions.
+* Dev: Add post info maintenance for attachments. This helps diagnose attachments with unexpected post names.
+
+* 51.02 20241201 =
+
+* Fix: Allow dynamic handling of custom field blacklist.
+* Fix: Better display of missing maintenance check.
 
 * 51.01 20241116 =
 

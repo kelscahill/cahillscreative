@@ -24,15 +24,12 @@ trait Field {
 	 */
 	private function hooks() {
 
-		add_filter( 'wpforms_field_new_default', [ $this, 'field_new_default' ] );
 		add_filter( 'wpforms_entry_single_data', [ $this, 'filter_fields_remove_layout' ], 1000, 3 );
-
 		add_filter( 'wpforms_pro_admin_entries_print_preview_fields', [ $this, 'filter_entries_print_preview_fields' ] );
 		add_filter( 'wpforms_pro_admin_entries_edit_form_data', [ $this, 'filter_entries_print_preview_fields' ], 40 );
 		add_filter( 'wpforms_entry_preview_fields', [ $this, 'filter_entries_print_preview_fields' ] );
 		add_filter( 'wpforms_admin_payments_views_single_fields', [ $this, 'filter_entries_print_preview_fields' ] );
 		add_filter( 'wpforms_pro_fields_entry_preview_print_entry_preview_exclude_field', [ $this, 'exclude_hidden_fields' ], 10, 3 );
-
 		add_filter( 'register_block_type_args', [ $this, 'register_block_type_args' ], 20, 2 );
 		add_filter( 'wpforms_conversational_form_detected', [ $this, 'cf_frontend_hooks' ], 10, 2 );
 		add_filter( 'wpforms_field_properties_layout', [ $this, 'field_properties' ], 5, 3 );
@@ -43,9 +40,9 @@ trait Field {
 	 *
 	 * @since 1.8.9
 	 *
-	 * @param array $properties Field properties.
-	 * @param array $field      Field settings.
-	 * @param array $form_data  Form data and settings.
+	 * @param array|mixed $properties Field properties.
+	 * @param array       $field      Field settings.
+	 * @param array       $form_data  Form data and settings.
 	 *
 	 * @return array
 	 * @noinspection PhpMissingParamTypeInspection
@@ -53,10 +50,12 @@ trait Field {
 	 */
 	public function field_properties( $properties, $field, $form_data ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
+		$properties = (array) $properties;
+
 		// Null 'for' value for label as there no input for it.
 		unset( $properties['label']['attr']['for'] );
 
-		return (array) $properties;
+		return $properties;
 	}
 
 	/**
@@ -79,6 +78,9 @@ trait Field {
 
 	/**
 	 * Define new field defaults.
+	 *
+	 * Rewrite method from the base class to continue using old $this->defaults
+	 * instead of the new $this->default_settings.
 	 *
 	 * @since 1.8.9
 	 *
@@ -245,13 +247,14 @@ trait Field {
 	 *
 	 * @since 1.8.9
 	 *
-	 * @param array $data The field list OR column data.
+	 * @param array|mixed $data The field list OR column data.
 	 *
 	 * @return array
 	 */
 	public function filter_entries_print_preview_fields( $data ): array { // phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded, Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		$fields = $data['fields'] ?? $data;
+		$data   = (array) $data;
+		$fields = (array) ( $data['fields'] ?? $data );
 
 		foreach ( $fields as $key => $field ) {
 			if ( ! isset( $field['type'] ) || ! Helpers::is_layout_based_field( $field['type'] ) ) {
@@ -337,11 +340,13 @@ trait Field {
 	 *
 	 * @since 1.8.9
 	 *
-	 * @param array $form_data Form data.
+	 * @param array|mixed $form_data Form data.
 	 *
 	 * @return array Fields data without the layout fields.
 	 */
 	public function filter_fields_remove_layout_cf( $form_data ): array {
+
+		$form_data = (array) $form_data;
 
 		$form_data['fields'] = $this->filter_fields_remove_layout( $form_data['fields'], [], $form_data );
 

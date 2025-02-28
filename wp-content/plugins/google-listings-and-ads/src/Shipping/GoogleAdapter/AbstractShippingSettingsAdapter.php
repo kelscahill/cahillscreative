@@ -66,8 +66,8 @@ abstract class AbstractShippingSettingsAdapter extends GoogleShippingSettings {
 		$time = new DeliveryTime();
 		$time->setMinHandlingTimeInDays( 0 );
 		$time->setMaxHandlingTimeInDays( 0 );
-		$time->setMinTransitTimeInDays( (int) $this->delivery_times[ $country ] );
-		$time->setMaxTransitTimeInDays( (int) $this->delivery_times[ $country ] );
+		$time->setMinTransitTimeInDays( (int) $this->delivery_times[ $country ]['time'] );
+		$time->setMaxTransitTimeInDays( (int) $this->delivery_times[ $country ]['max_time'] );
 
 		return $time;
 	}

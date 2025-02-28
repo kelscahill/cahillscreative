@@ -104,7 +104,7 @@ class Rest_API {
 					),
 					'permission_callback' => '__return_true',
 				),
-			),
+			)
 		);
 	}
 
@@ -121,14 +121,11 @@ class Rest_API {
 
 		$status = Indexer::get_status();
 
-		// Always check if the process time is ok.
-		Indexer::validate_process_lock_time();
-
 		// Check if we need to set errored state.
-		Indexer::validate_process();
+		Indexer::check_for_errors();
 
 		// Use the regular status checks to start a new indexer process if needed.
-		if ( Indexer::has_tasks() && ! Indexer::has_process_key() && ! in_array( $status, Indexer::$stop_statuses, true ) ) {
+		if ( ! Indexer::has_process_key() && ! in_array( $status, Indexer::$stop_statuses, true ) ) {
 			// Then try to spawn a new process.
 			Indexer::run_processing();
 		}
@@ -153,14 +150,15 @@ class Rest_API {
 		$progress = Indexer::get_progress_data();
 
 		$indexer_data = array(
-			'status'       => $status,
-			'type'         => $task_type,
-			'message'      => '',
-			'progress'     => $progress,
-			'postTypes'    => array(),
-			'objectsCount' => 0,
-			'rowsCount'    => 0,
-			'time'         => time(),
+			'status'                  => $status,
+			'type'                    => $task_type,
+			'message'                 => '',
+			'progress'                => $progress,
+			'postTypes'               => array(),
+			'objectsCount'            => 0,
+			'rowsCount'               => 0,
+			'time'                    => time(),
+			'canBackgroundProcess'    => Indexer::can_use_background_processing(),
 		);
 
 		if ( $status === 'error' ) {
@@ -211,7 +209,7 @@ class Rest_API {
 		// Only if we're doing background processing should we launch the process.
 		// otherwise, lets just return the updated indexer data and wait for the next tick
 		// to start the processing.
-		if ( Indexer::get_method() === 'background' ) {
+		if ( Indexer::get_processing_method() === 'background' ) {
 			// Then run the process.
 			Indexer::run_processing();
 		} else {
@@ -232,10 +230,14 @@ class Rest_API {
 		wp_using_ext_object_cache( false );
 		session_write_close();
 
-		// Reset the process.
-		Indexer::reset_process_locks();
-		// Then try to resume.
-		Indexer::run_processing();
+		$status = Indexer::get_status();
+		// If we're already paused, then return early.
+		if ( $status === 'paused' ) {
+			// Reset the process.
+			Indexer::reset_process_locks();
+			// Then try to resume.
+			Indexer::run_processing();
+		}
 
 		return rest_ensure_response( self::get_indexer_data() );
 	}
@@ -289,6 +291,9 @@ class Rest_API {
 
 		// Try to run the tasks.
 		Util::error_log( 'REST API: process_tasks | run tasks', 'notice' );
+
+		// Reset the lock time as we've just started a new process via the rest API.
+		Indexer::refresh_process_lock_time();
 		Indexer::run_tasks( $process_key );
 
 		// Chaining async requests can cause mysql to crash.

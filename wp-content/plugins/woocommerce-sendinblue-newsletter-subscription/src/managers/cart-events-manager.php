@@ -276,6 +276,7 @@ class CartEventsManagers
     public function get_tracking_data_cart($cart_id, $email = "")
     {
         $data = array();
+        WC()->cart->calculate_totals(); //Force WC to recalculate the cart to avoid discrepancies
         $cartitems = WC()->cart->get_cart();
         $totals = WC()->cart->get_totals();
 
@@ -434,13 +435,15 @@ class CartEventsManagers
         $data['discount_tax'] = $order->get_discount_tax() ?? "";
         $data['discount_code'] = $order->get_coupon_codes() ?? "";
         $data['fee_lines'] = [];
-        $fees = $order->get_fees() ?? "";
+        $fees = $order->get_fees();
 
         if (!empty($fees)) {
             foreach ($fees as $key => $fee) {
-                $data['fee_lines'][$key]['fee_name'] = $fee->get_name() ?? "";
-                $data['fee_lines'][$key]['fee_total'] = $fee->get_total() ?? "";
-                $data['fee_lines'][$key]['fee_tax'] = $fee->get_total_tax() ?? "";
+                $item = array();
+                $item['fee_name'] = $fee->get_name() ?? "";
+                $item['fee_total'] = $fee->get_total() ?? "";
+                $item['fee_tax'] = $fee->get_total_tax() ?? "";
+                array_push($data['fee_lines'], $item);
             }
         }
 
@@ -524,6 +527,43 @@ class CartEventsManagers
     {
         $opt_in = isset($_POST['ws_opt_in']) ? true : false;
         update_post_meta($order_id, 'ws_opt_in', $opt_in);
+    }
+
+    public function add_optin_wc_checkout_block() 
+    {
+        $settings = $this->api_manager->get_settings();
+        $checkout_label = $this->checkout_label($settings);
+        $location = "";
+
+        //Mapping of old Under billing & Under T & C to Under contact info
+        if (
+            !empty($settings[SendinblueClient::IS_DISPLAY_OPT_IN_ENABLED]) && (
+            $settings[SendinblueClient::DISPLAY_OPT_IN_LOCATION] == 1 || $settings[SendinblueClient::DISPLAY_OPT_IN_LOCATION] == 3 )
+        ) {
+            $location = "contact";
+            $this->register_checkout_fields($checkout_label, $location);
+        }
+
+        //Mapping of Under Order Info to Under Order Info
+        if (
+            !empty($settings[SendinblueClient::IS_DISPLAY_OPT_IN_ENABLED]) &&
+            $settings[SendinblueClient::DISPLAY_OPT_IN_LOCATION] == 2
+        ) {
+            $location = "order";
+            $this->register_checkout_fields($checkout_label, $location);
+        }
+    }
+
+    public function register_checkout_fields($checkout_label, $location) {
+        woocommerce_register_additional_checkout_field(
+            array(
+                'id'            => 'SendinblueWoocommerce/newsletter_opt_in',
+                'label'         => $checkout_label,
+                'location'      => $location,
+                'required'      => true,
+                    'type'     => 'checkbox',
+            ),
+        );
     }
 
     private function get_dynamic_img($html_tags)

@@ -52,7 +52,7 @@ class Connection implements ContainerAwareInterface, OptionsAwareInterface {
 			$result = $client->post(
 				$this->get_connection_url(),
 				[
-					'body' => json_encode( $post_body ),
+					'body' => wp_json_encode( $post_body ),
 				]
 			);
 

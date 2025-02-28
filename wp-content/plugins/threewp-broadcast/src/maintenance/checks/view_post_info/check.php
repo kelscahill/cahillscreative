@@ -82,6 +82,23 @@ class check
 		$text = sprintf( '<pre>%s</pre>', stripslashes( var_export( $metas, true ) ) );
 		$o->r .= $this->broadcast()->message( $text );
 
+		if ( $post->post_type == 'attachment' )
+		{
+			$ad = \threewp_broadcast\attachment_data::from_attachment_id( $post->ID );
+
+			$text = 'Attachment status: ';
+
+			if ( $ad->is_url() )
+				$text .= 'Is a URL.';
+			else
+				$text .= 'Is not a URL.';
+
+			$o->r .= $this->broadcast()->message( $text );
+
+			$text = var_export( $ad, true );
+			$o->r .= $this->broadcast()->message( $text );
+		}
+
 		// Show all posts that have this post as the parent.
 		global $wpdb;
 		// We have to use a query since get_posts is post_status sensitive.

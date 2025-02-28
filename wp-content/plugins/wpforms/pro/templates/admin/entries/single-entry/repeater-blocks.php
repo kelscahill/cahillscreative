@@ -51,6 +51,7 @@ foreach ( $blocks as $key => $rows ) :
 				'field'          => $field,
 				'form_data'      => $form_data,
 				'entries_single' => $entries_single,
+				'block_number'   => $block_number,
 			],
 			true
 		);

@@ -92,13 +92,15 @@ class Frontend {
 	 *
 	 * @since 1.8.7
 	 *
-	 * @param array $fields    Field settings.
-	 * @param array $entry     Form $_POST.
-	 * @param array $form_data Form data and settings.
+	 * @param array|mixed $fields    Field settings.
+	 * @param array       $entry     Form $_POST.
+	 * @param array       $form_data Form data and settings.
 	 *
 	 * @return array
 	 */
 	public function process_remove_field( $fields, $entry, $form_data ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+
+		$fields = (array) $fields;
 
 		foreach ( $fields as $id => $field ) {
 			// Remove captcha from saved data.
@@ -115,13 +117,15 @@ class Frontend {
 	 *
 	 * @since 1.8.7
 	 *
-	 * @param array $properties Field properties.
-	 * @param array $field      Field settings.
-	 * @param array $form_data  Form data and settings.
+	 * @param array|mixed $properties Field properties.
+	 * @param array       $field      Field settings.
+	 * @param array       $form_data  Form data and settings.
 	 *
 	 * @return array
 	 */
 	public function field_properties( $properties, $field, $form_data ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+
+		$properties = (array) $properties;
 
 		$field_id = wpforms_validate_field_id( $field['id'] );
 		$format   = ! empty( $field['format'] ) ? $field['format'] : 'math';

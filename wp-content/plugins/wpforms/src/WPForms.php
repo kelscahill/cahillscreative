@@ -22,6 +22,17 @@ namespace WPForms {
 	final class WPForms {
 
 		/**
+		 * List of screen IDs where heartbeat requests are allowed.
+		 *
+		 * @since 1.9.3
+		 *
+		 * @var string[]
+		 */
+		private const HEARTBEAT_ALLOWED_SCREEN_IDS = [
+			'wpforms_page_wpforms-entries',
+		];
+
+		/**
 		 * One is the loneliest number that you'll ever do.
 		 *
 		 * @since 1.0.0
@@ -120,31 +131,42 @@ namespace WPForms {
 		 * @since 1.0.0
 		 *
 		 * @return WPForms
-		 * @noinspection UsingInclusionOnceReturnValueInspection
 		 */
 		public static function instance(): WPForms {
 
-			if (
-				self::$instance === null ||
-				! self::$instance instanceof self
-			) {
-
+			if ( self::$instance === null || ! self::$instance instanceof self ) {
 				self::$instance = new self();
 
-				self::$instance->constants();
-				self::$instance->includes();
-
-				// Load Pro or Lite specific files.
-				if ( self::$instance->is_pro() ) {
-					self::$instance->registry['pro'] = require_once WPFORMS_PLUGIN_DIR . 'pro/wpforms-pro.php';
-				} else {
-					require_once WPFORMS_PLUGIN_DIR . 'lite/wpforms-lite.php';
-				}
-
-				self::hooks();
+				self::$instance->init();
 			}
 
 			return self::$instance;
+		}
+
+		/**
+		 * Initialize the plugin.
+		 *
+		 * @since 1.9.3
+		 *
+		 * @noinspection UsingInclusionOnceReturnValueInspection
+		 */
+		private function init() {
+
+			if ( self::is_restricted_heartbeat() ) {
+				return;
+			}
+
+			$this->constants();
+			$this->includes();
+
+			// Load Pro or Lite specific files.
+			if ( $this->is_pro() ) {
+				$this->registry['pro'] = require_once WPFORMS_PLUGIN_DIR . 'pro/wpforms-pro.php';
+			} else {
+				require_once WPFORMS_PLUGIN_DIR . 'lite/wpforms-lite.php';
+			}
+
+			$this->hooks();
 		}
 
 		/**
@@ -217,10 +239,11 @@ namespace WPForms {
 		 * Hooks.
 		 *
 		 * @since 1.9.0
+		 * @since 1.9.3 No longer static.
 		 *
 		 * @return void
 		 */
-		private static function hooks() {
+		private function hooks() {
 
 			add_action( 'plugins_loaded', [ self::$instance, 'objects' ] );
 			add_action( 'wpforms_settings_init', [ self::$instance, 'reinstall_custom_tables' ] );
@@ -306,7 +329,7 @@ namespace WPForms {
 		}
 
 		/**
-		 * Re-create plugin custom tables if don't exist.
+		 * Re-create plugin custom tables if they don't exist.
 		 *
 		 * @since 1.9.0
 		 *
@@ -343,7 +366,7 @@ namespace WPForms {
 		 * - run: optional -- method to run on class instantiation -- default init.
 		 * - condition: optional -- condition to check before registering the class.
 		 */
-		public function register( $class_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks
+		public function register( $class_data ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks
 
 			if ( empty( $class_data['name'] ) || ! is_string( $class_data['name'] ) ) {
 				return;
@@ -356,7 +379,19 @@ namespace WPForms {
 			$full_name = $this->is_pro() ? '\WPForms\Pro\\' . $class_data['name'] : '\WPForms\Lite\\' . $class_data['name'];
 			$full_name = class_exists( $full_name ) ? $full_name : '\WPForms\\' . $class_data['name'];
 
-			if ( ! class_exists( $full_name ) ) {
+			// Register an addon class.
+			if ( ! empty( $class_data['addon_class'] ) && ! empty( $class_data['addon_slug'] ) ) {
+				$is_initialized = wpforms_is_addon_initialized( $class_data['addon_slug'] ) && $this->is_pro();
+				$full_name      = $is_initialized ? $class_data['addon_class'] : $full_name;
+				$full_name      = strpos( $full_name, '\\' ) !== 0 ? '\\' . $full_name : $full_name;
+
+				// The core plugin classes have the priority 10.
+				// Addon classes should be initialized after the core.
+				$class_data['priority'] = 100;
+			}
+
+			// Bail if the class doesn't exist AND it is not an addon class.
+			if ( ! class_exists( $full_name ) && empty( $class_data['addon_class'] ) ) {
 				return;
 			}
 
@@ -366,7 +401,10 @@ namespace WPForms {
 			$run      = $class_data['run'] ?? 'init';
 			$priority = isset( $class_data['priority'] ) && is_int( $class_data['priority'] ) ? $class_data['priority'] : 10;
 
-			$callback = function () use ( $full_name, $id, $run ) {
+			$callback = function () use ( $full_name, $id, $run, $hook ) {
+				if ( ! class_exists( $full_name ) ) {
+					return;
+				}
 
 				// Instantiate class.
 				$instance = new $full_name();
@@ -478,7 +516,7 @@ namespace WPForms {
 		 *
 		 * @return bool
 		 */
-		public function is_pro() {
+		public function is_pro(): bool {
 
 			/**
 			 * Filters whether the current plugin version is pro.
@@ -489,33 +527,83 @@ namespace WPForms {
 			 */
 			return (bool) apply_filters( 'wpforms_allow_pro_version', $this->pro );
 		}
+
+		/**
+		 * Whether the current request is restricted heartbeat.
+		 *
+		 * @since 1.9.3
+		 *
+		 * @return bool
+		 */
+		public static function is_restricted_heartbeat(): bool {
+
+			// phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$action = $_POST['action'] ?? '';
+
+			if ( $action !== 'heartbeat' || ! wp_doing_ajax() ) {
+				return false;
+			}
+
+			$screen_id = sanitize_key( $_POST['screen_id'] ?? '' );
+			$data      = array_map( 'sanitize_text_field', $_POST['data'] ?? [] );
+			// phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
+			/**
+			 * Filters the screen ids where the heartbeat is allowed.
+			 *
+			 * @since 1.9.3
+			 *
+			 * @param array $allowed_screen_ids Screen IDs where the heartbeat is allowed.
+			 */
+			$allowed_screen_ids = (array) apply_filters( 'wpforms_heartbeat_allowed_screen_ids', self::HEARTBEAT_ALLOWED_SCREEN_IDS );
+
+			// Allow heartbeat requests on specific screens.
+			if ( in_array( $screen_id, $allowed_screen_ids, true ) ) {
+				return false;
+			}
+
+			/**
+			 * Filters whether the current request is restricted heartbeat.
+			 *
+			 * @since 1.9.3
+			 *
+			 * @param bool   $is_restricted Whether the current request is restricted heartbeat.
+			 * @param string $screen_id     Screen ID.
+			 * @param array  $data          Heartbeat request data.
+			 */
+			return (bool) apply_filters( 'wpforms_is_restricted_heartbeat', true, $screen_id, $data );
+		}
 	}
 }
 
 // phpcs:ignore Universal.Namespaces.DisallowCurlyBraceSyntax.Forbidden, Universal.Namespaces.DisallowDeclarationWithoutName.Forbidden, Universal.Namespaces.OneDeclarationPerFile.MultipleFound
 namespace {
 
-	/**
-	 * The function which returns the one WPForms instance.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return WPForms\WPForms
-	 */
-	function wpforms(): WPForms\WPForms { // phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed
+	// Define `wpforms()` function only if it's not the restricted heartbeat request.
+	if ( ! WPForms\WPForms::is_restricted_heartbeat() ) {
 
-		return WPForms\WPForms::instance();
+		/**
+		 * The function which returns the one WPForms instance.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @return WPForms\WPForms
+		 */
+		function wpforms(): WPForms\WPForms { // phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed
+
+			return WPForms\WPForms::instance();
+		}
+
+		/**
+		 * Adding an alias for backward-compatibility with plugins
+		 * that still use class_exists( 'WPForms' )
+		 * instead of function_exists( 'wpforms' ), which is preferred.
+		 *
+		 * In 1.5.0 we removed support for PHP 5.2
+		 * and moved the former WPForms class to a namespace: WPForms\WPForms.
+		 *
+		 * @since 1.5.1
+		 */
+		class_alias( 'WPForms\WPForms', 'WPForms' );
 	}
-
-	/**
-	 * Adding an alias for backward-compatibility with plugins
-	 * that still use class_exists( 'WPForms' )
-	 * instead of function_exists( 'wpforms' ), which is preferred.
-	 *
-	 * In 1.5.0 we removed support for PHP 5.2
-	 * and moved the former WPForms class to a namespace: WPForms\WPForms.
-	 *
-	 * @since 1.5.1
-	 */
-	class_alias( 'WPForms\WPForms', 'WPForms' );
 }

@@ -10,6 +10,7 @@
 
 namespace Search_Filter_Pro\Fields\Search;
 
+use Search_Filter\Util;
 use Search_Filter_Pro\Fields\Search;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -43,6 +44,10 @@ class Autocomplete extends Search {
 		'spinner-circle',
 	);
 
+	public $supports = array(
+		// 'autoSubmit',
+	);
+
 	/**
 	 * The supported styles.
 	 *
@@ -61,6 +66,18 @@ class Autocomplete extends Search {
 		'inputIconColor',
 		'inputClearColor',
 		'inputClearHoverColor',
+
+		'labelColor',
+		'labelBackgroundColor',
+		'labelPadding',
+		'labelMargin',
+		'labelScale',
+
+		'descriptionColor',
+		'descriptionBackgroundColor',
+		'descriptionPadding',
+		'descriptionMargin',
+		'descriptionScale',
 	);
 
 	/**
@@ -217,7 +234,7 @@ class Autocomplete extends Search {
 		);
 		$this->set_render_escape_callbacks( $esc_callbacks );
 
-		// TODO - we might need to move where we do this, depeds if
+		// TODO - we might need to move where we do this, depends if
 		// we want to regenerate the link when attributes change.
 		$this->set_api_url();
 	}
@@ -257,7 +274,13 @@ class Autocomplete extends Search {
 	 */
 	public function parse_url_value() {
 		$url_param_name = self::url_prefix() . $this->get_url_name();
-		$value          = isset( $_GET[ $url_param_name ] ) ? urldecode_deep( sanitize_text_field( wp_unslash( $_GET[ $url_param_name ] ) ) ) : '';
+
+		if ( ! method_exists( '\Search_Filter\Util', 'get_request_var' ) ) {
+			return;
+		}
+		// Notice: the request var has not been sanitized yet, its the raw value from the either $_GET or $_POST.
+		$request_var = Util::get_request_var( $url_param_name );
+		$value       = $request_var !== null ? urldecode_deep( sanitize_text_field( wp_unslash( $request_var ) ) ) : '';
 
 		if ( $value !== '' ) {
 			$this->set_values( array( $value ) );
@@ -372,7 +395,7 @@ class Autocomplete extends Search {
 					),
 					'permission_callback' => array( __CLASS__, 'rest_permissions' ),
 				),
-			),
+			)
 		);
 	}
 

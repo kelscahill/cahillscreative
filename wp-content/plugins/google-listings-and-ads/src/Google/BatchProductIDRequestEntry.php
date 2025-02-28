@@ -8,7 +8,7 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Value\ProductIDMap;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Class BatchDeleteProductRequestEntry
+ * Class BatchProductIDRequestEntry
  *
  * @package Automattic\WooCommerce\GoogleListingsAndAds\Google
  */
@@ -24,7 +24,7 @@ class BatchProductIDRequestEntry {
 	protected $product_id;
 
 	/**
-	 * BatchDeleteProductRequestEntry constructor.
+	 * BatchProductIDRequestEntry constructor.
 	 *
 	 * @param int    $wc_product_id
 	 * @param string $product_id

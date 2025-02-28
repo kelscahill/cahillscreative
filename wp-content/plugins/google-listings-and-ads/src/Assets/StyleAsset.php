@@ -38,7 +38,7 @@ class StyleAsset extends BaseAsset {
 		string $uri,
 		array $dependencies = [],
 		string $version = '',
-		callable $enqueue_condition_callback = null,
+		?callable $enqueue_condition_callback = null,
 		string $media = 'all'
 	) {
 		$this->media = $media;

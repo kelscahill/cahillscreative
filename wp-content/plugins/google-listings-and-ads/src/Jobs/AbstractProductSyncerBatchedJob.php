@@ -45,7 +45,7 @@ abstract class AbstractProductSyncerBatchedJob extends AbstractBatchedActionSche
 	protected $merchant_statuses;
 
 	/**
-	 * SyncProducts constructor.
+	 * AbstractProductSyncerBatchedJob constructor.
 	 *
 	 * @param ActionSchedulerInterface  $action_scheduler
 	 * @param ActionSchedulerJobMonitor $monitor

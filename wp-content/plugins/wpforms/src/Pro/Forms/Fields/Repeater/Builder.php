@@ -54,13 +54,14 @@ class Builder {
 	 *
 	 * @since 1.8.9
 	 *
-	 * @param array   $strings All strings that will be passed to builder.
-	 * @param WP_Post $form    Form object.
+	 * @param array|mixed $strings All strings that will be passed to builder.
+	 * @param WP_Post     $form    Form object.
 	 *
 	 * @return array
 	 */
 	public function get_localized_strings( $strings, $form ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
+		$strings   = (array) $strings;
 		$form_data = wpforms_decode( $form->post_content ?? '' );
 
 		$strings['repeater'] = [

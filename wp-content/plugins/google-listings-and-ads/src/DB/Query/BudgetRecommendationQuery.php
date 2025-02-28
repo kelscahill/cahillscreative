@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
 class BudgetRecommendationQuery extends Query {
 
 	/**
-	 * Query constructor.
+	 * BudgetRecommendationQuery constructor.
 	 *
 	 * @param wpdb                      $wpdb
 	 * @param BudgetRecommendationTable $table

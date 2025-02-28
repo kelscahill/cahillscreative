@@ -38,38 +38,37 @@ if ( $query->have_posts() ) {
 		}
 		?>
 	</div>
-	
-	<?php
-	while ( $query->have_posts() ) {
-		$query->the_post();
-
-		?>
-		<div>
-			<h2><a href="<?php esc_attr( the_permalink() ); ?>"><?php esc_html( the_title() ); ?></a></h2>
-			
-			<p><br /><?php esc_html( the_excerpt() ); ?></p>
-			<?php
-			if ( has_post_thumbnail() ) {
-				echo '<p>';
-				the_post_thumbnail( 'small' );
-				echo '</p>';
-			}
-			?>
-			<?php esc_html( the_category() ); ?>
-			<p><?php esc_html( the_tags() ); ?></p>
-			<p><small><?php esc_html( the_date() ); ?></small></p>
-			
-		</div>
-		
-		<hr />
+	<!-- Keep the `.search-filter-query-posts` class to support the load more button -->
+	<div class="search-filter-query-posts">
 		<?php
-	}
-	wp_reset_postdata();
-	?>
+		while ( $query->have_posts() ) {
+			$query->the_post();
+
+			?>
+			<div>
+				<h2><a href="<?php esc_attr( the_permalink() ); ?>"><?php esc_html( the_title() ); ?></a></h2>
+				<br />
+				<p><?php esc_html( the_excerpt() ); ?></p>
+				<?php
+				if ( has_post_thumbnail() ) {
+					echo '<p>';
+					the_post_thumbnail( 'small' );
+					echo '</p>';
+				}
+				?>
+				<?php esc_html( the_category() ); ?>
+				<p><?php esc_html( the_tags() ); ?></p>
+				<p><small><?php esc_html( the_date() ); ?></small></p>
+			</div>
+			<hr />
+			<?php
+		}
+		wp_reset_postdata();
+		?>
+	</div>
 	Page <?php echo esc_html( $paged ); ?> of <?php echo esc_html( $query->max_num_pages ); ?><br />
 	
 	<div class="pagination">
-		
 		<div class="nav-previous"><?php echo search_filter_get_next_posts_link( 'Older posts', $query->max_num_pages ); ?></div>
 		<div class="nav-next"><?php echo search_filter_get_previous_posts_link( 'Newer posts' ); ?></div>
 		<?php

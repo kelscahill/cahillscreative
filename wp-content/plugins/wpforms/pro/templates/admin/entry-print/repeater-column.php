@@ -26,18 +26,7 @@ $current_column = 0;
 ?>
 <?php foreach ( $row_data as $data ) : ?>
 	<?php
-	$preset_width = ! empty( $data['width_preset'] ) ? (int) $data['width_preset'] : 50;
-
-	if ( $preset_width === 33 ) {
-		$preset_width = 33.33333;
-	} elseif ( $preset_width === 67 ) {
-		$preset_width = 66.66666;
-	}
-
-	if ( ! empty( $data['width_custom'] ) ) {
-		$preset_width = (int) $data['width_custom'];
-	}
-
+	$preset_width    = wpforms_get_column_width( $data );
 	$is_column_empty = ! isset( $columns[ $current_column ] ) || LayoutHelpers::is_column_empty( $columns[ $current_column ] );
 	$column_classes  = [
 		'wpforms-field-layout-column',

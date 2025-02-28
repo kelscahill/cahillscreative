@@ -2,6 +2,8 @@
 
 namespace WPForms\Pro\Forms\Fields\Base;
 
+use WPForms_Field;
+
 /**
  * Editing field entries.
  *
@@ -14,7 +16,7 @@ class EntriesEdit {
 	 *
 	 * @since 1.6.0
 	 *
-	 * @var \WPForms_Field
+	 * @var WPForms_Field
 	 */
 	protected $field_object;
 
@@ -27,9 +29,18 @@ class EntriesEdit {
 	 */
 	public function __construct( $type = '' ) {
 
-		if ( ! empty( $type ) ) {
-			$this->field_object = apply_filters( "wpforms_fields_get_field_object_{$type}", null );
+		if ( empty( $type ) ) {
+			return;
 		}
+
+		/**
+		 * Get the field object.
+		 *
+		 * @since 1.6.0
+		 *
+		 * @param WPForms_Field|null $field_object Field object.
+		 */
+		$this->field_object = apply_filters( "wpforms_fields_get_field_object_{$type}", null ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 	}
 
 	/**
@@ -50,7 +61,7 @@ class EntriesEdit {
 	 */
 	public function field_display( $entry_field, $field, $form_data ) {
 
-		$value = isset( $entry_field['value'] ) ? $entry_field['value'] : '';
+		$value = $entry_field['value'] ?? '';
 
 		if ( $value !== '' ) {
 			$field['properties'] = $this->field_object->get_field_populated_single_property_value_public( (string) $value, 'primary', $field['properties'], $field );
@@ -68,6 +79,8 @@ class EntriesEdit {
 	 * @param mixed $field_submit Field value that was submitted.
 	 * @param mixed $field_data   Existing field data.
 	 * @param array $form_data    Form data and settings.
+	 *
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	public function validate( $field_id, $field_submit, $field_data, $form_data ) {
 

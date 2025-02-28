@@ -34,6 +34,18 @@ class Button extends Choice {
 		'inputBorderFocusColor',
 		'inputInteractiveColor',
 		'inputInteractiveHoverColor',
+
+		'labelColor',
+		'labelBackgroundColor',
+		'labelPadding',
+		'labelMargin',
+		'labelScale',
+
+		'descriptionColor',
+		'descriptionBackgroundColor',
+		'descriptionPadding',
+		'descriptionMargin',
+		'descriptionScale',
 	);
 	public static $data_support = array(
 		// Each entry is a group of settings that need to have certain conditions.

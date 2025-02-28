@@ -51,7 +51,7 @@ class AccountController extends BaseOptionsController {
 	];
 
 	/**
-	 * BaseController constructor.
+	 * AccountController constructor.
 	 *
 	 * @param RESTServer $server
 	 * @param Manager    $manager

@@ -27,7 +27,7 @@ class AttributeMappingDataController extends BaseOptionsController {
 
 
 	/**
-	 * AttributeMappingController constructor.
+	 * AttributeMappingDataController constructor.
 	 *
 	 * @param RESTServer             $server
 	 * @param AttributeMappingHelper $attribute_mapping_helper

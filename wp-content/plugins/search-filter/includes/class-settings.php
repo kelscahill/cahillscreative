@@ -222,10 +222,8 @@ class Settings {
 	 *
 	 * @return array
 	 */
-	public static function get_post_types() {
-		$post_types = WP_Data::get_post_types();
-
-		// $post_types = get_post_types( $args, 'objects' );
+	public static function get_post_types( $args = array(), $operator = 'and' ) {
+		$post_types = WP_Data::get_post_types( $args, $operator );
 
 		$exclude_post_types = array( 'search-filter', 'revision', 'nav_menu_item', 'shop_webhook' );
 		$post_types_options = array();

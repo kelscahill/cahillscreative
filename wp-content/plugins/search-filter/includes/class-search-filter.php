@@ -16,12 +16,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Search_Filter\Debug_Bar;
 use Search_Filter\Fields\Field_Factory;
 use Search_Filter\Rest_API;
 use Search_Filter\Admin\Screens;
 use Search_Filter\Core\Scripts;
-
+use Search_Filter\Compatibility;
 /**
  * The main entry point for the plugin
  *
@@ -100,6 +99,8 @@ class Search_Filter {
 		$this->set_locale(); // Needs to go after load_dependencies.
 		$this->load_rest_api();
 
+		Compatibility::init();
+
 		add_action( 'plugins_loaded', array( $this, 'init_dependencies' ), 1 );
 
 		// Correctly load public / admin classes & hooks.
@@ -119,7 +120,6 @@ class Search_Filter {
 
 		// Fields must be registered before settings (so they can register their own settings).
 		Field_Factory::register_types();
-		Debug_Bar::init();
 		\Search_Filter\Theme_Styles::init();
 		\Search_Filter\Core\CSS_Loader::init();
 		\Search_Filter\Core\Upgrader::init();
@@ -164,9 +164,10 @@ class Search_Filter {
 		\Search_Filter\Styles::init();
 		\Search_Filter\Queries::init();
 
+		\Search_Filter\Debugger::init();
 		// This matches the settings init hooks found in the above classes, so it
 		// should be fired close to the last one (in Styles) has been fired.
-		add_action( 'init', array( __CLASS__, 'after_register_settings' ), 1 );
+		add_action( 'init', array( __CLASS__, 'after_register_settings' ), 2 );
 	}
 
 	/**
@@ -213,7 +214,6 @@ class Search_Filter {
 	 */
 	private function set_locale() {
 		$plugin_i18n = new \Search_Filter\Core\I18n();
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 	}
 
 	/**
@@ -225,13 +225,13 @@ class Search_Filter {
 	 */
 	private function define_admin_hooks() {
 
-		Screens::init();
 		$plugin_admin = new \Search_Filter\Admin( $this->get_plugin_name(), $this->get_version() );
 
 		// Scripts & css.
 		add_action( 'admin_print_scripts', array( Scripts::class, 'output_init_js' ), 10 );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles', 10 );
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts', 10 );
+		$this->loader->add_action( 'plugin_action_links', $plugin_admin, 'plugin_action_links', 10, 2 );
 
 		// Plugin updater.
 		add_action( 'admin_init', array( \Search_Filter\Admin::class, 'update_plugin' ), 20 );
@@ -239,6 +239,7 @@ class Search_Filter {
 		// Data.
 
 		// Setup Admin Screens.
+		$this->loader->add_filter( 'init', Screens::class, 'init', 2 );
 		$this->loader->add_filter( 'submenu_file', Screens::class, 'modify_active_submenu', 20, 2 );
 		$this->loader->add_action( 'admin_menu', Screens::class, 'admin_pages', 9 );
 		$this->loader->add_action( 'admin_menu', Screens::class, 'admin_pages_more_menu_items', 10 );
@@ -247,7 +248,7 @@ class Search_Filter {
 
 		// We want to get in as early as possible, and remove all admin notices
 		// This is the closest action before admin_notices that I can find.
-		$this->loader->add_action( 'in_admin_header', Screens::class, 'remove_admin_notices', 20 );
+		$this->loader->add_action( 'in_admin_header', Screens::class, 'remove_admin_notices', 200 );
 	}
 	/**
 	 * Register all of the hooks related to the public-facing functionality
@@ -269,8 +270,8 @@ class Search_Filter {
 
 		// Use a really low priority so that we load after other plugins, eg Elementor loads popups in
 		// `wp_footer` and we want to load after them just in case they have S&F fields.
-		add_action( 'wp_footer', 'Search_Filter\\Core\\SVG_Loader::output', 100 );
-		add_action( 'wp_footer', array( $plugin_frontend, 'data' ), 100 );
+		add_action( 'wp_footer', array( Search_Filter\Core\SVG_Loader::class, 'output' ), 100 );
+		add_action( 'wp_footer', array( Search_Filter\Frontend::class, 'data' ), 100 );
 	}
 
 	/**
@@ -281,6 +282,9 @@ class Search_Filter {
 	private function load_rest_api() {
 		$this->rest_api = new Rest_API();
 	}
+
+
+
 
 	/**
 	 * Init plugin schema class (post types, taxonomies etc)

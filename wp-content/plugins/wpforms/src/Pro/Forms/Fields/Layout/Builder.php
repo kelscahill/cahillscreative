@@ -141,8 +141,8 @@ class Builder {
 	 *
 	 * @since 1.7.7
 	 *
-	 * @param string $css_class Preview new field CSS class.
-	 * @param array  $field     Field data.
+	 * @param string|mixed $css_class Preview new field CSS class.
+	 * @param array        $field     Field data.
 	 *
 	 * @return string
 	 */

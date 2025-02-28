@@ -16,7 +16,10 @@ use Automattic\WooCommerce\GoogleListingsAndAds\DB\Table\ShippingTimeTable;
 use Automattic\WooCommerce\GoogleListingsAndAds\Exception\ApiNotReady;
 use Automattic\WooCommerce\GoogleListingsAndAds\Exception\ExceptionWithResponseData;
 use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\Service;
+use Automattic\WooCommerce\GoogleListingsAndAds\Internal\ContainerAwareTrait;
+use Automattic\WooCommerce\GoogleListingsAndAds\Internal\Interfaces\ContainerAwareInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Jobs\CleanupSyncedProducts;
+use Automattic\WooCommerce\GoogleListingsAndAds\Jobs\JobRepository;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\AdsAccountState;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\MerchantAccountState;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsAwareInterface;
@@ -36,9 +39,8 @@ defined( 'ABSPATH' ) || exit;
  * Container used to access:
  * - Ads
  * - AdsAccountState
- * - CleanupSyncedProducts
+ * - JobRepository
  * - Merchant
- * - MerchantAccountState
  * - MerchantCenterService
  * - MerchantIssueTable
  * - MerchantStatuses
@@ -50,15 +52,11 @@ defined( 'ABSPATH' ) || exit;
  * @since 1.12.0
  * @package Automattic\WooCommerce\GoogleListingsAndAds\MerchantCenter
  */
-class AccountService implements OptionsAwareInterface, Service {
+class AccountService implements ContainerAwareInterface, OptionsAwareInterface, Service {
 
+	use ContainerAwareTrait;
 	use OptionsAwareTrait;
 	use PluginHelper;
-
-	/**
-	 * @var ContainerInterface
-	 */
-	protected $container;
 
 	/**
 	 * @var MerchantAccountState
@@ -82,11 +80,10 @@ class AccountService implements OptionsAwareInterface, Service {
 	/**
 	 * AccountService constructor.
 	 *
-	 * @param ContainerInterface $container
+	 * @param MerchantAccountState $state
 	 */
-	public function __construct( ContainerInterface $container ) {
-		$this->state     = $container->get( MerchantAccountState::class );
-		$this->container = $container;
+	public function __construct( MerchantAccountState $state ) {
+		$this->state = $state;
 	}
 
 	/**
@@ -279,7 +276,7 @@ class AccountService implements OptionsAwareInterface, Service {
 		$this->container->get( ShippingRateTable::class )->truncate();
 		$this->container->get( ShippingTimeTable::class )->truncate();
 
-		$this->container->get( CleanupSyncedProducts::class )->schedule();
+		$this->container->get( JobRepository::class )->get( CleanupSyncedProducts::class )->schedule();
 
 		$this->container->get( TransientsInterface::class )->delete( TransientsInterface::MC_ACCOUNT_REVIEW );
 		$this->container->get( TransientsInterface::class )->delete( TransientsInterface::URL_MATCHES );
@@ -530,7 +527,7 @@ class AccountService implements OptionsAwareInterface, Service {
 	 *
 	 * @return ExceptionWithResponseData
 	 */
-	private function prepare_exception( string $message, array $data = [], int $code = null ): ExceptionWithResponseData {
+	private function prepare_exception( string $message, array $data = [], ?int $code = null ): ExceptionWithResponseData {
 		$merchant_id = $this->options->get_merchant_id();
 
 		if ( $merchant_id && ! isset( $data['id'] ) ) {

@@ -65,4 +65,17 @@ class Search extends Field {
 		$query_args = apply_filters( 'search-filter/field/search/wp_query_args', $query_args, $this );
 		return parent::apply_wp_query_args( $query_args );
 	}
+
+	/**
+	 * Apply the query_args for regular WP queries.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param    array $query_args    The WP query args to update.
+	 * @return   array    The updated WP query args.
+	 */
+	protected function return_apply_wp_query_args( $query_args ) {
+		$query_args = apply_filters( 'search-filter/field/search/wp_query_args', $query_args, $this );
+		return parent::apply_wp_query_args( $query_args );
+	}
 }

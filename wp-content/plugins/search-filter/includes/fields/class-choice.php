@@ -10,7 +10,6 @@
 
 namespace Search_Filter\Fields;
 
-use Search_Filter\Core\Data_Store;
 use Search_Filter\Fields\Field;
 use Search_Filter\Core\WP_Data;
 use Search_Filter\Fields\Data\Taxonomy_Options;
@@ -27,6 +26,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  * as a list of options.
  */
 class Choice extends Field {
+
+	/**
+	 * The option values with corresponding labels.
+	 *
+	 * Only needed when using the control -> selection field.
+	 *
+	 * @var array
+	 */
+	protected $options_labels = array();
+
 	/**
 	 * Get the default attributes for the field.
 	 *
@@ -75,59 +84,62 @@ class Choice extends Field {
 	 * 2. Resolve the settings in PHP before loading the page,
 	 *    use it as the default state for the JS so we don't send
 	 *    the wrong data to the server when creating new fields.
-	 *
-	 * @return array
 	 */
 	protected function create_options() {
 
 		if ( ! $this->has_init() ) {
-			return array();
+			return;
 		}
 
 		do_action( 'search-filter/fields/filter/choice/create_options/start', $this );
-		$options = array();
+		$options_data = array(
+			'options' => array(),
+			'labels'  => array(),
+		);
+
 		// Now check things like data type and data source, to figure out which options should be generated
 		// get the options for the field - used by all choice decendants.
 		if ( 'post_attribute' === $this->attributes['dataType'] ) {
 			$data_source = $this->attributes['dataPostAttribute'];
 			if ( 'post_type' === $data_source ) {
-				if ( ! isset( $this->attributes['dataPostTypes'] ) || empty( $this->attributes['dataPostTypes'] ) ) {
+
+				$post_type_options = $this->get_attribute( 'dataPostTypes' );
+
+				if ( empty( $post_type_options ) ) {
 					// If no post type is chosen, then choose all available from the query attributes.
-					$this->attributes['dataPostTypes'] = false;
-					$query                             = Query::find( array( 'id' => $this->get_query_id() ) );
+					$query = Query::find( array( 'id' => $this->get_query_id() ) );
 					if ( ! is_wp_error( $query ) ) {
-						$this->attributes['dataPostTypes'] = $query->get_attribute( 'dataPostTypes' );
+						$post_type_options = $query->get_attribute( 'postTypes' );
 					}
 				}
 
-				if ( ! is_array( $this->attributes['dataPostTypes'] ) ) {
+				if ( ! is_array( $post_type_options ) ) {
 					// TODO - throw error.
-					return $options;
+					return;
 				}
 
-				// TODO - lookup only the post types chosen.
-				$post_types = WP_Data::get_post_types();
+				$all_post_types = WP_Data::get_post_types( array( 'publicly_queryable' => true ), 'or' );
 
 				// Collect all the valid options.
-				foreach ( $post_types as $post_type ) {
-					if ( in_array( $post_type->name, $this->attributes['dataPostTypes'], true ) ) {
+				foreach ( $all_post_types as $post_type ) {
+					if ( in_array( $post_type->name, $post_type_options, true ) ) {
 						self::add_option_to_array(
-							$options,
+							$options_data['options'],
 							array(
 								'value' => $post_type->name,
 								'label' => html_entity_decode( $post_type->label ),
 							),
 							$this->get_id()
 						);
-
+						$options_data['labels'][ $post_type->name ] = html_entity_decode( $post_type->label );
 					}
 				}
 			} elseif ( 'post_status' === $data_source ) {
 				if ( empty( $this->attributes['dataPostStati'] ) ) {
-					return $options;
+					return;
 				}
 				if ( ! is_array( $this->attributes['dataPostStati'] ) ) {
-					return $options;
+					return;
 				}
 
 				$post_stati = WP_Data::get_post_stati();
@@ -136,13 +148,15 @@ class Choice extends Field {
 					if ( in_array( $post_status->name, $this->attributes['dataPostStati'], true ) ) {
 
 						self::add_option_to_array(
-							$options,
+							$options_data['options'],
 							array(
 								'value' => $post_status->name,
 								'label' => html_entity_decode( $post_status->label ),
 							),
 							$this->get_id()
 						);
+
+						$options_data['labels'][ $post_status->name ] = html_entity_decode( $post_status->label );
 					}
 				}
 			}
@@ -151,9 +165,9 @@ class Choice extends Field {
 			$order           = $this->get_attribute( 'inputOptionsOrder' ) ? $this->get_attribute( 'inputOptionsOrder' ) : 'label';
 			$order_direction = $this->get_attribute( 'inputOptionsOrderDir' ) ? $this->get_attribute( 'inputOptionsOrderDir' ) : 'asc';
 			if ( $order === 'label' ) {
-				$options = Util::sort_assoc_array_by_property( $options, $order, 'alphabetical', $order_direction );
+				$options_data['options'] = Util::sort_assoc_array_by_property( $options_data['options'], $order, 'alphabetical', $order_direction );
 			} elseif ( $order === 'count' ) {
-				$options = Util::sort_assoc_array_by_property( $options, 'count', 'numerical', $order_direction );
+				$options_data['options'] = Util::sort_assoc_array_by_property( $options_data['options'], 'count', 'numerical', $order_direction );
 			}
 		} elseif ( 'taxonomy' === $this->attributes['dataType'] ) {
 
@@ -164,7 +178,7 @@ class Choice extends Field {
 			} elseif ( $this->get_attribute( 'taxonomyOrderDir' ) === 'desc' ) {
 				$order_dir = 'DESC';
 			}
-			$args    = array(
+			$args         = array(
 				'order_by'            => $this->get_attribute( 'taxonomyOrderBy' ) !== 'default' ? $this->get_attribute( 'taxonomyOrderBy' ) : '',
 				'order_dir'           => $order_dir,
 				'hide_empty'          => $this->get_attribute( 'hideEmpty' ) === 'yes',
@@ -175,24 +189,36 @@ class Choice extends Field {
 				'show_count'          => $this->get_attribute( 'showCount' ) === 'yes',
 				'show_count_brackets' => $this->get_attribute( 'showCountBrackets' ) === 'yes',
 			);
-			$options = $this->get_taxonomy_options( $data_source, $args );
+			$options_data = $this->get_taxonomy_options_data( $data_source, $args );
 
 			// Even though we probably order the options ok with count above, better do it
 			// this way by count to support extending it via the indexer (so the options are
 			// reshuffled according the currently highest count value)
 			$order_by_count = $this->get_attribute( 'taxonomyOrderBy' ) === 'count';
 			if ( $order_by_count === 'count' ) {
-				$options = Util::sort_assoc_array_by_property( $options, 'count', 'numerical', $this->get_attribute( 'taxonomyOrderDir' ) );
+				$options_data['options'] = Util::sort_assoc_array_by_property( $options_data['options'], 'count', 'numerical', $this->get_attribute( 'taxonomyOrderDir' ) );
 			}
 		}
 
-		// Allow custom options.
-		$options = apply_filters( 'search-filter/field/choice/options', $options, $this );
+		// Legacy support for custom options, replaced by options_data.
+		$options_data['options'] = apply_filters( 'search-filter/field/choice/options', $options_data['options'], $this );
+		// Allow custom options + labels.
+		$options_data = apply_filters( 'search-filter/field/choice/options_data', $options_data, $this );
 
 		do_action( 'search-filter/fields/filter/choice/create_options/finish', $this );
 
-		$this->set_options( $options );
-		return $options;
+		$this->set_options( $options_data['options'] );
+		$this->set_options_labels( $options_data['labels'] );
+	}
+
+	/**
+	 * Sets options labels.
+	 *
+	 * @param array $options_labels Array of options labels.
+	 */
+	public function set_options_labels( $options_labels ) {
+		$this->options_labels = $options_labels;
+		$this->update_connected_data( 'optionsLabels', (object) $options_labels );
 	}
 
 	/**
@@ -203,10 +229,13 @@ class Choice extends Field {
 	 *
 	 * @return array
 	 */
-	public function get_taxonomy_options( $taxonomy_name, $args = array() ) {
+	public function get_taxonomy_options_data( $taxonomy_name, $args = array() ) {
 
 		if ( empty( $taxonomy_name ) ) {
-			return array();
+			return array(
+				'options' => array(),
+				'labels'  => array(),
+			);
 		}
 
 		$defaults = array(
@@ -248,7 +277,7 @@ class Choice extends Field {
 		$taxonomy_terms   = WP_Data::get_terms( $term_query_args );
 		$taxonomy_options = new Taxonomy_Options();
 
-		$taxonomy_options->init( $taxonomy_terms, $this->get_id(), $args['show_count'], $args['show_count_brackets'] );
+		$taxonomy_options->init( $taxonomy_name, $taxonomy_terms, $this->get_id(), $args['show_count'], $args['show_count_brackets'] );
 		if ( $args['is_hierarchical'] ) {
 			if ( $this->attributes['inputType'] === 'checkbox' || $this->attributes['inputType'] === 'radio' ) {
 				$options = $taxonomy_options->get_hierarchical_term_options( 'nested', $data_tax_depth );
@@ -259,10 +288,19 @@ class Choice extends Field {
 			$options = $taxonomy_options->get_term_options();
 		}
 
+		$labels = $taxonomy_options->get_options_labels();
+
 		$this->update_connected_data( 'taxonomyParents', $taxonomy_options->get_all_term_parents() );
 		$this->update_connected_data( 'termIdentifiers', (array) $taxonomy_options->get_all_term_identifiers() );
 
-		return $options;
+		if ( $this->filters_taxonomy_archives() ) {
+			$this->update_connected_data( 'filtersTaxonomyArchive', $this->get_attribute( 'dataTaxonomy' ) );
+		}
+
+		return array(
+			'options' => $options,
+			'labels'  => $labels,
+		);
 	}
 
 	/**
@@ -352,61 +390,61 @@ class Choice extends Field {
 	 * If the setting is enabled, supply a URL for the field
 	 * when its a taxonomy.
 	 */
-	public function get_url() {
+	public function get_url_template() {
 		if ( ! $this->has_init() ) {
-			return parent::get_url();
+			return parent::get_url_template();
 		}
 
 		if ( ! isset( $this->attributes['dataType'] ) ) {
-			return parent::get_url();
+			return parent::get_url_template();
 		}
 
 		if ( $this->attributes['dataType'] === 'taxonomy' ) {
 			$taxonomy_name = isset( $this->attributes['dataTaxonomy'] ) ? $this->attributes['dataTaxonomy'] : '';
 
 			if ( empty( $taxonomy_name ) ) {
-				return parent::get_url();
+				return parent::get_url_template();
 			}
 
 			$query = Query::find( array( 'id' => $this->get_query_id() ) );
 			if ( is_wp_error( $query ) ) {
-				return parent::get_url();
+				return parent::get_url_template();
 			}
 
 			// Check the connected query is set to archive and taxonomy.
 			if ( $query->get_attribute( 'integrationType' ) !== 'archive' ) {
-				return parent::get_url();
+				return parent::get_url_template();
 			}
 			if ( $query->get_attribute( 'archiveType' ) === 'post_type' ) {
 				// Check the setting for filtering taxonomy archives.
 				if ( $query->get_attribute( 'archiveFilterTaxonomies' ) !== 'yes' ) {
-					return parent::get_url();
+					return parent::get_url_template();
 				}
 				if ( $this->get_attribute( 'taxonomyFilterArchive' ) !== 'yes' ) {
-					return parent::get_url();
+					return parent::get_url_template();
 				}
 			} elseif ( $query->get_attribute( 'archiveType' ) === 'taxonomy' ) {
 
 				$should_use_archive_value = $this->get_attribute( 'taxonomyFilterArchive' ) === 'yes' || $this->field_is_taxonomy_archive();
 
 				if ( ! $should_use_archive_value ) {
-					return parent::get_url();
+					return parent::get_url_template();
 				}
 				// Only use archive url if the archive taxonomy matches the taxonomy field.
 				if ( $query->get_attribute( 'taxonomy' ) !== $taxonomy_name ) {
-					return parent::get_url();
+					return parent::get_url_template();
 				}
 			}
 
 			// Now check the post types of the taxonomy.
 			if ( Template_Data::taxonomy_term_has_multiple_post_types( $taxonomy_name ) ) {
-				return parent::get_url();
+				return parent::get_url_template();
 			}
 
 			// Get taxonomy URL.
 			return Template_Data::get_term_template_link( $taxonomy_name );
 		}
-		return parent::get_url();
+		return parent::get_url_template();
 	}
 
 
@@ -437,13 +475,10 @@ class Choice extends Field {
 		if ( ! $this->has_init() ) {
 			return array();
 		}
+
 		$json_data = parent::get_json_data();
 
 		$json_data['options'] = $this->get_options();
-
-		if ( $this->get_attribute( 'dataType' ) === 'taxonomy' ) {
-			$json_data['connectedData'] = $this->get_connected_data();
-		}
 
 		return $json_data;
 	}
@@ -677,5 +712,19 @@ class Choice extends Field {
 
 		$term_slugs = array( $term->slug );
 		$this->set_values( $term_slugs );
+	}
+
+	public function filters_taxonomy_archives() {
+		if ( $this->get_attribute( 'dataType' ) !== 'taxonomy' ) {
+			return false;
+		}
+
+		if ( ! $this->is_single_select() ) {
+			return false;
+		}
+
+		$should_use_archive_value = $this->get_attribute( 'taxonomyFilterArchive' ) === 'yes' || $this->field_is_taxonomy_archive();
+
+		return $should_use_archive_value;
 	}
 }

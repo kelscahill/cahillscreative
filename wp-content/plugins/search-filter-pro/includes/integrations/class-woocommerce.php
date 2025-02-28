@@ -9,10 +9,11 @@
 
 namespace Search_Filter_Pro\Integrations;
 
+use Search_Filter\Core\Data_Store;
 use Search_Filter\Fields\Choice;
 use Search_Filter\Integrations;
 use Search_Filter\Fields\Field;
-use Search_Filter\Integrations\WooCommerce as WooCommerce_Integration;
+use Search_Filter\Integrations\Woocommerce as WooCommerce_Integration;
 use Search_Filter\Queries\Settings as Queries_Settings;
 use Search_Filter\Fields\Settings as Fields_Settings;
 use Search_Filter\Util;
@@ -26,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * All WooCommerce integration functionality.
  * Add options to admin UI, integrate with frontend queries and fields.
  */
-class WooCommerce {
+class Woocommerce {
 	/**
 	 * Init
 	 *
@@ -38,26 +39,10 @@ class WooCommerce {
 			return;
 		}
 
-		/**
-		 * Add compatibility with WooCommerce Custom Order Tables (HPOS).
-		 *
-		 * We don't do anything with the order tables, but without this users cannot use
-		 * custom order tables.  The alternative is to remove the WC tested upto version
-		 * from the plugin readme.
-		 */
-		add_action(
-			'before_woocommerce_init',
-			function() {
-				if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
-					\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', SEARCH_FILTER_PRO_BASE_FILE, true );
-				}
-			}
-		);
-
 		// Priority of 2 so we can run before our gutenberg integration which is set to 3.
 		add_action( 'search-filter/settings/init', array( __CLASS__, 'setup' ), 2 );
 
-		// We are already inside the `search-filter/integrations/init` hook.
+		// We are already inside the `search-filter/settings/integrations/init` hook.
 		if ( ! Integrations::is_enabled( 'woocommerce' ) ) {
 			return;
 		}
@@ -89,19 +74,21 @@ class WooCommerce {
 		add_filter( 'render_block', array( __CLASS__, 'render_product_collection_block' ), 9, 2 );
 		add_filter( 'render_block', array( __CLASS__, 'render_product_results_count' ), 10, 2 );
 
-		add_action( 'woocommerce_before_shop_loop', 'Search_Filter_Pro\\Integrations\\WooCommerce::open_results_container', 0 );
+		// Add the results container class on the shop page when using non block editor themes.
+		add_action( 'woocommerce_before_shop_loop', 'Search_Filter_Pro\\Integrations\\WooCommerce::open_classic_shop_results_container', 0 );
 		// Priority of 11 to fire after WC pagination, 20 for after other plugins etc.
-		add_action( 'woocommerce_after_shop_loop', 'Search_Filter_Pro\\Integrations\\WooCommerce::close_results_container', 20 );
+		add_action( 'woocommerce_after_shop_loop', 'Search_Filter_Pro\\Integrations\\WooCommerce::close_classic_shop_results_container', 20 );
 
 		// Add the results container to the no products found message.
-		add_action( 'woocommerce_no_products_found', 'Search_Filter_Pro\\Integrations\\WooCommerce::open_results_container', 0, 1 );
-		add_action( 'woocommerce_no_products_found', 'Search_Filter_Pro\\Integrations\\WooCommerce::close_results_container', 20, 1 );
+		add_action( 'woocommerce_no_products_found', 'Search_Filter_Pro\\Integrations\\WooCommerce::open_classic_shop_results_container', 0, 1 );
+		add_action( 'woocommerce_no_products_found', 'Search_Filter_Pro\\Integrations\\WooCommerce::close_classic_shop_results_container', 20, 1 );
 
 		// Add support WC products shortcode.
 		add_action( 'woocommerce_shortcode_before_products_loop', 'Search_Filter_Pro\\Integrations\\WooCommerce::open_shortcode_results_container', 0 );
 		add_action( 'woocommerce_shortcode_after_products_loop', 'Search_Filter_Pro\\Integrations\\WooCommerce::close_shortcode_results_container', 20 );
 		add_action( 'woocommerce_shortcode_products_loop_no_results', 'Search_Filter_Pro\\Integrations\\WooCommerce::open_shortcode_results_container', 0 );
 		add_action( 'woocommerce_shortcode_products_loop_no_results', 'Search_Filter_Pro\\Integrations\\WooCommerce::close_shortcode_results_container', 20 );
+		add_filter( 'shortcode_atts_products', array( __CLASS__, 'shortcode_container_attributes' ), 11, 3 );
 
 		// Add support for Autocomplete field suggestions.
 		add_action( 'search-filter-pro/field/search/autocomplete/suggestions', array( __CLASS__, 'get_autocomplete_suggestions' ), 10, 3 );
@@ -110,15 +97,59 @@ class WooCommerce {
 		add_filter( 'search-filter/field/choice/wp_query_args', array( __CLASS__, 'get_choice_wp_query_args' ), 10, 2 );
 		add_filter( 'search-filter/field/range/wp_query_args', array( __CLASS__, 'get_range_wp_query_args' ), 10, 2 );
 
-		add_filter( 'search-filter/field/choice/options', array( __CLASS__, 'add_field_choice_options' ), 10, 2 );
-		add_filter( 'search-filter/indexer/sync_field_index/override_values', array( __CLASS__, 'index_values' ), 10, 3 );
+		add_filter( 'search-filter/field/choice/options_data', array( __CLASS__, 'add_field_choice_options_data' ), 10, 2 );
+		add_filter( 'search-filter-pro/indexer/sync_field_index/override_values', array( __CLASS__, 'index_product_values' ), 10, 3 );
+		add_filter( 'search-filter-pro/indexer/sync_field_index/override_values', array( __CLASS__, 'index_variation_values' ), 10, 3 );
+		add_filter( 'search-filter-pro/indexer/resync_queue/items', array( __CLASS__, 'add_resync_queue_items' ), 10, 1 );
+
+		// Make sure we update the post types to include variations whever we run rebuild tasks.
+		add_action( 'search-filter-pro/indexer/run_task/start', array( __CLASS__, 'init_sync_data_start' ), 10, 1 );
+		add_action( 'search-filter-pro/indexer/run_task/finish', array( __CLASS__, 'init_sync_data_finish' ), 10, 1 );
+		// Also update the post type whenver the sync data is init, cover cases like a post being updated and being synced immediately.
+		add_action( 'search-filter-pro/indexer/init_sync_data/start', array( __CLASS__, 'init_sync_data_start' ), 10, 1 );
+		add_action( 'search-filter-pro/indexer/init_sync_data/finish', array( __CLASS__, 'init_sync_data_finish' ), 10, 1 );
+
+		add_filter( 'search-filter-pro/indexer/query/result_lookup/query_args', array( __CLASS__, 'result_lookup_query_args' ), 10, 2 );
+		add_filter( 'search-filter-pro/indexer/query/collapse_children', array( __CLASS__, 'collapse_children' ), 10, 2 );
 		add_filter( 'search-filter/field/range/auto_detect_custom_field', array( __CLASS__, 'auto_detect_custom_field' ), 10, 2 );
 
-		self::add_settings();
-		// add_filter( 'search-filter/field/url_name', array( __CLASS__, 'add_custom_field_url_name' ), 10, 2 );
-		// add_filter( 'search-filter-pro/field/search/autocomplete/suggestions', array( __CLASS__, 'get_autocomplete_suggestions' ), 10, 3 );
-	}
+		// Add default URL names for price, on sale, and stock status.
+		add_filter( 'search-filter/field/url_name', array( __CLASS__, 'update_field_url_name' ), 10, 2 );
 
+		self::add_settings();
+	}
+	/**
+	 * Set the URL name for the field.
+	 *
+	 * @since    3.0.0
+	 *
+	 * @param string $url_name The existing URL name.
+	 * @param Field  $field    The field instance.
+	 *
+	 * @return string The updated URL name.
+	 */
+	public static function update_field_url_name( $url_name, $field ) {
+		$data_type = $field->get_attribute( 'dataType' );
+
+		if ( $data_type !== 'woocommerce' ) {
+			return $url_name;
+		}
+
+		$data_source = $field->get_attribute( 'dataWoocommerce' );
+
+		if ( ! $data_source ) {
+			return $url_name;
+		}
+		if ( $data_source === 'price' ) {
+			return 'price';
+		} elseif ( $data_source === 'stock_status' ) {
+			return 'stock_status';
+		} elseif ( $data_source === 'on_sale' ) {
+			return 'on_sale';
+		}
+
+		return $url_name;
+	}
 	/**
 	 * Update the field data support for the WooCommerce integration.
 	 *
@@ -302,9 +333,10 @@ class WooCommerce {
 
 		global $wp_query;
 		// Check to see if we are on the shop page.
-		$is_shop = \Search_Filter\Integrations\Woocommerce::is_shop( $wp_query );
+		$is_shop             = \Search_Filter\Integrations\Woocommerce::is_shop( $wp_query );
+		$is_taxonomy_archive = \Search_Filter\Integrations\Woocommerce::is_taxonomy_archive();
 
-		if ( $is_shop ) {
+		if ( $is_shop || $is_taxonomy_archive ) {
 			// Bail if we're not connected to this query.
 			if ( ! isset( $wp_query->query_vars['search_filter_queries'] ) ) {
 				return $block_content;
@@ -352,9 +384,10 @@ class WooCommerce {
 		}
 		global $wp_query;
 		// Check to see if we are on the shop page.
-		$is_shop = \Search_Filter\Integrations\Woocommerce::is_shop( $wp_query );
+		$is_shop             = \Search_Filter\Integrations\Woocommerce::is_shop( $wp_query );
+		$is_taxonomy_archive = \Search_Filter\Integrations\Woocommerce::is_taxonomy_archive();
 
-		if ( $is_shop ) {
+		if ( $is_shop || $is_taxonomy_archive ) {
 			// Bail if we're not connected to this query.
 			if ( ! isset( $wp_query->query_vars['search_filter_queries'] ) ) {
 				return $block_content;
@@ -435,8 +468,10 @@ class WooCommerce {
 		}
 
 		// Check to see if we are on the shop page.
-		$is_shop = \Search_Filter\Integrations\Woocommerce::is_shop( $wp_query );
-		if ( $is_shop && isset( $wp_query->query_vars['search_filter_queries'] ) ) {
+		$is_shop             = \Search_Filter\Integrations\Woocommerce::is_shop( $wp_query );
+		$is_taxonomy_archive = \Search_Filter\Integrations\Woocommerce::is_taxonomy_archive();
+
+		if ( ( $is_shop || $is_taxonomy_archive ) && isset( $wp_query->query_vars['search_filter_queries'] ) ) {
 			$connected_queries = $wp_query->query_vars['search_filter_queries'];
 			$content           = new \WP_HTML_Tag_Processor( $block_content );
 			$content->next_tag( array( 'div' ) );
@@ -478,11 +513,13 @@ class WooCommerce {
 
 			$attributes['queryContainer']          = '.search-filter-query--id-' . absint( $id );
 			$attributes['queryPaginationSelector'] = '.search-filter-query--id-' . absint( $id ) . ' .wp-block-query-pagination a';
+			$attributes['queryPostsContainer']     = '.search-filter-query--id-' . absint( $id ) . ' .wc-block-product-template';
 
 		} elseif ( $query_integration === 'woocommerce/products_shortcode' ) {
 
 			$attributes['queryContainer']          = '.search-filter-query--id-' . absint( $id );
 			$attributes['queryPaginationSelector'] = '.search-filter-query--id-' . absint( $id ) . ' .woocommerce-pagination a';
+			$attributes['queryPostsContainer'] = '.search-filter-query--id-' . absint( $id ) . ' .products';
 
 		} elseif ( $integration_type === 'woocommerce/shop' ) {
 
@@ -497,17 +534,21 @@ class WooCommerce {
 				 * - If we start on a page with no results and reset the form, the layout is broken because the CSS is not loaded,
 				 *   there is strategy for this in the Elementor plugin.
 				 *
-				 * // TODO - we should only do this (and other related logic) if dynamic update is actually enabled.
+				 * TODO - we should only do this (and other related logic) if dynamic update is actually enabled.
 				 */
 				$query_class                  = '.search-filter-query--id-' . absint( $id );
-				$attributes['queryContainer'] = '.woocommerce-shop ' . $query_class;
+				$attributes['queryContainer'] = $query_class;
 				// TODO - we need to change this for the product collection block.
-				$attributes['queryPaginationSelector']   = '.woocommerce-shop ' . $query_class . ' .wp-block-query-pagination a';
+				$attributes['queryPaginationSelector']   = $query_class . ' .wp-block-query-pagination a';
+				$attributes['queryPostsContainer']       = '.search-filter-query--id-' . absint( $id ) . ' .wc-block-product-template';
 				$attributes['additionalDynamicSections'] = '.search-filter-query-section--id-' . absint( $id );
 
 			} else {
-				$attributes['queryContainer']          = '.woocommerce-shop .search-filter-query';
-				$attributes['queryPaginationSelector'] = '.woocommerce-shop search-filter-query .woocommerce-pagination a';
+				
+				$query_class                           = '.search-filter-query--id-' . absint( $id );
+				$attributes['queryContainer']          = $query_class;
+				$attributes['queryPaginationSelector'] = $query_class . ' .woocommerce-pagination a';
+				$attributes['queryPostsContainer']     = '.search-filter-query--id-' . absint( $id ) . ' .products';
 			}
 		}
 		return $attributes;
@@ -597,13 +638,21 @@ class WooCommerce {
 	/**
 	 * Wrap a div container around the results in non block themes.
 	 *
-	 * @since 3.0.0
+	 * @since 3.0.0w
 	 */
-	public static function open_results_container() {
+	public static function open_classic_shop_results_container() {
 		if ( \wp_is_block_theme() ) {
 			return;
 		}
-		echo '<div class="search-filter-query">';
+
+		global $wp_query;
+		// Check to see if we are on the shop page.
+		if ( ! \Search_Filter\Integrations\Woocommerce::is_shop( $wp_query ) ) {
+			return;
+		}
+
+		// TODO - check if the shop has a S&F query attached.
+		echo '<div class="search-filter-query search-filter-query--id-' . absint( WooCommerce_Integration::get_active_query_id() ) . '">';
 	}
 
 	/**
@@ -611,8 +660,13 @@ class WooCommerce {
 	 *
 	 * @since 3.0.0
 	 */
-	public static function close_results_container() {
+	public static function close_classic_shop_results_container() {
 		if ( \wp_is_block_theme() ) {
+			return;
+		}
+		global $wp_query;
+		// Check to see if we are on the shop page.
+		if ( ! \Search_Filter\Integrations\Woocommerce::is_shop( $wp_query ) ) {
 			return;
 		}
 		echo '</div>';
@@ -626,10 +680,29 @@ class WooCommerce {
 	 * @param array $atts    The attributes.
 	 */
 	public static function open_shortcode_results_container( $atts ) {
-		if ( WooCommerce_Integration::get_active_query_id() === 0 ) {
+		if ( isset( $atts['search_filter_bypass_container'] ) ) {
 			return;
 		}
-		echo '<div class="search-filter-query search-filter-query--id-' . absint( WooCommerce_Integration::get_active_query_id() ) . '">';
+		$query_id = WooCommerce_Integration::get_active_query_id();
+		if ( $query_id === 0 ) {
+			return;
+		}
+		// Prevent adding a container if the query is the shop query.
+		// This allows us to support additional `[products]` shortcodes
+		// on the shop page.
+		if ( self::is_shop_query_id( $query_id ) ) {
+			return;
+		}
+		echo '<div class="search-filter-query search-filter-query--id-' . absint( $query_id ) . '">';
+	}
+
+
+	private static function is_shop_query_id( $query_id ) {
+		$query =  Data_Store::get( 'query', $query_id );
+		if ( ! $query ) {
+			return false;
+		}
+		return $query->get_attribute( 'integrationType' ) === 'woocommerce/shop';
 	}
 
 	/**
@@ -640,10 +713,40 @@ class WooCommerce {
 	 * @param array $atts    The attributes.
 	 */
 	public static function close_shortcode_results_container( $atts ) {
-		if ( WooCommerce_Integration::get_active_query_id() === 0 ) {
+		if ( isset( $atts['search_filter_bypass_container'] ) ) {
+			return;
+		}
+		$query_id = WooCommerce_Integration::get_active_query_id();
+		if ( $query_id === 0 || self::is_shop_query_id( $query_id ) ) {
 			return;
 		}
 		echo '</div>';
+	}
+
+	/**
+	 * Add `search_filter_bypass_container` to the shortcode attributes, otherwise
+	 * WC will remove it when it calls `shortcode_atts()` with its list of known
+	 * attributes.
+	 * 
+	 * This will allow the `WC_Shortcode_Products` class to keep the attribute around
+	 * so we can use it in the `open_shortcode_results_container()` and
+	 * `close_shortcode_results_container()` methods.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $out The existing shortcode attributes.
+	 * @param array $pairs The shortcode pairs.
+	 * @param array $atts The shortcode attributes.
+	 *
+	 * @return array The updated shortcode attributes.
+	 */
+	public static function shortcode_container_attributes( $out, $pairs, $atts ) {
+		if ( ! isset( $atts['search_filter_bypass_container'] ) ) {
+			return $out;
+		}
+		// Add `search_filter_bypass_container` to the shortcode attributes, otherwise they'll be removed by WC.
+		$out['search_filter_bypass_container'] = $atts['search_filter_bypass_container'];
+		return $out;
 	}
 
 	/**
@@ -671,7 +774,7 @@ class WooCommerce {
 			return $suggestions;
 		}
 
-		// TODO...
+		// TODO add options to autocomplete.
 		/*
 		 if ( $data_wc === 'stock_status' ) {
 			Choice::add_option_to_array(
@@ -818,33 +921,16 @@ class WooCommerce {
 
 			$values = $field->get_values();
 
-			$show_on_backorder = $field->get_attribute( 'dataWoocommerceShowOnBackorder' ) === 'yes';
-
 			if ( ! isset( $query_args['meta_query'] ) ) {
 				$query_args['meta_query'] = array();
 			}
 
-			foreach ( $values as $value ) {
-
-				if ( $value === 'backorder' && $show_on_backorder ) {
-					$query_args['meta_query'][] = array(
-						array(
-							'key'   => '_backorders',
-							'value' => 'yes',
-						),
-					);
-				} else {
-					// TODO - support custom stock status...
-					if ( $value === 'in-stock' ) {
-						$query_args['meta_query'][] = array(
-							array(
-								'key'   => '_stock_status',
-								'value' => 'instock',
-							),
-						);
-					}
-				}
-			}
+			$query_args['meta_query'][] = array(
+				array(
+					'key'   => '_stock_status',
+					'value' => $values,
+				),
+			);
 
 			return $query_args;
 
@@ -871,7 +957,7 @@ class WooCommerce {
 
 		}
 
-		// It must be a tax product attribute, product_cat or product_tag, which is already handled in
+		// It must be a tax product attribute, product_cat or product_tag, or product_brand which is already handled in
 		// the free version.
 		return $query_args;
 	}
@@ -976,68 +1062,75 @@ class WooCommerce {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array $options    The options to add the field choice options for.
+	 * @param array $options_data    The options to add the field choice options for.
 	 * @param Field $field    The field.
 	 * @return array    The updated options.
 	 */
-	public static function add_field_choice_options( $options, $field ) {
+	public static function add_field_choice_options_data( $options_data, $field ) {
 		$data_type = $field->get_attribute( 'dataType' );
 		if ( $data_type !== 'woocommerce' ) {
-			return $options;
+			return $options_data;
 		}
 
-		if ( count( $options ) > 0 ) {
-			return $options;
+		if ( count( $options_data['options'] ) > 0 ) {
+			return $options_data;
 		}
 
 		$wc_data_type = $field->get_attribute( 'dataWoocommerce' );
 		if ( ! $wc_data_type ) {
-			return $options;
+			return $options_data;
 		}
 
 		// Build options for On Sale, Price, and Stock status.
 		if ( $wc_data_type === 'on_sale' ) {
 			Choice::add_option_to_array(
-				$options,
+				$options_data['options'],
 				array(
 					'value' => 'on-sale',
 					'label' => __( 'On sale', 'search-filter-pro' ),
 				),
 				$field->get_id()
 			);
+			$options_data['labels']['on-sale'] = __( 'On sale', 'search-filter-pro' );
 
 		} elseif ( $wc_data_type === 'stock_status' ) {
 
-			Choice::add_option_to_array(
-				$options,
-				array(
-					'value' => 'in-stock',
-					'label' => __( 'In stock', 'search-filter-pro' ),
-				),
-				$field->get_id()
-			);
 			$show_on_backorder = $field->get_attribute( 'dataWoocommerceShowOnBackorder' );
-			if ( $show_on_backorder === 'yes' ) {
+			$show_out_of_stock = $field->get_attribute( 'dataWoocommerceShowOutOfStock' );
+
+			$stock_status_options = \wc_get_product_stock_status_options();
+			foreach ( $stock_status_options as $stock_status => $stock_status_label ) {
+
+				if ( $stock_status === 'onbackorder' && $show_on_backorder !== 'yes' ) {
+					continue;
+				}
+
+				if ( $stock_status === 'outofstock' && $show_out_of_stock !== 'yes' ) {
+					continue;
+				}
+
 				Choice::add_option_to_array(
-					$options,
+					$options_data['options'],
 					array(
-						'value' => 'backorder',
-						'label' => __( 'On backorder', 'search-filter-pro' ),
+						'value' => $stock_status,
+						'label' => $stock_status_label,
 					),
 					$field->get_id()
 				);
+
+				$options_data['labels'][ $stock_status ] = $stock_status_label;
 			}
 		}
 
 		$order           = $field->get_attribute( 'inputOptionsOrder' ) ? $field->get_attribute( 'inputOptionsOrder' ) : 'label';
 		$order_direction = $field->get_attribute( 'inputOptionsOrderDir' ) ? $field->get_attribute( 'inputOptionsOrderDir' ) : 'asc';
 		if ( $order === 'label' ) {
-			$options = Util::sort_assoc_array_by_property( $options, $order, 'alphabetical', $order_direction );
+			$options_data['options'] = Util::sort_assoc_array_by_property( $options_data['options'], $order, 'alphabetical', $order_direction );
 		} elseif ( $order === 'count' ) {
-			$options = Util::sort_assoc_array_by_property( $options, 'count', 'numerical', $order_direction );
+			$options_data['options'] = Util::sort_assoc_array_by_property( $options_data['options'], 'count', 'numerical', $order_direction );
 		}
 
-		return $options;
+		return $options_data;
 	}
 
 	private static function add_settings() {
@@ -1088,6 +1181,53 @@ class WooCommerce {
 			),
 		);
 		Fields_Settings::add_setting( $setting, $setting_args );
+
+		$setting = array(
+			'name'      => 'dataWoocommerceShowOutOfStock',
+			'label'     => __( 'Show out of stock', 'search-filter' ),
+			'group'     => 'data',
+			'tab'       => 'settings',
+			'type'      => 'string',
+			'inputType' => 'Toggle',
+			'default'   => 'no',
+			'options'   => array(
+				array(
+					'value' => 'yes',
+					'label' => __( 'Yes', 'search-filter-pro' ),
+				),
+				array(
+					'value' => 'no',
+					'label' => __( 'No', 'search-filter-pro' ),
+				),
+			),
+			'context'   => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced' ),
+			'dependsOn' => array(
+				'relation' => 'AND',
+				'rules'    => array(
+					array(
+						'option'  => 'dataType',
+						'compare' => '=',
+						'value'   => 'woocommerce',
+					),
+					array(
+						'option'  => 'dataWoocommerce',
+						'compare' => '=',
+						'value'   => 'stock_status',
+					),
+				),
+			),
+			'supports'  => array(
+				'previewAPI' => true,
+			),
+		);
+
+		$setting_args = array(
+			'position' => array(
+				'placement' => 'after',
+				'setting'   => 'dataWoocommerceShowOnBackorder',
+			),
+		);
+		Fields_Settings::add_setting( $setting, $setting_args );
 	}
 
 	/**
@@ -1100,7 +1240,7 @@ class WooCommerce {
 	 * @param    int   $object_id    The object ID to get the values for.
 	 * @return   array    The values to index.
 	 */
-	public static function index_values( $values, $field, $object_id ) {
+	public static function index_product_values( $values, $field, $object_id ) {
 		if ( $field->get_attribute( 'dataType' ) !== 'woocommerce' ) {
 			return $values;
 		}
@@ -1112,19 +1252,19 @@ class WooCommerce {
 			return $values;
 		}
 
+		if ( get_post_type( $object_id ) !== 'product' ) {
+			return $values;
+		}
+
+		// For variable products, handle everything on the variations
+		// unless the variation doesn't have any children yet.
+		if ( $product->is_type( 'variable' ) && ! empty( $product->get_children() ) ) {
+			return $values;
+		}
+
 		if ( $wc_data === 'stock_status' ) {
-			$values = array();
-			if ( $product->is_in_stock() ) {
-				$values[] = 'in-stock';
-			}
-
-			// TODO - support custom stock status by using $product->get_stock_status().
-
-			// Add backorder if set, regardless if the setting is set to show it (to avoid rebuilds).
-			if ( $product->is_on_backorder() ) {
-				$values[] = 'backorder';
-			}
-
+			$values   = array();
+			$values[] = $product->get_stock_status();
 			return $values;
 		} elseif ( $wc_data === 'on_sale' ) {
 			if ( $product->is_on_sale() ) {
@@ -1141,6 +1281,39 @@ class WooCommerce {
 					continue;
 				}
 				$values[] = $product_category->slug;
+
+				// Loop through and attach all parents that exist.
+				$parent_id = $product_category->parent;
+				while ( $parent_id !== 0 ) {
+					$parent_term = get_term( $parent_id, 'product_cat' );
+					$parent_id   = $parent_term->parent;
+					if ( ! in_array( $parent_term->slug, $values, true ) ) {
+						$values[] = $parent_term->slug;
+					}
+				}
+			}
+			return $values;
+		} elseif ( $wc_data === 'product_brand' ) {
+			$values              = array();
+			$product_brand_terms = get_the_terms( $object_id, 'product_brand' );
+			if ( ! $product_brand_terms ) {
+				return $values;
+			}
+			foreach ( $product_brand_terms as $product_brand ) {
+				if ( ! $product_brand || is_wp_error( $product_brand ) ) {
+					continue;
+				}
+				$values[] = $product_brand->slug;
+
+				// Loop through and attach all parents that exist.
+				$parent_id = $product_brand->parent;
+				while ( $parent_id !== 0 ) {
+					$parent_term = get_term( $parent_id, 'product_brand' );
+					$parent_id   = $parent_term->parent;
+					if ( ! in_array( $parent_term->slug, $values, true ) ) {
+						$values[] = $parent_term->slug;
+					}
+				}
 			}
 			return $values;
 		} elseif ( $wc_data === 'product_tag' ) {
@@ -1155,21 +1328,29 @@ class WooCommerce {
 			}
 			return $values;
 		} else {
-			// Then we are dealing with a product attribute or category or tag.
-			// This should include the pa_ prefix.
+
+			// Then we are dealing with a product attribute.
 			$taxonomy_name = WooCommerce_Integration::get_taxonomy_name_from_data_source( $wc_data );
 			if ( empty( $taxonomy_name ) ) {
 				return $values;
 			}
 
 			$attributes = $product->get_attributes();
-
 			foreach ( $attributes as $attribute ) {
 				if ( ! $attribute->is_taxonomy() ) {
 					continue;
 				}
-				$attribute_taxonomy_name = $attribute->get_taxonomy();
-				if ( $attribute_taxonomy_name === $taxonomy_name ) {
+
+				$attribute_name = $attribute->get_taxonomy();
+
+				// TODO - is this what we want when we have a variable product
+				// without variations?
+				/* if ( $attribute->get_variation() ) {
+					// The options are stored as IDs
+					return $attribute->get_slugs();
+				} */
+				
+				if ( $attribute_name === $taxonomy_name ) {
 					$values = $attribute->get_slugs();
 					return $values;
 				}
@@ -1178,13 +1359,321 @@ class WooCommerce {
 
 		return $values;
 	}
+
+	private static function get_parent_product( $product_variation ) {
+		$parent_id = $product_variation->get_parent_id();
+		return \wc_get_product( $parent_id );
+	}
+	/**
+	 * Override the index values and add WC values.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param    array $values    The values to index.
+	 * @param    Field $field    The field to get the values for.
+	 * @param    int   $object_id    The object ID to get the values for.
+	 * @return   array    The values to index.
+	 */
+	public static function index_variation_values( $values, $field, $object_id ) {
+		if ( $field->get_attribute( 'dataType' ) !== 'woocommerce' ) {
+			return $values;
+		}
+
+		$wc_data = $field->get_attribute( 'dataWoocommerce' );
+
+		if ( get_post_type( $object_id ) !== 'product_variation' ) {
+			return $values;
+		}
+
+		Util::error_log( 'index_variation_values '. $object_id );
+
+		$product_variation = \wc_get_product( $object_id );
+		if ( ! $product_variation ) {
+			return $values;
+		}
+
+		if ( $product_variation->get_type() !== 'variation' ) {
+			return $values;
+		}
+
+		if ( $wc_data === 'stock_status' ) {
+			$values         = array();
+			$parent_product = self::get_parent_product( $product_variation );
+			// If the variation is not managing its own stock, then it will
+			// be show the parent value automatically.
+			$values[] = $product_variation->get_stock_status();
+			return $values;
+		} elseif ( $wc_data === 'on_sale' ) {
+			if ( $product_variation->is_on_sale() ) {
+				$values[] = 'on-sale';
+			}
+		} elseif ( $wc_data === 'price' ) {
+			return array( $product_variation->get_price() );
+		} elseif ( $wc_data === 'product_cat' ) {
+			// If we're indexing the parent product category, then the value is stored on the parent
+			// so get that an apply it the variation.
+			$parent_product = self::get_parent_product( $product_variation );
+			if ( ! $parent_product ) {
+				return $values;
+			}
+
+			$product_category_ids = $parent_product->get_category_ids();
+			$values               = array();
+			foreach ( $product_category_ids as $product_category_id ) {
+				$product_category = get_term( $product_category_id, 'product_cat' );
+				if ( ! $product_category || is_wp_error( $product_category ) ) {
+					continue;
+				}
+				$values[] = $product_category->slug;
+
+				// Loop through and attach all parents they exist.
+				$parent_id = $product_category->parent;
+				while ( $parent_id !== 0 ) {
+					$parent_term = get_term( $parent_id, 'product_cat' );
+					$parent_id   = $parent_term->parent;
+					if ( ! in_array( $parent_term->slug, $values, true ) ) {
+						$values[] = $parent_term->slug;
+					}
+				}
+			}
+			return $values;
+		} elseif ( $wc_data === 'product_brand' ) {
+			// If we're indexing the parent product category, then the value is stored on the parent
+			// so get that an apply it the variation.
+			$parent_product = self::get_parent_product( $product_variation );
+			if ( ! $parent_product ) {
+				return $values;
+			}
+
+			$values = array();
+			// TODO - this function does not exist yet, but likely will later: https://github.com/woocommerce/woocommerce/issues/52991.
+			if ( ! method_exists( $parent_product, 'get_brand_ids' ) ) {
+				return $values;
+			}
+			$product_brand_ids = $parent_product->get_brand_ids();
+			foreach ( $product_brand_ids as $product_brand_id ) {
+				$product_brand = get_term( $product_brand_id, 'product_brand' );
+				if ( ! $product_brand || is_wp_error( $product_brand ) ) {
+					continue;
+				}
+				$values[] = $product_brand->slug;
+
+				// Loop through and attach all parents that exist.
+				$parent_id = $product_brand->parent;
+				while ( $parent_id !== 0 ) {
+					$parent_term = get_term( $parent_id, 'product_brand' );
+					$parent_id   = $parent_term->parent;
+					if ( ! in_array( $parent_term->slug, $values, true ) ) {
+						$values[] = $parent_term->slug;
+					}
+				}
+			}
+			return $values;
+		} elseif ( $wc_data === 'product_tag' ) {
+
+			// If we're indexing the parent product tag, then the value is stored on the parent
+			// so get that an apply it the variation.
+			$parent_product = self::get_parent_product( $product_variation );
+			if ( ! $parent_product ) {
+				return $values;
+			}
+
+			$product_tag_ids = $product_variation->get_tag_ids();
+			$values          = array();
+			foreach ( $product_tag_ids as $product_tag_id ) {
+				$product_tag = get_term( $product_tag_id, 'product_tag' );
+				if ( ! $product_tag || is_wp_error( $product_tag ) ) {
+					continue;
+				}
+				$values[] = $product_tag->slug;
+			}
+			return $values;
+		} else {
+			// Then we are dealing with a product attribute.
+			// This should include the pa_ prefix.
+
+			// Figure out if the attribute is set to be used on variations or not.
+			// If it's not then we need to get the parent product and use its value.
+			$attribute_name = WooCommerce_Integration::get_taxonomy_name_from_data_source( $wc_data );
+			
+			$parent_product = self::get_parent_product( $product_variation );
+			if ( ! $parent_product ) {
+				return $values;
+			}
+
+			$parent_attributes = $parent_product->get_attributes();
+			if ( ! isset( $parent_attributes[ $attribute_name ] ) ) {
+				return $values;
+			}
+			$product_attribute = $parent_attributes[ $attribute_name ];
+
+			// Then is an attribute used on the parent, and _not_ used for variations, 
+			// then add all the values to the variation.
+			if ( ! $product_attribute->get_variation() ) {
+				return $product_attribute->get_slugs();
+			}
+
+			// If it is a variation attribute, then we try to get the value directly from the variation.
+			$attributes = $product_variation->get_attributes( $attribute_name );
+			if ( ! isset( $attributes[ $attribute_name ] ) ) {
+				return $values;
+			}
+			$values[] = $attributes[ $attribute_name ];
+		}
+
+		return $values;
+	}
+
+
+	/**
+	 * If there are any parent products, make sure we add the variation IDs too.
+	 * 
+	 * This is necessary because when we update products attributes, if they are
+	 * not used on variations, then the variations will never get them.
+	 *
+	 * @param [type] $items
+	 * @return void
+	 */
+	public static function add_resync_queue_items( $items ) {
+
+		$items_to_add = array();
+		foreach( $items as $item ) {
+			$post_id = $item;
+			if ( get_post_type( $post_id ) !== 'product' ) {
+				continue;
+			}
+
+			$product = \wc_get_product( $post_id );
+			if ( ! $product ) {
+				continue;
+			}
+
+			if ( ! $product->is_type( 'variable' ) ) {
+				continue;
+			}
+
+			$variation_ids = $product->get_children();
+			foreach ( $variation_ids as $variation_id ) {
+				$items_to_add[] = $variation_id;
+			}
+		}
+
+		return array_merge( $items, $items_to_add );
+	}
+
+	/**
+	 * Add the variations post type when using posts.
+	 *
+	 * Ensures post variations are included in when syncing.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function init_sync_data_start() {
+		add_filter( 'search-filter/queries/query/get_attributes', array( __CLASS__, 'add_variations_to_post_types' ), 10 );
+	}
+
+	/**
+	 * Remove the filter when finished.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function init_sync_data_finish() {
+		remove_filter( 'search-filter/queries/query/get_attributes', array( __CLASS__, 'add_variations_to_post_types' ), 10 );
+	}
+
+	/**
+	 * Add the variations post type to the query attributes when the product post type is used.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array  $attributes    The attributes.
+	 * @param object $query         The query object.
+	 * @return array    The attributes.
+	 */
+	public static function add_variations_to_post_types( $attributes ) {
+		if ( ! isset( $attributes['postTypes'] ) ) {
+			return $attributes;
+		}
+
+		if ( ! in_array( 'product', $attributes['postTypes'], true ) ) {
+			return $attributes;
+		}
+
+		if ( ! in_array( 'product_variation', $attributes['postTypes'], true ) ) {
+			$attributes['postTypes'][] = 'product_variation';
+		}
+
+		return $attributes;
+	}
+
+	/**
+	 * Check if the query is a WooCommerce query.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param object $query The query object.
+	 * @return bool    Whether the query is a WooCommerce query.
+	 */
+	private static function is_woocommerce_query( $query ) {
+		$post_types = $query->get_attribute( 'postTypes' );
+		if ( in_array( 'product', $post_types, true ) ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Insert the product_variation post type into the indexer query args
+	 * when setting up the queries to obtain results IDs (not the actual
+	 * findal WP_Query for listing the posts).
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array  $query_args    The query args.
+	 * @param object $query         The query object.
+	 * @return array    The query args.
+	 */
+	public static function result_lookup_query_args( $query_args, $query ) {
+
+		if ( ! self::is_woocommerce_query( $query ) ) {
+			return $query_args;
+		}
+
+		if ( ! is_array( $query_args['post_type']  ) ) {
+			$query_args['post_type'] = array( $query_args['post_type'] );
+		}
+		$query_args['post_type'][] = 'product_variation';
+
+		return $query_args;
+	}
+
+	/**
+	 * Collapse children into parents when counting.
+	 *
+	 * Ensures that product variation hits are counted against the parent product.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param bool   $should_collapse    Whether to collapse children.
+	 * @param object $query              The query object.
+	 * @return bool    Whether to collapse children.
+	 */
+	public static function collapse_children( $should_collapse, $query ) {
+
+		if ( ! self::is_woocommerce_query( $query ) ) {
+			return $should_collapse;
+		}
+
+		return true;
+	}
+
 	/**
 	 * Get the custom field key for the range field when using price.
 	 *
 	 * @since 3.0.0
 	 *
 	 * @param string $custom_field_key    The custom field key.
-	 * @param Field  $field    The field.
+	 * @param array  $attributes          The attributes.
 	 * @return string    The custom field key.
 	 */
 	public static function auto_detect_custom_field( $custom_field_key, $attributes ) {

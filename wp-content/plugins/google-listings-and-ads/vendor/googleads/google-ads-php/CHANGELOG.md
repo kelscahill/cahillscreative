@@ -1,3 +1,66 @@
+## 25.0.0
+*   Added support for v18 of Google Ads API.
+*   Removed support for the `useGapicV2Source` configuration, as the source code
+    of all versions are generated as GAPIC v2.
+    * Fixed the LaravelSampleApp to use GAPIC v2.
+*   Updated code examples:
+    * GetAllDisapprovedAds
+    * HandlePartialFailure
+
+## 24.0.0
+*   Added support for v17_1 of Google Ads API.
+*   Removed support for v15 of Google Ads API.
+*   Made service client classes non-final.
+*   Added support for setting a REST handler as a client option for each call.
+
+## 23.1.0
+*   Added support for v17 of Google Ads API.
+*   Updated code examples for removing the usage of `pageSize`:
+    * GetAccountHierarchy
+    * GetChangeDetails
+    * GetChangeSummary
+    * LinkManagerToClient
+    * FindAndRemoveCriteriaFromSharedSet
+    * GetAdGroupBidModifiers
+    * GetResponsiveSearchAds
+    * GetAllDisapprovedAds
+    * CampaignReportToCsv
+    * SetUpRemarketing
+    * UpdateAudienceTargetRestriction
+    * AddPerformanceMaxProductListingGroupTree
+    * AddPerformanceMaxRetailCampaign
+    * AddShoppingProductListingGroupTree
+    * GetProductCategoryConstants
+    * Utils\Feeds
+*   Removed code examples:
+    * NavigateSearchResultPagesCachingTokens
+
+## 23.0.1
+*   Re-generated the source code for v16_1 of Google Ads API to add some missing
+    classes and enum values.
+
+## 23.0.0
+*   Added support for v16_1 of Google Ads API.
+*   Removed support for v14 of Google Ads API.
+*   Added support for `google/protobuf` v4.26.
+*   Updated `composer.json` to require the minimum PHP version of 8.1.
+*   Rolled back changes to the code base that requires PHP 8.0 or above, so PHP
+    7 users can still easily clone this library to work with the legacy code.
+*   Updated `package.json` of LaravelSampleApp.
+*   Added VerifyAdvertiserIdentity example.
+*   Updated code examples:
+    * AddCompleteCampaignsUsingBatchJob
+    * DetectAndApplyRecommendations
+    * DismissRecommendation
+    * UploadConversionAdjustment
+*   Removed code examples:
+    * AddFlightsFeed
+    * AddRealEstateFeed
+    * ApplyRecommendation
+    * ApproveMerchantCenterLink
+    * DismissRecommendation
+    * RejectMerchantCenterLink
+
 ## 22.1.0
 *   Added support for v16 of Google Ads API.
 *   Fixed dependabot alert in `examples/LaravelSampleApp/composer.lock`.

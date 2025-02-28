@@ -1168,7 +1168,14 @@ class Ajax {
 				continue;
 			}
 
-			$fields_by_id[ $field['id'] ] = $field;
+			/**
+			 * Filters the entry field data.
+			 *
+			 * @since 1.9.4
+			 *
+			 * @param array $field Field data.
+			 */
+			$fields_by_id[ $field['id'] ] = apply_filters( 'wpforms_pro_admin_entries_export_ajax_get_entry_fields_data_field', $field );
 		}
 
 		return $fields_by_id;

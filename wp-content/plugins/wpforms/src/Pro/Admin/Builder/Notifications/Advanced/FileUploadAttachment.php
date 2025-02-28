@@ -3,7 +3,7 @@
 namespace WPForms\Pro\Admin\Builder\Notifications\Advanced;
 
 use WPForms_Builder_Panel_Settings;
-use WPForms_Field_File_Upload;
+use WPForms\Pro\Forms\Fields\FileUpload\Field as FileUploadField;
 use WPForms_WP_Emails;
 
 /**
@@ -47,12 +47,14 @@ class FileUploadAttachment {
 	 * @param object $form    Current form.
 	 *
 	 * @return array
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function javascript_strings( $strings, $form ) {
+	public function javascript_strings( $strings, $form ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		$strings['notifications_file_upload'] = [
-			'wp_max_upload_size' => wp_max_upload_size() / MB_IN_BYTES,
-			'no_choices_text'    => esc_html__( 'You do not have any file upload fields', 'wpforms' ),
+			'wp_max_upload_size'   => wp_max_upload_size() / MB_IN_BYTES,
+			'no_choices_text'      => esc_html__( 'You do not have any file upload fields', 'wpforms' ),
+			'restrictions_enabled' => esc_html__( 'Restrictions Enabled', 'wpforms' ),
 		];
 
 		return $strings;
@@ -99,6 +101,7 @@ class FileUploadAttachment {
 	 * @param int   $notification_id Notification ID.
 	 *
 	 * @return string
+	 * @noinspection HtmlUnknownTarget
 	 */
 	private function file_upload_attachment_fields( $form_data, $notification_id ) {
 
@@ -157,11 +160,13 @@ class FileUploadAttachment {
 	 *
 	 * @param array $form Form array which is usable with `wp_update_post()`.
 	 * @param array $data Form custom data.
-	 * @param array $args Empty by default, may have custom data not intended to be saved, but used for processing.
+	 * @param array $args Empty by default. May have custom data not intended to be saved, but used for processing.
 	 *
 	 * @return array
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function format_data_on_save( $form, $data, $args ) {
+	public function format_data_on_save( $form, $data, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		return Settings::attach_notification_data_in_form_data( $form, $this->get_file_upload_attachment_fields_from_post( $data ) );
 	}
@@ -197,7 +202,7 @@ class FileUploadAttachment {
 			// Sanitize Entry Information items.
 			$file_upload_attachment_fields[ $id ]['file_upload_attachment_fields'] = array_map(
 				'absint',
-				(array) json_decode( wp_unslash( $notification['file_upload_attachment_fields']['hidden'] ) )
+				(array) json_decode( wp_unslash( $notification['file_upload_attachment_fields']['hidden'] ), true )
 			);
 		}
 
@@ -280,7 +285,7 @@ class FileUploadAttachment {
 				continue;
 			}
 
-			$file_paths = WPForms_Field_File_Upload::get_entry_field_file_paths( $form_id, $entry_fields[ $file_upload_field_id ] );
+			$file_paths = FileUploadField::get_entry_field_file_paths( $form_id, $entry_fields[ $file_upload_field_id ] );
 
 			if ( empty( $file_paths ) ) {
 				continue;

@@ -36,6 +36,12 @@ trait StringsTrait {
 			esc_url( wpforms_utm_link( 'https://wpforms.com/contact/', 'builder-modal', 'Addon Install Failure' ) )
 		);
 
+		$strings['addon_incompatible'] = [
+			'title'       => esc_html__( 'Incompatible Addon', 'wpforms' ),
+			'button_text' => esc_html__( 'Check for Update', 'wpforms' ),
+			'button_url'  => admin_url( 'update-core.php' ),
+		];
+
 		$license_key = wpforms_get_license_key();
 
 		if ( ! empty( $license_key ) ) {

@@ -10,28 +10,16 @@ use WPForms\Emails\Notifications as EmailNotifications;
  *
  * @since 1.8.9
  */
-class Notifications {
-	/**
-	 * Initialize.
-	 *
-	 * @since 1.8.9
-	 */
-	public function init() {
-
-		$this->hooks();
-	}
+class Notifications extends \WPForms\Pro\Forms\Fields\Base\Notifications {
 
 	/**
-	 * Hooks.
+	 * Current field notification type.
 	 *
-	 * @since 1.8.9
+	 * @since 1.9.3
+	 *
+	 * @var string
 	 */
-	private function hooks() {
-
-		add_filter( 'wpforms_emails_notifications_field_message_plain', [ $this, 'get_repeater_field_plain' ], 10, 6 );
-		add_filter( 'wpforms_emails_notifications_field_message_html', [ $this, 'get_repeater_field_html' ], 10, 7 );
-		add_filter( 'wpforms_emails_notifications_field_ignored', [ $this, 'notifications_field_ignored' ], 10, 3 );
-	}
+	protected $field_type = 'repeater';
 
 	/**
 	 * Ignore the field if it is part of the repeater field.
@@ -69,6 +57,8 @@ class Notifications {
 	 * @since 1.8.9
 	 * @since 1.8.9.3 The $notifications parameter was added.
 	 *
+	 * @deprecated 1.9.3
+	 *
 	 * @param string|mixed       $message           Field message.
 	 * @param array              $field             Field data.
 	 * @param bool               $show_empty_fields Whether to display empty fields in the email.
@@ -79,33 +69,57 @@ class Notifications {
 	 *
 	 * @return string
 	 */
-	public function get_repeater_field_html( $message, array $field, bool $show_empty_fields, array $other_fields, array $form_data, array $fields, $notifications ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity, Generic.Metrics.NestingLevel.MaxExceeded
+	public function get_repeater_field_html( $message, array $field, bool $show_empty_fields, array $other_fields, array $form_data, array $fields, EmailNotifications $notifications ): string {
 
-		$message = (string) $message;
+		_deprecated_function( __METHOD__, '1.9.3 of the WPForms plugin', __CLASS__ . '::get_field_html()' );
 
-		if ( isset( $field['type'] ) && $field['type'] !== 'repeater' ) {
-			return $message;
-		}
+		return $this->get_field_html( $message, $field, $show_empty_fields, $other_fields, $form_data, $fields, $notifications );
+	}
 
-		if ( ! $notifications ) {
-			return $message;
-		}
+	/**
+	 * Get the repeater field plain text markup.
+	 *
+	 * @since 1.8.9
+	 * @since 1.8.9.3 The $notifications parameter was added.
+	 *
+	 * @deprecated 1.9.3
+	 *
+	 * @param string|mixed       $message           Field message.
+	 * @param array              $field             Field data.
+	 * @param bool               $show_empty_fields Whether to display empty fields in the email.
+	 * @param array              $form_data         Form data.
+	 * @param array              $fields            List of submitted fields.
+	 * @param EmailNotifications $notifications     Notifications instance.
+	 *
+	 * @return string
+	 */
+	public function get_repeater_field_plain( $message, array $field, bool $show_empty_fields, array $form_data, array $fields, EmailNotifications $notifications ): string {
 
-		$blocks = RepeaterHelpers::get_blocks( $field, $form_data );
+		_deprecated_function( __METHOD__, '1.9.3 of the WPForms plugin', __CLASS__ . '::get_field_plain()' );
 
-		if ( ! $blocks ) {
-			return $message;
+		return $this->get_field_plain( $message, $field, $show_empty_fields, $form_data, $fields, $notifications );
+	}
+
+	/**
+	 * Get the plain message for the repeater field.
+	 *
+	 * @since 1.9.3
+	 *
+	 * @return string
+	 */
+	protected function get_plain_message(): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity, Generic.Metrics.NestingLevel.MaxExceeded
+
+		$blocks = RepeaterHelpers::get_blocks( $this->field, $this->form_data );
+
+		if ( empty( $blocks ) ) {
+			return '';
 		}
 
 		$repeater_message = '';
 
 		foreach ( $blocks as $key => $rows ) {
 			$block_number = $key >= 1 ? ' #' . ( $key + 1 ) : '';
-			$divider      = '';
-
-			if ( isset( $field['label_hide'] ) && ! $field['label_hide'] ) {
-				$divider = '<tr><td class="field-repeater-name field-name"><strong>' . $field['label'] . $block_number . '</strong></td><td class="field-value"></td></tr>';
-			}
+			$divider      = $this->get_header( $this->field['label'] . $block_number );
 
 			$fields_message = '';
 
@@ -117,8 +131,8 @@ class Notifications {
 
 					$field_id = $column['field'];
 
-					if ( isset( $form_data['fields'][ $field_id ] ) ) {
-						$fields_message .= $notifications->get_field_html( $form_data['fields'][ $field_id ], $show_empty_fields, $other_fields );
+					if ( isset( $this->form_data['fields'][ $field_id ] ) ) {
+						$fields_message .= $this->get_subfield_message( $this->form_data['fields'][ $column['field'] ] );
 					}
 				}
 			}
@@ -132,63 +146,129 @@ class Notifications {
 	}
 
 	/**
-	 * Get the repeater field plain text markup.
+	 * Get field markup for an email.
 	 *
-	 * @since 1.8.9
-	 * @since 1.8.9.3 The $notifications parameter was added.
-	 *
-	 * @param string|mixed       $message           Field message.
-	 * @param array              $field             Field data.
-	 * @param bool               $show_empty_fields Whether to display empty fields in the email.
-	 * @param array              $form_data         Form data.
-	 * @param array              $fields            List of submitted fields.
-	 * @param EmailNotifications $notifications     Notifications instance.
+	 * @since 1.9.3
 	 *
 	 * @return string
 	 */
-	public function get_repeater_field_plain( $message, array $field, bool $show_empty_fields, array $form_data, array $fields, $notifications ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity, Generic.Metrics.NestingLevel.MaxExceeded
+	protected function get_html_message(): string {
 
-		$message = (string) $message;
+		$blocks = RepeaterHelpers::get_blocks( $this->field, $this->form_data );
 
-		if ( isset( $field['type'] ) && $field['type'] !== 'repeater' ) {
-			return $message;
+		if ( empty( $blocks ) || $this->is_repeater_empty( $blocks ) ) {
+			return '';
 		}
 
-		if ( ! $notifications ) {
-			return $message;
+		$display = $this->field['display'] ?? 'rows';
+
+		$output = sprintf(
+			'<tr class="wpforms-layout-table wpforms-layout-table-display-%s"><td>',
+			sanitize_html_class( $display )
+		);
+
+		if ( $display === 'rows' ) {
+			$output .= sprintf(
+				'<table style="width: 100%%;">%1$s</table>',
+				$this->get_header( $this->field['label'] )
+			);
 		}
 
-		$blocks = RepeaterHelpers::get_blocks( $field, $form_data );
+		$output .= $this->get_block_message( $blocks, $display );
 
-		if ( ! $blocks ) {
-			return $message;
-		}
+		$output .= '</td></tr>';
 
-		$repeater_message = '';
+		return $output;
+	}
 
-		foreach ( $blocks as $key => $rows ) {
-			$block_number = $key >= 1 ? ' #' . ( $key + 1 ) : '';
-			$divider      = '';
+	/**
+	 * Check if repeater is empty.
+	 *
+	 * @since 1.9.3
+	 *
+	 * @param array $blocks Blocks data.
+	 *
+	 * @return bool
+	 */
+	private function is_repeater_empty( array $blocks ): bool { // phpcs:ignore Generic.Metrics.CyclomaticComplexity, Generic.Metrics.NestingLevel.MaxExceeded
 
-			if ( isset( $field['label_hide'] ) && ! $field['label_hide'] ) {
-				$divider = '--- ' . $field['label'] . $block_number . " ---\r\n\r\n";
-			}
+		foreach ( $blocks as $rows ) {
+			foreach ( $rows as $row ) {
+				foreach ( $row as $column ) {
+					$field_id    = $column['field'] ?? null;
+					$field_value = $this->fields[ $field_id ]['value'] ?? null;
 
-			$fields_message = '';
-
-			foreach ( $rows as $row_data ) {
-				foreach ( $row_data as $data ) {
-					if ( isset( $data['field'], $form_data['fields'][ $data['field'] ] ) ) {
-						$fields_message .= $notifications->get_field_plain( $form_data['fields'][ $data['field'] ], $show_empty_fields );
+					if ( $field_value !== null && ! wpforms_is_empty_string( $field_value ) ) {
+						return false;
 					}
 				}
 			}
-
-			if ( $fields_message ) {
-				$repeater_message .= $divider . $fields_message;
-			}
 		}
 
-		return $repeater_message;
+		return true;
+	}
+
+	/**
+	 * Render repeater blocks.
+	 *
+	 * @since 1.9.3
+	 *
+	 * @param array  $blocks  Blocks data.
+	 * @param string $display Display type.
+	 *
+	 * @return string
+	 */
+	private function get_block_message( array $blocks, string $display ): string {
+
+		ob_start();
+		?>
+		<?php foreach ( $blocks as $key => $rows ) : ?>
+			<?php
+
+			if ( $display === 'blocks' ) {
+				$block_number = $key >= 1 ? ' #' . ( $key + 1 ) : '';
+
+				echo '<table style="width: 100%;">' . $this->get_header( $this->field['label'] . $block_number ) . '</table>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+			?>
+
+			<table class="wpforms-layout-table-row <?php echo $key === 0 ? esc_attr( 'wpforms-first-row' ) : ''; ?>">
+				<?php foreach ( $rows as $row ) : ?>
+					<tr>
+						<?php echo $this->get_columns_message( $row ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					</tr>
+				<?php endforeach; ?>
+			</table>
+		<?php endforeach; ?>
+		<?php
+
+		return ob_get_clean();
+	}
+
+	/**
+	 * Render repeater columns.
+	 *
+	 * @since 1.9.3
+	 *
+	 * @param array $row Row data.
+	 *
+	 * @return string
+	 */
+	private function get_columns_message( array $row ): string {
+
+		ob_start();
+		?>
+		<?php foreach ( $row as $column ) : ?>
+			<td style="width: <?php echo esc_attr( wpforms_get_column_width( $column ) ); ?>%">
+				<?php if ( isset( $column['field'], $this->form_data['fields'][ $column['field'] ] ) ) : ?>
+					<table class="wpforms-layout-table-cell">
+						<?php echo $this->get_subfield_message( $this->form_data['fields'][ $column['field'] ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					</table>
+				<?php endif; ?>
+			</td>
+		<?php endforeach; ?>
+		<?php
+
+		return ob_get_clean();
 	}
 }

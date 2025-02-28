@@ -16,6 +16,8 @@
  * @var string $video         Video URL.
  * @var string $utm_conten    UTM content.
  * @var bool   $recommended   Flag for recommended providers.
+ * @var string $utm_content   UTM content.
+ * @var string $message       Inform message.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -32,7 +34,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	data-nonce="<?php echo esc_attr( $nonce ); ?>"
 	data-video="<?php echo esc_url( $video ); ?>"
 	data-license="<?php echo esc_attr( $license_level ); ?>"
-	data-utm-content="<?php echo esc_attr( $utm_content ); ?>">
+	data-utm-content="<?php echo esc_attr( $utm_content ); ?>"
+	data-message="<?php echo esc_attr( $message ); ?>"
+	>
 		<img src="<?php echo esc_url( WPFORMS_PLUGIN_URL . 'assets/images/' . $icon ); ?>" alt="<?php echo esc_attr( $modal_name ); ?>">
 		<?php echo esc_html( $name ); ?>
 		<?php if ( ! empty( $recommended ) ) : ?>

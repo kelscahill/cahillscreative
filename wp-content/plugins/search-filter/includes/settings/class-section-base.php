@@ -227,6 +227,9 @@ abstract class Section_Base {
 		if ( ! empty( static::$section ) ) {
 			Settings::register_settings_class( static::$section, static::class );
 		}
+
+		$section = static::$section;
+		do_action( "search-filter/settings/{$section}/init" );
 	}
 
 	/**
@@ -339,7 +342,7 @@ abstract class Section_Base {
 
 		$section = static::$section;
 		if ( ! empty( $section ) ) {
-			$setting = apply_filters( "search-filter/{$section}/settings/setting/{$name}", $setting );
+			$setting = apply_filters( "search-filter/settings/{$section}/setting/{$name}", $setting );
 		}
 
 		return new Setting( $setting );

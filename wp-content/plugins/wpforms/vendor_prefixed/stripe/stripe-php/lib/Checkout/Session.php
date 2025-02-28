@@ -21,6 +21,7 @@ namespace WPForms\Vendor\Stripe\Checkout;
  *
  * @property string $id Unique identifier for the object.
  * @property string $object String representing the object's type. Objects of the same type share the same value.
+ * @property null|\Stripe\StripeObject $adaptive_pricing Settings for price localization with <a href="https://docs.stripe.com/payments/checkout/adaptive-pricing">Adaptive Pricing</a>.
  * @property null|\Stripe\StripeObject $after_expiration When set, provides configuration for actions to take if this Checkout Session expires.
  * @property null|bool $allow_promotion_codes Enables user redeemable promotion codes.
  * @property null|int $amount_subtotal Total of all items before discounts or taxes are applied.
@@ -41,6 +42,7 @@ namespace WPForms\Vendor\Stripe\Checkout;
  * @property null|string $customer_creation Configure whether a Checkout Session creates a Customer when the Checkout Session completes.
  * @property null|\Stripe\StripeObject $customer_details The customer details including the customer's tax exempt status and the customer's tax IDs. Customer's address details are not present on Sessions in <code>setup</code> mode.
  * @property null|string $customer_email If provided, this value will be used when the Customer object is created. If not provided, customers will be asked to enter their email address. Use this parameter to prefill customer data if you already have an email on file. To access information about the customer once the payment flow is complete, use the <code>customer</code> attribute.
+ * @property null|\Stripe\StripeObject[] $discounts List of coupons and promotion codes attached to the Checkout Session.
  * @property int $expires_at The timestamp at which the Checkout Session will expire.
  * @property null|string|\Stripe\Invoice $invoice ID of the invoice created by the Checkout Session, if it exists.
  * @property null|\Stripe\StripeObject $invoice_creation Details on the state of invoice creation for the Checkout Session.
@@ -101,6 +103,7 @@ class Session extends \WPForms\Vendor\Stripe\ApiResource
     const SUBMIT_TYPE_BOOK = 'book';
     const SUBMIT_TYPE_DONATE = 'donate';
     const SUBMIT_TYPE_PAY = 'pay';
+    const SUBMIT_TYPE_SUBSCRIBE = 'subscribe';
     const UI_MODE_EMBEDDED = 'embedded';
     const UI_MODE_HOSTED = 'hosted';
     /**

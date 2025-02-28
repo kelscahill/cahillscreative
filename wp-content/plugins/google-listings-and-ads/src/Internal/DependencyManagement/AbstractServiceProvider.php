@@ -37,12 +37,12 @@ abstract class AbstractServiceProvider extends LeagueProvider {
 
 	/**
 	 * Use the register method to register items with the container via the
-	 * protected $this->leagueContainer property or the `getLeagueContainer` method
+	 * protected $this->container property or the `getContainer` method
 	 * from the ContainerAwareTrait.
 	 *
 	 * @return void
 	 */
-	public function register() {
+	public function register(): void {
 		foreach ( $this->provides as $class => $provided ) {
 			$this->share( $class );
 		}
@@ -57,7 +57,7 @@ abstract class AbstractServiceProvider extends LeagueProvider {
 	 * @return DefinitionInterface
 	 */
 	protected function share_concrete( string $interface_name, $concrete = null ): DefinitionInterface {
-		return $this->getLeagueContainer()->share( $interface_name, $concrete );
+		return $this->getContainer()->addShared( $interface_name, $concrete );
 	}
 
 	/**
@@ -89,7 +89,7 @@ abstract class AbstractServiceProvider extends LeagueProvider {
 	 * @return DefinitionInterface
 	 */
 	protected function share( string $class_name, ...$arguments ): DefinitionInterface {
-		return $this->getLeagueContainer()->share( $class_name )->addArguments( $arguments );
+		return $this->getContainer()->addShared( $class_name )->addArguments( $arguments );
 	}
 
 	/**
@@ -103,7 +103,7 @@ abstract class AbstractServiceProvider extends LeagueProvider {
 	 * @return DefinitionInterface
 	 */
 	protected function add( string $class_name, ...$arguments ): DefinitionInterface {
-		return $this->getLeagueContainer()->add( $class_name )->addArguments( $arguments );
+		return $this->getContainer()->add( $class_name )->addArguments( $arguments );
 	}
 
 	/**

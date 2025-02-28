@@ -41,9 +41,9 @@ class Legacy {
 			return;
 		}
 		// Add the legacy support option regardless of whether the feature is enabled or not.
-		add_action( 'search-filter/settings/register/features', '\\Search_Filter\\Integrations\\Legacy::add_legacy_setting', 10 );
+		add_action( 'search-filter/settings/features/init', '\\Search_Filter\\Integrations\\Legacy::add_legacy_setting', 10 );
 		// Can't use `Features::is_enabled` until after the features are registered.
-		add_action( 'search-filter/settings/register/features', '\\Search_Filter\\Integrations\\Legacy::load_plugin', 10 );
+		add_action( 'search-filter/settings/features/init', '\\Search_Filter\\Integrations\\Legacy::load_plugin', 10 );
 	}
 
 	public static function load_plugin() {

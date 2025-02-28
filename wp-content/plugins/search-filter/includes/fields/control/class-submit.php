@@ -56,8 +56,8 @@ class Submit extends Control {
 	public static $styles = array(
 		'inputColor',
 		'inputBackgroundColor',
-		'inputSelectedColor',
-		'inputSelectedBackgroundColor',
+		// 'inputSelectedColor',
+		// 'inputSelectedBackgroundColor',
 		'inputBorderColor',
 		'inputBorderHoverColor',
 		'inputBorderFocusColor',

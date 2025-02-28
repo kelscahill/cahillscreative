@@ -2,6 +2,7 @@
 
 namespace WPForms\Pro\Forms\Fields\DateTime;
 
+use WPForms\Forms\Fields\DateTime\Field as FieldLite;
 /**
  * Editing Date / Time field entries.
  *
@@ -64,10 +65,12 @@ class EntriesEdit extends \WPForms\Pro\Forms\Fields\Base\EntriesEdit {
 	 * @param array $field       Field data and settings.
 	 * @param array $form_data   Form data and settings.
 	 */
-	public function field_display( $entry_field, $field, $form_data ) {
+	public function field_display( $entry_field, $field, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Available time formats in PHP format.
 		$time_formats = array_keys( wpforms_time_formats() );
+
+		$field = wp_parse_args( $field, FieldLite::DEFAULTS );
 
 		// Collect all available formats.
 		$formats = [
@@ -80,7 +83,7 @@ class EntriesEdit extends \WPForms\Pro\Forms\Fields\Base\EntriesEdit {
 
 		foreach ( $inputs as $input ) {
 
-			// Skip if value is empty.
+			// Skip if the value is empty.
 			if ( empty( $entry_field[ $input ] ) ) {
 				continue;
 			}
@@ -100,7 +103,7 @@ class EntriesEdit extends \WPForms\Pro\Forms\Fields\Base\EntriesEdit {
 			$input_format = ! empty( $field[ $input . '_format' ] ) ? $field[ $input . '_format' ] : '';
 
 			// Determine a valid date/time format.
-			$format = isset( $formats[ $input ][ $input_format ] ) ? $formats[ $input ][ $input_format ] : reset( $formats[ $input ][ $input_format ] );
+			$format = $formats[ $input ][ $input_format ] ?? reset( $formats[ $input ][ $input_format ] );
 
 			// Generate input value according to the date/time format.
 			$input_value         = ! empty( $entry_field['unix'] ) ? gmdate( $format, $entry_field['unix'] ) : $entry_field[ $input ];

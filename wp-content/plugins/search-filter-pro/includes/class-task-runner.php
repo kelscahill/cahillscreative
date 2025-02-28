@@ -11,7 +11,9 @@
 namespace Search_Filter_Pro;
 
 use Search_Filter\Options;
+use Search_Filter_Pro\Task_Runner\Cron;
 use Search_Filter_Pro\Task_Runner\Database\Tasks_Query;
+use Search_Filter_Pro\Task_Runner\Rest_API;
 use Search_Filter_Pro\Task_Runner\Task;
 
 // If this file is called directly, abort.
@@ -36,14 +38,14 @@ abstract class Task_Runner {
 	 *
 	 * @var int
 	 */
-	private static $batch_size = -1;
+	protected static $batch_size = -1;
 
 	/**
 	 * Start time for the task runner.
 	 *
 	 * @var int
 	 */
-	private static $process_start_time = 0;
+	protected static $process_start_time = 0;
 
 	/**
 	 * Has init tasks.
@@ -119,12 +121,22 @@ abstract class Task_Runner {
 	public static $stop_statuses = array( 'error', 'finished', 'paused' );
 
 	/**
+	 * Test background processing option name.
+	 *
+	 * @since 3.1.2
+	 *
+	 * @var int
+	 */
+	public static $can_background_process_option_name = 'task-runner-can-background-process';
+	
+	/**
 	 * Init the task runner.
 	 *
 	 * @since    3.0.0
 	 */
 	public static function init() {
-		do_action( 'search-filter/task_runner/init' );
+		Rest_API::init();
+		Cron::init();
 	}
 
 	/**
@@ -151,6 +163,7 @@ abstract class Task_Runner {
 			'status'    => $task_data['status'],
 			'object_id' => $task_data['object_id'],
 		);
+
 		if ( isset( $task_data['meta'] ) ) {
 			foreach ( $task_data['meta'] as $key => $value ) {
 				$task_query_data['meta_query'][] = array(
@@ -160,6 +173,7 @@ abstract class Task_Runner {
 				);
 			}
 		}
+
 		$query = new Tasks_Query( $task_query_data );
 		if ( count( $query->items ) > 0 ) {
 			return;
@@ -314,20 +328,9 @@ abstract class Task_Runner {
 		if ( $status !== 'processing' ) {
 			return;
 		}
-		$new_lock_time = self::get_new_process_lock_time();
-
-		// Check if there are any issues with the lock time.
-		if ( ! $new_lock_time ) {
-			self::validate_process_lock_time();
-			return;
-		}
 
 		// Reset the error count as we got through the process ok.
 		self::reset_error_count();
-
-		if ( ! self::has_tasks() ) {
-			return;
-		}
 
 		// Start the timer.
 		static::$process_start_time = time();
@@ -339,6 +342,13 @@ abstract class Task_Runner {
 		do {
 			$task = self::get_next_task();
 
+			// This should technically never happen, but as a safeguard lets
+			// ensure we have valid task, in case something ran `run_tasks`
+			// but there were no tasks in the queue.
+			if ( ! $task ) {
+				break;
+			}
+
 			// Process the task.
 			static::run_task( $task );
 
@@ -346,7 +356,7 @@ abstract class Task_Runner {
 			if ( $task->get_status() === 'complete' ) {
 				self::complete_next_task();
 			} elseif ( $task->get_status() === 'error' ) {
-				// TODO - lets log the errors using our debugging tools.
+				Util::error_log( 'Task runner: error running task: ' . $task->get_action(), 'error' );
 				self::complete_next_task();
 			}
 
@@ -366,11 +376,9 @@ abstract class Task_Runner {
 			self::has_batch_remaining( $task_counter )
 		);
 
-		self::clear_process_lock_time();
-
 		// If we've completed all the tasks, then we can reset the process.
 		if ( self::has_finished_tasks() ) {
-			self::clear_process_key();
+			self::reset_process_locks();
 			self::clear_tasks( array( 'status' => 'complete' ) );
 			self::set_status( 'finished' );
 			Util::error_log( 'Task runner: finished tasks.', 'notice' );
@@ -380,48 +388,8 @@ abstract class Task_Runner {
 		Util::clear_caches();
 	}
 
-	/**
-	 * Get the individual object indexed count.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param string $action The action to get the count for.
-	 * @return int    The number of objects in the count result.
-	 */
-	public static function get_tasks_objects_count( $action ) {
-
-		// Add the filter to do a custom select.
-		add_filter( 'search_filter_tasks_query_clauses', array( __CLASS__, 'update_tasks_query_unique_count_clauses' ) );
-
-		$query = new Tasks_Query(
-			array(
-				'action' => $action,
-				// Need to set this to count so the query is handled a count
-				// query in BerlinDB.
-				'count'  => true,
-				'number' => -1,
-			)
-		);
-
-		// Remove the filter after the query is run.
-		remove_filter( 'search_filter_tasks_query_clauses', array( __CLASS__, 'update_tasks_query_unique_count_clauses' ) );
-
-		// Items contains the count of the objects.
-		return $query->items;
-	}
-
-	/**
-	 * To avoid big queries, better we update the SQL to select distinct columns.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param array $clauses The clauses to update.
-	 * @return array    The updated clauses.
-	 */
-	public static function update_tasks_query_unique_count_clauses( $clauses ) {
-		// Make sure we use distinct on the object ID to only count unique object_ids.
-		$clauses['fields'] = 'COUNT( DISTINCT object_id ) as COUNT';
-		return $clauses;
+	public static function finish_tasks() {
+		
 	}
 
 	/**
@@ -501,42 +469,44 @@ abstract class Task_Runner {
 	 *
 	 * @return   bool    True if the lock is set.
 	 */
-	public static function get_new_process_lock_time() {
+	public static function create_process_lock_time() {
 		$option_name = self::$option_process_lock_time_name . static::$type;
-		$lock        = Options::get_option_value( $option_name );
-		$is_locked   = $lock !== false;
-
-		// If already locked, then return false.
-		if ( $is_locked === true ) {
-			return false;
-		}
-
 		// Try to get a new lock.
 		$new_lock = time() + self::get_time_limit();
-
 		try {
 			$result = Options::create_option_value( $option_name, $new_lock );
-
 		} catch ( \Exception $e ) {
 			// If there was an exception then we couldn't get a lock.
 			return false;
 		}
-
 		// Result would be false if it failed.
-		return $result !== false;
+		return $new_lock;
 	}
 
 	/**
-	 * Check if the lock has expired.
+	 * Check if the lock has expired, ignore if no lock is set.
 	 *
 	 * @since    3.0.0
 	 */
-	public static function validate_process_lock_time() {
+	protected static function validate_process() {
+
+		if ( ! self::has_process_key() ) {
+			return;
+		}
 
 		$option_name = self::$option_process_lock_time_name . static::$type;
 		$lock        = Options::get_option_value( $option_name );
 
+		// This should not happen as we set and clear process time in sync with the process
+		// key.  But this did happen in versions <= 3.1.4
 		if ( $lock === false ) {
+			$error_count = self::increment_error_count();
+			if ( $error_count < self::$error_count_limit ) {
+				Util::error_log( __( 'Task runner: lock time not found.', 'search-filter-pro' ), 'error' );
+				// Reset the process locks so we can try again.
+				self::reset_process_locks();
+			}
+			
 			return;
 		}
 
@@ -545,19 +515,15 @@ abstract class Task_Runner {
 
 		if ( time() >= $time_limit ) {
 
-			$error_count = self::error_count();
-			$error_count++;
-			self::set_error_count( $error_count );
-			Util::error_log( esc_html__( 'Task runner: lock expired.', 'search-filter' ) );
+			$error_count = self::increment_error_count();
+			Util::error_log( __( 'Task runner: lock expired.', 'search-filter-pro' ), 'error' );
 
 			if ( $error_count < self::$error_count_limit ) {
 				// Reset the process key so we can try again.
 				self::reset_process_locks();
-				do_action( 'search-filter/task_runner/process_expired' );
 			} else {
 				// Reached the limit of errors, need to display a message to the user.
-				Util::error_log( esc_html__( 'Task runner: error count limit reached.', 'search-filter' ) );
-				do_action( 'search-filter/task_runner/process_stalled' );
+				Util::error_log( __( 'Task runner: error count limit reached.', 'search-filter-pro' ), 'error' );
 			}
 		}
 	}
@@ -568,9 +534,15 @@ abstract class Task_Runner {
 	 * @since 3.0.0
 	 */
 	protected static function increment_error_count() {
-		$error_count = self::error_count();
+		$error_count = self::get_error_count();
 		$error_count++;
 		self::set_error_count( $error_count );
+
+		if ( $error_count >= self::$error_count_limit ) {
+			self::set_status( 'error' );
+		}
+
+		return $error_count;
 	}
 
 	/**
@@ -592,6 +564,15 @@ abstract class Task_Runner {
 		return false;
 	}
 
+	/**
+	 * Reset the locks.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function refresh_process_lock_time() {
+		self::clear_process_lock_time();
+		self::create_process_lock_time();
+	}
 	/**
 	 * Unlock the process.
 	 *
@@ -678,7 +659,7 @@ abstract class Task_Runner {
 	/**
 	 * Get the error count for the current taks type.
 	 */
-	protected static function error_count() {
+	protected static function get_error_count() {
 		$option_name = self::$option_error_name . static::$type;
 		$error_count = Options::get_option_value( $option_name );
 		if ( $error_count === false ) {
@@ -717,7 +698,7 @@ abstract class Task_Runner {
 	 * @return   bool    True if we've reached the error limit.
 	 */
 	protected static function has_reached_error_limit() {
-		$error_count = self::error_count();
+		$error_count = self::get_error_count();
 		return $error_count >= self::$error_count_limit;
 	}
 
@@ -783,6 +764,12 @@ abstract class Task_Runner {
 		return $process_key;
 	}
 
+	public static function create_process() {
+		$process_key = self::create_process_key();
+		self::create_process_lock_time();
+		return $process_key;
+	}
+
 	/**
 	 * Has process key.
 	 *
@@ -822,9 +809,8 @@ abstract class Task_Runner {
 	 * @since 3.0.0
 	 */
 	public static function pause_process() {
-		self::clear_process_lock_time();
-		self::clear_process_key();
 		self::set_status( 'paused' );
+		self::reset_process_locks();
 	}
 
 	/**
@@ -886,5 +872,71 @@ abstract class Task_Runner {
 			return;
 		}
 		self::clear_status();
+	}
+
+
+	/**
+	 * Check if we can use background processing.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool    True if we can use background processing.
+	 */
+	public static function can_use_background_processing() {
+		$can_background_process = Options::get_option_value( self::$can_background_process_option_name );
+		if ( $can_background_process === false ) {
+			// Then the test has not init yet, so lets assume yes.
+			return true;
+		}
+		if ( $can_background_process === 'yes' ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Test if we can use background processing.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool    True if we can use background processing.
+	 */
+	public static function test_background_process() {
+		$headers = array(
+			'Cache-Control' => 'no-cache',
+		);
+
+		// Try get and pass any http auth credentials if they exist to send in our rest api request.
+		$credentials = \Search_Filter_Pro\Core\Authentication::get_http_auth_credentials();
+		if ( ! empty( $credentials ) ) {
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+			$headers['Authorization'] = 'Basic ' . base64_encode( $credentials['username'] . ':' . $credentials['password'] );
+		}
+
+		$options = array(
+			'method'    => 'GET',
+			'headers'   => $headers,
+			'timeout'   => 10,
+			'blocking'  => true,
+			'cookies'   => $_COOKIE,
+			'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
+		);
+
+		$rest_url = get_rest_url( null, 'search-filter-pro/v1/task-runner/endpoint' );
+		$result   = wp_remote_post( $rest_url, $options );
+
+		$can_use_background_processing = 'no';
+		// Check the result for valid status code
+		$response_code = 0;
+		if ( ! is_wp_error( $result ) ) {
+			$response_code = wp_remote_retrieve_response_code( $result );
+			if ( $response_code >= 200 && $response_code < 300 ) {
+				$can_use_background_processing = 'yes';
+			}
+		}
+
+		Options::update_option_value( Task_Runner::$can_background_process_option_name, $can_use_background_processing );
+
+		return $can_use_background_processing;
 	}
 }

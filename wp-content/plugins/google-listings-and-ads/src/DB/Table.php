@@ -52,7 +52,7 @@ abstract class Table implements TableInterface {
 	 */
 	public function exists(): bool {
 		$result = $this->wpdb->get_var(
-			"SHOW TABLES LIKE '{$this->get_sql_safe_name()}'" // phpcs:ignore WordPress.DB.PreparedSQL
+			"SHOW TABLES LIKE '{$this->wpdb->esc_like( $this->get_name() )}'" // phpcs:ignore WordPress.DB.PreparedSQL
 		);
 
 		return $result === $this->get_name();

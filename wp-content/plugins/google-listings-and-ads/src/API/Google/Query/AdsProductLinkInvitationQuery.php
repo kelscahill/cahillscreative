@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 class AdsProductLinkInvitationQuery extends AdsQuery {
 
 	/**
-	 * Query constructor.
+	 * AdsProductLinkInvitationQuery constructor.
 	 */
 	public function __construct() {
 		parent::__construct( 'product_link_invitation' );

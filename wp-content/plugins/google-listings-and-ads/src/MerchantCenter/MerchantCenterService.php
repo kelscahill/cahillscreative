@@ -230,16 +230,13 @@ class MerchantCenterService implements ContainerAwareInterface, OptionsAwareInte
 
 		if (
 			$this->connected_account() &&
-			$this->container->get( AdsService::class )->connected_account()
+			$this->container->get( AdsService::class )->connected_account() &&
+			$this->is_mc_contact_information_setup()
 		) {
 			$step = 'product_listings';
 
 			if ( $this->saved_target_audience() && $this->saved_shipping_and_tax_options() ) {
-				$step = 'store_requirements';
-
-				if ( $this->is_mc_contact_information_setup() && $this->checked_pre_launch_checklist() ) {
-					$step = 'paid_ads';
-				}
+				$step = 'paid_ads';
 			}
 		}
 
@@ -313,9 +310,7 @@ class MerchantCenterService implements ContainerAwareInterface, OptionsAwareInte
 	 */
 	protected function is_mc_contact_information_setup(): bool {
 		$is_setup = [
-			'phone_number'          => false,
-			'phone_number_verified' => false,
-			'address'               => false,
+			'address' => false,
 		];
 
 		try {
@@ -331,9 +326,6 @@ class MerchantCenterService implements ContainerAwareInterface, OptionsAwareInte
 		}
 
 		if ( $contact_info instanceof AccountBusinessInformation ) {
-			$is_setup['phone_number']          = ! empty( $contact_info->getPhoneNumber() );
-			$is_setup['phone_number_verified'] = 'VERIFIED' === $contact_info->getPhoneVerificationStatus();
-
 			/** @var Settings $settings */
 			$settings = $this->container->get( Settings::class );
 
@@ -345,35 +337,7 @@ class MerchantCenterService implements ContainerAwareInterface, OptionsAwareInte
 			}
 		}
 
-		return $is_setup['phone_number'] && $is_setup['phone_number_verified'] && $is_setup['address'];
-	}
-
-	/**
-	 * Check if all items in the pre-launch checklist have been checked.
-	 *
-	 * NOTE: This is a temporary method that will be replaced by the Policy Compliance Checks project.
-	 *
-	 * @return bool If all required items in the pre-launch checklist have been checked.
-	 *
-	 * @since 2.2.0
-	 */
-	protected function checked_pre_launch_checklist(): bool {
-		$settings = $this->options->get( OptionsInterface::MERCHANT_CENTER, [] );
-		$keys     = [
-			'website_live',
-			'checkout_process_secure',
-			'payment_methods_visible',
-			'refund_tos_visible',
-			'contact_info_visible',
-		];
-
-		foreach ( $keys as $key ) {
-			if ( empty( $settings[ $key ] ) || $settings[ $key ] !== true ) {
-				return false;
-			}
-		}
-
-		return true;
+		return $is_setup['address'];
 	}
 
 	/**

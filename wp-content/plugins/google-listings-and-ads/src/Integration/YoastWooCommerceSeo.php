@@ -76,6 +76,19 @@ class YoastWooCommerceSeo implements IntegrationInterface {
 			10,
 			2
 		);
+
+		add_filter(
+			'woocommerce_gla_gtin_migration_value',
+			function ( $gtin, $product ) {
+				if ( ! $gtin || self::VALUE_KEY === $gtin ) {
+					return $this->get_gtin( self::VALUE_KEY, $product );
+				}
+
+				return $gtin;
+			},
+			10,
+			2
+		);
 	}
 
 	/**

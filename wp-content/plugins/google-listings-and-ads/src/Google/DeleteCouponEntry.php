@@ -31,7 +31,7 @@ class DeleteCouponEntry {
 	protected $synced_google_ids;
 
 	/**
-	 * BatchProductRequestEntry constructor.
+	 * DeleteCouponEntry constructor.
 	 *
 	 * @param int             $wc_coupon_id
 	 * @param GooglePromotion $google_promotion

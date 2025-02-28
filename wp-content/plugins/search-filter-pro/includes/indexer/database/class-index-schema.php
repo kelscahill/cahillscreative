@@ -68,7 +68,7 @@ class Index_Schema extends Schema {
 		array(
 			'name'        => 'value',
 			'type'        => 'varchar',
-			'length'      => '50',
+			'length'      => '200',
 			'default'     => '',
 			'unsigned'    => true,
 			'range_query' => true,

@@ -56,7 +56,7 @@ class Records extends \Search_Filter\Database\Engine\Query {
 			$value     = $where_part['value'];
 
 			if ( ! in_array( $condition, $valid_conditions, true ) ) {
-				Util::error_log( 'Invalid condition in query: ' . $condition );
+				Util::error_log( 'Invalid condition in query: ' . $condition, 'error' );
 				return false;
 			}
 
@@ -105,7 +105,7 @@ class Records extends \Search_Filter\Database\Engine\Query {
 				$meta_table_name,
 				$table_name,
 				$meta_table_name,
-				$item_id_column,
+				$item_id_column
 			);
 
 			$where_sub_clauses = array();
@@ -176,7 +176,7 @@ class Records extends \Search_Filter\Database\Engine\Query {
 
 		$results_select_sql = $this->get_db()->prepare(
 			"SELECT id FROM %i $join_clause $where_clause",
-			$table_name,
+			$table_name
 		);
 
 		// First lookup the items (so we can clear the meta and caches on success).

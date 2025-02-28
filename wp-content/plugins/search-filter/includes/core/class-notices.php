@@ -36,6 +36,10 @@ class Notices {
 
 		$actions_keys = array_keys( $actions );
 
+		if ( self::is_notice_dismissed( $id ) ) {
+			return;
+		}
+
 		self::$notices[] = array(
 			'message' => $message,
 			'status'  => $status,

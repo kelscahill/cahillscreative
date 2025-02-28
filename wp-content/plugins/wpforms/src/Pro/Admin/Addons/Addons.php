@@ -3,6 +3,7 @@
 namespace WPForms\Pro\Admin\Addons;
 
 use WPForms\Helpers\Transient;
+use WPForms\Requirements\Requirements;
 
 /**
  * Addons data handler for Pro.
@@ -73,40 +74,42 @@ class Addons extends \WPForms\Admin\Addons\Addons {
 	 *
 	 * @param array $addon Addon data.
 	 *
-	 * @return array|bool
+	 * @return array
 	 */
 	protected function prepare_addon_data( $addon ) {
 
 		$addon = parent::prepare_addon_data( $addon );
 
-		$addon['status'] = $this->get_status( $addon['slug'] );
+		$addon['message'] = '';
+		$addon['status']  = $this->get_status( $addon['slug'] );
 
-		if ( $addon['status'] === 'active' && $addon['plugin_allow'] ) {
+		if ( ! $addon['plugin_allow'] ) {
+			$addon['action'] = ! $this->license['type'] ? 'license' : 'upgrade';
+
+			return $addon;
+		}
+
+		if ( $addon['status'] === 'active' ) {
 			$addon['action'] = '';
 
 			return $addon;
 		}
 
-		if ( $addon['plugin_allow'] && in_array( $addon['status'], [ 'installed', 'incompatible' ], true ) ) {
+		if ( $addon['status'] === 'installed' ) {
 			$addon['action'] = 'activate';
 
 			return $addon;
 		}
 
-		if ( ! $this->license['type'] ) {
-			$addon['action'] = 'license';
+		if ( $addon['status'] === 'incompatible' ) {
+			$addon['action']  = 'incompatible';
+			$addon['message'] = Requirements::get_instance()->get_notice( $addon['path'] );
 
 			return $addon;
 		}
 
-		if ( $addon['plugin_allow'] ) {
-			$addon['action'] = 'install';
-			$addon['url']    = $this->get_url( $addon['slug'] );
-
-			return $addon;
-		}
-
-		$addon['action'] = 'upgrade';
+		$addon['action'] = 'install';
+		$addon['url']    = $this->get_url( $addon['slug'] );
 
 		return $addon;
 	}
@@ -199,7 +202,7 @@ class Addons extends \WPForms\Admin\Addons\Addons {
 		}
 
 		// Otherwise, our request worked. Save the data and return it.
-		Transient::set( 'addons_urls', $urls, DAY_IN_SECONDS );
+		Transient::set( 'addons_urls', $urls, 12 * HOUR_IN_SECONDS );
 
 		return $urls;
 	}

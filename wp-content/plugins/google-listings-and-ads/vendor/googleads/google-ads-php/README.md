@@ -1,6 +1,6 @@
 # Google Ads API Client Library for PHP
 
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.0-8892BF.svg)](https://www.php.net/supported-versions.php)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.1-8892BF.svg)](https://www.php.net/supported-versions.php)
 [![Latest Stable
 Version](https://img.shields.io/packagist/v/googleads/google-ads-php.svg)](https://packagist.org/packages/googleads/google-ads-php)
 [![Total Downloads](https://poser.pugx.org/googleads/google-ads-php/downloads.svg)](https://packagist.org/packages/googleads/google-ads-php)
@@ -40,7 +40,7 @@ Google Ads API v14 is [scheduled to be sunset by the end of May 2024](https://de
     [composer.json](composer.json) of this library.
     *   **PHP**: You can find the required minimum PHP version in `"php"` under the [**`require`**](https://getcomposer.org/doc/01-basic-usage.md#the-require-key) key of [`composer.json`](composer.json). We usually set it to the minimum PHP version for which the PHP development team still provide security fixes. Whenever such a version is sunset, we'll update the composer file accordingly. Currently, the update frequency is around once a year based on the [official schedule](https://www.php.net/supported-versions.php).
     Visit [this page](https://www.php.net/manual/en/getting-started.php) for introduction to PHP.
-    *   **gRPC**: To install the gRPC PHP extension, make sure to meet any additional requirements listed in the project's [**documentation**](https://grpc.io/docs/languages/php/quickstart/#prerequisites). You can learn more about how gRPC is used by this library by reading our [Transport](https://developers.google.com/google-ads/api/docs/client-libs/php/transport) guide. It usually take minutes to install using `PECL`:
+    *   **gRPC**: To install the gRPC PHP extension, make sure to meet any additional requirements listed in the project's [**documentation**](https://cloud.google.com/php/grpc#installing_the_grpc_extension). You can learn more about how gRPC is used by this library by reading our [Transport](https://developers.google.com/google-ads/api/docs/client-libs/php/transport) guide. It usually take minutes to install using `PECL`:
         1.  Install the extension using the command `sudo pecl install grpc`.
         1.  Add a line `extension=grpc.so` to the `php.ini` file.
         1.  Run `php -i | grep grpc` in a terminal: it is well installed
@@ -142,7 +142,7 @@ Follow the below steps if you want to try our code examples.
 ### Instantiate a client
 
 To issue requests via the Google Ads API, you first need to create a
-[GoogleAdsClient](https://github.com/googleads/google-ads-php/blob/HEAD/src/Google/Ads/GoogleAds/Lib/V16/GoogleAdsClient.php).
+[GoogleAdsClient](https://github.com/googleads/google-ads-php/blob/HEAD/src/Google/Ads/GoogleAds/Lib/V18/GoogleAdsClient.php).
 
 For more information on how to configure a client when instantiating it, see the
 [configuration guide](https://developers.google.com/google-ads/api/docs/client-libs/php/configuration).
@@ -151,12 +151,6 @@ For more information on how to configure a client when instantiating it, see the
 
 Once you have an instance of `GoogleAdsClient`, you can obtain a service client
 for a particular service using one of the `get...ServiceClient()` methods.
-
-The created service client can be either GAPIC (Generated API Client) v1 or v2 source code, based
-on the value of the `useGapicV2Source` configuration.
-See [GAPIC](https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic)
-and [Configuration fields](https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/configuration#config-field)
-for details.
 
 ## Client configuration
 

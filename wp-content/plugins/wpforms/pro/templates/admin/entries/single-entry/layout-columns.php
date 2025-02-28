@@ -46,7 +46,7 @@ if ( LayoutHelpers::is_layout_empty( $field ) ) {
 
 	<div class="wpforms-entry-field-layout">
 		<?php foreach ( $field['columns'] as $column ) : ?>
-			<?php $width = $entries_single->get_layout_col_width( $column ); ?>
+			<?php $width = wpforms_get_column_width( $column ); ?>
 			<div class="wpforms-entry-field-layout-inner wpforms-field-layout-column" style="width: <?php echo esc_attr( $width ); ?>%">
 				<?php
 				foreach ( $column['fields'] as $child_field ) {

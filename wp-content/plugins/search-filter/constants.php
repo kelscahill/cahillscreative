@@ -13,7 +13,7 @@ if ( ! defined( 'SEARCH_FILTER_SLUG' ) ) {
 }
 
 if ( ! defined( 'SEARCH_FILTER_VERSION' ) ) {
-	define( 'SEARCH_FILTER_VERSION', '3.0.7' );
+	define( 'SEARCH_FILTER_VERSION', '3.1.6' );
 }
 
 if ( ! defined( 'SEARCH_FILTER_URL' ) ) {
@@ -26,14 +26,6 @@ if ( ! defined( 'SEARCH_FILTER_PATH' ) ) {
 
 if ( ! defined( 'SEARCH_FILTER_QUERY_DEBUG' ) ) {
 	define( 'SEARCH_FILTER_QUERY_DEBUG', false );
-}
-
-if ( ! defined( 'SEARCH_FILTER_SHOW_ALL_TAXONOMIES' ) ) {
-	define( 'SEARCH_FILTER_SHOW_ALL_TAXONOMIES', false );
-}
-
-if ( ! defined( 'SEARCH_FILTER_SHOW_ALL_POST_TYPES' ) ) {
-	define( 'SEARCH_FILTER_SHOW_ALL_POST_TYPES', false );
 }
 
 // Define exception codes.

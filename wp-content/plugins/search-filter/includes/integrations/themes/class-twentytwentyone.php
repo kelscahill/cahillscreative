@@ -23,7 +23,7 @@ class Twentytwentyone {
 	 */
 	public function register_styles( $registered_styles ) {
 		$registered_styles['search-filter-twentytwentyone'] = array(
-			'src'     => trailingslashit( plugin_dir_url( dirname( __DIR__, 2 ) ) ) . 'assets/css/integrations/twentytwentyone.' . Util::get_file_ext( 'css' ),
+			'src'     => trailingslashit( plugin_dir_url( dirname( __DIR__, 2 ) ) ) . 'assets/css/integrations/twentytwentyone.css',
 			'deps'    => array( 'search-filter' ),
 			'version' => SEARCH_FILTER_VERSION,
 			'media'   => 'all',

@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
 class ShippingTimeQuery extends Query {
 
 	/**
-	 * Query constructor.
+	 * ShippingTimeQuery constructor.
 	 *
 	 * @param wpdb              $wpdb
 	 * @param ShippingTimeTable $table
@@ -58,6 +58,7 @@ class ShippingTimeQuery extends Query {
 			$data = [
 				'country_code' => $time['country'],
 				'time'         => $time['time'],
+				'max_time'     => $time['max_time'] ?: $time['time'],
 			];
 
 			$items[ $time['country'] ] = $data;

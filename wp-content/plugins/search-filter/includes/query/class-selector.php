@@ -40,8 +40,25 @@ class Selector {
 	 */
 	public static function init() {
 		add_action( 'init', 'Search_Filter\\Query\\Selector::init_queries', 21 );
-		add_action( 'pre_get_posts', 'Search_Filter\\Query\\Selector::attach_ids', 1 );
-		add_action( 'pre_get_posts', 'Search_Filter\\Query\\Selector::attach_queries', 11 );
+
+		// Initially attach the hooks.
+		self::attach_pre_get_posts_hooks();
+
+		// Allow them to be attached/detached via an action.
+		add_action( 'search-filter/query/pre_get_posts/attach', array( __CLASS__, 'attach_pre_get_posts_hooks' ), 10 );
+		add_action( 'search-filter/query/pre_get_posts/detach', array( __CLASS__, 'detach_pre_get_posts_hooks' ), 10 );
+	}
+
+	public static function attach_pre_get_posts_hooks() {
+		// Priority is important.  We ideally want this to be after the default priority of 10
+		// as that's where most user functions will be called.
+		add_action( 'pre_get_posts', 'Search_Filter\\Query\\Selector::attach_ids', 20 );
+		add_action( 'pre_get_posts', 'Search_Filter\\Query\\Selector::attach_queries', 20 );
+	}
+
+	public static function detach_pre_get_posts_hooks() {
+		remove_action( 'pre_get_posts', 'Search_Filter\\Query\\Selector::attach_ids', 20 );
+		remove_action( 'pre_get_posts', 'Search_Filter\\Query\\Selector::attach_queries', 20 );
 	}
 
 	/**
@@ -91,6 +108,7 @@ class Selector {
 	 * @param \WP_Query $query The WP_Query instance.
 	 */
 	public static function attach_queries( $wp_query ) {
+
 		// TODO - store the integration settings in seperate columns so we can look them up,
 		// rather than looping through all of them on every page load.
 		foreach ( self::$queries as $saved_query ) {

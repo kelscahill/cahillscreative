@@ -129,7 +129,7 @@ class Field_Factory {
 			if ( method_exists( $class_name, 'render' ) ) {
 				$class_name::register();
 			}
-		} elseif ( self::class_ready( $class_name ) ) {
+		} elseif ( self::class_ready( $class_name ) === true ) {
 			$class_name::register();
 		}
 
@@ -186,7 +186,8 @@ class Field_Factory {
 
 			// If class_ref is false it means the field type / input type combination does not exist.
 			/* translators: %1$s is the internal field type - eg search/filter/control, %2$s is the internal input type - eg radio/checkbox/text */
-			throw new Exception( sprintf( esc_html__( 'Class not found for `%1$s` / `%2$s`.', 'search-filter' ), esc_html( $field_type ), esc_html( $input_type ) ), SEARCH_FILTER_EXCEPTION_FIELD_CLASS_NOT_REGISTERED ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			Util::error_log( sprintf( __( 'Class not found for `%1$s` / `%2$s`.', 'search-filter' ), esc_html( $field_type ), esc_html( $input_type ) ), 'error' );
+			return null;
 		}
 		return self::$fields[ $field_type ][ $input_type ];
 	}
@@ -231,15 +232,8 @@ class Field_Factory {
 		}
 
 		if ( ! isset( self::$fields[ $field_type ][ $input_type ] ) ) {
-			/*
-			* Note: using phpcs:ignore after the exceptions because the rule `WordPress.Security.EscapeOutput.ExceptionNotEscaped`
-			* is being triggered because the last argument is not escaped - but this is not used in the message or displayed to the user,
-			* it's a constant/error code used in our custom exception class.
-			*/
-			/*
-			translators: %s is the internal input type - eg radio/checkbox/text */
-			// throw new Exception( sprintf( esc_html__( 'The input type `%1$s` does not have a class associated with it for field type `%2$s`. Use `register_field_input`.', 'search-filter' ), esc_html( $input_type ), esc_html( $field_type ) ), SEARCH_FILTER_EXCEPTION_FIELD_NOT_REGISTERED ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-			Util::error_log( sprintf( esc_html__( 'The input type `%1$s` does not have a class associated with it for field type `%2$s`. Use `register_field_input`.', 'search-filter' ), esc_html( $input_type ), esc_html( $field_type ) ) );
+			/* translators: %1$s is the internal input type - eg radio/checkbox/text, %2$s is the internal field type - eg search/filter/control */
+			Util::error_log( sprintf( __( 'The input type `%1$s` does not have a class associated with it for field type `%2$s`. Use `register_field_input`.', 'search-filter' ), esc_html( $input_type ), esc_html( $field_type ) ), 'error' );
 		}
 		return array(
 			'inputType' => $input_type,
@@ -260,6 +254,11 @@ class Field_Factory {
 	 * @throws Exception If the class does not have a render method or a create method.
 	 */
 	private static function class_ready( $class_ref ) {
+
+		if ( empty( $class_ref ) ) {
+			return new \WP_Error( 'search_filter_field_class_not_found', __( 'Class not found.', 'search-filter' ), array( 'status' => 404 ) );
+		}
+
 		/**
 		 * Note: using phpcs:ignore after the exceptions because the rule `WordPress.Security.EscapeOutput.ExceptionNotEscaped`
 		 * is being triggered because the last argument is not escaped - but this is not used in the message or displayed to the user,
@@ -308,7 +307,7 @@ class Field_Factory {
 		// Lookup the class associated with the input type.
 		$field_class_ref = self::get_field_class( $attributes );
 
-		if ( self::class_ready( $field_class_ref ) ) {
+		if ( self::class_ready( $field_class_ref ) === true ) {
 			// Now create an instance of the correct Field class.
 			$field = $field_class_ref::create( $attributes, $context );
 			return $field;
@@ -331,13 +330,13 @@ class Field_Factory {
 		// Lookup the class associated with the input type.
 		$field_class_ref = self::get_field_class( $attributes );
 
-		if ( self::class_ready( $field_class_ref ) ) {
+		if ( self::class_ready( $field_class_ref ) === true ) {
 			// Now create an instance of the correct Field class.
 			$field = $field_class_ref::create_from_record( $item );
 			return $field;
 		}
 
-		return false;
+		return new \WP_Error( 'search_filter_field_class_not_found', __( 'Class not found.', 'search-filter' ), array( 'status' => 404 ) );
 	}
 	/**
 	 * Creates a field from the record ID.
@@ -358,13 +357,13 @@ class Field_Factory {
 		// Lookup the class associated with the input type.
 		$field_class_ref = self::get_field_class( $field->get_attributes() );
 
-		if ( self::class_ready( $field_class_ref ) ) {
+		if ( self::class_ready( $field_class_ref ) === true ) {
 			// Now create an instance of the correct Field class.
 			$field = $field_class_ref::create_from_record( $field->get_record() );
 			return $field;
 		}
 		// TODO - we probably want to throw an exception or error here.
-		return false;
+		return new \WP_Error( 'search_filter_field_unable_to_create', __( 'Unable to create field.', 'search-filter' ), array( 'status' => 404 ) );
 	}
 
 	/**

@@ -244,9 +244,25 @@ class WCCouponAdapter extends GooglePromotion implements Validatable {
 			$this->setItemId( $google_product_ids );
 		}
 
-		$wc_excluded_product_ids = $wc_coupon->get_excluded_product_ids();
-		if ( ! empty( $wc_excluded_product_ids ) ) {
-			$google_product_ids      = array_map( $get_offer_id, $wc_excluded_product_ids );
+		// Currently the brand inclusion restriction will override the product inclustion restriction.
+		// It's align with the current coupon discounts behaviour in WooCommerce.
+		$wc_product_ids_in_brand = $this->get_product_ids_in_brand( $wc_coupon );
+		if ( ! empty( $wc_product_ids_in_brand ) ) {
+			$google_product_ids      = array_map( $get_offer_id, $wc_product_ids_in_brand );
+			$has_product_restriction = true;
+			$this->setItemId( $google_product_ids );
+		}
+
+		// Get excluded product IDs and excluded product IDs in brand.
+		$wc_excluded_product_ids          = $wc_coupon->get_excluded_product_ids();
+		$wc_excluded_product_ids_in_brand = $this->get_product_ids_in_brand( $wc_coupon, true );
+		if ( ! empty( $wc_excluded_product_ids ) || ! empty( $wc_excluded_product_ids_in_brand ) ) {
+			$google_product_ids = array_merge(
+				array_map( $get_offer_id, $wc_excluded_product_ids ),
+				array_map( $get_offer_id, $wc_excluded_product_ids_in_brand )
+			);
+			$google_product_ids = array_values( array_unique( $google_product_ids ) );
+
 			$has_product_restriction = true;
 			$this->setItemIdExclusion( $google_product_ids );
 		}
@@ -389,5 +405,36 @@ class WCCouponAdapter extends GooglePromotion implements Validatable {
 		}
 
 		return apply_filters( 'woocommerce_gla_coupon_destinations', $destinations, $coupon_data );
+	}
+
+	/**
+	 * Get the product IDs that belongs to a brand.
+	 *
+	 * @param WC_Coupon $wc_coupon The WC coupon object.
+	 * @param bool      $is_exclude If the product IDs are for exclusion.
+	 * @return string[] The product IDs that belongs to a brand.
+	 */
+	private function get_product_ids_in_brand( WC_Coupon $wc_coupon, bool $is_exclude = false ) {
+		$coupon_id = $wc_coupon->get_id();
+		$meta_key  = $is_exclude ? 'exclude_product_brands' : 'product_brands';
+
+		// Get the brand term IDs if brand restriction is set.
+		$brand_term_ids = get_post_meta( $coupon_id, $meta_key );
+
+		if ( ! is_array( $brand_term_ids ) ) {
+			return [];
+		}
+
+		$product_ids = [];
+		foreach ( $brand_term_ids as $brand_term_id ) {
+			// Get the product IDs that belongs to the brand.
+			$object_ids = get_objects_in_term( $brand_term_id, 'product_brand' );
+			if ( is_wp_error( $object_ids ) ) {
+				continue;
+			}
+			$product_ids = array_merge( $product_ids, $object_ids );
+		}
+
+		return $product_ids;
 	}
 }

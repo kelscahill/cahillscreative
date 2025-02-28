@@ -121,7 +121,7 @@ class SVG_Loader {
 		// Now we have some to load, so include + hide them - use inline display to prevent flicker.
 		// TODO - put style back to display: none; when chrome bug is fixed.
 		$styles = 'clip: rect(1px, 1px, 1px, 1px); clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute;	width: 1px !important; word-wrap: normal !important;';
-		echo '<div class="search-filter-svg-template" aria-hidden="true" style="' . esc_attr( $styles ) . '">';
+		echo '<div id="search-filter-svg-template" aria-hidden="true" style="' . esc_attr( $styles ) . '">';
 		foreach ( self::$svgs_to_load as $svg_name ) {
 			$path = self::$registered_svgs[ $svg_name ];
 			if ( file_exists( $path ) ) {

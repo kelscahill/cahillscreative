@@ -205,7 +205,7 @@ jQuery(document).ready(function(){
                             sendinblue.identify(email, postData);
                         }
                     }
-                    jQuery(".sib-alert-message").delay(2000).hide('slow');
+                    jQuery(".sib-alert-message").delay(5000).hide('slow');
                     form.removeClass('sib_processing');
                     if (typeof grecaptcha != 'undefined')
                     {

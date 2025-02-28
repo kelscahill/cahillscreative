@@ -3,13 +3,15 @@
 namespace WPForms\Forms\Fields\PaymentTotal;
 
 use WPForms\Forms\Fields\Helpers\RequirementsAlerts;
+use WPForms_Builder_Panel_Settings;
+use WPForms_Field;
 
 /**
  * Total payment field.
  *
  * @since 1.8.2
  */
-class Field extends \WPForms_Field {
+class Field extends WPForms_Field {
 
 	/**
 	 * Primary class constructor.
@@ -45,7 +47,7 @@ class Field extends \WPForms_Field {
 		// Add classes to the builder field preview.
 		add_filter( 'wpforms_field_preview_class', [ $this, 'preview_field_class' ], 10, 2 );
 
-		// Add new option on the confirmation page.
+		// Add a new option on the confirmation page.
 		add_action( 'wpforms_form_settings_confirmations_single_after', [ $this, 'add_confirmation_setting' ], 10, 2 );
 		add_action( 'wpforms_lite_form_settings_confirmations_single_after', [ $this, 'add_confirmation_setting' ], 10, 2 );
 		add_action( 'wpforms_frontend_confirmation_message_after', [ $this, 'order_summary_confirmation' ], 10, 4 );
@@ -61,6 +63,8 @@ class Field extends \WPForms_Field {
 	 * @param array $form_data  Form data and settings.
 	 *
 	 * @return array
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	public function field_properties( $properties, $field, $form_data ) {
 
@@ -92,7 +96,7 @@ class Field extends \WPForms_Field {
 	}
 
 	/**
-	 * Whether current field can be populated dynamically.
+	 * Whether the current field can be populated dynamically.
 	 *
 	 * @since 1.8.2
 	 *
@@ -101,13 +105,13 @@ class Field extends \WPForms_Field {
 	 *
 	 * @return bool
 	 */
-	public function is_dynamic_population_allowed( $properties, $field ) {
+	public function is_dynamic_population_allowed( $properties, $field ): bool {
 
 		return false;
 	}
 
 	/**
-	 * Whether current field can be populated dynamically.
+	 * Whether the current field can be populated dynamically.
 	 *
 	 * @since 1.8.2
 	 *
@@ -116,15 +120,15 @@ class Field extends \WPForms_Field {
 	 *
 	 * @return bool
 	 */
-	public function is_fallback_population_allowed( $properties, $field ) {
+	public function is_fallback_population_allowed( $properties, $field ): bool {
 
 		return false;
 	}
 
 	/**
-	 * Do not trust the posted total since that relies on javascript.
+	 * Do not trust the posted total since that relies on JavaScript.
 	 *
-	 * Instead we re-calculate server side.
+	 * Instead, we re-calculate on the server side.
 	 *
 	 * @since 1.8.2
 	 *
@@ -149,6 +153,8 @@ class Field extends \WPForms_Field {
 	 * @param array $form_data Form data and settings.
 	 *
 	 * @return array
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	public static function calculate_total_static( $fields, $entry, $form_data ) {
 
@@ -259,7 +265,7 @@ class Field extends \WPForms_Field {
 		// Label.
 		$this->field_preview_option( 'label', $field );
 
-		list( $items, $foot, $total_width ) = $this->prepare_builder_preview_data();
+		[ $items, $foot, $total_width ] = $this->prepare_builder_preview_data();
 
 		// Summary preview.
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -288,8 +294,11 @@ class Field extends \WPForms_Field {
 	 * @param array $field      Field data and settings.
 	 * @param array $deprecated Deprecated, not used parameter.
 	 * @param array $form_data  Form data and settings.
+	 *
+	 * @noinspection HtmlWrongAttributeValue
+	 * @noinspection HtmlUnknownAttribute
 	 */
-	public function field_display( $field, $deprecated, $form_data ) {
+	public function field_display( $field, $deprecated, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$primary = $field['properties']['inputs']['primary'];
 		$type    = ! empty( $field['required'] ) ? 'text' : 'hidden';
@@ -305,9 +314,22 @@ class Field extends \WPForms_Field {
 
 		$is_summary_enabled = $this->is_summary_enabled( $field );
 
-		if ( $is_summary_enabled ) {
+		// Prepare data for the order summary preview if summary is enabled, or we are on the editor page.
+		if ( $is_summary_enabled || wpforms_is_editor_page() ) {
+			[ $items, $foot, $total_width ] = $this->prepare_payment_fields_data( $form_data );
+		}
 
-			list( $items, $foot, $total_width ) = $this->prepare_payment_fields_data( $form_data );
+		if ( $is_summary_enabled ) {
+			/**
+			 * Allow to filter form data before displaying the order summary table.
+			 *
+			 * @since 1.9.3
+			 *
+			 * @param array $form_data Form data.
+			 *
+			 * @return array
+			 */
+			$form_data = apply_filters( 'wpforms_forms_fields_payment_total_field_display_form_data', $form_data );
 
 			// Summary preview.
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -322,6 +344,14 @@ class Field extends \WPForms_Field {
 			);
 		}
 
+		$amount = wpforms_format_amount( 0, true );
+
+		// If we are on the editor page, we need to get the total amount from the last item in the foot.
+		if ( ! empty( $foot ) && wpforms_is_editor_page() ) {
+			$foot_item = end( $foot );
+			$amount    = $foot_item['amount'] ?? 0;
+		}
+
 		// Always print total to cover a case when field is embedded into Layout column with 25% width.
 		$hidden_style = $is_summary_enabled ? 'display:none' : '';
 
@@ -329,7 +359,7 @@ class Field extends \WPForms_Field {
 		printf(
 			'<div class="wpforms-payment-total" style="%1$s">%2$s</div>',
 			esc_attr( $hidden_style ),
-			esc_html( wpforms_format_amount( 0, true ) )
+			esc_html( $amount )
 		);
 
 		// Hidden input for processing.
@@ -341,7 +371,7 @@ class Field extends \WPForms_Field {
 	}
 
 	/**
-	 * Validate field on form submit.
+	 * Validate field on form submitting.
 	 *
 	 * @since 1.8.2
 	 *
@@ -436,7 +466,7 @@ class Field extends \WPForms_Field {
 	}
 
 	/**
-	 * Summary notice on the options tab.
+	 * Summary notice on the options' tab.
 	 *
 	 * @since 1.8.7
 	 *
@@ -457,7 +487,7 @@ class Field extends \WPForms_Field {
 	}
 
 	/**
-	 * Determine if summary option is enabled.
+	 * Determine if a summary option is enabled.
 	 *
 	 * @since 1.8.7
 	 *
@@ -501,7 +531,7 @@ class Field extends \WPForms_Field {
 		$total = 60;
 
 		/**
-		 * Allow to filter items in the footer on the order summary table (builder screen).
+		 * Allow filtering items in the footer on the order summary table (builder screen).
 		 *
 		 * @since 1.8.7
 		 *
@@ -511,7 +541,7 @@ class Field extends \WPForms_Field {
 		$foot = (array) apply_filters( 'wpforms_forms_fields_payment_total_field_builder_order_summary_preview_foot', [], $total );
 
 		/**
-		 * Allow to filter builder order summary fields total.
+		 * Allow filtering builder order summary fields total.
 		 *
 		 * @since 1.8.7
 		 *
@@ -531,7 +561,7 @@ class Field extends \WPForms_Field {
 		$total_width = strlen( html_entity_decode( $total, ENT_COMPAT, 'UTF-8' ) ) + 4;
 
 		/**
-		 * Allow to filter builder order summary total column width.
+		 * Allow filtering builder order summary total column width.
 		 *
 		 * @since 1.8.7
 		 *
@@ -572,7 +602,7 @@ class Field extends \WPForms_Field {
 		}
 
 		/**
-		 * Allow to filter items in the order summary footer.
+		 * Allow filtering items in the order summary footer.
 		 *
 		 * @since 1.8.7
 		 *
@@ -609,13 +639,20 @@ class Field extends \WPForms_Field {
 
 		$quantity     = $this->get_payment_field_min_quantity( $field );
 		$field_amount = ! empty( $field['price'] ) ? wpforms_sanitize_amount( $field['price'] ) * $quantity : 0;
+		$classes      = [ 'wpforms-order-summary-field' ];
+
+		$format = $field['format'] ?? '';
+
+		if ( $format === 'hidden' ) {
+			$classes[] = 'wpforms-hidden';
+		}
 
 		$fields[] = [
 			'label'     => ! empty( $field['label_hide'] ) ? '' : $field['label'],
 			'quantity'  => $this->get_payment_field_min_quantity( $field ),
 			'amount'    => wpforms_format_amount( $field_amount, true ),
 			'is_hidden' => ! $quantity,
-			'class'     => 'wpforms-order-summary-field',
+			'class'     => $classes,
 			'data'      => [
 				'field' => $field['id'],
 			],
@@ -633,7 +670,7 @@ class Field extends \WPForms_Field {
 	 * @param array $fields Fields data.
 	 * @param float $total  Fields total.
 	 */
-	private function prepare_payment_field_choices( array $field, array &$fields, float &$total ) {
+	private function prepare_payment_field_choices( array $field, array &$fields, float &$total ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( empty( $field['choices'] ) ) {
 			return;
@@ -646,9 +683,11 @@ class Field extends \WPForms_Field {
 
 			$choice_amount = ! empty( $choice['value'] ) ? wpforms_sanitize_amount( $choice['value'] ) * $quantity : 0;
 			$is_default    = ! empty( $choice['default'] ) || ( isset( $default_choice_key ) && (int) $key === $default_choice_key );
+			/* translators: %s - item number. */
+			$choice_label = ! empty( $choice['label'] ) ? $choice['label'] : sprintf( esc_html__( 'Item %s', 'wpforms-lite' ), $key );
 
 			$fields[] = [
-				'label'     => ! empty( $field['label_hide'] ) ? $choice['label'] : $field['label'] . ' - ' . $choice['label'],
+				'label'     => ! empty( $field['label_hide'] ) ? $choice_label : $field['label'] . ' - ' . $choice_label,
 				'quantity'  => $quantity,
 				'amount'    => wpforms_format_amount( $choice_amount, true ),
 				'is_hidden' => ! $is_default || ! $quantity,
@@ -663,6 +702,22 @@ class Field extends \WPForms_Field {
 				$total += $choice_amount;
 			}
 		}
+	}
+
+	/**
+	 * The `array_key_first` polyfill.
+	 *
+	 * @since 1.9.3
+	 *
+	 * @param array|mixed $arr Input array.
+	 *
+	 * @return int|string|null
+	 */
+	private function array_key_first( $arr ) {
+
+		$array = (array) $arr;
+
+		return empty( $array ) ? null : array_keys( $array )[0];
 	}
 
 	/**
@@ -688,7 +743,7 @@ class Field extends \WPForms_Field {
 			return (int) $key;
 		}
 
-		return array_key_first( $field['choices'] );
+		return $this->array_key_first( $field['choices'] );
 	}
 
 	/**
@@ -785,7 +840,7 @@ class Field extends \WPForms_Field {
 			break;
 		}
 
-		// Check if total field exists on the form.
+		// Check if the total field exists on the form.
 		if ( ! $total_exists ) {
 			return;
 		}

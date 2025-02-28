@@ -38,8 +38,6 @@ class Extensions {
 	private static $registered_extensions = array();
 
 
-
-
 	/**
 	 * Init
 	 */
@@ -107,4 +105,15 @@ class Extensions {
 		return version_compare( $database_version, $active_version, '<' );
 	}
 
+
+	/**
+	 * Get the registered extensions.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return array
+	 */
+	public static function get_registered_extensions() {
+		return self::$registered_extensions;
+	}
 }

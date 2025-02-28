@@ -3,13 +3,12 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Admin\MetaBox;
 
-use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\Conditional;
 use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\Renderable;
 use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\Service;
 
 defined( 'ABSPATH' ) || exit;
 
-interface MetaBoxInterface extends Service, Conditional, Renderable {
+interface MetaBoxInterface extends Renderable, Service {
 	public const SCREEN_PRODUCT = 'product';
 	public const SCREEN_COUPON  = 'shop_coupon';
 

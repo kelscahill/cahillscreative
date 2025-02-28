@@ -64,6 +64,18 @@ class Select extends Range {
 		'inputInteractiveHoverColor',
 		'inputClearColor',
 		'inputClearHoverColor',
+
+		'labelColor',
+		'labelBackgroundColor',
+		'labelPadding',
+		'labelMargin',
+		'labelScale',
+
+		'descriptionColor',
+		'descriptionBackgroundColor',
+		'descriptionPadding',
+		'descriptionMargin',
+		'descriptionScale',
 	);
 
 	/**

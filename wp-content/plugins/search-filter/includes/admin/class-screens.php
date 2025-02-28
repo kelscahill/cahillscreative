@@ -285,19 +285,19 @@ class Screens {
 	 */
 	public static function get_admin_screen_options() {
 		$screen_options = get_user_meta( get_current_user_id(), 'search_filter_screen_options', true );
-		if ( ! $screen_options || $screen_options === '' ) {
+		if ( empty( $screen_options ) ) {
 			$screen_options = array(
 				'fields'                   => array(
 					'itemsPerPage' => '10',
-					'columns'      => array( 'name', 'type', 'query', 'status', 'date', 'actions' ),
+					'columns'      => array( 'id', 'name', 'type', 'query', 'status', 'date', 'actions' ),
 				),
 				'queryEditConnectedFields' => array(
 					'itemsPerPage' => '10',
-					'columns'      => array( 'name', 'type', 'status', 'date', 'actions' ),
+					'columns'      => array( 'id', 'name', 'type', 'status', 'date', 'actions' ),
 				),
 				'queries'                  => array(
 					'itemsPerPage' => '10',
-					'columns'      => array( 'name', 'fields', 'status', 'date', 'actions' ),
+					'columns'      => array( 'id', 'name', 'fields', 'status', 'date', 'actions' ),
 				),
 				'styles'                   => array(
 					'itemsPerPage' => '10',
@@ -318,7 +318,6 @@ class Screens {
 		}
 		return $screen_options;
 	}
-
 }
 
 

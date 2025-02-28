@@ -2,109 +2,33 @@
 
 namespace WPForms\Pro\Forms\Fields\Layout;
 
-use WPForms\Emails\Notifications as EmailNotifications;
 use WPForms\Pro\Forms\Fields\Layout\Helpers as LayoutHelpers;
+use WPForms\Emails\Notifications as EmailNotifications;
 
 /**
  * Layout field's Notifications class.
  *
  * @since 1.9.0
  */
-class Notifications {
+class Notifications extends \WPForms\Pro\Forms\Fields\Base\Notifications {
 
 	/**
-	 * Email type (Plain or HTML).
+	 * Current field notification type.
 	 *
-	 * @since 1.9.0.4
+	 * @since 1.9.3
 	 *
 	 * @var string
 	 */
-	private $type;
-
-	/**
-	 * Field data.
-	 *
-	 * @since 1.9.0.4
-	 *
-	 * @var array
-	 */
-	private $field;
-
-	/**
-	 * Fields data.
-	 *
-	 * @since 1.9.1
-	 *
-	 * @var array
-	 */
-	private $fields;
-
-	/**
-	 * Form data.
-	 *
-	 * @since 1.9.1
-	 *
-	 * @var array
-	 */
-	private $form_data;
-
-	/**
-	 * Email notification object.
-	 *
-	 * @since 1.9.0.4
-	 *
-	 * @var EmailNotifications
-	 */
-	private $notifications;
-
-	/**
-	 * Whether to display empty fields in the email.
-	 *
-	 * @since 1.9.0.4
-	 *
-	 * @var bool
-	 */
-	private $show_empty_fields;
-
-	/**
-	 * List of field types.
-	 *
-	 * @since 1.9.0.4
-	 *
-	 * @var array
-	 */
-	private $other_fields;
-
-	/**
-	 * Initialize.
-	 *
-	 * @since 1.9.0
-	 */
-	public function init() {
-
-		$this->hooks();
-	}
-
-	/**
-	 * Hooks.
-	 *
-	 * @since 1.9.0
-	 */
-	private function hooks() {
-
-		add_filter( 'wpforms_emails_notifications_field_message_html', [ $this, 'get_layout_field_html' ], 10, 7 );
-		add_filter( 'wpforms_emails_notifications_field_message_plain', [ $this, 'get_layout_field_plain' ], 10, 6 );
-		add_filter( 'wpforms_emails_notifications_field_ignored', [ $this, 'notifications_field_ignored' ], 10, 3 );
-	}
+	protected $field_type = 'layout';
 
 	/**
 	 * Ignore the field if it is part of the layout field.
 	 *
 	 * @since 1.9.1
 	 *
-	 * @param bool  $ignore    Whether to ignore the field.
-	 * @param array $field     Field data.
-	 * @param array $form_data Form data.
+	 * @param bool|mixed $ignore    Whether to ignore the field.
+	 * @param array      $field     Field data.
+	 * @param array      $form_data Form data.
 	 *
 	 * @return bool
 	 */
@@ -118,6 +42,10 @@ class Notifications {
 
 		if ( empty( $form_data['fields'] ) ) {
 			return $ignore;
+		}
+
+		if ( wpforms_conditional_logic_fields()->field_is_hidden( $form_data, $field['id'] ) ) {
+			return true;
 		}
 
 		$layout_fields = LayoutHelpers::get_layout_fields( $form_data['fields'] );
@@ -134,23 +62,10 @@ class Notifications {
 	}
 
 	/**
-	 * Check if the field is a layout field.
-	 *
-	 * @since 1.9.0.4
-	 *
-	 * @param array $field Field data.
-	 *
-	 * @return bool
-	 */
-	private function is_layout_field( array $field ): bool {
-
-		return isset( $field['type'] ) && $field['type'] === 'layout';
-	}
-
-	/**
 	 * Get the layout field HTML markup.
 	 *
 	 * @since 1.9.0
+	 * @deprecated 1.9.3
 	 *
 	 * @param string|mixed       $message           Field message.
 	 * @param array              $field             Field data.
@@ -164,27 +79,16 @@ class Notifications {
 	 */
 	public function get_layout_field_html( $message, array $field, bool $show_empty_fields, array $other_fields, array $form_data, array $fields, EmailNotifications $notifications ): string {
 
-		$message = (string) $message;
+		_deprecated_function( __METHOD__, '1.9.3 of the WPForms plugin', __CLASS__ . '::get_field_html()' );
 
-		if ( ! $this->is_layout_field( $field ) ) {
-			return $message;
-		}
-
-		$this->type              = 'html';
-		$this->field             = $field;
-		$this->fields            = $fields;
-		$this->form_data         = $form_data;
-		$this->notifications     = $notifications;
-		$this->show_empty_fields = $show_empty_fields;
-		$this->other_fields      = $other_fields;
-
-		return $this->get_field_message();
+		return $this->get_field_html( $message, $field, $show_empty_fields, $other_fields, $form_data, $fields, $notifications );
 	}
 
 	/**
 	 * Get the layout field plain text markup.
 	 *
 	 * @since 1.9.0
+	 * @deprecated 1.9.3
 	 *
 	 * @param string|mixed       $message           Field message.
 	 * @param array              $field             Field data.
@@ -197,69 +101,67 @@ class Notifications {
 	 */
 	public function get_layout_field_plain( $message, array $field, bool $show_empty_fields, array $form_data, array $fields, EmailNotifications $notifications ): string {
 
-		$message = (string) $message;
+		_deprecated_function( __METHOD__, '1.9.3 of the WPForms plugin', __CLASS__ . '::get_field_plain()' );
 
-		if ( ! $this->is_layout_field( $field ) ) {
-			return $message;
-		}
-
-		$this->type              = 'plain';
-		$this->field             = $field;
-		$this->fields            = $fields;
-		$this->form_data         = $form_data;
-		$this->notifications     = $notifications;
-		$this->show_empty_fields = $show_empty_fields;
-
-		return $this->get_field_message();
+		return $this->get_field_plain( $message, $field, $show_empty_fields, $form_data, $fields, $notifications );
 	}
 
 	/**
 	 * Get field markup for an email.
 	 *
-	 * @since 1.9.0.4
+	 * @since 1.9.3
 	 *
 	 * @return string
 	 */
-	private function get_field_message(): string {
+	protected function get_html_message(): string {
 
-		$header = $this->get_header();
+		$layout_content = isset( $this->field['display'] ) && $this->field['display'] === 'rows'
+			? $this->get_rows()
+			: $this->get_columns();
 
-		if ( isset( $this->field['display'] ) && $this->field['display'] === 'rows' ) {
-			return $header . $this->get_layout_field_rows();
-		}
-
-		return $header . $this->get_layout_field_columns();
-	}
-
-	/**
-	 * Get layout field header.
-	 *
-	 * @since 1.9.0.4
-	 *
-	 * @return string
-	 */
-	private function get_header(): string {
-
-		if ( ! empty( $this->field['label_hide'] ) || ! isset( $this->field['label'] ) || wpforms_is_empty_string( $this->field['label'] ) ) {
+		if ( wpforms_is_empty_string( $layout_content ) ) {
 			return '';
 		}
 
-		if ( $this->type === 'html' ) {
-			return '<tr><td class="field-layout-name field-name"><strong>' . esc_html( $this->field['label'] ) . '</strong></td><td class="field-value"></td></tr>';
+		if ( ! isset( $this->field['label'] ) ) {
+			return $layout_content;
 		}
 
-		// In plain email all HTML tags deleted automatically before sending, so we can skip escaping at all.
-		return '--- ' . $this->field['label'] . " ---\r\n\r\n";
+		return $this->get_header( $this->field['label'] ) . $layout_content;
 	}
 
 	/**
-	 * Get the layout field rows markup.
+	 * Get field markup for an email in compact mode.
 	 *
-	 * @since 1.9.0.4
+	 * @since 1.9.3
 	 *
 	 * @return string
 	 */
-	private function get_layout_field_rows(): string {
+	protected function get_plain_message(): string {
+
+		$layout_content = isset( $this->field['display'] ) && $this->field['display'] === 'rows'
+			? $this->get_plain_rows()
+			: $this->get_plain_columns();
+
+		if ( wpforms_is_empty_string( $layout_content ) ) {
+			return '';
+		}
+
+		if ( ! isset( $this->field['label'] ) ) {
+			return $layout_content;
+		}
+
+		return $this->get_header( $this->field['label'] ) . $layout_content;
+	}
+
+	/**
+	 * Get the layout field rows markup in plain text mode.
+	 *
+	 * @since 1.9.3
+	 *
+	 * @return string
+	 */
+	private function get_plain_rows(): string {
 
 		$rows = isset( $this->field['columns'] ) && is_array( $this->field['columns'] ) ? LayoutHelpers::get_row_data( $this->field ) : [];
 
@@ -281,13 +183,13 @@ class Notifications {
 	}
 
 	/**
-	 * Get the layout field columns markup.
+	 * Get the layout field columns markup in plain text mode.
 	 *
-	 * @since 1.9.0.4
+	 * @since 1.9.3
 	 *
 	 * @return string
 	 */
-	private function get_layout_field_columns(): string {
+	private function get_plain_columns(): string {
 
 		if ( ! isset( $this->field['columns'] ) ) {
 			return '';
@@ -311,18 +213,118 @@ class Notifications {
 	}
 
 	/**
-	 * Get layout subfield markup for email.
+	 * Get the layout field rows markup.
 	 *
-	 * @since 1.9.0.4
-	 *
-	 * @param array $field Field data.
+	 * @since 1.9.3
 	 *
 	 * @return string
 	 */
-	private function get_subfield_message( array $field ): string {
+	private function get_rows(): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
 
-		return $this->type === 'html' ?
-			$this->notifications->get_field_html( $field, $this->show_empty_fields, $this->other_fields ) :
-			$this->notifications->get_field_plain( $field, $this->show_empty_fields );
+		$rows = isset( $this->field['columns'] ) && is_array( $this->field['columns'] ) ? LayoutHelpers::get_row_data( $this->field ) : [];
+
+		if ( empty( $rows ) ) {
+			return '';
+		}
+
+		$is_layout_empty = true;
+
+		ob_start();
+
+		?>
+		<tr class="wpforms-layout-table wpforms-layout-table-display-columns">
+			<td>
+				<table class="wpforms-layout-table-row">
+					<?php foreach ( $rows as $row ) : ?>
+						<tr>
+							<?php foreach ( $row as $column ) : ?>
+								<td style="width: <?php echo esc_attr( wpforms_get_column_width( $column ) ); ?>%">
+									<?php if ( isset( $column['field'], $this->form_data['fields'][ $column['field'] ] ) ) : ?>
+										<table class="wpforms-layout-table-cell wpforms-width-<?php echo esc_attr( $column['width_preset'] ?? 50 ); ?>">
+											<?php
+												$field_message = $this->get_subfield_message( $this->form_data['fields'][ $column['field'] ] );
+
+												if ( ! wpforms_is_empty_string( $field_message ) ) {
+													$is_layout_empty = false;
+												}
+
+												echo $field_message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+											?>
+										</table>
+									<?php endif; ?>
+								</td>
+							<?php endforeach; ?>
+						</tr>
+					<?php endforeach; ?>
+				</table>
+			</td>
+		</tr>
+		<?php
+
+		if ( $is_layout_empty ) {
+			ob_end_clean();
+
+			return '';
+		}
+
+		return ob_get_clean();
+	}
+
+	/**
+	 * Get the layout field columns markup.
+	 *
+	 * @since 1.9.3
+	 *
+	 * @return string
+	 */
+	private function get_columns(): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
+
+		if ( ! isset( $this->field['columns'] ) ) {
+			return '';
+		}
+
+		$is_layout_empty = true;
+
+		ob_start();
+
+		?>
+		<tr class="wpforms-layout-table wpforms-layout-table-display-columns">
+			<td>
+				<table class="wpforms-layout-table-row">
+					<tr>
+						<?php foreach ( $this->field['columns'] as $column ) : ?>
+							<td style="width: <?php echo esc_attr( wpforms_get_column_width( $column ) ); ?>%">
+								<?php if ( isset( $column['fields'] ) ) : ?>
+									<table class="wpforms-layout-table-cell wpforms-width-<?php echo esc_attr( $column['width_preset'] ?? 50 ); ?>">
+										<?php foreach ( $column['fields'] as $child_field_id ) : ?>
+											<?php if ( isset( $this->form_data['fields'][ $child_field_id ] ) ) : ?>
+												<?php
+												$field_message = $this->get_subfield_message( $this->form_data['fields'][ $child_field_id ] );
+
+												if ( ! wpforms_is_empty_string( $field_message ) ) {
+													$is_layout_empty = false;
+												}
+
+												echo $field_message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+												?>
+											<?php endif; ?>
+										<?php endforeach; ?>
+									</table>
+								<?php endif; ?>
+							</td>
+						<?php endforeach; ?>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<?php
+
+		if ( $is_layout_empty ) {
+			ob_end_clean();
+
+			return '';
+		}
+
+		return ob_get_clean();
 	}
 }

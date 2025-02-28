@@ -23,11 +23,11 @@ class Async {
 	public static function hook_dispatch_request() {
 
 		// Don't add the hook if it's already added.
-		if ( has_action( 'shutdown', array( __CLASS__, 'maybe_dispatch_request' ) ) ) {
+		if ( has_action( 'shutdown', array( __CLASS__, 'maybe_dispatch_request' ), 200 ) ) {
 			return;
 		}
 
-		add_action( 'shutdown', array( __CLASS__, 'maybe_dispatch_request' ) );
+		add_action( 'shutdown', array( __CLASS__, 'maybe_dispatch_request' ), 200 );
 	}
 
 	/**

@@ -103,7 +103,7 @@ class Gutenberg {
 			// Gutenberg is not active.
 			return;
 		}
-		add_action( 'search-filter/settings/init', array( __CLASS__, 'setup' ), 10 );
+		add_action( 'search-filter/settings/init', array( __CLASS__, 'setup' ), 1 );
 	}
 
 	/**
@@ -126,8 +126,9 @@ class Gutenberg {
 		add_action( 'enqueue_block_editor_assets', array( __CLASS__, 'editor_assets' ), 20 );
 		add_action( 'init', array( __CLASS__, 'register_extended_attributes' ), 20 );
 		add_action( 'init', array( __CLASS__, 'register_blocks' ), 20 );
-		add_action( 'block_editor_rest_api_preload_paths', array( __CLASS__, 'get_preload_api_paths' ), 10 );
-		add_action( 'block_type_metadata', array( __CLASS__, 'block_type_metadata' ), 10, 1 );
+
+		add_filter( 'block_editor_rest_api_preload_paths', array( __CLASS__, 'get_preload_api_paths' ), 10, 2 );
+		add_filter( 'block_type_metadata', array( __CLASS__, 'block_type_metadata' ), 10, 1 );
 
 		// Update fields when blocks are updated.
 		add_action( 'save_post', array( __CLASS__, 'save_post' ), 20, 2 );
@@ -191,9 +192,10 @@ class Gutenberg {
 				if ( isset( $setting['type'] ) ) {
 					$attributes[ $block_type ][ $setting['name'] ]['type'] = $setting['type'];
 				}
+				/*
 				if ( isset( $setting['default'] ) ) {
 					$attributes[ $block_type ][ $setting['name'] ]['default'] = $setting['default'];
-				}
+				} */
 			}
 		}
 		self::$extended_block_attributes = $attributes;
@@ -229,8 +231,14 @@ class Gutenberg {
 		// Load our plugins for the block editor.
 		wp_register_script( 'search-filter-block-editor-plugins', Scripts::get_admin_assets_url() . 'js/admin/block-editor-plugins.js', array( 'wp-plugins', 'wp-edit-post', 'wp-element', 'search-filter-gutenberg' ), SEARCH_FILTER_VERSION, false );
 
-		$script_dependencies = array( 'search-filter', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-site' );
-		wp_register_script( 'search-filter-gutenberg', Scripts::get_admin_assets_url() . 'js/admin/gutenberg.js', $script_dependencies, SEARCH_FILTER_VERSION, false );
+		$asset_file = SEARCH_FILTER_PATH . 'assets/js/admin/gutenberg.asset.php';
+		if ( file_exists( $asset_file ) ) {
+			$asset               = require $asset_file;
+			$script_dependencies = array_merge( array( 'search-filter' ), $asset['dependencies'] );
+			wp_register_script( 'search-filter-gutenberg', Scripts::get_admin_assets_url() . 'js/admin/gutenberg.js', $script_dependencies, $asset['version'], false );
+		} else {
+			Util::error_log( 'Block Editor script asset file not found: ' . $asset_file, 'error' );
+		}
 
 		$blocks_dir = realpath( plugin_dir_path( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'gutenberg' . DIRECTORY_SEPARATOR . 'blocks' . DIRECTORY_SEPARATOR;
 
@@ -342,22 +350,57 @@ class Gutenberg {
 	 * @param array $preload_paths  Existing api paths.
 	 * @return array
 	 */
-	public static function get_preload_api_paths( $preload_paths ) {
+	public static function get_preload_api_paths( $preload_paths, $block_editor_context ) {
+
 		if ( Screens::is_search_filter_screen() ) {
 			// If we're on one of our admin screens, then we don't need to add this to the preload.
 			return;
 		}
+
 		$default_style_id = Styles::get_default_styles_id();
-		$paths            = array(
-			'/search-filter/v1/queries',
-			'/search-filter/v1/styles',
-			'/search-filter/v1/admin/field-input-types',
-			'/search-filter/v1/admin/styles/default',
-			'/search-filter/v1/records/styles/' . $default_style_id,
-			'/search-filter/v1/admin/settings?section=queries',
-			'/search-filter/v1/admin/settings?section=fields',
-			'/search-filter/v1/admin/settings?section=styles',
-		);
+		$preload_paths[]  = '/search-filter/v1/queries';
+		$preload_paths[]  = '/search-filter/v1/styles';
+		$preload_paths[]  = '/search-filter/v1/admin/field-input-types';
+		$preload_paths[]  = '/search-filter/v1/admin/styles/default';
+		$preload_paths[]  = '/search-filter/v1/records/styles/' . $default_style_id;
+		$preload_paths[]  = '/search-filter/v1/admin/settings?section=queries';
+		$preload_paths[]  = '/search-filter/v1/admin/settings?section=fields';
+		$preload_paths[]  = '/search-filter/v1/admin/settings?section=styles';
+
+		// TODO - parse the page and look for our field ID, then preload those records, the select style + query records too.
+		//
+		if ( $block_editor_context->name === 'core/edit-post' ) {
+			$post_content = $block_editor_context->post->post_content;
+			$post_blocks  = Block_Parser::extract_blocks( $post_content );
+
+			foreach ( $post_blocks as $post_block ) {
+				if ( isset( $post_block['styleId'] ) ) {
+					$style_path = '/search-filter/v1/records/styles/' . $post_block['styleId'];
+					if ( ! in_array( $style_path, $preload_paths, true ) ) {
+						$preload_paths[] = $style_path;
+					}
+				}
+
+				if ( isset( $post_block['queryId'] ) ) {
+					$query_path = '/search-filter/v1/records/queries/' . $post_block['queryId'] . '?context=edit';
+					if ( ! in_array( $query_path, $preload_paths, true ) ) {
+						$preload_paths[] = $query_path;
+					}
+				}
+
+				if ( isset( $post_block['fieldId'] ) ) {
+					$field_path = '/search-filter/v1/records/fields/' . $post_block['fieldId'] . '?context=edit';
+					if ( ! in_array( $field_path, $preload_paths, true ) ) {
+						$preload_paths[] = $field_path;
+					}
+				}
+			}
+		}
+
+		$first_query_id = Queries::get_queries_list_first_id();
+		if ( $first_query_id > 0 ) {
+			$preload_paths[] = '/search-filter/v1/records/queries/' . $first_query_id . '?context=edit';
+		}
 
 		global $pagenow;
 		global $post_id;
@@ -369,10 +412,8 @@ class Gutenberg {
 			$context_path = 'post/' . $post_id;
 		}
 		// Preload context field IDs so we can track copy + pasted fields from other contexts.
-		$paths[] = '/search-filter/v1/fields/context/ids?context=block-editor&context_path=' . $context_path;
-
-		$preload_paths = array_merge( $preload_paths, $paths );
-		$preload_paths = apply_filters( 'search-filter/integrations/gutenberg/get_preload_api_paths', $preload_paths );
+		$preload_paths[] = '/search-filter/v1/fields/context/ids?context=block-editor&context_path=' . $context_path;
+		$preload_paths   = apply_filters( 'search-filter/integrations/gutenberg/get_preload_api_paths', $preload_paths );
 
 		return $preload_paths;
 	}
@@ -527,6 +568,16 @@ class Gutenberg {
 			'search-filter-gutenberg',
 			'admin',
 			self::add_dynamic_attributes()
+		);
+
+		// Preload settings data for settings.  It's important to only load the queries list + styles list
+		// to reduce the number of api requests when fields initially resolve.
+		Scripts::preload_api_requests(
+			array(
+				'/search-filter/v1/settings/options/queries',
+				'/search-filter/v1/settings/options/styles',
+			),
+			'search-filter-gutenberg'
 		);
 	}
 
@@ -725,35 +776,40 @@ class Gutenberg {
 					// TODO - check if field_context is valid.
 					$updated_field_ids[] = absint( $field_id );
 					$field_record        = Field::find( array( 'id' => $field_id ), 'record' );
-					if ( ! is_wp_error( $field_record ) ) {
-						$field = Field::create_from_record( $field_record );
-
-						// Based on depends on conditions, get the settings for this field.
-						// This will handle the issue of block attributes being missing when they're
-						// set to the default value as well as popuplate anything thats missing.
-						$args = array(
-							'filters' => array(
-								array(
-									'type'  => 'context',
-									'value' => 'admin/field/' . $field->get_attribute( 'type' ),
-								),
-							),
-						);
-
-						$attributes['type'] = $block_types_to_attribute_type[ $block['blockName'] ];
-
-						$processed_settings = Fields_Settings::get_processed_settings( $attributes, $args );
-						$new_attributes     = $processed_settings->get_attributes();
-
-						$field->set_attributes( wp_parse_args( $attributes, $new_attributes ), true );
-
-						if ( ! empty( $status ) ) {
-							$field->set_status( $status );
-						}
-						$field->save();
+					if ( is_wp_error( $field_record ) ) {
+						continue;
 					}
+
+					$field = Field::create_from_record( $field_record );
+					if ( is_wp_error( $field ) ) {
+						continue;
+					}
+
+					// Based on depends on conditions, get the settings for this field.
+					// This will handle the issue of block attributes being missing when they're
+					// set to the default value as well as popuplate anything thats missing.
+					$args = array(
+						'filters' => array(
+							array(
+								'type'  => 'context',
+								'value' => 'admin/field/' . $field->get_attribute( 'type' ),
+							),
+						),
+					);
+
+					$attributes['type'] = $block_types_to_attribute_type[ $block['blockName'] ];
+
+					$processed_settings = Fields_Settings::get_processed_settings( $attributes, $args );
+					$new_attributes     = $processed_settings->get_attributes();
+
+					$field->set_attributes( wp_parse_args( $attributes, $new_attributes ), true );
+
+					if ( ! empty( $status ) ) {
+						$field->set_status( $status );
+					}
+					$field->save();
 				} else {
-					Util::error_log( 'There is a block found in post content without a fieldId.' );
+					Util::error_log( 'There is a block found in post content without a fieldId.', 'warning' );
 				}
 			}
 		}
@@ -895,6 +951,9 @@ class Gutenberg {
 				if ( $item->get_status() === 'enabled' ) {
 					// Then we need to disable it.
 					$field = Field_Factory::create_from_record( $item );
+					if ( is_wp_error( $field ) ) {
+						continue;
+					}
 					$field->set_status( 'disabled' );
 					$field->save();
 				}
@@ -995,14 +1054,14 @@ class Gutenberg {
 	 * @return string
 	 */
 	public static function pre_render_query_block( $pre_render, $block ) {
-		// echo 'pre render block: ' . $block['blockName'] . "\r\n";
+
 		if ( $block['blockName'] !== 'core/query' ) {
 			return $pre_render;
 		}
 		if ( isset( $block['attrs']['namespace'] ) && $block['attrs']['namespace'] !== '' ) {
 			return $pre_render;
 		}
-		// echo "PRE RENDER, try to connect....\r\n";
+
 		self::try_connect_to_query_loop( $block );
 		return $pre_render;
 	}
@@ -1062,8 +1121,8 @@ class Gutenberg {
 	 * @param string $query_integration_name The name of the integration.
 	 * @return bool
 	 */
-	public static function try_connect_to_query_loop( $block, $query_integration_name = 'query_block' ) {
-		if ( $block['blockName'] !== 'core/query' ) {
+	public static function try_connect_to_query_loop( $block, $query_integration_name = 'query_block', $block_name = 'core/query' ) {
+		if ( $block['blockName'] !== $block_name ) {
 			return;
 		}
 
@@ -1077,7 +1136,7 @@ class Gutenberg {
 		 * If so that's the simplest case and we can return early.
 		 */
 		if ( self::needs_query_block_global_query_override( $block ) ) {
-			Util::error_log( "Found a query loop that we can't reach, its set to 'default' but should be set to 'custom'." );
+			Util::error_log( "Found a query loop that we can't reach, its set to 'default' but should be set to 'custom'.", 'warning' );
 			return;
 		}
 
@@ -1093,7 +1152,6 @@ class Gutenberg {
 				);
 				self::$is_tracking_query  = true;
 
-				// We're getting here too much??
 				self::attach_query_vars_filter();
 				return;
 			}
@@ -1183,6 +1241,7 @@ class Gutenberg {
 				$connected_queries[] = $query;
 			}
 		}
+
 		self::$current_query_data = array(
 			'connected_queries' => $connected_queries,
 		);

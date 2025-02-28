@@ -4,7 +4,7 @@ declare( strict_types=1 );
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Tracking;
 
 /**
- * Trait TracksAwareness
+ * Trait TracksAwareTrait
  *
  * @package Automattic\WooCommerce\GoogleListingsAndAds\Tracking
  */

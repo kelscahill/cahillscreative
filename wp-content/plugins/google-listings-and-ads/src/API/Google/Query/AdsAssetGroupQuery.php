@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
 class AdsAssetGroupQuery extends AdsQuery {
 
 	/**
-	 * Query constructor.
+	 * AdsAssetGroupQuery constructor.
 	 *
 	 * @param array $search_args List of search args, such as pageSize.
 	 */

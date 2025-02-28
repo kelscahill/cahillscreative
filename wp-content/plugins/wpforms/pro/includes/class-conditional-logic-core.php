@@ -103,7 +103,7 @@ class WPForms_Conditional_Logic_Core {
 					</select>
 					{{ data.actionDesc }}
 				</h4>
-				<div class="wpforms-conditional-group" data-reference="{{ data.fieldID }}">
+				<div class="wpforms-conditional-group" data-reference="{{ data.reference }}">
 					<table><tbody>
 					<tr class="wpforms-conditional-row" data-field-id="{{ data.fieldID }}" data-input-name="{{ data.fieldName }}">
 						<td class="field">
@@ -258,6 +258,7 @@ class WPForms_Conditional_Logic_Core {
 								'name'        => $field_name,
 								'actions'     => $actions,
 								'action-desc' => esc_attr( $action_desc ),
+								'reference'   => esc_attr( $reference ),
 							],
 						],
 						false
@@ -287,6 +288,7 @@ class WPForms_Conditional_Logic_Core {
 					$form_data = $args['form'];
 
 					$action_desc = ! empty( $args['action_desc'] ) ? $args['action_desc'] : esc_html__( 'this connection if', 'wpforms' );
+					$reference   = ! empty( $args['reference'] ) ? $args['reference'] : '';
 
 					if ( empty( $args['actions'] ) ) {
 						$actions = [
@@ -351,6 +353,7 @@ class WPForms_Conditional_Logic_Core {
 								'name'        => $field_name,
 								'actions'     => $actions,
 								'action-desc' => esc_attr( $action_desc ),
+								'reference'   => esc_attr( $reference ),
 							],
 						]
 					);

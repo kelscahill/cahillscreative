@@ -4,6 +4,7 @@
 /** @noinspection PhpIllegalPsrClassPathInspection */
 
 use WPForms\Pro\AntiSpam\Helpers as AntiSpamHelpers;
+use WPForms\Pro\Forms\Fields\FileUpload\Field as FileUploadField;
 
 /** @noinspection AutoloadingIssuesInspection */
 // phpcs:enable Generic.Commenting.DocComment.MissingShort
@@ -197,7 +198,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 			return false;
 		}
 
-		WPForms_Field_File_Upload::delete_uploaded_files_from_entry( $entry_id );
+		FileUploadField::delete_uploaded_files_from_entry( $entry_id );
 
 		$entry        = parent::delete( $entry_id );
 		$entry_meta   = wpforms()->obj( 'entry_meta' );
@@ -246,7 +247,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 		}
 
 		foreach ( $entry_ids as $entry_id ) {
-			WPForms_Field_File_Upload::delete_uploaded_files_from_entry( $entry_id );
+			FileUploadField::delete_uploaded_files_from_entry( $entry_id );
 		}
 
 		wpforms()->obj( 'entry_meta' )->delete_where_in( 'entry_id', $entry_ids );
@@ -1386,7 +1387,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 		/**
 		 * Modify the ORDER BY.
          */
-		if ( $args['orderby'] !== 'payment_total' ) {
+		if ( ! in_array( $args['orderby'], [ 'payment_total', 'notes_count' ], true ) ) {
 			$args['orderby'] = ! array_key_exists( $args['orderby'], $this->get_columns() )
 				? $this->primary_key
 				: $args['orderby'];
@@ -1596,11 +1597,6 @@ class WPForms_Entry_Handler extends WPForms_DB {
 				) notes_counts
 				ON
 					notes_counts.meta_entry_id = $this->table_name.entry_id";
-
-			// Changed the ORDER BY - notes' count sorting support.
-			if ( $args['orderby'] === "$this->table_name.notes_count" ) {
-				$args['orderby'] = 'notes_counts.notes_count';
-			}
 		}
 
 		// In the case of ordering by payment_total.

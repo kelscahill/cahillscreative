@@ -28,7 +28,7 @@ trait LeaveReviewActionTrait {
 		$note->add_action(
 			'leave-review',
 			__( 'Leave a review', 'google-listings-and-ads' ),
-			rand( 0, 1 ) ? $wp_link : $wc_link
+			wp_rand( 0, 1 ) ? $wp_link : $wc_link
 		);
 	}
 }

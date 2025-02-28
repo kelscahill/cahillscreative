@@ -434,6 +434,28 @@ class Process {
 	}
 
 	/**
+	 * Populate all the Layout fields' conditional settings to child fields.
+	 * Will be used as a hook, so we should keep it public.
+	 *
+	 * @since 1.9.3
+	 *
+	 * @param array|mixed $form_data Form data.
+	 *
+	 * @return array
+	 */
+	public function populate_layout_conditional_settings( $form_data ): array {
+
+		$form_data = (array) $form_data;
+		$fields    = $form_data['fields'] ?? [];
+
+		foreach ( $fields as $field_id => $field ) {
+			$form_data = $this->populate_field_conditional_settings( $form_data, $field_id, 'layout' );
+		}
+
+		return $form_data;
+	}
+
+	/**
 	 * Populate all the layout and repeater fields' conditional settings to child fields.
 	 * Will be used as a hook, so we should keep it public.
 	 *
@@ -515,8 +537,8 @@ class Process {
 	 *
 	 * @since 1.8.9
 	 *
-	 * @param array $form_data Form data.
-	 * @param int   $entry_id  Entry ID.
+	 * @param array|mixed $form_data Form data.
+	 * @param int         $entry_id  Entry ID.
 	 *
 	 * @return array
 	 */

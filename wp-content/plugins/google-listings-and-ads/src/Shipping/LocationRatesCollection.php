@@ -21,7 +21,7 @@ abstract class LocationRatesCollection {
 	protected $location_rates = [];
 
 	/**
-	 * RatesCollection constructor.
+	 * LocationRatesCollection constructor.
 	 *
 	 * @param LocationRate[] $location_rates
 	 */

@@ -94,14 +94,14 @@ class Frontend {
 
 		$this->registered_styles = array(
 			$this->plugin_name                => array(
-				'src'     => Scripts::get_frontend_assets_url() . 'css/frontend/frontend.' . Util::get_file_ext( 'css' ),
+				'src'     => Scripts::get_frontend_assets_url() . 'css/frontend/frontend.css',
 				'deps'    => array( $this->plugin_name . '-flatpickr' ),
 				'version' => $this->version,
 				'media'   => 'all',
 			),
 			// TODO - use the HMR url? Scripts::get_frontend_assets_url()
 			$this->plugin_name . '-flatpickr' => array(
-				'src'     => trailingslashit( plugin_dir_url( __DIR__ ) ) . 'assets/css/vendor/flatpickr.' . Util::get_file_ext( 'css' ),
+				'src'     => trailingslashit( plugin_dir_url( __DIR__ ) ) . 'assets/css/vendor/flatpickr.min.css',
 				'deps'    => array(),
 				'version' => $this->version,
 				'media'   => 'all',
@@ -133,13 +133,13 @@ class Frontend {
 
 		$this->registered_scripts = array(
 			$this->plugin_name        => array(
-				'src'     => Scripts::get_frontend_assets_url() . 'js/frontend/frontend.' . Util::get_file_ext( 'js' ),
+				'src'     => Scripts::get_frontend_assets_url() . 'js/frontend/frontend.js',
 				'deps'    => array( 'search-filter-flatpickr' ),
 				'version' => $this->version,
 				'footer'  => false,
 			),
 			'search-filter-flatpickr' => array(
-				'src'     => trailingslashit( plugin_dir_url( __DIR__ ) ) . 'assets/js/vendor/flatpickr.' . Util::get_file_ext( 'js' ),
+				'src'     => trailingslashit( plugin_dir_url( __DIR__ ) ) . 'assets/js/vendor/flatpickr.min.js',
 				'deps'    => array(),
 				'version' => $this->version,
 				'footer'  => false,
@@ -212,6 +212,7 @@ class Frontend {
 			 */
 			'restNonce' => wp_create_nonce( 'wp_rest' ),
 			'homeUrl'   => home_url(),
+			'isPro'     => false,
 		);
 
 		$data = apply_filters( 'search-filter/frontend/enqueue_scripts/data', $data );
@@ -229,26 +230,28 @@ class Frontend {
 		Scripts::attach_globals(
 			$this->plugin_name,
 			'frontend',
-			$data,
+			$data
 		);
 	}
 
 	/**
 	 * Outputs the JSON object for the active fields (inital render data), queries and template data.
 	 */
-	public function data() {
-
+	public static function data() {
+		do_action( 'search-filter/frontend/data/start' );
 		$should_mount = apply_filters( 'search-filter/frontend/register_scripts/should_mount', true );
-		$data         = array(
+
+		$data = array(
 			'fields'      => Fields::get_active_fields(),
-			'queries'     => Queries::get_active_queries(),
+			'queries'     => Queries::get_used_queries(),
 			'shouldMount' => $should_mount,
 		);
 		// Add filter to modify the data.
 		$data    = apply_filters( 'search-filter/frontend/data', $data );
 		$api_url = apply_filters( 'search-filter/frontend/api_url', '' );
+
 		?>
-		<script type="text/javascript">
+		<script type="text/javascript" id="search-filter-data-js">
 			window.searchAndFilterData = <?php echo wp_json_encode( $data ); ?>;
 		</script>
 		<script type="text/javascript" id="search-filter-api-url-js">
@@ -257,3 +260,4 @@ class Frontend {
 		<?php
 	}
 }
+

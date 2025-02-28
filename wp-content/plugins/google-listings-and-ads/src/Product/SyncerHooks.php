@@ -59,19 +59,9 @@ class SyncerHooks implements Service, Registerable {
 	protected $product_helper;
 
 	/**
-	 * @var UpdateProducts
+	 * @var JobRepository
 	 */
-	protected $update_products_job;
-
-	/**
-	 * @var DeleteProducts
-	 */
-	protected $delete_products_job;
-
-	/**
-	 * @var ProductNotificationJob
-	 */
-	protected $product_notification_job;
+	protected $job_repository;
 
 	/**
 	 * @var MerchantCenterService
@@ -106,14 +96,12 @@ class SyncerHooks implements Service, Registerable {
 		NotificationsService $notifications_service,
 		WC $wc
 	) {
-		$this->batch_helper             = $batch_helper;
-		$this->product_helper           = $product_helper;
-		$this->update_products_job      = $job_repository->get( UpdateProducts::class );
-		$this->delete_products_job      = $job_repository->get( DeleteProducts::class );
-		$this->product_notification_job = $job_repository->get( ProductNotificationJob::class );
-		$this->merchant_center          = $merchant_center;
-		$this->notifications_service    = $notifications_service;
-		$this->wc                       = $wc;
+		$this->batch_helper          = $batch_helper;
+		$this->product_helper        = $product_helper;
+		$this->job_repository        = $job_repository;
+		$this->merchant_center       = $merchant_center;
+		$this->notifications_service = $notifications_service;
+		$this->wc                    = $wc;
 	}
 
 	/**
@@ -258,12 +246,12 @@ class SyncerHooks implements Service, Registerable {
 		}
 
 		if ( ! empty( $products_to_update ) ) {
-			$this->update_products_job->schedule( [ $products_to_update ] );
+			$this->job_repository->get( UpdateProducts::class )->schedule( [ $products_to_update ] );
 		}
 
 		if ( ! empty( $products_to_delete ) ) {
 			$request_entries = $this->batch_helper->generate_delete_request_entries( $products_to_delete );
-			$this->delete_products_job->schedule( [ BatchProductIDRequestEntry::convert_to_id_map( $request_entries )->get() ] );
+			$this->job_repository->get( DeleteProducts::class )->schedule( [ BatchProductIDRequestEntry::convert_to_id_map( $request_entries )->get() ] );
 		}
 	}
 
@@ -275,7 +263,7 @@ class SyncerHooks implements Service, Registerable {
 	protected function handle_update_product_notification( WC_Product $product ) {
 		if ( $this->product_helper->should_trigger_create_notification( $product ) ) {
 			$this->product_helper->set_notification_status( $product, NotificationStatus::NOTIFICATION_PENDING_CREATE );
-			$this->product_notification_job->schedule(
+			$this->job_repository->get( ProductNotificationJob::class )->schedule(
 				[
 					'item_id' => $product->get_id(),
 					'topic'   => NotificationsService::TOPIC_PRODUCT_CREATED,
@@ -283,7 +271,7 @@ class SyncerHooks implements Service, Registerable {
 			);
 		} elseif ( $this->product_helper->should_trigger_update_notification( $product ) ) {
 			$this->product_helper->set_notification_status( $product, NotificationStatus::NOTIFICATION_PENDING_UPDATE );
-			$this->product_notification_job->schedule(
+			$this->job_repository->get( ProductNotificationJob::class )->schedule(
 				[
 					'item_id' => $product->get_id(),
 					'topic'   => NotificationsService::TOPIC_PRODUCT_UPDATED,
@@ -309,7 +297,7 @@ class SyncerHooks implements Service, Registerable {
 		if ( isset( $this->delete_requests_map[ $product_id ] ) ) {
 			$product_id_map = BatchProductIDRequestEntry::convert_to_id_map( $this->delete_requests_map[ $product_id ] )->get();
 			if ( ! empty( $product_id_map ) && ! $this->is_already_scheduled_to_delete( $product_id ) ) {
-				$this->delete_products_job->schedule( [ $product_id_map ] );
+				$this->job_repository->get( DeleteProducts::class )->schedule( [ $product_id_map ] );
 				$this->set_already_scheduled_to_delete( $product_id );
 			}
 		}
@@ -341,7 +329,7 @@ class SyncerHooks implements Service, Registerable {
 	 */
 	protected function schedule_delete_notification( $product ) {
 		$this->product_helper->set_notification_status( $product, NotificationStatus::NOTIFICATION_PENDING_DELETE );
-		$this->product_notification_job->schedule(
+		$this->job_repository->get( ProductNotificationJob::class )->schedule(
 			[
 				'item_id' => $product->get_id(),
 				'topic'   => NotificationsService::TOPIC_PRODUCT_DELETED,

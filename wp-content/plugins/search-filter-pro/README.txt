@@ -3,8 +3,8 @@ Contributors: codeamp
 Tags: search, filter, taxonomy, tag, category, product, shop, post type
 Requires at least: 6.0
 Tested up to: 6.7
-Requires PHP: 5.3
-Stable tag: 3.0.6
+Requires PHP: 7.2
+Stable tag: 3.1.7
 
 Create powerful search and filtering experiences for your users and customers.
 
@@ -21,6 +21,79 @@ Create powerful search and filtering experiences for your users and customers.
 
 
 == Changelog ==
+
+= 3.1.7 =
+* Improvement - update integrations list.
+* Improvement - platform updates to support integrations.
+
+= 3.1.6 =
+* Improvement - clearing a field is no longer affected by the auto submit delay.
+* Fix - an issue with rendering field previews in admin screens.
+* Fix - an issue with counts not updating correctly when using the indexer.
+* Fix - issues with incorrect position of our dropdown in some scenarios.
+* Fix - an issue where a license that was already removed via your account couldn't not be disconnected in the plugin dashboard.
+* Fix - issues with the the autocomplete field not showing suggestions in certain conditions in admin previews.
+
+= 3.1.5 =
+* New - support searching in radio, checkbox, select and button ACF fields when the indexer is enabled.
+* New - support using the "load more" field with WooCommerce Products Collections blocks, shortcodes & the shop page.
+* Fix - issues with live search and WooCommerce Products shortcodes.
+* Fix - issues when using search input types with ACF fields.
+* Fix - an issue when using the `post__in` filter  with the indexer causing incorrect results to be displayed.
+* Fix - an issue where the indexer could stall.
+* Fix - issue where sort order stopped working when using post meta queries.
+
+= 3.1.4 =
+* New - set field defaults and autodetect default values from archives or posts.
+* Improvement - better compatibility with block editor layouts and query loops.
+* Change - renamed the query and fields Javascript `remove()` function to `unload()`.
+* Fix - regression with ACF fields not generating their options properly.
+* Fix - issues when using WooCommerce Collections in the block editor.
+* Fix - script errors in the block editor.
+* Fix - update the indexer table to support longer values, matching the max length of taxonomy slugs.
+
+= 3.1.3 =
+* Fix - issues with indexing some ACF fields.
+* Fix - error when the site can't connect to Search & Filter update servers.
+
+= 3.1.2 =
+* New - option to disable indexer sync when posts are updated on the frontend.
+* New - add a hook for overriding the shortcode template path.
+* Improvement - added warning about the maximum number of range options of 200 for select and radio ranges.
+* Improvement - stop using `getmypid()` when its not available (some hosting companies like Kinsta disable this function).
+* Fix - allow spaces as decimal or thousand seperators in range fields.
+* Fix - errors when using the same character for decimals and thousands.
+* Fix - issues with live search not working with the WooCommerce Shop when using non FSE themes.
+* Fix - issues with shortcodes pagination when used on the (static) homepage.
+* Fix - update the license check to use the new update server.
+
+= 3.1.1 =
+* Fix - hotfix to remove the HPOS warning when using WooCommerce.
+* Fix - prevent litespeed cache from caching our indexer process leading to inaccurate indexer status.
+* Fix - issues with current selection values not showing in the selection field.
+* Fix - issues with plugin updates performed via the plugins screen.
+* Fix - update to using the new license server to work around hosting issues.
+
+= 3.1.0 =
+* New - updates to support the integration with the Dynamic Content for Elementor plugin.
+* New - support for custom WooCommerce stock statuses in fields.
+* New - show out of stock option for WooCommerce fields.
+* New - filter on product tags, categories and brand archives.
+* Improvement - update the results shortcode template to automatically support the "load more" button
+* Improvement - add additional CSS properties to range sliders to prevent themes from overriding styling (Astra)
+* Improvement - click on range sliders to set automatically set the handle locations.
+* Improvement - add plugin action link to the settings page.
+* Improvement - stop disabling the checkbox on the plugins screen for the base plugin.
+* Fix - issues with indexing WooCommerce product variations.
+* Fix - an issue with the WooCommerce shop not completing ajax requests.
+* Fix - an issue with WooCommerce category fields when displaying hierarchically.
+* Fix - issues with WP 6.7 and loading translations too early.
+* Fix - auto submit was not working with the date picker.
+* Fix - issues when editing range fields, prompting for the field to be saved when no changes had been made.
+* Fix - issues with floating point calculations in range fields.
+* Fix - issues with date fields when connected to custom fields or ACF data - rebuild the indexer if you are using these.
+* Fix - an issue with autodetecting min/max with range fields.
+* Fix - links with URL fragments caused issues with live search.
 
 = 3.0.6 =
 * Improvement - allow option for the indexer to build when loopback requests fail - enable via -> `settings` -> `indexer` -> disable `use background process`
@@ -86,3 +159,8 @@ Create powerful search and filtering experiences for your users and customers.
 * Release version 3.0.0.
 * Fix - issue  with the loading icon position.
 * Fix - issue with count formatting.
+
+= Upgrade Notice =
+
+= 3.1.1 =
+If you see the update error message "plugin is already at the latest version", please update via the updates screen (rather than the plugins screen).

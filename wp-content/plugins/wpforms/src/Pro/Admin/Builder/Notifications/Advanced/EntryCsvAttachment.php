@@ -603,12 +603,16 @@ class EntryCsvAttachment {
 			return $entry_field;
 		}
 
-		if ( ! wpforms_is_repeated_field( $field_id, $form_data['fields'] ) ) {
+		$type = $entry_field['type'] ?? '';
+
+		// If the field is not a file upload or a repeated field, return the entry field.
+		if ( $type !== 'file-upload' && ! wpforms_is_repeated_field( $field_id, $form_data['fields'] ) ) {
 			return $entry_field;
 		}
 
 		$field_smart_tag = '{field_id="' . $field_id . '"}';
 
+		// Process smart tags for file upload and repeated fields.
 		$entry_field['value'] = wpforms_process_smart_tags( $field_smart_tag, $form_data, $entry_fields, $field_id );
 
 		return $entry_field;

@@ -60,12 +60,17 @@ class Template_Data {
 	private static $is_search = false;
 
 	/**
+	 * Tracks and pre-calculated templates.
+	 *
+	 * @var array
+	 */
+	private static $taxonomy_templates = array();
+	/**
 	 * Initialize the class
 	 *
 	 * @since    3.0.0
 	 */
 	public static function init() {
-		add_action( 'wp', 'Search_Filter\\Template_Data::detect_archive_type', 1 );
 	}
 
 	public static function is_taxonomy_archive() {
@@ -143,7 +148,11 @@ class Template_Data {
 	 * @return string
 	 */
 	public static function get_term_template_link( $taxonomy_name ) {
-		$term_names = array();
+
+		if ( isset( self::$taxonomy_templates[ $taxonomy_name ] ) ) {
+			return self::$taxonomy_templates[ $taxonomy_name ];
+		}
+
 		/**
 		 * TODO - keep an eye on this, we're fetching only top level terms
 		 * and assuming that all hierarchical terms work the same way.
@@ -166,7 +175,7 @@ class Template_Data {
 			return '';
 		}
 		$term_template_link = self::get_term_link_template( $term );
-		return $term_template_link;
+		return array( $term_template_link );
 	}
 
 	/**
@@ -180,28 +189,38 @@ class Template_Data {
 	 */
 	private static function get_term_link_template( $term ) {
 		$taxonomy_name = $term->taxonomy;
+
+		$term_link          = get_term_link( $term, $taxonomy_name );
+		$term_template_link = self::parse_term_link_template( $term_link, $term );
+		return $term_template_link;
+	}
+
+	private static function parse_term_link_template( $url, $term ) {
+
+		$taxonomy_name = $term->taxonomy;
 		$term_slug     = $term->slug;
 		$term_id       = $term->term_id;
 
-		// is_taxonomy_hierarchical
-		$term_link          = get_term_link( $term, $taxonomy_name );
-		$term_template_link = $term_link;
-		$home_url_removed   = false;
-		if ( strpos( $term_template_link, home_url() ) === 0 ) {
-			$term_template_link = substr( $term_template_link, strlen( home_url() ) );
-			$home_url_removed   = true;
+		$home_url_removed = false;
+		if ( strpos( $url, home_url() ) === 0 ) {
+			$url              = substr( $url, strlen( home_url() ) );
+			$home_url_removed = true;
 		}
 		$has_permalink_structure = ! empty( get_option( 'permalink_structure' ) );
 
-		$replace_part       = $has_permalink_structure ? $term_slug : $term_id;
-		$replace_symbol     = $has_permalink_structure ? '[slug]' : '[id]';
-		$term_template_link = Util::string_lreplace( $replace_part, $replace_symbol, $term_template_link );
+		$replace_part   = $has_permalink_structure ? $term_slug : $term_id;
+		$replace_symbol = $has_permalink_structure ? '[slug]' : '[id]';
+		$url            = Util::string_lreplace( $replace_part, $replace_symbol, $url );
 
 		if ( $home_url_removed === true ) {
-			$term_template_link = home_url() . $term_template_link;
+			$url = home_url() . $url;
 		}
 
-		return $term_template_link;
+		if ( $term->parent > 0 ) {
+			$url = self::parse_term_link_template( $url, get_term( $term->parent, $taxonomy_name ) );
+		}
+
+		return $url;
 	}
 	/**
 	 * Gets all the taxonomies belonging to the post type that don't also belong
@@ -224,5 +243,23 @@ class Template_Data {
 		}
 		// Check to make sure the tax
 		return $post_type_only_taxonomies;
+	}
+
+	public static function get_taxonomy_template( $taxonomy_name ) {
+		if ( isset( self::$taxonomy_templates[ $taxonomy_name ] ) ) {
+			return self::$taxonomy_templates[ $taxonomy_name ];
+		}
+	}
+	public static function set_taxonomy_template( $taxonomy_name, $depth, $term ) {
+
+		if ( ! isset( self::$taxonomy_templates[ $taxonomy_name ] ) ) {
+			self::$taxonomy_templates[ $taxonomy_name ] = array();
+		}
+
+		// Don't need multiples at the same depth.
+		if ( isset( self::$taxonomy_templates[ $taxonomy_name ][ $depth ] ) ) {
+			return;
+		}
+		self::$taxonomy_templates[ $taxonomy_name ][ $depth ] = self::get_term_link_template( $term );
 	}
 }

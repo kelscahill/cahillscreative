@@ -144,7 +144,7 @@ jQuery( function( $ ) {
 
 			data = wc_stripe_payment_request.getRequiredFieldDataFromCheckoutForm( data );
 
-			return data;
+			return { ...data, ...wc_stripe_payment_request.extractOrderAttributionData() };
 		},
 
 		/**
@@ -173,7 +173,7 @@ jQuery( function( $ ) {
 						if ( ! data[ name ] ) {
 							data[ name ] = value;
 						}
-	
+
 						// if shipping same as billing is selected, copy the billing field to shipping field.
 						const shipToDiffAddress = $( '#ship-to-different-address' ).find( 'input' ).is( ':checked' );
 						if ( ! shipToDiffAddress ) {
@@ -434,6 +434,12 @@ jQuery( function( $ ) {
 			// Since it's considered a US state by Stripe, we need to do some special mapping.
 			if ( 'PR' === options.country ) {
 				options.country = 'US';
+			}
+
+			// Reunion Island (RE) is a FR territory supported by Stripe.
+			// It's considered like FR by Stripe.
+			if ( 'RE' === options.country ) {
+				options.country = 'FR';
 			}
 
 			// Handle errors thrown by Stripe, so we don't break the product page
@@ -831,6 +837,24 @@ jQuery( function( $ ) {
 					paymentRequest.show();
 				}
 			} );
+		},
+
+		/**
+		 * Get order attribution data from the hidden inputs.
+		 *
+		 * @return {Object} Order attribution data.
+		 */
+		extractOrderAttributionData: function() {
+			const $orderAttributionWrapper = $( 'wc-order-attribution-inputs' );
+			if ( ! $orderAttributionWrapper.length ) {
+				return {};
+			}
+
+			const orderAttributionData = {};
+			$orderAttributionWrapper.children( 'input' ).each( function () {
+				orderAttributionData[ $(this).attr( 'name' ) ] = $(this).val();
+			});
+			return orderAttributionData;
 		},
 
 		showPaymentRequestButton: function( prButton ) {

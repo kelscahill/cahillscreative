@@ -40,7 +40,7 @@ export default ( function( document, window, $ ) {
 	 *
 	 * @since 1.8.8
 	 */
-	const { isPro, isLicenseActive, strings, route_namespace: routeNamespace } = wpforms_gutenberg_form_selector;
+	const { isAdmin, isPro, isLicenseActive, strings, route_namespace: routeNamespace } = wpforms_gutenberg_form_selector;
 
 	/**
 	 * Form selector common module.
@@ -127,6 +127,10 @@ export default ( function( document, window, $ ) {
 		 */
 		events() {
 			wp.data.subscribe( function() { // eslint-disable-line complexity
+				if ( ! isAdmin ) {
+					return;
+				}
+
 				const isSavingPost = wp.data.select( 'core/editor' )?.isSavingPost();
 				const isAutosavingPost = wp.data.select( 'core/editor' )?.isAutosavingPost();
 				const isSavingWidget = wp.data.select( 'core/edit-widgets' )?.isSavingWidgetAreas();
@@ -563,13 +567,13 @@ export default ( function( document, window, $ ) {
 
 			// Get event handlers.
 			const handlers = app.getEventHandlers( props );
-			const showCustomThemeOptions = formSelectorCommonModule.isFullStylingEnabled() && app.maybeCreateCustomTheme( props );
+			const showCustomThemeOptions = isAdmin && formSelectorCommonModule.isFullStylingEnabled() && app.maybeCreateCustomTheme( props );
 			const checked = formSelectorCommonModule.isFullStylingEnabled() ? props.attributes.theme : 'classic';
 			const isLeadFormsEnabled = formSelectorCommonModule.isLeadFormsEnabled( formSelectorCommonModule.getBlockContainer( props ) );
 			const displayLeadFormNotice = isLeadFormsEnabled ? 'block' : 'none';
 			const modernNoticeStyles = displayLeadFormNotice === 'block' ? { display: 'none' } : {};
 
-			let classes = formSelectorCommon.getPanelClass( props );
+			let classes = formSelectorCommon.getPanelClass( props, 'themes' );
 
 			classes += isLeadFormsEnabled ? ' wpforms-lead-forms-enabled' : '';
 			classes += app.isMac() ? ' wpforms-is-mac' : '';
@@ -683,6 +687,9 @@ export default ( function( document, window, $ ) {
 			}
 
 			const title = theme.name?.length > 0 ? theme.name : strings.theme_noname;
+			let radioClasses = 'wpforms-gutenberg-form-selector-themes-radio';
+
+			radioClasses += app.isDisabledTheme( slug ) ? ' wpforms-gutenberg-form-selector-themes-radio-disabled' : ' wpforms-gutenberg-form-selector-themes-radio-enabled';
 
 			return (
 				<Radio
@@ -690,15 +697,17 @@ export default ( function( document, window, $ ) {
 					title={ title }
 				>
 					<div
-						className={ app.isDisabledTheme( slug ) ? 'wpforms-gutenberg-form-selector-themes-radio-disabled' : '' }
+						className={ radioClasses }
 					>
 						<div className="wpforms-gutenberg-form-selector-themes-radio-title">{ title }</div>
 					</div>
-					<ColorIndicator colorValue={ theme.settings.buttonBackgroundColor } title={ strings.button_background } />
-					<ColorIndicator colorValue={ theme.settings.buttonTextColor } title={ strings.button_text } />
-					<ColorIndicator colorValue={ theme.settings.labelColor } title={ strings.field_label } />
-					<ColorIndicator colorValue={ theme.settings.labelSublabelColor } title={ strings.field_sublabel } />
-					<ColorIndicator colorValue={ theme.settings.fieldBorderColor } title={ strings.field_border } />
+					<div className="wpforms-gutenberg-form-selector-themes-indicators">
+						<ColorIndicator colorValue={ theme.settings.buttonBackgroundColor } title={ strings.button_background } data-index="0" />
+						<ColorIndicator colorValue={ theme.settings.buttonTextColor } title={ strings.button_text } data-index="1" />
+						<ColorIndicator colorValue={ theme.settings.labelColor } title={ strings.field_label } data-index="2" />
+						<ColorIndicator colorValue={ theme.settings.labelSublabelColor } title={ strings.field_sublabel } data-index="3" />
+						<ColorIndicator colorValue={ theme.settings.fieldBorderColor } title={ strings.field_border } data-index="4" />
+					</div>
 				</Radio>
 			);
 		},

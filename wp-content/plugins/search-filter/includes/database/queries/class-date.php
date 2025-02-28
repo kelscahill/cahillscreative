@@ -949,8 +949,8 @@ class Date extends Base {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string       $compare The compare operator to use
-	 * @param string|array $value The value
+	 * @param string       $compare The compare operator to use.
+	 * @param string|array $value The value.
 	 *
 	 * @return string|false|int The value to be used in SQL or false on error.
 	 */

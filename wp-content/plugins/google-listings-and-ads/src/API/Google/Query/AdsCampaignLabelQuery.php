@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 class AdsCampaignLabelQuery extends AdsQuery {
 
 	/**
-	 * Query constructor.
+	 * AdsCampaignLabelQuery constructor.
 	 */
 	public function __construct() {
 		parent::__construct( 'label' );

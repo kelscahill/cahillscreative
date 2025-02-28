@@ -25,7 +25,7 @@ $current_column = 0;
 ?>
 <?php foreach ( $row_data as $data ) : ?>
 	<?php
-		$width           = $entries_single->get_layout_col_width( $data );
+		$width           = wpforms_get_column_width( $data );
 		$is_empty_column = ! isset( $columns[ $current_column ] ) || LayoutHelpers::is_column_empty( $columns[ $current_column ] );
 		$column_classes  = [
 			'wpforms-entry-field-layout-inner',

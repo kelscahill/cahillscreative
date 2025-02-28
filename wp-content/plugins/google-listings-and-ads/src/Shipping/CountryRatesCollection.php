@@ -91,11 +91,14 @@ class CountryRatesCollection extends LocationRatesCollection {
 	/**
 	 * @param LocationRate $location_rate
 	 *
-	 * @throws InvalidValue If any of the location rates do not belong to the same country as the one provided for this class.
+	 * @throws InvalidValue If any of the location rates do not belong to the same country as the one provided for this class or if any of the rates are negative.
 	 */
 	protected function validate_rate( LocationRate $location_rate ) {
 		if ( $this->country !== $location_rate->get_location()->get_country() ) {
 			throw new InvalidValue( 'All location rates must be in the same country as the one provided for this collection.' );
+		}
+		if ( $location_rate->get_shipping_rate()->get_rate() < 0 ) {
+			throw new InvalidValue( 'Shipping rates cannot be negative.' );
 		}
 	}
 

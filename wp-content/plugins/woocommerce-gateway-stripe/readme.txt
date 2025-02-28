@@ -4,7 +4,7 @@ Tags: credit card, stripe, apple pay, payment request, google pay, sepa, bancont
 Requires at least: 6.5
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 8.9.0
+Stable tag: 9.2.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Attributions: thorsten-stripe
@@ -110,33 +110,58 @@ If you get stuck, you can ask for help in the [Plugin Forum](https://wordpress.o
 
 == Changelog ==
 
-= 8.9.0 - 2024-11-14 =
-* Update - Enhance webhook processing to enable retrieving orders using payment_intent metadata.
-* Dev - Minor updates to the webhook handler class related to payment method names constants.
-* Tweak - Improve error message displayed when payment method creation fails in classic checkout.
-* Dev - Replace two occurrences of payment method names with their constant equivalents.
-* Fix - Hide express checkout when credit card payments are not enabled.
-* Fix - Fix issues when detaching payment methods on staging sites (with the new checkout experience enabled).
-* Fix - Display a notice if taxes vary by customer's billing address when checking out using the Stripe Express Checkout Element.
-* Tweak - Makes the new Stripe Express Checkout Element enabled by default in new accounts.
-* Dev - Add multiple unit tests for the Stripe Express Checkout Element implementation (for both frontend and backend).
-* Fix - Check if taxes are enabled when applying ECE tax compatibility check.
-* Fix - Fix ECE error when initial address on load is not defined as a shipping zone.
-* Fix - Corrected card brand capitalization on the My Account → Subscription page.
-* Fix - Displays a specific message when an authentication error occurs during checkout for 3DS cards (shortcode version).
-* Fix - Show 'Use a New Payment Method' radio button for logged in users only when card saving is enabled.
-* Fix - Fix the display and usage of the Link payment method on the shortcode checkout page with the Stripe Express Checkout Element.
-* Fix - Fix payment methods count on settings page.
-* Update - Improve Express Payment button previews on the edit Block Checkout and Cart pages for Google Pay and Apple Pay.
-* Tweak - Add error logging in ECE critical Ajax requests.
-* Add - Add support for Stripe Link payments via the new Stripe Checkout Element on the block cart and block checkout pages.
-* Add - Add support for Stripe Link payments via the new Stripe Checkout Element on the product, cart, checkout and pay for order pages.
-* Tweak - Do not load ECE button if the total amount is 0.
-* Add - Show ECE button preview on settings page.
-* Tweak - Remove the subscription order notes added each time a source wasn't migrated.
-* Tweak - Update ECE default button type.
-* Fix - Fix position of ECE button on shortcode cart page.
-* Fix - Call ECE specific 'paymentFailed' function only when payment request fails.
-* Fix - Fix issue in purchasing subscriptions when the store has no shipping options.
+= 9.2.0 - 2025-02-13 =
+* Fix - Fix missing product_id parameter for the express checkout add-to-cart operation.
+* Fix - Fix the quantity parameter for the express checkout add-to-cart API call.
+* Dev - Replaces part of the StoreAPI call code for the cart endpoints to use the newly introduced filter.
+* Fix - Clear cart first when using express checkout inside the product page.
+* Fix - Avoid Stripe timeouts for the express checkout click event.
+* Fix - Switch booking products back to using non-StoreAPI add-to-cart methods.
+* Dev - Add new E2E tests for Link express checkout.
+* Add - Add Amazon Pay to block cart and block checkout.
+* Fix - Remove intentional delay when displaying tax-related notice for express checkout, causing click event to time out.
+* Fix - Fixes an issue when saving Bancontact and iDEAL methods with SEPA Direct Debit disabled.
+* Dev - Introduces new payment method constants for the express methods: Google Pay, Apple Pay, Link, and Amazon Pay.
+* Fix - Prevent an express checkout element's load errors from affecting other express checkout elements.
+* Tweak - Process ECE cart requests using the Blocks (Store) API.
+* Add - Adds a new setting to toggle saving of Bancontact and iDEAL methods as SEPA Debit.
+* Add - Wrap Amazon Pay in feature flag.
+* Fix - Allow the saving of Bancontact tokens when SEPA is disabled.
+* Tweak - Use WC Core's rate limiter on "Add payment method" page.
+* Add - New Amazon Pay payment method in the Stripe Express Checkout Element for the classic, shortcode (classic) checkout, product, and cart pages.
+* Dev - Introduces new payment intent status constants for the frontend.
+* Fix - Fix Stripe customer creation when using the Blocks API for express checkout.
+* Add - Add new payment processing flow using confirmation tokens.
+* Dev - Adds new logs to identify why express payment methods are not being displayed.
+* Fix - Fixes a fatal error when editing the shortcode checkout page with an empty cart on PHP 8.4.
+* Fix - Fixes processing of orders through the Pay for Order page when using ECE with Blocks (Store) API.
+* Add - Enables the use of Blocks API for Express Checkout Element orders by default.
+* Add - Adds a new filter to allow changing the user attributed to an order when paying for it through the Order Pay page.
+* Fix - Fixes an error with the fingerprint property setting when using the legacy checkout.
+* Fix - Fixes order attribution data for the Express Checkout Element when using the Blocks API to process.
+* Tweak - Process ECE orders using the Blocks API.
+* Fix - Fixes incorrect error message for card failures due insufficient funds on the shortcode checkout page (legacy).
+* Fix - Fixes deprecation warnings related to nullable method parameters when using PHP 8.4, and increases the minimum PHP version Code Sniffer considers to 7.4.
+* Fix - Adds support for the Reunion country when checking out using the new checkout experience.
+* Add - Support zero-amount refunds.
+* Fix - A potential fix to prevent duplicate charges.
+* Fix - Prevent empty settings screen when cancelling changes to the payment methods display order.
+* Fix - Improve product page caching when Express Payment buttons are not enabled.
+* Fix - Allow editing uncaptured orders but show a warning about the possible failure scenario.
+* Fix - Fetch the payment intent status on order edit page only for unpaid orders if manual capture is enabled.
+* Fix - Error when changing subscription payment method to a 3D Secure card while using a custom checkout endpoint.
+* Fix - Fixes the webhook order retrieval by intent charges by adding an array check.
+* Add - Add total tax amount to metadata.
+* Update - Update the translation for payment requests settings section notice.
+* Add - Add Amazon Pay to settings express checkout section.
+* Add - Add Amazon Pay customize express checkout page.
+* Fix - Improve the appearance of Stripe elements in checkout pages to match the store theme.
+* Fix - Hide ECE button for synced subscription variations.
+* Fix - Use the original shipping address for Amazon Pay pay for orders.
+* Tweak - Improve slow query for legacy SEPA subscriptions on WC status tools page by caching the data.
+* Tweak - Improve settings page load by delaying oauth URL generation.
+* Tweak - Update the Woo logo in the Configure connection modal
+* Add - Add currency restriction pill on Amazon Pay.
+* Fix - Express checkout methods dependency.
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce-gateway-stripe/trunk/changelog.txt).

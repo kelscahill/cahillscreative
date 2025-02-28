@@ -3,10 +3,9 @@
 namespace WPForms\Pro\Forms\Fields\FileUpload;
 
 use InvalidArgumentException;
-use WPForms_Field_File_Upload;
 
 /**
- * Chunk class
+ * Chunk class.
  *
  * This class handles all the chunk file uploading logic.
  *
@@ -42,7 +41,7 @@ class Chunk {
 	protected $offset;
 
 	/**
-	 * Information about each chunk
+	 * Information about each chunk.
 	 *
 	 * @since 1.6.2
 	 *
@@ -55,7 +54,7 @@ class Chunk {
 	 *
 	 * @since 1.6.2
 	 *
-	 * @var WPForms_Field_File_Upload
+	 * @var Field
 	 */
 	protected $field;
 
@@ -64,12 +63,12 @@ class Chunk {
 	 *
 	 * @since 1.6.2
 	 *
-	 * @param array                     $metadata Metadata about the chunk.
-	 * @param WPForms_Field_File_Upload $field    Field.
+	 * @param array $metadata Metadata about the chunk.
+	 * @param Field $field    Field.
 	 *
 	 * @throws InvalidArgumentException Invalid UUID.
 	 */
-	public function __construct( array $metadata, WPForms_Field_File_Upload $field ) {
+	public function __construct( array $metadata, Field $field ) {
 
 		$metadata = array_merge(
 			[
@@ -128,7 +127,7 @@ class Chunk {
 	 */
 	public function get_file_name() {
 
-		return isset( $this->metadata['name'] ) ? $this->metadata['name'] : '';
+		return $this->metadata['name'] ?? '';
 	}
 
 	/**
@@ -140,7 +139,7 @@ class Chunk {
 	 */
 	public function get_file_user_name() {
 
-		return isset( $this->metadata['file_user_name'] ) ? $this->metadata['file_user_name'] : '';
+		return $this->metadata['file_user_name'] ?? '';
 	}
 
 	/**
@@ -158,15 +157,15 @@ class Chunk {
 	/**
 	 * Create a Chunk object from the current request.
 	 *
-	 * If validation failed FALSE is returned instead.
+	 * If validation failed, FALSE is returned instead.
 	 *
 	 * @since 1.6.2
 	 *
-	 * @param WPForms_Field_File_Upload $field File field instance.
+	 * @param Field $field File field instance.
 	 *
 	 * @return bool|Chunk False or the instance of this class.
 	 */
-	public static function from_current_request( WPForms_Field_File_Upload $field ) {
+	public static function from_current_request( Field $field ) {
 
 		$field_name = $field->get_input_name();
 
@@ -191,8 +190,8 @@ class Chunk {
 				'file_user_name' => sanitize_text_field( wp_unslash( $_FILES[ $field_name ]['name'] ) ),
 			];
 		} else {
-			// No file attached, most likely this is a initialization Ajax call, in that scenario
-			// we require fewer fields.
+			// No file attached, most likely this is an initialization Ajax call.
+			// In that scenario, we require fewer fields.
 			$required = [
 				'dzuuid'          => 'uuid',
 				'dztotalfilesize' => 'file_size',
@@ -271,6 +270,7 @@ class Chunk {
 	 * @since 1.6.2
 	 *
 	 * @return bool
+	 * @noinspection NonSecureUniqidUsageInspection
 	 */
 	public function create_metadata() {
 
@@ -308,8 +308,9 @@ class Chunk {
 	/**
 	 * Verify the chunk size and offset.
 	 *
-	 * This function is very strict for security. The exact amount of bytes are expected, anything above
-	 * or bellow that will be rejected. Only the latest chunk is allowed to maybe be smaller.
+	 * This function is very strict for security
+	 * The exact number of bytes is expected, anything above or bellow that will be rejected.
+	 * Only the latest chunk is allowed to maybe be smaller.
 	 *
 	 * @since 1.6.2
 	 *
@@ -334,7 +335,7 @@ class Chunk {
 	/**
 	 * Whether the current chunk is the last chunk of the file or not.
 	 *
-	 * The last chunk by their offset position.
+	 * The last chunk is determined by their offset position.
 	 *
 	 * @since 1.6.2
 	 *
@@ -364,8 +365,7 @@ class Chunk {
 	/**
 	 * Move the uploaded file to the temporary storage.
 	 *
-	 * No further check are performed, all the validations are performed
-	 * once al the chunks has been uploaded.
+	 * No further check is performed, all the validations are performed once al the chunks have been uploaded.
 	 *
 	 * @since 1.6.2
 	 *
@@ -406,7 +406,7 @@ class Chunk {
 
 	/**
 	 * Check if all the chunks have been uploaded.
-	 * This must be TRUE in order to finalize the upload.
+	 * This must be TRUE to finalize the upload.
 	 *
 	 * @since 1.6.2
 	 *
@@ -425,7 +425,7 @@ class Chunk {
 				return false;
 			}
 
-			$next = isset( $chunks[ $id + 1 ] ) ? $chunks[ $id + 1 ] : null;
+			$next = $chunks[ $id + 1 ] ?? null;
 
 			if ( $next && $chunk['end'] !== $next['start'] ) {
 				return false;
@@ -479,7 +479,7 @@ class Chunk {
 	 *
 	 * @since 1.6.2
 	 */
-	protected function delete_temporary_files() {
+	protected function delete_temporary_files(): void {
 
 		foreach ( $this->get_chunks() as $chunk ) {
 			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.unlink_unlink
@@ -494,8 +494,9 @@ class Chunk {
 	/**
 	 * Attempt to finalize the uploading.
 	 *
-	 * This function should be called at most once. This will verify that all the chunks has been uploaded
-	 * successfully and will attempt to merge all those chunks in a single file.
+	 * This function should be called at most once.
+	 * This will verify that all the chunks have been uploaded successfully
+	 * and will attempt to merge all those chunks in a single file.
 	 *
 	 * @since 1.6.2
 	 * @since 1.9.2 $file_name parameter added.

@@ -7,7 +7,7 @@ use WPForms\Pro\Admin\Entries\Table\DataObjects\Column;
 use WPForms\Pro\Admin\Entries\Table\Facades\Columns;
 use WPForms\Pro\Admin\DashboardWidget;
 use WPForms\Pro\AntiSpam\SpamEntry;
-use WPForms_Field_File_Upload;
+use WPForms\Pro\Forms\Fields\FileUpload\Field as FileUploadField;
 use WPForms_Form_Handler;
 
 /**
@@ -301,6 +301,14 @@ class Page {
 
 		// JavaScript.
 		wp_enqueue_script(
+			'wpforms-htmx',
+			WPFORMS_PLUGIN_URL . 'assets/lib/htmx.min.js',
+			[],
+			WPFORMS_VERSION,
+			true
+		);
+
+		wp_enqueue_script(
 			'wpforms-flatpickr',
 			WPFORMS_PLUGIN_URL . 'assets/lib/flatpickr/flatpickr.min.js',
 			[ 'jquery' ],
@@ -328,7 +336,7 @@ class Page {
 		wp_enqueue_script(
 			'wpforms-admin-list-table-ext',
 			WPFORMS_PLUGIN_URL . "assets/js/admin/share/list-table-ext{$min}.js",
-			[ 'jquery', 'wpforms-multiselect-checkboxes' ],
+			[ 'jquery', 'jquery-ui-sortable', 'underscore', 'wpforms-multiselect-checkboxes', 'wpforms-htmx' ],
 			WPFORMS_VERSION,
 			true
 		);
@@ -499,7 +507,7 @@ class Page {
 
 		// Delete media if any.
 		// It must be done before removing the entry itself.
-		array_map( [ WPForms_Field_File_Upload::class, 'delete_uploaded_files_from_entry' ], $entry_ids );
+		array_map( [ FileUploadField::class, 'delete_uploaded_files_from_entry' ], $entry_ids );
 
 		/**
 		 * Allow performing additional actions before deleting entries.
@@ -956,7 +964,8 @@ class Page {
 			return;
 		}
 
-		$form_data = ! empty( $this->form->post_content ) ? wpforms_decode( $this->form->post_content ) : '';
+		$post_content = $this->form->post_content ?? '';
+		$form_data    = $post_content ? wpforms_decode( $post_content ) : [];
 
 		/**
 		 * Filter the list all wrap classes.
@@ -1049,7 +1058,7 @@ class Page {
 									_n(
 										'Found <strong>%s entry</strong>',
 										'Found <strong>%s entries</strong>',
-										absint( count( $this->entries->items ) ),
+										absint( count( (array) $this->entries->items ) ),
 										'wpforms'
 									),
 									[

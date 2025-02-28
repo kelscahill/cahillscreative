@@ -13,9 +13,12 @@ namespace Search_Filter_Pro;
 use Search_Filter_Pro\Integrations\Acf;
 use Search_Filter_Pro\Integrations\Beaver_Builder;
 use Search_Filter_Pro\Integrations\Elementor;
+use Search_Filter_Pro\Integrations\Generate_Blocks;
+use Search_Filter_Pro\Integrations\Wpml;
 use Search_Filter_Pro\Integrations\Gutenberg;
+use Search_Filter_Pro\Integrations\Polylang;
 use Search_Filter_Pro\Integrations\Relevanssi;
-use Search_Filter_Pro\Integrations\WooCommerce;
+use Search_Filter_Pro\Integrations\Woocommerce;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -39,7 +42,7 @@ class Integrations {
 	 */
 	public static function init() {
 		// TODO check this is loading after our database is init.
-		add_action( 'search-filter/integrations/init', array( __CLASS__, 'init_integrations' ) );
+		add_action( 'search-filter/settings/integrations/init', array( __CLASS__, 'init_integrations' ) );
 	}
 
 	/**
@@ -49,10 +52,13 @@ class Integrations {
 	 */
 	public static function init_integrations() {
 		Gutenberg::init();
-		WooCommerce::init();
+		Woocommerce::init();
 		Acf::init();
 		Relevanssi::init();
 		Elementor::init();
 		Beaver_Builder::init();
+		Wpml::init();
+		Polylang::init();
+		Generate_Blocks::init();
 	}
 }

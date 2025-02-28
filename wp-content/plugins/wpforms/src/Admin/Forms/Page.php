@@ -195,9 +195,17 @@ class Page {
 		$min = wpforms_get_min_suffix();
 
 		wp_enqueue_script(
+			'wpforms-htmx',
+			WPFORMS_PLUGIN_URL . 'assets/lib/htmx.min.js',
+			[],
+			WPFORMS_VERSION,
+			true
+		);
+
+		wp_enqueue_script(
 			'wpforms-admin-forms-overview',
 			WPFORMS_PLUGIN_URL . "assets/js/admin/forms/overview{$min}.js",
-			[ 'jquery' ],
+			[ 'jquery', 'underscore', 'wpforms-htmx' ],
 			WPFORMS_VERSION,
 			true
 		);
@@ -212,7 +220,7 @@ class Page {
 		wp_enqueue_script(
 			'wpforms-admin-list-table-ext',
 			WPFORMS_PLUGIN_URL . "assets/js/admin/share/list-table-ext{$min}.js",
-			[ 'jquery', 'wpforms-multiselect-checkboxes' ],
+			[ 'jquery', 'jquery-ui-sortable', 'underscore', 'wpforms-admin', 'wpforms-multiselect-checkboxes' ],
 			WPFORMS_VERSION,
 			true
 		);

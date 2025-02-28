@@ -45,10 +45,10 @@ class SetupCampaignTwoWeeks extends AbstractSetupCampaign {
 	 */
 	protected function set_title_and_content( NoteEntry $note ): void {
 		if ( ! $this->ads_service->is_setup_started() ) {
-			$note->set_title( __( 'Reach more shoppers with paid listings on Google', 'google-listings-and-ads' ) );
+			$note->set_title( __( 'Reach more shoppers with Google Ads', 'google-listings-and-ads' ) );
 			$note->set_content(
 				__(
-					'Your products are ready for Google Ads! Connect with the right shoppers at the right moment when they’re searching for products like yours. Connect your Google Ads account to create your first paid ad campaign.',
+					'Your products are ready for Google Ads! Connect with the right shoppers at the right moment when they’re searching for products like yours. Connect your Google Ads account to create your first campaign.',
 					'google-listings-and-ads'
 				)
 			);

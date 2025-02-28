@@ -2,6 +2,56 @@
 
 All Notable changes to `League\Container` will be documented in this file
 
+## 4.2.4
+
+### Fixed
+- Now properly handle string based fully qualified class names in with preceding slashes. (@M1ke)
+
+## 4.2.3
+
+### Fixed
+- Warnings for PHP 8.4 implicit nullable types (@andypost)
+
+## 4.2.1
+
+### Fixed
+- Remove an unnecessary conditional in ServiceProviderAggregate. (@SubhanSh)
+- Fixed an infinite loop in resolving definitions. (@arai-ta)
+
+## 4.2.0
+
+### Added
+- Support for psr/container 1.1.0.
+
+## 4.1.2
+
+### Fixed
+- Fix bug that was causing an error on inflection due to introduced type hint.
+
+## 4.1.1
+
+### Changed
+- Move files autoload directive to dev (@ADmad)
+
+## 4.1.0
+
+### Added
+- Way to handle non-public controllers safely (@beryllium)
+
+## 4.0.0
+
+### Added
+- New definition interface that extends psr/container
+- Literal and resolvable argument wrappers for better explicitness in definitions
+
+### Changed
+- PHP requirement now `>=7.2`
+- Updated `psr/container` to ^2.0.0
+- `Container::shared` convenience method is now explicit `Container::addShared` method
+- Removed third argument `$shared` from `Container::add`, use `Container::addShared`
+- `ServiceProviderInterface` now defines return types
+- Service providers now require implementation of a `provides` method rather than relying on a class property.
+
 ## 3.4.1
 
 ### Added
@@ -77,7 +127,7 @@ All Notable changes to `League\Container` will be documented in this file
 
 ### Added
 - Re-added the `share` proxy method that was mistakenly removed in previous major release.
-- Added ability to set Conatiner to "share" by default using `defaultToShared` method.
+- Added ability to set Container to "share" by default using `defaultToShared` method.
 - Added ability for `ReflectionContainer` to cache resolutions and pull from cache for following calls.
 
 ## 3.0.1

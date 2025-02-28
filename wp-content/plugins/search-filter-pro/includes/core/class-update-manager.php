@@ -50,7 +50,7 @@ class Update_Manager {
 		foreach ( self::$registered_updaters as $updater_name => $update_config ) {
 			// Setup the updater.
 			self::$registered_updaters[ $updater_name ]['updater'] = new \Search_Filter_Pro\Core\Plugin_Updater(
-				'https://searchandfilter.com',
+				License_Server::get_endpoint(),
 				$update_config['file'],
 				array(
 					'version' => $update_config['version'],

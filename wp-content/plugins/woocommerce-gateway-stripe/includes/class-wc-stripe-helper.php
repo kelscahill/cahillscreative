@@ -265,14 +265,15 @@ class WC_Stripe_Helper {
 				'tax_id_invalid'                        => __( 'Invalid Tax Id, please try again with a valid tax id', 'woocommerce-gateway-stripe' ),
 				'invalid_wallet_type'                   => __( 'Invalid wallet payment type, please try again or use an alternative method.', 'woocommerce-gateway-stripe' ),
 				'payment_intent_authentication_failure' => __( 'We are unable to authenticate your payment method. Please choose a different payment method and try again.', 'woocommerce-gateway-stripe' ),
+				'insufficient_funds'                    => __( 'Your card has insufficient funds.', 'woocommerce-gateway-stripe' ),
 			]
 		);
 	}
 
 	/**
 	 * List of currencies supported by Stripe that has no decimals
-	 * https://stripe.com/docs/currencies#zero-decimal from https://stripe.com/docs/currencies#presentment-currencies
-	 * ugx is an exception and not in this list for being a special cases in Stripe https://stripe.com/docs/currencies#special-cases
+	 * https://docs.stripe.com/currencies#zero-decimal from https://docs.stripe.com/currencies#presentment-currencies
+	 * ugx is an exception and not in this list for being a special cases in Stripe https://docs.stripe.com/currencies#special-cases
 	 *
 	 * @return array $currencies
 	 */
@@ -491,7 +492,7 @@ class WC_Stripe_Helper {
 		// If the legacy method order is not set, return the default order.
 		if ( ! empty( $ordered_payment_method_ids ) ) {
 			$payment_method_ids = array_map(
-				function( $payment_method_id ) {
+				function ( $payment_method_id ) {
 					if ( 'stripe' === $payment_method_id ) {
 						return WC_Stripe_Payment_Methods::CARD;
 					} else {
@@ -517,7 +518,7 @@ class WC_Stripe_Helper {
 			}
 		} else {
 			$payment_method_ids = array_map(
-				function( $payment_method_class ) {
+				function ( $payment_method_class ) {
 					return str_replace( 'stripe_', '', $payment_method_class::ID );
 				},
 				$payment_method_classes
@@ -616,6 +617,7 @@ class WC_Stripe_Helper {
 	 * @return array
 	 */
 	public static function get_upe_individual_payment_method_settings( $gateway ) {
+		$payment_method_settings = [];
 		$available_gateways = $gateway->get_upe_available_payment_methods();
 
 		foreach ( $available_gateways as $gateway ) {
@@ -666,13 +668,13 @@ class WC_Stripe_Helper {
 	 */
 	public static function get_upe_ordered_payment_method_ids( $gateway ) {
 		$stripe_settings            = self::get_stripe_settings();
-		$testmode                   = isset( $stripe_settings['testmode'] ) && 'yes' === $stripe_settings['testmode'];
+		$testmode                   = WC_Stripe_Mode::is_test();
 		$ordered_payment_method_ids = isset( $stripe_settings['stripe_upe_payment_method_order'] ) ? $stripe_settings['stripe_upe_payment_method_order'] : [];
 
 		// When switched to the new checkout experience, the UPE method order is not set. Copy the legacy order to the UPE order to persist previous settings.
 		if ( empty( $stripe_settings['stripe_upe_payment_method_order'] ) && ! empty( $stripe_settings['stripe_legacy_method_order'] ) ) {
 			$ordered_payment_method_ids = array_map(
-				function( $payment_method_id ) {
+				function ( $payment_method_id ) {
 					if ( 'stripe' === $payment_method_id ) {
 						return WC_Stripe_Payment_Methods::CARD;
 					} elseif ( 'stripe_sepa' === $payment_method_id ) {
@@ -692,7 +694,7 @@ class WC_Stripe_Helper {
 
 		$ordered_payment_method_ids_with_capability = array_filter(
 			$ordered_payment_method_ids,
-			function( $payment_method_id ) use ( $available_methods_with_capability ) {
+			function ( $payment_method_id ) use ( $available_methods_with_capability ) {
 				return in_array( $payment_method_id, $available_methods_with_capability, true );
 			}
 		);
@@ -1088,7 +1090,7 @@ class WC_Stripe_Helper {
 	 * Converts a WooCommerce locale to the closest supported by Stripe.js.
 	 *
 	 * Stripe.js supports only a subset of IETF language tags, if a country specific locale is not supported we use
-	 * the default for that language (https://stripe.com/docs/js/appendix/supported_locales).
+	 * the default for that language (https://docs.stripe.com/js/appendix/supported_locales).
 	 * If no match is found we return 'auto' so Stripe.js uses the browser locale.
 	 *
 	 * @param string $wc_locale The locale to convert.
@@ -1096,7 +1098,7 @@ class WC_Stripe_Helper {
 	 * @return string Closest locale supported by Stripe ('auto' if NONE).
 	 */
 	public static function convert_wc_locale_to_stripe_locale( $wc_locale ) {
-		// List copied from: https://stripe.com/docs/js/appendix/supported_locales.
+		// List copied from: https://docs.stripe.com/js/appendix/supported_locales.
 		$supported = [
 			'ar',     // Arabic.
 			'bg',     // Bulgarian (Bulgaria).
@@ -1496,8 +1498,11 @@ class WC_Stripe_Helper {
 	 *
 	 * @param WC_Order $order The order.
 	 * @return bool
+	 *
+	 * @deprecated 8.9.0
 	 */
 	public static function is_wallet_payment_method( $order ) {
+		wc_deprecated_function( __METHOD__, '8.9.0', 'in_array( $order->get_meta( \'_stripe_upe_payment_type\' ), WC_Stripe_Payment_Methods::WALLET_PAYMENT_METHODS, true )' );
 		return in_array( $order->get_meta( '_stripe_upe_payment_type' ), WC_Stripe_Payment_Methods::WALLET_PAYMENT_METHODS, true );
 	}
 

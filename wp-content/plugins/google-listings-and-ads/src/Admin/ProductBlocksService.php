@@ -275,6 +275,12 @@ class ProductBlocksService implements Service, Registerable, Conditional {
 			$input_type = call_user_func( [ $attribute_type, 'get_input_type' ] );
 			$input      = AttributesForm::init_input( new $input_type(), new $attribute_type() );
 
+			// Avoid to render Inputs that are defined as hidden in the Input.
+			// i.e We don't render GTIN for new WC versions anymore.
+			if ( $input->is_hidden() ) {
+				continue;
+			}
+
 			if ( $is_variation_template ) {
 				// When editing a variation, its product type on the frontend side won't be changed dynamically.
 				// In addition, the property of `editedProduct.type` doesn't exist in the variation product.

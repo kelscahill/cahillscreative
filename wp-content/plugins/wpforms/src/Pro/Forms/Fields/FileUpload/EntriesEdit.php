@@ -57,7 +57,7 @@ class EntriesEdit extends \WPForms\Pro\Forms\Fields\Base\EntriesEdit {
 
 		$is_media_file = isset( $field['media_library'] );
 
-		if ( \WPForms_Field_File_Upload::is_modern_upload( $entry_field ) ) {
+		if ( Field::is_modern_upload( $entry_field ) ) {
 
 			foreach ( $entry_field['value_raw'] as $key => $field_data ) {
 
@@ -81,6 +81,7 @@ class EntriesEdit extends \WPForms\Pro\Forms\Fields\Base\EntriesEdit {
 	 * @param int   $key           Key for multiple items.
 	 *
 	 * @return string
+	 * @noinspection HtmlUnknownTarget
 	 */
 	private function get_file_item_html( $field_data, $is_media_file, $key = 0 ) {
 
@@ -90,8 +91,8 @@ class EntriesEdit extends \WPForms\Pro\Forms\Fields\Base\EntriesEdit {
 
 		$html .= sprintf(
 			'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
-			esc_url( $field_data['value'] ),
-			esc_html( $field_data['file_user_name'] )
+			esc_url( $this->field_object->get_file_url( $field_data ) ),
+			esc_html( $this->field_object->get_file_name( $field_data ) )
 		);
 
 		$html .= sprintf(
@@ -125,7 +126,7 @@ class EntriesEdit extends \WPForms\Pro\Forms\Fields\Base\EntriesEdit {
 	}
 
 	/**
-	 * Get remove button html.
+	 * Get remove button HTML.
 	 *
 	 * @since 1.6.6
 	 *
@@ -148,7 +149,7 @@ class EntriesEdit extends \WPForms\Pro\Forms\Fields\Base\EntriesEdit {
 	 */
 	public function format( $field_id, $field_submit, $field_data, $form_data ) {
 
-		if ( ! \WPForms_Field_File_Upload::is_modern_upload( $field_data ) ) {
+		if ( ! Field::is_modern_upload( $field_data ) ) {
 
 			if ( ! is_array( $field_submit ) ) {
 				$field_data['value']         = '';
@@ -188,5 +189,4 @@ class EntriesEdit extends \WPForms\Pro\Forms\Fields\Base\EntriesEdit {
 	 * @param array $form_data    Form data and settings.
 	 */
 	public function validate( $field_id, $field_submit, $field_data, $form_data ) { }
-
 }

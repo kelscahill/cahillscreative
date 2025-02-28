@@ -349,8 +349,14 @@ class UpdatePluginManagers
             'plugin_version' => SENDINBLUE_WC_PLUGIN_VERSION,
             'shop_version' => SENDINBLUE_WORDPRESS_SHOP_VERSION
         );
+
+        if (class_exists( 'Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFields' ) && 
+            (\Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils::is_checkout_block_default())
+        ) {
+            $data['settings']['is_checkout_block_default'] = true;
+        }
+
         $this->client_manager->eventsSync(SendinblueClient::PLUGIN_UPDATED, $data);
         (get_option(SENDINBLUE_WC_VERSION_SENT, null) !== null) ? update_option(SENDINBLUE_WC_VERSION_SENT, SENDINBLUE_WC_PLUGIN_VERSION) : add_option(SENDINBLUE_WC_VERSION_SENT, SENDINBLUE_WC_PLUGIN_VERSION);
     }
 }
-

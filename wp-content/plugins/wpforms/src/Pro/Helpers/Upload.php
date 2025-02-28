@@ -59,21 +59,23 @@ class Upload {
 			return $this->process_media_storage( $file_details, $file, $field_id, $form_data );
 		}
 
-		return $this->process_wpforms_storage( $file_details, $file, $form_data );
+		return $this->process_wpforms_storage( $file_details, $file, $form_data, $field_id );
 	}
 
 	/**
 	 * Process a file when WPForms storage is used.
 	 *
 	 * @since 1.7.0
+	 * @since 1.9.4 Added the `$field_id` argument.
 	 *
 	 * @param array $file_details Array of file detail data.
 	 * @param array $file         File data.
 	 * @param array $form_data    Form data and settings.
+	 * @param int   $field_id     Field ID.
 	 *
 	 * @return array  Array of file data.
 	 */
-	private function process_wpforms_storage( $file_details, $file, $form_data ) {
+	private function process_wpforms_storage( $file_details, $file, $form_data, $field_id ) {
 
 		$form_id          = $form_data['id'];
 		$upload_dir       = wpforms_upload_dir();
@@ -109,7 +111,28 @@ class Upload {
 		$file_details['upload_path']   = $upload_path_form;
 		$file_details['file_url']      = $file_url;
 
+		if ( $this->is_file_protected( $field_id, $form_data ) ) {
+			$file_details['protection_hash'] = wp_hash( $file_url );
+		}
+
 		return $file_details;
+	}
+
+	/**
+	 * Check if the file is protected.
+	 *
+	 * @since 1.9.4
+	 *
+	 * @param int   $field_id  Field ID.
+	 * @param array $form_data Form data.
+	 *
+	 * @return bool
+	 */
+	private function is_file_protected( $field_id, $form_data ): bool {
+
+		$field = $form_data['fields'][ $field_id ] ?? [];
+
+		return ! empty( $field['is_restricted'] );
 	}
 
 	/**

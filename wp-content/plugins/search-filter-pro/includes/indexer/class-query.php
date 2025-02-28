@@ -53,6 +53,18 @@ class Query {
 	private $field_result_ids = null;
 
 	/**
+	 * Object Parents.
+	 *
+	 * Keep track of an objects parents for
+	 * converting later.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var null|array
+	 */
+	private $object_parents = array();
+
+	/**
 	 * The result IDs.
 	 *
 	 * @since 3.0.0
@@ -118,22 +130,22 @@ class Query {
 	 * @var array
 	 */
 	private $field_cache_args = array();
-	/**
-	 * Has search term.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var bool
-	 */
-	private $has_search = false;
+
 
 	private $field_has_match_any = false;
 
 	private $query_has_match_any = false;
 
-	private $timer = null;
-
 	private $enable_caching = true;
+
+	/**
+	 * Whether the query has a search term.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var bool|null
+	 */
+	private $has_search = null;
 
 	/**
 	 * Construct.
@@ -144,13 +156,12 @@ class Query {
 	 */
 	public function __construct( $query ) {
 
+		do_action( 'search-filter-pro/indexer/query/init/start', $query );
 		// Disable caching for admins.
 		// TODO - we should use S&F roles to handle this.
 		if ( current_user_can( 'administrator' ) ) {
 			$this->enable_caching = false;
 		}
-
-		$this->timer = microtime( true );
 
 		$this->query  = $query;
 		$this->fields = $query->get_fields();
@@ -170,11 +181,16 @@ class Query {
 			$combine_type = 'intersect';
 		}
 
+
 		$field_cache_args = array();
 		foreach ( $this->fields as $field ) {
 
-			$this->fields_by_id[ $field->get_id() ] = $field;
+			if ( is_wp_error( $field ) ) {
+				continue;
+			}
 
+			$this->fields_by_id[ $field->get_id() ] = $field;
+			
 			if ( count( $field->get_values() ) === 0 ) {
 				continue;
 			}
@@ -187,16 +203,18 @@ class Query {
 				$post__in = self::combine_arrays( $post__in, $field_post_ids, $combine_type );
 			}
 		}
+
+
 		if ( is_array( $post__in ) && empty( $post__in ) ) {
 			// Add a post ID of 0 to force the query to return no results.
 			$post__in = array( 0 );
 		}
-
+		
 		// Get the query args from the query settings.
 		$query_args = $query->apply_wp_query_args( array() );
 
 		// Apply the query args for fields that are not handled by the indexer.
-		$query_args = $this->apply_fields_wp_query_args( $query_args, $query );
+		$query_args = $query->apply_fields_wp_query_args( $query_args, $query );
 
 		// Apply any user defined query args.
 		$query_args = apply_filters( 'search-filter/query/query_args', $query_args, $query );
@@ -211,7 +229,8 @@ class Query {
 		// Create the query args for the full extended query.
 		$full_query_args = $this->create_full_query_args( $query_args, $post__in );
 
-		$result_ids = $this->run_cached_query( $cache_key, $full_query_args );
+		$result_ids = $this->result_lookup( $cache_key, $full_query_args );
+
 		$this->set_result_ids( $result_ids );
 
 		// Initially set the unfiltered result IDs to the same as the filtered result IDs,
@@ -238,21 +257,20 @@ class Query {
 			// Generate the query args for the unfiltered query.
 			$unfiltered_full_query_args = $this->create_full_query_args( $query_args, $post__in, false );
 			// Try to get the results from the cache, if not generate them.
-			$unfiltered_result_ids = $this->run_cached_query( $unfiltered_cache_key, $unfiltered_full_query_args );
+			$unfiltered_result_ids = $this->result_lookup( $unfiltered_cache_key, $unfiltered_full_query_args );
 
 		}
 
 		// Update the unfiltered result IDs.
 		$this->set_unfiltered_result_ids( $unfiltered_result_ids );
 
-		$this->query_args             = $query_args;
-		$this->query_args['post__in'] = $this->get_updated_post__in( $query_args, $post__in );
+		$this->query_args = $query_args;
+		$updated_post__in = $this->get_updated_post__in( $query_args, $post__in );
+		// Convert any object IDs to their parents.
+		$resolved_post__in = $this->resolve_parents( $updated_post__in );
+		$this->query_args['post__in'] = $resolved_post__in;
 
-		$end_time = microtime( true );
-		$is_rest  = defined( 'REST_REQUEST' ) && REST_REQUEST;
-		if ( ! $is_rest && ! wp_doing_ajax() && ! is_admin() ) {
-			// echo 'Time for unfiltered query: ' . $query->get_id() . ': ' . ( $end_time - $this->timer ) . "<br />\r\n";
-		}
+		do_action( 'search-filter-pro/indexer/query/init/finish', $query );
 	}
 
 	/**
@@ -261,10 +279,10 @@ class Query {
 	 * @since 3.0.0
 	 *
 	 * @param string $cache_key The cache key to use.
-	 * @param array  $full_query_args The full query args.
+	 * @param array  $query_args The full query args.
 	 * @return array The result IDs.
 	 */
-	private function run_cached_query( $cache_key, $full_query_args ) {
+	private function result_lookup( $cache_key, $query_args ) {
 
 		$result_ids = false;
 
@@ -275,8 +293,24 @@ class Query {
 
 		// If not cached, then run the query.
 		if ( ! $result_ids ) {
-			$full_query = new \WP_Query( $full_query_args );
 
+			$query_args = apply_filters( 'search-filter-pro/indexer/query/result_lookup/query_args', $query_args, $this->get_query() );
+
+			
+			// Before we run the query, we need to remove the `pre_get_posts` hooks that
+			// are already attached to prevent infinite loops.
+			\Search_Filter\Query\Selector::detach_pre_get_posts_hooks();
+			\Search_Filter\Query::detach_pre_get_posts_hooks();
+
+			// Remove existing hooks from our plugin to prevent infinite loops.
+			do_action( 'search-filter/query/pre_get_posts/detach' );
+			$full_query = new \WP_Query( $query_args );
+			// Re-attach the hooks.
+			do_action( 'search-filter/query/pre_get_posts/attach' );
+
+			\Search_Filter\Query\Selector::attach_pre_get_posts_hooks();
+			\Search_Filter\Query::attach_pre_get_posts_hooks();
+	
 			if ( $this->enable_caching ) {
 				$this->add_query_cache( $cache_key, $full_query->posts );
 			}
@@ -362,18 +396,52 @@ class Query {
 	 * @param array $query_post__in The query post in.
 	 * @return array The updated post in.
 	 */
-	private static function get_updated_post__in( $query_args, $query_post__in ) {
-		$new_post__in = array();
-		if ( isset( $query_args['post__in'] ) && count( $query_args['post__in'] ) > 0 ) {
-			if ( empty( $query_post__in ) ) {
-				$new_post__in = $query_args['post__in'];
-			} else {
-				$new_post__in = self::array_intersect( $query_args['post__in'], $query_post__in );
-			}
-		} else {
-			$new_post__in = $query_post__in;
+	private function get_updated_post__in( $query_args, $query_post__in ) {
+		$query_args_post__in = isset( $query_args['post__in'] ) ? $query_args['post__in'] : array();
+
+		// If $query_post__in is null, then there are no filters applied to intersect with, 
+		// use the query args post__in if it exists otherwise return an empty array.
+		if ( $query_post__in === null ) {
+			return $query_args_post__in;
+		}
+
+		// If there is no post__in in the query args and query_post__in is set, then use the query_post__in.
+		// Don't use `empty()` as we want to know if there is a `0` in the array.
+		if ( count( $query_args_post__in ) === 0 ) {
+			return $query_post__in;
+		}
+
+		$new_post__in = self::array_intersect( $query_args_post__in, $query_post__in );
+		// After we intersect the 2 arrays, if there are no results, then there are no possible
+		// results to satisfy the query, so return a post ID of `0` to force a no results message.
+		if ( count( $new_post__in ) === 0 ) {
+			return array( 0 );
 		}
 		return $new_post__in;
+	}
+
+	/**
+	 * Get the updated post__in.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $query_args The query args.
+	 * @param array $query_post__in The query post in.
+	 * @return array The updated post in.
+	 */
+	private function resolve_parents( $post__in ) {
+
+		if ( empty( $this->object_parents ) ) {
+			return $post__in;
+		}
+
+		// TODO - can we make this faster - we could mark their positions when
+		// we combine the arrays so we don't have to loop through it all again.
+		$resolved_post__in = array();
+		foreach ( $post__in as $post_id ) {
+			$resolved_post__in[] = isset( $this->object_parents[ $post_id ] ) ? $this->object_parents[ $post_id ] : $post_id;
+		}
+		return $resolved_post__in;
 	}
 
 	/**
@@ -534,6 +602,11 @@ class Query {
 	 * @return array|null  The result IDs or null if there was no field query.
 	 */
 	public function field_query( $field ) {
+
+		if ( $field->get_query_type() !== 'indexer' ) {
+			return null;
+		}
+
 		$field_type = $field->get_attribute( 'type' );
 		if ( $field_type === 'search' ) {
 			return $this->search( $field );
@@ -544,12 +617,13 @@ class Query {
 		} elseif ( $field_type === 'advanced' ) {
 			return $this->advanced( $field );
 		}
+
 		// Return null so we know there was no field query.
 		return null;
 	}
 
 	/**
-	 * Run the choice field query.
+	 * Run the search field query.
 	 *
 	 * @since 3.0.0
 	 *
@@ -558,29 +632,19 @@ class Query {
 	 */
 	public function search( $field ) {
 
-		// For now, lets not support using the indexer for searching by default, we can enable it
-		// on a case by case basis if needed.
-		$should_enable = apply_filters( 'search-filter-pro/indexer/query/search/should_enable', false, $field );
-		if ( ! $should_enable ) {
-			return null;
-		}
-
 		$field_value = $field->get_value();
-		$query_id    = $field->get_query_id();
 		$field_id    = $field->get_id();
-
-		// $this->init_field_values_ids( $query_id, $field_id, array( $field_value ) );
 
 		if ( empty( $field_value ) ) {
 			return array();
 		}
-
+		
 		$field_post_ids = array();
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'search_filter_index';
 		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedPlaceholder, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
-		$results = $wpdb->get_results( $wpdb->prepare( 'SELECT object_id FROM %i WHERE field_id = %d AND value LIKE %s', $table_name, $field_id, '%' . $field_value . '%' ) );
+		$results = $wpdb->get_results( $wpdb->prepare( 'SELECT object_id, object_parent_id FROM %i WHERE field_id = %d AND value LIKE %s', $table_name, $field_id, '%' . $field_value . '%' ) );
 
 		if ( $results === null ) {
 			return array();
@@ -653,6 +717,132 @@ class Query {
 		return $field_post_ids;
 	}
 
+
+
+	/**
+	 * Run the range field query.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param Field $field The field to run the query for.
+	 * @return array  The result IDs.
+	 */
+	public function range( $field ) {
+
+		$field_values = $field->get_values();
+
+		if ( empty( $field_values ) ) {
+			// Return null so we know there was no range query.
+			return null;
+		}
+
+		$field_id = $field->get_id();
+
+		$value_conditions = array(
+			'relation' => 'AND',
+		);
+		if ( isset( $field_values[0] ) && $field_values[0] !== '' ) {
+			$value_conditions[] = array(
+				'compare'  => '>=',
+				'value'    => $field_values[0],
+				'decimals' => absint( $field->get_attribute( 'rangeDecimalPlaces' ) ),
+			);
+		}
+		if ( isset( $field_values[1] ) && $field_values[1] !== '' ) {
+			$value_conditions[] = array(
+				'compare'  => '<=',
+				'value'    => $field_values[1],
+				'decimals' => absint( $field->get_attribute( 'rangeDecimalPlaces' ) ),
+			);
+		}
+
+		$args  = array(
+			'fields'      => 'object_id',
+			'groupby'     => 'object_id',
+			'number'      => 0,
+			'field_id'    => $field_id,
+			'value_query' => $value_conditions,
+		);
+		$query = new Index_Query( $args );
+
+		$this->field_result_ids[ $field_id ] = $query->items;
+
+		return $this->field_result_ids[ $field_id ];
+	}
+	/**
+	 * Run the advanced field query.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param Field $field The field to run the query for.
+	 * @return array  The result IDs.
+	 */
+	public function advanced( $field ) {
+
+		$field_values = $field->get_values();
+
+		if ( empty( $field_values ) ) {
+			// Return null so we know there was no advanced query.
+			return null;
+		}
+
+		$field_id = $field->get_id();
+
+		$field_input_type = $field->get_attribute( 'inputType' );
+
+		$value_conditions = array(
+			'relation' => 'AND',
+		);
+
+		if ( $field_input_type === 'date_picker' ) {
+
+			$field_values = array_map(
+				function( $value ) {
+					return str_replace( '-', '', $value );
+				},
+				$field_values
+			);
+
+			if ( count( $field_values ) === 2 ) {
+				if ( isset( $field_values[0] ) && $field_values[0] !== '' ) {
+					$value_conditions[] = array(
+						'compare' => '>=',
+						'value'   => $field_values[0],
+						'type'    => 'DATE',
+					);
+				}
+				if ( isset( $field_values[1] ) && $field_values[1] !== '' ) {
+					$value_conditions[] = array(
+						'compare' => '<=',
+						'value'   => $field_values[1],
+						'type'    => 'DATE',
+					);
+				}
+			}
+
+			// TODO need to properly check if we're dealing with a range or single value.
+			if ( count( $field_values ) === 1 ) {
+				$value_conditions[] = array(
+					'compare' => '=',
+					'value'   => $field_values[0],
+					'type'    => 'DATE',
+				);
+			}
+		}
+
+		$args  = array(
+			'fields'      => 'object_id',
+			'groupby'     => 'object_id',
+			'number'      => 0,
+			'field_id'    => $field_id,
+			'value_query' => $value_conditions,
+		);
+		$query = new Index_Query( $args );
+
+		$this->field_result_ids[ $field_id ] = $query->items;
+
+		return $this->field_result_ids[ $field_id ];
+	}
 	/**
 	 * Combine two arrays based on the operator.
 	 *
@@ -707,6 +897,7 @@ class Query {
 	 * @return array  The transformed field values.
 	 */
 	private function get_choice_field_values( $field ) {
+
 		$field_values = $field->get_values();
 		// We might need to transform the url values to a DB stored format.
 
@@ -719,127 +910,6 @@ class Query {
 		}
 		return $field_values;
 	}
-
-	/**
-	 * Run the range field query.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param Field $field The field to run the query for.
-	 * @return array  The result IDs.
-	 */
-	public function range( $field ) {
-		$field_values = $field->get_values();
-
-		if ( empty( $field_values ) ) {
-			// Return null so we know there was no range query.
-			return null;
-		}
-
-		$field_id = $field->get_id();
-
-		$value_conditions = array(
-			'relation' => 'AND',
-		);
-		if ( isset( $field_values[0] ) && $field_values[0] !== '' ) {
-			$value_conditions[] = array(
-				'compare'  => '>=',
-				'value'    => $field_values[0],
-				'decimals' => absint( $field->get_attribute( 'rangeDecimalPlaces' ) ),
-			);
-		}
-		if ( isset( $field_values[1] ) && $field_values[1] !== '' ) {
-			$value_conditions[] = array(
-				'compare'  => '<=',
-				'value'    => $field_values[1],
-				'decimals' => absint( $field->get_attribute( 'rangeDecimalPlaces' ) ),
-			);
-		}
-
-		$args  = array(
-			'fields'      => 'object_id',
-			'groupby'     => 'object_id',
-			'number'      => 0,
-			'field_id'    => $field_id,
-			'value_query' => $value_conditions,
-		);
-		$query = new Index_Query( $args );
-
-		$this->field_result_ids[ $field_id ] = $query->items;
-
-		return $this->field_result_ids[ $field_id ];
-	}
-	/**
-	 * Run the advanced field query.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param Field $field The field to run the query for.
-	 * @return array  The result IDs.
-	 */
-	public function advanced( $field ) {
-		$field_values = $field->get_values();
-
-		if ( empty( $field_values ) ) {
-			// Return null so we know there was no advanced query.
-			return null;
-		}
-
-		$field_id = $field->get_id();
-
-		$field_input_type = $field->get_attribute( 'inputType' );
-
-		$value_conditions = array(
-			'relation' => 'AND',
-		);
-
-		if ( $field_input_type === 'date_picker' ) {
-
-			$field_values = array_map(
-				function( $value ) {
-					return str_replace( '-', '', $value );
-				},
-				$field_values
-			);
-
-			if ( count( $field_values ) === 2 ) {
-				if ( isset( $field_values[0] ) && $field_values[0] !== '' ) {
-					$value_conditions[] = array(
-						'compare' => '>=',
-						'value'   => $field_values[0],
-					);
-				}
-				if ( isset( $field_values[1] ) && $field_values[1] !== '' ) {
-					$value_conditions[] = array(
-						'compare' => '<=',
-						'value'   => $field_values[1],
-					);
-				}
-			}
-
-			// TODO need to properly check if we're dealing with a range or single value.
-			if ( count( $field_values ) === 1 ) {
-				$value_conditions[] = array(
-					'compare' => '=',
-					'value'   => $field_values[0],
-				);
-			}
-		}
-
-		$args  = array(
-			'fields'      => 'object_id',
-			'groupby'     => 'object_id',
-			'number'      => 0,
-			'field_id'    => $field_id,
-			'value_query' => $value_conditions,
-		);
-		$query = new Index_Query( $args );
-
-		$this->field_result_ids[ $field_id ] = $query->items;
-
-		return $this->field_result_ids[ $field_id ];
-	}
-
 	/**
 	 * Get the result IDs for a field value.
 	 *
@@ -851,17 +921,43 @@ class Query {
 	 */
 	private function get_field_value_ids( $query_id, $field_id, $field_value ) {
 
-		$value = Query_Cache::get_value(
-			array(
-				'query_id'  => $query_id,
-				'field_id'  => $field_id,
-				'type'      => 'query',
-				'cache_key' => $field_value,
-			)
-		);
+		$value  = null;
+		$values = array();
 
-		if ( $value === false ) {
-			return array();
+		// Whether to collapse children into parents, if so, we need to record the object
+		// parent IDs for conversion later.
+		$collapse_children_into_parents = apply_filters( 'search-filter-pro/indexer/query/collapse_children', true, $this->query );
+		if ( $this->enable_caching ) {
+			$value = Query_Cache::get_value(
+				array(
+					'query_id'  => $query_id,
+					'field_id'  => $field_id,
+					'type'      => 'query',
+					'cache_key' => $field_value,
+				)
+			);
+
+			$values = explode( ',', $value );
+			if ( $value === false ) {
+				return array();
+			}
+
+			if ( $collapse_children_into_parents ) {
+				$result_parents = Query_Cache::get_value(
+					array(
+						'query_id'  => $query_id,
+						'field_id'  => $field_id,
+						'type'      => 'query-parents',
+						'cache_key' => $field_value,
+					)
+				);
+				if ( $result_parents ) {
+					$result_parents = json_decode( $result_parents, true );
+					foreach ( $result_parents as $object_id => $parent_id ) {
+						$this->object_parents[ $object_id ] = $parent_id;
+					}
+				}
+			}
 		}
 
 		if ( $value === null ) {
@@ -871,7 +967,7 @@ class Query {
 					'field_id' => $field_id,
 					'value'    => $field_value,
 					'number'   => 0,
-					'fields'   => 'object_id',
+					'fields'   => array( 'object_id', 'object_parent_id' ),
 				)
 			);
 
@@ -879,20 +975,52 @@ class Query {
 				return array();
 			}
 
-			$value = implode( ',', $query->items );
+			$query_cache_value = '';
+			$query_parents     = array();
 
-			Query_Cache::update_item(
-				array(
-					'query_id'    => $query_id,
-					'field_id'    => $field_id,
-					'type'        => 'query',
-					'cache_key'   => $field_value,
-					'cache_value' => $value,
-				)
-			);
+			$values      = array();
+			$items_count = count( $query->items );
+			for ( $i = 0; $i < $items_count; $i++ ) {
+				$item = $query->items[ $i ];
+				if ( absint( $item->object_parent_id ) !== 0 ) {
+					// Store the parents for caching seperately.
+					$query_parents[ $item->object_id ] = $item->object_parent_id;
+					// Update the parent reference.
+					$this->object_parents[ $item->object_id ] = $item->object_parent_id;
+				}
+				$values[]           = $item->object_id;
+				$query_cache_value .= $item->object_id;
+				if ( $i < $items_count - 1 ) {
+					$query_cache_value .= ',';
+				}
+			}
+
+			if ( $this->enable_caching ) {
+				Query_Cache::update_item(
+					array(
+						'query_id'    => $query_id,
+						'field_id'    => $field_id,
+						'type'        => 'query',
+						'cache_key'   => $field_value,
+						'cache_value' => $query_cache_value,
+					)
+				);
+
+				if ( $collapse_children_into_parents ) {
+					Query_Cache::update_item(
+						array(
+							'query_id'    => $query_id,
+							'field_id'    => $field_id,
+							'type'        => 'query-parents',
+							'cache_key'   => $field_value,
+							'cache_value' => wp_json_encode( $query_parents ),
+						)
+					);
+				}
+			}
 		}
 
-		return explode( ',', $value );
+		return $values;
 	}
 
 	/**
@@ -918,32 +1046,39 @@ class Query {
 		);
 	}
 	/**
-	 * Apply the field WP_Query args to the WP_Query args.
+	 * Whether the query has a search term.
+	 *
+	 * TODO - at the next major version, use the query `has_search` method instead.
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array                       $query_args  The query args to get the field WP_Query args for.
-	 * @param Search_Filter\Queries\Query $query       The query to get the field WP_Query args for.
-	 * @return array    The field WP_Query args.
+	 * @return bool Whether the query has a search term.
 	 */
-	private function apply_fields_wp_query_args( $query_args, $query ) {
-		$fields = $query->get_fields();
+	public function has_search() {
 
+		if ( $this->has_search !== null ) {
+			return $this->has_search;
+		}
+
+		$fields = $this->query->get_fields();
+
+		$this->has_search = false;
 		foreach ( $fields as $field ) {
+			if ( is_wp_error( $field ) ) {
+				continue;
+			}
 			$type = $field->get_attribute( 'type' );
 
-			if ( $type === 'search' ) {
-				$values = $field->get_values();
-				if ( ! empty( $values ) ) {
-					$this->has_search = true;
-				}
-				$query_args = $field->apply_wp_query_args( $query_args );
-			} elseif ( $type === 'control' ) {
-				// Most controls do not apply query args, but some do.
-				$query_args = $field->apply_wp_query_args( $query_args );
+			if ( $type !== 'search' ) {
+				continue;
+			}
+			$values = $field->get_values();
+			if ( ! empty( $values ) ) {
+				$this->has_search = true;
+				break;
 			}
 		}
-		return $query_args;
+		return $this->has_search;
 	}
 
 	/**
@@ -963,12 +1098,12 @@ class Query {
 
 	/**
 	 * Gets the combined result IDs of all the fields excluding the
-	 * specified ID.
+	 * specified field ID.
 	 *
-	 * Requried to calculate the counts of fields that are using match
+	 * Required to calculate the counts of fields that are using match
 	 * mode `any`.
 	 *
-	 * @param mixed $exclude_field_id
+	 * @param mixed $exclude_field_id The field ID to exclude.
 	 * @return mixed
 	 */
 	public function get_combined_result_field_ids_excluding( $exclude_field_id ) {
@@ -1011,14 +1146,4 @@ class Query {
 		return $combined_result_ids;
 	}
 
-	/**
-	 * Has search term.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @return bool    True if the query has a search term.
-	 */
-	public function has_search() {
-		return $this->has_search;
-	}
 }

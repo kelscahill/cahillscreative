@@ -100,6 +100,9 @@ class Upgrader {
 			}
 		}
 		update_option( 'search-filter-pro-version', SEARCH_FILTER_PRO_VERSION );
+
+		// Clear caches for all S&F plugins & extensions.
+		Update_Manager::invalidate_updater_caches();
 	}
 	/**
 	 * Checks to see if we're on a pre beta-12 version.
@@ -146,3 +149,5 @@ class Upgrader {
 Upgrader::register_upgrade( '3.0.4', '\Search_Filter_Pro\Core\Upgrader\Upgrade_3_0_4', '3.0.4' );
 Upgrader::register_upgrade( '3.0.5', '\Search_Filter_Pro\Core\Upgrader\Upgrade_3_0_5', '3.0.5' );
 Upgrader::register_upgrade( '3.0.6', '\Search_Filter_Pro\Core\Upgrader\Upgrade_3_0_6', '3.0.6' );
+Upgrader::register_upgrade( '3.1.0', '\Search_Filter_Pro\Core\Upgrader\Upgrade_3_1_0', '3.1.0' );
+Upgrader::register_upgrade( '3.1.5', '\Search_Filter_Pro\Core\Upgrader\Upgrade_3_1_5' );

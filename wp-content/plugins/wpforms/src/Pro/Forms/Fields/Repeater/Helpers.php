@@ -121,6 +121,41 @@ class Helpers {
 	}
 
 	/**
+	 * Get previewable form data.
+	 *
+	 * @since 1.9.3
+	 *
+	 * @param array $form_data Form data.
+	 * @param array $field     Field data.
+	 *
+	 * @return array
+	 */
+	public static function get_previewable_form_data( array $form_data, array $field ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+
+		$field_settings = $form_data['fields'][ $field['id'] ] ?? [];
+
+		if ( empty( $field_settings ) ) {
+			return $form_data;
+		}
+
+		foreach ( $field_settings['columns'] as $column_id => $column ) {
+			$column_fields = $column['fields'] ?? [];
+
+			foreach ( $column_fields as $field_index => $field_id ) {
+				$inner_field = $form_data['fields'][ $field_id ] ?? [];
+
+				if ( in_array( $inner_field['type'] ?? '', [ 'html', 'content', 'hidden', 'internal-information' ], true ) ) {
+					unset( $field_settings['columns'][ $column_id ]['fields'][ $field_index ] );
+				}
+			}
+		}
+
+		$form_data['fields'][ $field['id'] ] = $field_settings;
+
+		return $form_data;
+	}
+
+	/**
 	 * Get the number of repeater clones.
 	 *
 	 * @since 1.8.9

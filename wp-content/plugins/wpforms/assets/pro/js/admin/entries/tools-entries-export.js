@@ -411,7 +411,6 @@ const WPFormsEntriesExport = window.WPFormsEntriesExport || ( function( document
 			vars.Choices = new Choices( el.$selectStatuses[ 0 ], {
 				removeItemButton: true,
 				allowHTML: false, // TODO: Remove after next Choices.js release.
-				itemSelectText: '',
 			} );
 		},
 

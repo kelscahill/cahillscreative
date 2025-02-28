@@ -28,7 +28,7 @@ class ChannelVisibility implements CastableValueInterface, ValueInterface {
 	protected $visibility;
 
 	/**
-	 * PositiveInteger constructor.
+	 * ChannelVisibility constructor.
 	 *
 	 * @param string $visibility The value.
 	 *

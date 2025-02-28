@@ -69,7 +69,7 @@ class NotificationsService implements Service, OptionsAwareInterface {
 
 
 	/**
-	 * Class constructor
+	 * NotificationsService constructor
 	 *
 	 * @param MerchantCenterService $merchant_center
 	 * @param AccountService        $account_service
@@ -126,7 +126,7 @@ class NotificationsService implements Service, OptionsAwareInterface {
 
 		do_action(
 			'woocommerce_gla_debug_message',
-			sprintf( 'Notification - Item ID: %s - Topic: %s - Data %s', $item_id, $topic, json_encode( $data ) ),
+			sprintf( 'Notification - Item ID: %s - Topic: %s - Data %s', $item_id, $topic, wp_json_encode( $data ) ),
 			__METHOD__
 		);
 

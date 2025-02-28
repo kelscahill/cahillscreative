@@ -388,9 +388,6 @@ trait terms_and_taxonomies
 	{
 		$bcd = $action->broadcasting_data;
 
-		// Syncing taxonomies doesn't go through the proper custom_fields setup (in order to retrieve blacklists and what not), so we have to do it, just in case.
-		$bcd->prepare_custom_fields();
-
 		$bcd->parent_blog_taxonomies = get_object_taxonomies( [ 'object_type' => $bcd->post->post_type ], 'array' );
 		$bcd->parent_post_taxonomies = [];
 

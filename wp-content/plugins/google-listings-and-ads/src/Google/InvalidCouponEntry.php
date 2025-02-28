@@ -42,14 +42,14 @@ class InvalidCouponEntry implements JsonSerializable {
 	 *
 	 * @param int         $wc_coupon_id
 	 * @param string[]    $errors
-	 * @param string      $target_country
+	 * @param string|null $target_country
 	 * @param string|null $google_promotion_id
 	 */
 	public function __construct(
 		int $wc_coupon_id,
 		array $errors = [],
-		string $target_country = null,
-		string $google_promotion_id = null
+		?string $target_country = null,
+		?string $google_promotion_id = null
 	) {
 		$this->wc_coupon_id        = $wc_coupon_id;
 		$this->target_country      = $target_country;

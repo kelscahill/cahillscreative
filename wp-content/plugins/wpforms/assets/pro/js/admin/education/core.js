@@ -176,7 +176,7 @@ WPFormsEducation.proCore = window.WPFormsEducation.proCore || ( function( docume
 			}
 
 			var modalTitle   = feature + ' ' + wpforms_education.upgrade[type].title,
-				isVideoModal = ! _.isEmpty( video ),
+				isVideoModal = Boolean( video ),
 				modalWidth   = WPFormsEducation.core.getUpgradeModalWidth( isVideoModal );
 
 			if ( typeof fieldName !== 'undefined' && fieldName.length > 0 ) {

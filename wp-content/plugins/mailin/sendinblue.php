@@ -3,7 +3,7 @@
  * Plugin Name: Newsletter, SMTP, Email marketing and Subscribe forms by Brevo
  * Plugin URI: https://www.brevo.com/?r=wporg
  * Description: Manage your contact lists, subscription forms and all email and marketing-related topics from your wp panel, within one single plugin
- * Version: 3.1.89
+ * Version: 3.1.93
  * Author: Brevo
  * Author URI: https://www.brevo.com/?r=wporg
  * License: GPLv2 or later
@@ -50,7 +50,6 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 	require_once( 'page/page-home.php' );
 	require_once( 'page/page-form.php' );
 	require_once( 'page/page-statistics.php' );
-	require_once( 'page/page-scenarios.php' );
 	require_once( 'widget/widget_form.php' );
 	require_once( 'inc/table-forms.php' );
 	require_once( 'inc/sib-api-manager.php' );
@@ -64,6 +63,10 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 	 * Class SIB_Manager
 	 */
 	class SIB_Manager {
+
+        	private const ROUTE_METHODS = 'methods';
+        	private const ROUTE_CALLBACK = 'callback';
+		private const PERMISSION_CALLBACK = 'permission_callback';
 
 		/** Main setting option name */
 		const MAIN_OPTION_NAME = 'sib_main_option';
@@ -88,6 +91,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 
 		/** Installation id option name */
 		const INSTALLATION_ID = 'sib_installation_id';
+		const BREVO_PLUGIN_VERSION = 'brevo_plugin_version';
 
         /*Pushowl Url */
         const PUSHOWL_STAGING_URL = "https://cdn-staging.pushowl.com/latest/sdks/service-worker.js";
@@ -240,9 +244,11 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			self::$access_key = isset( $general_settings['access_key'] ) ? $general_settings['access_key'] : '';
 
 			self::$instance = $this;
+			add_action('plugins_loaded', array( &$this, 'brevo_wp_load' ) );
 			add_action( 'upgrader_process_complete', array( &$this, 'my_upgrade_function' ), 10, 2);
 			add_action( 'admin_init', array( &$this, 'admin_init' ), 9999 );
 			add_action( 'admin_menu', array( &$this, 'admin_menu' ), 9999 );
+			add_action('rest_api_init', array($this, 'create_brevo_rest_endpoints'));
 
 			add_action( 'wp_print_scripts', array( &$this, 'frontend_register_scripts' ), 9999 );
 			add_action( 'wp_enqueue_scripts', array( &$this, 'wp_head_ac' ), 999 );
@@ -423,10 +429,6 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			new SIB_Page_Home();
 			new SIB_Page_Form();
 			new SIB_Page_Statistics();
-			$home_settings = get_option( SIB_Manager::HOME_OPTION_NAME );
-			if ( isset( $home_settings['activate_ma'] ) && 'yes' == $home_settings['activate_ma'] ) {
-				new SIB_Page_Scenarios();
-			}
 
 		}
 
@@ -493,7 +495,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 				// Default option when activate.
 				$home_settings = array(
 					'activate_email' => 'no',
-					'activate_ma' => 'no',
+					'activate_ma' => 'default',
 				);
 				update_option( self::HOME_OPTION_NAME, $home_settings );
 			}
@@ -511,7 +513,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 
 			$home_settings = array(
 				'activate_email' => 'no',
-				'activate_ma' => 'no',
+				'activate_ma' => 'default',
 			);
 			update_option( SIB_Manager::HOME_OPTION_NAME, $home_settings );
 
@@ -539,6 +541,8 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			if(!empty($installationId))
 			{
 				$apiClient = new SendinblueApiClient();
+				$params["connection"] = 27;
+				$params["plugin_version"] = SendinblueApiClient::PLUGIN_VERSION;
 				$params["active"] = false;
 				$params["deactivated_at"] = gmdate("Y-m-d\TH:i:s\Z");
 				$apiClient->updateInstallationInfo($installationId, $params);
@@ -551,6 +555,8 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			if(!empty($installationId))
 			{
 				$apiClient = new SendinblueApiClient();
+				$params["connection"] = 27;
+				$params["plugin_version"] = SendinblueApiClient::PLUGIN_VERSION;
 				$params["active"] = true;
 				$params["activated_at"] = gmdate("Y-m-d\TH:i:s\Z");
 				$apiClient->updateInstallationInfo($installationId, $params);
@@ -616,6 +622,17 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 		    return !empty($api_key);
         }
 
+		static function is_ma_active() {
+			$general_settings = get_option( SIB_Manager::MAIN_OPTION_NAME, array() );
+			$ma_key = isset( $general_settings['ma_key'] ) ? sanitize_text_field($general_settings['ma_key']) : null;
+			if ( $ma_key === null || strlen($ma_key) === 0 ) {
+				return false;
+			}
+			$home_settings = get_option( SIB_Manager::HOME_OPTION_NAME, array() );
+			$activate_ma = isset( $home_settings['activate_ma'] ) ? $home_settings['activate_ma'] : 'default';
+			return 'no' !== $activate_ma;
+		}
+
 		static function fetch_and_save_installation_id()
 		{
 			$apiClient = new SendinblueApiClient();
@@ -676,9 +693,9 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 		 * Install marketing automation script in header
 		 */
 		function install_ma_script() {
-			$home_settings = get_option( SIB_Manager::HOME_OPTION_NAME, array() );
-			if ( isset( $home_settings['activate_ma'] ) && 'yes' == $home_settings['activate_ma'] ) {
+			if ( SIB_Manager::is_ma_active() ) {
 				$general_settings = get_option( SIB_Manager::MAIN_OPTION_NAME, array() );
+				$ma_key = isset( $general_settings['ma_key'] ) ? sanitize_text_field($general_settings['ma_key']) : null;
                 $service_worker = __DIR__ . self::SERVICE_WORKER_FILE_URL;
                 if ( ! file_exists($service_worker)) {
                     self::install_service_worker_script($service_worker);
@@ -688,13 +705,18 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 				if ( $current_user instanceof WP_User ) {
 					$ma_email = $current_user->user_email;
 				}
-				$ma_key = sanitize_text_field($general_settings['ma_key']);
+				$pushOptions = json_encode(array(
+					'customDomain' => SIB_Manager::$plugin_url . '/',
+					'userId' => $ma_email ?: null,
+				));
 				$output = '<script src="https://cdn.brevo.com/js/sdk-loader.js" async></script>';
 				$output .= '<script>window.Brevo = window.Brevo || [];
 								Brevo.push([
 									"init",
 								{
-									client_key:"' . $ma_key .'",';
+									client_key:"' . $ma_key .'",
+									push: '.$pushOptions.',
+									';
 				$output .= 'email_id : "' . sanitize_email($ma_email) . '",},]);</script>';
 				echo html_entity_decode($output);
 			} else {
@@ -1676,6 +1698,25 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			activate_plugin( $current_plugin_path_name );
 		}
 
+
+		public function brevo_wp_load()
+		{
+			$installationId = get_option( SIB_Manager::INSTALLATION_ID );
+			$pluginVersion = get_option( SIB_Manager::BREVO_PLUGIN_VERSION );
+			if(!empty($installationId) && (empty($pluginVersion) || $pluginVersion != SendinblueApiClient::PLUGIN_VERSION))
+			{
+				$apiClient = new SendinblueApiClient();
+				$params["connection"] = 27;
+				$params["plugin_version"] = SendinblueApiClient::PLUGIN_VERSION;
+				$params["shop_version"] = get_bloginfo('version');
+				$apiClient->updateInstallationInfo($installationId, $params);;
+				if ( $apiClient->getLastResponseCode() === SendinblueApiClient::RESPONSE_CODE_NO_CONTENT )
+				{
+					update_option(SIB_Manager::BREVO_PLUGIN_VERSION, SendinblueApiClient::PLUGIN_VERSION);
+				}
+			}
+		}
+
 		public static function wordpress_allowed_attributes()
 		{
 			global $allowedposttags, $allowedtags, $allowedentitynames;
@@ -1689,6 +1730,60 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 
 			return $attributes;
 		}
+
+		static function create_brevo_rest_endpoints() {
+			$path = '/mailin_disconnect';
+
+			$arguments = array(
+                self::ROUTE_METHODS    => 'DELETE',
+				self::ROUTE_CALLBACK   => function ($request) {
+					return self::mailin_disconnect($request);
+				},
+				self::PERMISSION_CALLBACK => '__return_true',
+			);
+
+  	        register_rest_route("mailin/v1", $path, $arguments);
+		}
+
+        private static function mailin_disconnect($request) {
+			$request = $request->get_params();
+			$user_connection_id = isset($request['id']) ? $request['id'] : '';
+            if (!empty($user_connection_id)) {
+                $installationId = get_option( SIB_Manager::INSTALLATION_ID );
+				
+                if ($user_connection_id == $installationId) {
+                    self::delete_connection();
+                } else {
+                    return new WP_REST_Response(
+                        array(
+                            'message' => "user_connection_id not found"
+                        ), 404);
+                }
+            }
+        }
+
+        private static function delete_connection()
+        {
+            $setting = array();
+			update_option( self::MAIN_OPTION_NAME, $setting );
+			delete_option(self::API_KEY_V3_OPTION_NAME);
+
+			$home_settings = array(
+				'activate_email' => 'no',
+				'activate_ma' => 'default',
+			);
+			update_option( self::HOME_OPTION_NAME, $home_settings );
+
+			// remove sync users option.
+			delete_option( 'sib_sync_users' );
+			// remove all transients.
+			SIB_API_Manager::remove_transients();
+
+			// remove all forms.
+			SIB_Forms::removeAllForms();
+			SIB_Forms_Lang::remove_all_trans();
+			delete_option(SIB_Manager::INSTALLATION_ID);
+        }
     }
 
 	add_action( 'sendinblue_init', 'sendinblue_init' );

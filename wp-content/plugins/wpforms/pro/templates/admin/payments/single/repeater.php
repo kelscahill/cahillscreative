@@ -21,32 +21,20 @@ if ( ! $blocks ) {
 	return '';
 }
 
-?>
+$display = $field['display'] ?? 'blocks';
 
-<?php foreach ( $blocks as $key => $rows ) : ?>
-	<div class="wpforms-payment-entry-repeater-block">
-		<?php
-		$block_number = $key >= 1 ? ' #' . ( $key + 1 ) : '';
-		?>
+$args = [
+	'field' => $field,
+];
 
-		<p class="wpforms-payment-entry-field-name">
-			<?php echo esc_html( $field['label'] . $block_number ); ?>
-		</p>
+if ( $display === 'blocks' ) {
+	$args['blocks'] = $blocks;
+} else {
+	$args['rows'] = $field['columns'];
+}
 
-		<?php
-		foreach ( $rows as $row_data ) {
-			foreach ( $row_data as $data ) {
-				if ( isset( $data['field'] ) && $data['field'] ) {
-					echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						'admin/payments/single/field',
-						[
-							'field' => $data['field'],
-						],
-						true
-					);
-				}
-			}
-		}
-		?>
-	</div>
-<?php endforeach; ?>
+echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	"admin/payments/single/repeater-{$display}",
+	$args,
+	true
+);

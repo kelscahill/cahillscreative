@@ -303,11 +303,6 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 			var alert = wpforms_builder.conditionals_change + '<br>',
 				updateAlert;
 
-			if ( wpf.empty( updater.allFields ) ) {
-
-				updater.cacheAllFields( wpf.getFields() );
-			}
-
 			$( '.wpforms-conditional-field' ).each( function() {
 
 				if ( fieldData.id === Number( $( this ).val() ) ) {
@@ -399,23 +394,23 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 *
 		 * @since 1.6.0.2
 		 *
-		 * @param  {mixed} field Field ID or field name.
-		 * @returns {string} HTML message.
+		 * @param {string|number} field Field ID or field name.
+		 *
+		 * @return {string} HTML message.
 		 */
-		getChangedFieldNameForAlert: function( field ) {
-
+		getChangedFieldNameForAlert( field ) {
 			if ( ! wpf.isNumber( field ) ) {
-
 				// Panel
 				return '<br>' + field;
 			}
 
-			// Field
-			if ( ( ( updater.allFields[field] || {} ).label || '' ).length ) {
-				return '<br/>' + wpf.sanitizeString( updater.allFields[field].label ) + ' (' + wpforms_builder.field + ' #' + field + ')';
-			} else {
-				return '<br>' + wpforms_builder.field + ' #' + field;
+			const formData = wpf.formObject( '#wpforms-field-options' );
+
+			if ( ( ( formData.fields[ field ] || {} ).label || '' ).length ) {
+				return '<br/>' + wpf.sanitizeHTML( formData.fields[ field ].label ) + ' (' + wpforms_builder.field + ' #' + field + ')';
 			}
+
+			return '<br>' + wpforms_builder.field + ' #' + field;
 		},
 	};
 
@@ -573,6 +568,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 					fieldName  : $this.data( 'name' ),
 					actions    : $this.data( 'actions' ),
 					actionDesc : $this.data( 'action-desc' ),
+					reference  : $this.data( 'reference' ),
 				};
 
 			if ( $this.is( ':checked' ) ) {

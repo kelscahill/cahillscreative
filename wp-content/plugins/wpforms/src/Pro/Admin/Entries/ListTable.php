@@ -2006,6 +2006,11 @@ class ListTable extends WP_List_Table {
 			$data_args['notes_count'] = true;
 		}
 
+		// Reset the orderby if the parameter does not exist in columns.
+		if ( ! array_key_exists( $orderby, $columns ) ) {
+			$data_args['orderby'] = 'entry_id';
+		}
+
 		/**
 		 * Filters get entries arguments array.
 		 *

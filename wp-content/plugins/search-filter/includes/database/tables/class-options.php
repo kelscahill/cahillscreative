@@ -1,7 +1,6 @@
 <?php
 namespace Search_Filter\Database\Tables;
 
-use Error;
 use Search_Filter\Core\Data_Store;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -62,7 +61,7 @@ class Options extends \Search_Filter\Database\Engine\Table {
 			name            varchar(200) NOT NULL,
 			value           longtext     NOT NULL,
 			PRIMARY KEY (id),
-			UNIQUE KEY name (name)
+			UNIQUE KEY name (name(191))
 		';
 	}
 
@@ -80,7 +79,7 @@ class Options extends \Search_Filter\Database\Engine\Table {
 	 */
 	public function upgrade_3_0_1() {
 		$result = $this->get_db()->query(
-			"ALTER TABLE {$this->table_name} ADD UNIQUE INDEX name (name);"
+			"ALTER TABLE {$this->table_name} ADD UNIQUE INDEX name (name(191));"
 		);
 		return $this->is_success( $result );
 	}

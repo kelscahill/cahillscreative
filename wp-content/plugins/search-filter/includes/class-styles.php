@@ -120,11 +120,11 @@ class Styles {
 	 * @return void
 	 */
 	public static function init() {
-		add_action( 'search-filter/settings/init', 'Search_Filter\\Styles::add_default_styles', 10 );
+		add_action( 'search-filter/settings/init', 'Search_Filter\\Styles::add_default_styles', 1 );
 		add_action( 'search-filter/record/save', 'Search_Filter\\Styles::save_css', 10, 2 );
 
 		// Register settings.
-		self::register_settings();
+		add_action( 'init', array( __CLASS__, 'register_settings' ), 2 );
 	}
 	/**
 	 * Register the CSS handler.
@@ -143,7 +143,6 @@ class Styles {
 	public static function register_settings() {
 		// Register settings.
 		Styles_Settings::init( Fields_Settings::get_settings_by_tab( 'styles', 'arrays' ), Fields_Settings::get_groups() );
-		do_action( 'search-filter/settings/register/styles' );
 	}
 	/**
 	 * Adds a default styles preset to the database.

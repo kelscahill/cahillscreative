@@ -14,7 +14,7 @@ class SpamEntry {
 	 *
 	 * @since 1.8.3
 	 */
-	const ENTRY_STATUS = 'spam';
+	public const ENTRY_STATUS = 'spam';
 
 	/**
 	 * Initialize.
@@ -35,7 +35,7 @@ class SpamEntry {
 	 *
 	 * @return void
 	 */
-	public function hooks() {
+	public function hooks(): void {
 
 		// Spam entry save.
 		add_filter( 'wpforms_entry_save_args', [ $this, 'add_spam_status' ], 10, 2 );
@@ -80,12 +80,14 @@ class SpamEntry {
 	 *
 	 * @since 1.8.3
 	 *
-	 * @param array $args      Entry save args.
-	 * @param array $form_data Form data.
+	 * @param array|mixed $args      Entry save args.
+	 * @param array       $form_data Form data.
 	 *
 	 * @return array
 	 */
-	public function add_spam_status( $args, $form_data ) {
+	public function add_spam_status( $args, $form_data ): array {
+
+		$args = (array) $args;
 
 		if ( $this->is_spam_form_data( $form_data ) ) {
 			$args['status'] = self::ENTRY_STATUS;
@@ -103,6 +105,9 @@ class SpamEntry {
 	 * @param array $entry     Entry data.
 	 * @param array $form_data Form data.
 	 * @param int   $entry_id  Entry ID.
+	 *
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	public function add_meta_data( $fields, $entry, $form_data, $entry_id ) {
 
@@ -142,7 +147,7 @@ class SpamEntry {
 	 *
 	 * @return string
 	 */
-	private function get_spam_reason( $entry_id ) {
+	private function get_spam_reason( $entry_id ): string {
 
 		$reason = wpforms()->obj( 'entry_meta' )->get_meta(
 			[
@@ -152,7 +157,7 @@ class SpamEntry {
 			]
 		);
 
-		return ! empty( $reason[0] ) ? $reason[0]->data : '';
+		return $reason[0]->data ?? '';
 	}
 
 	/**
@@ -182,14 +187,18 @@ class SpamEntry {
 	 *
 	 * @since 1.8.3
 	 *
-	 * @param bool  $enabled   Whether the email is enabled.
-	 * @param array $fields    Entry fields.
-	 * @param array $entry     Entry data.
-	 * @param array $form_data Form data.
+	 * @param bool|mixed $enabled   Whether the email is enabled.
+	 * @param array      $fields    Entry fields.
+	 * @param array      $entry     Entry data.
+	 * @param array      $form_data Form data.
 	 *
 	 * @return bool
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function disable_entry_email( $enabled, $fields, $entry, $form_data ) {
+	public function disable_entry_email( $enabled, $fields, $entry, $form_data ): bool {
+
+		$enabled = (bool) $enabled;
 
 		if ( $this->is_spam_form_data( $form_data ) ) {
 			return false;
@@ -230,18 +239,20 @@ class SpamEntry {
 	}
 
 	/**
-	 * Add spam entries to the entries table counts.
+	 * Add spam entries to the entries' table counts.
 	 *
 	 * @since 1.8.3
 	 *
-	 * @param array $counts    Entries table counts.
-	 * @param array $form_data Form data.
+	 * @param array|mixed $counts    Entries table counts.
+	 * @param array       $form_data Form data.
 	 *
 	 * @return array
 	 */
-	public function entries_table_counts( $counts, $form_data ) {
+	public function entries_table_counts( $counts, $form_data ): array {
 
-		$counts['spam'] = $this->get_spam_entries_count( $form_data['id'] );
+		$counts = (array) $counts;
+
+		$counts['spam'] = $this->get_spam_entries_count( $form_data['id'] ?? 0 );
 
 		return $counts;
 	}
@@ -251,13 +262,16 @@ class SpamEntry {
 	 *
 	 * @since 1.8.3
 	 *
-	 * @param array $views     Entries table views.
-	 * @param array $form_data Form data.
-	 * @param array $counts    Entries table counts.
+	 * @param array|mixed $views     Entries table views.
+	 * @param array       $form_data Form data.
+	 * @param array       $counts    Entries table counts.
 	 *
 	 * @return array
+	 * @noinspection HtmlUnknownTarget
 	 */
-	public function entries_table_views( $views, $form_data, $counts ) {
+	public function entries_table_views( $views, $form_data, $counts ): array {
+
+		$views = (array) $views;
 
 		$views['spam'] = sprintf(
 			'<a href="%1$s" class="%2$s">%3$s <span class="count">(%4$d)</span></a>',
@@ -308,6 +322,8 @@ class SpamEntry {
 	 * Maybe display an error message.
 	 *
 	 * @since 1.8.3
+	 *
+	 * @noinspection HtmlUnknownTarget
 	 */
 	private function maybe_display_error_message() {
 
@@ -339,7 +355,7 @@ class SpamEntry {
 			'edit-entry'
 		);
 
-		// Show error message if entry is spam.
+		// Show an error message if entry is spam.
 		wpforms()->obj( 'notice' )->error(
 			sprintf(
 				'%s %s',
@@ -505,14 +521,15 @@ class SpamEntry {
 	 *
 	 * @since 1.8.3
 	 *
-	 * @param array $entries_list Entries list.
-	 * @param array $args         Query args.
+	 * @param array|mixed $entries_list Entries list.
+	 * @param array       $args         Query args.
 	 *
 	 * @return array
 	 */
-	public function filter_process_actions_entries_list( $entries_list, $args ) {
+	public function filter_process_actions_entries_list( $entries_list, $args ): array {
 
-		$ids = $args['entry_id'];
+		$entries_list = (array) $entries_list;
+		$ids          = $args['entry_id'];
 
 		if ( empty( $ids ) ) {
 			return $entries_list;
@@ -531,7 +548,7 @@ class SpamEntry {
 	}
 
 	/**
-	 * Add spam action link to the entry details sidebar.
+	 * Add a spam action link to the entry details sidebar.
 	 *
 	 * @since 1.8.9
 	 *
@@ -605,6 +622,8 @@ class SpamEntry {
 	 * @param object $entry   Entry object.
 	 *
 	 * @return bool
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	public function disallow_details_actions( $disable, $entry ) {
 
@@ -616,12 +635,15 @@ class SpamEntry {
 	 *
 	 * @since 1.8.3
 	 *
-	 * @param array  $actions Actions.
-	 * @param object $entry   Entry object.
+	 * @param array|mixed $actions Actions.
+	 * @param object      $entry   Entry object.
 	 *
 	 * @return array
+	 * @noinspection HtmlUnknownTarget
 	 */
-	public function filter_entry_actions( $actions, $entry ) {
+	public function filter_entry_actions( $actions, $entry ): array {
+
+		$actions = (array) $actions;
 
 		if ( ! wpforms_current_user_can( 'edit_entries_form_single', $entry->form_id ) ) {
 			return $actions;
@@ -681,7 +703,7 @@ class SpamEntry {
 	 *
 	 * @return bool
 	 */
-	public function disable_date_range_filter() {
+	public function disable_date_range_filter(): bool {
 
 		return $this->is_spam_list();
 	}
@@ -690,6 +712,8 @@ class SpamEntry {
 	 * Add button to remove spam entries.
 	 *
 	 * @since 1.8.3
+	 *
+	 * @noinspection HtmlUnknownTarget
 	 */
 	public function add_remove_spam_entries_button() {
 
@@ -728,11 +752,13 @@ class SpamEntry {
 	 *
 	 * @since 1.8.3
 	 *
-	 * @param array $actions Bulk actions.
+	 * @param array|mixed $actions Bulk actions.
 	 *
 	 * @return array
 	 */
-	public function filter_bulk_actions( $actions ) {
+	public function filter_bulk_actions( $actions ): array {
+
+		$actions = (array) $actions;
 
 		if ( ! $this->is_spam_list() ) {
 			unset( $actions['unspam'] );
@@ -759,11 +785,13 @@ class SpamEntry {
 	 *
 	 * @since 1.8.3
 	 *
-	 * @param array $classes Table classes.
+	 * @param array|mixed $classes Table classes.
 	 *
 	 * @return array
 	 */
-	public function add_spam_entries_table_class( $classes ) {
+	public function add_spam_entries_table_class( $classes ): array {
+
+		$classes = (array) $classes;
 
 		if ( $this->is_spam_list() ) {
 			$classes[] = 'wpforms-entries-table-spam';
@@ -795,9 +823,13 @@ class SpamEntry {
 	 *
 	 * @since 1.8.7
 	 *
-	 * @param array $args Form args.
+	 * @param array|mixed $args Form args.
+	 *
+	 * @return array
 	 */
-	public function enable_store_spam_entries( $args ) {
+	public function enable_store_spam_entries( $args ): array {
+
+		$args = (array) $args;
 
 		if ( ! wpforms()->is_pro() ) {
 			return $args;
@@ -822,13 +854,15 @@ class SpamEntry {
 	 *
 	 * @since 1.8.3
 	 *
-	 * @param string $url      Form URL.
-	 * @param int    $entry_id Entry ID.
-	 * @param int    $form_id  Form ID.
+	 * @param string|mixed $url      Form URL.
+	 * @param int          $entry_id Entry ID.
+	 * @param int          $form_id  Form ID.
 	 *
 	 * @return string
 	 */
-	public function filter_spam_form_url( $url, $entry_id, $form_id ) {
+	public function filter_spam_form_url( $url, $entry_id, $form_id ): string {
+
+		$url = (string) $url;
 
 		if ( $this->is_spam_entry( $entry_id ) ) {
 			return $this->get_spam_entries_list_url( $form_id );
@@ -1047,7 +1081,7 @@ class SpamEntry {
 	 *
 	 * @return bool
 	 */
-	public function is_spam_list() {
+	public function is_spam_list(): bool {
 
 		$status = ! empty( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 

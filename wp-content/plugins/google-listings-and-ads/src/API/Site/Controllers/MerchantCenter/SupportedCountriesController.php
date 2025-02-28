@@ -37,7 +37,7 @@ class SupportedCountriesController extends BaseController {
 	protected $google_helper;
 
 	/**
-	 * BaseController constructor.
+	 * SupportedCountriesController constructor.
 	 *
 	 * @param RESTServer   $server
 	 * @param WC           $wc

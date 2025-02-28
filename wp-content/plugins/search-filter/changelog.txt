@@ -1,0 +1,129 @@
+*** Search & Filter Changelog ***
+2025-02-12 - version 3.1.5
+* Fix - an issue with rendering field previews in admin screens.
+
+2025-02-11 - version 3.1.4
+* Fix - issue with the taxonomies tab not displaying correctly in the query editor.
+* Fix - issue when using past end of life database servers (MySQL version < 5.7 or MariaDB version < 10.2) when creating the options table.
+* Fix - error when queries are loaded in admin screens and trying to access `is_archive()`.
+* Fix - issue showing incorrect field counts in the query editor.
+
+2025-01-26 - version 3.1.3
+* New - added hooks to support new pro features.
+* New - reworked WPML integration.
+* Improvement - logging and debugging tweaks.
+* Improvement - support publicly queryable post types in fields and queries.
+* Improvement - better performance in admins settings screens.
+* Improvement - better compatibility with the WooCommerce collections block.
+* Improvement - update license server URL.
+* Change - renamed the query and fields `remove()` function to `unload()`.
+* Fix - JavaScript issues in the block editor when using WooCommerce.
+* Fix - an issue detecting default post types to display.
+* Fix - an issue setting post types when using the Search location.
+
+2025-01-06 - version 3.1.2
+* Improvement - stop using `getmypid()` when its not available (some hosting companies like Kinsta disable this function).
+* Fix - an issue with setting the correct post type for archives & WooCommerce shop.
+* Fix - issue with WooCommerce attributes that were not used for variations.
+* Fix - issue with the datepicker not clearing correctly after using a reset button.
+* Fix - number formatting issues when using the range slider.
+* Fix - show the "all options" default option as selected when no other options are selected.
+* Fix - an issue with the admin fields not rendering on a clean install.
+
+2024-12-26 - version 3.1.1
+* New - added hooks to our rest api requests to prevent caching.
+* Fix - hotfix to remove the HPOS warning when using WooCommerce.
+* Fix - issues with field previews on new sites, when no queries have been created.
+
+2024-12-18 - version 3.1.0
+* New - add support for WooCommerce Product Brands.
+* New - enable filtering on WooCommerce product archives option when using the shop integration.
+* New - `has_active_fields()` PHP method for queries.
+* New - added debugging options and logging levels.
+* Improvement - add plugin action link to the settings page.
+* Improvement - better detection of current page URL.
+* Improvement - add option values as data attributes for easier targetting with CSS.
+* Improvement - reliability with some hosts when generating our CSS file on the server.
+* Improvement - batch api requests in the block editor and admin screens.
+* Fix - a fatal error caused when using certain themes.
+* Fix - issues with WP 6.7 and loading translations too early.
+* Fix - an issue in the query editor when choosing taxonomy archives, causing the query tab to throw an error.
+* Fix - issues generating hierarchical taxonomy term URLs.
+* Fix - admin JS issues when navigating between templates in FSE.
+* Fix - styling issues with the sort fields label.
+* Fix - an issue with hierarchical taxonomies not showing posts only assigned to parents.
+
+2024-11-18 - version 3.0.7
+* New - add notices to suggest enabling integrations when they are detected.
+* Change - remove beta feedback form.
+* Fix - select input types were not showing their placeholders on mobile and multiselect were not showing selections properly.
+* Fix - issues when using CSS variable colors from block editor themes.
+* Fix - an issue with the new query modal throwing an error in the block editor.
+* Fix - issues with the Main Query option not being available for archives.
+* Fix - stop enqueuing unnecessary JS in admin screens.
+
+2024-11-11 - version 3.0.6
+* New - New `dynamic` query integration location, replaces the dynamic toggle.
+* New - improvements to the integrations screen - install extensions with a single click!
+* New - Duplicate fields, queries & styles from the admin UI
+* Improvement - JavaScript APIs have been restructured and renamed.
+* Improvement - change the JS initialisation to improve compatibility.
+* Improvement - added ID column to admin tables - check the column view dropdown menu to enable it.
+* Improvement - disable text input on select fields on mobile devices.
+* Change - rename the query "integration" tab to to query "location"
+* Updated - renamed hooks in field render function to match naming conventions.
+* Fix - an issue with the count containers being added the DOM unnecessarily.
+* Fix - an admin error when shortcodes are disabled when using the fields dropdown.
+* Fix - issues with our fields not inheriting the block gap setting in the block editor.
+* Fix - order options in choice fields without case sensitivity.
+
+2024-10-28 - version 3.0.5
+* Hotfix for fatal error thrown in Search & Filter Pro
+
+2024-10-28 - version 3.0.4
+* New - added an "all items" option for radios, selects and buttons input type.
+* New - add limit depth, hide empty, show count, order by, include & exclude terms to WooCommerce data types.
+* Improvement - various admin UI improvements related to dynamically showing settings.
+* Improvement - set the default sticky posts option to ignore.
+* Fix - multiple issues with the UI showing out of date messaging in the block editor and admin screens.
+* Fix - limit number of options shown in fields wasn't working on the frontend in some scenarios.
+* Fix - issue with fields when restricting taxonomy terms and post authors in the block editor.
+* Fix - indentation issues with hierarchical taxonomy checkboxes & radios.
+* Fix - order option in fields was not working when using post attributes as the data source.
+* Fix - counts were not showing in button fields.
+* Fix - issues with checkbox selection when pressing forwards/backwards in the browser history.
+
+2024-10-21 - version 3.0.3
+* Fix - issues detecting the current page in a query.
+* Fix - properly respect relevance ordering if set in the query when a search term has been entered.
+* Fix - issues with Cron schedules.
+* Fix - issues with broken links.
+
+2024-10-15 - version 3.0.2
+* New - add support to include/exclude taxonomy terms from fields.
+* New - added custom fields to query sort order.
+* New - added support for multiple sort orders to a query.
+* New - added sort order field type (control field).
+* Improvement - UI improvements to make working with shortcodes easier when the feature is enabled.
+* Fix - issues when integrations & features are updated and it not reflecting throughout the admin UI.
+* Fix - issues showing the correct styles in admin / block editor.
+* Fix - issue with connected queries and fields not displaying correctly in the admin list screens.
+
+2024-10-06 - version 3.0.1
+* New - add sorting options for data types: post type, post status.
+* Improvement - show the ID of fields, queries & styles next to the screen title.
+* Fix - issues with fields not loading when block editor features are disabled.
+* Fix - an issue when changing field types and settings were persisting.
+* Fix - an issue with sort order not working correctly.
+
+2024-09-21 - version 3.0.0
+* Release version 3.0.0.
+* Fix - issue with placeholders sometimes not being the correct scale.
+* Fix - issue with buttons not applying the correct width.
+* Fix - issue with select dropdown positioning.
+* Fix - regression with archive queries not being properly attached.
+* Fix - issue with the button field not showing the selected option.
+* Fix - issues when migrating fields from older versions.
+* Fix - an JS issue being thrown with the ResizeObserver inside FSE iframes.
+* Fix - various issues when using taxonomy archive query integration.
+* Fix - issue with count brackets not showing.

@@ -15,73 +15,73 @@ class Requirements {
 	 * @since 1.8.2.2
 	 * @since 1.9.2 Keep addons active.
 	 */
-	const DEACTIVATE_IF_NOT_MET = false;
+	private const DEACTIVATE_IF_NOT_MET = false;
 
 	/**
 	 * Whether to show PHP version notice.
 	 *
 	 * @since 1.8.2.2
 	 */
-	const SHOW_PHP_NOTICE = true;
+	private const SHOW_PHP_NOTICE = true;
 
 	/**
 	 * Whether to show PHP extension notice.
 	 *
 	 * @since 1.8.2.2
 	 */
-	const SHOW_EXT_NOTICE = true;
+	private const SHOW_EXT_NOTICE = true;
 
 	/**
 	 * Whether to show WordPress version notice.
 	 *
 	 * @since 1.8.2.2
 	 */
-	const SHOW_WP_NOTICE = true;
+	private const SHOW_WP_NOTICE = true;
 
 	/**
 	 * Whether to show WPForms version notice.
 	 *
 	 * @since 1.8.2.2
 	 */
-	const SHOW_WPFORMS_NOTICE = true;
+	private const SHOW_WPFORMS_NOTICE = true;
 
 	/**
 	 * Whether to show license level notice.
 	 *
 	 * @since 1.8.2.2
 	 */
-	const SHOW_LICENSE_NOTICE = false;
+	private const SHOW_LICENSE_NOTICE = false;
 
 	/**
 	 * Whether to show addon version notice.
 	 *
 	 * @since 1.8.2.2
 	 */
-	const SHOW_ADDON_NOTICE = true;
+	private const SHOW_ADDON_NOTICE = true;
 
 	/**
 	 * Keys of the requirements' arrays.
 	 *
 	 * @since 1.8.2.2
 	 */
-	const PHP                    = 'php';
-	const EXT                    = 'ext';
-	const WP                     = 'wp';
-	const WPFORMS                = 'wpforms';
-	const LICENSE                = 'license';
-	const PRIORITY               = 'priority';
-	const ADDON                  = 'addon';
-	const ADDON_VERSION_CONSTANT = 'addon_version_constant';
-	const VERSION                = 'version';
-	const COMPARE                = 'compare';
-	const COMPARE_DEFAULT        = '>=';
+	private const PHP                    = 'php';
+	private const EXT                    = 'ext';
+	private const WP                     = 'wp';
+	private const WPFORMS                = 'wpforms';
+	private const LICENSE                = 'license';
+	private const PRIORITY               = 'priority';
+	private const ADDON                  = 'addon';
+	private const ADDON_VERSION_CONSTANT = 'addon_version_constant';
+	private const VERSION                = 'version';
+	private const COMPARE                = 'compare';
+	private const COMPARE_DEFAULT        = '>=';
 
 	/**
 	 * Development version of WPForms. Can be specified in an addon.
 	 *
 	 * @since 1.8.2.2
 	 */
-	const WPFORMS_DEV_VERSION_IN_ADDON = '{WPFORMS_VERSION}';
+	private const WPFORMS_DEV_VERSION_IN_ADDON = '{WPFORMS_VERSION}';
 
 	/**
 	 * Plus, Pro and Top level licenses.
@@ -89,7 +89,7 @@ class Requirements {
 	 *
 	 * @since 1.8.2.2
 	 */
-	const PLUS_PRO_AND_TOP = [ 'plus', 'pro', 'elite', 'agency', 'ultimate' ];
+	private const PLUS_PRO_AND_TOP = [ 'plus', 'pro', 'elite', 'agency', 'ultimate' ];
 
 	/**
 	 * Pro and Top level licenses.
@@ -97,7 +97,7 @@ class Requirements {
 	 *
 	 * @since 1.8.2.2
 	 */
-	const PRO_AND_TOP = [ 'pro', 'elite', 'agency', 'ultimate' ];
+	private const PRO_AND_TOP = [ 'pro', 'elite', 'agency', 'ultimate' ];
 
 	/**
 	 * Top level licenses.
@@ -105,7 +105,7 @@ class Requirements {
 	 *
 	 * @since 1.8.2.2
 	 */
-	const TOP = [ 'elite', 'agency', 'ultimate' ];
+	private const TOP = [ 'elite', 'agency', 'ultimate' ];
 
 	/**
 	 * Default minimal addon requirements.
@@ -115,7 +115,7 @@ class Requirements {
 	 * @var string[]
 	 */
 	private $defaults = [
-		self::PHP      => '7.0',
+		self::PHP      => '7.1',
 		self::WP       => '5.5',
 		self::WPFORMS  => self::WPFORMS_DEV_VERSION_IN_ADDON,
 		self::LICENSE  => self::PRO_AND_TOP,
@@ -143,16 +143,17 @@ class Requirements {
 	 * self::ADDON_VERSION_CONSTANT ('addon_version_constant') for the addon version constant.
 	 * self::PRIORITY ('priority') for the priority of the current requirements.
 	 *
-	 * 'php' value can be string like '5.6' or an array like 'php' => [ 'version' => '7.2', compare => '=' ].
-	 * 'ext' value can be string like 'curl' or an array like 'ext' => [ 'curl', 'mbstring' ].
-	 * 'wp' value can be string like '5.5' or an array like 'wp' => [ 'version' => '6.4', compare => '=' ].
-	 * 'wpforms' value can be string like '1.8.2' or an array like 'wpforms' => [ 'version' => '1.7.5', compare => '=' ].
+	 * The 'php' value can be string like '5.6' or an array like 'php' => [ 'version' => '7.2', compare => '=' ].
+	 * The 'ext' value can be string like 'curl' or an array like 'ext' => [ 'curl', 'mbstring' ].
+	 * The 'wp' value can be string like '5.5' or an array like 'wp' => [ 'version' => '6.4', compare => '=' ].
+	 * The 'wpforms' value can be string like '1.8.2' or an array like 'wpforms' => [ 'version' => '1.7.5', compare => '=' ].
 	 *   When 'wpforms' value is '{WPFORMS_VERSION}', it is not checked and should be used for development.
-	 * 'license' value can be string like 'elite, agency, ultimate', an array like 'license' => [ 'elite', 'agency', 'ultimate' ].
-	 *    When 'license' value is an empty like null, false, [], it is not checked.
-	 * 'addon' value can be string like '2.0.1' or an array like 'addon' => [ 'version' => '2.0.1', 'compare' => '<=' ].
-	 * 'addon_version_constant' must be a string like 'WPFORMS_ACTIVECAMPAIGN_VERSION'.
-	 * 'priority' must be an integer like 20. By default, it is 10.
+	 * The 'license' value can be string like 'elite, agency, ultimate',
+	 *   an array like 'license' => [ 'elite', 'agency', 'ultimate' ].
+	 *   When 'license' value is an empty like null, false, [], it is not checked.
+	 * The 'addon' value can be string like '2.0.1' or an array like 'addon' => [ 'version' => '2.0.1', 'compare' => '<=' ].
+	 * The 'addon_version_constant' must be a string like 'WPFORMS_ACTIVECAMPAIGN_VERSION'.
+	 * The 'priority' must be an integer like 20. By default, it is 10.
 	 *
 	 * By default, 'compare' is '>='.
 	 *
@@ -194,7 +195,7 @@ class Requirements {
 			self::LICENSE => self::PLUS_PRO_AND_TOP,
 		],
 		'wpforms-calculations/wpforms-calculations.php'                 => [
-			self::ADDON  => '1.3.0',
+			self::ADDON => '1.5.0',
 		],
 		'wpforms-campaign-monitor/wpforms-campaign-monitor.php'         => [
 			self::LICENSE => self::PLUS_PRO_AND_TOP,
@@ -202,8 +203,8 @@ class Requirements {
 		'wpforms-captcha/wpforms-captcha.php'                           => [
 			self::LICENSE  => 'basic, plus, pro, elite, agency, ultimate',
 			self::WPFORMS  => [
-				self::VERSION  => [ '1.8.3', '1.8.7' ],
-				self::COMPARE  => [ '>=', '<' ],
+				self::VERSION => [ '1.8.3', '1.8.7' ],
+				self::COMPARE => [ '>=', '<' ],
 			],
 			self::PRIORITY => 20,
 		],
@@ -212,13 +213,18 @@ class Requirements {
 			self::LICENSE => self::PLUS_PRO_AND_TOP,
 			self::PHP     => '7.4',
 		],
-		'wpforms-coupons/wpforms-coupons.php'                           => [],
+		'wpforms-coupons/wpforms-coupons.php'                           => [
+			self::ADDON => '1.6.0',
+		],
 		'wpforms-drip/wpforms-drip.php'                                 => [
 			self::LICENSE => self::PLUS_PRO_AND_TOP,
 		],
+		'wpforms-dropbox/wpforms-dropbox.php'                           => [
+			self::ADDON => '1.1.0',
+		],
 		'wpforms-form-abandonment/wpforms-form-abandonment.php'         => [],
 		'wpforms-form-locker/wpforms-form-locker.php'                   => [
-			self::ADDON  => '2.8.0',
+			self::ADDON => '2.8.0',
 		],
 		'wpforms-form-pages/wpforms-form-pages.php'                     => [],
 		'wpforms-form-templates-pack/wpforms-form-templates-pack.php'   => [
@@ -233,7 +239,7 @@ class Requirements {
 			self::PHP     => '7.3',
 		],
 		'wpforms-google-sheets/wpforms-google-sheets.php'               => [
-			self::ADDON  => '2.2.0',
+			self::ADDON => '2.2.0',
 		],
 		'wpforms-hubspot/wpforms-hubspot.php'                           => [
 			self::LICENSE => self::TOP,
@@ -243,6 +249,9 @@ class Requirements {
 			self::LICENSE => self::PLUS_PRO_AND_TOP,
 		],
 		'wpforms-mailerlite/wpforms-mailerlite.php'                     => [
+			self::LICENSE => self::PLUS_PRO_AND_TOP,
+		],
+		'wpforms-mailpoet/wpforms-mailpoet.php'                         => [
 			self::LICENSE => self::PLUS_PRO_AND_TOP,
 		],
 		'wpforms-offline-forms/wpforms-offline-forms.php'               => [],
@@ -259,7 +268,8 @@ class Requirements {
 			self::LICENSE => self::PLUS_PRO_AND_TOP,
 		],
 		'wpforms-signatures/wpforms-signatures.php'                     => [
-			self::EXT     => 'gd',
+			self::ADDON => '1.12.0',
+			self::EXT   => 'gd',
 		],
 		'wpforms-slack/wpforms-slack.php'                               => [
 			self::LICENSE => self::PLUS_PRO_AND_TOP,
@@ -268,7 +278,12 @@ class Requirements {
 			self::PHP => '7.2',
 		],
 		'wpforms-stripe/wpforms-stripe.php'                             => [],
-		'wpforms-surveys-polls/wpforms-surveys-polls.php'               => [],
+		'wpforms-surveys-polls/wpforms-surveys-polls.php'               => [
+			self::ADDON => '1.15.0',
+		],
+		'wpforms-twilio/wpforms-twilio.php'                             => [
+			self::LICENSE => self::PLUS_PRO_AND_TOP,
+		],
 		'wpforms-user-journey/wpforms-user-journey.php'                 => [],
 		'wpforms-user-registration/wpforms-user-registration.php'       => [],
 		'wpforms-webhooks/wpforms-webhooks.php'                         => [
@@ -339,7 +354,7 @@ class Requirements {
 	 *
 	 * @since 1.8.2.2
 	 */
-	private function init() {
+	private function init(): void {
 
 		foreach ( $this->requirements as $basename => $requirement ) {
 			$this->init_addon_requirements( $basename );
@@ -353,7 +368,7 @@ class Requirements {
 	 *
 	 * @since 1.8.2.2
 	 */
-	private function hooks() {
+	private function hooks(): void {
 
 		add_action( 'admin_init', [ $this, 'deactivate' ] );
 		add_action( 'admin_notices', [ $this, 'show_notices' ] );
@@ -415,8 +430,13 @@ class Requirements {
 	 */
 	public function is_validated( string $basename ): bool {
 
+		if ( ! $this->is_wpforms_addon( $basename ) ) {
+			// No more actions if it is not a wpforms addon.
+			return true;
+		}
+
 		// We didn't check the addon before.
-		if ( ! isset( $this->not_validated[ $basename ], $this->is_validated[ $basename ] ) ) {
+		if ( ! isset( $this->not_validated[ $basename ], $this->validated[ $basename ] ) ) {
 			$addon_load_function = $this->get_addon_load_function( $basename );
 
 			if ( ! is_callable( $addon_load_function ) ) {
@@ -507,6 +527,10 @@ class Requirements {
 		if ( strpos( $plugin, 'wpforms-' ) !== 0 ) {
 			// No more actions for general plugin.
 			return false;
+		}
+
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
 		/**
@@ -818,7 +842,7 @@ class Requirements {
 	 *
 	 * @since 1.8.2.2
 	 */
-	public function deactivate() {
+	public function deactivate(): void {
 
 		if ( ! self::DEACTIVATE_IF_NOT_MET ) {
 			return;
@@ -852,7 +876,7 @@ class Requirements {
 	 *
 	 * @since 1.8.2.2
 	 */
-	public function show_notices() {
+	public function show_notices(): void {
 
 		$notices = $this->get_notices();
 
@@ -892,6 +916,45 @@ class Requirements {
 	}
 
 	/**
+	 * Get an addon compatible message.
+	 *
+	 * @since 1.9.3
+	 *
+	 * @param string $basename Plugin basename.
+	 *
+	 * @return string
+	 * @noinspection HtmlUnknownTarget
+	 */
+	public function get_addon_compatible_message( string $basename ): string {
+
+		if ( empty( $this->not_validated[ $basename ] ) ) {
+			return '';
+		}
+
+		$errors  = $this->not_validated[ $basename ];
+		$message = $this->get_validation_message( $errors, $basename );
+
+		if ( ! $message ) {
+			return '';
+		}
+
+		$notice = sprintf(
+			/* translators: translators: %1$s - requirements message. */
+			__( 'It requires %1$s.', 'wpforms-lite' ),
+			$message
+		);
+
+		if ( self::SHOW_PHP_NOTICE && in_array( self::PHP, $errors, true ) ) {
+			$notice .= ' ' . sprintf( /* translators: %s - required PHP version. */
+				__( '<a href="%s" target="_blank" rel="noopener noreferrer">Learn more</a>', 'wpforms-lite' ),
+				esc_url( wpforms_utm_link( 'https://wpforms.com/docs/supported-php-version/', 'all-plugins', 'Addon Compatible Message' ) )
+			);
+		}
+
+		return $notice;
+	}
+
+	/**
 	 * Get notice.
 	 *
 	 * @since 1.9.2
@@ -903,7 +966,7 @@ class Requirements {
 	 */
 	public function get_notice( string $basename ): string {
 
-		if ( ! $this->not_validated[ $basename ] ) {
+		if ( empty( $this->not_validated[ $basename ] ) ) {
 			return '';
 		}
 
@@ -982,7 +1045,7 @@ class Requirements {
 	}
 
 	/**
-	 * Get PHP validation message.
+	 * Get a PHP validation message.
 	 *
 	 * @since 1.8.2.2
 	 *
@@ -1001,7 +1064,7 @@ class Requirements {
 	}
 
 	/**
-	 * Get EXT validation message.
+	 * Get an EXT validation message.
 	 *
 	 * @since 1.8.2.2
 	 *
@@ -1097,7 +1160,7 @@ class Requirements {
 	}
 
 	/**
-	 * Get ADDON validation message.
+	 * Get an ADDON validation message.
 	 *
 	 * @since 1.8.2.2
 	 *
@@ -1125,7 +1188,7 @@ class Requirements {
 	 *
 	 * @param string $notice Message.
 	 */
-	private function show_notice( string $notice ) {
+	private function show_notice( string $notice ): void {
 
 		echo '<div class="notice notice-error">';
 		echo wp_kses_post( $notice );
@@ -1139,7 +1202,7 @@ class Requirements {
 	 *
 	 * @param string $basename Addon basename.
 	 */
-	private function init_addon_requirements( string $basename ) {
+	private function init_addon_requirements( string $basename ): void {
 
 		if ( ! array_key_exists( $basename, $this->requirements ) ) {
 			$this->requirements[ $basename ] = [];
@@ -1245,5 +1308,19 @@ class Requirements {
 	public function get_requirements(): array {
 
 		return $this->requirements;
+	}
+
+	/**
+	 * Get not validated addons.
+	 *
+	 * @since 1.9.4
+	 *
+	 * @return array
+	 */
+	public function get_not_validated_addons(): array {
+
+		$all_addons = array_unique( array_keys( $this->requirements ) );
+
+		return array_values( array_diff( $all_addons, $this->validated ) );
 	}
 }

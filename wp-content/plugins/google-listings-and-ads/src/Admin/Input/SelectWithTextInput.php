@@ -16,7 +16,7 @@ class SelectWithTextInput extends Input {
 	public const SELECT_INPUT_KEY = '_gla_select';
 
 	/**
-	 * Select constructor.
+	 * SelectWithTextInput constructor.
 	 */
 	public function __construct() {
 		$select_input = ( new Select() )->set_id( self::SELECT_INPUT_KEY )
@@ -105,6 +105,15 @@ class SelectWithTextInput extends Input {
 		// add custom value option
 		$select_input['options'][ self::CUSTOM_INPUT_KEY ] = __( 'Enter a custom value', 'google-listings-and-ads' );
 
+		if ( $this->is_readonly ) {
+			$select_input['custom_attributes'] = [
+				'disabled' => 'disabled',
+			];
+			$custom_input['custom_attributes'] = [
+				'readonly' => 'readonly',
+			];
+		}
+
 		$view_data['children'][ self::CUSTOM_INPUT_KEY ] = $custom_input;
 		$view_data['children'][ self::SELECT_INPUT_KEY ] = $select_input;
 
@@ -125,8 +134,8 @@ class SelectWithTextInput extends Input {
 			return;
 		}
 
-		$select_value = is_array( $data ) ? $data[ self::SELECT_INPUT_KEY ] : $data;
-		$custom_value = is_array( $data ) ? $data[ self::CUSTOM_INPUT_KEY ] : $data;
+		$select_value = is_array( $data ) ? $data[ self::SELECT_INPUT_KEY ] ?? '' : $data;
+		$custom_value = is_array( $data ) ? $data[ self::CUSTOM_INPUT_KEY ] ?? '' : $data;
 		if ( ! isset( $this->get_options()[ $select_value ] ) ) {
 			$this->get_select_input()->set_data( self::CUSTOM_INPUT_KEY );
 			$this->get_custom_input()->set_data( $custom_value );

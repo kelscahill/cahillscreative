@@ -168,6 +168,25 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 4. You can access your settings by clicking on “Settings” at the top right of the screen.
 
 == Changelog ==
+= 4.0.37 =
+* Improvement related to plugin_updated call
+* Plugin code enhancements for WooCommerce Checkout Block
+
+= 4.0.36 =
+* Fixed bug related to checkbox appearing twice on Checkout page
+
+= 4.0.35 =
+* Declare compatibility for WooCommerce Checkout Block and related improvements
+
+= 4.0.34 =
+* Improvements related to cart calculations for cart_updated events
+
+= 4.0.33 =
+* Improvements related to fetching the shop url
+
+= 4.0.32 =
+* Included Customer Note in Order Events
+
 = 4.0.31 =
 * Enhancements to Brevo tracking script for automation events and syncing
 

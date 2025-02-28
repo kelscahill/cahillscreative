@@ -20,9 +20,10 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Product\ProductRepository;
 use Automattic\WooCommerce\GoogleListingsAndAds\Value\ChannelVisibility;
 use Automattic\WooCommerce\GoogleListingsAndAds\Value\MCStatus;
 use Automattic\WooCommerce\GoogleListingsAndAds\Vendor\Google\Service\ShoppingContent\ProductStatus as GoogleProductStatus;
-use Automattic\WooCommerce\GoogleListingsAndAds\Jobs\UpdateMerchantProductStatuses;
-use Automattic\WooCommerce\GoogleListingsAndAds\Jobs\UpdateAllProducts;
 use Automattic\WooCommerce\GoogleListingsAndAds\Jobs\DeleteAllProducts;
+use Automattic\WooCommerce\GoogleListingsAndAds\Jobs\JobRepository;
+use Automattic\WooCommerce\GoogleListingsAndAds\Jobs\UpdateAllProducts;
+use Automattic\WooCommerce\GoogleListingsAndAds\Jobs\UpdateMerchantProductStatuses;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsAwareInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsAwareTrait;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsInterface;
@@ -35,6 +36,7 @@ use WC_Product;
  * Note: this class uses vanilla WP methods get_post, get_post_meta, update_post_meta
  *
  * ContainerAware used to retrieve
+ * - JobRepository
  * - Merchant
  * - MerchantCenterService
  * - MerchantIssueQuery
@@ -42,9 +44,6 @@ use WC_Product;
  * - ProductHelper
  * - ProductRepository
  * - TransientsInterface
- * - UpdateMerchantProductStatuses
- * - UpdateAllProducts
- * - DeleteAllProducts
  *
  * @package Automattic\WooCommerce\GoogleListingsAndAds\MerchantCenter
  */
@@ -191,7 +190,7 @@ class MerchantStatuses implements Service, ContainerAwareInterface, OptionsAware
 	 * @return array With two indices, results (may be paged), count (considers type) and loading (indicating whether the data is loading).
 	 * @throws Exception If the account state can't be retrieved from Google.
 	 */
-	public function get_issues( string $type = null, int $per_page = 0, int $page = 1, bool $force_refresh = false ): array {
+	public function get_issues( ?string $type = null, int $per_page = 0, int $page = 1, bool $force_refresh = false ): array {
 		$job = $this->maybe_refresh_status_data( $force_refresh );
 
 		// Get only error issues
@@ -210,8 +209,9 @@ class MerchantStatuses implements Service, ContainerAwareInterface, OptionsAware
 	 * @since 1.1.0
 	 */
 	public function clear_cache(): void {
-		$update_all_products_job = $this->container->get( UpdateAllProducts::class );
-		$delete_all_products_job = $this->container->get( DeleteAllProducts::class );
+		$job_repository          = $this->container->get( JobRepository::class );
+		$update_all_products_job = $job_repository->get( UpdateAllProducts::class );
+		$delete_all_products_job = $job_repository->get( DeleteAllProducts::class );
 
 		// Clear the cache if we are not in the middle of updating/deleting all products. Otherwise, we might update the product stats for each individual batch.
 		// See: ClearProductStatsCache::register
@@ -296,7 +296,7 @@ class MerchantStatuses implements Service, ContainerAwareInterface, OptionsAware
 
 		// Only refresh if the current data has expired.
 		$this->mc_statuses = $this->container->get( TransientsInterface::class )->get( Transients::MC_STATUSES );
-		$job               = $this->container->get( UpdateMerchantProductStatuses::class );
+		$job               = $this->container->get( JobRepository::class )->get( UpdateMerchantProductStatuses::class );
 
 		// If force_refresh is true or if not transient, return empty array and scheduled the job to update the statuses.
 		if ( ! $job->is_scheduled() && ( $force_refresh || ( ! $force_refresh && null === $this->mc_statuses ) ) ) {
@@ -328,7 +328,7 @@ class MerchantStatuses implements Service, ContainerAwareInterface, OptionsAware
 	 * @return array The requested issues and the total count of issues.
 	 * @throws InvalidValue If the type filter is invalid.
 	 */
-	protected function fetch_issues( string $type = null, int $per_page = 0, int $page = 1, bool $only_errors = false ): array {
+	protected function fetch_issues( ?string $type = null, int $per_page = 0, int $page = 1, bool $only_errors = false ): array {
 		/** @var MerchantIssueQuery $issue_query */
 		$issue_query = $this->container->get( MerchantIssueQuery::class );
 
@@ -427,7 +427,7 @@ class MerchantStatuses implements Service, ContainerAwareInterface, OptionsAware
 			}
 
 			$product_issue_template = [
-				'product'              => html_entity_decode( $wc_product->get_name() ),
+				'product'              => html_entity_decode( $wc_product->get_name(), ENT_QUOTES ),
 				'product_id'           => $wc_product_id,
 				'created_at'           => $created_at,
 				'applicable_countries' => [],
@@ -514,7 +514,7 @@ class MerchantStatuses implements Service, ContainerAwareInterface, OptionsAware
 		$account_issues = array_map(
 			function ( $issue ) {
 				sort( $issue['applicable_countries'] );
-				$issue['applicable_countries'] = json_encode(
+				$issue['applicable_countries'] = wp_json_encode(
 					array_unique(
 						$issue['applicable_countries']
 					)
@@ -567,7 +567,7 @@ class MerchantStatuses implements Service, ContainerAwareInterface, OptionsAware
 		ksort( $product_issues );
 		$product_issues = array_map(
 			function ( $unique_key, $issue ) {
-				$issue['applicable_countries'] = json_encode( $this->product_issue_countries[ $unique_key ] );
+				$issue['applicable_countries'] = wp_json_encode( $this->product_issue_countries[ $unique_key ] );
 				return $issue;
 			},
 			array_keys( $product_issues ),

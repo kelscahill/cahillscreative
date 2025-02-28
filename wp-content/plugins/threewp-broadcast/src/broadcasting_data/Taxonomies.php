@@ -72,15 +72,16 @@ class Taxonomies
 	**/
 	public function also_sync( $post_type, $taxonomy )
 	{
+		// We can't sync a taxonomy that doesn't exist.
+		if ( trim( $taxonomy ) == '' )
+			return $this;
+
 		// If no post type is specified, absolutely force syncing of the taxonomy.
-		if ( isset( $this->broadcasting_data->already_also_synced_taxonomies ) )
+		if ( ! $this->broadcasting_data->already_also_synced_taxonomies->has( $taxonomy ) )
 		{
-			if ( ! $this->broadcasting_data->already_also_synced_taxonomies->has( $taxonomy ) )
-			{
-				if ( ! $post_type )
-					if ( isset( $this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ] ) )
-						unset( $this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ] );
-			}
+			if ( ! $post_type )
+				if ( isset( $this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ] ) )
+					unset( $this->broadcasting_data->parent_blog_taxonomies[ $taxonomy ] );
 		}
 
 		$this->also_sync_taxonomy( [
@@ -109,18 +110,16 @@ class Taxonomies
 		// Objects are easier to reference.
 		$options = (object) $options;
 
+		if ( trim( $options->taxonomy ) == '' )
+			return $this;
+
 		$bc = ThreeWP_Broadcast();
 
-		if ( isset( $this->broadcasting_data->already_also_synced_taxonomies ) )
+		if ( $this->broadcasting_data->already_also_synced_taxonomies->has( $options->taxonomy ) )
 		{
-			if ( $this->broadcasting_data->already_also_synced_taxonomies->has( $options->taxonomy ) )
-			{
-				$bc->debug( 'Has already also_synced taxonomy %s', $options->taxonomy );
-				return $this;
-			}
+			$bc->debug( 'Has already also_synced taxonomy %s', $options->taxonomy );
+			return $this;
 		}
-		else
-			$this->broadcasting_data->already_also_synced_taxonomies = $bc->collection();
 
 		$this->broadcasting_data->already_also_synced_taxonomies->set( $options->taxonomy, true );
 
@@ -470,7 +469,7 @@ class Taxonomies
 	}
 
 	/**
-		@brief		Marke the terms as "used".
+		@brief		Mark the terms as "used".
 		@see		use_term()
 		@since		2021-10-22 23:08:07
 	**/

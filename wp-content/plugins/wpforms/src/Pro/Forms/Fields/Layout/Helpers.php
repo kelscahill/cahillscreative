@@ -205,8 +205,12 @@ class Helpers {
 		$non_empty_fields = array_filter(
 			$fields,
 			static function ( $field ) {
+				$value =
+					isset( $field['type'] ) && ( $field['type'] === 'html' || $field['type'] === 'content' ) ?
+					$field['formatted_value'] ?? '' :
+					$field['value'] ?? '';
 
-				return ! wpforms_is_empty_string( $field['value'] ?? '' );
+				return ! wpforms_is_empty_string( $value );
 			}
 		);
 

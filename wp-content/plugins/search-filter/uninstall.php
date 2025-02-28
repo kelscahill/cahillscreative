@@ -54,8 +54,6 @@ function search_filter_uninstall() {
 		}
 
 		delete_option( 'search_filter_default_styles' );
-		delete_option( 'search_filter_css_mode' );
-		delete_option( 'search_filter_css_version_id' );
 		delete_option( 'search-filter-version' );
 
 		// TODO - purge transients & cache.

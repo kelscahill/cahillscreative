@@ -52,15 +52,18 @@ class Index_Table extends \Search_Filter\Database\Engine\Table {
 	 * @since 1.0.0
 	 * @var   mixed
 	 */
-	protected $version = '3.0.0';
+	protected $version = '3.0.2';
 
 	/**
 	 * Key => value array of versions => methods.
 	 *
-	 * @since 3.0.0
+	 * @since 1.0.0
 	 * @var   array
 	 */
-	protected $upgrades = array();
+	protected $upgrades = array(
+		'3.0.1' => 'upgrade_3_0_1',
+		'3.0.2' => 'upgrade_3_0_2',
+	);
 
 	/**
 	 * Setup this database table.
@@ -73,10 +76,10 @@ class Index_Table extends \Search_Filter\Database\Engine\Table {
 			object_id             bigint(20)   NOT NULL default '0',
 			object_parent_id      bigint(20)   NOT NULL default '0',
 			field_id              bigint(20)   NOT NULL,
-			value                 varchar(50)  NOT NULL,
+			value                 varchar(200)  NOT NULL,
 			date_modified         datetime     NOT NULL default CURRENT_TIMESTAMP,
 			PRIMARY KEY (id),
-			KEY value (value(50)),
+			KEY value (value(200)),
 			KEY field (field_id)
 			";
 	}
@@ -93,5 +96,42 @@ class Index_Table extends \Search_Filter\Database\Engine\Table {
 		parent::drop();
 
 		Data_Store::flush( 'index' );
+	}
+
+	/**
+	 * Change the value column to varchar(200) to match the max length of taxonomy term slugs.
+	 *
+	 * @return bool
+	 */
+	public function upgrade_3_0_1() {
+
+		// Alter the table so the `value` column is changed from varchar(50) to varchar(200).
+		$result = $this->get_db()->query(
+			"ALTER TABLE {$this->table_name} MODIFY COLUMN `value` varchar(200) NOT NULL;"
+		);
+		
+		return $this->is_success( $result );
+	}
+
+	/**
+	 * Change the key from value(50) to value(200).
+	 *
+	 * @return bool
+	 */
+	public function upgrade_3_0_2() {
+		// Alter the table so the `value` column key is changed from value(50) to value(200).
+		$result = $this->get_db()->query(
+			"ALTER TABLE {$this->table_name} DROP INDEX `value`;"
+		);
+		if ( ! $this->is_success( $result ) ) {
+			return false;
+		}
+		$result = $this->get_db()->query(
+			"ALTER TABLE {$this->table_name} ADD INDEX `value` (`value`(200));"
+		);
+		if ( ! $this->is_success( $result ) ) {
+			return false;
+		}
+		return true;
 	}
 }

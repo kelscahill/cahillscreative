@@ -75,6 +75,7 @@ class Rest_API {
 						'sanitize_callback' => 'absint',
 					),
 				),
+				'allow_batch'         => true,
 			)
 		);
 		register_rest_route(
@@ -84,6 +85,7 @@ class Rest_API {
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_post_author_roles_options' ),
 				'permission_callback' => array( $this, 'permissions' ),
+				'allow_batch'         => true,
 			)
 		);
 		register_rest_route(
@@ -93,6 +95,7 @@ class Rest_API {
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_post_author_capabilities_options' ),
 				'permission_callback' => array( $this, 'permissions' ),
+				'allow_batch'         => true,
 			)
 		);
 	}

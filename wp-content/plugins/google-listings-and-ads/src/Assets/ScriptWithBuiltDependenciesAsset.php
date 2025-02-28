@@ -32,7 +32,7 @@ class ScriptWithBuiltDependenciesAsset extends ScriptAsset {
 		string $uri,
 		string $build_dependency_path,
 		DependencyArray $fallback_dependency_data,
-		callable $enqueue_condition_callback = null,
+		?callable $enqueue_condition_callback = null,
 		bool $in_footer = true
 	) {
 		$dependency_data = $this->get_dependency_data( $build_dependency_path, $fallback_dependency_data );

@@ -40,7 +40,7 @@ class Plugin_Installer {
 		// Setup the updater.
 		$response        = array();
 		$plugin_data_api = new Plugin_Data(
-			'https://searchandfilter.com',
+			License_Server::get_endpoint(),
 			array(
 				'license' => $license,
 				'item_id' => $plugin_id,

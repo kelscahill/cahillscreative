@@ -91,6 +91,9 @@ WPForms.Admin.Builder.Notifications = WPForms.Admin.Builder.Notifications || ( f
 			choicesJSConfigFileUpload = Object.assign( {}, choicesJSConfig );
 			choicesJSConfigFileUpload.noChoicesText = wpforms_builder.notifications_file_upload.no_choices_text;
 
+			app.setup();
+			app.bindEvents();
+
 			$( app.ready );
 		},
 
@@ -105,8 +108,6 @@ WPForms.Admin.Builder.Notifications = WPForms.Admin.Builder.Notifications || ( f
 				return;
 			}
 
-			app.setup();
-			app.bindEvents();
 			app.maybeSaveFormState();
 		},
 
@@ -203,20 +204,26 @@ WPForms.Admin.Builder.Notifications = WPForms.Admin.Builder.Notifications || ( f
 		 *
 		 * @since 1.7.8
 		 *
-		 * @param {object} $block         jQuery element of the block.
+		 * @param {Object} $block         jQuery element of the block.
 		 * @param {number} blockID        The block ID.
 		 * @param {string} toggleElClass  Class name of the toggle element.
 		 * @param {Array}  actionElements Elements that are controlled by the toggle.
 		 *
-		 * @returns {boolean} Whether or not the toggle has been initialized.
+		 * @return {boolean} Whether or not the toggle has been initialized.
 		 */
-		initToggle: function( $block, blockID, toggleElClass, actionElements ) {
-
+		initToggle( $block, blockID, toggleElClass, actionElements ) {
 			const $toggleEl = $block.find( toggleElClass ).first();
 
 			if ( $toggleEl.length <= 0 ) {
 				return false;
 			}
+
+			$toggleEl.on( 'change', function() {
+				const $this = $( this ),
+					choices = app.choicesJSHelperMethods.getFormFields( [ 'file-upload' ] );
+
+				$this.trigger( 'wpformsNotificationsToggleConditionalChange', [ choices ] );
+			} );
 
 			return app.setupToggleConditional( $toggleEl, blockID, actionElements );
 		},
@@ -306,6 +313,14 @@ WPForms.Admin.Builder.Notifications = WPForms.Admin.Builder.Notifications || ( f
 				.on( 'change', app.changeChoicesJS );
 
 			app.choicesJSHelperMethods.populateInstance( choicesJS, choices, originalVal );
+
+			choicesJS.passedElement.element.addEventListener( 'addItem', function( event ) {
+				el.$builder.trigger( 'wpformsNotificationFieldAdded', [ event.detail.value, event.target ] );
+			} );
+
+			choicesJS.passedElement.element.addEventListener( 'removeItem', function( event ) {
+				el.$builder.trigger( 'wpformsNotificationFieldRemoved', [ event.detail.value, event.target ] );
+			} );
 
 			return choicesJS;
 		},
@@ -721,9 +736,17 @@ WPForms.Admin.Builder.Notifications = WPForms.Admin.Builder.Notifications || ( f
 						continue;
 					}
 
+					const hasRestrictions = app.choicesJSHelperMethods.fieldHasRestrictions( field.id );
+					let label = wpf.encodeHTMLEntities( app.choicesJSHelperMethods.getFieldLabel( field ) );
+
+					if ( hasRestrictions ) {
+						label += '<span class="wpfroms-notifications-restrictions-enabled">' + wpforms_builder.notifications_file_upload.restrictions_enabled + '</span>';
+					}
+
 					availableFields.push( {
-						label: wpf.encodeHTMLEntities( app.choicesJSHelperMethods.getFieldLabel( field ) ),
+						label,
 						value: wpf.sanitizeHTML( field.id.toString() ),
+						disabled: hasRestrictions,
 					} );
 				}
 
@@ -743,6 +766,19 @@ WPForms.Admin.Builder.Notifications = WPForms.Admin.Builder.Notifications || ( f
 			isFieldExcluded: function( field, exclude ) {
 
 				return Array.isArray( exclude ) && exclude.length > 0 && exclude.includes( field.type );
+			},
+
+			/**
+			 * Check if the field is restricted.
+			 *
+			 * @since 1.9.4
+			 *
+			 * @param {number} fieldId The ID of the field.
+			 *
+			 * @return {boolean} True if the field is restricted, false otherwise.
+			 */
+			fieldHasRestrictions( fieldId ) {
+				return Boolean( $( `#wpforms-field-option-${ fieldId }-is_restricted` ).prop( 'checked' ) );
 			},
 
 			/**

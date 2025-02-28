@@ -11,15 +11,10 @@
 
 namespace Search_Filter\Core;
 
-use Search_Filter\Fields\Field;
-use Search_Filter\Styles;
-use Search_Filter\Styles\Style;
-
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
 
 /**
  * Runs actions on plugin activation (via the `activate` button in wp-admin)
@@ -73,3 +68,6 @@ Upgrader::register_upgrade( '3.0.2', '\Search_Filter\Core\Upgrader\Upgrade_3_0_2
 Upgrader::register_upgrade( '3.0.4', '\Search_Filter\Core\Upgrader\Upgrade_3_0_4' );
 Upgrader::register_upgrade( '3.0.6', '\Search_Filter\Core\Upgrader\Upgrade_3_0_6' );
 Upgrader::register_upgrade( '3.0.7', '\Search_Filter\Core\Upgrader\Upgrade_3_0_7' );
+Upgrader::register_upgrade( '3.1.0', '\Search_Filter\Core\Upgrader\Upgrade_3_1_0' );
+Upgrader::register_upgrade( '3.1.3', '\Search_Filter\Core\Upgrader\Upgrade_3_1_3' );
+Upgrader::register_upgrade( '3.1.4', '\Search_Filter\Core\Upgrader\Upgrade_3_1_4' );

@@ -11,6 +11,8 @@
 namespace Search_Filter_Pro\Fields\Advanced;
 
 use Search_Filter\Fields\Advanced;
+use Search_Filter\Fields\Advanced\Date_Picker as Base_Date_Picker;
+use Search_Filter\Util;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -19,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Generates the markup for a Text field
  */
-class Date_Picker extends Advanced {
+class Date_Picker extends Base_Date_Picker {
 
 	/**
 	 * The supported icons.
@@ -30,6 +32,7 @@ class Date_Picker extends Advanced {
 	 */
 	public $icons = array(
 		'event',
+		'clear',
 	);
 
 	/**
@@ -39,9 +42,7 @@ class Date_Picker extends Advanced {
 	 *
 	 * @var      array
 	 */
-	public $supports = array(
-		'autoSubmit',
-	);
+	public $supports = array();
 
 	/**
 	 * The styles.
@@ -63,6 +64,18 @@ class Date_Picker extends Advanced {
 		'inputInteractiveHoverColor',
 		'inputClearColor',
 		'inputClearHoverColor',
+
+		'labelColor',
+		'labelBackgroundColor',
+		'labelPadding',
+		'labelMargin',
+		'labelScale',
+
+		'descriptionColor',
+		'descriptionBackgroundColor',
+		'descriptionPadding',
+		'descriptionMargin',
+		'descriptionScale',
 	);
 
 	/**
@@ -137,26 +150,19 @@ class Date_Picker extends Advanced {
 		$this->set_render_escape_callbacks( $esc_callbacks );
 
 	}
-	/**
-	 * Gets the URL name for the field.
-	 *
-	 * @return string
-	 */
-	public function get_url_name() {
-		if ( ! $this->has_init() ) {
-			return parent::get_url_name();
-		}
-		$url_name = '';
-		$url_name = apply_filters( 'search-filter/field/url_name', $url_name, $this );
-		return $url_name;
-	}
 
 	/**
 	 * Parses a value from the URL.
 	 */
 	public function parse_url_value() {
 		$url_param_name = self::url_prefix() . $this->get_url_name();
-		$value          = isset( $_GET[ $url_param_name ] ) ? urldecode_deep( sanitize_text_field( wp_unslash( $_GET[ $url_param_name ] ) ) ) : '';
+
+		if ( ! method_exists( '\Search_Filter\Util', 'get_request_var' ) ) {
+			return;
+		}
+		// Notice: the request var has not been sanitized yet, its the raw value from the either $_GET or $_POST.
+		$request_var = Util::get_request_var( $url_param_name );
+		$value       = $request_var !== null ? urldecode_deep( sanitize_text_field( wp_unslash( $request_var ) ) ) : '';
 
 		if ( $value !== '' ) {
 			$this->set_values( array( $value ) );

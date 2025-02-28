@@ -23,8 +23,8 @@ class Block_Parser {
 	 *
 	 * @return array|object The extracted blocks.
 	 */
-	public static function extract_blocks( $content ) {
-		$blocks = self::extract_all_blocks( $content );
+	public static function extract_blocks( $content, $exclude_types = array() ) {
+		$blocks = self::extract_all_blocks( $content, $exclude_types );
 		return $blocks;
 	}
 
@@ -38,7 +38,7 @@ class Block_Parser {
 	 *
 	 * @return array The extracted blocks.
 	 */
-	public static function extract_all_blocks( $content ) {
+	public static function extract_all_blocks( $content, $exclude_types = array() ) {
 
 		$regex_tag = '<!-- wp:search-filter/(.*?) (.*?) /-->';
 		$pattern   = '/' . self::escape_pattern_slashes( $regex_tag ) . '/';
@@ -58,18 +58,12 @@ class Block_Parser {
 			$field_type        = $match[1];
 			$block_attributes  = self::parse_block( $block_json_string, $field_type );
 
-			/**
-			 * Check to see if a block doesn't have a `queryId`
-			 * Then it will be a reusable block - so lookup its query_id.
-			 * TODO - probably needs optimizing for re-usable fields - this is only necessary
-			 * for re-usable fields that are connected to a "dynamic" query on this page.
-			 * Essentially the field needs to declare that it is connected to a query, so we know
-			 * the query should be affecting this single post/page.
-			 */
-			if ( ! isset( $block_attributes['queryId'] ) ) {
+			if ( $field_type === 'reusable-field' ) {
 				if ( ! isset( $block_attributes['fieldId'] ) ) {
+					// Then the field hasn't been selected yet.
 					continue;
 				}
+				// Then we need to get the field from the database.
 				$field = Field::find(
 					array(
 						'id' => $block_attributes['fieldId'],
@@ -77,7 +71,10 @@ class Block_Parser {
 					'record'
 				);
 				if ( ! is_wp_error( $field ) ) {
-					$fields[] = $field->get_attributes();
+					$attributes = $field->get_attributes();
+					// Add back in the  field ID.
+					$attributes['fieldId'] = $field->get_id();
+					$fields[]              = $attributes;
 				}
 			} else {
 				$fields[] = $block_attributes;

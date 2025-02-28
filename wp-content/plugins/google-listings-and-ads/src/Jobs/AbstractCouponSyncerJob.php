@@ -39,7 +39,7 @@ abstract class AbstractCouponSyncerJob extends AbstractActionSchedulerJob {
 	protected $merchant_center;
 
 	/**
-	 * SyncProducts constructor.
+	 * AbstractCouponSyncerJob constructor.
 	 *
 	 * @param ActionSchedulerInterface  $action_scheduler
 	 * @param ActionSchedulerJobMonitor $monitor

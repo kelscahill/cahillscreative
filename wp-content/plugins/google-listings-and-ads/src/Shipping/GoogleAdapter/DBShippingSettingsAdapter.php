@@ -139,7 +139,7 @@ class DBShippingSettingsAdapter extends AbstractShippingSettingsAdapter {
 	 * @return GoogleShippingService
 	 */
 	protected function create_shipping_service( string $country, string $currency, float $rate ): GoogleShippingService {
-		$unique  = sprintf( '%04x', mt_rand( 0, 0xffff ) );
+		$unique  = sprintf( '%04x', wp_rand( 0, 0xffff ) );
 		$service = new GoogleShippingService();
 		$service->setActive( true );
 		$service->setDeliveryCountry( $country );

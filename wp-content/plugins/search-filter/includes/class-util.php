@@ -9,6 +9,8 @@
 
 namespace Search_Filter;
 
+use Search_Filter\Core\Deprecations;
+
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -27,15 +29,14 @@ class Util {
 	private static $options = array();
 
 	/**
-	 * Adds `.min` to a file extension if SCRIPT_DEBUG is disabled
+	 * TODO - deprecate this function.
 	 *
 	 * @param string $file_ext  The extension of the file.
 	 *
 	 * @return string
 	 */
 	public static function get_file_ext( $file_ext ) {
-		// TODO - need to re-implement dynamic file extension.
-		$file_ext = strtolower( $file_ext );
+		Deprecations::add( 'Using outdated method `get_file_ext` which will be deprecated soon.  Update Search & Filter and extensions to remove this notice.' );
 		return $file_ext;
 	}
 
@@ -160,12 +161,54 @@ class Util {
 	 *
 	 * @param string $message The error message.
 	 */
-	public static function error_log( $message ) {
+	public static function error_log( $message, $level = 'error' ) {
+
+		$log_level       = 'errors';
+		$log_to_database = 'no';
+
+		if ( did_action( 'search-filter/settings/features/init' ) && Features::is_enabled( 'debugMode' ) ) {
+			$log_level = Debugger::get_setting_value( 'logLevel' );
+			if ( $log_level === null ) {
+				$log_level = 'errors';
+			}
+
+			$log_to_database = Debugger::get_setting_value( 'logToDatabase' );
+			if ( $log_to_database === null ) {
+				$log_to_database = 'no';
+			}
+		}
+
+		$log_matrix = array(
+			'errors'   => array( 'error' ),
+			'warnings' => array( 'warning', 'error' ),
+			'all'      => array( 'notice', 'warning', 'error' ),
+		);
+
+		if ( ! in_array( $level, $log_matrix[ $log_level ], true ) ) {
+			return;
+		}
+
+		$pid = '';
+		// Some hosting companies like Kinsta disable this function.
+		if ( function_exists( 'getmypid' ) ) {
+			$pid = getmypid() . ' | ';
+		}
+
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG === true ) {
-			// Translators: %s is the log message.
-			$full_message = wp_kses_post( sprintf( __( 'Search & Filter: %s', 'search-filter' ), $message ) );
+			// Translators: %1$s is the process ID, %2$s is the message.
+			$full_message = wp_kses_post( sprintf( '%1$sSearch & Filter: %2$s', $pid, $message ) );
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( $full_message );
+		}
+
+		if ( did_action( 'search-filter/settings/features/init' ) && Features::is_enabled( 'debugMode' ) && $log_to_database === 'yes' ) {
+			$full_message = sprintf( '%1$sSearch & Filter: %2$s', $pid, $message );
+			Debugger::create_log(
+				array(
+					'message' => sanitize_text_field( $full_message ),
+					'level'   => $level,
+				)
+			);
 		}
 	}
 
@@ -304,5 +347,24 @@ class Util {
 		}
 
 		return $subject;
+	}
+
+
+	/**
+	 * Get the global $_GET variable with fallback to $_POST to support more
+	 * use cases out of the box.
+	 *
+	 * WARNING: these variables still need to be checked and sanitized.
+	 *
+	 * @param string $var_name The name of the variable to get.
+	 * @return mixed
+	 */
+	public static function get_request_var( $var_name ) {
+		if ( isset( $_GET[ $var_name ] ) ) {
+			return $_GET[ $var_name ];
+		} elseif ( isset( $_POST[ $var_name ] ) ) {
+			return $_POST[ $var_name ];
+		}
+		return null;
 	}
 }

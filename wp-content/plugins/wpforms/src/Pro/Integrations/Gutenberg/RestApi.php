@@ -57,7 +57,7 @@ class RestApi extends RestApiBase {
 			[
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'install_stock_photos' ],
-				'permission_callback' => [ $this, 'permissions_check' ],
+				'permission_callback' => [ $this, 'admin_permissions_check' ],
 			]
 		);
 	}

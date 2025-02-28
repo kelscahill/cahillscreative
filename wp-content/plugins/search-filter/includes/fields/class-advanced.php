@@ -44,10 +44,10 @@ class Advanced extends Field {
 
 	protected function create_options() {
 		if ( ! $this->has_init() ) {
-			return array();
+			return;
 		}
 		$this->set_options( array() );
-		return array();
+		return;
 	}
 
 	/**

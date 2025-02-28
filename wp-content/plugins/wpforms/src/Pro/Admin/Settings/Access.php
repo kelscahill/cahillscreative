@@ -59,7 +59,7 @@ class Access {
 		wp_enqueue_script(
 			'wpforms-settings-access',
 			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/settings-access{$min}.js",
-			[ 'jquery', 'jquery-confirm' ],
+			[ 'jquery', 'jquery-confirm', 'underscore' ],
 			WPFORMS_VERSION,
 			true
 		);

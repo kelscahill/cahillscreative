@@ -13,6 +13,7 @@ namespace Search_Filter\Rest_API;
 
 use Search_Filter\Database\Queries\Queries as Queries_Query;
 use Search_Filter\Queries\Query;
+use Search_Filter\Rest_API;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -176,6 +177,14 @@ class Queries {
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_records_section_counts' ),
 				'permission_callback' => array( $this, 'permissions' ),
+				'args'                => array(
+					'query_id' => array(
+						'required'          => false,
+						'description'       => __( 'Query ID.', 'search-filter' ),
+						'type'              => 'number',
+						'sanitize_callback' => 'absint',
+					),
+				),
 			)
 		);
 	}
@@ -186,7 +195,7 @@ class Queries {
 	public function get_records_section_counts() {
 		$query      = new Queries_Query();
 		$args       = array();
-		$count_data = get_records_section_status_counts( $query, $args );
+		$count_data = Util::get_records_section_status_counts( $query, $args );
 		return rest_ensure_response( $count_data );
 	}
 
@@ -205,18 +214,13 @@ class Queries {
 			unset( $query_args['context'] );
 		}
 
-		$query_args  = get_records_query_args( $query_args );
+		$query_args  = Util::get_records_query_args( $query_args );
 		$query       = new Queries_Query( $query_args );
 		$query_items = $query->items;
 		$records     = array();
 
 		if ( $query ) {
 
-			// TODO - need to re-implement somehow.
-			// $records_data->total_records = get_query_found_items( $query, $query_args );
-			// $records_data->section_counts = get_records_section_status_counts( $query, $query_args );
-
-			// $records_data->max_num_pages = $query->max_num_pages;
 			foreach ( $query_items as $record ) {
 				$query_record = array(
 					'id'            => $record->get_id(),
@@ -318,11 +322,8 @@ class Queries {
 		$id     = $params['id'];
 
 		$section_instance = new Query( $id );
-		do_action( 'search-filter/admin/delete_record', $id, $params, 'queries' );
 
 		$section_instance->delete();
-
-		do_action( 'search-filter/rest-api/queries/delete_record', $section_instance );
 
 		// Return the complete updated record for the query.
 		$response = array( 'id' => $id );
@@ -369,7 +370,7 @@ class Queries {
 
 		// Bail if nothing found.
 		if ( is_wp_error( $instance ) ) {
-			return \rest_convert_error_to_response( new \WP_Error( 'not_found', 'Not found.' ) );
+			return \rest_convert_error_to_response( new \WP_Error( 'not_found', 'Not found.', array( 'status' => 404 ) ) );
 		}
 
 		$item = $instance->get_record();

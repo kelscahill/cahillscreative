@@ -22,15 +22,16 @@ class ShippingTimeTable extends Table {
 	 * @return string
 	 */
 	protected function get_install_query(): string {
-		return <<< SQL
+		return "
 CREATE TABLE `{$this->get_sql_safe_name()}` (
     id bigint(20) NOT NULL AUTO_INCREMENT,
     country varchar(2) NOT NULL,
     time bigint(20) NOT NULL default 0,
+	max_time bigint(20) NOT NULL default 0,
     PRIMARY KEY (id),
     KEY country (country)
 ) {$this->get_collation()};
-SQL;
+";
 	}
 
 	/**
@@ -49,9 +50,10 @@ SQL;
 	 */
 	public function get_columns(): array {
 		return [
-			'id'      => true,
-			'country' => true,
-			'time'    => true,
+			'id'       => true,
+			'country'  => true,
+			'time'     => true,
+			'max_time' => true,
 		];
 	}
 }

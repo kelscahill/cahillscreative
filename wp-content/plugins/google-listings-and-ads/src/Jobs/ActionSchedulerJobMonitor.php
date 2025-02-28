@@ -30,7 +30,7 @@ class ActionSchedulerJobMonitor implements Service {
 	protected $monitored_hooks = [];
 
 	/**
-	 * ActionSchedulerInterface constructor.
+	 * ActionSchedulerJobMonitor constructor.
 	 *
 	 * @param ActionSchedulerInterface $action_scheduler
 	 */
@@ -206,7 +206,7 @@ class ActionSchedulerJobMonitor implements Service {
 	 * @since 1.7.0
 	 */
 	protected static function get_job_hash( string $hook, ?array $args = null ): string {
-		return hash( 'crc32b', $hook . json_encode( $args ) );
+		return hash( 'crc32b', $hook . wp_json_encode( $args ) );
 	}
 
 	/**

@@ -8,7 +8,7 @@ use InvalidArgumentException;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Class InvalidColumn
+ * Class InvalidQuery
  *
  * @package Automattic\WooCommerce\GoogleListingsAndAds\Exception
  */

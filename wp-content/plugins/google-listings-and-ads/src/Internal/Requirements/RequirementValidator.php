@@ -3,7 +3,7 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds\Internal\Requirements;
 
-use RuntimeException;
+use Automattic\WooCommerce\GoogleListingsAndAds\Exception\RuntimeExceptionWithMessageFunction;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -36,15 +36,15 @@ abstract class RequirementValidator implements RequirementValidatorInterface {
 	/**
 	 * Add a standard requirement validation error notice.
 	 *
-	 * @param RuntimeException $e
+	 * @param RuntimeExceptionWithMessageFunction $e
 	 */
-	protected function add_admin_notice( RuntimeException $e ) {
+	protected function add_admin_notice( RuntimeExceptionWithMessageFunction $e ) {
 		// Display notice error message.
 		add_action(
 			'admin_notices',
 			function () use ( $e ) {
 				echo '<div class="notice notice-error">' . PHP_EOL;
-				echo '	<p>' . esc_html( $e->getMessage() ) . '</p>' . PHP_EOL;
+				echo '	<p>' . esc_html( $e->get_formatted_message() ) . '</p>' . PHP_EOL;
 				echo '</div>' . PHP_EOL;
 			}
 		);

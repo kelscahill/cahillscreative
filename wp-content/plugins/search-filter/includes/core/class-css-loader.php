@@ -11,6 +11,7 @@
 
 namespace Search_Filter\Core;
 
+use Search_Filter\Options;
 use Search_Filter\Styles;
 use Search_Filter\Util;
 
@@ -112,64 +113,30 @@ class CSS_Loader {
 		$upload_dir = wp_upload_dir(); // Grab uploads folder array.
 		$sf_dir     = trailingslashit( $upload_dir['basedir'] ) . 'search-filter/'; // Set storage directory path.
 
-		global $wp_filesystem;
-		// Try to init the file system and watch out for the return value of 'false' or 'null'.
-		$is_filesystem_ready = WP_Filesystem();
-		if ( $is_filesystem_ready !== true ) {
-
-			if ( WP_DEBUG === true ) {
-				Util::error_log( 'Search & Filter: Unable to init file system.', 'search-filter' );
-			}
-			return;
-		}
-
-		$filesystem = $wp_filesystem;
-		$dir_exists = $filesystem->exists( $sf_dir );
-		if ( ! $dir_exists ) {
+		// Try to create the folder if it doesn't exist.
+		if ( ! is_dir( $sf_dir ) ) {
 			$mk_dir_result = wp_mkdir_p( $sf_dir ); // Try to create the folder.
 			if ( ! $mk_dir_result ) {
 				// Log error.
-				if ( defined( 'WP_DEBUG' ) ) {
-					if ( WP_DEBUG === true ) {
-						// translators: %s is the error message.
-						Util::error_log( sprintf( __( 'Unable to write folder, info: %s' ), $filesystem->errors->get_error_message() ) );
-					}
-				}
-			} else {
-				$dir_exists = true;
+				// translators: %s is the error message.
+				Util::error_log( __( 'Unable to write folder `search-filter` in `uploads` directory.' ), 'error' );
+				self::set_mode( 'inline' );
+				return;
 			}
 		}
 
-		$created_file = false;
-		if ( $dir_exists ) {
-			$file_permission = 0644;
-			if ( defined( 'FS_CHMOD_FILE' ) ) {
-				$file_permission = FS_CHMOD_FILE;
-			}
-			$file_result = $filesystem->put_contents( $sf_dir . 'style.css', $css, $file_permission ); // Finally, store the file.
-			if ( $file_result ) {
-				// Save in an option if this method is successful.
-				$created_file = true;
-			} else {
-				$created_file = false;
-				if ( defined( 'WP_DEBUG' ) ) {
-					if ( WP_DEBUG === true ) {
-						// translators: %s is the error message.
-						Util::error_log( sprintf( __( 'Unable to write file, info: %s' ), $filesystem->errors->get_error_message() ) );
-					}
-				}
-			}
-		}
-
-		if ( $created_file ) {
-			// All good, use the CSS file.
+		$file_result = file_put_contents( $sf_dir . 'style.css', $css ); // Finally, store the file.
+		if ( $file_result !== false ) {
+			// Success.
 			self::set_mode( 'file-system' );
-		} else {
-			// Then we need to switch to generating inline CSS.
-			self::set_mode( 'inline' );
+			self::set_version_id(); // Update the ID so the request won't be cached.
+			return;
 		}
 
-		self::set_version_id(); // Update the ID so the request won't be cached.
+		// Failed.
+		// translators: %s is the error message.
+		Util::error_log( __( 'Unable to write file with `file_put_contents`.' ), 'error' );
+		self::set_mode( 'inline' );
 	}
 
 	/**
@@ -178,21 +145,30 @@ class CSS_Loader {
 	 * @param string $mode The mode to set - file-system or inline.
 	 */
 	private static function set_mode( $mode ) {
-		update_option( 'search_filter_css_mode', sanitize_key( $mode ), false );
+		Options::update_option_value( 'css-mode', sanitize_key( $mode ) );
 	}
 
 	/**
 	 * Updates the CSS version ID to bust the cache.
 	 */
 	private static function set_version_id() {
-		$version_id = absint( get_option( 'search_filter_css_version_id' ) );
+		$version_id = Options::get_option_value( 'css-version-id' );
+		if ( ! $version_id ) {
+			$version_id = 1;
+		}
 		++$version_id;
 		// I guess we don't want this number to grow forever, so when it hits 1000 reset it.
 		if ( $version_id === 1000 ) {
 			$version_id = 1;
 		}
-		update_option( 'search_filter_css_version_id', absint( $version_id ), false );
+		Options::update_option_value( 'css-version-id', absint( $version_id ) );
 	}
+
+
+	public static function get_version_id() {
+		return Options::get_option_value( 'css-version-id' );
+	}
+
 	/**
 	 * Gets the CSS version.
 	 *
@@ -203,7 +179,7 @@ class CSS_Loader {
 	public static function get_version( $plugin_version = -1 ) {
 		$version = 0;
 		if ( 'file-system' === self::get_mode() ) {
-			$version = absint( get_option( 'search_filter_css_version_id' ) );
+			$version = absint( self::get_version_id() );
 		} elseif ( $plugin_version ) {
 			$version = $plugin_version;
 		}
@@ -216,7 +192,7 @@ class CSS_Loader {
 	 * @return string The CSS mode.
 	 */
 	public static function get_mode() {
-		return get_option( 'search_filter_css_mode' );
+		return Options::get_option_value( 'css-mode' );
 	}
 
 	/**

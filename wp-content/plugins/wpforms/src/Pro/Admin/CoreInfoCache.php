@@ -12,6 +12,15 @@ use WPForms\Helpers\CacheBase;
 class CoreInfoCache extends CacheBase {
 
 	/**
+	 * Remote source URL.
+	 *
+	 * @since 1.9.3
+	 *
+	 * @var string
+	 */
+	const REMOTE_SOURCE = 'https://wpformsapi.com/feeds/v1/core/';
+
+	/**
 	 * Determine if the class is allowed to load.
 	 *
 	 * @since 1.8.6
@@ -35,7 +44,7 @@ class CoreInfoCache extends CacheBase {
 		return [
 
 			// Remote source URL.
-			'remote_source' => 'https://wpforms.com/wp-content/core.json',
+			'remote_source' => self::REMOTE_SOURCE,
 
 			// Addons cache file name.
 			'cache_file'    => 'core.json',

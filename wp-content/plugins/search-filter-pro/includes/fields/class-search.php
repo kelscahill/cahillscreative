@@ -39,6 +39,15 @@ class Search extends Search_Base {
 	 * @return   array    The updated WP query args.
 	 */
 	public function apply_wp_query_args( $query_args = array() ) {
+
+		if ( ! $this->has_init() ) {
+			return $this->return_apply_wp_query_args( $query_args );
+		}
+
+		// Only set post_type if a value is selected.
+		if ( ! $this->has_values() ) {
+			return $this->return_apply_wp_query_args( $query_args );
+		}
 		// Handle the built in data types.
 		$data_type = $this->get_attribute( 'dataType' );
 		$value     = $this->get_value();
@@ -111,6 +120,7 @@ class Search extends Search_Base {
 		}
 		return parent::apply_wp_query_args( $query_args );
 	}
+
 
 	/**
 	 * Add the query args to generate a "failed" query (one with no results).

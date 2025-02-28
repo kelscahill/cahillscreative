@@ -14,6 +14,7 @@
  * @var string $url           Download URL.
  * @var string $video         Video URL.
  * @var string $utm_content   UTM content.
+ * @var string $message       Inform message.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -30,7 +31,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	data-nonce="<?php echo esc_attr( $nonce ); ?>"
 	data-video="<?php echo esc_url( $video ); ?>"
 	data-license="<?php echo esc_attr( $license_level ); ?>"
-	data-utm-content="<?php echo esc_attr( $utm_content ); ?>">
+	data-utm-content="<?php echo esc_attr( $utm_content ); ?>"
+   	data-message="<?php echo esc_attr( $message ); ?>"
+>
 		<?php echo esc_html( $name ); ?>
 		<i class="fa fa-angle-right wpforms-toggle-arrow"></i>
 </a>

@@ -1,11 +1,11 @@
 === Google for WooCommerce ===
 Contributors: automattic, google, woocommerce
 Tags: woocommerce, google, product feed, ads, listings
-Requires at least: 5.9
+Requires at least: 6.1
 Tested up to: 6.7
 Requires PHP: 7.4
 Requires PHP Architecture: 64 Bits
-Stable tag: 2.8.7
+Stable tag: 2.9.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -51,8 +51,8 @@ Once you’re running Google Ads campaigns, the Google tag feature in the extens
 
 = Minimum Requirements =
 
-* WordPress 5.9 or greater
-* WooCommerce 6.9 or greater
+* WordPress 6.1 or greater
+* WooCommerce 7.9 or greater
 * PHP version 7.4 or greater
 * PHP Architecture 64 bits
 * MySQL version 5.6 or greater
@@ -140,25 +140,17 @@ To allow your products to appear in all relevant locations, make sure you’ve c
 
 == Changelog ==
 
-= 2.8.7 - 2024-11-14 =
-* Dev - WordPress 6.7 Compatibility: Fix the issue that E2E test can't log in to wp-admin.
-* Fix - Remove a Google Ads API vendor file that prints php information.
-* Fix - WordPress 6.7 Compatibility: Avoid the block toolbar appearing when interacting blockified product editor.
-* Tweak - WC 9.4 compatibility.
-* Tweak - WP 6.7 compatibility.
-* Tweak - WordPress 6.7 Compatibility: Adjust the layout of the radio control to align well with the extended content.
-* Tweak - WordPress 6.7 Compatibility: Avoid errors in the database where a TEXT type can't have a default value.
+= 2.9.9 - 2025-02-18 =
+* Fix - Error displayed when accessing campaign assets editing page without attached asset groups.
+* Tweak - Opt-in to URL expansion.
+* Tweak - Supplement the implementation of API Pull for the Settings page.
+* Tweak - WC 9.7 compatibility.
 
-= 2.8.6 - 2024-10-02 =
-* Dev - Fix missing blueprint dependency.
-* Tweak - Adjust WP Proxy Response to force the string type for the price fields.
-* Tweak - Logic for Delete notifications.
+= 2.9.8 - 2025-02-04 =
+* Tweak - Replace WooCommerce logo with Woo 2.0 Brand.
 
-= 2.8.5 - 2024-09-05 =
-* Break - Remove WooCommerce Navigation integration.
-* Fix - Issue with syncing shipping rates with more than two decimals.
-* Fix - Log exceptions triggered by assets being enqueued before being registered.
-* Tweak - Use remote-site-status to check the WPCOM Auth status.
-* Tweak - WC 9.3.0 compatibility.
+= 2.9.7 - 2025-01-28 =
+* Tweak - Adjust some query and table functions.
+* Tweak - Allow mapping of a Google ID without a prefix.
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/google-listings-and-ads/trunk/changelog.txt).

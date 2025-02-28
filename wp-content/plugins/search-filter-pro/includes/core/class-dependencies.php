@@ -42,6 +42,24 @@ class Dependencies {
 		}
 		return true;
 	}
+	/**
+	 * Check if the parent plugin is required version.
+	 *
+	 * @since    3.0.0
+	 *
+	 * @return   boolean
+	 */
+	public static function is_search_filter_recommended_version() {
+		if ( ! self::is_search_filter_enabled() ) {
+			return false;
+		}
+		// We use this hook on plugins_loaded, so we can't use get_plugins to find the version
+		// of an inactive plugin.
+		if ( version_compare( SEARCH_FILTER_VERSION, SEARCH_FILTER_PRO_RECOMMENDED_BASE_VERSION, '<' ) ) {
+			return false;
+		}
+		return true;
+	}
 
 	/**
 	 * Check if the plugin is installed.
@@ -114,7 +132,11 @@ class Dependencies {
 	 * @return   boolean
 	 */
 	public static function has_legacy_base_plugin() {
-		return version_compare( self::get_base_plugin_version(), '2.0.0', '<' );
+		$base_plugin_version = self::get_base_plugin_version();
+		if ( $base_plugin_version === false ) {
+			return false;
+		}
+		return version_compare( $base_plugin_version, '2.0.0', '<' );
 	}
 	/**
 	 * Ensure we can't disable the free plugin, while the pro plugin is active.
@@ -122,13 +144,12 @@ class Dependencies {
 	 * @return void
 	 */
 	public static function init() {
-		add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
-		add_filter( 'network_admin_plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
-		add_action( 'after_plugin_row_meta', array( __CLASS__, 'plugin_row_meta' ), 10, 1 );
+		add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 9, 2 );
+		add_filter( 'network_admin_plugin_action_links', array( __CLASS__, 'network_plugin_action_links' ), 10, 2 );
 	}
 
 	/**
-	 * Remove the disabled link from the plugin row and add a notice instead.
+	 * Remove the disable link from the plugin row and add a notice instead.
 	 *
 	 * @param array  $actions The plugin actions.
 	 * @param string $plugin_file The path to the plugin file.
@@ -141,40 +162,42 @@ class Dependencies {
 		}
 
 		if ( $plugin_file === 'search-filter/search-filter.php' ) {
-			if ( isset( $actions['deactivate'] ) ) {
-				unset( $actions['deactivate'] );
-				$actions['disable_notice'] = __( 'Required by Search & Filter Pro', 'search-filter-pro' );
-			}
+			return self::modify_base_plugin_links( $actions );
+		}
+
+		if ( $plugin_file === 'search-filter-pro/search-filter-pro.php' ) {
+			$actions['settings'] = '<a href="' . esc_url( admin_url( 'admin.php?page=search-filter' ) ) . '">' . esc_html__( 'Settings', 'search-filter-pro' ) . '</a>';
+		}
+
+		return $actions;
+	}
+	/**
+	 * Remove the disable link from the plugin row and add a notice instead.
+	 *
+	 * @param array  $actions The plugin actions.
+	 * @param string $plugin_file The path to the plugin file.
+	 * @return array
+	 */
+	public static function network_plugin_action_links( $actions, $plugin_file ) {
+
+		if ( ! self::is_search_filter_installed() || ! self::is_search_filter_enabled() ) {
+			return $actions;
+		}
+
+		if ( $plugin_file === 'search-filter/search-filter.php' ) {
+			return self::modify_base_plugin_links( $actions );
 		}
 
 		return $actions;
 	}
 
-	/**
-	 * Add js to the output to disable the checkbox for the free plugin.
-	 *
-	 * @param string $plugin_file The path to the plugin file.
-	 * @param array  $plugin_data The plugin data.
-	 * @return void
-	 */
-	public static function plugin_row_meta( $plugin_file ) {
-
-		if ( ! self::is_search_filter_installed() || ! self::is_search_filter_enabled() ) {
-			return;
+	private static function modify_base_plugin_links( $actions ) {
+		if ( isset( $actions['deactivate'] ) ) {
+			unset( $actions['deactivate'] );
+			$actions['disable_notice'] = __( 'Required by Search & Filter Pro', 'search-filter-pro' );
 		}
 
-		if ( $plugin_file === 'search-filter/search-filter.php' ) {
-			?>
-			<script>
-				document.addEventListener('DOMContentLoaded', function() {
-					var row = document.querySelector('tr[data-plugin="search-filter/search-filter.php"]');
-					var checkbox = row.querySelector('input[type="checkbox"][value^="search-filter/search-filter.php"]');
-					if (checkbox) {
-						checkbox.disabled = true;
-					}
-				});
-			</script>
-			<?php
-		}
+		return $actions;
 	}
+
 }

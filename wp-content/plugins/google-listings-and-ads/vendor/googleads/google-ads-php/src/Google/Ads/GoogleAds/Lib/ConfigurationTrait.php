@@ -39,7 +39,6 @@ trait ConfigurationTrait
     private $proxy;
     private $transport;
     private $grpcChannelIsSecure;
-    private $useGapicV2Source;
 
     // The following configuration settings are based on complex objects. They cannot be set in
     // configuration files like the others but only dynamically.
@@ -47,6 +46,7 @@ trait ConfigurationTrait
     private $unaryMiddlewares;
     private $streamingMiddlewares;
     private $grpcInterceptors;
+    private $httpHandler;
 
     /**
      * Gets the developer token.
@@ -169,16 +169,6 @@ trait ConfigurationTrait
     }
 
     /**
-     * Returns true when this library is set to use GAPIC v2 source.
-     *
-     * @return bool
-     */
-    public function useGapicV2Source()
-    {
-        return $this->useGapicV2Source;
-    }
-
-    /**
      * Gets the Google Ads unary middlewares.
      *
      * @return GoogleAdsMiddlewareAbstract[] the Google Ads unary middlewares
@@ -198,7 +188,7 @@ trait ConfigurationTrait
         return $this->streamingMiddlewares;
     }
 
-    /*
+    /**
      * Gets the gRPC interceptors.
      *
      * @return Interceptor[] the gRPC interceptors
@@ -206,5 +196,15 @@ trait ConfigurationTrait
     public function getGrpcInterceptors()
     {
         return $this->grpcInterceptors;
+    }
+
+    /**
+     * Gets the REST HTTP handler.
+     *
+     * @return callable
+     */
+    public function getHttpHandler()
+    {
+        return $this->httpHandler;
     }
 }

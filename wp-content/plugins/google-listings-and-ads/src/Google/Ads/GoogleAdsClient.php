@@ -2,7 +2,7 @@
 declare( strict_types=1 );
 
 /**
- * Overrides vendor/googleads/google-ads-php/src/Google/Ads/GoogleAds/Lib/V16/GoogleAdsClient.php
+ * Overrides vendor/googleads/google-ads-php/src/Google/Ads/GoogleAds/Lib/V18/GoogleAdsClient.php
  *
  * phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
  * phpcs:disable WordPress.NamingConventions.ValidVariableName
@@ -24,7 +24,7 @@ class GoogleAdsClient {
 	private $httpClient = null;
 
 	/**
-	 * Default constructor
+	 * GoogleAdsClient constructor
 	 *
 	 * @param string $endpoint Endpoint URL to send requests to.
 	 */

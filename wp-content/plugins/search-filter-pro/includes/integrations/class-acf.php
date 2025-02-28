@@ -56,14 +56,14 @@ class Acf {
 			'url',
 			'password',
 			'radio',
-			/*
-			 'select',
-			'button', */
 		),
 		'range'    => array(
 			'number',
 		),
-		'advanced' => array(),
+		'advanced' => array(
+			'date_picker',
+			'date_time_picker',
+		),
 	);
 
 	/**
@@ -81,6 +81,10 @@ class Acf {
 			'email',
 			'url',
 			'password',
+			'radio',
+			'checkbox',
+			'select',
+			'button',
 		),
 		'choice'   => array(
 			'text',
@@ -129,7 +133,7 @@ class Acf {
 		add_action( 'search-filter/settings/init', array( __CLASS__, 'update_integration' ), 10 );
 
 		// Need to update field support before field settings are setup.
-		// We are already inside the `search-filter/integrations/init` hook.
+		// We are already inside the `search-filter/settings/integrations/init` hook.
 		if ( ! self::acf_enabled() ) {
 			return;
 		}
@@ -138,7 +142,7 @@ class Acf {
 		}
 
 		add_filter( 'search-filter/field/get_data_support', array( __CLASS__, 'get_field_data_support' ), 10, 3 );
-		add_filter( 'search-filter/indexer/sync_field_index/override_values', array( __CLASS__, 'index_values' ), 10, 3 );
+		add_filter( 'search-filter-pro/indexer/sync_field_index/override_values', array( __CLASS__, 'index_values' ), 10, 3 );
 		add_filter( 'search-filter/field/url_name', array( __CLASS__, 'add_custom_field_url_name' ), 10, 2 );
 	}
 
@@ -190,10 +194,11 @@ class Acf {
 		add_action( 'rest_api_init', array( __CLASS__, 'add_routes' ) );
 		add_filter( 'search-filter-pro/field/search/autocomplete/suggestions', array( __CLASS__, 'get_autocomplete_suggestions' ), 10, 3 );
 		add_filter( 'search-filter/field/search/wp_query_args', array( __CLASS__, 'get_search_wp_query_args' ), 10, 2 );
-		add_filter( 'search-filter-pro/indexer/query/search/should_enable', array( __CLASS__, 'enable_indexer_search' ), 10, 2 );
+		add_filter( 'search-filter/fields/field/get_query_type', array( __CLASS__, 'enable_indexer_search' ), 2, 2 ); // Priority of 2 after the indexer has done its thing.
 		add_filter( 'search-filter/field/choice/wp_query_args', array( __CLASS__, 'get_choice_wp_query_args' ), 10, 2 );
 		add_filter( 'search-filter/field/range/wp_query_args', array( __CLASS__, 'get_range_wp_query_args' ), 10, 2 );
-		add_filter( 'search-filter/field/choice/options', array( __CLASS__, 'add_field_choice_options' ), 10, 2 );
+		add_filter( 'search-filter/field/advanced/wp_query_args', array( __CLASS__, 'get_advanced_wp_query_args' ), 10, 2 );
+		add_filter( 'search-filter/field/choice/options_data', array( __CLASS__, 'add_field_choice_options_data' ), 10, 2 );
 		add_filter( 'search-filter/field/range/auto_detect_custom_field', array( __CLASS__, 'auto_detect_custom_field' ), 10, 2 );
 
 		self::register_settings();
@@ -264,6 +269,7 @@ class Acf {
 					),
 				),
 				'permission_callback' => array( __CLASS__, 'permissions' ),
+				'allow_batch'         => true,
 			)
 		);
 		register_rest_route(
@@ -290,6 +296,7 @@ class Acf {
 					),
 				),
 				'permission_callback' => array( __CLASS__, 'permissions' ),
+				'allow_batch'         => true,
 			)
 		);
 	}
@@ -317,18 +324,18 @@ class Acf {
 		);
 		// Group setting.
 		$setting                      = array(
-			'name'        => 'dataAcfGroup',
-			'type'        => 'string',
-			'default'     => '',
-			'inputType'   => 'Select',
-			'label'       => __( 'Group / Parent', 'search-filter' ),
-			'placeholder' => __( 'Choose Group', 'search-filter' ),
-			'group'       => 'data',
-			'tab'         => 'settings',
-			'context'     => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/search', 'block/field/search' ),
-			'options'     => array(),
-			'isDataType'  => true,
-			'dependsOn'   => array(
+			'name'         => 'dataAcfGroup',
+			'type'         => 'string',
+			'default'      => '',
+			'inputType'    => 'Select',
+			'label'        => __( 'Group / Parent', 'search-filter' ),
+			'placeholder'  => __( 'Choose Group', 'search-filter' ),
+			'group'        => 'data',
+			'tab'          => 'settings',
+			'context'      => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/search', 'block/field/search' ),
+			'options'      => array(),
+			'isDataType'   => true,
+			'dependsOn'    => array(
 				'relation' => 'AND',
 				'rules'    => array(
 					array(
@@ -338,7 +345,7 @@ class Acf {
 					),
 				),
 			),
-			'store'       => array(
+			'dataProvider' => array(
 				'route' => '/settings/options/acf-groups',
 				'args'  => array(
 					'queryId',
@@ -387,18 +394,18 @@ class Acf {
 
 		// Field setting.
 		$setting                      = array(
-			'name'        => 'dataAcfField',
-			'type'        => 'string',
-			'default'     => '',
-			'inputType'   => 'Select',
-			'label'       => __( 'Field', 'search-filter' ),
-			'placeholder' => __( 'Choose Field', 'search-filter' ),
-			'group'       => 'data',
-			'tab'         => 'settings',
-			'context'     => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/search', 'block/field/search' ),
-			'options'     => array(),
-			'isDataType'  => true,
-			'dependsOn'   => array(
+			'name'         => 'dataAcfField',
+			'type'         => 'string',
+			'default'      => '',
+			'inputType'    => 'Select',
+			'label'        => __( 'Field', 'search-filter' ),
+			'placeholder'  => __( 'Choose Field', 'search-filter' ),
+			'group'        => 'data',
+			'tab'          => 'settings',
+			'context'      => array( 'admin/field', 'admin/field/choice', 'block/field/choice', 'admin/field/range', 'block/field/range', 'admin/field/advanced', 'block/field/advanced', 'admin/field/search', 'block/field/search' ),
+			'options'      => array(),
+			'isDataType'   => true,
+			'dependsOn'    => array(
 				'relation' => 'AND',
 				'rules'    => array(
 					array(
@@ -413,7 +420,7 @@ class Acf {
 					),
 				),
 			),
-			'store'       => array(
+			'dataProvider' => array(
 				'route' => '/settings/options/acf-fields',
 				'args'  => array(
 					'queryId',
@@ -421,7 +428,7 @@ class Acf {
 					'type',
 				),
 			),
-			'supports'    => array(
+			'supports'     => array(
 				'previewAPI' => true,
 			),
 		);
@@ -445,9 +452,10 @@ class Acf {
 	 */
 	public static function get_field_data_support( $data_support, $type, $input_type ) {
 		$supported_matrix = array(
-			'choice' => array( 'select', 'radio', 'checkbox', 'button' ),
-			'search' => array( 'text', 'autocomplete' ),
-			'range'  => array( 'select', 'slider', 'number', 'radio' ),
+			'choice'   => array( 'select', 'radio', 'checkbox', 'button' ),
+			'search'   => array( 'text', 'autocomplete' ),
+			'range'    => array( 'select', 'slider', 'number', 'radio' ),
+			'advanced' => array( 'date_picker' ),
 		);
 
 		if ( ! isset( $supported_matrix[ $type ] ) ) {
@@ -732,24 +740,29 @@ class Acf {
 	 * Enable the indexer search for search fields connected to ACF
 	 * data types.
 	 */
-	public static function enable_indexer_search( $should_enable, $field ) {
+	public static function enable_indexer_search( $query_type, $field ) {
+
+		if ( $field->get_attribute( 'type' ) !== 'search' ) {
+			return $query_type;
+		}
 
 		$data_type = $field->get_attribute( 'dataType' );
 		if ( $data_type !== 'acf_field' ) {
-			return $should_enable;
+			return $query_type;
 		}
 
 		$field_key = $field->get_attribute( 'dataAcfField' );
 		if ( ! $field_key || $field_key === '' ) {
-			return $should_enable;
+			return $query_type;
 		}
 
 		// Support using the indexer for search fields with ACF.
 		if ( ! Fields::field_is_connected_to_indexer( $field ) ) {
-			return false;
+			return $query_type;
 		}
 
-		return true;
+		// Set the query type to indexer.
+		return 'indexer';
 	}
 
 	/**
@@ -955,6 +968,89 @@ class Acf {
 		return $query_args;
 	}
 
+
+	/**
+	 * Get the range WP query args for the field.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $query_args    The query args to get the range WP query args for.
+	 * @param Field $field    The field.
+	 * @return array    The range WP query args.
+	 */
+	public static function get_advanced_wp_query_args( $query_args, $field ) {
+		if ( ! self::acf_enabled() ) {
+			return $query_args;
+		}
+
+		$data_type = $field->get_attribute( 'dataType' );
+		if ( $data_type !== 'acf_field' ) {
+			return $query_args;
+		}
+
+		$field_key = $field->get_attribute( 'dataAcfField' );
+
+		if ( ! $field_key || $field_key === '' ) {
+			return $query_args;
+		}
+
+		// So far there is only a date input type.
+		if ( $field->get_attribute( 'inputType' ) !== 'date_picker' ) {
+			return $query_args;
+		}
+
+		// If there is no meta query key then create one.
+		if ( ! isset( $query_args['meta_query'] ) ) {
+			$query_args['meta_query'] = array();
+		}
+
+		// If there is no relation add it.
+		if ( ! isset( $query_args['meta_query']['relation'] ) ) {
+			$query_args['meta_query']['relation'] = 'AND';
+		}
+
+		$values = $field->get_values();
+
+		if ( count( $values ) === 1 ) {
+
+			$custom_field_key = self::generate_field_key( $field_key );
+
+			$query_args['meta_query'][] = array(
+				'key'     => sanitize_text_field( $custom_field_key ),
+				'value'   => sanitize_text_field( $values[0] ),
+				'compare' => '=',
+				'type'    => 'DATE',
+			);
+		}
+
+		if ( count( $values ) === 2 ) {
+
+			$from = $values[0];
+			$to   = $values[1];
+
+			// If there is no meta query key then create one.
+			if ( ! isset( $query_args['meta_query'] ) ) {
+				$query_args['meta_query'] = array();
+			}
+
+			// If there is no relation add it.
+			if ( ! isset( $query_args['meta_query']['relation'] ) ) {
+				$query_args['meta_query']['relation'] = 'AND';
+			}
+
+			$custom_field_key = self::generate_field_key( $field_key );
+
+			$query_args['meta_query'][] = array(
+				'key'     => sanitize_text_field( $custom_field_key ),
+				'value'   => array( sanitize_text_field( $from ), sanitize_text_field( $to ) ),
+				'compare' => 'BETWEEN',
+				'type'    => 'DATE',
+			);
+		}
+
+		return $query_args;
+	}
+
 	/**
 	 * Generate the meta key for the field.
 	 *
@@ -1024,34 +1120,37 @@ class Acf {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array $options    The options to add the field choice options for.
+	 * @param array $options_data    The options to add the field choice options for.
 	 * @param Field $field    The field.
 	 * @return array    The updated options.
 	 */
-	public static function add_field_choice_options( $options, $field ) {
+	public static function add_field_choice_options_data( $options_data, $field ) {
 
 		$data_type = $field->get_attribute( 'dataType' );
 		if ( $data_type !== 'acf_field' ) {
-			return $options;
+			return $options_data;
 		}
 
-		if ( count( $options ) > 0 ) {
-			return $options;
+		if ( count( $options_data['options'] ) > 0 ) {
+			return $options_data;
 		}
 
 		$field_key = $field->get_attribute( 'dataAcfField' );
 		if ( ! $field_key || $field_key === '' ) {
-			return $options;
+			return $options_data;
 		}
 
 		$acf_field = \acf_maybe_get_field( $field_key );
 
 		if ( empty( $acf_field ) ) {
-			return $options;
+			return $options_data;
 		}
 
 		if ( isset( $acf_field['choices'] ) ) {
-			$options = array();
+			$options_data = array(
+				'options' => array(),
+				'labels'  => array(),
+			);
 
 			// Sort according to the order direction.
 			$acf_choices     = $acf_field['choices'];
@@ -1059,34 +1158,36 @@ class Acf {
 			$order_direction = $field->get_attribute( 'inputOptionsOrderDir' ) ? $field->get_attribute( 'inputOptionsOrderDir' ) : 'asc';
 
 			$acf_choices = Util::sort_assoc_array( $acf_choices, $order, $order_direction );
-
 			foreach ( $acf_choices as $key => $value ) {
 				Choice::add_option_to_array(
-					$options,
+					$options_data['options'],
 					array(
-						'value' => $key,
-						'label' => $value,
+						'value' => (string) $key,
+						'label' => (string) $value,
 					),
 					$field->get_id()
 				);
+				$options_data['labels'][ (string) $key ] = (string) $value;
 			}
-			return $options;
+
+			
+			return $options_data;
 		}
 
 		if ( $acf_field['type'] === 'post_object' || $acf_field['type'] === 'relationship' ) {
-			$options = self::get_post_relationship_options( $field, $acf_field );
-			return $options;
+			$options_data = self::get_post_relationship_options_data( $field, $acf_field );
+			return $options_data;
 		}
 
 		if ( $acf_field['type'] === 'taxonomy' ) {
-			$options = self::get_taxonomy_relationship_options( $field, $acf_field );
-			return $options;
+			$options_data = self::get_taxonomy_relationship_options_data( $field, $acf_field );
+			return $options_data;
 		}
 
 		// If the field didn't have choices and it wasn't a relationship or taxonomy, lets assume its a
 		// single value string (ie text input).
-		$options = self::get_single_value_options( $field, $acf_field );
-		return $options;
+		$options_data['options'] = self::get_single_value_options( $field, $acf_field );
+		return $options_data;
 	}
 
 	/**
@@ -1098,9 +1199,9 @@ class Acf {
 	 * @param array $acf_field    The ACF field to get the options for.
 	 * @return array    The options for the field.
 	 */
-	public static function get_post_relationship_options( $field, $acf_field ) {
+	public static function get_post_relationship_options_data( $field, $acf_field ) {
 
-		$options         = array();
+		$options_data         = array();
 		$order           = $field->get_attribute( 'inputOptionsOrder' );
 		$order_direction = $field->get_attribute( 'inputOptionsOrderDir' ) ? $field->get_attribute( 'inputOptionsOrderDir' ) : 'asc';
 
@@ -1121,7 +1222,7 @@ class Acf {
 				);
 
 				if ( is_wp_error( $query ) ) {
-					return $options;
+					return $options_data;
 				}
 				$ids = $query->items;
 
@@ -1145,16 +1246,17 @@ class Acf {
 
 			foreach ( $cached_field_posts as $post ) {
 				Choice::add_option_to_array(
-					$options,
+					$options_data['options'],
 					array(
 						'value' => (string) $post->ID,
 						'label' => $post->post_title,
 					),
 					$field->get_id()
 				);
+				$options_data['labels'][ (string) $post->ID ] = $post->post_title;
 			}
 
-			return $options;
+			return $options_data;
 		}
 
 		// We should only get here in field previews, or unsaved fields which have
@@ -1179,15 +1281,16 @@ class Acf {
 
 		foreach ( $posts as $post ) {
 			Choice::add_option_to_array(
-				$options,
+				$options_data['options'],
 				array(
 					'value' => (string) $post->ID,
 					'label' => $post->post_title,
 				),
 				$field->get_id()
 			);
+			$options_data['labels'][ (string) $post->ID ] = $post->post_title;
 		}
-		return $options;
+		return $options_data;
 	}
 	/**
 	 * Get the options for a relationship field.
@@ -1198,9 +1301,9 @@ class Acf {
 	 * @param array $acf_field    The ACF field to get the options for.
 	 * @return array    The options for the field.
 	 */
-	public static function get_taxonomy_relationship_options( $field, $acf_field ) {
+	public static function get_taxonomy_relationship_options_data( $field, $acf_field ) {
 
-		$options         = array();
+		$options_data         = array();
 		$order           = $field->get_attribute( 'inputOptionsOrder' );
 		$order_direction = $field->get_attribute( 'inputOptionsOrderDir' ) ? $field->get_attribute( 'inputOptionsOrderDir' ) : 'asc';
 
@@ -1221,7 +1324,7 @@ class Acf {
 				);
 
 				if ( is_wp_error( $query ) ) {
-					return $options;
+					return $options_data;
 				}
 				$ids = $query->items;
 
@@ -1245,16 +1348,17 @@ class Acf {
 
 			foreach ( $cached_field_terms as $term ) {
 				Choice::add_option_to_array(
-					$options,
+					$options_data['options'],
 					array(
 						'value' => (string) $term->term_id,
 						'label' => $term->name,
 					),
 					$field->get_id()
 				);
+				$options_data['labels'][ (string) $term->term_id ] = $term->name;
 			}
 
-			return $options;
+			return $options_data;
 		}
 
 		// We should only get here in field previews, or unsaved fields which have
@@ -1265,12 +1369,13 @@ class Acf {
 
 		foreach ( $term_options as $term_option ) {
 			Choice::add_option_to_array(
-				$options,
+				$options_data['options'],
 				$term_option,
 				$field->get_id()
 			);
+			$options_data['labels'][ $term_option['value'] ] = $term_option['label'];
 		}
-		return $options;
+		return $options_data;
 	}
 
 
@@ -1429,8 +1534,7 @@ class Acf {
 			$field_values = \get_field( $field_key, $object_id, false, false );
 			$values       = self::normalise_index_field_values( $field_values );
 		} elseif ( $top_parent_field['type'] === 'repeater' ) {
-			// Then we have a repeater, so get the rows/values, and plant to iterate through them.
-			// Need to make a recursive function to keep iterationg through sub repeaters until we find the field we want.
+			// Then we have a repeater, so get the rows/values, and iterate through them.
 			$rows = \get_field( $top_parent_field['name'], $object_id, false, false );
 			if ( $rows ) {
 				// The first field name in the hierarchy will be this one, so remove it.
@@ -1439,14 +1543,13 @@ class Acf {
 				$values       = self::normalise_index_field_values( $field_values );
 			}
 		} elseif ( $top_parent_field['type'] === 'group' ) {
-			// Then we have a repeater, so get the rows/values, and plant to iterate through them.
-			// Need to make a recursive function to keep iterationg through sub repeaters until we find the field we want.
-			$values = \get_field( $top_parent_field['name'], $object_id, false, false );
+			// Then we have a group.
+			$field_values = \get_field( $top_parent_field['name'], $object_id, false, false );
 
-			if ( $values ) {
+			if ( $field_values ) {
 				// The first field name in the hierarchy will be this one, so remove it.
 				array_shift( $field_keys_hierarchy );
-				$field_values = self::get_nested_group_values( $field_keys_hierarchy, $values );
+				$field_values = self::get_nested_group_values( $field_keys_hierarchy, $field_values );
 				$values       = self::normalise_index_field_values( $field_values );
 			}
 		} elseif ( $top_parent_field['type'] === 'flexible_content' ) {
@@ -1476,7 +1579,6 @@ class Acf {
 	 */
 	public static function normalise_index_field_values( $field_values ) {
 		$values = array();
-
 		// ACF returns an empty string when there are no values for many field types.
 		if ( empty( $field_values ) ) {
 			return $values;
@@ -1496,25 +1598,16 @@ class Acf {
 	 * @since 3.0.0
 	 *
 	 * @param    array $field_values    The field values.
-	 * @return   array    The normalised field values.
+	 * @return   array    The parsed field values.
 	 */
 	public static function parse_field_values( $field_values, $acf_field ) {
-
 		if ( empty( $field_values ) ) {
 			return $field_values;
 		}
 
-		if ( $acf_field['type'] === 'date_time_picker' ) {
-			$parsed_values = array();
-			foreach ( $field_values as $value ) {
-				// Convert a date time value like `2024-10-08 21:00:00` to date only, like `20241008`
-				// making sure to remove the time.
-				$date            = \DateTimeImmutable::createFromFormat( 'Y-m-d H:i:s', $value );
-				$parsed_values[] = $date->format( 'Ymd' );
-			}
-			return $parsed_values;
-		}
-
+		// TODO - this looks like it no longer in use - it used to be used 
+		// to format dates before indexing them but that is now handled at
+		// the query level.
 		return $field_values;
 	}
 

@@ -286,7 +286,7 @@ class PluginList {
 					'banners'          => [],
 					'banners_rtl'      => [],
 					'requires'         => $addon['required_versions']['wp'] ?? '5.5',
-					'requires_php'     => $addon['required_versions']['php'] ?? '7.0',
+					'requires_php'     => $addon['required_versions']['php'] ?? '7.1',
 					'requires_wpforms' => $addon['required_versions']['wpforms'] ?? WPFORMS_VERSION,
 					'requires_plugin'  => 'wpforms/wpforms.php',
 				];

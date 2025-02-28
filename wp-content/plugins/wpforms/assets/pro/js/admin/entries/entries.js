@@ -35,7 +35,17 @@ var WPFormsPagesEntries = window.WPFormsPagesEntries || ( function( document, wi
 		},
 
 		/**
-		 * Document ready.
+		 * Re-init table after swapping the content.
+		 *
+		 * @since 1.9.3
+		 */
+		htmxAfterSettle() {
+			app.initFlatpickr();
+			app.bindResetButtons();
+		},
+
+		/**
+		 * Initialize Flatpickr.
 		 *
 		 * @since 1.6.3
 		 */

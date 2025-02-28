@@ -1,15 +1,15 @@
-# Copyright (C) 2024 Stripe
+# Copyright (C) 2025 Stripe
 # This file is distributed under the same license as the WooCommerce Stripe Gateway plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce Stripe Gateway 8.9.0\n"
+"Project-Id-Version: WooCommerce Stripe Gateway 9.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woocommerce-gateway-stripe\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-11-14T21:25:33+00:00\n"
+"POT-Creation-Date: 2025-02-13T18:44:56+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: woocommerce-gateway-stripe\n"
@@ -31,9 +31,9 @@ msgstr ""
 
 #. Author of the plugin
 #: woocommerce-gateway-stripe.php
-#: includes/admin/class-wc-stripe-privacy.php:11
+#: includes/admin/class-wc-stripe-privacy.php:21
 #: includes/class-wc-gateway-stripe.php:81
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:133
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:143
 msgid "Stripe"
 msgstr ""
 
@@ -53,9 +53,9 @@ msgstr ""
 
 #: includes/abstracts/abstract-wc-stripe-payment-gateway-voucher.php:265
 #: includes/abstracts/abstract-wc-stripe-payment-gateway-voucher.php:385
-#: includes/class-wc-stripe-intent-controller.php:476
-#: includes/class-wc-stripe-webhook-handler.php:930
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:727
+#: includes/class-wc-stripe-intent-controller.php:491
+#: includes/class-wc-stripe-webhook-handler.php:998
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:768
 msgid "Awaiting payment."
 msgstr ""
 
@@ -65,8 +65,8 @@ msgstr ""
 
 #: includes/abstracts/abstract-wc-stripe-payment-gateway-voucher.php:366
 #: includes/abstracts/abstract-wc-stripe-payment-gateway-voucher.php:404
-#: includes/class-wc-stripe-intent-controller.php:306
-#: includes/class-wc-stripe-intent-controller.php:381
+#: includes/class-wc-stripe-intent-controller.php:321
+#: includes/class-wc-stripe-intent-controller.php:396
 msgid "We're not able to process this payment. Please refresh the page and try again."
 msgstr ""
 
@@ -75,9 +75,9 @@ msgid "Order Id not found, send an order id"
 msgstr ""
 
 #: includes/abstracts/abstract-wc-stripe-payment-gateway-voucher.php:379
-#: includes/class-wc-stripe-intent-controller.php:216
-#: includes/class-wc-stripe-intent-controller.php:391
-#: includes/class-wc-stripe-intent-controller.php:642
+#: includes/class-wc-stripe-intent-controller.php:231
+#: includes/class-wc-stripe-intent-controller.php:406
+#: includes/class-wc-stripe-intent-controller.php:657
 msgid "Unable to verify your request. Please reload the page and try again."
 msgstr ""
 
@@ -87,116 +87,116 @@ msgid "You must add the following webhook endpoint <strong style=\"background-co
 msgstr ""
 
 #: includes/abstracts/abstract-wc-stripe-payment-gateway.php:102
-#: includes/admin/class-wc-stripe-settings-controller.php:96
+#: includes/admin/class-wc-stripe-settings-controller.php:112
 msgid "Return to payments"
 msgstr ""
 
 #: includes/abstracts/abstract-wc-stripe-payment-gateway.php:133
-#: includes/payment-methods/class-wc-stripe-upe-payment-method.php:662
+#: includes/payment-methods/class-wc-stripe-upe-payment-method.php:710
 msgid "Save payment information to my account for future purchases."
 msgstr ""
 
 #. translators: 1) amount (including currency symbol)
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:371
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:372
 #: includes/payment-methods/class-wc-gateway-stripe-boleto.php:165
 #: includes/payment-methods/class-wc-gateway-stripe-oxxo.php:102
 msgid "Sorry, the minimum allowed order total is %1$s to use this payment method."
 msgstr ""
 
 #. translators: 1) blog name 2) order number
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:449
-#: includes/class-wc-stripe-intent-controller.php:439
-#: includes/class-wc-stripe-intent-controller.php:731
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:669
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:450
+#: includes/class-wc-stripe-intent-controller.php:454
+#: includes/class-wc-stripe-intent-controller.php:752
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:710
 msgid "%1$s - Order %2$s"
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:482
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:483
 msgid "customer_name"
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:483
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:484
 msgid "customer_email"
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:531
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:596
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:998
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:532
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:597
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:999
 msgid "Payment processing failed. Please retry."
 msgstr ""
 
 #. translators: transaction id
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:568
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:569
 msgid "Stripe charge awaiting payment: %s."
 msgstr ""
 
 #. translators: transaction id
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:590
-#: includes/class-wc-stripe-order-handler.php:327
-#: includes/class-wc-stripe-webhook-handler.php:446
-#: includes/class-wc-stripe-webhook-handler.php:511
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:591
+#: includes/class-wc-stripe-order-handler.php:360
+#: includes/class-wc-stripe-webhook-handler.php:501
+#: includes/class-wc-stripe-webhook-handler.php:566
 msgid "Stripe charge complete (Charge ID: %s)"
 msgstr ""
 
 #. translators: transaction id
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:608
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:609
 msgid "Stripe charge authorized (Charge ID: %s). Process order to take payment, or cancel to remove the pre-authorization. Refunding is unavailable until payment has been captured."
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:793
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2087
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:794
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2138
 msgid "Sorry, we're not accepting prepaid cards at this time. Your credit card has not been charged. Please try with alternative payment method."
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:880
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:881
 msgid "Invalid payment method. Please input a new card number."
 msgstr ""
 
 #. translators: %1$s is a stripe error message
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:1162
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:1175
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:1170
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:1184
 msgid "There was a problem initiating a refund: %1$s"
 msgstr ""
 
 #. translators: amount (including currency symbol)
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:1189
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:1198
 msgid "Pre-Authorization for %s voided."
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:1194
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:1203
 msgid "The authorization was voided and the order cancelled. Click okay to continue, then refresh the page."
 msgstr ""
 
 #. translators: 1) amount (including currency symbol) 2) transaction id 3) refund message
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:1208
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:1217
 msgid "Refunded %1$s - Refund ID: %2$s - Reason: %3$s"
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2052
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2103
 msgid "Please accept the terms and conditions first"
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2053
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2104
 msgid "Please fill in required checkout fields first"
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2088
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2139
 msgid "Please enter your IBAN account name."
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2089
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2140
 msgid "Please enter your IBAN account number."
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2090
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2141
 msgid "We couldn't initiate the payment. Please try again."
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2101
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2152
 msgid "Billing First Name and Last Name are required."
 msgstr ""
 
-#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2109
+#: includes/abstracts/abstract-wc-stripe-payment-gateway.php:2160
 msgid "CPF/CNPJ is a required field"
 msgstr ""
 
@@ -254,6 +254,7 @@ msgid "Please wait at least 1 minute before trying to configure webhooks again."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/admin/class-wc-rest-stripe-account-keys-controller.php:409
@@ -313,66 +314,76 @@ msgid "Individual payment method settings."
 msgstr ""
 
 #: includes/admin/class-wc-rest-stripe-settings-controller.php:87
-msgid "If Stripe express checkouts should be enabled."
+msgid "If Amazon Pay should be enabled."
 msgstr ""
 
 #: includes/admin/class-wc-rest-stripe-settings-controller.php:92
-msgid "Express checkout button types."
-msgstr ""
-
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:98
-msgid "Express checkout button themes."
-msgstr ""
-
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:104
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:124
 msgid "Express checkout button sizes."
 msgstr ""
 
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:111
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:98
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:131
 msgid "Express checkout locations that should be enabled."
 msgstr ""
 
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:120
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:107
+msgid "If Stripe express checkouts should be enabled."
+msgstr ""
+
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:112
+msgid "Express checkout button types."
+msgstr ""
+
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:118
+msgid "Express checkout button themes."
+msgstr ""
+
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:140
 msgid "If manual capture of charges should be enabled."
 msgstr ""
 
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:125
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:145
 msgid "If \"Saved cards\" should be enabled."
 msgstr ""
 
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:130
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:150
+msgid "If \"SEPA tokens for other methods\" should be enabled."
+msgstr ""
+
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:155
 msgid "If credit card number field, expiry date field, and CVC field should be separate."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:135
-#: client/settings/payments-and-transactions-section/index.js:149
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:160
+#: client/settings/payments-and-transactions-section/index.js:169
 msgid "When enabled, we'll include the order number for card and express checkout transactions."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:140
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:165
 #: client/settings/advanced-settings-section/debug-mode.js:18
 msgid "When enabled, payment error logs will be saved to WooCommerce > Status > Logs."
 msgstr ""
 
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:156
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:181
 msgid "The order for the payment method IDs to be saved."
 msgstr ""
 
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:176
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:201
 msgid "Payment method id."
 msgstr ""
 
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:182
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:207
 msgid "If payment method should be enabled."
 msgstr ""
 
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:187
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:212
 msgid "Payment method title."
 msgstr ""
 
-#: includes/admin/class-wc-rest-stripe-settings-controller.php:192
+#: includes/admin/class-wc-rest-stripe-settings-controller.php:217
 msgid "Payment method description."
 msgstr ""
 
@@ -461,6 +472,16 @@ msgstr ""
 msgid "Cheatin&#8217; huh?"
 msgstr ""
 
+#: includes/admin/class-wc-stripe-amazon-pay-controller.php:68
+#: includes/admin/class-wc-stripe-payment-requests-controller.php:70
+msgid "Customize express checkouts"
+msgstr ""
+
+#: includes/admin/class-wc-stripe-amazon-pay-controller.php:69
+#: includes/admin/class-wc-stripe-payment-requests-controller.php:71
+msgid "Return to Stripe"
+msgstr ""
+
 #: includes/admin/class-wc-stripe-inbox-notes.php:67
 msgid "Boost sales this holiday season with Apple Pay!"
 msgstr ""
@@ -488,100 +509,92 @@ msgstr ""
 #: build/upe_settings.js:1
 #: includes/admin/class-wc-stripe-inbox-notes.php:176
 #: client/settings/notices/legacy-experience-transition/index.js:106
-#: client/settings/payment-methods/index.js:46
+#: client/settings/payment-methods/index.js:47
 msgid "Learn more"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-payment-requests-controller.php:70
-msgid "Customize express checkouts"
-msgstr ""
-
-#: includes/admin/class-wc-stripe-payment-requests-controller.php:71
-msgid "Return to Stripe"
-msgstr ""
-
-#: includes/admin/class-wc-stripe-privacy.php:13
+#: includes/admin/class-wc-stripe-privacy.php:23
 msgid "WooCommerce Stripe Order Data"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:16
+#: includes/admin/class-wc-stripe-privacy.php:26
 msgid "WooCommerce Stripe Subscriptions Data"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:19
-#: includes/admin/class-wc-stripe-privacy.php:21
+#: includes/admin/class-wc-stripe-privacy.php:29
+#: includes/admin/class-wc-stripe-privacy.php:31
 msgid "WooCommerce Stripe Customer Data"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:22
+#: includes/admin/class-wc-stripe-privacy.php:32
 msgid "WooCommerce Stripe Data"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:36
+#: includes/admin/class-wc-stripe-privacy.php:44
 msgid "Retain Stripe Data"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:37
+#: includes/admin/class-wc-stripe-privacy.php:45
 msgid "Retains any Stripe data such as Stripe customer ID, source ID."
 msgstr ""
 
 #. translators: 1) card brand 2) last 4 digits
-#: includes/admin/class-wc-stripe-privacy.php:40
-#: includes/compat/trait-wc-stripe-subscriptions.php:955
-#: includes/compat/trait-wc-stripe-subscriptions.php:968
-#: includes/compat/trait-wc-stripe-subscriptions.php:975
+#: includes/admin/class-wc-stripe-privacy.php:48
+#: includes/compat/trait-wc-stripe-subscriptions.php:956
+#: includes/compat/trait-wc-stripe-subscriptions.php:969
+#: includes/compat/trait-wc-stripe-subscriptions.php:976
 msgid "N/A"
 msgstr ""
 
 #. translators: 1) HTML anchor open tag 2) HTML anchor closing tag
-#: includes/admin/class-wc-stripe-privacy.php:95
+#: includes/admin/class-wc-stripe-privacy.php:103
 msgid "By using this extension, you may be storing personal data or sharing data with an external service. %1$sLearn more about how this works, including what you may want to include in your privacy policy%2$s."
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:123
+#: includes/admin/class-wc-stripe-privacy.php:131
 msgid "Orders"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:127
-#: includes/admin/class-wc-stripe-privacy.php:192
-#: includes/admin/class-wc-stripe-privacy.php:232
+#: includes/admin/class-wc-stripe-privacy.php:135
+#: includes/admin/class-wc-stripe-privacy.php:200
+#: includes/admin/class-wc-stripe-privacy.php:240
 msgid "Stripe payment id"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:131
-#: includes/admin/class-wc-stripe-privacy.php:196
-#: includes/admin/class-wc-stripe-privacy.php:236
+#: includes/admin/class-wc-stripe-privacy.php:139
+#: includes/admin/class-wc-stripe-privacy.php:204
+#: includes/admin/class-wc-stripe-privacy.php:244
 msgid "Stripe customer id"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:188
+#: includes/admin/class-wc-stripe-privacy.php:196
 msgid "Subscriptions"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:228
+#: includes/admin/class-wc-stripe-privacy.php:236
 msgid "Customer Data"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:274
+#: includes/admin/class-wc-stripe-privacy.php:282
 msgid "Stripe User Data Erased."
 msgstr ""
 
 #. translators: %d Order ID
-#: includes/admin/class-wc-stripe-privacy.php:353
-#: includes/admin/class-wc-stripe-privacy.php:389
+#: includes/admin/class-wc-stripe-privacy.php:361
+#: includes/admin/class-wc-stripe-privacy.php:397
 msgid "Order ID %d is less than set retention days. Personal data retained. (Stripe)"
 msgstr ""
 
 #. translators: %d Order ID
-#: includes/admin/class-wc-stripe-privacy.php:358
+#: includes/admin/class-wc-stripe-privacy.php:366
 msgid "Order ID %d contains an active Subscription. Personal data retained. (Stripe)"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:373
+#: includes/admin/class-wc-stripe-privacy.php:381
 msgid "Stripe Subscription Data Erased."
 msgstr ""
 
-#: includes/admin/class-wc-stripe-privacy.php:400
+#: includes/admin/class-wc-stripe-privacy.php:408
 msgid "Stripe personal data erased."
 msgstr ""
 
@@ -589,16 +602,20 @@ msgstr ""
 msgid "Determines if the UPE feature flag is enabled."
 msgstr ""
 
-#: includes/admin/class-wc-stripe-settings-controller.php:75
+#: includes/admin/class-wc-stripe-settings-controller.php:91
 msgid "Refunding unavailable"
 msgstr ""
 
-#: includes/admin/class-wc-stripe-settings-controller.php:76
+#: includes/admin/class-wc-stripe-settings-controller.php:92
 msgid "Refunding via Stripe is unavailable because funds have not been captured for this order. Process order to take payment, or cancel to remove the pre-authorization."
 msgstr ""
 
+#: includes/admin/class-wc-stripe-settings-controller.php:128
+msgid "You do not have permission to do this."
+msgstr ""
+
 #. translators: 1) Html strong opening tag 2) Html strong closing tag
-#: includes/admin/class-wc-stripe-settings-controller.php:162
+#: includes/admin/class-wc-stripe-settings-controller.php:229
 msgid "%1$sWarning:%2$s your site's time does not match the time on your browser and may be incorrect. Some payment methods depend on webhook verification and verifying webhooks with a signing secret depends on your site's time being correct, so please check your site's time before setting a webhook secret. You may need to contact your site's hosting provider to correct the site's time."
 msgstr ""
 
@@ -634,12 +651,12 @@ msgstr ""
 
 #: includes/admin/stripe-alipay-settings.php:18
 #: includes/admin/stripe-bancontact-settings.php:18
-#: includes/admin/stripe-eps-settings.php:14
+#: includes/admin/stripe-eps-settings.php:16
 #: includes/admin/stripe-giropay-settings.php:18
 #: includes/admin/stripe-ideal-settings.php:18
 #: includes/admin/stripe-multibanco-settings.php:14
-#: includes/admin/stripe-p24-settings.php:14
-#: includes/admin/stripe-sepa-settings.php:18
+#: includes/admin/stripe-p24-settings.php:16
+#: includes/admin/stripe-sepa-settings.php:20
 #: includes/admin/stripe-sofort-settings.php:18
 msgid "Must be activated from your Stripe Dashboard Settings <a href=\"https://dashboard.stripe.com/account/payments/settings\" target=\"_blank\">here</a>"
 msgstr ""
@@ -656,13 +673,13 @@ msgstr ""
 #: includes/admin/stripe-alipay-settings.php:29
 #: includes/admin/stripe-bancontact-settings.php:29
 #: includes/admin/stripe-boleto-settings.php:30
-#: includes/admin/stripe-eps-settings.php:25
+#: includes/admin/stripe-eps-settings.php:27
 #: includes/admin/stripe-giropay-settings.php:29
 #: includes/admin/stripe-ideal-settings.php:29
 #: includes/admin/stripe-multibanco-settings.php:25
 #: includes/admin/stripe-oxxo-settings.php:39
-#: includes/admin/stripe-p24-settings.php:25
-#: includes/admin/stripe-sepa-settings.php:29
+#: includes/admin/stripe-p24-settings.php:27
+#: includes/admin/stripe-sepa-settings.php:31
 #: includes/admin/stripe-settings.php:19
 #: includes/admin/stripe-sofort-settings.php:29
 msgid "Title"
@@ -671,19 +688,20 @@ msgstr ""
 #: includes/admin/stripe-alipay-settings.php:31
 #: includes/admin/stripe-bancontact-settings.php:31
 #: includes/admin/stripe-boleto-settings.php:32
-#: includes/admin/stripe-eps-settings.php:27
+#: includes/admin/stripe-eps-settings.php:29
 #: includes/admin/stripe-giropay-settings.php:31
 #: includes/admin/stripe-ideal-settings.php:31
 #: includes/admin/stripe-multibanco-settings.php:27
 #: includes/admin/stripe-oxxo-settings.php:41
-#: includes/admin/stripe-p24-settings.php:27
-#: includes/admin/stripe-sepa-settings.php:31
+#: includes/admin/stripe-p24-settings.php:29
+#: includes/admin/stripe-sepa-settings.php:33
 #: includes/admin/stripe-settings.php:21
 #: includes/admin/stripe-sofort-settings.php:31
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/admin/stripe-alipay-settings.php:32
@@ -698,16 +716,16 @@ msgstr ""
 #: includes/admin/stripe-alipay-settings.php:36
 #: includes/admin/stripe-bancontact-settings.php:36
 #: includes/admin/stripe-boleto-settings.php:37
-#: includes/admin/stripe-eps-settings.php:32
+#: includes/admin/stripe-eps-settings.php:34
 #: includes/admin/stripe-giropay-settings.php:36
 #: includes/admin/stripe-ideal-settings.php:36
 #: includes/admin/stripe-multibanco-settings.php:32
 #: includes/admin/stripe-oxxo-settings.php:46
-#: includes/admin/stripe-p24-settings.php:32
-#: includes/admin/stripe-sepa-settings.php:36
+#: includes/admin/stripe-p24-settings.php:34
+#: includes/admin/stripe-sepa-settings.php:38
 #: includes/admin/stripe-settings.php:26
 #: includes/admin/stripe-sofort-settings.php:36
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1655
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1793
 #: client/settings/general-settings-section/customize-payment-method.js:76
 #: client/settings/payment-gateway-section/index.js:103
 msgid "Description"
@@ -716,13 +734,13 @@ msgstr ""
 #: includes/admin/stripe-alipay-settings.php:38
 #: includes/admin/stripe-bancontact-settings.php:38
 #: includes/admin/stripe-boleto-settings.php:39
-#: includes/admin/stripe-eps-settings.php:34
+#: includes/admin/stripe-eps-settings.php:36
 #: includes/admin/stripe-giropay-settings.php:38
 #: includes/admin/stripe-ideal-settings.php:38
 #: includes/admin/stripe-multibanco-settings.php:34
 #: includes/admin/stripe-oxxo-settings.php:48
-#: includes/admin/stripe-p24-settings.php:34
-#: includes/admin/stripe-sepa-settings.php:38
+#: includes/admin/stripe-p24-settings.php:36
+#: includes/admin/stripe-sepa-settings.php:40
 #: includes/admin/stripe-settings.php:28
 #: includes/admin/stripe-sofort-settings.php:38
 msgid "This controls the description which the user sees during checkout."
@@ -735,13 +753,13 @@ msgstr ""
 #: includes/admin/stripe-alipay-settings.php:43
 #: includes/admin/stripe-bancontact-settings.php:43
 #: includes/admin/stripe-boleto-settings.php:51
-#: includes/admin/stripe-eps-settings.php:39
+#: includes/admin/stripe-eps-settings.php:41
 #: includes/admin/stripe-giropay-settings.php:43
 #: includes/admin/stripe-ideal-settings.php:43
 #: includes/admin/stripe-multibanco-settings.php:39
 #: includes/admin/stripe-oxxo-settings.php:53
-#: includes/admin/stripe-p24-settings.php:39
-#: includes/admin/stripe-sepa-settings.php:43
+#: includes/admin/stripe-p24-settings.php:41
+#: includes/admin/stripe-sepa-settings.php:45
 #: includes/admin/stripe-settings.php:73
 #: includes/admin/stripe-sofort-settings.php:43
 msgid "Webhook Endpoints"
@@ -760,10 +778,11 @@ msgid "Enable Stripe Bancontact"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/admin/stripe-bancontact-settings.php:32
-#: includes/payment-methods/class-wc-stripe-upe-payment-method-bancontact.php:24
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-bancontact.php:25
 #: client/payment-methods-map.js:129
 #: client/settings/payment-gateway-manager/constants.js:36
 msgid "Bancontact"
@@ -788,6 +807,7 @@ msgid "Enable Stripe Boleto"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/admin/stripe-boleto-settings.php:33
@@ -812,18 +832,19 @@ msgstr ""
 msgid "This controls the expiration in number of days for the voucher."
 msgstr ""
 
-#: includes/admin/stripe-eps-settings.php:10
+#: includes/admin/stripe-eps-settings.php:12
 msgid "Customer Geography: Austria"
 msgstr ""
 
-#: includes/admin/stripe-eps-settings.php:19
+#: includes/admin/stripe-eps-settings.php:21
 msgid "Enable Stripe EPS"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
-#: includes/admin/stripe-eps-settings.php:28
+#: includes/admin/stripe-eps-settings.php:30
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-eps.php:21
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-eps.php:24
 #: client/payment-methods-map.js:119
@@ -831,7 +852,7 @@ msgstr ""
 msgid "EPS"
 msgstr ""
 
-#: includes/admin/stripe-eps-settings.php:35
+#: includes/admin/stripe-eps-settings.php:37
 msgid "You will be redirected to EPS."
 msgstr ""
 
@@ -848,12 +869,13 @@ msgid "Enable Stripe giropay"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/admin/stripe-giropay-settings.php:32
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-giropay.php:21
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-giropay.php:24
-#: client/payment-methods-map.js:21
+#: client/payment-methods-map.js:22
 #: client/settings/payment-gateway-manager/constants.js:18
 msgid "giropay"
 msgstr ""
@@ -875,11 +897,12 @@ msgid "Enable Stripe iDEAL"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/admin/stripe-ideal-settings.php:32
-#: includes/payment-methods/class-wc-stripe-upe-payment-method-ideal.php:21
-#: includes/payment-methods/class-wc-stripe-upe-payment-method-ideal.php:24
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-ideal.php:22
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-ideal.php:25
 #: client/payment-methods-map.js:139
 #: client/settings/payment-gateway-manager/constants.js:27
 msgid "iDEAL"
@@ -898,6 +921,7 @@ msgid "Enable Stripe Multibanco"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/admin/stripe-multibanco-settings.php:28
@@ -926,6 +950,7 @@ msgid "Enable Stripe OXXO"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/admin/stripe-oxxo-settings.php:42
@@ -939,49 +964,49 @@ msgstr ""
 msgid "You'll be able to download or print the OXXO voucher after checkout."
 msgstr ""
 
-#: includes/admin/stripe-p24-settings.php:10
+#: includes/admin/stripe-p24-settings.php:12
 msgid "Customer Geography: Poland"
 msgstr ""
 
-#: includes/admin/stripe-p24-settings.php:19
+#: includes/admin/stripe-p24-settings.php:21
 msgid "Enable Stripe P24"
 msgstr ""
 
-#: includes/admin/stripe-p24-settings.php:28
+#: includes/admin/stripe-p24-settings.php:30
 msgid "Przelewy24 (P24)"
 msgstr ""
 
-#: includes/admin/stripe-p24-settings.php:35
+#: includes/admin/stripe-p24-settings.php:37
 msgid "You will be redirected to P24."
 msgstr ""
 
-#: includes/admin/stripe-sepa-settings.php:10
+#: includes/admin/stripe-sepa-settings.php:12
 msgid "Customer Geography: France, Germany, Spain, Belgium, Netherlands, Luxembourg, Italy, Portugal, Austria, Ireland"
 msgstr ""
 
-#: includes/admin/stripe-sepa-settings.php:14
+#: includes/admin/stripe-sepa-settings.php:16
 msgid "<a href=\"https://stripe.com/payments/payment-methods-guide#sepa-direct-debit\" target=\"_blank\">Payment Method Guide</a>"
 msgstr ""
 
-#: includes/admin/stripe-sepa-settings.php:23
+#: includes/admin/stripe-sepa-settings.php:25
 msgid "Enable Stripe SEPA Direct Debit"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: includes/admin/stripe-sepa-settings.php:32
+#: includes/admin/stripe-sepa-settings.php:34
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-sepa.php:24
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-sepa.php:27
 #: client/settings/payment-gateway-manager/constants.js:8
 msgid "SEPA Direct Debit"
 msgstr ""
 
-#: includes/admin/stripe-sepa-settings.php:39
+#: includes/admin/stripe-sepa-settings.php:41
 msgid "Mandate Information."
 msgstr ""
 
 #: build/upe_settings.js:1
 #: includes/admin/stripe-settings.php:13
-#: client/settings/payment-settings/general-settings-section.js:62
+#: client/settings/payment-settings/general-settings-section.js:65
 msgid "Enable Stripe"
 msgstr ""
 
@@ -1123,13 +1148,13 @@ msgstr ""
 
 #: build/payment_requests_settings.js:1
 #: includes/admin/stripe-settings.php:145
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:76
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:77
 msgid "Buy"
 msgstr ""
 
 #: build/payment_requests_settings.js:1
 #: includes/admin/stripe-settings.php:146
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:80
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:81
 msgid "Donate"
 msgstr ""
 
@@ -1225,22 +1250,30 @@ msgid "Select where you would like Payment Request Buttons to be displayed"
 msgstr ""
 
 #: includes/admin/stripe-settings.php:199
+#: includes/admin/stripe-settings.php:251
 msgid "Product"
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/admin/stripe-settings.php:200
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:227
+#: includes/admin/stripe-settings.php:252
+#: client/entrypoints/amazon-pay-settings/amazon-pay-settings-section.js:176
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:247
 msgid "Cart"
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/admin/stripe-settings.php:201
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:199
+#: includes/admin/stripe-settings.php:253
+#: client/entrypoints/amazon-pay-settings/amazon-pay-settings-section.js:148
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:219
 msgid "Checkout"
 msgstr ""
 
 #: includes/admin/stripe-settings.php:205
+#: includes/admin/stripe-settings.php:257
 msgid "Select pages"
 msgstr ""
 
@@ -1249,18 +1282,22 @@ msgid "Payment Request Button Size"
 msgstr ""
 
 #: includes/admin/stripe-settings.php:211
+#: includes/admin/stripe-settings.php:263
 msgid "Select the size of the button."
 msgstr ""
 
 #: includes/admin/stripe-settings.php:215
+#: includes/admin/stripe-settings.php:267
 msgid "Small (40px)"
 msgstr ""
 
 #: includes/admin/stripe-settings.php:216
+#: includes/admin/stripe-settings.php:268
 msgid "Default (48px)"
 msgstr ""
 
 #: includes/admin/stripe-settings.php:217
+#: includes/admin/stripe-settings.php:269
 msgid "Large (56px)"
 msgstr ""
 
@@ -1274,48 +1311,76 @@ msgstr ""
 
 #: build/upe_settings.js:1
 #: includes/admin/stripe-settings.php:224
-#: client/settings/payments-and-transactions-section/index.js:88
+#: client/settings/payments-and-transactions-section/index.js:96
 msgid "If enabled, users will be able to pay with a saved card during checkout. Card details are saved on Stripe servers, not on your store."
 msgstr ""
 
 #: includes/admin/stripe-settings.php:229
+msgid "SEPA Direct Debit tokens for other methods"
+msgstr ""
+
+#: build/upe_settings.js:1
+#: includes/admin/stripe-settings.php:230
+#: client/settings/payments-and-transactions-section/index.js:104
+msgid "Enable SEPA Direct Debit tokens for other methods"
+msgstr ""
+
+#: build/upe_settings.js:1
+#: includes/admin/stripe-settings.php:232
+#: client/settings/payments-and-transactions-section/index.js:108
+msgid "If enabled, users will be able to pay with iDEAL or Bancontact and save the method as a SEPA Direct Debit method."
+msgstr ""
+
+#: includes/admin/stripe-settings.php:237
 msgid "Logging"
 msgstr ""
 
-#: includes/admin/stripe-settings.php:230
+#: includes/admin/stripe-settings.php:238
 msgid "Log debug messages"
 msgstr ""
 
-#: includes/admin/stripe-settings.php:232
+#: includes/admin/stripe-settings.php:240
 msgid "Save debug messages to the WooCommerce System Status log."
 msgstr ""
 
+#: includes/admin/stripe-settings.php:245
+msgid "Amazon Pay Button Locations"
+msgstr ""
+
+#: includes/admin/stripe-settings.php:247
+msgid "Select where you would like Amazon Pay Button to be displayed"
+msgstr ""
+
+#: includes/admin/stripe-settings.php:261
+msgid "Amazon Pay Button Size"
+msgstr ""
+
 #: build/payment_requests_settings.js:1
-#: includes/admin/stripe-settings.php:248
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:72
+#: includes/admin/stripe-settings.php:284
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:73
 msgid "Only icon"
 msgstr ""
 
 #: build/payment_requests_settings.js:1
-#: includes/admin/stripe-settings.php:249
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:84
+#: includes/admin/stripe-settings.php:285
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:85
 msgid "Book"
 msgstr ""
 
-#: includes/admin/stripe-settings.php:260
+#: includes/admin/stripe-settings.php:296
 msgid "New checkout experience"
 msgstr ""
 
 #. translators: 1) br tag 2) Stripe anchor tag 3) Apple anchor tag 4) Stripe dashboard opening anchor tag 5) Stripe dashboard closing anchor tag
-#: includes/admin/stripe-settings.php:263
+#: includes/admin/stripe-settings.php:299
 msgid "Try the new payment experience (Early access) %1$sGet early access to a new, smarter payment experience on checkout and let us know what you think by %2$s. We recommend this feature for experienced merchants as the functionality is currently limited. %3$s"
 msgstr ""
 
-#: includes/admin/stripe-settings.php:269
+#: includes/admin/stripe-settings.php:305
 msgid "New checkout experience allows you to manage all payment methods on one screen and display them to customers based on their currency and location."
 msgstr ""
 
-#: includes/admin/stripe-settings.php:277
+#: includes/admin/stripe-settings.php:313
 msgid "Payments accepted on checkout (Early access)"
 msgstr ""
 
@@ -1332,6 +1397,7 @@ msgid "Enable Stripe Sofort"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/admin/stripe-sofort-settings.php:32
@@ -1353,7 +1419,7 @@ msgstr ""
 
 #. translators: $1. Count of enabled payment methods.
 #: includes/class-wc-gateway-stripe.php:149
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:196
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:218
 msgid "%d payment method"
 msgid_plural "%d payment methods"
 msgstr[0] ""
@@ -1389,32 +1455,32 @@ msgstr ""
 msgid "Card Code (CVC)"
 msgstr ""
 
-#: includes/class-wc-gateway-stripe.php:563
+#: includes/class-wc-gateway-stripe.php:572
 msgid "This represents the fee Stripe collects for the transaction."
 msgstr ""
 
-#: includes/class-wc-gateway-stripe.php:564
+#: includes/class-wc-gateway-stripe.php:573
 msgid "Stripe Fee:"
 msgstr ""
 
-#: includes/class-wc-gateway-stripe.php:600
+#: includes/class-wc-gateway-stripe.php:609
 msgid "This represents the net total that will be credited to your Stripe bank account. This may be in the currency that is set in your Stripe account."
 msgstr ""
 
-#: includes/class-wc-gateway-stripe.php:601
+#: includes/class-wc-gateway-stripe.php:610
 msgid "Stripe Payout:"
 msgstr ""
 
-#: includes/class-wc-gateway-stripe.php:627
-#: includes/class-wc-stripe-order-handler.php:164
-#: includes/class-wc-stripe-webhook-handler.php:286
+#: includes/class-wc-gateway-stripe.php:636
+#: includes/class-wc-stripe-order-handler.php:197
+#: includes/class-wc-stripe-webhook-handler.php:323
 #: includes/payment-methods/class-wc-gateway-stripe-sepa.php:354
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1429
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1963
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1556
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:2115
 msgid "Sorry, we are unable to process your payment at this time. Please retry later."
 msgstr ""
 
-#: includes/class-wc-gateway-stripe.php:680
+#: includes/class-wc-gateway-stripe.php:689
 msgid ""
 "Almost there!\n"
 "\n"
@@ -1422,32 +1488,32 @@ msgid ""
 msgstr ""
 
 #. translators: %s is the order Id
-#: includes/class-wc-gateway-stripe.php:702
+#: includes/class-wc-gateway-stripe.php:711
 msgid "Payment Intent not found for order #%s"
 msgstr ""
 
 #. translators: 1) The error message that was received from Stripe.
-#: includes/class-wc-gateway-stripe.php:955
-#: includes/class-wc-stripe-webhook-handler.php:976
-#: includes/class-wc-stripe-webhook-handler.php:1030
+#: includes/class-wc-gateway-stripe.php:964
+#: includes/class-wc-stripe-webhook-handler.php:1044
+#: includes/class-wc-stripe-webhook-handler.php:1098
 msgid "Stripe SCA authentication failed. Reason: %s"
 msgstr ""
 
-#: includes/class-wc-gateway-stripe.php:956
+#: includes/class-wc-gateway-stripe.php:965
 msgid "Stripe SCA authentication failed."
 msgstr ""
 
 #. translators: %1$s Link to Stripe API details, %2$s Link to register a Stripe account
-#: includes/class-wc-gateway-stripe.php:1100
+#: includes/class-wc-gateway-stripe.php:1109
 msgid "Your API details can be obtained from your <a href=\"%1$s\">Stripe account</a>. Don’t have a Stripe account? <a href=\"%2$s\">Create one.</a>"
 msgstr ""
 
 #. Translators: %s is the error message from the Stripe API.
-#: includes/class-wc-stripe-account.php:297
+#: includes/class-wc-stripe-account.php:302
 msgid "There was a problem setting up your webhooks. %s"
 msgstr ""
 
-#: includes/class-wc-stripe-account.php:301
+#: includes/class-wc-stripe-account.php:306
 msgid "There was a problem setting up your webhooks, please try again later."
 msgstr ""
 
@@ -1497,90 +1563,74 @@ msgid "Please check the %1$slogs%2$s for more details on this issue. Logging mus
 msgstr ""
 
 #: build/index.js:1
-#: includes/class-wc-stripe-blocks-support.php:365
+#: includes/class-wc-stripe-blocks-support.php:379
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-cc.php:25
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-cc.php:27
 #: client/blocks/credit-card/index.js:36
 msgid "Credit / Debit Card"
 msgstr ""
 
-#: includes/class-wc-stripe-blocks-support.php:377
+#: includes/class-wc-stripe-blocks-support.php:391
 msgid "Visa"
 msgstr ""
 
-#: includes/class-wc-stripe-blocks-support.php:381
+#: includes/class-wc-stripe-blocks-support.php:395
 msgid "American Express"
 msgstr ""
 
-#: includes/class-wc-stripe-blocks-support.php:385
+#: includes/class-wc-stripe-blocks-support.php:399
 msgid "Mastercard"
 msgstr ""
 
-#: includes/class-wc-stripe-blocks-support.php:392
+#: includes/class-wc-stripe-blocks-support.php:406
 msgctxt "Name of credit card"
 msgid "Discover"
 msgstr ""
 
-#: includes/class-wc-stripe-blocks-support.php:396
+#: includes/class-wc-stripe-blocks-support.php:410
 msgid "JCB"
 msgstr ""
 
-#: includes/class-wc-stripe-blocks-support.php:400
+#: includes/class-wc-stripe-blocks-support.php:414
 msgid "Diners"
 msgstr ""
 
-#: build/payment_gateways.js:1
-#: build/upe_settings.js:1
-#: build/payment_requests_settings.js:1
-#. Translators: %s is the Cash App Pay $Cashtag.
-#: includes/class-wc-stripe-cash-app-pay-token.php:44
-#: includes/class-wc-stripe-payment-tokens.php:392
-#: includes/payment-methods/class-wc-stripe-upe-payment-method-cash-app-pay.php:28
-#: includes/payment-methods/class-wc-stripe-upe-payment-method-cash-app-pay.php:34
-#: client/payment-methods-map.js:234
-msgid "Cash App Pay"
-msgstr ""
-
-#. Translators: %s is the Cash App Pay $Cashtag.
-#: includes/class-wc-stripe-cash-app-pay-token.php:44
-msgid "Cash App Pay (%s)"
-msgstr ""
-
 #. translators: %1$s First name, %2$s Second name, %3$s Username.
-#: includes/class-wc-stripe-customer.php:153
+#: includes/class-wc-stripe-customer.php:143
 msgid "Name: %1$s %2$s, Username: %3$s"
 msgstr ""
 
 #. translators: %1$s First name, %2$s Second name.
-#: includes/class-wc-stripe-customer.php:169
+#: includes/class-wc-stripe-customer.php:160
 msgid "Name: %1$s %2$s, Guest"
 msgstr ""
 
-#: includes/class-wc-stripe-customer.php:293
+#: includes/class-wc-stripe-customer.php:353
 msgid "Attempting to update a Stripe customer without a customer ID."
 msgstr ""
 
-#: includes/class-wc-stripe-customer.php:455
+#: includes/class-wc-stripe-customer.php:518
 msgid "Unable to add payment source."
 msgstr ""
 
 #. translators: %1$s Name, %2$s Username.
-#: includes/class-wc-stripe-customer.php:761
+#: includes/class-wc-stripe-customer.php:826
 msgid "Name: %1$s, Username: %2$s"
 msgstr ""
 
 #. translators: %1$s Name.
-#: includes/class-wc-stripe-customer.php:765
+#: includes/class-wc-stripe-customer.php:830
 msgid "Name: %1$s, Guest"
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
 #: includes/class-wc-stripe-helper.php:241
-#: client/stripe-utils/utils.js:55
+#: client/stripe-utils/utils.js:57
 msgid "The card number is not a valid credit card number."
 msgstr ""
 
@@ -1596,23 +1646,25 @@ msgstr ""
 msgid "The card's security code is invalid."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
 #: includes/class-wc-stripe-helper.php:245
-#: client/stripe-utils/utils.js:71
+#: client/stripe-utils/utils.js:73
 msgid "The card number is incorrect."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
 #: includes/class-wc-stripe-helper.php:246
-#: client/stripe-utils/utils.js:75
+#: client/stripe-utils/utils.js:77
 msgid "The card number is incomplete."
 msgstr ""
 
@@ -1624,13 +1676,14 @@ msgstr ""
 msgid "The card's expiration date is incomplete."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
 #: includes/class-wc-stripe-helper.php:249
-#: client/stripe-utils/utils.js:87
+#: client/stripe-utils/utils.js:89
 msgid "The card has expired."
 msgstr ""
 
@@ -1650,33 +1703,36 @@ msgstr ""
 msgid "The card's expiration year is in the past"
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
 #: includes/class-wc-stripe-helper.php:254
-#: client/stripe-utils/utils.js:103
+#: client/stripe-utils/utils.js:105
 msgid "The card was declined."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
 #: includes/class-wc-stripe-helper.php:255
-#: client/stripe-utils/utils.js:107
+#: client/stripe-utils/utils.js:109
 msgid "There is no card on a customer that is being charged."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
 #: includes/class-wc-stripe-helper.php:256
-#: client/stripe-utils/utils.js:111
+#: client/stripe-utils/utils.js:113
 msgid "An error occurred while processing the card."
 msgstr ""
 
@@ -1684,13 +1740,14 @@ msgstr ""
 msgid "The billing country is not accepted by Sofort. Please try another country."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
 #: includes/class-wc-stripe-helper.php:258
-#: client/stripe-utils/utils.js:122
+#: client/stripe-utils/utils.js:124
 msgid "Invalid email address, please correct and try again."
 msgstr ""
 
@@ -1698,14 +1755,15 @@ msgstr ""
 msgid "Unable to save this payment method, please try again or use alternative method."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
 #: includes/class-wc-stripe-helper.php:261
-#: includes/class-wc-stripe-order-handler.php:101
-#: client/stripe-utils/utils.js:127
+#: includes/class-wc-stripe-order-handler.php:134
+#: client/stripe-utils/utils.js:129
 msgid "Unable to process this payment, please try again or use alternative method."
 msgstr ""
 
@@ -1733,8 +1791,12 @@ msgstr ""
 msgid "We are unable to authenticate your payment method. Please choose a different payment method and try again."
 msgstr ""
 
+#: includes/class-wc-stripe-helper.php:268
+msgid "Your card has insufficient funds."
+msgstr ""
+
 #. translators: $1%s payment intent ID
-#: includes/class-wc-stripe-helper.php:1276
+#: includes/class-wc-stripe-helper.php:1278
 msgid "Stripe payment intent created (Payment Intent ID: %1$s)"
 msgstr ""
 
@@ -1743,9 +1805,9 @@ msgid "We're not able to process this payment."
 msgstr ""
 
 #: includes/class-wc-stripe-intent-controller.php:81
-#: includes/class-wc-stripe-intent-controller.php:570
-#: includes/class-wc-stripe-intent-controller.php:633
-#: includes/class-wc-stripe-intent-controller.php:1086
+#: includes/class-wc-stripe-intent-controller.php:585
+#: includes/class-wc-stripe-intent-controller.php:648
+#: includes/class-wc-stripe-intent-controller.php:1134
 msgid "CSRF verification failed."
 msgstr ""
 
@@ -1758,244 +1820,250 @@ msgstr ""
 msgid "Payment verification error: %s"
 msgstr ""
 
-#: includes/class-wc-stripe-intent-controller.php:258
-msgid "Your card could not be set up for future usage."
-msgstr ""
-
-#: includes/class-wc-stripe-intent-controller.php:275
+#: includes/class-wc-stripe-intent-controller.php:216
+#: includes/class-wc-stripe-intent-controller.php:290
 msgid "Failed to save payment method."
 msgstr ""
 
-#: includes/class-wc-stripe-intent-controller.php:315
+#: includes/class-wc-stripe-intent-controller.php:273
+msgid "Your card could not be set up for future usage."
+msgstr ""
+
+#: includes/class-wc-stripe-intent-controller.php:330
 msgid "Unable to process your request. Please reload the page and try again."
 msgstr ""
 
-#: includes/class-wc-stripe-intent-controller.php:496
-#: includes/class-wc-stripe-intent-controller.php:1021
+#: includes/class-wc-stripe-intent-controller.php:511
+#: includes/class-wc-stripe-intent-controller.php:1069
 msgid "We're not able to add this payment method. Please refresh the page and try again."
 msgstr ""
 
-#: includes/class-wc-stripe-intent-controller.php:576
-#: includes/class-wc-stripe-intent-controller.php:588
-#: includes/class-wc-stripe-intent-controller.php:656
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1303
+#: includes/class-wc-stripe-intent-controller.php:591
+#: includes/class-wc-stripe-intent-controller.php:603
+#: includes/class-wc-stripe-intent-controller.php:671
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1430
 msgid "We're not able to process this payment. Please try again later."
 msgstr ""
 
 #. translators: %1: transaction ID of the payment or a translated string indicating an unknown ID.
-#: includes/class-wc-stripe-intent-controller.php:584
+#: includes/class-wc-stripe-intent-controller.php:599
 msgid "A payment with ID %s was used in an attempt to pay for this order. This payment intent ID does not match any payments for this order, so it was ignored and the order was not updated."
 msgstr ""
 
-#: includes/class-wc-stripe-intent-controller.php:874
+#: includes/class-wc-stripe-intent-controller.php:899
 msgid "There was a problem processing the payment."
 msgstr ""
 
-#: includes/class-wc-stripe-intent-controller.php:896
+#: includes/class-wc-stripe-intent-controller.php:925
 msgid "Please reach out to us if the problem persists."
 msgstr ""
 
-#: includes/class-wc-stripe-intent-controller.php:1014
+#: includes/class-wc-stripe-intent-controller.php:1056
+msgid "You cannot add a new payment method so soon after the previous one."
+msgstr ""
+
+#: includes/class-wc-stripe-intent-controller.php:1062
 msgid "Unable to verify your request. Please refresh the page and try again."
 msgstr ""
 
-#: includes/class-wc-stripe-intent-controller.php:1045
+#: includes/class-wc-stripe-intent-controller.php:1093
 msgid "There was an error adding this payment method. Please refresh the page and try again"
 msgstr ""
 
-#: includes/class-wc-stripe-intent-controller.php:1090
-#: includes/class-wc-stripe-intent-controller.php:1097
-#: includes/class-wc-stripe-intent-controller.php:1103
+#: includes/class-wc-stripe-intent-controller.php:1138
+#: includes/class-wc-stripe-intent-controller.php:1145
+#: includes/class-wc-stripe-intent-controller.php:1151
 msgid "We're not able to process this subscription change payment request payment. Please try again later."
 msgstr ""
 
-#: includes/class-wc-stripe-intent-controller.php:1108
+#: includes/class-wc-stripe-intent-controller.php:1156
 msgid "Payment method updated."
 msgstr ""
 
-#: includes/class-wc-stripe-intent-controller.php:1120
+#: includes/class-wc-stripe-intent-controller.php:1168
 msgid "Payment method updated for all your current subscriptions."
 msgstr ""
 
-#. translators: customer email
-#: includes/class-wc-stripe-link-payment-token.php:43
-msgid "Stripe Link email %s"
+#: includes/class-wc-stripe-order-handler.php:67
+msgid "Attempting to capture more than the authorized amount will fail with an error."
 msgstr ""
 
-#: includes/class-wc-stripe-order-handler.php:143
-#: includes/class-wc-stripe-webhook-handler.php:264
+#: includes/class-wc-stripe-order-handler.php:68
+msgid "You may edit the order to have a total less than or equal to the original authorized amount."
+msgstr ""
+
+#: includes/class-wc-stripe-order-handler.php:176
+#: includes/class-wc-stripe-webhook-handler.php:301
 #: includes/payment-methods/class-wc-gateway-stripe-sepa.php:334
 msgid "This card is no longer available and has been removed."
 msgstr ""
 
 #. translators: error message
-#: includes/class-wc-stripe-order-handler.php:196
+#: includes/class-wc-stripe-order-handler.php:229
 msgid "Stripe payment failed: %s"
 msgstr ""
 
 #. translators: error message
-#: includes/class-wc-stripe-order-handler.php:270
-#: includes/class-wc-stripe-order-handler.php:285
-#: includes/class-wc-stripe-order-handler.php:301
-#: includes/class-wc-stripe-order-handler.php:316
+#: includes/class-wc-stripe-order-handler.php:303
+#: includes/class-wc-stripe-order-handler.php:318
+#: includes/class-wc-stripe-order-handler.php:334
+#: includes/class-wc-stripe-order-handler.php:349
 msgid "Unable to capture charge! %s"
 msgstr ""
 
-#: includes/class-wc-stripe-payment-tokens.php:389
-msgid "SEPA IBAN"
-msgstr ""
-
-#: includes/class-wc-stripe-payment-tokens.php:395
-#: includes/payment-methods/class-wc-stripe-upe-payment-method-link.php:21
-msgid "Stripe Link"
-msgstr ""
-
-#. translators: last 4 digits of IBAN account
-#: includes/class-wc-stripe-sepa-payment-token.php:48
-msgid "SEPA IBAN ending in %s"
-msgstr ""
-
 #. translators: 1) HTML anchor open tag 2) HTML anchor closing tag
-#: includes/class-wc-stripe-webhook-handler.php:349
+#: includes/class-wc-stripe-webhook-handler.php:388
 msgid "A dispute was created for this order. Response is needed. Please go to your %1$sStripe Dashboard%2$s to review this dispute."
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-handler.php:383
+#: includes/class-wc-stripe-webhook-handler.php:393
+msgid "A dispute was created for this order."
+msgstr ""
+
+#: includes/class-wc-stripe-webhook-handler.php:425
 msgid "The dispute was lost or accepted."
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-handler.php:385
+#: includes/class-wc-stripe-webhook-handler.php:427
 msgid "The dispute was resolved in your favor."
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-handler.php:387
+#: includes/class-wc-stripe-webhook-handler.php:429
 msgid "The inquiry or retrieval was closed."
 msgstr ""
 
 #. translators: partial captured amount
-#: includes/class-wc-stripe-webhook-handler.php:441
+#: includes/class-wc-stripe-webhook-handler.php:496
 msgid "This charge was partially captured via Stripe Dashboard in the amount of: %s"
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-handler.php:539
+#: includes/class-wc-stripe-webhook-handler.php:596
+msgid "This payment has expired."
+msgstr ""
+
+#: includes/class-wc-stripe-webhook-handler.php:598
 msgid "This payment failed to clear."
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-handler.php:576
+#: includes/class-wc-stripe-webhook-handler.php:636
 msgid "This payment was cancelled."
 msgstr ""
 
 #. translators: amount (including currency symbol)
-#: includes/class-wc-stripe-webhook-handler.php:628
+#: includes/class-wc-stripe-webhook-handler.php:688
 msgid "Pre-Authorization for %s voided from the Stripe Dashboard."
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-handler.php:641
+#: includes/class-wc-stripe-webhook-handler.php:705
 msgid "Refunded via Stripe Dashboard"
 msgstr ""
 
 #. translators: 1) amount (including currency symbol) 2) transaction id 3) refund message
-#: includes/class-wc-stripe-webhook-handler.php:663
+#: includes/class-wc-stripe-webhook-handler.php:729
 msgid "Refunded %1$s - Refund ID: %2$s - %3$s"
 msgstr ""
 
 #. translators: 1) amount (including currency symbol) 2) transaction id 3) refund failure code
-#: includes/class-wc-stripe-webhook-handler.php:724
+#: includes/class-wc-stripe-webhook-handler.php:790
 msgid "Refund failed for %1$s - Refund ID: %2$s - Reason: %3$s"
 msgstr ""
 
 #. translators: 1) amount (including currency symbol) 2) transaction id 3) refund failure code
-#: includes/class-wc-stripe-webhook-handler.php:727
+#: includes/class-wc-stripe-webhook-handler.php:793
 msgid "Refund canceled for %1$s - Refund ID: %2$s - Reason: %3$s"
 msgstr ""
 
 #. translators: 1) HTML anchor open tag 2) HTML anchor closing tag 3) The reason type.
-#: includes/class-wc-stripe-webhook-handler.php:763
+#: includes/class-wc-stripe-webhook-handler.php:829
 msgid "A review has been opened for this order. Action is needed. Please go to your %1$sStripe Dashboard%2$s to review the issue. Reason: (%3$s)."
 msgstr ""
 
 #. translators: 1) The reason type.
-#: includes/class-wc-stripe-webhook-handler.php:801
+#: includes/class-wc-stripe-webhook-handler.php:867
 msgid "The opened review for this order is now closed. Reason: (%s)"
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-handler.php:968
+#: includes/class-wc-stripe-webhook-handler.php:1036
 msgid "Payment not completed in time"
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-state.php:157
+#: includes/class-wc-stripe-webhook-state.php:162
 msgid "No error"
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-state.php:161
+#: includes/class-wc-stripe-webhook-state.php:166
 msgid "The webhook was missing expected headers"
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-state.php:165
+#: includes/class-wc-stripe-webhook-state.php:170
 msgid "The webhook was missing expected body"
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-state.php:169
-msgid "The webhook secret is not set in the store"
+#: includes/class-wc-stripe-webhook-state.php:174
+msgid "The webhook secret is not set in the store. Please configure the webhooks"
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-state.php:174
+#: includes/class-wc-stripe-webhook-state.php:179
 msgid "The webhook received did not come from Stripe"
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-state.php:178
+#: includes/class-wc-stripe-webhook-state.php:183
 msgid "The webhook signature was missing or was incorrectly formatted"
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-state.php:182
+#: includes/class-wc-stripe-webhook-state.php:187
+msgid "Multiple webhooks exist for this site. Please remove the duplicate webhooks or re-configure the webhooks"
+msgstr ""
+
+#: includes/class-wc-stripe-webhook-state.php:191
 msgid "The timestamp in the webhook differed more than five minutes from the site time"
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-state.php:186
+#: includes/class-wc-stripe-webhook-state.php:195
 msgid "The webhook was not signed with the expected signing secret"
 msgstr ""
 
-#: includes/class-wc-stripe-webhook-state.php:189
+#: includes/class-wc-stripe-webhook-state.php:198
 msgid "Unknown error."
 msgstr ""
 
 #. translators: 1) date and time of last webhook received, e.g. 2020-06-28 10:30:50 UTC
-#: includes/class-wc-stripe-webhook-state.php:242
+#: includes/class-wc-stripe-webhook-state.php:251
 msgid "The most recent test webhook, timestamped %s, was processed successfully."
 msgstr ""
 
 #. translators: 1) date and time of last webhook received, e.g. 2020-06-28 10:30:50 UTC
-#: includes/class-wc-stripe-webhook-state.php:244
+#: includes/class-wc-stripe-webhook-state.php:253
 msgid "The most recent live webhook, timestamped %s, was processed successfully."
 msgstr ""
 
 #. translators: 1) date and time webhook monitoring began, e.g. 2020-06-28 10:30:50 UTC
-#: includes/class-wc-stripe-webhook-state.php:251
+#: includes/class-wc-stripe-webhook-state.php:260
 msgid "No test webhooks have been received since monitoring began at %s."
 msgstr ""
 
 #. translators: 1) date and time webhook monitoring began, e.g. 2020-06-28 10:30:50 UTC
-#: includes/class-wc-stripe-webhook-state.php:253
+#: includes/class-wc-stripe-webhook-state.php:262
 msgid "No live webhooks have been received since monitoring began at %s."
 msgstr ""
 
 #. translators: 1) date and time of last failed webhook e.g. 2020-06-28 10:30:50 UTC translators: 2) reason webhook failed translators: 3) date and time of last successful webhook e.g. 2020-05-28 10:30:50 UTC
-#: includes/class-wc-stripe-webhook-state.php:264
+#: includes/class-wc-stripe-webhook-state.php:273
 msgid "Warning: The most recent test webhook, received at %1$s, could not be processed. Reason: %2$s. (The last test webhook to process successfully was timestamped %3$s.)"
 msgstr ""
 
 #. translators: 1) date and time of last failed webhook e.g. 2020-06-28 10:30:50 UTC translators: 2) reason webhook failed translators: 3) date and time of last successful webhook e.g. 2020-05-28 10:30:50 UTC
-#: includes/class-wc-stripe-webhook-state.php:270
+#: includes/class-wc-stripe-webhook-state.php:279
 msgid "Warning: The most recent live webhook, received at %1$s, could not be processed. Reason: %2$s. (The last live webhook to process successfully was timestamped %3$s.)"
 msgstr ""
 
 #. translators: 1) date and time of last failed webhook e.g. 2020-06-28 10:30:50 UTC translators: 2) reason webhook failed translators: 3) date and time webhook monitoring began e.g. 2020-05-28 10:30:50 UTC
-#: includes/class-wc-stripe-webhook-state.php:282
+#: includes/class-wc-stripe-webhook-state.php:291
 msgid "Warning: The most recent test webhook, received at %1$s, could not be processed. Reason: %2$s. (No test webhooks have been processed successfully since monitoring began at %3$s.)"
 msgstr ""
 
 #. translators: 1) date and time of last failed webhook e.g. 2020-06-28 10:30:50 UTC translators: 2) reason webhook failed translators: 3) date and time webhook monitoring began e.g. 2020-05-28 10:30:50 UTC
-#: includes/class-wc-stripe-webhook-state.php:287
+#: includes/class-wc-stripe-webhook-state.php:296
 msgid "Warning: The most recent live webhook, received at %1$s, could not be processed. Reason: %2$s. (No live webhooks have been processed successfully since monitoring began at %3$s.)"
 msgstr ""
 
@@ -2060,7 +2128,7 @@ msgstr ""
 #. translators: %s is the stripe charge Id
 #: includes/compat/trait-wc-stripe-pre-orders.php:274
 #: includes/compat/trait-wc-stripe-subscriptions.php:528
-#: includes/compat/trait-wc-stripe-subscriptions.php:1054
+#: includes/compat/trait-wc-stripe-subscriptions.php:1055
 msgid "Stripe charge awaiting authentication by user: %s."
 msgstr ""
 
@@ -2108,31 +2176,31 @@ msgid "Invalid payment method ID. A valid \"Stripe Payment Method ID\" must begi
 msgstr ""
 
 #. translators: 1) card brand 2) last 4 digits
-#: includes/compat/trait-wc-stripe-subscriptions.php:968
-#: includes/compat/trait-wc-stripe-subscriptions.php:975
+#: includes/compat/trait-wc-stripe-subscriptions.php:969
+#: includes/compat/trait-wc-stripe-subscriptions.php:976
 msgid "Via %1$s card ending in %2$s"
 msgstr ""
 
 #. translators: 1) last 4 digits of SEPA Direct Debit
-#: includes/compat/trait-wc-stripe-subscriptions.php:979
+#: includes/compat/trait-wc-stripe-subscriptions.php:980
 msgid "Via SEPA Direct Debit ending in %1$s"
 msgstr ""
 
 #. translators: 1) Cash App Cashtag
-#: includes/compat/trait-wc-stripe-subscriptions.php:983
+#: includes/compat/trait-wc-stripe-subscriptions.php:984
 msgid "Via Cash App Pay (%1$s)"
 msgstr ""
 
 #. translators: 1) email address associated with the Stripe Link payment method
-#: includes/compat/trait-wc-stripe-subscriptions.php:987
+#: includes/compat/trait-wc-stripe-subscriptions.php:988
 msgid "Via Stripe Link (%1$s)"
 msgstr ""
 
-#: includes/compat/trait-wc-stripe-subscriptions.php:1088
+#: includes/compat/trait-wc-stripe-subscriptions.php:1089
 msgid "Your early renewal order was successful."
 msgstr ""
 
-#: includes/compat/trait-wc-stripe-subscriptions.php:1102
+#: includes/compat/trait-wc-stripe-subscriptions.php:1103
 msgid "Payment authorization for the renewal order was unsuccessful, please try again."
 msgstr ""
 
@@ -2169,32 +2237,32 @@ msgid "Your site must be served over HTTPS in order to connect your Stripe accou
 msgstr ""
 
 #. translators: %1$s: <strong> tag, %2$s: </strong> tag, %3$s: <i> tag. %4$s: </i> tag.
-#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:224
+#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:226
 msgid "%1$sProgress: %2$s %3$sWe are still identifying all subscriptions that require updating.%4$s"
 msgstr ""
 
 #. translators: %1$s: <strong> tag, %2$s: </strong> tag, %3$s: percentage complete.
-#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:237
+#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:239
 msgid "%1$sProgress: %2$s %3$s%% complete"
 msgstr ""
 
-#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:243
+#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:245
 msgid "SEPA subscription update in progress"
 msgstr ""
 
-#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:244
+#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:246
 msgid "We are currently updating customer subscriptions that use the legacy Stripe SEPA Direct Debit payment method. During this update, you may notice that some subscriptions appear as manual renewals. Don't worry—renewals will continue to process as normal. Please be aware this process may take some time."
 msgstr ""
 
-#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:329
+#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:331
 msgid "Stripe Legacy SEPA Token Update"
 msgstr ""
 
-#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:330
+#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:332
 msgid "This will restart the legacy Stripe SEPA update process."
 msgstr ""
 
-#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:331
+#: includes/migrations/class-wc-stripe-subscriptions-repairer-legacy-sepa-tokens.php:333
 msgid "Restart SEPA token update"
 msgstr ""
 
@@ -2224,7 +2292,7 @@ msgid "Set up now"
 msgstr ""
 
 #: includes/payment-methods/class-wc-gateway-stripe-alipay.php:64
-#: woocommerce-gateway-stripe.php:530
+#: woocommerce-gateway-stripe.php:545
 msgid "Stripe Alipay"
 msgstr ""
 
@@ -2253,7 +2321,7 @@ msgid "Add Payment"
 msgstr ""
 
 #: includes/payment-methods/class-wc-gateway-stripe-bancontact.php:64
-#: woocommerce-gateway-stripe.php:524
+#: woocommerce-gateway-stripe.php:539
 msgid "Stripe Bancontact"
 msgstr ""
 
@@ -2268,22 +2336,22 @@ msgid "Sorry, the maximum allowed order total is %1$s to use this payment method
 msgstr ""
 
 #: includes/payment-methods/class-wc-gateway-stripe-eps.php:64
-#: woocommerce-gateway-stripe.php:527
+#: woocommerce-gateway-stripe.php:542
 msgid "Stripe EPS"
 msgstr ""
 
 #: includes/payment-methods/class-wc-gateway-stripe-giropay.php:64
-#: woocommerce-gateway-stripe.php:526
+#: woocommerce-gateway-stripe.php:541
 msgid "Stripe giropay"
 msgstr ""
 
 #: includes/payment-methods/class-wc-gateway-stripe-ideal.php:64
-#: woocommerce-gateway-stripe.php:528
+#: woocommerce-gateway-stripe.php:543
 msgid "Stripe iDEAL"
 msgstr ""
 
 #: includes/payment-methods/class-wc-gateway-stripe-multibanco.php:64
-#: woocommerce-gateway-stripe.php:532
+#: woocommerce-gateway-stripe.php:547
 msgid "Stripe Multibanco"
 msgstr ""
 
@@ -2316,12 +2384,12 @@ msgid "Stripe OXXO"
 msgstr ""
 
 #: includes/payment-methods/class-wc-gateway-stripe-p24.php:64
-#: woocommerce-gateway-stripe.php:529
+#: woocommerce-gateway-stripe.php:544
 msgid "Stripe P24"
 msgstr ""
 
 #: includes/payment-methods/class-wc-gateway-stripe-sepa.php:64
-#: woocommerce-gateway-stripe.php:531
+#: woocommerce-gateway-stripe.php:546
 msgid "Stripe SEPA Direct Debit"
 msgstr ""
 
@@ -2339,256 +2407,280 @@ msgid "TEST MODE ENABLED. In test mode, you can use IBAN number DE89370400440532
 msgstr ""
 
 #: includes/payment-methods/class-wc-gateway-stripe-sofort.php:64
-#: woocommerce-gateway-stripe.php:525
+#: woocommerce-gateway-stripe.php:540
 msgid "Stripe Sofort"
 msgstr ""
 
 #. translators: 1) The product Id
-#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:218
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1346
+#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:216
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1377
 msgid "Product with the ID (%1$s) cannot be found."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:233
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1361
+#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:231
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1392
 msgid "The chosen subscription product is not supported."
 msgstr ""
 
 #. translators: 1) product name 2) quantity in stock
-#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:243
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1371
+#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:241
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1402
 msgid "You cannot add that amount of \"%1$s\"; to the cart because there is not enough stock (%2$s remaining)."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:268
-#: includes/payment-methods/class-wc-stripe-express-checkout-element.php:232
-#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:242
-#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:1235
-#: includes/payment-methods/class-wc-stripe-payment-request.php:426
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1388
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1905
+#: build/express_checkout.js:1
+#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:266
+#: includes/payment-methods/class-wc-stripe-express-checkout-element.php:259
+#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:244
+#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:1268
+#: includes/payment-methods/class-wc-stripe-payment-request.php:436
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1419
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1934
+#: client/express-checkout/transformers/wc-to-stripe.js:66
 msgid "Tax"
 msgstr ""
 
 #: build/express_checkout.js:1
-#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:276
-#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:250
-#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:1243
-#: includes/payment-methods/class-wc-stripe-payment-request.php:434
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1396
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1912
-#: client/entrypoints/express-checkout/index.js:109
+#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:274
+#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:252
+#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:1276
+#: includes/payment-methods/class-wc-stripe-payment-request.php:444
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1427
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1941
+#: client/express-checkout/transformers/wc-to-stripe.js:81
 msgid "Shipping"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:283
-#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:309
-#: includes/payment-methods/class-wc-stripe-payment-request.php:441
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1403
+#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:281
+#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:311
+#: includes/payment-methods/class-wc-stripe-payment-request.php:451
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1434
 msgid "Pending"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:308
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1699
+#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:309
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1728
 msgid "Empty cart"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:364
+#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:368
 msgid "Invalid request"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:380
+#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:384
 msgid "Invalid order!"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:384
+#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:388
 msgid "This order does not require payment!"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:392
+#: includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php:396
 msgid "Unable to determine payment success."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-element.php:194
-#: includes/payment-methods/class-wc-stripe-payment-request.php:798
+#: includes/payment-methods/class-wc-stripe-express-checkout-element.php:210
+#: includes/payment-methods/class-wc-stripe-payment-request.php:829
 msgid "Sorry, we're not accepting prepaid cards at this time."
 msgstr ""
 
 #. translators: Do not translate the [option] placeholder
-#: includes/payment-methods/class-wc-stripe-express-checkout-element.php:196
-#: includes/payment-methods/class-wc-stripe-payment-request.php:800
+#: includes/payment-methods/class-wc-stripe-express-checkout-element.php:212
+#: includes/payment-methods/class-wc-stripe-payment-request.php:831
 msgid "Unknown shipping option \"[option]\"."
 msgstr ""
 
-#. Translators: %s is the name of the shipping method.
 #: includes/payment-methods/class-wc-stripe-express-checkout-element.php:240
+msgid "Subtotal"
+msgstr ""
+
+#: build/express_checkout.js:1
+#: includes/payment-methods/class-wc-stripe-express-checkout-element.php:266
+#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:1284
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1948
+#: client/express-checkout/transformers/wc-to-stripe.js:92
+msgid "Discount"
+msgstr ""
+
+#. Translators: %s is the name of the shipping method.
+#: includes/payment-methods/class-wc-stripe-express-checkout-element.php:274
 msgid "Shipping (%s)"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-element.php:416
-#: includes/payment-methods/class-wc-stripe-payment-request.php:923
+#: includes/payment-methods/class-wc-stripe-express-checkout-element.php:490
+#: includes/payment-methods/class-wc-stripe-payment-request.php:954
 msgid "OR"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:749
-#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:767
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1225
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1244
+#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:782
+#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:800
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1256
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1275
 msgid "Unable to find shipping method for address."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:755
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1232
+#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:788
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1263
 msgid "Unable to provide shipping options for Payment Requests."
 msgstr ""
 
 #. translators: 1) country.
-#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:1020
+#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:1053
 msgid "The Express Checkout button is not supported in %1$s because some required fields couldn't be verified. Please proceed to the checkout page and try again."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:1251
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1919
-msgid "Discount"
-msgstr ""
-
 #. translators: The text encapsulated in `**` can be replaced with "Apple Pay" or "Google Pay". Please translate this text, but don't remove the `**`.
-#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:1287
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1962
+#: includes/payment-methods/class-wc-stripe-express-checkout-helper.php:1320
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1991
 msgid "To complete your transaction with **the selected payment method**, you must log in or create an account with our site."
 msgstr ""
 
 #. translators: 1) country.
-#: includes/payment-methods/class-wc-stripe-payment-request.php:1683
+#: includes/payment-methods/class-wc-stripe-payment-request.php:1712
 msgid "The Payment Request button is not supported in %1$s because some required fields couldn't be verified. Please proceed to the checkout page and try again."
 msgstr ""
 
 #. translators: link
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:135
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:145
 msgid "Accept debit and credit cards in 135+ currencies, methods such as SEPA, and one-touch checkout with Apple Pay."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:399
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:427
 msgid "There was a problem processing the payment. Please check your email inbox and refresh the page to try again."
 msgstr ""
 
 #. translators: 1) HTML strong open tag 2) HTML strong closing tag 3) HTML anchor open tag 2) HTML anchor closing tag
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:577
-#: includes/payment-methods/class-wc-stripe-upe-payment-method-cc.php:110
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:618
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-cc.php:112
 msgid "%1$sTest mode:%2$s use the test VISA card 4242424242424242 with any expiry date and CVC. Other payment methods may redirect to a Stripe test page to authorize payment. More test card numbers are listed %3$shere%4$s."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:619
-#: includes/payment-methods/class-wc-stripe-upe-payment-method.php:565
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:660
+#: includes/payment-methods/class-wc-stripe-upe-payment-method.php:604
 msgid "An error was encountered when preparing the payment form. Please try again later."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:703
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:744
 msgid "This payment method is not available on the selected country"
 msgstr ""
 
 #. translators: localized exception message
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:922
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1036
 msgid "There was an error processing the payment: %s"
 msgstr ""
 
 #. translators: localized exception message
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:935
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1049
 msgid "Payment failed: %s"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1128
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1241
 msgid "Payment method successfully added."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1156
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1269
 msgid "Failed to add payment method."
 msgstr ""
 
 #. translators: localized exception message
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1274
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1393
 msgid "UPE payment failed: %s"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1649
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1787
 msgid "Select payments available to customers at checkout. We'll only show your customers the most relevant payment methods based on their currency and location."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1653
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1791
 msgid "Method"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1654
-#: client/settings/account-details/index.js:68
-#: client/settings/account-details/index.js:83
-#: client/settings/account-details/index.js:126
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1792
+#: client/settings/account-details/index.js:63
+#: client/settings/account-details/index.js:78
+#: client/settings/account-details/index.js:115
 #: client/settings/stripe-auth-account/account-status-panel.js:193
 msgid "Enabled"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1664
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1802
 msgid "enabled"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1664
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1802
 msgid "disabled"
 msgstr ""
 
 #. translators: $1%s payment method ID, $2%s "enabled" or "disabled"
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1670
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1808
 msgid "The &quot;%1$s&quot; payment method is currently %2$s"
 msgstr ""
 
 #. translators: $1%s payment method label
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1676
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1814
 msgid "%1$s is not available to your customers when manual capture is enabled."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1687
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1825
 msgid "Yes"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1687
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1825
 msgid "No"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1698
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1836
 #: client/settings/general-settings-section/section-footer.js:14
 msgid "Get more payment methods"
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1699
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1837
 msgid "You must save your changes."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1796
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:1935
 msgid "We're not able to add this payment method. Please try again later."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:2004
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:2156
 msgid "The selected payment method isn't valid."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:2283
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:2501
 msgid "The selected payment method type is invalid."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:2309
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:2527
 msgid "This payment method type is not available in the selected country."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:2596
+#: includes/payment-methods/class-wc-stripe-upe-payment-gateway.php:2845
 msgid "Unable to update Stripe Elements appearance values at this time."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
+#: build/upe_settings.js:1
+#: build/payment_requests_settings.js:1
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-ach.php:25
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-ach.php:29
+#: client/payment-methods-map.js:248
+msgid "ACH Direct Debit"
+msgstr ""
+
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-ach.php:30
+msgid "Pay directly from your US bank account via ACH."
+msgstr ""
+
+#: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-affirm.php:19
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-affirm.php:24
-#: client/payment-methods-map.js:55
+#: client/payment-methods-map.js:56
 msgid "Affirm"
 msgstr ""
 
@@ -2606,6 +2698,7 @@ msgid "Allow customers to pay over time with Clearpay / Afterpay."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-afterpay-clearpay.php:79
@@ -2614,6 +2707,7 @@ msgid "Clearpay"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-afterpay-clearpay.php:81
@@ -2622,6 +2716,7 @@ msgid "Afterpay"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-alipay.php:37
@@ -2629,15 +2724,31 @@ msgstr ""
 msgid "Alipay is a popular wallet in China, operated by Ant Financial Services Group, a financial services provider affiliated with Alibaba."
 msgstr ""
 
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-bacs.php:22
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-bacs.php:27
+msgid "Bacs Direct Debit"
+msgstr ""
+
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
-#: includes/payment-methods/class-wc-stripe-upe-payment-method-bancontact.php:28
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-bacs.php:28
+#: client/payment-methods-map.js:263
+msgid "Bacs Direct Debit enables customers in the UK to pay by providing their bank account details."
+msgstr ""
+
+#: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
+#: build/upe_settings.js:1
+#: build/payment_requests_settings.js:1
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-bancontact.php:26
 #: client/payment-methods-map.js:130
 msgid "Bancontact is the most popular online payment method in Belgium, with over 15 million cards in circulation."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-boleto.php:30
@@ -2646,6 +2757,20 @@ msgid "Boleto is an official payment method in Brazil. Customers receive a vouch
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
+#: build/upe_settings.js:1
+#: build/payment_requests_settings.js:1
+#. Translators: %s is the Cash App Pay $Cashtag.
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-cash-app-pay.php:28
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-cash-app-pay.php:34
+#: includes/payment-tokens/class-wc-stripe-cash-app-payment-token.php:43
+#: includes/payment-tokens/class-wc-stripe-payment-tokens.php:409
+#: client/payment-methods-map.js:234
+msgid "Cash App Pay"
+msgstr ""
+
+#: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-cash-app-pay.php:35
@@ -2654,14 +2779,16 @@ msgid "Cash App is a popular consumer app in the US that allows customers to ban
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-cc.php:30
-#: client/payment-methods-map.js:11
+#: client/payment-methods-map.js:12
 msgid "Let your customers pay with major credit and debit cards without leaving your store."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-eps.php:25
@@ -2670,40 +2797,48 @@ msgid "EPS is an Austria-based payment method that allows customers to complete 
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-giropay.php:25
-#: client/payment-methods-map.js:22
+#: client/payment-methods-map.js:23
 msgid "Expand your business with giropay — Germany’s second most popular payment system."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
-#: includes/payment-methods/class-wc-stripe-upe-payment-method-ideal.php:28
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-ideal.php:26
 #: client/payment-methods-map.js:140
 msgid "iDEAL is a Netherlands-based payment method that allows customers to complete transactions online using their bank credentials."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-klarna.php:19
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-klarna.php:36
-#: client/payment-methods-map.js:31
+#: client/payment-methods-map.js:32
 msgid "Klarna"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-klarna.php:37
-#: client/payment-methods-map.js:32
+#: client/payment-methods-map.js:33
 msgid "Allow customers to pay over time with Klarna."
 msgstr ""
 
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-link.php:19
 msgid "Link"
+msgstr ""
+
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-link.php:21
+msgid "Stripe Link"
 msgstr ""
 
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-link.php:22
@@ -2713,6 +2848,7 @@ msgid ""
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-multibanco.php:26
@@ -2720,7 +2856,28 @@ msgstr ""
 msgid "Multibanco is an interbank network that links the ATMs of all major banks in Portugal, allowing customers to pay through either their ATM or online banking environment."
 msgstr ""
 
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-multibanco.php:79
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-multibanco.php:91
+msgid "MULTIBANCO ORDER INFORMATION"
+msgstr ""
+
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-multibanco.php:81
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-multibanco.php:94
+msgid "Amount:"
+msgstr ""
+
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-multibanco.php:84
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-multibanco.php:98
+msgid "Entity:"
+msgstr ""
+
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-multibanco.php:87
+#: includes/payment-methods/class-wc-stripe-upe-payment-method-multibanco.php:102
+msgid "Reference:"
+msgstr ""
+
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-oxxo.php:30
@@ -2729,6 +2886,7 @@ msgid "OXXO is a Mexican chain of convenience stores that allows customers to pa
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-p24.php:21
@@ -2738,6 +2896,7 @@ msgid "Przelewy24"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-p24.php:25
@@ -2746,6 +2905,7 @@ msgid "Przelewy24 is a Poland-based payment method aggregator that allows custom
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-sepa.php:28
@@ -2760,6 +2920,7 @@ msgid "%1$sTest mode:%2$s use the test account number AT611904300234573201. Othe
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-sofort.php:28
@@ -2768,6 +2929,7 @@ msgid "Accept secure bank transfers from Austria, Belgium, Germany, Italy, Nethe
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-wechat-pay.php:19
@@ -2777,6 +2939,7 @@ msgid "WeChat Pay"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: includes/payment-methods/class-wc-stripe-upe-payment-method-wechat-pay.php:38
@@ -2784,24 +2947,44 @@ msgstr ""
 msgid "WeChat Pay is a popular mobile payment and digital wallet service by WeChat in China."
 msgstr ""
 
-#: includes/payment-methods/class-wc-stripe-upe-payment-method.php:425
+#: includes/payment-methods/class-wc-stripe-upe-payment-method.php:445
 msgid "Pending activation"
 msgstr ""
 
 #. translators: %1: Payment method name
-#: includes/payment-methods/class-wc-stripe-upe-payment-method.php:428
+#: includes/payment-methods/class-wc-stripe-upe-payment-method.php:448
 msgid "%1$s won't be visible to your customers until you provide the required information. Follow the instructions Stripe has sent to your e-mail address."
 msgstr ""
 
 #. translators: %s: List of comma-separated currencies.
-#: includes/payment-methods/class-wc-stripe-upe-payment-method.php:437
+#: includes/payment-methods/class-wc-stripe-upe-payment-method.php:457
 msgid "In order to be used at checkout, the payment method requires the store currency to be set to one of: %s"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: includes/payment-methods/class-wc-stripe-upe-payment-method.php:438
-#: client/components/payment-method-missing-currency-pill/index.js:57
+#: includes/payment-methods/class-wc-stripe-upe-payment-method.php:458
+#: client/components/payment-method-missing-currency-pill/index.js:58
 msgid "Requires currency"
+msgstr ""
+
+#. Translators: %s is the Cash App Pay $Cashtag.
+#: includes/payment-tokens/class-wc-stripe-cash-app-payment-token.php:43
+msgid "Cash App Pay (%s)"
+msgstr ""
+
+#. translators: customer email
+#: includes/payment-tokens/class-wc-stripe-link-payment-token.php:42
+#: includes/payment-tokens/class-wc-stripe-payment-tokens.php:414
+msgid "Stripe Link (%s)"
+msgstr ""
+
+#: includes/payment-tokens/class-wc-stripe-payment-tokens.php:406
+msgid "SEPA IBAN"
+msgstr ""
+
+#. translators: last 4 digits of IBAN account
+#: includes/payment-tokens/class-wc-stripe-sepa-payment-token.php:51
+msgid "SEPA IBAN ending in %s"
 msgstr ""
 
 #. translators: 1) is a link to the payment re-authentication URL.
@@ -2859,48 +3042,50 @@ msgstr ""
 msgid "Stripe requires WooCommerce %1$s or greater to be installed and active. WooCommerce %2$s is no longer supported."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/payment_requests_settings.js:1
 #: build/upe_settings.js:1
-#: woocommerce-gateway-stripe.php:418
+#: woocommerce-gateway-stripe.php:433
+#: client/entrypoints/amazon-pay-settings/amazon-pay-page.js:30
 #: client/entrypoints/payment-request-settings/payment-request-page.js:32
 #: client/settings/settings-manager/index.js:29
 msgid "Settings"
 msgstr ""
 
-#: woocommerce-gateway-stripe.php:434
+#: woocommerce-gateway-stripe.php:449
 msgid "View Documentation"
 msgstr ""
 
-#: woocommerce-gateway-stripe.php:434
+#: woocommerce-gateway-stripe.php:449
 msgid "Docs"
 msgstr ""
 
-#: woocommerce-gateway-stripe.php:435
+#: woocommerce-gateway-stripe.php:450
 msgid "Open a support request at WooCommerce.com"
 msgstr ""
 
-#: woocommerce-gateway-stripe.php:435
+#: woocommerce-gateway-stripe.php:450
 msgid "Support"
 msgstr ""
 
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/express_checkout.js:1
-#: client/api/index.js:43
+#: client/api/index.js:49
 msgid "A timeout occurred while connecting to the server. Please try again."
 msgstr ""
 
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/express_checkout.js:1
-#: client/api/index.js:48
+#: client/api/index.js:54
 msgid "The connection to the server was aborted. Please try again."
 msgstr ""
 
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/express_checkout.js:1
-#: client/api/index.js:54
+#: client/api/index.js:60
 msgid "An error occurred while connecting to the server. Please try again."
 msgstr ""
 
@@ -2915,33 +3100,33 @@ msgid "CVV/CVC"
 msgstr ""
 
 #: build/index.js:1
-#: client/blocks/credit-card/index.js:52
+#: client/blocks/credit-card/index.js:61
 msgid "Stripe Credit Card payment method"
 msgstr ""
 
 #: build/upe_blocks.js:1
 #: build/express_checkout.js:1
-#: client/blocks/express-checkout/hooks.js:95
-#: client/entrypoints/express-checkout/index.js:162
+#: client/blocks/express-checkout/hooks.js:96
+#: client/entrypoints/express-checkout/index.js:342
 msgid "Final taxes charged can differ based on your actual billing address when using Express Checkout buttons (Link, Google Pay or Apple Pay)."
 msgstr ""
 
 #: build/upe_blocks.js:1
 #: build/index.js:1
-#: client/blocks/payment-request/index.js:19
+#: client/blocks/payment-request/index.js:26
 msgid "This will show users the ApplePay, GooglePay, or Stripe Link button depending on their browser and logged in status."
 msgstr ""
 
 #: build/upe_blocks.js:1
 #: build/index.js:1
-#: client/blocks/payment-request/payment-request-express.js:107
-#: client/blocks/payment-request/payment-request-express.js:125
-#: client/blocks/payment-request/payment-request-express.js:150
+#: client/blocks/payment-request/payment-request-express.js:119
+#: client/blocks/payment-request/payment-request-express.js:137
+#: client/blocks/payment-request/payment-request-express.js:162
 msgid "Loading payment request…"
 msgstr ""
 
 #: build/upe_blocks.js:1
-#: client/blocks/upe/upe-deferred-intent-creation/payment-processor.js:140
+#: client/blocks/upe/upe-deferred-intent-creation/payment-processor.js:158
 msgid "Your payment information is incomplete."
 msgstr ""
 
@@ -2953,6 +3138,17 @@ msgstr ""
 #: build/upe_settings.js:1
 #: client/brand-logos/woo-white/index.js:23
 msgid "Woo logo"
+msgstr ""
+
+#: build/upe_classic.js:1
+#: client/classic/upe/payment-processing.js:280
+msgid "Payment failed. Please try again."
+msgstr ""
+
+#: build/upe_classic.js:1
+#. translators: %s is an input field name
+#: client/classic/upe/payment-processing.js:313
+msgid "%s is a required field."
 msgstr ""
 
 #: build/upe_settings.js:1
@@ -2996,12 +3192,12 @@ msgstr ""
 
 #: build/upe_settings.js:1
 #. translators: $1: a payment method name. %2: Currency(ies).
-#: client/components/payment-method-missing-currency-pill/index.js:63
+#: client/components/payment-method-missing-currency-pill/index.js:64
 msgid "%1$s requires store currency to be set to %2$s. {{currencySettingsLink}}Set currency{{/currencySettingsLink}}"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/components/webhook-description/index.js:69
+#: client/components/webhook-description/index.js:68
 #: client/settings/payment-gateway-section/index.js:126
 msgid "Refresh"
 msgstr ""
@@ -3012,6 +3208,7 @@ msgid "Click the {{configureButtonText/}} button to {{settingsLink}}configure a 
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/account-keys/actions.js:70
@@ -3019,6 +3216,7 @@ msgid "Account disconnected."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/account-keys/actions.js:71
@@ -3026,6 +3224,7 @@ msgid "Account connected."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/account-keys/actions.js:77
@@ -3033,6 +3232,7 @@ msgid "Error disconnecting account."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/account-keys/actions.js:81
@@ -3040,6 +3240,7 @@ msgid "Error connecting account."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/account-keys/resolvers.js:18
@@ -3047,6 +3248,7 @@ msgid "Error retrieving account keys."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #. translators: %s: one or more payment method names separated by commas (e.g.: giropay, EPS, Sofort, etc).
@@ -3055,6 +3257,7 @@ msgid "You can now accept payments with %s."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/account/actions.js:74
@@ -3062,6 +3265,7 @@ msgid "Error updating account data."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/account/resolvers.js:18
@@ -3069,6 +3273,7 @@ msgid "Error retrieving account data."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/payment-gateway/actions.js:45
@@ -3077,6 +3282,7 @@ msgid "Settings saved."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/payment-gateway/actions.js:50
@@ -3085,6 +3291,7 @@ msgid "Error saving settings."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/payment-gateway/resolvers.js:21
@@ -3092,6 +3299,7 @@ msgid "Error retrieving payment gateway settings."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/settings/actions.js:96
@@ -3099,6 +3307,7 @@ msgid "Saved changed order."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/settings/actions.js:100
@@ -3106,6 +3315,7 @@ msgid "Error saving changed order."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/settings/actions.js:130
@@ -3113,49 +3323,123 @@ msgid "Error saving payment method."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/data/settings/resolvers.js:18
 msgid "Error retrieving settings."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
+#: client/entrypoints/amazon-pay-settings/amazon-pay-enable-section.js:18
+msgid "Enable Amazon Pay"
+msgstr ""
+
+#: build/amazon_pay_settings.js:1
+#: client/entrypoints/amazon-pay-settings/amazon-pay-page.js:32
+msgid "Configure the display of Amazon Pay button on your store."
+msgstr ""
+
+#: build/amazon_pay_settings.js:1
+#: build/payment_requests_settings.js:1
+#: client/entrypoints/amazon-pay-settings/amazon-pay-settings-section.js:39
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:45
+msgid "Small {{helpText}}(40 px){{/helpText}}"
+msgstr ""
+
+#: build/amazon_pay_settings.js:1
+#: build/payment_requests_settings.js:1
+#: client/entrypoints/amazon-pay-settings/amazon-pay-settings-section.js:48
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:54
+msgid "Default {{helpText}}(48 px){{/helpText}}"
+msgstr ""
+
+#: build/amazon_pay_settings.js:1
+#: build/payment_requests_settings.js:1
+#: client/entrypoints/amazon-pay-settings/amazon-pay-settings-section.js:57
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:63
+msgid "Large {{helpText}}(56 px){{/helpText}}"
+msgstr ""
+
+#: build/amazon_pay_settings.js:1
+#: build/payment_requests_settings.js:1
+#: client/entrypoints/amazon-pay-settings/amazon-pay-settings-section.js:134
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:205
+msgid "Show express checkouts on"
+msgstr ""
+
+#: build/amazon_pay_settings.js:1
+#: build/payment_requests_settings.js:1
+#: client/entrypoints/amazon-pay-settings/amazon-pay-settings-section.js:162
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:233
+msgid "Product page"
+msgstr ""
+
+#: build/amazon_pay_settings.js:1
+#: build/payment_requests_settings.js:1
+#: client/entrypoints/amazon-pay-settings/amazon-pay-settings-section.js:180
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:269
+msgid "Appearance"
+msgstr ""
+
+#: build/amazon_pay_settings.js:1
+#: build/payment_requests_settings.js:1
+#: client/entrypoints/amazon-pay-settings/amazon-pay-settings-section.js:182
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:271
+msgid "Note that larger buttons are more suitable for mobile use."
+msgstr ""
+
+#: build/amazon_pay_settings.js:1
+#: build/payment_requests_settings.js:1
+#: client/entrypoints/amazon-pay-settings/amazon-pay-settings-section.js:186
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:275
+msgid "Size"
+msgstr ""
+
+#: build/amazon_pay_settings.js:1
+#: build/payment_requests_settings.js:1
+#: client/entrypoints/amazon-pay-settings/amazon-pay-settings-section.js:191
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:286
+msgid "Preview"
+msgstr ""
+
 #: build/express_checkout.js:1
-#: client/entrypoints/express-checkout/index.js:58
+#: client/entrypoints/express-checkout/index.js:73
 msgid "There was an error getting the product information."
 msgstr ""
 
 #: build/express_checkout.js:1
-#: client/entrypoints/express-checkout/index.js:147
-msgid "The cart is incompatible with express checkout."
+#: client/entrypoints/express-checkout/index.js:111
+msgid "Please select your product options before proceeding."
 msgstr ""
 
 #: build/express_checkout.js:1
-#: client/entrypoints/express-checkout/index.js:187
+#: client/entrypoints/express-checkout/index.js:123
 msgid "Sorry, this product is unavailable. Please choose a different combination."
 msgstr ""
 
 #: build/express_checkout.js:1
-#: client/entrypoints/express-checkout/index.js:195
-msgid "Please select your product options before proceeding."
+#: client/entrypoints/express-checkout/index.js:390
+msgid "There was an error adding the product to the cart."
 msgstr ""
 
 #: build/payment_gateways.js:1
-#: client/entrypoints/payment-gateways/disable-confirmation-modal.js:25
+#: client/entrypoints/payment-gateways/disable-confirmation-modal.js:26
 msgid "Are you sure you want to disable Stripe? Without it, your customers will no longer be able to pay using the express checkouts."
 msgstr ""
 
 #: build/payment_gateways.js:1
-#: client/entrypoints/payment-gateways/disable-confirmation-modal.js:29
+#: client/entrypoints/payment-gateways/disable-confirmation-modal.js:30
 msgid "Are you sure you want to disable Stripe? Without it, your customers will no longer be able to pay using the payment methods below as well as express checkouts."
 msgstr ""
 
 #: build/payment_gateways.js:1
-#: client/entrypoints/payment-gateways/disable-confirmation-modal.js:38
+#: client/entrypoints/payment-gateways/disable-confirmation-modal.js:39
 msgid "Disable Stripe"
 msgstr ""
 
 #: build/payment_gateways.js:1
-#: client/entrypoints/payment-gateways/disable-confirmation-modal.js:61
+#: client/entrypoints/payment-gateways/disable-confirmation-modal.js:62
 msgid "Payment methods that need Stripe:"
 msgstr ""
 
@@ -3181,117 +3465,82 @@ msgid "Configure the display of Apple Pay and Google Pay buttons on your store."
 msgstr ""
 
 #: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:44
-msgid "Small {{helpText}}(40 px){{/helpText}}"
-msgstr ""
-
-#: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:53
-msgid "Default {{helpText}}(48 px){{/helpText}}"
-msgstr ""
-
-#: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:62
-msgid "Large {{helpText}}(56 px){{/helpText}}"
-msgstr ""
-
-#: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:102
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:103
 msgid "Dark {{br/}}{{helpText}}Recommended for white or light-colored backgrounds with high contrast.{{/helpText}}"
 msgstr ""
 
 #: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:111
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:112
 msgid "Light {{br/}}{{helpText}}Recommended for dark or colored backgrounds with high contrast.{{/helpText}}"
 msgstr ""
 
 #: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:120
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:121
 msgid "Outline {{br/}}{{helpText}}Recommended for white or light-colored backgrounds with insufficient contrast.{{/helpText}}"
 msgstr ""
 
 #: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:185
-msgid "Show express checkouts on"
-msgstr ""
-
-#: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:213
-msgid "Product page"
-msgstr ""
-
-#: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:232
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:236
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:252
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:256
 msgid "Call to action"
 msgstr ""
 
 #: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:241
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:261
 msgid "Select a button label that fits best with the flow of purchase or payment experience on your store."
 msgstr ""
 
 #: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:249
-msgid "Appearance"
-msgstr ""
-
-#: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:251
-msgid "Note that larger buttons are more suitable for mobile use."
-msgstr ""
-
-#: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:255
-msgid "Size"
-msgstr ""
-
-#: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:261
+#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:281
 msgid "Theme"
-msgstr ""
-
-#: build/payment_requests_settings.js:1
-#: client/entrypoints/payment-request-settings/payment-request-settings-section.js:266
-msgid "Preview"
 msgstr ""
 
 #: build/upe_blocks.js:1
 #: build/express_checkout.js:1
-#: client/express-checkout/event-handler.js:115
+#: client/express-checkout/payment-flow.js:17
 msgid "There was a problem processing the order."
 msgstr ""
 
+#: build/express_checkout.js:1
+#: client/express-checkout/transformers/wc-to-stripe.js:100
+msgid "Refund"
+msgstr ""
+
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
-#: client/payment-methods-map.js:10
+#: client/payment-methods-map.js:11
 msgid "Credit card / debit card"
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #. translators: %s is the store currency.
-#: client/payment-methods-map.js:57
-msgid "Allow customers to pay over time with Affirm. Available to all customers paying in %s."
+#: client/payment-methods-map.js:58
+msgid "Allow customers to pay over time. Available to all customers paying in %s. Purchases from 50 %s to 30,000 %s are eligible for Affirm financing."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/payment-methods-map.js:75
-msgid "Allow customers to pay over time with Clearpay."
+msgid "Allow customers to pay over time with Clearpay. {{limitsLink}}Transaction limits vary by country{{/limitsLink}}."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/payment-methods-map.js:79
-msgid "Allow customers to pay over time with Afterpay."
+msgid "Allow customers to pay over time with Afterpay. {{limitsLink}}Transaction limits vary by country{{/limitsLink}}."
 msgstr ""
 
 #: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/payment-methods-map.js:89
@@ -3299,42 +3548,50 @@ msgstr ""
 msgid "Direct debit payment"
 msgstr ""
 
+#: build/payment_gateways.js:1
+#: build/amazon_pay_settings.js:1
 #: build/upe_settings.js:1
-#: client/settings/account-details/index.js:65
+#: build/payment_requests_settings.js:1
+#: client/payment-methods-map.js:249
+msgid "ACH lets you accept payments from customers with a US bank account."
+msgstr ""
+
+#: build/upe_settings.js:1
+#: client/settings/account-details/index.js:60
 msgid "Payment"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/account-details/index.js:69
-#: client/settings/account-details/index.js:84
-#: client/settings/account-details/index.js:127
+#: client/settings/account-details/index.js:64
+#: client/settings/account-details/index.js:79
+#: client/settings/account-details/index.js:116
 #: client/settings/stripe-auth-account/account-status-panel.js:197
 msgid "Disabled"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/account-details/index.js:80
+#: client/settings/account-details/index.js:75
 msgid "Payout"
 msgstr ""
 
 #: build/upe_settings.js:1
 #. translators: <a> - dashboard login URL
-#: client/settings/account-details/index.js:89
+#: client/settings/account-details/index.js:84
 msgid "Payments/payouts may be disabled for this account until missing business information is updated. <a>Update now</a>"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/account-details/index.js:123
+#: client/settings/account-details/index.js:112
 msgid "Webhook"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/account-details/index.js:148
+#: client/settings/account-details/index.js:135
 msgid "Seems like the test API keys we've saved for you are no longer valid. If you recently updated them, use the <strong>Configure Connection</strong> button below to reconnect."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/account-details/index.js:152
+#: client/settings/account-details/index.js:139
 msgid "Seems like the live API keys we've saved for you are no longer valid. If you recently updated them, use the <strong>Configure Connection</strong> button below to reconnect."
 msgstr ""
 
@@ -3401,7 +3658,7 @@ msgstr ""
 
 #: build/upe_settings.js:1
 #: client/settings/connect-stripe-account/index.js:104
-#: client/settings/stripe-auth-account/stripe-auth-actions.js:34
+#: client/settings/stripe-auth-account/stripe-auth-actions.js:67
 msgid "Create or connect an account"
 msgstr ""
 
@@ -3412,7 +3669,7 @@ msgstr ""
 
 #: build/upe_settings.js:1
 #: client/settings/connect-stripe-account/index.js:122
-#: client/settings/stripe-auth-account/stripe-auth-actions.js:30
+#: client/settings/stripe-auth-account/stripe-auth-actions.js:66
 msgid "Create or connect a test account"
 msgstr ""
 
@@ -3452,13 +3709,14 @@ msgstr ""
 #: build/upe_settings.js:1
 #: client/settings/general-settings-section/customize-payment-method.js:103
 #: client/settings/general-settings-section/remove-method-confirmation-modal.js:42
-#: client/settings/general-settings-section/section-heading.js:121
+#: client/settings/general-settings-section/section-heading.js:115
 #: client/settings/payment-settings/disconnect-stripe-confirmation-modal.js:58
-#: client/settings/payments-and-transactions-section/manual-capture-control.js:90
+#: client/settings/payments-and-transactions-section/manual-capture-control.js:99
 msgid "Cancel"
 msgstr ""
 
 #: build/upe_settings.js:1
+#: build/amazon_pay_settings.js:1
 #: build/payment_requests_settings.js:1
 #: client/settings/general-settings-section/customize-payment-method.js:110
 #: client/settings/save-payment-gateway-section/index.js:23
@@ -3467,25 +3725,26 @@ msgid "Save changes"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/general-settings-section/index.js:62
+#: client/settings/general-settings-section/index.js:85
 msgid "Updating payment methods information, please wait."
 msgstr ""
 
 #: build/upe_settings.js:1
 #. translators: %s: a payment method name.
-#: client/settings/general-settings-section/payment-method-checkbox.js:84
+#: client/settings/general-settings-section/payment-method-checkbox.js:85
 msgid "%s is not available to your customers when the \"manual capture\" setting is enabled."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/general-settings-section/payment-methods-list.js:350
-#: client/settings/payment-request-section/index.js:126
+#: client/settings/general-settings-section/payment-methods-list.js:384
+#: client/settings/payment-request-section/index.js:155
+#: client/settings/payment-request-section/index.js:303
 msgid "Customize"
 msgstr ""
 
 #: build/upe_settings.js:1
 #. translators: %d: Number of unavailable payment methods not displayed.
-#: client/settings/general-settings-section/payment-methods-unavailable-list.js:42
+#: client/settings/general-settings-section/payment-methods-unavailable-list.js:43
 msgid "+ %d more"
 msgstr ""
 
@@ -3512,48 +3771,48 @@ msgid "You can add it again at any time in Stripe settings."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/general-settings-section/section-heading.js:79
+#: client/settings/general-settings-section/section-heading.js:73
 msgid "Payment methods"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/general-settings-section/section-heading.js:89
+#: client/settings/general-settings-section/section-heading.js:83
 msgid "Change display order"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/general-settings-section/section-heading.js:98
+#: client/settings/general-settings-section/section-heading.js:92
 msgid "Payment methods menu"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/general-settings-section/section-heading.js:104
+#: client/settings/general-settings-section/section-heading.js:98
 msgid "Refresh payment methods"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/general-settings-section/section-heading.js:128
+#: client/settings/general-settings-section/section-heading.js:122
 msgid "Save display order"
 msgstr ""
 
 #: build/upe_settings.js:1
 #: client/settings/notices/legacy-experience-transition/index.js:56
-#: client/settings/payment-settings/promotional-banner-section.js:85
+#: client/settings/payment-settings/promotional-banner-section.js:97
 msgid "New checkout experience enabled"
 msgstr ""
 
 #: build/upe_settings.js:1
 #: client/settings/notices/legacy-experience-transition/index.js:63
-#: client/settings/payment-settings/promotional-banner-section.js:92
-#: client/settings/payment-settings/promotional-banner-section.js:117
+#: client/settings/payment-settings/promotional-banner-section.js:104
+#: client/settings/payment-settings/promotional-banner-section.js:129
 msgid "There was an error. Please reload the page and try again."
 msgstr ""
 
 #: build/upe_settings.js:1
 #: client/settings/notices/legacy-experience-transition/index.js:79
 #: client/settings/notices/legacy-experience-transition/index.js:95
-#: client/settings/payment-settings/promotional-banner-section.js:221
-#: client/settings/payment-settings/promotional-banner-section.js:273
+#: client/settings/payment-settings/promotional-banner-section.js:233
+#: client/settings/payment-settings/promotional-banner-section.js:285
 msgid "Enable the new checkout"
 msgstr ""
 
@@ -3665,43 +3924,54 @@ msgid "Webhook endpoints"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-methods/index.js:18
+#: client/settings/payment-methods/index.js:19
 msgid "Payments accepted on checkout"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-methods/index.js:38
+#: client/settings/payment-methods/index.js:39
 msgid "Express checkouts"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-methods/index.js:40
+#: client/settings/payment-methods/index.js:41
 msgid "Let your customers use their favorite express payment methods and digital wallets for faster, more secure checkouts across different parts of your store."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-request-section/index.js:61
+#: client/settings/payment-request-section/index.js:90
 msgid "Credit card / debit card must be enabled as a payment method in order to use Express Checkout."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-request-section/index.js:81
+#: client/settings/payment-request-section/index.js:110
 msgid "Apple Pay / Google Pay"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-request-section/index.js:138
+#: client/settings/payment-request-section/index.js:167
 msgid "Link by Stripe Input"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-request-section/index.js:151
+#: client/settings/payment-request-section/index.js:180
 msgid "Link by Stripe"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-request-section/index.js:194
+#: client/settings/payment-request-section/index.js:223
 msgid "{{linkDocs}}Read more{{/linkDocs}}"
+msgstr ""
+
+#: build/upe_settings.js:1
+#: client/settings/payment-request-section/index.js:245
+msgid "Amazon Pay Input"
+msgstr ""
+
+#: build/upe_settings.js:1
+#: client/settings/payment-request-section/index.js:258
+#: client/settings/payment-request-section/index.js:264
+msgid "Amazon Pay"
 msgstr ""
 
 #: build/upe_settings.js:1
@@ -3799,7 +4069,7 @@ msgid "All settings will be cleared and your customers will no longer be able to
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-settings/general-settings-section.js:66
+#: client/settings/payment-settings/general-settings-section.js:69
 msgid "When enabled, payment methods powered by Stripe will appear on checkout."
 msgstr ""
 
@@ -3839,62 +4109,62 @@ msgid "Configure optional payment settings and transaction details."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-settings/promotional-banner-section.js:130
-#: client/settings/payment-settings/promotional-banner-section.js:186
-#: client/settings/payment-settings/promotional-banner-section.js:242
+#: client/settings/payment-settings/promotional-banner-section.js:142
+#: client/settings/payment-settings/promotional-banner-section.js:198
+#: client/settings/payment-settings/promotional-banner-section.js:254
 msgid "New"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-settings/promotional-banner-section.js:133
+#: client/settings/payment-settings/promotional-banner-section.js:145
 msgid "Make your store more secure"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-settings/promotional-banner-section.js:139
+#: client/settings/payment-settings/promotional-banner-section.js:151
 msgid "Re-connect your Stripe account using the new authentication flow by clicking the \"Re-authenticate\" button and make your store safer."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-settings/promotional-banner-section.js:148
-#: client/settings/payment-settings/promotional-banner-section.js:161
+#: client/settings/payment-settings/promotional-banner-section.js:160
+#: client/settings/payment-settings/promotional-banner-section.js:173
 msgid "Re-authenticate"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-settings/promotional-banner-section.js:170
+#: client/settings/payment-settings/promotional-banner-section.js:182
 msgid "Stripe ended support for non-card payment methods in the {{StripeLegacyLink}}legacy checkout on October 29, 2024{{/StripeLegacyLink}}. To continue accepting non-card payments, you must enable the new checkout experience or remove non-card payment methods from your checkout to avoid payment disruptions."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-settings/promotional-banner-section.js:175
+#: client/settings/payment-settings/promotional-banner-section.js:187
 msgid "Stripe will end support for non-card payment methods in the {{StripeLegacyLink}}legacy checkout on October 29, 2024{{/StripeLegacyLink}}. To continue accepting non-card payments, you must enable the new checkout experience or remove non-card payment methods from your checkout to avoid payment disruptions."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-settings/promotional-banner-section.js:189
+#: client/settings/payment-settings/promotional-banner-section.js:201
 msgid "Enable the new Stripe checkout to continue accepting non-card payments"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-settings/promotional-banner-section.js:208
-#: client/settings/payment-settings/promotional-banner-section.js:260
+#: client/settings/payment-settings/promotional-banner-section.js:220
+#: client/settings/payment-settings/promotional-banner-section.js:272
 msgid "New Checkout"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-settings/promotional-banner-section.js:231
-#: client/settings/payment-settings/promotional-banner-section.js:283
+#: client/settings/payment-settings/promotional-banner-section.js:243
+#: client/settings/payment-settings/promotional-banner-section.js:295
 msgid "Dismiss"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-settings/promotional-banner-section.js:245
+#: client/settings/payment-settings/promotional-banner-section.js:257
 msgid "Boost sales and checkout conversion"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payment-settings/promotional-banner-section.js:251
+#: client/settings/payment-settings/promotional-banner-section.js:263
 msgid "Enable the new checkout to boost sales, increase order value, and reach new customers with Klarna, Afterpay, Affirm and Link, a one-click checkout."
 msgstr ""
 
@@ -3909,112 +4179,112 @@ msgid "Use {{testCardNumbersLink}}test card numbers{{/testCardNumbersLink}} to s
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:56
+#: client/settings/payments-and-transactions-section/index.js:64
 msgid "All Other Payment Methods"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:57
+#: client/settings/payments-and-transactions-section/index.js:65
 msgid "All Payment Methods"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:79
+#: client/settings/payments-and-transactions-section/index.js:87
 msgid "Payments settings"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:84
+#: client/settings/payments-and-transactions-section/index.js:92
 msgid "Enable payments via saved cards"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:97
+#: client/settings/payments-and-transactions-section/index.js:117
 msgid "Enable separate credit card form"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:101
+#: client/settings/payments-and-transactions-section/index.js:121
 msgid "If enabled, the credit card form will display separate credit card number field, expiry date field and CVC field."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:108
+#: client/settings/payments-and-transactions-section/index.js:128
 msgid "Transaction preferences"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:115
+#: client/settings/payments-and-transactions-section/index.js:135
 msgid "Customer bank statement"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:123
+#: client/settings/payments-and-transactions-section/index.js:143
 msgid "You can change the description your customers will see on their bank statement in your {{settingsLink}}Stripe account settings{{/settingsLink}}. Set this to a recognizable name – e.g. the legal entity name or website address – to avoid potential disputes and chargebacks."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:133
+#: client/settings/payments-and-transactions-section/index.js:153
 msgid "Full bank statement"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:145
+#: client/settings/payments-and-transactions-section/index.js:165
 msgid "Add customer order number to the bank statement"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:158
+#: client/settings/payments-and-transactions-section/index.js:178
 msgid "We'll use the shortened descriptor in combination with the customer order number. You can change the shortened description in your {{settingsLink}}Stripe account settings{{/settingsLink}}."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:168
+#: client/settings/payments-and-transactions-section/index.js:188
 msgid "Shortened customer bank statement"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:181
+#: client/settings/payments-and-transactions-section/index.js:201
 msgid "Cards & Express Checkouts"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/index.js:194
+#: client/settings/payments-and-transactions-section/index.js:214
 msgid "Cash App Payments"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/manual-capture-control.js:71
+#: client/settings/payments-and-transactions-section/manual-capture-control.js:72
 msgid "Issue an authorization on checkout, and capture later"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/manual-capture-control.js:75
-msgid "Charge must be captured on the order details screen within 7 days of authorization, otherwise the authorization and order will be canceled."
+#: client/settings/payments-and-transactions-section/manual-capture-control.js:77
+msgid "Charge must be captured on the order details screen within 7 days of authorization, otherwise the authorization and order will be canceled. {{learnMoreLink}}Learn more{{/learnMoreLink}}"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/manual-capture-control.js:83
+#: client/settings/payments-and-transactions-section/manual-capture-control.js:92
 msgid "Enable manual capture"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/manual-capture-control.js:96
+#: client/settings/payments-and-transactions-section/manual-capture-control.js:105
 msgid "Enable"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/manual-capture-control.js:102
+#: client/settings/payments-and-transactions-section/manual-capture-control.js:111
 msgid "Are you sure you want to enable manual capture of payments?"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/manual-capture-control.js:109
+#: client/settings/payments-and-transactions-section/manual-capture-control.js:118
 msgid "Only cards, Affirm, Afterpay, and Klarna support manual capture. When enabled, all other payment methods will be hidden from checkout."
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/payments-and-transactions-section/manual-capture-control.js:115
+#: client/settings/payments-and-transactions-section/manual-capture-control.js:124
 msgid "You must capture the payment on the order details screen within 7 days of authorization, otherwise the money will return to the shopper."
 msgstr ""
 
@@ -4114,7 +4384,13 @@ msgid "Connect with Stripe in live mode"
 msgstr ""
 
 #: build/upe_settings.js:1
-#: client/settings/stripe-auth-account/stripe-auth-actions.js:47
+#: client/settings/stripe-auth-account/stripe-auth-actions.js:43
+#: client/settings/stripe-auth-account/stripe-auth-actions.js:51
+msgid "Failed to fetch OAuth URLs"
+msgstr ""
+
+#: build/upe_settings.js:1
+#: client/settings/stripe-auth-account/stripe-auth-actions.js:74
 msgid "An issue occurred generating a connection to Stripe, please ensure your server has a valid SSL certificate and try again.{{br /}}For assistance, refer to our {{Link}}documentation{{/Link}}."
 msgstr ""
 
@@ -4134,75 +4410,83 @@ msgstr ""
 msgid "Webhooks have been manually configured via a webhook secret."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
-#: client/stripe-utils/utils.js:59
+#: client/stripe-utils/utils.js:61
 msgid "The card expiration month is invalid."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
-#: client/stripe-utils/utils.js:63
+#: client/stripe-utils/utils.js:65
 msgid "The card expiration year is invalid."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
-#: client/stripe-utils/utils.js:67
+#: client/stripe-utils/utils.js:69
 msgid "The card security code is invalid."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
-#: client/stripe-utils/utils.js:79
+#: client/stripe-utils/utils.js:81
 msgid "The card security code is incomplete."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
-#: client/stripe-utils/utils.js:83
+#: client/stripe-utils/utils.js:85
 msgid "The card expiration date is incomplete."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
-#: client/stripe-utils/utils.js:91
+#: client/stripe-utils/utils.js:93
 msgid "The card security code is incorrect."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
-#: client/stripe-utils/utils.js:95
+#: client/stripe-utils/utils.js:97
 msgid "The card zip code failed validation."
 msgstr ""
 
+#: build/amazon_pay_settings.js:1
 #: build/upe_blocks.js:1
 #: build/upe_classic.js:1
 #: build/payment_requests_settings.js:1
 #: build/express_checkout.js:1
 #: build/index.js:1
-#: client/stripe-utils/utils.js:99
+#: client/stripe-utils/utils.js:101
 msgid "The card expiration year is in the past"
 msgstr ""
 

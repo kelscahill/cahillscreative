@@ -52,6 +52,16 @@ class Input extends Form implements InputInterface {
 	protected $value;
 
 	/**
+	 * @var bool
+	 */
+	protected $is_readonly = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $is_hidden = false;
+
+	/**
 	 * Input constructor.
 	 *
 	 * @param string $type
@@ -143,6 +153,41 @@ class Input extends Form implements InputInterface {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function is_readonly(): bool {
+		return $this->is_readonly;
+	}
+
+	/**
+	 * @param bool $value
+	 *
+	 * @return InputInterface
+	 */
+	public function set_readonly( bool $value ): InputInterface {
+		$this->is_readonly = $value;
+
+		return $this;
+	}
+	/**
+	 * @param bool $value
+	 *
+	 * @return InputInterface
+	 */
+	public function set_hidden( bool $value ): InputInterface {
+		$this->is_hidden = $value;
+
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_hidden(): bool {
+		return $this->is_hidden;
+	}
+
+	/**
 	 * Return the data used for the input's view.
 	 *
 	 * @return array
@@ -156,6 +201,12 @@ class Input extends Form implements InputInterface {
 			'description' => $this->get_description(),
 			'desc_tip'    => true,
 		];
+
+		if ( $this->is_readonly ) {
+			$view_data['custom_attributes'] = [
+				'readonly' => 'readonly',
+			];
+		}
 
 		return array_merge( parent::get_view_data(), $view_data );
 	}
@@ -207,7 +258,7 @@ class Input extends Form implements InputInterface {
 	public function get_block_attributes(): array {
 		$meta_key = $this->prefix_meta_key( $this->get_id() );
 
-		return array_merge(
+		$block_attributes = array_merge(
 			[
 				'property' => "meta_data.{$meta_key}",
 				'label'    => $this->get_label(),
@@ -215,6 +266,13 @@ class Input extends Form implements InputInterface {
 			],
 			$this->block_attributes
 		);
+
+		// Set boolean disabled property only if it's needed.
+		if ( $this->is_readonly() ) {
+			$block_attributes['disabled'] = true;
+		}
+
+		return $block_attributes;
 	}
 
 	/**

@@ -7,18 +7,18 @@ use Automattic\WooCommerce\GoogleListingsAndAds\API\Google\Query\AdsAssetGroupQu
 use Automattic\WooCommerce\GoogleListingsAndAds\Google\Ads\GoogleAdsClient;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsAwareInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\Options\OptionsAwareTrait;
-use Google\Ads\GoogleAds\Util\V16\ResourceNames;
-use Google\Ads\GoogleAds\V16\Enums\ListingGroupFilterListingSourceEnum\ListingGroupFilterListingSource;
-use Google\Ads\GoogleAds\V16\Enums\AssetGroupStatusEnum\AssetGroupStatus;
-use Google\Ads\GoogleAds\V16\Enums\ListingGroupFilterTypeEnum\ListingGroupFilterType;
-use Google\Ads\GoogleAds\V16\Resources\AssetGroup;
-use Google\Ads\GoogleAds\V16\Resources\AssetGroupListingGroupFilter;
-use Google\Ads\GoogleAds\V16\Services\AssetGroupListingGroupFilterOperation;
-use Google\Ads\GoogleAds\V16\Services\AssetGroupOperation;
-use Google\Ads\GoogleAds\V16\Services\GoogleAdsRow;
-use Google\Ads\GoogleAds\V16\Services\MutateGoogleAdsRequest;
-use Google\Ads\GoogleAds\V16\Services\MutateOperation;
-use Google\Ads\GoogleAds\V16\Services\Client\AssetGroupServiceClient;
+use Google\Ads\GoogleAds\Util\V18\ResourceNames;
+use Google\Ads\GoogleAds\V18\Enums\ListingGroupFilterListingSourceEnum\ListingGroupFilterListingSource;
+use Google\Ads\GoogleAds\V18\Enums\AssetGroupStatusEnum\AssetGroupStatus;
+use Google\Ads\GoogleAds\V18\Enums\ListingGroupFilterTypeEnum\ListingGroupFilterType;
+use Google\Ads\GoogleAds\V18\Resources\AssetGroup;
+use Google\Ads\GoogleAds\V18\Resources\AssetGroupListingGroupFilter;
+use Google\Ads\GoogleAds\V18\Services\AssetGroupListingGroupFilterOperation;
+use Google\Ads\GoogleAds\V18\Services\AssetGroupOperation;
+use Google\Ads\GoogleAds\V18\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V18\Services\MutateGoogleAdsRequest;
+use Google\Ads\GoogleAds\V18\Services\MutateOperation;
+use Google\Ads\GoogleAds\V18\Services\Client\AssetGroupServiceClient;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\ValidationException;
 use Google\Protobuf\FieldMask;
@@ -48,11 +48,6 @@ class AdsAssetGroup implements OptionsAwareInterface {
 	 * @var int
 	 */
 	protected const TEMPORARY_ID = -3;
-
-	/**
-	 *  The page size for the AdsAssetGroupQuery.
-	 */
-	protected const PAGE_SIZE = 1;
 
 	/**
 	 * The Google Ads Client.
@@ -226,7 +221,7 @@ class AdsAssetGroup implements OptionsAwareInterface {
 	}
 
 	/**
-	 * Get Asset Groups for a specific campaign.
+	 * Get Asset Groups for a specific campaign. Limit to first AdsAssetGroup.
 	 *
 	 * @since 2.4.0
 	 *
@@ -240,7 +235,7 @@ class AdsAssetGroup implements OptionsAwareInterface {
 		try {
 			$asset_groups_converted = [];
 
-			$asset_group_results = ( new AdsAssetGroupQuery( [ 'pageSize' => self::PAGE_SIZE ] ) )
+			$asset_group_results = ( new AdsAssetGroupQuery() )
 				->set_client( $this->client, $this->options->get_ads_id() )
 				->add_columns( [ 'asset_group.path1', 'asset_group.path2', 'asset_group.id', 'asset_group.final_urls' ] )
 				->where( 'campaign.id', $campaign_id )
@@ -250,6 +245,7 @@ class AdsAssetGroup implements OptionsAwareInterface {
 			/** @var GoogleAdsRow $row */
 			foreach ( $asset_group_results->getPage()->getIterator() as $row ) {
 				$asset_groups_converted[ $row->getAssetGroup()->getId() ] = $this->convert_asset_group( $row );
+				break; // Limit to only first asset group.
 			}
 
 			if ( $include_assets ) {

@@ -23,6 +23,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * The main class for setting up i18n
  */
 class I18n {
+
+	public function __construct() {
+		add_action( 'init', array( $this, 'load_plugin_textdomain' ), 1 );
+	}
 	/**
 	 * Load the plugin text domain for translation.
 	 *

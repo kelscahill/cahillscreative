@@ -5,6 +5,8 @@
 
 namespace Automattic\WooCommerce\GoogleListingsAndAds;
 
+use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\Conditional;
+use Automattic\WooCommerce\GoogleListingsAndAds\Internal\DependencyManagement\AdminServiceProvider;
 use Automattic\WooCommerce\GoogleListingsAndAds\Internal\DependencyManagement\CoreServiceProvider;
 use Automattic\WooCommerce\GoogleListingsAndAds\Internal\DependencyManagement\DBServiceProvider;
 use Automattic\WooCommerce\GoogleListingsAndAds\Internal\DependencyManagement\GoogleServiceProvider;
@@ -51,6 +53,7 @@ final class Container implements ContainerInterface {
 		JobServiceProvider::class,
 		IntegrationServiceProvider::class,
 		DBServiceProvider::class,
+		AdminServiceProvider::class,
 	];
 
 	/**
@@ -61,18 +64,24 @@ final class Container implements ContainerInterface {
 	private $container;
 
 	/**
-	 * Class constructor.
+	 * Container constructor.
 	 *
 	 * @param LeagueContainer|null $container
 	 */
 	public function __construct( ?LeagueContainer $container = null ) {
 		$this->container = $container ?? new LeagueContainer();
-		$this->container->share( ContainerInterface::class, $this );
+		$this->container->addShared( ContainerInterface::class, $this );
 		$this->container->inflector( ContainerAwareInterface::class )
 			->invokeMethod( 'set_container', [ ContainerInterface::class ] );
 
 		foreach ( $this->service_providers as $service_provider_class ) {
-			$this->container->addServiceProvider( $service_provider_class );
+			$service_provider = new $service_provider_class();
+			$implements       = class_implements( $service_provider );
+			if ( array_key_exists( Conditional::class, $implements ) && ! $service_provider->is_needed() ) {
+				continue;
+			}
+
+			$this->container->addServiceProvider( $service_provider );
 		}
 	}
 

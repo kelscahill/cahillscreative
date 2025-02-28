@@ -11,6 +11,7 @@
 namespace Search_Filter\Fields\Data;
 
 use Search_Filter\Fields\Choice;
+use Search_Filter\Query\Template_Data;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -80,6 +81,12 @@ class Option {
 class Taxonomy_Options {
 
 	/**
+	 * The taxonomy name.
+	 *
+	 * @var string
+	 */
+	private $taxonomy_name = '';
+	/**
 	 * The taxonomy terms.
 	 *
 	 * @var array
@@ -143,6 +150,17 @@ class Taxonomy_Options {
 	private $show_count_brackets = false;
 
 	/**
+	 * The option values with corresponding labels.
+	 *
+	 * Necessary when using hierarchical taxonomies to avoid
+	 * traversing nested options multiple times.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var array
+	 */
+	private $options_labels = array();
+	/**
 	 * Initialise the class.
 	 *
 	 * This is called from the field class.
@@ -150,7 +168,9 @@ class Taxonomy_Options {
 	 * @param array $taxonomy_terms The taxonomy terms.
 	 * @param int   $field_id       The field ID.
 	 */
-	public function init( $taxonomy_terms, $field_id, $show_count = false, $show_count_brackets = false ) {
+	public function init( $taxonomy_name, $taxonomy_terms, $field_id, $show_count = false, $show_count_brackets = false ) {
+
+		$this->taxonomy_name       = $taxonomy_name;
 		$this->taxonomy_terms      = $taxonomy_terms;
 		$this->field_id            = $field_id;
 		$this->show_count          = $show_count;
@@ -171,6 +191,7 @@ class Taxonomy_Options {
 			// We need to expose these for our JS app to use.
 			$this->term_parents[ $term->term_id ] = array();
 			$this->add_term_identifier( $term );
+			$this->add_option_label( $term );
 		}
 	}
 
@@ -181,9 +202,19 @@ class Taxonomy_Options {
 	public function get_all_term_parents() {
 		return $this->term_parents;
 	}
+
 	public function get_all_term_identifiers() {
 		return $this->term_identifiers;
 	}
+
+	public function get_options_labels() {
+		return $this->options_labels;
+	}
+
+	public function add_option_label( $term ) {
+		$this->options_labels[ $term->slug ] = $term->name;
+	}
+
 	/**
 	 * Get the IDs of child terms for a given term.
 	 */
@@ -200,6 +231,7 @@ class Taxonomy_Options {
 		$options = array();
 		foreach ( $this->taxonomy_terms as $term ) {
 			$this->add_term_identifier( $term );
+			$this->add_option_label( $term );
 			$option = $this->create_term_option( $term, 0 );
 			do_action( 'search-filter/fields/data/taxonomy/update_option', $option, null );
 			Choice::add_option_to_array( $options, $option->get(), $this->field_id );
@@ -246,6 +278,8 @@ class Taxonomy_Options {
 			if ( $term->parent > 0 ) {
 				$parent_option = $this->options_by_id[ $term->parent ]; // Note the reference.
 			}
+
+			Template_Data::set_taxonomy_template( $this->taxonomy_name, $depth, $term );
 
 			$this->options_by_id[ $term->term_id ]->update( array( 'depth' => $depth ) );
 

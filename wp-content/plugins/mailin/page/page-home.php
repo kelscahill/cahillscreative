@@ -187,10 +187,8 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 			$smtp_status = SIB_API_Manager::get_smtp_status();
 
 			$home_settings = get_option( SIB_Manager::HOME_OPTION_NAME );
-			// for upgrade to 2.6.0 from old version.
-			if ( ! isset( $home_settings['activate_ma'] ) ) {
-				$home_settings['activate_ma'] = 'no';
-			}
+			$is_ma_active = SIB_Manager::is_ma_active();
+
 			// set default sender info.
 			$senders = SIB_API_Manager::get_sender_lists();
 			if (is_array( $senders)  && (!isset( $home_settings['sender'] ) || (count($senders) == 1 && $home_settings['from_email'] != $senders[0]['from_email']))) {
@@ -353,10 +351,11 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 							<div class="col-md-3">
 								<label class="col-md-5"><input type="radio" name="activate_ma" id="activate_ma_radio_yes" value="yes"
 								<?php
-								checked( $home_settings['activate_ma'], 'yes' );
+								checked( true, $is_ma_active  );
 									?>
 									 >&nbsp;<?php esc_attr_e( 'Yes', 'mailin' ); ?></label>
-								<label class="col-md-5"><input type="radio" name="activate_ma" id="activate_ma_radio_no" value="no" <?php checked( $home_settings['activate_ma'], 'no' ); ?>>&nbsp;<?php esc_attr_e( 'No', 'mailin' ); ?></label>
+								<label class="col-md-5"><input type="radio" name="activate_ma" id="activate_ma_radio_no" value="no" <?php
+									checked( false, $is_ma_active ); ?>>&nbsp;<?php esc_attr_e( 'No', 'mailin' ); ?></label>
 							</div>
 							<div class="col-md-5">
 								<small style="font-style: italic;"><?php esc_attr_e( 'Choose "Yes" if you want to use Brevo Automation to track your website activity', 'mailin' ); ?></small>
@@ -628,16 +627,16 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 		/** Ajax module to change activate marketing automation option */
 		public static function ajax_validate_ma() {
 			check_ajax_referer( 'ajax_sib_admin_nonce', 'security' );
-			$main_settings = get_option( SIB_Manager::MAIN_OPTION_NAME );
+			$general_settings = get_option( SIB_Manager::MAIN_OPTION_NAME, array() );
 			$home_settings = get_option( SIB_Manager::HOME_OPTION_NAME );
-			$ma_key = $main_settings['ma_key'];
-			if ( '' != $ma_key ) {
+			$ma_key = isset( $general_settings['ma_key'] ) ? sanitize_text_field($general_settings['ma_key']) : null;
+			if ( $ma_key !== null && strlen($ma_key) > 0 ) {
 				$option_val = isset( $_POST['option_val'] ) ? sanitize_text_field( wp_unslash( $_POST['option_val'] ) ) : 'no';
 				$home_settings['activate_ma'] = $option_val;
 				update_option( SIB_Manager::HOME_OPTION_NAME, $home_settings );
 				wp_send_json( $option_val );
 			} else {
-				$home_settings['activate_ma'] = 'no';
+				$home_settings['activate_ma'] = 'default';
 				update_option( SIB_Manager::HOME_OPTION_NAME, $home_settings );
 				wp_send_json( 'disabled' );
 			}
@@ -809,7 +808,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 
 			$home_settings = array(
 				'activate_email' => 'no',
-				'activate_ma' => 'no',
+				'activate_ma' => 'default',
 			);
 			update_option( SIB_Manager::HOME_OPTION_NAME, $home_settings );
 
@@ -863,6 +862,8 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 					$apiClient = new SendinblueApiClient();
 					$params["active"] = false;
 					$params["deactivated_at"] = gmdate("Y-m-d\TH:i:s\Z");
+					$params["connection"] = 27;
+					$params["plugin_version"] = SendinblueApiClient::PLUGIN_VERSION;
 					$apiClient->updateInstallationInfo($installationId, $params);
 				}
 			}

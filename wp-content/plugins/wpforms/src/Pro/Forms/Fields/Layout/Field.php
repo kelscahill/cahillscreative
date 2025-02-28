@@ -152,6 +152,7 @@ class Field extends WPForms_Field {
 			'name'    => $name,
 			'value'   => $value,
 			'id'      => absint( $field_id ),
+			'display' => ! empty( $form_data['fields'][ $field_id ]['display'] ) ? $form_data['fields'][ $field_id ]['display'] : 'rows',
 			'columns' => ! empty( $form_data['fields'][ $field_id ]['columns'] ) ? $form_data['fields'][ $field_id ]['columns'] : [],
 			'preset'  => ! empty( $form_data['fields'][ $field_id ]['preset'] ) ? $form_data['fields'][ $field_id ]['preset'] : '50-50',
 			'label'   => ! empty( $form_data['fields'][ $field_id ]['label'] ) ? $form_data['fields'][ $field_id ]['label'] : '',

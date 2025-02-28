@@ -97,15 +97,6 @@ class Plugin_Updater {
 	private $cache_key = '';
 
 	/**
-	 * The API request cache key.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var string
-	 */
-	private $api_request_cache_key = '';
-
-	/**
 	 * The beta version.
 	 *
 	 * @since 3.0.0
@@ -145,7 +136,6 @@ class Plugin_Updater {
 		$this->wp_override           = isset( $_api_data['wp_override'] ) ? (bool) $_api_data['wp_override'] : false;
 		$this->beta                  = ! empty( $this->api_data['beta'] ) ? true : false;
 		$this->cache_key             = 'edd_sl_' . md5( serialize( $this->slug . $this->api_data['license'] . $this->beta ) );
-		$this->api_request_cache_key = 'edd_api_request_' . md5( serialize( $this->slug . $this->api_data['license'] . $this->beta ) );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$this->force_check = isset( $_REQUEST['force-check'] ) ? true : false; // When a user is on `update-core` and presses `force check` make sure we bypass our cache too.
@@ -424,7 +414,7 @@ class Plugin_Updater {
 			),
 		);
 
-		$cache_key = $this->api_request_cache_key;
+		$cache_key = $this->cache_key;
 
 		// Get the transient where we store the api request for this plugin for 24 hours.
 		$edd_api_request_transient = $this->get_cached_version_info( $cache_key );
@@ -743,7 +733,22 @@ class Plugin_Updater {
 	 */
 	public function delete_caches() {
 		delete_option( $this->cache_key );
-		delete_option( $this->api_request_cache_key );
+	}
+
+	/**
+	 * Fetch updates and add them to the cache.
+	 * 
+	 */
+	public function refresh_cache() {
+		$version_info = $this->api_request(
+			'plugin_latest_version',
+			array(
+				'slug' => $this->slug,
+				'beta' => $this->beta,
+			)
+		);
+
+		$this->set_version_info_cache( $version_info );
 	}
 
 	/**

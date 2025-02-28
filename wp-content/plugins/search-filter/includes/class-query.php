@@ -40,11 +40,27 @@ class Query {
 	public static function init() {
 		if ( self::$query_type === 'wp' ) {
 			// Try to be the last thing to attach to the hook.
-			add_action( 'pre_get_posts', array( __CLASS__, 'setup_wp_query' ), 100, 1 );
 			// add_action( 'posts_where', array( __CLASS__, 'setup_wp_query_posts_where' ), 100, 2 );
 			// add_action( 'posts_join', array( __CLASS__, 'setup_wp_query_posts_join' ), 100, 2 );
+			self::attach_pre_get_posts_hooks();
+
+			// Initially attach the hooks.
+			self::attach_pre_get_posts_hooks();
+			// Allow them to be attached/detached via an action.
+			add_action( 'search-filter/query/pre_get_posts/attach', array( __CLASS__, 'attach_pre_get_posts_hooks' ), 10 );
+			add_action( 'search-filter/query/pre_get_posts/detach', array( __CLASS__, 'detach_pre_get_posts_hooks' ), 10 );
+			// Track the query data via the loop data.
 			add_action( 'loop_start', array( __CLASS__, 'track_query_data' ), 10 );
 		}
+	}
+
+	public static function attach_pre_get_posts_hooks() {
+		// Priority must be higher than 20, as that's where we attach things in the selector class.
+		add_action( 'pre_get_posts', array( __CLASS__, 'setup_wp_query' ), 30, 1 );
+	}
+
+	public static function detach_pre_get_posts_hooks() {
+		remove_action( 'pre_get_posts', array( __CLASS__, 'setup_wp_query' ), 30, 1 );
 	}
 
 	/**
@@ -55,7 +71,7 @@ class Query {
 	 * @param \WP_Query $query The WP_Query instance.
 	 */
 	public static function setup_wp_query( $query ) {
-		if ( ! self::is_frontend_query() ) {
+		if ( ! self::is_query_context() ) {
 			return;
 		}
 
@@ -73,7 +89,7 @@ class Query {
 	 * @param \WP_Query $wp_query The WP_Query instance.
 	 */
 	public static function track_query_data( $wp_query ) {
-		if ( ! self::is_frontend_query() ) {
+		if ( ! self::is_query_context() ) {
 			return;
 		}
 
@@ -93,10 +109,11 @@ class Query {
 			// Other queries might try the same, so lets try to get the paged variable by various.
 
 			// First, lets check if the query is paged, if so lets use the variable.
+
 			if ( $wp_query->is_paged() ) {
 				$page = $wp_query->get( 'paged' );
-			} elseif ( ! empty( $page_key ) && isset( $_GET[ $page_key ] ) ) {
-				$page = (int) $_GET[ $page_key ];
+			} elseif ( ! empty( $page_key ) && Util::get_request_var( $page_key ) !== null ) {
+				$page = (int) Util::get_request_var( $page_key );
 			} else {
 				$offset         = $wp_query->get( 'offset' );
 				$posts_per_page = $wp_query->get( 'posts_per_page' );
@@ -122,7 +139,7 @@ class Query {
 	 * @return string The updated WHERE clauses.
 	 */
 	public static function setup_wp_query_posts_where( $where, $query ) {
-		if ( ! self::is_frontend_query() ) {
+		if ( ! self::is_query_context() ) {
 			return;
 		}
 		$query_handler = new \Search_Filter\Query\Handler\Wp( $query );
@@ -138,7 +155,7 @@ class Query {
 	 * @return string The updated JOIN clauses.
 	 */
 	public static function setup_wp_query_posts_join( $join, $query ) {
-		if ( ! self::is_frontend_query() ) {
+		if ( ! self::is_query_context() ) {
 			return;
 		}
 		$query_handler = new \Search_Filter\Query\Handler\Wp( $query );
@@ -153,7 +170,11 @@ class Query {
 	 *
 	 * @return bool
 	 */
-	public static function is_frontend_query() {
+	public static function is_query_context() {
+		$override = apply_filters( 'search-filter/query/is_query_context', false );
+		if ( $override ) {
+			return true;
+		}
 		if ( ! is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 			return true;
 		}

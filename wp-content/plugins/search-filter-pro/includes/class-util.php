@@ -9,6 +9,8 @@
 
 namespace Search_Filter_Pro;
 
+use Search_Filter\Features;
+
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -198,12 +200,52 @@ class Util {
 	 * @param string $message The error message.
 	 */
 	public static function error_log( $message, $level = 'error' ) {
+
+		$log_level       = 'errors';
+		$log_to_database = 'no';
+
+		if ( did_action( 'search-filter/settings/features/init' ) && Features::is_enabled( 'debugMode' ) && class_exists( '\Search_Filter\Debugger' ) ) {
+			$log_level = \Search_Filter\Debugger::get_setting_value( 'logLevel' );
+			if ( $log_level === null ) {
+				$log_level = 'errors';
+			}
+			$log_to_database = \Search_Filter\Debugger::get_setting_value( 'logToDatabase' );
+			if ( $log_to_database === null ) {
+				$log_to_database = 'no';
+			}
+		}
+
+		$log_matrix = array(
+			'errors'   => array( 'error' ),
+			'warnings' => array( 'warning', 'error' ),
+			'all'      => array( 'notice', 'warning', 'error' ),
+		);
+
+		if ( ! in_array( $level, $log_matrix[ $log_level ], true ) ) {
+			return;
+		}
+
+		$pid = '';
+		// Some hosting companies like Kinsta disable this function.
+		if ( function_exists( 'getmypid' ) ) {
+			$pid = getmypid() . ' | ';
+		}
+
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG === true ) {
 			// Translators: %1$s is the process ID, %2$s is the message.
-			$full_message = wp_kses_post( sprintf( __( '%1$s | Search & Filter: %2$s', 'search-filter' ), getmypid(), $message ) );
-
+			$full_message = wp_kses_post( sprintf( '%1$sSearch & Filter Pro: %2$s', $pid, $message ) );
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( $full_message );
+		}
+
+		if ( did_action( 'search-filter/settings/features/init' ) && Features::is_enabled( 'debugMode' ) && $log_to_database === 'yes' && class_exists( '\Search_Filter\Debugger' ) ) {
+			$full_message = sprintf( '%1$sSearch & Filter Pro: %2$s', $pid, $message );
+			\Search_Filter\Debugger::create_log(
+				array(
+					'message' => sanitize_text_field( $full_message ),
+					'level'   => $level,
+				)
+			);
 		}
 	}
 
@@ -226,5 +268,18 @@ class Util {
 			}
 		}
 		return $author_ids;
+	}
+
+	/**
+	 * Check if we're only in the admin, exclude AJAX and REST requests.
+	 *
+	 * @return bool
+	 */
+	public static function is_admin_only() {
+		return is_admin() && ! wp_doing_ajax() && ! wp_is_serving_rest_request() && ! wp_doing_cron();
+	}
+
+	public static function is_frontend_only() {
+		return ! is_admin() && ! wp_doing_ajax() && ! wp_is_serving_rest_request() && ! wp_doing_cron();
 	}
 }

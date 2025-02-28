@@ -21,12 +21,15 @@ use Search_Filter_Pro\Compatibility;
 use Search_Filter_Pro\Core\Dependencies;
 use Search_Filter_Pro\Core\Dependencies\Stubs;
 use Search_Filter_Pro\Core\Extensions;
+use Search_Filter_Pro\Core\License_Server;
+use Search_Filter_Pro\Core\Remote_Notices;
 use Search_Filter_Pro\Core\Update_Manager;
 use Search_Filter_Pro\Core\Upgrader;
 use Search_Filter_Pro\Features;
 use Search_Filter_Pro\Indexer;
 use Search_Filter_Pro\Integrations;
 use Search_Filter_Pro\Rest_API;
+use Search_Filter_Pro\Task_Runner;
 use Search_Filter_Pro\Util;
 
 /**
@@ -105,7 +108,8 @@ class Search_Filter_Pro {
 		$this->plugin_name = 'search-filter-pro';
 		$this->version     = SEARCH_FILTER_PRO_VERSION;
 		$this->strings     = array(
-			'outdated_version' => __( 'Pro features cannot be enabled because the free version is outdated.', 'search-filter-pro' ),
+			'outdated_version' => 'Pro features cannot be enabled because the free version is outdated.',
+			'outdated_recommended_version' => 'The Search & Filter plugin is outdated, upgrade to the latest version for full functionality.',
 		);
 
 		// Needs priority of 0 to load before the free plugin, so we can registers
@@ -120,7 +124,6 @@ class Search_Filter_Pro {
 
 		$this->set_locale();
 		Dependencies::init();
-
 		// Check to see if S&F legacy version from .org is installed - bail otherwise we'll get
 		// a fatal error.
 		if ( Dependencies::has_legacy_base_plugin() ) {
@@ -131,7 +134,7 @@ class Search_Filter_Pro {
 		}
 
 		if ( ! Dependencies::is_search_filter_enabled() ) {
-			if ( is_admin() && ! wp_doing_ajax() ) {
+			if ( Util::is_admin_only() ) {
 				$plugin_admin = new \Search_Filter_Pro\Admin( $this->get_plugin_name(), $this->get_version() );
 
 				// Add notice to WP admin screens.
@@ -139,10 +142,9 @@ class Search_Filter_Pro {
 
 				// Add actions to update / activate the plugin.
 				add_action( 'admin_init', array( $plugin_admin, 'search_filter_actions' ) );
-
-				// Return early if S&F base plugin does not meet the criteria.
-				return;
 			}
+			// Return early if S&F base plugin does not meet the criteria.
+			return;
 		}
 
 		Compatibility::init();
@@ -151,18 +153,17 @@ class Search_Filter_Pro {
 		if ( ! Dependencies::is_search_filter_required_version() ) {
 
 			// Add admin notices to notify the user that the main plugin is missing or outdated.
-			if ( is_admin() && ! wp_doing_ajax() ) {
+			if ( Util::is_admin_only() ) {
 				$plugin_admin = new \Search_Filter_Pro\Admin( $this->get_plugin_name(), $this->get_version() );
-
 				// Add notice to WP admin screens.
 				add_action( 'admin_notices', array( $plugin_admin, 'search_filter_outdated_notice' ) );
-
-				// Log the error.
-				Util::error_log( $this->strings['outdated_version'] );
-
+				
 				// Display admin notice on our own screens.
-				add_action( 'search-filter/core/notices/get_notices', array( $this, 'add_outdated_notice' ) );
+				add_action( 'search-filter/core/notices/get_notices', array( $this, 'add_outdated_recommended_notice' ) );
 			}
+
+			// Log the error.
+			Util::error_log( $this->strings['outdated_version'], 'error' );
 
 			// Load the stubs to prevent fatal errors when upgrading and the base version is still beta.
 			// TODO - remove after 3.1.0 release.
@@ -171,6 +172,21 @@ class Search_Filter_Pro {
 			}
 			// Return early if S&F base plugin does not meet the criteria.
 			return;
+		}
+		if ( ! Dependencies::is_search_filter_recommended_version() ) {
+
+			// Add admin notices to notify the user that the main plugin is missing or outdated.
+			if ( Util::is_admin_only() ) {
+				$plugin_admin = new \Search_Filter_Pro\Admin( $this->get_plugin_name(), $this->get_version() );
+				// Add notice to WP admin screens.
+				add_action( 'admin_notices', array( $plugin_admin, 'search_filter_outdated_recommended_notice' ) );
+				
+				// Display admin notice on our own screens.
+				add_action( 'search-filter/core/notices/get_notices', array( $this, 'add_outdated_recommended_notice' ) );
+			}
+
+			// Log the error.
+			Util::error_log( $this->strings['outdated_recommended_version'], 'error' );
 		}
 
 		$this->init_dependencies();
@@ -194,11 +210,20 @@ class Search_Filter_Pro {
 	public function add_outdated_notice() {
 		// Add notice to our admin screen.
 		// Note: do not add this class via a user directive, because the base plugin might not be enabled.
-		$manage_plugins_link = sprintf( '<a href="%s">%s</a>.', esc_url( admin_url( 'plugins.php' ) ), esc_html__( 'Manage plugins', 'search-filter-pro' ) );
+		$manage_plugins_link = sprintf( '<a href="%s">%s</a>.', esc_url( admin_url( 'update-core.php?force-check=1' ) ), esc_html__( 'Check for updates', 'search-filter-pro' ) );
 		\Search_Filter\Core\Notices::add_notice( $this->strings['outdated_version'] . ' ' . $manage_plugins_link, 'warning', 'search-filter-pro-missing-required-version' );
 
 	}
+	/**
+	 * Add a notice to the admin screen if the free version recommendation is outdated.
+	 */
+	public function add_outdated_recommended_notice() {
+		// Add notice to our admin screen.
+		// Note: do not add this class via a user directive, because the base plugin might not be enabled.
+		$manage_plugins_link = sprintf( '<a href="%s">%s</a>.', esc_url( admin_url( 'update-core.php?force-check=1' ) ), esc_html__( 'Check for updates', 'search-filter-pro' ) );
+		\Search_Filter\Core\Notices::add_notice( $this->strings['outdated_recommended_version'] . ' ' . $manage_plugins_link, 'warning', 'search-filter-pro-missing-recommended-version' );
 
+	}
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
@@ -210,7 +235,6 @@ class Search_Filter_Pro {
 	 */
 	private function set_locale() {
 		$plugin_i18n = new \Search_Filter_Pro\Core\I18n();
-		$plugin_i18n->load_plugin_textdomain();
 	}
 
 	/**
@@ -256,11 +280,14 @@ class Search_Filter_Pro {
 
 		Integrations::init();
 		Features::init();
+		Task_Runner::init(); // Only used to register the test endpoint.
 		Indexer::init();
 
 		Upgrader::init();
 		Update_Manager::init();
+		License_Server::init();
 		Extensions::init();
+		Remote_Notices::init();
 	}
 
 	/**

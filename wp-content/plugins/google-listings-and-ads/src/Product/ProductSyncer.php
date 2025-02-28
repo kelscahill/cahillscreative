@@ -149,7 +149,7 @@ class ProductSyncer implements Service {
 			sprintf(
 				"Submitted %s products:\n%s",
 				count( $updated_products ),
-				json_encode( $updated_products )
+				wp_json_encode( $updated_products )
 			),
 			__METHOD__
 		);
@@ -159,7 +159,7 @@ class ProductSyncer implements Service {
 				sprintf(
 					"%s products failed to sync with Merchant Center:\n%s",
 					count( $invalid_products ),
-					json_encode( $invalid_products )
+					wp_json_encode( $invalid_products )
 				),
 				__METHOD__
 			);
@@ -235,7 +235,7 @@ class ProductSyncer implements Service {
 			sprintf(
 				"Deleted %s products:\n%s",
 				count( $deleted_products ),
-				json_encode( $deleted_products ),
+				wp_json_encode( $deleted_products ),
 			),
 			__METHOD__
 		);
@@ -245,7 +245,7 @@ class ProductSyncer implements Service {
 				sprintf(
 					"Failed to delete %s products from Merchant Center:\n%s",
 					count( $invalid_products ),
-					json_encode( $invalid_products )
+					wp_json_encode( $invalid_products )
 				),
 				__METHOD__
 			);

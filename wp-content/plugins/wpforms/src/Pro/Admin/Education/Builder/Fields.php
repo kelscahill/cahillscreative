@@ -2,7 +2,8 @@
 
 namespace WPForms\Pro\Admin\Education\Builder;
 
-use \WPForms\Admin\Education;
+use WPForms\Admin\Education;
+use WPForms\Helpers\Form;
 
 /**
  * Builder/Fields Education for Pro.
@@ -20,6 +21,7 @@ class Fields extends Education\Builder\Fields {
 
 		add_filter( 'wpforms_builder_fields_buttons', [ $this, 'add_fields' ], 500 );
 		add_filter( 'wpforms_builder_field_button_attributes', [ $this, 'fields_attributes' ], 100, 2 );
+		add_action( 'wpforms_builder_panel_fields_panel_content_title_after', [ $this, 'form_preview_notice' ] );
 
 		if ( ! $this->is_valid_license() ) {
 			add_filter( 'wpforms_builder_fields_buttons', [ $this, 'no_license_fields' ], 501 );
@@ -86,7 +88,7 @@ class Fields extends Education\Builder\Fields {
 	 *
 	 * @return array
 	 */
-	private function fields_add_group_fields( $fields, $group, $nonce ) {
+	private function fields_add_group_fields( $fields, $group, $nonce ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
 
 		$addons_slugs = array_column( $this->addons->get_available(), 'slug' );
 		$group_fields = $fields[ $group ]['fields'];
@@ -100,9 +102,10 @@ class Fields extends Education\Builder\Fields {
 				continue;
 			}
 
-			// Also skip if field is provided by addon which is not available.
-			if ( ! empty( $edu_field['addon'] ) &&
-				 ! in_array( $edu_field['addon'], $addons_slugs, true )
+			// Also skip if field is provided by addon, which is not available.
+			if (
+				! empty( $edu_field['addon'] ) &&
+			    ! in_array( $edu_field['addon'], $addons_slugs, true )
 			) {
 				continue;
 			}
@@ -110,14 +113,29 @@ class Fields extends Education\Builder\Fields {
 			$addon = ! empty( $edu_field['addon'] ) ? $this->addons->get_addon( $edu_field['addon'] ) : [];
 
 			if ( ! empty( $addon ) ) {
+				$addon = wp_parse_args(
+					$addon,
+					[
+						'slug'          => '',
+						'title'         => '',
+						'action'        => '',
+						'url'           => '',
+						'video'         => '',
+						'license_level' => '',
+						'plugin_allow'  => false,
+						'message'       => '',
+					]
+				);
+
 				$edu_field['plugin']      = sprintf( '%1$s/%1$s.php', $addon['slug'] );
-				$edu_field['plugin_name'] = isset( $addon['title'] ) ? $addon['title'] : '';
-				$edu_field['action']      = isset( $addon['action'] ) ? $addon['action'] : '';
-				$edu_field['url']         = isset( $addon['url'] ) && $edu_field['action'] === 'install' ? $addon['url'] : '';
-				$edu_field['video']       = isset( $addon['video'] ) ? $addon['video'] : '';
-				$edu_field['license']     = isset( $addon['license_level'] ) ? $addon['license_level'] : '';
-				$edu_field['allowed']     = isset( $addon['plugin_allow'] ) ? $addon['plugin_allow'] : false;
+				$edu_field['plugin_name'] = $addon['title'];
+				$edu_field['action']      = $addon['action'];
+				$edu_field['url']         = $edu_field['action'] === 'install' ? $addon['url'] : '';
+				$edu_field['video']       = $addon['video'];
+				$edu_field['license']     = $addon['license_level'];
+				$edu_field['allowed']     = $addon['plugin_allow'];
 				$edu_field['nonce']       = $nonce;
+				$edu_field['message']     = $addon['message'];
 			}
 
 			$fields[ $group ]['fields'][] = $edu_field;
@@ -136,11 +154,11 @@ class Fields extends Education\Builder\Fields {
 	 *
 	 * @return array Attributes array.
 	 */
-	public function fields_attributes( $atts, $field ) {
+	public function fields_attributes( $atts, $field ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
 
 		if ( empty( $field['name_en'] ) && ! empty( $field['type'] ) ) {
 			$edu_field        = $this->fields->get_field( $field['type'] );
-			$field['name_en'] = isset( $edu_field['name_en'] ) ? $edu_field['name_en'] : '';
+			$field['name_en'] = $edu_field['name_en'] ?? '';
 		}
 
 		$atts['data']['utm-content'] = ! empty( $field['name_en'] ) ? $field['name_en'] : '';
@@ -153,8 +171,9 @@ class Fields extends Education\Builder\Fields {
 			esc_html__( '%s field', 'wpforms' ),
 			$field['name']
 		);
-		$atts['data']['action']     = $field['action'];
-		$atts['data']['nonce']      = wp_create_nonce( 'wpforms-admin' );
+
+		$atts['data']['action'] = $field['action'];
+		$atts['data']['nonce']  = wp_create_nonce( 'wpforms-admin' );
 
 		if ( ! empty( $field['plugin_name'] ) ) {
 			$atts['data']['name'] = ! preg_match( '/addon$/i', $field['plugin_name'] ) ?
@@ -171,6 +190,10 @@ class Fields extends Education\Builder\Fields {
 
 		if ( ! empty( $field['url'] ) ) {
 			$atts['data']['url'] = $field['url'];
+		}
+
+		if ( ! empty( $field['message'] ) ) {
+			$atts['data']['message'] = $field['message'];
 		}
 
 		if ( ! empty( $field['video'] ) ) {
@@ -228,5 +251,39 @@ class Fields extends Education\Builder\Fields {
 		$atts['class'][]        = 'education-modal';
 
 		return $atts;
+	}
+
+	/**
+	 * The form preview addon fields notice.
+	 *
+	 * @since 1.9.4
+	 *
+	 * @param array $form_data Form data.
+	 */
+	public function form_preview_notice( array $form_data ): void {
+
+		$dismissed  = get_user_meta( get_current_user_id(), 'wpforms_dismissed', true );
+		$edu_addons = Form::get_form_addons_edu_data( $form_data );
+
+		// Check the form has addon fields OR if not dismissed.
+		if ( ! empty( $dismissed['edu-addon-fields-form-preview-notice'] ) || empty( $edu_addons ) ) {
+			return;
+		}
+
+		$actions = wp_list_pluck( $edu_addons, 'action' );
+
+		$args = [
+			'class'           => 'wpforms-alert-warning',
+			'title'           => esc_html__( 'Your Form Contains Fields From Inactive Addons', 'wpforms' ),
+			'content'         => esc_html__( 'They will still be visible in the form preview, but will not be present in the published form.', 'wpforms' ),
+			'dismiss_section' => 'addon-fields-form-preview-notice',
+		];
+
+		if ( in_array( 'incompatible', $actions, true ) ) {
+			$args['class'] = 'wpforms-alert-error';
+			$args['title'] = esc_html__( 'Your Form Contains Fields From Incompatible Addons', 'wpforms' );
+		}
+
+		$this->print_form_preview_notice( $args );
 	}
 }

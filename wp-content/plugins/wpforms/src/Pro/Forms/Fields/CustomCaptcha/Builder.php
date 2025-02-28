@@ -87,8 +87,8 @@ class Builder {
 	 *
 	 * @since 1.8.7
 	 *
-	 * @param bool  $required Required status, true is required.
-	 * @param array $field    Field settings.
+	 * @param bool|mixed $required Required status, true is required.
+	 * @param array      $field    Field settings.
 	 *
 	 * @return bool
 	 */
@@ -98,7 +98,7 @@ class Builder {
 			return true;
 		}
 
-		return $required;
+		return (bool) $required;
 	}
 
 	/**
@@ -106,13 +106,15 @@ class Builder {
 	 *
 	 * @since 1.8.7
 	 *
-	 * @param array $form Form array, usable with wp_update_post.
-	 * @param array $data Data retrieved from $_POST and processed.
-	 * @param array $args Update form arguments.
+	 * @param array|mixed $form Form array, usable with wp_update_post.
+	 * @param array       $data Data retrieved from $_POST and processed.
+	 * @param array       $args Update form arguments.
 	 *
 	 * @return array
 	 */
 	public function save_form( $form, $data, $args ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+
+		$form = (array) $form;
 
 		$form_data = json_decode( stripslashes( $form['post_content'] ), true );
 

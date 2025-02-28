@@ -128,8 +128,6 @@ class Scripts {
 	 * @return string The URL path to the assets.
 	 */
 	public static function get_admin_assets_url() {
-		// TODO - use wp function for getting the url (rather than SEARCH_FILTER_URL)
-		// eg - plugin_dir_url( dirname( __FILE__ ) ) . 'assets/css/vendor/flatpickr.css' ).
 		$assets_url = SEARCH_FILTER_URL . 'assets/';
 		if ( defined( 'SEARCH_FILTER_ADMIN_ASSETS_URL' ) ) {
 			$assets_url = SEARCH_FILTER_ADMIN_ASSETS_URL;
@@ -153,7 +151,7 @@ class Scripts {
 	 *
 	 * @param array $preload_paths The paths to preload.
 	 */
-	public static function preload_api_requests( $preload_paths ) {
+	public static function preload_api_requests( $preload_paths, $script_handle = 'search-filter-admin' ) {
 		/* Copied from core - wp-includes/block-editor.php */
 
 		// Restore the global $post as it was before API preloading.
@@ -172,11 +170,28 @@ class Scripts {
 		$backup_wp_styles   = ! empty( $wp_styles ) ? clone $wp_styles : $wp_styles;
 		$backup_post_id     = $post_id;
 
-		$preload_data = array_reduce(
+		$all_preload_data = array_reduce(
 			$preload_paths,
 			'rest_preload_api_request',
 			array()
 		);
+
+		// Split the data into regular preload data (the WP way) and our settings data, for the
+		// processed settings.
+		$preload_data            = array();
+		$preloaded_settings_data = array();
+
+		foreach ( $all_preload_data as $key => $value ) {
+			// If the key starts with '/search-filter/v1/settings/options/`
+			if ( strpos( $key, '/search-filter/v1/settings/options/' ) === 0 ) {
+				// Don't an apiFetch middleware to preload this data.
+				$preloaded_settings_data[ $key ] = $value;
+			} else {
+				// All other data should go through the middleware as usual.
+				$preload_data[ $key ] = $value;
+			}
+		}
+
 		//phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$post = $backup_global_post;
 		//phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
@@ -186,21 +201,23 @@ class Scripts {
 		//phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$post_id = $backup_post_id;
 
-		wp_add_inline_script(
-			'search-filter-admin',
-			sprintf(
-				'wp.apiFetch.use( searchAndFilter.admin.apiFetch.createPreloadingMiddleware( %s ) );',
-				wp_json_encode( $preload_data )
-			),
-			'after'
-		);
+		if ( ! empty( $preload_data ) ) {
+			wp_add_inline_script(
+				$script_handle,
+				sprintf(
+					'wp.apiFetch.use( wp.apiFetch.createPreloadingMiddleware( %s ) );',
+					wp_json_encode( $preload_data )
+				),
+				'after'
+			);
+		}
 
-		// We need to track which routes are preloaded so we can start to figure out
-		// which ones to bypass if needed.
-		wp_add_inline_script(
-			'search-filter-admin',
-			'window.searchAndFilter.admin.apiFetch.preloadedRoutes =  ' . wp_json_encode( $preload_paths ),
-			'after'
-		);
+		if ( ! empty( $preloaded_settings_data ) ) {
+			wp_add_inline_script(
+				$script_handle,
+				'window.searchAndFilter.admin.preload.routeData =  ' . wp_json_encode( $preloaded_settings_data ),
+				'after'
+			);
+		}
 	}
 }

@@ -173,6 +173,9 @@ class Frontend {
 			return $form_data;
 		}
 
+		// Populate conditional settings to the fields inside the layout fields.
+		$form_data = $process->populate_layout_conditional_settings( $form_data );
+
 		$this->form_data = $process->add_repeater_child_fields_to_form_data( $form_data, $this->populate_entry );
 		$this->form_data = $process->move_child_fields_to_repeater_field( $this->form_data );
 
@@ -184,15 +187,17 @@ class Frontend {
 	 *
 	 * @since 1.8.9
 	 *
-	 * @param array $properties Field properties.
-	 * @param array $field      Field settings.
-	 * @param array $form_data  Form data and settings.
+	 * @param array|mixed $properties Field properties.
+	 * @param array       $field      Field settings.
+	 * @param array       $form_data  Form data and settings.
 	 *
 	 * @return array
 	 * @noinspection PhpMissingParamTypeInspection
 	 * @noinspection PhpUnusedParameterInspection
 	 */
 	public function field_properties( $properties, $field, $form_data ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+
+		$properties = (array) $properties;
 
 		$display  = $field['display'] ?? $this->field_obj->defaults['display'];
 		$preset   = $field['preset'] ?? $this->field_obj->defaults['preset'];

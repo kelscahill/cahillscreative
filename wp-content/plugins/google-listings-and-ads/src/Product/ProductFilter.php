@@ -22,7 +22,7 @@ class ProductFilter implements Service {
 	protected $product_helper;
 
 	/**
-	 * ProductRepository constructor.
+	 * ProductFilter constructor.
 	 *
 	 * @param ProductHelper $product_helper
 	 */

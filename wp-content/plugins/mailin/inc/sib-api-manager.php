@@ -59,16 +59,6 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 				if ($client->getLastResponseCode() == 200) {
 					$status = $account['relay']['enabled'] ? 'enabled' : 'disabled';
 					set_transient( 'sib_smtp_status_' . md5( SIB_Manager::$access_key ), $status, self::DELAYTIME );
-
-					// get Marketing Automation API key.
-					if ( isset( $account['marketingAutomation']['enabled'] ) && true == $account['marketingAutomation']['enabled'] ) {
-						$ma_key = $account['marketingAutomation']['key'];
-					} else {
-						$ma_key = '';
-					}
-					$general_settings = get_option( SIB_Manager::MAIN_OPTION_NAME, array() );
-					$general_settings['ma_key'] = $ma_key;
-					update_option( SIB_Manager::MAIN_OPTION_NAME, $general_settings );
 				}
 			}
 			return $status;

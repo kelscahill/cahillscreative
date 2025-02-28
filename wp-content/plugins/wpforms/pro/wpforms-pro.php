@@ -16,6 +16,8 @@ use WPForms\Admin\Builder\TemplateSingleCache;
 use WPForms\Admin\Builder\TemplatesCache;
 use WPForms\Db\Payments\Meta as PaymentsMeta;
 use WPForms\Db\Payments\Payment;
+use WPForms\Pro\Db\Files\ProtectedFiles;
+use WPForms\Pro\Db\Files\Restrictions;
 use WPForms\Helpers\DB;
 use WPForms\Integrations\UsageTracking\UsageTracking;
 use WPForms\Logger\Repository;
@@ -36,13 +38,15 @@ class WPForms_Pro {
 	 * @since 1.9.0
 	 */
 	const CUSTOM_TABLES = [
-		'wpforms_entries'      => WPForms_Entry_Handler::class,
-		'wpforms_entry_fields' => WPForms_Entry_Fields_Handler::class,
-		'wpforms_entry_meta'   => WPForms_Entry_Meta_Handler::class,
-		'wpforms_payments'     => Payment::class,
-		'wpforms_payment_meta' => PaymentsMeta::class,
-		'wpforms_tasks_meta'   => TasksMeta::class,
-		'wpforms_logs'         => Repository::class,
+		'wpforms_entries'           => WPForms_Entry_Handler::class,
+		'wpforms_entry_fields'      => WPForms_Entry_Fields_Handler::class,
+		'wpforms_entry_meta'        => WPForms_Entry_Meta_Handler::class,
+		'wpforms_logs'              => Repository::class,
+		'wpforms_payment_meta'      => PaymentsMeta::class,
+		'wpforms_payments'          => Payment::class,
+		'wpforms_protected_files'   => ProtectedFiles::class,
+		'wpforms_file_restrictions' => Restrictions::class,
+		'wpforms_tasks_meta'        => TasksMeta::class,
 	];
 
 	/**
@@ -67,7 +71,12 @@ class WPForms_Pro {
 
 		// Plugin Updater API.
 		if ( ! defined( 'WPFORMS_UPDATER_API' ) ) {
-			define( 'WPFORMS_UPDATER_API', 'https://wpforms.com/license-api' );
+			/**
+			 * Define the WPForms Updater API URL.
+			 *
+			 * @since 1.0.0
+			 */
+			define( 'WPFORMS_UPDATER_API', 'https://wpformsapi.com/license/v1' );
 		}
 	}
 
@@ -395,16 +404,20 @@ class WPForms_Pro {
 	 */
 	public function get_updater_response_from_cache( $response, string $action, array $body ) {
 
-		if ( ! isset( $body['tgm-updater-plugin'] ) || $body['tgm-updater-plugin'] !== 'wpforms' ) {
+		$update_cache_obj = wpforms()->obj( 'license_api_plugin_update_cache' );
+		$info_cache_obj   = wpforms()->obj( 'license_api_plugin_info_cache' );
+		$slug             = (string) ( $body['tgm-updater-plugin'] ?? '' );
+
+		if ( ! $update_cache_obj || ! $info_cache_obj || ! $slug ) {
 			return $response;
 		}
 
 		if ( $action === 'get-plugin-update' ) {
-			return (object) wpforms()->obj( 'license_api_plugin_update_cache' )->get();
+			return (object) $update_cache_obj->get_by_slug( $slug );
 		}
 
-		if ( $action === 'get-plugin-info' ) {
-			return (object) wpforms()->obj( 'license_api_plugin_info_cache' )->get();
+		if ( $action === 'get-plugin-info' && $slug === 'wpforms' ) {
+			return (object) $info_cache_obj->get();
 		}
 
 		return $response;
@@ -628,7 +641,7 @@ class WPForms_Pro {
 			$output .= '<button id="wpforms-setting-license-key-verify" class="wpforms-btn wpforms-btn-md wpforms-btn-blue ' . $class . '">' . esc_html__( 'Verify Key', 'wpforms' ) . '</button>';
 		}
 
-		// Skip, in case license did not expire.
+		// Skip, in case the license did not expire.
 		if ( $has_errors && $license->is_expired() ) {
 			$renew_url = wpforms_utm_link( 'https://wpforms.com/account/licenses/', 'settings-license', 'Renew License CTA' );
 			$output   .= '<a href="' . esc_url( $renew_url ) . '" id="wpforms-setting-license-key-renew" class="wpforms-btn wpforms-btn-md wpforms-btn-red wpforms-license-key-deactivate-remove" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Renew License', 'wpforms' ) . '</a>';
@@ -814,18 +827,20 @@ class WPForms_Pro {
 			$settings['general'],
 			[
 				'gdpr-disable-uuid'    => [
-					'id'     => 'gdpr-disable-uuid',
-					'name'   => esc_html__( 'Disable User Cookies', 'wpforms' ),
-					'desc'   => esc_html__( 'Disable user tracking cookies. This will disable the Related Entries feature and the Form Abandonment addon.', 'wpforms' ),
-					'type'   => 'toggle',
-					'status' => true,
+					'id'        => 'gdpr-disable-uuid',
+					'name'      => esc_html__( 'Disable User Cookies', 'wpforms' ),
+					'desc'      => esc_html__( 'Disable user tracking cookies. This will disable the Related Entries feature and the Form Abandonment addon.', 'wpforms' ),
+					'type'      => 'toggle',
+					'is_hidden' => ! wpforms_setting( 'gdpr' ),
+					'status'    => true,
 				],
 				'gdpr-disable-details' => [
-					'id'     => 'gdpr-disable-details',
-					'name'   => esc_html__( 'Disable User Details', 'wpforms' ),
-					'desc'   => esc_html__( 'Disable storage IP addresses and User Agent on all forms. If unchecked, then this can be managed on a form-by-form basis inside the form builder under Settings → General', 'wpforms' ),
-					'type'   => 'toggle',
-					'status' => true,
+					'id'        => 'gdpr-disable-details',
+					'name'      => esc_html__( 'Disable User Details', 'wpforms' ),
+					'desc'      => esc_html__( 'Disable storage IP addresses and User Agent on all forms. If unchecked, then this can be managed on a form-by-form basis inside the form builder under Settings → General', 'wpforms' ),
+					'type'      => 'toggle',
+					'is_hidden' => ! wpforms_setting( 'gdpr' ),
+					'status'    => true,
 				],
 			],
 			'gdpr'
@@ -862,7 +877,7 @@ class WPForms_Pro {
 	}
 
 	/**
-	 * Save entry to database.
+	 * Save entry to the database.
 	 *
 	 * @since 1.2.1
 	 *
@@ -1124,7 +1139,7 @@ class WPForms_Pro {
 			$from_name_after = apply_filters( 'wpforms_builder_notifications_from_name_after', '', $settings->form_data, $id );
 
 			/**
-			 * Allow filtering of text after the `From Email` field.
+			 * Allow filtering of a text after the `From Email` field.
 			 *
 			 * @since 1.2.3
 			 * @since 1.7.6 Added $form_data and $id arguments.
@@ -1284,7 +1299,7 @@ class WPForms_Pro {
 						esc_html__( 'From Email', 'wpforms' ),
 						// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
 						/**
-						 * Allow modifying the "From Email" field settings in the builder on Settings > Notifications panel.
+						 * Allow modifying the "From Email" field settings in the builder on the Settings > Notifications panel.
 						 *
 						 * @since 1.7.6
 						 *
@@ -1539,6 +1554,7 @@ class WPForms_Pro {
 							'smarttags'   => [
 								'type' => 'all',
 							],
+							'location'    => 'confirmations',
 						]
 					);
 
@@ -1666,7 +1682,7 @@ class WPForms_Pro {
 	}
 
 	/**
-	 * Modify javascript `wpforms_settings` properties on the site front end.
+	 * Modify JavaScript `wpforms_settings` properties on the site front end.
 	 *
 	 * @since 1.4.6
 	 *
@@ -1835,7 +1851,7 @@ class WPForms_Pro {
 	}
 
 	/**
-	 * Re-create plugin custom tables if don't exist.
+	 * Re-create plugin custom tables if they don't exist.
 	 *
 	 * @since 1.5.9
 	 * @deprecated 1.9.0
@@ -1863,7 +1879,7 @@ class WPForms_Pro {
 	 *
 	 * @since 1.6.4
 	 */
-	private function allow_wp_auto_update_plugins() {
+	private function allow_wp_auto_update_plugins() { // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks
 
 		// If license wasn't found. Is it the Lite version?
 		if ( ! wpforms_get_license_type() ) {
