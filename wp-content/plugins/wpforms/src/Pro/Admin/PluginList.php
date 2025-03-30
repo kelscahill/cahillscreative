@@ -21,14 +21,15 @@ class PluginList {
 	 * License Statuses.
 	 *
 	 * @since 1.8.6
-	 *
-	 * @var string
+	 * @since 1.9.4.2 Added new `limit_reached` and `flagged` statuses.
 	 */
-	const LICENSE_STATUS_EMPTY    = 'empty';
-	const LICENSE_STATUS_VALID    = 'valid';
-	const LICENSE_STATUS_EXPIRED  = 'expired';
-	const LICENSE_STATUS_DISABLED = 'disabled';
-	const LICENSE_STATUS_INVALID  = 'invalid';
+	const LICENSE_STATUS_EMPTY         = 'empty';
+	const LICENSE_STATUS_VALID         = 'valid';
+	const LICENSE_STATUS_EXPIRED       = 'expired';
+	const LICENSE_STATUS_DISABLED      = 'disabled';
+	const LICENSE_STATUS_INVALID       = 'invalid';
+	const LICENSE_STATUS_LIMIT_REACHED = 'limit_reached';
+	const LICENSE_STATUS_FLAGGED       = 'flagged';
 
 	/**
 	 * Plugin slug.
@@ -479,7 +480,7 @@ class PluginList {
 	 *
 	 * @return string
 	 */
-	private function get_license_status(): string {
+	private function get_license_status(): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( ! is_null( $this->license_status ) ) {
 			return $this->license_status;
@@ -504,6 +505,12 @@ class PluginList {
 			$this->license_status;
 		$this->license_status = wpforms_setting( 'is_invalid', false, 'wpforms_license' ) ?
 			self::LICENSE_STATUS_INVALID :
+			$this->license_status;
+		$this->license_status = wpforms_setting( 'is_limit_reached', false, 'wpforms_license' ) ?
+			self::LICENSE_STATUS_LIMIT_REACHED :
+			$this->license_status;
+		$this->license_status = wpforms_setting( 'is_flagged', false, 'wpforms_license' ) ?
+			self::LICENSE_STATUS_FLAGGED :
 			$this->license_status;
 
 		return $this->license_status;
@@ -630,6 +637,28 @@ class PluginList {
 
 		$message = $this->is_using_latest_version() ? '' : $this->get_new_version_available_notice() . '<br>';
 
+		$status_messages = [
+			self::LICENSE_STATUS_EXPIRED       => esc_html__( 'Your WPForms Pro license is expired.', 'wpforms' ),
+			self::LICENSE_STATUS_DISABLED      => esc_html__( 'Your WPForms Pro license is disabled.', 'wpforms' ),
+			self::LICENSE_STATUS_INVALID       => esc_html__( 'Your WPForms Pro license is invalid.', 'wpforms' ),
+			self::LICENSE_STATUS_LIMIT_REACHED => esc_html__( 'Your WPForms Pro license has no activations left.', 'wpforms' ),
+			self::LICENSE_STATUS_FLAGGED       => esc_html__( 'Your WPForms Pro license needs support.', 'wpforms' ),
+		];
+
+		$status_message = $status_messages[ $status ] ?? '';
+
+		if ( $status === self::LICENSE_STATUS_FLAGGED ) {
+			$flagged_msg = sprintf( /* translators: %s - WPForms Pro key support link. */
+				__(
+					'Before you can activate this key, we\'d like to check in with you. Please <a href="%1$s" target="_blank" rel="noopener noreferrer">reach out to support here.</a>',
+					'wpforms'
+				),
+				esc_url( wpforms_utm_link( 'https://wpforms.com/account/key-support/', 'all-plugins', 'Verify Key - Reach out to Support' ) )
+			);
+
+			return "$message<span class='wpforms-wrong-license'>$status_message</span> $flagged_msg";
+		}
+
 		$renew_msg = sprintf( /* translators: %s - WPForms Pro renew link. */
 			__(
 				'<a target="_blank" href="%1$s" rel="noopener noreferrer">Renew now</a> to receive new features, updates, and support.',
@@ -637,14 +666,6 @@ class PluginList {
 			),
 			esc_url( wpforms_utm_link( 'https://wpforms.com/account/licenses/', 'plugins list expired license', 'WPForms' ) )
 		);
-
-		$status_messages = [
-			self::LICENSE_STATUS_EXPIRED  => esc_html__( 'Your WPForms Pro license is expired.', 'wpforms' ),
-			self::LICENSE_STATUS_DISABLED => esc_html__( 'Your WPForms Pro license is disabled.', 'wpforms' ),
-			self::LICENSE_STATUS_INVALID  => esc_html__( 'Your WPForms Pro license is invalid.', 'wpforms' ),
-		];
-
-		$status_message = $status_messages[ $status ] ?? '';
 
 		return "$message<span class='wpforms-wrong-license'>$status_message</span> $renew_msg";
 	}

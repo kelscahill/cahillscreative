@@ -355,6 +355,30 @@
   }
 }
 
+.wc-proceed-to-checkout {
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: $space;
+  margin-top: $space;
+  flex-direction: column;
+
+  .button {
+    margin-top: 0;
+  }
+}
+
+#wc-stripe-express-checkout-element {
+  margin: 0 !important;
+
+  > * {
+    width: 100%;
+    height: 40px;
+    border-radius: 40px;
+    overflow: hidden;
+  }
+}
+
 .woocommerce-thankyou-order-details {
   margin-left: $space-double;
   line-height: 1.6;

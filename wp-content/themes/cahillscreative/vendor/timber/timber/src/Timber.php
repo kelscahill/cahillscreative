@@ -42,7 +42,7 @@ use WP_User;
  */
 class Timber
 {
-    public static $version = '2.3.0'; // x-release-please-version
+    public static $version = '2.3.1'; // x-release-please-version
 
     public static $locations;
 
@@ -1076,7 +1076,7 @@ class Timber
         }
 
         $locations = \array_flip(static::get_menu_locations());
-        return $locations[$term->term_id] ?? null;
+        return $locations[$term_id] ?? null;
     }
 
     /**

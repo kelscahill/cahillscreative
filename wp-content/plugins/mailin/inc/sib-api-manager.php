@@ -77,12 +77,16 @@ if ( ! class_exists( 'SIB_API_Manager' ) ) {
 					'attributes' => array(
 						'normal_attributes' => array(),
 						'category_attributes' => array(),
+						'multiple_choice_attributes' => array(),
 					)
 				);
 
 				if (!empty($attributes) && count( $attributes ) > 0 ) {
 					foreach ($attributes as $key => $value) {
-						if ($value["category"] == "normal") {
+						if ($value["type"] == "multiple-choice") {
+							$attrs['attributes']['multiple_choice_attributes'][] = $value;
+						}
+						elseif ($value["category"] == "normal") {
 							$attrs['attributes']['normal_attributes'][] = $value;
 						}
 						elseif ($value["category"] == "category") {

@@ -22,7 +22,7 @@
     {% if image.height %}
       height="{{ image.height }}"
     {% endif %}
-    data-pin-media="{{ image.src|towebp|resize(1200, auto) }}"
+    data-pin-media="{{ image.src|resize(1200, auto) }}"
     {% if post.link or post.affiliate_link %}
       data-pin-url="{{ post.affiliate_link ? post.affiliate_link : post.link }}"
     {% endif %}

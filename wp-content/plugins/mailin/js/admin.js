@@ -112,6 +112,8 @@ $jQ(document).ready(function(){
 
     var category_attributes = [];
 
+    var multiple_choice_attributes = [];
+
     function isValidEmailAddress(emailAddress) {
 
         var pattern = new RegExp(/^[#&*\/=?^{!}~'_a-z0-9-\+]+([#&*\/=?^{!}~'_a-z0-9-\+]+)*(\.[#&*\/=?^{!}~'_a-z0-9-\+]+)*[.]?@[_a-z0-9-]+(\.[_a-z0-9-]+)*(\.[a-z0-9]{2,10})$/);
@@ -144,6 +146,14 @@ $jQ(document).ready(function(){
                     attr_text = attr_name;
                 }
             });
+
+            $jQ.each(multiple_choice_attributes, function(index, value) {
+                if (value['name'] == attr_val) {
+                    attr_type = value['type'];
+                    attr_name = value['name'];
+                    attr_text = attr_name;
+                }
+            });
         }
 
         // generate attribute html
@@ -158,6 +168,7 @@ $jQ(document).ready(function(){
         $jQ('.sib-attr-other').hide();
         $jQ('.sib-attr-normal').hide();
         $jQ('.sib-attr-category').hide();
+        $jQ('.sib-attr-multiple-choice').hide();
         $jQ('#sib_field_required').removeAttr('checked');
         var dateformat = $jQ('.sib-dateformat').val();
         switch(attr_type)
@@ -179,6 +190,9 @@ $jQ(document).ready(function(){
                 break;
             case 'category':
                 $jQ('.sib-attr-category').show();
+                break;
+            case 'multiple-choice':
+                $jQ('.sib-attr-multiple-choice').show();
                 break;
             case 'submit':
                 $jQ('.sib-attr-other').show();
@@ -213,6 +227,9 @@ $jQ(document).ready(function(){
             else {
                 field_html += '    <div style="display:block;"><label class="sib-' + attr_name + '-area">' + field_label + '</label></div> \n';
             }
+        }
+        else if ((field_label != '') && (attr_type == 'multiple-choice')) {
+            field_html += '    <label class="sib-' + attr_name + '-area">' + field_label + '</label> \n';
         }
         else if((field_label != '') && (attr_type != 'submit')) {
             field_html += '    <label class="sib-' + attr_name + '-area">' + field_label + '</label> \n';
@@ -315,6 +332,36 @@ $jQ(document).ready(function(){
                         }
                         field_html += '>' + value['label'] + '</div> \n';
                     }
+                });
+                if (field_type == 'select') {
+                    field_html += '    </select> \n';
+                }
+                break;
+            case 'multiple-choice':
+                var choices = [];
+                $jQ.each(multiple_choice_attributes, function(index, value) {
+                    if (value['name'] == attr_name) {
+                        choices = value['multiCategoryOptions'];
+                    }
+                });
+                if (field_type == 'select') {
+                    field_html += '    <select class="sib-' + attr_name + '-area" name="' + attr_name + '[]" multiple="true" ';
+                    if (field_required == true) {
+                        field_html += 'required="required" ';
+                    }
+                    field_html += '> \n';
+                }
+                $jQ.each(choices, function(index, value) {
+                    if (field_type == 'select') {
+                        field_html += '      <option value="' + value + '">' + value + '</option> \n';
+                    } else {
+                        field_html += '    <div style="display:block;"><input type="checkbox" class="sib-' + attr_name + '-area" name="' + attr_name + '[]" value="' + value + '" ';
+                        if (field_required == true) {
+                            field_html += 'required="required" ';
+                        }
+                        field_html += '>' + value + '</div> \n';
+                    }
+                    
                 });
                 if (field_type == 'select') {
                     field_html += '    </select> \n';
@@ -469,10 +516,12 @@ $jQ(document).ready(function(){
 
             normal_attributes = respond.attrs.attributes.normal_attributes;
             category_attributes = respond.attrs.attributes.category_attributes;
+            multiple_choice_attributes = respond.attrs.attributes.multiple_choice_attributes;
             var attr_email_name = $jQ('#sib_hidden_email').attr('data-text');
             var message_1 = $jQ('#sib_hidden_message_1').val();
             var message_2 = $jQ('#sib_hidden_message_2').val();
             var message_3 = $jQ('#sib_hidden_message_3').val();
+            var message_multichoice = $jQ('#sib_hidden_message_multichoice').val();
             var message_4 = $jQ('#sib_hidden_message_4').val();
             var message_5 = $jQ('#sib_hidden_message_5').val();
             var select_html = '<select class="col-md-12" id="sib_sel_attribute">' +
@@ -486,6 +535,11 @@ $jQ(document).ready(function(){
             select_html += '<optgroup label="' + message_3 + '">';
             $jQ.each(category_attributes, function(index, value) {
                 if(value['name'] == 'DOUBLE_OPT-IN') return;
+                select_html += '<option value="' + value['name'] + '">' + value['name'] + '</option>';
+            });
+            select_html += '</optgroup>';
+            select_html += '<optgroup label="' + message_multichoice + '">';
+            $jQ.each(multiple_choice_attributes, function(index, value) {
                 select_html += '<option value="' + value['name'] + '">' + value['name'] + '</option>';
             });
             select_html += '</optgroup>';
@@ -518,6 +572,14 @@ $jQ(document).ready(function(){
                     });
 
                     $jQ.each(category_attributes, function(index, value) {
+                        if (value['name'] == attr_val) {
+                            attr_type = value['type'];
+                            attr_name = value['name'];
+                            attr_text = attr_name;
+                        }
+                    });
+
+                    $jQ.each(multiple_choice_attributes, function(index, value) {
                         if (value['name'] == attr_val) {
                             attr_type = value['type'];
                             attr_name = value['name'];

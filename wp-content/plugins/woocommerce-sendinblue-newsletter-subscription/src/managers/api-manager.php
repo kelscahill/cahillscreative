@@ -67,7 +67,10 @@ class ApiManager
         add_filter('woocommerce_update_cart_action_cart_updated', array($cart_events_manager, 'handle_cart_update_event' ), 10, 1);
         add_filter('woocommerce_add_to_cart', array($cart_events_manager, 'handle_cart_update_event' ), 10, 1);
         add_action('woocommerce_cart_item_removed', array($cart_events_manager, 'handle_cart_update_event' ), 10, 1 );
-        add_action( 'woocommerce_before_single_product_summary', array($products_events_manager, 'product_viewed'), 10);
+        add_action('woocommerce_before_single_product_summary', array($products_events_manager, 'product_viewed'), 10);
+        add_action('woocommerce_product_set_stock_status', array($products_events_manager, 'product_stock_events'), 10, 1);
+        add_action('woocommerce_variation_set_stock_status', array($products_events_manager, 'product_stock_events'), 10, 1);
+        add_action('woocommerce_reduce_order_stock', array($products_events_manager, 'product_stock_update_on_order'), 10, 1);
     }
 
     public function add_conditional_hooks() {

@@ -168,6 +168,12 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 4. You can access your settings by clicking on “Settings” at the top right of the screen.
 
 == Changelog ==
+= 4.0.39 =
+* Plugin made compatible with Wordpress v6.7.2
+
+= 4.0.38 =
+* Plugin enhancements to start syncing product inventory counts
+
 = 4.0.37 =
 * Improvement related to plugin_updated call
 * Plugin code enhancements for WooCommerce Checkout Block

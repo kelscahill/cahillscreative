@@ -6,7 +6,7 @@ class CDN
     //initialize cdn
     public static function init() 
     {
-        add_action('wp', array('Perfmatters\CDN', 'queue'));
+        add_action('perfmatters_queue', array('Perfmatters\CDN', 'queue'));
     }
 
     //queue functions
@@ -31,7 +31,7 @@ class CDN
         //prep site url
         $siteURL  = '//' . ((!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : parse_url(home_url(), PHP_URL_HOST));
         $escapedSiteURL = quotemeta($siteURL);
-        $regExURL = 'https?:' . substr($escapedSiteURL, strpos($escapedSiteURL, '//'));
+        $regExURL = '(?:https?:)?' . substr($escapedSiteURL, strpos($escapedSiteURL, '//'));
 
         //prep included directories
         $directories = 'wp\-content|wp\-includes';

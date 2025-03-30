@@ -492,6 +492,19 @@ class ConnectionTest implements ContainerAwareInterface, Service, Registerable {
 										<?php endforeach; ?>
 										)
 									</p>
+									<?php
+										$conversion_action = $options->get( OptionsInterface::ADS_CONVERSION_ACTION );
+										if ( ! empty( $conversion_action ) && is_array( $conversion_action ) ) :
+									?>
+									<p class="description" style="font-style: italic">
+										( Conversion Action --
+										<?php foreach ( $conversion_action as $name => $value ) : ?>
+											<?php echo "{$name} : \"{$value}\""; ?>
+										<?php endforeach; ?>
+										)
+									</p>
+									<?php endif; ?>
+									<br/>
 								<?php endif; ?>
 								<p class="description">
 									Begins/continues a multistep account-setup sequence.

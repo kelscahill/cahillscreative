@@ -92,9 +92,11 @@ if(isset($_GET['updated'])) {
 	echo "<div class='notice updated is-dismissible'><p>" . __('Options saved.', 'perfmatters') . "</p></div>";
 }
 
+perfmatters_settings_header(__('Network Setup', 'perfmatters'), 'dashicons-networking');
+
 echo "<form method='POST' action='edit.php?action=perfmatters_update_network_options'>";
 	settings_fields('perfmatters_network');
-	perfmatters_settings_section('perfmatters_network', 'perfmatters_network', 'dashicons-networking');
+	perfmatters_settings_section('perfmatters_network', 'perfmatters_network');
 	submit_button();
 echo "</form>";
 

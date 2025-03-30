@@ -270,12 +270,37 @@ class Fields extends Education\Builder\Fields {
 			return;
 		}
 
-		$actions = wp_list_pluck( $edu_addons, 'action' );
+		$actions          = wp_list_pluck( $edu_addons, 'action' );
+		$license          = (array) get_option( 'wpforms_license', [] );
+		$license_key      = $license['key'] ?? '';
+		$license_type     = $license['type'] ?? '';
+		$license_is_valid = $this->is_valid_license();
+
+		if ( ! $license_is_valid || in_array( $license_type, [ 'basic', 'plus' ], true ) ) {
+			$content = sprintf(
+				wp_kses( /* translators: %s - WPForms.com announcement page URL. */
+					__( 'They will not be present in the published form. <a href="%s" target="_blank" rel="noopener noreferrer">Upgrade now</a> to unlock these features.', 'wpforms' ),
+					[
+						'a' => [
+							'href'   => [],
+							'target' => [],
+							'rel'    => [],
+						],
+					]
+				),
+				add_query_arg(
+					[ 'license_key' => sanitize_text_field( $license_key ) ],
+					wpforms_admin_upgrade_link( 'Builder - Settings', 'AI Form - Inactive Addon Field notice' )
+				)
+			);
+		} else {
+			$content = esc_html__( 'They will still be visible in the form preview, but will not be present in the published form.', 'wpforms' );
+		}
 
 		$args = [
 			'class'           => 'wpforms-alert-warning',
 			'title'           => esc_html__( 'Your Form Contains Fields From Inactive Addons', 'wpforms' ),
-			'content'         => esc_html__( 'They will still be visible in the form preview, but will not be present in the published form.', 'wpforms' ),
+			'content'         => $content,
 			'dismiss_section' => 'addon-fields-form-preview-notice',
 		];
 

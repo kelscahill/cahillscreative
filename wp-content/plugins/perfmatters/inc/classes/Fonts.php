@@ -1,8 +1,6 @@
 <?php
 namespace Perfmatters;
 
-//use WpOrg\Requests\Requests; //wp 6.2+
-
 if(!defined('REQUESTS_SILENCE_PSR0_DEPRECATIONS')) {
     define('REQUESTS_SILENCE_PSR0_DEPRECATIONS', true);
 }
@@ -15,7 +13,7 @@ class Fonts
     //initialize fonts
     public static function init() {
         if(empty(Config::$options['fonts']['disable_google_fonts'])) {
-            add_action('wp', array('Perfmatters\Fonts', 'queue'));
+            add_action('perfmatters_queue', array('Perfmatters\Fonts', 'queue'));
         }
         add_action('wp_ajax_perfmatters_clear_local_fonts', array('Perfmatters\Fonts', 'clear_local_fonts_ajax'));
     }
@@ -83,12 +81,12 @@ class Fonts
         }
 
         //find google fonts
-        preg_match_all('#<link[^>]+?href=(["\'])([^>]*?fonts\.googleapis\.com\/css.*?)\1.*?>#i', $html, $google_fonts, PREG_SET_ORDER);
+        preg_match_all('#<link[^>]+?href=(["\'])([^>]*?fonts\.googleapis\.com\/(css|icon).*?)\1.*?>#i', $html, $google_fonts, PREG_SET_ORDER);
         if(!empty($google_fonts)) {
             foreach($google_fonts as $google_font) {
      
                 //create unique file details
-                $file_name = substr(md5($google_font[2]), 0, 12) . ".google-fonts.css";
+                $file_name = substr(md5($google_font[2]), 0, 12) . ".google-fonts.min.css";
                 $file_path = PERFMATTERS_CACHE_DIR . 'fonts/' . $file_name;
                 $file_url = PERFMATTERS_CACHE_URL . 'fonts/' . $file_name;
 
@@ -170,8 +168,9 @@ class Fonts
             }
         }
 
-        //save final css file
-        file_put_contents($file_path, $css);
+        //minify and save file
+        $minifier = new \MatthiasMullie\Minify\CSS($css);
+        $minifier->minify($file_path);
 
         return true;
     }

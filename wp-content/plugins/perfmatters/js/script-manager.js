@@ -167,10 +167,12 @@ document.addEventListener("DOMContentLoaded", function() {
 		    	//successful request
 		        if(this.status >= 200 && this.status < 400) {
 
+		        	var response = this.response.trim();
+
 		            //setup message variable
 		    		var message = [];
 
-		            if(this.response == 'update_success') {
+		            if(response == 'update_success') {
 			    		message.text = pmsm.messages.updateSuccess;
 			    		message.color = 'green';
 
@@ -225,15 +227,15 @@ document.addEventListener("DOMContentLoaded", function() {
 				        });
 
 			    	}
-			    	else if(this.response == 'update_failure') {
+			    	else if(response == 'update_failure') {
 			    		message.text = pmsm.messages.updateFailure;
 			    		message.color = 'red';
 			    	}
-			    	else if(this.response == 'update_nooption') {
+			    	else if(response == 'update_nooption') {
 			    		message.text = pmsm.messages.updateNoOption;
 			    		message.color = 'red';
 			    	}
-			    	else if(this.response == 'update_nochange') {
+			    	else if(response == 'update_nochange') {
 			    		message.text = pmsm.messages.updateNoChange;
 			    		message.color = 'red';
 			    	}

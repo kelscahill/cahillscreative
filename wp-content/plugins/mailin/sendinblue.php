@@ -3,7 +3,7 @@
  * Plugin Name: Newsletter, SMTP, Email marketing and Subscribe forms by Brevo
  * Plugin URI: https://www.brevo.com/?r=wporg
  * Description: Manage your contact lists, subscription forms and all email and marketing-related topics from your wp panel, within one single plugin
- * Version: 3.1.93
+ * Version: 3.1.96
  * Author: Brevo
  * Author URI: https://www.brevo.com/?r=wporg
  * License: GPLv2 or later
@@ -64,9 +64,11 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 	 */
 	class SIB_Manager {
 
-        	private const ROUTE_METHODS = 'methods';
-        	private const ROUTE_CALLBACK = 'callback';
+		private const ROUTE_METHODS = 'methods';
+		private const ROUTE_CALLBACK = 'callback';
+		private const ROUTE_PATH = 'path';
 		private const PERMISSION_CALLBACK = 'permission_callback';
+		private const API_NAMESPACE = "mailin/v1";
 
 		/** Main setting option name */
 		const MAIN_OPTION_NAME = 'sib_main_option';
@@ -167,6 +169,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			),
 			'select' => array(
 				'name' => true,
+				'multiple' => true,
 				'class' => true,
 				'id' => true,
 				'style' => true,
@@ -1043,7 +1046,10 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
                 foreach ( $_POST as $postAttribute => $postAttributeValue ) {
                     $correspondingSibAttribute = $this->getCorrespondingSibAttribute($postAttribute, $attributes);
                     if (!empty($correspondingSibAttribute)) {
-                        $info[ $correspondingSibAttribute ] = sanitize_text_field( $postAttributeValue );
+                        $info[$correspondingSibAttribute] = is_array($postAttributeValue)
+							? array_map('sanitize_text_field', $postAttributeValue)
+							: sanitize_text_field($postAttributeValue);
+
                     }
                 }
             }
@@ -1732,17 +1738,43 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 		}
 
 		static function create_brevo_rest_endpoints() {
-			$path = '/mailin_disconnect';
-
-			$arguments = array(
-                self::ROUTE_METHODS    => 'DELETE',
-				self::ROUTE_CALLBACK   => function ($request) {
-					return self::mailin_disconnect($request);
-				},
-				self::PERMISSION_CALLBACK => '__return_true',
+			$routes = array(
+				array(
+					self::ROUTE_PATH       => '/mailin_disconnect',
+					self::ROUTE_METHODS    => 'DELETE',
+					self::ROUTE_CALLBACK   => function ($request) {
+						return self::mailin_disconnect($request);
+					},
+					self::PERMISSION_CALLBACK => '__return_true',
+				),
+				array(
+					self::ROUTE_PATH       => '/testconnection',
+					self::ROUTE_METHODS    => 'GET',
+					self::ROUTE_CALLBACK   => function ($request) {
+						return self::mailin_testconnection($request);
+					},
+					self::PERMISSION_CALLBACK => '__return_true',
+				)
 			);
 
-  	        register_rest_route("mailin/v1", $path, $arguments);
+			foreach ($routes as $route) {
+				self::register_route($route);
+			}
+		}
+
+		private static function register_route(array $route)
+		{
+			$arguments = array(
+				self::ROUTE_METHODS => $route[self::ROUTE_METHODS],
+				self::ROUTE_CALLBACK => $route[self::ROUTE_CALLBACK],
+				self::PERMISSION_CALLBACK => $route[self::PERMISSION_CALLBACK]
+			);
+
+			register_rest_route(
+				self::API_NAMESPACE,
+				$route[self::ROUTE_PATH],
+				$arguments
+			);
 		}
 
         private static function mailin_disconnect($request) {
@@ -1760,6 +1792,24 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
                         ), 404);
                 }
             }
+        }
+
+		private static function mailin_testconnection($request) {
+			$request = $request->get_params();
+			$uc_id = isset($request['id']) ? $request['id'] : '';
+			if (empty($uc_id)) {
+				return new WP_REST_Response(array('success' => false), 404);
+			}
+			$installationId = get_option(SIB_Manager::INSTALLATION_ID);
+			if ($installationId !== $uc_id) {
+				return new WP_REST_Response(array('success' => false), 403);
+			}
+			$account_info = get_transient( 'sib_credit_' . md5( SIB_Manager::$access_key ) );
+			if ( false === $account_info ) {
+				return new WP_REST_Response(array('success' => false), 404);
+			}
+
+			return new WP_REST_Response(array('success' => true), 200);
         }
 
         private static function delete_connection()

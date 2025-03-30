@@ -51,8 +51,8 @@ To sync the live site's database with your local site use the following command:
 ### Update and activate plugins
 
 1. Update the `style.css` file to Cahill's Creative's settings (feel free to update the `screenshot.png` too).
-2. Navigate to https://cahillscreative.local.host/wp-admin/themes.php and update the theme to the `your-site` theme.
-3. Navigate to https://cahillscreative.local.host/wp-admin/update-core.php and update any plugins that need updating.
+2. Navigate to https://cahillscreative.local/wp-admin/themes.php and update the theme to the `your-site` theme.
+3. Navigate to https://cahillscreative.local/wp-admin/update-core.php and update any plugins that need updating.
 
 This starter kit comes packed with the following plugins:
 - [Advanced Custom Fields Pro](https://www.advancedcustomfields.com/pro/)
@@ -65,7 +65,7 @@ This starter kit comes packed with the following plugins:
 ```php
 define( 'WP_ALLOW_MULTISITE', true );
 ```
-2. In your browser, navigate to [Tools > Network Setup](https://cahillscreative.local.host/wp-admin/network.php) and click "Install".
+2. In your browser, navigate to [Tools > Network Setup](https://cahillscreative.local/wp-admin/network.php) and click "Install".
 3. Follow the instructions on the Network Setup page to complete the setup.
 4. Refresh the page and log back in.
 

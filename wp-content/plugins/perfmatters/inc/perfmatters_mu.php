@@ -3,7 +3,7 @@
 Plugin Name: Perfmatters MU
 Plugin URI: https://perfmatters.io/
 Description: Perfmatters is a lightweight performance plugin developed to speed up your WordPress site.
-Version: 2.1.8
+Version: 2.3.2
 Author: forgemedia
 Author URI: https://forgemedia.io/
 License: GPLv2 or later
@@ -27,7 +27,7 @@ function perfmatters_mu_disable_plugins($plugins) {
     }
 
     //dont filter if its a rest or ajax request
-    if((defined('REST_REQUEST') && REST_REQUEST) || (defined('WP_CLI') && WP_CLI) || (function_exists('wp_is_json_request') && wp_is_json_request()) || wp_doing_ajax() || wp_doing_cron()) {
+    if((defined('REST_REQUEST') && REST_REQUEST) || (defined('WP_CLI') && WP_CLI) || (function_exists('wp_is_json_request') && wp_is_json_request() && !pmsm_mu_prefer_html_request()) || wp_doing_ajax() || wp_doing_cron()) {
         return $plugins;
     }
 
@@ -46,9 +46,14 @@ function perfmatters_mu_disable_plugins($plugins) {
         return $plugins;
     }
 
+    //page builder check
+    if(pmsm_mu_is_page_builder()) {
+        return $plugins;
+    }
+
     //make sure script manager is enabled
-    $perfmatters_options = get_option('perfmatters_options');
-    if(empty($perfmatters_options['assets']['script_manager'])) {
+    $perfmatters_tools = get_option('perfmatters_tools');
+    if(empty($perfmatters_tools['script_manager'])) {
         return $plugins;
     }
 
@@ -262,6 +267,80 @@ function pmsm_mu_check_device_type($option) {
     return false;
 }
 
+//check if page builder is being used
+function pmsm_mu_is_page_builder() {
+    $page_builders = apply_filters('perfmatters_page_builders', array(
+        'elementor-preview', //elementor
+        'fl_builder', //beaver builder
+        'et_fb', //divi
+        'ct_builder', //oxygen
+        'tve', //thrive
+        'app', //flatsome
+        'uxb_iframe',
+        'fb-edit', //fusion builder
+        'builder',
+        'bricks', //bricks
+        'vc_editable', //wp bakery
+        'op3editor', //optimizepress
+        'cs_preview_state' //cornerstone
+    ));
+
+    if(!empty($page_builders)) {
+        foreach($page_builders as $page_builder) {
+            if(isset($_REQUEST[$page_builder])) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+//check if html/xhtml is the preferred request
+function pmsm_mu_prefer_html_request() {
+
+    //check accept header
+    if(empty($_SERVER['HTTP_ACCEPT'])) {
+        return false;
+    }
+
+    //get content types set in header
+    $content_types = explode(',', $_SERVER['HTTP_ACCEPT']);
+    $html_preference = 0;
+    $xhtml_preference = 0;
+    $highest_preference = 0;
+
+    //loop through accepted types
+    foreach($content_types as $type) {
+
+        //split parts
+        $type_parts = explode(';', trim($type));
+        $mime_type = $type_parts[0];
+
+        //default quality factor of 1 if not set
+        $q = 1.0;
+        if(isset($type_parts[1]) && strpos($type_parts[1], 'q=') === 0) {
+            $q = floatval(substr($type_parts[1], 2));
+        }
+
+        //update highest preference
+        if($q > $highest_preference) {
+            $highest_preference = $q;
+        }
+
+        //check mime type
+        if($mime_type === 'text/html') {
+            $html_preference = $q;
+        }
+        elseif($mime_type === 'application/xhtml+xml') {
+            $xhtml_preference = $q;
+        }
+    }
+
+    // Return true if text/html or application/xhtml+xml has the highest preference
+    return ($html_preference === $highest_preference || $xhtml_preference === $highest_preference);
+}
+
 //custom url_to_postid() replacement - modified from https://gist.github.com/Webcreations907/ce5b77565dfb9a208738
 function perfmatters_url_to_postid($url) {
 
@@ -358,6 +437,14 @@ function perfmatters_url_to_postid($url) {
     // Strip 'www.' if it is present and shouldn't be
     if ( false === strpos( home_url(), '://www.' ) ) {
         $url = str_replace( '://www.', '://', $url );
+    }
+
+    if ( trim( $url, '/' ) === home_url() && 'page' === get_option( 'show_on_front' ) ) {
+        $page_on_front = get_option( 'page_on_front' );
+
+        if ( $page_on_front && get_post( $page_on_front ) instanceof WP_Post ) {
+            return (int) $page_on_front;
+        }
     }
 
     // Strip 'index.php/' if we're not using path info permalinks

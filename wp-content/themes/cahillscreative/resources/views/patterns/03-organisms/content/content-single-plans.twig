@@ -55,7 +55,7 @@
           <p>Best of luck,</p>
           {% include "@atoms/images/image/responsive-image.twig" with {
             "image": {
-              "src": "wp-content/themes/cahillscreative/resources/images/signature.png",
+              "src": function('asset', 'images/signature.png'),
               "alt": "Kelsey Ploransky",
               "extra": "c-intro__signature"
             }

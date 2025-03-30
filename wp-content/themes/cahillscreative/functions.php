@@ -103,7 +103,6 @@ if ( ! class_exists( 'StarterSite' ) ) {
       $context['site'] = $this;
 
       /* Global */
-      $context['image_path'] = '/resources/assets/images/';
       $context['disclaimer'] = 'DISCLOSURE: Some of the links are affiliate links, meaning, at no additional cost to you, I will earn a commission if you click through and make a purchase.';
 
       /* Menus */
@@ -214,11 +213,11 @@ try {
   \Roots\bootloader();
 } catch (Throwable $e) {
   wp_die(
-    __('You need to install Acorn to use this theme.', 'northright'),
+    __('You need to install Acorn to use this theme.', 'sage'),
     '',
     [
       'link_url' => 'https://docs.roots.io/acorn/2.x/installation/',
-      'link_text' => __('Acorn Docs: Installation', 'northright'),
+      'link_text' => __('Acorn Docs: Installation', 'sage'),
     ]
   );
 }
@@ -240,7 +239,7 @@ collect(['setup', 'filters'])
     if (! locate_template($file = "app/{$file}.php", true, true)) {
       wp_die(
         /* translators: %s is replaced with the relative file path */
-        sprintf(__('Error locating <code>%s</code> for inclusion.', 'northright'), $file)
+        sprintf(__('Error locating <code>%s</code> for inclusion.', 'sage'), $file)
       );
     }
   });

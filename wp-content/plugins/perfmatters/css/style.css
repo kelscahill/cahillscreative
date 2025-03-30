@@ -105,9 +105,12 @@
 
 /* general ui */
 .perfmatters-settings-section {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   border-bottom: 1px solid #f2f2f2;
   padding-bottom: 20px;
+}
+.perfmatters-settings-section h2 {
+  padding-top: 10px;
 }
 #perfmatters-admin .section-content {
   display: none;
@@ -121,7 +124,7 @@
   line-height: normal;
   margin: 0px auto 10px auto;
 }
-#perfmatters-admin .perfmatters-settings-section:first-of-type h2:first-of-type {
+#perfmatters-admin .perfmatters-settings-header {
   display: flex;
   align-items: center;
   font-size: 22px;
@@ -132,7 +135,7 @@
   border-radius: 3px 3px 0px 0px;
   color: #fff;
 }
-#perfmatters-admin .perfmatters-settings-section:first-of-type h2:first-of-type .dashicons {
+#perfmatters-admin .perfmatters-settings-header .dashicons {
   font-size:23px;
   width: 23px;
   height: 23px;
@@ -179,7 +182,6 @@
   right: 20px;
   line-height: 24px;
   color: #fff;
-  opacity: 0.5;
 }
 #perfmatters-admin #perfmatters-cta {
   display: flex; 
@@ -229,6 +231,7 @@
   background-color: #ccc;
   transition: .4s;
   border-radius: 50px;
+  cursor: pointer;
 }
 #perfmatters-admin .perfmatters-slider:before {
   position: absolute;
@@ -253,27 +256,27 @@
 #perfmatters-admin input[type="text"], #perfmatters-admin select, #perfmatters-admin input[type="file"] {
   min-width: 300px;
   margin: 0px;
-  border-color: #ccc;
+  border: .5px solid #ccc;
 }
 #perfmatters-admin input[type="checkbox"] {
   border-color: #ccc;
 }
 #perfmatters-admin input[type="file"] {
   margin-bottom: 5px;
+  border: 0px;
 }
 #perfmatters-admin textarea {
   width: 100%;
-  resize: both;
+  resize: vertical;
   min-height: 150px;
-  border-color: #ccc;
+  border: .5px solid #ccc;
 }
 #perfmatters-admin .CodeMirror {
   max-width: 700px;
-  max-height: 200px;
-  height: 100px;
-}
-#perfmatters-admin .CodeMirror.CodeMirror-focused {
   height: 200px;
+  border: .5px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
 }
 #perfmatters-admin ::placeholder {
   color: #ccc;
@@ -376,6 +379,9 @@
   background: #4A89DD;
   border-color: #4A89DD;
 }
+#perfmatters-admin-container .button-primary:hover {
+  background: #3F74BC;
+}
 #perfmatters-admin-container .button-primary:disabled {
   background: #4A89DD !important;
   border-color: #4A89DD !important;
@@ -458,7 +464,7 @@ a.perfmatters-add-input-row span.dashicons {
   position: absolute;
   left: 1px;
   background: #F0F0F1;
-  border-right: 1px solid #ccc;
+  border-right: .5px solid #ccc;
   color: #8c8f94;
   height: 28px;
   padding: 0px 10px;
@@ -493,7 +499,7 @@ a.perfmatters-add-input-row span.dashicons {
 .perfmatters-quick-exclusion {
   padding: 4px 8px;
   margin-bottom: 10px;
-  border: 1px solid #ccc;
+  border: .5px solid #ccc;
   border-radius: 3px; 
 }
 .perfmatters-quick-exclusion:last-of-type {
@@ -510,7 +516,7 @@ a.perfmatters-add-input-row span.dashicons {
 .perfmatters-quick-exclusion-items {
   display: none;
   margin-top: 4px;
-  border-top: 1px solid #f2f2f2;
+  border-top: .5px solid #f2f2f2;
   padding-top: 4px;
 }
 .perfmatters-quick-exclusion:not(.perfmatters-opened) .dashicons-minus {
@@ -666,7 +672,7 @@ a.perfmatters-add-input-row span.dashicons {
 .rtl .perfmatters-inline-label-input span {
   right: 1px;
   left: auto;
-  border-left: 1px solid #ccc;
+  border-left: .5px solid #ccc;
   border-right: none;
   border-radius: 4px 0px 0px 4px;
 }

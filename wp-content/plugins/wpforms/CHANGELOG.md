@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file and formatted via [this recommendation](https://keepachangelog.com/).
 
+## [1.9.4.2] - 2025-03-12
+### Fixed
+- The Address field had the Country label in the Form Builder for the US scheme.
+- Character encoding issues in Email notifications when viewed on some Apple devices.
+
 ## [1.9.4.1] - 2025-02-27
 ### Fixed
 - Fatal error with a custom country address scheme.

@@ -35,12 +35,15 @@ echo '<div id="perfmatters-admin" class="wrap">';
 
 						//options
 						echo '<a href="#" rel="options-general" class="active"><span class="dashicons dashicons-dashboard"></span>' . __('General', 'perfmatters') . '</a>';
-						echo '<a href="#assets" rel="options-assets"><span class="dashicons dashicons-editor-code"></span>' . __('Assets', 'perfmatters') . '</a>';
+						//echo '<a href="#assets" rel="options-assets"><span class="dashicons dashicons-editor-code"></span>' . __('Assets', 'perfmatters') . '</a>';
+						echo '<a href="#js" rel="options-js"><span class="dashicons dashicons-media-code"></span>' . __('JavaScript', 'perfmatters') . '</a>';
+						echo '<a href="#css" rel="options-css"><span class="dashicons dashicons-admin-appearance"></span>' . __('CSS', 'perfmatters') . '</a>';
 						echo '<a href="#preload" rel="options-preload"><span class="dashicons dashicons-clock"></span>' . __('Preloading', 'perfmatters') . '</a>';
 						echo '<a href="#lazyload" rel="options-lazyload"><span class="dashicons dashicons-images-alt2"></span>' . __('Lazy Loading', 'perfmatters') . '</a>';
 						echo '<a href="#fonts" rel="options-fonts"><span class="dashicons dashicons-editor-paste-text"></span>' . __('Fonts', 'perfmatters') . '</a>';
 						echo '<a href="#cdn" rel="options-cdn"><span class="dashicons dashicons-admin-site-alt2"></span>' . __('CDN', 'perfmatters') . '</a>';
 						echo '<a href="#analytics" rel="options-analytics"><span class="dashicons dashicons-chart-bar"></span>' . __('Analytics', 'perfmatters') . '</a>';
+						echo '<a href="#code" rel="options-code"><span class="dashicons dashicons-editor-code"></span>' . __('Code', 'perfmatters') . '</a>';
 
 						//spacer
 						echo '<hr style="border-top: 1px solid #f2f2f2; border-bottom: 0px; margin: 10px 0px;" />';
@@ -56,7 +59,7 @@ echo '<div id="perfmatters-admin" class="wrap">';
 					}
 
 					//license
-					if(!is_plugin_active_for_network('perfmatters/perfmatters.php') || is_network_admin()) {
+					if(!is_multisite() || is_network_admin()) {
 						echo '<a href="#license" rel="license-license"><span class="dashicons dashicons-admin-network"></span>' . __('License', 'perfmatters') . '</a>';
 					}
 
@@ -91,37 +94,63 @@ echo '<div id="perfmatters-admin" class="wrap">';
 						//options
 						echo '<div id="perfmatters-options"' . (empty($tools['show_advanced']) ? ' class="pm-hide-advanced"' : '') . '>';
 
+							//general
 							echo '<section id="options-general" class="section-content active">';
-						    	perfmatters_settings_section('perfmatters_options', 'perfmatters_options', 'dashicons-dashboard');
+								perfmatters_settings_header(__('General', 'perfmatters'), 'dashicons-dashboard');
+						    	perfmatters_settings_section('perfmatters_options', 'perfmatters_options');
 						    	perfmatters_settings_section('perfmatters_options', 'login_url');
 						    	perfmatters_settings_section('perfmatters_options', 'perfmatters_woocommerce');
 						    echo '</section>';
 
-						    echo '<section id="options-assets" class="section-content">';
-						    	perfmatters_settings_section('perfmatters_options', 'assets', 'dashicons-editor-code');
-						    	perfmatters_settings_section('perfmatters_options', 'assets_js');
+						    //javascript
+						    echo '<section id="options-js" class="section-content">';
+						    	perfmatters_settings_header(__('JavaScript', 'perfmatters'), 'dashicons-media-code');
+						    	perfmatters_settings_section('perfmatters_options', 'assets_js_defer');
+						    	perfmatters_settings_section('perfmatters_options', 'assets_js_delay');
+						    	perfmatters_settings_section('perfmatters_options', 'assets_js_minify');
+						    echo '</section>';
+
+						    //css
+						    echo '<section id="options-css" class="section-content">';
+						    	perfmatters_settings_header(__('CSS', 'perfmatters'), 'dashicons-admin-appearance');
 						    	perfmatters_settings_section('perfmatters_options', 'assets_css');
-						    	perfmatters_settings_section('perfmatters_options', 'assets_code');
+						    	perfmatters_settings_section('perfmatters_options', 'assets_css_minify');
 						    echo '</section>';
 
+						    //preloading
 						    echo '<section id="options-preload" class="section-content">';
-						    	perfmatters_settings_section('perfmatters_options', 'preload', 'dashicons-clock');
+						    	perfmatters_settings_header(__('Preloading', 'perfmatters'), 'dashicons-clock');
+						    	perfmatters_settings_section('perfmatters_options', 'preload');
 						    echo '</section>';
 
+						    //lazyload
 						    echo '<section id="options-lazyload" class="section-content">';
-						    	perfmatters_settings_section('perfmatters_options', 'lazyload', 'dashicons-images-alt2');
+						    	perfmatters_settings_header(__('Lazy Loading', 'perfmatters'), 'dashicons-images-alt2');
+						    	perfmatters_settings_section('perfmatters_options', 'lazyload');
 						    echo '</section>';
 
+						    //fonts
 						    echo '<section id="options-fonts" class="section-content">';
-						    	perfmatters_settings_section('perfmatters_options', 'perfmatters_fonts', 'dashicons-editor-paste-text');
+						    	perfmatters_settings_header(__('Fonts', 'perfmatters'), 'dashicons-editor-paste-text');
+						    	perfmatters_settings_section('perfmatters_options', 'perfmatters_fonts');
 						    echo '</section>';
 
+						    //cdn
 						    echo '<section id="options-cdn" class="section-content">';
-						    	perfmatters_settings_section('perfmatters_options', 'perfmatters_cdn', 'dashicons-admin-site-alt2');
+						    	perfmatters_settings_header(__('CDN', 'perfmatters'), 'dashicons-admin-site-alt2');
+						    	perfmatters_settings_section('perfmatters_options', 'perfmatters_cdn');
 						    echo '</section>';
 
+						    //analytics
 						    echo '<section id="options-analytics" class="section-content">';
-						    	perfmatters_settings_section('perfmatters_options', 'perfmatters_analytics', 'dashicons-chart-bar');
+						    	perfmatters_settings_header(__('Google Analytics', 'perfmatters'), 'dashicons-chart-bar');
+						    	perfmatters_settings_section('perfmatters_options', 'perfmatters_analytics');
+						    echo '</section>';
+
+						    //code
+						    echo '<section id="options-code" class="section-content">';
+						    	perfmatters_settings_header(__('Code', 'perfmatters'), 'dashicons-editor-code');
+						    	perfmatters_settings_section('perfmatters_options', 'assets_code');
 						    echo '</section>';
 
 					    echo '</div>';
@@ -130,11 +159,16 @@ echo '<div id="perfmatters-admin" class="wrap">';
 						echo '<div id="perfmatters-tools">';
 
 							echo '<section id="tools-plugin" class="section-content">';
-						    	perfmatters_settings_section('perfmatters_tools', 'plugin', 'dashicons-admin-tools');
+								perfmatters_settings_header(__('Tools', 'perfmatters'), 'dashicons-admin-tools');
+								perfmatters_settings_section('perfmatters_options', 'assets');
+								perfmatters_settings_section('perfmatters_tools', 'plugin');
+						    	perfmatters_settings_section('perfmatters_tools', 'settings');
+
 						    echo '</section>';
 
 						    echo '<section id="tools-database" class="section-content">';
-						    	perfmatters_settings_section('perfmatters_tools', 'database', 'dashicons-database');
+						    	perfmatters_settings_header(__('Database', 'perfmatters'), 'dashicons-database');
+						    	perfmatters_settings_section('perfmatters_tools', 'database');
 						    echo '</section>';
 
 						echo '</div>';
@@ -147,10 +181,14 @@ echo '<div id="perfmatters-admin" class="wrap">';
 				}
 				else {
 
-					//network
-					echo '<section id="network-network" class="section-content active">';		
-						require_once('network.php');
-					echo '</section>';
+					echo '<div id="perfmatters-options">';
+
+						//network
+						echo '<section id="network-network" class="section-content active">';
+							require_once('network.php');
+						echo '</section>';
+
+					echo '</div>';
 				}
 
 				//license

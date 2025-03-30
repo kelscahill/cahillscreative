@@ -14,7 +14,7 @@ function perfmatters_network_admin_menu() {
     }
  
  	//Add Settings Section
-    add_settings_section('perfmatters_network', 'Network Setup', '__return_false', 'perfmatters_network');
+    add_settings_section('perfmatters_network', '', '__return_false', 'perfmatters_network');
    
    	//Add Options Fields
 	add_settings_field(

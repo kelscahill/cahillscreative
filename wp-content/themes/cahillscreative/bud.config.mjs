@@ -49,7 +49,7 @@ export default async (app) => {
    */
   app
     .setUrl("http://0.0.0.0:3005")
-    .setProxyUrl("https://thehappyglamper.local.host")
+    .setProxyUrl("https://thehappyglamper.local")
     .watch(app.globSync(["resources/**/*", "app/**/*"]));
 
   /**

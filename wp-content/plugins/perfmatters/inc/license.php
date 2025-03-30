@@ -55,15 +55,14 @@ if(isset($_POST['perfmatters_remove_license']) && wp_verify_nonce($_POST['perfma
 //get license key
 $license = is_network_admin() ? get_site_option('perfmatters_edd_license_key') : get_option('perfmatters_edd_license_key');
 
+perfmatters_settings_header(__('License', 'perfmatters'), 'dashicons-admin-network');
+
 //start custom license form
 echo "<form method='post' action=''>";
 	
 	wp_nonce_field('perfmatters_license', 'perfmatters_license_nonce');
 
 	echo '<div class="perfmatters-settings-section">';
-
-		//tab header
-		echo "<h2><span class='dashicons dashicons-admin-network'></span>" . __('License', 'perfmatters') . "</h2>";
 
 		echo "<table class='form-table'>";
 			echo "<tbody>";

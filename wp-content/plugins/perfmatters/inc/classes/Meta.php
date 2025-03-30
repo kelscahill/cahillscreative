@@ -128,9 +128,17 @@ class Meta
 				'name'     => __('Delay JavaScript', 'perfmatters'),
 				'value'    => !empty(Config::$options['assets']['delay_js'])
 			),
+			'minify_js'    => array(
+				'name'     => __('Minify JavaScript', 'perfmatters'),
+				'value'    => !empty(Config::$options['assets']['minify_js'])
+			),
 			'unused_css'   => array(
 				'name'     => __('Unused CSS', 'perfmatters'),
 				'value'    => !empty(Config::$options['assets']['remove_unused_css'])
+			),
+			'minify_css'    => array(
+				'name'     => __('Minify CSS', 'perfmatters'),
+				'value'    => !empty(Config::$options['assets']['minify_css'])
 			),
 			'lazy_loading' => array(
 				'name'     => __('Lazy Loading', 'perfmatters'),

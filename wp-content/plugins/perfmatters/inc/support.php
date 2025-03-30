@@ -1,9 +1,6 @@
 <?php
+perfmatters_settings_header(__('Support', 'perfmatters'), 'dashicons-editor-help');
 echo '<div class="perfmatters-settings-section">';
-
-	//page title
-	echo '<h2><span class="dashicons dashicons-editor-help"></span>' . __("Support", "novashare") . '</h2>';
-	echo '<div style="margin-bottom: 20px;"></div>'; //spacer
 	
 	//documentation
 	echo '<h2>' . __('Documentation', 'perfmatters') . '</h2>';

@@ -4,8 +4,8 @@ Donate link: https://perfmatters.io
 Tags: perfmatters
 Requires at least: 5.5
 Requires PHP: 7.0
-Tested up to: 6.3.2
-Stable tag: 2.1.8
+Tested up to: 6.6.1
+Stable tag: 2.3.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,153 @@ Perfmatters is a lightweight performance plugin developed to speed up your WordP
 Check out our [documentation](https://perfmatters.io/docs/) for more information on how to use Perfmatters.
 
 == Changelog ==
+
+= 2.3.2 - 07.30.2024 =
+* Updated CSS parsing library to the latest version (8.6.0) which should help with correctly parsing mathematical operations inside CSS property values.
+* Added additional parameter to excluded page builders array for GenerateBlocks and TranslatePress.
+* Added additional built-in deferral exclusion for jqueryParams inline script.
+* Added Delay JS quick exclusion for the Kadence menu.
+* Fixed a MU Mode issue where home page exceptions would not be applied correctly if a query string was present in the requested URL.
+* Fixed an undefined array key warning coming from the minify class.
+* Fixed a minify error that would show up when a prospective file did not have any content.
+* Fixed an issue where having Remove Unused CSS turned on with no stylesheets loading would return a blank screen.
+* Fixed a CSS error that would show up when trying to determine the current page ID when the queried post was null.
+* Fixed an issue where the CSS class would attempt to retrieve the contents of a stylesheet even if it didn't exist.
+* Fixed an issue where minified files would not get picked up by the CDN rewriter.
+* Removed unnecessary minify library .git directories from the plugin.
+* Minor style adjustments to the plugin UI.
+* Updated our staging site license key exception list with additional formats.
+* Translation updates.
+
+= 2.3.1 - 06.27.2024 =
+* Added new Minify JS and Minify CSS features along with options to exclude specific files from minification and clear generated minified files when necessary.
+* UI Updates: What was previously the Assets tab has now been replaced by three more specific tabs, JavaScript, CSS, and Code. The main Script Manager toggle has been moved to Tools. Additional subheaders have also been added throughout to help with organization.
+* Added new perfmatters_minify_js filter.
+* Added new perfmatters_minify_js_exclusions filter.
+* Added new perfmatters_minify_css filter.
+* Added new perfmatters_minify_css_exclusions filter.
+* Added a REST API exception for Independent Analytics.
+* Added additional request parameter for Divi to excluded page builders array.
+* Added built-in critical image exclusion for WPML flag images.
+* Added Delay JS quick exclusion for Grow for WordPress.
+* Updated used CSS function to generate a separate file for each post type archive instead of a single shared stylesheet.
+* Fixed an issue that was causing an incorrect root directory to be returned for some environments.
+* Fixed an issue with preload and lazyload parent exclusion filters that was preventing them from excluding images correctly in some cases.
+* Translation updates.
+
+= 2.3.0 - 05.23.2024 =
+* Added a new function to verify the preferred content type from the HTTP header when determining if JSON is being requested. This should improve compatibility with certain hosting providers.
+* Added an additional check when removing unused CSS to avoid parsing print-only stylesheets.
+* Updated Delay JS quick exclusion for Termageddon + UserCentrics for better compatibility.
+* Removed option to disable wlwmanifest link output as that function was deprecated in WordPress 6.3.
+* Fixed an issue that was preventing lazy loaded images from displaying when defer inline scripts was enabled.
+* Fixed an issue where responsive styles for YouTube preview thumbnails were not printing on certain themes using responsive embeds.
+* Fixed an issue with DOMDocument where HTML entities coming from inline styles would display as their encoded values.
+* Fixed a missing tooltip on the scan database option.
+* Translation updates.
+
+= 2.2.9 - 05.16.2024 =
+* Fixed an issue that could cause a conflict with other JS deferral solutions when running at the same time.
+
+= 2.2.8 - 05.16.2024 =
+* Added new Defer JavaScript option to Include Inline Scripts.
+* Added new option to Separate Block Styles.
+* Added additional built-in CSS selector exclusions for Splide.
+* Updated Delay JS quick exclusion for Kadence Blocks with additional scripts.
+* Updated our staging site license key exception list with additional formats.
+* Updated deferral exclusion check to work with entire tag instead of just src URL.
+* Moved to printing responsive embed styles for YouTube preview thumbnails in all cases for better compatibility.
+* Fixed an issue where the CDN rewrite was not picking up URLs with a relative protocol.
+* Fixed an issue where an existing data-wp-strategy attribute would prevent a script from being able to be deferred.
+* Fixed an issue where the Script Manager was not giving the right feedback on save when a new line character was showing up in the AJAX response.
+* Fixed an issue on the network settings page where incorrect tab content would show up after saving.
+* Fixed an issue where the license tab was showing up at the subsite level if the plugin was not network activated in a multisite environment.
+* Translation updates.
+
+= 2.2.7 - 04.19.2024 =
+* Added new perfmatters_used_css_below filter.
+* Added new perfmatters_defer_js_exclusions filter.
+* Added new perfmatters_delay_js_fastclick filter.
+* Added additional DOMDocument flag to parent exclusion filters for better compatibility.
+* Added GiveWP request parameter to excluded page builders array.
+* Updated Delay JS quick exclusion for WooCommerce Single Product Gallery with additional scripts to help with zoom and lightbox functionality.
+* Updated Delay JS quick exclusion for Cookie Notice with additional scripts.
+* Moved Script Manager CSS to stylesheet printed inline instead of from a PHP file.
+
+= 2.2.6 - 03.18.2024 =
+* Added new perfmatters_defer_jquery filter.
+* Added Delay JS quick exclusion for Monumetric Ads.
+* Updated content URL reference to use content_url function instead of constant when generating root directory path.
+* Updated local stylesheet URL replace function to be case insensitive.
+* Updated new parent exclusion filters to use DOMDocument instead of regex to allow support for targeting images inside nested containers.
+* Fixed an issue where certain scripts were not being deferred properly when delay JavaScript option was also enabled.
+* Fixed an issue where abnormal image URLs would sometimes generate a warning when trying to parse for image dimensions.
+* Translation updates.
+
+= 2.2.5 - 02.29.2024 =
+* Added new perfmatters_critical_image_parent_exclusions filter.
+* Added new perfmatters_leading_image_parent_exclusions filter.
+* Added new Disable Core Fetch option to disable the fetch priority attribute added by WordPress core.
+* Added built-in WooCommerce CSS selector exclusion for better compatibility on single product posts.
+* Added Breakdance request parameters to excluded page builders array.
+* Added a REST API exception for WP Recipe Maker.
+* Added Delay JS quick exclusions for Kadence Blocks and Kadence Blocks Pro.
+* Added CSS Background Image support for the footer element.
+* Fixed an issue where dynamic preload version numbers would sometimes get added to the wrong resource.
+* Fixed an issue with certain multilingual setups where the base URL for generated files was incorrect.
+* Updated background processing library to the latest version (1.3.0).
+* Updated CSS parsing library to the latest version (8.5.1).
+* Minor style updates to plugin UI.
+
+= 2.2.4 - 02.05.2024 =
+* Added built-in Image Dimensions exclusion for blank placeholder SVGs.
+* Added excluded page builders function check to MU plugin file.
+* Changed method of retrieving root directory in certain classes for better compatibility with more file structures.
+* Fixed PHP warnings coming from local analytics function.
+
+= 2.2.3 - 01.08.2024 =
+* Fixed an issue where Mediavine and Modula Slider quick exclusions were not working properly.
+
+= 2.2.2 - 01.07.2024 =
+* Fixed PHP warnings coming from certain local analytics setups.
+* Translation updates.
+
+= 2.2.1 - 01.04.2024 =
+* Removed deprecated Universal Analytics options which are no longer available and renamed remaining script type labels. If you still haven't updated to Google Analytics 4, make sure to create a new profile and input your new measurement ID.
+* Added new tools option to Disable Optimizations for Logged In Users.
+* Added new perfmatters_leading_image_exclusions filter.
+* Added support for targeting figure elements to CSS Background Images.
+* Added REST route exception for Litespeed.
+* Added and updated Delay JS quick exclusions for Gravity Forms, Mediavine Trellis, Modula Slider, SHE Media Infuse, Thrive Leads, and WP Recipe Maker.
+* Added built-in Delay JS exclusion for Divi link options script.
+* Added generic customizer request parameter to excluded page builders array.
+* Made some adjustments to classes dealing with cache directory files to support non-traditional folder structures such as Bedrock.
+* Fixed a PHP warning related to cache URL declaration that would sometimes display for certain types of requests.
+* Fixed an issue where picture elements were not getting excluded from lazy loading when fetchpriority high was set on a child image.
+* Removed unnecessary script type attribute from our Delay JS inline script.
+* Translation updates.
+
+= 2.2.0 - 11.22.2023 =
+* Added Delay JS quick exclusion and REST route exception for WS Form.
+* Adjusted built-in WooCommerce stylesheet exclusions for better compatibility.
+* Updated instant.page and FastClick script names for ad blocker compatibility.
+* Fixed a PHP 8.2 deprecated warning coming from the CSS class.
+* Fixed a Script Manager CSS issue where certain disable controls weren't hiding correctly in some cases.
+* Removed unnecessary .git directory from background processor library folder. 
+* Script Manager security updates to fix XSS vulnerability.
+* Translation updates.
+
+= 2.1.9 - 11.09.2023 =
+* Added Delay JS quick exclusions for Presto Player, Raptive Ads, Slickstream, and WP Recipe Maker.
+* Added new WP-CLI command to clear used CSS with multisite support.
+* Added support for Google Material Symbols and Icons to local font feature.
+* Added support for excluding by no-lazy class to CSS Background Images.
+* Added support for lazy loading the poster attribute when set for a video tag.
+* Made adjustments to CSS class to allow for stylesheet's to be excluded by any portion of their attribute string.
+* Made some styling improvements to the YouTube preview thumbnail play button on hover.
+* Fixed an issue where delayed stylesheets would be loaded in twice if individual JS delay was also being used.
+* Updated Google Analytics 4 minimal script to version 1.10.
+* Translation updates.
 
 = 2.1.8 - 10.13.2023 = 
 * Fixed a compatibility issue with local fonts and WordPress 6.3.2 that was causing an error when new font files were requested.

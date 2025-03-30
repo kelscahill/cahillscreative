@@ -15,6 +15,11 @@ class ComposerStaticInitf44a6754192f24e2a51152e4c571b08b
         array (
             'Perfmatters\\' => 12,
         ),
+        'M' => 
+        array (
+            'MatthiasMullie\\PathConverter\\' => 29,
+            'MatthiasMullie\\Minify\\' => 22,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -25,6 +30,14 @@ class ComposerStaticInitf44a6754192f24e2a51152e4c571b08b
         'Perfmatters\\' => 
         array (
             0 => __DIR__ . '/../..' . '/inc/classes',
+        ),
+        'MatthiasMullie\\PathConverter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/matthiasmullie/path-converter/src',
+        ),
+        'MatthiasMullie\\Minify\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/matthiasmullie/minify/src',
         ),
     );
 

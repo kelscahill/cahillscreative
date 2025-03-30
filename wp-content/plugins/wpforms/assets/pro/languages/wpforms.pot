@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: WPForms 1.9.4.1\n"
+"Project-Id-Version: WPForms 1.9.4.2\n"
 "Report-Msgid-Bugs-To: https://wpforms.com/support/\n"
 "Last-Translator: WPForms <support@wpforms.com>\n"
 "Language-Team: WPForms <support@wpforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-02-26T17:31:02+00:00\n"
+"POT-Creation-Date: 2025-03-12T11:59:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: wpforms\n"
@@ -66,8 +66,8 @@ msgid "Please enter a license key."
 msgstr ""
 
 #: pro/includes/admin/class-license.php:154
-#: pro/includes/admin/class-license.php:277
-#: pro/includes/admin/class-license.php:347
+#: pro/includes/admin/class-license.php:293
+#: pro/includes/admin/class-license.php:377
 msgid "There was an error connecting to the remote key API. Please try again later."
 msgstr ""
 
@@ -75,52 +75,64 @@ msgstr ""
 msgid "Congratulations! This site is now receiving automatic updates."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:362
+#: pro/includes/admin/class-license.php:392
 msgid "You have deactivated the key from this site successfully."
 msgstr ""
 
 #. translators: %1$s - WPForms.com Account dashboard URL, %2$s - WPForms.com pricing URL.
-#: pro/includes/admin/class-license.php:451
+#: pro/includes/admin/class-license.php:495
 msgid "Your license key can be found in your <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">WPForms Account Dashboard</a>. Don’t have a license? <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">Sign up today!</a>"
 msgstr ""
 
-#: pro/includes/admin/class-license.php:467
+#: pro/includes/admin/class-license.php:511
 msgid "<strong>Your license has expired.</strong> An active license is needed to create new forms and edit existing forms. It also provides access to new features & addons, plugin updates (including security improvements), and our world class support!"
 msgstr ""
 
-#: pro/includes/admin/class-license.php:474
+#: pro/includes/admin/class-license.php:518
 msgid "<strong>Your license key has been disabled.</strong> Please use a different key to continue receiving automatic updates."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:481
+#: pro/includes/admin/class-license.php:525
 msgid "<strong>Your license key is invalid.</strong> The key no longer exists or the user associated with the key has been deleted. Please use a different key to continue receiving automatic updates."
 msgstr ""
 
+#. translators: %1$s - WPForms.com Account licenses URL.
+#: pro/includes/admin/class-license.php:533
+msgid "<strong>Sorry, but this license has no activations left.</strong> You can manage your site activations, upgrade your license, or purchase a new one in <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">your account</a>."
+msgstr ""
+
+#. translators: %1$s - WPForms.com license key support URL.
+#: pro/includes/admin/class-license.php:550
+msgid "<strong>Heads up! Before you can activate this key, we'd like to check in with you.</strong> Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">reach out to support here.</a>"
+msgstr ""
+
 #. translators: %s - Link to the Settings > General screen in the plugin, where users can enter their license key.
-#: pro/includes/admin/class-license.php:513
+#: pro/includes/admin/class-license.php:594
 msgid "To access all features, addons, and enable automatic updates, please <a href=\"%s\" target=\"_blank\">activate your WPForms license.</a>"
 msgstr ""
 
-#: pro/includes/admin/class-license.php:568
+#: pro/includes/admin/class-license.php:640
 #: src/Pro/Admin/Builder/LicenseAlert.php:131
 msgid "Heads up! Your WPForms license has expired."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:569
+#: pro/includes/admin/class-license.php:641
 msgid "An active license is needed to create new forms and edit existing forms. It also provides access to new features & addons, plugin updates (including security improvements), and our world class support!"
 msgstr ""
 
-#: pro/includes/admin/class-license.php:571
-#: pro/includes/admin/class-license.php:595
-#: pro/includes/admin/class-license.php:619
+#: pro/includes/admin/class-license.php:643
+#: pro/includes/admin/class-license.php:667
+#: pro/includes/admin/class-license.php:690
+#: pro/includes/admin/class-license.php:713
 #: src/Pro/Admin/Builder/LicenseAlert.php:133
 #: src/Pro/Admin/Education/StringsTrait.php:91
 msgid "Renew Now"
 msgstr ""
 
-#: pro/includes/admin/class-license.php:573
-#: pro/includes/admin/class-license.php:597
-#: pro/includes/admin/class-license.php:621
+#: pro/includes/admin/class-license.php:645
+#: pro/includes/admin/class-license.php:669
+#: pro/includes/admin/class-license.php:692
+#: pro/includes/admin/class-license.php:715
 #: pro/templates/education/admin/did-you-know.php:30
 #: src/Pro/Admin/Builder/LicenseAlert.php:134
 #: src/Pro/Admin/DashboardWidget.php:329
@@ -128,43 +140,74 @@ msgstr ""
 msgid "Learn More"
 msgstr ""
 
-#: pro/includes/admin/class-license.php:592
+#: pro/includes/admin/class-license.php:664
 msgid "Heads up! Your WPForms license has been disabled."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:593
+#: pro/includes/admin/class-license.php:665
 msgid "Your license key for WPForms has been disabled. Please use a different key to continue receiving automatic updates"
 msgstr ""
 
-#: pro/includes/admin/class-license.php:616
+#: pro/includes/admin/class-license.php:687
 msgid "Heads up! Your WPForms license is invalid."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:617
+#: pro/includes/admin/class-license.php:688
 msgid "The key no longer exists or the user associated with the key has been deleted. Please use a different key to continue receiving automatic updates."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:875
+#: pro/includes/admin/class-license.php:710
+msgid "Heads up! Your WPForms license has no activations left."
+msgstr ""
+
+#: pro/includes/admin/class-license.php:711
+msgid "Sorry, but this license has no activations left. You can update the list of your sites, upgrade the license in the Account area or purchase a new license key."
+msgstr ""
+
+#: pro/includes/admin/class-license.php:739
+#: src/Pro/Admin/Education/StringsTrait.php:55
+msgid "Heads up!"
+msgstr ""
+
+#: pro/includes/admin/class-license.php:740
+msgid "Before you can activate this key, we'd like to check in with you. Please reach out to support."
+msgstr ""
+
+#: pro/includes/admin/class-license.php:742
+#: src/Pro/Admin/Education/StringsTrait.php:97
+msgid "Contact Support"
+msgstr ""
+
+#: pro/includes/admin/class-license.php:1011
 msgid "You've Exceeded the Allowed License Verification Attempts"
 msgstr ""
 
-#: pro/includes/admin/class-license.php:876
+#: pro/includes/admin/class-license.php:1012
 msgid "Double-check the license key in your account and try again later. If your license key is no longer valid, please renew or install the free version of WPForms."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:920
+#: pro/includes/admin/class-license.php:1054
 msgid "Your license key for WPForms is invalid. The key no longer exists or the user associated with the key has been deleted. Please use a different key to continue receiving automatic updates."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:946
+#: pro/includes/admin/class-license.php:1078
 msgid "Your license key for WPForms has expired. Please renew your license key on WPForms.com to continue receiving automatic updates."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:972
+#: pro/includes/admin/class-license.php:1102
 msgid "Your license key for WPForms has been disabled. Please use a different key to continue receiving automatic updates."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:1000
+#: pro/includes/admin/class-license.php:1126
+msgid "Sorry, but this license has no activations left. You can manage your site activations, upgrade your license, or purchase a new one in your account."
+msgstr ""
+
+#. translators: %1$s - WPForms.com license key support URL.
+#: pro/includes/admin/class-license.php:1153
+msgid "Heads up! Before you can activate this key, we'd like to check in with you. Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">reach out to support here.</a>"
+msgstr ""
+
+#: pro/includes/admin/class-license.php:1192
 msgid "Your key has been refreshed successfully."
 msgstr ""
 
@@ -1916,15 +1959,20 @@ msgstr ""
 msgid "%s addon"
 msgstr ""
 
-#: src/Pro/Admin/Education/Builder/Fields.php:277
-msgid "Your Form Contains Fields From Inactive Addons"
+#. translators: %s - WPForms.com announcement page URL.
+#: src/Pro/Admin/Education/Builder/Fields.php:282
+msgid "They will not be present in the published form. <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Upgrade now</a> to unlock these features."
 msgstr ""
 
-#: src/Pro/Admin/Education/Builder/Fields.php:278
+#: src/Pro/Admin/Education/Builder/Fields.php:297
 msgid "They will still be visible in the form preview, but will not be present in the published form."
 msgstr ""
 
-#: src/Pro/Admin/Education/Builder/Fields.php:284
+#: src/Pro/Admin/Education/Builder/Fields.php:302
+msgid "Your Form Contains Fields From Inactive Addons"
+msgstr ""
+
+#: src/Pro/Admin/Education/Builder/Fields.php:309
 msgid "Your Form Contains Fields From Incompatible Addons"
 msgstr ""
 
@@ -1939,10 +1987,6 @@ msgstr ""
 
 #: src/Pro/Admin/Education/StringsTrait.php:41
 msgid "Check for Update"
-msgstr ""
-
-#: src/Pro/Admin/Education/StringsTrait.php:55
-msgid "Heads up!"
 msgstr ""
 
 #: src/Pro/Admin/Education/StringsTrait.php:56
@@ -1984,10 +2028,6 @@ msgstr ""
 
 #: src/Pro/Admin/Education/StringsTrait.php:96
 msgid "Your WPForms license is not active. To access the %name%, please contact support for more details."
-msgstr ""
-
-#: src/Pro/Admin/Education/StringsTrait.php:97
-msgid "Contact Support"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Ajax/Columns.php:83
@@ -2876,73 +2916,86 @@ msgid "Install Addon"
 msgstr ""
 
 #. translators: %1$s - WPForms Pro URL; %2$s - WPForms Pro purchase link.
-#: src/Pro/Admin/PluginList.php:598
+#: src/Pro/Admin/PluginList.php:605
 msgid "<a href=\"%1$s\">Activate WPForms Pro</a> to receive features, updates, and support. Don't have a license? <a target=\"_blank\" href=\"%2$s\" rel=\"noopener noreferrer\">Purchase one now</a>."
 msgstr ""
 
 #. translators: %1$s - WPForms Pro URL; %2$s - WPForms Pro purchase link.
-#: src/Pro/Admin/PluginList.php:610
+#: src/Pro/Admin/PluginList.php:617
 msgid "<a href=\"%1$s\">Activate</a> your license to access this update, new features, and support. Don't have a license? <a target=\"_blank\" href=\"%2$s\" rel=\"noopener noreferrer\">Purchase one now</a>."
 msgstr ""
 
-#. translators: %s - WPForms Pro renew link.
-#: src/Pro/Admin/PluginList.php:634
-msgid "<a target=\"_blank\" href=\"%1$s\" rel=\"noopener noreferrer\">Renew now</a> to receive new features, updates, and support."
-msgstr ""
-
-#: src/Pro/Admin/PluginList.php:642
+#: src/Pro/Admin/PluginList.php:641
 msgid "Your WPForms Pro license is expired."
 msgstr ""
 
-#: src/Pro/Admin/PluginList.php:643
+#: src/Pro/Admin/PluginList.php:642
 msgid "Your WPForms Pro license is disabled."
 msgstr ""
 
-#: src/Pro/Admin/PluginList.php:644
+#: src/Pro/Admin/PluginList.php:643
 msgid "Your WPForms Pro license is invalid."
 msgstr ""
 
+#: src/Pro/Admin/PluginList.php:644
+msgid "Your WPForms Pro license has no activations left."
+msgstr ""
+
+#: src/Pro/Admin/PluginList.php:645
+msgid "Your WPForms Pro license needs support."
+msgstr ""
+
+#. translators: %s - WPForms Pro key support link.
+#: src/Pro/Admin/PluginList.php:652
+msgid "Before you can activate this key, we'd like to check in with you. Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">reach out to support here.</a>"
+msgstr ""
+
+#. translators: %s - WPForms Pro renew link.
+#: src/Pro/Admin/PluginList.php:663
+msgid "<a target=\"_blank\" href=\"%1$s\" rel=\"noopener noreferrer\">Renew now</a> to receive new features, updates, and support."
+msgstr ""
+
 #. translators: %1$s - WPForms Pro Changelog link; %2$s - WPForms Pro latest version.
-#: src/Pro/Admin/PluginList.php:677
+#: src/Pro/Admin/PluginList.php:698
 msgid "There is a new version of WPForms available. <a target=\"_blank\" href=\"%1$s\" rel=\"noopener noreferrer\">View version %2$s details</a>"
 msgstr ""
 
 #. translators: %1$s - WPForms Pro upgrade URL; %2$s - Update now link aria-label attribute.
-#: src/Pro/Admin/PluginList.php:692
+#: src/Pro/Admin/PluginList.php:713
 msgid "or <a href=\"%1$s\" class=\"update-link\" aria-label=\"%2$s\">update now</a>."
 msgstr ""
 
-#: src/Pro/Admin/PluginList.php:697
+#: src/Pro/Admin/PluginList.php:718
 msgid "Update Now"
 msgstr ""
 
 #. translators: 1: Plugin name, 2: Version number.
-#: src/Pro/Admin/PluginList.php:765
+#: src/Pro/Admin/PluginList.php:786
 msgid "View %1$s version %2$s details"
 msgstr ""
 
 #. translators: 1: Plugin name, 2: Details URL, 3: Link attributes, 4: Version number, 5: Components.
-#: src/Pro/Admin/PluginList.php:806
+#: src/Pro/Admin/PluginList.php:827
 msgid "Sorry, the %1$s addon can't be updated to <a href=\"%2$s\" %3$s>version %4$s</a> because it requires %5$s."
 msgstr ""
 
 #. translators: 1: Details URL, 2: Additional link attributes, 3: Version number.
-#: src/Pro/Admin/PluginList.php:827
+#: src/Pro/Admin/PluginList.php:848
 msgid "If no update is available, try <a href=\"%1$s\">checking for new plugin updates</a>."
 msgstr ""
 
 #. translators: 1:URL to Update PHP page.
-#: src/Pro/Admin/PluginList.php:843
+#: src/Pro/Admin/PluginList.php:864
 msgid "Learn more about <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">updating PHP</a>."
 msgstr ""
 
 #. translators: %s: Plugin name.
-#: src/Pro/Admin/PluginList.php:888
+#: src/Pro/Admin/PluginList.php:909
 msgid "Update %s now"
 msgstr ""
 
 #. translators: 1: Plugin name, 2: Details URL, 3: Additional link attributes, 4: Version number, 5: Update URL, 6: Additional link attributes.
-#: src/Pro/Admin/PluginList.php:896
+#: src/Pro/Admin/PluginList.php:917
 msgid "There is a new version of %1$s available. <a href=\"%2$s\" %3$s>View version %4$s details</a>%5$s."
 msgstr ""
 

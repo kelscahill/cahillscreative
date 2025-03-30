@@ -84,6 +84,41 @@ class ProductsManager
         }
     }
 
+    public function product_stock_events($product_id)
+    {
+        $product = wc_get_product($product_id);
+        if (!is_object($product)) {
+            return;
+        }
+
+        if (!empty($product) && $this->product_sync_enabled()) {
+            $client = new SendinblueClient();
+            $client->eventsSync(SendinblueClient::PRODUCT_CREATED, $this->prepare_payload($product));
+        }
+    }
+
+    public function product_stock_update_on_order($order)
+    {
+        if (!is_object($order) || !$this->product_sync_enabled()) {
+            return;
+        }
+
+        foreach ($order->get_items() as $item) {
+            $product = $item->get_product();
+            if (!is_object($product) || empty($product)) {
+                continue;
+            }
+
+            $data = $this->prepare_payload($product);
+            if (empty($data['stock_quantity'])) {
+                continue;
+            }
+
+            $client = new SendinblueClient();
+            $client->eventsSync(SendinblueClient::PRODUCT_CREATED, $data);
+        }
+    }
+
     public function prepare_payload($product)
     {
         $data = [];
@@ -96,6 +131,7 @@ class ProductsManager
 
         $data['title'] = $product->get_title();
         $data['type'] = $product->get_type();
+        $data['stock_quantity'] = $product->get_stock_quantity();
         $data['permalink'] = is_string($product->get_permalink()) ? $product->get_permalink() : "" ;
         $data['date_created'] = $product->get_date_created() !== null ? $product->get_date_created()->date(DATE_ATOM) : null;
         $data['date_modified'] = $product->get_date_modified() !== null ? $product->get_date_modified()->date(DATE_ATOM) : null;
