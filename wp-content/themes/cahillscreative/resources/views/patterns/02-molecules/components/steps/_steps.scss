@@ -116,6 +116,15 @@
   &__image {
     mix-blend-mode: multiply;
     margin-top: $space-double;
+
+    img {
+      .single-plans & {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        max-height: 800px;
+      }
+    }
   }
 
   .no-images {
