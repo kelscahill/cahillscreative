@@ -105,6 +105,10 @@
     page-break-inside: avoid;
   }
 
+  .c-steps__image img {
+    max-height: 600px;
+  }
+
   .c-intro {
     &__signature {
       max-width: 2in !important;

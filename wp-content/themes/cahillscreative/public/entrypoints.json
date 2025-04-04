@@ -2,10 +2,10 @@
   "app": {
     "js": [
       "js/runtime.1d4c3b.js",
-      "js/app.051688.js"
+      "js/app.ee9be8.js"
     ],
     "css": [
-      "css/app.9d1955.css"
+      "css/app.0be187.css"
     ],
     "dependencies": [
       "jquery"
@@ -17,7 +17,7 @@
       "js/editor.a6e8cc.js"
     ],
     "css": [
-      "css/editor.a49132.css"
+      "css/editor.4f6491.css"
     ],
     "dependencies": [
       "wp-blocks"
