@@ -52,10 +52,12 @@
     }
   }
 
-  .c-stats + picture {
-    max-width: 50%;
-    margin-left: auto;
-    margin-right: auto;
+  .c-stats {
+    + picture {
+      max-width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+    }
   }
 
   .o-dek {

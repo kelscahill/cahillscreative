@@ -23,6 +23,7 @@
       margin-right: $space-double;
     }
 
+    .single-plans &,
     &.is-sticky {
       position: sticky;
       top: 0;
@@ -87,6 +88,7 @@
       right: 0;
       margin-left: 0;
       margin-right: 0;
+      transform: translateX(0);
     }
   }
 

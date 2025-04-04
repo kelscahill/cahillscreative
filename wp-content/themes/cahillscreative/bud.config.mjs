@@ -60,5 +60,6 @@ export default async (app) => {
     "@styles/_breakpoints",
     "@styles/_mixins",
     "@styles/_grid",
+    "@styles/_print",
   ]);
 };

@@ -5,7 +5,7 @@
   border-top: $border--standard;
   padding-top: $space-one-fourth;
 
-  @include media('>medium') {
+  @include media('>small') {
     flex-direction: row;
     border-bottom: $border--standard;
     padding: $space 0;
@@ -20,7 +20,7 @@
     border-bottom: $border--standard;
     margin-bottom: $space-one-fourth;
 
-    @include media('>medium') {
+    @include media('>small') {
       flex-direction: column;
       padding: 0 $space-double;
       margin-bottom: 0;
