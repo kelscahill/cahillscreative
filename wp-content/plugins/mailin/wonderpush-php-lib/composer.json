@@ -1,0 +1,32 @@
+{
+  "name": "wonderpush/wonderpush-php-lib",
+  "description": "PHP library for WonderPush",
+  "authors": [
+    {
+      "name": "WonderPush",
+      "email": "contact@wonderpush.com",
+      "homepage": "https://github.com/wonderpush/wonderpush-php-lib"
+    }
+  ],
+  "keywords": [
+    "wonderpush",
+    "push notification",
+    "api"
+  ],
+  "homepage": "https://www.wonderpush.com/",
+  "license": "Apache-2.0",
+  "require": {
+    "php": ">=5.3.3",
+    "ext-curl": "*",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.8",
+    "satooshi/php-coveralls": "^1.0",
+    "phpcompatibility/php-compatibility": "^9.2",
+    "squizlabs/php_codesniffer": "^2.3"
+  },
+  "autoload": {
+    "psr-4": { "WonderPush\\" : "lib/" }
+  }
+}

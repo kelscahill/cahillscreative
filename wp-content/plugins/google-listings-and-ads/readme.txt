@@ -2,10 +2,10 @@
 Contributors: automattic, google, woocommerce
 Tags: woocommerce, google, product feed, ads, listings
 Requires at least: 6.1
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.4
 Requires PHP Architecture: 64 Bits
-Stable tag: 2.9.10
+Stable tag: 3.1.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -140,17 +140,20 @@ To allow your products to appear in all relevant locations, make sure you’ve c
 
 == Changelog ==
 
-= 2.9.10 - 2025-03-18 =
-* Dev - Add the conversion action details to the connection test page.
-* Fix - It may be unable to connect to the auto-selected Google Ads account after disconnecting during onboarding.
+= 3.1.0 - 2025-07-01 =
+* Add - A new endpoint for Google-triggered account linking.
+* Add - Notice to gather feedback and request ratings from merchants.
+* Add - Reintroduce account:connect functionality for Google account linking.
+* Fix - Prevent the user from continuing if the minimum shipping time is not set.
+* Fix - The API error of querying campaign assets by an invalid ID after saving a campaign with assets.
+* Tweak - WC 10.0 compatibility.
 
-= 2.9.9 - 2025-02-18 =
-* Fix - Error displayed when accessing campaign assets editing page without attached asset groups.
-* Tweak - Opt-in to URL expansion.
-* Tweak - Supplement the implementation of API Pull for the Settings page.
-* Tweak - WC 9.7 compatibility.
+= 3.0.0 - 2025-06-17 =
+* Add - API Push/Pull Sync control endpoint Implementation.
+* Add - Price Benchmarks: Competitive pricing analysis and price recommendations from Google.
+* Tweak - WC 9.9 compatibility.
 
-= 2.9.8 - 2025-02-04 =
-* Tweak - Replace WooCommerce logo with Woo 2.0 Brand.
+= 2.9.13 - 2025-04-29 =
+* Update - Revert the changes related to the Grant API Pull Access in Onboarding feature made in version 2.9.12.
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/google-listings-and-ads/trunk/changelog.txt).

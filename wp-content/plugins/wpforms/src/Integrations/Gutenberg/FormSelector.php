@@ -186,7 +186,7 @@ abstract class FormSelector implements IntegrationInterface {
 	 */
 	public function filter_is_honeypot_enabled( $is_enabled ): bool {
 
-		if ( wpforms_is_rest() ) {
+		if ( wpforms_is_wpforms_rest() ) {
 			return false;
 		}
 
@@ -224,155 +224,72 @@ abstract class FormSelector implements IntegrationInterface {
 	 */
 	public function register_block() {
 
+		$type_string  = [ 'type' => 'string' ];
+		$type_boolean = [ 'type' => 'boolean' ];
+
 		$attributes = [
-			'clientId'              => [
-				'type' => 'string',
-			],
-			'formId'                => [
-				'type' => 'string',
-			],
-			'displayTitle'          => [
-				'type' => 'boolean',
-			],
-			'displayDesc'           => [
-				'type' => 'boolean',
-			],
-			'className'             => [
-				'type' => 'string',
-			],
-			'theme'                 => [
-				'type' => 'string',
-			],
-			'themeName'             => [
-				'type' => 'string',
-			],
-			'fieldSize'             => [
-				'type' => 'string',
-			],
-			'fieldBorderRadius'     => [
-				'type' => 'string',
-			],
-			'fieldBorderStyle'      => [
-				'type' => 'string',
-			],
-			'fieldBorderSize'       => [
-				'type' => 'string',
-			],
-			'fieldBackgroundColor'  => [
-				'type' => 'string',
-			],
-			'fieldBorderColor'      => [
-				'type' => 'string',
-			],
-			'fieldTextColor'        => [
-				'type' => 'string',
-			],
-			'fieldMenuColor'        => [
-				'type' => 'string',
-			],
-			'labelSize'             => [
-				'type' => 'string',
-			],
-			'labelColor'            => [
-				'type' => 'string',
-			],
-			'labelSublabelColor'    => [
-				'type' => 'string',
-			],
-			'labelErrorColor'       => [
-				'type' => 'string',
-			],
-			'buttonSize'            => [
-				'type' => 'string',
-			],
-			'buttonBorderStyle'     => [
-				'type' => 'string',
-			],
-			'buttonBorderSize'      => [
-				'type' => 'string',
-			],
-			'buttonBorderRadius'    => [
-				'type' => 'string',
-			],
-			'buttonBackgroundColor' => [
-				'type' => 'string',
-			],
-			'buttonBorderColor'     => [
-				'type' => 'string',
-			],
-			'buttonTextColor'       => [
-				'type' => 'string',
-			],
-			'pageBreakColor'        => [
-				'type' => 'string',
-			],
-			'backgroundImage'       => [
-				'type' => 'string',
-			],
-			'backgroundPosition'    => [
-				'type' => 'string',
-			],
-			'backgroundRepeat'      => [
-				'type' => 'string',
-			],
-			'backgroundSizeMode'    => [
-				'type' => 'string',
-			],
-			'backgroundSize'        => [
-				'type' => 'string',
-			],
-			'backgroundWidth'       => [
-				'type' => 'string',
-			],
-			'backgroundHeight'      => [
-				'type' => 'string',
-			],
-			'backgroundUrl'         => [
-				'type' => 'string',
-			],
-			'backgroundColor'       => [
-				'type' => 'string',
-			],
-			'containerPadding'      => [
-				'type' => 'string',
-			],
-			'containerBorderStyle'  => [
-				'type' => 'string',
-			],
-			'containerBorderWidth'  => [
-				'type' => 'string',
-			],
-			'containerBorderColor'  => [
-				'type' => 'string',
-			],
-			'containerBorderRadius' => [
-				'type' => 'string',
-			],
-			'containerShadowSize'   => [
-				'type' => 'string',
-			],
-			'customCss'             => [
-				'type' => 'string',
-			],
-			'copyPasteJsonValue'    => [
-				'type' => 'string',
-			],
+			'clientId'              => $type_string,
+			'formId'                => $type_string,
+			'displayTitle'          => $type_boolean,
+			'displayDesc'           => $type_boolean,
+			'className'             => $type_string,
+			'theme'                 => $type_string,
+			'themeName'             => $type_string,
+			'fieldSize'             => $type_string,
+			'fieldBorderRadius'     => $type_string,
+			'fieldBorderStyle'      => $type_string,
+			'fieldBorderSize'       => $type_string,
+			'fieldBackgroundColor'  => $type_string,
+			'fieldBorderColor'      => $type_string,
+			'fieldTextColor'        => $type_string,
+			'fieldMenuColor'        => $type_string,
+			'labelSize'             => $type_string,
+			'labelColor'            => $type_string,
+			'labelSublabelColor'    => $type_string,
+			'labelErrorColor'       => $type_string,
+			'buttonSize'            => $type_string,
+			'buttonBorderStyle'     => $type_string,
+			'buttonBorderSize'      => $type_string,
+			'buttonBorderRadius'    => $type_string,
+			'buttonBackgroundColor' => $type_string,
+			'buttonBorderColor'     => $type_string,
+			'buttonTextColor'       => $type_string,
+			'pageBreakColor'        => $type_string,
+			'backgroundImage'       => $type_string,
+			'backgroundPosition'    => $type_string,
+			'backgroundRepeat'      => $type_string,
+			'backgroundSizeMode'    => $type_string,
+			'backgroundSize'        => $type_string,
+			'backgroundWidth'       => $type_string,
+			'backgroundHeight'      => $type_string,
+			'backgroundUrl'         => $type_string,
+			'backgroundColor'       => $type_string,
+			'containerPadding'      => $type_string,
+			'containerBorderStyle'  => $type_string,
+			'containerBorderWidth'  => $type_string,
+			'containerBorderColor'  => $type_string,
+			'containerBorderRadius' => $type_string,
+			'containerShadowSize'   => $type_string,
+			'customCss'             => $type_string,
+			'copyPasteJsonValue'    => $type_string,
 		];
 
 		$this->register_styles();
 
+		/**
+		 * Modify WPForms block attributes.
+		 *
+		 * @since 1.5.8.2
+		 *
+		 * @param array $attributes Attributes.
+		 */
+		$attributes = apply_filters( 'wpforms_gutenberg_form_selector_attributes', $attributes ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+
 		register_block_type(
 			'wpforms/form-selector',
 			[
-				/**
-				 * Modify WPForms block attributes.
-				 *
-				 * @since 1.5.8.2
-				 *
-				 * @param array $attributes Attributes.
-				 */
 				'api_version'     => $this->get_block_api_version(),
-				'attributes'      => apply_filters( 'wpforms_gutenberg_form_selector_attributes', $attributes ), // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+				'attributes'      => $attributes,
 				'style'           => 'wpforms-gutenberg-form-selector',
 				'editor_style'    => 'wpforms-integrations',
 				'render_callback' => [ $this, 'get_form_html' ],
@@ -498,53 +415,6 @@ abstract class FormSelector implements IntegrationInterface {
 	protected function is_legacy_block() {
 
 		return version_compare( $GLOBALS['wp_version'], '6.0', '<' );
-	}
-
-	/**
-	 * Register API route for Gutenberg block.
-	 *
-	 * @since 1.8.4
-	 * @deprecated 1.8.8
-	 */
-	public function register_api_route() {
-
-		_deprecated_function( __METHOD__, '1.8.8 of the WPForms plugin', '\WPForms\Integrations\Gutenberg\RestApi::register_api_routes()' );
-
-		$this->rest_api_obj->register_api_routes();
-	}
-
-	/**
-	 * Wrap localized data in a protected WP_REST_Response object.
-	 *
-	 * @since 1.8.4
-	 * @deprecated 1.8.8
-	 *
-	 * @see https://developer.wordpress.org/reference/functions/rest_ensure_response/
-	 *
-	 * @return WP_Error|WP_REST_Response
-	 */
-	public function protected_data_callback() {
-
-		_deprecated_function( __METHOD__, '1.8.8 of the WPForms plugin', '\WPForms\Integrations\Gutenberg\RestApi::get_forms()' );
-
-		return $this->rest_api_obj->get_forms();
-	}
-
-	/**
-	 * Check if a user has permission to access private data.
-	 *
-	 * @since 1.8.4
-	 * @deprecated 1.8.8
-	 *
-	 * @see https://developer.wordpress.org/rest-api/extending-the-rest-api/routes-and-endpoints/#permissions-callback
-	 *
-	 * @return true|WP_Error True if a user has permission.
-	 */
-	public function protected_permissions_callback() {
-
-		_deprecated_function( __METHOD__, '1.8.8 of the WPForms plugin', '\WPForms\Integrations\Gutenberg\RestApi::permissions_check()' );
-
-		return $this->rest_api_obj->permissions_check();
 	}
 
 	/**
@@ -729,17 +599,6 @@ abstract class FormSelector implements IntegrationInterface {
 			},
 			$forms
 		);
-	}
-
-	/**
-	 * Let's WP know that we have translation strings on our block script.
-	 *
-	 * @since 1.8.3
-	 * @deprecated 1.8.5
-	 */
-	public function enable_block_translations() {
-
-		_deprecated_function( __METHOD__, '1.8.5' );
 	}
 
 	/**

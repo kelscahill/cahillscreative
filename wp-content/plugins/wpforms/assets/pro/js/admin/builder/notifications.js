@@ -93,8 +93,6 @@ WPForms.Admin.Builder.Notifications = WPForms.Admin.Builder.Notifications || ( f
 
 			app.setup();
 			app.bindEvents();
-
-			$( app.ready );
 		},
 
 		/**
@@ -102,14 +100,7 @@ WPForms.Admin.Builder.Notifications = WPForms.Admin.Builder.Notifications || ( f
 		 *
 		 * @since 1.7.7
 		 */
-		ready: function() {
-
-			if ( typeof window.Choices !== 'function' ) {
-				return;
-			}
-
-			app.maybeSaveFormState();
-		},
+		ready() {},
 
 		/**
 		 * Setup. Prepare some variables.
@@ -569,9 +560,6 @@ WPForms.Admin.Builder.Notifications = WPForms.Admin.Builder.Notifications || ( f
 
 				callback( $block, blockID );
 			} );
-
-			// Re-save the form state since DOM has been changed.
-			app.maybeSaveFormState();
 		},
 
 		/**
@@ -597,17 +585,14 @@ WPForms.Admin.Builder.Notifications = WPForms.Admin.Builder.Notifications || ( f
 		 * Save the form state if it was changed during the initialization process.
 		 *
 		 * @since 1.7.7
+		 * @deprecated 1.9.6
 		 */
 		maybeSaveFormState: function() {
 
-			const currentState = wpf.getFormState( '#wpforms-builder-form' );
+			// eslint-disable-next-line no-console
+			console.warn( 'WARNING! Function "WPForms.Admin.Builder.Notifications.maybeSaveFormState()" has been deprecated, please use the new "wpf._getCurrentFormState()" function instead!' );
 
-			// If some elements were changed (e.g. ChoiceJS instance was pre-populated),
-			// then the whole form state was changed as well.
-			// That's why we need to re-save it.
-			if ( wpf.savedState !== currentState ) {
-				wpf.savedState = currentState;
-			}
+			wpf._getCurrentFormState();
 		},
 
 		/**

@@ -428,6 +428,17 @@ trait attachments
 				}
 			}
 
+			$blog_id = get_current_blog_id();
+			if ( ! isset( $this->__dumped_attachment_guids[ $blog_id ] ) )
+				$this->__dumped_attachment_guids[ $blog_id ] = 0;
+
+			$md5 = md5( serialize( $guids ) );
+			if ( $this->__dumped_attachment_guids[ $blog_id ] != $md5 )
+			{
+				$this->debug( 'Attachment GUIDs on blog %s: %s', $blog_id, $guids );
+				$this->__dumped_attachment_guids[ $blog_id ] = $md5;
+			}
+
 			// Modify the captions.
 			$content = str_replace( '[caption id="attachment_' . $a->old->ID . '"', '[caption id="attachment_' . $a->new->ID . '"', $content, $count );
 			if ( $count > 0 )

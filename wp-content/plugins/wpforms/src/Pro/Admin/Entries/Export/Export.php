@@ -440,7 +440,7 @@ class Export {
 			[];
 
 		/**
-		 * Filter entries during form data init.
+		 * Filter form data during export.
 		 *
 		 * @since 1.8.2
 		 *
@@ -503,26 +503,6 @@ class Export {
 		$form_data['payment_fields'] = $form_payment_fields;
 
 		return $form_data;
-	}
-
-	/**
-	 * Check if current page request meets requirements for Export tool.
-	 *
-	 * @since 1.5.5
-	 * @deprecated 1.7.6
-	 *
-	 * @return bool
-	 */
-	public function is_tools_export_page() {
-
-		_deprecated_function( __METHOD__, '1.7.6 of the WPForms plugin' );
-
-		// Only proceed for the Tools > Export.
-		if ( ! wpforms_is_admin_page( 'tools', 'export' ) ) {
-			return false;
-		}
-
-		return true;
 	}
 
 	/**

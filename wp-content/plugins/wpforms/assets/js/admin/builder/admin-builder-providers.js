@@ -1,4 +1,4 @@
-/* global wpforms_builder_providers, wpforms_builder, wpf, WPForms */
+/* global wpforms_builder_providers, wpforms_builder, wpf, WPForms, WPFormsBuilder */
 
 ( function( $ ) {
 
@@ -69,14 +69,20 @@
 				WPFormsProviders.accountListSelect( this, e );
 			} );
 
+			// BC: Constant Contact v2, Aweber v1 and Campaign Monitor don't have JS logic for updating select fields with form fields options.
+			// That's why we have to refresh the form every time when change something in fields and visit the Marketing tab.
 			$( document ).on( 'wpformsPanelSwitch', function( e, targetPanel ) {
-				WPFormsProviders.providerPanelConfirm( targetPanel );
+				const legacyProviders = [ 'aweber', 'campaign-monitor', 'constant-contact' ];
+				const hasConfiguredLegacyProvider = legacyProviders.some( ( legacyProvider ) => $( `.wpforms-panel-content-section-${ legacyProvider } .wpforms-provider-connection` ).length > 0 );
+
+				if ( hasConfiguredLegacyProvider ) {
+					WPFormsProviders.providerPanelConfirm( targetPanel );
+				}
 			} );
 
 			// Alert users if they save a form and do not configure required
 			// fields.
-			$( document ).on( 'wpformsSaved', function() {
-
+			$( document ).on( 'wpformsSaved', function( e, data ) {
 				var providerAlerts = [];
 				var $connectionBlocks = $( '#wpforms-panel-providers' ).find( '.wpforms-connection-block' );
 
@@ -391,7 +397,7 @@
 
 			wpforms_panel_switch = true;
 			if ( targetPanel === 'providers' && ! s.form.data( 'revision' ) ) {
-				if ( wpf.savedState != wpf.getFormState( '#wpforms-builder-form' ) ) {
+				if ( ! WPFormsBuilder.formIsSaved() ) {
 					wpforms_panel_switch = false;
 					$.confirm( {
 						title: false,
@@ -537,22 +543,11 @@
 		 * @return {string} Returns the default name for a new connection.
 		 */
 		getDefaultConnectionName( provider ) {
-			const providerClass = WPFormsProviders.getProviderClass( provider );
-
-			// Check if the provider has a method to set the custom connection name.
-			if ( typeof providerClass?.setDefaultModalValue === 'function' ) {
-				return providerClass.setDefaultModalValue();
-			}
-
 			const providerName = $( `#${ provider }-provider` ).data( 'provider-name' );
 			const numberOfConnections = WPFormsProviders.getCountConnectionsOf( provider );
 			const defaultName = `${ providerName } ${ wpforms_builder.connection_label }`;
 
-			if ( numberOfConnections === 0 ) {
-				return defaultName;
-			}
-
-			return `${ defaultName } #${ numberOfConnections + 1 }`;
+			return numberOfConnections < 1 ? defaultName : '';
 		},
 
 		/**
@@ -572,12 +567,16 @@
 		 * Get a provider JS object.
 		 *
 		 * @since 1.9.3
+		 * @deprecated 1.9.5 Not used anymore.
 		 *
 		 * @param {string} provider Provider name.
 		 *
 		 * @return {Object|null} Return provider object or null.
 		 */
 		getProviderClass( provider ) {
+			// eslint-disable-next-line no-console
+			console.warn( 'WARNING! Function "WPFormsProviders.getProviderClass()" has been deprecated!' );
+
 			const upperProviderPart = ( providerPart ) => (
 				providerPart.charAt( 0 ).toUpperCase() + providerPart.slice( 1 )
 			);

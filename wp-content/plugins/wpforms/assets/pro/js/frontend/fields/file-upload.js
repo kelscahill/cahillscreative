@@ -1014,13 +1014,8 @@
 		 *
 		 * @since 1.6.0
 		 */
-		init: function() {
-
-			if ( document.readyState === 'loading' ) {
-				document.addEventListener( 'DOMContentLoaded', ready );
-			} else {
-				ready();
-			}
+		init() {
+			$( document ).on( 'wpformsReady', ready );
 		},
 	};
 

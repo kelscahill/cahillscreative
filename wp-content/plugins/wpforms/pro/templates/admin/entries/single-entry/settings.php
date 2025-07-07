@@ -4,7 +4,8 @@
  *
  * @since 1.8.3
  *
- * @var array $entry_view_settings Display settings for the single entry page.
+ * @var array  $entry_view_settings Display settings for the single entry page.
+ * @var string $form_id             Form ID.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,7 +18,7 @@ if ( ! $entry_view_settings ) {
 
 ?>
 <div class="wpforms-entries-settings-container">
-	<button id="wpforms-entries-settings-button" class="wpforms-entries-settings-button button" type="button">
+	<button id="wpforms-entries-settings-button" class="wpforms-entries-settings-button button" type="button" data-form-id="<?php echo esc_attr( $form_id ); ?>">
 		<span class="dashicons dashicons-admin-generic"></span>
 	</button>
 	<div class="wpforms-entries-settings-menu">

@@ -678,6 +678,7 @@ class ApiManager
         $customer_data['email'] = $customer_data['billing']['email'];
         $customer_data['subscribed'] = "false";
         $customer_data['is_customer'] = "false";
+        $customer_data['subscription_location'] = "order-checkout";
 
         if (empty($opt_in_enabled)) {
             $customer_data['subscribed'] = "true";

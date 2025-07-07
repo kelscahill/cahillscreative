@@ -370,33 +370,6 @@ class ListTable extends WP_List_Table {
 	}
 
 	/**
-	 * Logic to determine which fields are displayed in the table columns.
-	 *
-	 * @since 1.8.6
-	 * @deprecated 1.8.6
-	 *
-	 * @param array $columns List of columns.
-	 * @param int   $display Number of columns to display.
-	 *
-	 * @return array
-	 * @noinspection PhpUnusedParameterInspection
-	 */
-	public function get_columns_form_fields( array $columns = [], int $display = 3 ): array {
-
-		// We don't need current method anymore.
-		// All the logic is refactored and moved to the \WPForms\Pro\Admin\Entries\Table\Facades\Columns::get_list_table_columns() method.
-		_deprecated_function( __METHOD__, '1.8.6 of the WPForms plugin', Columns::class . '::get_list_table_columns()' );
-
-		return array_filter(
-			$columns,
-			static function ( $slug ) {
-
-				return strpos( $slug, 'wpforms_field_' ) === 0;
-			}
-		);
-	}
-
-	/**
 	 * Render the checkbox column.
 	 *
 	 * @since 1.8.6
@@ -408,73 +381,6 @@ class ListTable extends WP_List_Table {
 	public function column_cb( $entry ) {
 
 		return '<input type="checkbox" name="entry_id[]" value="' . absint( $entry->entry_id ) . '" />';
-	}
-
-	/**
-	 * Show `status` value.
-	 *
-	 * @since 1.8.6
-	 * @deprecated 1.8.2.1
-	 *
-	 * @param object $entry       Current entry data.
-	 * @param string $column_name Current column name.
-	 *
-	 * @return string
-	 * @noinspection PhpMissingParamTypeInspection
-	 * @noinspection PhpUnusedParameterInspection
-	 */
-	public function column_status_field( $entry, $column_name ) {
-
-		_deprecated_function( __METHOD__, '1.8.2.1 of the WPForms plugin' );
-
-		// If the entry is a payment, show the payment status.
-		if ( $entry->type === 'payment' ) {
-			list( $status_label ) = $this->get_payment_status_by_entry_id( (int) $entry->entry_id );
-
-			return $status_label;
-		}
-
-		// If the entry has a status, show it.
-		if ( ! empty( $entry->status ) ) {
-			return ucwords( sanitize_text_field( $entry->status ) );
-		}
-
-		// Otherwise, show "N/A" as a placeholder.
-		return esc_html__( 'N/A', 'wpforms' );
-	}
-
-	/**
-	 * Show `payment_total` value.
-	 *
-	 * @since 1.8.6
-	 * @deprecated 1.8.2
-	 *
-	 * @param object $entry       Current entry data.
-	 * @param string $column_name Current column name.
-	 *
-	 * @return string
-	 * @noinspection PhpMissingParamTypeInspection
-	 * @noinspection PhpUnusedParameterInspection
-	 */
-	public function column_payment_total_field( $entry, $column_name ) {
-
-		_deprecated_function( __METHOD__, '1.8.2 of the WPForms plugin' );
-
-		$entry_meta = json_decode( $entry->meta, true );
-
-		if ( $entry->type === 'payment' && isset( $entry_meta['payment_total'] ) ) {
-			$amount = wpforms_sanitize_amount( $entry_meta['payment_total'], $entry_meta['payment_currency'] );
-			$total  = wpforms_format_amount( $amount, true, $entry_meta['payment_currency'] );
-			$value  = $total;
-
-			if ( ! empty( $entry_meta['payment_subscription'] ) ) {
-				$value .= ' <i class="fa fa-refresh" aria-hidden="true" style="color:#ccc;margin-left:4px;" title="' . esc_html__( 'Recurring', 'wpforms' ) . '"></i>';
-			}
-		} else {
-			$value = '-';
-		}
-
-		return $value;
 	}
 
 	/**
@@ -2034,34 +1940,6 @@ class ListTable extends WP_List_Table {
 				'per_page'    => $per_page,
 			]
 		);
-	}
-
-	/**
-	 * Sort by payment total.
-	 *
-	 * @since 1.8.6
-	 * @deprecated 1.7.6
-	 *
-	 * @param object $a First entry to sort.
-	 * @param object $b Second entry to sort.
-	 *
-	 * @return int
-	 * @noinspection PhpUnused
-	 */
-	public function payment_total_sort( $a, $b ) {
-
-		_deprecated_function( __METHOD__, '1.7.6 of the WPForms plugin' );
-
-		$a_meta  = json_decode( $a->meta, true );
-		$a_total = ! empty( $a_meta['payment_total'] ) ? wpforms_sanitize_amount( $a_meta['payment_total'] ) : 0;
-		$b_meta  = json_decode( $b->meta, true );
-		$b_total = ! empty( $b_meta['payment_total'] ) ? wpforms_sanitize_amount( $b_meta['payment_total'] ) : 0;
-
-		if ( (float) $a_total === (float) $b_total ) {
-			return 0;
-		}
-
-		return ( $a_total < $b_total ) ? - 1 : 1;
 	}
 
 	/**

@@ -65,6 +65,8 @@ class Admin {
 
 			<p><?php esc_html_e( 'Select a form to export entries, then select the fields you would like to include. You can also define search and date filters to further personalize the list of entries you want to retrieve. WPForms will generate a downloadable CSV/XLSX file of your entries.', 'wpforms' ); ?></p>
 
+			<?php $this->display_export_notice(); ?>
+
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=wpforms-tools&view=export' ) ); ?>" id="wpforms-tools-entries-export">
 				<input type="hidden" name="action" value="wpforms_tools_entries_export_step">
 				<?php
@@ -138,6 +140,73 @@ class Admin {
 			</form>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Display export notice.
+	 *
+	 * @since 1.9.6.1
+	 */
+	private function display_export_notice(): void {
+
+		if ( ! wpforms()->obj( 'addons' )->get_addon( 'entry-automation' ) ) {
+			return;
+		}
+
+		$dismissed_notices = get_user_meta( get_current_user_id(), 'wpforms_admin_notices', true );
+
+		if ( ! empty( $dismissed_notices['wpforms-tools-entries-export-notice'] ) ) {
+			return;
+		}
+
+		$this->enqueue_script();
+
+		$notice = sprintf(
+			wp_kses( /* translators: %1$s - link to the WPForms.com doc article. */
+				__( 'If you need to export entries on a regular basis, you can now automate this process. <a href="%1$s" target="_blank" rel="noopener noreferrer">Learn More</a>', 'wpforms' ),
+				[
+					'a' => [
+						'href'   => [],
+						'rel'    => [],
+						'target' => [],
+					],
+				]
+			),
+			esc_url( wpforms_utm_link( 'https://wpforms.com/docs/entry-automation-addon/', 'Entry Automation Education', 'Entry Automation Documentation' ) )
+		);
+
+		printf(
+			'<div id="wpforms-tools-entries-export-notice" class="wpforms-notice" style="display: block;"><p>%1$s</p><button type="button" class="notice-dismiss"><span class="screen-reader-text">%2$s</span></button></div>',
+			$notice, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			esc_html__( 'Dismiss this notice.', 'wpforms' )
+		);
+	}
+
+	/**
+	 * Enqueue scripts.
+	 *
+	 * @since 1.9.6.1
+	 */
+	private function enqueue_script(): void {
+
+		$min = wpforms_get_min_suffix();
+
+		wp_enqueue_script(
+			'wpforms-admin-notices',
+			WPFORMS_PLUGIN_URL . "assets/js/admin/notices{$min}.js",
+			[ 'jquery' ],
+			WPFORMS_VERSION,
+			true
+		);
+
+		wp_localize_script(
+			'wpforms-admin-notices',
+			'wpforms_admin_notices',
+			[
+				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'nonce'    => wp_create_nonce( 'wpforms-admin' ),
+			]
+		);
 	}
 
 	/**

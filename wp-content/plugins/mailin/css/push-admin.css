@@ -1,0 +1,32 @@
+/**
+ * Global Stylesheet.
+ * These styles are embedded into every WordPress admin page.
+ */
+
+#sib_push_editor {
+    margin-top: 8px;
+}
+
+#sib_push_editor .sib_push_target {
+    padding: 0 0 15px 25px;
+}
+
+#sib_push_editor .sib_push_target input[type=search]::placeholder {
+}
+
+#sib_push_editor label {
+    display: block;
+}
+
+#sib_push_editor .sib_push_target label {
+    display: block;
+}
+
+#sib_push_editor .sib_push_target .select2 {
+    min-width: 250px;
+    max-width: 400px;
+}
+
+#sib_push_editor .sib_push_utm_summary a.sib_push_configure {
+    display: block;
+}

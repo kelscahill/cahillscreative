@@ -8,6 +8,18 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 class SIB_Forms_List extends WP_List_Table {
 
+    /**
+     * Column headers for the table
+     * @var array
+     */
+    public $_column_headers;
+
+    /**
+     * Items for the table
+     * @var array
+     */
+    public $items;
+
     /** Class constructor */
     public function __construct() {
 

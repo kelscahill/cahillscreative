@@ -737,46 +737,6 @@ class DashboardWidget extends Widget {
 	}
 
 	/**
-	 * Get timespan options for $element (in days).
-	 *
-	 * @since 1.5.0
-	 * @deprecated 1.5.2
-	 *
-	 * @param string $element Possible value: 'chart' or 'forms_list'.
-	 *
-	 * @return array
-	 * @noinspection PhpUnused
-	 * @noinspection PhpUnusedParameterInspection
-	 * @noinspection PhpMissingReturnTypeInspection
-	 * @noinspection ReturnTypeCanBeDeclaredInspection
-	 */
-	public function get_timespan_options_for( $element ) {
-
-		_deprecated_function( __METHOD__, '1.5.2 of the WPForms plugin', 'get_timespan_options()' );
-
-		return $this->get_timespan_options();
-	}
-
-	/**
-	 * Get default timespan option for $element.
-	 *
-	 * @since 1.5.0
-	 * @deprecated 1.5.2
-	 *
-	 * @param string $element Possible value: 'chart' or 'forms_list'.
-	 *
-	 * @return int|null
-	 * @noinspection PhpUnused
-	 * @noinspection PhpUnusedParameterInspection
-	 */
-	public function get_timespan_default_for( $element ) {
-
-		_deprecated_function( __METHOD__, '1.5.2 of the WPForms plugin', 'DashboardWidget::get_timespan_default()' );
-
-		return $this->get_timespan_default();
-	}
-
-	/**
 	 * Converts number of days to day start and day end values.
 	 *
 	 * @since 1.5.5

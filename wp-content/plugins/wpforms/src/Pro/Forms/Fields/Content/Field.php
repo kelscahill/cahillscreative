@@ -24,6 +24,7 @@ class Field extends FieldLite {
 		add_filter( "wpforms_pro_admin_entries_edit_is_field_displayable_{$this->type}", '__return_false' );
 		add_action( 'wpforms_frontend_css', [ $this, 'frontend_css' ] );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_css' ] );
+		add_action( 'wpforms_builder_enqueues', [ $this, 'builder_enqueues_pro' ] );
 	}
 
 	/**
@@ -160,6 +161,28 @@ class Field extends FieldLite {
 			WPFORMS_PLUGIN_URL . "assets/pro/css/fields/content/frontend{$min}.css",
 			[],
 			WPFORMS_VERSION
+		);
+	}
+
+	/**
+	 * Enqueue wpforms-content-field script.
+	 *
+	 * @since 1.9.5
+	 *
+	 * @param string $view Current view.
+	 *
+	 * @noinspection PhpUnusedParameterInspection, PhpUnnecessaryCurlyVarSyntaxInspection
+	 */
+	public function builder_enqueues_pro( string $view ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+
+		$min = wpforms_get_min_suffix();
+
+		wp_enqueue_script(
+			'wpforms-content-field',
+			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/builder/fields/content{$min}.js",
+			[ 'wpforms-builder', 'editor', 'quicktags' ],
+			WPFORMS_VERSION,
+			true
 		);
 	}
 

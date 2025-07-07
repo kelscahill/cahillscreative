@@ -420,6 +420,9 @@ var WPFormsStripePaymentElement = window.WPFormsStripePaymentElement || ( functi
 					'.Tab': {
 						color: inputStyle.colorText,
 					},
+					'.InstantBankPayment': {
+						display: 'none',
+					},
 					'.TabLabel, .TabIcon': {
 						color: inputStyle.colorText,
 					},
@@ -856,8 +859,8 @@ var WPFormsStripePaymentElement = window.WPFormsStripePaymentElement || ( functi
 		 */
 		displayStripeError( $form, message ) {
 			wpforms.clearFormAjaxGeneralErrors( $form );
-
 			wpforms.displayFormAjaxErrors( $form, message );
+			wpforms.resetFormRecaptcha( $form );
 
 			app.formAjaxUnblock( $form );
 		},

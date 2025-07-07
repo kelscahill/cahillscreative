@@ -125,6 +125,14 @@ trait post_actions
 
 		$post = get_post( $post_id );
 
+		$parent_post_broadcast_data = false;
+		if ( $post->post_parent > 0 )
+		{
+			// Save the parent post linking data.
+			$parent_post_broadcast_data = ThreeWP_Broadcast()->get_parent_post_broadcast_data( $blog_id, $post->post_parent );
+			$this->debug( 'Saved the broadcast data for the parent post: %s / %s', $blog_id, $post->post_parent );
+		}
+
 		foreach( $blogs as $blog )
 		{
 			if ( $blog->id == $blog_id )
@@ -159,6 +167,28 @@ trait post_actions
 				$blog->id,
 				json_encode( $args )
 			);
+
+			if ( count( $action->posts ) > 1 )
+			{
+				if ( $parent_post_broadcast_data && $parent_post_broadcast_data->has_linked_child_on_this_blog() )
+				{
+					$parent_post_id = $parent_post_broadcast_data->get_linked_post_on_this_blog();
+					$args = [
+						'cache_results' => false,
+						'name' => $post->post_name,
+						'post_parent' => $parent_post_id,
+						'post_type' => $post->post_type,
+						'post_status' => $post->post_status,
+					];
+					$action->posts = get_posts( $args );
+					ThreeWP_Broadcast()->debug( 'Also looking the parent post. Found %d posts (%s) on blog %s: %s',
+						count( $post_ids ),
+						implode( ",", $post_ids ),
+						$blog->id,
+						json_encode( $args )
+					);
+				}
+			}
 
 			// An exact match was found.
 			if ( count( $action->posts ) == 1 )

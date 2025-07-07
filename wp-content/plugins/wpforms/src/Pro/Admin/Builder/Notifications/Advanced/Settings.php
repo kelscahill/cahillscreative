@@ -65,7 +65,7 @@ class Settings {
 		wp_enqueue_script(
 			'wpforms-builder-notifications-advanced',
 			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/builder/notifications{$min}.js",
-			[ 'jquery', 'conditionals', 'choicesjs' ],
+			[ 'jquery', 'conditions', 'choicesjs' ],
 			WPFORMS_VERSION,
 			true
 		);

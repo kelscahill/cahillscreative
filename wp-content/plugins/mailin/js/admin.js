@@ -797,7 +797,36 @@ $jQ(document).ready(function(){
 
         return true;
     });
+    $jQ('#activate_push_btn').on('click', function() {
+        var $btn = this;
+        var deactivate = function() {
+            $jQ('#sib-push-activation-message').show();
+            $jQ($btn).find('.sib-spin').show();
+            $jQ($btn).attr('disabled', 'disabled');
+        };
+        deactivate();
+        var data = {
+            action: 'sib_push_set_push_activated',
+            activated: 'true',
+            nonce: ajax_sib_object.ajax_nonce
+        };
+        $jQ.post(ajax_sib_object.ajax_url, data, function(response) {
+            window.location.reload();
+        });
+    });
+    $jQ(document).on('click', '#deactivate_push_btn', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var data = {
+            action: 'sib_push_set_push_activated',
+            activated: 'false',
+            nonce: ajax_sib_object.ajax_nonce
+        };
+        $jQ.post(ajax_sib_object.ajax_url, data, function(response) {
+            window.location.reload();
+        });
 
+    });
     // validate MA
     $jQ('#validate_ma_btn').on('click',function(){
         var option_val = $jQ('input[name=activate_ma]:checked').val();

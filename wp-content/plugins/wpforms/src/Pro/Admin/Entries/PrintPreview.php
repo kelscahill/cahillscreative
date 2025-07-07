@@ -514,68 +514,6 @@ class PrintPreview {
 	}
 
 	/**
-	 * Add HTML entries, dividers to entry.
-	 *
-	 * @since 1.6.7
-	 * @deprecated 1.8.7
-	 *
-	 * @param array  $fields    Form fields.
-	 * @param object $entry     Entry fields.
-	 * @param object $form_data Form data.
-	 *
-	 * @return array
-	 */
-	public function add_hidden_data( $fields, $entry, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
-
-		_deprecated_function( __METHOD__, '1.8.7 of the WPForms', 'WPForms_Entries_Single::get_choice_label()' );
-
-		$settings = ! empty( $form_data['fields'] ) ? $form_data['fields'] : [];
-
-		// Content, Divider, HTML and layout fields must always be included because it's allowed to show and hide these fields.
-		$forced_allowed_fields = [ 'content', 'divider', 'html', 'layout', 'pagebreak' ];
-
-		// First order settings field and remove fields that we dont need.
-		foreach ( $settings as $key => $setting ) {
-
-			if ( empty( $setting['type'] ) ) {
-				unset( $settings[ $key ] );
-				continue;
-			}
-
-			$field_type = $setting['type'];
-
-			if ( in_array( $field_type, $forced_allowed_fields, true ) ) {
-				continue;
-			}
-
-			// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
-			/** This filter is documented in /src/Pro/Admin/Entries/Edit.php */
-			if ( ! (bool) apply_filters( "wpforms_pro_admin_entries_edit_is_field_displayable_{$field_type}", true, $setting, $form_data ) ) {
-				unset( $settings[ $key ] );
-				continue;
-			}
-			// phpcs:enable WPForms.PHP.ValidateHooks.InvalidHookName
-
-			if ( ! isset( $fields[ $key ] ) ) {
-				unset( $settings[ $key ] );
-				continue;
-			}
-
-			$settings[ $key ] = $fields[ $key ];
-		}
-
-		// Second, add fields that might have been removed on the form but are still tied to the entry.
-		foreach ( $fields as $key => $field ) {
-
-			if ( ! isset( $settings[ $key ] ) ) {
-				$settings[ $key ] = $field;
-			}
-		}
-
-		return $settings;
-	}
-
-	/**
 	 * Check if field is allowed to be displayed.
 	 *
 	 * @since 1.8.1.2

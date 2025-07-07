@@ -48,6 +48,12 @@ class ThreeWP_Broadcast
 	public $__plugin_pack;
 
 	/**
+	 *	@brief		Have we dumped the attachment GUIDs on this blog?
+	 *	@since		2025-02-20 17:04:35
+	 **/
+	public $__dumped_attachment_guids = [];
+
+	/**
 		@brief		The URL of the site, used during broadcasting.
 		@details	Here for the php 8.2 warning.
 		@since		2024-05-11 21:12:56

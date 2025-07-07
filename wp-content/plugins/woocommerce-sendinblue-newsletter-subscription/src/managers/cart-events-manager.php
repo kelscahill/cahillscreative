@@ -39,12 +39,13 @@ class CartEventsManagers
 
         $tracking_email = sanitize_text_field($_POST['tracking_email']);
         $email_id = $this->get_email_id($tracking_email);
-
+        $subscription_location = isset($_POST['subscription_location']) ? sanitize_text_field($_POST['subscription_location']) : '';
         $client = new SendinblueClient();
         $client->eventsSync(SendinblueClient::CONTACT_CREATED, [
             "subscribed"=>"false",
             "email"=>$email_id,
             "is_anonymous_user"=>true,
+            "subscription_location" => $subscription_location,
         ]);
     }
 
@@ -560,7 +561,7 @@ class CartEventsManagers
                 'id'            => 'SendinblueWoocommerce/newsletter_opt_in',
                 'label'         => $checkout_label,
                 'location'      => $location,
-                'required'      => true,
+                'required'      => false,
                     'type'     => 'checkbox',
             ),
         );

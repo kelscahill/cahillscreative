@@ -335,6 +335,16 @@ class Edit {
 			);
 		}
 
+		if ( wpforms_has_field_type( 'address', $this->form ) ) {
+			wp_enqueue_script(
+				'wpforms-address-field',
+				WPFORMS_PLUGIN_URL . "assets/js/frontend/fields/address{$min}.js",
+				[ 'jquery' ],
+				WPFORMS_VERSION,
+				true
+			);
+		}
+
 		wp_enqueue_script(
 			'wpforms-generic-utils',
 			WPFORMS_PLUGIN_URL . "assets/js/share/utils{$min}.js",
@@ -808,7 +818,8 @@ class Edit {
 			?>
 			<div class="wpforms-entry-edit-row">
 				<?php foreach ( $row_data as $data ) : ?>
-					<div class="wpforms-entry-edit-column wpforms-entry-edit-column-<?php echo esc_attr( $data['width_preset'] ); ?>">
+					<?php $width = wpforms_get_column_width( $data ); ?>
+					<div class="wpforms-entry-edit-column" style="--field-layout-column-width: <?php echo esc_attr( $width ); ?>%">
 						<?php
 							if ( $data['field'] ) {
 								$this->display_edit_form_field( $data['field']['id'], $data['field'], $entry_fields, $form_data, $hide_empty );
@@ -876,7 +887,8 @@ class Edit {
 			?>
 			<div class="wpforms-entry-edit-row">
 				<?php foreach ( $row_data as $column ) : ?>
-					<div class="wpforms-entry-edit-column wpforms-entry-edit-column-<?php echo esc_attr( $column['width_preset'] ); ?>">
+					<?php $width = wpforms_get_column_width( $column ); ?>
+					<div class="wpforms-entry-edit-column" style="--field-layout-column-width: <?php echo esc_attr( $width ); ?>%">
 						<?php
 						if ( ! empty( $column['field'] ) ) {
 							$this->display_edit_form_field( $column['field']['id'], $column['field'], $entry_fields, $form_data, $hide_empty );
@@ -904,7 +916,8 @@ class Edit {
 		?>
 		<div class="wpforms-entry-edit-row">
 			<?php foreach ( $columns as $column ) : ?>
-				<div class="wpforms-entry-edit-column wpforms-entry-edit-column-<?php echo esc_attr( $column['width_preset'] ); ?>">
+				<?php $width = wpforms_get_column_width( $column ); ?>
+				<div class="wpforms-entry-edit-column" style="--field-layout-column-width: <?php echo esc_attr( $width ); ?>%">
 					<?php
 					foreach ( $column['fields'] as $child_field ) {
 						$this->display_edit_form_field( $child_field['id'], $child_field, $entry_fields, $form_data, $hide_empty );

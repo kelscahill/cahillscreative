@@ -23,6 +23,7 @@ class Field extends FieldLite {
 		// Define additional field properties.
 		add_filter( "wpforms_field_properties_{$this->type}", [ $this, 'field_properties' ], 5, 3 );
 		add_filter( 'wpforms_field_display_sublabel_skip_for', [ $this, 'skip_sublabel_for_attribute' ], 10, 3 );
+		add_filter( 'wpforms_smart_tags_formatted_field_value', [ $this, 'smart_tags_formatted_field_value' ], 7, 5 );
 	}
 
 	/**
@@ -851,5 +852,56 @@ class Field extends FieldLite {
 			'time'  => sanitize_text_field( $time ),
 			'unix'  => $unix,
 		];
+	}
+
+	/**
+	 * Format the smart tag value.
+	 *
+	 * @since 1.9.5
+	 *
+	 * @param string|mixed $value     Field value.
+	 * @param int          $field_id  Field ID.
+	 * @param array        $fields    List of fields.
+	 * @param string       $field_key Field key to get value from.
+	 * @param array        $form_data Form data.
+	 *
+	 * @return string
+	 * @noinspection PhpMissingParamTypeInspection
+	 */
+	public function smart_tags_formatted_field_value( $value, $field_id, $fields, $field_key, $form_data ): string {
+
+		$value = (string) $value;
+
+		// Check if the field is a DateTime field.
+		if (
+			empty( $fields[ $field_id ] ) ||
+			empty( $fields[ $field_id ]['type'] ) ||
+			$fields[ $field_id ]['type'] !== $this->type
+		) {
+			return $value;
+		}
+
+		// Continue only for the non-combined value (date and time subfields).
+		if (
+			empty( $form_data['fields'][ $field_id ] ) ||
+			! in_array( $field_key, [ 'date', 'time' ], true )
+		) {
+			return $value;
+		}
+
+		$field     = $form_data['fields'][ $field_id ];
+		$saved_ts  = $fields[ $field_id ]['unix'] ?? '';
+		$dt_string = $fields[ $field_id ][ $field_key ] ?? '';
+		$parsed_ts = strtotime( $dt_string . ' ' . wp_timezone_string() );
+		$timestamp = $parsed_ts === false ? $saved_ts : $parsed_ts;
+
+		// Get the format.
+		if ( $field_key === 'time' ) {
+			$format = empty( $field['time_format'] ) ? self::DEFAULTS['time_format'] : $field['time_format'];
+		} else {
+			$format = empty( $field['date_format'] ) ? self::DEFAULTS['date_format'] : $field['date_format'];
+		}
+
+		return wp_date( $format, (int) $timestamp, wp_timezone() );
 	}
 }

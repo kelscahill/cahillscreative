@@ -61,10 +61,14 @@ WPForms.Admin.Builder.Filters = WPForms.Admin.Builder.Filters || ( function( doc
 		 */
 		ready: function() {
 
-			app.setup();
-			app.events();
-			app.initCountryList();
-			app.loadStates();
+			el.$builder = $( '#wpforms-builder' );
+
+			el.$builder.on( 'wpformsBuilderConfirmationsReady', function() {
+				app.setup();
+				app.events();
+				app.initCountryList();
+				app.loadStates();
+			} );
 		},
 
 		/**
@@ -76,7 +80,7 @@ WPForms.Admin.Builder.Filters = WPForms.Admin.Builder.Filters || ( function( doc
 
 			// Cache DOM elements.
 			el = {
-				$builder: $( '#wpforms-builder' ),
+				...el,
 				$panelToggle: $( '.wpforms-panel-field-toggle-next-field' ),
 				$keywordsList: $( '.wpforms-panel-field-keyword-keywords textarea' ),
 				$keywordsListContainer: $( '.wpforms-panel-field-keyword-filter-keywords-container' ),
@@ -156,12 +160,6 @@ WPForms.Admin.Builder.Filters = WPForms.Admin.Builder.Filters || ( function( doc
 
 			// Update hidden input value.
 			app.changeCountryCodes( null );
-
-			// Update form state when hidden input is updated.
-			// This will prevent a please-save-prompt to appear without doing any changes anywhere.
-			if ( wpf.initialSave === true ) {
-				wpf.savedState = wpf.getFormState( '#wpforms-builder-form' );
-			}
 		},
 
 		/**
@@ -218,6 +216,10 @@ WPForms.Admin.Builder.Filters = WPForms.Admin.Builder.Filters || ( function( doc
 						vars.keywordList = res.data.keywords.join( '\r\n' );
 
 						el.$keywordsList.val( vars.keywordList );
+
+						// We must use `$field.val()` to keep consistency with the `wpf._getCurrentFormState()` method.
+						wpf.savedFormState.keywordFilter = el.$keywordsList.val();
+
 						app.updateKeywordsCount();
 					}
 				}

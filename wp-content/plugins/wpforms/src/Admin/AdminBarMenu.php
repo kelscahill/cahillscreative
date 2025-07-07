@@ -164,8 +164,8 @@ class AdminBarMenu {
 				'main_menu',
 				'notification_menu',
 				'all_forms_menu',
-				'all_payments_menu',
 				'add_new_menu',
+				'all_payments_menu',
 				'settings_menu',
 				'tools_menu',
 				'community_menu',
@@ -296,6 +296,10 @@ class AdminBarMenu {
 				'wpforms-tools-export'           => [
 					'title' => esc_html__( 'Export', 'wpforms-lite' ),
 					'path'  => 'admin.php?page=wpforms-tools&view=export',
+				],
+				'wpforms-tools-entry-automation' => [
+					'title' => esc_html__( 'Entry Automation', 'wpforms-lite' ),
+					'path'  => 'admin.php?page=wpforms-tools&view=entry-automation',
 				],
 				'wpforms-tools-system'           => [
 					'title' => esc_html__( 'System Info', 'wpforms-lite' ),
@@ -512,7 +516,7 @@ class AdminBarMenu {
 			[
 				'parent' => 'wpforms-menu',
 				'id'     => 'wpforms-add-new',
-				'title'  => esc_html__( 'Add New', 'wpforms-lite' ),
+				'title'  => esc_html__( 'Add New Form', 'wpforms-lite' ),
 				'href'   => admin_url( 'admin.php?page=wpforms-builder' ),
 			]
 		);

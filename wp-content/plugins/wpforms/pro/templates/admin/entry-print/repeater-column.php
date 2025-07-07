@@ -34,7 +34,7 @@ $current_column = 0;
 	];
 	?>
 
-	<div class="<?php echo wpforms_sanitize_classes( $column_classes, true ); ?>" style="width: <?php echo esc_attr( $preset_width ); ?>%">
+	<div class="<?php echo wpforms_sanitize_classes( $column_classes, true ); ?>" style="--field-layout-column-width: <?php echo esc_attr( $preset_width ); ?>%">
 		<?php if ( $data['field'] ) : ?>
 			<?php
 			echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

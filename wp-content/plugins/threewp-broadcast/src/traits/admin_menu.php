@@ -239,6 +239,15 @@ trait admin_menu
 			->size( 3, 3 )
 			->value( $this->get_site_option( 'blogs_to_hide' ) );
 
+		$blogs_show_counter = $fs->number( 'blogs_show_counter' )
+			->description( __( 'After how many total blogs to show the count of selected / total blogs in the meta box. -1 to disable.', 'threewp-broadcast' ) )
+			// Input label.
+			->label( __( 'Show selected blogs counter', 'threewp-broadcast' ) )
+			->min( -1 )
+			->required()
+			->size( 3, 3 )
+			->value( $this->get_site_option( 'blogs_show_counter' ) );
+
 		$blogs_hide_overview = $fs->number( 'blogs_hide_overview' )
 			->description( __( 'How many children to display in the overview before making the list into a summary.', 'threewp-broadcast' ) )
 			// Input label.
@@ -462,6 +471,7 @@ trait admin_menu
 			$this->update_site_option( 'show_custom_fields_taxonomies', $show_custom_fields_taxonomies->is_checked() );
 			$this->update_site_option( 'save_post_priority', $save_post_priority->get_post_value() );
 			$this->update_site_option( 'save_post_decoys', $save_post_decoys->get_post_value() );
+			$this->update_site_option( 'blogs_show_counter', $blogs_show_counter->get_post_value() );
 			$this->update_site_option( 'blogs_to_hide', $blogs_to_hide->get_post_value() );
 			$this->update_site_option( 'blogs_hide_overview', $blogs_hide_overview->get_post_value() );
 			$this->update_site_option( 'blog_selector_position', $blog_selector_position->get_post_value() );

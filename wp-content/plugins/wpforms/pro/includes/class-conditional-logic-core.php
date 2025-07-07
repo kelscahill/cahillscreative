@@ -607,28 +607,6 @@ class WPForms_Conditional_Logic_Core {
 	}
 
 	/**
-	 * Alias method for backwards compatibility.
-	 *
-	 * @since 1.1.0
-	 * @deprecated 1.3.8
-	 *
-	 * @param array $args Data needed for a block to be generated properly.
-	 * @param bool  $echo Whether to return or print. Default: print.
-	 *
-	 * @return string
-	 */
-	public function conditionals_block( $args = [], $echo = true ) {
-
-		_deprecated_function( __METHOD__, '1.3.8 of the WPForms plugin', 'wpforms_conditional_logic()->builder_block()' );
-
-		if ( $echo ) {
-			echo $this->builder_block( $args, $echo ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		} else {
-			return $this->builder_block( $args, $echo );
-		}
-	}
-
-	/**
 	 * Process conditional rules.
 	 *
 	 * Check if a form passes the conditional logic rules that are provided.

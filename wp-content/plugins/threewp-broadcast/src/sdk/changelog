@@ -1,3 +1,5 @@
+20250319		Wordpress: Allow for checking of the is_multisite function. For legacy installs.
+20250210		PHP 8.2 compat fixes
 20240902		Worpdress: remove EDD https workaround. Deprecated.
 20240902		Form: Allow setting of checkboxes value() with an array.
 20240511		Worpdress: 8.2 form warning

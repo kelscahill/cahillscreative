@@ -45,8 +45,9 @@ class Builder {
 	 * @param object $form    CPT of the form.
 	 *
 	 * @return array
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function form_builder_strings( $strings, $form ) {
+	public function form_builder_strings( $strings, $form ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		$strings['notification_clone'] = esc_html__( ' - clone', 'wpforms' );
 
@@ -93,8 +94,7 @@ class Builder {
 		<script type="text/html" id="tmpl-wpforms-builder-confirmations-message-field">
 			<div id="wpforms-panel-field-confirmations-message-{{ data.id }}-wrap" class="wpforms-panel-field wpforms-panel-field-tinymce" style="display: block;">
 				<label for="wpforms-panel-field-confirmations-message-{{ data.id }}"><?php esc_html_e( 'Confirmation Message', 'wpforms' ); ?></label>
-				<textarea id="wpforms-panel-field-confirmations-message-{{ data.id }}" name="settings[confirmations][{{ data.id }}][message]" rows="3" placeholder="" class="wpforms-panel-field-confirmations-message"></textarea>
-				<a href="#" class="toggle-smart-tag-display toggle-unfoldable-cont" data-location="confirmations" data-type="all" data-fields=""><i class="fa fa-tags"></i><span><?php esc_html_e( 'Show Smart Tags', 'wpforms' ); ?></span></a>
+				<textarea id="wpforms-panel-field-confirmations-message-{{ data.id }}" name="settings[confirmations][{{ data.id }}][message]" rows="3" placeholder="" class="wpforms-panel-field-confirmations-message" data-location="confirmations" data-type="all" data-fields=""></textarea>
 			</div>
 		</script>
 
@@ -124,8 +124,11 @@ class Builder {
 	 * @since 1.7.6
 	 *
 	 * @param string $view Current view.
+	 *
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function builder_enqueues( $view ) {
+	public function builder_enqueues( $view ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 
 		$min = wpforms_get_min_suffix();
 

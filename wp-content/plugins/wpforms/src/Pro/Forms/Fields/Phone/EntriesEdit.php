@@ -41,7 +41,7 @@ class EntriesEdit extends \WPForms\Pro\Forms\Fields\Base\EntriesEdit {
 		// Load International Telephone Input library - https://github.com/jackocnr/intl-tel-input.
 		wp_enqueue_script(
 			'wpforms-smart-phone-field',
-			WPFORMS_PLUGIN_URL . 'assets/pro/lib/intl-tel-input/module.intl-tel-input.min.js',
+			WPFORMS_PLUGIN_URL . 'assets/pro/lib/intl-tel-input/intlTelInputWithUtils.min.js',
 			[],
 			FieldLite::INTL_VERSION,
 			true

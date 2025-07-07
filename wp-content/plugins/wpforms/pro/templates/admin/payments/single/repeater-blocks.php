@@ -12,15 +12,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+$label_hide = $field['label_hide'] ?? false;
+
 ?>
 
 <div class="wpforms-payment-entry-repeater-block">
 	<?php foreach ( $blocks as $key => $rows ) : ?>
-		<?php $block_number = $key >= 1 ? ' #' . ( $key + 1 ) : ''; ?>
+		<?php if ( ! $label_hide ) : ?>
+			<?php $block_number = $key >= 1 ? ' #' . ( $key + 1 ) : ''; ?>
 
-		<p class="wpforms-payment-entry-field-name">
-			<?php echo esc_html( $field['label'] . $block_number ); ?>
-		</p>
+			<p class="wpforms-payment-entry-field-name">
+				<?php echo esc_html( $field['label'] . $block_number ); ?>
+			</p>
+		<?php endif; ?>
 
 		<?php
 			foreach ( $rows as $row_data ) {

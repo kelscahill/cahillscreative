@@ -12,12 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$hide_label = $field['hide_label'] ?? false;
+$label_hide = $field['label_hide'] ?? false;
 
 ?>
 
 <div class="wpforms-payment-entry-layout-block">
-	<?php if ( ! $hide_label ) : ?>
+	<?php if ( ! $label_hide ) : ?>
 		<div class="wpforms-payment-entry-field-name">
 			<?php echo esc_html( $field['label'] ); ?>
 		</div>

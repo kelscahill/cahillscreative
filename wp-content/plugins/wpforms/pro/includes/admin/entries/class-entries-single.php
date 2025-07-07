@@ -374,7 +374,7 @@ class WPForms_Entries_Single {
 	 *
 	 * @since 1.1.6
 	 */
-	public function process_note_delete() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function process_note_delete(): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Security check.
 		if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpforms_entry_details_deletenote' ) ) {
@@ -394,8 +394,18 @@ class WPForms_Entries_Single {
 		$message    = esc_html__( 'Note deleted.', 'wpforms' );
 		$entry_meta = wpforms()->obj( 'entry_meta' );
 
+		if ( ! $entry_meta ) {
+			return;
+		}
+
 		// Capability check.
 		if ( ! wpforms_current_user_can( 'edit_entry_single', $entry_id ) ) {
+			return;
+		}
+
+		$note = $entry_meta->get( $note_id );
+
+		if ( ! $note || ( $note->user_id !== get_current_user_id() && ! wpforms_current_user_can() ) ) {
 			return;
 		}
 
@@ -456,7 +466,7 @@ class WPForms_Entries_Single {
 	 *
 	 * @since 1.1.6
 	 */
-	public function process_note_add() {
+	public function process_note_add(): void {
 
 		// Check for post trigger and required vars.
 		if ( empty( $_POST['wpforms_add_note'] ) || empty( $_POST['entry_id'] ) || empty( $_POST['form_id'] ) || empty( $_POST['entry_note'] ) ) {
@@ -485,6 +495,15 @@ class WPForms_Entries_Single {
 		$form_id    = absint( $_POST['form_id'] );
 		$message    = esc_html__( 'Note added.', 'wpforms' );
 		$entry_meta = wpforms()->obj( 'entry_meta' );
+
+		if ( ! $entry_meta ) {
+			return;
+		}
+
+		// Check that the user has permission to add notes to this specific entry.
+		if ( ! wpforms_current_user_can( 'edit_entry_single', $entry_id ) ) {
+			return;
+		}
 
 		// Add note.
 		$entry_meta->add(
@@ -829,7 +848,10 @@ class WPForms_Entries_Single {
 					<?php
 						echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							'admin/entries/single-entry/settings',
-							[ 'entry_view_settings' => $this->entry_view_settings ],
+							[
+								'entry_view_settings' => $this->entry_view_settings,
+								'form_id'             => $entry->form_id,
+							],
 							true
 						);
 					?>
@@ -926,10 +948,32 @@ class WPForms_Entries_Single {
 			],
 		];
 
-		return get_option( 'wpforms_entry_view_settings', $defaults );
+		return (array) get_option( 'wpforms_entry_view_settings', $defaults );
 	}
 
+	/**
+	 * Prepare entry view settings.
+	 *
+	 * @since 1.9.5
+	 *
+	 * @param array $settings Entry view settings.
+	 *
+	 * @return array Prepared entry view settings.
+	 */
+	public static function prepare_entry_view_settings( array $settings ): array {
 
+		$option = self::get_entry_view_settings();
+
+		foreach ( $option['fields'] as $key => $value ) {
+			$option['fields'][ $key ]['value'] = (int) in_array( $key, $settings, true );
+		}
+
+		foreach ( $option['display'] as $key => $value ) {
+			$option['display'][ $key ]['value'] = (int) in_array( $key, $settings, true );
+		}
+
+		return $option;
+	}
 
 	/**
 	 * Entry fields metabox.
@@ -1050,23 +1094,24 @@ class WPForms_Entries_Single {
 
 		return '';
 	}
+
 	/**
 	 * Prints fields for the entry.
 	 *
 	 * @since 1.8.3
+	 * @since 1.9.5 Added $context parameter.
 	 *
 	 * @param array $field     Field Data.
 	 * @param array $form_data Form Data.
+	 * @param array $context   Optional context. Used for rendering Repeater & Layout inner fields.
 	 */
-	public function print_field( $field, $form_data ) {
+	public function print_field( $field, $form_data, array $context = [] ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Get field default value.
 		$field_value = $field['value'] ?? '';
-		$is_hidden   = $this->is_field_hidden( $field ); // If we should hide the field by default or not.
 
 		// Set field value for HTML and Content fields.
 		if ( in_array( $field['type'], [ 'html', 'content' ], true ) ) {
-
 			$field_value = $field['formatted_value'] ?? '';
 		}
 
@@ -1080,7 +1125,7 @@ class WPForms_Entries_Single {
 		$field_value = apply_filters( 'wpforms_html_field_value', wp_kses_post( $field_value ), $field, $form_data, 'entry-single' ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 
 		// Get field classes.
-		$field_classes = $this->get_field_classes( $field, $field_value, $is_hidden );
+		$field_classes = $this->get_field_classes( $field, $field_value, $context );
 
 		// Get field description.
 		$field_description = $form_data['fields'][ $field['id'] ]['description'] ?? '';
@@ -1091,7 +1136,7 @@ class WPForms_Entries_Single {
 			$this->print_field_label( $field, $field_description );
 
 			// Print the field value.
-			$this->print_field_value( $field, $field_value );
+			$this->print_field_value( $field, $field_value, $context );
 
 			// Print the field meta-data.
 			$this->print_field_hidden_data( $field );
@@ -1103,16 +1148,19 @@ class WPForms_Entries_Single {
 	 * Check if the field should be hidden by default or not.
 	 *
 	 * @since 1.8.3
+	 * @since 1.9.5 Added $is_empty parameter.
 	 *
-	 * @param array $field Field data.
+	 * @param array   $field    Field data.
+	 * @param boolean $is_empty Is empty field value.
 	 *
 	 * @return bool
 	 */
-	private function is_field_hidden( $field ): bool {
+	private function is_field_hidden( array $field, bool $is_empty ): bool {
 
 		return ( in_array( $field['type'], [ 'html', 'content' ], true ) && $this->entry_view_settings['fields']['show_html_fields']['value'] !== 1 ) ||
 			( $field['type'] === 'divider' && $this->entry_view_settings['fields']['show_section_dividers']['value'] !== 1 ) ||
-			( $field['type'] === 'pagebreak' && $this->entry_view_settings['fields']['show_page_breaks']['value'] !== 1 );
+			( $field['type'] === 'pagebreak' && $this->entry_view_settings['fields']['show_page_breaks']['value'] !== 1 ) ||
+			( $is_empty && $this->entry_view_settings['fields']['show_empty_fields']['value'] !== 1 );
 	}
 
 	/**
@@ -1207,18 +1255,24 @@ class WPForms_Entries_Single {
 	 * Prints field value.
 	 *
 	 * @since 1.8.3
+	 * @since 1.9.5 Added $context parameter.
 	 *
 	 * @param array  $field       Field Data.
 	 * @param string $field_value Field Value.
+	 * @param array  $context     Context.
 	 */
-	private function print_field_value( $field, $field_value ) {
+	private function print_field_value( $field, $field_value, $context ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( $this->is_structure_field( $field['type'] ) ) {
 			return;
 		}
 
-		$is_choices_field  = $this->is_choice_field( $field['type'] );
-		$hide_choice_value = $is_choices_field && $this->entry_view_settings['fields']['show_unselected_choices']['value'] === 1 ? ' wpforms-hide' : '';
+		$field_classes    = [ 'wpforms-entry-field-value' ];
+		$is_choices_field = $this->is_choice_field( $field['type'] );
+
+		if ( $is_choices_field && $this->entry_view_settings['fields']['show_unselected_choices']['value'] === 1 ) {
+			$field_classes[] = 'wpforms-hide';
+		}
 
 		if ( $field['type'] === 'html' ) {
 			$field_value = make_clickable( force_balance_tags( $field_value ) );
@@ -1226,7 +1280,19 @@ class WPForms_Entries_Single {
 			$field_value = nl2br( make_clickable( $field_value ) );
 		}
 
-		echo '<div class="wpforms-entry-field-value' . esc_attr( $hide_choice_value ) . '">';
+		if ( ! empty( $context['layout-row'] ) ) {
+			$is_empty = $this->is_empty_field( $field, $field_value );
+
+			if ( $is_empty ) {
+				$field_classes[] = 'empty';
+			}
+
+			if ( ! in_array( 'wpforms-hide', $field_classes, true ) && $this->is_field_hidden( $field, $is_empty ) ) {
+				$field_classes[] = 'wpforms-hide';
+			}
+		}
+
+		printf( '<div class="%s">', wpforms_sanitize_classes( $field_classes, true ) );
 			echo ! wpforms_is_empty_string( $field_value )
 				? wp_kses_post( $field_value )
 				: esc_html__( 'Empty', 'wpforms' );
@@ -1237,14 +1303,15 @@ class WPForms_Entries_Single {
 	 * Get field classes.
 	 *
 	 * @since 1.8.3
+	 * @since 1.9.5 Added $context parameter.
 	 *
-	 * @param array   $field       Field Data.
-	 * @param string  $field_value Field Value.
-	 * @param boolean $is_hidden   Hide or show the field.
+	 * @param array  $field       Field Data.
+	 * @param string $field_value Field Value.
+	 * @param array  $context     Context.
 	 *
 	 * @return array
 	 */
-	private function get_field_classes( $field, $field_value, $is_hidden ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_field_classes( $field, $field_value, array $context ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( $field['type'] !== 'layout' && $this->is_structure_field( $field['type'] ) ) {
 			$field_value = $field['formatted_label'] ?? '';
@@ -1257,14 +1324,6 @@ class WPForms_Entries_Single {
 			"wpforms-field-entry-{$field['type']}",
 		];
 
-		$is_empty_quantity = isset( $field['quantity'] ) && ! $field['quantity'];
-		$is_empty_slider   = isset( $field['type'] ) && $field['type'] === 'number-slider' && ( $field['value'] ?? 0 ) === 0;
-		$is_empty          = ! isset( $field_value ) || wpforms_is_empty_string( trim( $field_value ) ) || $is_empty_quantity || $is_empty_slider;
-
-		if ( $is_empty ) {
-			$field_classes[] = 'empty';
-		}
-
 		if ( ! $this->is_structure_field( $field['type'] ) ) {
 			$field_classes[] = 'wpforms-field-entry-fields';
 		}
@@ -1273,11 +1332,17 @@ class WPForms_Entries_Single {
 			$field_classes[] = 'wpforms-field-entry-toggle';
 		}
 
-		if ( $is_empty && $this->entry_view_settings['fields']['show_empty_fields']['value'] !== 1 ) {
-			$field_classes[] = 'wpforms-hide';
+		if ( ! empty( $context['layout-row'] ) ) {
+			return $field_classes;
 		}
 
-		if ( $is_hidden ) {
+		$is_empty = $this->is_empty_field( $field, $field_value );
+
+		if ( $is_empty ) {
+			$field_classes[] = 'empty';
+		}
+
+		if ( $this->is_field_hidden( $field, $is_empty ) ) {
 			$field_classes[] = 'wpforms-hide';
 		}
 
@@ -2243,53 +2308,6 @@ class WPForms_Entries_Single {
 	}
 
 	/**
-	 * Display admin notices and errors.
-	 *
-	 * @since 1.1.6
-	 * @deprecated 1.6.7.1
-	 *
-	 * @param mixed $display Type(s) of the notice.
-	 * @param bool  $wrap    Whether to output the wrapper.
-	 */
-	public function display_alerts( $display = '', $wrap = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
-
-		_deprecated_function( __METHOD__, '1.6.7.1 of the WPForms plugin' );
-
-		if ( empty( $this->alerts ) ) {
-			return;
-		}
-
-		$display = empty( $display ) ?
-			[ 'error', 'info', 'warning', 'success' ] :
-			(array) $display;
-
-		foreach ( $this->alerts as $alert ) {
-
-			$type = ! empty( $alert['type'] ) ? $alert['type'] : 'info';
-
-			if ( ! in_array( $type, $display, true ) ) {
-				continue;
-			}
-
-			$classes = [ 'notice', 'notice-' . $type ];
-
-			if ( ! empty( $alert['dismiss'] ) ) {
-				$classes[] = 'is-dismissible';
-			}
-
-			$output = $wrap ?
-				'<div class="wrap"><div class="%1$s"><p>%2$s</p></div></div>' :
-				'<div class="%1$s"><p>%2$s</p></div>';
-
-			printf(
-				$output, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				esc_attr( implode( ' ', $classes ) ),
-				$alert['message'] // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			);
-		}
-	}
-
-	/**
 	 * Add formatted data to the field.
 	 *
 	 * @since 1.8.3
@@ -2671,6 +2689,24 @@ class WPForms_Entries_Single {
 		}
 
 		return $settings;
+	}
+
+	/**
+	 * Check if the given field is considered empty based on specific conditions.
+	 *
+	 * @since 1.9.5
+	 *
+	 * @param array  $field       Field data, including type, value, and other properties.
+	 * @param string $field_value The value associated with the field.
+	 *
+	 * @return bool True if the field is empty, false otherwise.
+	 */
+	private function is_empty_field( array $field, $field_value ): bool {
+
+		$is_empty_quantity = isset( $field['quantity'] ) && ! $field['quantity'];
+		$is_empty_slider   = isset( $field['type'] ) && $field['type'] === 'number-slider' && ( $field['value'] ?? 0 ) === 0;
+
+		return ! isset( $field_value ) || wpforms_is_empty_string( trim( $field_value ) ) || $is_empty_quantity || $is_empty_slider;
 	}
 }
 

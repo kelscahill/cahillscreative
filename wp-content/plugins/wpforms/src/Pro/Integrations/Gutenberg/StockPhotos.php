@@ -167,7 +167,7 @@ class StockPhotos {
 		$dir = $this->get_dir_path();
 
 		// Download the zip file.
-		$response = wp_remote_get( $url );
+		$response = wp_safe_remote_get( $url );
 
 		// In the case of error.
 		if ( is_wp_error( $response ) ) {

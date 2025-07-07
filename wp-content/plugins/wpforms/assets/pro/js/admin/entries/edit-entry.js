@@ -457,7 +457,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 				}
 
 				const fieldID = $( this ).closest( '.wpforms-field' ).data( 'field-id' );
-				const iti = window.intlTelInputGlobals?.getInstance( this );
+				const iti = window.intlTelInput?.getInstance( this );
 				const result = $( this ).triggerHandler( 'validate' ) || iti?.isValidNumberPrecise();
 
 				// If the phone number is not valid, prevent form submission and display an error.
@@ -479,6 +479,9 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 			$( '.wpforms-field-number' ).each( function() {
 				const $field = $( this ),
 					fieldInput = $field.find( 'input[type="number"]' )[ 0 ];
+
+				// We validate required fields on backend to ensure CL doesn't hide the field.
+				fieldInput.required = false;
 
 				if ( fieldInput.checkValidity() ) {
 					return;

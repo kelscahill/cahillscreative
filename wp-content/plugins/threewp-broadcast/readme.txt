@@ -4,9 +4,9 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 8.0
-Stable tag: 51.03
+Stable tag: 51.07
 Tags: multipost, sharing, duplicate, syndication, marketing
-Tested up to: 6.7
+Tested up to: 6.8
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -77,6 +77,7 @@ The following add-ons add support for the plugin after which they are named:
 * <a href="https://broadcast.plainviewplugins.com/addon/cm-tooltip-glossary/">CM Tooltip Glossary</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/contact-form-7/">Contact Form 7</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/create/">Create</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/dear-flipbook/">Dear Flipbook</a> adds support for the Dear Flipbook PDF book plugin.
 * <a href="https://broadcast.plainviewplugins.com/addon/divi-builder/">Divi Builder</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/download-manager/">Download Manager</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/download-monitor/">Download Monitor</a>
@@ -370,24 +371,46 @@ If your products have variations, a product image gallery, you want to sync stoc
 
 == Changelog ==
 
-* 51.03 20250216 =
+= 51.07 20250621 =
+
+* Fix: When searching for unlinked children, take the linked parent into account. This solves the problem of two pages on the child blog with the same name but different linked parents not being found correctly.
+
+= 51.06 20250519 =
+
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/dear-flipbook/">Dear Flipbook</a> adds support for the <a href="https://wordpress.org/plugins/3d-flipbook-dflip-lite/">Dear Flipbook</a> PDF book plugin.
+* Dev: Do not show the current blog when using the add_blog_list_input() function.
+
+= 51.05 20250419 =
+
+* Dev: Convert the ThreeWP_Broadcast()->broadcasting array to a static, so that it is the same everywhere.
+* Dev: Add the API call broadcast_children_with_post().
+
+= 51.04 20250408 =
+
+* New: If Broadcast is not keeping attachments during broadcasting, it will specifically delete the child's featured image, whether it is attached or not.
+* Fix: Attachments are now deleted when not keeping attachments. Fix from 51.03
+* Dev: Added attachment GUID debug code
+* Dev: Use an array on wp_insert_post. Fixes error for users of The Events Calendar.
+* Dev: Do not try and sync a non-existent taxonomy.
+
+= 51.03 20250216 =
 
 * More PHP 8.2 warning fixes.
 * Dev: broadcasting_data assuming nothing to be done with deleting attachments. This affects broadcasting using manually-created broadcasting_data.
 * Dev: Added ThreeWP_Broadcast()->get_nested_broadcasting() and is_nested_broadcasting() functions.
 * Dev: Add post info maintenance for attachments. This helps diagnose attachments with unexpected post names.
 
-* 51.02 20241201 =
+= 51.02 20241201 =
 
 * Fix: Allow dynamic handling of custom field blacklist.
 * Fix: Better display of missing maintenance check.
 
-* 51.01 20241116 =
+= 51.01 20241116 =
 
 * Dev: Improve taxonomies()->also_sync() function.
 * More PHP 8.2 warning fixes.
 
-* 50.15 20241012 =
+= 50.15 20241012 =
 
 * Fix: Remove warning from Equivalent_Posts debug code that warns of an equivalent post not existing.
 * Tweak: Workaround define BROADCAST_PP_SSL_WORKAROUND removed since Wordpress no longer allows https transport workarounds.

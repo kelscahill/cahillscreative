@@ -79,8 +79,8 @@
 			"backgroundUrl": "url()"
 		}
 	},
-	"curelean": {
-		"name": "Curelean",
+	"cerulean": {
+		"name": "Cerulean",
 		"settings": {
 			"fieldSize": "medium",
 			"fieldBorderRadius": "3px",

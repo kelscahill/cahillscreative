@@ -379,7 +379,7 @@ class WPForms_Updater {
 			'new_version'      => $plugin_info['version'] ?? $this->version,
 			'tested'           => '',
 			'requires'         => $plugin_info['required_versions']['wp'] ?? '5.5',
-			'requires_php'     => $plugin_info['required_versions']['php'] ?? '7.1',
+			'requires_php'     => $plugin_info['required_versions']['php'] ?? '7.2',
 			'requires_wpforms' => $plugin_info['required_versions']['wpforms'] ?? WPFORMS_VERSION,
 			'active_installs'  => 6 * 1000 * 1000,
 			'package'          => '',
@@ -396,45 +396,23 @@ class WPForms_Updater {
 	}
 
 	/**
-	 * Disable SSL verification to prevent download package failures.
-	 *
-	 * @since 1.5.4.2
-	 * @deprecated 1.8.6
-	 *
-	 * @param array  $args Array of request args.
-	 * @param string $url  The URL to be pinged.
-	 *
-	 * @return array $args Amended array of request args.
-	 * @noinspection PhpMissingParamTypeInspection
-	 * @noinspection PhpUnusedParameterInspection
-	 */
-	public function http_request_args( $args, $url ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
-
-		_deprecated_function( __METHOD__, '1.8.6 of the WPForms plugin' );
-
-		return $args;
-	}
-
-	/**
 	 * Filter the plugins_api function to get our custom plugin information from a private repo.
 	 *
 	 * @since 1.5.4.2
 	 *
 	 * @param object|mixed $api    The original plugins_api object.
 	 * @param string|mixed $action The action sent by plugins_api.
-	 * @param object       $args   Additional args to send to plugins_api.
+	 * @param object|null  $args   Additional args to send to plugins_api.
 	 *
 	 * @return object New stdClass with plugin or addon information on success, default response on failure.
 	 */
-	public function plugins_api( $api, $action = '', $args = null ) {
+	public function plugins_api( $api, $action = '', ?object $args = null ) {
 
-		$wpforms_plugin =
+		// If a plugin slug matches the request, set our own plugin data, else return the default response.
+		if (
 			(string) $action === 'plugin_information' &&
-			isset( $args->slug ) &&
-			$this->plugin_slug === $args->slug;
-
-		// If plugin slug matches the request, set our own plugin data, else return the default response.
-		if ( $wpforms_plugin ) {
+			$this->plugin_slug === ( $args->slug ?? '' )
+		) {
 			return $this->set_plugins_api( $api );
 		}
 
@@ -455,11 +433,11 @@ class WPForms_Updater {
 		$cached_data = $this->get_update_from_cached_json_file();
 
 		// Perform the remote request to retrieve our plugin information. If it fails, return the default object.
-		if ( ! $this->info && $this->is_valid_license() ) {
+		if ( ! $this->info ) {
 			$this->info = $this->perform_remote_request( 'get-plugin-info', [ 'tgm-updater-plugin' => $this->plugin_slug ] );
 		}
 
-		if ( ! $this->info ) {
+		if ( ! $this->info || ! empty( $this->info->error ) ) {
 			$this->info = $cached_data;
 		}
 
@@ -606,7 +584,7 @@ class WPForms_Updater {
 			]
 		);
 
-		// Setup variable for wp_remote_post.
+		// Setup variable for wp_remote_get.
 		$args = [
 			'headers' => $headers,
 			'timeout' => 30,
@@ -621,6 +599,31 @@ class WPForms_Updater {
 
 		// Bail out early if there are any errors.
 		if ( $response_code !== 200 || is_wp_error( $response_body ) ) {
+			$error_message = is_wp_error( $response ) ? $response->get_error_message() : '';
+
+			$log_data = [
+				'action'        => $action,
+				'url'           => $remote_url,
+				'query_params'  => $query_params,
+				'response_code' => $response_code,
+				'error'         => $error_message,
+				'response'      => $response,
+				'server_ip'     => wpforms_get_ip(),
+			];
+
+			// Add response body to log if error message is empty.
+			if ( empty( $error_message ) && ! is_wp_error( $response_body ) ) {
+				$log_data['response_body'] = $response_body;
+			}
+
+			wpforms_log(
+				'Updater Remote Request Failed',
+				$log_data,
+				[
+					'type' => [ 'error' ],
+				]
+			);
+
 			return false;
 		}
 
@@ -666,7 +669,7 @@ class WPForms_Updater {
 			return $this->is_allowed;
 		}
 
-		if ( wp_doing_cron() || wpforms_doing_wp_cli() ) {
+		if ( wp_doing_cron() || wpforms_doing_wp_cli() || wpforms_is_rest() ) {
 			$this->is_allowed = true;
 
 			return true;
@@ -695,12 +698,10 @@ class WPForms_Updater {
 
 		global $pagenow;
 
-		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$action = isset( $_POST['action'] ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
-		$slug   = isset( $_POST['slug'] ) ? sanitize_text_field( wp_unslash( $_POST['slug'] ) ) : '';
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
-		$is_update_action = $pagenow === 'admin-ajax.php' && $action === 'update-plugin' && $slug === $this->plugin_slug;
+		$is_update_action = $pagenow === 'admin-ajax.php' && $action === 'update-plugin';
 		$is_update_page   = in_array(
 			$pagenow ?? '',
 			[

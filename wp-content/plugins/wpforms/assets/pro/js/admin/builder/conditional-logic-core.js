@@ -311,7 +311,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 						return;
 					}
 
-					alert += updater.getChangedFieldNameForAlert( $( this ).closest( '.wpforms-conditional-group' ).data( 'reference' ) );
+					alert += updater.getChangedFieldNameForAlert( updater.getReferenceName( this ) );
 
 					updateAlert = true;
 					fieldData.trigger = true;
@@ -322,6 +322,28 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 
 				fieldData.message = '<strong>' + fieldData.message + '</strong>' + '<br><br>' + alert;
 			}
+		},
+
+		/**
+		 * Retrieves the reference name based on the provided conditional field context.
+		 * The reference name is determined by the closest provider or conditional group associated with the field.
+		 *
+		 * @since 1.9.6
+		 *
+		 * @param {HTMLElement} conditionalField The conditional field element for which the reference name needs to be determined.
+		 *
+		 * @return {string} The determined reference name.
+		 */
+		getReferenceName( conditionalField ) {
+			const $conditionalField = $( conditionalField );
+			// Fetch only Marketing provider name.
+			const providerName = $conditionalField.closest( '.wpforms-builder-provider' ).data( 'provider-name' );
+
+			if ( ! providerName ) {
+				return $conditionalField.closest( '.wpforms-conditional-group' ).data( 'reference' );
+			}
+
+			return wpforms_builder.cl_reference.replace( '{integration}', providerName );
 		},
 
 		/**

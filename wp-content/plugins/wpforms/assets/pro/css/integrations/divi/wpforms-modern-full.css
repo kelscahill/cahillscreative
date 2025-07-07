@@ -3356,6 +3356,16 @@
   margin-top: 45px;
 }
 
+.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .wpforms-field-address .wpforms-field-row.wpforms-without-state .wpforms-field-row-block.wpforms-first {
+  width: 100%;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .wpforms-field-address .wpforms-field-row.wpforms-without-state .wpforms-field-row-block:not(.wpforms-first) {
+  display: none;
+}
+
 .et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .wpforms-field.wpforms-field-select-style-classic select {
   padding-inline-start: 14px;
 }
@@ -4651,94 +4661,6 @@
   background-color: #b4d39b;
   border-color: #008000;
   opacity: 1;
-}
-
-.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container {
-  padding: 0;
-  position: absolute;
-  height: 100%;
-}
-
-.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__selected-country {
-  border-top-left-radius: var(--wpforms-field-border-radius);
-  border-bottom-left-radius: var(--wpforms-field-border-radius);
-  border-width: var(--wpforms-field-border-size, 0);
-  border-style: var(--wpforms-field-border-style);
-  border-color: transparent;
-  background-color: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
-  height: 100%;
-  width: 100%;
-}
-
-.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__selected-country:focus {
-  border-width: var(--wpforms-field-border-size, 0);
-  border-style: solid;
-  border-color: var(--wpforms-button-background-color);
-  box-shadow: 0 0 0 1px var(--wpforms-button-background-color), 0px 1px 2px rgba(0, 0, 0, 0.15);
-  outline: none;
-}
-
-.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__dropdown-content {
-  border-radius: var(--wpforms-field-border-radius);
-}
-
-.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__dropdown-content .iti__country-list {
-  border-radius: var(--wpforms-field-border-radius);
-  background: var(--wpforms-field-menu-color) !important;
-  border-width: var(--wpforms-field-border-size);
-  border-style: var(--wpforms-field-border-style);
-  border-color: var(--wpforms-field-border-color);
-  font-size: var(--wpforms-field-size-font-size);
-  max-height: 350px;
-  scrollbar-color: #ccc transparent;
-}
-
-.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__dropdown-content .iti__country-list::-webkit-scrollbar {
-  background: transparent;
-  width: 12px;
-  height: 12px;
-}
-
-.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__dropdown-content .iti__country-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__dropdown-content .iti__country-list::-webkit-scrollbar-thumb {
-  box-shadow: inset 0 0 4px 4px var(--wpforms-field-text-color);
-  background: transparent;
-  border-radius: 12px;
-  border: solid 3px transparent;
-}
-
-.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__dropdown-content .iti__country-list::-webkit-resizer, .et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__dropdown-content .iti__country-list::-webkit-scrollbar-button, .et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__dropdown-content .iti__country-list::-webkit-scrollbar-corner {
-  display: none;
-}
-
-@-moz-document url-prefix() {
-  .et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__dropdown-content .iti__country-list {
-    scrollbar-color: var(--wpforms-field-text-color) transparent;
-    scrollbar-width: thin;
-  }
-}
-
-.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__dropdown-content .iti__country-list .iti__country-name {
-  color: var(--wpforms-field-text-color);
-}
-
-.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__dropdown-content .iti__country-list .iti__dial-code {
-  color: var(--wpforms-field-text-color);
-  font-size: calc( var( --wpforms-field-size-font-size ) - 2px);
-  opacity: 0.6;
-}
-
-.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .iti--allow-dropdown .iti__country-container .iti__dropdown-content .iti__country-list .iti__divider {
-  border-bottom-width: 1px !important;
-  border-bottom-style: var(--wpforms-field-border-style, solid) !important;
-  border-bottom-color: var(--wpforms-field-border-color, #ccc) !important;
 }
 
 .et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-field-phone-input-container {

@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Newsletter, SMTP, Email marketing and Subscribe forms by Brevo
+ * Plugin Name: Brevo - Email, SMS, Web Push, Chat, and more.
  * Plugin URI: https://www.brevo.com/?r=wporg
  * Description: Manage your contact lists, subscription forms and all email and marketing-related topics from your wp panel, within one single plugin
- * Version: 3.1.96
+ * Version: 3.2.5
  * Author: Brevo
  * Author URI: https://www.brevo.com/?r=wporg
  * License: GPLv2 or later
@@ -42,6 +42,46 @@ if ( ! class_exists( 'Sendinblue' ) ) {
 	require_once( 'inc/sendinblue.php' );
 }
 
+if ( ! class_exists( 'WonderPush\WonderPush' )) {
+	require_once( 'wonderpush-php-lib/init.php' );
+}
+
+if ( ! class_exists( 'SIB_Push_Utils' ) ) {
+    require_once( 'inc/push-utils.php' );
+}
+
+if ( ! class_exists( 'SIB_Push_Settings' ) ) {
+	require_once( 'inc/push-settings.php' );
+}
+
+if ( ! class_exists( 'inc/push-httpclient.php' ) ) {
+    require_once( 'inc/push-httpclient.php' );
+}
+
+if ( ! class_exists( 'SIB_Push_API' ) ) {
+	require_once( 'inc/push-api.php' );
+}
+
+if ( ! class_exists( 'SIB_Push_Admin' ) ) {
+	require_once( 'inc/push-admin.php' );
+}
+
+if ( ! class_exists( 'SIB_Push_Public' ) ) {
+	require_once( 'inc/push-public.php' );
+}
+
+if ( ! class_exists( 'SIB_Push_WooCommerce' ) ) {
+	require_once( 'inc/push-woocommerce.php' );
+}
+
+if ( ! class_exists( 'SIB_Push_Amp' ) ) {
+	require_once( 'inc/push-amp.php' );
+}
+
+if (!function_exists('http_build_url')) {
+    require_once( 'inc/http-build-url.php' );
+}
+
 if ( ! class_exists( 'SIB_Manager' ) ) {
 	register_deactivation_hook( __FILE__, array( 'SIB_Manager', 'deactivate' ) );
 	register_activation_hook( __FILE__, array( 'SIB_Manager', 'install' ) );
@@ -49,7 +89,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 
 	require_once( 'page/page-home.php' );
 	require_once( 'page/page-form.php' );
-	require_once( 'page/page-statistics.php' );
+	require_once( 'page/page-push.php' );
 	require_once( 'widget/widget_form.php' );
 	require_once( 'inc/table-forms.php' );
 	require_once( 'inc/sib-api-manager.php' );
@@ -87,6 +127,8 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 
         const API_KEY_V3_OPTION_NAME = 'sib_api_key_v3';
 
+        const PUSH_SETTINGS_OPTION_NAME = 'sib_push_settings';
+
 		const RECAPTCHA_API_TEMPLATE = 'https://www.google.com/recaptcha/api/siteverify?%s';
 
 		const TURNSTILE_SITE_VERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
@@ -95,11 +137,10 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 		const INSTALLATION_ID = 'sib_installation_id';
 		const BREVO_PLUGIN_VERSION = 'brevo_plugin_version';
 
-        /*Pushowl Url */
-        const PUSHOWL_STAGING_URL = "https://cdn-staging.pushowl.com/latest/sdks/service-worker.js";
-        const PUSHOWL_PRODUCTION_URL = "https://cdn.pushowl.com/latest/sdks/service-worker.js";
+        const SDK_LOADER_PRODUCTION_URL = "https://cdn.brevo.com/js/sdk-loader.js";
+        const SDK_LOADER_STAGING_URL = "https://cdn.brevo.com/js/sdk-staging-loader.js";
         const URL_CHECK_STAGING = "staging";
-        const SERVICE_WORKER_FILE_URL = "/js/service-worker.js";
+		const SERVICE_WORKER_FILE_URL = "/js/service-worker.js";
 
         const SIB_ATTRIBUTE = array(
 			'input' => array(
@@ -255,6 +296,9 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 
 			add_action( 'wp_print_scripts', array( &$this, 'frontend_register_scripts' ), 9999 );
 			add_action( 'wp_enqueue_scripts', array( &$this, 'wp_head_ac' ), 999 );
+			add_action( 'wp_dashboard_setup', array( 'SIB_Push_Admin', 'add_dashboard_widget' ), 9999 );
+			add_action( 'admin_init', array( 'SIB_Push_Admin', 'add_post_options' ), 9999 );
+			add_action( 'admin_bar_menu', array( 'SIB_Push_Admin', 'add_admin_bar_menu_item' ), 100);
 
 			// create custom url for form preview.
 			add_filter( 'query_vars', array( &$this, 'sib_query_vars' ) );
@@ -277,6 +321,11 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 
 			add_action( 'wp_ajax_sib_get_country_prefix', array( $this, 'ajax_get_country_prefix' ) );
 			add_action( 'wp_ajax_nopriv_sib_get_country_prefix', array( $this, 'ajax_get_country_prefix' ) );
+
+			add_action( 'init', array( 'SIB_Push_API', 'init' ) );
+			add_action( 'init', array( 'SIB_Push_Public', 'init' ) );
+			// NOTE: deactivate woocommerce
+//			add_action( 'init', array( 'SIB_Push_WooCommerce', 'init' ) );
 
 			add_action( 'init', array( &$this, 'init' ) );
 
@@ -365,6 +414,15 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 		}
 
 		/**
+		 * Is this wordpress instance connected to the staging environment?
+		 * Note: don't forget to manually change mailin/sw.js to put the staging sdk loader
+		 * @return bool
+		 */
+		static function is_staging() {
+			return false;
+		}
+
+		/**
 		 * Add identify tag for login users
 		 *
 		 * @param string $user_login - user login name.
@@ -430,8 +488,10 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 		function admin_menu() {
 			SIB_Manager::LoadTextDomain();
 			new SIB_Page_Home();
+			if ( SIB_Push_Utils::can_modify_settings() ) {
+				new SIB_Page_Push();
+			}
 			new SIB_Page_Form();
-			new SIB_Page_Statistics();
 
 		}
 
@@ -442,6 +502,11 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			wp_register_script( 'sib-bootstrap-js', self::$plugin_url . '/js/bootstrap/js/bootstrap.bundle.min.js', array( 'jquery' ), false );
 			wp_register_script( 'sib-admin-js', self::$plugin_url . '/js/admin.js', array( 'jquery' ), filemtime( self::$plugin_dir . '/js/admin.js' ) );
 			wp_register_script( 'sib-chosen-js', self::$plugin_url . '/js/chosen.jquery.min.js', array( 'jquery' ), false );
+			wp_register_script( 'sib-push-js', self::$plugin_url . '/js/push.bundle.js', array( 'wp-i18n', 'react', 'react-dom' ),  filemtime(self::$plugin_dir . '/js/push.bundle.js'), true );
+			wp_register_script('sib-post-editor-js', self::$plugin_url . '/js/post-editor.bundle.js', array( 'jquery', 'wp-i18n' ), filemtime(self::$plugin_dir . '/js/post-editor.bundle.js'));
+			wp_register_script('sib-select2', self::$plugin_url . '/js/select2.full.min.js', array('jquery'), '4.0.13');
+			wp_set_script_translations( 'sib-push-js', 'push', self::$plugin_dir . 'lang' );
+			wp_set_script_translations( 'sib-post-editor-js', 'post-editor', self::$plugin_dir . 'lang' );
             wp_enqueue_script('jquery-ui-datepicker');
             wp_enqueue_script('jquery-ui-spinner');
         }
@@ -454,6 +519,9 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			wp_register_style( 'sib-fontawesome-css', self::$plugin_url . '/css/fontawesome/css/font-awesome.css', array(), false, 'all' );
 			wp_register_style( 'sib-chosen-css', self::$plugin_url . '/css/chosen.min.css' );
 			wp_register_style( 'sib-admin-css', self::$plugin_url . '/css/admin.css', array(), filemtime( self::$plugin_dir . '/css/admin.css' ), 'all' );
+			wp_register_style('sib-push-admin-css', self::$plugin_url . '/css/push-admin.css', array(), filemtime( self::$plugin_dir . '/css/push-admin.css' ));
+			wp_register_style('sib-select2', self::$plugin_url . '/css/select2.min.css', false, '4.0.13');
+			wp_register_style('sib-font-face', 'https://designsystem.brevo.com/designsystem/component/face/ba05798091ad5d7562c3.css', false, 'ba05798091ad5d7562c3');
 		}
 
 		/**
@@ -571,8 +639,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 		 */
 		static function deactivate() {
 			update_option( SIB_Manager::LANGUAGE_OPTION_NAME, false );
-            // Remove service worker file.
-            self::uninstall_service_worker_script();
+			self::uninstall_service_worker_script();
 			// Remove sync users option.
 			delete_option( 'sib_sync_users' );
 			// Remove all transient.
@@ -655,27 +722,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			}
 		}
 
-        /**
-         * Install service-worker script in plugin for push notifications
-         * @return void
-         */
-        static function install_service_worker_script($service_worker)
-        {
-            try {
-                $site_url              = get_site_url();
-                $service_worker_file   = str_contains($site_url, self::URL_CHECK_STAGING)
-                    ? self::PUSHOWL_STAGING_URL
-                    : self::PUSHOWL_PRODUCTION_URL;
-                $js_content            = "importScripts('" . $service_worker_file . "');";
-                $service_worker_script = fopen($service_worker, "wb");
-                fwrite($service_worker_script, $js_content);
-                fclose($service_worker_script);
-            } catch (\Throwable $th) {
-                update_option('sib_service_worker_install_exception', $th->getMessage());
-            }
-        }
-
-        /**
+		/**
          * Uninstall service-worker script from plugin
          * @return void
          */
@@ -696,36 +743,36 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 		 * Install marketing automation script in header
 		 */
 		function install_ma_script() {
+			$push_enabled = SIB_Push_Utils::is_push_sdk_enabled();
 			if ( SIB_Manager::is_ma_active() ) {
-				$general_settings = get_option( SIB_Manager::MAIN_OPTION_NAME, array() );
-				$ma_key = isset( $general_settings['ma_key'] ) ? sanitize_text_field($general_settings['ma_key']) : null;
-                $service_worker = __DIR__ . self::SERVICE_WORKER_FILE_URL;
-                if ( ! file_exists($service_worker)) {
-                    self::install_service_worker_script($service_worker);
-                }
-                $ma_email = '';
-				$current_user = wp_get_current_user();
-				if ( $current_user instanceof WP_User ) {
-					$ma_email = $current_user->user_email;
-				}
-				$pushOptions = json_encode(array(
-					'customDomain' => SIB_Manager::$plugin_url . '/',
-					'userId' => $ma_email ?: null,
-				));
-				$output = '<script src="https://cdn.brevo.com/js/sdk-loader.js" async></script>';
-				$output .= '<script>window.Brevo = window.Brevo || [];
-								Brevo.push([
-									"init",
-								{
-									client_key:"' . $ma_key .'",
-									push: '.$pushOptions.',
-									';
-				$output .= 'email_id : "' . sanitize_email($ma_email) . '",},]);</script>';
-				echo html_entity_decode($output);
+				$init_options = json_encode( SIB_Push_Utils::brevo_init_options() );
+				$script_url = self::is_staging() ? self::SDK_LOADER_STAGING_URL : self::SDK_LOADER_PRODUCTION_URL;
+				$output = <<<EOT
+<script type="text/javascript" src="{$script_url}" async></script>
+<script type="text/javascript">
+  window.Brevo = window.Brevo || [];
+  window.Brevo.push(['init', {$init_options}]);
+</script>
+EOT;
+				echo $output;
 			} else {
                 self::uninstall_service_worker_script();
             }
-
+			if ( $push_enabled ) {
+				$init_options = SIB_Push_Utils::wonderpush_init_options();
+				$script_url = 'https://cdn.by.wonderpush.com/sdk/1.1/wonderpush-loader.min.js';
+				if ($init_options) {
+					$encoded_init_options = json_encode($init_options);
+					$output = <<<EOT
+<script type="text/javascript" src="{$script_url}" async></script>
+<script type="text/javascript">
+  window.WonderPush = window.WonderPush || [];
+  window.WonderPush.push(['init', {$encoded_init_options}]);
+</script>
+EOT;
+					echo $output;
+				}
+			}
 		}
 
 		/**
@@ -1804,8 +1851,8 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 			if ($installationId !== $uc_id) {
 				return new WP_REST_Response(array('success' => false), 403);
 			}
-			$account_info = get_transient( 'sib_credit_' . md5( SIB_Manager::$access_key ) );
-			if ( false === $account_info ) {
+			$haveApiKey = get_option(SIB_Manager::API_KEY_V3_OPTION_NAME, false);
+			if ( false === $haveApiKey ) {
 				return new WP_REST_Response(array('success' => false), 404);
 			}
 
@@ -1838,6 +1885,9 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 
 	add_action( 'sendinblue_init', 'sendinblue_init' );
 	add_filter( 'widget_text', 'do_shortcode' );
+	add_action( 'save_post', array( 'SIB_Push_Admin', 'on_save_post' ), 1, 3 );
+	add_action( 'transition_post_status', array( 'SIB_Push_Admin', 'on_transition_post_status' ), 10, 3 );
+
 
 	/**
 	 * Plugin entry point Process.

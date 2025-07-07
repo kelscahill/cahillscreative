@@ -281,6 +281,39 @@ broadcast_popup = function( options )
 				var $select_all;
 				var $selection_change_container;
 				var $show_hide;
+				var $blog_counter;
+
+				/**
+					* @brief		Add a counter after the "Broadcast to" text.
+					* @since		2025-03-15 07:28:56
+				**/
+				$this.enable_blog_counter = function()
+				{
+					var $legend = $( 'legend', $this.$blogs_container ).first();
+					var $counter = $( '<span class="counters">' );
+					$counter.append( ' (' );
+					var $selected_blogs = $( '<span class="selected_blogs">' );
+					$selected_blogs.appendTo( $counter );
+
+					$counter.append( ' / ' );
+
+					var $total_blogs = $( '<span class="total_blogs">' );
+					$total_blogs.appendTo( $counter );
+
+					$counter.append( ')' );
+
+					$counter.appendTo( $legend );
+
+					recount_selected_blogs = function()
+					{
+						var selected = $( 'input:checked', $this.$blogs_container ).length;
+						selected = parseInt( selected );
+						$selected_blogs.html( selected );
+						$total_blogs.html( $this.$blog_inputs.length );
+					}
+					$this.$blog_inputs.on( 'change', recount_selected_blogs );
+					$this.$blog_inputs.change();
+				}
 
 				/**
 					Hides all the blogs ... except those that have been selected.
@@ -403,6 +436,10 @@ broadcast_popup = function( options )
 
 					$this.hide_blogs();
 				}
+
+				if ( broadcast_setting_blogs_show_counter > -1 )
+					if ( $this.$blog_inputs.length > broadcast_setting_blogs_show_counter )
+						$this.enable_blog_counter();
 
 				// GROUP functionality: Allow blogs to be mass selected, unselected.
 				$( ".blog_groups select", $this ).on( 'change', function()

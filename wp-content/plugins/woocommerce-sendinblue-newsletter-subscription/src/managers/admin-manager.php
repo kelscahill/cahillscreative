@@ -98,6 +98,8 @@ class AdminManager
     
     public function brevo_hook_javascript_footer()
     {
+        $is_checkout = is_checkout();
+        $is_account_page = is_account_page();
         $output = '<script type="text/javascript">
                     document.body.addEventListener("blur", function(event) {
                         if (event.target.matches("input[type=\'email\']")) {
@@ -109,9 +111,19 @@ class AdminManager
                                 return false;
                             }
                             document.cookie="tracking_email="+encodeURIComponent(event.target.value)+"; path=/";
+                            var isCheckout = ' . ($is_checkout ? 'true' : 'false') . ';
+                			var isAccountPage = ' . ($is_account_page ? 'true' : 'false') . ';
+                            
+                            var subscription_location = "";
+
+                            if (isCheckout) {
+                                subscription_location = "order-checkout";
+                            } else if (isAccountPage) {
+                                subscription_location = "sign-up";
+                            }
                             var xhrobj = new XMLHttpRequest();
                             xhrobj.open("POST","/wp-admin/admin-ajax.php");
-                            var params = "action=the_ajax_hook&tracking_email=" + encodeURIComponent(event.target.value);
+                            var params = "action=the_ajax_hook&tracking_email=" + encodeURIComponent(event.target.value) + "&subscription_location=" + encodeURIComponent(subscription_location);
                             xhrobj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                             xhrobj.send(params);
                             return;

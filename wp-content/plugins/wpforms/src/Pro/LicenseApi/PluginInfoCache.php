@@ -8,6 +8,7 @@ namespace WPForms\Pro\LicenseApi;
  * @see LicenseApiCache
  *
  * @since 1.8.7
+ * @deprecated 1.9.5
  */
 class PluginInfoCache extends LicenseApiCache {
 

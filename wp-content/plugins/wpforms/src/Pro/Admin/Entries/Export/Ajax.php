@@ -873,7 +873,7 @@ class Ajax {
 		 *
 		 * @param string $val    The value.
 		 * @param string $col_id Column id.
-		 * @param object $entry  Entry object.
+		 * @param array  $entry  Entry object.
 		 */
 		return apply_filters( 'wpforms_pro_admin_entries_export_ajax_get_additional_info_value', $val, $col_id, $entry );
 	}
@@ -1179,36 +1179,6 @@ class Ajax {
 		}
 
 		return $fields_by_id;
-	}
-
-	/**
-	 * Get date format.
-	 *
-	 * @since 1.5.5
-	 * @deprecated 1.8.5
-	 */
-	public function date_format() {
-
-		_deprecated_function( __METHOD__, '1.8.5 of the WPForms plugin' );
-
-		$this->export->data['date_format'] = empty( $this->export->data['date_format'] ) ? sprintf( '%s %s', get_option( 'date_format' ), get_option( 'time_format' ) ) : $this->export->data['date_format'];
-
-		return $this->export->data['date_format'];
-	}
-
-	/**
-	 * Get GMT offset in seconds.
-	 *
-	 * @since 1.5.5
-	 * @deprecated 1.8.5
-	 */
-	public function gmt_offset_sec() {
-
-		_deprecated_function( __METHOD__, '1.8.5 of the WPForms plugin' );
-
-		$this->export->data['gmt_offset_sec'] = empty( $this->export->data['gmt_offset_sec'] ) ? get_option( 'gmt_offset' ) * 3600 : $this->export->data['gmt_offset_sec'];
-
-		return $this->export->data['gmt_offset_sec'];
 	}
 
 	/**

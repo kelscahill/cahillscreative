@@ -19,13 +19,6 @@ class PluginUpdateCache extends LicenseApiCache {
 	protected const ENCRYPT = true;
 
 	/**
-	 * A class id or array of cache class ids to sync updates with.
-	 *
-	 * @since 1.8.9
-	 */
-	protected const SYNC_WITH = 'license_api_plugin_info_cache';
-
-	/**
 	 * Expirable URL key.
 	 *
 	 * @since 1.8.7
@@ -171,9 +164,13 @@ class PluginUpdateCache extends LicenseApiCache {
 
 		parent::init();
 
-		// if this is GET force-check=1 set and $this->type is plugin-update, then Invalidate cache.
+		// If this is GET force-check=1 set, then invalidate the cache.
+		// We do not check nonce here, as this GET request should be available from the frontend by design.
+		// This request is needed for support purposes also and does not lead to any security issues.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( isset( $_GET['force-check'] ) && $_GET['force-check'] === '1' ) {
+		$force_check = isset( $_GET['force-check'] ) ? absint( $_GET['force-check'] ) : 0;
+
+		if ( $force_check === 1 && current_user_can( 'update_plugins' ) ) {
 			$this->invalidate_cache();
 		}
 	}

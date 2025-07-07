@@ -15,7 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div class="wpforms-payment-entry-<?php echo esc_attr( $type ); ?>-row">
 	<?php foreach ( $items as $data ) : ?>
-		<div class="wpforms-payment-entry-column wpforms-payment-entry-column-<?php echo esc_attr( $data['width_preset'] ); ?>">
+		<?php $width = wpforms_get_column_width( $data ); ?>
+		<div class="wpforms-payment-entry-column" style="--field-layout-column-width: <?php echo esc_attr( $width ); ?>%">
 			<?php
 				if ( isset( $data['field'] ) && $data['field'] ) {
 					echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

@@ -82,7 +82,7 @@ class Field extends FieldLite {
 				'address1' => [
 					'attr'     => [
 						'name'        => "wpforms[fields][$field_id][address1]",
-						'value'       => ! empty( $field['address1_default'] ) ? wpforms_process_smart_tags( $field['address1_default'], $form_data ) : '',
+						'value'       => ! empty( $field['address1_default'] ) ? wpforms_process_smart_tags( $field['address1_default'], $form_data, [], '', 'field-properties' ) : '',
 						'placeholder' => ! empty( $field['address1_placeholder'] ) ? $field['address1_placeholder'] : '',
 					],
 					'block'    => [],
@@ -100,7 +100,7 @@ class Field extends FieldLite {
 				'address2' => [
 					'attr'     => [
 						'name'        => "wpforms[fields][$field_id][address2]",
-						'value'       => ! empty( $field['address2_default'] ) ? wpforms_process_smart_tags( $field['address2_default'], $form_data ) : '',
+						'value'       => ! empty( $field['address2_default'] ) ? wpforms_process_smart_tags( $field['address2_default'], $form_data, [], '', 'field-properties' ) : '',
 						'placeholder' => ! empty( $field['address2_placeholder'] ) ? $field['address2_placeholder'] : '',
 					],
 					'block'    => [],
@@ -119,7 +119,7 @@ class Field extends FieldLite {
 				'city'     => [
 					'attr'     => [
 						'name'        => "wpforms[fields][$field_id][city]",
-						'value'       => ! empty( $field['city_default'] ) ? wpforms_process_smart_tags( $field['city_default'], $form_data ) : '',
+						'value'       => ! empty( $field['city_default'] ) ? wpforms_process_smart_tags( $field['city_default'], $form_data, [], '', 'field-properties' ) : '',
 						'placeholder' => ! empty( $field['city_placeholder'] ) ? $field['city_placeholder'] : '',
 					],
 					'block'    => [
@@ -141,7 +141,7 @@ class Field extends FieldLite {
 				'state'    => [
 					'attr'     => [
 						'name'        => "wpforms[fields][$field_id][state]",
-						'value'       => ! empty( $field['state_default'] ) ? wpforms_process_smart_tags( $field['state_default'], $form_data ) : '',
+						'value'       => ! empty( $field['state_default'] ) ? wpforms_process_smart_tags( $field['state_default'], $form_data, [], '', 'field-properties' ) : '',
 						'placeholder' => $state_placeholder,
 					],
 					'block'    => [
@@ -163,7 +163,7 @@ class Field extends FieldLite {
 				'postal'   => [
 					'attr'     => [
 						'name'        => "wpforms[fields][$field_id][postal]",
-						'value'       => ! empty( $field['postal_default'] ) ? wpforms_process_smart_tags( $field['postal_default'], $form_data ) : '',
+						'value'       => ! empty( $field['postal_default'] ) ? wpforms_process_smart_tags( $field['postal_default'], $form_data, [], '', 'field-properties' ) : '',
 						'placeholder' => ! empty( $field['postal_placeholder'] ) ? $field['postal_placeholder'] : '',
 					],
 					'block'    => [
@@ -186,7 +186,7 @@ class Field extends FieldLite {
 				'country'  => [
 					'attr'     => [
 						'name'        => "wpforms[fields][$field_id][country]",
-						'value'       => ! empty( $field['country_default'] ) ? wpforms_process_smart_tags( $field['country_default'], $form_data ) : '',
+						'value'       => ! empty( $field['country_default'] ) ? wpforms_process_smart_tags( $field['country_default'], $form_data, [], '', 'field-properties' ) : '',
 						'placeholder' => ! empty( $field['country_placeholder'] ) ? $field['country_placeholder'] : $this->dropdown_empty_value( 'country' ),
 					],
 					'block'    => [

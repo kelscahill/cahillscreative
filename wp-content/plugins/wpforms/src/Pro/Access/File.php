@@ -14,6 +14,15 @@ use WPForms\Pro\Db\Files\ProtectedFiles;
 class File {
 
 	/**
+	 * Protection hash.
+	 *
+	 * @since 1.9.5
+	 *
+	 * @var string
+	 */
+	private $hash;
+
+	/**
 	 * Check if the current page is a file page.
 	 *
 	 * @since 1.9.4
@@ -46,7 +55,9 @@ class File {
 	 */
 	private function hooks(): void {
 
+		add_action( 'parse_request', [ $this, 'validate_hash' ], 1 );
 		add_action( 'template_redirect', [ $this, 'download_template' ] );
+
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_filter( 'body_class', [ $this, 'body_class' ] );
 
@@ -79,15 +90,28 @@ class File {
 	}
 
 	/**
+	 * Validate the hash.
+	 *
+	 * @since 1.9.5
+	 */
+	public function validate_hash(): void {
+
+		$this->hash = $this->get_protection_hash();
+
+		if ( empty( $this->hash ) ) {
+			wp_safe_redirect( home_url() );
+			exit;
+		}
+	}
+
+	/**
 	 * Download template.
 	 *
 	 * @since 1.9.4
 	 */
 	public function download_template(): void {
 
-		$protection_hash = $this->get_protection_hash();
-
-		$protected_file = wpforms()->obj( 'protected_files' )->get_by_hash( $protection_hash );
+		$protected_file = $this->get_protected_file();
 
 		// If the hash is not found, redirect to the home page.
 		if ( ! $protected_file ) {
@@ -318,7 +342,33 @@ class File {
 	 */
 	private function get_protection_hash(): string {
 
-		return sanitize_key( $_GET['wpforms_uploaded_file'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		$hash = sanitize_key( $_GET['wpforms_uploaded_file'] );
+
+		// The MD5 (Message-digest algorithm) Hash is typically expressed in text format as a 32 digit hexadecimal number.
+		// The following regex checks if the hash contains only letters, digits (a-f, 0-9),
+		// and length is 32 characters.
+		if ( ! preg_match( '/^[a-f0-9]{32}$/', $hash ) ) {
+			return '';
+		}
+
+		return $hash;
+	}
+
+	/**
+	 * Get the protected file.
+	 *
+	 * @since 1.9.5
+	 *
+	 * @return object|false The protected file object if found, false otherwise.
+	 */
+	private function get_protected_file() {
+
+		if ( empty( $this->hash ) ) {
+			return false;
+		}
+
+		return wpforms()->obj( 'protected_files' )->get_by_hash( $this->hash );
 	}
 
 	/**

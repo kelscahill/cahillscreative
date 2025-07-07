@@ -2,46 +2,33 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "woocommerce/product-gallery",
-	"version": "1.0.0",
 	"title": "Product Gallery (Beta)",
 	"description": "Showcase your products relevant images and media.",
 	"category": "woocommerce",
 	"keywords": [ "WooCommerce" ],
 	"supports": {
 		"align": true,
-		"interactivity": true
+		"interactivity": true,
+		"layout": {
+			"default": {
+				"type": "flex",
+				"flexWrap": "nowrap",
+				"orientation": "horizontal"
+			},
+			"allowOrientation": true,
+			"allowEditing": true,
+			"allowJustification": false
+		}
 	},
 	"textdomain": "woocommerce",
 	"usesContext": [ "postId" ],
 	"providesContext": {
-		"thumbnailsPosition": "thumbnailsPosition",
-		"thumbnailsNumberOfThumbnails": "thumbnailsNumberOfThumbnails",
-		"productGalleryClientId": "productGalleryClientId",
-		"nextPreviousButtonsPosition": "nextPreviousButtonsPosition",
-		"pagerDisplayMode": "pagerDisplayMode",
 		"hoverZoom": "hoverZoom",
 		"fullScreenOnClick": "fullScreenOnClick",
-		"mode": "mode",
 		"cropImages": "cropImages"
 	},
 	"ancestor": [ "woocommerce/single-product" ],
 	"attributes": {
-		"thumbnailsPosition": {
-			"type": "string",
-			"default": "left"
-		},
-		"thumbnailsNumberOfThumbnails": {
-			"type": "number",
-			"default": 3
-		},
-		"pagerDisplayMode": {
-			"type": "string",
-			"default": "dots"
-		},
-		"productGalleryClientId": {
-			"type": "string",
-			"default": ""
-		},
 		"cropImages": {
 			"type": "boolean",
 			"default": false
@@ -53,16 +40,10 @@
 		"fullScreenOnClick": {
 			"type": "boolean",
 			"default": true
-		},
-		"nextPreviousButtonsPosition": {
-			"type": "string",
-			"default": "insideTheImage"
-		},
-		"mode": {
-			"type": "string",
-			"default": "standard"
 		}
 	},
 	"viewScript": "wc-product-gallery-frontend",
-	"example": {}
+	"example": {},
+	"viewScriptModule": "woocommerce/product-gallery",
+	"style": "file:../woocommerce/product-gallery-style.css"
 }

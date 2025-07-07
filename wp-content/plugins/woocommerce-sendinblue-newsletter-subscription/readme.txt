@@ -168,6 +168,16 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 4. You can access your settings by clicking on “Settings” at the top right of the screen.
 
 == Changelog ==
+= 4.0.42 =
+* Fixed bug related to Checkout Block
+
+= 4.0.41 =
+* Plugin made compatible with Wordpress v6.8.1
+
+= 4.0.40 =
+* Improvements related to Ecommerce enable call
+* Fixed bug related to Products image
+
 = 4.0.39 =
 * Plugin made compatible with Wordpress v6.7.2
 
@@ -175,7 +185,7 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 * Plugin enhancements to start syncing product inventory counts
 
 = 4.0.37 =
-* Improvement related to plugin_updated call
+* Improvements related to plugin_updated call
 * Plugin code enhancements for WooCommerce Checkout Block
 
 = 4.0.36 =

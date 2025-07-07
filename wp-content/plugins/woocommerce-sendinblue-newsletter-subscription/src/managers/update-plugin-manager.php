@@ -322,7 +322,9 @@ class UpdatePluginManagers
 
         (get_option(SENDINBLUE_ECOMMERCE_CALLED_TIME, null) !== null) ? update_option(SENDINBLUE_ECOMMERCE_CALLED_TIME, time()) : add_option(SENDINBLUE_ECOMMERCE_CALLED_TIME, time());
 
-        if (empty($settings[SendinblueClient::IS_ECOMMERCE_ENABLED])) {
+        //this will stop the calls as IS_ECOMMERCE_ENABLED is never being set,
+        //thus we keep getting incessent calls on MS BE
+        if (empty($settings[SendinblueClient::IS_PRODUCT_SYNC_ENABLED])) {
             $response = $this->client_manager->enableEcommerce();
             if (!empty($response) && $response['code'] == 201) {
                 update_option(SENDINBLUE_WC_ECOMMERCE_REQ, true);

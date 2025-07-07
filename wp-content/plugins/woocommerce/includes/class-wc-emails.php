@@ -9,8 +9,10 @@
  */
 
 use Automattic\Jetpack\Constants;
+use Automattic\WooCommerce\Admin\Features\Features;
 use Automattic\WooCommerce\Blocks\Package;
 use Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFields;
+use Automattic\WooCommerce\Enums\ProductType;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 defined( 'ABSPATH' ) || exit;
@@ -156,6 +158,8 @@ class WC_Emails {
 			WC()->payment_gateways();
 			WC()->shipping();
 
+			// phpcs:disable WooCommerce.Commenting.CommentHooks.MissingSinceComment
+			/** This action is documented in includes/class-wc-emails.php in the send_transactional_email method. */
 			do_action_ref_array( $filter . '_notification', $args );
 		}
 	}
@@ -171,6 +175,17 @@ class WC_Emails {
 		try {
 			$args = func_get_args();
 			self::instance(); // Init self so emails exist.
+
+			/**
+			 * Action hook for email template classes to trigger the sending of an email.
+			 *
+			 * The name of the hook is based on the "parent" hook that is currently firing, that this is attached to.
+			 * See the WC_Emails::init_transactional_emails method for a list of hooks.
+			 *
+			 * @since 3.1.0
+			 *
+			 * @param array $args Args from the parent hook, which may differ depending on the hook.
+			 */
 			do_action_ref_array( current_filter() . '_notification', $args );
 		} catch ( Exception $e ) {
 			$error  = 'Transactional email triggered fatal error for callback ' . current_filter();
@@ -237,6 +252,11 @@ class WC_Emails {
 		$this->emails['WC_Email_Customer_Reset_Password']   = include __DIR__ . '/emails/class-wc-email-customer-reset-password.php';
 		$this->emails['WC_Email_Customer_New_Account']      = include __DIR__ . '/emails/class-wc-email-customer-new-account.php';
 
+		if ( Features::is_enabled( 'point-of-sale' ) ) {
+			$this->emails['WC_Email_Customer_POS_Completed_Order'] = include __DIR__ . '/emails/class-wc-email-customer-pos-completed-order.php';
+			$this->emails['WC_Email_Customer_POS_Refunded_Order']  = include __DIR__ . '/emails/class-wc-email-customer-pos-refunded-order.php';
+		}
+
 		$this->emails = apply_filters( 'woocommerce_email_classes', $this->emails );
 	}
 
@@ -293,20 +313,6 @@ class WC_Emails {
 	public function replace_placeholders( $string ) {
 		$domain = wp_parse_url( home_url(), PHP_URL_HOST );
 
-		if ( FeaturesUtil::feature_is_enabled( 'email_improvements' ) ) {
-			$string = str_replace(
-				array(
-					'{store_address}',
-					'{store_email}',
-				),
-				array(
-					$this->get_store_address(),
-					$this->get_from_address(),
-				),
-				$string
-			);
-		}
-
 		return str_replace(
 			array(
 				'{site_title}',
@@ -314,6 +320,8 @@ class WC_Emails {
 				'{site_url}',
 				'{woocommerce}',
 				'{WooCommerce}',
+				'{store_address}',
+				'{store_email}',
 			),
 			array(
 				$this->get_blogname(),
@@ -321,6 +329,8 @@ class WC_Emails {
 				$domain,
 				'<a href="https://woocommerce.com">WooCommerce</a>',
 				'<a href="https://woocommerce.com">WooCommerce</a>',
+				$this->get_store_address(),
+				$this->get_from_address(),
 			),
 			$string
 		);
@@ -693,7 +703,7 @@ class WC_Emails {
 	 *
 	 * @return string
 	 */
-	private function get_store_address() {
+	public function get_store_address() {
 		add_filter(
 			'woocommerce_formatted_address_force_country_display',
 			array( $this, 'get_store_address_force_country_display' ),
@@ -750,6 +760,14 @@ class WC_Emails {
 			return;
 		}
 
+		// If this is a variation but stock is managed at the parent level, use the parent product for the notification.
+		if ( $product->is_type( 'variation' ) && 'parent' === $product->get_manage_stock() ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			if ( $parent_product ) {
+				$product = $parent_product;
+			}
+		}
+
 		$subject = sprintf( '[%s] %s', $this->get_blogname(), __( 'Product low in stock', 'woocommerce' ) );
 		$message = sprintf(
 			/* translators: 1: product name 2: items in stock */
@@ -786,6 +804,14 @@ class WC_Emails {
 		 */
 		if ( false === apply_filters( 'woocommerce_should_send_no_stock_notification', true, $product->get_id() ) ) {
 			return;
+		}
+
+		// If this is a variation but stock is managed at the parent level, use the parent product for the notification.
+		if ( $product->is_type( ProductType::VARIATION ) && 'parent' === $product->get_manage_stock() ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			if ( $parent_product ) {
+				$product = $parent_product;
+			}
 		}
 
 		$subject = sprintf( '[%s] %s', $this->get_blogname(), __( 'Product out of stock', 'woocommerce' ) );

@@ -97,6 +97,11 @@ class Sender {
 		$handle = $this->payload->create_payload( $batch, $state_data, $state_data['bottleneck'] );
 		rewind( $handle );
 
+		// Before outputting anything, make sure buffer is empty and set headers
+		// so that services like Cloudflare do not corrupt the stream.
+		@ob_clean();
+		header( 'content-type: application/octet-stream' );
+		header( 'cache-control: no-transform' );
 
 		// Read payload line by line and send each line to the output buffer
 		while ( ! feof( $handle ) ) {

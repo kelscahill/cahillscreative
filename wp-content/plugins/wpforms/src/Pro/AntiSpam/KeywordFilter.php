@@ -118,7 +118,7 @@ class KeywordFilter {
 						<span class="wpforms-loading-spinner wpforms-loading-white wpforms-loading-inline wpforms-hidden"></span>
 						<span class="wpforms-settings-keyword-filter-save-changes-text"><?php esc_html_e( 'Save Changes', 'wpforms' ); ?></span>
 					</button>
-					<button class="wpforms-btn wpforms-btn-sm wpforms-btn-light-grey-blue-borders wpforms-settings-keyword-filter-cancel">
+					<button class="wpforms-btn wpforms-btn-sm wpforms-btn-blue-borders wpforms-settings-keyword-filter-cancel">
 						<?php esc_html_e( 'Cancel', 'wpforms' ); ?>
 					</button>
 				</div>

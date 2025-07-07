@@ -154,7 +154,12 @@ class ProductsManager
         if (!empty($product->get_image_id())) {
             $data['images'] = [];
             $data['main_image_src'] = '';
-            $img_url = wp_get_attachment_image_src(get_post_thumbnail_id($data['id']), 'single-post-thumbnail')[0];
+            $img_url_data = wp_get_attachment_image_src(get_post_thumbnail_id($data['id']), 'single-post-thumbnail');
+
+            $img_url = '';
+            if (is_array($img_url_data) and count($img_url_data) > 0) {
+                $img_url = $img_url_data[0];
+            }
             $img_obj = (object) [
                 'id' => (int) $product->get_image_id(),
                 'src' => is_string($img_url) ? $img_url : ""

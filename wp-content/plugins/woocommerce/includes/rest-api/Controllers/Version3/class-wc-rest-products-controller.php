@@ -9,7 +9,10 @@
  */
 
 use Automattic\WooCommerce\Enums\ProductStatus;
+use Automattic\WooCommerce\Enums\ProductStockStatus;
+use Automattic\WooCommerce\Enums\ProductTaxStatus;
 use Automattic\WooCommerce\Enums\ProductType;
+use Automattic\WooCommerce\Enums\CatalogVisibility;
 use Automattic\WooCommerce\Internal\CostOfGoodsSold\CogsAwareRestControllerTrait;
 use Automattic\WooCommerce\Utilities\I18nUtil;
 
@@ -33,13 +36,21 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 	protected $namespace = 'wc/v3';
 
 	/**
-	 * A string to inject into a query to do a partial match SKU search.
+	 * The value of the 'search_sku' argument if present.
 	 *
 	 * See prepare_objects_query()
 	 *
 	 * @var string
 	 */
-	private $search_sku_in_product_lookup_table = '';
+	private $search_sku_arg_value = '';
+
+	/**
+	 * If the 'search_name_or_sku' argument is present this will be set
+	 * to an array of the (space-separated) tokens that form the argument value.
+	 *
+	 * @var array|null
+	 */
+	private $search_name_or_sku_tokens = null;
 
 	/**
 	 * Suggested product ids.
@@ -293,11 +304,22 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 			);
 		}
 
-		if ( wc_product_sku_enabled() ) {
-			// Do a partial match for a sku. Supersedes sku parameter that does exact matching.
+		$search_name_or_sku_arg = $request['search_name_or_sku'] ?? '';
+
+		if ( '' !== $search_name_or_sku_arg ) {
+			// Do a tokenized search for name or SKU. Supersedes the 'search', 'search_sku' and 'sku' arguments.
+			$tokens                          = array_filter( array_map( 'trim', explode( ' ', $search_name_or_sku_arg ) ) );
+			$this->search_name_or_sku_tokens = array_map( 'esc_sql', $tokens );
+
+			unset( $request['search'] );
+			unset( $args['s'] );
+			unset( $request['search_sku'] );
+			unset( $request['sku'] );
+		} elseif ( wc_product_sku_enabled() ) {
+			// Do a partial match for a sku. Supersedes the 'sku' argument, that does exact matching.
 			if ( ! empty( $request['search_sku'] ) ) {
 				// Store this for use in the query clause filters.
-				$this->search_sku_in_product_lookup_table = $request['search_sku'];
+				$this->search_sku_arg_value = $request['search_sku'];
 
 				unset( $request['sku'] );
 			}
@@ -372,7 +394,7 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 		}
 
 		// Force the post_type argument, since it's not a user input variable.
-		if ( ! empty( $request['sku'] ) || ! empty( $request['search_sku'] ) ) {
+		if ( ! empty( $request['sku'] ) || ! empty( $request['search_sku'] ) || $this->search_name_or_sku_tokens ) {
 			$args['post_type'] = array( 'product', 'product_variation' );
 		} else {
 			$args['post_type'] = $this->post_type;
@@ -409,8 +431,10 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 	 * @return array
 	 */
 	protected function get_objects( $query_args ) {
+		$add_search_criteria = $this->search_sku_arg_value || $this->search_name_or_sku_tokens;
+
 		// Add filters for search criteria in product postmeta via the lookup table.
-		if ( ! empty( $this->search_sku_in_product_lookup_table ) ) {
+		if ( $add_search_criteria ) {
 			add_filter( 'posts_join', array( $this, 'add_search_criteria_to_wp_query_join' ) );
 			add_filter( 'posts_where', array( $this, 'add_search_criteria_to_wp_query_where' ) );
 		}
@@ -423,11 +447,11 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 		$result = parent::get_objects( $query_args );
 
 		// Remove filters for search criteria in product postmeta via the lookup table.
-		if ( ! empty( $this->search_sku_in_product_lookup_table ) ) {
+		if ( $add_search_criteria ) {
 			remove_filter( 'posts_join', array( $this, 'add_search_criteria_to_wp_query_join' ) );
 			remove_filter( 'posts_where', array( $this, 'add_search_criteria_to_wp_query_where' ) );
 
-			$this->search_sku_in_product_lookup_table = '';
+			$this->search_sku_arg_value = '';
 		}
 
 		// Remove filters for excluding product statuses.
@@ -447,11 +471,20 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 	 * @return string
 	 */
 	public function add_search_criteria_to_wp_query_join( $join ) {
-		global $wpdb;
-		if ( ! empty( $this->search_sku_in_product_lookup_table ) && ! strstr( $join, 'wc_product_meta_lookup' ) ) {
-			$join .= " LEFT JOIN $wpdb->wc_product_meta_lookup wc_product_meta_lookup
-						ON $wpdb->posts.ID = wc_product_meta_lookup.product_id ";
+		if ( $this->search_name_or_sku_tokens ) {
+			if ( ! wc_product_sku_enabled() ) {
+				// The argument is effectively a tokenized name search: we don't need to join the meta lookup table.
+				return $join;
+			}
+		} elseif ( empty( $this->search_sku_arg_value ) || strstr( $join, 'wc_product_meta_lookup' ) ) {
+			return;
 		}
+
+		global $wpdb;
+
+		$join .= " LEFT JOIN $wpdb->wc_product_meta_lookup wc_product_meta_lookup
+						ON $wpdb->posts.ID = wc_product_meta_lookup.product_id ";
+
 		return $join;
 	}
 
@@ -463,8 +496,28 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 	 */
 	public function add_search_criteria_to_wp_query_where( $where ) {
 		global $wpdb;
-		if ( ! empty( $this->search_sku_in_product_lookup_table ) ) {
-			$like_search = '%' . $wpdb->esc_like( $this->search_sku_in_product_lookup_table ) . '%';
+
+		if ( $this->search_name_or_sku_tokens ) {
+			$use_sku                  = wc_product_sku_enabled();
+			$posts_clause_parts       = array();
+			$meta_lookup_clause_parts = array();
+			foreach ( $this->search_name_or_sku_tokens as $token ) {
+				$like_search          = '%' . $wpdb->esc_like( $token ) . '%';
+				$posts_clause_parts[] = $wpdb->prepare( "($wpdb->posts.post_title LIKE %s)", $like_search );
+				if ( $use_sku ) {
+					$meta_lookup_clause_parts[] = $wpdb->prepare( '(wc_product_meta_lookup.sku LIKE %s)', $like_search );
+				}
+			}
+			$post_clause = implode( ' AND ', $posts_clause_parts );
+			if ( $use_sku ) {
+				$meta_lookup_clause = implode( ' AND ', $meta_lookup_clause_parts );
+			}
+			$where .=
+				$use_sku ?
+					" AND (($post_clause) OR ($meta_lookup_clause))" :
+					" AND ($post_clause)";
+		} elseif ( ! empty( $this->search_sku_arg_value ) ) {
+			$like_search = '%' . $wpdb->esc_like( $this->search_sku_arg_value ) . '%';
 			$where      .= ' AND ' . $wpdb->prepare( '(wc_product_meta_lookup.sku LIKE %s)', $like_search );
 		}
 		return $where;
@@ -819,7 +872,7 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 				$product->set_manage_stock( 'no' );
 				$product->set_backorders( 'no' );
 				$product->set_stock_quantity( '' );
-				$product->set_stock_status( 'instock' );
+				$product->set_stock_status( ProductStockStatus::IN_STOCK );
 			} elseif ( $product->get_manage_stock() ) {
 				// Stock status is always determined by children so sync later.
 				if ( ! $product->is_type( ProductType::VARIABLE ) ) {
@@ -1095,8 +1148,8 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 				'catalog_visibility'    => array(
 					'description' => __( 'Catalog visibility.', 'woocommerce' ),
 					'type'        => 'string',
-					'default'     => 'visible',
-					'enum'        => array( 'visible', 'catalog', 'search', 'hidden' ),
+					'default'     => CatalogVisibility::VISIBLE,
+					'enum'        => array( CatalogVisibility::VISIBLE, CatalogVisibility::CATALOG, CatalogVisibility::SEARCH, CatalogVisibility::HIDDEN ),
 					'context'     => array( 'view', 'edit' ),
 				),
 				'description'           => array(
@@ -1242,8 +1295,8 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 				'tax_status'            => array(
 					'description' => __( 'Tax status.', 'woocommerce' ),
 					'type'        => 'string',
-					'default'     => 'taxable',
-					'enum'        => array( 'taxable', 'shipping', 'none' ),
+					'default'     => ProductTaxStatus::TAXABLE,
+					'enum'        => array( ProductTaxStatus::TAXABLE, ProductTaxStatus::SHIPPING, ProductTaxStatus::NONE ),
 					'context'     => array( 'view', 'edit' ),
 				),
 				'tax_class'             => array(
@@ -1265,7 +1318,7 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 				'stock_status'          => array(
 					'description' => __( 'Controls the stock status of the product.', 'woocommerce' ),
 					'type'        => 'string',
-					'default'     => 'instock',
+					'default'     => ProductStockStatus::IN_STOCK,
 					'enum'        => array_keys( wc_get_product_stock_status_options() ),
 					'context'     => array( 'view', 'edit' ),
 				),
@@ -1431,6 +1484,33 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 							),
 							'slug' => array(
 								'description' => __( 'Category slug.', 'woocommerce' ),
+								'type'        => 'string',
+								'context'     => array( 'view', 'edit' ),
+								'readonly'    => true,
+							),
+						),
+					),
+				),
+				'brands'                => array(
+					'description' => __( 'List of brands.', 'woocommerce' ),
+					'type'        => 'array',
+					'context'     => array( 'view', 'edit' ),
+					'items'       => array(
+						'type'       => 'object',
+						'properties' => array(
+							'id'   => array(
+								'description' => __( 'Brand ID.', 'woocommerce' ),
+								'type'        => 'integer',
+								'context'     => array( 'view', 'edit' ),
+							),
+							'name' => array(
+								'description' => __( 'Brand name.', 'woocommerce' ),
+								'type'        => 'string',
+								'context'     => array( 'view', 'edit' ),
+								'readonly'    => true,
+							),
+							'slug' => array(
+								'description' => __( 'Brand slug.', 'woocommerce' ),
 								'type'        => 'string',
 								'context'     => array( 'view', 'edit' ),
 								'readonly'    => true,
@@ -1691,7 +1771,14 @@ class WC_REST_Products_Controller extends WC_REST_Products_V2_Controller {
 		);
 
 		$params['search_sku'] = array(
-			'description'       => __( 'Limit results to those with a SKU that partial matches a string.', 'woocommerce' ),
+			'description'       => __( "Limit results to those with a SKU that partial matches a string. This argument takes precedence over 'sku'.", 'woocommerce' ),
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_text_field',
+			'validate_callback' => 'rest_validate_request_arg',
+		);
+
+		$params['search_name_or_sku'] = array(
+			'description'       => __( "Limit results to those with a name or SKU that partial matches a string. This argument takes precedence over 'search', 'sku' and 'search_sku'.", 'woocommerce' ),
 			'type'              => 'string',
 			'sanitize_callback' => 'sanitize_text_field',
 			'validate_callback' => 'rest_validate_request_arg',

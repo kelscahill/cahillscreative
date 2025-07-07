@@ -96,9 +96,6 @@ WPForms.Admin.Builder.ContentField = WPForms.Admin.Builder.ContentField || ( fun
 		 * @since 1.7.8
 		 */
 		ready: function() {
-
-			app.setPluginManager();
-
 			$( '#wpforms-builder' )
 				.on( 'wpformsFieldAdd', app.onWpformsFieldAdd )
 				.on( 'wpformsFieldMove', app.onWpformsFieldMove )
@@ -114,7 +111,8 @@ WPForms.Admin.Builder.ContentField = WPForms.Admin.Builder.ContentField || ( fun
 				.on( 'click', '.wpforms-expandable-editor .mce-toolbar button, .wpforms-expandable-editor .quicktags-toolbar input', app.onContentUpdated )
 				.on( 'input', '.wpforms-expandable-editor .wp-editor-area', app.onContentUpdated )
 				.on( 'click', '.wpforms-expandable-editor .wp-switch-editor.switch-html', app.setTextareaVisible )
-				.on( 'click', '.wpforms-panel-content-wrap .wpforms-field', app.hideImageToolbar );
+				.on( 'click', '.wpforms-panel-content-wrap .wpforms-field', app.hideImageToolbar )
+				.on( 'wpformsBuilderConfirmationsReady', app.setPluginManager );
 		},
 
 		/**
@@ -535,15 +533,9 @@ WPForms.Admin.Builder.ContentField = WPForms.Admin.Builder.ContentField || ( fun
 		showUpdatePreviewButton: function( textareaId ) {
 
 			/**
-			 Builder does not see changes in TinyMCE field so if the user edits content and then is going to leave
-			 the editor, it is not prompting to save. Let's reset savedState on TinyMCE change.
+			 * Unhide the "Update preview" button.
 			 */
-			wpf.savedState = false;
-
-			/**
-			 * Unhide "Update preview" button.
-			 */
-			$( `#${textareaId}` ).closest( '.wpforms-field-option' ).find( '.update-preview' ).show();
+			$( `#${ textareaId }` ).closest( '.wpforms-field-option' ).find( '.update-preview' ).show();
 		},
 
 		/**

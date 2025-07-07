@@ -216,26 +216,6 @@ function wpforms_refresh_license() {
 add_action( 'wp_ajax_wpforms_refresh_license', 'wpforms_refresh_license' );
 
 /**
- * Save a single notification state (opened or closed) for a form for a currently logged in user.
- *
- * @since 1.4.1
- * @deprecated 1.4.8
- */
-function wpforms_builder_notification_state_save() {
-
-	_deprecated_function( __FUNCTION__, '1.4.8 of the WPForms plugin', 'wpforms_builder_settings_block_state_save()' );
-
-	check_ajax_referer( 'wpforms-builder', 'nonce' );
-
-	if ( empty( $_POST['block_type'] ) ) {
-		$_POST['block_type'] = 'notification';
-	}
-	wpforms_builder_settings_block_state_save();
-}
-
-add_action( 'wp_ajax_wpforms_builder_notification_state_save', 'wpforms_builder_notification_state_save' );
-
-/**
  * Save a single settings block state (opened or closed) for a form for a currently logged in user.
  *
  * @since 1.4.8
@@ -278,26 +258,6 @@ function wpforms_builder_settings_block_state_save() {
 }
 
 add_action( 'wp_ajax_wpforms_builder_settings_block_state_save', 'wpforms_builder_settings_block_state_save' );
-
-/**
- * Remove a single notification state (opened or closed) for a form for a currently logged in user.
- *
- * @since 1.4.1
- * @deprecated 1.4.8
- */
-function wpforms_builder_notification_state_remove() {
-
-	_deprecated_function( __FUNCTION__, '1.4.8 of the WPForms plugin', 'wpforms_builder_settings_block_state_remove()' );
-
-	check_ajax_referer( 'wpforms-builder', 'nonce' );
-
-	if ( empty( $_POST['block_type'] ) ) {
-		$_POST['block_type'] = 'notification';
-	}
-	wpforms_builder_settings_block_state_remove();
-}
-
-add_action( 'wp_ajax_wpforms_builder_notification_state_remove', 'wpforms_builder_notification_state_remove' );
 
 /**
  * Remove a single settings block state (opened or closed) for a form for a currently logged in user.
@@ -370,8 +330,13 @@ add_action( 'wp_ajax_wpforms_builder_settings_block_state_remove', 'wpforms_buil
  */
 function wpforms_update_single_entry_filter_settings() {
 
-	// Validate nonce.
-	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'wpforms-admin' ) ) {
+	// Run a security check.
+	check_ajax_referer( 'wpforms-admin', 'nonce' );
+
+	$form_id = ! empty( $_POST['formId'] ) ? absint( $_POST['formId'] ) : 0;
+
+	// Check for permissions.
+	if ( ! wpforms_current_user_can( 'view_entries_form_single', $form_id ) ) {
 		return;
 	}
 
@@ -380,15 +345,7 @@ function wpforms_update_single_entry_filter_settings() {
 	}
 
 	$settings = ! empty( $_POST['wpforms_entry_view_settings'] ) && is_array( $_POST['wpforms_entry_view_settings'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['wpforms_entry_view_settings'] ) ) : [];
-	$option   = WPForms_Entries_Single::get_entry_view_settings();
-
-	foreach ( $option['fields'] as $key => $value ) {
-		$option['fields'][ $key ]['value'] = (int) in_array( $key, $settings, true );
-	}
-
-	foreach ( $option['display'] as $key => $value ) {
-		$option['display'][ $key ]['value'] = (int) in_array( $key, $settings, true );
-	}
+	$option   = WPForms_Entries_Single::prepare_entry_view_settings( $settings );
 
 	update_option( 'wpforms_entry_view_settings', $option );
 

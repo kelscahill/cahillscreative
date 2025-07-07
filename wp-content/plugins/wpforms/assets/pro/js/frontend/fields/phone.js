@@ -32,7 +32,6 @@ window.WPFormsPhoneField = window.WPFormsPhoneField || ( function( document, win
 		ready() {
 			app.loadValidation();
 			app.loadSmartField();
-			app.loadSmartFieldUtils();
 			app.bindSmartField();
 
 			$( '.wpforms-smart-phone-field' ).each( function() {
@@ -78,7 +77,7 @@ window.WPFormsPhoneField = window.WPFormsPhoneField || ( function( document, win
 					return false;
 				}
 
-				const iti = window.intlTelInputGlobals?.getInstance( element );
+				const iti = window.intlTelInput?.getInstance( element );
 				const result = $( element ).triggerHandler( 'validate' );
 
 				return this.optional( element ) || iti?.isValidNumberPrecise() || result;
@@ -115,51 +114,6 @@ window.WPFormsPhoneField = window.WPFormsPhoneField || ( function( document, win
 		},
 
 		/**
-		 * Load utils for the Smartphone field.
-		 *
-		 * @since 1.9.4
-		 */
-		loadSmartFieldUtils() {
-			const $phoneFields = $( document ).find( '.wpforms-smart-phone-field' );
-
-			if ( ! $phoneFields.length ) {
-				return;
-			}
-
-			// Load a utils script for the SmartPhone field.
-			const utilsPromise = window.intlTelInputGlobals.loadUtils(
-				wpforms_settings.wpforms_plugin_url + 'assets/pro/lib/intl-tel-input/module.intl-tel-input-utils.min.js'
-			);
-
-			// Utils could be loaded already.
-			// But we should update hidden inputs anyway.
-			if ( ! utilsPromise ) {
-				$phoneFields.each( app.updateSmartFieldHiddenInput );
-
-				return;
-			}
-
-			// Update hidden input of the `Smart` phone field
-			// to be sure the actual value will be provided to the Entry Preview.
-			utilsPromise.then( function() {
-				$phoneFields.each( app.updateSmartFieldHiddenInput );
-			} );
-		},
-
-		/**
-		 * Update hidden input of the Smartphone field.
-		 * We need to be sure the actual value will be provided to the Entry Preview.
-		 *
-		 * @since 1.9.4
-		 */
-		updateSmartFieldHiddenInput() {
-			const $el = $( this );
-			const iti = $el.data( 'plugin_intlTelInput' );
-
-			$( iti.hiddenInput ).val( iti.getNumber() );
-		},
-
-		/**
 		 * Backward compatibility jQuery plugin for IntlTelInput library, to support custom snippets.
 		 * e.g., https://wpforms.com/developers/how-to-set-a-default-flag-on-smart-phone-field-with-gdpr/.
 		 *
@@ -173,16 +127,18 @@ window.WPFormsPhoneField = window.WPFormsPhoneField || ( function( document, win
 			$.fn.extend( {
 				intlTelInput( options ) {
 					const $el = $( this );
-
 					if ( options === undefined || typeof options === 'object' ) {
+
+						// Phone library stopped supporting preferredCountries with version 25.3.1.
+						// They suggest to use countryOrder instead.
+						if ( options.preferredCountries ) {
+							options.countryOrder = options.preferredCountries;
+						}
+
 						return $el.each( function() {
 							const $item = $( this );
 
-							if ( ! $item.data( 'plugin_intlTelInput' ) ) {
-								const iti = window.intlTelInput( $item.get( 0 ), options );
-
-								$item.data( 'plugin_intlTelInput', iti );
-							}
+							app.initSmartField( $item, options );
 						} );
 					}
 
@@ -231,6 +187,15 @@ window.WPFormsPhoneField = window.WPFormsPhoneField || ( function( document, win
 			inputOptions = Object.keys( inputOptions ).length > 0 ? inputOptions : app.getDefaultSmartFieldOptions();
 
 			const fieldId = $el.closest( '.wpforms-field-phone' ).data( 'field-id' );
+
+			// For proper validation, we should preserve the name attribute of the input field.
+			// But we need to modify the original input name not to interfere with a hidden input.
+			$el.attr( 'name', 'wpf-temp-wpforms[fields][' + fieldId + ']' );
+
+			// Add special class to remove name attribute before submitting.
+			// So, only the hidden input value will be submitted.
+			$el.addClass( 'wpforms-input-temp-name' );
+
 			// Hidden input allows to include country code into submitted data.
 			inputOptions.hiddenInput = function() {
 				return {
@@ -247,22 +212,17 @@ window.WPFormsPhoneField = window.WPFormsPhoneField || ( function( document, win
 
 			$el.data( 'plugin_intlTelInput', iti );
 
-			// For proper validation, we should preserve the name attribute of the input field.
-			// But we need to modify the original input name not to interfere with a hidden input.
-			$el.attr( 'name', 'wpf-temp-wpforms[fields][' + fieldId + ']' );
-
-			// Add special class to remove name attribute before submitting.
-			// So, only the hidden input value will be submitted.
-			$el.addClass( 'wpforms-input-temp-name' );
-
 			// Instantly update a hidden form input.
 			// Validation is done separately, so we shouldn't worry about it.
 			// Previously "blur" only was used, which is broken in case Enter was used to submit the form.
-			$el.on( 'blur input', function() {
+			const updateHiddenInput = function() {
 				const itiPlugin = $el.data( 'plugin_intlTelInput' );
-
 				$el.siblings( 'input[type="hidden"]' ).val( itiPlugin.getNumber() );
-			} );
+			};
+
+			$el.on( 'blur input', updateHiddenInput );
+
+			$( document ).ready( updateHiddenInput );
 		},
 
 		/**
@@ -328,8 +288,9 @@ window.WPFormsPhoneField = window.WPFormsPhoneField || ( function( document, win
 			const inputOptions = {
 				countrySearch: false,
 				fixDropdownWidth: false,
-				preferredCountries: [ 'us', 'gb' ],
+				countryOrder: [ 'us', 'gb' ],
 				countryListAriaLabel: wpforms_settings.country_list_label,
+				validationNumberTypes: [ 'FIXED_LINE_OR_MOBILE' ],
 			};
 
 			// Determine the country by IP if no GDPR restrictions enabled.
@@ -347,7 +308,7 @@ window.WPFormsPhoneField = window.WPFormsPhoneField || ( function( document, win
 
 			// Make sure the library recognizes browser country code to avoid console error.
 			if ( countryCode ) {
-				let countryData = window.intlTelInputGlobals.getCountryData();
+				let countryData = window.intlTelInput?.getCountryData();
 
 				countryData = countryData.filter( function( country ) {
 					return country.iso2 === countryCode.toLowerCase();

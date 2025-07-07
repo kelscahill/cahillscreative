@@ -25,6 +25,15 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 	const __private = {
 
 		/**
+		 * Flag to determine if we have a new connection which is unsaved.
+		 *
+		 * @since 1.9.6
+		 *
+		 * @type {boolean}
+		 */
+		hasUnsavedNewConnection: false,
+
+		/**
 		 * Internal cache storage.
 		 * Do not use it directly, but app.cache.{(get|set|delete|clear)()} instead.
 		 * Key is the provider slug, value is a Map, that will have its own key as a connection id (or not).
@@ -147,8 +156,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 			 */
 			request( provider, custom ) {
 				const $holder = app.getProviderHolder( provider ),
-					$lock = $holder.find( '.wpforms-builder-provider-connections-save-lock' ),
-					$error = $holder.find( '.wpforms-builder-provider-connections-error' );
+					$lock = $holder.find( '.wpforms-builder-provider-connections-save-lock' );
 
 				const params = {
 					url: wpforms_builder.ajax_url,
@@ -157,7 +165,7 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 					beforeSend() {
 						$holder.addClass( 'loading' );
 						$lock.val( 1 );
-						$error.hide();
+						app.ui.getProviderError( provider ).hide();
 					},
 				};
 
@@ -181,19 +189,13 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 						console.error( textStatus ); // eslint-disable-line no-console
 
 						$lock.val( 1 );
-						$error.show();
+						app.ui.showError( provider );
 					} )
 					.always( function( dataOrjqXHR, textStatus, jqXHROrerrorThrown ) { // eslint-disable-line no-unused-vars
 						$holder.removeClass( 'loading' );
 
 						if ( 'success' === textStatus ) {
 							$lock.val( 0 );
-
-							// Update the form state when the provider data is unlocked.
-							// We need to do it on the next tick to ensure that provider fields are already initialized.
-							setTimeout( function() {
-								wpf.savedState = wpf.getFormState( '#wpforms-builder-form' );
-							}, 0 );
 						}
 					} );
 			},
@@ -422,6 +424,8 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 		bindActions() {
 			// On Form save - notify user about required fields.
 			$( document ).on( 'wpformsSaved', function() {
+				__private.hasUnsavedNewConnection = false;
+
 				const $connectionBlocks = app.panelHolder.find( '.wpforms-builder-provider-connection' );
 
 				if ( ! $connectionBlocks.length ) {
@@ -480,15 +484,45 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 				}
 			} );
 
+			$( document ).on( 'wpformsFieldUpdate', function() {
+				const $connectionBlocks = app.panelHolder.find( '.wpforms-builder-provider-connection' );
+
+				app.updateMapSelects( $connectionBlocks );
+			} );
+
+			app.panelHolder.on( 'connectionCreate', function() {
+				__private.hasUnsavedNewConnection = true;
+			} );
+
 			/*
 			 * Update form state when each connection is loaded into the DOM.
-			 * This will prevent a please-save-prompt to appear when navigating
-			 * out and back to Marketing tab without doing any changes anywhere.
+			 * This will prevent a please-save-prompt from appearing when navigating
+			 * out and back to the Marketing or Settings tab without doing any changes anywhere.
 			 */
-			app.panelHolder.on( 'connectionRendered', function() {
-				if ( wpf.initialSave === true ) {
-					wpf.savedState = wpf.getFormState( '#wpforms-builder-form' );
+			app.panelHolder.on( 'connectionGeneralSettingsRendered connectionRendered', function( e, provider ) {
+				if ( typeof provider !== 'string' ) {
+					return;
 				}
+
+				if ( __private.hasUnsavedNewConnection ) {
+					return;
+				}
+
+				// We need to save the form next tick to ensure that JS fields are already initialized.
+				setTimeout( () => {
+					const currentState = wpf._getCurrentFormState();
+
+					for ( const [ key, value ] of Object.entries( currentState ) ) {
+						// What it matches:
+						// - `[provider]`
+						// - `provider[`
+						const providerRegex = new RegExp( `\\[?${ provider }[\\[\\]]` );
+
+						if ( providerRegex.test( key ) && typeof wpf.savedFormState[ key ] === 'undefined' ) {
+							wpf.savedFormState[ key ] = value;
+						}
+					}
+				}, 0 );
 			} );
 		},
 
@@ -595,12 +629,6 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 
 				$select.replaceWith( $newSelect );
 			} );
-
-			// If selects for mapping was changed, that whole form state was changed as well.
-			// That's why we need to re-save it.
-			if ( wpf.savedState !== wpf.getFormState( '#wpforms-builder-form' ) ) {
-				wpf.savedState = wpf.getFormState( '#wpforms-builder-form' );
-			}
 
 			// Save form fields state for the next saving process.
 			__private.fields = fields;
@@ -821,28 +849,18 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 			 * Get the default name for a new connection.
 			 *
 			 * @since 1.9.3
+			 * @since 1.9.5 Remove support of the `providerClass.setDefaultModalValue` method.
 			 *
 			 * @param {string} provider Current provider slug.
 			 *
 			 * @return {string} Returns the default name for a new connection.
 			 */
 			getDefaultConnectionName( provider ) {
-				const providerClass = app.getProviderClass( provider );
-
-				// Check if the provider has a method to set the custom connection name.
-				if ( typeof providerClass?.setDefaultModalValue === 'function' ) {
-					return providerClass.setDefaultModalValue();
-				}
-
 				const providerName = app.getProviderHolder( provider ).data( 'provider-name' );
 				const numberOfConnections = app.ui.getCountConnectionsOf( provider );
 				const defaultName = `${ providerName } ${ wpforms_builder.connection_label }`;
 
-				if ( numberOfConnections === 0 ) {
-					return defaultName;
-				}
-
-				return `${ defaultName } #${ numberOfConnections + 1 }`;
+				return numberOfConnections < 1 ? defaultName : '';
 			},
 
 			/**
@@ -870,6 +888,48 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 					$sidebarItem = $( '.wpforms-panel-sidebar-section-' + $connection.target.dataset.provider );
 
 				$sidebarItem.find( '.fa-check-circle-o' ).toggleClass( 'wpforms-hidden', $( $section ).find( '.wpforms-builder-provider-connection' ).length <= 0 );
+			},
+
+			/**
+			 * Retrieves the error message element for the specified provider.
+			 *
+			 * @since 1.9.5
+			 *
+			 * @param {string} provider The name of the provider.
+			 *
+			 * @return {Object} The jQuery object containing the error message element for the provider.
+			 */
+			getProviderError( provider ) {
+				return $( `#wpforms-${ provider }-builder-provider-error` );
+			},
+
+			/**
+			 * Displays an error message for the specified provider in the UI.
+			 * This method checks if an error already exists for the provider and displays it.
+			 * If no error exists, it dynamically creates and displays a new error template.
+			 *
+			 * @since 1.9.5
+			 *
+			 * @param {string} provider The provider for which the error message is displayed.
+			 */
+			showError( provider ) {
+				const $error = app.ui.getProviderError( provider );
+
+				if ( $error.length ) {
+					$error.show();
+
+					return;
+				}
+
+				const templateId = `wpforms-${ provider }-builder-content-connection-default-error`;
+				const $holder = app.getProviderHolder( provider ).find( '.wpforms-builder-provider-connections' );
+
+				// Register and prepend template.
+				app.Templates.add( [ templateId ] );
+				$holder.prepend( app.Templates.get( templateId )() );
+
+				// Show error.
+				app.ui.getProviderError( provider ).show();
 			},
 
 			/**
@@ -1055,12 +1115,16 @@ WPForms.Admin.Builder.Providers = WPForms.Admin.Builder.Providers || ( function(
 		 *
 		 * @since 1.9.2.3
 		 * @since 1.9.3 Added support for "-" in provider names.
+		 * @deprecated 1.9.5 Not used anymore.
 		 *
 		 * @param {string} provider Provider name.
 		 *
 		 * @return {Object|null} Return provider object or null.
 		 */
 		getProviderClass( provider ) {
+			// eslint-disable-next-line no-console
+			console.warn( 'WARNING! Function "WPForms.Admin.Builder.Providers.getProviderClass()" has been deprecated!' );
+
 			// Convert part of the provider name to uppercase.
 			const upperProviderPart = ( providerPart ) => (
 				providerPart.charAt( 0 ).toUpperCase() + providerPart.slice( 1 )

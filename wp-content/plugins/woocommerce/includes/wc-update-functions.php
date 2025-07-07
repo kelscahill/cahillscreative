@@ -21,6 +21,7 @@ defined( 'ABSPATH' ) || exit;
 use Automattic\WooCommerce\Admin\Notes\Note;
 use Automattic\WooCommerce\Admin\Notes\Notes;
 use Automattic\WooCommerce\Database\Migrations\MigrationHelper;
+use Automattic\WooCommerce\Enums\ProductStockStatus;
 use Automattic\WooCommerce\Enums\ProductType;
 use Automattic\WooCommerce\Internal\Admin\Marketing\MarketingSpecs;
 use Automattic\WooCommerce\Internal\Admin\Notes\WooSubscriptionsNotes;
@@ -34,6 +35,8 @@ use Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Registe
 use Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Synchronize as Download_Directories_Sync;
 use Automattic\WooCommerce\Internal\Utilities\DatabaseUtil;
 use Automattic\WooCommerce\Utilities\StringUtil;
+use Automattic\WooCommerce\Blocks\Options as BlockOptions;
+use Automattic\WooCommerce\Blocks\Utils\BlockTemplateUtils;
 
 /**
  * Update file paths for 2.0
@@ -996,7 +999,7 @@ function wc_update_241_variations() {
 		$parent_stock_status = get_post_meta( $variation->variation_parent, '_stock_status', true );
 
 		// Set the _stock_status.
-		add_post_meta( $variation->variation_id, '_stock_status', $parent_stock_status ? $parent_stock_status : 'instock', true );
+		add_post_meta( $variation->variation_id, '_stock_status', $parent_stock_status ? $parent_stock_status : ProductStockStatus::IN_STOCK, true );
 
 		// Delete old product children array.
 		delete_transient( 'wc_product_children_' . $variation->variation_parent );
@@ -1336,7 +1339,7 @@ function wc_update_300_product_visibility() {
 		$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO {$wpdb->term_relationships} SELECT post_id, %d, 0 FROM {$wpdb->postmeta} WHERE meta_key = '_visibility' AND meta_value IN ('hidden', 'search');", $exclude_catalog_term->term_taxonomy_id ) );
 	}
 
-	$outofstock_term = get_term_by( 'name', 'outofstock', 'product_visibility' );
+	$outofstock_term = get_term_by( 'name', ProductStockStatus::OUT_OF_STOCK, 'product_visibility' );
 
 	if ( $outofstock_term ) {
 		$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO {$wpdb->term_relationships} SELECT post_id, %d, 0 FROM {$wpdb->postmeta} WHERE meta_key = '_stock_status' AND meta_value = 'outofstock';", $outofstock_term->term_taxonomy_id ) );
@@ -2601,6 +2604,13 @@ function wc_update_770_remove_multichannel_marketing_feature_options() {
 }
 
 /**
+ * Set a flag to indicate whether the blockified Product Grid Block should be used as a template.
+ */
+function wc_update_790_blockified_product_grid_block() {
+	update_option( BlockOptions::WC_BLOCK_USE_BLOCKIFIED_PRODUCT_GRID_BLOCK_AS_TEMPLATE, wc_bool_to_string( false ) );
+}
+
+/**
  * Migrate transaction data which was being incorrectly stored in the postmeta table to HPOS tables.
  *
  * @return bool Whether there are pending migration records.
@@ -2645,6 +2655,44 @@ LIMIT 250
 	$has_pending = $wpdb->query( "$select_query LIMIT 1;" );
 
 	return ! empty( $has_pending );
+}
+
+/**
+ * Rename the checkout template to page-checkout.
+ */
+function wc_update_830_rename_checkout_template() {
+	$template = get_block_template( BlockTemplateUtils::PLUGIN_SLUG . '//checkout', 'wp_template' );
+
+	if ( $template && ! empty( $template->wp_id ) ) {
+		if ( ! defined( 'WP_POST_REVISIONS' ) ) {
+			define( 'WP_POST_REVISIONS', false );
+		}
+		wp_update_post(
+			array(
+				'ID'        => $template->wp_id,
+				'post_name' => 'page-checkout',
+			)
+		);
+	}
+}
+
+/**
+ * Rename the cart template to page-cart.
+ */
+function wc_update_830_rename_cart_template() {
+	$template = get_block_template( BlockTemplateUtils::PLUGIN_SLUG . '//cart', 'wp_template' );
+
+	if ( $template && ! empty( $template->wp_id ) ) {
+		if ( ! defined( 'WP_POST_REVISIONS' ) ) {
+			define( 'WP_POST_REVISIONS', false );
+		}
+		wp_update_post(
+			array(
+				'ID'        => $template->wp_id,
+				'post_name' => 'page-cart',
+			)
+		);
+	}
 }
 
 /**
@@ -2739,7 +2787,7 @@ function wc_update_910_add_launch_your_store_tour_option() {
  * Add woocommerce_hooked_blocks_version option for existing stores that are using a theme that supports the Block Hooks API
  */
 function wc_update_920_add_wc_hooked_blocks_version_option() {
-	if ( ! wc_current_theme_is_fse_theme() && ! current_theme_supports( 'block-template-parts' ) ) {
+	if ( ! wp_is_block_theme() && ! current_theme_supports( 'block-template-parts' ) ) {
 		return;
 	}
 
@@ -2943,4 +2991,43 @@ function wc_update_961_migrate_default_email_base_color() {
 	if ( '#7f54b3' === $color ) {
 		update_option( 'woocommerce_email_base_color', '#720eec' );
 	}
+}
+
+/**
+ * Remove the option woocommerce_order_attribution_install_banner_dismissed.
+ * This data is now stored in the user meta table in the PR #55715.
+ */
+function wc_update_980_remove_order_attribution_install_banner_dismissed_option() {
+	delete_option( 'woocommerce_order_attribution_install_banner_dismissed' );
+}
+
+/**
+ * One-time force enable the new Payments Settings page feature for all stores.
+ */
+function wc_update_985_enable_new_payments_settings_page_feature() {
+	update_option( 'woocommerce_feature_reactify-classic-payments-settings_enabled', 'yes' );
+}
+
+/**
+ * Remove the transient wc_count_comments as this has migrated to use cache.
+ */
+function wc_update_990_remove_wc_count_comments_transient() {
+	delete_transient( 'wc_count_comments' );
+}
+
+/**
+ * Remove all notes of type 'email' from wp_wc_admin_notes table.
+ *
+ * @return void
+ */
+function wc_update_990_remove_email_notes() {
+	global $wpdb;
+
+	$wpdb->delete(
+		$wpdb->prefix . 'wc_admin_notes',
+		array(
+			'type' => 'email',
+		),
+		array( '%s' )
+	);
 }

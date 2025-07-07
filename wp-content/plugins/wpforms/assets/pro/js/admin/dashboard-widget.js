@@ -119,7 +119,7 @@ const WPFormsDashboardWidget = window.WPFormsDashboardWidget || ( function( docu
 						reverse: isRTL,
 						ticks: {
 							source: 'labels',
-							padding: 10,
+							padding: 0,
 							minRotation: 25,
 							maxRotation: 25,
 							callback( value, index, values ) {
@@ -139,7 +139,7 @@ const WPFormsDashboardWidget = window.WPFormsDashboardWidget || ( function( docu
 						beginAtZero: true,
 						ticks: {
 							maxTicksLimit: 6,
-							padding: 20,
+							padding: 0,
 							callback( value ) {
 								// Make sure the tick value has no decimals.
 								if ( Math.floor( value ) === value ) {

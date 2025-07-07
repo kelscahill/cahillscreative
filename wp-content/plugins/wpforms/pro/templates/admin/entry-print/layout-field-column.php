@@ -54,7 +54,7 @@ if ( LayoutHelpers::is_layout_empty( $field ) ) {
 			}
 
 			?>
-			<div class="<?php echo wpforms_sanitize_classes( $column_classes, true ); ?>" style="width: <?php echo (float) $preset_width; ?>%">
+			<div class="<?php echo wpforms_sanitize_classes( $column_classes, true ); ?>" style="--field-layout-column-width: <?php echo (float) $preset_width; ?>%">
 				<?php
 				foreach ( $column['fields'] as $child_field ) {
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

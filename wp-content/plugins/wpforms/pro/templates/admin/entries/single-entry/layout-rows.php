@@ -35,6 +35,8 @@ if ( LayoutHelpers::is_layout_empty( $field ) ) {
 		$classes[] = 'wpforms-hide';
 	}
 }
+
+$context = [ 'layout-row' => true ];
 ?>
 
 <div class="<?php echo wpforms_sanitize_classes( $classes, true ); ?>">
@@ -55,10 +57,10 @@ if ( LayoutHelpers::is_layout_empty( $field ) ) {
 			<div class="wpforms-layout-row">
 				<?php foreach ( $row as $data ) : ?>
 					<?php $width = wpforms_get_column_width( $data ); ?>
-					<div class="wpforms-entry-field-layout-inner wpforms-field-layout-column" style="width: <?php echo esc_attr( $width ); ?>%">
+					<div class="wpforms-entry-field-layout-inner wpforms-field-layout-column" style="--field-layout-column-width: <?php echo esc_attr( $width ); ?>%">
 						<?php
 						if ( $data['field'] ) {
-							$entries_single->print_field( $data['field'], $form_data );
+							$entries_single->print_field( $data['field'], $form_data, $context );
 						}
 						?>
 					</div>

@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: WPForms 1.9.4.2\n"
+"Project-Id-Version: WPForms 1.9.6.1\n"
 "Report-Msgid-Bugs-To: https://wpforms.com/support/\n"
 "Last-Translator: WPForms <support@wpforms.com>\n"
 "Language-Team: WPForms <support@wpforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-12T11:59:48+00:00\n"
+"POT-Creation-Date: 2025-06-16T16:47:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: wpforms\n"
@@ -32,26 +32,26 @@ msgstr ""
 
 #: pro/includes/admin/ajax-actions.php:43
 #: pro/includes/admin/entries/class-entries-single.php:259
-#: src/Pro/Admin/Entries/ListTable.php:1427
+#: src/Pro/Admin/Entries/ListTable.php:1333
 msgid "Entry starred."
 msgstr ""
 
 #: pro/includes/admin/ajax-actions.php:53
 #: pro/includes/admin/entries/class-entries-single.php:290
-#: src/Pro/Admin/Entries/ListTable.php:1487
+#: src/Pro/Admin/Entries/ListTable.php:1393
 msgid "Entry unstarred."
 msgstr ""
 
 #: pro/includes/admin/ajax-actions.php:113
-#: pro/includes/admin/entries/class-entries-single.php:706
-#: src/Pro/Admin/Entries/Edit.php:502
-#: src/Pro/Admin/Entries/ListTable.php:1223
+#: pro/includes/admin/entries/class-entries-single.php:725
+#: src/Pro/Admin/Entries/Edit.php:512
+#: src/Pro/Admin/Entries/ListTable.php:1129
 msgid "Entry read."
 msgstr ""
 
 #: pro/includes/admin/ajax-actions.php:123
 #: pro/includes/admin/entries/class-entries-single.php:357
-#: src/Pro/Admin/Entries/ListTable.php:1283
+#: src/Pro/Admin/Entries/ListTable.php:1189
 msgid "Entry unread."
 msgstr ""
 
@@ -178,42 +178,42 @@ msgstr ""
 msgid "Contact Support"
 msgstr ""
 
-#: pro/includes/admin/class-license.php:1011
+#: pro/includes/admin/class-license.php:1016
 msgid "You've Exceeded the Allowed License Verification Attempts"
 msgstr ""
 
-#: pro/includes/admin/class-license.php:1012
+#: pro/includes/admin/class-license.php:1017
 msgid "Double-check the license key in your account and try again later. If your license key is no longer valid, please renew or install the free version of WPForms."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:1054
+#: pro/includes/admin/class-license.php:1059
 msgid "Your license key for WPForms is invalid. The key no longer exists or the user associated with the key has been deleted. Please use a different key to continue receiving automatic updates."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:1078
+#: pro/includes/admin/class-license.php:1083
 msgid "Your license key for WPForms has expired. Please renew your license key on WPForms.com to continue receiving automatic updates."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:1102
+#: pro/includes/admin/class-license.php:1107
 msgid "Your license key for WPForms has been disabled. Please use a different key to continue receiving automatic updates."
 msgstr ""
 
-#: pro/includes/admin/class-license.php:1126
+#: pro/includes/admin/class-license.php:1131
 msgid "Sorry, but this license has no activations left. You can manage your site activations, upgrade your license, or purchase a new one in your account."
 msgstr ""
 
 #. translators: %1$s - WPForms.com license key support URL.
-#: pro/includes/admin/class-license.php:1153
+#: pro/includes/admin/class-license.php:1158
 msgid "Heads up! Before you can activate this key, we'd like to check in with you. Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">reach out to support here.</a>"
 msgstr ""
 
-#: pro/includes/admin/class-license.php:1192
+#: pro/includes/admin/class-license.php:1197
 msgid "Your key has been refreshed successfully."
 msgstr ""
 
 #: pro/includes/admin/entries/class-entries-export.php:224
 #: src/Pro/Admin/Entries/Table/Facades/Columns.php:145
-#: src/Pro/Forms/Fields/DateTime/Field.php:120
+#: src/Pro/Forms/Fields/DateTime/Field.php:121
 msgid "Date"
 msgstr ""
 
@@ -254,325 +254,325 @@ msgstr ""
 msgid "Note deleted."
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:425
+#: pro/includes/admin/entries/class-entries-single.php:435
 msgid "Something went wrong while deleting a note. Please try again."
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:477
+#: pro/includes/admin/entries/class-entries-single.php:487
 msgid "Please provide a meaningful content for the note."
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:486
+#: pro/includes/admin/entries/class-entries-single.php:496
 msgid "Note added."
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:564
+#: pro/includes/admin/entries/class-entries-single.php:583
 msgid "Notifications were resent!"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:580
+#: pro/includes/admin/entries/class-entries-single.php:599
 msgid "It looks like the provided entry ID isn't valid."
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:600
-#: src/Pro/Admin/Entries/Edit.php:433
+#: pro/includes/admin/entries/class-entries-single.php:619
+#: src/Pro/Admin/Entries/Edit.php:443
 msgid "It looks like the entry you are trying to access is no longer available."
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:609
+#: pro/includes/admin/entries/class-entries-single.php:628
 msgid "You can't view this entry because it's in the trash."
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:746
-#: src/Pro/Admin/Entries/Edit.php:390
+#: pro/includes/admin/entries/class-entries-single.php:765
+#: src/Pro/Admin/Entries/Edit.php:400
 msgid "View Entry"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:791
+#: pro/includes/admin/entries/class-entries-single.php:810
 #: pro/templates/admin/empty-states/no-entries.php:24
 #: pro/templates/admin/empty-states/no-entry.php:24
 msgid "Back to All Entries"
 msgstr ""
 
 #. translators: %1$d - current number of the entry, %2$d - total number of entries.
-#: pro/includes/admin/entries/class-entries-single.php:799
+#: pro/includes/admin/entries/class-entries-single.php:818
 msgid "Entry %1$d of %2$d"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:808
+#: pro/includes/admin/entries/class-entries-single.php:827
 msgid "Previous form entry"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:816
+#: pro/includes/admin/entries/class-entries-single.php:835
 msgid "Current form entry"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:822
+#: pro/includes/admin/entries/class-entries-single.php:841
 msgid "Next form entry"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:893
+#: pro/includes/admin/entries/class-entries-single.php:915
 msgid "Field Descriptions"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:897
+#: pro/includes/admin/entries/class-entries-single.php:919
 #: pro/templates/admin/entry-print/legend-start.php:20
 msgid "Empty Fields"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:901
+#: pro/includes/admin/entries/class-entries-single.php:923
 #: pro/templates/admin/entry-print/legend-start.php:21
 msgid "Unselected Choices"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:905
+#: pro/includes/admin/entries/class-entries-single.php:927
 msgid "HTML/Content Fields"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:909
+#: pro/includes/admin/entries/class-entries-single.php:931
 #: pro/templates/admin/entry-print/legend-start.php:23
 msgid "Section Dividers"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:913
+#: pro/includes/admin/entries/class-entries-single.php:935
 #: pro/templates/admin/entry-print/legend-start.php:24
 msgid "Page Breaks"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:919
+#: pro/includes/admin/entries/class-entries-single.php:941
 msgid "Maintain Layouts"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:923
+#: pro/includes/admin/entries/class-entries-single.php:945
 #: pro/templates/admin/entry-print/legend-start.php:28
 msgid "Compact View"
 msgstr ""
 
 #. translators: %d - form ID.
-#: pro/includes/admin/entries/class-entries-single.php:951
-#: src/Pro/Admin/Entries/Page.php:1303
+#: pro/includes/admin/entries/class-entries-single.php:995
+#: src/Pro/Admin/Entries/Page.php:1178
 msgid "Form (#%d)"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:983
+#: pro/includes/admin/entries/class-entries-single.php:1027
 #: pro/templates/admin/entry-print/no-fields.php:14
-#: src/Pro/Admin/Entries/Edit.php:704
+#: src/Pro/Admin/Entries/Edit.php:714
 msgid "This entry does not have any fields"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1200
-#: pro/includes/admin/entries/class-entries-single.php:1232
+#: pro/includes/admin/entries/class-entries-single.php:1248
+#: pro/includes/admin/entries/class-entries-single.php:1298
 #: pro/templates/admin/entry-print/field.php:41
-#: src/Pro/Admin/Entries/Edit.php:396
-#: src/Pro/Admin/Entries/Edit.php:1013
+#: src/Pro/Admin/Entries/Edit.php:406
+#: src/Pro/Admin/Entries/Edit.php:1026
 #: src/Pro/Admin/Entries/PrintPreview.php:462
 #: src/Pro/Forms/Fields/EntryPreview/Field.php:971
 msgid "Empty"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1342
+#: pro/includes/admin/entries/class-entries-single.php:1407
 #: pro/templates/admin/entry-print/legend-start.php:32
 #: pro/templates/admin/entry-print/notes.php:19
 msgid "Notes"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1352
-#: pro/includes/admin/entries/class-entries-single.php:1368
+#: pro/includes/admin/entries/class-entries-single.php:1417
+#: pro/includes/admin/entries/class-entries-single.php:1433
 msgid "Add Note"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1369
-#: src/Pro/Admin/Entries/Export/Admin.php:133
+#: pro/includes/admin/entries/class-entries-single.php:1434
+#: src/Pro/Admin/Entries/Export/Admin.php:135
 #: src/Pro/AntiSpam/KeywordFilter.php:122
+#: src/Pro/Integrations/Elementor/Elementor.php:72
 #: src/Pro/Integrations/Gutenberg/FormSelector.php:162
 msgid "Cancel"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1378
+#: pro/includes/admin/entries/class-entries-single.php:1443
 msgid "No notes."
 msgstr ""
 
 #. translators: %1$s - user name, %2$s - date.
-#: pro/includes/admin/entries/class-entries-single.php:1419
-#: pro/includes/admin/entries/class-entries-single.php:1496
+#: pro/includes/admin/entries/class-entries-single.php:1484
+#: pro/includes/admin/entries/class-entries-single.php:1561
 #: pro/templates/admin/entry-print/notes.php:32
 msgid "Added by %1$s on %2$s"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1427
+#: pro/includes/admin/entries/class-entries-single.php:1492
 msgctxt "Entry: note"
 msgid "Delete"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1465
+#: pro/includes/admin/entries/class-entries-single.php:1530
 msgid "Log"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1473
+#: pro/includes/admin/entries/class-entries-single.php:1538
 msgid "No logs."
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1593
+#: pro/includes/admin/entries/class-entries-single.php:1658
 msgid "Debug Information"
 msgstr ""
 
 #. translators: %1$s - formatted date, %2$s - formatted time.
-#: pro/includes/admin/entries/class-entries-single.php:1620
-#: src/Pro/Admin/Entries/Edit.php:1290
+#: pro/includes/admin/entries/class-entries-single.php:1685
+#: src/Pro/Admin/Entries/Edit.php:1303
 msgid "%1$s at %2$s"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1632
+#: pro/includes/admin/entries/class-entries-single.php:1697
 msgid "Entry Details"
 msgstr ""
 
 #. translators: %s - entry ID.
-#: pro/includes/admin/entries/class-entries-single.php:1645
+#: pro/includes/admin/entries/class-entries-single.php:1710
 msgid "Entry ID: %s"
 msgstr ""
 
 #. translators: %1$s - post type name, %2$s - post type ID.
-#: pro/includes/admin/entries/class-entries-single.php:1663
+#: pro/includes/admin/entries/class-entries-single.php:1728
 msgid "%1$s ID: %2$s"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1674
+#: pro/includes/admin/entries/class-entries-single.php:1739
 msgid "Submitted:"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1683
+#: pro/includes/admin/entries/class-entries-single.php:1748
 msgid "Modified:"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1694
+#: pro/includes/admin/entries/class-entries-single.php:1759
 msgid "User:"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1711
+#: pro/includes/admin/entries/class-entries-single.php:1776
 msgid "User IP:"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1730
+#: pro/includes/admin/entries/class-entries-single.php:1795
 msgid "Type:"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1731
+#: pro/includes/admin/entries/class-entries-single.php:1796
 #: src/Pro/Admin/Entries/Export/Ajax.php:939
-#: src/Pro/Admin/Entries/ListTable.php:514
+#: src/Pro/Admin/Entries/ListTable.php:420
 msgid "Completed"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1784
+#: pro/includes/admin/entries/class-entries-single.php:1849
 msgid "Trash Entry"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1821
+#: pro/includes/admin/entries/class-entries-single.php:1886
 #: src/Pro/Admin/Entries/Export/Ajax.php:1070
-#: src/Pro/Admin/Entries/ListTable.php:443
-#: src/Pro/Admin/Entries/ListTable.php:2154
-#: src/Pro/Admin/Entries/ListTable.php:2163
+#: src/Pro/Admin/Entries/ListTable.php:2032
+#: src/Pro/Admin/Entries/ListTable.php:2041
 msgid "N/A"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1916
-#: src/Pro/Admin/Entries/ListTable.php:979
+#: pro/includes/admin/entries/class-entries-single.php:1981
+#: src/Pro/Admin/Entries/ListTable.php:885
 msgid "Unstar"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1916
-#: src/Pro/Admin/Entries/ListTable.php:978
+#: pro/includes/admin/entries/class-entries-single.php:1981
+#: src/Pro/Admin/Entries/ListTable.php:884
 msgid "Star"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1936
+#: pro/includes/admin/entries/class-entries-single.php:2001
 #: pro/templates/admin/entry-print/legend-start.php:96
-#: src/Pro/Admin/Entries/ListTable.php:980
+#: src/Pro/Admin/Entries/ListTable.php:886
 msgid "Print"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1941
+#: pro/includes/admin/entries/class-entries-single.php:2006
 msgid "Export (CSV)"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1946
+#: pro/includes/admin/entries/class-entries-single.php:2011
 msgid "Export (XLSX)"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1964
-#: src/Pro/Admin/Entries/ListTable.php:977
+#: pro/includes/admin/entries/class-entries-single.php:2029
+#: src/Pro/Admin/Entries/ListTable.php:883
 msgid "Mark as Unread"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:1996
+#: pro/includes/admin/entries/class-entries-single.php:2061
 msgid "Delete Entry"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:2007
-#: src/Pro/Admin/Entries/ListTable.php:2260
+#: pro/includes/admin/entries/class-entries-single.php:2072
+#: src/Pro/Admin/Entries/ListTable.php:2138
 #: src/Pro/Admin/Entries/Table/Facades/Columns.php:457
 msgid "Actions"
 msgstr ""
 
 #. translators: %s - a list of addons that disable the link.
-#: pro/includes/admin/entries/class-entries-single.php:2023
+#: pro/includes/admin/entries/class-entries-single.php:2088
 msgid "Unavailable because %s is enabled."
 msgid_plural "Unavailable because %s are enabled."
 msgstr[0] ""
 msgstr[1] ""
 
-#: pro/includes/admin/entries/class-entries-single.php:2029
+#: pro/includes/admin/entries/class-entries-single.php:2094
 #: src/Pro/Forms/Fields/Repeater/Builder.php:107
 msgid "and"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:2098
+#: pro/includes/admin/entries/class-entries-single.php:2163
 msgid "Resend Notifications"
 msgstr ""
 
 #. translators: %s - payment add-on name.
-#: pro/includes/admin/entries/class-entries-single.php:2121
+#: pro/includes/admin/entries/class-entries-single.php:2186
 msgid "the \"%s completed payments\" setting"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:2186
+#: pro/includes/admin/entries/class-entries-single.php:2251
 msgid "Related Entries"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:2192
+#: pro/includes/admin/entries/class-entries-single.php:2257
 msgid "The user who created this entry also submitted the entries below."
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:2208
+#: pro/includes/admin/entries/class-entries-single.php:2273
 msgid "(Abandoned)"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:2424
+#: pro/includes/admin/entries/class-entries-single.php:2442
 msgid "Section Divider"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:2428
+#: pro/includes/admin/entries/class-entries-single.php:2446
 msgid "Page Break"
 msgstr ""
 
-#: pro/includes/admin/entries/class-entries-single.php:2432
+#: pro/includes/admin/entries/class-entries-single.php:2450
 msgid "Content Field"
 msgstr ""
 
 #. translators: %d - field ID.
-#: pro/includes/admin/entries/class-entries-single.php:2454
+#: pro/includes/admin/entries/class-entries-single.php:2472
 msgid "Field ID #%s"
 msgstr ""
 
 #. translators: %s - choice number.
-#: pro/includes/admin/entries/class-entries-single.php:2548
-#: pro/includes/admin/entries/class-entries-single.php:2610
+#: pro/includes/admin/entries/class-entries-single.php:2566
+#: pro/includes/admin/entries/class-entries-single.php:2628
 #: src/Pro/Admin/Entries/Export/Ajax.php:686
 #: src/Pro/Admin/Entries/PrintPreview.php:510
 msgid "Choice %s"
 msgstr ""
 
 #. translators: %s - item number.
-#: pro/includes/admin/entries/class-entries-single.php:2554
+#: pro/includes/admin/entries/class-entries-single.php:2572
 msgid "Item %s"
 msgstr ""
 
@@ -596,7 +596,7 @@ msgstr ""
 
 #: pro/includes/class-conditional-logic-core.php:255
 #: pro/includes/class-conditional-logic-core.php:344
-#: src/Pro/Admin/Builder/Builder.php:89
+#: src/Pro/Admin/Builder/Builder.php:90
 msgid "How to use Conditional Logic"
 msgstr ""
 
@@ -619,26 +619,26 @@ msgstr ""
 #. translators: %d - field ID.
 #: pro/includes/class-conditional-logic-core.php:452
 #: src/Pro/Admin/Builder/Notifications/Advanced/Settings.php:251
-#: src/Pro/Admin/Entries/Export/Admin.php:265
-#: src/Pro/Admin/Entries/Export/Admin.php:391
-#: src/Pro/Admin/Entries/Export/Admin.php:418
+#: src/Pro/Admin/Entries/Export/Admin.php:334
+#: src/Pro/Admin/Entries/Export/Admin.php:460
+#: src/Pro/Admin/Entries/Export/Admin.php:487
 #: src/Pro/Admin/Entries/Export/Ajax.php:334
-#: src/Pro/Admin/Entries/Export/Ajax.php:1312
+#: src/Pro/Admin/Entries/Export/Ajax.php:1282
 #: src/Pro/Admin/Entries/Table/DataObjects/FieldColumn.php:37
 msgid "Field #%d"
 msgstr ""
 
 #: pro/includes/class-conditional-logic-core.php:482
-#: src/Pro/Admin/Entries/Export/Admin.php:449
-#: src/Pro/Admin/Entries/ListTable.php:1928
-#: src/Pro/Admin/Entries/Page.php:739
+#: src/Pro/Admin/Entries/Export/Admin.php:518
+#: src/Pro/Admin/Entries/ListTable.php:1834
+#: src/Pro/Admin/Entries/Page.php:614
 msgid "is"
 msgstr ""
 
 #: pro/includes/class-conditional-logic-core.php:483
-#: src/Pro/Admin/Entries/Export/Admin.php:450
-#: src/Pro/Admin/Entries/ListTable.php:1931
-#: src/Pro/Admin/Entries/Page.php:740
+#: src/Pro/Admin/Entries/Export/Admin.php:519
+#: src/Pro/Admin/Entries/ListTable.php:1837
+#: src/Pro/Admin/Entries/Page.php:615
 msgid "is not"
 msgstr ""
 
@@ -651,16 +651,16 @@ msgid "not empty"
 msgstr ""
 
 #: pro/includes/class-conditional-logic-core.php:495
-#: src/Pro/Admin/Entries/Export/Admin.php:447
-#: src/Pro/Admin/Entries/ListTable.php:1922
-#: src/Pro/Admin/Entries/Page.php:737
+#: src/Pro/Admin/Entries/Export/Admin.php:516
+#: src/Pro/Admin/Entries/ListTable.php:1828
+#: src/Pro/Admin/Entries/Page.php:612
 msgid "contains"
 msgstr ""
 
 #: pro/includes/class-conditional-logic-core.php:496
-#: src/Pro/Admin/Entries/Export/Admin.php:448
-#: src/Pro/Admin/Entries/ListTable.php:1925
-#: src/Pro/Admin/Entries/Page.php:738
+#: src/Pro/Admin/Entries/Export/Admin.php:517
+#: src/Pro/Admin/Entries/ListTable.php:1831
+#: src/Pro/Admin/Entries/Page.php:613
 msgid "does not contain"
 msgstr ""
 
@@ -688,7 +688,7 @@ msgstr ""
 #. translators: %d - choice ID.
 #: pro/includes/class-conditional-logic-core.php:553
 #: pro/includes/class-conditional-logic-fields.php:920
-#: src/Pro/Admin/Entries/Export/Ajax.php:1524
+#: src/Pro/Admin/Entries/Export/Ajax.php:1494
 msgid "Choice %d"
 msgstr ""
 
@@ -726,61 +726,31 @@ msgstr ""
 msgid "Entry Confirmation stopped by conditional logic."
 msgstr ""
 
-#. translators: %s - payment provider.
-#: pro/includes/payments/class-payment.php:173
-msgid "<p>One of %s's recurring payment plans doesn't have conditional logic, which means that One-Time Payments will never work and were disabled.</p>"
-msgstr ""
-
-#. translators: %s - payment provider.
-#: pro/includes/payments/class-payment.php:183
-msgid "<p>You should check your settings in <strong>Payments » %s</strong>.</p>"
-msgstr ""
-
-#: pro/includes/payments/class-payment.php:198
-msgid "Enter a plan name"
-msgstr ""
-
-#: pro/includes/payments/class-payment.php:199
-msgid "Eg: Monthly Subscription"
-msgstr ""
-
-#: pro/includes/payments/class-payment.php:200
-msgid "Plan Name #{id}"
-msgstr ""
-
-#: pro/includes/payments/class-payment.php:201
-msgid "Are you sure you want to delete this recurring plan?"
-msgstr ""
-
-#: pro/includes/payments/class-payment.php:202
-msgid "You must provide a plan name."
-msgstr ""
-
-#: pro/includes/payments/class-payment.php:306
+#: pro/includes/payments/class-payment.php:250
 msgid "One-Time Payments"
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:314
+#: pro/includes/payments/class-payment.php:258
 msgid "Enable one-time payments"
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:318
+#: pro/includes/payments/class-payment.php:262
 msgid "Allow your customers to one-time pay via the form."
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:340
+#: pro/includes/payments/class-payment.php:284
 msgid "Recurring Payments"
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:343
+#: pro/includes/payments/class-payment.php:287
 msgid "Add New Plan"
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:351
+#: pro/includes/payments/class-payment.php:295
 msgid "Enable recurring subscription payments"
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:355
+#: pro/includes/payments/class-payment.php:299
 msgid "Allow your customer to pay recurringly via the form."
 msgstr ""
 
@@ -839,18 +809,19 @@ msgstr ""
 msgid "View Payment"
 msgstr ""
 
-#: pro/templates/admin/entries/single-entry/settings.php:27
+#: pro/templates/admin/entries/single-entry/settings.php:28
 #: pro/templates/admin/entry-print/legend-start.php:102
 msgid "Field Settings"
 msgstr ""
 
-#: pro/templates/admin/entries/single-entry/settings.php:43
+#: pro/templates/admin/entries/single-entry/settings.php:44
 #: pro/templates/admin/entry-print/legend-start.php:116
 msgid "Display Settings"
 msgstr ""
 
 #: pro/templates/admin/entry-print/head.php:52
 #: src/Pro/Admin/Builder/LicenseAlert.php:165
+#: src/Pro/Integrations/Elementor/Elementor.php:75
 #: src/Pro/Integrations/Gutenberg/FormSelector.php:165
 msgid "Close"
 msgstr ""
@@ -877,26 +848,26 @@ msgid "Cog"
 msgstr ""
 
 #: pro/templates/admin/lite-connect/dashboard-widget-notice-in-progress.php:20
-#: src/Pro/Integrations/LiteConnect/Admin.php:168
+#: src/Pro/Integrations/LiteConnect/Admin.php:184
 msgid "Entry Restore in Progress"
 msgstr ""
 
 #: pro/templates/admin/lite-connect/dashboard-widget-notice-in-progress.php:23
-#: src/Pro/Integrations/LiteConnect/Admin.php:169
+#: src/Pro/Integrations/LiteConnect/Admin.php:185
 msgid "Your entries are currently being imported. This should only take a few minutes. An admin notice will be displayed when the process is complete."
 msgstr ""
 
-#: pro/templates/admin/lite-connect/dashboard-widget-notice-restore.php:18
-#: src/Pro/Integrations/LiteConnect/Admin.php:197
+#: pro/templates/admin/lite-connect/dashboard-widget-notice-restore.php:25
+#: src/Pro/Integrations/LiteConnect/Admin.php:213
 msgid "Restore Your Form Entries"
 msgstr ""
 
-#: pro/templates/admin/lite-connect/dashboard-widget-notice-restore.php:22
+#: pro/templates/admin/lite-connect/dashboard-widget-notice-restore.php:29
 msgid "Restore them now and get instant access to reports."
 msgstr ""
 
-#: pro/templates/admin/lite-connect/dashboard-widget-notice-restore.php:26
-#: src/Pro/Integrations/LiteConnect/Admin.php:199
+#: pro/templates/admin/lite-connect/dashboard-widget-notice-restore.php:33
+#: src/Pro/Integrations/LiteConnect/Admin.php:215
 msgid "Restore Entries Now"
 msgstr ""
 
@@ -922,12 +893,12 @@ msgstr ""
 
 #: pro/templates/builder/context-menu.php:87
 #: src/Pro/Admin/Settings/Access.php:186
-#: src/Pro/Integrations/LiteConnect/Admin.php:259
+#: src/Pro/Integrations/LiteConnect/Admin.php:280
 msgid "View Entries"
 msgstr ""
 
 #: pro/templates/builder/context-menu.php:100
-#: src/Pro/Admin/Entries/Page.php:1339
+#: src/Pro/Admin/Entries/Page.php:1214
 msgid "View Payments"
 msgstr ""
 
@@ -948,7 +919,7 @@ msgid "Upgrade to Pro"
 msgstr ""
 
 #: pro/templates/education/admin/did-you-know.php:35
-#: pro/wpforms-pro.php:1070
+#: pro/wpforms-pro.php:1069
 msgid "Dismiss this message."
 msgstr ""
 
@@ -965,7 +936,7 @@ msgstr ""
 
 #: pro/templates/education/admin/entries/geolocation.php:51
 #: src/Pro/Admin/Entries/Export/Ajax.php:1033
-#: src/Pro/Admin/Entries/Export/Ajax.php:1420
+#: src/Pro/Admin/Entries/Export/Ajax.php:1390
 msgid "Country"
 msgstr ""
 
@@ -988,8 +959,9 @@ msgstr ""
 
 #: pro/templates/education/admin/entries/geolocation.php:80
 #: pro/templates/education/admin/entries/user-journey.php:258
-#: pro/wpforms-pro.php:555
-#: pro/wpforms-pro.php:717
+#: pro/wpforms-pro.php:551
+#: pro/wpforms-pro.php:713
+#: pro/wpforms-pro.php:2023
 msgid "Activate"
 msgstr ""
 
@@ -1128,262 +1100,254 @@ msgstr ""
 msgid "Sorry, you don’t have access to this file."
 msgstr ""
 
-#: pro/wpforms-pro.php:466
+#: pro/wpforms-pro.php:462
 msgid "Go to WPForms.com Support page"
 msgstr ""
 
-#: pro/wpforms-pro.php:467
+#: pro/wpforms-pro.php:463
 msgid "Support"
 msgstr ""
 
-#: pro/wpforms-pro.php:483
+#: pro/wpforms-pro.php:479
 msgid "Read the documentation"
 msgstr ""
 
-#: pro/wpforms-pro.php:484
+#: pro/wpforms-pro.php:480
 msgid "Docs"
 msgstr ""
 
-#: pro/wpforms-pro.php:502
+#: pro/wpforms-pro.php:498
 msgid "Inactive &mdash; You've got a paid version of WPForms"
 msgstr ""
 
-#: pro/wpforms-pro.php:577
-#: pro/wpforms-pro.php:718
+#: pro/wpforms-pro.php:573
+#: pro/wpforms-pro.php:714
 msgid "You cannot activate WPForms Lite because you have a paid version of WPForms activated."
 msgstr ""
 
-#: pro/wpforms-pro.php:641
+#: pro/wpforms-pro.php:637
 msgid "Verify Key"
 msgstr ""
 
-#: pro/wpforms-pro.php:647
+#: pro/wpforms-pro.php:643
 msgid "Renew License"
 msgstr ""
 
-#: pro/wpforms-pro.php:653
+#: pro/wpforms-pro.php:649
 msgid "Remove Key"
 msgstr ""
 
 #. translators: $s - license type.
-#: pro/wpforms-pro.php:663
+#: pro/wpforms-pro.php:659
 msgid "Your license key level is %s."
 msgstr ""
 
 #. translators: %s - refresh link.
-#: pro/wpforms-pro.php:670
+#: pro/wpforms-pro.php:666
 msgid "If your license has been upgraded or is incorrect, then please %1$sforce a refresh%2$s."
 msgstr ""
 
-#: pro/wpforms-pro.php:759
+#: pro/wpforms-pro.php:755
 msgid "Website URL"
 msgstr ""
 
-#: pro/wpforms-pro.php:761
-#: pro/wpforms-pro.php:1714
+#: pro/wpforms-pro.php:757
+#: pro/wpforms-pro.php:1754
 #: src/Pro/Forms/Fields/Url/Field.php:76
 msgid "Please enter a valid URL."
 msgstr ""
 
-#: pro/wpforms-pro.php:765
+#: pro/wpforms-pro.php:761
 msgid "Phone"
 msgstr ""
 
-#: pro/wpforms-pro.php:767
+#: pro/wpforms-pro.php:763
 #: src/Pro/Forms/Fields/Phone/Field.php:220
 #: src/Pro/Forms/Fields/Phone/Field.php:325
 msgid "Please enter a valid phone number."
 msgstr ""
 
-#: pro/wpforms-pro.php:771
+#: pro/wpforms-pro.php:767
 msgid "File Extension"
 msgstr ""
 
-#: pro/wpforms-pro.php:773
-#: pro/wpforms-pro.php:1717
-#: src/Pro/Forms/Fields/FileUpload/Field.php:257
-#: src/Pro/Forms/Fields/FileUpload/Field.php:2078
-#: src/Pro/Forms/Fields/FileUpload/Field.php:2106
+#: pro/wpforms-pro.php:769
+#: pro/wpforms-pro.php:1757
+#: src/Pro/Forms/Fields/FileUpload/Field.php:253
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1915
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1943
 msgid "File type is not allowed."
 msgstr ""
 
-#: pro/wpforms-pro.php:777
+#: pro/wpforms-pro.php:773
 msgid "File Size"
 msgstr ""
 
-#: pro/wpforms-pro.php:779
-#: pro/wpforms-pro.php:1718
+#: pro/wpforms-pro.php:775
+#: pro/wpforms-pro.php:1758
 msgid "File exceeds max size allowed. File was not uploaded."
 msgstr ""
 
-#: pro/wpforms-pro.php:783
+#: pro/wpforms-pro.php:779
 msgid "File Uploads"
 msgstr ""
 
 #. translators: %s - max number of files allowed.
-#: pro/wpforms-pro.php:786
-#: src/Pro/Forms/Fields/FileUpload/Field.php:253
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1010
+#: pro/wpforms-pro.php:782
+#: src/Pro/Forms/Fields/FileUpload/Field.php:249
+#: src/Pro/Forms/Fields/FileUpload/Field.php:973
 msgid "File uploads exceed the maximum number allowed (%s)."
 msgstr ""
 
-#: pro/wpforms-pro.php:792
+#: pro/wpforms-pro.php:788
 msgid "Time (12 hour)"
 msgstr ""
 
-#: pro/wpforms-pro.php:794
-#: pro/wpforms-pro.php:1709
+#: pro/wpforms-pro.php:790
+#: pro/wpforms-pro.php:1749
 msgid "Please enter time in 12-hour AM/PM format (eg 8:45 AM)."
 msgstr ""
 
-#: pro/wpforms-pro.php:798
+#: pro/wpforms-pro.php:794
 msgid "Time (24 hour)"
 msgstr ""
 
-#: pro/wpforms-pro.php:800
-#: pro/wpforms-pro.php:1710
+#: pro/wpforms-pro.php:796
+#: pro/wpforms-pro.php:1750
 msgid "Please enter time in 24-hour format (eg 22:45)."
 msgstr ""
 
-#: pro/wpforms-pro.php:804
+#: pro/wpforms-pro.php:800
 msgid "Limit Hours"
 msgstr ""
 
-#: pro/wpforms-pro.php:806
-#: pro/wpforms-pro.php:1711
-#: src/Pro/Forms/Fields/DateTime/Field.php:743
+#: pro/wpforms-pro.php:802
+#: pro/wpforms-pro.php:1751
+#: src/Pro/Forms/Fields/DateTime/Field.php:744
 msgid "Please enter time between {minTime} and {maxTime}."
 msgstr ""
 
-#: pro/wpforms-pro.php:810
+#: pro/wpforms-pro.php:806
 msgid "File Upload Total Size"
 msgstr ""
 
 #. translators: %1$s - total size of the selected files in megabytes, %2$s - allowed file upload limit in megabytes.
-#: pro/wpforms-pro.php:813
-#: pro/wpforms-pro.php:1702
+#: pro/wpforms-pro.php:809
+#: pro/wpforms-pro.php:1742
 msgid "The total size of the selected files %1$s MB exceeds the allowed limit %2$s MB."
 msgstr ""
 
-#: pro/wpforms-pro.php:820
+#: pro/wpforms-pro.php:816
 msgid "Password Strength"
 msgstr ""
 
-#: pro/wpforms-pro.php:822
+#: pro/wpforms-pro.php:818
 #: src/Pro/Forms/Fields/Password/Field.php:450
 msgid "A stronger password is required. Consider using upper and lower case letters, numbers, and symbols."
 msgstr ""
 
-#: pro/wpforms-pro.php:831
+#: pro/wpforms-pro.php:827
 msgid "Disable User Cookies"
 msgstr ""
 
-#: pro/wpforms-pro.php:832
+#: pro/wpforms-pro.php:828
 msgid "Disable user tracking cookies. This will disable the Related Entries feature and the Form Abandonment addon."
 msgstr ""
 
-#: pro/wpforms-pro.php:839
+#: pro/wpforms-pro.php:835
 msgid "Disable User Details"
 msgstr ""
 
-#: pro/wpforms-pro.php:840
+#: pro/wpforms-pro.php:836
 msgid "Disable storage IP addresses and User Agent on all forms. If unchecked, then this can be managed on a form-by-form basis inside the form builder under Settings → General"
 msgstr ""
 
-#: pro/wpforms-pro.php:930
+#: pro/wpforms-pro.php:929
 msgid "Disable storing entry information in WordPress"
 msgstr ""
 
-#: pro/wpforms-pro.php:942
+#: pro/wpforms-pro.php:941
 msgid "Disable storing user details (IP address and user agent)"
 msgstr ""
 
-#: pro/wpforms-pro.php:967
+#: pro/wpforms-pro.php:966
 #: src/Pro/Admin/AdminBarMenu.php:96
 #: src/Pro/Admin/DashboardWidget.php:223
 #: src/Pro/Admin/Entries/Overview/Page.php:187
 #: src/Pro/Admin/Entries/Overview/Page.php:244
-#: src/Pro/Admin/Entries/Page.php:988
-#: src/Pro/Admin/Entries/Page.php:1124
+#: src/Pro/Admin/Entries/Page.php:863
+#: src/Pro/Admin/Entries/Page.php:999
 #: src/Pro/Admin/Settings/Access.php:376
 msgid "Entries"
 msgstr ""
 
 #. translators: %s - form name.
-#: pro/wpforms-pro.php:1044
+#: pro/wpforms-pro.php:1043
 msgid "New %s Entry"
 msgstr ""
 
-#: pro/wpforms-pro.php:1061
+#: pro/wpforms-pro.php:1060
 msgid "Notifications"
 msgstr ""
 
-#: pro/wpforms-pro.php:1063
+#: pro/wpforms-pro.php:1062
 msgid "Add New Notification"
 msgstr ""
 
 #. translators: %s - link to the WPForms.com doc article.
-#: pro/wpforms-pro.php:1074
+#: pro/wpforms-pro.php:1073
 msgid "Notifications are emails sent when a form is submitted. By default, these emails include entry details. For setup and customization options, including a video overview, please <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">see our tutorial</a>."
 msgstr ""
 
 #. translators: 1$s, %2$s - links to the WPForms.com doc articles.
-#: pro/wpforms-pro.php:1089
+#: pro/wpforms-pro.php:1088
 msgid "After saving these settings, be sure to <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">test a form submission</a>. This lets you see how emails will look, and to ensure that they <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">are delivered successfully</a>."
 msgstr ""
 
-#: pro/wpforms-pro.php:1111
+#: pro/wpforms-pro.php:1110
 msgid "Enable Notifications"
 msgstr ""
 
-#: pro/wpforms-pro.php:1119
+#: pro/wpforms-pro.php:1118
 msgid "Default Notification"
 msgstr ""
 
-#: pro/wpforms-pro.php:1124
-msgid "Active"
-msgstr ""
-
-#: pro/wpforms-pro.php:1125
-msgid "Inactive"
-msgstr ""
-
-#: pro/wpforms-pro.php:1181
+#: pro/wpforms-pro.php:1180
 msgid "Clone"
 msgstr ""
 
-#: pro/wpforms-pro.php:1182
-#: pro/wpforms-pro.php:1497
-#: src/Pro/Admin/Entries/ListTable.php:801
-#: src/Pro/Admin/Entries/ListTable.php:1027
+#: pro/wpforms-pro.php:1181
+#: pro/wpforms-pro.php:1557
+#: src/Pro/Admin/Entries/ListTable.php:707
+#: src/Pro/Admin/Entries/ListTable.php:933
 msgid "Delete"
 msgstr ""
 
-#: pro/wpforms-pro.php:1183
-#: pro/wpforms-pro.php:1498
+#: pro/wpforms-pro.php:1182
+#: pro/wpforms-pro.php:1558
 msgid "Open / Close"
 msgstr ""
 
-#: pro/wpforms-pro.php:1195
-#: pro/wpforms-pro.php:1509
-#: src/Pro/Admin/Entries/Edit.php:551
-#: src/Pro/Admin/Entries/ListTable.php:839
+#: pro/wpforms-pro.php:1194
+#: pro/wpforms-pro.php:1569
+#: src/Pro/Admin/Entries/Edit.php:561
+#: src/Pro/Admin/Entries/ListTable.php:745
 msgid "Edit"
 msgstr ""
 
-#: pro/wpforms-pro.php:1207
+#: pro/wpforms-pro.php:1205
 msgid "Send To Email Address"
 msgstr ""
 
-#: pro/wpforms-pro.php:1210
+#: pro/wpforms-pro.php:1208
 msgid "Enter the email address to receive form entry notifications. For multiple notifications, separate email addresses with a comma."
 msgstr ""
 
-#: pro/wpforms-pro.php:1228
+#: pro/wpforms-pro.php:1227
 msgid "CC"
 msgstr ""
 
-#: pro/wpforms-pro.php:1230
+#: pro/wpforms-pro.php:1229
 msgid "Enter the email address to add it to the carbon copy of the form entry notifications. For multiple notifications, separate email addresses with a comma."
 msgstr ""
 
@@ -1396,134 +1360,142 @@ msgstr ""
 msgid "New Entry: %s"
 msgstr ""
 
-#: pro/wpforms-pro.php:1266
+#: pro/wpforms-pro.php:1267
 msgid "From Name"
 msgstr ""
 
-#: pro/wpforms-pro.php:1299
+#: pro/wpforms-pro.php:1301
 msgid "From Email"
 msgstr ""
 
-#: pro/wpforms-pro.php:1332
+#: pro/wpforms-pro.php:1335
 msgid "Reply-To"
 msgstr ""
 
 #. translators: %s - <email@example.com>.
-#: pro/wpforms-pro.php:1336
+#: pro/wpforms-pro.php:1339
 msgid "Enter the email address or email address with recipient's name in \"First Last %s\" format."
 msgstr ""
 
-#: pro/wpforms-pro.php:1356
+#: pro/wpforms-pro.php:1360
 msgid "Email Message"
 msgstr ""
 
 #. translators: %s - all fields smart tag.
-#: pro/wpforms-pro.php:1368
+#: pro/wpforms-pro.php:1373
 msgid "To display all form fields, use the %s Smart Tag."
 msgstr ""
 
-#: pro/wpforms-pro.php:1379
-msgid "Enable This Notification"
-msgstr ""
-
-#: pro/wpforms-pro.php:1398
+#: pro/wpforms-pro.php:1385
 msgid "Send"
 msgstr ""
 
-#: pro/wpforms-pro.php:1399
+#: pro/wpforms-pro.php:1386
 msgid "Don't send"
 msgstr ""
 
-#: pro/wpforms-pro.php:1401
+#: pro/wpforms-pro.php:1388
 msgid "this notification if"
 msgstr ""
 
-#: pro/wpforms-pro.php:1402
+#: pro/wpforms-pro.php:1389
 msgid "Email notifications"
 msgstr ""
 
-#: pro/wpforms-pro.php:1447
-#: pro/wpforms-pro.php:1545
+#: pro/wpforms-pro.php:1496
+#: pro/wpforms-pro.php:1604
 msgid "Thanks for contacting us! We will be in touch with you shortly."
 msgstr ""
 
-#: pro/wpforms-pro.php:1460
+#: pro/wpforms-pro.php:1509
 msgid "Confirmations"
 msgstr ""
 
-#: pro/wpforms-pro.php:1461
+#: pro/wpforms-pro.php:1510
 msgid "Add New Confirmation"
 msgstr ""
 
-#: pro/wpforms-pro.php:1466
+#: pro/wpforms-pro.php:1515
 msgid "Default Confirmation"
 msgstr ""
 
-#: pro/wpforms-pro.php:1522
+#: pro/wpforms-pro.php:1581
 msgid "Confirmation Type"
 msgstr ""
 
-#: pro/wpforms-pro.php:1526
+#: pro/wpforms-pro.php:1585
 msgid "Message"
 msgstr ""
 
-#: pro/wpforms-pro.php:1527
+#: pro/wpforms-pro.php:1586
 msgid "Show Page"
 msgstr ""
 
-#: pro/wpforms-pro.php:1528
+#: pro/wpforms-pro.php:1587
 msgid "Go to URL (Redirect)"
 msgstr ""
 
-#: pro/wpforms-pro.php:1543
-#: src/Pro/Admin/Builder/Builder.php:95
+#: pro/wpforms-pro.php:1602
+#: src/Pro/Admin/Builder/Builder.php:96
 msgid "Confirmation Message"
 msgstr ""
 
-#: pro/wpforms-pro.php:1566
+#: pro/wpforms-pro.php:1625
 msgid "Automatically scroll to the confirmation message"
 msgstr ""
 
-#: pro/wpforms-pro.php:1580
+#: pro/wpforms-pro.php:1639
 msgid "Confirmation Page"
 msgstr ""
 
-#: pro/wpforms-pro.php:1600
+#: pro/wpforms-pro.php:1659
 msgid "Confirmation Redirect URL"
 msgstr ""
 
-#: pro/wpforms-pro.php:1614
+#: pro/wpforms-pro.php:1673
 msgid "Open confirmation in new tab"
 msgstr ""
 
-#: pro/wpforms-pro.php:1631
+#: pro/wpforms-pro.php:1690
 msgid "Use"
 msgstr ""
 
-#: pro/wpforms-pro.php:1632
+#: pro/wpforms-pro.php:1691
 msgid "Don't use"
 msgstr ""
 
-#: pro/wpforms-pro.php:1634
+#: pro/wpforms-pro.php:1693
 msgid "this confirmation if"
 msgstr ""
 
-#: pro/wpforms-pro.php:1635
+#: pro/wpforms-pro.php:1694
 msgid "Form confirmations"
 msgstr ""
 
 #. translators: %s - WPForms.com announcement page URL.
-#: pro/wpforms-pro.php:1740
+#: pro/wpforms-pro.php:1780
 msgid "Conditional logic functionality is now included in the core WPForms plugin! The WPForms Conditional Logic addon can be removed without affecting your forms. For more details <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">read our announcement</a>."
 msgstr ""
 
 #. translators: %s - WPForms.com Account dashboard URL.
-#: pro/wpforms-pro.php:1794
+#: pro/wpforms-pro.php:1821
 msgid "Your WPForms license key has expired. In order to continue receiving support and plugin updates you must renew your license key. Please log in to <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">your WPForms.com account</a> to renew your license."
 msgstr ""
 
-#: pro/wpforms-pro.php:1929
+#: pro/wpforms-pro.php:1941
 msgid "Addon auto-updates controlled by WPForms"
+msgstr ""
+
+#: pro/wpforms-pro.php:2022
+msgid "Active"
+msgstr ""
+
+#: pro/wpforms-pro.php:2024
+msgid "Inactive"
+msgstr ""
+
+#: pro/wpforms-pro.php:2025
+msgid "Deactivate"
 msgstr ""
 
 #: src/Pro/Access/Capabilities.php:70
@@ -1579,7 +1551,7 @@ msgstr ""
 msgid "Delete Others' Forms Entries"
 msgstr ""
 
-#: src/Pro/Access/File.php:261
+#: src/Pro/Access/File.php:285
 msgid "Sorry, the password you entered is incorrect."
 msgstr ""
 
@@ -1605,22 +1577,18 @@ msgstr ""
 msgid "Your keyword filter list has been reformatted. Please save these changes."
 msgstr ""
 
-#: src/Pro/Admin/Builder/Builder.php:51
+#: src/Pro/Admin/Builder/Builder.php:52
 msgid " - clone"
 msgstr ""
 
 #. translators: %1$s - payment provider completed payments. Example: "PayPal Standard completed payments".
-#: src/Pro/Admin/Builder/Builder.php:54
+#: src/Pro/Admin/Builder/Builder.php:55
 msgid "<p>You have just enabled this notification for <strong>%1$s</strong>. Please note that this email notification will only send for <strong>%1$s</strong>.</p><p>If you'd like to set up additional notifications for this form, please see our <a href=\"https://wpforms.com/docs/setup-form-notification-wpforms/\" rel=\"nofollow noopener\" target=\"_blank\">tutorial</a>.</p>"
 msgstr ""
 
 #. translators: %1$s - payment provider completed payments. Example: "PayPal Standard completed payments", %2$s - disabled Payment provider completed payments.
-#: src/Pro/Admin/Builder/Builder.php:67
+#: src/Pro/Admin/Builder/Builder.php:68
 msgid "<p>You have just <strong>disabled</strong> the notification for <strong>%2$s</strong> and <strong>enabled</strong> the notification for <strong>%1$s</strong>. Please note that this email notification will only send for <strong>%1$s</strong>.</p><p>If you'd like to set up additional notifications for this form, please see our <a href=\"https://wpforms.com/docs/setup-form-notification-wpforms/\" rel=\"nofollow noopener\" target=\"_blank\">tutorial</a>.</p>"
-msgstr ""
-
-#: src/Pro/Admin/Builder/Builder.php:97
-msgid "Show Smart Tags"
 msgstr ""
 
 #: src/Pro/Admin/Builder/LicenseAlert.php:132
@@ -1705,6 +1673,36 @@ msgstr ""
 
 #: src/Pro/Admin/Builder/Notifications/Advanced/Settings.php:104
 msgid "Advanced"
+msgstr ""
+
+#. translators: %s - payment provider.
+#: src/Pro/Admin/Builder/Payments.php:68
+msgid "<p>One of %s's recurring payment plans doesn't have conditional logic, which means that One-Time Payments will never work and were disabled.</p>"
+msgstr ""
+
+#. translators: %s - payment provider.
+#: src/Pro/Admin/Builder/Payments.php:78
+msgid "<p>You should check your settings in <strong>Payments » %s</strong>.</p>"
+msgstr ""
+
+#: src/Pro/Admin/Builder/Payments.php:91
+msgid "Enter a plan name"
+msgstr ""
+
+#: src/Pro/Admin/Builder/Payments.php:92
+msgid "Eg: Monthly Subscription"
+msgstr ""
+
+#: src/Pro/Admin/Builder/Payments.php:93
+msgid "Plan Name #{id}"
+msgstr ""
+
+#: src/Pro/Admin/Builder/Payments.php:94
+msgid "Are you sure you want to delete this recurring plan?"
+msgstr ""
+
+#: src/Pro/Admin/Builder/Payments.php:95
+msgid "You must provide a plan name."
 msgstr ""
 
 #: src/Pro/Admin/DashboardWidget.php:219
@@ -2043,97 +2041,97 @@ msgid "Form ID is missing."
 msgstr ""
 
 #: src/Pro/Admin/Entries/Ajax/Columns.php:111
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1887
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1724
 msgid "You are not allowed to perform this action."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:387
-#: src/Pro/Admin/Entries/Edit.php:1075
+#: src/Pro/Admin/Entries/Edit.php:397
+#: src/Pro/Admin/Entries/Edit.php:1088
 msgid "Update"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:388
+#: src/Pro/Admin/Entries/Edit.php:398
 msgid "Success"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:389
+#: src/Pro/Admin/Entries/Edit.php:399
 msgid "Continue Editing"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:391
+#: src/Pro/Admin/Entries/Edit.php:401
 msgid "The entry was successfully saved."
 msgstr ""
 
 #. translators: %s - file name.
-#: src/Pro/Admin/Entries/Edit.php:393
+#: src/Pro/Admin/Entries/Edit.php:403
 msgid "Are you sure you want to permanently delete the file \"%s\"?"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:442
+#: src/Pro/Admin/Entries/Edit.php:452
 msgid "You can't edit this entry because it's in the trash."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:595
-#: src/Pro/Admin/Entries/Edit.php:653
+#: src/Pro/Admin/Entries/Edit.php:605
+#: src/Pro/Admin/Entries/Edit.php:663
 msgid "Edit Entry"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:600
+#: src/Pro/Admin/Entries/Edit.php:610
 msgid "Back to Entry"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:693
+#: src/Pro/Admin/Entries/Edit.php:703
 msgid "Show Empty Fields"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:693
+#: src/Pro/Admin/Entries/Edit.php:703
 msgid "Hide Empty Fields"
 msgstr ""
 
 #. translators: %d - field ID.
-#: src/Pro/Admin/Entries/Edit.php:958
+#: src/Pro/Admin/Entries/Edit.php:971
 #: src/Pro/Forms/Fields/EntryPreview/Field.php:878
 msgid "Field ID #%d"
 msgstr ""
 
 #. translators: %s - form edit URL.
-#: src/Pro/Admin/Entries/Edit.php:1040
+#: src/Pro/Admin/Entries/Edit.php:1053
 msgid "You don't have any fields in this form. <a href=\"%s\">Add some!</a>"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:1050
+#: src/Pro/Admin/Entries/Edit.php:1063
 msgid "You don't have any fields in this form."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:1092
-#: src/Pro/Admin/Entries/Edit.php:1133
+#: src/Pro/Admin/Entries/Edit.php:1105
+#: src/Pro/Admin/Entries/Edit.php:1146
 msgid "Invalid form."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:1096
+#: src/Pro/Admin/Entries/Edit.php:1109
 msgid "Invalid Entry."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:1100
-#: src/Pro/Admin/Entries/Page.php:478
-#: src/Pro/Admin/Entries/Page.php:558
+#: src/Pro/Admin/Entries/Edit.php:1113
+#: src/Pro/Admin/Entries/Page.php:353
+#: src/Pro/Admin/Entries/Page.php:433
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:1142
+#: src/Pro/Admin/Entries/Edit.php:1155
 msgid "Invalid entry."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:1181
+#: src/Pro/Admin/Entries/Edit.php:1194
 msgid "Entry has not been saved, please see the fields errors."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:1282
+#: src/Pro/Admin/Entries/Edit.php:1295
 msgid "Entry edited."
 msgstr ""
 
 #. translators: %s - name of the file that has been deleted.
-#: src/Pro/Admin/Entries/Edit.php:1697
+#: src/Pro/Admin/Entries/Edit.php:1710
 msgid "The uploaded file \"%s\" has been deleted."
 msgstr ""
 
@@ -2145,89 +2143,98 @@ msgstr ""
 msgid "Select a form to export entries, then select the fields you would like to include. You can also define search and date filters to further personalize the list of entries you want to retrieve. WPForms will generate a downloadable CSV/XLSX file of your entries."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:78
-#: src/Pro/Admin/Entries/Page.php:1185
+#: src/Pro/Admin/Entries/Export/Admin.php:80
+#: src/Pro/Admin/Entries/Page.php:1060
 msgid "Form Fields"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:86
+#: src/Pro/Admin/Entries/Export/Admin.php:88
 msgid "Payment Fields"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:94
+#: src/Pro/Admin/Entries/Export/Admin.php:96
 msgid "Additional Information"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:101
+#: src/Pro/Admin/Entries/Export/Admin.php:103
 msgid "Custom Date Range"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:108
-#: src/Pro/Admin/Entries/ListTable.php:954
+#: src/Pro/Admin/Entries/Export/Admin.php:110
+#: src/Pro/Admin/Entries/ListTable.php:860
 msgid "Select a date range"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:113
+#: src/Pro/Admin/Entries/Export/Admin.php:115
 msgid "Clear Start Date"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:123
-#: src/Pro/Admin/Entries/Page.php:1094
+#: src/Pro/Admin/Entries/Export/Admin.php:125
+#: src/Pro/Admin/Entries/Page.php:969
 msgid "Search"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:130
+#: src/Pro/Admin/Entries/Export/Admin.php:132
 msgid "Download Export File"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:165
+#. translators: %1$s - link to the WPForms.com doc article.
+#: src/Pro/Admin/Entries/Export/Admin.php:166
+msgid "If you need to export entries on a regular basis, you can now automate this process. <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">Learn More</a>"
+msgstr ""
+
+#: src/Pro/Admin/Entries/Export/Admin.php:181
+msgid "Dismiss this notice."
+msgstr ""
+
+#: src/Pro/Admin/Entries/Export/Admin.php:234
 msgid "Select a Form"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:182
+#: src/Pro/Admin/Entries/Export/Admin.php:251
 msgid "You need to have at least one form before you can use entries export."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:207
+#: src/Pro/Admin/Entries/Export/Admin.php:276
 msgid "Status"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:331
+#: src/Pro/Admin/Entries/Export/Admin.php:400
 msgid "Export Options"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:381
-#: src/Pro/Admin/Entries/ListTable.php:1889
+#: src/Pro/Admin/Entries/Export/Admin.php:450
+#: src/Pro/Admin/Entries/ListTable.php:1795
 msgid "Form fields"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:382
-#: src/Pro/Admin/Entries/ListTable.php:1890
+#: src/Pro/Admin/Entries/Export/Admin.php:451
+#: src/Pro/Admin/Entries/ListTable.php:1796
 msgid "Any form field"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:404
+#: src/Pro/Admin/Entries/Export/Admin.php:473
 msgid "Payment fields"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:410
+#: src/Pro/Admin/Entries/Export/Admin.php:479
 msgid "No payment fields found"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:432
-#: src/Pro/Admin/Entries/ListTable.php:1905
+#: src/Pro/Admin/Entries/Export/Admin.php:501
+#: src/Pro/Admin/Entries/ListTable.php:1811
 msgid "Advanced Options"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Admin.php:549
+#: src/Pro/Admin/Entries/Export/Admin.php:618
 #: src/Pro/Admin/Entries/Export/Export.php:214
 msgid "Select All"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Ajax.php:383
 #: src/Pro/Admin/Entries/Export/Ajax.php:570
-#: src/Pro/Admin/Entries/Export/Ajax.php:1385
-#: src/Pro/Admin/Entries/Export/Ajax.php:1477
+#: src/Pro/Admin/Entries/Export/Ajax.php:1355
+#: src/Pro/Admin/Entries/Export/Ajax.php:1447
 msgid " (modified)"
 msgstr ""
 
@@ -2256,94 +2263,94 @@ msgstr ""
 msgid "Deleted field #%d"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1227
+#: src/Pro/Admin/Entries/Export/Ajax.php:1197
 msgid "Total"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1228
+#: src/Pro/Admin/Entries/Export/Ajax.php:1198
 msgid "Currency"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1229
+#: src/Pro/Admin/Entries/Export/Ajax.php:1199
 msgid "Gateway"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1230
+#: src/Pro/Admin/Entries/Export/Ajax.php:1200
 #: src/Pro/Admin/Entries/Export/Export.php:156
 msgid "Type"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1231
+#: src/Pro/Admin/Entries/Export/Ajax.php:1201
 msgid "Mode"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1232
+#: src/Pro/Admin/Entries/Export/Ajax.php:1202
 msgid "Transaction"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1233
+#: src/Pro/Admin/Entries/Export/Ajax.php:1203
 msgid "Customer"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1234
+#: src/Pro/Admin/Entries/Export/Ajax.php:1204
 msgid "Subscription"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1235
+#: src/Pro/Admin/Entries/Export/Ajax.php:1205
 msgid "Subscription Status"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1270
+#: src/Pro/Admin/Entries/Export/Ajax.php:1240
 msgid "Payment Note"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1271
+#: src/Pro/Admin/Entries/Export/Ajax.php:1241
 msgid "Subscription Period"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1387
+#: src/Pro/Admin/Entries/Export/Ajax.php:1357
 msgid "File"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1403
-#: src/Pro/Admin/Entries/Export/Ajax.php:1407
+#: src/Pro/Admin/Entries/Export/Ajax.php:1373
+#: src/Pro/Admin/Entries/Export/Ajax.php:1377
 msgid "First"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1404
-#: src/Pro/Admin/Entries/Export/Ajax.php:1409
+#: src/Pro/Admin/Entries/Export/Ajax.php:1374
+#: src/Pro/Admin/Entries/Export/Ajax.php:1379
 msgid "Last"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1408
+#: src/Pro/Admin/Entries/Export/Ajax.php:1378
 msgid "Middle"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1415
+#: src/Pro/Admin/Entries/Export/Ajax.php:1385
 msgid "Address Line 1"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1416
+#: src/Pro/Admin/Entries/Export/Ajax.php:1386
 msgid "Address Line 2"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1417
+#: src/Pro/Admin/Entries/Export/Ajax.php:1387
 msgid "City"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1418
+#: src/Pro/Admin/Entries/Export/Ajax.php:1388
 msgid "State"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1419
+#: src/Pro/Admin/Entries/Export/Ajax.php:1389
 msgid "Zip/Postal Code"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1426
+#: src/Pro/Admin/Entries/Export/Ajax.php:1396
 msgid "Value"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Export/Ajax.php:1427
+#: src/Pro/Admin/Entries/Export/Ajax.php:1397
 msgid "Quantity"
 msgstr ""
 
@@ -2506,178 +2513,174 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: src/Pro/Admin/Entries/ListTable.php:306
-#: src/Pro/Admin/Entries/ListTable.php:861
+#: src/Pro/Admin/Entries/ListTable.php:767
 msgid "Trash"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:471
-msgid "Recurring"
-msgstr ""
-
-#: src/Pro/Admin/Entries/ListTable.php:544
+#: src/Pro/Admin/Entries/ListTable.php:450
 msgid "The payment in the Trash."
 msgstr ""
 
 #. translators: date and time separator.
-#: src/Pro/Admin/Entries/ListTable.php:650
+#: src/Pro/Admin/Entries/ListTable.php:556
 msgid "at"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:737
+#: src/Pro/Admin/Entries/ListTable.php:643
 msgid "Unstar entry"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:737
+#: src/Pro/Admin/Entries/ListTable.php:643
 msgid "Star entry"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:742
+#: src/Pro/Admin/Entries/ListTable.php:648
 msgid "Mark entry unread"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:742
+#: src/Pro/Admin/Entries/ListTable.php:648
 msgid "Mark entry read"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:781
+#: src/Pro/Admin/Entries/ListTable.php:687
 msgid "Restore Form Entry"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:782
-#: src/Pro/Admin/Entries/ListTable.php:1022
+#: src/Pro/Admin/Entries/ListTable.php:688
+#: src/Pro/Admin/Entries/ListTable.php:928
 msgid "Restore"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:800
+#: src/Pro/Admin/Entries/ListTable.php:706
 msgid "Delete Form Entry"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:818
+#: src/Pro/Admin/Entries/ListTable.php:724
 msgid "View Form Entry"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:819
+#: src/Pro/Admin/Entries/ListTable.php:725
 #: src/Pro/Admin/Entries/Overview/Page.php:69
 msgid "View"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:838
+#: src/Pro/Admin/Entries/ListTable.php:744
 msgid "Edit Form Entry"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:860
+#: src/Pro/Admin/Entries/ListTable.php:766
 msgid "Trash Form Entry"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:925
-#: src/Pro/Admin/Entries/Page.php:1374
+#: src/Pro/Admin/Entries/ListTable.php:831
+#: src/Pro/Admin/Entries/Page.php:1249
 msgid "Empty Trash"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:958
+#: src/Pro/Admin/Entries/ListTable.php:864
 msgid "Filter"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:976
+#: src/Pro/Admin/Entries/ListTable.php:882
 msgid "Mark as Read"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:1013
+#: src/Pro/Admin/Entries/ListTable.php:919
 msgid "----------"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:1016
+#: src/Pro/Admin/Entries/ListTable.php:922
 #: src/Pro/AntiSpam/SpamEntry.php:367
 #: src/Pro/AntiSpam/SpamEntry.php:665
 msgid "Mark as Not Spam"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:1018
+#: src/Pro/Admin/Entries/ListTable.php:924
 #: src/Pro/AntiSpam/SpamEntry.php:563
 #: src/Pro/AntiSpam/SpamEntry.php:688
 msgid "Mark as Spam"
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:1024
+#: src/Pro/Admin/Entries/ListTable.php:930
 msgid "Move to Trash"
 msgstr ""
 
 #. translators: %d - number of processed entries.
-#: src/Pro/Admin/Entries/ListTable.php:1733
+#: src/Pro/Admin/Entries/ListTable.php:1639
 msgid "%d entry was successfully marked as read."
 msgid_plural "%d entries were successfully marked as read."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d - number of processed entries.
-#: src/Pro/Admin/Entries/ListTable.php:1735
+#: src/Pro/Admin/Entries/ListTable.php:1641
 msgid "%d entry was successfully marked as unread."
 msgid_plural "%d entries were successfully marked as unread."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d - number of processed entries.
-#: src/Pro/Admin/Entries/ListTable.php:1737
+#: src/Pro/Admin/Entries/ListTable.php:1643
 msgid "%d entry was successfully marked as spam."
 msgid_plural "%d entries were successfully marked as spam."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d - number of processed entries.
-#: src/Pro/Admin/Entries/ListTable.php:1739
+#: src/Pro/Admin/Entries/ListTable.php:1645
 msgid "%d entry was successfully marked as not spam."
 msgid_plural "%d entries were successfully marked as not spam."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d - number of processed entries.
-#: src/Pro/Admin/Entries/ListTable.php:1741
+#: src/Pro/Admin/Entries/ListTable.php:1647
 msgid "%d entry was successfully starred."
 msgid_plural "%d entries were successfully starred."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d - number of processed entries.
-#: src/Pro/Admin/Entries/ListTable.php:1743
+#: src/Pro/Admin/Entries/ListTable.php:1649
 msgid "%d entry was successfully unstarred."
 msgid_plural "%d entries were successfully unstarred."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d - number of processed entries.
-#: src/Pro/Admin/Entries/ListTable.php:1745
+#: src/Pro/Admin/Entries/ListTable.php:1651
 msgid "%d entry was successfully deleted."
 msgid_plural "%d entries were successfully deleted."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d - number of processed entries.
-#: src/Pro/Admin/Entries/ListTable.php:1747
+#: src/Pro/Admin/Entries/ListTable.php:1653
 msgid "%d entry was successfully trashed."
 msgid_plural "%d entries were successfully trashed."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d - number of processed entries.
-#: src/Pro/Admin/Entries/ListTable.php:1749
+#: src/Pro/Admin/Entries/ListTable.php:1655
 msgid "%d entry was successfully restored."
 msgid_plural "%d entries were successfully restored."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Pro/Admin/Entries/ListTable.php:1753
+#: src/Pro/Admin/Entries/ListTable.php:1659
 msgid "All entries for the currently selected form were successfully deleted."
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:1757
+#: src/Pro/Admin/Entries/ListTable.php:1663
 msgid "All entries for the currently selected form were successfully trashed."
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:1786
+#: src/Pro/Admin/Entries/ListTable.php:1692
 msgid "No entries found."
 msgstr ""
 
-#: src/Pro/Admin/Entries/ListTable.php:1819
+#: src/Pro/Admin/Entries/ListTable.php:1725
 msgid "Field"
 msgstr ""
 
@@ -2730,128 +2733,127 @@ msgstr ""
 msgid "It looks like the form you are trying to access is no longer available."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:263
-#: src/Pro/Admin/Entries/PageOptions.php:64
-msgid "Number of entries per page:"
-msgstr ""
-
-#: src/Pro/Admin/Entries/Page.php:415
+#: src/Pro/Admin/Entries/Page.php:327
 msgid "All entries marked as read."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:466
-#: src/Pro/Admin/Entries/Page.php:546
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1882
+#: src/Pro/Admin/Entries/Page.php:341
+#: src/Pro/Admin/Entries/Page.php:421
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1719
 msgid "Your session expired. Please reload the builder."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:473
-#: src/Pro/Admin/Entries/Page.php:487
-#: src/Pro/Admin/Entries/Page.php:502
-#: src/Pro/Admin/Entries/Page.php:553
-#: src/Pro/Admin/Entries/Page.php:569
+#: src/Pro/Admin/Entries/Page.php:348
+#: src/Pro/Admin/Entries/Page.php:362
+#: src/Pro/Admin/Entries/Page.php:377
+#: src/Pro/Admin/Entries/Page.php:428
+#: src/Pro/Admin/Entries/Page.php:444
 msgid "Something went wrong while performing this action."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:761
+#: src/Pro/Admin/Entries/Page.php:636
 msgid "any form field"
 msgstr ""
 
 #. translators: %1$s - field name, %2$s - operation, %3$s term.
-#: src/Pro/Admin/Entries/Page.php:765
+#: src/Pro/Admin/Entries/Page.php:640
 msgid "where %1$s %2$s \"%3$s\""
 msgstr ""
 
 #. translators: %s: date.
-#: src/Pro/Admin/Entries/Page.php:821
+#: src/Pro/Admin/Entries/Page.php:696
 msgid "on %s"
 msgstr ""
 
 #. translators: %1$s - date, %2$s - date.
-#: src/Pro/Admin/Entries/Page.php:828
+#: src/Pro/Admin/Entries/Page.php:703
 msgid "between %1$s and %2$s"
 msgstr ""
 
 #. translators: %s - WPForms Builder page.
-#: src/Pro/Admin/Entries/Page.php:901
+#: src/Pro/Admin/Entries/Page.php:776
 msgid "Whoops, you haven't created a form yet. Want to <a href=\"%s\">give it a go</a>?"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1023
-#: src/Pro/Admin/Entries/Page.php:1602
+#: src/Pro/Admin/Entries/Page.php:898
+#: src/Pro/Admin/Entries/Page.php:1415
 msgid "Storing entry information has been disabled for this form."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1024
+#: src/Pro/Admin/Entries/Page.php:899
 msgid "It looks like you don't have any form entries just yet - check back soon!"
 msgstr ""
 
 #. translators: %s - number of entries found.
-#: src/Pro/Admin/Entries/Page.php:1058
+#: src/Pro/Admin/Entries/Page.php:933
 msgid "Found <strong>%s entry</strong>"
 msgid_plural "Found <strong>%s entries</strong>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Pro/Admin/Entries/Page.php:1186
+#: src/Pro/Admin/Entries/Page.php:1061
 msgid "Entry Meta"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1312
-#: src/Pro/Admin/Entries/Page.php:1420
+#: src/Pro/Admin/Entries/Page.php:1187
+#: src/Pro/Admin/Entries/Page.php:1295
 msgid "Template"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1318
+#: src/Pro/Admin/Entries/Page.php:1193
 msgid "Select Form"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1332
+#: src/Pro/Admin/Entries/Page.php:1207
 msgid "All Entries"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1346
+#: src/Pro/Admin/Entries/Page.php:1221
 msgid "Edit This Template"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1346
+#: src/Pro/Admin/Entries/Page.php:1221
 msgid "Edit This Form"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1353
+#: src/Pro/Admin/Entries/Page.php:1228
 msgid "Preview Template"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1353
+#: src/Pro/Admin/Entries/Page.php:1228
 msgid "Preview Form"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1360
+#: src/Pro/Admin/Entries/Page.php:1235
 msgid "Export Filtered"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1360
+#: src/Pro/Admin/Entries/Page.php:1235
 msgid "Export All"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1366
+#: src/Pro/Admin/Entries/Page.php:1241
 msgid "Mark All Read"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1374
+#: src/Pro/Admin/Entries/Page.php:1249
 msgid "Trash All"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1401
+#: src/Pro/Admin/Entries/Page.php:1276
 msgid "Open form selector"
 msgstr ""
 
 #. translators: %d - number of form entries.
-#: src/Pro/Admin/Entries/Page.php:1550
+#: src/Pro/Admin/Entries/Page.php:1363
 msgid "See %d new entry"
 msgid_plural "See %d new entries"
 msgstr[0] ""
 msgstr[1] ""
+
+#: src/Pro/Admin/Entries/PageOptions.php:64
+msgid "Number of entries per page:"
+msgstr ""
 
 #: src/Pro/Admin/Entries/Table/Facades/Columns.php:148
 msgid "Entry Type"
@@ -2916,87 +2918,91 @@ msgid "Install Addon"
 msgstr ""
 
 #. translators: %1$s - WPForms Pro URL; %2$s - WPForms Pro purchase link.
-#: src/Pro/Admin/PluginList.php:605
+#: src/Pro/Admin/PluginList.php:607
 msgid "<a href=\"%1$s\">Activate WPForms Pro</a> to receive features, updates, and support. Don't have a license? <a target=\"_blank\" href=\"%2$s\" rel=\"noopener noreferrer\">Purchase one now</a>."
 msgstr ""
 
 #. translators: %1$s - WPForms Pro URL; %2$s - WPForms Pro purchase link.
-#: src/Pro/Admin/PluginList.php:617
+#: src/Pro/Admin/PluginList.php:619
 msgid "<a href=\"%1$s\">Activate</a> your license to access this update, new features, and support. Don't have a license? <a target=\"_blank\" href=\"%2$s\" rel=\"noopener noreferrer\">Purchase one now</a>."
 msgstr ""
 
-#: src/Pro/Admin/PluginList.php:641
+#: src/Pro/Admin/PluginList.php:643
 msgid "Your WPForms Pro license is expired."
 msgstr ""
 
-#: src/Pro/Admin/PluginList.php:642
+#: src/Pro/Admin/PluginList.php:644
 msgid "Your WPForms Pro license is disabled."
 msgstr ""
 
-#: src/Pro/Admin/PluginList.php:643
+#: src/Pro/Admin/PluginList.php:645
 msgid "Your WPForms Pro license is invalid."
 msgstr ""
 
-#: src/Pro/Admin/PluginList.php:644
+#: src/Pro/Admin/PluginList.php:646
 msgid "Your WPForms Pro license has no activations left."
 msgstr ""
 
-#: src/Pro/Admin/PluginList.php:645
+#: src/Pro/Admin/PluginList.php:647
 msgid "Your WPForms Pro license needs support."
 msgstr ""
 
 #. translators: %s - WPForms Pro key support link.
-#: src/Pro/Admin/PluginList.php:652
+#: src/Pro/Admin/PluginList.php:654
 msgid "Before you can activate this key, we'd like to check in with you. Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">reach out to support here.</a>"
 msgstr ""
 
 #. translators: %s - WPForms Pro renew link.
-#: src/Pro/Admin/PluginList.php:663
+#: src/Pro/Admin/PluginList.php:665
 msgid "<a target=\"_blank\" href=\"%1$s\" rel=\"noopener noreferrer\">Renew now</a> to receive new features, updates, and support."
 msgstr ""
 
 #. translators: %1$s - WPForms Pro Changelog link; %2$s - WPForms Pro latest version.
-#: src/Pro/Admin/PluginList.php:698
-msgid "There is a new version of WPForms available. <a target=\"_blank\" href=\"%1$s\" rel=\"noopener noreferrer\">View version %2$s details</a>"
+#: src/Pro/Admin/PluginList.php:696
+msgid "There is a new version of WPForms available. <a class=\"thickbox open-plugin-details-modal\" href=\"%1$s\" rel=\"noopener noreferrer\">View version %2$s details</a>"
 msgstr ""
 
 #. translators: %1$s - WPForms Pro upgrade URL; %2$s - Update now link aria-label attribute.
-#: src/Pro/Admin/PluginList.php:713
+#: src/Pro/Admin/PluginList.php:711
 msgid "or <a href=\"%1$s\" class=\"update-link\" aria-label=\"%2$s\">update now</a>."
 msgstr ""
 
-#: src/Pro/Admin/PluginList.php:718
+#: src/Pro/Admin/PluginList.php:716
 msgid "Update Now"
 msgstr ""
 
 #. translators: 1: Plugin name, 2: Version number.
-#: src/Pro/Admin/PluginList.php:786
+#: src/Pro/Admin/PluginList.php:784
 msgid "View %1$s version %2$s details"
 msgstr ""
 
 #. translators: 1: Plugin name, 2: Details URL, 3: Link attributes, 4: Version number, 5: Components.
-#: src/Pro/Admin/PluginList.php:827
+#: src/Pro/Admin/PluginList.php:825
 msgid "Sorry, the %1$s addon can't be updated to <a href=\"%2$s\" %3$s>version %4$s</a> because it requires %5$s."
 msgstr ""
 
 #. translators: 1: Details URL, 2: Additional link attributes, 3: Version number.
-#: src/Pro/Admin/PluginList.php:848
+#: src/Pro/Admin/PluginList.php:846
 msgid "If no update is available, try <a href=\"%1$s\">checking for new plugin updates</a>."
 msgstr ""
 
 #. translators: 1:URL to Update PHP page.
-#: src/Pro/Admin/PluginList.php:864
+#: src/Pro/Admin/PluginList.php:862
 msgid "Learn more about <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">updating PHP</a>."
 msgstr ""
 
 #. translators: %s: Plugin name.
-#: src/Pro/Admin/PluginList.php:909
+#: src/Pro/Admin/PluginList.php:907
 msgid "Update %s now"
 msgstr ""
 
 #. translators: 1: Plugin name, 2: Details URL, 3: Additional link attributes, 4: Version number, 5: Update URL, 6: Additional link attributes.
-#: src/Pro/Admin/PluginList.php:917
+#: src/Pro/Admin/PluginList.php:915
 msgid "There is a new version of %1$s available. <a href=\"%2$s\" %3$s>View version %4$s details</a>%5$s."
+msgstr ""
+
+#: src/Pro/Admin/PluginListDisabler.php:72
+msgid "WPForms license is not valid."
 msgstr ""
 
 #. translators: %1$s - capability being granted, %2$s - capability(s) required for a capability being granted, %3$s - role a capability is granted to.
@@ -3411,23 +3417,23 @@ msgstr ""
 msgid "Incorrect answer."
 msgstr ""
 
-#: src/Pro/Forms/Fields/DateTime/Field.php:173
+#: src/Pro/Forms/Fields/DateTime/Field.php:174
 msgid "Time"
 msgstr ""
 
-#: src/Pro/Forms/Fields/DateTime/Field.php:467
+#: src/Pro/Forms/Fields/DateTime/Field.php:468
 msgid "Clear Date"
 msgstr ""
 
-#: src/Pro/Forms/Fields/DateTime/Field.php:551
+#: src/Pro/Forms/Fields/DateTime/Field.php:552
 msgid "MM"
 msgstr ""
 
-#: src/Pro/Forms/Fields/DateTime/Field.php:552
+#: src/Pro/Forms/Fields/DateTime/Field.php:553
 msgid "DD"
 msgstr ""
 
-#: src/Pro/Forms/Fields/DateTime/Field.php:553
+#: src/Pro/Forms/Fields/DateTime/Field.php:554
 msgid "YYYY"
 msgstr ""
 
@@ -3472,87 +3478,81 @@ msgstr ""
 msgid "Please use the default <a href=\"%s\">WordPress Media</a> interface to remove this file."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:248
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1636
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1706
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1761
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1789
+#: src/Pro/Forms/Fields/FileUpload/Field.php:244
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1543
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1598
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1626
 msgid "Something went wrong, please try again."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:249
+#: src/Pro/Forms/Fields/FileUpload/Field.php:245
 msgid "This file was not uploaded."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:258
+#: src/Pro/Forms/Fields/FileUpload/Field.php:254
 msgid "File exceeds the max size allowed."
 msgstr ""
 
 #. translators: %s - max allowed file size by a server.
-#: src/Pro/Forms/Fields/FileUpload/Field.php:260
+#: src/Pro/Forms/Fields/FileUpload/Field.php:256
 msgid "File exceeds the upload limit allowed (%s)."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:264
+#: src/Pro/Forms/Fields/FileUpload/Field.php:260
 msgid "File upload is in progress. Please submit the form once uploading is completed."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:996
+#: src/Pro/Forms/Fields/FileUpload/Field.php:959
 msgid "File(s) not uploaded. Remove and re-attach file(s)."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1610
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1511
 msgid "Something went wrong while removing the file."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1650
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1677
-msgid "File upload failed, please try again."
-msgstr ""
-
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1891
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1728
 msgid "Incorrect usage of this operation."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1956
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1793
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1957
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1794
 msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1958
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1795
 msgid "The uploaded file was only partially uploaded."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1959
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1796
 msgid "No file was uploaded."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1961
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1798
 msgid "Missing a temporary folder."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1962
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1799
 msgid "Failed to write file to disk."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1963
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1800
 msgid "File upload stopped by extension."
 msgstr ""
 
 #. translators: %s - error text.
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1968
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1805
 msgid "File upload error. %s"
 msgstr ""
 
 #. translators: $s - allowed file size in MB.
-#: src/Pro/Forms/Fields/FileUpload/Field.php:2049
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1886
 msgid "File exceeds max size allowed (%s)."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:2073
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1910
 msgid "File must have an extension."
 msgstr ""
 
@@ -3774,7 +3774,7 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: src/Pro/Forms/Fields/Richtext/Field.php:679
+#: src/Pro/Forms/Fields/Richtext/Field.php:663
 msgid "Uploaded to this form"
 msgstr ""
 
@@ -3836,98 +3836,111 @@ msgstr ""
 msgid "Add Fields"
 msgstr ""
 
+#: src/Pro/Integrations/Elementor/Elementor.php:68
 #: src/Pro/Integrations/Gutenberg/FormSelector.php:158
 msgid "The theme you’ve selected has a background image."
 msgstr ""
 
+#: src/Pro/Integrations/Elementor/Elementor.php:69
 #: src/Pro/Integrations/Gutenberg/FormSelector.php:159
 msgid "In order to use Stock Photos, an image library must be downloaded and installed."
 msgstr ""
 
+#: src/Pro/Integrations/Elementor/Elementor.php:70
 #: src/Pro/Integrations/Gutenberg/FormSelector.php:160
 msgid "It's quick and easy, and you'll only have to do this once."
 msgstr ""
 
+#: src/Pro/Integrations/Elementor/Elementor.php:71
 #: src/Pro/Integrations/Gutenberg/FormSelector.php:161
 msgid "Continue"
 msgstr ""
 
-#: src/Pro/Integrations/Gutenberg/FormSelector.php:163
-msgid "Installing"
-msgstr ""
-
+#: src/Pro/Integrations/Elementor/Elementor.php:73
 #: src/Pro/Integrations/Gutenberg/FormSelector.php:164
 msgid "Uh oh!"
 msgstr ""
 
+#: src/Pro/Integrations/Elementor/Elementor.php:74
+#: src/Pro/Integrations/Gutenberg/FormSelector.php:163
+msgid "Installing"
+msgstr ""
+
+#: src/Pro/Integrations/Elementor/Elementor.php:76
 #: src/Pro/Integrations/Gutenberg/FormSelector.php:166
 msgid "Something went wrong while performing an AJAX request."
 msgstr ""
 
+#: src/Pro/Integrations/Elementor/Elementor.php:77
 #: src/Pro/Integrations/Gutenberg/FormSelector.php:167
 msgid "Choose a Stock Photo"
 msgstr ""
 
+#: src/Pro/Integrations/Elementor/Elementor.php:78
 #: src/Pro/Integrations/Gutenberg/FormSelector.php:168
 msgid "Browse for the perfect image for your form background."
 msgstr ""
 
+#: src/Pro/Integrations/Elementor/StockPhotos.php:175
 #: src/Pro/Integrations/Gutenberg/StockPhotos.php:175
 msgid "Can't download file."
 msgstr ""
 
+#: src/Pro/Integrations/Elementor/StockPhotos.php:191
 #: src/Pro/Integrations/Gutenberg/StockPhotos.php:191
 msgid "Can't unzip file."
 msgstr ""
 
+#: src/Pro/Integrations/Elementor/StockPhotos.php:201
 #: src/Pro/Integrations/Gutenberg/StockPhotos.php:201
 msgid "Can't move unzipped files."
 msgstr ""
 
+#: src/Pro/Integrations/Elementor/StockPhotos.php:229
 #: src/Pro/Integrations/Gutenberg/StockPhotos.php:229
 msgid "Can't create the stock photos storage directory."
 msgstr ""
 
-#: src/Pro/Integrations/LiteConnect/Admin.php:257
+#: src/Pro/Integrations/LiteConnect/Admin.php:278
 msgid "Entry Restore Complete"
 msgstr ""
 
 #. translators: %d - number of imported entries.
-#: src/Pro/Integrations/LiteConnect/Admin.php:304
+#: src/Pro/Integrations/LiteConnect/Admin.php:325
 msgid "%d entry has been successfully imported."
 msgid_plural "%d entries have been successfully imported."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d - number of imported entries.
-#: src/Pro/Integrations/LiteConnect/Admin.php:318
+#: src/Pro/Integrations/LiteConnect/Admin.php:339
 msgid "%d entry was not imported."
 msgid_plural "%d entries were not imported."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Pro/Integrations/LiteConnect/Admin.php:330
+#: src/Pro/Integrations/LiteConnect/Admin.php:351
 msgid "No entries were imported."
 msgstr ""
 
 #. translators: %s - WPForms Logs admin page URL.
-#: src/Pro/Integrations/LiteConnect/Admin.php:336
+#: src/Pro/Integrations/LiteConnect/Admin.php:357
 msgid "<a href=\"%s\">View log</a> for details."
 msgstr ""
 
-#: src/Pro/Integrations/LiteConnect/Admin.php:362
+#: src/Pro/Integrations/LiteConnect/Admin.php:383
 msgid "Unfortunately, there were some issues during the entries importing process. Don't worry - data is not lost. Please try again later."
 msgstr ""
 
 #. translators: %d - backed up entries count.
-#: src/Pro/Integrations/LiteConnect/Admin.php:529
+#: src/Pro/Integrations/LiteConnect/Admin.php:550
 msgid "%d form entry has been backed up"
 msgid_plural "%d form entries have been backed up"
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s - time when Lite Connect was enabled.
-#: src/Pro/Integrations/LiteConnect/Admin.php:542
+#: src/Pro/Integrations/LiteConnect/Admin.php:563
 msgid "since you enabled Lite Connect on %s"
 msgstr ""
 

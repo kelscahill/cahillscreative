@@ -69,14 +69,26 @@ class check
 		$o->r .= '<pre>' . htmlspecialchars( $post->post_content ) . '</pre>';
 
 		$metas = get_post_meta( $post_id );
-		foreach( $metas as $key => $value )
+		foreach( $metas as $key => $values )
 		{
-			$value = maybe_unserialize( $value );
-			if ( ! is_string( $value ) )
-				$value = var_export( $value, true );
-			else
-			    $value = htmlspecialchars( $value );
-			$metas [ $key ] = $value;
+			$metas [ $key ] = [];
+			foreach( $values as $value )
+			{
+				$json_decoded = json_decode( $value );
+				$maybe_unserialized = maybe_unserialize( $value );
+
+				$exportable = false;
+				if ( $json_decoded )
+					$exportable = $json_decoded;
+				if ( $maybe_unserialized )
+					$exportable = $maybe_unserialized;
+
+				if ( $exportable )
+					$value = var_export( $exportable, true );
+				else
+					$value = htmlspecialchars( $value );
+				$metas [ $key ] []= $value;
+			}
 		}
 
 		$text = sprintf( '<pre>%s</pre>', stripslashes( var_export( $metas, true ) ) );

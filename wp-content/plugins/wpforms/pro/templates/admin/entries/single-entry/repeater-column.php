@@ -31,20 +31,12 @@ $current_column = 0;
 			'wpforms-entry-field-layout-inner',
 			'wpforms-field-layout-column',
 		];
-
-		if ( $is_empty_column ) {
-			$column_classes[] = 'wpforms-field-layout-column-empty';
-			$column_classes[] = 'empty';
-
-			if ( empty( $entries_single->entry_view_settings['fields']['show_empty_fields']['value'] ) ) {
-				$column_classes[] = 'wpforms-hide';
-			}
-		}
+		$context         = [ 'layout-row' => true ];
 	?>
 
-	<div class="<?php echo wpforms_sanitize_classes( $column_classes, true ); ?>" style="width: <?php echo esc_attr( $width ); ?>%">
+	<div class="<?php echo wpforms_sanitize_classes( $column_classes, true ); ?>" style="--field-layout-column-width: <?php echo esc_attr( $width ); ?>%">
 		<?php if ( $data['field'] ) : ?>
-			<?php $entries_single->print_field( $data['field'], $form_data ); ?>
+			<?php $entries_single->print_field( $data['field'], $form_data, $context ); ?>
 		<?php endif; ?>
 	</div>
 <?php

@@ -214,7 +214,7 @@ class WPForms_License {
 	/**
 	 * Reset all license flags.
 	 *
-	 * @since 1.9.4.2
+	 * @since 1.9.5
 	 *
 	 * @param array $option License option.
 	 */
@@ -786,26 +786,6 @@ class WPForms_License {
 			]
 		);
 	}
-	/**
-	 * Retrieve addons from the stored transient or remote server.
-	 *
-	 * @since 1.0.0
-	 * @deprecated 1.8.0
-	 *
-	 * @param bool $force Whether to force the addons retrieval or re-use transient cache.
-	 *
-	 * @return array
-	 */
-	public function addons( $force = false ) {
-
-		_deprecated_function( __METHOD__, '1.8.0 of the WPForms plugin', __CLASS__ . '::get_addons()' );
-
-		if ( $force ) {
-			Transient::delete( 'addons' );
-		}
-
-		return $this->get_addons();
-	}
 
 	/**
 	 * Ping the remote server for addons data.
@@ -886,6 +866,31 @@ class WPForms_License {
 
 		// Bail out early if there are any errors.
 		if ( (int) $response_code !== 200 || is_wp_error( $response_body ) ) {
+			$error_message = is_wp_error( $response ) ? $response->get_error_message() : '';
+
+			$log_data = [
+				'action'        => $action,
+				'url'           => $remote_url,
+				'query_params'  => $query_params,
+				'response_code' => $response_code,
+				'error'         => $error_message,
+				'response'      => $response,
+				'server_ip'     => wpforms_get_ip(),
+			];
+
+			// Add response body to log if error message is empty.
+			if ( empty( $error_message ) && ! is_wp_error( $response_body ) ) {
+				$log_data['response_body'] = $response_body;
+			}
+
+			wpforms_log(
+				'License Remote Request Failed',
+				$log_data,
+				[
+					'type' => [ 'error' ],
+				]
+			);
+
 			return false;
 		}
 
@@ -934,7 +939,7 @@ class WPForms_License {
 	/**
 	 * Whether the site is using a license with no activations left.
 	 *
-	 * @since 1.9.4.2
+	 * @since 1.9.5
 	 *
 	 * @return bool
 	 */
@@ -946,7 +951,7 @@ class WPForms_License {
 	/**
 	 * Whether the site is using a flagged license.
 	 *
-	 * @since 1.9.4.2
+	 * @since 1.9.5
 	 *
 	 * @return bool
 	 */
@@ -1108,7 +1113,7 @@ class WPForms_License {
 	/**
 	 * Handle case when validate response is limit_reached.
 	 *
-	 * @since 1.9.4.2
+	 * @since 1.9.5
 	 *
 	 * @param bool  $ajax          AJAX.
 	 * @param bool  $return_status Option to return the license status.
@@ -1132,7 +1137,7 @@ class WPForms_License {
 	/**
 	 * Handle case when validate response is flagged.
 	 *
-	 * @since 1.9.4.2
+	 * @since 1.9.5
 	 *
 	 * @param bool  $ajax          AJAX.
 	 * @param bool  $return_status Option to return the license status.

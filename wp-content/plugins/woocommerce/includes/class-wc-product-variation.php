@@ -10,6 +10,7 @@
 
 use Automattic\WooCommerce\Enums\ProductStatus;
 use Automattic\WooCommerce\Enums\ProductType;
+use Automattic\WooCommerce\Enums\CatalogVisibility;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -165,12 +166,12 @@ class WC_Product_Variation extends WC_Product_Simple {
 	public function get_permalink( $item_object = null ) {
 		$url = get_permalink( $this->get_parent_id() );
 
-		if ( ! empty( $item_object['variation'] ) ) {
-			$data = $item_object['variation'];
-		} elseif ( ! empty( $item_object['item_meta_array'] ) ) {
+		if ( ! empty( $item_object['item_meta_array'] ) ) {
 			$data_keys   = array_map( 'wc_variation_attribute_name', wp_list_pluck( $item_object['item_meta_array'], 'key' ) );
 			$data_values = wp_list_pluck( $item_object['item_meta_array'], 'value' );
 			$data        = array_intersect_key( array_combine( $data_keys, $data_values ), $this->get_variation_attributes() );
+		} elseif ( ! empty( $item_object['variation'] ) ) {
+			$data = $item_object['variation'];
 		} else {
 			$data = $this->get_variation_attributes();
 		}
@@ -480,7 +481,7 @@ class WC_Product_Variation extends WC_Product_Simple {
 				'shipping_class_id'  => 0,
 				'image_id'           => 0,
 				'purchase_note'      => '',
-				'catalog_visibility' => 'visible',
+				'catalog_visibility' => CatalogVisibility::VISIBLE,
 			)
 		);
 

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Automattic\WooCommerce\Blocks;
 
 use Automattic\WooCommerce\Admin\Features\Features;
@@ -61,6 +63,7 @@ final class BlockTypesController {
 		add_action( 'woocommerce_login_form_end', array( $this, 'redirect_to_field' ) );
 		add_filter( 'widget_types_to_hide_from_legacy_widget_block', array( $this, 'hide_legacy_widgets_with_block_equivalent' ) );
 		add_action( 'woocommerce_delete_product_transients', array( $this, 'delete_product_transients' ) );
+		add_filter( 'register_block_type_args', array( $this, 'enqueue_block_style_for_classic_themes' ), 10, 2 );
 	}
 
 	/**
@@ -282,9 +285,7 @@ final class BlockTypesController {
 	 */
 	public function add_data_attributes( $content, $block ) {
 
-		$content = trim( $content );
-
-		if ( ! $this->block_should_have_data_attributes( $block['blockName'] ) ) {
+		if ( ! is_string( $content ) || ! $this->block_should_have_data_attributes( $block['blockName'] ) ) {
 			return $content;
 		}
 
@@ -294,10 +295,9 @@ final class BlockTypesController {
 		$processor = new \WP_HTML_Tag_Processor( $content );
 
 		if (
-			false === $processor->next_token() ||
-			'DIV' !== $processor->get_token_name() ||
-			$processor->is_tag_closer()
+			false === $processor->next_tag() || $processor->is_tag_closer()
 		) {
+
 			return $content;
 		}
 
@@ -372,9 +372,7 @@ final class BlockTypesController {
 	 */
 	protected function get_widget_area_block_types() {
 		return array(
-			'ActiveFilters',
 			'AllReviews',
-			'AttributeFilter',
 			'Breadcrumbs',
 			'CartLink',
 			'CatalogSorting',
@@ -382,16 +380,33 @@ final class BlockTypesController {
 			'CustomerAccount',
 			'FeaturedCategory',
 			'FeaturedProduct',
-			'FilterWrapper',
 			'MiniCart',
-			'PriceFilter',
 			'ProductCategories',
 			'ProductResultsCount',
 			'ProductSearch',
-			'RatingFilter',
 			'ReviewsByCategory',
 			'ReviewsByProduct',
+			'ProductFilters',
+			'ProductFilterStatus',
+			'ProductFilterPrice',
+			'ProductFilterPriceSlider',
+			'ProductFilterAttribute',
+			'ProductFilterRating',
+			'ProductFilterActive',
+			'ProductFilterRemovableChips',
+			'ProductFilterClearButton',
+			'ProductFilterCheckboxList',
+			'ProductFilterChips',
+
+			// Keep hidden legacy filter blocks for backward compatibility.
+			'ActiveFilters',
+			'AttributeFilter',
+			'FilterWrapper',
+			'PriceFilter',
+			'RatingFilter',
 			'StockFilter',
+			// End: legacy filter blocks.
+
 			// Below product grids are hidden from inserter however they could have been used in widgets.
 			// Keep them for backward compatibility.
 			'HandpickedProducts',
@@ -402,6 +417,7 @@ final class BlockTypesController {
 			'ProductsByAttribute',
 			'ProductCategory',
 			'ProductTag',
+			// End: legacy product grids blocks.
 		);
 	}
 
@@ -439,10 +455,20 @@ final class BlockTypesController {
 			'ProductCategory',
 			'ProductCollection\Controller',
 			'ProductCollection\NoResults',
+			'ProductFilters',
+			'ProductFilterStatus',
+			'ProductFilterPrice',
+			'ProductFilterPriceSlider',
+			'ProductFilterAttribute',
+			'ProductFilterRating',
+			'ProductFilterActive',
+			'ProductFilterRemovableChips',
+			'ProductFilterClearButton',
+			'ProductFilterCheckboxList',
+			'ProductFilterChips',
 			'ProductGallery',
 			'ProductGalleryLargeImage',
 			'ProductGalleryLargeImageNextPrevious',
-			'ProductGalleryPager',
 			'ProductGalleryThumbnails',
 			'ProductImage',
 			'ProductImageGallery',
@@ -498,25 +524,43 @@ final class BlockTypesController {
 			MiniCartContents::get_mini_cart_block_types()
 		);
 
-		// Update plugins/woocommerce-blocks/docs/internal-developers/blocks/feature-flags-and-experimental-interfaces.md
+		// Update plugins/woocommerce/client/blocks/docs/internal-developers/blocks/feature-flags-and-experimental-interfaces.md
 		// when modifying this list.
 		if ( Features::is_enabled( 'experimental-blocks' ) ) {
-			$block_types[] = 'ProductFilters';
-			$block_types[] = 'ProductFilterStatus';
-			$block_types[] = 'ProductFilterPrice';
-			$block_types[] = 'ProductFilterPriceSlider';
-			$block_types[] = 'ProductFilterAttribute';
-			$block_types[] = 'ProductFilterRating';
-			$block_types[] = 'ProductFilterActive';
-			$block_types[] = 'ProductFilterRemovableChips';
-			$block_types[] = 'ProductFilterClearButton';
-			$block_types[] = 'ProductFilterCheckboxList';
-			$block_types[] = 'ProductFilterChips';
-			if ( Features::is_enabled( 'blockified-add-to-cart' ) ) {
-				$block_types[] = 'AddToCartWithOptions';
-				$block_types[] = 'AddToCartWithOptionsQuantitySelector';
-				$block_types[] = 'AddToCartWithOptionsVariationSelector';
+			if ( Features::is_enabled( 'blockified-add-to-cart' ) && wp_is_block_theme() ) {
+				$block_types[] = 'AddToCartWithOptions\AddToCartWithOptions';
+				$block_types[] = 'AddToCartWithOptions\QuantitySelector';
+				$block_types[] = 'AddToCartWithOptions\VariationSelector';
+				$block_types[] = 'AddToCartWithOptions\VariationSelectorItemTemplate';
+				$block_types[] = 'AddToCartWithOptions\VariationSelectorAttributeName';
+				$block_types[] = 'AddToCartWithOptions\VariationSelectorAttributeOptions';
+				$block_types[] = 'AddToCartWithOptions\GroupedProductSelector';
+				$block_types[] = 'AddToCartWithOptions\GroupedProductSelectorItemTemplate';
+				$block_types[] = 'AddToCartWithOptions\GroupedProductSelectorItemCTA';
 			}
+
+			$block_types[] = 'BlockifiedProductDetails';
+			$block_types[] = 'ProductDescription';
+			$block_types[] = 'ProductSpecifications';
+			$block_types[] = 'Reviews\ProductReviews';
+			$block_types[] = 'Reviews\ProductReviewRating';
+			$block_types[] = 'Reviews\ProductReviewsTitle';
+			$block_types[] = 'Reviews\ProductReviewForm';
+			$block_types[] = 'Reviews\ProductReviewDate';
+			$block_types[] = 'Reviews\ProductReviewContent';
+			$block_types[] = 'Reviews\ProductReviewAuthorName';
+			$block_types[] = 'Reviews\ProductReviewsPagination';
+			$block_types[] = 'Reviews\ProductReviewsPaginationNext';
+			$block_types[] = 'Reviews\ProductReviewsPaginationPrevious';
+			$block_types[] = 'Reviews\ProductReviewsPaginationNumbers';
+			$block_types[] = 'Reviews\ProductReviewTemplate';
+
+			// Generic blocks that will be pushed upstream.
+			$block_types[] = 'Accordion\AccordionGroup';
+			$block_types[] = 'Accordion\AccordionItem';
+			$block_types[] = 'Accordion\AccordionPanel';
+			$block_types[] = 'Accordion\AccordionHeader';
+			// End: generic blocks that will be pushed upstream.
 		}
 
 		/**
@@ -566,5 +610,50 @@ final class BlockTypesController {
 		 * @param array $block_types List of block types.
 		 */
 		return apply_filters( 'woocommerce_get_block_types', $block_types );
+	}
+
+	/**
+	 * By default, when the classic theme is used, block style is always
+	 * enqueued even if the block is not used on the page. We want WooCommerce
+	 * store to always performant so we have to manually enqueue the block style
+	 * on-demand for classic themes.
+	 *
+	 * @internal
+	 *
+	 * @param array  $args Block metadata.
+	 * @param string $block_name Block name.
+	 *
+	 * @return array Block metadata.
+	 */
+	public function enqueue_block_style_for_classic_themes( $args, $block_name ) {
+		if (
+			is_admin() ||
+			wp_is_block_theme() ||
+			( function_exists( 'wp_should_load_block_assets_on_demand' ) && wp_should_load_block_assets_on_demand() ) ||
+			wp_should_load_separate_core_block_assets() ||
+			false === strpos( $block_name, 'woocommerce/' ) ||
+			( empty( $args['style_handles'] ) && empty( $args['style'] ) )
+		) {
+			return $args;
+		}
+
+		$style_handlers = $args['style_handles'] ?? $args['style'];
+
+		add_filter(
+			'render_block',
+			static function ( $html, $block ) use ( $style_handlers, $block_name ) {
+				if ( $block['blockName'] === $block_name ) {
+					array_map( 'wp_enqueue_style', $style_handlers );
+				}
+				return $html;
+			},
+			10,
+			2
+		);
+
+		$args['style_handles'] = array();
+		$args['style']         = array();
+
+		return $args;
 	}
 }

@@ -50,8 +50,10 @@ class base
 		// Add all available blogs as options.
 		$filter = new \threewp_broadcast\actions\get_user_writable_blogs( $this->user_id() );
 		$blogs = $filter->execute()->blogs;
+		$current_blog_id = get_current_blog_id();
 		foreach( $blogs as $blog )
-			$input->option( $blog->get_name(), $blog->get_id() );
+			if ( $blog->get_id() != $current_blog_id )
+				$input->option( $blog->get_name(), $blog->get_id() );
 
 		// Maybe give them group functionality.
 		if ( function_exists( 'BC_Blog_Groupize' ) )

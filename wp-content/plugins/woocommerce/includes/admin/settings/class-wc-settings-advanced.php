@@ -5,7 +5,7 @@
  * @package  WooCommerce\Admin
  */
 
-use Automattic\WooCommerce\Admin\Features\Features;
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -53,8 +53,8 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 			'woocommerce_com' => __( 'WooCommerce.com', 'woocommerce' ),
 		);
 
-		if ( Features::is_enabled( 'blueprint' ) ) {
-			$sections['blueprint'] = __( 'Blueprint', 'woocommerce' );
+		if ( FeaturesUtil::feature_is_enabled( 'blueprint' ) ) {
+			$sections['blueprint'] = __( 'Blueprint (beta)', 'woocommerce' );
 		}
 
 		return $sections;
@@ -448,10 +448,6 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 		$settings =
 			array(
 				array(
-					'title' => '',
-					'type'  => 'title',
-				),
-				array(
 					'id'   => 'wc_settings_blueprint_slotfill',
 					'type' => 'slotfill_placeholder',
 				),
@@ -491,7 +487,11 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 	 * Output the settings.
 	 */
 	public function output() {
-		global $current_section;
+		global $current_section, $hide_save_button;
+
+		if ( 'blueprint' === $current_section ) {
+			$hide_save_button = true;
+		}
 
 		if ( 'webhooks' === $current_section ) {
 			WC_Admin_Webhooks::page_output();

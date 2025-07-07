@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Google for WooCommerce 2.9.10\n"
+"Project-Id-Version: Google for WooCommerce 3.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/google-listings-and-ads\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-18T04:54:47+00:00\n"
+"POT-Creation-Date: 2025-07-01T09:30:23+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: google-listings-and-ads\n"
@@ -49,24 +49,24 @@ msgstr ""
 msgid "No action matching %s was found."
 msgstr ""
 
-#: src/Admin/Admin.php:205
+#: src/Admin/Admin.php:219
 #: src/Menu/Settings.php:25
 #: js/build/commons.js:60
 #: js/build/index.js:25
 msgid "Settings"
 msgstr ""
 
-#: src/Admin/Admin.php:211
+#: src/Admin/Admin.php:225
 #: js/build/blocks.js:1
 msgid "Get Started"
 msgstr ""
 
-#: src/Admin/Admin.php:218
+#: src/Admin/Admin.php:232
 msgid "Documentation"
 msgstr ""
 
 #. translators: 1) HTML anchor open tag 2) HTML anchor closing tag
-#: src/Admin/Admin.php:279
+#: src/Admin/Admin.php:293
 msgid "By using this extension, you may be storing personal data or sharing data with an external service. %1$sLearn more about what data is collected by Google and what you may want to include in your privacy policy%2$s."
 msgstr ""
 
@@ -294,8 +294,8 @@ msgstr ""
 msgid "Error retrieving accounts: %s"
 msgstr ""
 
-#: src/API/Google/Ads.php:357
-msgid "Merchant link is not available to accept"
+#: src/API/Google/Ads.php:354
+msgid "Unable to find the pending approval link sent from the Merchant Center account"
 msgstr ""
 
 #. translators: %s: current date time.
@@ -449,6 +449,18 @@ msgstr ""
 msgid "Unable to update Merchant Center account: %s"
 msgstr ""
 
+#: src/API/Google/MerchantPriceBenchmarks.php:84
+msgid "Unable to retrieve price benchmark data"
+msgstr ""
+
+#: src/API/Google/MerchantPriceBenchmarks.php:143
+msgid "Unable to retrieve price insights data"
+msgstr ""
+
+#: src/API/Google/MerchantPriceBenchmarks.php:196
+msgid "Unable to retrieve product metrics data"
+msgstr ""
+
 #: src/API/Google/MerchantReport.php:116
 msgid "Unable to retrieve Product View Report."
 msgstr ""
@@ -468,7 +480,7 @@ msgstr ""
 
 #: src/API/Google/Middleware.php:97
 #: src/API/Google/SiteVerification.php:59
-#: src/MerchantCenter/AccountService.php:450
+#: src/MerchantCenter/AccountService.php:453
 msgid "Invalid site URL."
 msgstr ""
 
@@ -510,16 +522,28 @@ msgstr ""
 msgid "Error linking account"
 msgstr ""
 
+#: src/API/Google/Middleware.php:522
+msgid "Merchant ID must be set before updating in SDI."
+msgstr ""
+
+#: src/API/Google/Middleware.php:545
+msgid "Invalid response when updating merchant account in Google Partner APP."
+msgstr ""
+
+#: src/API/Google/Middleware.php:553
+msgid "Error updating merchant account in Google Partner APP."
+msgstr ""
+
 #. translators: 1: current date in the format Y-m-d
-#: src/API/Google/Middleware.php:509
+#: src/API/Google/Middleware.php:578
 msgid "Account %1$s"
 msgstr ""
 
-#: src/API/Google/Middleware.php:586
+#: src/API/Google/Middleware.php:655
 msgid "Invalid response authenticating partner app."
 msgstr ""
 
-#: src/API/Google/Middleware.php:596
+#: src/API/Google/Middleware.php:665
 msgid "Error authenticating Google Partner APP."
 msgstr ""
 
@@ -854,11 +878,13 @@ msgid "Limit totals to a set of fields."
 msgstr ""
 
 #: src/API/Site/Controllers/BaseReportsController.php:67
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:159
 #: src/API/Site/Controllers/MerchantCenter/ProductFeedController.php:198
 msgid "Order sort attribute ascending or descending."
 msgstr ""
 
 #: src/API/Site/Controllers/BaseReportsController.php:74
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:165
 #: src/API/Site/Controllers/MerchantCenter/ProductFeedController.php:191
 msgid "Sort collection by attribute."
 msgstr ""
@@ -871,6 +897,26 @@ msgstr ""
 #: src/API/Site/Controllers/MerchantCenter/ShippingRateSuggestionsController.php:64
 #: src/API/Site/Controllers/MerchantCenter/TargetAudienceController.php:247
 msgid "Array of country codes in ISO 3166-1 alpha-2 format."
+msgstr ""
+
+#: src/API/Site/Controllers/ConnectController.php:83
+msgid "Account connection triggered successfully."
+msgstr ""
+
+#: src/API/Site/Controllers/ConnectController.php:103
+msgid "Status of the connection request."
+msgstr ""
+
+#: src/API/Site/Controllers/ConnectController.php:109
+msgid "Message describing the connection result."
+msgstr ""
+
+#: src/API/Site/Controllers/ConnectController.php:115
+msgid "The Merchant Center ID that was connected."
+msgstr ""
+
+#: src/API/Site/Controllers/ConnectController.php:121
+msgid "The WordPress.com blog ID."
 msgstr ""
 
 #: src/API/Site/Controllers/CountryCodeTrait.php:72
@@ -1084,6 +1130,118 @@ msgstr ""
 
 #: src/API/Site/Controllers/MerchantCenter/PolicyComplianceCheckController.php:126
 msgid "The refund returns policy associated with onboarding policy checking."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:142
+msgid "Current page of the collection."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:148
+msgid "Maximum number of items returned in the results."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:155
+msgid "Limit results to those matching a string."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:181
+msgid "The Id of the product."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:218
+msgid "Product details."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:230
+msgid "Effectiveness score."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:235
+msgid "Country code."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:239
+msgid "Currency code."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:243
+msgid "Current price of the product on Google."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:247
+msgid "Average benchmark price of the product on Google."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:251
+msgid "Benchmark price currency code."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:255
+msgid "Price gap between the product price and the benchmark price on Google."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:259
+msgid "Suggested price for the product."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:263
+msgid "Suggested price currency code."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:267
+msgid "Current clicks."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:271
+msgid "Current impressions."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:275
+msgid "Click-through rate."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:279
+msgid "Current conversions."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:283
+msgid "Expected uplift in impressions (fraction)."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:287
+msgid "Expected uplift in clicks (fraction)."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:291
+msgid "Expected uplift in conversions (fraction)."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:295
+msgid "Comparison of price with benchmark."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:301
+msgid "The total number of benchmarks that are available."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:328
+msgid "Total number of products represented in the Google report."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:332
+msgid "Total number of products with similar prices to benchmark data."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:336
+msgid "Total number of products with higher prices to benchmark data."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:340
+msgid "Total number of products with lower prices to benchmark data."
+msgstr ""
+
+#: src/API/Site/Controllers/MerchantCenter/PriceBenchmarksController.php:344
+msgid "Total number of products without price benchmark data."
 msgstr ""
 
 #: src/API/Site/Controllers/MerchantCenter/ProductFeedController.php:84
@@ -1549,33 +1707,33 @@ msgid "Attempting invalid claim overwrite."
 msgstr ""
 
 #. translators: 1: is a string representing an unknown step name
-#: src/MerchantCenter/AccountService.php:365
+#: src/MerchantCenter/AccountService.php:368
 msgid "Unknown merchant account creation step %1$s"
 msgstr ""
 
-#: src/MerchantCenter/AccountService.php:397
+#: src/MerchantCenter/AccountService.php:400
 msgid "Unable to claim website URL with this Merchant Center Account."
 msgstr ""
 
 #. translators: 1: is a numeric account ID
-#: src/MerchantCenter/AccountService.php:429
+#: src/MerchantCenter/AccountService.php:432
 msgid "Merchant Center account already connected: %d"
 msgstr ""
 
 #. translators: 1: is a website URL (without the protocol)
-#: src/MerchantCenter/AccountService.php:478
+#: src/MerchantCenter/AccountService.php:481
 msgid "This Merchant Center account already has a verified and claimed URL, %1$s"
 msgstr ""
 
-#: src/MerchantCenter/AccountService.php:566
+#: src/MerchantCenter/AccountService.php:572
 msgid "No stored nonce found in the database, skip updating auth status."
 msgstr ""
 
-#: src/MerchantCenter/AccountService.php:572
+#: src/MerchantCenter/AccountService.php:578
 msgid "Nonce is not provided, skip updating auth status."
 msgstr ""
 
-#: src/MerchantCenter/AccountService.php:579
+#: src/MerchantCenter/AccountService.php:585
 msgid "Nonces mismatch, skip updating auth status."
 msgstr ""
 
@@ -1802,6 +1960,7 @@ msgid "Age group"
 msgstr ""
 
 #: src/Product/Attributes/Condition.php:51
+#: js/build/price-benchmark.js:1
 msgid "New"
 msgstr ""
 
@@ -2459,6 +2618,35 @@ msgstr ""
 
 #: js/build/commons.js:10
 msgid "<p>We will soon transition to a new and improved method for synchronizing product data with Google.</p><enableButton>Get early access</enableButton>"
+msgstr ""
+
+#: js/build/commons.js:10
+msgid "Thanks for letting us know!"
+msgstr ""
+
+#: js/build/commons.js:10
+#: js/build/product-feed.js:13
+msgid "Maybe later"
+msgstr ""
+
+#: js/build/commons.js:10
+msgid "Rate us"
+msgstr ""
+
+#: js/build/commons.js:10
+msgid "If you have a minute, we'd appreciate it if you could leave us a rating. Your review will help other store owners find this extension."
+msgstr ""
+
+#: js/build/commons.js:10
+msgid "How was your experience with Google for WooCommerce?"
+msgstr ""
+
+#: js/build/commons.js:10
+msgid "Good"
+msgstr ""
+
+#: js/build/commons.js:10
+msgid "Need help"
 msgstr ""
 
 #. translators: 1: current page number 2: total number of pages
@@ -3179,6 +3367,11 @@ msgid "Dashboard"
 msgstr ""
 
 #: js/build/commons.js:60
+#: js/build/index.js:25
+msgid "Price Benchmark"
+msgstr ""
+
+#: js/build/commons.js:60
 msgid "Attributes"
 msgstr ""
 
@@ -3523,21 +3716,6 @@ msgid "%s: Character limit exceeded"
 msgstr ""
 
 #: js/build/commons.js:97
-msgctxt "A sample product title for demonstrating the paid ads shown on Google services."
-msgid "White tee"
-msgstr ""
-
-#: js/build/commons.js:97
-msgctxt "A sample product price for demonstrating the paid ads shown on Google services."
-msgid "$10.00"
-msgstr ""
-
-#: js/build/commons.js:97
-msgctxt "A sample name of an online shop for demonstrating the paid ads shown on Google services."
-msgid "Colleen's Tee Store"
-msgstr ""
-
-#: js/build/commons.js:97
 msgid "Google Shopping Logo"
 msgstr ""
 
@@ -3550,11 +3728,26 @@ msgid "LEARN MORE"
 msgstr ""
 
 #: js/build/commons.js:97
+msgid "Gmail Logo"
+msgstr ""
+
+#: js/build/commons.js:97
 msgid "Simulated the info and close buttons at the corner of a Google ad"
 msgstr ""
 
 #: js/build/commons.js:97
-msgid "Gmail Logo"
+msgctxt "A sample product title for demonstrating the paid ads shown on Google services."
+msgid "White tee"
+msgstr ""
+
+#: js/build/commons.js:97
+msgctxt "A sample product price for demonstrating the paid ads shown on Google services."
+msgid "$10.00"
+msgstr ""
+
+#: js/build/commons.js:97
+msgctxt "A sample name of an online shop for demonstrating the paid ads shown on Google services."
+msgid "Colleen's Tee Store"
 msgstr ""
 
 #: js/build/commons.js:97
@@ -4545,6 +4738,14 @@ msgid "There was an error getting the GTIN Migration Status."
 msgstr ""
 
 #: js/build/index.js:25
+msgid "There was an error getting the price benchmark summary."
+msgstr ""
+
+#: js/build/index.js:25
+msgid "There was an error getting the price benchmark suggestions."
+msgstr ""
+
+#: js/build/index.js:25
 msgid "Unknown error occurred."
 msgstr ""
 
@@ -4745,6 +4946,199 @@ msgstr ""
 #: js/build/onboarding.js:1
 #: js/build/settings.js:1
 msgid "Any ongoing campaigns and configuration will continue to run. They will be pushed to Google as in the previous versions of this extension."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Price Benchmark & Suggestions"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "This report includes a competitive pricing analysis, price recommendations, and insights like <strong>Effectiveness</strong> to help you identify opportunities, compare against competitors, and accelerate your sales growth."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Dismiss"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "No sale price suggestions graphic"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "You do not have any sale price suggestions at this moment."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "<a>Find out</a> if you meet all eligibility criteria to receive suggestions in the future."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Change Effectiveness"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Effectiveness tells you which products would benefit most from price changes. This rating takes into consideration the performance boost predicted by adjusting the sale price and the difference between your current price and the suggested price. Price suggestions with “High” effectiveness are predicted to drive the largest increase in performance. Keep in mind that predictions do not guarantee improvements in future performance."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Avg. Price on Google"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "The effective price for a product across all retailers selling the same product weighted by customer clicks. Products are matched based on the GTIN you provide in the product details."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Price Gap %"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "The percentage difference between your price and the price on Google for this product."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Suggested Price"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Suggested sale price predicted by Google for products that benefit most from pricing adjustments. It is based on advanced simulations at different price points over the past 7 days factoring in price elasticity, current performance and the performance impact on price changes for businesses similar to you. Use suggested sale prices as valuable directional guidance to help shape your pricing strategy. Learn more about how to change the sale price of your products. Keep in mind that predictions do not guarantee future performance outcomes."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Regular Price"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Action"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Current Clicks"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "The number of clicks your product received in the last 7 days."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Current Conversions"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "The number of conversions your product received in the last 7 days."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Exp. Uplift in Clicks"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Click uplift shows the predicted percentage increase of clicks from your Shopping ads if the suggested price is applied. Predictions are generated by advanced pricing simulations based on performance data over the past 7 days. It's important to keep in mind that these predictions do not guarantee future performance outcomes, as actual performance can be influenced by factors other than price."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Exp. Uplift in Conv."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Conversion uplift shows the predicted percentage increase in online conversions from Shopping ads for your product if the suggested sale price is applied. Predictions are generated by advanced pricing simulations based on performance data over the past 7 days. It's important to keep in mind that predictions do not guarantee future performance outcomes."
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Sales Price"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Unspecified"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Low"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "Medium"
+msgstr ""
+
+#: js/build/price-benchmark.js:1
+msgid "High"
+msgstr ""
+
+#. Translators: %s is replaced with the sales price.
+#: js/build/price-benchmark.js:4
+msgid "New price must be greater than the sales price (%s)."
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "New price must be greater than or equals to zero."
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "New price"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "Change Price"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "Close"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "Product not found. "
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "Product thumbnail"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "This product is currently on sale. To change the sale price, go to the <link>Edit Product</link> page in WooCommerce."
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "Change price"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "FAQ"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "Image"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "Product"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "Description"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "Similar"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "No price benchmark"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "Cheaper"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "More Expensive"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "How Your Products Compare to Competitors"
+msgstr ""
+
+#: js/build/price-benchmark.js:4
+msgid "There was an error loading the price benchmark suggestions."
 msgstr ""
 
 #: js/build/product-feed.js:1
@@ -5005,10 +5399,6 @@ msgstr ""
 
 #: js/build/product-feed.js:13
 msgid "View product feed"
-msgstr ""
-
-#: js/build/product-feed.js:13
-msgid "Maybe later"
 msgstr ""
 
 #: js/build/product-feed.js:13

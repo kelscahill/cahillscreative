@@ -411,22 +411,6 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Enqueue builder field CSS.
-	 *
-	 * @since 1.7.0
-	 * @deprecated 1.7.6
-	 *
-	 * @param string $view Current view.
-	 *
-	 * @noinspection PhpMissingParamTypeInspection
-	 * @noinspection PhpUnusedParameterInspection
-	 */
-	public function builder_css( $view ): void {
-
-		_deprecated_function( __METHOD__, '1.7.6 of the WPForms plugin' );
-	}
-
-	/**
 	 * Enqueue frontend field js.
 	 *
 	 * @since 1.7.0

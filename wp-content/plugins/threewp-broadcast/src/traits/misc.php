@@ -507,6 +507,11 @@ trait misc
 			'all_networks' => false,
 			'blogs_to_hide' => 5,								// How many blogs to auto-hide
 			'blogs_hide_overview' => 5,							// Use a summary in the overview if more than this amount of children / siblings.
+			/**
+				* @brief		Show a count of selected blogs in the meta box after this many blogs exist.
+				* @since		2025-03-15 09:42:57
+			**/
+			'blogs_show_counter' => -1,
 			'blog_selector_position' => 'bottom',				// Where to place the blog selector line in the meta box.
 			'canonical_url' => true,							// Override the canonical URLs with the parent post's.
 			/**

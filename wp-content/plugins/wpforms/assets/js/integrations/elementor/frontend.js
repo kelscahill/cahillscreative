@@ -1,20 +1,17 @@
 /* global wpforms, wpformsElementorVars, wpformsModernFileUpload, wpformsRecaptchaLoad, grecaptcha, WPFormsRepeaterField, WPFormsStripePaymentElement */
 
-'use strict';
-
 /**
  * WPForms integration with Elementor on the frontend.
  *
  * @since 1.6.2 Moved from `wpforms-elementor.js`
  */
 var WPFormsElementorFrontend = window.WPFormsElementorFrontend || ( function( document, window, $ ) {
-
 	/**
 	 * Public functions and properties.
 	 *
 	 * @since 1.6.2
 	 *
-	 * @type {object}
+	 * @type {Object}
 	 */
 	var app = {
 
@@ -41,8 +38,7 @@ var WPFormsElementorFrontend = window.WPFormsElementorFrontend || ( function( do
 		 *
 		 * @since 1.6.2
 		 */
-		init: function() {
-
+		init() {
 			app.events();
 		},
 
@@ -53,7 +49,6 @@ var WPFormsElementorFrontend = window.WPFormsElementorFrontend || ( function( do
 		 */
 		events() {
 			window.addEventListener( 'elementor/popup/show', function( event ) {
-
 				const $modal = $( '#elementor-popup-modal-' + event.detail.id ),
 					$form = $modal.find( '.wpforms-form' );
 
@@ -64,6 +59,11 @@ var WPFormsElementorFrontend = window.WPFormsElementorFrontend || ( function( do
 				app.forceSetStripe = true;
 
 				app.initFields( $form );
+			} );
+
+			// Add Elementor popup support for text limit.
+			window.addEventListener( 'elementor/popup/show', function() {
+				window.WPFormsTextLimit?.initHint( '.elementor-popup-modal' );
 			} );
 
 			// Force load ChoicesJS for elementor popup.
@@ -110,10 +110,9 @@ var WPFormsElementorFrontend = window.WPFormsElementorFrontend || ( function( do
 		 *
 		 * @since 1.6.2
 		 *
-		 * @param {object} $form jQuery selector.
+		 * @param {Object} $form jQuery selector.
 		 */
-		initFields: function( $form ) {
-
+		initFields( $form ) { // eslint-disable-line complexity
 			// Init WPForms things.
 			wpforms.ready();
 
@@ -149,7 +148,6 @@ var WPFormsElementorFrontend = window.WPFormsElementorFrontend || ( function( do
 	};
 
 	return app;
-
 }( document, window, jQuery ) );
 
 // Initialize.

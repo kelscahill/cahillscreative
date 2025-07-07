@@ -27,3 +27,4 @@
 .gla-minimum-order-input-control .gla-minimum-order-input-control__label{display:flex;flex-direction:column;gap:8px;justify-content:space-between}.gla-minimum-order-input-control .gla-minimum-order-input-control__label_country{display:flex;gap:4px;justify-content:space-between}.gla-minimum-order-input-control .gla-minimum-order-input-control__label_country button{height:-moz-fit-content;height:fit-content;line-height:1.4em;padding:0}
 .gla-minimum-order-card .app-input-control{width:300px}
 @media(min-width:600px){._GQ4sGfGTeKA7JPcBsrS{max-width:360px}}
+.gla-experience-rating-banner .gla-experience-rating-banner__text{margin:0 0 16px}.gla-experience-rating-banner .gla-experience-rating-banner__actions{display:flex;gap:12px}.gla-experience-rating-banner__feedback-modal .app-modal__footer .components-button.is-primary{justify-content:center}

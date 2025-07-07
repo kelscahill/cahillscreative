@@ -235,64 +235,6 @@ class Page {
 	}
 
 	/**
-	 * Add per-page screen option to the Entries table.
-	 *
-	 * @since 1.8.6
-	 * @deprecated 1.8.6
-	 */
-	public function screen_options() {
-
-		_deprecated_function( __METHOD__, '1.8.6', 'WPForms\Pro\Admin\Entries\PageOptions::screen_options()' );
-
-		$screen = get_current_screen();
-
-		if ( $screen === null || $screen->id !== 'wpforms_page_wpforms-entries' ) {
-			return;
-		}
-
-		/**
-		 * Filter admin screen option arguments.
-		 *
-		 * @since 1.8.2
-		 *
-		 * @param array $args Option-dependent arguments.
-		 */
-		$args = (array) apply_filters( // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
-			'wpforms_entries_list_default_screen_option_args',
-			[
-				'label'   => esc_html__( 'Number of entries per page:', 'wpforms' ),
-				'option'  => 'wpforms_entries_per_page',
-				'default' => wpforms()->obj( 'entry' )->get_count_per_page(),
-			]
-		);
-
-		add_screen_option( 'per_page', $args );
-	}
-
-	/**
-	 * Entries table per-page screen option value.
-	 *
-	 * @since 1.8.6
-	 * @deprecated 1.8.6
-	 *
-	 * @param mixed  $status Status.
-	 * @param string $option Options.
-	 * @param mixed  $value  Value.
-	 *
-	 * @return mixed
-	 */
-	public function screen_options_set( $status, $option, $value ) {
-
-		_deprecated_function( __METHOD__, '1.8.6', 'WPForms\Pro\Admin\Entries\PageOptions::screen_options_set()' );
-
-		if ( $option === 'wpforms_entries_per_page' ) {
-			return $value;
-		}
-
-		return $status;
-	}
-
-	/**
 	 * Enqueue assets for the entries pages.
 	 *
 	 * @since 1.8.6
@@ -360,36 +302,6 @@ class Page {
 	}
 
 	/**
-	 * Watch for and run complete form exports.
-	 *
-	 * @since 1.8.6
-	 * @deprecated 1.5.5
-	 */
-	public function process_export() {
-
-		$form_id = $this->get_filtered_form_id();
-
-		// Check for run switch.
-		if ( empty( $_GET['export'] ) || ! $form_id || $_GET['export'] !== 'all' || empty( $_GET['_wpnonce'] ) ) {
-			return;
-		}
-
-		_deprecated_function( __METHOD__, '1.5.5 of the WPForms plugin', 'WPForms\Pro\Admin\Export\Export class' );
-
-		// Security check.
-		if ( ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpforms_entry_list_export' ) ) {
-			return;
-		}
-		require_once WPFORMS_PLUGIN_DIR . 'pro/includes/admin/entries/class-entries-export.php';
-
-		$export             = new \WPForms_Entries_Export(); // phpcs:ignore WPForms.PHP.BackSlash.RemoveBackslash
-		$export->entry_type = 'all';
-		$export->form_id    = $form_id;
-
-		$export->export();
-	}
-
-	/**
 	 * Watch for and run complete marking all entries as read.
 	 *
 	 * @since 1.8.6
@@ -415,43 +327,6 @@ class Page {
 			'message' => esc_html__( 'All entries marked as read.', 'wpforms' ),
 			'dismiss' => true,
 		];
-	}
-
-	/**
-	 * Watch for and update list column settings.
-	 *
-	 * @since 1.8.6
-	 * @deprecated 1.8.6
-	 */
-	public function process_columns() {
-
-		_deprecated_function( __METHOD__, '1.8.6 of the WPForms plugin', 'WPForms\Pro\Admin\Entries\Ajax\Columns class' );
-
-		// Check for run switch and data.
-		if ( empty( $_POST['action'] ) || empty( $_POST['form_id'] ) || $_POST['action'] !== 'list-columns' || empty( $_POST['_wpnonce'] ) ) {
-			return;
-		}
-
-		// Security check.
-		if ( ! wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'wpforms_entry_list_columns' ) ) {
-			return;
-		}
-
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$fields  = isset( $_POST['fields'] ) ? explode( ',', wp_unslash( $_POST['fields'] ) ) : [];
-		$post_id = absint( $_POST['form_id'] );
-
-		// Remove KSES filters before updating meta for forms and their fields which contain HTML.
-		// If we don't do this, forms for users who don't have 'unfiltered_html' capabilities can get corrupt due to conflicts with wp_kses().
-		kses_remove_filters();
-
-		// Update or delete.
-		Columns::sanitize_and_save_columns( $post_id, $fields );
-
-		// Re-initialize KSES filters for users who don't have 'unfiltered_html' capabilities.
-		if ( ! current_user_can( 'unfiltered_html' ) ) {
-			kses_init_filters();
-		}
 	}
 
 	/**
@@ -1450,68 +1325,6 @@ class Page {
 				$this->abort = true;
 
 				break;
-			}
-		}
-	}
-
-	/**
-	 * Display admin notices and errors.
-	 *
-	 * @since 1.8.6
-	 * @deprecated 1.6.7.1
-	 *
-	 * @param string $display Notice text.
-	 * @param bool   $wrap    Whether wrap it or not.
-	 */
-	public function display_alerts( $display = '', $wrap = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity, Generic.Metrics.NestingLevel
-
-		_deprecated_function( __METHOD__, '1.6.7.1 of the WPForms plugin' );
-
-		if ( empty( $this->alerts ) ) {
-			return;
-
-		} else {
-
-			if ( empty( $display ) ) {
-				$display = [ 'error', 'info', 'warning', 'success' ];
-			} else {
-				$display = (array) $display;
-			}
-
-			foreach ( $this->alerts as $alert ) {
-
-				$type = ! empty( $alert['type'] ) ? $alert['type'] : 'info';
-
-				if ( in_array( $type, $display, true ) ) {
-					$classes  = 'notice-' . $type;
-					$classes .= ! empty( $alert['dismiss'] ) ? ' is-dismissible' : '';
-
-					$output = sprintf(
-						'<div class="notice %s"><p>%s</p></div>',
-						wpforms_sanitize_classes( $classes ),
-						wp_kses(
-							$alert['message'],
-							[
-								'a' => [
-									'href' => [],
-								],
-							]
-						)
-					);
-
-					if ( $wrap ) {
-						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						echo '<div class="wrap">' . $output . '</div>';
-					} else {
-						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						echo $output;
-					}
-					if ( ! empty( $alert['abort'] ) ) {
-						$this->abort = true;
-
-						break;
-					}
-				}
 			}
 		}
 	}

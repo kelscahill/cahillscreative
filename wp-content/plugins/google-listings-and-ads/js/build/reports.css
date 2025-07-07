@@ -10,3 +10,4 @@
 .gla-sub-nav.subsubsub{float:none;margin:calc(var(--main-gap)*-1/3) 0 var(--main-gap) 0;text-align:left}
 .gla-rebranding-tour__heading{align-items:center;display:flex;gap:8px;fill:var(--wp-admin-theme-color)}.gla-rebranding-tour .components-card__footer{padding-top:0}.gla-rebranding-tour .components-card__footer>*{display:none}
 .app-spinner{display:flex;justify-content:center;padding:var(--main-gap)}
+.gla-experience-rating-banner .gla-experience-rating-banner__text{margin:0 0 16px}.gla-experience-rating-banner .gla-experience-rating-banner__actions{display:flex;gap:12px}.gla-experience-rating-banner__feedback-modal .app-modal__footer .components-button.is-primary{justify-content:center}

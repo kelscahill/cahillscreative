@@ -43,6 +43,13 @@ if ( ! class_exists( 'SIB_Page_Form' ) ) {
          */
 		public $defaultComplianceNote;
 
+        /**
+         * Forms list instance
+         *
+         * @var SIB_Forms_List
+         */
+        public $forms;
+
 		/**
 		 * Constructs new page object and adds entry to WordPress admin menu
 		 */

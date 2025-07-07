@@ -11,6 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+$import_btn_url = add_query_arg(
+	[
+		'wpforms_lite_connect_action' => 'import',
+		'_wpnonce'                    => wp_create_nonce( 'wpforms_lite_connect_action' ),
+	]
+);
+
 ?>
 <div id="wpforms-dash-widget-lite-connect" class="wpforms-dash-widget-chart-overlay">
 	<div class="wpforms-dash-widget-modal">
@@ -22,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php esc_html_e( 'Restore them now and get instant access to reports.', 'wpforms' ); ?>
 		</p>
 
-		<a href="<?php echo esc_url( add_query_arg( [ 'wpforms_lite_connect_action' => 'import' ] ) ); ?>" class="wpforms-btn">
+		<a href="<?php echo esc_url( $import_btn_url ); ?>" class="wpforms-btn">
 			<?php esc_html_e( 'Restore Entries Now', 'wpforms' ); ?>
 		</a>
 

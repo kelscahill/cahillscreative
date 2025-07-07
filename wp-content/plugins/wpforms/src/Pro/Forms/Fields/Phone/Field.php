@@ -148,7 +148,7 @@ class Field extends FieldLite {
 		if ( ! empty( $phone_formats['smart'] ) ) {
 			wp_enqueue_script(
 				'wpforms-smart-phone-field',
-				WPFORMS_PLUGIN_URL . 'assets/pro/lib/intl-tel-input/module.intl-tel-input.min.js',
+				WPFORMS_PLUGIN_URL . 'assets/pro/lib/intl-tel-input/intlTelInputWithUtils.min.js',
 				[],
 				self::INTL_VERSION,
 				$this->load_script_in_footer()

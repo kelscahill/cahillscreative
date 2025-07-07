@@ -1,6 +1,100 @@
 # Changelog
 All notable changes to this project will be documented in this file and formatted via [this recommendation](https://keepachangelog.com/).
 
+## [1.9.6.1] - 2025-06-17
+### Added
+- Smart Tags support in the Default Value setting for Name field subfields.
+
+### Fixed
+- WPForms updates did not work consistently with the WP Umbrella plugin.
+- The layout of the Order Summary table was broken on Windows operating systems.
+- The layout of the Stripe custom fields mapping table was broken in the form builder.
+
+## [1.9.6] - 2025-06-03
+### Added
+- Form Themes for Elementor.
+- Customer phone, Payment, and Customer metadata can now be configured on the Form Builder > Payments > Stripe screen.
+
+### Changed
+- Improved styles on Tools > Scheduled Actions page with reset search filter.
+- Improved Form Builder loading.
+- Updated intl-tel-input library to 25.3.1.
+- Required select fields have default placeholder text to prevent the submission of default values.
+- Improved message about missing PHP extensions.
+- Updated DOMPurify library to 3.2.6.
+
+### Fixed
+- Captcha verification was skipped for payment forms.
+- The Entry Date wasn't submitted in the {entry_date} smart tag when you sent it to a Google Sheets spreadsheet.
+- Email notification was malformed when a form had a Total field with the "Order Summary" enabled.
+- The marketing provider's name was not specified in the warning popup when a field with conditional logic was removed.
+- An error occurred when installing a plugin through the Gutenberg block.
+- Addon fields were not rendered on the front-end on multisite if addons were not activated site-wide.
+- Missing popup about unsaved changes when closing the form from the Marketing tab.
+- Compatibility with Elementor editor.
+- The "Plugin is in the Latest Version" error occurred when updating several addons using bulk update on the Plugins page.
+- There was no popup about unsaved changes displayed after typing into the MCE editor.
+- Layout issues of the Square credit card field.
+- JavaScript error occurred when a form was added in the Elementor popup.
+- Fields were added to the form in the wrong order under some conditions.
+
+## [1.9.5.2] - 2025-05-05
+### Fixed
+- Issue sending form notifications using email fields that had ID=0.
+
+## [1.9.5.1] - 2025-04-29
+### Fixed
+- Multi-step form with required address field was not possible to proceed for countries with no state.
+- Incorrect alignment of Layout fields in email notification templates.
+- AJAX request for Stripe payments was sent twice, which might lead to missed entries and payment records.
+- `{field_id="#"}` smart tag didn't work for CC field in email notifications.
+
+## [1.9.5] - 2025-04-22
+### IMPORTANT
+- Support for PHP 7.1 has been discontinued. If you are running PHP 7.1, you MUST upgrade PHP before installing WPForms 1.9.5. Failure to do that will disable WPForms core functionality.
+
+### Added
+- Users can connect their Square accounts and receive payments via their payment forms.
+- New design for Smart Tags.
+- The ability to activate and deactivate email notifications through a status button in the form builder.
+
+### Changed
+- Enhancing the prevention of duplicate form submissions.
+- Improved the error messaging when creating new provider connections in the form builder.
+- Improved the "From Email" setting validation in the Notifications screen.
+- Improved compatibility with OptinMonster popups.
+- The prompt input field now resizes when a user provides long text.
+- AI Chat Modal can be docked to the right of the builder.
+- Changed the order of the admin bar menu items.
+- Improved compatibility with PHP 8.1.
+- Update-related details for WPForms plugins and addons had views inconsistent with those of other WordPress plugins.
+- Improved UX for Dropdown and Dropdown Items fields.
+
+### Fixed
+- Hidden by conditional logic items in the Order Summary table were shown in the Editors.
+- The state subfield in the address field is now hidden if a user is filling in the address in a country that does not have states.
+- Form Themes templates were disabled when the form is reselected on the page.
+- The description of the Payment Single Item field was not reflected in the form builder.
+- Stripe settings were active when the credit card field was removed from the form.
+- The form created with the AI Form Generator had the "Store spam entries in the database" setting disabled.
+- Form Builder saving was failing with an Uncaught SecurityError in the console when the preview tab was redirected to a PPS/PPC page.
+- The notice for the minimum and maximum valid values of the Number Slider field is now correct.
+- WPForms Challenge RTL issues.
+- The Repeater and Layout fields grids became broken on the single entry page when some columns were empty.
+- Incorrect wpforms_htaccess_file transient name generation.
+- Console error when users tried to embed a form into an existing page on the last step of the WPForms Challenge.
+- The submit button stays disabled after Stripe payment fails in some cases.
+- The Dropdown and Dropdown Items fields displayed placeholders instead of default values in the Form Builder.
+- The DateTime field smart tags' values had an incorrect format.
+- Content and HTML fields inside the Repeater field did not appear when enabling the HTML/Content toggle.
+- Hidden Layout and Repeater labels were visible on the Single Payment page.
+- Wrong paddings in the Form Builder sidebar on Windows in the RTL mode.
+- AI-generated addon fields were available on the Single Entry page when addons were not activated.
+- Required number fields hidden by Conditional Logic couldn't be empty on the Edit Entry screen.
+- Inactive addons fields generated by AI Forms were displayed on the Export and Form Entries pages.
+- Improved the From Email notification setting. The Email field is detected now by a smart tag.
+- Improved notification template for the {entry_geolocation} smart tag.
+
 ## [1.9.4.2] - 2025-03-12
 ### Fixed
 - The Address field had the Country label in the Form Builder for the US scheme.
@@ -61,7 +155,7 @@ All notable changes to this project will be documented in this file and formatte
 ### Changed
 - The Hide Labels option is ignored in notifications.
 
-## 1.9.3 - 2025-01-14
+## [1.9.3] - 2025-01-14
 ### IMPORTANT
 - Support for PHP 7.0 has been discontinued. If you are running PHP 7.0, you MUST upgrade PHP before installing WPForms 1.9.3. Failure to do that will disable WPForms core functionality.
 

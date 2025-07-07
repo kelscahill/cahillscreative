@@ -21,7 +21,7 @@ class PluginList {
 	 * License Statuses.
 	 *
 	 * @since 1.8.6
-	 * @since 1.9.4.2 Added new `limit_reached` and `flagged` statuses.
+	 * @since 1.9.5 Added new `limit_reached` and `flagged` statuses.
 	 */
 	const LICENSE_STATUS_EMPTY         = 'empty';
 	const LICENSE_STATUS_VALID         = 'valid';
@@ -106,6 +106,8 @@ class PluginList {
 		$this->plugin_slug      = defined( 'WPFORMS_PLUGIN_DIR' ) ? plugin_basename( WPFORMS_PLUGIN_DIR ) : 'wpforms';
 		$this->plugin_path      = $this->plugin_slug . '/wpforms.php';
 		$this->addons_cache_obj = wpforms()->obj( 'addons_cache' );
+
+		( new PluginListDisabler() )->init( $this->is_valid_license() );
 
 		$this->hooks();
 	}
@@ -287,7 +289,7 @@ class PluginList {
 					'banners'          => [],
 					'banners_rtl'      => [],
 					'requires'         => $addon['required_versions']['wp'] ?? '5.5',
-					'requires_php'     => $addon['required_versions']['php'] ?? '7.1',
+					'requires_php'     => $addon['required_versions']['php'] ?? '7.2',
 					'requires_wpforms' => $addon['required_versions']['wpforms'] ?? WPFORMS_VERSION,
 					'requires_plugin'  => 'wpforms/wpforms.php',
 				];
@@ -680,12 +682,8 @@ class PluginList {
 	 */
 	private function get_new_version_available_notice(): string {
 
-		$details_url  = wpforms_utm_link(
-			'https://wpforms.com/docs/how-to-view-recent-changes-to-the-wpforms-plugin-changelog/',
-			'WPForms',
-			'view version details'
-		);
-		$details_url .= '#changelog';
+		$details_url =
+			self_admin_url( 'plugin-install.php?tab=plugin-information&plugin=wpforms&section=changelog&TB_iframe=true&width=772&height=771' );
 
 		$upgrade_url = wp_nonce_url(
 			self_admin_url( 'update.php?action=upgrade-plugin&plugin=' . $this->plugin_path ),
@@ -696,7 +694,7 @@ class PluginList {
 		// Message without "update now" link.
 		$new_version_message = sprintf( /* translators: %1$s - WPForms Pro Changelog link; %2$s - WPForms Pro latest version. */
 			__(
-				'There is a new version of WPForms available. <a target="_blank" href="%1$s" rel="noopener noreferrer">View version %2$s details</a>',
+				'There is a new version of WPForms available. <a class="thickbox open-plugin-details-modal" href="%1$s" rel="noopener noreferrer">View version %2$s details</a>',
 				'wpforms'
 			),
 			esc_url( $details_url ),

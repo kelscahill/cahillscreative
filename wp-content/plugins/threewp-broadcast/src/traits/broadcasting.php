@@ -236,8 +236,7 @@ trait broadcasting
 		if ( $bcd->delete_attachments === null )
 		{
 			$keep_attachments = $this->get_site_option( 'keep_attachments' );
-			if ( $keep_attachments )
-				$bcd->delete_attachments = false;
+			$bcd->delete_attachments = ! $keep_attachments;
 			$this->debug( 'Set delete_attachments to %d', $bcd->delete_attachments );
 		}
 		else
@@ -430,6 +429,9 @@ trait broadcasting
 				// WP likes to unslash...
 				$temp_post_data->post_content = wp_slash( $temp_post_data->post_content );
 
+				// wp_insert_post will eat an object, but other plugins hooked into the action are more picky.
+				$temp_post_data = (array) $temp_post_data;
+
 				$this->debug( 'Running wp_insert_post with %s', $temp_post_data );
 				$result = wp_insert_post( $temp_post_data, true );
 
@@ -533,6 +535,12 @@ trait broadcasting
 				$this->debug( 'Taxonomies: Starting sync of %s', implode( ', ', array_keys( $bcd->parent_post_taxonomies ) ) );
 				foreach( $bcd->parent_post_taxonomies as $parent_taxonomy => $terms )
 				{
+					if ( strlen( $parent_taxonomy ) < 1 )
+					{
+						$this->debug( 'WARNING: Skipping empty taxonomy.' );
+						continue;
+					}
+
 					$syncing_parent_blog_taxonomies = false;
 					$this->debug( 'Taxonomies: Handling taxonomy %s', $parent_taxonomy );
 
@@ -645,6 +653,21 @@ trait broadcasting
 
 				$child_fields = $bcd->custom_fields()->child_fields();
 				$child_fields->load();
+
+				if ( $bcd->delete_attachments )
+				{
+					if ( $child_fields->has( '_thumbnail_id' ) )
+					{
+						$child_thumbnail_id = $child_fields->get( '_thumbnail_id' );
+						$child_thumbnail_id = reset( $child_thumbnail_id );
+						if ( $child_thumbnail_id > 0 )
+						{
+							$this->debug( 'Deleting existing featured image %s', $child_thumbnail_id );
+							wp_delete_attachment( $child_thumbnail_id );
+
+						}
+					}
+				}
 
 				$this->debug( 'Custom fields of the child post: %s', $child_fields->to_array() );
 

@@ -1,9 +1,6 @@
-/* global wpf, wpforms_builder, wpforms_builder_stripe */
+/* global wpf, wpforms_builder, wpforms_builder_stripe, WPFormsBuilder */
 
-'use strict';
-
-var WPFormsBuilderPayments = window.WPFormsBuilderPayments || ( function( document, window, $ ) {
-
+const WPFormsBuilderPayments = window.WPFormsBuilderPayments || ( function( document, window, $ ) {
 	/**
 	 * Payments panel.
 	 *
@@ -11,24 +8,23 @@ var WPFormsBuilderPayments = window.WPFormsBuilderPayments || ( function( docume
 	 *
 	 * @type {jQuery}
 	 */
-	var $paymentsPanel = $( '#wpforms-panel-payments' );
+	const $paymentsPanel = $( '#wpforms-panel-payments' );
 
 	/**
 	 * Public functions and properties.
 	 *
 	 * @since 1.7.5
 	 *
-	 * @type {object}
+	 * @type {Object}
 	 */
-	var app = {
+	const app = {
 
 		/**
 		 * Init payment panel scripts.
 		 *
 		 * @since 1.7.5
 		 */
-		init: function() {
-
+		init() {
 			$( app.ready );
 		},
 
@@ -37,10 +33,10 @@ var WPFormsBuilderPayments = window.WPFormsBuilderPayments || ( function( docume
 		 *
 		 * @since 1.7.5
 		 */
-		ready: function() {
-
+		ready() {
 			app.defaultStates();
 			app.bindEvents();
+			app.bindHooks();
 		},
 
 		/**
@@ -59,8 +55,7 @@ var WPFormsBuilderPayments = window.WPFormsBuilderPayments || ( function( docume
 		 *
 		 * @since 1.7.5
 		 */
-		bindEvents: function() {
-
+		bindEvents() {
 			$paymentsPanel
 				.on( 'click', '.wpforms-panel-content-section-payment-toggle input', app.toggleContent )
 				.on( 'click', '.wpforms-panel-content-section-payment-plan-head-buttons-toggle', app.togglePlan )
@@ -69,8 +64,8 @@ var WPFormsBuilderPayments = window.WPFormsBuilderPayments || ( function( docume
 				.on( 'focusout', '.wpforms-panel-content-section-payment-plan-name input', app.checkPlanName )
 				.on( 'click', '.wpforms-panel-content-section-payment-plan-head-buttons-delete', app.deletePlan )
 				.on( 'click', '.wpforms-panel-content-section-payment-toggle-recurring input', app.addEmptyPlan )
+				.on( 'change', WPFormsBuilder.getPaymentsTogglesSelector(), app.onPaymentTogglesChange )
 				.on( 'click', '.wpforms-panel-content-section-payment-toggle-one-time input', function() {
-
 					app.noteOneTimePaymentsDisabled( $( this ) );
 				} );
 
@@ -80,6 +75,19 @@ var WPFormsBuilderPayments = window.WPFormsBuilderPayments || ( function( docume
 
 					app.disableOneTimePayments( $el );
 				} );
+		},
+
+		/**
+		 * Binds hooks to add the necessary filters for the WPForms Builder.
+		 *
+		 * @since 1.9.6
+		 */
+		bindHooks() {
+			wp.hooks.addFilter(
+				'wpforms.Builder.entryRequirement',
+				'wpforms/payments',
+				app.entryRequirementHandler
+			);
 		},
 
 		/**
@@ -169,7 +177,7 @@ var WPFormsBuilderPayments = window.WPFormsBuilderPayments || ( function( docume
 			}
 
 			// Needs to replace index manually because {{ data.index }} was sanitized in ID attribute.
-			$recurringWrapper.append( template( data ).replaceAll( '-dataindex-', `-${index}-` ) );
+			$recurringWrapper.append( template( data ).replaceAll( '-dataindex-', `-${ index }-` ).replaceAll( '_dataindex-', `_${ index }-` ).replaceAll( '_dataindex]', `_${ index }]` ) );
 
 			var $newPlan = $recurringWrapper.find( '.wpforms-panel-content-section-payment-plan' ).last(),
 				$newPlanNameInput = $newPlan.find( '.wpforms-panel-content-section-payment-plan-name input' );
@@ -499,11 +507,122 @@ var WPFormsBuilderPayments = window.WPFormsBuilderPayments || ( function( docume
 
 			return $input.closest( '.wpforms-panel-content-section' );
 		},
+
+		/**
+		 * Handles changes to payment toggle switches in the form builder.
+		 *
+		 * Updates notification visibility based on the state of the toggles
+		 * and validates user action when entries disabled.
+		 *
+		 * @since 1.9.6
+		 */
+		onPaymentTogglesChange() {
+			const $this = $( this ),
+				gateway = $this.attr( 'id' ).replace( /wpforms-panel-field-|-enable|_one_time|_recurring/gi, '' ),
+				$notificationWrap = $( `.wpforms-panel-content-section-notifications [id*="-${ gateway }-wrap"]` ),
+				gatewayEnabled = $this.prop( 'checked' ) || $( `#wpforms-panel-field-${ gateway }-enable_one_time` ).prop( 'checked' ) || $( `#wpforms-panel-field-${ gateway }-enable_recurring` ).prop( 'checked' );
+
+			if ( ! gatewayEnabled ) {
+				$notificationWrap.addClass( 'wpforms-hidden' );
+				$notificationWrap.find( `input[id*="-${ gateway }"]` ).prop( 'checked', false );
+
+				return;
+			}
+
+			const disabled = $( '#wpforms-panel-field-settings-disable_entries' ).prop( 'checked' );
+
+			if ( ! disabled ) {
+				$notificationWrap.removeClass( 'wpforms-hidden' );
+
+				return;
+			}
+
+			$.confirm( {
+				title: wpforms_builder.heads_up,
+				content: wpforms_builder.payments_entries_off,
+				icon: 'fa fa-exclamation-circle',
+				type: 'orange',
+				buttons: {
+					confirm: {
+						text: wpforms_builder.ok,
+						btnClass: 'btn-confirm',
+						keys: [ 'enter' ],
+					},
+				},
+			} );
+
+			$this.prop( 'checked', false );
+		},
+
+		/**
+		 * Handles the processing of entry requirements by determining if certain conditions are met,
+		 * and updating the requirement state accordingly.
+		 *
+		 * @since 1.9.6
+		 *
+		 * @param {Object} entryRequirement The entry requirement object to be processed.
+		 *
+		 * @return {Object} The updated entry requirement object.
+		 */
+		entryRequirementHandler( entryRequirement ) {
+			const isPaymentsEnabled = WPFormsBuilder.isPaymentsEnabled();
+			entryRequirement.required = entryRequirement?.required || isPaymentsEnabled;
+
+			if ( ! isPaymentsEnabled ) {
+				return entryRequirement;
+			}
+
+			const $inputs = app.getCheckedPaymentToggles();
+
+			const mapDependencyCallback = function( $input ) {
+				const $panel = $input.closest( '.wpforms-panel-content-section' ),
+					providerId = $panel.data( 'provider' ),
+					providerName = $panel.data( 'provider-name' );
+
+				let href = wpf.updateQueryString( 'view', 'payments' );
+				href = wpf.updateQueryString( 'section', providerId, href );
+
+				return {
+					providerId,
+					dependency: {
+						href,
+						text: providerName,
+					},
+				};
+			};
+
+			$inputs.forEach( function( $input ) {
+				const { providerId, dependency } = mapDependencyCallback( $input );
+				entryRequirement.dependencies[ providerId ] = dependency;
+			} );
+
+			return entryRequirement;
+		},
+
+		/**
+		 * Retrieves a list of payment toggle elements that are currently checked.
+		 *
+		 * @since 1.9.6
+		 *
+		 * @return {Array} An array of jQuery wrapped elements representing the checked payment toggles.
+		 */
+		getCheckedPaymentToggles() {
+			const paymentToggles = [];
+
+			$( WPFormsBuilder.getPaymentsTogglesSelector() ).each( function() {
+				const $input = $( this );
+
+				if ( $input.prop( 'checked' ) ) {
+					paymentToggles.push( $input );
+				}
+			} );
+
+			return paymentToggles;
+		},
 	};
 
 	// Provide access to public functions/properties.
 	return app;
-
 }( document, window, jQuery ) );
 
 // Initialize.

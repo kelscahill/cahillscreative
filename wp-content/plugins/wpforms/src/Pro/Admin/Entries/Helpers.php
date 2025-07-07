@@ -16,7 +16,7 @@ class Helpers {
 	 *
 	 * @return array
 	 */
-	public static function get_search_fields_advanced_options() {
+	public static function get_search_fields_advanced_options(): array {
 
 		$advanced_options = [
 			'entry_id'    => esc_html__( 'Entry ID', 'wpforms' ),
@@ -39,6 +39,6 @@ class Helpers {
 		 *     @type string $user_agent  Option label 'User Agent'.
 		 * }
 		 */
-		return (array) apply_filters( 'wpforms_pro_admin_entries_get_search_fields_advanced_options', $advanced_options );
+		return (array) apply_filters( 'wpforms_pro_admin_entries_get_search_fields_advanced_options', $advanced_options ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 	}
 }

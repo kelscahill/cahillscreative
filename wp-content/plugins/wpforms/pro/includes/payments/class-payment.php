@@ -62,15 +62,6 @@ abstract class WPForms_Payment {
 	public $form_data;
 
 	/**
-	 * Flag for modified strings.
-	 *
-	 * @since 1.7.5
-	 *
-	 * @var bool
-	 */
-	private static $i18n_modified = false;
-
-	/**
 	 * Flag for recommended payments.
 	 *
 	 * @since 1.7.7.2
@@ -102,10 +93,6 @@ abstract class WPForms_Payment {
 
 		// Register builder HTML template(s).
 		add_action( 'wpforms_builder_print_footer_scripts', [ $this, 'builder_templates' ] );
-
-		// Enqueue assets and add localized strings.
-		add_action( 'wpforms_builder_enqueues', [ $this, 'enqueues' ] );
-		add_filter( 'wpforms_builder_strings', [ $this, 'add_localized_strings' ], 10, 2 );
 	}
 
 	/**
@@ -136,26 +123,20 @@ abstract class WPForms_Payment {
 	 * Enqueue builder's assets.
 	 *
 	 * @since 1.7.5
+	 * @deprecated 1.9.6
 	 *
 	 * @param string $view Current view.
 	 */
 	public function enqueues( $view ) {
 
-		$min = wpforms_get_min_suffix();
-
-		wp_enqueue_script(
-			'wpforms-builder-payments',
-			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/builder/payments{$min}.js",
-			[ 'wpforms-builder-conditionals' ],
-			WPFORMS_VERSION,
-			true
-		);
+		wpforms()->obj( 'builder_payments' )->enqueues( $view );
 	}
 
 	/**
 	 * Add localized strings.
 	 *
 	 * @since 1.7.5
+	 * @deprecated 1.9.6
 	 *
 	 * @param array  $strings List of builder strings.
 	 * @param object $form    CPT of the form.
@@ -164,44 +145,7 @@ abstract class WPForms_Payment {
 	 */
 	public function add_localized_strings( $strings, $form ) {
 
-		if ( self::$i18n_modified ) {
-			return $strings;
-		}
-
-		$disabled_message = sprintf(
-			wp_kses( /* translators: %s - payment provider. */
-				__( "<p>One of %s's recurring payment plans doesn't have conditional logic, which means that One-Time Payments will never work and were disabled.</p>", 'wpforms' ), // phpcs:ignore WordPress.WP.I18n.NoHtmlWrappedStrings
-				[
-					'p' => [],
-				]
-			),
-			'{provider}'
-		);
-
-		$disabled_message .= sprintf(
-			wp_kses( /* translators: %s - payment provider. */
-				__( '<p>You should check your settings in <strong>Payments » %s</strong>.</p>', 'wpforms' ), // phpcs:ignore WordPress.WP.I18n.NoHtmlWrappedStrings
-				[
-					'p'      => [],
-					'strong' => [],
-				]
-			),
-			'{provider}'
-		);
-
-		self::$i18n_modified = true;
-
-		return array_merge(
-			$strings,
-			[
-				'payment_one_time_payments_disabled' => $disabled_message,
-				'payment_plan_prompt'                => esc_html__( 'Enter a plan name', 'wpforms' ),
-				'payment_plan_prompt_placeholder'    => esc_html__( 'Eg: Monthly Subscription', 'wpforms' ),
-				'payment_plan_placeholder'           => esc_html__( 'Plan Name #{id}', 'wpforms' ),
-				'payment_plan_confirm'               => esc_html__( 'Are you sure you want to delete this recurring plan?', 'wpforms' ),
-				'payment_error_name'                 => esc_html__( 'You must provide a plan name.', 'wpforms' ),
-			]
-		);
+		return wpforms()->obj( 'builder_payments' )->add_localized_strings( $strings, $form );
 	}
 
 	/********************************************************
@@ -264,7 +208,7 @@ abstract class WPForms_Payment {
 
 		?>
 		<div class="wpforms-panel-content-section wpforms-panel-content-section-<?php echo esc_attr( $this->slug ); ?>"
-			id="<?php echo esc_attr( $this->slug ); ?>-provider" data-provider="<?php echo esc_attr( $this->slug ); ?>">
+			id="<?php echo esc_attr( $this->slug ); ?>-provider" data-provider="<?php echo esc_attr( $this->slug ); ?>" data-provider-name="<?php echo esc_attr( $this->name ); ?>">
 
 			<div class="wpforms-panel-content-section-title">
 

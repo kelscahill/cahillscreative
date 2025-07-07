@@ -1,94 +1,119 @@
-=== Newsletter, SMTP, Email marketing and Subscribe forms by Brevo (formely Sendinblue) ===
+=== Brevo - Email, SMS, Web Push, Chat, and more. ===
  Contributors: neeraj_slit
-Tags: smtp, email, form, newsletter, subscribe
+Tags: email marketing, newsletter, sendinblue, brevo, forms, smtp, marketing automation, web push, sms, whatsapp
 Requires at least: 4.4
-Tested up to: 6.7.2
+Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.1.96
+Stable tag: 3.2.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Manage your contact lists, subscription forms and all email and marketing-related topics from your wp panel, within one single plugin
+Turn your WordPress site into a marketing powerhouse. Grow your audience, boost engagement, and drive more sales with Brevo. 
 
 == Description ==
 
-<a href="https://www.brevo.com/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page" target="_blank" rel="noopener">Brevo</a>’s official plugin for WordPress is a powerful all-in-one email marketing plugin. At a glance:
+https://www.youtube.com/watch?v=0m_QTzn4xs8
+
+= The most advanced AI-enabled platform to manage your customer relationships via Email, SMS, WhatsApp, Chat, and more. = 
+[Brevo AI Agents](https://www.brevo.com/features/ai/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page) to supercharge your growth. We're building AI that works with you and for you.
+
+= 🚀 Why Choose Brevo? = 
+
+[Brevo](https://www.brevo.com/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page) at a glance:
 <ul>
-<li><b>Subscription forms</b> - Create custom subscription forms and easily integrate them into your posts, pages or sidebars</li>
-<li><b>Contact lists</b> - Manage your contact lists and take advantage of advanced segmentation to improve your campaign performance</li>
-<li><b>Marketing campaigns</b> - Easily create and send beautiful newsletters using our mobile-friendly, drag and drop builder to create custom emails or select from our template library</li>
-<li><b>Transactional emails</b> - The wp_mail() function automatically uses Brevo’s SMTP for enhanced deliverability and tracking</li>
-<li><b>Statistics</b> - Real-time report dashboard gives you advanced insights into deliverability and performance: opens, clicks, bounce reports, etc.</li>
-<li><b>Marketing automation</b> - Enable Automation on WordPress to auto-install the script on your website and the identify tag on the Brevo forms and Wordpress Login </li>
+<li><b>Omnichannel Marketing Made Simple</b> - Manage email, SMS, WhatsApp and push notifications alongside forms, automations, and analytics — all in one platform.</li>
+<li><b>Ecommerce-Ready</b> - Deep <a href="https://wordpress.org/plugins/woocommerce-sendinblue-newsletter-subscription/" target="_blank" rel="noopener">Brevo for WooCommerce</a>  integration for abandoned cart recovery, product recommendations, and revenue tracking.</li>
+<li><b>Seamless Integrations</b> - Works with all major form builders (Elementor, WPForms, OptinMonster, Contact Form 7, Gravity Forms, Ninja Forms, etc.), WooCommerce, and 40+ other platforms.</li>
+<li><b>Free Forever Plan</b> - Send up to 9,000 emails/month and manage unlimited contacts at no cost.</li>
+<li><b>World-Class Deliverability</b> - Brevo’s SMTP ensures your emails land in inboxes, not spam folders, with real-time tracking and analytics.</li>
+<li><b>GDPR Compliant</b> - Built-in double opt-in, consent management, and data protection features.</li>
 </ul>
 
-= Subscription Forms =
-<ul>
-<li>Form designer with WYSIWYG and direct HTML / CSS editing (if desired)</li>
-<li>Integration as widget or shortcode [sibwp_form]</li>
-<li>Send a confirmation email - you choose the template and the sender</li>
-<li>Use a double opt-in confirmation - you choose the template and the sender</li>
-<li>URL redirection</li>
-<li>Confirmation / error message customization</li>
-</ul>
+= ✨ Key Features =
 
-= Contact Lists =
-<ul>
-<li>Folder and lists management</li>
-<li>CSV and TXT file import</li>
-<li>Unlimited custom fields</li>
-<li>Advanced segmentation. Example: Search for contacts who are less than 45 years who clicked links in my last 3 campaigns.</li>
-</ul>
+= Customizable Forms & Popups =
 
-= Marketing Campaigns =
-<ul>
-<li>Responsive, drag and drop email design tools</li>
-<li>Library of mobile-friendly, creative email design templates</li>
-<li>Subject and content personalization. Example: Hello {NAME},</li>
-<li>Inbox and design rendering tests for multiple devices and email clients</li>
-<li>Schedule campaigns in advance</li>
-</ul>
+* [Signup forms](https://www.brevo.com/features/signup-forms/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page) Grow your email list
+and drive results.
+* GDPR friendly. Drag-and-drop form builder with direct HTML/CSS editing.
+* Add forms anywhere on your site: posts, pages, widgets, or via shortcode.
+* Advanced opt-in options: double opt-in for GDPR compliance and higher-quality leads.
+* Gamified popups (spin-to-win, exit-intent) to boost signups.
+* Seamless integration with all major WordPress form plugins.
 
-= Transactional Emails & Statistics =
-<ul>
-<li>Automatic replacement of default SMTP when you use wp_mail function</li>
-<li>Create transactional email templates that are easy to reuse via the API</li>
-<li>Real-time and exhaustive statistics: delivered, opened, clicked, etc.</li>
-</ul>
+= Advanced List Management & Segmentation =
 
-= Marketing Automation =
-<ul>
-<li>Auto-installation of the automation script on your website</li>
-<li>Auto-deployment of the identify tag for Brevo’s forms and Wordpress plugin</li>
-<li>Access to the Brevo online dashboard for workflow creation and management</li>
-</ul>
+* Unlimited contact lists and custom fields.
+* Powerful segmentation: target by behavior, demographics, purchase history, engagement, and more.
+* Personalize campaigns using dynamic content tailored to each recipient.
+* Automatic sync with WooCommerce and other plugins.
+* Effortless migration from Mailchimp, Omnisend, Klaviyo, and more.
 
-= Plugin Support =
+= Omnichannel Campaigns =
+
+* [Email](https://www.brevo.com/features/email-marketing/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page) - Create beautiful emails with a drag-and-drop editor. Use dynamic content, A/B testing, scheduling, and pre-built templates optimized for mobile.
+* [SMS & WhatsApp](https://www.brevo.com/features/sms-marketing/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page) - Send targeted SMS and/or WhatsApp campaigns, order updates, and promotions. Collect phone numbers with customizable forms.
+* [Push Notifications](https://www.brevo.com/features/push/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page) - Re-engage visitors instantly with personalized web/app push notifications.
+* Ads Sync - Sync audiences with Facebook Custom Audiences and Google Ads for retargeting campaigns.
+
+= Powerful Marketing Automation =
+
+* Visual workflow builder to automate welcome series, abandoned cart recovery, post-purchase follow-ups, win-back campaigns, and more.
+* Multi-channel workflows: combine email, SMS, and push notifications in a single automation.
+* Trigger automations based on user actions like purchases or inactivity.
+
+= Transactional Email & SMTP =
+
+* Use Brevo’s SMTP service for all transactional emails (order confirmations, password resets) to ensure reliable delivery.
+* Real-time tracking for delivered emails, opens, clicks, bounces—and more.
+
+= Ecommerce Integration =
+
+* Sync customer data from WooCommerce to create targeted campaigns based on purchase behavior.
+* Automate abandoned cart recovery emails/SMS/push notifications.
+* Generate product recommendations and unique coupon codes directly within campaigns.
+
+= Actionable Analytics =
+
+* Sync customer data from WooCommerce to create targeted campaigns based on purchase behavior.
+* Automate abandoned cart recovery emails/SMS/push notifications.
+* Generate product recommendations and unique coupon codes directly within campaigns.
+
+= Developer-Friendly Tools =
+
+* Sync customer data from WooCommerce to create targeted campaigns based on purchase behavior.
+* Automate abandoned cart recovery emails/SMS/push notifications.
+* Generate product recommendations and unique coupon codes directly within campaigns.
+
+
+= 🛠️ Easy Setup & Migration =
+
+1. Install using the WordPress built-in Plugin installer, or Extract the zip file and drop the contents in the `wp-content/plugins/` directory of your WordPress installation.
+2. Activate the plugin through the 'Plugins' menu in WordPress. Connect your free Brevo account using your <a href="https://app.brevo.com/settings/keys/api?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page" target="_blank" rel="noopener">Brevo API key</a>.
+3. Start creating forms, campaigns, automations—and more—without any coding required.
+
 To get support, please send an email to <a href="mailto:contact@brevo.com">contact@brevo.com</a>, we will be happy to help you!
 
-The plugin is available in English and French.
+= 🛡️ GDPR & Security =
+Brevo is fully GDPR-compliant with built-in features like double opt-in forms and consent management tools to protect user data. Regular updates ensure compatibility with the latest WordPress versions while maintaining top-notch security standards.
 
-== Installation ==
+= 📣 See What Our Users Have to Say =
 
-1.	In your WordPress admin panel, go to Plugins > New Plugin, search for "Brevo for WP" and click "Install now". Alternatively, download the plugin and upload the contents of mailin.zip to your plugins directory, which may be  /wp-content/plugins/.
-2.	Activate the Brevo plugin through the 'Plugins' menu in WordPress.
-3.	The "Brevo" tab must appear in your WordPress side navigation panel, then set your <a href="https://app.brevo.com/settings/keys/api?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page" target="_blank" rel="noopener">Brevo API key</a> in the plugin homepage.
-
-To get a Brevo API key, you have to <a href="https://onboarding.brevo.com/account/register/?utm_source=wordpress_plugin&utm_medium=plugin&utm_campaign=addons_page" target="_blank" rel="noopener">create an account</a>. It's free and takes less than 2 minutes!
+https://www.youtube.com/watch?v=hlRnjv9fPK0
 
 == Screenshots ==
-1. First, your are invited to create an account on Brevo then enter your API keys
+1. First, your are invited to create an account on Brevo then enter your API key
 2. The Homepage gives you an overall view over your campaigns and allows you to activate Brevo SMTP for all transactional emails and Marketing Automation to better target your customers
-3. The Forms page gives you access to your forms list
-4. When you click on a specific form, you can configure your sign up process and customize it
-5. The Statistics page gives you a global view over your performance: delivered, opened, clicked, etc.
+4. The Web Push gives you access to web and mobile push platform within WordPress admin
+5. The SMS page gives you access to SMS dashboard to create and monitor campaigns
+
 
 == Frequently Asked Questions ==
 
 = What is Brevo? =
-Brevo is a powerful all-in-one marketing platform. Over 165 000 companies around the world trust Brevo to deliver their emails and SMS messages.
-Brevo combines competitive pricing and excellent deliverability & powerful features such as Email, SMS, Facebook, Chat, CRM, and marketing automation.
-Brevo is available and supported in 6 languages: English, French, Spanish, German, Italian, and Portuguese.
+Brevo is a powerful all-in-one marketing platform. Over 500 000 companies around the world trust Brevo to deliver their emails, SMS and web push messages.
+Brevo combines competitive pricing and excellent deliverability & powerful features such as Email, SMS, Web Push, WhatsApp, Chat, CRM, and marketing automation.
+Available and supported in 6 languages: English, French, Spanish, German, Italian, and Portuguese.
 
 = Why use Brevo as an SMTP relay for my website? =
 By using Brevo’s SMTP, you will avoid the risk of having your legitimate emails ending up in the spam folder and you will have statistics on emails sent: deliverability, opens, clicks, etc. Brevo’s proprietary infrastructure optimizes your deliverability, enabling you to focus on your content.
@@ -97,22 +122,50 @@ By using Brevo’s SMTP, you will avoid the risk of having your legitimate email
 The Brevo for WordPress plugin uses Brevo’s API to synchronize contacts, send emails and get statistics. Creating an account on Brevo is free and takes less than 2 minutes. Once logged into your account, you can get the API key, and you can send up to 300 emails / day on the free (forever) plan.
 
 = Do I have to pay to use the plugin and send emails? =
-No, the plugin is totally free and Brevo offers a free forever plan with 9,000 emails per month. Additionally, Brevo comes with unlimited contacts (including on the free plan), so there is no hidden cost.
-If you need to send more than 300 emails / day, check out our pricing. Paid plans start at $25 / month to send up to 10 000 emails / month with no daily sending limit.
+No, the plugin is totally free and Brevo offers a free forever plan with 9,000 emails per month (limited to 300 emails per day)
+If you need to send more than 300 emails / day, check out our pricing. Paid plans start at $9/ month to send up to 5 000 emails / month with no daily sending limit.
 
 = How do I get my get synchronize my lists? =
 You have nothing to do – synchronization is automatic! It doesn’t matter whether your lists were uploaded on your WordPress interface or on your Brevo account: they will always remain up-to-date on both sides.
 Brevo also integrates with most lead capture and advanced form builder plugins.
 
 = How can I get support? =
-If you need some assistance, you can post an issue in the Support tab, or send us an email at contact@brevo.com.
+If you need some assistance, you can post an issue in the Support tab.
 
 = How do I create a signup form? =
 In order to create a signup form, you need to:
-1. Go to Wp admin > Brevo > Settings in order to define your form’s fields and settings
+1. Go to WP Admin > Brevo > Settings in order to define your form’s fields and settings
 2. Integrate the form in a sidebar using a widget from WP panel > Appearance > Widgets. The Brevo widget form should appear in your widgets list, you just to have to drag and drop the widget into the sidebar of your choice.
 
 == Changelog ==
+= 3.2.5 =
+* Technical improvements related to PushOwl Service
+* Technical improvements related to PHP8 warnings
+
+= 3.2.4 =
+* Technical improvements related to Attributes
+
+= 3.2.3 =
+* Technical improvements related to WebPush
+* Improvements related to Pop up handling
+
+= 3.2.2 =
+* Technical improvements related to WebPush
+* Improvements related to Pop up handling
+
+= 3.2.1 =
+* Improvements related to conflicts with 3rd party editors
+
+= 3.2.0 =
+* Improvements in WebPush functionality to the Plugin
+* Compatibility with WordPress v6.8
+
+= 3.1.98 =
+* Added new WebPush functionality to the plugin. The plugin will now support sending push notifications to subscribers
+
+= 3.1.97 =
+* Plugin code enhancements to validate connections.
+
 = 3.1.96 =
 * Added support for Multi Select Attribute type in forms.
 * Plugin code enhancements to validate connections.

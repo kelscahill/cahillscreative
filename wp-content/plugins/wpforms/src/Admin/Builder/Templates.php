@@ -392,21 +392,18 @@ class Templates {
 	 *
 	 * @since 1.7.7
 	 */
-	public function ajax_save_favorites() {
+	public function ajax_save_favorites(): void {
 
-		if ( ! check_ajax_referer( 'wpforms-form-templates', 'nonce', false ) ) {
+		if ( ! $this->is_valid_ajax_request() ) {
 			wp_send_json_error();
 		}
 
-		if ( ! isset( $_POST['slug'], $_POST['favorite'] ) ) {
-			wp_send_json_error();
-		}
+		[ $template_slug, $favorite ] = $this->get_ajax_input();
 
-		$favorites     = $this->get_favorites_list( true );
-		$user_id       = get_current_user_id();
-		$template_slug = sanitize_text_field( wp_unslash( $_POST['slug'] ) );
-		$is_favorite   = sanitize_key( $_POST['favorite'] ) === 'true';
-		$is_exists     = isset( $favorites[ $user_id ][ $template_slug ] );
+		$favorites   = $this->get_favorites_list( true );
+		$user_id     = get_current_user_id();
+		$is_favorite = $favorite === 'true';
+		$is_exists   = isset( $favorites[ $user_id ][ $template_slug ] );
 
 		if ( $is_favorite && $is_exists ) {
 			wp_send_json_success();
@@ -421,9 +418,45 @@ class Templates {
 		update_option( self::FAVORITE_TEMPLATES_OPTION, $favorites );
 
 		// Update and save the template content cache.
-		wpforms()->obj( 'builder_templates_cache' )->wipe_content_cache();
+		$templates_cache_obj = wpforms()->obj( 'builder_templates_cache' );
+
+		if ( $templates_cache_obj ) {
+			$templates_cache_obj->wipe_content_cache();
+		}
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * Get AJAX input.
+	 *
+	 * @since 1.9.6
+	 *
+	 * @return array
+	 */
+	protected function get_ajax_input(): array {
+
+		// Nonce is checked in the is_valid_ajax_request() method.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		$template_slug = isset( $_POST['slug'] ) ? sanitize_text_field( wp_unslash( $_POST['slug'] ) ) : '';
+		$favorite      = isset( $_POST['favorite'] ) ? sanitize_key( wp_unslash( $_POST['favorite'] ) ) : '';
+
+		return [ $template_slug, $favorite ];
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+	/**
+	 * Determine if the AJAX request is valid.
+	 *
+	 * @since 1.9.5
+	 *
+	 * @return bool
+	 */
+	private function is_valid_ajax_request(): bool {
+
+		return check_ajax_referer( 'wpforms-form-templates', 'nonce', false ) &&
+			wpforms_current_user_can( 'create_forms' ) &&
+			isset( $_POST['slug'], $_POST['favorite'] );
 	}
 
 	/**

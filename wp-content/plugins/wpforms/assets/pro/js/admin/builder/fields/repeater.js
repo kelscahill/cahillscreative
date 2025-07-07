@@ -376,6 +376,8 @@ WPForms.Admin.Builder.FieldRepeater = WPForms.Admin.Builder.FieldRepeater || ( f
 			const preset = $input.val();
 			const $fieldOptions = $input.closest( '.wpforms-field-option-repeater' );
 
+			$( document ).trigger( 'wpformsLayoutPresetChanged', $fieldOptions );
+
 			$fieldOptions
 				.find( '.wpforms-field-option-row-size' )
 				.toggleClass( 'wpforms-disabled', preset !== '100' );
@@ -611,6 +613,8 @@ WPForms.Admin.Builder.FieldRepeater = WPForms.Admin.Builder.FieldRepeater || ( f
 			const $repeaterField = $fieldLayoutWrapper.closest( '.wpforms-field-repeater' );
 
 			app.adjustRowsAppearance( $repeaterField.data( 'field-id' ) );
+
+			$fieldLayoutWrapper.closest( '.wpforms-field-layout' ).removeClass( 'wpforms-field-child-hovered' );
 		},
 
 		/**

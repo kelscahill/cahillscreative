@@ -86,6 +86,27 @@ class api
 	}
 
 	/**
+		@brief		When in an existing broadcast, send a post to one or more blogs, while keeping the _POST from the original broadcast.
+		@details	This is used to preserve the _POST data into the next broadcast, so that various add-ons can detect checked options.
+		@param		int		$post_id		ID of post on this blog to broadcast.
+		@param		array	$blogs			Array of blog IDs to which to broadcast.
+		@see		broadcast_children()
+		@since		2025-04-11 14:56:59
+	**/
+	public function broadcast_children_with_post( $post_id, $blogs )
+	{
+		$bc = ThreeWP_Broadcast();
+		$nested_broadcasting_data = $bc->broadcasting;
+		if ( count( $nested_broadcasting_data ) > 0 )
+		{
+			$latest_bcd = end( $nested_broadcasting_data );
+			$_POST = $latest_bcd->_POST;
+			$bc->debug( 'API: Broadcasting children with POST.' );
+		}
+		return $this->broadcast_children( $post_id, $blogs );
+	}
+
+	/**
 		@brief		Delete the specified children.
 		@param		int		$post_id		ID of post on this blog to use as the parent.
 		@param		array	$child_blogs	Array of blog IDs from which to delete the child posts.

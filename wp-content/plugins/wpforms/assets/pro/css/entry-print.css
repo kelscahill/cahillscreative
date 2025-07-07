@@ -994,10 +994,6 @@ a:hover, a:active, a:focus {
   vertical-align: middle;
 }
 
-.print-preview .wpforms-field-repeater-row .wpforms-layout-row:not(:first-child) .print-item-title {
-  display: none;
-}
-
 .print-preview .wpforms-field-repeater-block > .print-item-title,
 .print-preview .wpforms-field-repeater-row > .print-item-title,
 .print-preview .wpforms-field-layout-row > .print-item-title,
@@ -1049,14 +1045,6 @@ a:hover, a:active, a:focus {
   padding-right: 15px;
 }
 
-.print-preview .wpforms-field-repeater-row .wpforms-field-repeater-rows .wpforms-layout-row:first-child .wpforms-field-layout-column {
-  padding-top: 15px;
-}
-
-.print-preview .wpforms-field-repeater-row .wpforms-field-repeater-rows .wpforms-layout-row:last-child .wpforms-field-layout-column {
-  padding-bottom: 15px;
-}
-
 .print-preview .wpforms-field-repeater-block .wpforms-field-layout-column {
   padding: 15px;
 }
@@ -1073,8 +1061,8 @@ a:hover, a:active, a:focus {
   padding-bottom: 0;
 }
 
-.print-preview.wpforms-preview-mode-compact .print-body .wpforms-field-repeater-block .wpforms-layout-row:last-child .print-item,
-.print-preview.wpforms-preview-mode-compact .print-body .wpforms-field-repeater-row .wpforms-layout-row:last-child .print-item {
+.print-preview.wpforms-preview-mode-compact .print-body .wpforms-field-repeater-block .wpforms-layout-row:last-child,
+.print-preview.wpforms-preview-mode-compact .print-body .wpforms-field-repeater-row .wpforms-layout-row:last-child {
   padding-bottom: 10px;
 }
 
@@ -1113,51 +1101,58 @@ a:hover, a:active, a:focus {
   display: block;
 }
 
-.print-preview.wpforms-preview-mode-maintain-layout .wpforms-layout-row,
-.print-preview .wpforms-field-repeater-rows .wpforms-layout-row,
-.print-preview .wpforms-field-repeater-blocks .wpforms-layout-row {
+.print-preview:not(.wpforms-preview-mode-compact):not(.wpforms-preview-mode-maintain-layout) .wpforms-layout-row .wpforms-field-layout-column {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.print-preview.wpforms-preview-mode-maintain-layout .wpforms-field-repeater-row .wpforms-layout-row:not(:first-child) .print-item-title {
+  display: none;
+}
+
+.print-preview.wpforms-preview-mode-maintain-layout .wpforms-layout-row {
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
 }
 
-.print-preview.wpforms-preview-mode-maintain-layout .wpforms-layout-row .wpforms-field-layout-column,
-.print-preview .wpforms-field-repeater-rows .wpforms-layout-row .wpforms-field-layout-column,
-.print-preview .wpforms-field-repeater-blocks .wpforms-layout-row .wpforms-field-layout-column {
+.print-preview.wpforms-preview-mode-maintain-layout .wpforms-layout-row .wpforms-field-layout-column {
   border: 0;
 }
 
-.print-preview.wpforms-preview-mode-maintain-layout .wpforms-layout-row .wpforms-field-layout-column + .wpforms-field-layout-column,
-.print-preview .wpforms-field-repeater-rows .wpforms-layout-row .wpforms-field-layout-column + .wpforms-field-layout-column,
-.print-preview .wpforms-field-repeater-blocks .wpforms-layout-row .wpforms-field-layout-column + .wpforms-field-layout-column {
+.print-preview.wpforms-preview-mode-maintain-layout .wpforms-layout-row .wpforms-field-layout-column + .wpforms-field-layout-column {
   border-left: 1px solid #ddd;
 }
 
-.print-preview.wpforms-preview-mode-maintain-layout .wpforms-layout-row .wpforms-field-layout-column:empty,
-.print-preview .wpforms-field-repeater-rows .wpforms-layout-row .wpforms-field-layout-column:empty,
-.print-preview .wpforms-field-repeater-blocks .wpforms-layout-row .wpforms-field-layout-column:empty {
+.print-preview.wpforms-preview-mode-maintain-layout .wpforms-layout-row .wpforms-field-layout-column:empty {
   border-top: 1px solid #ddd !important;
 }
 
-.print-preview.wpforms-preview-mode-maintain-layout .wpforms-field-layout,
-.print-preview .wpforms-field-repeater-rows .wpforms-field-layout,
-.print-preview .wpforms-field-repeater-blocks .wpforms-field-layout {
+.print-preview.wpforms-preview-mode-maintain-layout .wpforms-layout-row:first-child .wpforms-field-layout-column {
+  padding-top: 15px;
+}
+
+.print-preview.wpforms-preview-mode-maintain-layout .wpforms-layout-row:last-child .wpforms-field-layout-column {
+  padding-bottom: 15px;
+}
+
+.print-preview.wpforms-preview-mode-maintain-layout .wpforms-field-layout {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   width: 100%;
 }
 
-.print-preview.wpforms-preview-mode-maintain-layout .wpforms-field-layout .wpforms-field-layout-column,
-.print-preview .wpforms-field-repeater-rows .wpforms-field-layout .wpforms-field-layout-column,
-.print-preview .wpforms-field-repeater-blocks .wpforms-field-layout .wpforms-field-layout-column {
+.print-preview.wpforms-preview-mode-maintain-layout .wpforms-field-layout .wpforms-field-layout-column {
   border: 0;
 }
 
-.print-preview.wpforms-preview-mode-maintain-layout .wpforms-field-layout .wpforms-field-layout-column + .wpforms-field-layout-column,
-.print-preview .wpforms-field-repeater-rows .wpforms-field-layout .wpforms-field-layout-column + .wpforms-field-layout-column,
-.print-preview .wpforms-field-repeater-blocks .wpforms-field-layout .wpforms-field-layout-column + .wpforms-field-layout-column {
+.print-preview.wpforms-preview-mode-maintain-layout .wpforms-field-layout .wpforms-field-layout-column + .wpforms-field-layout-column {
   border-left: 1px solid #ddd;
+}
+
+.print-preview.wpforms-preview-mode-maintain-layout .wpforms-field-layout-column {
+  width: var(--field-layout-column-width, auto);
 }
 
 .print-preview.wpforms-preview-mode-empty .wpforms-layout-row .wpforms-field-layout-column .print-item.wpforms-field-empty {
@@ -1166,10 +1161,6 @@ a:hover, a:active, a:focus {
 
 .print-preview.wpforms-preview-mode-empty .wpforms-field-repeater-block-empty {
   display: block;
-}
-
-.print-preview:not(.wpforms-preview-mode-maintain-layout) .wpforms-field-layout-rows .wpforms-field-layout-column, .print-preview:not(.wpforms-preview-mode-maintain-layout) .wpforms-field-layout .wpforms-field-layout-column {
-  width: 100% !important;
 }
 
 .print-preview:not(.wpforms-preview-mode-maintain-layout) .wpforms-field-layout-rows, .print-preview:not(.wpforms-preview-mode-maintain-layout) .wpforms-field-layout {

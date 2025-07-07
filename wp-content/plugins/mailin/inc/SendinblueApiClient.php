@@ -4,6 +4,7 @@
 class SendinblueApiClient
 {
     const API_BASE_URL = 'https://api.brevo.com/v3';
+    const API_STAGING_BASE_URL = 'https://api-staging.51b.dev/v3';
     const HTTP_METHOD_GET = 'GET';
     const HTTP_METHOD_POST = 'POST';
     const HTTP_METHOD_PUT = 'PUT';
@@ -15,7 +16,7 @@ class SendinblueApiClient
     const RESPONSE_CODE_ACCEPTED = 202;
     const RESPONSE_CODE_NO_CONTENT = 204;
     const RESPONSE_CODE_UNAUTHORIZED = 401;
-    const PLUGIN_VERSION = '3.1.96';
+    const PLUGIN_VERSION = '3.2.5';
     const USER_AGENT = 'sendinblue_plugins/wordpress';
 
     private $apiKey;
@@ -235,6 +236,37 @@ class SendinblueApiClient
         return $lists;
     }
 
+
+	/**
+	 * @param $data
+	 * @return mixed
+	 */
+	public function getSegments($data)
+	{
+		return $this->get("/contacts/segments", $data);
+	}
+
+	/**
+	 * @param $data
+	 * @return mixed
+	 */
+	public function getAllSegments()
+	{
+		$segments = array("segments" => array(), "count" => 0);
+		$offset = 0;
+		$limit = 50;
+		do {
+			$segment_data = $this->getSegments(array('limit' => $limit, 'offset' => $offset));
+			if (isset($segment_data["segments"]) && is_array($segment_data["segments"])) {
+				$segments["segments"] = array_merge($segments["segments"], $segment_data["segments"]);
+				$offset += 50;
+				$segments["count"] = $segment_data["count"];
+			}
+		} while (!empty($segments['segments']) && count($segments["segments"]) < $segment_data["count"]);
+
+		return $segments;
+	}
+
    /**
      * @param $data
      * @return mixed
@@ -330,7 +362,7 @@ class SendinblueApiClient
      */
     private function makeHttpRequest($method, $endpoint, $body = [])
     {
-        $url = self::API_BASE_URL . $endpoint;
+        $url = ( SIB_Manager::is_staging() ? self::API_STAGING_BASE_URL : self::API_BASE_URL ) . $endpoint;
 
         $args = [
             'timeout' => 10000,

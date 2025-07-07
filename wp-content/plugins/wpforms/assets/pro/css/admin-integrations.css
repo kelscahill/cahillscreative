@@ -545,6 +545,77 @@ body .jconfirm.upgrade-modal .jconfirm-box-container div.jconfirm-box .jconfirm-
   min-height: 29px;
 }
 
+.elementor-editor-active .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector, .elementor-editor-preview .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector {
+  height: 540px;
+  border-top-width: 0;
+}
+
+.elementor-editor-active .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .jconfirm-title-c, .elementor-editor-preview .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .jconfirm-title-c {
+  text-align: center;
+}
+
+.elementor-editor-active .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .jconfirm-title, .elementor-editor-preview .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .jconfirm-title {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 22px;
+  color: #444444;
+  margin: 0 0 10px 0 !important;
+}
+
+.elementor-editor-active .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .jconfirm-title p, .elementor-editor-preview .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .jconfirm-title p {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 22px;
+  margin: 15px 0 0 0;
+}
+
+.elementor-editor-active .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .jconfirm-closeIcon, .elementor-editor-preview .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .jconfirm-closeIcon {
+  width: 12px;
+  height: 12px;
+  background-size: 12px 12px;
+  background-repeat: no-repeat;
+  background-image: url("../../images/cross-inverse.svg");
+  opacity: .3;
+}
+
+.elementor-editor-active .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .jconfirm-closeIcon:after, .elementor-editor-preview .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .jconfirm-closeIcon:after {
+  display: none;
+}
+
+.elementor-editor-active .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .jconfirm-closeIcon:hover, .elementor-editor-preview .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .jconfirm-closeIcon:hover {
+  opacity: .5;
+}
+
+.elementor-editor-active .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .wpforms-elementor-stock-photos-pictures-wrap, .elementor-editor-preview .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .wpforms-elementor-stock-photos-pictures-wrap {
+  display: grid;
+  grid-template-columns: repeat(5, 124px);
+  grid-row-gap: 20px;
+  grid-column-gap: 20px;
+  justify-content: center;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.elementor-editor-active .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .wpforms-elementor-stock-photos-picture, .elementor-editor-preview .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .wpforms-elementor-stock-photos-picture {
+  width: 124px;
+  height: 124px;
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  border: none;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: box-shadow .15s ease-in-out;
+}
+
+.elementor-editor-active .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .wpforms-elementor-stock-photos-picture:hover, .elementor-editor-preview .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .wpforms-elementor-stock-photos-picture:hover {
+  box-shadow: inset 0 0 0 1px #2d2d2d, 0 0 0 1px #2d2d2d, 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
 /* Gutenberg Block */
 .edit-post-visual-editor div.wpforms-container-full .wpforms-form div.wpforms-field-richtext .quicktags-toolbar,
 .edit-post-visual-editor .wpforms-container .wpforms-form div.wpforms-field-richtext .quicktags-toolbar,
@@ -652,7 +723,7 @@ body .jconfirm.upgrade-modal .jconfirm-box-container div.jconfirm-box .jconfirm-
 }
 
 .jconfirm-modern .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector {
-  height: 600px;
+  height: 540px;
   border-top-width: 0;
 }
 

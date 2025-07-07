@@ -45,7 +45,8 @@ var WPFormsViewEntry = window.WPFormsViewEntry || ( function( document, window, 
 		 */
 		saveData() {
 			// Ajax call to save settings.
-			const checked = [];
+			const checked = [],
+				formId = $( '#wpforms-entries-settings-button' ).data( 'form-id' );
 
 			$( '.wpforms-entries-settings-menu-items input[type=checkbox]:checked' ).each( function() {
 				checked.push( $( this ).attr( 'name' ) );
@@ -55,6 +56,7 @@ var WPFormsViewEntry = window.WPFormsViewEntry || ( function( document, window, 
 				action: 'wpforms_update_single_entry_filter_settings',
 				nonce: wpforms_admin.nonce,
 				wpforms_entry_view_settings: checked,
+				formId,
 			};
 
 			$.post( wpforms_admin.ajax_url, data );
@@ -128,14 +130,29 @@ var WPFormsViewEntry = window.WPFormsViewEntry || ( function( document, window, 
 
 			/**
 			 * Show/Hide HTML Fields.
+			 * We need to show/hide the whole field - label and value
+			 * if it is located outside Repeater and Layout fields.
+			 * If not - show/hide only its value.
 			 *
 			 * @since 1.8.3
 			 *
 			 * @param {boolean} isActive Is the option active or not?
 			 */
 			showHtmlFields( isActive ) {
-				app.updateSettings.$container.find( '.wpforms-field-entry-html' ).toggle( isActive );
-				app.updateSettings.$container.find( '.wpforms-field-entry-content' ).toggle( isActive );
+				const getLayoutCompatibleSelector = ( fieldSelector ) => ( [
+					`.wpforms-entries-fields-wrapper > ${ fieldSelector }`,
+					`.wpforms-field-layout-column ${ fieldSelector } .wpforms-entry-field-value`,
+				].join( ', ' ) );
+
+				// HTML field.
+				app.updateSettings.$container.find(
+					getLayoutCompatibleSelector( '.wpforms-field-entry-html' )
+				).toggleClass( 'wpforms-hide', ! isActive );
+
+				// Content field.
+				app.updateSettings.$container.find(
+					getLayoutCompatibleSelector( '.wpforms-field-entry-content' )
+				).toggleClass( 'wpforms-hide', ! isActive );
 			},
 
 			/**
@@ -144,7 +161,6 @@ var WPFormsViewEntry = window.WPFormsViewEntry || ( function( document, window, 
 			 * @since 1.8.3
 			 *
 			 * @param {boolean} isActive Is the option active or not?
-			 * @since 1.8.3
 			 */
 			maintainLayouts( isActive ) {
 				app.updateSettings.$layoutWrapper.toggleClass( 'wpforms-entry-maintain-layout', isActive );

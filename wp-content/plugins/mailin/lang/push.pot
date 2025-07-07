@@ -1,0 +1,3055 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-05-27T08:57:37+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: push\n"
+
+#: push/api/models.js:23
+msgid "Web desktop"
+msgstr ""
+
+#: push/api/models.js:25
+msgid "Web mobile"
+msgstr ""
+
+#: push/api/models.js:115
+msgid "Marketing"
+msgstr ""
+
+#: push/api/models.js:116
+msgid "News"
+msgstr ""
+
+#: push/api/models.js:117
+msgid "Transactional"
+msgstr ""
+
+#: push/api/models.js:118
+msgid "Discount"
+msgstr ""
+
+#: push/api/models.js:119
+msgid "Announcement"
+msgstr ""
+
+#: push/api/models.js:120
+msgid "Sponsored"
+msgstr ""
+
+#: push/api/models.js:121
+msgid "Custom #1"
+msgstr ""
+
+#: push/api/models.js:122
+msgid "Custom #2"
+msgstr ""
+
+#: push/api/models.js:123
+msgid "Custom #3"
+msgstr ""
+
+#: push/api/models.js:124
+msgid "Custom #4"
+msgstr ""
+
+#: push/api/models.js:125
+msgid "Custom #5"
+msgstr ""
+
+#: push/api/models.js:205
+msgid "Daily"
+msgstr ""
+
+#: push/api/models.js:206
+msgid "Weekly"
+msgstr ""
+
+#: push/api/models.js:207
+msgid "Monthly"
+msgstr ""
+
+#: push/components/DateTimeInput.js:22
+#: push/components/editor/fields.js:96
+#: push/graphs/justcount-graphs/components/csvlink.js:47
+#: push/graphs/justcount-graphs/components/table.js:81
+msgid "Date"
+msgstr ""
+
+#: push/components/DateTimeInput.js:36
+msgid "Time"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:52
+msgid "subscribed contact"
+msgid_plural "subscribed contacts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: push/components/editor/AudienceEditor.js:53
+msgid "subscribed device"
+msgid_plural "subscribed devices"
+msgstr[0] ""
+msgstr[1] ""
+
+#: push/components/editor/AudienceEditor.js:133
+#: push/pages/settings/BlogSettings.js:57
+msgid "Everybody"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:137
+msgid "Based on their website activity"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:146
+msgid "New push subscribers"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:150
+msgid "Based on language"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:154
+msgid "Based on timezone"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:158
+msgid "From a Brevo segment"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:162
+msgid "From a Brevo list"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:165
+#: push/components/editor/fields.js:113
+msgid "Audience"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:165
+msgid "Please choose an audience"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:165
+msgid "Select an audience:"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:169
+#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/scheduling/UrlInput.js:101
+msgid "Select an audience"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "All push subscribers"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "Push subscribers that have visited in the last %d days"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "Push subscribers that have not visited for at least %d days"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "active"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "inactive"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "Push subscribers that have %s in the last %d days"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "purchased"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "not purchased"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "Push subscribers that have subscribed to push in the last %d days"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "Push subscribers that have a device in %s"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "Push subscribers that are in your Brevo segment “%s”"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "unknown"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:174
+msgid "Push subscribers that are in your Brevo list “%s”"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:198
+msgid "Send to all platforms"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:199
+msgid "Send only to %s"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:200
+msgid "Select one or more platforms"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:208
+msgid "Choose one or more platforms"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:219
+#: push/components/editor/AudienceEditor.js:240
+#: push/MainLayout.js:93
+msgid "Loading..."
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:230
+msgid "No segments found"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:230
+msgid "Select segment"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:251
+msgid "No lists found"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:251
+msgid "Select list"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:269
+msgid "Please select one or more languages"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:269
+msgid "Select languages"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:291
+msgid "Please select one or more timezones"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:291
+msgid "Select timezones"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:302
+msgid "Number of days"
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:321
+msgid "This audience is not supported by the editor yet."
+msgstr ""
+
+#: push/components/editor/AudienceEditor.js:321
+msgid "Edit the audience on wonderpush.com"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:30
+msgid "You must enter a text for your message."
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:33
+msgid "The image URL is invalid"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:37
+msgid "The icon URL is invalid"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:41
+msgid "The badge URL is invalid"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:45
+#: push/components/editor/campaign-validator.js:57
+msgid "Target URL is invalid"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:76
+msgid "JSON attachment must be an object '{}'"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:83
+msgid "Please choose an ad provider"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:91
+msgid "Please choose a campaign name"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:96
+msgid "End date must be after start date"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:103
+msgid "Please choose a trigger date"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:114
+msgid "Please choose an event type"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:119
+#: push/components/editor/campaign-validator.js:122
+msgid "Please specify at least one pattern"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:134
+msgid "Delays cannot have a negative value"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:138
+msgid "Invalid delay"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:144
+#: push/components/editor/campaign-validator.js:164
+msgid "Please choose a segment"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:154
+msgid "Please choose a language"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:159
+msgid "Please choose a timezone"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:169
+msgid "Please choose a list"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:178
+msgid "Please enter a label for the button."
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:179
+msgid "The target URL of the button does not look valid."
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:188
+msgid "You must enter the type of event you wish to track in your action."
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:192
+msgid "You must enter the name of the method to call."
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:203
+#: push/components/editor/campaign-validator.js:247
+msgid "Property names must be prefixed with their types, for example: string_my_property."
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:206
+msgid "Missing property name"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:212
+msgid "Invalid value for a property of type date"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:217
+msgid "Invalid value for a property of type bool"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:223
+msgid "Invalid value for a property of type string"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:234
+msgid "Invalid value for a numeric property"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:270
+#: push/components/editor/campaign-validator.js:311
+msgid "Please enter a title for your popup"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:272
+msgid "Image URL is not valid"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:279
+msgid "Title is mandatory"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:280
+msgid "Portrait image is mandatory"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:282
+msgid "Portrait image URL is not valid"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:285
+msgid "Landscape image URL is not valid"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:286
+#: push/components/editor/campaign-validator.js:288
+msgid "Please enter a text for your button"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:297
+msgid "Image is mandatory"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:304
+msgid "Size of the HTML code is limited to 50k"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:307
+msgid "URL is mandatory if you do not specify HTML code"
+msgstr ""
+
+#: push/components/editor/campaign-validator.js:322
+msgid "Please enter a valid URL"
+msgstr ""
+
+#: push/components/editor/CampaignNameModal.js:11
+msgid "Create a campaign"
+msgstr ""
+
+#: push/components/editor/CampaignNameModal.js:11
+#: push/components/editor/fields.js:68
+msgid "Campaign name"
+msgstr ""
+
+#: push/components/editor/CampaignNameModal.js:12
+#: push/components/listing/EmptyListPage.jsx:66
+#: push/MainLayout.js:124
+msgid "Create campaign"
+msgstr ""
+
+#: push/components/editor/CampaignNameModal.js:19
+#: push/components/editor/TopBar.js:52
+#: push/stats/StatsComponent/date-button.js:37
+msgid "Cancel"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:33
+msgid "This notification will not be capped and will be sent to all the subscribers of the target audience."
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:35
+msgid "This notification will not be sent to subscribers that already received:"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:35
+msgid "This push will have a TTL of %s."
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:35
+msgid "These values can be adjusted in the pressure settings of your project."
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:38
+msgid "Go to pressure settings"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:49
+msgid "1 notification of the %1$s category in the last day"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:52
+msgid "1 notification of the %1$s category in the last %2$s days"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:57
+msgid "%1$s notifications of the %2$s category in the last day"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:60
+msgid "%1$s notifications of the %2$s category in the last %3$s days"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:67
+msgid "1 notification of the %1$s category in the last hour"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:70
+msgid "1 notification of the %1$s category in the last %2$s hours"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:75
+msgid "%1$s notifications of the %2$s category in the last hour"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:78
+msgid "%1$s notifications of the %2$s category in the last %3$s hours"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:85
+msgid "1 notification of the %1$s category in the last minute"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:88
+msgid "1 notification of the %1$s category in the last %2$s minutes"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:93
+msgid "%1$s notifications of the %2$s category in the last minute"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:96
+msgid "%1$s notifications of the %2$s category in the last %3$s minutes"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:108
+msgid "1 notification in the last day"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:111
+msgid "1 notification in the last %1$s days"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:116
+msgid "%1$s notifications in the last day"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:119
+msgid "%1$s notifications in the last %2$s days"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:126
+msgid "1 notification in the last hour"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:129
+msgid "1 notification in the last %1$s hours"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:134
+msgid "%1$s notifications in the last hour"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:137
+msgid "%1$s notifications in the last %2$s hours"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:144
+msgid "1 notification in the last minute"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:147
+msgid "1 notification in the last %1$s minutes"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:152
+msgid "%1$s notifications in the last minute"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:155
+msgid "%1$s notifications in the last %2$s minutes"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:208
+#: push/components/subscription/SnoozeSelect.js:25
+msgid "1 year"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:210
+msgid "%1$s years"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:212
+#: push/components/subscription/SnoozeSelect.js:23
+msgid "1 month"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:214
+msgid "%1$s months"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:216
+#: push/components/subscription/SnoozeSelect.js:19
+msgid "1 day"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:218
+msgid "%1$s days"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:220
+#: push/components/subscription/SnoozeSelect.js:16
+msgid "1 hour"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:222
+msgid "%1$s hours"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:224
+msgid "1 minute"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:226
+msgid "%1$s minutes"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:228
+msgid "1 second"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:230
+msgid "%1$s seconds"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:232
+msgid "1 millisecond"
+msgstr ""
+
+#: push/components/editor/CappingLimitsDescription.js:234
+msgid "%1$s milliseconds"
+msgstr ""
+
+#: push/components/editor/fields.js:69
+#: push/components/editor/fields.js:91
+#: push/components/editor/NotificationEditor.js:141
+#: push/components/subscription/SubscriptionDialogSettings.js:168
+msgid "Text"
+msgstr ""
+
+#: push/components/editor/fields.js:70
+#: push/components/editor/NotificationEditor.js:137
+#: push/components/subscription/SubscriptionDialogSettings.js:155
+msgid "Title"
+msgstr ""
+
+#: push/components/editor/fields.js:71
+msgid "Image"
+msgstr ""
+
+#: push/components/editor/fields.js:75
+msgid "Open URL"
+msgstr ""
+
+#: push/components/editor/fields.js:77
+msgid "Open URL or deeplink"
+msgstr ""
+
+#: push/components/editor/fields.js:80
+msgid "Icon URL"
+msgstr ""
+
+#: push/components/editor/fields.js:81
+msgid "Badge URL"
+msgstr ""
+
+#: push/components/editor/fields.js:82
+msgid "External link"
+msgstr ""
+
+#: push/components/editor/fields.js:83
+msgid "Event type"
+msgstr ""
+
+#: push/components/editor/fields.js:84
+msgid "Property value"
+msgstr ""
+
+#: push/components/editor/fields.js:85
+msgid "Property name"
+msgstr ""
+
+#: push/components/editor/fields.js:86
+#: push/pages/settings/UtmSettings.js:60
+msgid "Value"
+msgstr ""
+
+#: push/components/editor/fields.js:87
+msgid "Attribute"
+msgstr ""
+
+#: push/components/editor/fields.js:88
+msgid "Tags"
+msgstr ""
+
+#: push/components/editor/fields.js:89
+msgid "Method argument"
+msgstr ""
+
+#: push/components/editor/fields.js:90
+msgid "Method name"
+msgstr ""
+
+#: push/components/editor/fields.js:92
+#: push/components/editor/NotificationEditor.js:179
+msgid "JSON data"
+msgstr ""
+
+#: push/components/editor/fields.js:93
+msgid "Badge number"
+msgstr ""
+
+#: push/components/editor/fields.js:94
+msgid "Sound filename"
+msgstr ""
+
+#: push/components/editor/fields.js:95
+msgid "Notification channel ID"
+msgstr ""
+
+#: push/components/editor/fields.js:97
+#: push/components/editor/PressureEditor.js:82
+#: push/pages/Settings.js:17
+#: push/pages/settings/PressureSettings.js:88
+msgid "Pressure settings"
+msgstr ""
+
+#: push/components/editor/fields.js:98
+msgid "Hide this push after some time"
+msgstr ""
+
+#: push/components/editor/fields.js:99
+#: push/components/subscription/SubscriptionBellSettings.js:111
+#: push/components/subscription/SubscriptionDialogSettings.js:185
+msgid "Position"
+msgstr ""
+
+#: push/components/editor/fields.js:100
+msgid "Portrait image"
+msgstr ""
+
+#: push/components/editor/fields.js:101
+msgid "Landscape image"
+msgstr ""
+
+#: push/components/editor/fields.js:102
+msgid "Background color"
+msgstr ""
+
+#: push/components/editor/fields.js:103
+msgid "Text color"
+msgstr ""
+
+#: push/components/editor/fields.js:104
+msgid "Close button position"
+msgstr ""
+
+#: push/components/editor/fields.js:105
+msgid "Entry animation"
+msgstr ""
+
+#: push/components/editor/fields.js:106
+msgid "Exit animation"
+msgstr ""
+
+#: push/components/editor/fields.js:107
+msgid "Send when this event occurs:"
+msgstr ""
+
+#: push/components/editor/fields.js:108
+#: push/components/editor/SchedulingEditor.js:267
+msgid "Cancel if one of these events occur:"
+msgstr ""
+
+#: push/components/editor/fields.js:109
+#: push/components/editor/fields.js:110
+msgid "Enter one pattern per line"
+msgstr ""
+
+#: push/components/editor/fields.js:112
+#: push/components/editor/scheduling/StartEndDateSelector.js:7
+msgid "End date"
+msgstr ""
+
+#: push/components/editor/fields.js:114
+msgid "Triggers"
+msgstr ""
+
+#: push/components/editor/fields.js:115
+msgid "Ad provider"
+msgstr ""
+
+#: push/components/editor/fields.js:116
+msgid "Page URL"
+msgstr ""
+
+#: push/components/editor/fields.js:117
+msgid "Languages"
+msgstr ""
+
+#: push/components/editor/fields.js:118
+msgid "Timezones"
+msgstr ""
+
+#: push/components/editor/fields.js:119
+msgid "Segment"
+msgstr ""
+
+#: push/components/editor/fields.js:120
+msgid "List"
+msgstr ""
+
+#: push/components/editor/LanguageModal.js:22
+msgid "Add language variant"
+msgstr ""
+
+#: push/components/editor/LanguageModal.js:22
+msgid "If no message for the user's language is specified, Brevo will automatically send the default message."
+msgstr ""
+
+#: push/components/editor/LanguageModal.js:22
+#: push/components/editor/NotificationEditor.js:61
+msgid "Default"
+msgstr ""
+
+#: push/components/editor/LanguageModal.js:30
+#: push/components/subscription/SubscriptionPrompts.js:115
+msgid "Done"
+msgstr ""
+
+#: push/components/editor/NotificationEditor.js:62
+msgid "Message #%d"
+msgstr ""
+
+#: push/components/editor/NotificationEditor.js:69
+msgid "Are you sure you want to delete this variant?"
+msgstr ""
+
+#: push/components/editor/NotificationEditor.js:123
+#: push/components/editor/Preview.js:113
+msgid "Your message"
+msgstr ""
+
+#: push/components/editor/NotificationEditor.js:123
+msgid "Language variant"
+msgstr ""
+
+#: push/components/editor/NotificationEditor.js:128
+msgid "A/B variant"
+msgstr ""
+
+#: push/components/editor/NotificationEditor.js:141
+msgid "This field is required"
+msgstr ""
+
+#: push/components/editor/NotificationEditor.js:170
+msgid "On click URL or deeplink"
+msgstr ""
+
+#: push/components/editor/NotificationEditor.js:170
+msgid "Users who click the notification will be taken to that URL"
+msgstr ""
+
+#: push/components/editor/NotificationEditor.js:174
+msgid "Leave empty to open your app or website homepage"
+msgstr ""
+
+#: push/components/editor/NotificationEditor.js:174
+msgid "Attach data payload"
+msgstr ""
+
+#: push/components/editor/NotificationEditor.js:179
+msgid "Attached JSON data payload is passed along with the push to your app or website and can be consumed upon reception or click of the notification. JSON data must be an object."
+msgstr ""
+
+#: push/components/editor/NotificationEditor.js:179
+#: push/components/editor/PressureEditor.js:82
+#: push/pages/settings/PressureSettings.js:111
+msgid "Documentation"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:21
+#: push/pages/settings/PressureSettings.js:75
+msgid "Very fast"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:26
+#: push/pages/settings/PressureSettings.js:76
+msgid "Fast"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:31
+#: push/pages/settings/PressureSettings.js:77
+msgid "Normal"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:36
+#: push/pages/settings/PressureSettings.js:78
+msgid "Slow"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:41
+#: push/pages/settings/PressureSettings.js:79
+msgid "Very slow"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:49
+msgid "Use default settings"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:54
+msgid "Bypass Subscriber Protection"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:66
+msgid "Select a pressure category"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:72
+msgid "Show pressure settings"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:72
+msgid "A too fast delivery speed risks overloading your servers"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:72
+#: push/pages/settings/PressureSettings.js:116
+msgid "Delivery speed"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:76
+msgid "Select a delivery speed"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:79
+#: push/components/editor/PressureEditor.js:82
+msgid "Select delivery speed"
+msgstr ""
+
+#: push/components/editor/PressureEditor.js:82
+msgid "Disabling pressure settings is not recommended. Subscribers receiving too many push notifications are likely to unsubscribe."
+msgstr ""
+
+#: push/components/editor/Preview.js:15
+#: push/stats/StatsComponent/platform-selector.js:40
+msgid "Android app"
+msgstr ""
+
+#: push/components/editor/Preview.js:20
+#: push/stats/StatsComponent/platform-selector.js:41
+msgid "iOS app"
+msgstr ""
+
+#: push/components/editor/Preview.js:25
+msgid "Web on Android"
+msgstr ""
+
+#: push/components/editor/Preview.js:30
+msgid "Web on macOS"
+msgstr ""
+
+#: push/components/editor/Preview.js:35
+msgid "Web on Windows"
+msgstr ""
+
+#: push/components/editor/scheduling/DelaySelector.js:7
+#: push/components/subscription/TriggerSettings.js:41
+msgid "Immediately"
+msgstr ""
+
+#: push/components/editor/scheduling/DelaySelector.js:8
+#: push/components/editor/scheduling/DelaySelector.js:9
+#: push/components/editor/scheduling/DelaySelector.js:10
+#: push/components/editor/scheduling/DelaySelector.js:11
+#: push/components/editor/scheduling/DelaySelector.js:12
+msgid "%d minutes after"
+msgstr ""
+
+#: push/components/editor/scheduling/DelaySelector.js:13
+msgid "1 hour after"
+msgstr ""
+
+#: push/components/editor/scheduling/DelaySelector.js:14
+#: push/components/editor/scheduling/DelaySelector.js:15
+#: push/components/editor/scheduling/DelaySelector.js:16
+#: push/components/editor/scheduling/DelaySelector.js:17
+msgid "%d hours after"
+msgstr ""
+
+#: push/components/editor/scheduling/DelaySelector.js:18
+msgid "1 day after"
+msgstr ""
+
+#: push/components/editor/scheduling/EventCriteriaChoice.js:28
+msgid "all time"
+msgstr ""
+
+#: push/components/editor/scheduling/EventCriteriaChoice.js:29
+msgid "last day"
+msgstr ""
+
+#: push/components/editor/scheduling/EventCriteriaChoice.js:30
+msgid "last 3 days"
+msgstr ""
+
+#: push/components/editor/scheduling/EventCriteriaChoice.js:31
+msgid "last 7 days"
+msgstr ""
+
+#: push/components/editor/scheduling/EventCriteriaChoice.js:32
+msgid "last 15 days"
+msgstr ""
+
+#: push/components/editor/scheduling/EventCriteriaChoice.js:33
+msgid "last 30 days"
+msgstr ""
+
+#: push/components/editor/scheduling/EventCriteriaChoice.js:34
+msgid "last 60 days"
+msgstr ""
+
+#: push/components/editor/scheduling/EventCriteriaChoice.js:35
+msgid "last 90 days"
+msgstr ""
+
+#: push/components/editor/scheduling/EventCriteriaChoice.js:39
+msgid "If event occurred at least"
+msgstr ""
+
+#: push/components/editor/scheduling/EventCriteriaChoice.js:41
+#: push/components/editor/scheduling/EventCriteriaChoice.js:47
+msgid "times in"
+msgstr ""
+
+#: push/components/editor/scheduling/EventCriteriaChoice.js:45
+msgid "If event occurred at most"
+msgstr ""
+
+#: push/components/editor/scheduling/StartEndDateSelector.js:7
+msgid "Start date"
+msgstr ""
+
+#: push/components/editor/scheduling/StartEndDateSelector.js:7
+msgid "Now"
+msgstr ""
+
+#: push/components/editor/scheduling/StartEndDateSelector.js:7
+#: push/components/subscription/SnoozeSelect.js:26
+msgid "Never"
+msgstr ""
+
+#: push/components/editor/scheduling/StartEndDateSelector.js:20
+#: push/components/listing/constants.js:64
+msgid "Scheduled"
+msgstr ""
+
+#: push/components/editor/scheduling/TimeDeliveryModeChoice.js:20
+msgid "Send to everyone at the same time"
+msgstr ""
+
+#: push/components/editor/scheduling/TimeDeliveryModeChoice.js:20
+msgid "According to the local time in the user's timezone"
+msgstr ""
+
+#: push/components/editor/scheduling/TimeDeliveryModeChoice.js:20
+msgid "Local time"
+msgstr ""
+
+#: push/components/editor/scheduling/TimeDeliveryModeChoice.js:34
+#: push/components/editor/scheduling/TimeDeliveryModeChoice.js:44
+msgid "Message will send when it is %s on %s in each user's timezone"
+msgstr ""
+
+#: push/components/editor/scheduling/TimeDeliveryModeChoice.js:38
+msgid "Message will send every day when it is %s in each user's timezone"
+msgstr ""
+
+#: push/components/editor/scheduling/TimeDeliveryModeChoice.js:40
+msgid "Message will send every %s when it is %s in each user's timezone"
+msgstr ""
+
+#: push/components/editor/scheduling/TimeDeliveryModeChoice.js:42
+msgid "Message will send every month on the %s when it is %s in each user's timezone"
+msgstr ""
+
+#: push/components/editor/scheduling/TimeDeliveryModeChoice.js:46
+msgid "Message will send the next time it is %s in each user's timezone"
+msgstr ""
+
+#: push/components/editor/scheduling/UrlInput.js:33
+msgid "Contains"
+msgstr ""
+
+#: push/components/editor/scheduling/UrlInput.js:41
+msgid "Does not contain"
+msgstr ""
+
+#: push/components/editor/scheduling/UrlInput.js:49
+msgid "Ends with"
+msgstr ""
+
+#: push/components/editor/scheduling/UrlInput.js:57
+msgid "Does not end with"
+msgstr ""
+
+#: push/components/editor/scheduling/UrlInput.js:65
+msgid "Starts with"
+msgstr ""
+
+#: push/components/editor/scheduling/UrlInput.js:73
+msgid "Does not start with"
+msgstr ""
+
+#: push/components/editor/scheduling/UrlInput.js:81
+msgid "Is exactly"
+msgstr ""
+
+#: push/components/editor/scheduling/UrlInput.js:89
+msgid "Is not exactly"
+msgstr ""
+
+#: push/components/editor/scheduling/UrlInput.js:96
+msgid "Select an operator"
+msgstr ""
+
+#: push/components/editor/scheduling/UrlInput.js:101
+msgid "Any of the following (one per line)"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:143
+msgid "Manually"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:147
+msgid "On a specific date"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:151
+msgid "Periodically"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:155
+msgid "When a subscriber performs an event"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:159
+msgid "When a subscriber visits a URL"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:163
+msgid "When a subscriber becomes part of the audience"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:188
+msgid "Add campaign start/end dates"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:190
+msgid "Scheduling"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:190
+msgid "Send this push:"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:194
+#: push/components/editor/SchedulingEditor.js:199
+msgid "Select a scheduling type"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:214
+msgid "On which days of the week?"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:220
+msgid "On what day of the month?"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:221
+msgid "(doesn't occur every month)"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:255
+msgid "Notify only once for a given subscriber"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:262
+#: push/stats/addMetric.js:20
+msgid "Event"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:262
+#: push/stats/addMetric.js:20
+msgid "e.g. PURCHASE"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:267
+msgid "Add conditions on event occurrences"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:268
+msgid "Use"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:273
+msgid "Select events"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:279
+msgid "Send this push after a subscriber visits a URL that:"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:279
+msgid "When subscribers visit a URL matching the criteria you specify here, the notification will be sent after the delay you specify. No more than 1 push every 30 minutes for each subscriber."
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:279
+msgid "Cancel sending the notification when the subscriber visits a URL that:"
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:279
+msgid "Subscribers that visit the cancellation URL after visiting the trigger URL will not receive the notification."
+msgstr ""
+
+#: push/components/editor/SchedulingEditor.js:279
+msgid "Add a cancellation URL"
+msgstr ""
+
+#: push/components/editor/TopBar.js:16
+#: push/components/editor/TopBar.js:18
+msgid "Back button"
+msgstr ""
+
+#: push/components/editor/TopBar.js:21
+msgid "Edit campaign name"
+msgstr ""
+
+#: push/components/editor/TopBar.js:35
+msgid "Update campaign name"
+msgstr ""
+
+#: push/components/editor/TopBar.js:45
+msgid "Cancel campaign name edition"
+msgstr ""
+
+#: push/components/editor/TopBar.js:54
+#: push/components/SaveButton.js:59
+#: push/components/subscription/SubscriptionPrompts.js:95
+#: push/components/subscription/SubscriptionPrompts.js:114
+msgid "Save"
+msgstr ""
+
+#: push/components/FileInput.js:65
+msgid "Choose file..."
+msgstr ""
+
+#: push/components/ImageField.js:160
+msgid "Invalid image type. Valid types are:"
+msgstr ""
+
+#: push/components/ImageField.js:168
+msgid "The image should be less than %sMB."
+msgstr ""
+
+#: push/components/ImageField.js:177
+msgid "Height must be smaller than %spx."
+msgstr ""
+
+#: push/components/ImageField.js:178
+msgid "Width must be smaller than %spx."
+msgstr ""
+
+#: push/components/ImageField.js:180
+msgid "Please upload a smaller image."
+msgstr ""
+
+#: push/components/ImageField.js:206
+msgid "Error uploading image file, please try again."
+msgstr ""
+
+#: push/components/ImageField.js:244
+msgid "Enter a URL"
+msgstr ""
+
+#: push/components/ImageField.js:244
+msgid "Select a file or enter a URL"
+msgstr ""
+
+#: push/components/ImageField.js:244
+msgid "Select an image"
+msgstr ""
+
+#: push/components/ImageField.js:244
+msgid "or drag an image here"
+msgstr ""
+
+#: push/components/ImageField.js:244
+msgid "Drop your image here"
+msgstr ""
+
+#: push/components/listing/action.js:23
+#: push/components/listing/action.js:144
+msgid "Edit"
+msgstr ""
+
+#: push/components/listing/action.js:38
+msgid "Details"
+msgstr ""
+
+#: push/components/listing/action.js:54
+#: push/components/listing/action.js:165
+msgid "Duplicate"
+msgstr ""
+
+#: push/components/listing/action.js:74
+#: push/components/listing/prepareList.js:83
+#: push/components/listing/prepareList.js:106
+msgid "Delete"
+msgstr ""
+
+#: push/components/listing/action.js:92
+msgid "Send now"
+msgstr ""
+
+#: push/components/listing/action.js:107
+#: push/components/listing/action.js:180
+#: push/components/listing/helper.js:202
+msgid "Activate"
+msgstr ""
+
+#: push/components/listing/action.js:120
+#: push/components/listing/action.js:195
+#: push/components/listing/helper.js:213
+#: push/components/listing/helper.js:214
+msgid "Deactivate"
+msgstr ""
+
+#: push/components/listing/ActionModal.jsx:53
+#: push/components/listing/helper.js:91
+msgid "We could not process your request at this time. Wait a few minutes, then try again."
+msgstr ""
+
+#: push/components/listing/campaignInfo/helper.js:25
+msgid "A/B test"
+msgstr ""
+
+#: push/components/listing/campaignInfo/helper.js:121
+msgid "Edited on %s"
+msgstr ""
+
+#: push/components/listing/campaignInfo/helper.js:127
+#: push/components/listing/campaignInfo/helper.js:167
+msgid "Last sent on %s"
+msgstr ""
+
+#: push/components/listing/campaignInfo/helper.js:144
+#: push/components/listing/campaignInfo/helper.js:164
+msgid "Scheduled %s"
+msgstr ""
+
+#: push/components/listing/campaignInfo/helper.js:236
+#: push/components/listing/campaignInfo/helper.js:281
+msgid "local time"
+msgstr ""
+
+#: push/components/listing/campaignInfo/helper.js:246
+msgid "Monthly on day %1$s at %2$s"
+msgstr ""
+
+#: push/components/listing/campaignInfo/helper.js:255
+msgid "Weekly on %1$s at %2$s"
+msgstr ""
+
+#: push/components/listing/campaignInfo/helper.js:265
+msgid "Daily at %s"
+msgstr ""
+
+#: push/components/listing/campaignInfo/helper.js:305
+msgid "Start date %s"
+msgstr ""
+
+#: push/components/listing/constants.js:40
+msgid "Draft"
+msgstr ""
+
+#: push/components/listing/constants.js:46
+msgid "Sent"
+msgstr ""
+
+#: push/components/listing/constants.js:52
+msgid "Active"
+msgstr ""
+
+#: push/components/listing/constants.js:58
+msgid "Inactive"
+msgstr ""
+
+#: push/components/listing/constants.js:70
+msgid "Sending"
+msgstr ""
+
+#: push/components/listing/DuplicateSuccessHandler.jsx:15
+msgid "Campaign %s duplicated."
+msgstr ""
+
+#: push/components/listing/DuplicateSuccessHandler.jsx:19
+msgid "View campaign"
+msgstr ""
+
+#: push/components/listing/EmptyListPage.jsx:23
+msgid "Try different keyword"
+msgstr ""
+
+#: push/components/listing/EmptyListPage.jsx:42
+msgid "We couldn’t find what you’re looking for."
+msgstr ""
+
+#: push/components/listing/EmptyListPage.jsx:48
+msgid "Click on ‘Create campaign’ and start designing your first Push campaign."
+msgstr ""
+
+#: push/components/listing/EmptyListPage.jsx:56
+msgid "Clear keyword"
+msgstr ""
+
+#: push/components/listing/GenericList.jsx:80
+msgid "Search for a campaign"
+msgstr ""
+
+#: push/components/listing/GenericList.jsx:152
+msgid "Rows per page"
+msgstr ""
+
+#: push/components/listing/helper.js:72
+#: push/components/listing/helper.js:75
+msgid "Clear selection"
+msgstr ""
+
+#: push/components/listing/helper.js:73
+#: push/components/listing/helper.js:76
+msgid "Select all"
+msgstr ""
+
+#: push/components/listing/helper.js:135
+msgid "All statuses"
+msgstr ""
+
+#: push/components/listing/helper.js:166
+msgid "You have not created any Push campaigns"
+msgstr ""
+
+#: push/components/listing/helper.js:169
+msgid "You have no active Push campaigns"
+msgstr ""
+
+#: push/components/listing/helper.js:172
+msgid "You have no inactive Push campaigns"
+msgstr ""
+
+#: push/components/listing/helper.js:175
+msgid "You have no sent Push campaigns"
+msgstr ""
+
+#: push/components/listing/helper.js:178
+msgid "You have no draft Push campaigns"
+msgstr ""
+
+#: push/components/listing/helper.js:181
+msgid "You have no scheduled Push campaigns"
+msgstr ""
+
+#: push/components/listing/helper.js:197
+msgid "Activate campaign?"
+msgstr ""
+
+#: push/components/listing/helper.js:199
+msgid "Campaign %s has been activated."
+msgstr ""
+
+#: push/components/listing/helper.js:203
+#: push/components/listing/helper.js:228
+msgid "Not now"
+msgstr ""
+
+#: push/components/listing/helper.js:204
+msgid "You're about to activate this campaign. It will be sent automatically once triggered according to your configured settings."
+msgstr ""
+
+#: push/components/listing/helper.js:208
+msgid "Deactivate campaign?"
+msgstr ""
+
+#: push/components/listing/helper.js:210
+msgid "Campaign %s has been deactivated."
+msgstr ""
+
+#: push/components/listing/helper.js:216
+msgid "You’re about to deactivate your campaign %s. Are you sure?"
+msgstr ""
+
+#: push/components/listing/helper.js:222
+msgid "Send campaign now?"
+msgstr ""
+
+#: push/components/listing/helper.js:224
+msgid "Your campaign %s has been sent successfully."
+msgstr ""
+
+#: push/components/listing/helper.js:227
+msgid "Send"
+msgstr ""
+
+#: push/components/listing/helper.js:229
+msgid "You’re about to send a Push notification campaign to all selected subscribers. Are you sure?"
+msgstr ""
+
+#: push/components/listing/helper.js:291
+msgid "Delete campaigns?"
+msgstr ""
+
+#: push/components/listing/helper.js:292
+msgid "%d  campaigns deleted."
+msgstr ""
+
+#: push/components/listing/helper.js:293
+msgid "Delete campaigns"
+msgstr ""
+
+#: push/components/listing/helper.js:294
+#: push/components/listing/helper.js:307
+msgid "Keep campaigns"
+msgstr ""
+
+#: push/components/listing/helper.js:296
+msgid "You're about to delete %d campaigns permanently. You will not be able to restore them."
+msgstr ""
+
+#: push/components/listing/helper.js:302
+msgid "Delete campaign?"
+msgstr ""
+
+#: push/components/listing/helper.js:304
+msgid "Campaign %s deleted."
+msgstr ""
+
+#: push/components/listing/helper.js:306
+msgid "Delete campaign"
+msgstr ""
+
+#: push/components/listing/helper.js:309
+msgid "You're about to delete the campaign %s permanently. You will not be able to restore it."
+msgstr ""
+
+#: push/components/listing/Listing.jsx:26
+#: push/pages/CampaignDetail.js:93
+msgid "Metrics"
+msgstr ""
+
+#: push/components/listing/metrics.js:10
+#: push/components/listing/metrics.js:56
+#: push/pages/Overview.js:263
+msgid "Receipts"
+msgstr ""
+
+#: push/components/listing/metrics.js:15
+#: push/components/listing/metrics.js:61
+#: push/pages/Overview.js:316
+msgid "Clicks"
+msgstr ""
+
+#: push/components/listing/metrics.js:20
+#: push/components/listing/metrics.js:66
+msgid "Click-through rate"
+msgstr ""
+
+#: push/components/NameEditor.js:13
+msgid "Update name"
+msgstr ""
+
+#: push/components/NameEditor.js:16
+msgid "Cancel name edition"
+msgstr ""
+
+#: push/components/NameEditor.js:18
+msgid "Edit name"
+msgstr ""
+
+#: push/components/PushSubscriptionBanner.js:21
+msgid "We couldn't subscribe you to push notifications:"
+msgstr ""
+
+#: push/components/PushSubscriptionBanner.js:21
+msgid "You are not subscribed to push notifications"
+msgstr ""
+
+#: push/components/PushSubscriptionBanner.js:27
+msgid "Subscribe to push notifications"
+msgstr ""
+
+#: push/components/SaveButton.js:48
+#: push/components/subscription/SubscriptionPrompts.js:82
+msgid "Changes saved"
+msgstr ""
+
+#: push/components/SaveButton.js:59
+msgid "There was an error saving your changes:"
+msgstr ""
+
+#: push/components/settings/PressureCategories.js:113
+msgid "per hour"
+msgstr ""
+
+#: push/components/settings/PressureCategories.js:118
+msgid "per day"
+msgstr ""
+
+#: push/components/settings/PressureCategories.js:123
+msgid "per week"
+msgstr ""
+
+#: push/components/settings/PressureCategories.js:130
+msgid "Minutes"
+msgstr ""
+
+#: push/components/settings/PressureCategories.js:135
+msgid "Hours"
+msgstr ""
+
+#: push/components/settings/PressureCategories.js:140
+msgid "Days"
+msgstr ""
+
+#: push/components/settings/PressureCategories.js:167
+msgid "Max number of pushes"
+msgstr ""
+
+#: push/components/settings/PressureCategories.js:177
+#: push/components/settings/PressureCategories.js:193
+msgid "Select a duration"
+msgstr ""
+
+#: push/components/settings/PressureCategories.js:183
+msgid "TTL"
+msgstr ""
+
+#: push/components/settings/PressureCategories.js:201
+msgid "Show more categories"
+msgstr ""
+
+#: push/components/SubscribersGraph.js:53
+msgid "Subscribed contacts"
+msgstr ""
+
+#: push/components/SubscribersGraph.js:54
+msgid "Number of unique subscribed contacts. Updated hourly."
+msgstr ""
+
+#: push/components/subscription/SnoozeSelect.js:17
+msgid "6 hours"
+msgstr ""
+
+#: push/components/subscription/SnoozeSelect.js:18
+msgid "12 hours"
+msgstr ""
+
+#: push/components/subscription/SnoozeSelect.js:20
+msgid "2 days"
+msgstr ""
+
+#: push/components/subscription/SnoozeSelect.js:21
+msgid "1 week"
+msgstr ""
+
+#: push/components/subscription/SnoozeSelect.js:22
+msgid "2 weeks"
+msgstr ""
+
+#: push/components/subscription/SnoozeSelect.js:24
+msgid "2 months"
+msgstr ""
+
+#: push/components/subscription/SnoozeSelect.js:28
+msgid "%s (default)"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:29
+msgid "Manage Notifications"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:30
+msgid "Subscribe"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:31
+msgid "Unsubscribe"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:32
+msgid "Click to subscribe to notifications"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:33
+msgid "You're subscribed to notifications"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:34
+msgid "You are not receiving any notifications"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:35
+msgid "You've blocked notifications"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:36
+msgid "Thanks for subscribing!"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:37
+msgid "You won't receive more notifications"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:38
+msgid "Your personal notification data:"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:39
+msgid "Brevo fully supports european GDPR"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:40
+msgid "Download"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:41
+msgid "Clear"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:85
+msgid "Bell icon URL is too large. Max 256kb"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:89
+msgid "Bell icon must be HTTPS"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:100
+#: push/components/subscription/SubscriptionBlurbSettings.js:69
+msgid "Left"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:101
+#: push/components/subscription/SubscriptionBlurbSettings.js:71
+msgid "Right"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:111
+msgid "Controls whether the bell is displayed on the lower left or right corner of the screen."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:114
+msgid "Color"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:117
+msgid "Bell icon"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:117
+msgid "Select a file"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:129
+#: push/components/subscription/SubscriptionDialogSettings.js:177
+msgid "CSS z-index"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:129
+msgid "Raise this value if the bell is hidden below an element of the page."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:135
+msgid "Distance from the edge (px)"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:135
+msgid "Adjust this value to move the bell a few pixels left or right. Defaults to 20px."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:140
+msgid "Distance from the bottom (px)"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:140
+msgid "Adjust this value to move the bell a few pixels up or down. Defaults to 20px."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:145
+msgid "Show unread count"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:147
+msgid "When set to YES, shows a badge that looks like an unread-count until user hovers the mouse over the bell."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:149
+msgid "Call-to-action"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:149
+msgid "Displayed when not-yet-subscribed users place mouse over bell."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:149
+msgid "Blocked message"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:149
+msgid "Displayed when notifications are blocked and user place mouse over the bell."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:149
+msgid "Thank-you message"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:149
+msgid "Message displayed when users subscribe."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:149
+msgid "Unsubscription dialog"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:149
+msgid "When users are subscribed, the bell can present a dialog that lets users manage their subscription."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:149
+msgid "Letting users unsubscribe keeps the push permission and makes it easier for them to subscribe again later."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:149
+msgid "Hide the bell to subscribed users"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:151
+msgid "Dialog title"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:151
+msgid "Already subscribed"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:151
+msgid "Displayed when unsubscribed users place mouse over bell."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:151
+msgid "Subscribe button"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:151
+msgid "Unsubscribe button"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:151
+msgid "Already unsubscribed"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:151
+msgid "Displayed when subscribed users place mouse over bell."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:151
+msgid "Unsubscribe message"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:151
+msgid "Message displayed when users unsubscribe."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:151
+msgid "Privacy settings"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:151
+msgid "The bell can display buttons that let users download or clear their personal data stored on Brevo."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:151
+msgid "Hide privacy settings"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:153
+msgid "Settings description"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:153
+msgid "The description preceding the buttons of the settings section."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:153
+msgid "Settings fineprint"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:153
+msgid "The fineprint right after the buttons of the settings section."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:153
+msgid "\"Download\" button"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:153
+msgid "The label of the \"Download data\" button in the settings section."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:153
+msgid "\"Clear\" button"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBellSettings.js:153
+msgid "The label of the \"Clear data\" button in the settings section."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:46
+#: push/components/subscription/SubscriptionDialogSettings.js:152
+msgid "Preview"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:59
+msgid "Before"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:60
+msgid "After"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:64
+msgid "As many as there are matching containers"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:65
+msgid "Just one, in the first matching container"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:70
+msgid "Center"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:74
+msgid "Where should we place the link?"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:74
+msgid "Specify the CSS class or ID of the HTML element you wish to use as container."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:74
+msgid "Finding the class or id of an element is easy, even for non-developers."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:74
+msgid "Just ctrl-click the background of the element on the page and choose \"Inspect\"."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:74
+msgid "CSS class or ID of the container"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:74
+msgid "Enter a single string with letters, numbers, underscore or hyphen: we'll use it to match the corresponding CSS IDs and classes."
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:74
+msgid "my-element"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:76
+msgid "Insert link before, or after other children in the container?"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:76
+msgid "How many links should we insert?"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:78
+msgid "Customizing the link"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:78
+#: push/components/subscription/SubscriptionDialogSettings.js:156
+#: push/components/subscription/SubscriptionNativeSettings.js:31
+msgid "Message"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:81
+msgid "Link color"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:81
+msgid "Alignment"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:81
+msgid "Displaying an icon"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:81
+msgid "Display an icon alongside the link"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:81
+msgid "Icon color"
+msgstr ""
+
+#: push/components/subscription/SubscriptionBlurbSettings.js:81
+msgid "Icon image URL"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:117
+msgid "Powered by Brevo"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:139
+msgid "Floats over page (fixed)"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:140
+msgid "Scrolls with page (absolute)"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:144
+msgid "Center top"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:145
+msgid "Left top"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:146
+msgid "Right top"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:147
+msgid "Center bottom"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:148
+msgid "Left bottom"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:149
+msgid "Right bottom"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:152
+#: push/components/subscription/SubscriptionNativeSettings.js:29
+msgid "When do you want to prompt users?"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:154
+msgid "Adapt texts"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:157
+#: push/components/subscription/SubscriptionNativeSettings.js:31
+msgid "Positive button label"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:158
+#: push/components/subscription/SubscriptionNativeSettings.js:31
+msgid "Negative button label"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:162
+msgid "Colors"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:163
+msgid "Positive button background"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:164
+msgid "Negative button background"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:165
+msgid "Positive button text"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:166
+msgid "Negative button text"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:167
+msgid "Background"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:172
+#: push/pages/Settings.js:17
+#: push/pages/settings/AdvancedSettings.js:31
+msgid "Advanced settings"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:181
+msgid "Scroll behavior"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:189
+msgid "Distance from the top (px)"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:189
+msgid "Close button snooze"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:189
+msgid "Time to wait before presenting the dialog again after user clicked the close button."
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:192
+msgid "Negative button snooze"
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:192
+msgid "Time to wait before presenting the dialog again after user clicked the negative button."
+msgstr ""
+
+#: push/components/subscription/SubscriptionDialogSettings.js:195
+msgid "Hide \"Powered by Brevo\""
+msgstr ""
+
+#: push/components/subscription/SubscriptionNativeSettings.js:31
+msgid "Android HTML prompt"
+msgstr ""
+
+#: push/components/subscription/SubscriptionNativeSettings.js:31
+msgid "On Android devices, we will display an intermediate prompt before triggering the native permission prompt."
+msgstr ""
+
+#: push/components/subscription/SubscriptionNativeSettings.js:31
+msgid "Web browsers remember permissions that were given after a click, they might use that information to unsubscribe users later."
+msgstr ""
+
+#: push/components/subscription/SubscriptionNativeSettings.js:31
+msgid "Display native permission prompt directly on Android (not recommended)"
+msgstr ""
+
+#: push/components/subscription/SubscriptionPrompts.js:34
+msgid "Subscription bell"
+msgstr ""
+
+#: push/components/subscription/SubscriptionPrompts.js:35
+msgid "Display a permanent bell at the bottom corner of the screen."
+msgstr ""
+
+#: push/components/subscription/SubscriptionPrompts.js:40
+msgid "Native prompt"
+msgstr ""
+
+#: push/components/subscription/SubscriptionPrompts.js:41
+msgid "Display the browser's native permission prompt, at the right time. HTTPS only."
+msgstr ""
+
+#: push/components/subscription/SubscriptionPrompts.js:46
+msgid "HTML dialog"
+msgstr ""
+
+#: push/components/subscription/SubscriptionPrompts.js:47
+msgid "Display a customizable dialog with your message and icon, at the right time."
+msgstr ""
+
+#: push/components/subscription/SubscriptionPrompts.js:52
+msgid "Inline link"
+msgstr ""
+
+#: push/components/subscription/SubscriptionPrompts.js:53
+msgid "Display clickable link and icon inlined anywhere in the page."
+msgstr ""
+
+#: push/components/subscription/SubscriptionPrompts.js:95
+msgid "Configure a subscription prompt below to allow your visitors to subscribe to push notification"
+msgstr ""
+
+#: push/components/subscription/SubscriptionPrompts.js:95
+msgid "You have unsaved changes"
+msgstr ""
+
+#: push/components/subscription/SubscriptionPrompts.js:104
+msgid "Configure"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:36
+msgid "pixels"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:37
+msgid "percent"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:46
+msgid "After a few pages"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:51
+msgid "Minimum page views"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:63
+msgid "After a few visits"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:63
+msgid "Minimum visits"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:74
+msgid "Wait for a few seconds once the page is loaded"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:74
+msgid "Number of seconds:"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:85
+msgid "Wait until user scrolled a minimum amount"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:95
+msgid "Amount"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:109
+msgid "Unit"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:124
+msgid "Snooze after user dismisses prompt"
+msgstr ""
+
+#: push/components/subscription/TriggerSettings.js:124
+msgid "Time to wait before presenting the permission prompt again when dismissed (users hitting the Block button cannot be prompted again)."
+msgstr ""
+
+#: push/components/subscription/URLFiltersForm.js:24
+msgid "Only show on URLs containing (one string per line)"
+msgstr ""
+
+#: push/components/subscription/URLFiltersForm.js:24
+msgid "Only show on some URLs"
+msgstr ""
+
+#: push/components/subscription/URLFiltersForm.js:24
+msgid "Only show if the URL contains at least one of the strings listed here. Leave this list empty to match all URLs."
+msgstr ""
+
+#: push/components/subscription/URLFiltersForm.js:24
+msgid ""
+"some-mandatory-string\n"
+"another-mandatory-string"
+msgstr ""
+
+#: push/components/subscription/URLFiltersForm.js:28
+msgid "Do NOT show on URLs containing (one string per line)"
+msgstr ""
+
+#: push/components/subscription/URLFiltersForm.js:28
+msgid "Do NOT show on some URLs"
+msgstr ""
+
+#: push/components/subscription/URLFiltersForm.js:28
+msgid "Do not show if the URL contains any of the strings listed here."
+msgstr ""
+
+#: push/components/subscription/URLFiltersForm.js:28
+msgid ""
+"some-excluded-string\n"
+"another-excluded-string"
+msgstr ""
+
+#: push/graphs/justcount-graphs/components/csvlink.js:50
+#: push/graphs/justcount-graphs/components/table.js:81
+msgid "Tenant"
+msgstr ""
+
+#: push/graphs/justcount-graphs/components/csvlink.js:72
+#: push/stats/StatsComponent/base.js:343
+msgid "Download as CSV"
+msgstr ""
+
+#: push/graphs/justcount-graphs/components/daterangeselect.js:51
+msgid "Today"
+msgstr ""
+
+#: push/graphs/justcount-graphs/components/daterangeselect.js:53
+msgid "Yesterday"
+msgstr ""
+
+#: push/graphs/justcount-graphs/components/daterangeselect.js:55
+msgid "Last 7 Days"
+msgstr ""
+
+#: push/graphs/justcount-graphs/components/daterangeselect.js:57
+msgid "Last 30 Days"
+msgstr ""
+
+#: push/MainLayout.js:108
+msgid "Overview"
+msgstr ""
+
+#: push/MainLayout.js:112
+#: push/pages/PushSubscription.js:6
+msgid "Subscription prompts"
+msgstr ""
+
+#: push/MainLayout.js:116
+msgid "Campaigns"
+msgstr ""
+
+#: push/MainLayout.js:120
+msgid "Settings"
+msgstr ""
+
+#: push/MainLayout.js:124
+#: push/pages/Activation.js:29
+#: push/stats/StatsComponent/platform-selector.js:39
+msgid "Web push"
+msgstr ""
+
+#: push/pages/Activation.js:29
+msgid "Grow your audience with push notifications"
+msgstr ""
+
+#: push/pages/Activation.js:29
+msgid "Notify your readers whenever a new post is published."
+msgstr ""
+
+#: push/pages/Activation.js:29
+msgid "Let your users subscribe to their favorite topics."
+msgstr ""
+
+#: push/pages/Activation.js:29
+msgid "Activate web push"
+msgstr ""
+
+#: push/pages/Activation.js:29
+msgid "Please wait, activation might take up to a minute."
+msgstr ""
+
+#: push/pages/Activation.js:29
+msgid "Manage shortcuts"
+msgstr ""
+
+#: push/pages/Activation.js:29
+msgid "Hide shortcut management"
+msgstr ""
+
+#: push/pages/Activation.js:29
+#: push/pages/settings/AdvancedSettings.js:31
+msgid "Show admin bar shortcut"
+msgstr ""
+
+#: push/pages/Activation.js:31
+msgid "Show post editor widget"
+msgstr ""
+
+#: push/pages/CampaignDetail.js:142
+msgid "Notified subscribers"
+msgstr ""
+
+#: push/pages/CampaignDetail.js:143
+msgid "Number of unique users that were sent this notification via the push servers of Google, Apple, Huawei, Mozilla, Microsoft, etc."
+msgstr ""
+
+#: push/pages/CampaignDetail.js:156
+msgid "Confirmed recipients"
+msgstr ""
+
+#: push/pages/CampaignDetail.js:157
+msgid "Number of targeted devices already acknowledged this notification."
+msgstr ""
+
+#: push/pages/CampaignDetail.js:170
+msgid "Clicking subscribers"
+msgstr ""
+
+#: push/pages/CampaignDetail.js:171
+msgid "Number of unique subscribers that clicked on this notification."
+msgstr ""
+
+#: push/pages/CampaignDetail.js:175
+msgid "Click-Through Rate: Part of the clicking subscribers over those with confirmed receipts."
+msgstr ""
+
+#: push/pages/CampaignDetail.js:189
+msgid "Capped subscribers"
+msgstr ""
+
+#: push/pages/CampaignDetail.js:190
+msgid "Number of unique subscribers that capping prevented at least once from getting this notification."
+msgstr ""
+
+#: push/pages/CampaignDetail.js:203
+msgid "Failed subscribers"
+msgstr ""
+
+#: push/pages/CampaignDetail.js:204
+msgid "Number of subscribers that were rejected at least once by servers of Google, Apple, Huawei, Mozilla, Microsoft, etc, usually because the user has unsubscribed."
+msgstr ""
+
+#: push/pages/CampaignDetail.js:219
+msgid "Sent notifications"
+msgstr ""
+
+#: push/pages/CampaignDetail.js:220
+msgid "Number of notifications successfully sent to push servers of Google, Apple, Huawei, Mozilla, Microsoft, etc."
+msgstr ""
+
+#: push/pages/CampaignDetail.js:233
+msgid "Confirmed receipts"
+msgstr ""
+
+#: push/pages/CampaignDetail.js:234
+msgid "Number of notifications already acknowledged by the targeted devices."
+msgstr ""
+
+#: push/pages/CampaignDetail.js:247
+msgid "Clicked notifications"
+msgstr ""
+
+#: push/pages/CampaignDetail.js:248
+#: push/pages/Overview.js:317
+msgid "Number of push notifications clicked."
+msgstr ""
+
+#: push/pages/CampaignDetail.js:252
+msgid "Click-Through Rate: Part of the notifications clicked over the confirmed receipts."
+msgstr ""
+
+#: push/pages/CampaignDetail.js:266
+msgid "Capped notifications"
+msgstr ""
+
+#: push/pages/CampaignDetail.js:267
+msgid "Number of push notifications that capping prevented from getting sent."
+msgstr ""
+
+#: push/pages/CampaignDetail.js:280
+msgid "Failed notifications"
+msgstr ""
+
+#: push/pages/CampaignDetail.js:281
+msgid "Number of push notifications that were rejected by servers of Google, Apple, Huawei, Mozilla, Microsoft, etc, usually because the user has unsubscribed."
+msgstr ""
+
+#: push/pages/CreateCampaign.js:17
+msgid "New campaign %s"
+msgstr ""
+
+#: push/pages/Overview.js:72
+msgid "%d subscribed contact"
+msgid_plural "%d subscribed contacts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: push/pages/Overview.js:72
+msgid "Number of contacts you can reach with push notifications. Contacts subscribe to push notifications by accepting a subscription prompt to grant permission."
+msgstr ""
+
+#: push/pages/Overview.js:75
+msgid "Configure subscription prompts"
+msgstr ""
+
+#: push/pages/Overview.js:85
+#: push/pages/Overview.js:211
+msgid "New subscribed contacts"
+msgstr ""
+
+#: push/pages/Overview.js:86
+#: push/pages/Overview.js:212
+msgid "Number of unique new contacts subscribed to push."
+msgstr ""
+
+#: push/pages/Overview.js:108
+#: push/pages/Overview.js:236
+msgid "%d users opted-out of push notifications directly through their device settings or through the Brevo SDK, uninstalled your app or cleared their website data."
+msgstr ""
+
+#: push/pages/Overview.js:136
+msgid "Recipients"
+msgstr ""
+
+#: push/pages/Overview.js:137
+msgid "%d target devices acknowledged at least one notification."
+msgstr ""
+
+#: push/pages/Overview.js:148
+msgid "%d unique users that were sent push notifications via the push servers of Google, Apple, Huawei, Mozilla, Microsoft, etc."
+msgstr ""
+
+#: push/pages/Overview.js:160
+msgid "%d users could not be reached, usually because they unsubscribed"
+msgstr ""
+
+#: push/pages/Overview.js:172
+msgid "%d users were not reached to respect frequency capping"
+msgstr ""
+
+#: push/pages/Overview.js:189
+msgid "Clickers"
+msgstr ""
+
+#: push/pages/Overview.js:190
+msgid "Number of unique contacts that clicked on a push notification."
+msgstr ""
+
+#: push/pages/Overview.js:194
+msgid "Click-Through Rate: Part of the clicking users over those with receipts."
+msgstr ""
+
+#: push/pages/Overview.js:264
+msgid "%d notifications already acknowledged by the targeted devices."
+msgstr ""
+
+#: push/pages/Overview.js:275
+msgid "%d notifications successfully sent to push servers of Google, Apple, Huawei, Mozilla, Microsoft, etc."
+msgstr ""
+
+#: push/pages/Overview.js:287
+msgid "%d notifications failed to send, usually because users unsubscribed."
+msgstr ""
+
+#: push/pages/Overview.js:299
+msgid "%d notifications were not sent to respect frequency capping."
+msgstr ""
+
+#: push/pages/Overview.js:321
+msgid "Click-Through Rate: Part of the notifications clicked over receipts."
+msgstr ""
+
+#: push/pages/PushSubscription.js:6
+msgid "Subscription prompts allow your visitors to subscribe to push notifications."
+msgstr ""
+
+#: push/pages/PushSubscription.js:6
+msgid "They can be combined to collect the most subscribers."
+msgstr ""
+
+#: push/pages/Settings.js:17
+#: push/pages/settings/BlogSettings.js:79
+msgid "Blog settings"
+msgstr ""
+
+#: push/pages/Settings.js:17
+msgid "Automatically send push notifications when you publish a post."
+msgstr ""
+
+#: push/pages/Settings.js:17
+msgid "Control how many push notifications can users receive each day."
+msgstr ""
+
+#: push/pages/Settings.js:17
+#: push/pages/settings/UtmSettings.js:58
+msgid "UTM parameters"
+msgstr ""
+
+#: push/pages/Settings.js:17
+msgid "Add Google Analytics UTM parameters to your push notification links."
+msgstr ""
+
+#: push/pages/Settings.js:17
+msgid "AMP"
+msgstr ""
+
+#: push/pages/Settings.js:17
+msgid "Add push to your Accelerated Mobile Pages."
+msgstr ""
+
+#: push/pages/Settings.js:17
+msgid "Configure cURL, push initialization options, and more."
+msgstr ""
+
+#: push/pages/settings/AdvancedSettings.js:31
+msgid "Additional init options JSON"
+msgstr ""
+
+#: push/pages/settings/AdvancedSettings.js:31
+msgid "A valid JSON object to be merged with"
+msgstr ""
+
+#: push/pages/settings/AdvancedSettings.js:31
+msgid "Brevo init options"
+msgstr ""
+
+#: push/pages/settings/AdvancedSettings.js:31
+msgid "Use with care as this can damage your Brevo installation."
+msgstr ""
+
+#: push/pages/settings/AdvancedSettings.js:31
+msgid "Use the WordPress built-in HTTP API"
+msgstr ""
+
+#: push/pages/settings/AdvancedSettings.js:31
+msgid "When checked, Brevo will contact its own API using the HTTP client built in WordPress. When checked, hooks like http_api_curl will allow other plugins to customize HTTP calls. Uncheck if you want Brevo to use an HTTP client that cannot be affected by other plugins."
+msgstr ""
+
+#: push/pages/settings/AdvancedSettings.js:31
+msgid "When checked, Brevo will show a shortcut to this Web Push dashboard in the admin bar of your WordPress."
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:31
+msgid "AMP settings"
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Disabling both top and bottom subscription buttons completely disables subscription on AMP pages"
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Display subscribe button at the top of AMP pages"
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Disable this option to remove the subscription button at the top of AMP pages and posts."
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Display subscribe button at the bottom of AMP pages"
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Disable this option to remove the subscription button at the bottom of AMP pages and posts."
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Subscribe button label"
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Subscribe to news updates"
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "The label of the subscription button on AMP pages."
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Display unsubscribe button to subscribed users on AMP pages"
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Disable this option to remove the option to unsubscribe to subscribed AMP users."
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Unsubscribe button label"
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "The label of the unsubscription button on AMP pages."
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Unsubscribe from news updates"
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Button width"
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "The width in pixels of both subscribe and unsubscribe buttons."
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "Button height"
+msgstr ""
+
+#: push/pages/settings/AmpSettings.js:32
+msgid "The height in pixels of both subscribe and unsubscribe buttons."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:45
+#: push/pages/settings/PressureSettings.js:83
+msgid "minutes"
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:47
+#: push/pages/settings/PressureSettings.js:84
+msgid "hours"
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:64
+msgid "Segments"
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:71
+msgid "Lists"
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:79
+msgid "Automatically send a notification when I publish a post from the WordPress editor."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:79
+msgid "If checked, when you create a new post from WordPress's editor, the checkbox 'Send notification on post publish/update' will be automatically checked. The checkbox can be unchecked to prevent sending a notification."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:79
+msgid "Automatically send a notification when I publish a post from a 3rd party plugin."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:79
+msgid "If checked, when a post is created outside of WordPress's editor, a push notification will automatically be sent. Must be the built-in WordPress post type 'post' and the post must be published."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:79
+msgid "Additional Custom Post Types for Automatic Notifications Created From Plugins"
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:79
+msgid "Enter a comma-separated list of custom post type names. Anytime a post is published with one of the listed post types, a notification will be sent to all your users."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:79
+msgid "Notification title"
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:79
+msgid "The notification title to use for all outgoing notifications. Defaults to your site's title: “%s”."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:79
+msgid "Who should we notify by default?"
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:79
+msgid "The default audience to use for new blog post notifications. You can override this setting for each post in the WordPress editor."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:85
+msgid "No delay"
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:85
+msgid "Push notification delay:"
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:85
+msgid "Add a delay before sending blog post notifications. The notification is sent to Brevo immediately and cannot be cancelled, but its delivery is delayed according to this setting."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:85
+msgid "Use the post featured image as notification image"
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:85
+msgid "If checked, use the post's featured image in the notification."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:85
+msgid "Prefer large notification image"
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:85
+msgid "If checked, use a larger image in the notification. May affect your site performance."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:85
+msgid "Display 'Send notification on post publish' in the WordPress editor."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:85
+msgid "If checked, Brevo will add the option to send a notification directly from the WordPress Editor."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:85
+msgid "Display number of subscribers when I publish a post."
+msgstr ""
+
+#: push/pages/settings/BlogSettings.js:85
+msgid "If checked, Brevo will display the number of subscribers reached when you checked 'Send notification on post publish/update' and published a post from the WordPress Editor."
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:69
+msgid "Per hour"
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:70
+msgid "Per day"
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:71
+msgid "Per week"
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:85
+msgid "days"
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:88
+msgid "Subscriber protection"
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:88
+msgid "Subscriber protection works by capping the maximum number of messages per hour, day, or week that a device will receive from your app or website. Enabling subscriber protection helps prevent subscribers from receiving too many notifications and unsubscribing."
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:88
+msgid "Cap the amount of push notifications the user receives"
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:100
+msgid "Enabling subscriber protection is highly recommended. Subscribers receiving too many push notifications are likely to unsubscribe."
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:100
+msgid "Maximum number of push notifications"
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:111
+msgid "By category"
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:111
+msgid "Apply different capping settings depending on the category you choose in the push notification editor."
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:117
+msgid "A too fast sending speed risks overloading your servers."
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:117
+msgid "Select the default delivery speed for your push notifications"
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:117
+msgid "You can override this setting on a per-notification basis from the push notification editor."
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:120
+msgid "Time-to-live"
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:120
+msgid "The maximum duration for which the gateway tries to deliver the push notification to the device. The device must be switched-on and connected to get the push notification. Past the TTL, the push notification is dropped."
+msgstr ""
+
+#: push/pages/settings/PressureSettings.js:120
+msgid "Selecting a long time-to-live will result in time-sensitive notifications being delivered past their relevancy."
+msgstr ""
+
+#: push/pages/settings/UtmSettings.js:58
+msgid "The following parameters will be automatically included in every push notification and popup target URLs. If a parameter is already present in a target URL, the value of this parameter will be kept untouched."
+msgstr ""
+
+#: push/pages/settings/UtmSettings.js:60
+msgid "Key"
+msgstr ""
+
+#: push/pages/settings/UtmSettings.js:60
+msgid "Remove"
+msgstr ""
+
+#: push/pages/settings/UtmSettings.js:61
+msgid "Add Parameter"
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:50
+msgid "WooCommerce"
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "Cart reminder: automatically send a notification after some time when users leave without buying."
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "View cart reminder campaign"
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "Order complete notifications."
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "If checked, automatically send a notification to customers when their order status changes from “Processing” to “Complete”. Only customers that have an account with your shop (e.g. not guests) will receive a notification."
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "Order complete message"
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "We've just shipped your order."
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "The text of the notification we send users when their order status changes from “Processing” to “Complete”. Defaults to “We've just shipped your order.”."
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "Order processing notifications."
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "If checked, automatically send a notification to customers when their order status changes from “Pending” to “Processing” (or “Complete” for digital goods). Only customers that have an account with your shop (e.g. not guests) will receive a notification."
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "Order processing message"
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "We're preparing your order."
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "The text of the notification we send users when their order status changes from “Pending” to “Processing” (or “Complete” for digital goods). Defaults to “We're preparing your order.”."
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "Send a Brevo event when users make a purchase."
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "If checked, send a Brevo event when users reach the thank-you page of the ordering process."
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "Name of the event sent when users reach the thank-you page"
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "GOAL_1"
+msgstr ""
+
+#: push/pages/settings/WooCommerceSettings.js:52
+msgid "The name of the Brevo event sent to our servers when users reach the thank-you page. Use that event name to create segments and target users who have already made a purchase."
+msgstr ""
+
+#: push/stats/addMetric.js:16
+msgid "Notifications sent"
+msgstr ""
+
+#: push/stats/addMetric.js:17
+msgid "Soft opt-outs"
+msgstr ""
+
+#: push/stats/addMetric.js:18
+msgid "Invalidated push tokens"
+msgstr ""
+
+#: push/stats/addMetric.js:25
+msgid "Label:"
+msgstr ""
+
+#: push/stats/addMetric.js:25
+msgid "e.g. Purchases"
+msgstr ""
+
+#: push/stats/addMetric.js:37
+#: push/stats/addMetric.js:41
+msgid "Add metric"
+msgstr ""
+
+#: push/stats/index.js:27
+msgid "Number of unique users that generated an event of type %s and subtype %s"
+msgstr ""
+
+#: push/stats/index.js:28
+msgid "Number of events of type %s and subtype %s"
+msgstr ""
+
+#: push/stats/index.js:30
+msgid "Number of unique users that generated an event of type %s"
+msgstr ""
+
+#: push/stats/index.js:31
+msgid "Number of events of type %s"
+msgstr ""
+
+#: push/stats/StatsComponent/base.js:213
+msgid "By hour"
+msgstr ""
+
+#: push/stats/StatsComponent/base.js:214
+msgid "By day"
+msgstr ""
+
+#: push/stats/StatsComponent/base.js:215
+msgid "By week"
+msgstr ""
+
+#: push/stats/StatsComponent/base.js:216
+msgid "By month"
+msgstr ""
+
+#: push/stats/StatsComponent/date-button.js:25
+msgid "Choose dates"
+msgstr ""
+
+#: push/stats/StatsComponent/date-button.js:28
+msgid "OK"
+msgstr ""
+
+#: push/stats/StatsComponent/date-button.js:43
+msgid "Choose date range"
+msgstr ""
+
+#: push/stats/StatsComponent/date-button.js:50
+msgid "Dates and times displayed in the %s timezone."
+msgstr ""
+
+#: push/stats/StatsComponent/platform-selector.js:43
+msgid "All platforms"
+msgstr ""
+
+#: push/stats/StatsComponent/platform-selector.js:43
+msgid "Some platforms"
+msgstr ""
+
+#: push/stats/StatsComponent/stat-group-selector.js:16
+msgid "No grouping"
+msgstr ""
+
+#: push/stats/StatsComponent/stat-group-selector.js:16
+msgid "Popups"
+msgstr ""
+
+#: push/stats/StatsComponent/stat-group-selector.js:16
+msgid "Group by contacts"
+msgstr ""
+
+#: push/stats/StatsComponent/stat-group-selector.js:16
+msgid "Visitors"
+msgstr ""
+
+#: push/unsaved.js:5
+msgid "You have unsaved changes. Are you sure you want to leave?"
+msgstr ""
+
+#: push/validator.js:42
+msgid "Must start with %s."
+msgstr ""
+
+#: push/validator.js:53
+msgid "Must be one of: %s."
+msgstr ""
+
+#: push/validator.js:64
+#: push/validator.js:72
+msgid "Mandatory field"
+msgstr ""
+
+#: push/validator.js:80
+msgid "Invalid URL"
+msgstr ""
+
+#: push/validator.js:83
+msgid "Forbidden URL"
+msgstr ""
