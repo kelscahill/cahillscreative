@@ -9,7 +9,7 @@
  */
 
 if ( ! defined( 'SEARCH_FILTER_PRO_VERSION' ) ) {
-	define( 'SEARCH_FILTER_PRO_VERSION', '3.1.7' );
+	define( 'SEARCH_FILTER_PRO_VERSION', '3.1.8' );
 }
 
 if ( ! defined( 'SEARCH_FILTER_PRO_URL' ) ) {

@@ -115,6 +115,9 @@ class Search_Filter_Pro {
 		// Needs priority of 0 to load before the free plugin, so we can registers
 		// certain hooks in time.
 		add_action( 'plugins_loaded', array( $this, 'init' ), 0 );
+
+		// Our extensions init their updates on priority 9 so we need to override them on 10.
+		add_action( 'plugins_loaded', array( $this, 'init_legacy_extension_updates' ), 10 );
 	}
 
 	/**
@@ -202,6 +205,15 @@ class Search_Filter_Pro {
 		$this->define_global_hooks();
 		$this->load_rest_api();
 
+	}
+
+	/**
+	 * Init the legacy extension updates.
+	 *
+	 * @return void
+	 */
+	public function init_legacy_extension_updates() {
+		Update_Manager::add_legacy_extension_updates();
 	}
 
 	/**

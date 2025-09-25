@@ -4,7 +4,7 @@ Tags: search, filter, taxonomy, tag, category, product, shop, post type
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.2
-Stable tag: 3.1.7
+Stable tag: 3.1.8
 
 Create powerful search and filtering experiences for your users and customers.
 
@@ -21,6 +21,9 @@ Create powerful search and filtering experiences for your users and customers.
 
 
 == Changelog ==
+
+= 3.1.8 =
+* Hotfix - workaround for an issue introduced in the Beaver Builder extension.
 
 = 3.1.7 =
 * Improvement - update integrations list.

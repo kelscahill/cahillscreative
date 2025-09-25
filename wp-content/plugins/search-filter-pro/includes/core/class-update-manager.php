@@ -180,4 +180,88 @@ class Update_Manager {
 			\Search_Filter\Options::update_option_value( 'update-manager_known-updates', $known_updates );
 		}
 	}
+	
+	/**
+	 * Add the legacy extensions for the update manager.
+	 *
+	 * Works around issues with old or broken versions of our extensions in circulation,
+	 * allowing for us to manually
+	 *
+	 * @return void
+	 */
+	public static function add_legacy_extension_updates() {
+
+		if ( class_exists( '\Search_Filter_BB_Extension' ) ) {
+
+			// Real path should convert `/` etc to the right format for the OS.
+			$plugin_file = self::get_plugin_file_path( 'search-filter-bb/search-filter-bb.php' );
+
+			if ( file_exists( $plugin_file ) ) {
+				// Add Beaver Builder Extension.
+				$extension_update_package = array(
+					'file'    => $plugin_file,
+					'id'      => \Search_Filter_BB_Extension::PLUGIN_UPDATE_ID,
+					'version' => \Search_Filter_BB_Extension::VERSION,
+					'license' => 'search-filter-extension-free',
+					'beta'    => false,
+				);
+				self::add( $extension_update_package );
+			}
+		}
+		if ( class_exists( '\Search_Filter_Elementor_Extension' ) ) {
+
+			$plugin_file = self::get_plugin_file_path( 'search-filter-elementor/search-filter-elementor.php' );
+
+			if ( file_exists( $plugin_file ) ) {
+				// Add Beaver Builder Extension.
+				$extension_update_package = array(
+					'file'    => $plugin_file,
+					'id'      => \Search_Filter_Elementor_Extension::PLUGIN_UPDATE_ID,
+					'version' => \Search_Filter_Elementor_Extension::VERSION,
+					'license' => 'search-filter-extension-free',
+					'beta'    => false,
+				);
+				self::add( $extension_update_package );
+			}
+		}
+
+		// Get the divi extension class.
+		$divi_extension_class = null;
+		// Class name used in Divi extension v2.x.
+		if ( class_exists( '\Search_Filter_Divi_Extension' ) ) {
+			$divi_extension_class = '\Search_Filter_Divi_Extension';
+		}
+		// Class name used in Divi extension v1.x.
+		if ( class_exists( '\Search_Filter_Divi' ) ) {
+			$divi_extension_class = '\Search_Filter_Divi_Extension\Version_2';
+		}
+		if ( ! empty( $divi_extension_class ) ) {
+
+			$plugin_file = self::get_plugin_file_path( 'search-filter-divi/search-filter-divi.php' );
+
+			if ( file_exists( $plugin_file ) ) {
+				// Add Beaver Builder Extension.
+				$extension_update_package = array(
+					'file'    => $plugin_file,
+					'id'      => $divi_extension_class::PLUGIN_UPDATE_ID,
+					'version' => $divi_extension_class::VERSION,
+					'license' => 'search-filter-extension-free',
+					'beta'    => false,
+				);
+				self::add( $extension_update_package );
+			}
+		}
+	}
+
+	/**
+	 * Get the plugin file path.
+	 * @since 3.1.8
+	 *
+	 * @param string $relative_path The relative path to the plugin file.
+	 * 
+	 * @return string The absolute path to the plugin file.
+	 */
+	private static function get_plugin_file_path( $relative_path ) {
+		return realpath( trailingslashit( WP_PLUGIN_DIR ) . $relative_path );
+	}
 }
