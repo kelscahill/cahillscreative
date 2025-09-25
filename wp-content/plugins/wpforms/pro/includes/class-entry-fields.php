@@ -302,7 +302,7 @@ class WPForms_Entry_Fields_Handler extends WPForms_DB {
 	 *
 	 * @return void
 	 */
-	private function save_field( $field, $form_data, $entry_id, $update, $date ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function save_field( $field, $form_data, $entry_id, $update, $date ) {
 
 		// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
 		/**

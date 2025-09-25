@@ -1,5 +1,8 @@
 <?php
 
+// phpcs:ignore  Generic.Commenting.DocComment.MissingShort
+/** @noinspection AutoloadingIssuesInspection */
+
 use WPForms\Helpers\Transient;
 use WPForms\Admin\Notice;
 
@@ -136,7 +139,7 @@ class WPForms_License {
 	 *
 	 * @return bool
 	 */
-	public function verify_key( $key = '', $ajax = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function verify_key( $key = '', $ajax = false ) {
 
 		if ( empty( $key ) ) {
 			return false;
@@ -173,9 +176,9 @@ class WPForms_License {
 			}
 		}
 
-		$success = isset( $verify->success ) ? $verify->success : esc_html__( 'Congratulations! This site is now receiving automatic updates.', 'wpforms' );
+		$success = $verify->success ?? esc_html__( 'Congratulations! This site is now receiving automatic updates.', 'wpforms' );
 
-		// Otherwise, user's license has been verified successfully, update the option and set the success message.
+		// Otherwise, the user's license has been verified successfully, update the option and set the success message.
 		$option          = (array) get_option( 'wpforms_license', [] );
 		$option['key']   = $key;
 		$option['type']  = $verify->type ?? $option['type'];
@@ -278,7 +281,7 @@ class WPForms_License {
 	 *
 	 * @return string|bool
 	 */
-	public function validate_key( $key = '', $forced = false, $ajax = false, $return_status = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function validate_key( $key = '', $forced = false, $ajax = false, $return_status = false ) {
 
 		if ( $ajax ) {
 			$this->cache_ajax_request( 'validate-key' );
@@ -360,7 +363,7 @@ class WPForms_License {
 	 *
 	 * @param bool $ajax True if this is an ajax request.
 	 */
-	public function deactivate_key( $ajax = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function deactivate_key( $ajax = false ) {
 
 		$key = $this->get();
 
@@ -426,7 +429,7 @@ class WPForms_License {
 		}
 
 		// Otherwise, user's license has been deactivated successfully, reset the option and set the success message.
-		$success         = isset( $deactivate->success ) ? $deactivate->success : $success_message;
+		$success         = $deactivate->success ?? $success_message;
 		$this->success[] = $success;
 
 		$this->remove_key();
@@ -487,7 +490,7 @@ class WPForms_License {
 	 *
 	 * @return string Returns proper info (error) message depending on the state of the license.
 	 */
-	public function get_info_message_escaped() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function get_info_message_escaped() {
 
 		if ( ! $this->get() ) {
 			return sprintf(
@@ -575,7 +578,7 @@ class WPForms_License {
 	 *
 	 * @param bool $below_h2 Whether to display a notice below H2.
 	 */
-	public function notices( $below_h2 = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function notices( $below_h2 = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Do not display notices if the user does not have permission or is on the settings page.
 		if ( ! wpforms_current_user_can() || wpforms_is_admin_page( 'settings' ) ) {
@@ -803,7 +806,11 @@ class WPForms_License {
 			return [];
 		}
 
-		$addons = Transient::get( 'addons' );
+		static $addons = null;
+
+		if ( $addons === null ) {
+			$addons = Transient::get( 'addons' );
+		}
 
 		// We store an empty array if the request isn't valid to prevent spam requests.
 		if ( is_array( $addons ) ) {

@@ -6,7 +6,7 @@
  * Author: Brevo
  * Text Domain: woocommerce-sendinblue-newsletter-subscription
  * Domain Path: /languages
- * Version: 4.0.42
+ * Version: 4.0.46
  * Author URI: https://www.brevo.com/?r=wporg
  * Requires at least: 4.3
  * Tested up to: 6.8.1
@@ -47,7 +47,7 @@ define('SENDINBLUE_WC_SETTINGS', 'sendinblue_woocommerce_user_connection_setting
 define('SENDINBLUE_WC_EMAIL_SETTINGS', 'sendinblue_woocommerce_email_options_settings');
 define('SENDINBLUE_WC_VERSION_SENT', 'sendinblue_woocommerce_version_sent');
 define('API_KEY_V3_OPTION_NAME', 'sib_wc_api_key_v3');
-define('SENDINBLUE_WC_PLUGIN_VERSION', '4.0.42');
+define('SENDINBLUE_WC_PLUGIN_VERSION', '4.0.46');
 define('SENDINBLUE_WORDPRESS_SHOP_VERSION', $GLOBALS['wp_version']);
 define('SENDINBLUE_WOOCOMMERCE_UPDATE', 'sendinblue_plugin_update_call_apiv3');
 define('SENDINBLUE_REDIRECT', 'sendinblue_woocommerce_redirect');
@@ -232,7 +232,6 @@ function sendinblue_woocommerce_update()
 {
     $update_manager = new UpdatePluginManagers();
     $update_manager->send_settings();
-    $update_manager->enable_ecommerce();
     $update_manager->post_update();
 }
 

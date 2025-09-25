@@ -10,6 +10,14 @@ div.wpforms-container div.wpforms-uploader {
   cursor: pointer;
 }
 
+div.wpforms-container div.wpforms-uploader .modern-title span {
+  text-decoration: underline;
+}
+
+div.wpforms-container div.wpforms-uploader .modern-title span:hover {
+  text-decoration: none;
+}
+
 div.wpforms-container div.wpforms-uploader .dz-message {
   display: flex;
   flex-direction: column;

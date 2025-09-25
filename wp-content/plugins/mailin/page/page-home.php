@@ -188,6 +188,22 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 
 			$home_settings = get_option( SIB_Manager::HOME_OPTION_NAME );
 			$push_activated = SIB_Push_Utils::is_push_active();
+			$contactSyncMessage = SIB_Push_Utils::is_contact_sync_active()
+				? sprintf(
+						// translators: %1$s: advanced settings, $2%s deactivate push notifications link
+						__( 'To stop creating contacts from push subscribers, %1$s. To disable notifications entirely, %2$s.', 'mailin' ),
+					'<a href="'.add_query_arg( 'page', SIB_Page_Push::PAGE_ID, admin_url( 'admin.php' ) ).'#/settings/advanced" style="font-size:12px;">' . __( 'go to Advanced settings', 'mailin' ) . '</a>',
+					'<a href="#" style="font-size:12px;" id="deactivate_push_btn">' . __( 'turn off Web push', 'mailin' ) . '</a>'
+				)
+				: sprintf(
+						// translators: %1$s: advanced settings, $2%s deactivate push notifications link
+						__( 'To use Brevo segments and lists, enable contact creation from push subscribers %1$s. To stop notifications completely, %2$s.', 'mailin' ),
+					'<a href="'.add_query_arg( 'page', SIB_Page_Push::PAGE_ID, admin_url( 'admin.php' ) ).'#/settings/advanced" style="font-size:12px;">' . __( 'in Advanced settings', 'mailin' ) . '</a>',
+					'<a href="#" style="font-size:12px;" id="deactivate_push_btn">' . __( 'turn off Web push', 'mailin' ) . '</a>'
+				);
+
+			/*											printf(
+											); */
 			$show_push = SIB_Push_Settings::getSettings()->getShowPush();
 			$push_app = null;
 			try { $push_app = SIB_Push_Utils::get_push_application(300); } catch (Exception $e) { }
@@ -411,12 +427,9 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 									</div>
 									<div class="col-md-5">
 										<small style="font-style: italic;">
-											<?php printf(
-													// translators: %s: deactivate push notifications link
-												__( 'To stop getting new push subscribers and notifying existing ones, you can %s.', 'mailin' ),
-												'<a href="#" style="font-size:12px;" id="deactivate_push_btn">' . __( 'deactivate web push', 'mailin' ) . '</a>'
-											); ?>
+											<?php echo $contactSyncMessage; ?>
 										</small>
+										<span style="display: none" id="deactivate_push_content"><?php _e("Warning: Deactivating push will stop new subscriptions and prevent notifications from being sent. To stop creating contacts without disabling push, click 'Cancel' and go to Advanced Settings. Are you sure you want to deactivate push?", 'mailin') ?></span>
 									</div>
 								</div>
 							<?php else : ?>

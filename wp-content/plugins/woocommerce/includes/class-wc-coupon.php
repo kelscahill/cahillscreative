@@ -5,7 +5,7 @@
  * The WooCommerce coupons class gets coupon data from storage and checks coupon validity.
  *
  * @package WooCommerce\Classes
- * @version 3.0.0
+ * @version x.x.x
  */
 
 use Automattic\WooCommerce\Enums\ProductType;
@@ -547,7 +547,7 @@ class WC_Coupon extends WC_Legacy_Coupon {
 			$discount_type = 'percent'; // Backwards compatibility.
 		}
 		if ( ! in_array( $discount_type, array_keys( wc_get_coupon_types() ), true ) ) {
-			$this->error( 'coupon_invalid_discount_type', __( 'Invalid discount type', 'woocommerce' ) );
+			$this->error( 'coupon_invalid_discount_type', __( 'Invalid discount type.', 'woocommerce' ) );
 		}
 		$this->set_prop( 'discount_type', $discount_type );
 	}
@@ -556,7 +556,7 @@ class WC_Coupon extends WC_Legacy_Coupon {
 	 * Set amount.
 	 *
 	 * @since 3.0.0
-	 * @param float $amount Amount.
+	 * @param float|string $amount Amount.
 	 */
 	public function set_amount( $amount ) {
 		$amount = wc_format_decimal( $amount );
@@ -565,12 +565,12 @@ class WC_Coupon extends WC_Legacy_Coupon {
 			$amount = 0;
 		}
 
-		if ( $amount < 0 ) {
-			$this->error( 'coupon_invalid_amount', __( 'Invalid discount amount', 'woocommerce' ) );
+		if ( (float) $amount < 0 ) {
+			$this->error( 'coupon_invalid_amount', __( 'Invalid discount amount.', 'woocommerce' ) );
 		}
 
-		if ( 'percent' === $this->get_discount_type() && $amount > 100 ) {
-			$this->error( 'coupon_invalid_amount', __( 'Invalid discount amount', 'woocommerce' ) );
+		if ( 'percent' === $this->get_discount_type() && (float) $amount > 100 ) {
+			$this->error( 'coupon_invalid_amount', __( 'Invalid discount amount.', 'woocommerce' ) );
 		}
 
 		$this->set_prop( 'amount', $amount );
@@ -720,7 +720,7 @@ class WC_Coupon extends WC_Legacy_Coupon {
 	 * Set the minimum spend amount.
 	 *
 	 * @since 3.0.0
-	 * @param float $amount Minimum amount.
+	 * @param float|string $amount Minimum amount.
 	 */
 	public function set_minimum_amount( $amount ) {
 		$this->set_prop( 'minimum_amount', wc_format_decimal( $amount ) );
@@ -730,9 +730,13 @@ class WC_Coupon extends WC_Legacy_Coupon {
 	 * Set the maximum spend amount.
 	 *
 	 * @since 3.0.0
-	 * @param float $amount Maximum amount.
+	 * @param float|string $amount Maximum amount.
 	 */
 	public function set_maximum_amount( $amount ) {
+		if ( (float) $amount && (float) $this->get_minimum_amount() > (float) $amount ) {
+			$this->error( 'coupon_invalid_maximum_amount', __( 'Invalid maximum spend value.', 'woocommerce' ) );
+		}
+
 		$this->set_prop( 'maximum_amount', wc_format_decimal( $amount ) );
 	}
 
@@ -746,7 +750,7 @@ class WC_Coupon extends WC_Legacy_Coupon {
 		$emails = array_filter( array_map( 'sanitize_email', array_map( 'strtolower', (array) $emails ) ) );
 		foreach ( $emails as $email ) {
 			if ( ! is_email( $email ) ) {
-				$this->error( 'coupon_invalid_email_address', __( 'Invalid email address restriction', 'woocommerce' ) );
+				$this->error( 'coupon_invalid_email_address', __( 'Invalid email address restriction.', 'woocommerce' ) );
 			}
 		}
 		$this->set_prop( 'email_restrictions', $emails );
@@ -1023,14 +1027,14 @@ class WC_Coupon extends WC_Legacy_Coupon {
 			case self::E_WC_COUPON_INVALID_FILTERED:
 				$err = sprintf(
 					/* translators: %s: coupon code */
-					esc_html__( 'Coupon "%s" is not valid.', 'woocommerce' ),
+					esc_html__( 'Coupon "%s" cannot be applied because it is not valid.', 'woocommerce' ),
 					esc_html( $this->get_code() )
 				);
 				break;
 			case self::E_WC_COUPON_NOT_EXIST:
 				$err = sprintf(
 					/* translators: %s: coupon code */
-					esc_html__( 'Coupon "%s" does not exist!', 'woocommerce' ),
+					esc_html__( 'Coupon "%s" cannot be applied because it does not exist.', 'woocommerce' ),
 					esc_html( $this->get_code() )
 				);
 				break;
@@ -1209,7 +1213,7 @@ class WC_Coupon extends WC_Legacy_Coupon {
 	public static function get_generic_coupon_error( $err_code ) {
 		switch ( $err_code ) {
 			case self::E_WC_COUPON_NOT_EXIST:
-				$err = __( 'Coupon does not exist!', 'woocommerce' );
+				$err = __( 'Coupon does not exist.', 'woocommerce' );
 				break;
 			case self::E_WC_COUPON_PLEASE_ENTER:
 				$err = __( 'Please enter a coupon code.', 'woocommerce' );

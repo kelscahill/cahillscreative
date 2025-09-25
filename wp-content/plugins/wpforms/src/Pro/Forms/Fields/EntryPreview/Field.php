@@ -174,7 +174,7 @@ class Field extends FieldLite {
 	 *
 	 * @since 1.9.4
 	 */
-	public function ajax_get_entry_preview(): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function ajax_get_entry_preview(): void {
 
 		$form_id = isset( $_POST['wpforms']['id'] ) ? absint( $_POST['wpforms']['id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
@@ -293,7 +293,7 @@ class Field extends FieldLite {
 	 * @param array $form_data                Form data and settings.
 	 * @param int   $current_entry_preview_id Current entry preview ID.
 	 *
-	 * @return int
+	 * @return int Field ID. -1 if not found.
 	 */
 	private function get_end_page_break_id( $form_data, $current_entry_preview_id ): int {
 
@@ -313,7 +313,8 @@ class Field extends FieldLite {
 			}
 		}
 
-		return 0;
+		// Return -1 as the field ID can be 0 or any positive number.
+		return -1;
 	}
 
 	/**
@@ -463,7 +464,7 @@ class Field extends FieldLite {
 	 * @param array  $entry_fields Entry fields.
 	 * @param array  $form_data    Form data and settings.
 	 */
-	private function print_entry_preview( string $type, array $entry_fields, array $form_data ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function print_entry_preview( string $type, array $entry_fields, array $form_data ): void {
 
 		/**
 		 * Modify the fields before the entry preview is printed.
@@ -503,7 +504,7 @@ class Field extends FieldLite {
 	 * @param array  $entry_fields Entry fields.
 	 * @param array  $form_data    Form data and settings.
 	 */
-	private function print_ajax_entry_preview( string $type, array $entry_fields, array $form_data ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function print_ajax_entry_preview( string $type, array $entry_fields, array $form_data ): void {
 
 		/**
 		 * Modify the fields before the entry preview is printed.
@@ -651,7 +652,7 @@ class Field extends FieldLite {
 	 *
 	 * @return string
 	 */
-	private function get_repeater_field( array $field, array $form_data ): string { // phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded, Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_repeater_field( array $field, array $form_data ): string {
 
 		$form_data_reduced = RepeaterHelpers::get_previewable_form_data( $form_data, $field );
 		$blocks            = RepeaterHelpers::get_blocks( $field, $form_data_reduced );

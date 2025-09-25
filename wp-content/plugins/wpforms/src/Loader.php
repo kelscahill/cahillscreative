@@ -122,10 +122,24 @@ class Loader {
 			'name' => 'Forms\AntiSpam',
 			'id'   => 'anti_spam',
 		];
+
+		$this->classes[] = [
+			'name'      => 'Forms\CorruptedSubmission',
+			/**
+			 * Filters whether to load the corrupted submission reports functionality.
+			 *
+			 * @since 1.9.8
+			 *
+			 * @param bool $is_enabled Whether the corrupted submission reports are enabled. Default true.
+			 *
+			 * @return bool
+			 */
+			'condition' => (bool) apply_filters( 'wpforms_loader_corrupted_submission_enable', true ),
+		];
 	}
 
 	/**
-	 * Populate Frontend related classes.
+	 * Populate Frontend-related classes.
 	 *
 	 * @since 1.8.1
 	 */
@@ -168,7 +182,7 @@ class Loader {
 	}
 
 	/**
-	 * Populate Admin related classes.
+	 * Populate Admin-related classes.
 	 *
 	 * @since 1.6.0
 	 */
@@ -277,6 +291,10 @@ class Loader {
 			],
 			[
 				'name' => 'Admin\Pages\ConstantContact',
+				'hook' => 'admin_init',
+			],
+			[
+				'name' => 'Admin\Pages\PrivacyCompliance',
 				'hook' => 'admin_init',
 			],
 			[
@@ -441,6 +459,10 @@ class Loader {
 
 		$this->classes[] = [
 			'name' => 'Forms\Fields\Repeater\Field',
+		];
+
+		$this->classes[] = [
+			'name' => 'Forms\Fields\Camera\Field',
 			'hook' => 'init',
 		];
 
@@ -646,6 +668,11 @@ class Loader {
 				'id'   => 'context_menu',
 			],
 			[
+				'name' => 'Admin\Builder\ImageUpload',
+				'hook' => 'wpforms_builder_init',
+				'id'   => 'image_upload',
+			],
+			[
 				'name' => 'Admin\Builder\Notifications\Advanced\Settings',
 			],
 			[
@@ -794,7 +821,7 @@ class Loader {
 	}
 
 	/**
-	 * Populate logger loaded classes.
+	 * Populate logger-loaded classes.
 	 *
 	 * @since 1.6.3
 	 */
@@ -809,7 +836,7 @@ class Loader {
 	}
 
 	/**
-	 * Populate education related classes.
+	 * Populate education-related classes.
 	 *
 	 * @since 1.6.6
 	 */
@@ -881,6 +908,7 @@ class Loader {
 			'Builder\Geolocation',
 			'Builder\Confirmations',
 			'Builder\Notifications',
+			'Builder\PDF',
 			'Admin\DidYouKnow',
 			'Admin\Settings\Integrations',
 			'Admin\Settings\Geolocation',

@@ -319,7 +319,7 @@ class Field extends FieldLite {
 	 *
 	 * @noinspection HtmlUnknownAttribute
 	 */
-	public function field_display( $field, $deprecated, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function field_display( $field, $deprecated, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$form_id    = $form_data['id'];
 		$properties = $field['properties'];
@@ -461,7 +461,7 @@ class Field extends FieldLite {
 		}
 
 		printf(
-			'<div class="wpforms-datepicker-wrap"><input type="text" %s %s><a title="%s" data-clear class="wpforms-datepicker-clear" style="display:%s;"></a></div>',
+			'<div class="wpforms-datepicker-wrap"><input type="text" %1$s %2$s><a title="%3$s" data-clear role="button" tabindex="0" class="wpforms-datepicker-clear" aria-label="%3$s" style="display:%4$s;"></a></div>',
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			wpforms_html_attributes( $date_prop['id'], $date_prop['class'], $date_prop['data'], $date_prop['attr'] ),
 			esc_attr( $date_prop['required'] ),
@@ -510,7 +510,7 @@ class Field extends FieldLite {
 	 *
 	 * @noinspection HtmlUnknownAttribute
 	 */
-	public function field_display_date_dropdowns( $format, $field, $field_required, $form_id ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function field_display_date_dropdowns( $format, $field, $field_required, $form_id ): void {
 
 		$format = ! empty( $format ) ? esc_attr( $format ) : self::DEFAULTS['date_format'];
 
@@ -693,7 +693,7 @@ class Field extends FieldLite {
 	 * @param array $field_submit Submitted field value.
 	 * @param array $form_data    Form data and settings.
 	 */
-	private function validate_time_limit( $field_id, $field_submit, $form_data ): void { // phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function validate_time_limit( $field_id, $field_submit, $form_data ): void {
 
 		if ( empty( $form_data['fields'][ $field_id ] ) ) {
 			return;
@@ -757,7 +757,7 @@ class Field extends FieldLite {
 	 * @param array $field_submit Submitted field value.
 	 * @param array $form_data    Form data and settings.
 	 */
-	public function format( $field_id, $field_submit, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, Generic.Metrics.NestingLevel.MaxExceeded
+	public function format( $field_id, $field_submit, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
 
 		if ( empty( $form_data['fields'][ $field_id ] ) ) {
 			return;

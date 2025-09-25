@@ -71,6 +71,12 @@ class ApiManager
         add_action('woocommerce_product_set_stock_status', array($products_events_manager, 'product_stock_events'), 10, 1);
         add_action('woocommerce_variation_set_stock_status', array($products_events_manager, 'product_stock_events'), 10, 1);
         add_action('woocommerce_reduce_order_stock', array($products_events_manager, 'product_stock_update_on_order'), 10, 1);
+        add_action('woocommerce_single_product_summary', array($products_events_manager, 'show_back_in_stock_form'), 39, 1);
+        add_action('wp_ajax_sib_back_in_stock', [$products_events_manager, 'sib_back_in_stock_ajax_handler']);
+        add_action('wp_ajax_nopriv_sib_back_in_stock', [$products_events_manager, 'sib_back_in_stock_ajax_handler']);
+        add_action('woocommerce_after_variations_form', [$products_events_manager, 'render_back_in_stock_placeholder']);
+        add_action('wp_ajax_sib_get_back_in_stock_form', [$products_events_manager, 'sib_get_back_in_stock_form']);
+        add_action('wp_ajax_nopriv_sib_get_back_in_stock_form', [$products_events_manager, 'sib_get_back_in_stock_form']);
     }
 
     public function add_conditional_hooks() {
@@ -201,7 +207,26 @@ class ApiManager
                 self::ROUTE_CALLBACK   => function ($request) {
                     return $this->modify_response($this->get_categories_url($request));
                 }
-            )
+            ),
+            array(
+                self::ROUTE_PATH       => '/users/guests',
+                self::ROUTE_METHODS    => 'GET',
+                self::ROUTE_CALLBACK   => function ($request) {
+                    return $this->modify_response($this->get_guest_users($request));
+                },
+                'args' => [
+                    'per_page' => [
+                        'type' => 'integer',
+                        'default' => 250,
+                        'sanitize_callback' => 'absint',
+                    ],
+                    'offset' => [
+                        'type' => 'integer',
+                        'default' => 0,
+                        'sanitize_callback' => 'absint',
+                    ],
+                ],
+            ),
         );
 
         foreach ($routes as $route) {
@@ -467,6 +492,58 @@ class ApiManager
                 ), 500);
         }
     }
+
+    private function get_guest_users($request)
+    {
+        global $wpdb;
+
+        $limit  = (int) $request->get_param('per_page');
+        $offset = (int) $request->get_param('offset');
+
+        $table = $wpdb->prefix . 'wc_customer_lookup';
+
+        try {
+            $results = $wpdb->get_results(
+                $wpdb->prepare("
+                    SELECT email, first_name, last_name, country, postcode, city, state
+                    FROM $table
+                    WHERE user_id IS NULL
+                    ORDER BY customer_id ASC
+                    LIMIT %d OFFSET %d
+                ", $limit, $offset),
+                ARRAY_A
+            );
+
+            $guests = [];
+
+            foreach ($results as $row) {
+                $user = [
+                    'email'      => $row['email'],
+                    'first_name' => $row['first_name'],
+                    'last_name'  => $row['last_name'],
+                    'billing'    => [
+                        'country'  => $row['country'],
+                        'postcode' => $row['postcode'],
+                        'city'     => $row['city'],
+                        'state'    => $row['state'],
+                    ],
+                    'shipping'  => [],
+                ];
+
+                $guests[] = $user;
+            }
+
+            return new WP_REST_Response($guests, 200);
+        } catch (\Throwable $t) {
+            return new WP_REST_Response(
+                [
+                    'message' => $t->getMessage() . ' in file: ' . $t->getFile() . ' at line no: ' . $t->getLine()
+                ],
+                500
+            );
+        }
+    }
+
 
     private function get_categories_url($request)
     {

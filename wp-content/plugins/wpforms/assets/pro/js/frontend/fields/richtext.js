@@ -1,23 +1,136 @@
 /* global tinymce, tinyMCE, tinyMCEPreInit, wpforms_settings, wpforms */
 
+// noinspection ES6ConvertVarToLetConst
 /**
  * Rich Text field.
  *
  * @since 1.7.0
  */
+var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, window, $ ) { // eslint-disable-line no-var
+	/**
+	 * Read-only field support object.
+	 *
+	 * Compatibility logic for the snippet from https://wpforms.com/developers/disable-a-form-field-to-prevent-user-input/.
+	 *
+	 * @since 1.9.8
+	 */
+	const readOnly = {
 
-'use strict';
+		/**
+		 * Disable TinyMCE editor for read-only fields.
+		 *
+		 * @since 1.9.8
+		 *
+		 * @param {Object} editor TinyMCE editor instance.
+		 */
+		disableEditor: ( editor ) => {
+			setTimeout( function() {
+				try {
+					editor.setMode( 'readonly' );
+					editor.getBody().setAttribute( 'contenteditable', 'false' );
+				} catch ( e ) {}
 
-var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, window, $ ) {
+				const container = editor.getContainer();
+
+				if ( container ) {
+					container.style.pointerEvents = 'none';
+					container.style.opacity = '0.35';
+					container.classList.add( 'wpf-disabled' );
+				}
+			}, 200 );
+		},
+
+		/**
+		 * Enable TinyMCE editor for read-only fields.
+		 *
+		 * @since 1.9.8
+		 *
+		 * @param {Object} editor TinyMCE editor instance.
+		 */
+		enableEditor: ( editor ) => {
+			setTimeout( function() {
+				try {
+					editor.setMode( 'design' );
+					editor.getBody().setAttribute( 'contenteditable', 'true' );
+				} catch ( e ) {}
+
+				const container = editor.getContainer();
+				if ( container ) {
+					container.style.pointerEvents = 'auto';
+					container.style.opacity = '1';
+					container.classList.remove( 'wpf-disabled' );
+				}
+			}, 200 );
+		},
+
+		/**
+		 * Check if the field is disabled and disable the editor if needed.
+		 *
+		 * @since 1.9.8
+		 *
+		 * @param {Object} editor TinyMCE editor instance.
+		 */
+		checkAndDisableEditor: ( editor ) => {
+			const $field = $( editor.getElement() ).closest( '.wpforms-field' );
+
+			if ( $field.hasClass( 'wpforms-field-readonly' ) || $field.hasClass( 'wpf-disable-field' ) ) {
+				readOnly.disableEditor( editor );
+			}
+		},
+
+		/**
+		 * Disable textarea fields before TinyMCE initialization.
+		 *
+		 * @since 1.9.8
+		 */
+		disableTextAreas: function() { // eslint-disable-line object-shorthand
+			$( '.wpforms-field-richtext' ).each( function() {
+				const $field = $( this );
+
+				if ( $field.hasClass( 'wpforms-field-readonly' ) || $field.hasClass( 'wpf-disable-field' ) ) {
+					const $textarea = $field.find( '.wp-editor-area' );
+					if ( $textarea.length ) {
+						$textarea.prop( 'readonly', true );
+						$field.find( '.wp-editor-wrap' ).addClass( 'wpf-disabled' );
+					}
+				}
+			} );
+		},
+
+		/**
+		 * Disable the textarea for read-only fields.
+		 *
+		 * @since 1.9.8
+		 *
+		 * @param {jQuery} $field jQuery object for .wpforms-field.
+		 * @param {jQuery} $wrap  jQuery object for .wp-editor-wrap.
+		 *
+		 * @return {boolean} True if field is disabled, false otherwise.
+		 */
+		disableOnHtmlSwitch: ( $field, $wrap ) => {
+			if ( $field.hasClass( 'wpforms-field-readonly' ) || $field.hasClass( 'wpf-disable-field' ) ) {
+				// Disable the textarea for read-only fields.
+				const $textarea = $wrap.find( '.wp-editor-area' );
+				$textarea.prop( 'readonly', true );
+				$textarea.css( 'opacity', '0.6' );
+				$textarea.css( 'pointer-events', 'none' );
+				$wrap.addClass( 'wpf-disabled' );
+
+				return true;
+			}
+
+			return false;
+		},
+	};
 
 	/**
 	 * Private functions and properties.
 	 *
 	 * @since 1.7.0
 	 *
-	 * @type {object}
+	 * @type {Object}
 	 */
-	var vars = {
+	const vars = {
 		mediaPostIdUpdateEvent: false,
 	};
 
@@ -26,9 +139,9 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 	 *
 	 * @since 1.7.0
 	 *
-	 * @type {object}
+	 * @type {Object}
 	 */
-	var app = {
+	const app = {
 
 		/**
 		 * Start the engine.
@@ -47,48 +160,48 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 		},
 
 		/**
-		 * Customize Rich Text field.
+		 * Customize the Rich Text field.
 		 *
 		 * @since 1.7.0
 		 */
-		customizeRichTextField: function() {
+		customizeRichTextField() { // eslint-disable-line max-lines-per-function
+			const $document = $( document );
 
-			var $document = $( document );
+			// Check and disable fields before TinyMCE initialization.
+			readOnly.disableTextAreas();
 
 			$document.on( 'tinymce-editor-setup', function( event, editor ) {
-
 				// Validate hidden editor textarea on keyup.
 				editor.on( 'keyup', function() {
 					app.validateRichTextField( editor );
 				} );
 
 				editor.on( 'focus', function( e ) {
-
 					$( e.target.editorContainer ).closest( '.wp-editor-wrap' ).addClass( 'wpforms-focused' );
 				} );
 
 				editor.on( 'blur', function( e ) {
-
 					$( e.target.editorContainer ).closest( '.wp-editor-wrap' ).removeClass( 'wpforms-focused' );
 				} );
 			} );
 
 			// Validate on mutation (insert image or any other changes).
 			$document.on( 'wpformsRichTextContentChange', function( event, mutation, editor ) {
-
 				app.validateRichTextField( editor );
 				app.enableAddMediaButtons( mutation );
 			} );
 
 			// Init each field.
 			$document.on( 'tinymce-editor-init', function( event, editor ) {
-
 				const docStyle = editor.getDoc().body.style;
 				const $body = $( 'body' );
 
 				// Inherit body text font family.
 				docStyle.fontFamily = $body.css( 'font-family' );
 				docStyle.background = 'transparent';
+
+				// Check if the field is disabled and disable the editor if needed.
+				readOnly.checkAndDisableEditor( editor );
 
 				app.initEditorModernMarkupMode( editor );
 				app.mediaPostIdUpdate();
@@ -118,17 +231,19 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 			}
 
 			$document.on( 'click', '.switch-html', function() {
-
 				const $wrap = $( this ).closest( '.wp-editor-wrap' );
+				const $field = $wrap.closest( '.wpforms-field' );
 
 				setTimeout( function() {
-					$wrap.find( '.wp-editor-area' ).trigger( 'focus' );
+					if ( ! readOnly.disableOnHtmlSwitch( $field, $wrap ) ) {
+						$wrap.find( '.wp-editor-area' ).trigger( 'focus' );
+					}
+
 					$wrap.addClass( 'wpforms-focused' );
 				}, 0 );
 			} );
 
 			$document.on( 'click', '.switch-tmce', function( e ) {
-
 				// Prevent the default action of the click event
 				e.preventDefault();
 
@@ -140,20 +255,25 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 				if ( editor ) {
 					$wrap.addClass( 'wpforms-focused' );
 
-					// Focus on editor without causing the jump effect.
-					setTimeout( () => {
-						editor.focus( false );
-					}, 0 );
+					// Check if the field is disabled and disable the editor if needed.
+					const $field = $wrap.closest( '.wpforms-field' );
+
+					if ( $field.hasClass( 'wpf-disable-field' ) ) {
+						readOnly.disableEditor( editor );
+					} else {
+						// Focus on the editor without causing the jump effect.
+						setTimeout( () => {
+							editor.focus( false );
+						}, 0 );
+					}
 				}
 			} );
 
 			$document.on( 'focus', '.wp-editor-area', function() {
-
 				$( this ).closest( '.wp-editor-wrap' ).addClass( 'wpforms-focused' );
 			} );
 
-			$document.on( 'blur', '.wp-editor-area', function( e ) {
-
+			$document.on( 'blur', '.wp-editor-area', function() {
 				$( this ).closest( '.wp-editor-wrap' ).removeClass( 'wpforms-focused' );
 			} );
 		},
@@ -162,10 +282,9 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 		 * Replace special characters in image attributes.
 		 *
 		 * @since 1.8.3
-		 * @param {object} editor TinyMCE editor instance.
+		 * @param {Object} editor TinyMCE editor instance.
 		 */
-		cleanImages: function( editor ) {
-
+		cleanImages( editor ) {
 			// Get TinyMCE content in raw format.
 			const content = editor.getContent( { format: 'raw' } );
 
@@ -180,18 +299,16 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 
 			// Loop through all the images.
 			for ( let i = 0; i < images.length; i++ ) {
-
 				// Replace wrong quote characters.
 				images[ i ].outerHTML = images[ i ].outerHTML.replace( /"”|”"|"″|″"/g, '"' );
 			}
 
-			// Send clean image back to TinyMCE.
+			// Send a clean image back to TinyMCE.
 			editor.setContent( imageDiv.innerHTML );
 		},
 
-
 		/**
-		 * Add media button for WordPress 4.9.
+		 * Add a media button for WordPress 4.9.
 		 *
 		 * @since 1.7.0
 		 * @deprecated 1.8.7
@@ -218,9 +335,8 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 		 *
 		 * @param {object|string} mutation Mutation observer's record or event object.
 		 */
-		enableAddMediaButtons: function( mutation ) {
-
-			var isEscapeEvent = mutation === 'escapeEvent';
+		enableAddMediaButtons( mutation ) {
+			const isEscapeEvent = mutation === 'escapeEvent';
 
 			if ( ! isEscapeEvent && ! app.isCloseEvent( mutation ) && ! app.isMutationImage( mutation ) ) {
 				return;
@@ -234,12 +350,11 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 		 *
 		 * @since 1.7.0
 		 *
-		 * @param {object} mutation Mutation observer's record or event object.
+		 * @param {Object} mutation Mutation observer's record or event object.
 		 *
-		 * @returns {boolean} True if is the close event.
+		 * @return {boolean} True if is the close event.
 		 */
-		isCloseEvent: function( mutation ) {
-
+		isCloseEvent( mutation ) {
 			return typeof mutation.target !== 'undefined' && (
 				mutation.target.classList.contains( 'media-modal-icon' ) ||
 				mutation.target.classList.contains( 'media-modal-backdrop' )
@@ -247,24 +362,22 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 		},
 
 		/**
-		 * Is it not mutation event?
+		 * Is it not a mutation event?
 		 *
 		 * @since 1.7.0
 		 *
-		 * @param {object} mutation Mutation observer's record or event object.
+		 * @param {Object} mutation Mutation observer's record or event object.
 		 *
-		 * @returns {boolean} True if isn't mutation event.
+		 * @return {boolean} True if isn't mutation event.
 		 */
-		isMutationImage: function( mutation ) {
-
-			if ( typeof mutation.addedNodes === 'undefined' || typeof mutation.addedNodes[0] === 'undefined' ) {
+		isMutationImage( mutation ) {
+			if ( typeof mutation.addedNodes === 'undefined' || typeof mutation.addedNodes[ 0 ] === 'undefined' ) {
 				return false;
 			}
 
-			var isMutationImage = false;
+			let isMutationImage = false;
 
 			mutation.addedNodes.forEach( function( node ) {
-
 				if ( node.tagName === 'IMG' ) {
 					isMutationImage = true;
 
@@ -286,8 +399,7 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 		 *
 		 * @since 1.7.0
 		 */
-		disableAddMediaButtons: function() {
-
+		disableAddMediaButtons() {
 			$( '.mce-btn-group button i.dashicons-admin-media' ).closest( '.mce-btn' ).addClass( 'mce-btn-disabled' );
 		},
 
@@ -296,8 +408,7 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 		 *
 		 * @since 1.7.0
 		 */
-		mediaPostIdUpdate: function() {
-
+		mediaPostIdUpdate() {
 			if ( vars.mediaPostIdUpdateEvent ) {
 				return;
 			}
@@ -309,7 +420,7 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 					return;
 				}
 
-				var formId = $this.closest( 'form' ).data( 'formid' ),
+				const formId = $this.closest( 'form' ).data( 'formid' ),
 					fieldId = $this.closest( '.wpforms-field-richtext' ).data( 'field-id' );
 
 				// Replace the digital parts with the current form and field IDs.
@@ -322,19 +433,16 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 		},
 
 		/**
-		 * Observe changes inside editor's iframe.
+		 * Observe changes inside the editor's iframe.
 		 *
 		 * @since 1.7.0
 		 *
-		 * @param {object} editor TinyMCE editor instance.
+		 * @param {Object} editor TinyMCE editor instance.
 		 */
-		observeEditorChanges: function( editor ) {
-
+		observeEditorChanges( editor ) {
 			// Observe changes inside editor's iframe.
-			var observer = new MutationObserver( function( mutationsList, observer ) {
-
-				for ( var key in mutationsList ) {
-
+			const observer = new MutationObserver( function( mutationsList ) {
+				for ( const key in mutationsList ) {
 					if ( mutationsList[ key ].type === 'childList' ) {
 						$( document ).trigger( 'wpformsRichTextContentChange', [ mutationsList[ key ], editor ] );
 					}
@@ -356,15 +464,14 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 		 *
 		 * @since 1.7.0
 		 *
-		 * @param {object} editor TinyMCE editor instance.
+		 * @param {Object} editor TinyMCE editor instance.
 		 */
-		validateRichTextField: function( editor ) {
-
+		validateRichTextField( editor ) {
 			if ( ! editor || ! $( editor.iframeElement ).closest( 'form' ).data( 'validator' ) ) {
 				return;
 			}
 
-			var $textarea = $( '#' + editor.id );
+			const $textarea = $( '#' + editor.id );
 
 			// We should save and validate if only the editor's content has the real changes.
 			if ( editor.getContent() === $textarea.val() ) {
@@ -377,7 +484,7 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 		},
 
 		/**
-		 * Re-initialize tinyMCEs in given form (container).
+		 * Re-initialize tinyMCEs in a given form (container).
 		 *
 		 * @since 1.7.0
 		 *
@@ -392,7 +499,7 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 				const id = $( this ).attr( 'id' );
 
 				if ( tinymce.get( id ) ) {
-					// Remove existing editor.
+					// Remove the existing editor.
 					tinyMCE.execCommand( 'mceRemoveEditor', false, id );
 				}
 
@@ -408,37 +515,37 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 		 *
 		 * @since 1.8.1
 		 *
-		 * @param {object} editor TinyMCE editor instance.
+		 * @param {Object} editor TinyMCE editor instance.
 		 */
-		initEditorModernMarkupMode: function( editor ) {
-
+		initEditorModernMarkupMode( editor ) {
 			if ( ! wpforms.isModernMarkupEnabled() || window.WPFormsEditEntry || ! window.WPForms.FrontendModern ) {
 				return;
 			}
 
-			const docStyle    = editor.getDoc().body.style;
-			const $el         = $( editor.getElement() );
-			const $field      = $el.closest( '.wpforms-field' );
-			const $form       = $el.closest( '.wpforms-form' );
-			const cssVars     = window.WPForms.FrontendModern.getCssVars( $form );
-			const inputHeight = cssVars['field-size-input-height'] ? cssVars['field-size-input-height'].replace( 'px', '' ) : 43;
-			const sizeK      = {
-				'small' : 1.80,
-				'medium': 2.79,
-				'large' : 5.12,
+			const docStyle = editor.getDoc().body.style;
+			const $el = $( editor.getElement() );
+			const $field = $el.closest( '.wpforms-field' );
+			const $form = $el.closest( '.wpforms-form' );
+			const cssVars = window.WPForms.FrontendModern.getCssVars( $form );
+			const inputHeight = cssVars[ 'field-size-input-height' ] ? cssVars[ 'field-size-input-height' ].replace( 'px', '' ) : 43;
+			const sizeK = {
+				small: 1.80,
+				medium: 2.79,
+				large: 5.12,
 			};
 
 			let fieldSize = 'medium';
 			fieldSize = $field.hasClass( 'wpforms-field-small' ) ? 'small' : fieldSize;
 			fieldSize = $field.hasClass( 'wpforms-field-large' ) ? 'large' : fieldSize;
 
-			const width  = editor.getWin().clientWidth;
+			const width = editor.getWin().clientWidth;
 			const height = inputHeight * sizeK[ fieldSize ];
 			editor.theme.resizeTo( width, height );
 
-			docStyle.color    = cssVars['field-text-color'];
-			docStyle.fontSize = cssVars['field-size-font-size'];
+			docStyle.color = cssVars[ 'field-text-color' ];
+			docStyle.fontSize = cssVars[ 'field-size-font-size' ];
 		},
+
 		/**
 		 * Create an iframe from a div inside the confirmation message.
 		 *
@@ -449,11 +556,34 @@ var WPFormsRichTextField = window.WPFormsRichTextField || ( function( document, 
 		updateIframes( event ) {
 			$( event.target ).find( '.wpforms-iframe' ).each( window?.WPFormsIframe?.update );
 		},
+
+		/**
+		 * Set the field as read-only.
+		 *
+		 * @since 1.9.8
+		 *
+		 * @param {jQuery} $field Field container object.
+		 */
+		lockField( $field ) {
+			const editor = tinyMCE.get( $field.find( '.wp-editor-area' ).attr( 'id' ) );
+			readOnly.disableEditor( editor );
+		},
+
+		/**
+		 * Remove the read-only state from the field.
+		 *
+		 * @since 1.9.8
+		 *
+		 * @param {jQuery} $field Field object.
+		 */
+		unlockField( $field ) {
+			const editor = tinyMCE.get( $field.find( '.wp-editor-area' ).attr( 'id' ) );
+			readOnly.enableEditor( editor );
+		},
 	};
 
 	// Provide access to public functions/properties.
 	return app;
-
 }( document, window, jQuery ) );
 
 WPFormsRichTextField.init();

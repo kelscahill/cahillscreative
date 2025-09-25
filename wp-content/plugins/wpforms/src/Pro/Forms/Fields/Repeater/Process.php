@@ -138,7 +138,7 @@ class Process {
 	 *
 	 * @return array
 	 */
-	private function add_missing_fields_to_entry( array $fields, $entry, array $form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	private function add_missing_fields_to_entry( array $fields, $entry, array $form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		$form_obj = wpforms()->obj( 'form' );
 
@@ -194,7 +194,7 @@ class Process {
 	 *
 	 * @return array
 	 */
-	public function remove_rows_out_of_limit( $form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function remove_rows_out_of_limit( $form_data ): array {
 
 		$form_data = (array) $form_data;
 
@@ -306,7 +306,7 @@ class Process {
 	 * @return array
 	 * @noinspection PhpMissingParamTypeInspection
 	 */
-	public function add_repeater_child_fields_to_form_data( $form_data, $entry ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function add_repeater_child_fields_to_form_data( $form_data, $entry ): array {
 
 		$form_data   = (array) $form_data;
 		$form_fields = $form_data['fields'] ?? [];
@@ -493,7 +493,7 @@ class Process {
 	 *
 	 * @return array
 	 */
-	private function populate_field_conditional_settings( array $form_data, $field_id, string $field_type ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	private function populate_field_conditional_settings( array $form_data, $field_id, string $field_type ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$field = $form_data['fields'][ $field_id ] ?? [];
 

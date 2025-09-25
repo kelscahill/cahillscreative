@@ -543,7 +543,7 @@ class PaymentIntents extends Common implements ApiInterface {
 	 *
 	 * @param array $args Subscription payment arguments.
 	 */
-	protected function charge_subscription( $args ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	protected function charge_subscription( $args ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( empty( $this->payment_method_id ) ) {
 			$this->error = esc_html__( 'Stripe subscription stopped, missing PaymentMethod id.', 'wpforms-lite' );
@@ -560,6 +560,7 @@ class PaymentIntents extends Common implements ApiInterface {
 			'metadata' => [
 				'form_name' => $args['form_title'],
 				'form_id'   => $args['form_id'],
+				'cycles'    => $args['cycles'] ?? null,
 			],
 			'expand'   => [ 'latest_invoice.payment_intent' ],
 		];
@@ -662,7 +663,7 @@ class PaymentIntents extends Common implements ApiInterface {
 	 *
 	 * @return array
 	 */
-	public function get_charge_details( $keys ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function get_charge_details( $keys ) {
 
 		$charge = isset( $this->intent->charges->data[0] ) ? $this->intent->charges->data[0] : null;
 

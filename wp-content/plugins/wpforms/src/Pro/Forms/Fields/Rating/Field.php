@@ -16,7 +16,9 @@ class Field extends FieldLite {
 	 *
 	 * @since 1.9.4
 	 */
-	protected function hooks() {
+	protected function hooks(): void {
+
+		parent::hooks();
 
 		// Define additional field properties.
 		add_filter( 'wpforms_field_properties_rating', [ $this, 'field_properties' ], 5, 3 );
@@ -38,7 +40,7 @@ class Field extends FieldLite {
 	 * @noinspection PhpMissingParamTypeInspection
 	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function field_properties( $properties, $field, $form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function field_properties( $properties, $field, $form_data ): array {
 
 		$properties = (array) $properties;
 
@@ -87,7 +89,7 @@ class Field extends FieldLite {
 	 * @noinspection PhpMissingParamTypeInspection
 	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function html_email_value( $val, $field, $form_data = [], $context = '' ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function html_email_value( $val, $field, $form_data = [], $context = '' ): string {
 
 		$val = (string) $val;
 
@@ -180,6 +182,20 @@ class Field extends FieldLite {
 			$svg
 		);
 
+		$is_label_above = ! empty( $field['label_position'] ) && $field['label_position'] === 'above';
+
+		$wrapper_classes = [
+			'wpforms-field-rating-wrapper',
+			'wpforms-field-rating-labels-position-' . ( $is_label_above ? 'above' : 'below' ),
+		];
+
+		echo '<div class="' . wpforms_sanitize_classes( $wrapper_classes, true ) . '">';
+
+		// Display field labels above the rating items.
+		if ( $is_label_above ) {
+			$this->display_field_labels( $field );
+		}
+
 		echo '<div class="wpforms-field-rating-items">';
 
 		// Generate each rating icon/element.
@@ -232,6 +248,43 @@ class Field extends FieldLite {
 
 			echo '</label>';
 		}
+
+		echo '</div>';
+
+		// Display field labels below the rating items.
+		if ( ! $is_label_above ) {
+			$this->display_field_labels( $field );
+		}
+
+		echo '</div>';
+	}
+
+	/**
+	 * Display field labels.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @param array $field Field settings.
+	 */
+	private function display_field_labels( array $field ): void {
+
+		if ( empty( $field['lowest_label'] ) && empty( $field['highest_label'] ) ) {
+			return;
+		}
+
+		echo '<div class="wpforms-field-rating-labels">';
+
+		// Lowest rating label.
+		printf(
+			'<span class="wpforms-field-labels-lowest wpforms-field-sublabel">%s</span>',
+			esc_html( $field['lowest_label'] )
+		);
+
+		// Highest rating label.
+		printf(
+			'<span class="wpforms-field-labels-highest wpforms-field-sublabel">%s</span>',
+			esc_html( $field['highest_label'] )
+		);
 
 		echo '</div>';
 	}

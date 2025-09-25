@@ -4,7 +4,8 @@ namespace WPForms\Pro\Forms\Fields\FileUpload;
 
 use WPForms\Forms\Fields\FileUpload\Field as FieldLite;
 use WPForms\Pro\Helpers\Upload;
-use WPForms\Pro\Robots;
+use WPForms\Forms\Fields\Traits\FileDisplayTrait;
+use WPForms\Forms\Fields\Traits\FileMethodsTrait;
 
 /**
  * File upload field.
@@ -12,6 +13,9 @@ use WPForms\Pro\Robots;
  * @since 1.9.4
  */
 class Field extends FieldLite {
+
+	use FileDisplayTrait;
+	use FileMethodsTrait;
 
 	/**
 	 * Dropzone plugin version.
@@ -32,15 +36,6 @@ class Field extends FieldLite {
 	private const HANDLE = 'wpforms-dropzone';
 
 	/**
-	 * File extensions that are now allowed.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @var array
-	 */
-	private $denylist = [ 'ade', 'adp', 'app', 'asp', 'bas', 'bat', 'cer', 'cgi', 'chm', 'cmd', 'com', 'cpl', 'crt', 'csh', 'csr', 'dll', 'drv', 'exe', 'fxp', 'flv', 'hlp', 'hta', 'htaccess', 'htm', 'html', 'htpasswd', 'inf', 'ins', 'isp', 'jar', 'js', 'jse', 'jsp', 'ksh', 'lnk', 'mdb', 'mde', 'mdt', 'mdw', 'msc', 'msi', 'msp', 'mst', 'ops', 'pcd', 'php', 'pif', 'pl', 'prg', 'ps1', 'ps2', 'py', 'rb', 'reg', 'scr', 'sct', 'sh', 'shb', 'shs', 'sys', 'swf', 'tmp', 'torrent', 'url', 'vb', 'vbe', 'vbs', 'vbscript', 'wsc', 'wsf', 'wsf', 'wsh', 'dfxp', 'onetmp' ];
-
-	/**
 	 * Upload files helper.
 	 *
 	 * @since 1.9.4
@@ -59,6 +54,15 @@ class Field extends FieldLite {
 	protected $builder_obj;
 
 	/**
+	 * Wait time.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @var int
+	 */
+	private $wait_time;
+
+	/**
 	 * Primary class constructor.
 	 *
 	 * @since 1.9.4
@@ -68,6 +72,12 @@ class Field extends FieldLite {
 		parent::init();
 
 		$this->remove_webfiles_from_denylist();
+
+		/**
+		 * Filter defined in WPForms\Pro\Forms\Fields\Camera\Field::init().
+		 */
+		// phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName, WPForms.Comments.PHPDocHooks.RequiredHookDocumentation, WPForms.Comments.SinceTagHooks.MissingSinceTag
+		$this->wait_time = absint( apply_filters( 'wpforms_pro_forms_fields_camera_field_wait_time_seconds', 3 ) );
 
 		// Init our upload helper and add the actions.
 		$this->upload = new Upload();
@@ -141,7 +151,7 @@ class Field extends FieldLite {
 		// Update smart tag value for protected files.
 		add_filter( 'wpforms_smart_tags_formatted_field_value', [ $this, 'smart_tags_formatted_field_value' ], 10, 4 );
 
-		// Delete file protection after file is deleted.
+		// Delete file protection after a file is deleted.
 		add_action( 'wpforms_pro_forms_fields_file_upload_field_delete_uploaded_file', [ $this, 'delete_file_protection' ], 10, 2 );
 
 		add_filter( 'wpforms_pro_admin_entries_export_ajax_get_entry_fields_data_field', [ $this, 'export_entry_field_data' ] );
@@ -202,6 +212,29 @@ class Field extends FieldLite {
 	 */
 	public function frontend_js( $forms ): void {
 
+		$min = wpforms_get_min_suffix();
+
+		// Check if among the forms is the field with camera_enabled set to true.
+		$camera_enabled = false;
+
+		foreach ( $forms as $form ) {
+			if ( $this->is_camera_enabled( $form ) ) {
+				$camera_enabled = true;
+
+				break;
+			}
+		}
+
+		if ( $camera_enabled ) {
+			wp_enqueue_script(
+				'wpforms-camera-field',
+				WPFORMS_PLUGIN_URL . "assets/pro/js/frontend/fields/camera{$min}.js",
+				[ 'wpforms' ],
+				WPFORMS_VERSION,
+				true
+			);
+		}
+
 		$is_file_modern_style = false;
 
 		foreach ( $forms as $form ) {
@@ -216,9 +249,6 @@ class Field extends FieldLite {
 			$is_file_modern_style ||
 			wpforms()->obj( 'frontend' )->assets_global()
 		) {
-
-			$min = wpforms_get_min_suffix();
-
 			wp_enqueue_script(
 				self::HANDLE,
 				WPFORMS_PLUGIN_URL . 'assets/pro/lib/dropzone.min.js',
@@ -368,7 +398,7 @@ class Field extends FieldLite {
 		// The Full Site Editor (FSE) uses an iframe with the site editor.
 		// It inserts into the iframe only those scripts defined during the block registration.
 		// Here we set the 'editor_style' field of the 'wpforms/form-selector' block to the current handle.
-		// All other styles required for 'wpforms/form-selector' block will be loaded as dependencies.
+		// All other styles required for the 'wpforms / form-selector' block will be loaded as dependencies.
 		// So, our styles will be loaded in the following order:
 		// wpforms-integrations
 		// wpforms-gutenberg-form-selector
@@ -447,136 +477,6 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Customize a format for HTML display.
-	 *
-	 * Additionally, truncates the list of files in the entry table view.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @param string $val       Field value.
-	 * @param array  $field     Field settings.
-	 * @param array  $form_data Form data and settings.
-	 * @param string $context   Value display context.
-	 *
-	 * @return string
-	 * @noinspection PhpMissingParamTypeInspection
-	 * @noinspection PhpUnusedParameterInspection
-	 */
-	public function html_field_value( $val, $field, $form_data = [], $context = '' ) {
-
-		if ( empty( $field['value'] ) || $field['type'] !== $this->type ) {
-			return $val;
-		}
-
-		// Process modern uploader.
-		if ( ! empty( $field['value_raw'] ) ) {
-			$values = $context === 'entry-table' ? array_slice( $field['value_raw'], 0, 3, true ) : $field['value_raw'];
-			$html   = wpforms_chain( $values )
-				->map(
-					function ( $file ) use ( $context ) {
-
-						if ( empty( $file['value'] ) || empty( $file['file_original'] ) ) {
-							return '';
-						}
-
-						return $this->get_file_link_html( $file, $context ) . '<br>';
-					}
-				)
-				->array_filter()
-				->implode()
-				->value();
-
-			if ( count( $values ) < count( $field['value_raw'] ) ) {
-				$html .= '&hellip;';
-			}
-
-			return $html;
-		}
-
-		return $this->get_file_link_html( $field, $context );
-	}
-
-	/**
-	 * Get file link HTML.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @param array  $file    File data.
-	 * @param string $context Value display context.
-	 *
-	 * @return string
-	 * @noinspection HtmlUnknownTarget
-	 */
-	private function get_file_link_html( $file, $context ) {
-
-		$html  = in_array( $context, [ 'email-html', 'entry-single' ], true ) ? $this->file_icon_html( $file ) : '';
-		$html .= sprintf(
-			'<a href="%s" rel="noopener noreferrer" target="_blank" style="%s">%s</a>',
-			esc_url( $this->get_file_url( $file ) ),
-			$context === 'email-html' ? 'padding-left:10px;' : '',
-			esc_html( $this->get_file_name( $file ) )
-		);
-
-		return $html;
-	}
-
-	/**
-	 * Get the URL of a file.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @param array $file File data.
-	 * @param array $args Additional query arguments.
-	 *
-	 * @return string
-	 */
-	public function get_file_url( array $file, array $args = [] ): string {
-
-		$file_url = $file['value'] ?? '';
-
-		if ( ! empty( $file['protection_hash'] ) ) {
-			$args = wp_parse_args(
-				$args,
-				[
-					'wpforms_uploaded_file' => $file['protection_hash'],
-				]
-			);
-
-			$file_url = add_query_arg( $args, home_url() );
-		}
-
-		/**
-		 * Allow to modify the URL of a file.
-		 *
-		 * @since 1.9.4
-		 *
-		 * @param string $file_url File URL.
-		 * @param array  $file     File data.
-		 */
-		return (string) apply_filters( 'wpforms_pro_fields_file_upload_get_file_url', $file_url, $file ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
-	}
-
-	/**
-	 * Get the name of a file.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @param array $file File data.
-	 *
-	 * @return string
-	 */
-	public function get_file_name( array $file ): string {
-
-		if ( ! $this->is_file_protected( $file ) ) {
-			return $file['file_original'];
-		}
-
-		$ext = $file['ext'] ?? '';
-
-		return sprintf( '%s.%s', hash( 'crc32b', $file['file_original'] ), $ext );
-	}
-
-	/**
 	 * Add Builder strings that are passed to JS.
 	 *
 	 * @since 1.9.4
@@ -593,20 +493,6 @@ class Field extends FieldLite {
 		$strings['file_upload'] = $this->get_strings();
 
 		return $strings;
-	}
-
-	/**
-	 * Check if the file is protected.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @param array $file_data File data.
-	 *
-	 * @return bool True if the file is protected, false otherwise.
-	 */
-	private function is_file_protected( array $file_data ): bool {
-
-		return ! empty( $file_data['protection_hash'] );
 	}
 
 	/**
@@ -662,18 +548,23 @@ class Field extends FieldLite {
 			echo wpforms_render(
 				'fields/file-upload-frontend',
 				[
-					'field_id'        => $field['id'],
-					'form_id'         => $form_data['id'],
-					'value'           => $value,
-					'input_name'      => $input_name,
-					'required'        => $primary['required'],
-					'extensions'      => $primary['data']['rule-extension'],
-					'max_size'        => abs( $primary['data']['rule-maxsize'] ),
-					'chunk_size'      => $this->get_chunk_size(),
-					'max_file_number' => $max_file_number,
-					'preview_hint'    => str_replace( self::TEMPLATE_MAXFILENUM, $max_file_number, $strings['preview_hint'] ),
-					'post_max_size'   => wp_max_upload_size(),
-					'is_full'         => ! empty( $value ) && $count >= $max_file_number,
+					'field_id'          => $field['id'],
+					'form_id'           => $form_data['id'],
+					'value'             => $value,
+					'input_name'        => $input_name,
+					'required'          => $primary['required'],
+					'extensions'        => $primary['data']['rule-extension'],
+					'max_size'          => abs( $primary['data']['rule-maxsize'] ),
+					'chunk_size'        => $this->get_chunk_size(),
+					'max_file_number'   => $max_file_number,
+					'preview_hint'      => str_replace( self::TEMPLATE_MAXFILENUM, $max_file_number, $strings['preview_hint'] ),
+					'post_max_size'     => wp_max_upload_size(),
+					'is_full'           => ! empty( $value ) && $count >= $max_file_number,
+					'classes'           => $primary['class'],
+					'camera_enabled'    => ! empty( $field['camera_enabled'] ),
+					'camera_format'     => $field['camera_format'] ?? 'photo',
+					'camera_time_limit' => $this->get_camera_time_limit( $field ),
+					'wait_time'         => $this->wait_time,
 				],
 				true
 			);
@@ -688,12 +579,45 @@ class Field extends FieldLite {
 			wpforms_html_attributes( $primary['id'], $primary['class'], $primary['data'], $primary['attr'] ),
 			! empty( $primary['required'] ) ? 'required' : ''
 		);
+
+		if ( ! empty( $field['camera_enabled'] ) ) {
+			/**
+			 * Filter defined in WPForms\Forms\Fields\FileUpload\Field::get_strings().
+			 */
+			// phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName, WPForms.Comments.PHPDocHooks.RequiredHookDocumentation, WPForms.Comments.SinceTagHooks.MissingSinceTag
+			$classic_camera_text = (string) apply_filters(
+				'wpforms_forms_fields_file_upload_field_classic_camera_text',
+				__( 'Capture With Your Camera', 'wpforms' )
+			);
+
+			printf(
+				'<p class="wpforms-file-upload-capture-camera wpforms-file-upload-capture-camera-classic">
+					<a class="wpforms-camera-link" href="#">
+						%s
+					</a>
+				</p>',
+				esc_html( $classic_camera_text )
+			);
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wpforms_render(
+				'fields/camera-modal',
+				[
+					'field_id'          => $field['id'],
+					'form_id'           => $form_data['id'],
+					'camera_format'     => $field['camera_format'] ?? 'photo',
+					'camera_time_limit' => $this->get_camera_time_limit( $field ),
+					'wait_time'         => $this->wait_time,
+				],
+				true
+			);
+		}
 	}
 
 	/**
 	 * Input name.
 	 *
-	 * The input name is name in which the data is expected to be sent in from the client.
+	 * The input name is the name in which the data is expected to be sent in from the client.
 	 *
 	 * @since 1.9.4
 	 *
@@ -742,7 +666,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Validate field for various errors on form submitted.
+	 * Validate field for various errors on the form submitted.
 	 *
 	 * @since 1.9.4
 	 *
@@ -772,12 +696,12 @@ class Field extends FieldLite {
 	 *
 	 * @since 1.9.4
 	 *
-	 * @param string $deprecated_input_name Input name inside the form on front-end.
+	 * @param string $deprecated_input_name Input name inside the form on the front-end.
 	 *
 	 * @noinspection PhpMissingParamTypeInspection
 	 * @noinspection PhpUnusedParameterInspection
 	 */
-	protected function validate_classic( $deprecated_input_name ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	protected function validate_classic( $deprecated_input_name ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( ! isset( get_defined_vars()['deprecated_input_name'] ) ) {
 			_deprecated_argument( __METHOD__, '1.7.2 of the WPForms plugin', 'The `$input_name` argument was deprecated.' );
@@ -850,7 +774,7 @@ class Field extends FieldLite {
 		}
 
 		/*
-		 * Validate file against what WordPress is set to allow.
+		 * Validate a file against what WordPress is set to allow.
 		 * At the end of the day, if you try to upload a file that WordPress
 		 * doesn't allow, we won't allow it either. Users can use a plugin to
 		 * filter the allowed mime types in WordPress if this is an issue.
@@ -868,7 +792,7 @@ class Field extends FieldLite {
 	 *
 	 * @since 1.9.4
 	 *
-	 * @param string $deprecated_input_name Input name inside the form on front-end.
+	 * @param string $deprecated_input_name Input name inside the form on the front-end.
 	 *
 	 * @noinspection PhpMissingParamTypeInspection
 	 * @noinspection PhpUnusedParameterInspection
@@ -881,7 +805,23 @@ class Field extends FieldLite {
 
 		$value = $this->sanitize_modern_files_input();
 
-		if ( empty( $value ) && $this->is_required() ) {
+		if (
+			empty( $value ) &&
+			$this->is_required() &&
+			/**
+			 * Filter to skip validation for a required file upload field.
+			 *
+			 * @since 1.9.8
+			 *
+			 * @param bool  $skip       Whether to skip validation.
+			 * @param array $form_data  Form data.
+			 * @param array $field_data Field data.
+			 * @param array $value      Field value.
+			 *
+			 * @return bool
+			 */
+			! apply_filters( 'wpforms_pro_forms_fields_file_upload_field_skip_validation', false, $this->form_data, $this->field_data, $value )
+		) {
 			wpforms()->obj( 'process' )->errors[ $this->form_id ][ $this->field_id ] = wpforms_get_required_label();
 
 			return;
@@ -999,7 +939,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Check if file(s) exists in temp directory.
+	 * Check if files exist in the temp directory.
 	 *
 	 * @since 1.9.4
 	 *
@@ -1069,6 +1009,9 @@ class Field extends FieldLite {
 	 * @param array $form_data  Form data and settings.
 	 * @param int   $entry_id   Entry ID.
 	 * @param int   $payment_id Payment ID.
+	 *
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	public function create_protection( $fields, $entry, $form_data, $entry_id, $payment_id ): void {
 
@@ -1154,6 +1097,8 @@ class Field extends FieldLite {
 	 * @param string $field_key The field key.
 	 *
 	 * @return string
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	public function smart_tags_formatted_field_value( $value, $field_id, $fields, $field_key ) {
 
@@ -1241,7 +1186,7 @@ class Field extends FieldLite {
 
 			$restriction['form_id'] = $new_form_id;
 
-			// Check if duplicated form already has a restriction for this field.
+			// Check if the duplicated form already has a restriction for this field.
 			$existing_restriction = $file_restrictions->get_restriction( $new_form_id, $field['id'] );
 
 			if ( ! empty( $existing_restriction ) ) {
@@ -1286,7 +1231,7 @@ class Field extends FieldLite {
 	 * @noinspection PhpMissingParamTypeInspection
 	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function upload_complete( $fields, $entry, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function upload_complete( $fields, $entry, $form_data ) {
 
 		if ( ! empty( wpforms()->obj( 'process' )->errors[ $form_data['id'] ] ) ) {
 			return $fields;
@@ -1321,7 +1266,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Complete upload process for the classic upload field.
+	 * Complete the upload process for the classic upload field.
 	 *
 	 * @since 1.9.4
 	 *
@@ -1363,7 +1308,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Complete upload process for the modern upload field.
+	 * Complete the upload process for the modern upload field.
 	 *
 	 * @since 1.9.4
 	 *
@@ -1409,7 +1354,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Generate a ready for DB data for each file.
+	 * Generate ready for DB data for each file.
 	 *
 	 * @since 1.9.4
 	 *
@@ -1438,25 +1383,6 @@ class Field extends FieldLite {
 		return $data;
 	}
 
-	/**
-	 * Determine the max allowed file size in bytes as per field options.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @return int Number of bytes allowed.
-	 */
-	public function max_file_size() {
-
-		if ( ! empty( $this->field_data['max_size'] ) ) {
-
-			// Strip any suffix provided (e.g., M, MB etc.), which leaves us with the raw MB value.
-			$max_size = preg_replace( '/[^0-9.]/', '', $this->field_data['max_size'] );
-
-			return wpforms_size_to_bytes( $max_size . 'M' );
-		}
-
-		return wpforms_max_upload( true );
-	}
 
 	/**
 	 * Clean up the tmp folder - remove all old files every day (filterable interval).
@@ -1663,7 +1589,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Validate form ID, field ID and field style for existence and that they are actually valid.
+	 * Validate form ID, field ID, and field style for existence and that they are actually valid.
 	 *
 	 * @since 1.9.4
 	 *
@@ -1731,11 +1657,11 @@ class Field extends FieldLite {
 		$search_name = sanitize_text_field( wp_unslash( $_GET['search'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		/**
-		 * Filter the columns to search for user names.
+		 * Filter the columns to search for usernames.
 		 *
 		 * @since 1.9.4
 		 *
-		 * @param array $search_columns Columns to search for user names.
+		 * @param array $search_columns Columns to search for usernames.
 		 */
 		$search_columns = (array) apply_filters( 'wpforms_pro_forms_fields_file_upload_field_ajax_search_user_names_columns', [ 'user_login', 'display_name' ] );
 
@@ -1894,8 +1820,7 @@ class Field extends FieldLite {
 
 	/**
 	 * Validate extension against denylist and admin-provided list.
-	 * There are certain extensions we do not allow under any circumstances,
-	 * with no exceptions, for security purposes.
+	 * There are certain extensions we do not allow under any circumstances for security purposes.
 	 *
 	 * @since 1.9.4
 	 *
@@ -1919,7 +1844,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Validate file against what WordPress is set to allow.
+	 * Validate a file against what WordPress is set to allow.
 	 * At the end of the day, if you try to upload a file that WordPress
 	 * doesn't allow, we won't allow it either. Users can use a plugin to
 	 * filter the allowed mime types in WordPress if this is an issue.
@@ -2067,54 +1992,9 @@ class Field extends FieldLite {
 		return $path_to;
 	}
 
-	/**
-	 * Get all allowed extensions.
-	 * Check against user-entered extensions.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @return array
-	 */
-	protected function get_extensions(): array {
-
-		// Allowed file extensions by default.
-		$default_extensions = $this->get_default_extensions();
-
-		// Allowed file extensions.
-		$extensions = ! empty( $this->field_data['extensions'] ) ? explode( ',', $this->field_data['extensions'] ) : $default_extensions;
-
-		return wpforms_chain( $extensions )
-			->map(
-				static function ( $ext ) {
-
-					return strtolower( preg_replace( '/[^A-Za-z0-9_-]/', '', $ext ) );
-				}
-			)
-			->array_filter()
-			->array_intersect( $default_extensions )
-			->value();
-	}
 
 	/**
-	 * Get default extensions supported by WordPress
-	 * without those that we manually denylist.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @return array
-	 */
-	protected function get_default_extensions(): array {
-
-		return wpforms_chain( get_allowed_mime_types() )
-			->array_keys()
-			->implode( '|' )
-			->explode( '|' )
-			->array_diff( $this->denylist )
-			->value();
-	}
-
-	/**
-	 * Whether field is required or not.
+	 * Whether a field is required or not.
 	 *
 	 * @uses $this->field_data
 	 *
@@ -2128,7 +2008,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Whether field is integrated with WordPress Media Library.
+	 * Whether the field is integrated with WordPress Media Library.
 	 *
 	 * @uses $this->field_data
 	 *
@@ -2141,35 +2021,10 @@ class Field extends FieldLite {
 		return ! empty( $this->field_data['media_library'] ) && $this->field_data['media_library'] === '1';
 	}
 
-	/**
-	 * Get file icon HTML.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @param array $file_data File data.
-	 *
-	 * @return string
-	 * @noinspection HtmlUnknownTarget
-	 */
-	public function file_icon_html( $file_data ): string {
 
-		$src       = esc_url( $file_data['value'] );
-		$ext_types = wp_get_ext_types();
-
-		if ( $this->is_file_protected( $file_data ) || ! in_array( $file_data['ext'], $ext_types['image'], true ) ) {
-
-			$src = wp_mime_type_icon( wp_ext2type( $file_data['ext'] ) ?? '' );
-		} elseif ( $file_data['attachment_id'] ) {
-
-			$image = wp_get_attachment_image_src( $file_data['attachment_id'], [ 16, 16 ], true );
-			$src   = $image ? $image[0] : $src;
-		}
-
-		return sprintf( '<span class="file-icon"><img width="16" height="16" src="%s" alt="" /></span>', esc_url( $src ) );
-	}
 
 	/**
-	 * Get Form files path.
+	 * Get a Form files path.
 	 *
 	 * @since 1.9.4
 	 *
@@ -2254,11 +2109,11 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Maybe delete uploaded file from entry.
+	 * Maybe delete an uploaded file from entry.
 	 *
 	 * @since 1.9.4
 	 *
-	 * @param array  $removed_files  Removed files array.
+	 * @param array  $removed_files  The removed files array.
 	 * @param array  $field          The field to delete.
 	 * @param array  $exclude_fields Exclude fields.
 	 * @param string $files_path     Form files path.
@@ -2415,6 +2270,9 @@ class Field extends FieldLite {
 	 *
 	 * @param array $file_data File data.
 	 * @param array $entry     Entry data.
+	 *
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	public function delete_file_protection( $file_data, $entry ): void {
 
@@ -2434,7 +2292,7 @@ class Field extends FieldLite {
 	 *
 	 * @return array
 	 */
-	protected function get_access_restrictions_options_attrs(): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	protected function get_access_restrictions_options_attrs(): array {
 
 		$addons_obj = wpforms()->obj( 'addons' );
 

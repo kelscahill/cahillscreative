@@ -222,7 +222,7 @@ class PluginList {
 	 *
 	 * @return object $value Amended WordPress update object.
 	 */
-	public function site_transient_update_addons( $value ) { // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks, Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function site_transient_update_addons( $value ) {  // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks, Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		global $current_screen;
 
@@ -332,7 +332,7 @@ class PluginList {
 	 * @return void|false
 	 * @noinspection HtmlUnknownAttribute
 	 */
-	public function after_plugin_row( string $file, array $plugin_data ) { // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks, Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function after_plugin_row( string $file, array $plugin_data ) {  // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks, Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Remove WP Core action, as we override its functionality for the plugin.
 		remove_action( "after_plugin_row_{$file}", 'wp_plugin_update_row' );
@@ -482,7 +482,7 @@ class PluginList {
 	 *
 	 * @return string
 	 */
-	private function get_license_status(): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_license_status(): string {
 
 		if ( ! is_null( $this->license_status ) ) {
 			return $this->license_status;

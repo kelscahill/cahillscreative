@@ -817,14 +817,18 @@ $jQ(document).ready(function(){
     $jQ(document).on('click', '#deactivate_push_btn', function(event) {
         event.preventDefault();
         event.stopPropagation();
-        var data = {
-            action: 'sib_push_set_push_activated',
-            activated: 'false',
-            nonce: ajax_sib_object.ajax_nonce
-        };
-        $jQ.post(ajax_sib_object.ajax_url, data, function(response) {
-            window.location.reload();
-        });
+        var contentNode = document.getElementById('deactivate_push_content');
+        var content = contentNode ? contentNode.textContent : '';
+        if (confirm(content)) {
+            var data = {
+                action: 'sib_push_set_push_activated',
+                activated: 'false',
+                nonce: ajax_sib_object.ajax_nonce
+            };
+            $jQ.post(ajax_sib_object.ajax_url, data, function(response) {
+                window.location.reload();
+            });
+        }
 
     });
     // validate MA

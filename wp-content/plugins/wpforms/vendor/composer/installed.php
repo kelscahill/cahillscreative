@@ -38,12 +38,12 @@
             'dev_requirement' => false,
         ),
         'apimatic/unirest-php' => array(
-            'pretty_version' => '4.0.6',
-            'version' => '4.0.6.0',
+            'pretty_version' => '4.0.7',
+            'version' => '4.0.7.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../apimatic/unirest-php',
             'aliases' => array(),
-            'reference' => 'df38c93ffa71e8a1b7a075c2322c28cdfe8fe1f5',
+            'reference' => 'bdfd5f27c105772682c88ed671683f1bd93f4a3c',
             'dev_requirement' => false,
         ),
         'awesomemotive/wpforms' => array(
@@ -108,7 +108,7 @@
             'aliases' => array(
                 0 => '9999999-dev',
             ),
-            'reference' => '0a95bcf39c5b55601cb073bc307d567a16e31dc0',
+            'reference' => '662d5ecfaab913d8ce0de4521fc40ce92aa14e75',
             'dev_requirement' => true,
         ),
         'square/square' => array(
@@ -139,8 +139,8 @@
             'dev_requirement' => false,
         ),
         'symfony/polyfill-iconv' => array(
-            'pretty_version' => 'v1.32.0',
-            'version' => '1.32.0.0',
+            'pretty_version' => 'v1.33.0',
+            'version' => '1.33.0.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/polyfill-iconv',
             'aliases' => array(),
@@ -148,8 +148,8 @@
             'dev_requirement' => false,
         ),
         'symfony/polyfill-mbstring' => array(
-            'pretty_version' => 'v1.32.0',
-            'version' => '1.32.0.0',
+            'pretty_version' => 'v1.33.0',
+            'version' => '1.33.0.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/polyfill-mbstring',
             'aliases' => array(),
@@ -157,8 +157,8 @@
             'dev_requirement' => false,
         ),
         'symfony/polyfill-php80' => array(
-            'pretty_version' => 'v1.32.0',
-            'version' => '1.32.0.0',
+            'pretty_version' => 'v1.33.0',
+            'version' => '1.33.0.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/polyfill-php80',
             'aliases' => array(),
@@ -184,12 +184,12 @@
             'dev_requirement' => false,
         ),
         'woocommerce/action-scheduler' => array(
-            'pretty_version' => '3.9.2',
-            'version' => '3.9.2.0',
+            'pretty_version' => '3.9.3',
+            'version' => '3.9.3.0',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../woocommerce/action-scheduler',
             'aliases' => array(),
-            'reference' => 'efbb7953f72a433086335b249292f280dd43ddfe',
+            'reference' => 'c58cdbab17651303d406cd3b22cf9d75c71c986c',
             'dev_requirement' => false,
         ),
     ),

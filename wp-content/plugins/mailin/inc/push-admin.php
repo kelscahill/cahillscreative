@@ -207,6 +207,13 @@ if ( ! class_exists( 'SIB_Push_Admin' ) ) {
 			} else if (!empty($target_brevo_list_ids)) {
 				$sib_push_audience = 'brevo_lists';
 			}
+			$contactSyncMessage = SIB_Push_Utils::is_contact_sync_active()
+				? null
+				: sprintf(
+					// translators: %1$s: advanced settings
+					__( 'To use Brevo segments and lists, enable contact creation from push subscribers %1$s.', 'mailin' ),
+					'<a href="'.add_query_arg( 'page', SIB_Page_Push::PAGE_ID, admin_url( 'admin.php' ) ).'#/settings/advanced" style="font-size:12px;">' . __( 'in Advanced settings', 'mailin' ) . '</a>',
+				);
 			?>
 			<div id="sib_notification_preview"></div>
 			<div id="sib_push_config" style="display:none"><?php
@@ -285,6 +292,9 @@ if ( ! class_exists( 'SIB_Push_Admin' ) ) {
 					<div class="sib_push_segments">
 						<div class="sib_push_target">
 							<label for="sib_push_target_brevo_segment_ids"><?php echo __("We'll notify users that match at least one of these segments:", 'mailin') ?></label>
+							<?php if ($contactSyncMessage): ?>
+								<p style="padding: 8px; background-color: #fdf5f1; border-radius: 12px;"><?php echo $contactSyncMessage; ?></p>
+							<?php endif; ?>
 							<select name="sib_push_target_brevo_segment_ids[]" multiple
 									id="sib_push_target_brevo_segment_ids"
 									class="sib_push_target_segment_id sib_push_select2">
@@ -311,6 +321,9 @@ if ( ! class_exists( 'SIB_Push_Admin' ) ) {
 					</label>
 					<div class="sib_push_lists">
 						<div class="sib_push_target">
+							<?php if ($contactSyncMessage): ?>
+								<p style="padding: 8px; background-color: #fdf5f1; border-radius: 12px;"><?php echo $contactSyncMessage; ?></p>
+							<?php endif; ?>
 							<label for="sib_push_target_brevo_list_ids"><?php echo __("We'll notify users that match at least one of these lists:", 'mailin') ?></label>
 							<select name="sib_push_target_brevo_list_ids[]" multiple
 									id="sib_push_target_brevo_list_ids"

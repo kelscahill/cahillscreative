@@ -92,16 +92,10 @@ class Robots {
 			return false;
 		}
 
-		$site_url = site_url();
-
-		$upload_root = str_replace( $site_url, '', $upload_dir['url'] );
-		$upload_root = trailingslashit( $upload_root );
-
-		$site_url_parts = wp_parse_url( $site_url );
-
-		if ( ! empty( $site_url_parts['path'] ) ) {
-			$upload_root = $site_url_parts['path'] . $upload_root;
-		}
+		// Parse the upload URL to extract just the path component.
+		$upload_url_parts = wp_parse_url( $upload_dir['url'] );
+		$upload_root      = ! empty( $upload_url_parts['path'] ) ? $upload_url_parts['path'] : '';
+		$upload_root      = trailingslashit( $upload_root );
 
 		$this->upload_root = $upload_root;
 

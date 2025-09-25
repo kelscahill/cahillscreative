@@ -4,6 +4,7 @@ namespace WPForms\Integrations\Stripe;
 
 use Stripe\Exception\ApiErrorException;
 use WPForms\Helpers\Transient;
+use WPForms\Vendor\Stripe\SubscriptionSchedule;
 
 /**
  * Stripe payment processing.
@@ -232,8 +233,11 @@ class Process {
 	 * @param array $payment_meta Payment meta.
 	 * @param array $fields       Final/sanitized submitted field data.
 	 * @param array $form_data    Form data and settings.
+	 *
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function prepare_payment_meta( $payment_meta, $fields, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function prepare_payment_meta( $payment_meta, $fields, $form_data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		$payment = $this->api->get_payment();
 
@@ -371,6 +375,11 @@ class Process {
 			$subscription->metadata['payment_id']  = $payment_id;
 			$subscription->metadata['payment_url'] = esc_url_raw( $payment_url );
 
+			$this->maybe_set_subscription_schedule( $subscription );
+
+			// Clean up cycles value.
+			$subscription->metadata['cycles'] = null;
+
 			$subscription->update( $subscription->id, $subscription->serializeParameters(), Helpers::get_auth_opts() );
 		}
 
@@ -406,7 +415,7 @@ class Process {
 	 *
 	 * @return array
 	 */
-	private function get_mapped_custom_metadata( string $type ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_mapped_custom_metadata( string $type ): array {
 
 		$settings_key = ! is_null( $this->plan_id ) ? 'recurring_custom_metadata_' . $this->plan_id : 'custom_metadata';
 
@@ -419,6 +428,11 @@ class Process {
 		foreach ( $this->form_data['payments']['stripe'][ $settings_key ] as $data ) {
 
 			if ( $data['object_type'] !== $type ) {
+				continue;
+			}
+
+			// Skip if either the key or value is empty.
+			if ( ! $data['meta_key'] || ! $data['meta_value'] ) {
 				continue;
 			}
 
@@ -724,7 +738,7 @@ class Process {
 	 *
 	 * @since 1.8.2
 	 */
-	public function process_payment_single() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function process_payment_single() {
 
 		$amount_decimals = wpforms_get_currency_multiplier();
 
@@ -860,6 +874,11 @@ class Process {
 
 			// Customer custom metadata.
 			$args['customer_metadata'] = $this->get_mapped_custom_metadata( 'customer' );
+
+			// Validate the number of cycle to process.
+			if ( ! empty( $recurring['cycles'] ) && ( $recurring['cycles'] === 'undefined' || ( is_numeric( $recurring['cycles'] ) && $recurring['cycles'] > 0 ) ) ) {
+				$args['cycles'] = sanitize_text_field( $recurring['cycles'] );
+			}
 
 			$this->process_subscription( $args );
 
@@ -1299,5 +1318,58 @@ class Process {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Maybe create a subscription schedule if the cycles was set.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @param object $subscription Stripe subscription object.
+	 */
+	private function maybe_set_subscription_schedule( object $subscription ): void {
+
+		if ( empty( $subscription->metadata['cycles'] ) || $subscription->metadata['cycles'] === 'unlimited' || (int) $subscription->metadata['cycles'] < 1 || empty( $subscription->items->data ) ) {
+			return;
+		}
+
+		try {
+			$schedule = SubscriptionSchedule::create(
+				[
+					'from_subscription' => $subscription->id,
+				],
+				Helpers::get_auth_opts()
+			);
+
+			$subscription_item = $subscription->items->data[0];
+
+			$schedule::update(
+				$schedule->id,
+				[
+					'end_behavior' => 'cancel',
+					'phases'       => [
+						[
+							'start_date' => $subscription_item->current_period_start,
+							'items'      => [
+								[
+									'plan' => $subscription_item->plan->id,
+								],
+							],
+							'iterations' => $subscription->metadata['cycles'],
+						],
+					],
+				],
+				Helpers::get_auth_opts()
+			);
+		} catch ( \Exception $e ) {
+
+			wpforms_log(
+				'Stripe: Unable to create Subscription Schedule.',
+				$e->getMessage(),
+				[
+					'type' => [ 'payment', 'error' ],
+				]
+			);
+		}
 	}
 }

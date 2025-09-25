@@ -114,7 +114,7 @@ class Upgrade143 extends UpgradeBase {
 	 * @since 1.5.9 Moved from WPForms_Upgrades.
 	 * @since 1.7.5 Moved from WPForms\Pro\Migrations
 	 */
-	public function v143_upgrade_ajax() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, Generic.Metrics.NestingLevel.MaxExceeded
+	public function v143_upgrade_ajax() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
 
 		// Run a security check.
 		check_ajax_referer( 'wpforms-admin', 'nonce' );

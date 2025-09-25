@@ -257,7 +257,7 @@ class Helpers {
 	 *
 	 * @return array
 	 */
-	private static function get_current_fields( array $rows, array &$form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private static function get_current_fields( array $rows, array &$form_data ): array {
 
 		$current_fields = [];
 

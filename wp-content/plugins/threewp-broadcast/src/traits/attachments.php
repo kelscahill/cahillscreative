@@ -379,7 +379,15 @@ trait attachments
 			$this->debug( "Found attachment %s and we are looking for %s.", $attachment_post->post_name, $attachment_data->post->post_name );
 			// We've found an existing attachment. What to do with it...
 			$existing_action = $this->get_site_option( 'existing_attachments', 'use' );
-			$this->debug( 'Maybe copy attachment: The action for existing attachments is to %s.', $existing_action );
+			$existing_action_comment = '';
+
+			if ( $existing_action != 'use' )
+				$existing_action_comment = ' Unusual!';
+
+			$this->debug( 'Maybe copy attachment: The action for existing attachments is to %s%s.',
+				$existing_action,
+				$existing_action_comment,
+			);
 
 			$apply_existing_attachment_action = $this->new_action( 'apply_existing_attachment_action' );
 			$apply_existing_attachment_action->action = $existing_action;
@@ -429,14 +437,13 @@ trait attachments
 			}
 
 			$blog_id = get_current_blog_id();
-			if ( ! isset( $this->__dumped_attachment_guids[ $blog_id ] ) )
-				$this->__dumped_attachment_guids[ $blog_id ] = 0;
-
+			$guid_dump_col = $bcd->dynamic_data->collection( 'dumped_attachment_guids' )
+				->collection( $blog_id );
 			$md5 = md5( serialize( $guids ) );
-			if ( $this->__dumped_attachment_guids[ $blog_id ] != $md5 )
+			if ( ! $guid_dump_col->has( $md5 ) )
 			{
 				$this->debug( 'Attachment GUIDs on blog %s: %s', $blog_id, $guids );
-				$this->__dumped_attachment_guids[ $blog_id ] = $md5;
+				$guid_dump_col->set( $md5, true );
 			}
 
 			// Modify the captions.

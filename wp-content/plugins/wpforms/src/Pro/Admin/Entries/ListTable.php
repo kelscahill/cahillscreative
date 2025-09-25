@@ -214,7 +214,7 @@ class ListTable extends WP_List_Table {
 	 * @noinspection HtmlUnknownAttribute
 	 * @noinspection HtmlUnknownTarget
 	 */
-	public function get_views() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function get_views() {
 
 		$base = remove_query_arg( [ 'type', 'status', 'paged', 'message' ] );
 
@@ -534,7 +534,7 @@ class ListTable extends WP_List_Table {
 	 *
 	 * @return string
 	 */
-	public function column_default( $entry, $column_name ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function column_default( $entry, $column_name ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$field_type = $this->get_field_type( $entry, $column_name );
 
@@ -963,7 +963,7 @@ class ListTable extends WP_List_Table {
 	 *
 	 * @since 1.8.6
 	 */
-	protected function process_bulk_action_single() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	protected function process_bulk_action_single() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$doaction = $this->current_action();
 		$status   = '';
@@ -1436,7 +1436,7 @@ class ListTable extends WP_List_Table {
 	 *
 	 * @return string
 	 */
-	private function process_bulk_action_single_trash( $ids, $sendback ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function process_bulk_action_single_trash( $ids, $sendback ) {
 
 		$trashed = 0;
 		$form_id = ! empty( $_GET['form_id'] ) ? absint( $_GET['form_id'] ) : false; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -1511,7 +1511,7 @@ class ListTable extends WP_List_Table {
 	 *
 	 * @return string
 	 */
-	private function process_bulk_action_single_restore( $ids, $sendback ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function process_bulk_action_single_restore( $ids, $sendback ) {
 
 		$restored = 0;
 
@@ -1853,7 +1853,7 @@ class ListTable extends WP_List_Table {
 	 *
 	 * @since 1.8.6
 	 */
-	public function prepare_items() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function prepare_items() {
 
 		// Retrieve the count.
 		$this->get_counts();

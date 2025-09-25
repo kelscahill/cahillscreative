@@ -310,7 +310,7 @@ class WPForms_Updater {
 	 *
 	 * @return object|bool
 	 */
-	private function get_addon_update() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_addon_update() {
 
 		if ( $this->update ) {
 			return $this->update;
@@ -360,7 +360,7 @@ class WPForms_Updater {
 	 *
 	 * @return object
 	 */
-	private function get_update_from_cached_json_file() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	private function get_update_from_cached_json_file() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( $this->is_core_plugin() ) {
 			// Get the core info.
@@ -428,7 +428,7 @@ class WPForms_Updater {
 	 *
 	 * @return object|mixed Return custom plugin or addon information to plugins_api.
 	 */
-	public function set_plugins_api( $default_api ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function set_plugins_api( $default_api ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$cached_data = $this->get_update_from_cached_json_file();
 
@@ -684,7 +684,16 @@ class WPForms_Updater {
 
 		$this->is_allowed = $this->is_update();
 
-		return $this->is_allowed;
+		/**
+		 * Whether the updater is allowed to load.
+		 * Useful for third-party plugins and snippets to allow refreshing the WPForms update data programmatically.
+		 *
+		 * @since 1.9.8
+		 *
+		 * @param bool            $is_allowed Whether the updater is allowed to load.
+		 * @param WPForms_Updater $updater    Updater instance.
+		 */
+		return (bool) apply_filters( 'wpforms_updater_allow_load', $this->is_allowed, $this );
 	}
 
 	/**

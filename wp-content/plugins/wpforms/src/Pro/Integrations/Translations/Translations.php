@@ -448,7 +448,9 @@ class Translations implements IntegrationInterface {
 	public function clear_translations_cache() {
 
 		foreach ( $this->get_wpforms_plugins() as $slug ) {
-			delete_site_transient( $this->get_cache_key( $slug ) );
+			if ( get_site_transient( $this->get_cache_key( $slug ) ) ) {
+				delete_site_transient( $this->get_cache_key( $slug ) );
+			}
 		}
 	}
 

@@ -136,7 +136,7 @@ class Ajax {
 	 *
 	 * @throws Exception Try-catch.
 	 */
-	public function ajax_export_step() {// phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function ajax_export_step() {
 
 		try {
 
@@ -376,12 +376,11 @@ class Ajax {
 							continue;
 						}
 
-						$columns_row[ "multiple_field_{$field_id}_{$key}" ] = sprintf(
-							'%s: %s%s',
-							$columns_labels[ $field_id ],
-							trim( $column['label'] ),
-							$is_modified ? __( ' (modified)', 'wpforms' ) : ''
-						);
+						$label        = $columns_labels[ $field_id ];
+						$modified     = $is_modified ? __( ' (modified)', 'wpforms' ) : '';
+						$column_label = empty( $field['single_row'] ) ? ': ' . trim( $column['label'] ) : '';
+
+						$columns_row[ "multiple_field_{$field_id}_{$key}" ] = "{$label}{$column_label}{$modified}";
 					}
 				} else {
 					$columns_row[ $field_id ] = $columns_labels[ $field_id ];
@@ -419,7 +418,7 @@ class Ajax {
 	 *
 	 * @return Generator
 	 */
-	public function get_entry_data( $entries ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, Generic.Metrics.NestingLevel.MaxExceeded
+	public function get_entry_data( $entries ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
 
 		$no_fields  = empty( $this->request_data['form_data']['fields'] );
 		$del_fields = in_array( 'del_fields', $this->request_data['additional_info'], true );
@@ -494,7 +493,7 @@ class Ajax {
 	 *
 	 * @return string
 	 */
-	public function get_multiple_row_value( $fields, $col_id ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh,Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function get_multiple_row_value( $fields, $col_id ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$row_value = '';
 
@@ -724,7 +723,7 @@ class Ajax {
 			return $address_values;
 		}
 
-		// Prepare values for Likert Scale field.
+		// Prepare values for the Likert Scale field.
 		if ( $type === 'likert_scale' ) {
 			return $this->get_likert_scale_field_value( $values );
 		}
@@ -743,14 +742,15 @@ class Ajax {
 	 */
 	private function get_likert_scale_field_value( $values ) {
 
-		// If single-row rating scale is selected.
+		// If a single-row rating scale is selected.
 		if ( count( $values ) === 1 ) {
 			$values = $values[0];
 			$values = explode( ',', $values );
 			$values = array_map( 'trim', $values );
 
-			// We need return array with keys as values.
-			return array_combine( $values, $values );
+			// Using Single Row as a key to map single row values
+			// to the column without changing the previous logic.
+			return [ 'Single Row' => implode( ', ', $values ) ];
 		}
 
 		// Get only odd values for rows.
@@ -796,7 +796,7 @@ class Ajax {
 		// Prepare an array with columns as keys and rows as values.
 		foreach ( $rows as $index => $row ) {
 			foreach ( $row as $row_label ) {
-				$field_value[ $row_label ][] = $columns[ $index - 1 ];
+				$field_value[ $columns[ $index - 1 ] ][] = $row_label;
 			}
 		}
 
@@ -1324,7 +1324,7 @@ class Ajax {
 	 *
 	 * @return array
 	 */
-	private function get_multiple_choices_columns( $field, $form_data, $is_dynamic_columns = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_multiple_choices_columns( $field, $form_data, $is_dynamic_columns = false ) {
 
 		$type = $field['type'];
 
@@ -1417,6 +1417,17 @@ class Ajax {
 			return $this->values[ $field['id'] ];
 		}
 
+		// Single row values should be in a one column.
+		if ( ! empty( $field['single_row'] ) ) {
+			$columns = [
+				[ 'label' => 'Single Row' ],
+			];
+
+			$this->values[ $field['id'] ] = $columns;
+
+			return $columns;
+		}
+
 		// Get all values from database.
 		$values = $this->get_entry_fields_values( $form_data['id'], $field['id'] );
 		$keys   = [];
@@ -1438,7 +1449,7 @@ class Ajax {
 		$keys = array_unique( $keys );
 
 		// Get modified columns.
-		$modified_columns = array_diff( $keys, $field['columns'] );
+		$modified_columns = array_diff( $keys, $field['rows'] );
 
 		// Add (modified) to column label.
 		$modified_columns = array_map(
@@ -1450,14 +1461,14 @@ class Ajax {
 		);
 
 		// Add modified columns to columns array.
-		$field['columns'] = array_merge( $field['columns'], $modified_columns );
+		$field['rows'] = array_merge( $field['rows'], $modified_columns );
 
 		$columns = array_map(
 			static function ( $column ) {
 
 				return [ 'label' => $column ];
 			},
-			$field['columns']
+			$field['rows']
 		);
 
 		$columns = array_values( $columns );
@@ -1479,7 +1490,7 @@ class Ajax {
 	 *
 	 * @return array Choices.
 	 */
-	private function get_choices( $form_id, $field, $field_choices ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_choices( $form_id, $field, $field_choices ) {
 
 		$field_id = $field['id'];
 

@@ -4,7 +4,7 @@ Tags: email marketing, newsletter, sendinblue, brevo, forms, smtp, marketing aut
 Requires at least: 4.4
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.2.5
+Stable tag: 3.2.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -138,6 +138,15 @@ In order to create a signup form, you need to:
 2. Integrate the form in a sidebar using a widget from WP panel > Appearance > Widgets. The Brevo widget form should appear in your widgets list, you just to have to drag and drop the widget into the sidebar of your choice.
 
 == Changelog ==
+= 3.2.8 =
+* Bug fixes
+
+= 3.2.7 =
+* Technical improvements related to WebPush
+
+= 3.2.6 =
+* Technical improvements related to WebPush
+
 = 3.2.5 =
 * Technical improvements related to PushOwl Service
 * Technical improvements related to PHP8 warnings

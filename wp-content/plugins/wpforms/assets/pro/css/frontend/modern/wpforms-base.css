@@ -129,11 +129,11 @@
 
 .wpforms-container .wpforms-datepicker-wrap .wpforms-datepicker-clear {
   position: absolute;
-  background-image: url("../../../images/times-solid-white.svg");
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  background-color: rgba(0, 0, 0, 0.35);
-  background-size: 8px;
+  background-image: url("../../../images/times-solid-white.svg") !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  background-color: rgba(0, 0, 0, 0.35) !important;
+  background-size: 8px !important;
   width: 16px;
   height: 16px;
   cursor: pointer;
@@ -145,8 +145,8 @@
   transition: all 0.25s;
 }
 
-.wpforms-container .wpforms-datepicker-wrap .wpforms-datepicker-clear:hover {
-  background-color: #D63637;
+.wpforms-container .wpforms-datepicker-wrap .wpforms-datepicker-clear:hover, .wpforms-container .wpforms-datepicker-wrap .wpforms-datepicker-clear:focus {
+  background-color: #D63637 !important;
 }
 
 .wpforms-container .wpforms-datepicker-wrap .wpforms-field-small + .wpforms-datepicker-clear {
@@ -289,23 +289,49 @@
   display: none;
 }
 
-.wpforms-container .wpforms-field-rating-item {
-  padding: 0 3px 0 0;
+.wpforms-container .wpforms-field-rating-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wpforms-container .wpforms-field-rating-wrapper.wpforms-field-rating-labels-position-above {
+  position: relative;
+  top: calc( var(--wpforms-field-size-input-spacing) * -1 + 10px);
+}
+
+.wpforms-container .wpforms-field-rating-wrapper .wpforms-field-rating-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.wpforms-container .wpforms-field-rating-wrapper .wpforms-field-rating-items .wpforms-field-rating-item {
   margin: 0;
   display: inline-block;
 }
 
-.wpforms-container .wpforms-field-rating-item svg {
+.wpforms-container .wpforms-field-rating-wrapper .wpforms-field-rating-items .wpforms-field-rating-item svg {
   cursor: pointer;
   opacity: 0.6;
   fill: rgba(0, 0, 0, 0.2);
   transition: fill 0.15s;
 }
 
-.wpforms-container .wpforms-field-rating-item.selected svg,
-.wpforms-container .wpforms-field-rating-item.hover svg {
+.wpforms-container .wpforms-field-rating-wrapper .wpforms-field-rating-items .wpforms-field-rating-item.selected svg,
+.wpforms-container .wpforms-field-rating-wrapper .wpforms-field-rating-items .wpforms-field-rating-item.hover svg {
   opacity: 1;
   fill: currentColor;
+}
+
+.wpforms-container .wpforms-field-rating-wrapper .wpforms-field-rating-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.wpforms-container .wpforms-field-rating-wrapper .wpforms-field-rating-labels .wpforms-field-sublabel {
+  min-width: 0;
 }
 
 .wpforms-container .wpforms-form textarea.wp-editor-area.wpforms-field-small {

@@ -20,6 +20,8 @@ class Field extends FieldLite {
 
 		add_filter( "wpforms_pro_admin_entries_edit_is_field_displayable_{$this->type}", '__return_false' );
 		add_filter( "wpforms_field_properties_{$this->type}", [ $this, 'field_properties' ], 5, 3 );
+		add_filter( 'wpforms_field_atts', [ $this, 'add_custom_class' ], 10, 3 );
+		add_filter( 'wpforms_field_preview_class', [ $this, 'add_css_class_for_field_wrapper' ], 10, 2 );
 	}
 
 	/**
@@ -116,5 +118,56 @@ class Field extends FieldLite {
 	 * @param array  $form_data    Form data and settings.
 	 */
 	public function format( $field_id, $field_submit, $form_data ) {
+	}
+
+	/**
+	 * Add .wpforms-field-divider-hide_line class when Hide Divider Line is checked.
+	 *
+	 * @since 1.9.7
+	 *
+	 * @param mixed $attributes Field attributes.
+	 * @param array $field      Field data.
+	 * @param array $form_data  Form data and settings.
+	 *
+	 * @return array
+	 */
+	public function add_custom_class( $attributes, array $field, array $form_data ): array {
+
+		$attributes = (array) $attributes;
+
+		if ( ! isset( $field['type'] ) || $field['type'] !== $this->type ) {
+			return $attributes;
+		}
+
+		if ( ! empty( $field['hide_divider_line'] ) && $field['hide_divider_line'] === '1' ) {
+			$attributes['field_class'][] = ' wpforms-field-divider-hide_line';
+		}
+
+		return $attributes;
+	}
+
+	/**
+	 * Add .hide_line class to the field wrapper when Hide Divider Line is checked on the field preview.
+	 *
+	 * @since 1.9.7
+	 *
+	 * @param mixed $css   CSS classes for the field wrapper.
+	 * @param array $field Field data.
+	 *
+	 * @return string
+	 */
+	public function add_css_class_for_field_wrapper( $css, array $field ): string {
+
+		$css = (string) $css;
+
+		if ( ! isset( $field['type'] ) || $field['type'] !== $this->type ) {
+			return $css;
+		}
+
+		if ( ! empty( $field['hide_divider_line'] ) && $field['hide_divider_line'] === '1' ) {
+			$css .= ' hide_line ';
+		}
+
+		return $css;
 	}
 }

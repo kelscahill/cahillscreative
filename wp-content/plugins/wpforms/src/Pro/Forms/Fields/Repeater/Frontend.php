@@ -576,7 +576,7 @@ class Frontend {
 	 *
 	 * @return string
 	 */
-	private function get_populated_clones_html( array $field ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_populated_clones_html( array $field ): string {
 
 		// Pass the form data with cloned fields to the field object.
 		// This is needed to get the correct field settings for the cloned fields.

@@ -45,6 +45,7 @@ class Upload {
 	public function process_file( $file, $field_id, $form_data, $is_media_integrated ) {
 
 		$file_name     = sanitize_file_name( $file['name'] );
+		$file_name     = str_replace( '^', '', $file_name ); // Remove ^ since sanitize_file_name() allows it, but esc_url_raw() will strip it when saving the URL, causing mismatches.
 		$file_ext      = pathinfo( $file_name, PATHINFO_EXTENSION );
 		$file_base     = $this->get_file_basename( $file_name, $file_ext );
 		$file_name_new = sprintf( '%s-%s.%s', $file_base, wp_hash( wp_rand() . microtime() . $form_data['id'] . $field_id ), strtolower( $file_ext ) );
@@ -237,6 +238,7 @@ class Upload {
 				'post_content'   => $this->get_wp_media_file_desc( $file, $field_data ),
 				'post_status'    => 'publish',
 				'post_mime_type' => $file['type'],
+				'guid'           => $this->get_attachment_guid( $upload_file ),
 			],
 			$upload_file
 		);
@@ -260,6 +262,27 @@ class Upload {
 		);
 
 		return $attachment_id;
+	}
+
+	/**
+	 * Get attachment GUID.
+	 *
+	 * @since 1.9.7
+	 *
+	 * @param string $upload_file Data from the side-loaded file.
+	 *
+	 * @return string
+	 */
+	private function get_attachment_guid( string $upload_file ): string {
+
+		$upload_dir = wp_get_upload_dir();
+		$upload_url = trailingslashit( $upload_dir['url'] );
+
+		if ( ! empty( $upload_dir['error'] ) || empty( $upload_dir['url'] ) ) {
+			return '';
+		}
+
+		return $upload_url . wp_basename( $upload_file );
 	}
 
 	/**

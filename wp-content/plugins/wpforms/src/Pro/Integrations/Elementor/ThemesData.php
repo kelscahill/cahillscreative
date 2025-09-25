@@ -76,7 +76,7 @@ class ThemesData extends ThemesDataBase {
 	 *
 	 * @return array
 	 */
-	public function get_wpforms_themes(): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function get_wpforms_themes(): array {
 
 		if ( $this->wpforms_themes !== null ) {
 			return $this->wpforms_themes;

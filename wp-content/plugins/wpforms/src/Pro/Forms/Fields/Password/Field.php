@@ -51,7 +51,7 @@ class Field extends FieldLite {
 	 *
 	 * @return array
 	 */
-	public function field_properties( $properties, $field, $form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function field_properties( $properties, $field, $form_data ): array {
 
 		$properties = (array) $properties;
 
@@ -61,6 +61,10 @@ class Field extends FieldLite {
 		if ( ! empty( $field['password-strength'] ) ) {
 			$properties['inputs']['primary']['data']['rule-password-strength']  = true;
 			$properties['inputs']['primary']['data']['password-strength-level'] = $field['password-strength-level'];
+		}
+
+		if ( ! empty( $field['password-visibility'] ) ) {
+			$properties['container']['class'][] = 'wpforms-field-password-visibility-enabled';
 		}
 
 		if ( empty( $field['confirmation'] ) ) {
@@ -129,17 +133,17 @@ class Field extends FieldLite {
 			]
 		);
 
-		// Input Primary: add error class if needed.
+		// Input Primary: add an error class if needed.
 		if ( ! empty( $properties['error']['value']['primary'] ) ) {
 			$properties['inputs']['primary']['class'][] = 'wpforms-error';
 		}
 
-		// Input Secondary: add error class if needed.
+		// Input Secondary: add an error class if needed.
 		if ( ! empty( $properties['error']['value']['secondary'] ) ) {
 			$properties['inputs']['secondary']['class'][] = 'wpforms-error';
 		}
 
-		// Input Secondary: add required class if needed.
+		// Input Secondary: add the required class if needed.
 		if ( ! empty( $field['required'] ) ) {
 			$properties['inputs']['secondary']['class'][] = 'wpforms-field-required';
 		}
@@ -221,43 +225,63 @@ class Field extends FieldLite {
 		$primary      = $field['properties']['inputs']['primary'];
 		$secondary    = ! empty( $field['properties']['inputs']['secondary'] ) ? $field['properties']['inputs']['secondary'] : [];
 
+		$field_markup = '<input type="password" %1$s %2$s>';
+
+		if ( ! empty( $field['password-visibility'] ) ) {
+			$field_markup  = '<div class="wpforms-field-password-input">';
+			$field_markup .= '<input type="password" %1$s %2$s>';
+
+			$field_markup .= sprintf(
+				'<a href="#" class="wpforms-field-password-input-icon" aria-label="%1$s" title="%1$s" data-switch-title="%2$s">
+					<svg class="wpforms-field-password-input-icon-invisible" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" role="img"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3z"/></svg>
+					<svg class="wpforms-field-password-input-icon-visible" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" role="img"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c8.4-19.3 10.6-41.4 4.8-63.3c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zM373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5L373 389.9z"/></svg>
+				</a>',
+				__( 'Show Password', 'wpforms' ),
+				__( 'Hide Password', 'wpforms' )
+			);
+
+			$field_markup .= '</div>';
+		}
+
 		// Standard password field.
 		if ( ! $confirmation ) {
 			// Primary field.
-			printf(
-				'<input type="password" %s %s>',
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			printf( // The `$field_markup` variable is escaped above, we should escape only passed variables to placeholders.
+				$field_markup, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				wpforms_html_attributes( $primary['id'], $primary['class'], $primary['data'], $primary['attr'] ),
 				esc_attr( $primary['required'] )
 			);
-		} else { // Confirmation password field configuration.
-			// Row wrapper.
-			echo '<div class="wpforms-field-row wpforms-field-' . sanitize_html_class( $field['size'] ) . '">';
-				// Primary field.
-				echo '<div ' . wpforms_html_attributes( false, $primary['block'] ) . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					$this->field_display_sublabel( 'primary', 'before', $field );
-					printf(
-						'<input type="password" %s %s>',
-						wpforms_html_attributes( $primary['id'], $primary['class'], $primary['data'], $primary['attr'] ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						esc_attr( $primary['required'] )
-					);
-					$this->field_display_sublabel( 'primary', 'after', $field );
-					$this->field_display_error( 'primary', $field );
-				echo '</div>';
 
-				// Secondary field.
-				echo '<div ' . wpforms_html_attributes( false, $secondary['block'] ) . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					$this->field_display_sublabel( 'secondary', 'before', $field );
-					printf(
-						'<input type="password" %s %s>',
-						wpforms_html_attributes( $secondary['id'], $secondary['class'], $secondary['data'], $secondary['attr'] ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						esc_attr( $secondary['required'] )
-					);
-					$this->field_display_sublabel( 'secondary', 'after', $field );
-					$this->field_display_error( 'secondary', $field );
-				echo '</div>';
-			echo '</div>';
+			return;
 		}
+
+		// Confirmation password field configuration.
+		// Row wrapper.
+		echo '<div class="wpforms-field-row wpforms-field-' . sanitize_html_class( $field['size'] ) . '">';
+			// Primary field.
+			echo '<div ' . wpforms_html_attributes( false, $primary['block'] ) . '>';
+				$this->field_display_sublabel( 'primary', 'before', $field );
+				printf( // The `$field_markup` variable is escaped above, we should escape only passed variables to placeholders.
+					$field_markup, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					wpforms_html_attributes( $primary['id'], $primary['class'], $primary['data'], $primary['attr'] ),
+					esc_attr( $primary['required'] )
+				);
+				$this->field_display_sublabel( 'primary', 'after', $field );
+				$this->field_display_error( 'primary', $field );
+			echo '</div>';
+
+			// Secondary field.
+			echo '<div ' . wpforms_html_attributes( false, $secondary['block'] ) . '>';
+				$this->field_display_sublabel( 'secondary', 'before', $field );
+				printf( // The `$field_markup` variable is escaped above, we should escape only passed variables to placeholders.
+					$field_markup, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					wpforms_html_attributes( $secondary['id'], $secondary['class'], $secondary['data'], $secondary['attr'] ),
+					esc_attr( $secondary['required'] )
+				);
+				$this->field_display_sublabel( 'secondary', 'after', $field );
+				$this->field_display_error( 'secondary', $field );
+			echo '</div>';
+		echo '</div>';
 	}
 
 	/**
@@ -269,7 +293,7 @@ class Field extends FieldLite {
 	 * @param array|string $field_submit Submitted field value (raw data).
 	 * @param array        $form_data    Form data and settings.
 	 */
-	public function validate( $field_id, $field_submit, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function validate( $field_id, $field_submit, $form_data ) {
 
 		$form_id  = $form_data['id'];
 		$fields   = $form_data['fields'];
@@ -356,7 +380,17 @@ class Field extends FieldLite {
 	 */
 	public function enqueue_frontend_css( $forms ): void {
 
-		if ( ! $this->strength_enabled( $forms ) && ! wpforms()->obj( 'frontend' )->assets_global() ) {
+		$frontend_obj = wpforms()->obj( 'frontend' );
+
+		if ( ! $frontend_obj ) {
+			return;
+		}
+
+		if (
+			! $this->option_is_enabled( $forms, 'password-strength' )
+			&& ! $this->option_is_enabled( $forms, 'password-visibility' )
+			&& ! $frontend_obj->assets_global()
+		) {
 			return;
 		}
 
@@ -379,7 +413,17 @@ class Field extends FieldLite {
 	 */
 	public function enqueue_frontend_js( $forms ): void {
 
-		if ( ! $this->strength_enabled( $forms ) && ! wpforms()->obj( 'frontend' )->assets_global() ) {
+		$frontend_obj = wpforms()->obj( 'frontend' );
+
+		if ( ! $frontend_obj ) {
+			return;
+		}
+
+		if (
+			! $this->option_is_enabled( $forms, 'password-strength' )
+			&& ! $this->option_is_enabled( $forms, 'password-visibility' )
+			&& ! $frontend_obj->assets_global()
+		) {
 			return;
 		}
 
@@ -395,15 +439,16 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Check if password strength enabled.
+	 * Check if a password field option is enabled in any of the forms.
 	 *
-	 * @since 1.9.4
+	 * @since 1.9.8
 	 *
-	 * @param array $forms Form data of forms on the current page.
+	 * @param array  $forms       Form data of forms on the current page.
+	 * @param string $option_name Name of the password field option to check.
 	 *
 	 * @return bool
 	 */
-	private function strength_enabled( $forms ): bool {
+	private function option_is_enabled( array $forms, string $option_name ): bool {
 
 		foreach ( $forms as $form_data ) {
 			if ( empty( $form_data['fields'] ) ) {
@@ -411,8 +456,8 @@ class Field extends FieldLite {
 			}
 
 			foreach ( $form_data['fields'] as $field ) {
-				if ( $field['type'] === 'password' && isset( $field['password-strength'] ) ) {
-					return (bool) $field['password-strength'];
+				if ( $field['type'] === 'password' && ! empty( $field[ $option_name ] ) ) {
+					return true;
 				}
 			}
 		}
@@ -421,7 +466,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Add password strength validation error to frontend strings.
+	 * Add a password strength validation error to frontend strings.
 	 *
 	 * @since 1.9.4
 	 *
@@ -451,7 +496,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Modify value for the entry preview field.
+	 * Modify the value for the entry preview field.
 	 *
 	 * @since 1.9.4
 	 *
@@ -469,7 +514,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Checks if password field has been submitted empty and set as not required at the same time.
+	 * Checks if the password field has been submitted empty and set as not required at the same time.
 	 *
 	 * @since 1.9.4
 	 *
@@ -482,10 +527,10 @@ class Field extends FieldLite {
 	private function is_empty_not_required_field( $field_id, $field_submit, $fields ): bool {
 
 		return (
-				// If submitted value is empty or is an array of empty values (that happens when password confirmation is enabled).
+				// If the submitted value is empty or is an array of empty values (that happens when password confirmation is enabled).
 				empty( $field_submit ) || empty( implode( '', array_values( (array) $field_submit ) ) )
 			)
-			&& empty( $fields[ $field_id ]['required'] ); // If field is not set as required.
+			&& empty( $fields[ $field_id ]['required'] ); // If the field is not set as required.
 	}
 
 	/**
@@ -493,7 +538,7 @@ class Field extends FieldLite {
 	 *
 	 * @since 1.9.4
 	 *
-	 * @param bool  $requires_fieldset True if it requires fieldset.
+	 * @param bool  $requires_fieldset True if it requires a fieldset.
 	 * @param array $field             Field data.
 	 *
 	 * @return bool

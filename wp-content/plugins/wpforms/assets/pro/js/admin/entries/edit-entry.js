@@ -1,22 +1,31 @@
 /* global wpforms_admin, wpforms_settings, wpforms_admin_edit_entry, wpf, wpforms, tinyMCE */
+
+/**
+ * @param wpforms_admin_edit_entry.strings.continue_editing
+ * @param wpforms_admin_edit_entry.strings.entry_delete_file
+ * @param wpforms_admin_edit_entry.strings.entry_empty_file
+ * @param wpforms_admin_edit_entry.strings.msg_saved
+ * @param wpforms_admin_edit_entry.strings.view_entry
+ * @param wpforms_admin_edit_entry.strings.view_entry_url
+ * @param wpforms_settings.val_number
+ * @param wpforms_settings.val_phone
+ */
+
+// noinspection ES6ConvertVarToLetConst
 /**
  * WPForms Edit Entry function.
  *
  * @since 1.6.0
  */
-
-'use strict';
-
-var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, $ ) {
-
+var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, $ ) { // eslint-disable-line
 	/**
 	 * Elements reference.
 	 *
 	 * @since 1.6.0
 	 *
-	 * @type {object}
+	 * @type {Object}
 	 */
-	var el = {
+	const el = {
 		$editForm:     $( '#wpforms-edit-entry-form' ),
 		$submitButton: $( '#wpforms-edit-entry-update' ),
 	};
@@ -26,26 +35,25 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 	 *
 	 * @since 1.6.0
 	 *
-	 * @type {object}
+	 * @type {Object}
 	 */
-	var vars = {};
+	const vars = {};
 
 	/**
 	 * Public functions and properties.
 	 *
 	 * @since 1.6.0
 	 *
-	 * @type {object}
+	 * @type {Object}
 	 */
-	var app = {
+	const app = {
 
 		/**
 		 * Start the engine.
 		 *
 		 * @since 1.6.0
 		 */
-		init: function() {
-
+		init() {
 			$( app.ready );
 		},
 
@@ -54,8 +62,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		 *
 		 * @since 1.6.0
 		 */
-		ready: function() {
-
+		ready() {
 			vars.nonce = el.$editForm.find( 'input[name="nonce"]' ).val();
 			vars.entryId = el.$editForm.find( 'input[name="wpforms[entry_id]"]' ).val();
 
@@ -70,14 +77,13 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		 *
 		 * @since 1.6.0
 		 */
-		events: function() {
-
+		events() {
 			// Submit the form.
 			el.$submitButton.on( 'click', app.clickUpdateButton );
 
 			// Submit result.
 			el.$editForm
-				.on( 'wpformsAjaxBeforeSubmit', app.validateFields ) // Validate fields before submit.
+				.on( 'wpformsAjaxBeforeSubmit', app.validateFields ) // Validate fields before submitting.
 				.on( 'wpformsAjaxSubmitFailed', app.submitFailed ) // Submit Failed, display the errors.
 				.on( 'wpformsAjaxSubmitSuccess', app.submitSuccess ); // Submit Success.
 
@@ -86,6 +92,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 
 			// Confirm file deletion.
 			$( document ).on( 'click', '.wpforms-edit-entry-field-file-upload .delete', app.fileDelete );
+			$( document ).on( 'click', '.wpforms-edit-entry-field-camera .delete', app.fileDelete );
 		},
 
 		/**
@@ -93,8 +100,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		 *
 		 * @since 1.6.0
 		 */
-		initSavedFormData: function() {
-
+		initSavedFormData() {
 			vars.savedFormData = el.$editForm.serialize();
 		},
 
@@ -103,12 +109,11 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		 *
 		 * @since 1.6.0
 		 *
-		 * @param {object} event Event object.
+		 * @param {Object} event Event object.
 		 *
-		 * @returns {string|void} Not empty string if needed to display standard alert.
+		 * @return {string|void} Not empty string if needed to display standard alert.
 		 */
-		beforeUnload: function( event ) {
-
+		beforeUnload( event ) {
 			if ( el.$editForm.serialize() === vars.savedFormData ) {
 				return;
 			}
@@ -119,14 +124,13 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		},
 
 		/**
-		 * Click Update button event handler.
+		 * Click the Update button event handler.
 		 *
 		 * @since 1.6.0
 		 *
-		 * @param {object} event Event object.
+		 * @param {Object} event Event object.
 		 */
-		clickUpdateButton: function( event ) {
-
+		clickUpdateButton( event ) {
 			event.preventDefault();
 
 			el.$submitButton.prop( 'disabled', true );
@@ -136,7 +140,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 			// Hide all errors.
 			app.hideErrors();
 
-			// Add referer hidden field to cover a case when the browser referer is stripped out by the server.
+			// Add a referer hidden field to cover a case when the browser referer is stripped out by the server.
 			el.$editForm.append( $( '<input>', { type: 'hidden', name: '_wp_http_referer', value: wpf.updateQueryString( '_wp_http_referer', null ) } ) );
 
 			wpforms.formSubmitAjax( el.$editForm );
@@ -147,25 +151,22 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		 *
 		 * @since 1.6.0
 		 */
-		preSubmitActions: function() {
+		preSubmitActions() {
+			const formID = el.$editForm.data( 'formid' );
 
-			var formID = $( '#wpforms-edit-entry-form' ).data( 'formid' );
-
-			// Fix for Smart Phone fields.
+			// Fix for Smartphone fields.
 			$( '.wpforms-smart-phone-field' ).trigger( 'input' );
 
 			// Delete files from the list.
-			$( '.wpforms-edit-entry-field-file-upload a.disabled' ).each( function() {
-
+			$( '.wpforms-edit-entry-field-file-upload a.disabled,.wpforms-edit-entry-field-camera a.disabled' ).each( function() {
 				$( this ).parent().remove();
 			} );
 
-			$( '.wpforms-field-file-upload' ).each( function() {
-
-				var $this = $( this );
+			$( '.wpforms-field-file-upload,.wpforms-field-camera' ).each( function() {
+				const $this = $( this );
 
 				if ( $this.is( ':empty' ) ) {
-					$this.closest( '.wpforms-edit-entry-field-file-upload' ).addClass( 'empty' );
+					$this.closest( '.wpforms-edit-entry-field-file-upload, .wpforms-edit-entry-field-camera' ).addClass( 'empty' );
 					$this.html( $( '<span>', {
 						class: 'wpforms-entry-field-value',
 						text: wpforms_admin_edit_entry.strings.entry_empty_file,
@@ -175,8 +176,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 
 			// Update Rich Text fields content.
 			$( '.wpforms-field-richtext' ).each( function() {
-
-				var fieldID = $( this ).data( 'field-id' ),
+				const fieldID = $( this ).data( 'field-id' ),
 					editor = tinyMCE.get( 'wpforms-' + formID + '-field_' + fieldID );
 
 				if ( editor ) {
@@ -190,11 +190,10 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		 *
 		 * @since 1.6.0
 		 *
-		 * @param {object} event    Event object.
-		 * @param {object} response Response data.
+		 * @param {Object} event    Event object.
+		 * @param {Object} response Response data.
 		 */
-		submitFailed: function( event, response ) {
-
+		submitFailed( event, response ) {
 			app.displayErrors( response );
 
 			$.alert( {
@@ -210,8 +209,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 					},
 					cancel: {
 						text    : wpforms_admin_edit_entry.strings.view_entry,
-						action  : function() {
-
+						action() {
 							window.location.href = wpforms_admin_edit_entry.strings.view_entry_url;
 						},
 					},
@@ -224,11 +222,10 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		 *
 		 * @since 1.6.0
 		 *
-		 * @param {object} event    Event object.
-		 * @param {object} response Response data.
+		 * @param {Object} event    Event object.
+		 * @param {Object} response Response data.
 		 */
-		submitSuccess: function( event, response ) {
-
+		submitSuccess( event, response ) {
 			app.initSavedFormData();
 
 			// Display alert only if some changes were made.
@@ -253,8 +250,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 					},
 					cancel: {
 						text    : wpforms_admin_edit_entry.strings.view_entry,
-						action  : function() {
-
+						action() {
 							window.location.href = wpforms_admin_edit_entry.strings.view_entry_url;
 						},
 					},
@@ -267,8 +263,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		 *
 		 * @since 1.6.0
 		 */
-		hideErrors: function() {
-
+		hideErrors() {
 			el.$editForm.find( '.wpforms-field.wpforms-has-error' ).removeClass( 'wpforms-has-error' );
 			el.$editForm.find( '.wpforms-error:not(label)' ).removeClass( 'wpforms-error' );
 			el.$editForm.find( 'label.wpforms-error, em.wpforms-error' ).addClass( 'wpforms-hidden' );
@@ -279,11 +274,10 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		 *
 		 * @since 1.6.0
 		 *
-		 * @param {object} response Response data.
+		 * @param {Object} response Response data.
 		 */
-		displayErrors: function( response ) {
-
-			var errors = response.data && ( 'errors' in response.data ) ? response.data.errors : null;
+		displayErrors( response ) {
+			let errors = response.data && ( 'errors' in response.data ) ? response.data.errors : null;
 
 			if ( wpf.empty( errors ) || wpf.empty( errors.field ) ) {
 				return;
@@ -292,7 +286,6 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 			errors = errors.field;
 
 			Object.keys( errors ).forEach( function( fieldID ) {
-
 				// Display field error.
 				app.displayFieldError( fieldID, errors[ fieldID ] );
 
@@ -309,8 +302,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		 * @param {string} fieldID    Field ID.
 		 * @param {string} fieldError Field error.
 		 */
-		displayFieldError: function( fieldID, fieldError ) {
-
+		displayFieldError( fieldID, fieldError ) {
 			if (
 				typeof fieldError !== 'string' ||
 				( wpf.empty( fieldID ) && fieldID !== '0' ) ||
@@ -319,7 +311,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 				return;
 			}
 
-			var formID = el.$editForm.data( 'formid' ),
+			const formID = el.$editForm.data( 'formid' ),
 				fieldInputID = 'wpforms-' + formID + '-field_' + fieldID,
 				errorLabelID = fieldInputID + '-error',
 				$fieldContainer = el.$editForm.find( '#' + fieldInputID + '-container' ),
@@ -342,27 +334,25 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		 * @since 1.6.0
 		 *
 		 * @param {string} fieldID     Field ID.
-		 * @param {object} fieldErrors Field errors.
+		 * @param {Object} fieldErrors Field errors.
 		 */
-		displaySubfieldsErrors: function( fieldID, fieldErrors ) {
-
+		displaySubfieldsErrors( fieldID, fieldErrors ) {
 			if ( typeof fieldErrors !== 'object' || wpf.empty( fieldErrors ) || wpf.empty( fieldID ) ) {
 				return;
 			}
 
-			var formID = el.$editForm.data( 'formid' ),
+			const formID = el.$editForm.data( 'formid' ),
 				fieldInputID = 'wpforms-' + formID + '-field_' + fieldID,
 				$fieldContainer = el.$editForm.find( '#' + fieldInputID + '-container' );
 
 			Object.keys( fieldErrors ).forEach( function( key ) {
-
-				var error = fieldErrors[ key ];
+				const error = fieldErrors[ key ];
 
 				if ( typeof error !== 'string' || error === '' ) {
 					return;
 				}
 
-				var fieldInputName = 'wpforms[fields][' + fieldID + '][' + key + ']',
+				const fieldInputName = 'wpforms[fields][' + fieldID + '][' + key + ']',
 					errorLabelID = 'wpforms-' + formID + '-field_' + fieldID + '-' + key + '-error',
 					$errLabel = el.$editForm.find( '#' + errorLabelID );
 
@@ -376,7 +366,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 					return;
 				}
 
-				var errorLabel = '<label id="' + errorLabelID + '" class="wpforms-error">' + error + '</label>';
+				const errorLabel = '<label id="' + errorLabelID + '" class="wpforms-error">' + error + '</label>';
 
 				if ( $fieldContainer.hasClass( 'wpforms-field-likert_scale' ) ) {
 					$fieldContainer.find( 'tr' ).eq( key.replace( /r/, '' ) ).after( errorLabel );
@@ -392,13 +382,12 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		 *
 		 * @since 1.6.6
 		 *
-		 * @param {object} event Event object.
+		 * @param {Object} event Event object.
 		 */
-		fileDelete : function( event ) {
-
+		fileDelete( event ) {
 			event.preventDefault();
 
-			var $element = $( this ),
+			const $element = $( this ),
 				$fileInput = $element.parent().find( 'a' ).first();
 
 			// Trigger alert modal to confirm.
@@ -412,8 +401,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 						text: wpforms_admin.ok,
 						btnClass: 'btn-confirm',
 						keys: [ 'enter' ],
-						action: function() {
-
+						action() {
 							$fileInput.html( $fileInput.text().strike() );
 							$fileInput.addClass( 'disabled' );
 							$element.parent().find( 'input[type="hidden"]' ).remove();
@@ -429,7 +417,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		},
 
 		/**
-		 * Validate fields before submit.
+		 * Validate fields before submitting.
 		 * Use event.preventDefault() to prevent form submission.
 		 *
 		 * @since 1.8.8
@@ -442,7 +430,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		},
 
 		/**
-		 * Validate "Smart" phone fields before submit.
+		 * Validate "Smart" phone fields before submitting.
 		 *
 		 * @since 1.8.8
 		 *
@@ -469,7 +457,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 		},
 
 		/**
-		 * Validate Numbers fields before submit.
+		 * Validate Numbers fields before submitting.
 		 *
 		 * @since 1.9.4
 		 *
@@ -480,7 +468,7 @@ var WPFormsEditEntry = window.WPFormsEditEntry || ( function( document, window, 
 				const $field = $( this ),
 					fieldInput = $field.find( 'input[type="number"]' )[ 0 ];
 
-				// We validate required fields on backend to ensure CL doesn't hide the field.
+				// We validate required fields on the backend to ensure CL doesn't hide the field.
 				fieldInput.required = false;
 
 				if ( fieldInput.checkValidity() ) {

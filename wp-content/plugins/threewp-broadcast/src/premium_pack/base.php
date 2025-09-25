@@ -35,6 +35,7 @@ class base
 			'name' => '',
 			'options' => [],
 			'opts' => [],
+			'self' => false,
 			'size' => 0,
 			'value' => '',
 		], $options );
@@ -52,8 +53,12 @@ class base
 		$blogs = $filter->execute()->blogs;
 		$current_blog_id = get_current_blog_id();
 		foreach( $blogs as $blog )
-			if ( $blog->get_id() != $current_blog_id )
-				$input->option( $blog->get_name(), $blog->get_id() );
+		{
+			if ( $blog->get_id() == $current_blog_id )
+				if ( ! $options->self )
+					continue;
+			$input->option( $blog->get_name(), $blog->get_id() );
+		}
 
 		// Maybe give them group functionality.
 		if ( function_exists( 'BC_Blog_Groupize' ) )

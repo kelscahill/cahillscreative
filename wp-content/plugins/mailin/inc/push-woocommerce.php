@@ -533,6 +533,7 @@ if ( ! class_exists('SIB_Push_WooCommerce')) {
 			$notificationText = json_encode(__('Your cart is about to expire! Don\'t miss out the brand you love! 😍', 'mailin'));
 			$notificationTitle = json_encode('🛒 {{event.custom.object_product.string_name}}');
 			$startDate = json_encode(time() * 1000);
+			$campaignBuilder = json_encode(\WonderPush\Obj\Campaign::CAMPAIGN_BUILDER_BREVO_WORDPRESS_PLUGIN);
 			return <<<JSON
 {
   "name": {$campaignTitle},
@@ -541,6 +542,7 @@ if ( ! class_exists('SIB_Push_WooCommerce')) {
     "alert"
   ],
   "segmentId": "@ALL",
+  "campaignBuilder": {$campaignBuilder},
   "scheduling": {
     "eventType": "AddToCart",
     "cancelEventTypes": [

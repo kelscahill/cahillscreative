@@ -2,18 +2,23 @@
 /**
  * Modern file upload template.
  *
- * @var int    $field_id        Field ID.
- * @var int    $form_id         Form ID.
- * @var string $value           Field value.
- * @var string $input_name      Field name.
- * @var string $extensions      Allowed extensions.
- * @var int    $max_size        Max file size.
- * @var int    $max_file_number Max file number.
- * @var int    $post_max_size   Max size for POST request.
- * @var int    $chunk_size      Chunk size.
- * @var string $preview_hint    Preview hint.
- * @var string $required        Is the field required?
- * @var bool   $is_full         Is the field has maximum uploaded files?
+ * @var int        $field_id          Field ID.
+ * @var int        $form_id           Form ID.
+ * @var string     $value             Field value.
+ * @var string     $input_name        Field name.
+ * @var string     $extensions        Allowed extensions.
+ * @var int        $max_size          Max file size.
+ * @var int|string $max_file_number   Max file number.
+ * @var int        $post_max_size     Max size for POST request.
+ * @var int        $chunk_size        Chunk size.
+ * @var string     $preview_hint      Preview hint.
+ * @var string     $required          Is the field required?
+ * @var bool       $is_full           Does the field have maximum uploaded files?
+ * @var array      $classes           Field classes.
+ * @var bool       $camera_enabled    Is a camera enabled for this field?
+ * @var string     $camera_format     Camera format.
+ * @var string     $camera_time_limit Camera time limit in seconds.
+ * @var int        $wait_time         Wait time.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -22,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 <div
-		class="wpforms-uploader"
+		class="wpforms-uploader <?php echo esc_attr( implode( ' ', $classes ) ); ?>"
 		data-field-id="<?php echo absint( $field_id ); ?>"
 		data-form-id="<?php echo absint( $form_id ); ?>"
 		data-input-name="<?php echo esc_attr( $input_name ); ?>"
@@ -34,16 +39,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 		data-parallel-uploads="true"
 		data-file-chunk-size="<?php echo absint( $chunk_size ); ?>">
 	<div class="dz-message<?php echo $is_full ? ' hide' : ''; ?>">
-		<svg viewBox="0 0 1024 1024" focusable="false" data-icon="inbox" width="50px" height="50px" fill="currentColor" aria-hidden="true">
-			<path d="M885.2 446.3l-.2-.8-112.2-285.1c-5-16.1-19.9-27.2-36.8-27.2H281.2c-17 0-32.1 11.3-36.9 27.6L139.4 443l-.3.7-.2.8c-1.3 4.9-1.7 9.9-1 14.8-.1 1.6-.2 3.2-.2 4.8V830a60.9 60.9 0 0 0 60.8 60.8h627.2c33.5 0 60.8-27.3 60.9-60.8V464.1c0-1.3 0-2.6-.1-3.7.4-4.9 0-9.6-1.3-14.1zm-295.8-43l-.3 15.7c-.8 44.9-31.8 75.1-77.1 75.1-22.1 0-41.1-7.1-54.8-20.6S436 441.2 435.6 419l-.3-15.7H229.5L309 210h399.2l81.7 193.3H589.4zm-375 76.8h157.3c24.3 57.1 76 90.8 140.4 90.8 33.7 0 65-9.4 90.3-27.2 22.2-15.6 39.5-37.4 50.7-63.6h156.5V814H214.4V480.1z"></path>
+		<svg  viewBox="0 0 640 640" focusable="false" data-icon="inbox" width="50px" height="50px" fill="currentColor" aria-hidden="true">
+			<path d="M352 173.3L352 384C352 401.7 337.7 416 320 416C302.3 416 288 401.7 288 384L288 173.3L246.6 214.7C234.1 227.2 213.8 227.2 201.3 214.7C188.8 202.2 188.8 181.9 201.3 169.4L297.3 73.4C309.8 60.9 330.1 60.9 342.6 73.4L438.6 169.4C451.1 181.9 451.1 202.2 438.6 214.7C426.1 227.2 405.8 227.2 393.3 214.7L352 173.3zM320 464C364.2 464 400 428.2 400 384L480 384C515.3 384 544 412.7 544 448L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 448C96 412.7 124.7 384 160 384L240 384C240 428.2 275.8 464 320 464zM464 488C477.3 488 488 477.3 488 464C488 450.7 477.3 440 464 440C450.7 440 440 450.7 440 464C440 477.3 450.7 488 464 488z"/>
 		</svg>
-		<span class="modern-title"><?php echo esc_html( _n( 'Click or drag a file to this area to upload.', 'Click or drag files to this area to upload.', (int) $max_file_number, 'wpforms' ) ); ?></span>
+
+		<span class="modern-title">
+			<?php if ( $camera_enabled ) : ?>
+				<?php echo esc_html__( 'Drag & Drop Files, ', 'wpforms' ); ?>
+				<span><?php echo esc_html__( 'Choose Files to Upload', 'wpforms' ); ?></span><?php echo esc_html__( ', or', 'wpforms' ); ?>
+				<span class="wpforms-camera"><?php echo esc_html__( 'Capture With Your Camera', 'wpforms' ); ?></span>
+			<?php else : ?>
+				<?php echo esc_html__( 'Drag & Drop Files, ', 'wpforms' ); ?>
+				<span><?php echo esc_html__( 'Choose Files to Upload', 'wpforms' ); ?></span>
+			<?php endif; ?>
+		</span>
 
 		<?php if ( (int) $max_file_number > 1 ) : ?>
 			<span class="modern-hint"><?php echo esc_html( $preview_hint ); ?></span>
 		<?php endif; ?>
 	</div>
 </div>
+
+<?php
+if ( $camera_enabled ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo wpforms_render(
+		'fields/camera-modal',
+		[
+			'field_id'          => $field_id,
+			'form_id'           => $form_id,
+			'camera_format'     => $camera_format,
+			'camera_time_limit' => $camera_time_limit,
+			'wait_time'         => $wait_time,
+		],
+		true
+	);
+}
+?>
 <input
 		type="text"
 		autocomplete="off"

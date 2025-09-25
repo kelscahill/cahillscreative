@@ -11,6 +11,7 @@ use Automattic\WooCommerce\Admin\Features\Features;
 use Automattic\WooCommerce\Admin\PageController;
 use Automattic\WooCommerce\Admin\PluginsHelper;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use Automattic\WooCommerce\Utilities\OrderUtil;
 use WC_Marketplace_Suggestions;
 
 /**
@@ -217,6 +218,7 @@ class Settings {
 			// We may have synced orders with a now-unregistered status.
 			// E.g. an extension that added statuses is now inactive or removed.
 			$settings['unregisteredOrderStatuses'] = $this->get_unregistered_order_statuses();
+			$settings['usesNewFullRefundData']     = OrderUtil::uses_new_full_refund_data();
 		}
 
 		// The separator used for attributes found in Variation titles.
@@ -245,6 +247,7 @@ class Settings {
 		$settings['connectNonce']                     = wp_create_nonce( 'connect' );
 		$settings['wcpay_welcome_page_connect_nonce'] = wp_create_nonce( 'wcpay-connect' );
 		$settings['email_preview_nonce']              = wp_create_nonce( 'email-preview-nonce' );
+		$settings['email_listing_nonce']              = wp_create_nonce( 'email-listing-nonce' );
 		$settings['wc_helper_nonces']                 = array(
 			'refresh' => wp_create_nonce( 'refresh' ),
 		);

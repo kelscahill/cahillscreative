@@ -203,7 +203,15 @@ class UsageTracking implements IntegrationInterface {
 			'wpforms_stats'                  => $this->get_additional_stats(),
 			'wpforms_ai'                     => AIHelpers::is_used(),
 			'wpforms_ai_killswitch'          => AIHelpers::is_disabled(),
+			'wpforms_disabled_entries_count' => count( $this->get_forms_with_disabled_entries( $forms ) ),
 		];
+
+		$wpconsent_source = (string) get_option( 'wpconsent_source', '' );
+		$wpconsent_date   = (int) get_option( 'wpconsent_date', 0 );
+
+		if ( $wpconsent_date && strpos( $wpconsent_source, 'WPForms' ) !== false ) {
+			$data['wpforms_wpconsent_date'] = $wpconsent_date;
+		}
 
 		if ( ! empty( $first_form_date ) ) {
 			$data['wpforms_forms_first_created'] = $first_form_date;
@@ -237,7 +245,7 @@ class UsageTracking implements IntegrationInterface {
 	 *
 	 * @return string
 	 */
-	private function get_license_status(): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_license_status(): string {
 
 		if ( ! wpforms()->is_pro() ) {
 			return 'lite';
@@ -577,6 +585,26 @@ class UsageTracking implements IntegrationInterface {
 	}
 
 	/**
+	 * Retrieve forms with disabled entries.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @param array $forms List of forms.
+	 *
+	 * @return array.
+	 */
+	private function get_forms_with_disabled_entries( array $forms ): array {
+
+		return array_filter(
+			$forms,
+			static function ( $form ) {
+
+				return ! empty( $form->post_content['settings']['disable_entries'] );
+			}
+		);
+	}
+
+	/**
 	 * Total number of sites.
 	 *
 	 * @since 1.6.1
@@ -907,7 +935,7 @@ class UsageTracking implements IntegrationInterface {
 	 *
 	 * @return array
 	 */
-	private function get_form_antispam_stat( array $forms ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	private function get_form_antispam_stat( array $forms ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$stat = [
 			'antispam'           => 0,
@@ -962,7 +990,7 @@ class UsageTracking implements IntegrationInterface {
 	 *
 	 * @return int
 	 */
-	private function count_fields_with_setting( array $forms, string $field_type, string $field_setting ): int { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function count_fields_with_setting( array $forms, string $field_type, string $field_setting ): int {
 
 		$counter = 0;
 

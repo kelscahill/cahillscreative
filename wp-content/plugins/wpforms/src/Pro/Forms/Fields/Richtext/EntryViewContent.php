@@ -43,7 +43,7 @@ class EntryViewContent {
 	 *
 	 * @return bool
 	 */
-	private function allow_load(): bool { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function allow_load(): bool {
 
 		if ( ! wpforms_is_admin_page( 'entries', 'details' ) && ! wpforms_is_admin_page( 'entries', 'print' ) ) {
 			return false;

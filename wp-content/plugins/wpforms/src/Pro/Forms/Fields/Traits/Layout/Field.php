@@ -251,7 +251,7 @@ trait Field {
 	 *
 	 * @return array
 	 */
-	public function filter_entries_print_preview_fields( $data ): array { // phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded, Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function filter_entries_print_preview_fields( $data ): array { // phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded
 
 		$data   = (array) $data;
 		$fields = (array) ( $data['fields'] ?? $data );

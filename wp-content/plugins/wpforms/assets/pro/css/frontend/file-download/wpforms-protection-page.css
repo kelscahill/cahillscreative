@@ -13,7 +13,7 @@
 }
 
 .wpforms-file-download-content h1 {
-  color: #444444;
+  color: #3c434a;
   font-size: 28px;
   font-weight: 700;
   line-height: normal;
@@ -22,7 +22,7 @@
 }
 
 .wpforms-file-download-content p {
-  color: #777777;
+  color: #50575e;
   font-size: 16px;
   font-style: normal;
   line-height: normal;
@@ -54,7 +54,7 @@
 }
 
 .wpforms-file-download-content .wpforms-file-password-form input::placeholder {
-  color: #cccccc;
+  color: #c3c4c7;
 }
 
 .wpforms-file-download-content .wpforms-file-password-form button {

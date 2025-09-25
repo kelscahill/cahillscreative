@@ -425,7 +425,7 @@ class Builder {
 	 * @param string $columns_class Columns container CSS class.
 	 * @param array  $field         Field settings.
 	 */
-	protected function field_preview_columns_wrap( $columns_html, $columns_class, $field ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed, Generic.Metrics.CyclomaticComplexity.TooHigh
+	protected function field_preview_columns_wrap( $columns_html, $columns_class, $field ) {
 
 		$display           = $field['display'] ?? $this->field_obj->defaults['display'];
 		$row_buttons_class = $display === 'rows' ? '' : 'wpforms-hidden';

@@ -41,12 +41,13 @@ class Field extends WPForms_Field {
 	public function init() {
 
 		// Define field type information.
-		$this->name     = esc_html__( 'Page Break', 'wpforms-lite' );
-		$this->keywords = esc_html__( 'progress bar, multi step, multi part', 'wpforms-lite' );
-		$this->type     = 'pagebreak';
-		$this->icon     = 'fa-files-o';
-		$this->order    = 160;
-		$this->group    = 'fancy';
+		$this->name            = esc_html__( 'Page Break', 'wpforms-lite' );
+		$this->keywords        = esc_html__( 'progress bar, multi step, multi part', 'wpforms-lite' );
+		$this->type            = 'pagebreak';
+		$this->icon            = 'fa-files-o';
+		$this->order           = 160;
+		$this->group           = 'fancy';
+		$this->allow_read_only = false;
 
 		$this->init_pro_field();
 		$this->hooks();
@@ -87,7 +88,7 @@ class Field extends WPForms_Field {
 	 * @param string $position       Position.
 	 * @param string $position_class Position CSS class.
      */
-	private function field_options_basic( array $field, string $position, string $position_class ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function field_options_basic( array $field, string $position, string $position_class ): void {
 
 		// Hidden field indicating the position.
 		$this->field_element(
@@ -118,7 +119,7 @@ class Field extends WPForms_Field {
 
 		$this->field_options_basic_top( $field, $position );
 
-		// Page Title, don't display for bottom pagebreaks.
+		// Page Title, don't display for bottom page breaks.
 		if ( $position !== 'bottom' ) {
 			$lbl = $this->field_element(
 				'label',
@@ -183,7 +184,7 @@ class Field extends WPForms_Field {
 			);
 		}
 
-		// Options are not available to top pagebreaks.
+		// Options are not available to top page breaks.
 		if ( $position !== 'top' ) {
 
 			// Previous button toggle.
@@ -252,6 +253,50 @@ class Field extends WPForms_Field {
 	}
 
 	/**
+	 * Generate the field UI for progress text configuration within a form.
+	 *
+	 * @since 1.9.7
+	 *
+	 * @param array $field The field data used to generate the progress text UI elements.
+	 */
+	private function field_progress_text( array $field ): void {
+
+		$lbl = $this->field_element(
+			'label',
+			$field,
+			[
+				'slug'    => 'progress_text',
+				'value'   => esc_html__( 'Progress Text', 'wpforms-lite' ),
+				'tooltip' => esc_html__( 'Enter text for the progress indicator.', 'wpforms-lite' ),
+			],
+			false
+		);
+
+		$fld = $this->field_element(
+			'text',
+			$field,
+			[
+				'slug'  => 'progress_text',
+				'value' => ! empty( $field['progress_text'] ) ? esc_html( $field['progress_text'] ) : 'Step {current_page} of {last_page}',
+				'after' => esc_html__( 'Enter text to show the user\'s progress. You can use {current_page} and {last_page} to indicate the current and last steps.', 'wpforms-lite' ),
+			],
+			false
+		);
+
+		$indicator = ! empty( $field['indicator'] ) ? esc_attr( $field['indicator'] ) : 'progress';
+
+		$this->field_element(
+			'row',
+			$field,
+			[
+				'slug'    => 'progress_text',
+				'content' => $lbl . $fld,
+				'class'   => $indicator !== 'progress' ? 'wpforms-hidden' : '', // Hide if the indicator is not set to progress.
+			]
+		);
+	}
+
+	/**
 	 * Field options panel inside the builder.
 	 *
 	 * @since 1.9.4
@@ -299,6 +344,7 @@ class Field extends WPForms_Field {
 				'slug'    => 'indicator',
 				'value'   => ! empty( $field['indicator'] ) ? esc_attr( $field['indicator'] ) : 'progress',
 				'options' => $themes,
+				'class'   => 'wpforms-pagebreak-progress-indicator',
 			],
 			false
 		);
@@ -348,6 +394,8 @@ class Field extends WPForms_Field {
 				'class'   => 'color-picker-row',
 			]
 		);
+
+		$this->field_progress_text( $field );
 	}
 
 	/**
@@ -459,7 +507,7 @@ class Field extends WPForms_Field {
 	 *
 	 * @param array $field Field data.
 	 */
-	public function field_preview( $field ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function field_preview( $field ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$nav_align  = 'wpforms-pagebreak-buttons-left';
 		$prev       = ! empty( $field['prev'] ) ? $field['prev'] : esc_html__( 'Previous', 'wpforms-lite' );
@@ -472,7 +520,7 @@ class Field extends WPForms_Field {
 		$label      = $position === 'normal' && empty( $label ) ? esc_html__( 'Page Break', 'wpforms-lite' ) : $label;
 
 		/**
-		 * Fires before page break is displayed on the preview.
+		 * Fires before the page break is displayed on the preview.
 		 *
 		 * @since 1.7.9
 		 *
@@ -531,7 +579,7 @@ class Field extends WPForms_Field {
 		echo '</div>';
 
 		/**
-		 * Fires after page break is displayed on the preview.
+		 * Fires after a page break is displayed on the preview.
 		 *
 		 * @since 1.7.9
 		 *
@@ -542,7 +590,7 @@ class Field extends WPForms_Field {
 	}
 
 	/**
-	 * Add class to the builder field preview.
+	 * Add a class to the builder field preview.
 	 *
 	 * @since 1.9.4
 	 *

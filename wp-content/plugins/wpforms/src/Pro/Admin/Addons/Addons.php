@@ -165,7 +165,11 @@ class Addons extends \WPForms\Admin\Addons\Addons {
 			return $this->get_remote_urls();
 		}
 
-		$urls = Transient::get( 'addons_urls' );
+		static $urls = null;
+
+		if ( $urls === null ) {
+			$urls = Transient::get( 'addons_urls' );
+		}
 
 		// We store an empty array if the request isn't valid to prevent spam requests.
 		if ( is_array( $urls ) ) {

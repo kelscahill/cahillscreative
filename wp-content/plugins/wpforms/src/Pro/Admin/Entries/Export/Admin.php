@@ -172,7 +172,7 @@ class Admin {
 					],
 				]
 			),
-			esc_url( wpforms_utm_link( 'https://wpforms.com/docs/entry-automation-addon/', 'Entry Automation Education', 'Entry Automation Documentation' ) )
+			esc_url( wpforms_utm_link( 'https://wpforms.com/docs/entry-automation-addon/', 'Tools - Export', 'Learn More - Entry Automation Documentation' ) )
 		);
 
 		printf(
@@ -302,7 +302,7 @@ class Admin {
 	 *
 	 * @param bool $is_payment_fields Whether to display payment fields.
 	 */
-	public function display_fields_selection_block( $is_payment_fields = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function display_fields_selection_block( $is_payment_fields = false ) {
 
 		$form_data = $this->export->data['form_data'];
 		$fields    = $this->export->data['get_args']['fields'];

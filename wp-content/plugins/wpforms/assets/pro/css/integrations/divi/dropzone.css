@@ -10,6 +10,14 @@ div.wpforms-container div.wpforms-uploader {
   cursor: pointer;
 }
 
+div.wpforms-container div.wpforms-uploader .modern-title span {
+  text-decoration: underline;
+}
+
+div.wpforms-container div.wpforms-uploader .modern-title span:hover {
+  text-decoration: none;
+}
+
 div.wpforms-container div.wpforms-uploader .dz-message {
   display: flex;
   flex-direction: column;
@@ -221,6 +229,14 @@ div.wpforms-container .wpforms-submit-overlay-container .wpforms-submit-overlay 
   justify-content: center;
   flex-direction: column;
   cursor: pointer;
+}
+
+.et-db #et-boc .et-l .et_pb_module div.wpforms-container div.wpforms-uploader .modern-title span {
+  text-decoration: underline;
+}
+
+.et-db #et-boc .et-l .et_pb_module div.wpforms-container div.wpforms-uploader .modern-title span:hover {
+  text-decoration: none;
 }
 
 .et-db #et-boc .et-l .et_pb_module div.wpforms-container div.wpforms-uploader .dz-message {

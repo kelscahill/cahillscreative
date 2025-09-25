@@ -334,7 +334,7 @@ class Page {
 	 *
 	 * @since 1.8.6
 	 */
-	public function process_delete() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function process_delete() {
 
 		// Security check.
 		if ( ! check_ajax_referer( 'wpforms-admin', 'nonce', false ) ) {
@@ -414,7 +414,7 @@ class Page {
 	 *
 	 * @since 1.8.5
 	 */
-	public function process_trash() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function process_trash() {
 
 		// Security check.
 		if ( ! check_ajax_referer( 'wpforms-admin', 'nonce', false ) ) {

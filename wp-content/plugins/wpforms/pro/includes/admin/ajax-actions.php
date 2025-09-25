@@ -204,13 +204,19 @@ function wpforms_refresh_license() {
 		wp_send_json_error();
 	}
 
+	// Get the license object.
+	$license = wpforms()->obj( 'license' );
+
+	// Get the license key.
+	$license_key = $license->get();
+
 	// Check for license key.
-	if ( empty( $_POST['license'] ) ) {
+	if ( empty( $license_key ) ) {
 		wp_send_json_error( esc_html__( 'Please enter a license key.', 'wpforms' ) );
 	}
 
 	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-	wpforms()->obj( 'license' )->validate_key( $_POST['license'], true, true );
+	wpforms()->obj( 'license' )->validate_key( $license_key, true, true );
 }
 
 add_action( 'wp_ajax_wpforms_refresh_license', 'wpforms_refresh_license' );

@@ -58,7 +58,7 @@
 }
 
 .wpforms-conditional-block .value :disabled {
-  background-color: #f1f1f1;
+  background-color: #f0f0f1;
   cursor: not-allowed;
 }
 

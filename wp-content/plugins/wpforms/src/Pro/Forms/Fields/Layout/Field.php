@@ -38,7 +38,7 @@ class Field extends WPForms_Field {
 	 *
 	 * @var array
 	 */
-	const PRESETS = [
+	private const PRESETS = [
 		'100',
 		'50-50',
 		'67-33',
@@ -57,7 +57,7 @@ class Field extends WPForms_Field {
 	 *
 	 * @var array
 	 */
-	const NOT_ALLOWED_FIELDS = [
+	private const NOT_ALLOWED_FIELDS = [
 		'layout',
 		'repeater',
 		'pagebreak',
@@ -81,12 +81,13 @@ class Field extends WPForms_Field {
 	public function init() {
 
 		// Define field type information.
-		$this->name     = esc_html__( 'Layout', 'wpforms' );
-		$this->keywords = esc_html__( 'column, row', 'wpforms' );
-		$this->type     = 'layout';
-		$this->icon     = 'fa-columns';
-		$this->order    = 140;
-		$this->group    = 'fancy';
+		$this->name            = esc_html__( 'Layout', 'wpforms' );
+		$this->keywords        = esc_html__( 'column, row', 'wpforms' );
+		$this->type            = 'layout';
+		$this->icon            = 'fa-columns';
+		$this->order           = 140;
+		$this->group           = 'fancy';
+		$this->allow_read_only = false;
 
 		// Default settings.
 		$this->defaults = [
@@ -120,7 +121,7 @@ class Field extends WPForms_Field {
 	 *
 	 * @since 1.8.9
 	 */
-	public function hooks() {
+	public function hooks(): void {
 
 		$this->layout_hooks();
 

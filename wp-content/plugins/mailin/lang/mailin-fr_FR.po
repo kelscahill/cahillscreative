@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sendinblue plugin\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/mailin\n"
-"POT-Creation-Date: 2025-05-27T08:57:42+00:00\n"
-"PO-Revision-Date: 2025-04-18 13:11+0200\n"
+"POT-Creation-Date: 2025-07-31T09:38:35+00:00\n"
+"PO-Revision-Date: 2025-07-31 11:40+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -19,7 +19,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #: sendinblue.php
 msgid "Brevo - Email, SMS, Web Push, Chat, and more."
-msgstr ""
+msgstr "Brevo - Email, SMS, Web Push, Chat, et plus."
 
 #. Plugin URI of the plugin
 #. Author URI of the plugin
@@ -39,11 +39,11 @@ msgstr ""
 
 #. Author of the plugin
 #: sendinblue.php inc/sib-api-manager.php:562 page/page-home.php:43
-#: page/page-home.php:544 page/page-home.php:781
+#: page/page-home.php:557 page/page-home.php:794
 msgid "Brevo"
 msgstr "Brevo"
 
-#: inc/push-admin.php:33 page/page-home.php:394 page/page-push.php:37
+#: inc/push-admin.php:33 page/page-home.php:410 page/page-push.php:37
 msgid "Web push"
 msgstr "Push web"
 
@@ -67,128 +67,141 @@ msgstr "Informez vos lecteurs de la publication d'un nouvel article."
 msgid "Let your users subscribe to their favorite topics."
 msgstr "Permettez à vos utilisateurs de s'abonner à leurs sujets favoris."
 
-#: inc/push-admin.php:70 page/page-home.php:424
+#: inc/push-admin.php:70 page/page-home.php:437
 msgid "Activate web push"
 msgstr "Activer web push"
 
-#: inc/push-admin.php:218
+#. translators: %1$s: advanced settings
+#: inc/push-admin.php:214
+msgid ""
+"To use Brevo segments and lists, enable contact creation from push "
+"subscribers %1$s."
+msgstr ""
+"Pour utiliser les listes et segments Brevo, activez la création de contacts "
+"pour vos abonnés push %1$s."
+
+#: inc/push-admin.php:215 page/page-home.php:201
+msgid "in Advanced settings"
+msgstr "dans les Réglages Avancés"
+
+#: inc/push-admin.php:225
 msgid "Notify your readers:"
 msgstr "Notifiez vos lecteurs :"
 
 #. translators: %s: Type of post. Usually is the string "post"
-#: inc/push-admin.php:226 inc/push-admin.php:252
+#: inc/push-admin.php:233 inc/push-admin.php:259
 msgid "Send web push on %s update"
 msgstr "Envoyer un web push quand le %s est mis à jour"
 
 #. translators: %s: Type of post. Usually is the string "post"
-#: inc/push-admin.php:229 inc/push-admin.php:255
+#: inc/push-admin.php:236 inc/push-admin.php:262
 msgid "Send web push on %s publish"
 msgstr "Envoyer un web push quand un %s est publié"
 
-#: inc/push-admin.php:232
+#: inc/push-admin.php:239
 msgid "New"
 msgstr "New"
 
-#: inc/push-admin.php:236
+#: inc/push-admin.php:243
 msgid "Please wait a few seconds..."
 msgstr "Veuillez patienter quelques secondes…"
 
-#: inc/push-admin.php:261
+#: inc/push-admin.php:268
 msgid "Target audience"
 msgstr "Audience cible"
 
-#: inc/push-admin.php:269
+#: inc/push-admin.php:276
 msgid "Everybody"
 msgstr "Tout le monde"
 
-#: inc/push-admin.php:283
+#: inc/push-admin.php:290
 msgid "Users in segment(s)"
 msgstr "Les utilisateurs dans le(s) segment(s)"
 
-#: inc/push-admin.php:287
+#: inc/push-admin.php:294
 msgid "We'll notify users that match at least one of these segments:"
 msgstr ""
 "Nous notifierons tous les utilisateurs présents dans au moins un de ces "
 "segments :"
 
-#: inc/push-admin.php:291 inc/push-admin.php:318
+#: inc/push-admin.php:301 inc/push-admin.php:331
 msgid "Everyone"
 msgstr "Tout le monde"
 
-#: inc/push-admin.php:310
+#: inc/push-admin.php:320
 msgid "Users in list(s)"
 msgstr "Utilisateurs dans la ou les listes"
 
-#: inc/push-admin.php:314
+#: inc/push-admin.php:327
 msgid "We'll notify users that match at least one of these lists:"
 msgstr ""
 "Nous notifierons tous les utilisateurs présents dans au moins une de ces "
 "listes :"
 
-#: inc/push-admin.php:337
+#: inc/push-admin.php:350
 msgid "Users with tag(s)"
 msgstr "Utilisateurs avec le(s) tag(s)"
 
-#: inc/push-admin.php:341
+#: inc/push-admin.php:354
 msgid "We'll notify users that match at least one of these tags:"
 msgstr "Nous notifierons tous les utilisateurs qui on au moins un de ces tags:"
 
-#: inc/push-admin.php:359
+#: inc/push-admin.php:372
 msgid "Send later"
 msgstr "Envoyer plus tard"
 
-#: inc/push-admin.php:360
+#: inc/push-admin.php:373
 msgid "Delay the notification after this post gets published:"
 msgstr ""
 "Retarder l’envoi de la notification après que le billet ne soit publié :"
 
-#: inc/push-admin.php:363
+#: inc/push-admin.php:376
 msgid "No delay"
 msgstr "Immédiatement"
 
-#: inc/push-admin.php:368
+#: inc/push-admin.php:381
 msgid "minutes"
 msgstr "minutes"
 
-#: inc/push-admin.php:375
+#: inc/push-admin.php:388
 msgid "hour"
 msgid_plural "hours"
 msgstr[0] "heure"
 msgstr[1] "heures"
 
-#: inc/push-admin.php:379
+#: inc/push-admin.php:392
 msgid "Google campaign parameters"
 msgstr "Paramètres de campagne Google"
 
-#: inc/push-admin.php:380
+#: inc/push-admin.php:393
 msgid "Campaign params help you see web push traffic in Google Analytics."
 msgstr ""
 "Les paramètres de campagne vous aideront à voir le traffic lié aux web push "
 "dans Google Analytics."
 
-#: inc/push-admin.php:380
+#: inc/push-admin.php:393
 msgid "Learn more"
 msgstr "En savoir plus"
 
-#: inc/push-admin.php:803
+#: inc/push-admin.php:816
 msgid "Brevo push notification sent."
 msgstr "Notification push Brevo envoyée."
 
 #. translators: %d is the number of subscribers, %s is the date and time
-#: inc/push-admin.php:820
+#: inc/push-admin.php:833
 msgid "Brevo will send a notification to %d subscribers on %s."
 msgstr "Brevo enverra une notification à %d abonnés le %s."
 
 #. translators: %d is the number of subscribers
-#: inc/push-admin.php:823
+#: inc/push-admin.php:836
 msgid "Brevo notification sent to %d subscribers."
 msgstr "Notification Brevo envoyée à %d abonnés."
 
-#: inc/push-admin.php:826
+#: inc/push-admin.php:839
 msgid "Brevo notification sent but the target audience is empty."
 msgstr "Notification Brevo envoyée mais l'audience cible est vide."
 
-#: inc/push-admin.php:831
+#: inc/push-admin.php:844
 msgid "Brevo notification could not be sent."
 msgstr "La notification Brevo n'a pas pu être envoyée."
 
@@ -200,7 +213,7 @@ msgstr "S’abonner aux mises à jour"
 msgid "Unsubscribe from news updates"
 msgstr "Se désabonner des mises à jour"
 
-#: inc/push-utils.php:304 inc/push-utils.php:374
+#: inc/push-utils.php:320 inc/push-utils.php:390
 msgid "My WordPress Site"
 msgstr "Mon Site WordPress"
 
@@ -222,7 +235,7 @@ msgstr "Inscription newsletter confirmée"
 msgid "Please confirm subscription"
 msgstr "Confirmer l'inscription"
 
-#: inc/sib-api-manager.php:561 page/page-home.php:780
+#: inc/sib-api-manager.php:561 page/page-home.php:793
 msgid "no-reply@"
 msgstr "no-reply@"
 
@@ -262,39 +275,39 @@ msgstr "Vous vous êtes inscrit à la newsletter de "
 msgid "-Brevo"
 msgstr "-Brevo"
 
-#: inc/table-forms.php:15
+#: inc/table-forms.php:27
 msgid "Form"
 msgstr "Formulaire"
 
-#: inc/table-forms.php:16 page/page-form.php:56 page/page-form.php:161
+#: inc/table-forms.php:28 page/page-form.php:63 page/page-form.php:168
 msgid "Forms"
 msgstr "Formulaires"
 
-#: inc/table-forms.php:55
+#: inc/table-forms.php:67
 msgid "No forms avaliable."
 msgstr "Aucun formulaire."
 
-#: inc/table-forms.php:151
+#: inc/table-forms.php:163
 msgid "Form Name"
 msgstr "Nom du Formulaire"
 
-#: inc/table-forms.php:152
+#: inc/table-forms.php:164
 msgid "Shortcode"
 msgstr "Shortcode"
 
-#: inc/table-forms.php:153
+#: inc/table-forms.php:165
 msgid "Visible attributes"
 msgstr "Attributs affichés"
 
-#: inc/table-forms.php:154 page/page-form.php:685 page/page-form.php:686
+#: inc/table-forms.php:166 page/page-form.php:692 page/page-form.php:693
 msgid "Linked List"
 msgstr "Liste liée"
 
-#: inc/table-forms.php:155
+#: inc/table-forms.php:167
 msgid "Last Update"
 msgstr "Dernière modification"
 
-#: inc/table-forms.php:269
+#: inc/table-forms.php:281
 msgid "Add New Form"
 msgstr "Ajouter un nouveau formulaire"
 
@@ -322,11 +335,11 @@ msgstr "Cette adresse email n'est pas valide"
 msgid "Please fill out this field"
 msgstr "Remplissez ce champ s’il vous plaît"
 
-#: page/page-form.php:141
+#: page/page-form.php:148
 msgid "You are about to change the language"
 msgstr "Vous êtes sur le point de changer de langue."
 
-#: page/page-form.php:144
+#: page/page-form.php:151
 msgid ""
 "Please make sure that you've saved all the changes. We will have to reload "
 "the page."
@@ -334,19 +347,19 @@ msgstr ""
 "Veuillez vous assurer que vos modifications ont bien été enregistrées. La "
 "page sera rechargée."
 
-#: page/page-form.php:145
+#: page/page-form.php:152
 msgid "Do you want to continue?"
 msgstr "Voulez-vous continuer ?"
 
-#: page/page-form.php:148
+#: page/page-form.php:155
 msgid "Ok"
 msgstr "Ok"
 
-#: page/page-form.php:149
+#: page/page-form.php:156
 msgid "Cancel"
 msgstr "Annuler"
 
-#: page/page-form.php:164
+#: page/page-form.php:171
 msgid ""
 "Note: Forms created in Brevo plugin for WordPress won't be displayed in "
 "Forms section in Brevo application"
@@ -354,86 +367,86 @@ msgstr ""
 "Note : Les formulaires créés avec le plugin Brevo pour Wordpress ne seront "
 "pas présents sur la page Formulaires de votre compte Brevo"
 
-#: page/page-form.php:242 page/page-form.php:921
+#: page/page-form.php:249 page/page-form.php:928
 msgid "Subscription form"
 msgstr "Formulaire d'inscription"
 
-#: page/page-form.php:248
+#: page/page-form.php:255
 msgid "Form Name : "
 msgstr "Nom du formulaire"
 
-#: page/page-form.php:280
+#: page/page-form.php:287
 msgid "Use the shortcode"
 msgstr "Utiliser le shortcode"
 
-#: page/page-form.php:290
+#: page/page-form.php:297
 msgid "inside a post, page or text widget to display your sign-up form."
 msgstr ""
 "à l'intérieur d'un article, d'une page ou d'un widget de texte afin d'y "
 "ajouter votre formulaire d'inscription"
 
-#: page/page-form.php:292
+#: page/page-form.php:299
 msgid "Do not copy and paste the above form mark up, that will not work"
 msgstr "Ne copiez coller pas le code ci-dessus, cela ne fonctionnera pas"
 
-#: page/page-form.php:299
+#: page/page-form.php:306
 msgid "Add a new Field"
 msgstr "Ajouter un nouveau champ"
 
-#: page/page-form.php:300
+#: page/page-form.php:307
 msgid "Add a New Field"
 msgstr "Ajouter un nouveau champ"
 
-#: page/page-form.php:300
+#: page/page-form.php:307
 msgid "Choose an attribute and add it to the subscription form of your Website"
 msgstr ""
 "Choisir un attribut et l'ajouter au formulaire d'inscription de votre site"
 
-#: page/page-form.php:309 page/page-form.php:392
+#: page/page-form.php:316 page/page-form.php:399
 msgid "Label"
 msgstr "Intitulé"
 
-#: page/page-form.php:310 page/page-form.php:316 page/page-form.php:323
-#: page/page-form.php:393
+#: page/page-form.php:317 page/page-form.php:323 page/page-form.php:330
+#: page/page-form.php:400
 msgid "Optional"
 msgstr "Optionnel"
 
-#: page/page-form.php:315
+#: page/page-form.php:322
 msgid "Place holder"
 msgstr "Ordre"
 
-#: page/page-form.php:322
+#: page/page-form.php:329
 msgid "Initial value"
 msgstr "Valeur initiale"
 
-#: page/page-form.php:329
+#: page/page-form.php:336
 msgid "Button Text"
 msgstr "Bouton de texte"
 
-#: page/page-form.php:336 page/page-form.php:399
+#: page/page-form.php:343 page/page-form.php:406
 msgid "Required field ?"
 msgstr "Champ obligatoire ?"
 
-#: page/page-form.php:342
+#: page/page-form.php:349
 msgid "Drop-down List"
 msgstr "Liste déroulante"
 
-#: page/page-form.php:345
+#: page/page-form.php:352
 msgid "Radio List"
 msgstr "boutons radio"
 
-#: page/page-form.php:348
+#: page/page-form.php:355
 msgid "Checkboxes List"
 msgstr "Liste de checkboxes"
 
-#: page/page-form.php:356 page/page-form.php:362 page/page-form.php:407
-#: page/page-form.php:409 page/page-form.php:437 page/page-form.php:439
-#: page/page-form.php:515 page/page-form.php:555 page/page-form.php:597
+#: page/page-form.php:363 page/page-form.php:369 page/page-form.php:414
+#: page/page-form.php:416 page/page-form.php:444 page/page-form.php:446
+#: page/page-form.php:522 page/page-form.php:562 page/page-form.php:604
 msgid "Add to form"
 msgstr "Ajouter au formulaire"
 
-#: page/page-form.php:362 page/page-form.php:409 page/page-form.php:439
-#: page/page-form.php:517 page/page-form.php:557 page/page-form.php:599
+#: page/page-form.php:369 page/page-form.php:416 page/page-form.php:446
+#: page/page-form.php:524 page/page-form.php:564 page/page-form.php:606
 msgid ""
 "Please click where you want to insert the field and click on this button. By "
 "default, the new field will be added at top."
@@ -441,15 +454,15 @@ msgstr ""
 "Cliquez où vous souhaitez insérer le champ puis cliquez sur le bouton. Par "
 "défaut le nouveau champ sera ajouté au début"
 
-#: page/page-form.php:366 page/page-form.php:413
+#: page/page-form.php:373 page/page-form.php:420
 msgid "Generated HTML"
 msgstr "HTML généré"
 
-#: page/page-form.php:378 page/page-form.php:379
+#: page/page-form.php:385 page/page-form.php:386
 msgid "Add Multi-List Subscription"
 msgstr "Ajouter une inscription multi-liste"
 
-#: page/page-form.php:379
+#: page/page-form.php:386
 msgid ""
 "Enable your contacts to subscribe to content based on specific interests or "
 "preferences. Create a contact list for each interest and allow them to "
@@ -460,47 +473,47 @@ msgstr ""
 "chaque centre d’intérêt et inviter votre contact à s’y abonner en utilisant "
 "ce champ"
 
-#: page/page-form.php:384
+#: page/page-form.php:391
 msgid "Please select the lists"
 msgstr "Veuillez sélectionner une ou plusieurs listes"
 
-#: page/page-form.php:423
+#: page/page-form.php:430
 msgid "Compliance Note"
 msgstr "Note de conformité"
 
-#: page/page-form.php:424
+#: page/page-form.php:431
 msgid "Add compliance note"
 msgstr "Ajouter une note de conformité"
 
-#: page/page-form.php:424
+#: page/page-form.php:431
 msgid ""
 "Create GDPR-compliant subscription forms for collecting email addresses."
 msgstr ""
 "Créer un formulaire d’inscription pour collecter les adresses emails "
 "conformément à la loi RGPD"
 
-#: page/page-form.php:427 page/page-form.php:452 page/page-form.php:571
-#: page/page-form.php:709 page/page-form.php:747 page/page-form.php:803
-#: page/page-home.php:312 page/page-home.php:372
+#: page/page-form.php:434 page/page-form.php:459 page/page-form.php:578
+#: page/page-form.php:716 page/page-form.php:754 page/page-form.php:810
+#: page/page-home.php:328 page/page-home.php:388
 msgid "Yes"
 msgstr "Oui"
 
-#: page/page-form.php:428 page/page-form.php:453 page/page-form.php:572
-#: page/page-form.php:714 page/page-form.php:752 page/page-form.php:808
-#: page/page-home.php:313 page/page-home.php:374
+#: page/page-form.php:435 page/page-form.php:460 page/page-form.php:579
+#: page/page-form.php:721 page/page-form.php:759 page/page-form.php:815
+#: page/page-home.php:329 page/page-home.php:390
 msgid "No"
 msgstr "Non"
 
-#: page/page-form.php:432
+#: page/page-form.php:439
 msgid "Reset to Default"
 msgstr "Charger le formulaire par défaut"
 
-#: page/page-form.php:448 page/page-form.php:449 page/page-form.php:517
-#: page/page-form.php:557
+#: page/page-form.php:455 page/page-form.php:456 page/page-form.php:524
+#: page/page-form.php:564
 msgid "Add Captcha"
 msgstr "Ajouter un Captcha"
 
-#: page/page-form.php:449
+#: page/page-form.php:456
 msgid ""
 "We are using Google reCaptcha for this form. To use Google reCaptcha on this "
 "form, you should input site key and secret key."
@@ -508,39 +521,39 @@ msgstr ""
 "Pour activer le Google reCaptcha pour ce formulaire, veuillez compléter "
 "votre clé de site et votre clé secrète."
 
-#: page/page-form.php:473 page/page-form.php:528
+#: page/page-form.php:480 page/page-form.php:535
 msgid "Site Key"
 msgstr "Clé Site"
 
-#: page/page-form.php:488 page/page-form.php:538
+#: page/page-form.php:495 page/page-form.php:545
 msgid "Secret Key"
 msgstr "Clé Secrète"
 
-#: page/page-form.php:504
+#: page/page-form.php:511
 msgid "Google Captcha"
 msgstr "Captcha Google"
 
-#: page/page-form.php:505
+#: page/page-form.php:512
 msgid "Google Invisible Captcha"
 msgstr "Captcha invisible Google"
 
-#: page/page-form.php:548
+#: page/page-form.php:555
 msgid "Auto"
 msgstr "Auto"
 
-#: page/page-form.php:549
+#: page/page-form.php:556
 msgid "Dark Theme"
 msgstr "Theme sombre"
 
-#: page/page-form.php:550
+#: page/page-form.php:557
 msgid "Light Theme"
 msgstr "Thème clair"
 
-#: page/page-form.php:567 page/page-form.php:568
+#: page/page-form.php:574 page/page-form.php:575
 msgid "Add a Term acceptance checkbox"
 msgstr "Ajouter une Checkbox pour l'acceptation des CGU"
 
-#: page/page-form.php:568
+#: page/page-form.php:575
 msgid ""
 "If the terms and condition checkbox is added to the form, the field will be "
 "mandatory for subscription."
@@ -548,83 +561,83 @@ msgstr ""
 "si la checkbox des conditions d'utilisation est ajoutée, elle sera "
 "obligatoire pour la souscription du contact"
 
-#: page/page-form.php:580
+#: page/page-form.php:587
 msgid "URL to terms and conditions"
 msgstr "URL de consultation des CGU"
 
-#: page/page-form.php:599
+#: page/page-form.php:606
 msgid "Add Terms URL"
 msgstr "Ajouter l'URL de consultation des CGU"
 
-#: page/page-form.php:606 page/page-form.php:607
+#: page/page-form.php:613 page/page-form.php:614
 msgid "Form Style"
 msgstr "Style du formulaire"
 
-#: page/page-form.php:607
+#: page/page-form.php:614
 msgid ""
 "Select the style you favorite. Your custom css will be applied to form only."
 msgstr ""
 "Sélectionnez votre style favori. Votre css personnalisé ne sera appliqué "
 "qu'à votre formulaire"
 
-#: page/page-form.php:610
+#: page/page-form.php:617
 msgid "Current Theme"
 msgstr "Theme courant"
 
-#: page/page-form.php:612
+#: page/page-form.php:619
 msgid "Custom style"
 msgstr "Theme personnalisé"
 
-#: page/page-form.php:624
+#: page/page-form.php:631
 msgid "Email Address"
 msgstr "Adresse email"
 
-#: page/page-form.php:626
+#: page/page-form.php:633
 msgid "Subscribe"
 msgstr "S'inscrire"
 
-#: page/page-form.php:628
+#: page/page-form.php:635
 msgid "Select Brevo Attribute"
 msgstr "Sélectionner un attribut Brevo"
 
-#: page/page-form.php:630
+#: page/page-form.php:637
 msgid "Brevo merge fields : Normal"
 msgstr "Champs synchronisé avec Brevo : normal"
 
-#: page/page-form.php:632
+#: page/page-form.php:639
 msgid "Brevo merge fields : Category"
 msgstr "Champs synchronisé avec Brevo : catégorie"
 
-#: page/page-form.php:634
+#: page/page-form.php:641
 msgid "Brevo merge fields : Multiple Choice"
 msgstr "Champs synchronisés avec Brevo : choix multiple"
 
-#: page/page-form.php:636
+#: page/page-form.php:643
 msgid "Other"
 msgstr "Autre"
 
-#: page/page-form.php:638
+#: page/page-form.php:645
 msgid "Submit Button"
 msgstr "Bouton de validation"
 
-#: page/page-form.php:644
+#: page/page-form.php:651
 msgid "Preview"
 msgstr "Aperçu"
 
-#: page/page-form.php:656 page/page-form.php:834 page/page-form.php:896
+#: page/page-form.php:663 page/page-form.php:841 page/page-form.php:903
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: page/page-form.php:668
+#: page/page-form.php:675
 msgid "Sign up process"
 msgstr "Processus d'inscription"
 
-#: page/page-form.php:675
+#: page/page-form.php:682
 msgid ""
 "Confirmation emails will be sent through your own email server, but you have "
-"no guarantees on their deliverability. <br/> <a href=\"https://app-"
-"smtp.brevo.com/\" target=\"_blank\" rel=\"noopener\">Click here</a> to send "
-"your emails through Brevo in order to improve your deliverability and get "
+"no guarantees on their deliverability. <br/> <a href=\"https://app-smtp."
+"brevo.com/\" target=\"_blank\" rel=\"noopener\">Click here</a> to send your "
+"emails through Brevo in order to improve your deliverability and get "
 "statistics"
 msgstr ""
 "Les emails de confirmations seront envoyé via votre propre serveur mail, "
@@ -633,7 +646,7 @@ msgstr ""
 "envoyer vos mails via Brevo pour améliorer votre délivrabilité et obtenir "
 "des statistiques."
 
-#: page/page-form.php:677
+#: page/page-form.php:684
 msgid ""
 "The template you selected does not include a link {{DOUBLEOPTIN}} to allow "
 "subscribers to confirm their subscription. <br/> Please edit the template to "
@@ -644,15 +657,15 @@ msgstr ""
 "template pour inclure le shortcode {{DOUBLEOPTIN}} à la place d'une URL "
 "avant de pouvoir le choisir."
 
-#: page/page-form.php:679
+#: page/page-form.php:686
 msgid "You cannot select a template with the tag {{DOUBLEOPTIN}}"
 msgstr "Vous ne pouvez pas choisir de modèle avec le tag {{DOUBLEOPTIN}}"
 
-#: page/page-form.php:686
+#: page/page-form.php:693
 msgid "Select the list where you want to add your new subscribers"
 msgstr "Sélectionner la liste ou vous voulez enregistrer vos contacts"
 
-#: page/page-form.php:697
+#: page/page-form.php:704
 msgid ""
 "You can use Marketing Automation to create specific workflow when a user is "
 "added to the list."
@@ -660,15 +673,15 @@ msgstr ""
 "Vous pouvez utiliser le Marketing Automation pour créer des scénarios "
 "spécifiques lorsqu'un utilisateur est ajouté à la liste"
 
-#: page/page-form.php:703
+#: page/page-form.php:710
 msgid "Send a confirmation email"
 msgstr "Envoyer un message de confirmation"
 
-#: page/page-form.php:703 page/page-form.php:844
+#: page/page-form.php:710 page/page-form.php:851
 msgid "Confirmation message"
 msgstr "Message de confirmation"
 
-#: page/page-form.php:703
+#: page/page-form.php:710
 msgid ""
 "You can choose to send a confirmation email. You will be able to set up the "
 "template that will be sent to your new suscribers"
@@ -676,26 +689,26 @@ msgstr ""
 "Vous pouvez choisir d'envoyer un message de confirmation. Vous serez ainsi "
 "capable de paramétrer le template qui sera envoyé à vos nouveaux inscrits"
 
-#: page/page-form.php:719
+#: page/page-form.php:726
 msgid ""
 "Select \"Yes\" if you want your subscribers to receive a confirmation email"
 msgstr ""
 "Sélectionner \"Oui\" si vous souhaitez que vous nouveaux inscrits reçoivent "
 "un email de confirmation"
 
-#: page/page-form.php:727
+#: page/page-form.php:734
 msgid "Default"
 msgstr "Défaut"
 
-#: page/page-form.php:734 page/page-form.php:768 page/page-form.php:789
+#: page/page-form.php:741 page/page-form.php:775 page/page-form.php:796
 msgid "Set up my templates"
 msgstr "Paramétrer mes templates"
 
-#: page/page-form.php:741
+#: page/page-form.php:748
 msgid "Double Opt-In"
 msgstr "Double Opt-In"
 
-#: page/page-form.php:741
+#: page/page-form.php:748
 msgid ""
 "Your subscribers will receive an email inviting them to confirm their "
 "subscription. Be careful, your subscribers are not saved in your list before "
@@ -705,26 +718,26 @@ msgstr ""
 "inscription. Attention, les inscrits ne sont pas rajoutés à votre liste de "
 "contact tant que leur inscription n'est pas confirmée."
 
-#: page/page-form.php:757
+#: page/page-form.php:764
 msgid ""
 "Select \"Yes\" if you want your subscribers to confirm their email address"
 msgstr ""
 "Sélectionner \"Oui\" si vous souhaitez que vous nouveaux inscrits confirment "
 "leurs adresses emails"
 
-#: page/page-form.php:773
+#: page/page-form.php:780
 msgid "Redirect to this URL after clicking in the email"
 msgstr "Rediriger sur cette URL après avoir cliqué sur le lien dans l'email"
 
-#: page/page-form.php:780
+#: page/page-form.php:787
 msgid "Select final confirmation email template"
 msgstr "Veuillez sélectionner l'email de confirmation finale"
 
-#: page/page-form.php:780
+#: page/page-form.php:787
 msgid "Final confirmation"
 msgstr "Confirmation finale"
 
-#: page/page-form.php:780
+#: page/page-form.php:787
 msgid ""
 "This is the final confirmation email your contacts will receive once they "
 "click on the double opt-in confirmation link. You can select one of the "
@@ -740,11 +753,11 @@ msgstr ""
 "information, vous ne pouvez pas sélectionner un template contenant le tag "
 "{{DOUBLEOPTIN}}."
 
-#: page/page-form.php:797
+#: page/page-form.php:804
 msgid "Redirect to this URL after subscription"
 msgstr "Rediriger vers ce lien après inscription"
 
-#: page/page-form.php:814
+#: page/page-form.php:821
 msgid ""
 "Select \"Yes\" if you want to redirect your subscribers to a specific page "
 "after they fullfill the form"
@@ -752,39 +765,39 @@ msgstr ""
 "Sélectionner \"Oui\" si vous voulez rediriger vos nouveaux inscrits sur une "
 "page après inscription"
 
-#: page/page-form.php:849 page/page-form.php:853
+#: page/page-form.php:856 page/page-form.php:860
 msgid "Success message"
 msgstr "Message de validation"
 
-#: page/page-form.php:853
+#: page/page-form.php:860
 msgid ""
 "Set up the success message that will appear when one of your visitors "
 "surccessfully signs up"
 msgstr "Paramétrer le message qui apparaît lorsque l'inscription est réussie"
 
-#: page/page-form.php:857
+#: page/page-form.php:864
 msgid "General error message"
 msgstr "Message d'erreur"
 
-#: page/page-form.php:862
+#: page/page-form.php:869
 msgid "General message error"
 msgstr "Message d'erreur"
 
-#: page/page-form.php:862
+#: page/page-form.php:869
 msgid ""
 "Set up the message that will appear when an error occurs during the "
 "subscritpion process"
 msgstr "Paramétrer le message qui apparaît lorsqu'une erreur survient"
 
-#: page/page-form.php:867
+#: page/page-form.php:874
 msgid "Existing subscribers"
 msgstr "Contact existant déjà"
 
-#: page/page-form.php:872
+#: page/page-form.php:879
 msgid "Existing Suscribers"
 msgstr "Contact existant déjà"
 
-#: page/page-form.php:872
+#: page/page-form.php:879
 msgid ""
 "Set up the message that will appear when a suscriber is already in your "
 "database"
@@ -792,11 +805,11 @@ msgstr ""
 "Paramétrer le message qui apparaît lorsque le contact est déjà présent dans "
 "votre base de données"
 
-#: page/page-form.php:877 page/page-form.php:882
+#: page/page-form.php:884 page/page-form.php:889
 msgid "Invalid email address"
 msgstr "Adresse email invalide"
 
-#: page/page-form.php:882
+#: page/page-form.php:889
 msgid ""
 "Set up the message that will appear when the email address used to sign up "
 "is not valid"
@@ -804,15 +817,15 @@ msgstr ""
 "Paramétrer le message qui apparaît lorsque l'adresse utilisée pour "
 "l'inscription n'est pas valide"
 
-#: page/page-form.php:886 page/page-form.php:891
+#: page/page-form.php:893 page/page-form.php:898
 msgid "Required Field"
 msgstr "Champ obligatoire"
 
-#: page/page-form.php:891
+#: page/page-form.php:898
 msgid "Set up the message that will appear when the required field is empty"
 msgstr "Configurez le message qui apparaîtra lorsque le champ requis est vide"
 
-#: page/page-form.php:924
+#: page/page-form.php:931
 msgid ""
 "Sorry, you selected invalid form ID. Please check again if the ID is right"
 msgstr ""
@@ -913,57 +926,85 @@ msgstr "Obtenez la clé API de votre compte"
 msgid "Login"
 msgstr "Se connecter"
 
+#. translators: %1$s: advanced settings, $2%s deactivate push notifications link
+#: page/page-home.php:194
+msgid ""
+"To stop creating contacts from push subscribers, %1$s. To disable "
+"notifications entirely, %2$s."
+msgstr ""
+"Pour arrêter de collecter de nouveaux abonnés et de notifier les abonnés "
+"existants, vous pouvez %1$s. Pour désactiver complètement les notifications "
+"vous pouvez %2$s."
+
+#: page/page-home.php:195
+msgid "go to Advanced settings"
+msgstr "vous rendre sur les Réglages Avancés"
+
+#: page/page-home.php:196 page/page-home.php:202
+msgid "turn off Web push"
+msgstr "désactiver Web push"
+
+#. translators: %1$s: advanced settings, $2%s deactivate push notifications link
+#: page/page-home.php:200
+msgid ""
+"To use Brevo segments and lists, enable contact creation from push "
+"subscribers %1$s. To stop notifications completely, %2$s."
+msgstr ""
+"Pour utiliser les listes et segments Brevo, activez la création de contacts "
+"pour vos abonnés push %1$s. Pour arrêter complètement les notifications vous "
+"pouvez %2$s."
+
 #. translators: %s: total users
-#: page/page-home.php:213
+#: page/page-home.php:229
 msgid "You have %s existing users. Do you want to add them to Brevo?"
 msgstr ""
 "Vous avez %s utilisateurs existants. Souhaitez-vous les ajouter à Brevo ?"
 
-#: page/page-home.php:216
+#: page/page-home.php:232
 msgid "All your users have been added to a Brevo list."
 msgstr "Tous vos utilisateurs ont été ajoutés à une liste Brevo."
 
-#: page/page-home.php:225
+#: page/page-home.php:241
 msgid "My Account"
 msgstr "Mon Compte"
 
-#: page/page-home.php:229
+#: page/page-home.php:245
 msgid "You are currently logged in as : "
 msgstr "Vous êtes actuellement connecté comme : "
 
-#: page/page-home.php:238
+#: page/page-home.php:254
 msgid "credits"
 msgstr "crédits"
 
-#: page/page-home.php:251
+#: page/page-home.php:267
 msgid "subscribers"
 msgstr "abonnés"
 
-#: page/page-home.php:263
+#: page/page-home.php:279
 msgid "Log out"
 msgstr "Se déconnecter"
 
-#: page/page-home.php:267
+#: page/page-home.php:283
 msgid "Contacts"
 msgstr "Contacts"
 
-#: page/page-home.php:272
+#: page/page-home.php:288
 msgid "Access to the list of all my contacts"
 msgstr "Accéder à la liste de tous mes contacts"
 
-#: page/page-home.php:277 page/page-home.php:281 page/page-home.php:591
+#: page/page-home.php:293 page/page-home.php:297 page/page-home.php:604
 msgid "Users Synchronisation"
 msgstr "Synchronisation des utilisateurs"
 
-#: page/page-home.php:281
+#: page/page-home.php:297
 msgid "Sync my users"
 msgstr "Synchroniser"
 
-#: page/page-home.php:290
+#: page/page-home.php:306
 msgid "Transactional emails"
 msgstr "Emails transactionnels"
 
-#: page/page-home.php:296
+#: page/page-home.php:312
 msgid ""
 "Unfortunately, your \"Transactional emails\" are not activated because your "
 "Brevo SMTP account is not active. Please send an email to contact@brevo.com "
@@ -973,60 +1014,60 @@ msgstr ""
 "que votre compte SMTP Brevo n'a pas été validé. Merci d'envoyer un email à "
 "contact@brevo.com afin de demander l'activation de votre compte SMTP"
 
-#: page/page-home.php:300
+#: page/page-home.php:316
 msgid "Mail Sent."
 msgstr "Email envoyé"
 
-#: page/page-home.php:301
+#: page/page-home.php:317
 msgid "Please input valid email."
 msgstr "Insérer une adresse valide"
 
-#: page/page-home.php:303
+#: page/page-home.php:319
 msgid "Activate email through Brevo"
 msgstr "Activer les emails avec Brevo "
 
-#: page/page-home.php:316
+#: page/page-home.php:332
 msgid ""
 "Choose \"Yes\" if you want to use Brevo SMTP to send transactional emails"
 msgstr ""
 "Choisir \"Oui\" pour utiliser SMTP Brevo pour envoyer vos emails "
 "transactionnels"
 
-#: page/page-home.php:327
+#: page/page-home.php:343
 msgid "Choose your sender"
 msgstr "Choisissez votre expéditeur"
 
-#: page/page-home.php:339
+#: page/page-home.php:355
 msgid "Create a new sender"
 msgstr "Créez un nouvel expéditeur"
 
-#: page/page-home.php:343
+#: page/page-home.php:359
 msgid "Enter email to send a test"
 msgstr "Entrer une adresse email pour envoyer un test"
 
-#: page/page-home.php:346
+#: page/page-home.php:362
 msgid "Send email"
 msgstr "Envoyer l'email"
 
-#: page/page-home.php:349
+#: page/page-home.php:365
 msgid "Select here the email address you want to send a test email to."
 msgstr ""
 "Sélectionner ici l'adresse email à qui vous souhaitez envoyer un email de "
 "test"
 
-#: page/page-home.php:358
+#: page/page-home.php:374
 msgid "Automation"
 msgstr "Automation"
 
-#: page/page-home.php:361
+#: page/page-home.php:377
 msgid "Your Marketing Automation script is installed correctly."
 msgstr "Le script Marketing Automation a été installé avec succès."
 
-#: page/page-home.php:362
+#: page/page-home.php:378
 msgid "Your Marketing Automation script has been uninstalled"
 msgstr "Le script Marketing Automation a été désinstallé"
 
-#: page/page-home.php:363
+#: page/page-home.php:379
 msgid ""
 "You have not enabled automation in Brevo. Please do so by choosing the "
 "Automation application here: "
@@ -1034,11 +1075,11 @@ msgstr ""
 "Vous n'avez pas activé l'automation dans Brevo. Veuillez le faire en "
 "choisissant l'application Automation ici: "
 
-#: page/page-home.php:363
+#: page/page-home.php:379
 msgid "Thanks"
 msgstr "Merci"
 
-#: page/page-home.php:364
+#: page/page-home.php:380
 msgid ""
 "Your Marketing Automation script will be uninstalled, you won't have access "
 "to any Marketing Automation data and workflows"
@@ -1046,11 +1087,11 @@ msgstr ""
 "Le script Marketing Automation va etre désinstallé. Vous n'aurez plus accès "
 "aux données Marketing Automation et aux scénarios."
 
-#: page/page-home.php:366
+#: page/page-home.php:382
 msgid "Activate Marketing Automation through Brevo"
 msgstr "Activer Marketing Automation via Brevo"
 
-#: page/page-home.php:377
+#: page/page-home.php:393
 msgid ""
 "Choose \"Yes\" if you want to use Brevo Automation to track your website "
 "activity"
@@ -1058,43 +1099,43 @@ msgstr ""
 "Choisissez \"Oui\" si vous souhaitez utiliser Brevo Automation poursuivre "
 "l'activité de votre site web"
 
-#: page/page-home.php:381
+#: page/page-home.php:397
 msgid "%s Explore our resource %s to learn more about Brevo Automation"
 msgstr ""
 "%s Explorez nos resources %s pour en savoir plus sur l'Automation Brevo"
 
-#: page/page-home.php:383 page/page-home.php:427
+#: page/page-home.php:399 page/page-home.php:440
 msgid "Activate"
 msgstr "Activer"
 
 #. translators: %s: number of subscribers
-#: page/page-home.php:406
+#: page/page-home.php:422
 msgid "Web push is currently active, you have %s subscriber."
 msgid_plural "Push is currently active, you have %s subscribers."
 msgstr[0] "Les push web sont activées, vous avez %s abonné."
 msgstr[1] "Les push web sont activées, vous avez %s abonnés."
 
-#: page/page-home.php:410
+#: page/page-home.php:426
 msgid "Web push dashboard"
 msgstr "Tableau de bord web push"
 
-#. translators: %s: deactivate push notifications link
-#: page/page-home.php:416
+#: page/page-home.php:432
 msgid ""
-"To stop getting new push subscribers and notifying existing ones, you can %s."
+"Warning: Deactivating push will stop new subscriptions and prevent "
+"notifications from being sent. To stop creating contacts without disabling "
+"push, click 'Cancel' and go to Advanced Settings. Are you sure you want to "
+"deactivate push?"
 msgstr ""
-"Pour arrêter de collecter de nouveaux abonnés et de notifier les abonnés "
-"existants, vous pouvez %s."
+"Attention: désactiver les push complètement stoppera la création de nouveaux "
+"abonnés et l’envoi des notifications. Pour arrêter de créer des contacts "
+"sans désactiver les push, appuyez sur “Annuler” et rendez-vous dans les "
+"réglages avancés. Êtes-vous sûr de vouloir désactiver les push ?"
 
-#: page/page-home.php:417
-msgid "deactivate web push"
-msgstr "désactiver web push"
-
-#: page/page-home.php:431
+#: page/page-home.php:444
 msgid "Please wait, activation might take up to a minute."
 msgstr "Veuillez patienter, l’activation peut prendre jusqu’à une minute."
 
-#: page/page-home.php:437
+#: page/page-home.php:450
 msgid ""
 "Click \"Activate\" to start notifying your readers whenever a new post is "
 "published, let your users subscribe to their favorite topics."
@@ -1103,32 +1144,32 @@ msgstr ""
 "qu’un billet est publié, offrez à vos utilisateurs la possibilité de "
 "s’inscrire à leurs sujets favoris."
 
-#: page/page-home.php:446
+#: page/page-home.php:459
 msgid "SMS"
 msgstr "SMS"
 
 #. translators: %s: number of subscribers
-#: page/page-home.php:457
+#: page/page-home.php:470
 msgid "SMS statistics"
 msgstr "Statistiques SMS"
 
-#: page/page-home.php:461
+#: page/page-home.php:474
 msgid "SMS dashboard"
 msgstr "Tableau de bord SMS"
 
-#: page/page-home.php:465
+#: page/page-home.php:478
 msgid "Check your SMS campaign statistics, you can see more here:"
 msgstr "Consultez les statistiques de vos campagnes SMS, plus de détails ici :"
 
-#: page/page-home.php:466
+#: page/page-home.php:479
 msgid "Learn about SMS statistics"
 msgstr "Découvrez les statistiques SMS"
 
-#: page/page-home.php:484 sendinblue.php:1639
+#: page/page-home.php:497 sendinblue.php:1612
 msgid "About Brevo"
 msgstr "A propos de Brevo"
 
-#: page/page-home.php:486
+#: page/page-home.php:499
 msgid ""
 "Brevo is an online software that helps you build and grow relationships "
 "through marketing and transactional emails, marketing automation, and text "
@@ -1138,47 +1179,47 @@ msgstr ""
 "relationnel : gérez de manière simple et efficace vos campagnes marketing, "
 "SMS et emails transactionnels."
 
-#: page/page-home.php:489
+#: page/page-home.php:502
 msgid "Who we are"
 msgstr "Qui sommes nous"
 
-#: page/page-home.php:492
+#: page/page-home.php:505
 msgid "Pricing"
 msgstr "Tarifs"
 
-#: page/page-home.php:495
+#: page/page-home.php:508
 msgid "Features"
 msgstr "Fonctionnalités"
 
-#: page/page-home.php:502
+#: page/page-home.php:515
 msgid "Need Help?"
 msgstr "Besoin d'aide ?"
 
-#: page/page-home.php:504
+#: page/page-home.php:517
 msgid "Do you have a question or need more information?"
 msgstr "Vous avez une question, ou avez besoin de plus d'information ?"
 
-#: page/page-home.php:506
+#: page/page-home.php:519
 msgid "Tutorials"
 msgstr "Tutoriels"
 
-#: page/page-home.php:507
+#: page/page-home.php:520
 msgid "FAQ"
 msgstr "FAQ"
 
-#: page/page-home.php:513
+#: page/page-home.php:526
 msgid "Recommend this plugin"
 msgstr "Recommander ce plugin"
 
-#: page/page-home.php:515
+#: page/page-home.php:528
 msgid "Let everyone know you like this plugin through a review!"
 msgstr "Partagez votre avis sur le plugin en laissant un commentaire !"
 
-#: page/page-home.php:517
+#: page/page-home.php:530
 msgid "Recommend the Brevo plugin"
 msgstr "Recommander le plugin Brevo"
 
-#: page/page-home.php:548
+#: page/page-home.php:561
 msgid ""
 "You are currently not logged in. Create an account or log in to benefit from "
 "all of Brevo's features an your WordPress site."
@@ -1187,128 +1228,128 @@ msgstr ""
 "pour bénéficier de toutes les fonctionnalités de Brevo pour votre site "
 "Wordpress"
 
-#: page/page-home.php:551
+#: page/page-home.php:564
 msgid "Collect and manage your contacts"
 msgstr "Collectez et gérez vos contacts"
 
-#: page/page-home.php:552
+#: page/page-home.php:565
 msgid "Send transactional emails via SMTP or API"
 msgstr "Envoyer des emails transactionnels via SMTP ou API"
 
-#: page/page-home.php:553
+#: page/page-home.php:566
 msgid "Real time statistics and email tracking"
 msgstr "Statistiques en temps réel et tracking des emails"
 
-#: page/page-home.php:554
+#: page/page-home.php:567
 msgid "Edit and send email marketing"
 msgstr "Editer et envoyer des emails marketings"
 
-#: page/page-home.php:558
+#: page/page-home.php:571
 msgid "Have an account?"
 msgstr "Vous avez un compte ?"
 
-#: page/page-home.php:561
+#: page/page-home.php:574
 msgid "Free Subscribe Now"
 msgstr "S'inscrire gratuitement"
 
-#: page/page-home.php:599
+#: page/page-home.php:612
 msgid "Roles to sync"
 msgstr "Rôles à synchroniser"
 
-#: page/page-home.php:609
+#: page/page-home.php:622
 msgid "Sync Lists"
 msgstr "Listes de synchronisation"
 
-#: page/page-home.php:612
+#: page/page-home.php:625
 msgid "Choose the Brevo list in which you want to add your existing customers:"
 msgstr ""
 "Choisissez à quelle(s) liste(s) Brevo vos contacts existants seront ajoutés :"
 
-#: page/page-home.php:627
+#: page/page-home.php:640
 msgid "First Name"
 msgstr "Prénom"
 
-#: page/page-home.php:628
+#: page/page-home.php:641
 msgid "Last Name"
 msgstr "Nom"
 
-#: page/page-home.php:629
+#: page/page-home.php:642
 msgid "Website URL"
 msgstr "URL de votre site"
 
-#: page/page-home.php:630
+#: page/page-home.php:643
 msgid "User Role"
 msgstr "Rôle utilisateur"
 
-#: page/page-home.php:631
+#: page/page-home.php:644
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: page/page-home.php:632
+#: page/page-home.php:645
 msgid "Nickname"
 msgstr "Surnom"
 
-#: page/page-home.php:633
+#: page/page-home.php:646
 msgid "User Registration Date"
 msgstr "Date d'enregistrement de l'utilisateur"
 
-#: page/page-home.php:634
+#: page/page-home.php:647
 msgid "Display Name"
 msgstr "Nom à afficher"
 
-#: page/page-home.php:635
+#: page/page-home.php:648
 msgid "Description about user"
 msgstr "Description de l'utilisateur"
 
-#: page/page-home.php:642
+#: page/page-home.php:655
 msgid "Match Attributes"
 msgstr "Mapping des champs"
 
-#: page/page-home.php:646
+#: page/page-home.php:659
 msgid "WordPress Users Attributes"
 msgstr "Attributs des utilisateurs WordPress"
 
-#: page/page-home.php:649
+#: page/page-home.php:662
 msgid "Brevo Contact Attributes"
 msgstr "Attributs de contact Brevo"
 
-#: page/page-home.php:685
+#: page/page-home.php:698
 msgid "Apply"
 msgstr "Appliquer"
 
-#: page/page-home.php:773
+#: page/page-home.php:786
 msgid "[Brevo SMTP] test email"
 msgstr "email de test [Brevo SMTP]"
 
-#: page/page-home.php:831
+#: page/page-home.php:844
 msgid "Please select a user role."
 msgstr "Veuillez sélectionner un rôle utilisateur."
 
-#: page/page-home.php:838
+#: page/page-home.php:851
 msgid "The attribute %s is duplicated. You can select one at a time."
 msgstr "L’attribut %s est dupliqué. Vous pouvez en sélectionner un à la fois."
 
-#: page/page-home.php:889
+#: page/page-home.php:902
 msgid "There is not any user in the roles."
 msgstr "Il n’y a aucun utilistaeur dans les rôles."
 
-#: sendinblue.php:545
+#: sendinblue.php:542
 msgid "Please fill out valid email address"
 msgstr "Veuillez entrer une adresse e-mail valide."
 
-#: sendinblue.php:546
+#: sendinblue.php:543
 msgid "Please fill out required fields"
 msgstr "Veuillez compléter les champs obligatoires."
 
-#: sendinblue.php:547
+#: sendinblue.php:544
 msgid "Please fill out valid date format"
 msgstr "Veuillez entrer une date valide."
 
-#: sendinblue.php:548
+#: sendinblue.php:545
 msgid "Please fill out valid phone number"
 msgstr "Veuillez entrer une numéro de téléphone valide."
 
-#: sendinblue.php:1573
+#: sendinblue.php:1546
 msgid ""
 "You cannot use Brevo SMTP now because wp_mail has been declared by another "
 "process or plugin. "
@@ -1316,19 +1357,19 @@ msgstr ""
 "Vous ne pouvez pas utilisez le SMTP Brevo car wp_mail a été déclaré par un "
 "autre process ou plugin"
 
-#: sendinblue.php:1642
+#: sendinblue.php:1615
 msgid "Language of this form:"
 msgstr "Langue de ce formulaire :"
 
-#: sendinblue.php:1676
+#: sendinblue.php:1649
 msgid "Translate this form"
 msgstr "Traduire ce formulaire"
 
-#: sendinblue.php:1731 sendinblue.php:1734
+#: sendinblue.php:1704 sendinblue.php:1707
 msgid "Copy content from origin form"
 msgstr "Copier le contenu du formulaire original"
 
-#: sendinblue.php:1736
+#: sendinblue.php:1709
 msgid ""
 "You can copy contents from origin form. You need to translate the contents "
 "by this language."
@@ -1347,6 +1388,9 @@ msgstr "Titre du Widget"
 #: widget/widget_form.php:56
 msgid "Form to use"
 msgstr "Formulaire à utiliser"
+
+#~ msgid "deactivate web push"
+#~ msgstr "désactiver web push"
 
 #~ msgid "Newsletter, SMTP, Email marketing and Subscribe forms by Brevo"
 #~ msgstr ""
@@ -1609,10 +1653,9 @@ msgstr "Formulaire à utiliser"
 
 #~ msgid ""
 #~ "Confirmation emails will be sent through your own email server, but you "
-#~ "have no guarantees on their deliverability. <a href=\"https://app-"
-#~ "smtp.brevo.com\" target=\"_blank\">Click here</a> to send your emails "
-#~ "through Sendinblue in order to improve your deliverability and get "
-#~ "statistics"
+#~ "have no guarantees on their deliverability. <a href=\"https://app-smtp."
+#~ "brevo.com\" target=\"_blank\">Click here</a> to send your emails through "
+#~ "Sendinblue in order to improve your deliverability and get statistics"
 #~ msgstr ""
 #~ "Les emails de confirmation seront envoyés par votre propre serveur email. "
 #~ "Vous n'avez donc aucune garantie sur la délivrabilité de vos emails. Pour "

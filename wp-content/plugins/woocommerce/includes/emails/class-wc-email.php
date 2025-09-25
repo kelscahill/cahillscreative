@@ -321,6 +321,9 @@ class WC_Email extends WC_Settings_API {
 		}
 		add_action( 'phpmailer_init', array( $this, 'handle_multipart' ) );
 		add_action( 'woocommerce_update_options_email_' . $this->id, array( $this, 'process_admin_options' ) );
+
+		// Use priority 1 to ensure our skip classes are added before lazy loading plugins process the images.
+		add_filter( 'wp_get_attachment_image_attributes', array( $this, 'prevent_lazy_loading_on_attachment' ), 1, 1 );
 	}
 
 	/**
@@ -798,57 +801,94 @@ class WC_Email extends WC_Settings_API {
 	/**
 	 * Apply inline styles to dynamic content.
 	 *
-	 * We only inline CSS for html emails, and to do so we use Emogrifier library (if supported).
+	 * We only inline CSS for html emails.
 	 *
-	 * @version 4.0.0
+	 * @version 10.2.0
 	 * @param string|null $content Content that will receive inline styles.
 	 * @return string
 	 */
 	public function style_inline( $content ) {
 		if ( in_array( $this->get_content_type(), array( 'text/html', 'multipart/alternative' ), true ) ) {
-			$css  = '';
-			$css .= $this->get_must_use_css_styles();
-			$css .= "\n";
-
-			ob_start();
-			wc_get_template( 'emails/email-styles.php' );
-			$css .= ob_get_clean();
-
 			/**
-			 * Provides an opportunity to filter the CSS styles included in e-mails.
+			 * Filter to allow the ability to override the email inline styling method.
 			 *
-			 * @since 2.3.0
+			 * @since 10.2.0
 			 *
-			 * @param string    $css   CSS code.
-			 * @param \WC_Email $email E-mail instance.
+			 * @param callable $style_inline_callback The default email inline styling callback.
+			 * @param string|null $content Content that will receive inline styles.
+			 * @param WC_Email $this The WC_Email object.
 			 */
-			$css = apply_filters( 'woocommerce_email_styles', $css, $this );
+			$style_inline_callback = apply_filters( 'woocommerce_mail_style_inline_callback', array( $this, 'apply_inline_style' ), $content, $this );
 
-			$css_inliner_class = CssInliner::class;
-
-			if ( $this->supports_emogrifier() && class_exists( $css_inliner_class ) ) {
-				try {
-					$css_inliner = CssInliner::fromHtml( $content )->inlineCss( $css );
-
-					do_action( 'woocommerce_emogrifier', $css_inliner, $this );
-
-					$dom_document = $css_inliner->getDomDocument();
-
-					// When the email is rendered in the block editor, we don't want to remove the elements with display: none.
-					// The main reason is using preview text in the email body which is hidden by default.
-					if ( ! $this->block_email_editor_enabled ) {
-						HtmlPruner::fromDomDocument( $dom_document )->removeElementsWithDisplayNone();
-					}
-					$content = CssToAttributeConverter::fromDomDocument( $dom_document )
-						->convertCssToVisualAttributes()
-						->render();
-				} catch ( Exception $e ) {
-					$logger = wc_get_logger();
-					$logger->error( $e->getMessage(), array( 'source' => 'emogrifier' ) );
-				}
-			} else {
-				$content = '<style type="text/css">' . $css . '</style>' . $content;
+			if ( ! is_callable( $style_inline_callback ) ) {
+				$style_inline_callback = array( $this, 'apply_inline_style' );
 			}
+
+			return call_user_func( $style_inline_callback, $content );
+		}
+
+		return $content;
+	}
+
+
+	/**
+	 * Apply inline styles to dynamic content using Emogrifier library (if supported).
+	 *
+	 * @since 10.2.0
+	 * @param string|null $content Content that will receive inline styles.
+	 * @return string
+	 */
+	private function apply_inline_style( $content ) {
+		$css  = '';
+		$css .= $this->get_must_use_css_styles();
+		$css .= "\n";
+
+		ob_start();
+		wc_get_template( 'emails/email-styles.php' );
+		$css .= ob_get_clean();
+
+		/**
+		 * Provides an opportunity to filter the CSS styles included in e-mails.
+		 *
+		 * @since 2.3.0
+		 *
+		 * @param string    $css   CSS code.
+		 * @param \WC_Email $email E-mail instance.
+		 */
+		$css = apply_filters( 'woocommerce_email_styles', $css, $this );
+
+		$css_inliner_class = CssInliner::class;
+
+		if ( $this->supports_emogrifier() && class_exists( $css_inliner_class ) ) {
+			try {
+				$css_inliner = CssInliner::fromHtml( $content )->inlineCss( $css );
+
+				/**
+				 * Action hook fired when an email content has been processed by Emogrifier CssInliner instance.
+				 *
+				 * @since 4.1.0
+				 *
+				 * @param CssInliner $css_inliner CssInliner instance.
+				 * @param WC_Email $this WC_Email instance.
+				 */
+				do_action( 'woocommerce_emogrifier', $css_inliner, $this );
+
+				$dom_document = $css_inliner->getDomDocument();
+
+				// When the email is rendered in the block editor, we don't want to remove the elements with display: none.
+				// The main reason is using preview text in the email body which is hidden by default.
+				if ( ! $this->block_email_editor_enabled ) {
+					HtmlPruner::fromDomDocument( $dom_document )->removeElementsWithDisplayNone();
+				}
+				$content = CssToAttributeConverter::fromDomDocument( $dom_document )
+					->convertCssToVisualAttributes()
+					->render();
+			} catch ( Exception $e ) {
+				$logger = wc_get_logger();
+				$logger->error( $e->getMessage(), array( 'source' => 'emogrifier' ) );
+			}
+		} else {
+			$content = '<style type="text/css">' . $css . '</style>' . $content;
 		}
 
 		return $content;
@@ -1145,6 +1185,7 @@ class WC_Email extends WC_Settings_API {
 				wp_safe_redirect( $redirect );
 				exit;
 			}
+			wc_clear_template_cache();
 		}
 	}
 
@@ -1186,6 +1227,7 @@ class WC_Email extends WC_Settings_API {
 				 */
 				do_action( 'woocommerce_copy_email_template', $template_type, $this );
 
+				wc_clear_template_cache();
 				?>
 				<div class="updated">
 					<p><?php echo esc_html__( 'Template file copied to theme.', 'woocommerce' ); ?></p>
@@ -1217,6 +1259,8 @@ class WC_Email extends WC_Settings_API {
 					 * @param string $email The email object
 					 */
 					do_action( 'woocommerce_delete_email_template', $template_type, $this );
+
+					wc_clear_template_cache();
 					?>
 					<div class="updated">
 						<p><?php echo esc_html__( 'Template file deleted from theme.', 'woocommerce' ); ?></p>
@@ -1463,8 +1507,9 @@ class WC_Email extends WC_Settings_API {
 		 */
 		$is_email_preview = apply_filters( 'woocommerce_is_email_preview', false );
 		if ( $is_email_preview ) {
+			$plugin_id = $this->plugin_id;
 			$email_id  = $this->id;
-			$transient = get_transient( "woocommerce_{$email_id}_{$key}" );
+			$transient = get_transient( "{$plugin_id}{$email_id}_{$key}" );
 			if ( false !== $transient ) {
 				$option = $transient ? $transient : $empty_value;
 			}
@@ -1487,5 +1532,38 @@ class WC_Email extends WC_Settings_API {
 		/** Service for rendering emails from block content @var BlockEmailRenderer $renderer */
 		$renderer = wc_get_container()->get( BlockEmailRenderer::class );
 		return $renderer->maybe_render_block_email( $this );
+	}
+
+	/**
+	 * Prevent lazy loading on attachment images in email context by adding skip classes.
+	 * This is hooked into the wp_get_attachment_image_attributes filter.
+	 *
+	 * @param array $attributes The image attributes array.
+	 * @return array The modified image attributes array.
+	 */
+	public function prevent_lazy_loading_on_attachment( $attributes ) {
+		// Only process if we're currently sending an email.
+		if ( ! $this->sending ) {
+			return $attributes;
+		}
+
+		// Skip classes to prevent lazy loading plugins from applying lazy loading.
+		// These are the most common skip classes used by popular lazy loading plugins.
+		$skip_classes = array( 'skip-lazy', 'no-lazyload', 'lazyload-disabled', 'no-lazy', 'skip-lazyload' );
+
+		// Add skip classes to prevent lazy loading plugins from applying lazy loading.
+		if ( isset( $attributes['class'] ) ) {
+			$classes             = array_filter( array_map( 'trim', explode( ' ', $attributes['class'] ) ) );
+			$classes             = array_unique( array_merge( $classes, $skip_classes ) );
+			$attributes['class'] = implode( ' ', $classes );
+		} else {
+			// No class attribute exists, add one with skip classes.
+			$attributes['class'] = implode( ' ', $skip_classes );
+		}
+
+		// Add data-skip-lazy attribute as an additional safeguard.
+		$attributes['data-skip-lazy'] = 'true';
+
+		return $attributes;
 	}
 }

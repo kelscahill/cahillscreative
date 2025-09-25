@@ -1,0 +1,25 @@
+<?php
+
+namespace WPForms\Pro\Forms\Fields\Camera;
+
+use WPForms\Forms\Fields\Traits\FileEntriesEditTrait;
+
+/**
+ * Editing field entries.
+ *
+ * @since 1.9.8
+ */
+class EntriesEdit extends \WPForms\Pro\Forms\Fields\Base\EntriesEdit {
+
+	use FileEntriesEditTrait;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 1.9.8
+	 */
+	public function __construct() {
+
+		parent::__construct( 'camera' );
+	}
+}

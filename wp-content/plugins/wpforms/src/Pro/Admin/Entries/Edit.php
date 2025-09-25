@@ -8,6 +8,7 @@ use WPForms\Pro\Forms\Fields\Layout\Helpers;
 use WPForms\Pro\Forms\Fields\Repeater\Helpers as RepeaterHelpers;
 use WPForms\Pro\Forms\Fields\Layout\Helpers as LayoutHelpers;
 use WPForms\Pro\Forms\Fields\FileUpload\Field as FileUploadField;
+use WPForms\Pro\Forms\Fields\Camera\Field as CameraField;
 use WPForms\Pro\Forms\Fields\Richtext\Field as RichtextField;
 use WPForms_Entries_Single;
 
@@ -216,7 +217,7 @@ class Edit {
 	 *
 	 * @since 1.6.0
 	 */
-	public function enqueues() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function enqueues() {
 
 		if ( ! empty( $this->abort ) ) {
 			return;
@@ -426,7 +427,7 @@ class Edit {
 	 *
 	 * @since 1.6.0
 	 */
-	public function setup() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function setup() {
 
 		// Find the entry.
 		// phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput.MissingUnslash,
@@ -940,7 +941,7 @@ class Edit {
 	 * @param array $form_data    Form data and settings.
 	 * @param bool  $hide_empty   Flag to hide empty fields.
 	 */
-	private function display_edit_form_field( $field_id, $field, $entry_fields, $form_data, $hide_empty ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	private function display_edit_form_field( $field_id, $field, $entry_fields, $form_data, $hide_empty ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$field_type = ! empty( $field['type'] ) ? $field['type'] : '';
 
@@ -1095,7 +1096,7 @@ class Edit {
 	 *
 	 * @since 1.6.0
 	 */
-	public function ajax_submit() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function ajax_submit() {
 
 		$this->form_id  = ! empty( $_POST['wpforms']['id'] ) ? (int) $_POST['wpforms']['id'] : 0;
 		$this->entry_id = ! empty( $_POST['wpforms']['entry_id'] ) ? (int) $_POST['wpforms']['entry_id'] : 0;
@@ -1231,7 +1232,7 @@ class Edit {
 	 * @param array  $entry  Submitted entry data.
 	 * @param string $action Action to perform: `validate` or `format`.
 	 */
-	private function process_fields( $entry, $action = 'validate' ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	private function process_fields( $entry, $action = 'validate' ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( empty( $this->form_data['fields'] ) ) {
 			return;
@@ -1295,6 +1296,7 @@ class Edit {
 		$this->add_entry_meta( esc_html__( 'Entry edited.', 'wpforms' ) );
 
 		$removed_files = FileUploadField::delete_uploaded_files_from_entry( $this->entry_id, $updated_fields, $this->entry_fields );
+		$removed_files = array_merge( $removed_files, CameraField::delete_uploaded_files_from_entry( $this->entry_id, $updated_fields, $this->entry_fields ) );
 
 		array_map( [ $this, 'add_removed_file_meta' ], $removed_files );
 
@@ -1318,7 +1320,7 @@ class Edit {
 	 *
 	 * @return array Updated fields data.
 	 */
-	private function process_update_fields_data() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function process_update_fields_data() {
 
 		$updated_fields = [];
 
@@ -1627,7 +1629,7 @@ class Edit {
 	 *
 	 * @return boolean
 	 */
-	public function is_admin_entry_editing_ajax() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function is_admin_entry_editing_ajax() {
 
 		if ( ! wp_doing_ajax() ) {
 			return false;
@@ -1759,7 +1761,7 @@ class Edit {
 				->map(
 					function ( $entry_field ) use ( $entry_id, $attachment_id ) {
 
-						if ( $entry_field['type'] !== 'file-upload' ) {
+						if ( $entry_field['type'] !== 'file-upload' && $entry_field['type'] !== 'camera' ) {
 							return $entry_field;
 						}
 
@@ -1798,7 +1800,7 @@ class Edit {
 	 */
 	private function maybe_remove_attachment_data_from_entry_fields( $entry_field, $entry_id, $attachment_id ) {
 
-		if ( ! FileUploadField::is_modern_upload( $entry_field ) ) {
+		if ( ! FileUploadField::is_modern_upload( $entry_field ) && ! CameraField::is_modern_upload( $entry_field ) ) {
 			if ( $this->maybe_remove_attachment_from_entry_field( $attachment_id, $entry_field, $entry_id, $entry_field['id'] ) ) {
 				$entry_field['value'] = '';
 			}

@@ -21,7 +21,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 *
 	 * @since 1.7.5
 	 */
-	const CACHE_GROUP = __CLASS__;
+	private const CACHE_GROUP = __CLASS__;
 
 	/**
 	 * Primary class constructor.
@@ -67,6 +67,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 			'richtext',
 			'url',
 			'file-upload',
+			'camera',
 		];
 	}
 
@@ -154,8 +155,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 *
 	 * @param string $id    Entry ID.
 	 * @param array  $data  Array of columns and associated data to update.
-	 * @param string $where Column to match against in the WHERE clause. If empty, $primary_key
-	 *                      will be used.
+	 * @param string $where Column to match against in the WHERE clause. If empty, $primary_key will be used.
 	 * @param string $type  Data type context.
 	 * @param array  $args  Additional arguments.
 	 *
@@ -478,7 +478,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 * Get previous entries count.
 	 *
 	 * @since 1.1.5
-	 * @since 1.5.0 Changed return type to always be an integer.
+	 * @since 1.5.0 Changed the return type to always be an integer.
 	 * @since 1.8.3 Added $status parameter.
 	 *
 	 * @param int    $entry_id Entry ID.
@@ -613,9 +613,9 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 * @param array $args  Arguments of the main `get_entries()` method.
 	 * @param array $where Main `get_entries()` query WHERE array.
 	 *
-	 * @return array Updated WHERE. An array needed to perform the main get_entries() query.
+	 * @return array Updated WHERE. An array is needed to perform the main get_entries() query.
 	 */
-	protected function second_query_update_where( array $args, array $where ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	protected function second_query_update_where( array $args, array $where ): array {
 
 		$second_where = $this->second_query_where( $args );
 
@@ -687,7 +687,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	}
 
 	/**
-	 * Prepare second query WHERE, needed to perform the main get_entries() query.
+	 * Prepare the second query WHERE, needed to perform the main get_entries() query.
 	 *
 	 * @since 1.6.9
 	 *
@@ -695,7 +695,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 *
 	 * @return array Updated WHERE array.
 	 */
-	protected function second_query_where( array $args ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	protected function second_query_where( array $args ): array {
 
 		$fields_table = wpforms()->obj( 'entry_fields' )->table_name;
 
@@ -716,7 +716,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 			return $second_where;
 		}
 
-		// For `inverse` logic (is_not or contains_not) we should use different approach.
+		// For `inverse` logic (is_not or contains_not), we should use a different approach.
 		if (
 			empty( $args['advanced_search'] ) &&
 			( is_numeric( $args['field_id'] ) || empty( $args['field_id'] ) || $args['field_id'] === 'any' )
@@ -758,7 +758,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	}
 
 	/**
-	 * Prepare second query WHERE with arg_value item.
+	 * Prepare a second query WHERE with arg_value item.
 	 *
 	 * @since 1.6.9
 	 *
@@ -785,7 +785,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	}
 
 	/**
-	 * Prepare second query WHERE arg_value.
+	 * Prepare a second query WHERE arg_value.
 	 *
 	 * @since 1.6.9
 	 *
@@ -804,7 +804,8 @@ class WPForms_Entry_Handler extends WPForms_DB {
 			return "$fields_table.`value` $condition_value";
 		}
 
-		// In the case of searching the `entry_id` with `is` or `is_not` we should prepare the value and generate different WHERE part.
+		// In the case of searching the `entry_id` with `is` or `is_not `,
+		// we should prepare the value and generate different WHERE part.
 		if (
 			$args['advanced_search'] === 'entry_id' &&
 			in_array( $value_compare, [ 'is', 'is_not' ], true )
@@ -816,7 +817,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	}
 
 	/**
-	 * Prepare second query WHERE arg_value element for advanced search.
+	 * Prepare a second query WHERE arg_value element for advanced search.
 	 *
 	 * @since 1.6.9
 	 *
@@ -825,7 +826,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 *
 	 * @return string
 	 */
-	private function second_query_where_arg_value_advanced_search( $args, $condition_value ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function second_query_where_arg_value_advanced_search( $args, $condition_value ): string {
 
 		if ( empty( $args['advanced_search'] ) ) {
 			return '';
@@ -857,7 +858,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	}
 
 	/**
-	 * Prepare second query WHERE arg_value element for searching entry_id.
+	 * Prepare a second query WHERE arg_value element for searching entry_id.
 	 *
 	 * @since 1.6.9
 	 *
@@ -896,7 +897,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 *
 	 * @param array $args Arguments.
 	 *
-	 * @return string Comma separated list of entry ids.
+	 * @return string Comma separated a list of entry ids.
 	 */
 	private function second_query_where_entry_notes_ids( $args ): string {
 
@@ -927,9 +928,9 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 * @param array  $args     Arguments.
 	 * @param string $form_ids Form ids.
 	 *
-	 * @return string Comma separated list of entry ids.
+	 * @return string Comma separated a list of entry ids.
 	 */
-	private function second_query_where_entry_notes_result_ids( $args, $form_ids ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function second_query_where_entry_notes_result_ids( $args, $form_ids ): string {
 
 		$meta_table     = wpforms()->obj( 'entry_meta' )->table_name;
 		$escaped_value  = strtolower( esc_sql( $args['value'] ) );
@@ -1034,13 +1035,13 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	}
 
 	/**
-	 * Check if entry has editable fields.
+	 * Check if the entry has editable fields.
 	 *
 	 * @since 1.6.9
 	 *
 	 * @param object $entry Submitted entry values.
 	 *
-	 * @return bool True if editable field is found.
+	 * @return bool True if an editable field is found.
 	 */
 	public function has_editable_fields( $entry ): bool {
 
@@ -1100,7 +1101,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	}
 
 	/**
-	 * Insert payment data into wpforms_entry_meta table.
+	 * Insert payment data into the wpforms_entry_meta table.
 	 *
 	 * @since 1.7.5
 	 *
@@ -1164,7 +1165,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 * @param object $entry        Entry.
 	 * @param array  $payment_meta Payment meta.
 	 */
-	private function insert_legacy_payment( $entry, $payment_meta ) {  // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	private function insert_legacy_payment( $entry, $payment_meta ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$required_keys = [ 'payment_total', 'payment_currency', 'payment_type' ];
 
@@ -1370,7 +1371,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 		 * @type string  $value             Field value.
 		 * @type string  $value_compare     Possible values: 'is', 'is_not', 'contains', 'contains_not'.
 		 * @type mixed   $date              Created date. Array with two items, start and end date.
-		 *                                  String value considered as the same value for start and end.
+		 *                                  String value is considered as the same value for start and end.
 		 *                                  Format: `Y-m-d H:i:s`.
 		 * @type string  $date_modified     Modified date. See details for `date`.
 		 * @type string  $ip_address        IP address.
@@ -1431,7 +1432,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	}
 
 	/**
-	 * Prepare WHERE clause for the main get_entries() query.
+	 * Prepare the WHERE clause for the main get_entries() query.
 	 *
 	 * @since 1.9.0
 	 *
@@ -1439,7 +1440,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 *
 	 * @return array
 	 */
-	private function prepare_where( array $args ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	private function prepare_where( array $args ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$where = [
 			'default' => '1=1',
@@ -1482,7 +1483,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 				continue;
 			}
 
-			// We can pass array and treat it as a range from:to.
+			// We can pass an array and treat it as a range from:to.
 			if ( is_array( $args[ $key ] ) && count( $args[ $key ] ) === 2 ) {
 				$date_start = wpforms_get_day_period_date( 'start_of_day', strtotime( $args[ $key ][0] ), 'Y-m-d H:i:s', true );
 				$date_end   = wpforms_get_day_period_date( 'end_of_day', strtotime( $args[ $key ][1] ), 'Y-m-d H:i:s', true );
@@ -1519,7 +1520,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 		}
 
 		/**
-		 * Give developers an ability to modify WHERE (unset clauses, add new, etc).
+		 * Allow developers to modify WHERE (unset clauses, add new, etc.).
 		 *
 		 * @since 1.4.4
 		 *
@@ -1530,7 +1531,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	}
 
 	/**
-	 * Prepare SELECT clause for the main get_entries() query.
+	 * Prepare a SELECT clause for the main get_entries() query.
 	 *
 	 * @since 1.9.0
 	 *
@@ -1581,7 +1582,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 		$from_sql   = $this->table_name;
 		$meta_table = wpforms()->obj( 'entry_meta' )->table_name;
 
-		// Add a LEFT OUTER JOIN for retrieve a notes' count.
+		// Add a LEFT OUTER JOIN to retrieve a notes' count.
 		if ( $args['notes_count'] ) {
 			$from_sql .= "
 			LEFT JOIN (

@@ -11,6 +11,7 @@
  */
 
 use Automattic\Jetpack\Constants;
+use Automattic\WooCommerce\Enums\PaymentGatewayFeature;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -89,8 +90,8 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 		/* translators: %s: Link to WC system status page */
 		$this->method_description = __( 'PayPal Standard redirects customers to PayPal to enter their payment information.', 'woocommerce' );
 		$this->supports           = array(
-			'products',
-			'refunds',
+			PaymentGatewayFeature::PRODUCTS,
+			PaymentGatewayFeature::REFUNDS,
 		);
 
 		// Load the settings.
@@ -563,3 +564,16 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 		return is_countable( $paypal_orders ) ? 1 === count( $paypal_orders ) : false;
 	}
 }
+
+// Initialize PayPal admin notices handler on 'init' hook to ensure the class loads before admin_init and admin_notices hooks fire.
+add_action(
+	'init',
+	function () {
+		if ( ! is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+			return;
+		}
+
+		include_once __DIR__ . '/includes/class-wc-gateway-paypal-notices.php';
+		new WC_Gateway_Paypal_Notices();
+	}
+);

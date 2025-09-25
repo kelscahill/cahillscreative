@@ -36,7 +36,7 @@ class Field extends WPForms_Field {
 	 *
 	 * @var array
 	 */
-	const DISPLAY_VALUES = [
+	public const DISPLAY_VALUES = [
 		'rows',
 		'blocks',
 	];
@@ -48,7 +48,7 @@ class Field extends WPForms_Field {
 	 *
 	 * @var array
 	 */
-	const PRESETS = [
+	private const PRESETS = [
 		'100',
 		'50-50',
 		'67-33',
@@ -67,7 +67,7 @@ class Field extends WPForms_Field {
 	 *
 	 * @var array
 	 */
-	const NOT_ALLOWED_FIELDS = [
+	private const NOT_ALLOWED_FIELDS = [
 		'layout',
 		'repeater',
 		'pagebreak',
@@ -75,6 +75,7 @@ class Field extends WPForms_Field {
 		'entry-preview',
 		'captcha',
 		'file-upload',
+		'camera',
 		'likert_scale',
 		'net_promoter_score',
 		'credit-card',
@@ -108,7 +109,7 @@ class Field extends WPForms_Field {
 	 *
 	 * @var int
 	 */
-	const ROWS_LIMIT_MAX = 200;
+	public const ROWS_LIMIT_MAX = 200;
 
 	/**
 	 * Maximum allowed rows by default.
@@ -117,7 +118,7 @@ class Field extends WPForms_Field {
 	 *
 	 * @var int
 	 */
-	const DEFAULT_ROWS_LIMIT_MAX = 10;
+	public const DEFAULT_ROWS_LIMIT_MAX = 10;
 
 	/**
 	 * Columns settings by default.
@@ -126,7 +127,7 @@ class Field extends WPForms_Field {
 	 *
 	 * @var array
 	 */
-	const DEFAULT_COLUMNS = [
+	public const DEFAULT_COLUMNS = [
 		0 => [
 			'width_custom' => '',
 			'width_preset' => '100',
@@ -142,12 +143,13 @@ class Field extends WPForms_Field {
 	public function init() {
 
 		// Define field type information.
-		$this->name     = esc_html__( 'Repeater', 'wpforms' );
-		$this->keywords = esc_html__( 'repeater, row, column', 'wpforms' );
-		$this->type     = 'repeater';
-		$this->icon     = 'fa-list fa-flip-horizontal';
-		$this->order    = 150;
-		$this->group    = 'fancy';
+		$this->name            = esc_html__( 'Repeater', 'wpforms' );
+		$this->keywords        = esc_html__( 'repeater, row, column', 'wpforms' );
+		$this->type            = 'repeater';
+		$this->icon            = 'fa-list fa-flip-horizontal';
+		$this->order           = 150;
+		$this->group           = 'fancy';
+		$this->allow_read_only = false;
 
 		// Default settings.
 		$this->defaults = [

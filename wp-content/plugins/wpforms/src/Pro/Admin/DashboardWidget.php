@@ -7,6 +7,7 @@ use DatePeriod;
 use DateTime;
 use Exception;
 use WP_Post;
+use WPForms\Admin\Blocks\Links;
 use WPForms\Admin\Dashboard\Widget;
 use WPForms\Admin\Helpers\Datepicker;
 use WPForms\Pro\Reports\EntriesCount;
@@ -186,14 +187,6 @@ class DashboardWidget extends Widget {
 		);
 
 		wp_enqueue_script(
-			'wpforms-chart-adapter-moment',
-			WPFORMS_PLUGIN_URL . 'assets/lib/chartjs-adapter-moment.min.js',
-			[ 'moment', 'wpforms-chart' ],
-			'1.0.1',
-			true
-		);
-
-		wp_enqueue_script(
 			'wpforms-dashboard-widget',
 			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/dashboard-widget$min.js",
 			[ 'jquery', 'wpforms-chart' ],
@@ -223,6 +216,8 @@ class DashboardWidget extends Widget {
 					'entries'       => esc_html__( 'Entries', 'wpforms' ),
 					'form_entries'  => esc_html__( 'Form Entries', 'wpforms' ),
 				],
+				// Adapter for Chart.js to use Moment.js for date formatting.
+				'adapter_path'     => WPFORMS_PLUGIN_URL . 'assets/lib/chartjs-adapter-moment.min.js?ver=1.0.1',
 			]
 		);
 	}
@@ -263,21 +258,12 @@ class DashboardWidget extends Widget {
 	 *
 	 * @throws Exception Exception.
 	 */
-	public function widget_content() {
+	public function widget_content(): void {
 
 		$form_obj = wpforms()->obj( 'form' );
 		$forms    = $form_obj ? $form_obj->get( '', [ 'fields' => 'ids' ] ) : [];
 
-		$hide_welcome        = $this->widget_meta( 'get', 'hide_welcome_block' );
-		$splash              = wpforms()->obj( 'splash_screen' );
-		$is_splash_available = $splash && $splash->is_available_for_display();
-		$is_splash_allowed   = $splash && $splash->is_allow_splash();
-
 		echo '<div class="wpforms-dash-widget wpforms-pro">';
-
-		if ( $is_splash_available && $is_splash_allowed && ! $hide_welcome ) {
-			$this->welcome_block_html();
-		}
 
 		echo '<div class="wpforms-dash-widget-content">';
 
@@ -288,6 +274,19 @@ class DashboardWidget extends Widget {
 		}
 
 		echo '</div><!-- .wpforms-dash-widget-content -->';
+
+		Links::render(
+			[
+				'docs'    => [
+					'medium'  => 'dashboard-widget',
+					'content' => 'docs',
+				],
+				'support' => [
+					'medium'  => 'dashboard-widget',
+					'content' => 'support',
+				],
+			]
+		);
 
 		$plugin           = $this->get_recommended_plugin();
 		$hide_recommended = $this->widget_meta( 'get', 'hide_recommended_block' );
@@ -455,7 +454,7 @@ class DashboardWidget extends Widget {
 	 *
 	 * @noinspection HtmlUnknownTarget
 	 */
-	public function forms_list_block_html( $forms ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function forms_list_block_html( $forms ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Number of forms to display in the forms' list before the "Show More" button appears.
 		$show_forms     = $this->settings['forms_list_number_to_display'];
@@ -681,37 +680,11 @@ class DashboardWidget extends Widget {
 	 * The welcome block HTML.
 	 *
 	 * @since 1.8.7
+	 * @deprecated 1.9.7
 	 */
 	public function welcome_block_html() {
 
-		$welcome_message = sprintf(
-			wp_kses(
-				/* translators: %s - WPForms version. */
-				__( 'Welcome to <strong>WPForms %s</strong>', 'wpforms' ),
-				[
-					'strong' => [],
-				]
-			),
-			WPFORMS_VERSION
-		);
-
-		/**
-		 * Filters the welcome message in the Dashboard Widget.
-		 *
-		 * @since 1.8.7
-		 *
-		 * @param string $welcome_message Welcome message.
-		 */
-		$welcome_message = apply_filters( 'wpforms_pro_admin_dashboard_widget_welcome_block_html_message', $welcome_message );
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo wpforms_render(
-			'admin/dashboard/widget/welcome',
-			[
-				'welcome_message' => $welcome_message,
-			],
-			true
-		);
+		return '';
 	}
 
 	/**
@@ -787,7 +760,7 @@ class DashboardWidget extends Widget {
 	 * @return array
 	 * @throws Exception When dates management fails.
 	 */
-	public function get_entries_count_by( $param, $days = 0, $form_id = 0 ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function get_entries_count_by( $param, $days = 0, $form_id = 0 ): array {
 
 		// Allow only 'date' and 'form' params.
 		if ( ! in_array( $param, [ 'date', 'form' ], true ) ) {

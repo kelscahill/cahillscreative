@@ -6,6 +6,7 @@
  */
 
 use Automattic\WooCommerce\Enums\OrderStatus;
+use Automattic\WooCommerce\Enums\PaymentGatewayFeature;
 use Automattic\WooCommerce\Enums\ProductType;
 
 defined( 'ABSPATH' ) || exit;
@@ -551,7 +552,7 @@ class WC_Form_Handler {
 			if ( isset( $available_gateways[ $payment_method_id ] ) ) {
 				$gateway = $available_gateways[ $payment_method_id ];
 
-				if ( ! $gateway->supports( 'add_payment_method' ) && ! $gateway->supports( 'tokenization' ) ) {
+				if ( ! $gateway->supports( PaymentGatewayFeature::ADD_PAYMENT_METHOD ) && ! $gateway->supports( PaymentGatewayFeature::TOKENIZATION ) ) {
 					wc_add_notice( __( 'Invalid payment gateway.', 'woocommerce' ), 'error' );
 					return;
 				}
@@ -635,6 +636,8 @@ class WC_Form_Handler {
 		if ( ! ( isset( $_REQUEST['apply_coupon'] ) || isset( $_REQUEST['remove_coupon'] ) || isset( $_REQUEST['remove_item'] ) || isset( $_REQUEST['undo_item'] ) || isset( $_REQUEST['update_cart'] ) || isset( $_REQUEST['proceed'] ) ) ) {
 			return;
 		}
+
+		wc_maybe_define_constant( 'WOOCOMMERCE_CART', true );
 
 		wc_nocache_headers();
 

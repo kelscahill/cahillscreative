@@ -78,6 +78,14 @@ class Builder {
 			WPFORMS_VERSION,
 			false
 		);
+
+		wp_enqueue_script(
+			'wpforms-builder-camera',
+			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/builder/camera{$min}.js",
+			[ 'jquery', 'wpforms-builder' ],
+			WPFORMS_VERSION,
+			false
+		);
 	}
 
 	/**
@@ -88,13 +96,13 @@ class Builder {
 	 * @param int   $form_id Form ID.
 	 * @param array $form    Form data.
 	 */
-	public function update_fields_restrictions( $form_id, $form ): void {
+	public function update_fields_restrictions( int $form_id, array $form ): void {
 
 		$form_data = json_decode( stripslashes( $form['post_content'] ), true );
 		$fields    = $form_data['fields'] ?? [];
 
 		foreach ( $fields as $field_id => $field ) {
-			$this->process_field_restriction( (int) $form_id, $field_id, $field );
+			$this->process_field_restriction( $form_id, $field_id, $field );
 		}
 
 		// Remove all files passwords.
@@ -149,12 +157,14 @@ class Builder {
 	 * @param array $args Arguments.
 	 *
 	 * @return array
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	public function prepare_restrictions( $form, $data, $args ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
 
 		$form      = (array) $form;
 		$form_data = json_decode( stripslashes( $form['post_content'] ), true );
-		$fields    = $form_data['fields'];
+		$fields    = $form_data['fields'] ?? [];
 
 		foreach ( $fields as $key => $field ) {
 			if ( $this->is_file_upload_field( $field ) ) {
@@ -326,7 +336,7 @@ class Builder {
 
 		$restriction_password = $restriction['password'] ?? '';
 
-		// If restriction password has changed, update it.
+		// If the restriction password has changed, update it.
 		if ( empty( $password ) || ! wp_check_password( $password, $restriction_password ) ) {
 			$file_restrictions->update_restriction_password( $restriction_id, $password );
 		}

@@ -429,7 +429,7 @@ class WPForms_Conditional_Logic_Fields {
 	 *
 	 * @param array $form_data Form data and settings.
 	 */
-	public function process_field_visibility( $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, Generic.Metrics.NestingLevel.MaxExceeded
+	public function process_field_visibility( $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
 
 		// If the form contains no fields with conditional logic,
 		// no need to continue processing.
@@ -656,7 +656,7 @@ class WPForms_Conditional_Logic_Fields {
 	 *
 	 * @return array
 	 */
-	public function detect_payment_conditionals( $form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function detect_payment_conditionals( $form_data ): array {
 
 		$form_data = (array) $form_data;
 
@@ -728,7 +728,7 @@ class WPForms_Conditional_Logic_Fields {
 	 *
 	 * @return bool
 	 */
-	public function field_is_trigger( $form_field, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
+	public function field_is_trigger( $form_field, $form_data ) { // phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded
 
 		$field_id = $form_field['id'];
 
@@ -829,7 +829,7 @@ class WPForms_Conditional_Logic_Fields {
 	 *
 	 * @return array
 	 */
-	public function generate_rules( $forms ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, Generic.Metrics.NestingLevel.MaxExceeded
+	public function generate_rules( $forms ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
 
 		// If this boolean is not true, we know there is no valid conditional logic rule,
 		// so we can avoid processing all the fields again.
@@ -946,7 +946,7 @@ class WPForms_Conditional_Logic_Fields {
 	 *
 	 * @return array Cleared conditional rules.
 	 */
-	public function clear_empty_rules( $conditionals ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function clear_empty_rules( $conditionals ) {
 
 		if ( empty( $conditionals ) || ! is_array( $conditionals ) ) {
 			return [];

@@ -68,7 +68,7 @@ class Field extends FieldLite {
 	 *
 	 * @return array
 	 */
-	public function field_properties( $properties, $field, $form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function field_properties( $properties, $field, $form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$properties = (array) $properties;
 
@@ -291,8 +291,9 @@ class Field extends FieldLite {
 	 * @param array $deprecated Deprecated field attributes. Use field properties.
 	 * @param array $form_data  Form data and settings.
 	 *
-	 * @noinspection HtmlUnknownAttribute*/
-	public function field_display( $field, $deprecated, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	 * @noinspection HtmlUnknownAttribute
+	 */
+	public function field_display( $field, $deprecated, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Define data.
 		$number = ! empty( $field['properties']['inputs']['number'] ) ? $field['properties']['inputs']['number'] : [];

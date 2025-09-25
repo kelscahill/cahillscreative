@@ -77,7 +77,7 @@ class File {
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		$f = fopen( 'php://temp', 'wb+' );
 
-		fputcsv( $f, $request_data['columns_row'], $this->export->configuration['csv_export_separator'], $enclosure );
+		fputcsv( $f, $request_data['columns_row'], $this->export->configuration['csv_export_separator'], $enclosure, '\\' );
 
 		$entry_handler = wpforms()->obj( 'entry' );
 
@@ -85,7 +85,7 @@ class File {
 			$entries = $entry_handler->get_entries( $request_data['db_args'] );
 
 			foreach ( $this->export->ajax->get_entry_data( $entries ) as $entry ) {
-				fputcsv( $f, $entry, $this->export->configuration['csv_export_separator'], $enclosure );
+				fputcsv( $f, $entry, $this->export->configuration['csv_export_separator'], $enclosure, '\\' );
 			}
 
 			$request_data['db_args']['offset'] = $i * $this->export->configuration['entries_per_step'];
@@ -130,7 +130,7 @@ class File {
 			$entries = $entry_handler->get_entries( $request_data['db_args'] );
 
 			foreach ( $this->export->ajax->get_entry_data( $entries ) as $entry ) {
-				fputcsv( $f, $entry, $this->export->configuration['csv_export_separator'], $enclosure );
+				fputcsv( $f, $entry, $this->export->configuration['csv_export_separator'], $enclosure, '\\' );
 			}
 
 			$request_data['db_args']['offset'] = $i * $this->export->configuration['entries_per_step'];
@@ -138,6 +138,7 @@ class File {
 
 		rewind( $f );
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		$file_contents = file_get_contents( $file_path );
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose

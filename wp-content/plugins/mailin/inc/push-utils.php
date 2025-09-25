@@ -163,6 +163,22 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 		}
 
 		/**
+		 * @return bool
+		 */
+		public static function is_contact_sync_active() {
+			// Check push application
+			try {
+				$app = self::get_push_application();
+				if (!$app) return true;
+				$brevoContactSync = $app->getBrevoContactSync();
+				return $brevoContactSync ? $brevoContactSync->getEnabled() : true;
+			} catch (Exception $e) {
+				SIB_Push_Utils::log_warn('Could not get application', $e);
+				return true;
+			}
+		}
+
+		/**
 		 * Activates push.
 		 * @throws SIB_Push_MissingCredentialsException
 		 * @throws Exception

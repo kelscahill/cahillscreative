@@ -27,6 +27,28 @@ class Field extends FieldLite {
 		add_action( 'wpforms_display_fields_after', [ $this, 'display_fields_after' ], 5, 2 );
 		add_action( 'wpforms_display_field_after', [ $this, 'display_field_after' ], 20, 2 );
 		add_filter( "wpforms_pro_admin_entries_edit_is_field_displayable_{$this->type}", '__return_false' );
+
+		// Admin form builder enqueues.
+		add_action( 'wpforms_builder_enqueues', [ $this, 'admin_builder_enqueues' ] );
+	}
+
+	/**
+	 * Enqueue script for the admin form builder.
+	 *
+	 * @since 1.9.7
+	 */
+	public function admin_builder_enqueues(): void {
+
+		$min = wpforms_get_min_suffix();
+
+		// JavaScript.
+		wp_enqueue_script(
+			'wpforms-builder-page-break-field',
+			WPFORMS_PLUGIN_URL . "assets/pro/js/admin/builder/fields/page-break{$min}.js",
+			[ 'jquery', 'wpforms-builder' ],
+			WPFORMS_VERSION,
+			false
+		);
 	}
 
 	/**
@@ -39,7 +61,7 @@ class Field extends FieldLite {
 	 *
 	 * @return array Form data.
 	 */
-	public function maybe_sort_fields( $form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function maybe_sort_fields( $form_data ): array {
 
 		$form_data = (array) $form_data;
 
@@ -183,8 +205,14 @@ class Field extends FieldLite {
 				'<span class="wpforms-page-indicator-page-title-sep" %s> - </span>',
 				empty( $p1 ) ? 'style="display:none;"' : ''
 			);
-			printf( /* translators: %1$s - current step in multipage form, %2$d - total number of pages. */
-				'<span class="wpforms-page-indicator-steps">' . esc_html__( 'Step %1$s of %2$d', 'wpforms' ) . '</span>',
+
+			$progress_text = ! empty( $top['progress_text'] ) ?
+				str_replace( [ '{current_page}', '{last_page}' ], [ '%1$s', '%2$s' ], str_replace( '%', '%%', $top['progress_text'] ) ) :
+				/* translators: %1$s - current step in multipage form, %2$d - total number of pages. */
+				esc_html__( 'Step %1$s of %2$d', 'wpforms' );
+
+			printf(
+				'<span class="wpforms-page-indicator-steps">' . esc_html( $progress_text ) . '</span>',
 				'<span class="wpforms-page-indicator-steps-current">1</span>',
 				count( $pagebreak['pages'] )
 			);
@@ -380,7 +408,7 @@ class Field extends FieldLite {
 	 * @param array $deprecated Field attributes.
 	 * @param array $form_data  Form data and settings.
 	 */
-	public function field_display( $field, $deprecated, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function field_display( $field, $deprecated, $form_data ) {
 
 		// Top pagebreaks don't display.
 		if ( ! empty( $field['position'] ) && $field['position'] === 'top' ) {

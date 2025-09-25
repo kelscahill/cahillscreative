@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-27T08:57:37+00:00\n"
-"PO-Revision-Date: 2025-05-27 11:01+0200\n"
+"POT-Creation-Date: 2025-07-31T09:20:20+00:00\n"
+"PO-Revision-Date: 2025-07-31 11:41+0200\n"
 "Last-Translator: Stéphane Jaïs <stephane.jais@brevo.com>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -22,59 +22,59 @@ msgstr "Web desktop"
 msgid "Web mobile"
 msgstr "Web mobile"
 
-#: push/api/models.js:115
+#: push/api/models.js:119
 msgid "Marketing"
 msgstr "Marketing"
 
-#: push/api/models.js:116
+#: push/api/models.js:120
 msgid "News"
 msgstr "News"
 
-#: push/api/models.js:117
+#: push/api/models.js:121
 msgid "Transactional"
 msgstr "Transactionnel"
 
-#: push/api/models.js:118
+#: push/api/models.js:122
 msgid "Discount"
 msgstr "Discount"
 
-#: push/api/models.js:119
+#: push/api/models.js:123
 msgid "Announcement"
 msgstr "Annonce"
 
-#: push/api/models.js:120
+#: push/api/models.js:124
 msgid "Sponsored"
 msgstr "Sponsorisé"
 
-#: push/api/models.js:121
+#: push/api/models.js:125
 msgid "Custom #1"
 msgstr "Perso n°1"
 
-#: push/api/models.js:122
+#: push/api/models.js:126
 msgid "Custom #2"
 msgstr "Perso n°2"
 
-#: push/api/models.js:123
+#: push/api/models.js:127
 msgid "Custom #3"
 msgstr "Perso n°3"
 
-#: push/api/models.js:124
+#: push/api/models.js:128
 msgid "Custom #4"
 msgstr "Perso n°4"
 
-#: push/api/models.js:125
+#: push/api/models.js:129
 msgid "Custom #5"
 msgstr "Perso n°5"
 
-#: push/api/models.js:205
+#: push/api/models.js:209
 msgid "Daily"
 msgstr "Quotidien"
 
-#: push/api/models.js:206
+#: push/api/models.js:210
 msgid "Weekly"
 msgstr "Hebdomadaire"
 
-#: push/api/models.js:207
+#: push/api/models.js:211
 msgid "Monthly"
 msgstr "Mensuel"
 
@@ -88,181 +88,195 @@ msgstr "Date"
 msgid "Time"
 msgstr "Heure"
 
-#: push/components/editor/AudienceEditor.js:52
+#: push/components/editor/AudienceEditor.js:54
 msgid "subscribed contact"
 msgid_plural "subscribed contacts"
 msgstr[0] "contact abonné"
 msgstr[1] "contacts abonnés"
 
-#: push/components/editor/AudienceEditor.js:53
+#: push/components/editor/AudienceEditor.js:55
 msgid "subscribed device"
 msgid_plural "subscribed devices"
 msgstr[0] "appareil abonné"
 msgstr[1] "appareils abonnés"
 
-#: push/components/editor/AudienceEditor.js:133
+#: push/components/editor/AudienceEditor.js:135
 #: push/pages/settings/BlogSettings.js:57
 msgid "Everybody"
 msgstr "Tout le monde"
 
-#: push/components/editor/AudienceEditor.js:137
+#: push/components/editor/AudienceEditor.js:139
 msgid "Based on their website activity"
 msgstr "Selon leur activité sur le site"
 
-#: push/components/editor/AudienceEditor.js:146
+#: push/components/editor/AudienceEditor.js:148
 msgid "New push subscribers"
 msgstr "Nouveaux abonnés push"
 
-#: push/components/editor/AudienceEditor.js:150
+#: push/components/editor/AudienceEditor.js:152
 msgid "Based on language"
 msgstr "Selon la langue"
 
-#: push/components/editor/AudienceEditor.js:154
+#: push/components/editor/AudienceEditor.js:156
 msgid "Based on timezone"
 msgstr "Selon le fuseau horaire"
 
-#: push/components/editor/AudienceEditor.js:158
+#: push/components/editor/AudienceEditor.js:160
 msgid "From a Brevo segment"
 msgstr "Depuis un segment Brevo"
 
-#: push/components/editor/AudienceEditor.js:162
+#: push/components/editor/AudienceEditor.js:164
 msgid "From a Brevo list"
 msgstr "Depuis une liste Brevo"
 
-#: push/components/editor/AudienceEditor.js:165
+#: push/components/editor/AudienceEditor.js:167
 #: push/components/editor/fields.js:113
 msgid "Audience"
 msgstr "Audience"
 
-#: push/components/editor/AudienceEditor.js:165
+#: push/components/editor/AudienceEditor.js:167
 msgid "Please choose an audience"
 msgstr "Veuillez choisir une audience"
 
-#: push/components/editor/AudienceEditor.js:165
+#: push/components/editor/AudienceEditor.js:167
 msgid "Select an audience:"
 msgstr "Choisir une audience :"
 
-#: push/components/editor/AudienceEditor.js:169
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:171
+#: push/components/editor/AudienceEditor.js:176
 #: push/components/editor/scheduling/UrlInput.js:101
 msgid "Select an audience"
 msgstr "Veuillez choisir une audience"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "All push subscribers"
 msgstr "Tous les abonnés au push"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "Push subscribers that have visited in the last %d days"
 msgstr "Les abonnés au push ayant visité le site dans les %d derniers jours"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "Push subscribers that have not visited for at least %d days"
 msgstr ""
 "Les abonnés au push n’ayant pas visité le site dans les %d derniers jours"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "active"
 msgstr "actif"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "inactive"
 msgstr "inactif"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "Push subscribers that have %s in the last %d days"
 msgstr "Les abonnés au push qui %s dans les derniers %d jours"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "purchased"
 msgstr "ont acheté"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "not purchased"
 msgstr "n’ont pas acheté"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "Push subscribers that have subscribed to push in the last %d days"
 msgstr "Les abonnés au push qui se sont abonnés dans les %d derniers jours"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "Push subscribers that have a device in %s"
 msgstr "Les abonnés au push qui ont un appareil en %s"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "Push subscribers that are in your Brevo segment “%s”"
 msgstr "Les abonnés au push qui sont dans votre segment Brevo “%s”"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "unknown"
 msgstr "inconnu"
 
-#: push/components/editor/AudienceEditor.js:174
+#: push/components/editor/AudienceEditor.js:176
 msgid "Push subscribers that are in your Brevo list “%s”"
 msgstr "Les abonnés au push qui sont dans votre liste Brevo “%s”"
 
-#: push/components/editor/AudienceEditor.js:198
+#: push/components/editor/AudienceEditor.js:200
 msgid "Send to all platforms"
 msgstr "Envoyer à toutes les plateformes"
 
-#: push/components/editor/AudienceEditor.js:199
+#: push/components/editor/AudienceEditor.js:201
 msgid "Send only to %s"
 msgstr "Envoyer seulement à %s"
 
-#: push/components/editor/AudienceEditor.js:200
+#: push/components/editor/AudienceEditor.js:202
 msgid "Select one or more platforms"
 msgstr "Sélectionnez une ou plusieurs plateformes"
 
-#: push/components/editor/AudienceEditor.js:208
+#: push/components/editor/AudienceEditor.js:210
 msgid "Choose one or more platforms"
 msgstr "Choisissez une ou plusieurs plateformes"
 
-#: push/components/editor/AudienceEditor.js:219
-#: push/components/editor/AudienceEditor.js:240 push/MainLayout.js:93
+#: push/components/editor/AudienceEditor.js:220
+msgid ""
+"Enable contact creation in Advanced Settings to use Brevo segmentation for "
+"push notifications."
+msgstr ""
+"Activez la création de contacts dans les Réglages Avancés pour utiliser la "
+"segmentation Brevo avec les notifications push."
+
+#: push/components/editor/AudienceEditor.js:220
+#: push/components/subscription/SubscriptionDialogSettings.js:172
+#: push/pages/Settings.js:17 push/pages/settings/AdvancedSettings.js:35
+msgid "Advanced settings"
+msgstr "Réglages avancés"
+
+#: push/components/editor/AudienceEditor.js:230
+#: push/components/editor/AudienceEditor.js:251 push/MainLayout.js:93
 msgid "Loading..."
 msgstr "Chargement…"
 
-#: push/components/editor/AudienceEditor.js:230
+#: push/components/editor/AudienceEditor.js:241
 msgid "No segments found"
 msgstr "Pas de segment trouvé"
 
-#: push/components/editor/AudienceEditor.js:230
+#: push/components/editor/AudienceEditor.js:241
 msgid "Select segment"
 msgstr "Sélectionner segment"
 
-#: push/components/editor/AudienceEditor.js:251
+#: push/components/editor/AudienceEditor.js:262
 msgid "No lists found"
 msgstr "Pas de liste trouvée"
 
-#: push/components/editor/AudienceEditor.js:251
+#: push/components/editor/AudienceEditor.js:262
 msgid "Select list"
 msgstr "Sélectionner liste"
 
-#: push/components/editor/AudienceEditor.js:269
+#: push/components/editor/AudienceEditor.js:280
 msgid "Please select one or more languages"
 msgstr "Veuillez sélectionner une ou plusieurs langues"
 
-#: push/components/editor/AudienceEditor.js:269
+#: push/components/editor/AudienceEditor.js:280
 msgid "Select languages"
 msgstr "Sélectionner langues"
 
-#: push/components/editor/AudienceEditor.js:291
+#: push/components/editor/AudienceEditor.js:302
 msgid "Please select one or more timezones"
 msgstr "Veuillez choisir un ou plusieurs fuseaux horaires"
 
-#: push/components/editor/AudienceEditor.js:291
+#: push/components/editor/AudienceEditor.js:302
 msgid "Select timezones"
 msgstr "Sélectionner fuseau horaire"
 
-#: push/components/editor/AudienceEditor.js:302
+#: push/components/editor/AudienceEditor.js:313
 msgid "Number of days"
 msgstr "Nombre de jours"
 
-#: push/components/editor/AudienceEditor.js:321
+#: push/components/editor/AudienceEditor.js:332
 msgid "This audience is not supported by the editor yet."
 msgstr "Cette audience n’est pas encore prise en charge par cet éditeur."
 
-#: push/components/editor/AudienceEditor.js:321
+#: push/components/editor/AudienceEditor.js:332
 msgid "Edit the audience on wonderpush.com"
 msgstr "Modifier l’audience sur wonderpush.com"
 
@@ -444,7 +458,7 @@ msgid "Campaign name"
 msgstr "Nom de campagne"
 
 #: push/components/editor/CampaignNameModal.js:12
-#: push/components/listing/EmptyListPage.jsx:66 push/MainLayout.js:124
+#: push/components/listing/EmptyListPage.jsx:70 push/MainLayout.js:124
 msgid "Create campaign"
 msgstr "Créer campagne"
 
@@ -1442,22 +1456,22 @@ msgstr "Campagne %s dupliquée."
 msgid "View campaign"
 msgstr "Voir campagne"
 
-#: push/components/listing/EmptyListPage.jsx:23
+#: push/components/listing/EmptyListPage.jsx:26
 msgid "Try different keyword"
 msgstr "Essayez un autre mot clé"
 
-#: push/components/listing/EmptyListPage.jsx:42
+#: push/components/listing/EmptyListPage.jsx:46
 msgid "We couldn’t find what you’re looking for."
 msgstr "Nous n’avons pu trouver ce que vous recherchez."
 
-#: push/components/listing/EmptyListPage.jsx:48
+#: push/components/listing/EmptyListPage.jsx:52
 msgid ""
 "Click on ‘Create campaign’ and start designing your first Push campaign."
 msgstr ""
 "Appuyez sur “Créer campagne” et commencez à concevoir votre première "
 "campagne Push."
 
-#: push/components/listing/EmptyListPage.jsx:56
+#: push/components/listing/EmptyListPage.jsx:60
 msgid "Clear keyword"
 msgstr "Effacer mot clé"
 
@@ -1653,44 +1667,44 @@ msgstr "Modifications enregistrées"
 msgid "There was an error saving your changes:"
 msgstr "Une erreur est survenue lors de la sauvegarde de vos changements :"
 
-#: push/components/settings/PressureCategories.js:113
+#: push/components/settings/PressureCategories.js:112
 msgid "per hour"
 msgstr "par heure"
 
-#: push/components/settings/PressureCategories.js:118
+#: push/components/settings/PressureCategories.js:117
 msgid "per day"
 msgstr "par jour"
 
-#: push/components/settings/PressureCategories.js:123
+#: push/components/settings/PressureCategories.js:122
 msgid "per week"
 msgstr "par semaine"
 
-#: push/components/settings/PressureCategories.js:130
+#: push/components/settings/PressureCategories.js:129
 msgid "Minutes"
 msgstr "Minutes"
 
-#: push/components/settings/PressureCategories.js:135
+#: push/components/settings/PressureCategories.js:134
 msgid "Hours"
 msgstr "Heures"
 
-#: push/components/settings/PressureCategories.js:140
+#: push/components/settings/PressureCategories.js:139
 msgid "Days"
 msgstr "Jours"
 
-#: push/components/settings/PressureCategories.js:167
+#: push/components/settings/PressureCategories.js:166
 msgid "Max number of pushes"
 msgstr "Nombre max de push"
 
-#: push/components/settings/PressureCategories.js:177
-#: push/components/settings/PressureCategories.js:193
+#: push/components/settings/PressureCategories.js:176
+#: push/components/settings/PressureCategories.js:192
 msgid "Select a duration"
 msgstr "Choisir une durée"
 
-#: push/components/settings/PressureCategories.js:183
+#: push/components/settings/PressureCategories.js:182
 msgid "TTL"
 msgstr "TTL"
 
-#: push/components/settings/PressureCategories.js:201
+#: push/components/settings/PressureCategories.js:200
 msgid "Show more categories"
 msgstr "Afficher plus de catégories"
 
@@ -2189,11 +2203,6 @@ msgstr "Texte du bouton négatif"
 msgid "Background"
 msgstr "Arrière-plan"
 
-#: push/components/subscription/SubscriptionDialogSettings.js:172
-#: push/pages/Settings.js:17 push/pages/settings/AdvancedSettings.js:31
-msgid "Advanced settings"
-msgstr "Réglages avancés"
-
 #: push/components/subscription/SubscriptionDialogSettings.js:181
 msgid "Scroll behavior"
 msgstr "Comportement du défilement"
@@ -2494,7 +2503,7 @@ msgstr "Gérer les raccourcis"
 msgid "Hide shortcut management"
 msgstr "Masquer la gestion des raccourcis"
 
-#: push/pages/Activation.js:29 push/pages/settings/AdvancedSettings.js:31
+#: push/pages/Activation.js:29 push/pages/settings/AdvancedSettings.js:37
 msgid "Show admin bar shortcut"
 msgstr "Montrer le raccourci dans la barre d’admin"
 
@@ -2788,28 +2797,27 @@ msgstr "Ajoutez les push à vos pages AMP."
 msgid "Configure cURL, push initialization options, and more."
 msgstr "Configurez cURL, options d’initialisation push, et plus."
 
-#: push/pages/settings/AdvancedSettings.js:31
-msgid "Additional init options JSON"
-msgstr "Options d’initialisations JSON additionnelles"
+#: push/pages/settings/AdvancedSettings.js:37
+msgid "Create Brevo contacts from push notification subscribers"
+msgstr "Créer des contacts dans Brevo pour les abonnés push"
 
-#: push/pages/settings/AdvancedSettings.js:31
-msgid "A valid JSON object to be merged with"
-msgstr "Un objet JSON valide à fusionner avec"
-
-#: push/pages/settings/AdvancedSettings.js:31
-msgid "Brevo init options"
-msgstr "Les options d’unitialisations Brevo"
-
-#: push/pages/settings/AdvancedSettings.js:31
-msgid "Use with care as this can damage your Brevo installation."
+#: push/pages/settings/AdvancedSettings.js:37
+msgid ""
+"Creating contacts (anonymous and identified) from push subscribers in Brevo "
+"allows you to send them push notifications via Brevo automation and "
+"campaigns. When this is unchecked, you will only be able to send push "
+"notifications via this WordPress plugin"
 msgstr ""
-"A utiliser avec prudence car cela peut endommager votre installation Brevo."
+"Créer des contacts (anonymes et identifiés) pour vos abonnés push dans Brevo "
+"vous permet de leur envoyer des notifications push avec Brevo Automation et "
+"les campaignes Brevo. Si vous décochez la case, vous ne pourrez leur envoyer "
+"des notifications que par l’intermédiaire de ce plugin"
 
-#: push/pages/settings/AdvancedSettings.js:31
+#: push/pages/settings/AdvancedSettings.js:37
 msgid "Use the WordPress built-in HTTP API"
 msgstr "Utiliser l’API HTTP native de WordPress"
 
-#: push/pages/settings/AdvancedSettings.js:31
+#: push/pages/settings/AdvancedSettings.js:37
 msgid ""
 "When checked, Brevo will contact its own API using the HTTP client built in "
 "WordPress. When checked, hooks like http_api_curl will allow other plugins "
@@ -2821,13 +2829,30 @@ msgstr ""
 "plugins de personnaliser les appels HTTP. Décocher si vous souhaitez que "
 "Brevo utilise un client HTTP qui ne peut être affecté par d’autres plugins."
 
-#: push/pages/settings/AdvancedSettings.js:31
+#: push/pages/settings/AdvancedSettings.js:37
 msgid ""
 "When checked, Brevo will show a shortcut to this Web Push dashboard in the "
 "admin bar of your WordPress."
 msgstr ""
 "Si coché, Brevo affichera un raccourci vers ce tableau de bord Web Push dans "
 "la barre d’admin de votre WordPress."
+
+#: push/pages/settings/AdvancedSettings.js:37
+msgid "Additional init options JSON"
+msgstr "Options d’initialisations JSON additionnelles"
+
+#: push/pages/settings/AdvancedSettings.js:37
+msgid "A valid JSON object to be merged with"
+msgstr "Un objet JSON valide à fusionner avec"
+
+#: push/pages/settings/AdvancedSettings.js:37
+msgid "Brevo init options"
+msgstr "Les options d’unitialisations Brevo"
+
+#: push/pages/settings/AdvancedSettings.js:37
+msgid "Use with care as this can damage your Brevo installation."
+msgstr ""
+"A utiliser avec prudence car cela peut endommager votre installation Brevo."
 
 #: push/pages/settings/AmpSettings.js:31
 msgid "AMP settings"

@@ -423,7 +423,7 @@ class Field extends FieldLite {
 	 * @param array $field_submit Submitted field value (raw data).
 	 * @param array $form_data    Form data and settings.
 	 */
-	public function validate( $field_id, $field_submit, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function validate( $field_id, $field_submit, $form_data ) {
 
 		if ( empty( $form_data['fields'][ $field_id ] ) ) {
 			return;
@@ -475,7 +475,7 @@ class Field extends FieldLite {
 	 * @param array $field_submit Submitted field values.
 	 * @param array $form_data    Form data and settings.
 	 */
-	public function format( $field_id, $field_submit, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function format( $field_id, $field_submit, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$name     = isset( $form_data['fields'][ $field_id ]['label'] ) && ! wpforms_is_empty_string( $form_data['fields'][ $field_id ]['label'] ) ? $form_data['fields'][ $field_id ]['label'] : '';
 		$address1 = isset( $field_submit['address1'] ) && ! wpforms_is_empty_string( $field_submit['address1'] ) ? $field_submit['address1'] : '';
@@ -535,7 +535,7 @@ class Field extends FieldLite {
 	 *
 	 * @return string
 	 */
-	public function ajax_error_field_name( $name, $field, $props, $error ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function ajax_error_field_name( $name, $field, $props, $error ): string {
 
 		$name = (string) $name;
 

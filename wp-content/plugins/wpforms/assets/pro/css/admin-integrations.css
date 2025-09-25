@@ -169,7 +169,7 @@ body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-closeIcon {
 }
 
 body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-closeIcon:after {
-  color: #bbbbbb;
+  color: #b0b2b3;
   content: "\f00d";
   font-size: 16px;
   left: 0;
@@ -178,7 +178,7 @@ body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-closeIcon:afte
 }
 
 body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-closeIcon:hover:after {
-  color: #777777 !important;
+  color: #50575e !important;
 }
 
 body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-title-c {
@@ -201,7 +201,7 @@ body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-title-c .jconf
 }
 
 body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-title-c .jconfirm-title {
-  color: #444444;
+  color: #3c434a;
   display: block;
   line-height: 30px;
 }
@@ -212,7 +212,7 @@ body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-content-pane {
 }
 
 body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-content-pane .jconfirm-content {
-  color: #444444;
+  color: #3c434a;
   font-size: 16px;
   line-height: 24px;
   margin-bottom: 0;
@@ -220,7 +220,7 @@ body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-content-pane .
 }
 
 body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-content-pane .jconfirm-content.lite-upgrade p {
-  color: #777777;
+  color: #50575e;
   font-size: 18px;
   padding: 0 20px;
 }
@@ -260,7 +260,7 @@ body div.jconfirm .jconfirm-box-container .jconfirm-box .already-purchased {
   display: block;
   grid-row: 5;
   grid-column: 1 / -1;
-  color: #bbbbbb;
+  color: #b0b2b3;
   font-size: 14px;
   margin-top: 15px;
   text-decoration: underline;
@@ -268,7 +268,7 @@ body div.jconfirm .jconfirm-box-container .jconfirm-box .already-purchased {
 }
 
 body div.jconfirm .jconfirm-box-container .jconfirm-box .already-purchased:hover {
-  color: #777777;
+  color: #50575e;
   text-decoration: underline;
 }
 
@@ -281,7 +281,7 @@ body div.jconfirm .jconfirm-box-container .jconfirm-box .discount-note {
 
 body div.jconfirm .jconfirm-box-container .jconfirm-box .discount-note p {
   background-color: #fcf9e8;
-  color: #777777;
+  color: #50575e;
   font-size: 16px;
   margin: 0 -30px;
   padding: 22px 52px 12px 52px;
@@ -312,7 +312,7 @@ body div.jconfirm .jconfirm-box-container .jconfirm-box .discount-note span {
 }
 
 body div.jconfirm .jconfirm-box-container .jconfirm-box .discount-note a {
-  color: #777777;
+  color: #50575e;
   display: block;
   margin-top: 12px;
 }
@@ -351,10 +351,10 @@ body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-buttons {
 
 body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-buttons button {
   min-width: 83px;
-  background: #f8f8f8;
-  border: 1px solid #cccccc;
+  background: #f6f7f7;
+  border: 1px solid #c3c4c7;
   border-radius: 4px;
-  color: #777777;
+  color: #50575e;
   font-size: 16px;
   font-weight: 600;
   line-height: 20px;
@@ -368,8 +368,8 @@ body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-buttons button
 }
 
 body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-buttons button:hover {
-  background: #eeeeee;
-  border-color: #cccccc;
+  background: #e8e9e9;
+  border-color: #c3c4c7;
 }
 
 body div.jconfirm .jconfirm-box-container .jconfirm-box .jconfirm-buttons button[disabled] {
@@ -455,7 +455,7 @@ body .jconfirm.has-video div.jconfirm-box-container .already-purchased {
 }
 
 body .jconfirm.has-video div.jconfirm-box-container .already-purchased:hover {
-  color: #777777;
+  color: #50575e;
 }
 
 body .jconfirm.has-video div.jconfirm-box-container .discount-note {
@@ -505,6 +505,16 @@ body .jconfirm.upgrade-modal .jconfirm-box-container div.jconfirm-box .jconfirm-
   body .jconfirm.has-video .feature-video, body .jconfirm.has-video .pro-feature-video {
     display: none;
   }
+}
+
+.elementor-element-edit-mode div.wpforms-container-full:not(.wpforms-gutenberg-form-selector) input[type=submit]:disabled, .elementor-element-edit-mode div.wpforms-container-full:not(.wpforms-gutenberg-form-selector) input[type=submit]:disabled:hover, .elementor-element-edit-mode div.wpforms-container-full:not(.wpforms-gutenberg-form-selector) input[type=submit].wpforms-disabled,
+.elementor-element-edit-mode div.wpforms-container-full:not(.wpforms-gutenberg-form-selector) button[type=submit]:disabled,
+.elementor-element-edit-mode div.wpforms-container-full:not(.wpforms-gutenberg-form-selector) button[type=submit]:disabled:hover,
+.elementor-element-edit-mode div.wpforms-container-full:not(.wpforms-gutenberg-form-selector) button[type=submit].wpforms-disabled,
+.elementor-element-edit-mode div.wpforms-container-full:not(.wpforms-gutenberg-form-selector) .wpforms-page-button:disabled,
+.elementor-element-edit-mode div.wpforms-container-full:not(.wpforms-gutenberg-form-selector) .wpforms-page-button:disabled:hover,
+.elementor-element-edit-mode div.wpforms-container-full:not(.wpforms-gutenberg-form-selector) .wpforms-page-button.wpforms-disabled {
+  opacity: 1 !important;
 }
 
 .elementor-editor-active div.wpforms-container-full .wpforms-form div.wpforms-field-richtext .quicktags-toolbar,
@@ -732,7 +742,7 @@ body .jconfirm.upgrade-modal .jconfirm-box-container div.jconfirm-box .jconfirm-
   font-weight: 500;
   font-size: 24px;
   line-height: 22px;
-  color: #444444;
+  color: #3c434a;
   margin: 0 0 10px 0 !important;
 }
 
@@ -766,7 +776,7 @@ body .jconfirm.upgrade-modal .jconfirm-box-container div.jconfirm-box .jconfirm-
   grid-row-gap: 20px;
   grid-column-gap: 20px;
   justify-content: center;
-  background-color: #f8f8f8;
+  background-color: #f6f7f7;
   border-radius: 4px;
   padding: 20px;
 }
@@ -786,7 +796,7 @@ body .jconfirm.upgrade-modal .jconfirm-box-container div.jconfirm-box .jconfirm-
 }
 
 .jconfirm-modern .jconfirm-box-container .jconfirm-box.jconfirm-type-picture-selector .wpforms-gutenberg-stock-photos-picture:hover {
-  box-shadow: inset 0 0 0 1px #2d2d2d, 0 0 0 1px #2d2d2d, 0 2px 4px rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 0 0 1px #282e32, 0 0 0 1px #282e32, 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 div.wpforms-container .wpforms-form div.wpforms-field-richtext .insert-media.add_media {

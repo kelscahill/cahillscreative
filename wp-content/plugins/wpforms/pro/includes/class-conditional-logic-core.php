@@ -181,12 +181,12 @@ class WPForms_Conditional_Logic_Core {
 	 *
 	 * @since 1.3.8
 	 *
-	 * @param array $args Data needed for a block to be generated properly.
-	 * @param bool  $echo Whether to return or print. Default: print.
+	 * @param array $args    Data needed for a block to be generated properly.
+	 * @param bool  $do_echo Whether to return or print. Default: print.
 	 *
 	 * @return string
 	 */
-	public function builder_block( $args = [], $echo = true ) {
+	public function builder_block( $args = [], $do_echo = true ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, Generic.Metrics.NestingLevel.MaxExceeded
 
 		if ( ! empty( $args['form'] ) ) {
 			$form_fields = wpforms_get_form_fields( $args['form'], wpforms_get_conditional_logic_form_fields_supported() );
@@ -599,7 +599,7 @@ class WPForms_Conditional_Logic_Core {
 
 		$output = ob_get_clean();
 
-		if ( $echo ) {
+		if ( $do_echo ) {
 			echo $output; //phpcs:ignore
 		} else {
 			return $output;

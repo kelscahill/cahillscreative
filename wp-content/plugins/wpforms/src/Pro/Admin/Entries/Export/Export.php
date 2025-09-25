@@ -512,7 +512,7 @@ class Export {
 	 *
 	 * @return bool
 	 */
-	public function is_entries_export_ajax() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function is_entries_export_ajax() {
 
 		if ( ! wp_doing_ajax() ) {
 			return false;

@@ -55,7 +55,7 @@ class Upgrade1_9_1 extends UpgradeBase {
 	 *
 	 * @return void
 	 */
-	private function run_robots_migration() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function run_robots_migration() {
 
 		// There is no physical robots.txt file.
 		// Complete the migration silently.

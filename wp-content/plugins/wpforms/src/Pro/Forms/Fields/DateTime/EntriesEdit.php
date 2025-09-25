@@ -65,7 +65,7 @@ class EntriesEdit extends \WPForms\Pro\Forms\Fields\Base\EntriesEdit {
 	 * @param array $field       Field data and settings.
 	 * @param array $form_data   Form data and settings.
 	 */
-	public function field_display( $entry_field, $field, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function field_display( $entry_field, $field, $form_data ) {
 
 		// Available time formats in PHP format.
 		$time_formats = array_keys( wpforms_time_formats() );

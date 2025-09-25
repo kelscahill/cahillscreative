@@ -45,7 +45,7 @@ class Handler {
 	 *
 	 * @return bool
 	 */
-	protected function is_valid_entries_page() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	protected function is_valid_entries_page() {
 
 		$url_args = $this->get_entries_page_args();
 

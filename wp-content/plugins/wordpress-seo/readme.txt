@@ -5,20 +5,22 @@ License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 Tags: SEO, XML sitemap, Content analysis, Readability, Schema
 Tested up to: 6.8
-Stable tag: 25.4
+Stable tag: 26.0
 Requires PHP: 7.4
 
 Improve your SEO with real-time feedback, schema, and clear guidance. Upgrade for AI tools, Google Docs integration, and 24/7 support, no hidden fees.
 
 == Description ==
 
-## YOAST SEO: THE #1 WORDPRESS SEO PLUGIN
+## Yoast SEO: The #1 WordPress SEO Plugin
 
 Yoast SEO helps your WordPress site grow by making SEO clear, actionable, and fast. With real-time feedback, built-in guidance, and AI tools in our Premium plans, you don’t have to be an expert to get more traffic and better content performance.
 
 Whether you’re publishing your first post or managing a high-traffic site, Yoast gives you the tools to improve visibility and reach the right audience.
 
 Yoast SEO is **free to install and includes all the essential tools to improve your content**. Upgrade only if and when you need more. **As of July 2025, we’ve updated our pricing and packaging**, so you’re seeing the most current plans and features. You’ll find all the extensive benefits of our [Yoast SEO Premium](https://yoa.st/1v8) plugin and our [Yoast WooCommerce SEO](https://yoa.st/3rh) plan for merchants below.
+
+https://www.youtube.com/watch?v=BtqZ7EnfX1M
 
 ### Built-in SEO tools to grow your traffic
 
@@ -195,48 +197,41 @@ Your question has most likely been answered on our help center: [yoast.com/help/
 
 == Changelog ==
 
-= 25.4 =
+= 26.0 =
 
-Release date: 2025-07-01
+Release date: 2025-09-23
 
-Yoast SEO 25.4 brings more enhancements and bugfixes. [Find more information about our software releases and updates here](https://yoa.st/releases).
+Yoast SEO 26.0 brings more enhancements and bugfixes. [Find more information about our software releases and updates here](https://yoa.st/releases).
 
 #### Enhancements
 
-* Adds descriptions for the posts listed in the llms.txt file, using their excerpts when those are explicitly set.
-* Adds support for preventing specifically `noindex`ed posts from getting into the llms.txt file.
-* Changes one of the feedback texts for the _text length_ assessment to be consistent with the others.
-* Improves support for non-english characters in llms.txt, for servers that don't serve .txt files in UTF-8.
-* Improves the feedback of the _competing links_ assessment by making it clearer.
-* Makes the assessments _single title_ and _competing links_ available from the get-go in the SEO analysis.
-* Prioritizes cornerstone content for the posts lists in the llms.txt file.
-* Renames the _link keyphrase_ assessment to _competing links_.
+* Opens the `Advanced` Settings' section when clicking the `Customize llms.txt file` button.
 
 #### Bugfixes
 
-* Fixes a bug where the llmst.txt file wouldn't be able to be generated in wp.com.
+* Fixes a bug where a string in the AI Generate usage counter tooltip was missing in RTL languages.
 
 #### Other
 
-* Improves the internal engine that creates the post lists in the llms.txt file for a more efficient and lighter generation.
-* Improves the translatability of the feedback strings for the _text length_ assessment.
-* Introduces the `wpseo_llmstxt_filesystem_path` filter that allows editing the file path of the llmst.txt file, to help users in servers with filesystem restrictions.
+* Adds an introduction which would show after 14 days of the plugin activation or update.
+* Adds safety check when accessing an array to avoid PHP warnings when getting the upgrade campaign for Wincher integration. Props to [@bor0](https://github.com/bor0).
+* Allow changing the main image ID through a filter `wpseo_schema_main_image_id`. Props to [@JoryHogeveen](https://github.com/JoryHogeveen).
+* Ensures compatibility with the recent Wincher API changes.
 
-= 25.3.1 =
+= 25.9 =
 
-Release date: 2025-06-18
+Release date: 2025-09-09
 
-This is a maintenance release which is required to align with changes to Yoast SEO Premium 25.3.1.
-
-= 25.3 =
-
-Release date: 2025-06-10
-
-*New:* Yoast SEO 25.3 introduces llms.txt support to help AI tools understand your site better. [Read the full release post here!](https://yoa.st/release-10-6-25)
+Yoast SEO 25.9 brings more enhancements and bugfixes. [Find more information about our software releases and updates here](https://yoa.st/releases).
 
 #### Enhancements
 
-* Introduces the llms.txt feature, which gives site owners the opportunity to automatically generate an llms.txt file. This file helps LLMs to better understand the site's content.
+* Improves the UX of the llms.txt feature by displaying errors with generating the llms.txt file in the relevant settings page.
+* Improves the UX of onboarding new users by preventing irrelevant modals from displaying in the First Time Configuration.
+
+#### Other
+
+* Updates the copy of the consent modal for using the Yoast AI features.
 
 = Earlier versions =
 For the changelog of earlier versions, please refer to [the changelog on yoast.com](https://yoa.st/yoast-seo-changelog).

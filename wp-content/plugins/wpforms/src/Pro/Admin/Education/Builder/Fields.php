@@ -88,7 +88,7 @@ class Fields extends Education\Builder\Fields {
 	 *
 	 * @return array
 	 */
-	private function fields_add_group_fields( $fields, $group, $nonce ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	private function fields_add_group_fields( $fields, $group, $nonce ) {
 
 		$addons_slugs = array_column( $this->addons->get_available(), 'slug' );
 		$group_fields = $fields[ $group ]['fields'];
@@ -154,7 +154,7 @@ class Fields extends Education\Builder\Fields {
 	 *
 	 * @return array Attributes array.
 	 */
-	public function fields_attributes( $atts, $field ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function fields_attributes( $atts, $field ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( empty( $field['name_en'] ) && ! empty( $field['type'] ) ) {
 			$edu_field        = $this->fields->get_field( $field['type'] );

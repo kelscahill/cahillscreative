@@ -139,6 +139,7 @@ class controller
 		$action->checks->add_check( new checks\database_tools\check );
 		$action->checks->add_check( new checks\view_broadcast_data\check );
 		$action->checks->add_check( new checks\view_blog_access\check );
+		$action->checks->add_check( new checks\view_option\check );
 		$action->checks->add_check( new checks\view_post_info\check );
 		$action->checks->add_check( new checks\view_taxonomy_info\check );
 		$action->checks->add_check( new checks\view_user_info\check );

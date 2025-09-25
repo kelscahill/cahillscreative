@@ -1,3 +1,40 @@
+## 31.0.1
+*    Updated protobuf constraint in to be less restrictive for users on the Protobuf 3.x series and preserve backwards compatibility.
+
+## 31.0.0
+*    Compatibility with v21.0 of the API: https://developers.google.com/google-ads/api/docs/release-notes
+*    Added support for declaring EU political advertising status on campaign creation in examples.
+*    Pinned the 'grpc/grpc' dependency so it doesn't get ahead of the C 'ext-grpc'.
+*    Removed support for v18 of the API: https://ads-developers.googleblog.com/2025/07/google-ads-api-v18-sunset-reminder.html
+
+## 30.0.0
+*    Fixed the potential break in v29.0.0 (due to dependency conflicts) by pinning the protobuf dependency to be <=4.30.0 and reverting back to the old getLabel method.
+*    Fixed the potential maximum call size error due to a bug in the GRPC C extension by pinning ext-grpc to be <=1.66.0
+
+## 29.0.0
+*    Security fixes, updated deprecated getLabel to isRepeated.
+
+## 28.0.0
+*    Compatibility with v20.0 of the API: https://developers.google.com/google-ads/api/docs/release-notes
+
+## 27.2.0
+*    Removed support for v17 of the API: https://ads-developers.googleblog.com/2025/04/google-ads-api-v17-sunset-reminder.html
+
+## 26.2.0
+*    Compatibility with v19.1 of the API: https://developers.google.com/google-ads/api/docs/release-notes
+
+## 26.1.0
+*   Added support for v19 of Google Ads API.
+*   Removed support for Feed-related classes, fields and enums in v19.
+*   Updated code examples:
+    * AddPerformanceMaxCampaign
+    * AddPerformanceMaxRetailCampaign
+    * AddShoppingProductAd
+    * GetChangeDetails
+
+## 26.0.0
+*   Removed support for v16 of Google Ads API.
+
 ## 25.0.0
 *   Added support for v18 of Google Ads API.
 *   Removed support for the `useGapicV2Source` configuration, as the source code

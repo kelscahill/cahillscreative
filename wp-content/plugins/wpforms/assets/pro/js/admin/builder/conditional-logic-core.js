@@ -1,15 +1,13 @@
 /* global wpf, wpforms_builder */
 
-'use strict';
-
-var WPFormsConditionals = window.WPFormsConditionals || ( function( document, window, $ ) {
-
+// noinspection ES6ConvertVarToLetConst
+var WPFormsConditionals = window.WPFormsConditionals || ( function( document, window, $ ) { // eslint-disable-line no-var
 	/**
 	 * Helper methods.
 	 *
 	 * @since 1.6.0.2
 	 */
-	var helpers = {
+	const helpers = {
 
 		/**
 		 * Splits an array to chunks of n elements.
@@ -19,10 +17,9 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 * @param {Array}  array Array to split.
 		 * @param {number} n     Number of elements in each chunk.
 		 *
-		 * @returns {Array} Array.
+		 * @return {Array} Array.
 		 */
-		arraySplitIntoChunks: function( array, n ) {
-
+		arraySplitIntoChunks( array, n ) {
 			if ( ! array.length ) {
 				return [];
 			}
@@ -37,7 +34,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 	 *
 	 * @since 1.6.0.2
 	 */
-	var updater = {
+	const updater = {
 
 		/**
 		 * All form fields.
@@ -81,8 +78,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 *
 		 * @param {Array} allFields List of all fields.
 		 */
-		cacheAllFields: function( allFields ) {
-
+		cacheAllFields( allFields ) {
 			updater.allFields = allFields;
 		},
 
@@ -93,8 +89,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 *
 		 * @param {jQuery} $rows Collection of all conditional rule rows.
 		 */
-		cacheRuleRows: function( $rows ) {
-
+		cacheRuleRows( $rows ) {
 			updater.$ruleRows = $rows || $( '.wpforms-conditional-row' );
 		},
 
@@ -103,8 +98,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 *
 		 * @since 1.6.0.2
 		 */
-		setConditionalFields: function() {
-
+		setConditionalFields() {
 			updater.conditionalFields = updater.removeUnsupportedFields();
 		},
 
@@ -141,12 +135,11 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		},
 
 		/**
-		 * Setup all HTML templates.
+		 * Set up all HTML templates.
 		 *
 		 * @since 1.6.0.2
 		 */
-		setTemplates: function() {
-
+		setTemplates() {
 			updater.setFieldsListTemplate();
 
 			// Reset cached field values templates before processing.
@@ -154,7 +147,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		},
 
 		/**
-		 * Return an HTML template for a select with all the fields names.
+		 * Return an HTML template for a select with all the field names.
 		 *
 		 * Doing a jQuery-DOM and copying the underlying HTML makes rendering
 		 * twice as fast.
@@ -162,6 +155,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 * @since 1.6.0.2
 		 */
 		setFieldsListTemplate() {
+			// language=HTML
 			const $fieldsListTemplate = $( '<select>' )
 				.append( $( '<option>', { value: '', text: wpforms_builder.select_field } ) );
 
@@ -196,12 +190,13 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 * @return {string} HTML template.
 		 */
 		getFieldValuesListTemplate( fields, fieldSelected ) {
-			// Return cached template if possible.
+			// Return the cached template if possible.
 			if ( updater.fieldValuesListTemplates[ fieldSelected ] ) {
 				return updater.fieldValuesListTemplates[ fieldSelected ];
 			}
 
 			const items = wpf.orders.choices[ 'field_' + fieldSelected ],
+				// language=HTML
 				$select = $( '<select>' ),
 				field = Object.values( wpf.getFields() ).find( ( el ) => el.id.toString() === fieldSelected.toString() );
 
@@ -222,27 +217,22 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 *
 		 * @since 1.6.0.2
 		 */
-		updateConditionalRuleRows: function() {
-
-			var rowsToProcess  = updater.$ruleRows.length;
-
+		updateConditionalRuleRows() {
 			/**
 			 * Split all the rows in sets of at most 20 elements.
 			 *
-			 * The set of 20 rows would then be processed as soon as possible but without blocking
+			 * The set of 20 rows would then be processed as soon as possible, but without blocking
 			 * the main thread (thanks to setTimeout).
 			 *
-			 * When all the groups are processed the function finalize is called.
+			 * When all the groups are processed, the function finalize is called.
 			 *
 			 * @since 1.6.0.2
 			 */
 			helpers.arraySplitIntoChunks( updater.$ruleRows, 20 ).map( function( elements ) {
 				setTimeout( function() {
-					for ( var i = 0; i < elements.length; ++i ) {
-						updater.updateConditionalRuleRow( elements[i] );
-						--rowsToProcess;
+					for ( let i = 0; i < elements.length; ++i ) {
+						updater.updateConditionalRuleRow( elements[ i ] );
 					}
-
 				}, 0 );
 
 				return elements;
@@ -254,38 +244,37 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 *
 		 * @since 1.6.0.2
 		 *
-		 * @param {object} row Element container.
+		 * @param {Object} row Element container.
 		 */
-		updateConditionalRuleRow: function( row ) {
-
-			var $row           = $( row ),
-				fieldID        = $row.attr( 'data-field-id' ),
-				$fields        = $row.find( '.wpforms-conditional-field' ),
-				fieldSelected  = $fields.val(),
-				$value         = $row.find( '.wpforms-conditional-value' );
+		updateConditionalRuleRow( row ) {
+			const $row = $( row ),
+				fieldID = $row.attr( 'data-field-id' ),
+				$fields = $row.find( '.wpforms-conditional-field' ),
+				fieldSelected = $fields.val();
 
 			// Clone template
-			$fields[0].innerHTML = updater.fieldsListTemplate;
+			$fields[ 0 ].innerHTML = updater.fieldsListTemplate;
 
 			// Remove the current item
 			$fields.find( '#option-' + fieldID ).remove();
 
 			if ( ! fieldSelected ) {
-
-				// Remove all ids properties.
+				// Remove all id properties.
 				// Querying the DOM by ID is much faster. It is safe to remove the IDs now.
 				$fields.find( 'option' ).removeAttr( 'id' );
 				return;
 			}
 
-			// Check if previous selected field exists in the new options added.
+			const $value = $row.find( '.wpforms-conditional-value' );
+
+			// Check if the previous selected field exists in the new options added.
 			if ( $fields.find( '#option-' + fieldSelected ).length ) {
 				updater.restorePreviousRuleRowSelection( $row, $fields, fieldSelected, $value );
 			} else {
 				updater.removeRuleRow( $row );
 			}
 
-			// Remove all ids properties.
+			// Remove all id properties.
 			// Querying the DOM by ID is much faster. It is safe to remove the IDs now.
 			$fields.find( 'option' ).removeAttr( 'id' );
 			$value.find( 'option' ).removeAttr( 'id' );
@@ -296,17 +285,14 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 *
 		 * @since 1.6.7
 		 *
-		 * @param {object} fieldData Field Data object.
+		 * @param {Object} fieldData Field Data object.
 		 */
-		fieldDeleteConfirmAlert: function( fieldData ) {
-
-			var alert = wpforms_builder.conditionals_change + '<br>',
+		fieldDeleteConfirmAlert( fieldData ) {
+			let alert = wpforms_builder.conditionals_change + '<br>',
 				updateAlert;
 
 			$( '.wpforms-conditional-field' ).each( function() {
-
 				if ( fieldData.id === Number( $( this ).val() ) ) {
-
 					if ( fieldData.choiceId && fieldData.choiceId !== Number( $( this ).closest( '.wpforms-conditional-row' ).find( '.wpforms-conditional-value' ).val() ) ) {
 						return;
 					}
@@ -319,7 +305,6 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 			} );
 
 			if ( updateAlert ) {
-
 				fieldData.message = '<strong>' + fieldData.message + '</strong>' + '<br><br>' + alert;
 			}
 		},
@@ -351,55 +336,49 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 *
 		 * @since 1.6.0.2
 		 *
-		 * @param {object} $row  		 Row container.
-		 * @param {object} $fields		 Field object.
+		 * @param {Object} $row          Row container.
+		 * @param {Object} $fields       Field object.
 		 * @param {string} fieldSelected Field selected value.
-		 * @param {object} $value		 Field Value.
+		 * @param {Object} $value        Field Value.
 		 */
-		restorePreviousRuleRowSelection: function( $row, $fields, fieldSelected, $value ) {
+		restorePreviousRuleRowSelection( $row, $fields, fieldSelected, $value ) {
+			let valueSelected = '';
 
-			var valueSelected  = '';
-
-			// Exists, so restore previous selected value
+			// Exists, so restore the previous selected value
 			$fields.find( '#option-' + fieldSelected ).prop( 'selected', true );
 
 			if ( ! $value.length || ! $value.is( 'select' ) ) {
 				return;
 			}
 
-			// Since the field exist and was selected, now we must proceed
-			// to updating the field values. Luckily, we only have to do
-			// this for fields that leverage a select element.
-
+			// Since the field exists and was selected, now we must proceed to update the field values.
+			// Luckily, we only have to do this for fields that leverage a select element.
 			// Grab the currently selected value to restore later
 			valueSelected = $value.val();
 
-			$value[0].innerHTML = updater.getFieldValuesListTemplate( updater.conditionalFields, fieldSelected );
+			$value[ 0 ].innerHTML = updater.getFieldValuesListTemplate( updater.conditionalFields, fieldSelected );
 
-			// Check if previous selected value exists in the new options added
+			// Check if the previous selected value exists in the new options added
 			if ( $value.find( '#choice-' + valueSelected ).length ) {
-
 				$value.find( '#choice-' + valueSelected ).prop( 'selected', true );
-
 			}
 		},
 
 		/**
-		 * Check if previous selected field exists in the new options added.
+		 * Check if the previous selected field exists in the new options added.
 		 *
 		 * @since 1.6.0.2
 		 *
-		 * @param {object} $row Row container.
+		 * @param {Object} $row Row container.
 		 */
-		removeRuleRow: function( $row ) {
-
-			// Since previously selected field no longer exists, this
+		removeRuleRow( $row ) {
+			// Since the previously selected field no longer exists, this
 			// means this rule is now invalid. So the rule gets
 			// deleted as long as it isn't the only rule remaining.
-			var $group = $row.closest( '.wpforms-conditional-group' );
+			const $group = $row.closest( '.wpforms-conditional-group' );
 
 			if ( $group.find( 'table >tbody >tr' ).length === 1 ) {
-				var $groups = $row.closest( '.wpforms-conditional-groups' );
+				const $groups = $row.closest( '.wpforms-conditional-groups' );
 				if ( $groups.find( '.wpforms-conditional-group' ).length > 1 ) {
 					$group.remove();
 				} else {
@@ -412,7 +391,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		},
 
 		/**
-		 * Return HTML with error Message.
+		 * Return HTML with an error message.
 		 *
 		 * @since 1.6.0.2
 		 *
@@ -436,18 +415,16 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		},
 	};
 
-	var app = {
+	const app = {
 
 		/**
 		 * Start the engine.
 		 *
 		 * @since 1.0.0
 		 */
-		init: function() {
-
+		init() {
 			// Document ready
 			$( WPFormsConditionals.ready );
-
 		},
 
 		/**
@@ -455,8 +432,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 *
 		 * @since 1.0.0
 		 */
-		ready: function() {
-
+		ready() {
 			WPFormsConditionals.bindUIActions();
 		},
 
@@ -472,7 +448,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		getLayoutFieldsToExclude( $element ) {
 			const layoutID = $element.parents( '.wpforms-field-option' ).find( '.wpforms-field-option-hidden-id' ).val();
 			const formData = wpf.formObject( '#wpforms-field-options' );
-			const layoutFieldData = formData?.fields[ layoutID ] ?? [];
+			const layoutFieldData = layoutID && formData?.fields?.[ layoutID ] ? formData.fields[ layoutID ] : [];
 			const fieldsToExclude = {};
 
 			Object.values( layoutFieldData[ 'columns-json' ] ?? {} ).forEach( ( column ) => {
@@ -493,9 +469,8 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 *
 		 * @since 1.0.0
 		 */
-		bindUIActions: function() {
-
-			var $builder = $( '#wpforms-builder' );
+		bindUIActions() {
+			const $builder = $( '#wpforms-builder' );
 
 			// Conditional support toggle.
 			$builder.on( 'change', '.wpforms-conditionals-enable-toggle input[type=checkbox]', function( e ) {
@@ -516,7 +491,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 				WPFormsConditionals.conditionalUpdateOptions( false, fields, $block.find( '.wpforms-conditional-row' ) );
 			} );
 
-			// Conditional process field select.
+			// Conditional process field selects.
 			$builder.on( 'change', '.wpforms-conditional-field', function( e ) {
 				WPFormsConditionals.conditionalField( this, e );
 			} );
@@ -553,9 +528,12 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 * Update/refresh the conditional logic fields and associated options.
 		 *
 		 * @since 1.0.0
+		 *
+		 * @param {Object} e         Event object.
+		 * @param {Array}  allFields All fields in the form.
+		 * @param {jQuery} $rows     Conditional rule rows.
 		 */
-		conditionalUpdateOptions: function( e, allFields, $rows ) {
-
+		conditionalUpdateOptions( e, allFields, $rows ) {
 			if ( wpf.empty( allFields ) ) {
 				return;
 			}
@@ -575,17 +553,16 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 * @since 1.0.0
 		 * @since 1.7.5 Added `wpformsRemoveConditionalLogicRules` trigger.
 		 *
-		 * @param {object} el Conditional Logic input (toggle).
-		 * @param {object} e  Event object.
+		 * @param {Object} el Conditional Logic input (toggle).
+		 * @param {Object} e  Event object.
 		 */
-		conditionalToggle: function( el, e ) {
-
+		conditionalToggle( el, e ) {
 			e.preventDefault();
 
-			var $this      = $( el ),
-				$block     = $this.closest( '.wpforms-conditional-block' ),
+			const $this = $( el ),
+				$block = $this.closest( '.wpforms-conditional-block' ),
 				logicBlock = wp.template( 'wpforms-conditional-block' ),
-				data       = {
+				data = {
 					fieldID    : $this.closest( '.wpforms-field-option-row' ).data( 'field-id' ),
 					fieldName  : $this.data( 'name' ),
 					actions    : $this.data( 'actions' ),
@@ -594,7 +571,6 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 				};
 
 			if ( $this.is( ':checked' ) ) {
-
 				// Add conditional logic rules.
 				$block.append( logicBlock( data ) );
 
@@ -603,7 +579,6 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 
 				WPFormsConditionals.conditionalUpdateOptions( false, fields, $block.find( '.wpforms-conditional-row' ) );
 			} else {
-
 				// Remove conditional logic rules.
 				$.confirm( {
 					title: false,
@@ -616,8 +591,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 							text: wpforms_builder.ok,
 							btnClass: 'btn-confirm',
 							keys: [ 'enter' ],
-							action: function() {
-
+							action() {
 								// Prompt
 								$block.find( '.wpforms-conditional-groups' ).remove();
 
@@ -626,8 +600,7 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 						},
 						cancel: {
 							text: wpforms_builder.cancel,
-							action: function() {
-
+							action() {
 								$this.prop( 'checked', true );
 							},
 						},
@@ -641,26 +614,24 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param {object} el Conditional Logic input (toggle).
-		 * @param {object} e  Event object.
+		 * @param {Object} el Conditional Logic input (toggle).
+		 * @param {Object} e  Event object.
 		 */
-		conditionalField: function( el, e ) {
-
+		conditionalField( el, e ) { // eslint-disable-line complexity
 			e.preventDefault();
 
-			var $this     = $( el ),
-				$rule     = $this.parent().parent(),
+			const $this = $( el ),
+				$rule = $this.parent().parent(),
 				$operator = $rule.find( '.wpforms-conditional-operator' ),
-				operator  = $operator.find( 'option:selected' ).val(),
-				data      = WPFormsConditionals.conditionalData( $this ),
-				name      = data.inputName + '[' + data.groupID + '][' + data.ruleID + '][value]',
-				$element;
+				operator = $operator.find( 'option:selected' ).val(),
+				data = WPFormsConditionals.conditionalData( $this ),
+				name = data.inputName + '[' + data.groupID + '][' + data.ruleID + '][value]';
+			let $element;
 
 			if ( ! data.field ) {
-
 				// Placeholder has been selected.
+				// language=HTML
 				$element = $( '<select>' );
-
 			} else if (
 				data.field.type === 'select' ||
 				data.field.type === 'radio' ||
@@ -669,36 +640,37 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 				data.field.type === 'payment-checkbox' ||
 				data.field.type === 'payment-select'
 			) {
-
 				// Selector type fields use select elements.
-				$element = $( '<select>' ).attr( { name: name, class: 'wpforms-conditional-value' } ); // jshint ignore:line
+
+				// language=HTML
+				$element = $( '<select>' ).attr( { name, class: 'wpforms-conditional-value' } ); // jshint ignore:line
 				$element.append( $( '<option>', { value: '', text : wpforms_builder.select_choice } ) );
 				if ( data.field.choices ) {
-					for ( var key in wpf.orders.choices[ 'field_' + data.field.id ] ) {
-						var choiceKey = wpf.orders.choices[ 'field_' + data.field.id ][ key ],
-							label = typeof data.field.choices[ choiceKey ].label !== 'undefined' && data.field.choices[ choiceKey ].label.toString().trim() !== '' ?
-								wpf.sanitizeHTML( data.field.choices[ choiceKey ].label.toString().trim() ) :
-								wpforms_builder.choice_empty_label_tpl.replace( '{number}', choiceKey );
+					for ( const key in wpf.orders.choices[ 'field_' + data.field.id ] ) {
+						const choiceKey = wpf.orders.choices[ 'field_' + data.field.id ][ key ],
+							label = typeof data.field.choices[ choiceKey ].label !== 'undefined' && data.field.choices[ choiceKey ].label.toString().trim() !== ''
+								? wpf.sanitizeHTML( data.field.choices[ choiceKey ].label.toString().trim() )
+								: wpforms_builder.choice_empty_label_tpl.replace( '{number}', choiceKey );
 						$element.append( $( '<option>', { value: choiceKey, text: wpf.sanitizeHTML( label ) } ) );
 					}
 				}
 				$operator.find( "option:not([value='=='],[value='!='],[value='e'],[value='!e'])" ).prop( 'disabled', true ).prop( 'selected', false ); // jshint ignore:line
-
 			} else {
-
 				// Text type fields (everything else) use text inputs.
 
-				// Determine input type.
-				var inputType = 'text';
+				// Determine an input type.
+				let inputType = 'text';
+
 				if ( 'rating' === data.field.type || 'net_promoter_score' === data.field.type || 'number-slider' === data.field.type ) {
 					inputType = 'number';
 				}
-				$element = $( '<input>' ).attr( { type: inputType, name: name, class: 'wpforms-conditional-value' } ); // jshint ignore:line
+
+				// language=HTML
+				$element = $( '<input>' ).attr( { type: inputType, name, class: 'wpforms-conditional-value' } ); // jshint ignore:line
 				$operator.find( 'option' ).prop( 'disabled', false );
 			}
 
 			if ( operator === 'e' || operator === '!e' ) {
-
 				// Empty/not empty doesn't use input, so we disable it.
 				$element.prop( 'disabled', true );
 			}
@@ -710,14 +682,16 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 * Process conditional field.
 		 *
 		 * @since 1.2.0
+		 *
+		 * @param {HTMLElement} el Conditional Logic input (toggle).
+		 * @param {Object}      e  Event object.
 		 */
-		conditionalOperator: function( el, e ) {
-
+		conditionalOperator( el, e ) {
 			e.preventDefault();
 
-			var $this    = $( el ),
-				$rule    = $this.parent().parent(),
-				$value   = $rule.find( '.wpforms-conditional-value' ),
+			const $this = $( el ),
+				$rule = $this.parent().parent(),
+				$value = $rule.find( '.wpforms-conditional-value' ),
 				operator = $this.find( 'option:selected' ).val();
 
 			if ( operator === 'e' || operator === '!e' ) {
@@ -736,22 +710,26 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 * Add new conditional rule.
 		 *
 		 * @since 1.0.0
+		 *
+		 * @param {HTMLElement} el Conditional Logic input (toggle).
+		 * @param {Object}      e  Event object.
 		 */
-		conditionalRuleAdd: function( el, e ) {
-
+		conditionalRuleAdd( el, e ) {
 			e.preventDefault();
 
-			var $this     = $( el ),
-				$group    = $this.closest( '.wpforms-conditional-group' ),
-				$rule     = $group.find( 'tr' ).last(),
-				$newRule  = $rule.clone(),
-				$field    = $newRule.find( '.wpforms-conditional-field' ),
+			const $this = $( el ),
+				$group = $this.closest( '.wpforms-conditional-group' ),
+				$rule = $group.find( 'tr' ).last(),
+				$newRule = $rule.clone(),
+				$field = $newRule.find( '.wpforms-conditional-field' ),
 				$operator = $newRule.find( '.wpforms-conditional-operator' ),
-				data      = WPFormsConditionals.conditionalData( $field ),
-				ruleID    = Number( data.ruleID ) + 1,
-				name      = data.inputName + '[' + data.groupID + '][' + ruleID + ']';
+				data = WPFormsConditionals.conditionalData( $field ),
+				ruleID = Number( data.ruleID ) + 1,
+				name = data.inputName + '[' + data.groupID + '][' + ruleID + ']';
 
 			$newRule.find( 'option:selected' ).prop( 'selected', false );
+
+			// language=HTML
 			$newRule.find( '.value' ).empty().append( $( '<select>' ) );
 			$field.attr( 'name', name + '[field]' ).attr( 'data-ruleid', ruleID );
 			$operator.attr( 'name', name + '[operator]' );
@@ -759,21 +737,23 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		},
 
 		/**
-		 * Delete conditional rule. If the only rule in group then group will
-		 * also be removed.
+		 * Delete conditional rule.
+		 * If the only rule in a group, then a group will also be removed.
 		 *
 		 * @since 1.0.0
+		 *
+		 * @param {HTMLElement} el Conditional Logic input (toggle).
+		 * @param {Object}      e  Event object.
 		 */
-		conditionalRuleDelete: function( el, e ) {
-
+		conditionalRuleDelete( el, e ) {
 			e.preventDefault();
 
-			var $this = $( el ),
+			const $this = $( el ),
 				$group = $this.closest( '.wpforms-conditional-group' ),
-				$rows  = $group.find( 'table >tbody >tr' );
+				$rows = $group.find( 'table >tbody >tr' );
 
 			if ( $rows && $rows.length === 1 ) {
-				var $groups = $this.closest( '.wpforms-conditional-groups' );
+				const $groups = $this.closest( '.wpforms-conditional-groups' );
 				if ( $groups.find( '.wpforms-conditional-group' ).length > 1 ) {
 					$group.remove();
 				} else {
@@ -787,34 +767,37 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		},
 
 		/**
-		 * Add new conditional group.
+		 * Add a new conditional group.
 		 *
 		 * @since 1.0.0
+		 *
+		 * @param {HTMLElement} el Conditional Logic input (toggle).
+		 * @param {Object}      e  Event object.
 		 */
-		conditionalGroupAdd: function( el, e ) {
-
+		conditionalGroupAdd( el, e ) {
 			e.preventDefault();
 
-			var $this      = $( el ),
+			const $this = $( el ),
 				$groupLast = $this.parent().find( '.wpforms-conditional-group' ).last(),
-				$newGroup  = $groupLast.clone();
+				$newGroup = $groupLast.clone();
 
 			$newGroup.find( 'tr' ).slice( 1 ).remove();
 
-			var $field    = $newGroup.find( '.wpforms-conditional-field' ),
+			const $field = $newGroup.find( '.wpforms-conditional-field' ),
 				$operator = $newGroup.find( '.wpforms-conditional-operator' ),
-				data      = WPFormsConditionals.conditionalData( $field ),
-				groupID   = Number( data.groupID ) + 1,
-				ruleID    = 0,
-				name      = data.inputName + '[' + groupID + '][' + ruleID + ']';
+				data = WPFormsConditionals.conditionalData( $field ),
+				groupID = Number( data.groupID ) + 1,
+				ruleID = 0,
+				name = data.inputName + '[' + groupID + '][' + ruleID + ']';
 
 			$newGroup.find( 'option:selected' ).prop( 'selected', false );
+
+			// language=HTML
 			$newGroup.find( '.value' ).empty().append( $( '<select>' ) );
 			$field.attr( 'name', name + '[field]' ).attr( 'data-ruleid', ruleID ).attr( 'data-groupid', groupID );
 			$operator.attr( 'name', name + '[operator]' );
 			$this.before( $newGroup );
 		},
-
 
 		//--------------------------------------------------------------------//
 		// Helper functions
@@ -824,11 +807,14 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 		 * Return various data for the conditional field.
 		 *
 		 * @since 1.0.0
+		 *
+		 * @param {HTMLElement} el Conditional Logic input (toggle).
+		 *
+		 * @return {Object} Data object containing fields, inputBase, fieldID, ruleID, groupID, selectedID and field.
 		 */
-		conditionalData: function( el ) {
-
-			var $this = $( el );
-			var data  = {
+		conditionalData( el ) {
+			const $this = $( el );
+			const data = {
 				fields     : wpf.getFields( false, true ),
 				inputBase  : $this.closest( '.wpforms-conditional-row' ).attr( 'data-input-name' ),
 				fieldID    : $this.closest( '.wpforms-conditional-row' ).attr( 'data-field-id' ),
@@ -844,12 +830,12 @@ var WPFormsConditionals = window.WPFormsConditionals || ( function( document, wi
 			} else {
 				data.field = false;
 			}
+
 			return data;
 		},
 	};
 
 	return app;
-
 }( document, window, jQuery ) );
 
 WPFormsConditionals.init();

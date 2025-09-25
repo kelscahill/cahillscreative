@@ -36,7 +36,7 @@ class Notifications extends \WPForms\Pro\Forms\Fields\Base\Notifications {
 
 		$ignore = (bool) $ignore;
 
-		if ( empty( $field['id'] ) || strpos( $field['id'], '_' ) ) {
+		if ( ( empty( $field['id'] ) && ! is_numeric( $field['id'] ) ) || strpos( $field['id'], '_' ) ) {
 			return $ignore;
 		}
 
@@ -219,7 +219,7 @@ class Notifications extends \WPForms\Pro\Forms\Fields\Base\Notifications {
 	 *
 	 * @return string
 	 */
-	private function get_rows(): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
+	private function get_rows(): string { // phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded
 
 		$rows = isset( $this->field['columns'] ) && is_array( $this->field['columns'] ) ? LayoutHelpers::get_row_data( $this->field ) : [];
 
@@ -277,7 +277,7 @@ class Notifications extends \WPForms\Pro\Forms\Fields\Base\Notifications {
 	 *
 	 * @return string
 	 */
-	private function get_columns(): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
+	private function get_columns(): string { // phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded
 
 		if ( ! isset( $this->field['columns'] ) ) {
 			return '';

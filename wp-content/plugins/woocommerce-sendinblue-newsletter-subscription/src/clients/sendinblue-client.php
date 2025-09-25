@@ -90,11 +90,13 @@ class SendinblueClient
 	public const IS_CATEGORY_SYNC_ENABLED               = "isCategoryAutoSyncEnabled";
 	public const IS_ORDERS_SYNC_ENABLED                 = "isOrdersAutoSyncEnabled";
 	public const IS_ECOMMERCE_ENABLED                   = "isEcommerceEnabled";
+	public const IS_BACK_IN_STOCK_ENABLED               = 'isBackInStockSyncEnabled';
 
 	private const INTEGRATION_BACKEND_URL               = 'https://plugin.brevo.com/integrations/api';
 	private const HTTP_METHOD_GET                       = 'GET';
 	private const HTTP_METHOD_POST                      = 'POST';
 	private const INTEGRATION_MIGRATION_URL             = '/migrate/woocommerce';
+	public const BACK_IN_STOCK           			    = '/product_subscription';
 	private const USER_AGENT                            = 'sendinblue_plugins/woocommerce_common';
 	private const ECOMMERCE_PATH                        = '/ecommerce/';
 
@@ -166,5 +168,21 @@ class SendinblueClient
 		);
 
 		return $this->post(self::ECOMMERCE_PATH . $user_connection_id, $data);
+	}
+	public function notifyBackInStock($email, $productId)
+	{
+		$user_connection_id = get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null);
+		if (empty($user_connection_id)) {
+			return ['code' => 400, 'data' => ['error' => 'User connection ID missing']];
+		}
+
+		$data = [
+			'email_id' => $email,
+			'id' => (string)$productId
+		];
+
+		$endpoint = '/events/' . $user_connection_id . '/product_subscription';
+
+		return $this->post($endpoint, $data);
 	}
 }

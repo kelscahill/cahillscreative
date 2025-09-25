@@ -362,7 +362,7 @@ class PrintPreview {
 	 *
 	 * @return string
 	 */
-	private function get_formatted_field_value( $field ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_formatted_field_value( $field ) {
 
 		// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
 		/** This filter is documented in src/SmartTags/SmartTag/FieldHtmlId.php.*/
@@ -414,7 +414,7 @@ class PrintPreview {
 	 *
 	 * @return string
 	 */
-	private function get_choices_field_value( $field ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_choices_field_value( $field ) {
 
 		$choices_html    = '';
 		$choices         = $this->form_data['fields'][ $field['id'] ]['choices'];

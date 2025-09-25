@@ -100,6 +100,7 @@ class AdminManager
     {
         $is_checkout = is_checkout();
         $is_account_page = is_account_page();
+        $ajax_url = admin_url('admin-ajax.php');
         $output = '<script type="text/javascript">
                     document.body.addEventListener("blur", function(event) {
                         if (event.target.matches("input[type=\'email\']")) {
@@ -122,7 +123,7 @@ class AdminManager
                                 subscription_location = "sign-up";
                             }
                             var xhrobj = new XMLHttpRequest();
-                            xhrobj.open("POST","/wp-admin/admin-ajax.php");
+                            xhrobj.open("POST", "' . esc_url($ajax_url) . '", true);
                             var params = "action=the_ajax_hook&tracking_email=" + encodeURIComponent(event.target.value) + "&subscription_location=" + encodeURIComponent(subscription_location);
                             xhrobj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                             xhrobj.send(params);
@@ -140,7 +141,7 @@ class AdminManager
     public function install_ma_and_chat_script()
     {
         $settings = $this->api_manager->get_settings();
-
+        
         if (
             empty($settings) ||
             !$settings[SendinblueClient::IS_PAGE_TRACKING_ENABLED] ||
@@ -148,14 +149,28 @@ class AdminManager
         ) {
             return;
         }
-        $output = '<script src="https://cdn.brevo.com/js/sdk-loader.js" async></script>';
-        $output .= '<script>window.Brevo = window.Brevo || [];
-                        Brevo.push([
-                            "init",
-                        {
-                            client_key:"' . $settings[SendinblueClient::MA_KEY] .'",';
-        $output .= 'email_id : "' . $this->cart_events_manager->get_email_id() . '",},]);</script>';
 
+        $emailId = $this->cart_events_manager->get_email_id();
+
+        $site_url = get_site_url();
+        $plugin_dir = 'woocommerce-sendinblue-newsletter-subscription';
+        $customDomain = $site_url . "\/wp-content\/plugins\/" . $plugin_dir . "\/";
+
+        $output = '<script type="text/javascript" src="https://cdn.brevo.com/js/sdk-loader.js" async></script>';
+
+        $output .= '<script type="text/javascript">
+            window.Brevo = window.Brevo || [];
+            window.Brevo.push(["init", {
+                client_key: "' . $settings[SendinblueClient::MA_KEY] . '",
+                email_id: "' . $emailId . '",
+                push: {
+                    customDomain: "' . $customDomain . '"' .
+                    (!empty($emailId) ? ',
+                    userId: "' . $emailId . '"' : '') . '
+                }
+            }]);
+        </script>';
+        
         echo $output;
     }
 

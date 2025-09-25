@@ -115,6 +115,12 @@ class Notifications extends \WPForms\Pro\Forms\Fields\Base\Notifications {
 			return '';
 		}
 
+		$display = $this->field['display'] ?? 'rows';
+
+		if ( $display === 'rows' && $this->is_compact() ) {
+			$blocks = $this->prepare_compact_blocks( $blocks );
+		}
+
 		$repeater_message = '';
 
 		foreach ( $blocks as $key => $rows ) {
@@ -123,7 +129,15 @@ class Notifications extends \WPForms\Pro\Forms\Fields\Base\Notifications {
 
 			$fields_message = '';
 
-			foreach ( $rows as $row ) {
+			foreach ( $rows as $row_key => $row ) {
+				// Add additional rows for compact display.
+				if ( $this->is_compact() ) {
+					$column_class = $row_key === 0 && $display === 'rows' ? 'wpforms-first-row' : '';
+					$column_class = $row_key === count( $rows ) - 1 && $display === 'rows' ? 'wpforms-last-row' : $column_class;
+
+					$fields_message .= sprintf( '<tr class="wpforms-layout-table-row wpforms-layout-table-row-display-%s %s"></tr>', sanitize_html_class( $display ), sanitize_html_class( $column_class ) );
+				}
+
 				foreach ( $row as $column ) {
 					if ( ! isset( $column['field'] ) ) {
 						continue;
@@ -143,6 +157,42 @@ class Notifications extends \WPForms\Pro\Forms\Fields\Base\Notifications {
 		}
 
 		return $repeater_message;
+	}
+
+	/**
+	 * Check if the current template is compact.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @return bool
+	 */
+	private function is_compact(): bool {
+
+		return $this->get_template() === 'compact';
+	}
+
+	/**
+	 * Prepare blocks for compact display.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @param array $blocks Blocks data.
+	 *
+	 * @return array
+	 */
+	private function prepare_compact_blocks( array $blocks ): array {
+
+		$compact_blocks = [];
+
+		foreach ( $blocks as $rows ) {
+			foreach ( $rows as $row ) {
+				foreach ( $row as $column_key => $column ) {
+					$compact_blocks[ $column_key ][] = $column;
+				}
+			}
+		}
+
+		return [ $compact_blocks ];
 	}
 
 	/**

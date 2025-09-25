@@ -165,6 +165,18 @@ abstract class Notifications {
 	}
 
 	/**
+	 * Get the current email template.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @return string
+	 */
+	protected function get_template(): string {
+
+		return $this->notifications->get_current_template();
+	}
+
+	/**
 	 * Get the layout field plain text markup.
 	 *
 	 * @since 1.9.3

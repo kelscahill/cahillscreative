@@ -130,7 +130,7 @@ class Helpers {
 	 *
 	 * @return array
 	 */
-	public static function get_previewable_form_data( array $form_data, array $field ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public static function get_previewable_form_data( array $form_data, array $field ): array {
 
 		$field_settings = $form_data['fields'][ $field['id'] ] ?? [];
 

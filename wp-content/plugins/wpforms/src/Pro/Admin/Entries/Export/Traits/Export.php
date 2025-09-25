@@ -68,7 +68,7 @@ trait Export {
 	 *
 	 * @return bool
 	 */
-	private function is_multiple_input( $field ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function is_multiple_input( $field ) {
 
 		/**
 		 * Filter to allow multiple input for specific fields.

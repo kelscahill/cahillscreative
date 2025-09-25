@@ -1,4 +1,20 @@
 /* global wpforms_builder, wpforms_education, wpf, WPFormsBuilder */
+
+/**
+ * @param wpforms_builder.empty_label_alternative_text
+ * @param wpforms_builder.file_upload.all_user_roles_selected
+ * @param wpforms_builder.file_upload.password_empty_error_text
+ * @param wpforms_builder.file_upload.password_empty_error_title
+ * @param wpforms_builder.file_upload.password_match_error_text
+ * @param wpforms_builder.file_upload.password_match_error_title
+ * @param wpforms_builder.incompatible_addon_text
+ * @param wpforms_builder.notification_error_text
+ * @param wpforms_builder.notification_error_title
+ * @param wpforms_builder.notification_warning_text
+ * @param wpforms_builder.notification_warning_title
+ */
+
+// noinspection ES6ConvertVarToLetConst
 /**
  * Form Builder Field File Upload module.
  *
@@ -70,6 +86,7 @@ WPForms.Admin.Builder.FieldFileUpload = WPForms.Admin.Builder.FieldFileUpload ||
 		events() {
 			el.$builder
 				.on( 'change', '.wpforms-file-upload-media-library', app.mediaLibraryOptionHandler )
+				.on( 'change', '.wpforms-camera-media-library', app.mediaLibraryOptionHandler )
 				.on( 'change', '.wpforms-file-upload-access-restrictions', app.accessRestrictionsOptionHandler )
 				.on( 'change', '.wpforms-file-upload-password-restrictions', app.passwordRestrictionsOptionHandler )
 				.on( 'change', '.wpforms-file-upload-user-restrictions', app.userRestrictionsOptionHandler )
@@ -109,7 +126,7 @@ WPForms.Admin.Builder.FieldFileUpload = WPForms.Admin.Builder.FieldFileUpload ||
 		},
 
 		/**
-		 * Initialize user restrictions selects for a specific field after it has been added.
+		 * Initialize user restrictions select for a specific field after it has been added.
 		 *
 		 * @since 1.9.4
 		 *
@@ -118,7 +135,7 @@ WPForms.Admin.Builder.FieldFileUpload = WPForms.Admin.Builder.FieldFileUpload ||
 		 * @param {string} type    The type of the field.
 		 */
 		initFieldUserRestrictionsSelects( event, fieldId, type ) {
-			if ( type !== 'file-upload' ) {
+			if ( type !== 'file-upload' && type !== 'camera' ) {
 				return;
 			}
 
@@ -127,7 +144,7 @@ WPForms.Admin.Builder.FieldFileUpload = WPForms.Admin.Builder.FieldFileUpload ||
 		},
 
 		/**
-		 * Initialize user names select with AJAX search.
+		 * Initialize usernames select with AJAX search.
 		 *
 		 * @since 1.9.4
 		 *
@@ -288,7 +305,7 @@ WPForms.Admin.Builder.FieldFileUpload = WPForms.Admin.Builder.FieldFileUpload ||
 		},
 
 		/**
-		 * Handle the options change event.
+		 * Handle the option change event.
 		 *
 		 * @since 1.9.4
 		 *
@@ -402,7 +419,7 @@ WPForms.Admin.Builder.FieldFileUpload = WPForms.Admin.Builder.FieldFileUpload ||
 		 * @param {Event} event The event object.
 		 */
 		checkNotificationsBeforeSave( event ) {
-			const fileUploadOptions = $( '.wpforms-field-option-file-upload' );
+			const fileUploadOptions = $( '.wpforms-field-option-file-upload, .wpforms-field-option-camera' );
 
 			if ( fileUploadOptions.length < 1 ) {
 				return;
@@ -441,7 +458,7 @@ WPForms.Admin.Builder.FieldFileUpload = WPForms.Admin.Builder.FieldFileUpload ||
 		 * @param {Event} event The event object.
 		 */
 		checkPasswordMatchBeforeSave( event ) {
-			const fileUploadOptions = $( '.wpforms-field-option-file-upload' );
+			const fileUploadOptions = $( '.wpforms-field-option-file-upload, .wpforms-field-option-camera' );
 
 			if ( fileUploadOptions.length < 1 ) {
 				return;
@@ -677,7 +694,7 @@ WPForms.Admin.Builder.FieldFileUpload = WPForms.Admin.Builder.FieldFileUpload ||
 		 * @since 1.9.4
 		 */
 		notificationsToggle() {
-			const choicesIds = WPForms.Admin.Builder.Notifications.choicesJSHelperMethods.getFormFields( [ 'file-upload' ] ).map( ( choice ) => choice.value ),
+			const choicesIds = WPForms.Admin.Builder.Notifications.choicesJSHelperMethods.getFormFields( [ 'file-upload', 'camera' ] ).map( ( choice ) => choice.value ),
 				fields = app.getNotificationsFileUploadFields();
 
 			app.handleRestrictions( fields, choicesIds );

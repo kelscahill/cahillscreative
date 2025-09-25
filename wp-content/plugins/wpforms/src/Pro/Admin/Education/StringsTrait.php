@@ -16,7 +16,7 @@ trait StringsTrait {
 	 *
 	 * @return array
 	 */
-	protected function get_js_strings(): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	protected function get_js_strings(): array {
 
 		$strings = parent::get_js_strings();
 

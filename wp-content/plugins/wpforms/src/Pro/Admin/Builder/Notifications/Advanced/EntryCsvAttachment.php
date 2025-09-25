@@ -745,7 +745,7 @@ class EntryCsvAttachment {
 		}
 
 		foreach ( $csv_content as $csv_fields ) {
-			fputcsv( $fp, $csv_fields );
+			fputcsv( $fp, $csv_fields, ',', '"', '\\' );
 		}
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
