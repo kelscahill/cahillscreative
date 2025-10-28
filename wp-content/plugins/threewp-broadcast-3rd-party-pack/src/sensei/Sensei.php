@@ -73,11 +73,14 @@ class Sensei
 		$key = 'category';
 		$old_value = $bcd->custom_fields()->get_single( $key );
 		if ( $old_value > 0 )
+		{
 			// We will be needing the equivalent category later.
 			$bcd->taxonomies()->also_sync_taxonomy( [
 				'post_type' => 'question',
 				'taxonomy' => 'question-category',
 			] );
+			$bcd->taxonomies()->use_term( $old_value );
+		}
 
 		$key = '_question_media';
 		$id = $bcd->custom_fields()->get_single( $key );

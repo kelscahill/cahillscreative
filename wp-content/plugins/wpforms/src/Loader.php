@@ -122,20 +122,6 @@ class Loader {
 			'name' => 'Forms\AntiSpam',
 			'id'   => 'anti_spam',
 		];
-
-		$this->classes[] = [
-			'name'      => 'Forms\CorruptedSubmission',
-			/**
-			 * Filters whether to load the corrupted submission reports functionality.
-			 *
-			 * @since 1.9.8
-			 *
-			 * @param bool $is_enabled Whether the corrupted submission reports are enabled. Default true.
-			 *
-			 * @return bool
-			 */
-			'condition' => (bool) apply_filters( 'wpforms_loader_corrupted_submission_enable', true ),
-		];
 	}
 
 	/**

@@ -28,7 +28,9 @@ class WP_All_Import_Pro
 		{
 			wp_defer_term_counting( false );
 			$this->debug( 'Imported post %s. Updating children.', $post_id );
-			ThreeWP_Broadcast()->api()->update_children( $post_id, [] );
+			ThreeWP_Broadcast()->api()
+				->low_priority()
+				->update_children( $post_id, [] );
 			$this->debug( 'Done updating children %s.', $post_id );
 		}
 		else

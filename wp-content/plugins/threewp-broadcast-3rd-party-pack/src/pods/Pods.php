@@ -21,6 +21,7 @@ class Pods
 		$this->add_filter( 'pods_admin_menu' );
 		$this->add_action( 'threewp_broadcast_broadcasting_started' );
 		$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
+		$this->add_action( 'delete_post' );
 	}
 
 	/**
@@ -74,6 +75,19 @@ class Pods
 	// --------------------------------------------------------------------------------------------
 
 	/**
+		@brief		Clear the pods cache when deleting posts.
+		@since		2021-10-18 19:04:29
+	**/
+	public function delete_post( $post_id )
+	{
+		if ( ! function_exists( 'pods_api' ) )
+			return;
+		$this->debug( 'Flushing cache because of post %s', $post_id );
+		$api = pods_api();
+		$api->cache_flush_pods();
+	}
+
+	/**
 		@brief		threewp_broadcast_broadcasting_before_restore_current_blog
 		@since		2017-10-06 19:55:53
 	**/
@@ -86,6 +100,8 @@ class Pods
 
 		$this->restore_fields( $bcd );
 		$this->restore_pod( $bcd );
+		$this->restore_group( $bcd );
+		$this->restore_field( $bcd );
 	}
 
 	/**
@@ -97,7 +113,7 @@ class Pods
 		$bcd = $action->broadcasting_data;
 
 		// Check that pods is active.
-		if ( ! class_exists( 'PodsMeta' ) )
+		if ( ! function_exists( 'pods_meta' ) )
 			return;
 
 		if ( ! isset( $bcd->pods ) )
@@ -118,9 +134,10 @@ class Pods
 	**/
 	public function save_fields( $bcd )
 	{
-		$podsmeta = \PodsMeta::$instance;
+		$podsmeta = pods_meta();
 		$groups = $podsmeta->groups_get( 'post_type', $bcd->post->post_type );
 		$taxonomies_to_sync = [];
+		$term_ids = [];		// The terms we are expecting.
 		foreach( $groups as $group )
 		{
 			if ( ! isset( $group[ 'fields' ] ) )
@@ -136,6 +153,9 @@ class Pods
 							$field_name = $field[ 'name' ];
 							$pick_values = $bcd->custom_fields()->get( $field_name );
 							$this->debug( 'Field %s (%s) found. Values: %s',$field[ 'type' ], $field_name , $pick_values );
+
+							if ( ! $pick_values )
+								break;
 
 							if ( count( $pick_values ) < 1 )
 								break;
@@ -162,11 +182,15 @@ class Pods
 							$this->debug( 'Field %s (%s) found.',$field[ 'type' ], $field_name );
 							$pick_values = $bcd->custom_fields()->get( $field_name );
 
+							if ( ! $pick_values )
+								break;
+
 							if ( count( $pick_values ) < 1 )
 								break;
 
 							foreach( $pick_values as $term_id )
 							{
+								$term_ids []= $term_id;		// We need to mark the terms as used.
 								$term = get_term( $term_id );
 								$taxonomy = $term->taxonomy;
 								$taxonomies_to_sync[ $taxonomy ] = $taxonomy;
@@ -190,6 +214,9 @@ class Pods
 						$this->debug( 'Field %s (%s) found.',$field[ 'type' ], $field_name );
 						$file_ids = $bcd->custom_fields()->get( $field_name );
 						$this->debug( 'File IDs: %s', $file_ids );
+
+						if ( ! $file_ids )
+							break;
 
 						if ( count( $file_ids ) < 1 )
 							break;
@@ -219,27 +246,74 @@ class Pods
 		}
 		foreach( $taxonomies_to_sync as $taxonomy_to_sync )
 			$bcd->taxonomies()->also_sync_taxonomy( $taxonomy_to_sync );
+		$bcd->taxonomies()->use_terms( $term_ids );
+	}
+
+	/**
+		@brief		Save this POD field.
+		@since		2022-04-04 16:20:21
+	**/
+	public function save_field( $bcd, $field )
+	{
+		if ( $field->post_type != '_pods_field' )
+			return;
+		$this->debug( 'Saving field %s %s', $field->ID, $field );
+		$bcd->pods->collection( '_pods_field' )->append( $field );
+	}
+
+	/**
+		@brief		Save this POD group.
+		@since		2022-04-04 16:20:21
+	**/
+	public function save_group( $bcd, $group )
+	{
+		if ( $group->post_type != '_pods_group' )
+			return;
+		$this->debug( 'Saving group %s %s', $group->ID, $group );
+		$bcd->pods->collection( '_pods_group' )->append( $group );
 	}
 
 	/**
 		@brief		Save the pod data.
 		@since		2017-10-06 20:23:10
 	**/
-	public function save_pod( $bcd )
+	public function save_pod( $bcd, $post_id = null )
 	{
-		// Find all fields for this pod.
-		$fields = get_posts( [
+		if ( ! $post_id )
+			$post_id = $bcd->post->ID;
+
+		// Find all groups fields for this pod.
+		$items = get_posts( [
 			'posts_per_page' => -1,
-			'post_parent' => $bcd->post->ID,
-			'post_type' => '_pods_field',
+			'post_parent' => $post_id,
+			'post_type' => [ '_pods_group', '_pods_field' ],
+			'order' => 'ASC',
 		] );
-		foreach( $fields as $field )
-			$bcd->pods->collection( 'fields' )->set( $field->ID, $field );
+		foreach( $items as $item )
+		{
+			$this->save_field( $bcd, $item );
+			$this->save_group( $bcd, $item );
+		}
 	}
 
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Restore
 	// --------------------------------------------------------------------------------------------
+
+	/**
+		@brief		Restore this field.
+		@since		2022-04-04 18:07:45
+	**/
+	public function restore_field( $bcd )
+	{
+		if ( $bcd->new_post->post_type != '_pods_field' )
+			return;
+		$old_group_id = $bcd->custom_fields()->get_single( 'group' );
+		$parent_group = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $old_group_id, get_current_blog_id() );
+		$bcd->custom_fields()
+			->child_fields()
+				->update_meta( 'group', $parent_group );
+	}
 
 	/**
 		@brief		Restore any pod fields for this post.
@@ -333,6 +407,19 @@ class Pods
 	}
 
 	/**
+		@brief		Restore this group.
+		@since		2022-04-04 18:07:45
+	**/
+	public function restore_group( $bcd )
+	{
+		if ( $bcd->new_post->post_type != '_pods_group' )
+			return;
+		$bcd->custom_fields()
+			->child_fields()
+				->update_meta( 'parent', $bcd->new_post->post_parent );
+	}
+
+	/**
 		@brief		Restore the pod data.
 		@since		2017-10-06 20:32:21
 	**/
@@ -341,21 +428,22 @@ class Pods
 		if ( $bcd->new_post->post_type != '_pods_pod' )
 			return;
 
-		// Restore all of the fields.
-		foreach( $bcd->pods->collection( 'fields' ) as $field_id => $field )
+		// Restore groups.
+		foreach( $bcd->pods->collection( '_pods_group' ) as $group )
 		{
-			$this->debug( 'Broadcasting field %d', $field_id );
+			$this->debug( 'Broadcasting pods group %d', $group->ID );
 			switch_to_blog( $bcd->parent_blog_id() );
-			$field_bcd = ThreeWP_Broadcast()->api()->broadcast_children( $field_id, [ $bcd->current_child_blog_id ] );
+			$field_bcd = ThreeWP_Broadcast()->api()->broadcast_children( $group->ID, [ $bcd->current_child_blog_id ] );
 			restore_current_blog();
+		}
 
-			// Modify the child field, setting the correct pod id.
-			$data = [
-				'ID' => $field_bcd->new_post( 'ID' ),
-				'post_parent' => $bcd->new_post( 'ID' ),
-			];
-			$this->debug( 'Updating child field: %s', $data );
-			wp_update_post( $data );
+		// Restore fields.
+		foreach( $bcd->pods->collection( '_pods_field' ) as $field )
+		{
+			$this->debug( 'Broadcasting pods field %d', $field->ID );
+			switch_to_blog( $bcd->parent_blog_id() );
+			$field_bcd = ThreeWP_Broadcast()->api()->broadcast_children( $field->ID, [ $bcd->current_child_blog_id ] );
+			restore_current_blog();
 		}
 
 		$this->debug( 'Flushing pods cache.' );
@@ -372,7 +460,7 @@ class Pods
 	**/
 	public function disable_pods()
 	{
-		$podsmeta = \PodsMeta::$instance;
+		$podsmeta = pods_meta();
 
 		// Remove the save post action.
 		$this->debug( 'Disabling Pods.' );

@@ -1,6 +1,8 @@
 <?php
 namespace threewp_broadcast\premium_pack\wpml;
 
+use Exception;
+
 /**
 	@brief				Add support for <a href="http://wpml.org/">ICanLocalize's WPML translation plugin</a>.
 	@plugin_group		3rd party compatability
@@ -9,6 +11,12 @@ class WPML
 extends \threewp_broadcast\premium_pack\base
 {
 	use \threewp_broadcast\premium_pack\classes\database_trait;
+
+	/**
+		@brief		Use SQL to set the object terms.
+		@since		2024-04-07 20:36:44
+	**/
+	public $use_term_sql = false;
 
 	public function _construct()
 	{
@@ -20,11 +28,15 @@ extends \threewp_broadcast\premium_pack\base
 
 		$this->add_action( 'threewp_broadcast_broadcasting_after_switch_to_blog' );
 		$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
+		$this->add_action( 'threewp_broadcast_broadcasting_modify_post', 'update_taxonomy_term_count' );
+		$this->add_action( 'threewp_broadcast_broadcasting_set_object_terms' );
+		$this->add_action( 'threewp_broadcast_broadcasting_setup', 'threewp_broadcast_broadcasting_started' );
 		$this->add_action( 'threewp_broadcast_broadcasting_started' );
 		$this->add_action( 'threewp_broadcast_collect_post_type_taxonomies' );
 		$this->add_action( 'threewp_broadcast_wp_insert_term' );
 		$this->add_action( 'threewp_broadcast_wp_update_term', 'threewp_broadcast_wp_update_term_1', 1 );
 		$this->add_action( 'threewp_broadcast_wp_update_term', 'threewp_broadcast_wp_update_term_100', 100 );
+
 
 		$this->add_action( 'icl_make_duplicate', 10, 4 );
 		$this->add_action( 'icl_pro_translation_completed' );
@@ -375,7 +387,10 @@ extends \threewp_broadcast\premium_pack\base
 	public function threewp_broadcast_broadcasting_after_switch_to_blog( $action )
 	{
 		if ( ! $this->action_check( $action ) )
+		{
+			$action->broadcast_here = false;
 			return;
+		}
 
 		if ( $this->get_site_option( 'disable_language_check' ) )
 			return $this->debug( 'Disabled language check.' );
@@ -394,7 +409,6 @@ extends \threewp_broadcast\premium_pack\base
 		// Force a switch to the correct language for the post in order to generate the terms in the correct lang.
 		$this->debug( 'Switched language to %s', $bcd->wpml->language );
 		$this->sitepress()->switch_lang( $bcd->wpml->language );
-
 	}
 
 	/**
@@ -420,6 +434,7 @@ extends \threewp_broadcast\premium_pack\base
 
 		if ( ! $bcd->new_child_created )
 		{
+			synchronize_terms( $bcd->new_post( 'ID' ), $bcd->wpml->language, true );
 			$this->debug( 'No child post was created. Do nothing more, since the translations are already linked.' );
 			return;
 		}
@@ -467,6 +482,18 @@ extends \threewp_broadcast\premium_pack\base
 		$this->debug( 'Set the element language details: %s %s %s %s', $id, $type, $trid, $bcd->wpml->language );
 
 		icl_cache_clear();
+
+		synchronize_terms( $id, $bcd->wpml->language, true );
+	}
+
+	/**
+		@brief		To bypass WPML, we have to set the terms using SQL.
+		@since		2024-04-07 20:36:02
+	**/
+	public function threewp_broadcast_broadcasting_set_object_terms( $action )
+	{
+		if ( $this->use_term_sql )
+			$action->use_sql = true;
 	}
 
 	/**
@@ -478,6 +505,17 @@ extends \threewp_broadcast\premium_pack\base
 	{
 		if ( ! $this->has_wpml() )
 			return;
+
+		// Disable the WooCommerce Multilingual plugin, to prevent it from deleting postmeta from translations on child blogs.
+		if ( class_exists( 'WCML_Synchronize_Product_Data' ) )
+		{
+			// add_action( 'deleted_post_meta', [ $this, 'delete_empty_post_meta_for_translations' ], 10, 3 );
+			$this->debug( 'Disabling WCML_Synchronize_Product_Data' );
+
+			global $woocommerce_wpml;
+			$spd = $woocommerce_wpml->sync_product_data;
+			remove_action( 'deleted_post_meta', [ $spd, 'delete_empty_post_meta_for_translations' ], 10, 3 );
+		}
 
 		$bcd = $action->broadcasting_data;
 
@@ -512,11 +550,15 @@ extends \threewp_broadcast\premium_pack\base
 
 		// Calculate the language of this post.
 		foreach( $wpml->translations as $lang => $post_id )
-			if( $post_id == $id )
+		{
+			if ( $post_id == $id )
 			{
 				$wpml->language = $lang;
+				$this->debug( 'Setting language to %s', $lang );
+				$this->sitepress()->switch_lang( $lang );
 				break;
 			}
+		}
 
 		$wpml->trid = new \stdClass;
 		$wpml->trid->$parent_blog_id = wpml_get_content_trid( $type, $id );
@@ -525,6 +567,14 @@ extends \threewp_broadcast\premium_pack\base
 			$wpml->broadcast_data->$lang = $broadcast->get_post_broadcast_data( $parent_blog_id, $element_id );
 		$this->debug( 'WPML data: %s', $wpml );
 		$bcd->wpml = $wpml;
+
+		// WPML is active and therefore cannot be trusted to set the post's terms correctly.
+		// Bypass it using SQL.
+		$this->use_term_sql = true;
+
+		// Disable the Translation Manager because it causes a fatal error
+		// Fatal error: Uncaught TypeError: array_filter(): Argument #1 ($array) must be of type array, bool given in /xxx/wp-content/plugins/sitepress-multilingual-cms/classes/translation-jobs/class-wpml-element-translation-package.php:319 Stack trace:
+		remove_all_filters( 'wpml_tm_save_post' );
 	}
 
 	public function threewp_broadcast_collect_post_type_taxonomies( $action )
@@ -557,6 +607,7 @@ extends \threewp_broadcast\premium_pack\base
 		// Why are we saving this here? Because (1) the wp_insert_term action does not supply a bcd, and (2) we might not be broadcasting at all.
 		$this->__wpml_data = $bcd->wpml;
 	}
+
 	/**
 		@brief		Recursively save the term translations into this collection.
 		@since		2017-08-09 16:05:57
@@ -567,6 +618,10 @@ extends \threewp_broadcast\premium_pack\base
 		$content_type = 'tax_' . $term->taxonomy;
 		$taxonomy = $term->taxonomy;
 		$translations = wpml_get_content_translations( $content_type, $content_id );
+
+		if ( ! is_array( $translations ) )
+			return;
+
 		foreach( $translations as $term_language => $translated_term_id )
 		{
 			$translated_term = get_term( $translated_term_id, $taxonomy );
@@ -577,6 +632,32 @@ extends \threewp_broadcast\premium_pack\base
 
 			if ( ! $translations->has( $translated_term->slug ) )
 				$this->save_term_translations( $collection, $translated_term );
+		}
+	}
+
+	/**
+		@brief		Force WPML to recount the terms.
+		@since		2021-01-11 15:46:05
+	**/
+	public function update_taxonomy_term_count( $action )
+	{
+		if ( ! $this->has_wpml() )
+			return;
+
+		$bcd = $action->broadcasting_data;
+		$wpml_wp_api = $this->sitepress()->get_wp_api();
+
+		foreach( $bcd->parent_post_taxonomies as $taxonomy => $ignore )
+		{
+			$terms = [];
+
+			// Get the new term IDs.
+			foreach( $bcd->parent_post_taxonomies[ $taxonomy ] as $old_term_id => $ignore )
+				$terms []= $bcd->terms()->get( $old_term_id );
+
+			$this->debug( 'Forcing WPML to recount the terms for taxonomy: %s, %s', $taxonomy, $terms );
+
+			$wpml_wp_api->wp_update_term_count( $terms, $taxonomy, true );
 		}
 	}
 
@@ -691,9 +772,13 @@ extends \threewp_broadcast\premium_pack\base
 	**/
 	public function threewp_broadcast_wp_update_term_1( $action )
 	{
+		if ( ! $this->has_wpml() )
+			return false;
+
 		$content_type = 'tax_' . $action->new_term->taxonomy;
-		$action->wpml_element_language_details = $this->sitepress()->get_element_language_details( $action->new_term->term_id, $content_type );
-		$this->debug( 'Saved term language as: %s', $action->wpml_element_language_details );
+		$term_language = $this->sitepress()->get_element_language_details( $action->new_term->term_id, $content_type );
+		$action->wpml_element_language_details = $term_language;
+		$this->debug( 'Saved term language as: %s', $term_language );
 	}
 
 	/**
@@ -702,10 +787,20 @@ extends \threewp_broadcast\premium_pack\base
 	**/
 	public function threewp_broadcast_wp_update_term_100( $action )
 	{
+		if ( ! $this->has_wpml() )
+			return false;
+
 		$content_type = 'tax_' . $action->new_term->taxonomy;
 		$details = $action->wpml_element_language_details;
 		$this->debug( 'Resetting term language to: %s', $details );
-		$this->sitepress()->set_element_language_details( $action->new_term->term_id, $content_type, $details->trid, $details->language_code );
+		try
+		{
+			$this->sitepress()->set_element_language_details( $action->new_term->term_id, $content_type, $details->trid, $details->language_code );
+		}
+		catch( Exception $e )
+		{
+			$this->debug( 'Warning! %s', $e->getMessage() );
+		}
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -826,4 +921,82 @@ extends \threewp_broadcast\premium_pack\base
 		global $sitepress;
 		return $sitepress;
 	}
+}
+
+/**
+ * @param int    $original_post_id
+ * @param string $lang
+ * @param bool   $duplicate sets whether missing terms should be created by duplicating the original term
+ */
+function synchronize_terms( $original_post_id, $lang, $duplicate ) {
+	global $wpml_post_translations;
+	global $sitepress;
+
+	ThreeWP_Broadcast()->debug( 'WPML: Beginning extra sync of %s', $original_post_id );
+
+	add_filter( 'wpml_disable_term_adjust_id', '__return_true' );
+
+	$wpml_post_translations->reload();
+	$translated_post_id = $wpml_post_translations->element_id_in( $original_post_id, $lang );
+	if ( (bool) $translated_post_id === true ) {
+		$taxonomies = get_post_taxonomies( $original_post_id );
+
+		foreach ( $taxonomies as $tax ) {
+			$terms_on_original = wp_get_object_terms( $original_post_id, $tax );
+			if ( is_wp_error ( $terms_on_original ) ) {
+				continue;
+			}
+
+			if ( ! $sitepress->is_translated_taxonomy( $tax ) ) {
+				if ( $sitepress->get_setting( 'sync_post_taxonomies' ) ) {
+					// Taxonomy is not translated so we can just copy from the original
+					foreach ( $terms_on_original as $key => $term ) {
+						$terms_on_original[ $key ] = $term->term_id;
+					}
+					wp_set_object_terms( $translated_post_id, $terms_on_original, $tax );
+				}
+			} else {
+
+				/** @var int[] $translated_terms translated term_ids */
+				$translated_terms = get_translated_term_ids( $terms_on_original, $lang, $tax, $duplicate );
+				wp_set_object_terms( $translated_post_id, $translated_terms, $tax );
+			}
+		}
+	}
+
+	remove_filter( 'wpml_disable_term_adjust_id', '__return_true' );
+	$post_type = get_post_type( $original_post_id );
+	$post_type && clean_object_term_cache( $original_post_id, $post_type );
+
+	ThreeWP_Broadcast()->debug( 'WPML: Finished extra sync of %s', $original_post_id );
+}
+
+function get_translated_term_ids( $terms, $lang, $taxonomy, $duplicate ) {
+	/** @var WPML_Term_Translation $wpml_term_translations */
+	global $wpml_term_translations;
+
+	$term_utils = new \WPML_Terms_Translations();
+	$wpml_term_translations->reload();
+	$translated_terms = array();
+	foreach ( $terms as $orig_term ) {
+		$translated_id = (int) $wpml_term_translations->term_id_in( $orig_term->term_id, $lang );
+		if ( ! $translated_id && $duplicate ) {
+			$translation   = $term_utils->create_automatic_translation(
+				array(
+					'lang_code'       => $lang,
+					'taxonomy'        => $taxonomy,
+					'trid'            => $wpml_term_translations->get_element_trid( $orig_term->term_taxonomy_id ),
+					'source_language' => $wpml_term_translations->get_element_lang_code(
+						$orig_term->term_taxonomy_id
+					),
+				)
+			);
+			$translated_id = isset( $translation['term_id'] ) ? $translation['term_id'] : false;
+		}
+		if ( $translated_id ) {
+			$translated_terms[] = $translated_id;
+		}
+	}
+
+	return $translated_terms;
 }

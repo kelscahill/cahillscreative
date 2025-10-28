@@ -18,6 +18,7 @@ class Events_Manager
 	public function _construct()
 	{
 		$this->add_action( 'broadcast_events_manager_generate_recurring' );
+		$this->add_action( 'deleted_post', 10, 2 );
 		$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
 		$this->add_action( 'threewp_broadcast_broadcasting_started' );
 		$this->add_action( 'threewp_broadcast_get_post_types' );
@@ -44,6 +45,30 @@ class Events_Manager
 	}
 
 	/**
+		@brief		Manually delete the associated event when a linked child is deleted.
+		@since		2024-09-17 12:33:55
+	**/
+	public function deleted_post( $post_id, $post )
+	{
+		// We must be switched from the parent blog.
+		if ( ! ms_is_switched() )
+			return;
+		// And we must be deleting an event.
+		if ( $post->post_type != 'event' )
+			return;
+
+		global $wpdb;
+		$table = $wpdb->prefix . 'em_events';
+		$query = sprintf( "DELETE FROM `%s` WHERE `post_id` = '%s' AND `blog_id` = '%s'",
+			$table,
+			$post_id,
+			get_current_blog_id(),
+		);
+		$this->debug( 'Delete the special event in the events table: %s', $query );
+		$this->query( $query );
+	}
+
+	/**
 		@brief		Restore events.
 		@since		2016-06-08 17:41:55
 	**/
@@ -58,8 +83,8 @@ class Events_Manager
 		{
 			case 'event':
 			case 'event-recurring':
-				$this->restore_event( $bcd );
-				$this->restore_event_location( $bcd );
+					$this->restore_event( $bcd );
+					$this->restore_event_location( $bcd );
 			break;
 			case 'location':
 				$this->restore_location( $bcd );
@@ -133,7 +158,8 @@ class Events_Manager
 		if ( $location_id < 1 )
 			return $this->debug( 'No location available.' );
 
-		$this->get_location( $bcd, $location_id );
+		$location = $this->get_location( $bcd, $location_id );
+		$bcd->events_manager->set( 'location_sql_row', $location );
 		$this->debug( 'Saving location %s: %s',
 			$location_id,
 			$bcd->events_manager->get( 'location_sql_row' )
@@ -142,16 +168,7 @@ class Events_Manager
 		// Save the broadcast data of the location.
 		// The post ID is not the same as the location ID, of course.
 		$location_post_id = $bcd->events_manager->get( 'location_sql_row' )->post_id;
-		$location_bcd = ThreeWP_Broadcast()->get_post_broadcast_data( get_current_blog_id(), $location_post_id );
-		$parent = $location_bcd->get_linked_parent();
-		if ( $parent !== false )
-		{
-			// Load the parent's bcd.
-			$location_bcd = ThreeWP_Broadcast()->get_post_broadcast_data( $parent[ 'blog_id' ], $parent[ 'post_id' ] );
-		}
-
-		$bcd->events_manager->set( 'location_bcd', $location_bcd );
-		$this->debug( 'Saving location broadcast data: %s', $location_bcd );
+		$bcd->events_manager->set( 'location_post_id', $location_post_id );
 	}
 
 	/**
@@ -162,13 +179,14 @@ class Events_Manager
 	{
 		// We need to retrieve the associated location ID.
 		global $wpdb;
-		$query = sprintf( 'SELECT * FROM `%sem_locations` WHERE `post_id` = %s',
-			$wpdb->prefix,
+		$query = sprintf( 'SELECT * FROM `%s` WHERE `post_id` = %s',
+			$this->get_locations_table(),
 			$bcd->post->ID
 		);
 		$location_id = $wpdb->get_var( $query );
 
-		$this->get_location( $bcd, $location_id );
+		$location = $this->get_location( $bcd, $location_id );
+		$bcd->events_manager->set( 'location_sql_row', $location );
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -183,13 +201,24 @@ class Events_Manager
 	{
 		global $wpdb;
 		$new_event_post_id = $bcd->new_post( 'ID' );
-		$table = $wpdb->prefix . 'em_events';
+
+		if ( $this->global_events_enabled() )
+		{
+			$table = $wpdb->base_prefix . 'em_events';
+			$this->debug( 'EM_MS_GLOBAL is enabled.' );
+		}
+		else
+		{
+			$table = $wpdb->prefix . 'em_events';
+		}
+		$this->debug( 'Table is %s', $table );
 
 		// Create or update the SQL row.
 		global $wpdb;
-		$query = sprintf( 'SELECT `event_id` FROM `%s` WHERE `post_id` = %s',
+		$query = sprintf( "SELECT `event_id` FROM `%s` WHERE `post_id` = %s AND `blog_id` = '%s'",
 			$table,
-			$new_event_post_id
+			$new_event_post_id,
+			get_current_blog_id(),
 		);
 		$this->debug( 'Find the event on this blog: %s', $query );
 		$results = $this->query( $query );
@@ -200,7 +229,7 @@ class Events_Manager
 				'post_id' => $new_event_post_id,
 				'blog_id' => get_current_blog_id(),
 			];
-			$this->debug( 'Inserting event: %s', $data );
+			$this->debug( 'Inserting event into %s: %s', $table, $data );
 			$wpdb->insert( $table, $data );
 			$event_id = $wpdb->insert_id;
 		}
@@ -259,35 +288,8 @@ class Events_Manager
 		if ( ! $location_sql_row )
 			return $this->debug( 'No location SQL row.' );
 
-		// Ask the BCD if there is a linked location post here.
-		$location_bcd = $bcd->events_manager->get( 'location_bcd' );
-
-		$new_location_post_id = false;
-		if ( $location_bcd )
-			$new_location_post_id = $location_bcd->get_linked_post_on_this_blog();
-
-		if ( ! $new_location_post_id )
-		{
-			// No location BCD available?
-			if ( ! $location_bcd->blog_id )
-			{
-				// Fake a bcd.
-				$location_bcd = (object)[
-					'blog_id' => $bcd->parent_blog_id,
-					'post_id' => $location_sql_row->post_id,
-				];
-			}
-
-			$this->debug( 'Broadcasting location %s', $location_bcd->post_id );
-
-			switch_to_blog( $location_bcd->blog_id );
-			$new_location_bcd = ThreeWP_Broadcast()
-				->api()
-				->broadcast_children( $location_bcd->post_id, [ $bcd->current_child_blog_id ] );
-			restore_current_blog();
-
-			$new_location_post_id = $new_location_bcd->broadcast_data->get_linked_post_on_this_blog();
-		}
+		$old_location_id = $bcd->events_manager->get( 'location_post_id' );
+		$new_location_post_id = $bcd->equivalent_posts()->broadcast_once( $bcd->parent_blog_id, $old_location_id, get_current_blog_id() );
 
 		$this->debug( 'Location ID on this blog is %s', $new_location_post_id );
 
@@ -295,7 +297,7 @@ class Events_Manager
 		$location_id = $this->get_location_id_for_post( $new_location_post_id );
 
 		// Set our location_id to the correct post.
-		$this->debug( 'Setting new location post ID to %s', $new_location_post_id );
+		$this->debug( 'Setting new location post ID for em_location %s to %s', $location_id, $new_location_post_id );
 
 		$bcd->custom_fields()
 			->child_fields()
@@ -303,11 +305,15 @@ class Events_Manager
 
 		// Set the correct new location also in the Events table.
 		global $wpdb;
-		$table = $wpdb->prefix . 'em_events';
-		$query = sprintf( "UPDATE `%s` SET `location_id` = '%s' WHERE `post_id` = '%s'",
+		if ( $this->global_locations_enabled() )
+			$table = $wpdb->base_prefix . 'em_events';
+		else
+			$table = $wpdb->prefix . 'em_events';
+		$query = sprintf( "UPDATE `%s` SET `location_id` = '%s' WHERE `post_id` = '%s' AND `blog_id` = '%s'",
 			$table,
 			$new_location_post_id,
-			$bcd->new_post( 'ID' )
+			$bcd->new_post( 'ID' ),
+			get_current_blog_id(),
 		);
 		$this->debug( 'Updating event location ID: %s', $query );
 		$this->query( $query );
@@ -321,13 +327,15 @@ class Events_Manager
 	{
 		global $wpdb;
 		$new_location_post_id = $bcd->new_post( 'ID' );
-		$table = $wpdb->prefix . 'em_locations';
+
+		$table = $this->get_locations_table();
 
 		// Create or update the SQL row.
 		global $wpdb;
-		$query = sprintf( 'SELECT `location_id` FROM `%s` WHERE `post_id` = %s',
+		$query = sprintf( "SELECT `location_id` FROM `%s` WHERE `post_id` = '%s' AND `blog_id` = '%s'",
 			$table,
-			$new_location_post_id
+			$new_location_post_id,
+			get_current_blog_id(),
 		);
 		$this->debug( 'Find the location on this blog: %s', $query );
 		$results = $this->query( $query );
@@ -338,9 +346,9 @@ class Events_Manager
 				'post_id' => $new_location_post_id,
 				'blog_id' => get_current_blog_id(),
 			];
-			$this->debug( 'Inserting location: %s', $data );
 			$wpdb->insert( $table, $data );
 			$location_id = $wpdb->insert_id;
+			$this->debug( 'Inserting location: %s as row %s', $data, $location_id );
 		}
 		else
 		{
@@ -382,13 +390,25 @@ class Events_Manager
 	**/
 	public function get_event( $bcd, $event_id )
 	{
+		global $wpdb;
+
 		$this->prepare_bcd( $bcd );
+
+		if ( $this->global_events_enabled() )
+		{
+			$table = $wpdb->base_prefix . 'em_events';
+		}
+		else
+		{
+			$table = $wpdb->prefix . 'em_events';
+		}
 
 		// Save the SQL row.
 		global $wpdb;
-		$query = sprintf( 'SELECT * FROM `%sem_events` WHERE `event_id` = %s',
-			$wpdb->prefix,
-			$event_id
+		$query = sprintf( "SELECT * FROM `%s` WHERE `event_id` = '%s' AND `blog_id` = '%s'",
+			$table,
+			$event_id,
+			get_current_blog_id(),
 		);
 		$row = $wpdb->get_row( $query );
 
@@ -401,17 +421,21 @@ class Events_Manager
 	**/
 	public function get_location( $bcd, $location_id )
 	{
+		global $wpdb;
+
 		$this->prepare_bcd( $bcd );
 
-		// Save the SQL row.
-		global $wpdb;
-		$query = sprintf( 'SELECT * FROM `%sem_locations` WHERE `location_id` = %s',
-			$wpdb->prefix,
-			$location_id
-		);
-		$row = $wpdb->get_row( $query );
+		$table = $this->get_locations_table();
 
-		$bcd->events_manager->set( 'location_sql_row', $row );
+		// Save the SQL row.
+		$query = sprintf( "SELECT * FROM `%s` WHERE `location_id` = '%s' AND `blog_id` = '%s'",
+			$table,
+			$location_id,
+			get_current_blog_id(),
+		);
+		$this->debug( $query );
+		$row = $wpdb->get_row( $query );
+		return $row;
 	}
 
 	/**
@@ -421,11 +445,50 @@ class Events_Manager
 	public function get_location_id_for_post( $location_post_id )
 	{
 		global $wpdb;
-		$query = sprintf( 'SELECT `location_id` FROM `%sem_locations` WHERE `post_id` = %s',
-			$wpdb->prefix,
-			$location_post_id
+
+		$table = $this->get_locations_table();
+
+		$query = sprintf( "SELECT `location_id` FROM `%s` WHERE `post_id` = '%s' AND `blog_id` = '%s'",
+			$table,
+			$location_post_id,
+			get_current_blog_id(),
 		);
+		$this->debug( $query );
 		return $wpdb->get_var( $query );
+	}
+
+	/**
+		@brief		Are the "global" event tables enabled.
+		@since		2024-09-30 14:44:08
+	**/
+	public function global_events_enabled()
+	{
+		return ( get_site_option( 'dbem_ms_global_table', true ) == true );
+	}
+
+	/**
+		@brief		Are the "global" location tables enabled.
+		@since		2024-09-30 14:44:08
+	**/
+	public function global_locations_enabled()
+	{
+		// Due to a bug in EM, this is the same as global events.
+		return $this->global_events_enabled();
+		return ( get_site_option( 'dbem_ms_global_locations', true ) == true );
+	}
+
+	/**
+		@brief		Return the correct table for the locations.
+		@since		2024-10-03 18:59:36
+	**/
+	public function get_locations_table()
+	{
+		global $wpdb;
+		if ( $this->global_locations_enabled() )
+			$table = $wpdb->base_prefix . 'em_locations';
+		else
+			$table = $wpdb->prefix . 'em_locations';
+		return $table;
 	}
 
 	/**
@@ -434,7 +497,7 @@ class Events_Manager
 	**/
 	public function is_recurring_event( $broadcasting_data )
 	{
-		return $broadcasting_data->post->post_type = 'event-recurring';
+		return $broadcasting_data->post->post_type == 'event-recurring';
 	}
 
 	/**

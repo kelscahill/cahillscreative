@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\premium_pack\classes\gutenberg_items;
 
+use Exception;
+
 /**
 	@brief		Base class for handling things that appear in Gutenberg blocks.
 	@since		2019-06-18 21:53:17
@@ -40,6 +42,7 @@ abstract class Gutenberg_Items
 			{
 				if ( $key !== $attribute )
 					continue;
+				$old_id = $value;	// Since the find only contains only the latest found ID, we use the original array.
 				$new_id = $this->replace_id( $bcd, $find, $old_id );
 				if ( $new_id )
 					$array[ $attribute ] = $new_id;
@@ -51,11 +54,14 @@ abstract class Gutenberg_Items
 					continue;
 				$old_ids = $value;
 				$new_ids = [];
-				foreach( $old_ids as $old_id )
+				foreach( $old_ids as $old_key => $old_id )
 				{
 					$new_id = $this->replace_id( $bcd, $find, $old_id );
 					if ( $new_id )
-						$new_ids[] = $new_id;
+						$new_ids[ $old_key ] = $new_id;
+					else
+						$new_ids[ $old_key ] = $old_id;
+
 				}
 
 				$array[ $attribute ] = $new_ids;
@@ -75,19 +81,19 @@ abstract class Gutenberg_Items
 			if ( is_array( $value ) )
 				$this->preparse_values( $find, $item, $value );
 
-			foreach( $item->value as $attribute => $ignore )
+			foreach( $this->expand_values( $item->value ) as $attribute => $ignore )
 			{
-				if ( ! isset( $array[ $attribute ] ) )
-					continue;
-				if ( $find->value->has( $attribute ) )
+				// The string comparison is needed for OpenLiteSpeed, I think.
+				if ( (string) $key != (string) $attribute )
 					continue;
 				$this->debug( 'Found single attribute %s: %s', $attribute, $array[ $attribute ] );
 				$find->value->set( $attribute, $array[ $attribute ] );
 			}
 
-			foreach( $item->values as $attribute => $ignore )
+			foreach( $this->expand_values( $item->values ) as $attribute => $ignore )
 			{
-				if ( ! isset( $array[ $attribute ] ) )
+				// The string comparison is needed for OpenLiteSpeed, I think.
+				if ( (string) $key != (string) $attribute )
 					continue;
 				if ( $find->values->has( $attribute ) )
 					continue;
@@ -96,19 +102,6 @@ abstract class Gutenberg_Items
 				$find->values->set( $attribute, $array[ $attribute ] );
 			}
 		}
-	}
-
-	/**
-		@brief		Return the Shared_Finds object.
-		@since		2020-01-31 08:15:43
-	**/
-	public function shared_finds()
-	{
-		$bc = ThreeWP_Broadcast();
-		if ( isset( $bc->gutenberg_items_shared_finds ) )
-			return $bc->gutenberg_items_shared_finds;
-		$bc->gutenberg_items_shared_finds = new Shared_Finds();
-		return $bc->gutenberg_items_shared_finds;
 	}
 
 	/**
@@ -167,14 +160,19 @@ abstract class Gutenberg_Items
 			if ( json_encode( $unmodified_find ) == json_encode( $item ) )
 				continue;
 
+			$render_options = [
+				'force_json_options' => true,
+				'json_options' => JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES,
+			];
+
 			$this->debug( 'Replacing %s <em><pre>%s</pre></em><br>with<br><em><pre>%s</pre></em>',
 				$generic_data->singular,
 				htmlspecialchars( $find->original[ 'original' ] ),
-				htmlspecialchars( ThreeWP_Broadcast()->gutenberg()->render_block( $item ) )
+				htmlspecialchars( ThreeWP_Broadcast()->gutenberg()->render_block( $item, $render_options ) )
 			);
 
 			// Using the original text is the safest way to guarantee that the block text is replaced.
-			$action->content = ThreeWP_Broadcast()->gutenberg()->replace_text_with_block( $find->original[ 'original' ], $item, $action->content );
+			$action->content = ThreeWP_Broadcast()->gutenberg()->replace_text_with_block( $find->original[ 'original' ], $item, $action->content, $render_options );
 		}
 	}
 
@@ -199,17 +197,18 @@ abstract class Gutenberg_Items
 
 		//$blocks = parse_blocks( $content );
 
-		$blocks = ThreeWP_Broadcast()->gutenberg()->parse_blocks( $content );
+		$blocks = ThreeWP_Broadcast()->gutenberg()->parse_blocks( $content, [
+			'dump_blocks_once' => $action->id,
+			'stripslashes' => false,		// We will want to be keeping as much of the original json as possible.
+		] );
 
 		if ( count( $blocks ) < 1 )
 			return;
 
-		$this->debug( 'Blocks: %s', $blocks );
+		$this->debug( 'Blocks in %s: %s', $action->id, $blocks );
 
 		foreach( $items as $item )
 		{
-			$this->debug( 'Looking for item: %s', $item->get_slug() );
-
 			foreach( $blocks as $block )
 			{
 				if ( $block[ 'blockName' ] != $item->get_slug() )
@@ -239,10 +238,17 @@ abstract class Gutenberg_Items
 				if ( $value_count < 1 )
 					continue;
 
-				$find_collection = $this->shared_finds()->add_find( $find );
-				$this->debug( 'Adding this find to the array x %s: %s', $find_collection->get_counter(), $find );
+				try
+				{
+					$find_collection = $this->shared_finds()->add_find( $find );
+					$this->debug( 'Adding this find to the array x %s: %s', $find_collection->get_counter(), $find );
+					$finds []= $find;
+				}
+				catch( Exception $e )
+				{
+					$this->debug( $e->getMessage() );
+				}
 
-				$finds []= $find;
 			}
 
 		}
@@ -252,4 +258,27 @@ abstract class Gutenberg_Items
 
 		$bcd->$slug->set( $action->id, $finds );
 	}
+
+	// --------------------------------------------------------------------------------------------
+	// ----------------------------------------- Shared Finds
+	// --------------------------------------------------------------------------------------------
+
+	/**
+		@brief		Create the shared finds instance.
+		@since		2023-08-02 00:11:55
+	**/
+	public function create_shared_finds()
+	{
+		return new Shared_Finds();
+	}
+
+	/**
+		@brief		Return the key where the shared finds are stored.
+		@since		2023-08-02 00:06:22
+	**/
+	public static function shared_finds_key()
+	{
+		return 'gutenberg_items_shared_finds';
+	}
+
 }

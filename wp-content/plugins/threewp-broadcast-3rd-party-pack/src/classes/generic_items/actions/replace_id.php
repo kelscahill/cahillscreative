@@ -16,7 +16,7 @@ class replace_id
 	public $broadcasting_data;
 
 	/**
-		@brief		IN/: The find array.
+		@brief		IN: The find array.
 		@details	The $find->original string should be replaced.
 		@since		2018-11-14 15:00:07
 	**/

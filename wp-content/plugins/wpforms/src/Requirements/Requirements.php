@@ -200,6 +200,9 @@ class Requirements {
 			self::EXT     => 'curl',
 			self::LICENSE => self::TOP,
 		],
+		'wpforms-airtable/wpforms-airtable.php'                         => [
+			self::LICENSE => self::TOP,
+		],
 		'wpforms-aweber/wpforms-aweber.php'                             => [
 			self::EXT     => 'curl',
 			self::LICENSE => self::PLUS_PRO_AND_TOP,
@@ -273,6 +276,9 @@ class Requirements {
 		],
 		'wpforms-mailpoet/wpforms-mailpoet.php'                         => [
 			self::LICENSE => self::PLUS_PRO_AND_TOP,
+		],
+		'wpforms-n8n/wpforms-n8n.php'                                   => [
+			self::LICENSE => self::PRO_AND_TOP,
 		],
 		'wpforms-offline-forms/wpforms-offline-forms.php'               => [],
 		'wpforms-paypal-commerce/wpforms-paypal-commerce.php'           => [],

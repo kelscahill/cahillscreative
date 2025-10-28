@@ -104,7 +104,12 @@ abstract class Local_Things
 
 		// We need to get the url of this blog.
 		$url = get_bloginfo( 'url' );
-		$this->debug( 'URL is %s', $url );
+		$url_key = 'shown_url_' . get_current_blog_id();
+		if ( ! isset( $this->$url_key ) )
+		{
+			$this->$url_key = true;
+			$this->debug( 'URL is %s', $url );
+		}
 
 		$things = $this->new_things();
 

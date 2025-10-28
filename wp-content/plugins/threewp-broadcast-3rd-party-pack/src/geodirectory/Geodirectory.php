@@ -953,11 +953,13 @@ class Geodirectory
 		// Are they identical?
 		$identical = true;
 		foreach( $source_description as $key => $ignore )
+		{
 			if ( ! isset( $target_description[ $key ] ) )
 			{
 				$identical = false;
 				break;
 			}
+		}
 
 		$columns_to_delete = [];
 		foreach( $target_description as $key => $ignore )

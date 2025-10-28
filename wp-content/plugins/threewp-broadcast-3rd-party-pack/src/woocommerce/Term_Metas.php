@@ -16,9 +16,11 @@ class Term_Metas
 		@brief		Add a term + image
 		@since		2015-07-14 19:20:45
 	**/
-	public function add_image( $term_id, $meta_key, $image_id )
+	public function add_image( $term, $meta_key, $image_id )
 	{
+		$term_id = $term->term_id;
 		$o = (object)[];
+		$o->term = $term;
 		$o->term_id = $term_id;
 		$o->key = $meta_key;
 		$o->image_id = $image_id;
@@ -29,9 +31,11 @@ class Term_Metas
 		@brief		Add a neutral meta value.
 		@since		2015-07-15 13:03:11
 	**/
-	public function add_value( $term_id, $meta_key, $meta_value )
+	public function add_value( $term, $meta_key, $meta_value )
 	{
+		$term_id = $term->term_id;
 		$o = (object)[];
+		$o->term = $term;
 		$o->term_id = $term_id;
 		$o->key = $meta_key;
 		$o->value = $meta_value;

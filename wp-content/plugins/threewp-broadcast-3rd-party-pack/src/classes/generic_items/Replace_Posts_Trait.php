@@ -19,7 +19,18 @@ trait Replace_Posts_Trait
 		else
 		{
 			$bcd = $broadcasting_data;	// Conv
-			$new_id = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $old_id, get_current_blog_id() );
+
+			$broadcast_children = apply_filters( 'broadcast_replace_posts', false, $bcd, $old_id );
+			$this->debug( 'broadcast_replace_posts: %d', $broadcast_children );
+			if ( $broadcast_children )
+			{
+				switch_to_blog( $bcd->parent_blog_id );
+				$item_bcd = ThreeWP_Broadcast()->api()->broadcast_children_with_post( $old_id, [ $bcd->current_child_blog_id ] );
+				$new_id = $item_bcd->new_post( 'ID' );
+				restore_current_blog();
+			}
+			else
+				$new_id = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $old_id, get_current_blog_id() );
 		}
 		$this->debug( 'Replacing post %s with %s', $old_id, $new_id );
 		return $new_id;

@@ -23,6 +23,10 @@ class ACF
 		$this->add_action( 'broadcast_acf_add_field', 100 );			// Let other plugins handle this first.
 		$this->add_action( 'broadcast_acf_parse_field', 100 );			// Let other plugins handle this first.
 		$this->add_action( 'broadcast_acf_restore_field', 100 );		// Let other plugins handle this first.
+		$this->add_action( 'broadcast_menus_copy_menus' );
+		$this->add_action( 'broadcast_menus_copy_menu_item', 100 );	// After the menu add-on has copied everything.
+		$this->add_action( 'broadcast_widgets_broadcast' );
+		$this->add_action( 'broadcast_widgets_modify_widgets' );
 		$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
 		$this->add_action( 'threewp_broadcast_broadcasting_modify_post' );
 		$this->add_action( 'threewp_broadcast_broadcasting_started' );
@@ -31,6 +35,7 @@ class ACF
 		$this->add_action( 'threewp_broadcast_menu' );
 		$this->add_action( 'threewp_broadcast_wp_update_term' );
 		$this->add_filter( 'threewp_broadcast_allowed_post_statuses' );
+
 
 		$bc = ThreeWP_Broadcast();
 		{
@@ -69,8 +74,12 @@ class ACF
 				case 'conditional_gallery':
 				case 'file':
 				case 'image':
+				case 'image_aspect_ratio_crop':
 				case 'image_crop':
 					$this->add_image_file_field( $action );
+				break;
+				case 'focuspoint':
+					$this->add_focuspoint_field( $action );
 				break;
 				case 'gallery':
 					$this->add_gallery_field( $action );
@@ -86,6 +95,8 @@ class ACF
 				case 'taxonomy':
 					$this->add_taxonomy_field( $action );
 				break;
+				case 'date_picker': // added by Tom
+				case 'number': //added by Tom
 				case 'text':
 				case 'textarea':
 				case 'url':
@@ -170,7 +181,7 @@ class ACF
 				}
 			break;
 			case 'flexible_content':
-				if( ! is_array( $action->field->layouts ) || empty( $action->field->value ) )
+				if ( ! is_array( $action->field->layouts ) || empty( $action->field->value ) )
 					break;
 				$layout_map = [];
 
@@ -350,9 +361,18 @@ class ACF
 		$this->debug( 'Restoring %s field %s %s', $field->type, $field->name, $field->key );
 		switch( $field->type )
 		{
+			case 'focuspoint':
+				$original_id = $field->value[ 'id' ];
+				$new_id = $bcd->copied_attachments()->get( $original_id );
+				$new_field = clone( $field );
+				$new_field->value[ 'id' ] = $new_id;
+				$this->debug( 'Replacing old focuspoint ID %s from %s with new attachment ID %s', $original_id, $field->name, $new_field->value );
+				$action->acf_update_value( $new_field->value );
+			break;
 			case 'conditional_gallery':
 			case 'file':
 			case 'image':
+			case 'image_aspect_ratio_crop':
 			case 'image_crop':
 				$new_meta = [];
 
@@ -505,21 +525,135 @@ class ACF
 			case 'wysiwyg':
 				$value = maybe_unserialize( $field->value );
 
-				$parse_action = new \threewp_broadcast\actions\parse_content();
-				$parse_action->broadcasting_data = $bcd;
-				$parse_action->content = $value;
-				$parse_action->id = $field->name;
-				$parse_action->execute();
-				$value = $parse_action->content;
+				if ( is_array( $value ) )
+				{
+					$new_values = [];
+					foreach( $value as $index => $v )
+					{
+						$parse_action = new \threewp_broadcast\actions\parse_content();
+						$parse_action->broadcasting_data = $bcd;
+						$parse_action->content = $v;
+						$parse_action->id = $field->name . $index;
+						$parse_action->execute();
+						$new_values[ $index ] = $parse_action->content;
+					}
+					$value = $new_values;
+				}
+				else
+				{
+					$parse_action = new \threewp_broadcast\actions\parse_content();
+					$parse_action->broadcasting_data = $bcd;
+					$parse_action->content = $value;
+					$parse_action->id = $field->name;
+					$parse_action->execute();
+					$value = $parse_action->content;
+				}
 
-				$this->debug( 'Setting new value <em>%s</em> for text field %s.', htmlspecialchars( $value ), $field->name );
+				$this->debug( 'Setting new value <em>%s</em> for text field %s.', htmlspecialchars( json_encode( $value ) ), $field->name );
 				$action->acf_update_value( $value );
 				break;
 			break;
 			default:
-				$this->debug( 'Setting new value <em>%s</em> for non-special field %s.', $field->value, $field->name );
+				$this->debug( 'Setting new value <em>%s</em> for non-special field %s.', htmlspecialchars( json_encode( $field->value ) ), $field->name );
 				$action->acf_update_value( $field->value );
 				break;
+		}
+	}
+
+	/**
+		@brief		Restore the ACF fields.
+		@since		2023-12-27 20:55:11
+	**/
+	public function broadcast_menus_copy_menu_item( $action )
+	{
+		$copy_menu = $action->copy_menu_action;
+		$copy_menus = $copy_menu->copy_menus_action;
+		$am = $copy_menus->acf_menus;		// Convenience.
+
+		$menu_id = $copy_menu->menu->id;
+
+		$menu_item = $action->menu_item;
+		$menu_item_id = $menu_item->ID;
+		$new_menu_item_id = $menu_item->new_item_id;
+
+		$this->debug( 'Retreiving BCD for menu %s item %s', $menu_id, $menu_item_id );
+
+		$bcd = $am->collection( 'menus' )->collection( $menu_id )
+			->get( $menu_item_id );
+
+		ThreeWP_Broadcast()->copy_attachments_to_child( $bcd );
+
+		$bcd->parent_post_taxonomies = [];
+		$this->debug( 'Restoring ACF fields for menu item %s', $new_menu_item_id );
+		$this->restore_post_fields( $bcd, $new_menu_item_id );
+	}
+
+	/**
+		@brief		Add support for menu items with ACF fields.
+		@since		2023-12-25 01:21:12
+	**/
+	public function broadcast_menus_copy_menus( $action )
+	{
+		$action->acf_menus = ThreeWP_Broadcast()->collection();
+		$am = $action->acf_menus;		// Convenience.
+		foreach( $action->menus as $menu_id => $menu )
+		{
+			// Find all menu items
+			foreach( $menu->all() as $item_id => $item )
+			{
+				// Create a fake bcd for each menu item
+				$bcd = new \threewp_broadcast\broadcasting_data( [
+					'parent_post_id' => -1,
+					'post' => $item,
+				] );
+				$this->save_post_fields( $bcd, $item->ID );
+				$this->debug( 'Saving BCD for menu %s item %s', $menu_id, $item->ID );
+				$am->collection( 'menus' )->collection( $menu_id )
+					->set( $item_id, $bcd );
+			}
+		}
+	}
+
+	/**
+		@brief		See if there are any fields in the widgets.
+		@since		2023-07-11 22:42:18
+	**/
+	public function broadcast_widgets_broadcast( $action )
+	{
+		// Find any post.
+		$posts = get_posts( [
+			'posts_per_page' => 1,
+		] );
+		$post = reset( $posts );
+		$bcd = new \threewp_broadcast\broadcasting_data( [
+			'parent_post_id' => -1,
+			'post' => $post,
+		] );
+		$bcd->parent_post_taxonomies = [];
+		$action->acf_widgets = ThreeWP_Broadcast()->collection();
+		$action->acf_widgets->set( 'bcd' , $bcd );
+		foreach( $action->widgets as $widget_id )
+		{
+			$id = 'widget_' . $widget_id;
+			$this->save_post_fields( $bcd, $id );
+			$action->acf_widgets->collection( 'handled_widgets' )->set( $id, $widget_id );
+		}
+	}
+
+	/**
+		@brief		Modify the acf fields in the
+		@since		2023-07-11 23:04:31
+	**/
+	public function broadcast_widgets_modify_widgets( $action )
+	{
+		if ( ! isset( $action->broadcast_action->acf_widgets ) )
+			return;
+		$bcd = $action->broadcast_action->acf_widgets->get( 'bcd' );
+		ThreeWP_Broadcast()->copy_attachments_to_child( $bcd );
+		foreach( $action->broadcast_action->acf_widgets->collection( 'handled_widgets' ) as $acf_widget_id => $widget_id )
+		{
+			$this->debug( 'Restoring ACF fields for widget %s', $acf_widget_id );
+			$this->restore_post_fields( $bcd, $acf_widget_id );
 		}
 	}
 
@@ -549,6 +683,33 @@ class ACF
 	public function threewp_broadcast_broadcasting_modify_post( $action )
 	{
 		$bcd = $action->broadcasting_data;
+
+		if ( isset( $bcd->acf_field ) )
+		{
+			$post_content = $bcd->post->post_content;
+			$post_content = maybe_unserialize( $post_content );
+			$acf_field = $bcd->acf_field;		// Convenience.
+
+			if ( ( isset( $post_content[ 'conditional_logic' ] ) ) && ( is_array( $post_content[ 'conditional_logic' ] ) )  )
+			{
+				foreach( $post_content[ 'conditional_logic' ] as $group_index => $rules )
+				{
+					foreach( $rules as $rule_index => $rule )
+					{
+						$field_key = $rule[ 'field' ];
+						if ( $acf_field->collection( 'conditional_logic' )->has( $field_key ) )
+						{
+							$value = $rule[ 'value' ];
+							$new_term_id = $bcd->terms()->get( $value );
+							$rule[ 'value' ] = $new_term_id;
+							$post_content[ 'conditional_logic' ][ $group_index ][ $rule_index ] = $rule;
+							$this->debug( 'Replacing old value %s in conditional_logic with %s to %s', $value, $field_key, $rule );
+						}
+					}
+				}
+			}
+			$bcd->modified_post->post_content = serialize( $post_content );
+		}
 
 		if ( isset( $bcd->acf_field_group ) )
 			if ( $bcd->acf_field_group->collection( 'location_values' )->count() > 0 )
@@ -611,11 +772,17 @@ class ACF
 
 		$bcd = $action->broadcasting_data;
 
-		// Is this a field group?
-		if ( $bcd->post->post_type == 'acf-field-group' )
-			$this->start_field_group( $bcd );
-		else
-			$this->start_normal_post( $bcd );
+		switch( $bcd->post->post_type )
+		{
+			case 'acf-field':
+				$this->start_field( $bcd );
+			break;
+			case 'acf-field-group':
+				$this->start_field_group( $bcd );
+			break;
+			default:
+				$this->start_normal_post( $bcd );
+		}
 	}
 
 	/**
@@ -635,8 +802,11 @@ class ACF
 		if ( isset( $bcd->acf ) )
 			$old_acf = $bcd->acf;
 
-		foreach( $bcd->parent_post_taxonomies as $parent_post_taxonomy => $terms )
+		// parent_blog_taxonomies instead of parent_post_taxonomies.
+		// Sync as many taxonomies as we can, since the post could be using terms with ACF fields, but not the term's parents.
+		foreach( $bcd->parent_blog_taxonomies as $parent_post_taxonomy => $data )
 		{
+			$terms = $data[ 'terms' ];
 			// Get all of the fields for all terms
 			foreach( $terms as $term )
 			{
@@ -659,7 +829,7 @@ class ACF
 						}
 					}
 					if ( count( $bcd->acf ) > 0 )
-						$this->debug( 'Saving %s fields: %s', count( $bcd->acf ), $bcd->acf );
+						$this->debug( 'Saving %s fields for %s / %s', count( $bcd->acf ), $parent_post_taxonomy, $term->slug );
 					$bcd->acf_taxonomy_data->set( $key, $bcd->acf );
 					unset( $bcd->acf );
 				}
@@ -681,6 +851,9 @@ class ACF
 	**/
 	public function threewp_broadcast_menu( $action )
 	{
+		if ( ! function_exists( 'acf_get_options_pages' ) )
+			return;
+
 		$action->menu_page
 			->submenu( 'broadcast_acf' )
 			->callback_this( 'admin_tabs' )
@@ -727,6 +900,25 @@ class ACF
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Misc functions
 	// --------------------------------------------------------------------------------------------
+
+	/**
+		@brief		add_focuspoint_field
+		@since		2024-05-23 08:48:19
+	**/
+	public function add_focuspoint_field( $action )
+	{
+		$field = $action->field;
+		$images = [];
+
+		$acf_field = new acf\field( $field );
+
+		$focus = $field->value;
+		$image_id = $focus[ 'id' ];
+		$this->debug( 'Adding attachment data for the focuspoint image %s.', $image_id );
+		$action->broadcasting_data->try_add_attachment( $image_id );
+
+		$action->get_storage()->append( $acf_field );
+	}
 
 	/**
 		@brief		Adds a gallery.
@@ -945,10 +1137,17 @@ class ACF
 		$this->debug( 'Taxonomy %s IDs are %s.', $field->taxonomy, $field->value );
 
 		$taxonomy = get_taxonomy( $field->taxonomy );
+		if ( !$taxonomy )
+		{
+			$this->debug( 'Taxonomy %s is not set.', $field->taxonomy);
+			return;
+		}
 		$post_type = reset( $taxonomy->object_type );
 
 		$acf_field = new acf\field( $field );
-		$action->broadcasting_data->taxonomies()->also_sync( $post_type, $field->taxonomy );
+		$action->broadcasting_data->taxonomies()
+			->also_sync( $post_type, $field->taxonomy )
+			->use_terms( $field->value );
 		$action->get_storage()->append( $acf_field );
 	}
 
@@ -1140,14 +1339,19 @@ class ACF
 		// And extract the ID from the array.
 		if ( is_array( $id ) )
 		{
-			foreach( [ 'ID', 'id' ] as $key )
+			foreach ( [ 'ID', 'id' ] as $key )
+			{
 				if ( isset( $id[ $key ] ) )
 				{
 					$id = $id[ $key ];
 					break;
 				}
+			}
+
 			if ( is_array( $id ) )
+			{
 				return false;
+			}
 		}
 
 		// Last chance: if this is not an integer...
@@ -1272,6 +1476,9 @@ class ACF
 	**/
 	public function has_acf_pro()
 	{
+		if ( defined( 'ACF_MAJOR_VERSION' ) )
+			if ( ACF_MAJOR_VERSION >= 5 )
+				return true;
 		return class_exists( 'acf_pro' );
 	}
 
@@ -1284,6 +1491,21 @@ class ACF
 		// Comparing an int with a string will convert the string to an int and therefore ... equal true.
 		// So we compare the $post_id string with a string.
 		return (string) intval( $post_id ) === (string) $post_id;
+	}
+
+	/**
+		@brief		Is this target a taxonomy?
+		@since		2021-03-04 19:08:01
+	**/
+	public static function is_a_taxonomy( $bcd, $target_id )
+	{
+		foreach( $bcd->parent_post_taxonomies as $taxonomy_name => $taxonomy_data )
+		{
+			if ( strpos( $target_id, $taxonomy_name . '_' ) !== 0 )
+				continue;
+			return $taxonomy_name;
+		}
+		return false;
 	}
 
 	/**
@@ -1367,41 +1589,79 @@ class ACF
 	**/
 	public function restore_post_fields( $bcd, $target_id = null )
 	{
+		if ( ! isset( $bcd->acf ) )
+		{
+			$this->debug( 'No ACF fields. Nothing to restore.' );
+			return;
+		}
+
 		if ( $target_id === null )
 			$target_id = $bcd->new_post( 'ID' );
 
-		$this->debug( 'Restoring %s post fields for %s', count( $bcd->acf), $target_id );
+		$this->debug( 'Restoring %s post fields for %s', count( $bcd->acf ), $target_id );
 
 		foreach( $bcd->acf as $acf_field )
 		{
-			if ( is_object( $bcd->custom_fields ) )
+			if ( static::is_a_taxonomy( $bcd, $target_id ) )
+			{
+				$parts = explode( '_', $target_id );
+				$new_term_id = array_pop( $parts );
+				$taxonomy = implode( '_', $parts );
+				$old_term_id = false;
+
+				// Find the old term ID.
+				foreach( $bcd->parent_blog_taxonomies[ $taxonomy ][ 'terms' ] as $term_id => $ignore )
+				{
+					$old_term_id = $term_id;
+					if ( $bcd->terms()->get( $old_term_id ) == $new_term_id )
+						break;
+				}
+
+				// We need the term's slug.
+				$old_term = $bcd->parent_blog_taxonomies[ $taxonomy ][ 'terms' ][ $old_term_id ];
+
+				if ( $bcd->taxonomies()->protectlist_has( $taxonomy, $old_term->slug, $acf_field->name ) )
+				{
+					$this->debug( 'The field %s exists in the term protect list. Skipping.', $acf_field->name );
+					continue;
+				}
+			}
+			elseif ( is_object( $bcd->custom_fields ) )
 			{
 				// If this field is protected and has content, skip it.
 				if ( $this->field_is_listed( $acf_field, $bcd, 'protectlist' ) )
 				{
-					$exists = false;
+					if ( ! $bcd->new_child_created )
+					{
+						$exists = false;
 
-					if ( static::is_a_real_post( $target_id ) )
-						$exists = $bcd->custom_fields()->child_fields()->has( $acf_field->name );
+						if ( static::is_a_real_post( $target_id ) )
+							$exists = $bcd->custom_fields()->child_fields()->has( $acf_field->name );
+						else
+						{
+							$exists = get_option( $target_id );
+							$exists = count( $exists ) > 0;
+						}
+
+						if ( $exists )
+						{
+							$this->debug( 'The field %s exists in the protect list. Skipping.', $acf_field->name );
+							continue;
+						}
+						else
+							$this->debug( 'The field %s exists in the protect list but has no previous value. Restoring.', $acf_field->name );
+					}
 					else
 					{
-						$exists = get_option( $target_id );
-						$exists = count( $exists ) > 0;
+						$this->debug( 'A new child was created. Ignoring field which is in the protect list.' );
 					}
-
-					if ( $exists )
-					{
-						$this->debug( 'The field %s exists in the protect list. Skipping.', $acf_field->name );
-						continue;
-					}
-					else
-						$this->debug( 'The field %s exists in the protect list but has no previous value. Restoring.', $acf_field->name );
 				}
 				else
 					$this->debug( 'The field %s does not exist in the protect list.', $acf_field->name );
+
+				$this->debug( 'Restoring field %s which is a %s', $acf_field->name, $acf_field->type );
 			}
 
-			$this->debug( 'Restoring field %s which is a %s', $acf_field->name, $acf_field->type );
 			$restore_field_action = new actions\restore_field();
 			$restore_field_action->set_broadcasting_data( $bcd );
 			$restore_field_action->set_field( $acf_field );
@@ -1424,10 +1684,15 @@ class ACF
 		if ( ! is_array( $fields ) )
 			return;
 
+		$is_real_post = strpos( $target_id, '_' ) === false;
+
 		// This is the collection of ACF fields that might be saved into the BCD later.
 		$bcd->acf = new acf\collection;
 
-		$this->debug( 'The ACF fields are <pre>%s</pre>', var_export( $fields, true ) );
+		$this->debug( 'In target %s', $target_id );
+
+		if ( $is_real_post )
+			$this->debug( 'The ACF fields are <pre>%s</pre>', var_export( $fields, true ) );
 
 		$field_counter = 0;
 		foreach( $fields as $field_index => $field )
@@ -1514,6 +1779,51 @@ class ACF
 	}
 
 	/**
+	 * Start handling an ACF field.
+	 *
+	 * @since		2025-01-30 19:42:29
+	 **/
+	public function start_field( $bcd )
+	{
+		$post_content = $bcd->post->post_content;
+		$post_content = maybe_unserialize( $post_content );
+
+		$bcd->acf_field = ThreeWP_Broadcast()->collection();
+		$acf_field = $bcd->acf_field;		// Convenience.
+
+		if ( ( isset( $post_content[ 'conditional_logic' ] ) ) && ( is_array( $post_content[ 'conditional_logic' ] ) )  )
+		{
+			foreach( $post_content[ 'conditional_logic' ] as $group_index => $rules )
+			{
+				foreach( $rules as $rule_index => $rule )
+				{
+					if ( isset( $rule[ 'value' ] ) )
+					{
+						$field_key = $rule[ 'field' ];		// Convenience.
+						$value = $rule[ 'value' ];			// Convenience.
+						// Check that this is a proper value.
+						if ( intval( $value ) != $value )
+							continue;
+						// Retrieve this field to see what it is.
+						$field = get_field_object( $field_key );
+						switch( $field[ 'type' ] )
+						{
+							case 'taxonomy':
+								// Sync this taxonomy for later.
+								$bcd->taxonomies()
+									->also_sync( null, $field[ 'taxonomy' ] )
+									->use_term( $value );
+								$acf_field->collection( 'conditional_logic' )
+									->set( $field_key, $field_key );
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
 		@brief		Handle the broadcast of an ACF v5 field group.
 		@since		2015-04-11 12:23:06
 	**/
@@ -1527,6 +1837,12 @@ class ACF
 		// Save the locations.
 		$content = $bcd->post->post_content;
 		$content = maybe_unserialize( $content );
+
+		if ( ! $content )
+		{
+			$this->debug( 'Post content does not contain location data. Ignoring field group with content: %s', $bcd->post->post_content );
+			return;
+		}
 
 		// We need a lookup of post types.
 		$post_types = get_post_types();

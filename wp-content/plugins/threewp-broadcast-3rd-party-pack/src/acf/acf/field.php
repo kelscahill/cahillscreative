@@ -7,6 +7,7 @@ namespace threewp_broadcast\premium_pack\acf\acf;
 	@details	Clones the original field, to allow extra data to be saved without modifying the original field data.
 	@since		20131030
 **/
+#[\AllowDynamicProperties]
 class field
 {
 	/**

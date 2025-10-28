@@ -4,7 +4,7 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 4.6
 Requires PHP: 8.0
-Stable tag: 51.09
+Stable tag: 51.11
 Tags: multipost, sharing, duplicate, syndication, marketing
 Tested up to: 6.8
 
@@ -75,6 +75,7 @@ The following add-ons add support for the plugin after which they are named:
 * <a href="https://broadcast.plainviewplugins.com/addon/calendarize-it/">Calendarize It</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/category-order-and-taxonomy-terms-order/">Category Order and Taxonomy Terms Order</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/cm-tooltip-glossary/">CM Tooltip Glossary</a>
+* <a href="https://broadcast.plainviewplugins.com/addon/code-snippets-pro/">Code Snippets Pro</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/contact-form-7/">Contact Form 7</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/create/">Create</a>
 * <a href="https://broadcast.plainviewplugins.com/addon/dear-flipbook/">Dear Flipbook</a> adds support for the Dear Flipbook PDF book plugin.
@@ -370,6 +371,12 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 51.11 20250928 =
+
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/code-snippets-pro/">CM Tooltip Glossary</a>: Adds support for the <a href="https://wordpress.org/plugins/code-snippets/">Code Snippets Pro plugin</a>.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/icegram-engage/">Icegram Engage</a> adds support for the <a href="https://wordpress.org/plugins/icegram/">Icegram Engage plugin</a>.
+* Added broadcast_add_post_row_actions_and_hooks filter to allow for access to post actions and bulk post actions via code snippet. In case your editor, that normally is not allowed to broadcast, needs access to the bulk post actions.
 
 = 51.09 20250907 =
 

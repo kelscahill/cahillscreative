@@ -154,6 +154,18 @@ class Slider_Revolution
 			$params = $slide->params;
 			$params = json_decode( $params );
 
+			if ( isset( $params->bg ) )
+            {
+            	$bg = $params->bg;
+                if ( $bg->imageLib == 'medialibrary' )
+                {
+                	$image_id = $bg->imageId;
+					$new_image_id = $bcd->copied_attachments()->get( $image_id );
+                    $params->bg->imageId = $new_image_id;
+                    $params->bg->image = wp_get_attachment_url( $new_image_id );
+					$modified = true;
+                }
+            }
 			if ( isset( $params->image_id ) )
 				if ( $params->image_id > 0 )
 				{
@@ -189,6 +201,43 @@ class Slider_Revolution
 		);
 		$this->debug( $query );
 		$wpdb->get_results( $query );
+
+		// And fix the satic slide image IDs.
+		$query = sprintf( "SELECT * FROM `%s` WHERE `slider_id` = '%s'",
+			$this->get_table( 'revslider_static_slides' ),
+			$new_item_id
+		);
+		$new_slides = $wpdb->get_results( $query );
+		foreach( $new_slides as $slide )
+		{
+			$modified = false;
+
+			$layers = $slide->layers;
+			$layers = json_decode( $layers );
+
+			foreach( $layers as $layer_index => $layer )
+			{
+				if ( isset( $layer->media ) )
+				{
+					$media = $layer->media;
+					if ( $media->imageLib == 'medialibrary' )
+					{
+						$image_id = $media->imageId;
+						$new_image_id = $bcd->copied_attachments()->get( $image_id );
+						$layers->$layer_index->media->imageId = $new_image_id;
+						$layers->$layer_index->media->imageUrl = wp_get_attachment_url( $new_image_id );
+						$modified = true;
+					}
+				}
+			}
+
+			if ( $modified )
+			{
+				$new_layers = json_encode( $layers );
+				$this->debug( 'Saving new layers for static slide %s in %s: %s', $slide->id, $item->id, $new_layers );
+				$wpdb->update( $this->get_table( 'revslider_static_slides' ), [ 'layers' => $new_layers ], [ 'id' => $slide->id ] );
+			}
+		}
 
 		return $new_item_id;
 	}
@@ -238,6 +287,7 @@ class Slider_Revolution
 		@since		2017-01-11 23:03:36
 	**/
 	public function get_shortcode_name()
+
 	{
 		return 'rev_slider';
 	}
@@ -272,6 +322,16 @@ class Slider_Revolution
 		{
 			$params = $slide->params;
 			$params = json_decode( $params );
+			if ( isset( $params->bg ) )
+            {
+            	$bg = $params->bg;
+                if ( $bg->imageLib == 'medialibrary' )
+                {
+                	$image_id = $bg->imageId;
+					if ( $bcd->try_add_attachment( $image_id ) )
+						$this->debug( 'Found background image %s in slide %s', $image_id, $index );
+                }
+            }
 			if ( isset( $params->image_id ) )
 				if ( $params->image_id > 0 )
 				{
@@ -279,5 +339,28 @@ class Slider_Revolution
 						$this->debug( 'Found image %s in slide %s', $params->image_id, $index );
 				}
 		}
+
+		// Get the image ID for each slide.
+		foreach( $item->static_slides as $index => $slide )
+		{
+			$layers = $slide->layers;
+			$layers = json_decode( $layers );
+			$this->debug( 'Static slide %s layers: %s', $index, $layers );
+			foreach( $layers as $layer_index => $layer )
+			{
+				if ( isset( $layer->media ) )
+				{
+					$media = $layer->media;
+					if ( $media->imageLib == 'medialibrary' )
+					{
+						$image_id = $media->imageId;
+						if ( $bcd->try_add_attachment( $image_id ) )
+							$this->debug( 'Found media image %s in static slide %s', $image_id, $layer_index );
+					}
+				}
+			}
+		}
+
+
 	}
 }

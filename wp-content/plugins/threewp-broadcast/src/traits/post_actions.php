@@ -41,9 +41,17 @@ trait post_actions
 	**/
 	public function add_post_row_actions_and_hooks()
 	{
-		if ( is_super_admin() || static::user_has_roles( $this->get_site_option( 'role_link' ) ) )
+		$add = false;
+		if ( is_super_admin() )
+			$add = true;
+		if ( static::user_has_roles( $this->get_site_option( 'role_link' ) ) )
+			$add = true;
+
+		$add = apply_filters( 'broadcast_add_post_row_actions_and_hooks', $add );
+
+		if ( $add )
 		{
-			if (  $this->display_broadcast_columns )
+			if ( $this->display_broadcast_columns )
 			{
 				// Add the broadcasted column to each post type we support.
 

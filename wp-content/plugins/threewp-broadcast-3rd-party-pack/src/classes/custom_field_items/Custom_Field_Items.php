@@ -339,7 +339,7 @@ class Custom_Field_Items
 				{
 					$original_value = $single_value;
 
-					$this->debug( 'Examining key %s, value %s', $single_key, $single_value );
+					$this->debug( 'Examining key %s:%s, value %s', $key, $single_key, $single_value );
 					$unserialized = maybe_unserialize( $single_value );
 					if ( is_array( $unserialized ) )
 						$single_value = $unserialized;
@@ -347,7 +347,13 @@ class Custom_Field_Items
 						$single_value = [ $single_value ];
 					// Extract as many IDs as possible.
 					foreach( $single_value as $maybe_id )
-						$ids = array_merge( $ids, preg_split( '/[^0-9]/', $maybe_id ) );
+					{
+						// Is this a URL? Don't split it.
+						if ( filter_var($maybe_id, FILTER_VALIDATE_URL) === false )
+							$ids = array_merge( $ids, preg_split( '/[^0-9]/', $maybe_id ) );
+						else
+							$ids []= $maybe_id;
+					}
 				}
 
 				if ( $options->type == 'add' )
@@ -375,9 +381,9 @@ class Custom_Field_Items
 		@brief		Replace a single ID.
 		@since		2019-05-31 08:54:27
 	**/
-	public function replace_id( $bcd, $id )
+	public function replace_id( $broadcasting_data, $find, $old_id )
 	{
-		return $id;
+		throw new \Exception( 'Override the replace ID method!' );
 	}
 
 	/**
@@ -390,10 +396,13 @@ class Custom_Field_Items
 		$new_value = $original_value;
 		foreach( $ids as $id )
 		{
-			$new_id = $this->replace_id( $bcd, $id );
+			$new_id = $this->replace_id( $bcd, false, $id );
 			if ( ! $new_id )
 				continue;
-			$new_value = preg_replace( '/' . $id . '/', $new_id, $new_value, 1 );
+			if ( filter_var( $new_id, FILTER_VALIDATE_URL) === false )
+				$new_value = preg_replace( '/' . $id . '/', $new_id, $new_value, 1 );
+			else
+				$new_value = str_replace( $id, $new_id, $new_value );
 			$this->debug( 'New value for %s is %s', $id, $new_id );
 		}
 		return $new_value;

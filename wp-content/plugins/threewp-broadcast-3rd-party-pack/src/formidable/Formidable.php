@@ -206,6 +206,7 @@ class Formidable
 		$options = array_merge( [
 			'blogs' => [],
 			'form_id' => false,
+			'mode' => 'append',		// "append" to only add new entries, "overwrite" to overwrite all entries.
 		], (array) $options );
 		$options = (object) $options;
 
@@ -237,6 +238,16 @@ class Formidable
 			$child_entries_table = $this->table_name( 'frm_items' );
 			$child_entry_meta_table = $this->table_name( 'frm_item_metas' );
 
+			if ( $options->mode == 'overwrite' )
+			{
+				$query = sprintf( "DELETE FROM `%s` WHERE `form_id` = '%s'",
+					$child_entries_table,
+					$new_form_id
+				);
+				$this->debug( $query );
+				$entries = $wpdb->get_results( $query );
+			}
+
 			// Insert each entry individually.
 			$query = sprintf( "SELECT `id`, %s FROM `%s` WHERE `form_id` = '%s' AND `item_key` NOT IN
 						( SELECT `item_key` FROM `%s` WHERE `form_id` = '%s' )",
@@ -258,6 +269,17 @@ class Formidable
 				$old_entry_id = $entry->id;
 				unset( $entry->id );
 				$entry->form_id = $new_form_id;
+
+				if ( $entry->post_id > 0 )
+				{
+					$old_post_id = $entry->post_id;
+					switch_to_blog( $parent_blog_id );
+					$post_bcd = ThreeWP_Broadcast()->api()->broadcast_children( $old_post_id, [ $blog_id ] );
+					restore_current_blog();
+					$new_post_id = $post_bcd->new_post( 'ID' );
+					$this->debug( 'New post ID for %s is %s', $old_post_id, $new_post_id );
+					$entry->post_id = $new_post_id;
+				}
 
 				$wpdb->insert( $child_entries_table, (array)$entry );
 				$new_entry_id = $wpdb->insert_id;
@@ -319,6 +341,13 @@ class Formidable
 			'required' => false,
 		] );
 
+		$mode_input = $form->select( 'mode' )
+			->description( __( 'How to broadcast the entries.', 'threewp_broadcast' ) )
+			->label( __( 'Mode', 'threewp_broadcast' ) )
+			->opt( 'append', 'Add new entries only' )
+			->opt( 'overwrite', 'Replace all entries' )
+			->value( 'append' );
+
 		$go = $form->primary_button( 'go' )
 			// Button
 			->value( __( 'Broadcast selected form entries', 'threewp_broadcast' ) );
@@ -332,11 +361,22 @@ class Formidable
 			$form_ids = $forms_input->get_post_value();
 			$blog_ids = $blogs_select->get_post_value();
 
+			switch( $mode_input->get_post_value() )
+			{
+				case 'overwrite':
+					$mode = 'overwrite';
+					break;
+				default:
+					$mode = 'append';
+					break;
+			}
+
 			foreach( $form_ids as $form_id )
 			{
 				$this->broadcast_entries( [
 					'form_id' => $form_id,
 					'blogs' => $blog_ids,
+					'mode' => $mode,
 				] );
 			}
 

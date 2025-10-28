@@ -1,3 +1,346 @@
+<strong>51.11</strong> 20250928
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/code-snippets-pro/">Code Snippets Pro</a>: Adds support for the <a href="https://wordpress.org/plugins/code-snippets/">Code Snippets Pro plugin</a>.
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/icegram-engage/">Icegram Engage</a> adds support for the <a href="https://wordpress.org/plugins/icegram/">Icegram Engage plugin</a>.
+<a href="https://broadcast.plainviewplugins.com/addon/event-organiser/">Event Organiser</a>: Fix recurring events not being broadcasted.
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Parse strings in fields, such as default values, allowing for replacement of texts using the Search And Replace add-on, and detection of shortcodes.
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Parse field content in Gravity Views, allowing for replacement of texts and detection of various shortcodes.
+
+<strong>51.08</strong> 20250713
+
+<a href="https://broadcast.plainviewplugins.com/addon/divi-builder/">Divi Builder</a>: Updated code to better find and translate image URLs in the et_pb_image shortcode.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Support post term IDs in loop coursels.
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Allow broadcasting of Taxonomies. Allow broadcasting of several types of options pages.
+
+<strong>51.06</strong> 20250519
+
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Allow broadcasting of Custom Content Types.
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Allow broadcasting of Smart Filters.
+<a href="https://broadcast.plainviewplugins.com/addon/polylang/">Polylang</a>: Set the language for copied images.
+<a href="https://broadcast.plainviewplugins.com/addon/yoast-seo/">Yoast SEO</a>: When using the Bulk Cloner, do not clone the indexable table, since it contains data that fits the source blog.
+
+<strong>51.05</strong> 20250419
+
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Fix focuspoint field ID not working on more than one blog.
+<a href="https://broadcast.plainviewplugins.com/addon/cornerstone/">Cornerstone</a>: Add support for bg_lower_img_src images.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Handle bundle sell linked products
+
+<strong>51.03</strong> 20250309
+
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Add support for field conditional logic. Currently only taxonomy fields are handled.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for ha-comparison-table.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Fix over-syncing of WooCommerce conditional displays.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for loop-carousels.
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Add support for forms in Gravity View widgets.
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Add support for views in Gravity Views.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Handle the product IDs and categories for shop coupons.
+<a href="https://broadcast.plainviewplugins.com/addon/yoast-seo/">Yoast SEO</a>: Allow for broadcasting without taxonomies enabled.
+
+<strong>51.02</strong> 20250125
+
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for icon widget, Advanced SVG Icons from Unlimited Elements.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for dynamic links in containers.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for dynamic popups in containers.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for WooCommerce conditional displays.
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Fix conditionals in Gravity Views.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Assign support for courses in WooCommerce products.
+<a href="https://broadcast.plainviewplugins.com/addon/pods/">Pods</a>: Fix fatal error when trying to add non-existent values for fields.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Check that the composite product default ID field is set before trying to broadcast the product specified by the field.
+
+<strong>51.01</strong> 20241116
+
+Renamed the "Post Expirator" add-on to "Publishpress Future".
+
+<a href="https://broadcast.plainviewplugins.com/addon/bricks-builder/">Bricks Builder</a>: Add image gallery support.
+<a href="https://broadcast.plainviewplugins.com/addon/divi-builder/">Divi Builder</a>: Add support for the include_categories attribute of the et_pb_blog shortcode.
+
+<strong>50.15</strong> 20241012
+
+<a href="https://broadcast.plainviewplugins.com/addon/bricks-builder/">Bricks Builder</a>: Adds support all elements with an svg icon attribute.
+<a href="https://broadcast.plainviewplugins.com/addon/events-manager/">Events Manager</a>: Fix events not disappearing from the child blog's event list when the child event is deleted.
+<a href="https://broadcast.plainviewplugins.com/addon/events-manager/">Events Manager</a>: Handle global events / locations. Note that due to a bug in EM, the setting of the global locations is the same as the global events.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Fix fatal error when no slider is found on child with newer versions of PHP.
+<a href="https://broadcast.plainviewplugins.com/addon/modern-events/">Modern Events</a>: Add support for the MEC shortcode.
+<a href="https://broadcast.plainviewplugins.com/addon/wpml/">WPML</a>: Disable the Translation Manager when broadcasting, because it causes a fatal error.
+<a href="https://broadcast.plainviewplugins.com/addon/wp-rocket/">WP Rocket</a>: Clear domain cache when Broadcast shortcodes are saved.
+
+<strong>50.14</strong> 20240824
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/bricks-builder/">Bricks Builder</a>: Adds support for the <a href="https://bricksbuilder.io/">Bricks Builder page editor</a>.
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Delete the relationships on the child if the parent does not have relationships.
+
+<strong>50.11</strong> 20240706
+
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Add support for the focuspoint field type.
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Check that the location content in the field group is valid.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Fix support for hotspot element.
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Add support for different types of relationships.
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Fix restoring fields for posts that have both meta boxes and taxonomy fields.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Add support for composite products and their scenarios.
+<a href="https://broadcast.plainviewplugins.com/addon/wpml/">WPML</a>: Sync the terms of the newly-broadcasted / updated child post after updating the child post. This fixes term counts not being in sync.
+
+<strong>50.09</strong> 20240506
+
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Save the newest field value when updating the value. Used to interact with snippets.
+<a href="https://broadcast.plainviewplugins.com/addon/cornerstone/">Cornerstone</a>: Replace the cs_content ID in the post content.
+<a href="https://broadcast.plainviewplugins.com/addon/cornerstone/">Cornerstone</a>: Handle featured images as the image ID.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for the hotspot widget.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for the icon-list widget.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Assign the course id to quizzes in yet another custom field.
+<a href="https://broadcast.plainviewplugins.com/addon/polylang/">Polylang</a>: Check for polylang using define.
+<a href="https://broadcast.plainviewplugins.com/addon/polylang/">Polylang</a>: Preserve the front page setting for the various languages.
+<a href="https://broadcast.plainviewplugins.com/addon/the-events-calendar/">The Events Calendar</a>: Wait until the event is created in the external table before broadcasting. Fixes a fatal error when broadcasting events.
+<a href="https://broadcast.plainviewplugins.com/addon/wpml/">WPML</a>: Set the taxonomy terms using raw SQL instead of relying on WPML's functions.
+
+<strong>50.08</strong> 20240221
+
+Remove reference to unreleased Tutor LMS add-on.
+
+<strong>50.07</strong> 20240209
+
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Add support for ACF field in menu items (when broadcasting menus using the Menus add-on).
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Ensure that the icon-box widget has a value image ID, preventing a fatal error.
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Add support for feeds with feed_xxx meta keys, such as the Legal Signing workflow step.
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Add support for galleries that only have URLs.
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Fix Options Pages tab.
+<a href="https://broadcast.plainviewplugins.com/addon/jetpack/">Jetpack</a>: Add-on is now obsolete due to changes in Jetpack's social broadcasting code. The developers cannot offer a solution.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Add update_sfwd_custom_field action to allow the course data to be protected using a code snippet.
+<a href="https://broadcast.plainviewplugins.com/addon/post-expirator/">Post Expirator</a>: Change the post link data in the child's expiration settings in the database.
+<a href="https://broadcast.plainviewplugins.com/addon/translatepress/">TranslatePress</a>: Add-on is now obsolete due to changes in their data storage. <a href="https://wordpress.org/support/topic/trp_original_meta-how-to-get-strings-associated-to-post/">The developers cannot offer a solution</a>.
+<a href="https://broadcast.plainviewplugins.com/addon/yoast-seo/">Yoast SEO</a>: Add support for modifying the post's canonical URL. This will replace the parent base URL with the child site's base URL.
+
+<strong>50.06</strong> 20231119
+
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Allow array string fields to be processed.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Obey the custom field protectlist regarding the protecting of the page conditions.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for "Slides" pro widget.
+<a href="https://broadcast.plainviewplugins.com/addon/jetpack/">Jetpack</a>: Fix double social posting to the parent post's social media.
+<a href="https://broadcast.plainviewplugins.com/addon/ninja-forms/">Ninja Forms</a>: Add support for new duplicate database table columns, fixes child form logged in state not being changed.
+
+<strong>50.05</strong> 20231007
+
+<a href="https://broadcast.plainviewplugins.com/addon/divi-builder/">Divi Builder</a>: Add support for the et_pb_image shortcode.
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Add support for more value formats.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Obey the taxonomy blacklist so that product_attribute_image and thumbnail_id meta keys can be ignored.
+
+<strong>50.04</strong> 20230818
+
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Fix detection of value format for ID fields.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Set yet another custom field in the quiz questions pointing to the quiz.
+<a href="https://broadcast.plainviewplugins.com/addon/ubermenu/">UberMenu</a>: Adds support item images.
+
+<strong>50.03</strong> 20230722
+
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Parse fields when widgets are being broadcasted using the <a href="https://broadcast.plainviewplugins.com/addon/widgets/">Widgets</a> add-on.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for term IDs in loop grid element.
+<a href="https://broadcast.plainviewplugins.com/addon/post-expirator/">Post Expirator</a>: Add fix for scheduling using the actions in the new versions of PE.
+
+<strong>50.02</strong> 20230613
+
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Fixed fatal error "does not have a method "threewp_broadcast_broadcasting_started""
+
+<strong>50.01</strong> 20230610
+
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Added support for the image_aspect_ratio_crop field type.
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Add support for broadcasting Gravity Bookings locations, services and staff.
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Add support for posts fields.
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Add support for text fields, allowing shortcodes to be parsed.
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Add support for gallery and media fields with the ID or ID+URL value format. Only URL does not work.
+<a href="https://broadcast.plainviewplugins.com/addon/pods/">Pods</a>: Fix instance error for Pods v2.9.15
+<a href="https://broadcast.plainviewplugins.com/addon/search-and-filter/">Search And Filter</a>: Adds support for broadcasting of the s&f widget.
+<a href="https://broadcast.plainviewplugins.com/addon/widgets/">Widgets</a>: Add support for widget names that have underscores and dashes.
+
+<strong>50</strong> 20230407
+
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Fix page conditions not transferring.
+
+<strong>49.06</strong> 20230303
+
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Automatically copy the global.css file when broadcasting the default-kit library.
+<a href="https://broadcast.plainviewplugins.com/addon/yoast-seo/">Yoast SEO</a>: Add support for primary all-sorts-of-taxonomies, not just categories.
+
+<strong>49.04</strong> 20230127
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/search-exclude/">Search Exclude</a>: Adds support for the <a href="https://wordpress.org/plugins/search-exclude/">Search Exclude</a> plugin.
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Better handling of taxonomies with underscores.
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Sync more taxonomy fields.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support page settings via the default-kit page.
+<a href="https://broadcast.plainviewplugins.com/addon/the-events-calendar/">The Events Calendar</a>: Add support for v6 with its new data storage.
+<a href="https://broadcast.plainviewplugins.com/addon/toolset/">Toolset</a>: Better handling of relationships.
+
+<strong>49.03</strong> 20230109
+
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: The product image gallery can now be protected using the custom field protect list (_product_image_gallery).
+
+<strong>49.02</strong> 20230104
+
+<a href="https://broadcast.plainviewplugins.com/addon/divi-builder/">Divi Builder</a>: Parse the encoded links in slideshows.
+
+<strong>49.01</strong> 20221225
+
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Fields in protect lists are ignored when a child post has just been created.
+<a href="https://broadcast.plainviewplugins.com/addon/bbpress/">BBPress</a>: Add support for nested replies.
+<a href="https://broadcast.plainviewplugins.com/addon/bbpress/">BBPress</a>: Automatically sync subscriptions between linked forums / topics.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for loop-grids.
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Add support for repeater, gallery and image fields in the meta box.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Add support for broadcasting notifications (the ld-notification post type).
+<a href="https://broadcast.plainviewplugins.com/addon/polylang/">Polylang</a>: During "find unlinked children", help find the correct child post when several translations have the same slug.
+<a href="https://broadcast.plainviewplugins.com/addon/search-and-filter/">Search And Filter</a>: Adds support for broadcasting layouts and templates.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Add support for additional variation images provided by the <a href="https://woocommerce.com/products/woocommerce-additional-variation-images/">WooCommerce Additional Variation Images plugin</a>.
+
+<strong>48.14</strong> 20221008
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Adds support for <a href="https://crocoblock.com/plugins/jetengine/custom-post-type/">JetEngine custom post types</a>.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Prevent the template part conditions from being overwritten during broadcasting and when deleting posts on the parent blog.
+<a href="https://broadcast.plainviewplugins.com/addon/slider-revolution/">Slider Revolution</a>: Add support for background images and the navigation images.
+
+<strong>48.11</strong> 20220819
+
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for broadcasting widgets from <a href="https://wordpress.org/plugins/unlimited-elements-for-elementor/">Unlimited Elements</a>.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Check for image widgets that are not image widgets.
+<a href="https://broadcast.plainviewplugins.com/addon/wpml/">WPML</a>: Force switching of language during broadcasting. This fixes the problem of taxonomies in the wrong language being created when using the queue in http mode.
+
+<strong>48.09</strong> 20220418
+
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Fix warning for elements that sometimes don't have links set.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Automatically create the CSS directory for each blog.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Fix course post not having the _sfwd-courses custom field.
+<a href="https://broadcast.plainviewplugins.com/addon/pods/">Pods</a>: Add support for broadcasting of groups and fields.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Add support for the variation image gallery.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Add support for term product_attribute_image.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Add support for composite products.
+
+<strong>48.08</strong> 20220312
+
+<a href="https://broadcast.plainviewplugins.com/addon/divi-builder/">Divi Builder</a>: Parse the encoded links in buttons.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Handle bg_image, background_image and image settings more generically.
+
+<strong>48.07</strong> 20220226
+
+<a href="https://broadcast.plainviewplugins.com/addon/cornerstone/">Cornerstone</a>: Add support for broadcasting layouts, templates and user templates.
+<a href="https://broadcast.plainviewplugins.com/addon/cornerstone/">Cornerstone</a>: Merge Global Blocks For Cornerstone add-on.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for button, header and call-to-action links.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for Media Carousel images and links.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for JetPopups.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for the Jet Listing Grid, Jet Smart Filters Checkboxes and Jet Smart Filters Range elements.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for the Jet Listing Grid, Jet Smart Filters Checkboxes and Jet Smart Filters Range elements.
+Global Blocks For Cornerstone: Add-on is obsolete. Replaced by Cornerstone add-on.
+<a href="https://broadcast.plainviewplugins.com/addon/post-expirator/">Post Expirator</a>: Mark categories as used, for compatibility with v48 of Broadcast.
+<a href="https://broadcast.plainviewplugins.com/addon/yoast-seo/">Yoast SEO</a>: Allow the _yoast_wpseo_meta-robots-nofollow and _yoast_wpseo_meta-robots-noindex custom fields to be protected.
+
+<strong>48.01</strong> 20211105
+
+<a href="https://broadcast.plainviewplugins.com/addon/pods/">Pods</a>: Clear the cache when pods are deleted on the parent blog, so that they are also shown as deleted on the child blog.
+<a href="https://broadcast.plainviewplugins.com/addon/the-events-calendar/">The Events Calendar</a>: Allow several organisers per event.
+<a href="https://broadcast.plainviewplugins.com/addon/toolset/">Toolset</a>: Fix recursion when broadcasting relationships again. Use new broadcast_once() functionality.
+
+<strong>47.13</strong> 20211007
+
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Delete existing add-on feeds on child blogs before adding the parent ones.
+
+<strong>47.12</strong> 20210923
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/search-and-filter/">Search And Filter</a>: Adds support for the <a href="https://searchandfilter.com/">Search And Filter</a> plugin.
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Allow handling of non-pro ACF5 fields with add-ons (repeater) as pro.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for ProductIntroFullDetail element type.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Add support for syncing shipping and coupon info when syncing orders.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Add support for the <a href="https://wclovers.com/">WCFM - WooCommerce Multivendor Marketplace</a> plugin.
+
+<strong>47.11</strong> 20210815
+
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Add support for <a href="https://woocommerce.com/products/product-bundles/">product bundles</a>.
+
+<strong>47.09</strong> 20210706
+
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Fix warning when no conditions are to be restored.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Fix warning when a gallery is empty.
+<a href="https://broadcast.plainviewplugins.com/addon/formidable-forms/">Formidable Forms</a>: Broadcast associated posts when broadcasting entries.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Better PHP8 compatability.
+
+<strong>47.08</strong> 20210613
+
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for new widgets: avante-portfolio-grid and dyxnet-testimonial-card
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Allow for non-standard upload directories.
+
+<strong>47.07</strong> 20210513
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/imagify/">Imagify</a>: Adds support for the <a href="https://wordpress.org/plugins/imagify/">Imagify</a> plugin / service.
+
+<a href="https://broadcast.plainviewplugins.com/addon/category-order-and-taxonomy-terms-order/">Category Order and Taxonomy Terms Order</a>: Also set the term order during broadcasting.
+<a href="https://broadcast.plainviewplugins.com/addon/toolset/">Toolset</a>: Fix recursion when broadcasting relationships.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Also broadcast new coupon amount when a coupon is used, not just usage count.
+
+<strong>47.06</strong> 20210412
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/rank-math-seo/">Rank Math SEO</a>: Add support for the <a href="https://wordpress.org/plugins/seo-by-rank-math/">Rank Math SEO</a> plugin.
+<a href="https://broadcast.plainviewplugins.com/addon/cornerstone/">Cornerstone</a>: Add support for toggle_anchor_graphic_image_src
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Add support for course builder data stored in "steps" instead of "hrt" data.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Add support for either overwriting or keeping the groups of a course.
+<a href="https://broadcast.plainviewplugins.com/addon/toolset/">Toolset</a>: Add support for relationships with intermediaries.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Allow broadcasting of coupons and broadcasting of usage count when the coupon is used.
+<a href="https://broadcast.plainviewplugins.com/addon/wpml/">WPML</a>: Ignore taxonomies that are not translatable.
+
+<strong>47.04</strong> 20210318
+
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for display conditions.
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Add support for parsing Advanced Post Creation content in order to get shortcodes parsed.
+<a href="https://broadcast.plainviewplugins.com/addon/tablepress/">Tablepress</a>: Modernize add-on to parse Tablepress shortcodes everywhere Broadcast processes texts (Elementor widgets, ACF text fields, etc), not just the post content.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Add support for chained products.
+
+<strong>47.03</strong> 20210308
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/all-in-one-seo/">All In One SEO</a> adds support for the <a href="https://wordpress.org/plugins/all-in-one-seo-pack/">All in One SEO</a> plugin.
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/generatepress/">GeneratePress</a> adds support for the <a href="https://generatepress.com/">GeneratePress</a> theme / plugin.
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Add support for term protect list.
+<a href="https://broadcast.plainviewplugins.com/addon/yoast-seo/">Yoast SEO</a>: Fix the SEO data cache for terms not being emptied.
+
+<strong>47.02</strong> 20210216
+
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Add support for <a href="https://bookingwp.com/plugins/woocommerce-appointments/">Appointments</a>.
+
+<strong>47.01</strong> 20210210
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/permalink-manager/">Permalink Manager</a>: Adds support for the <a href="https://wordpress.org/plugins/permalink-manager/">Permalink Manager</a> plugin.
+<a href="https://broadcast.plainviewplugins.com/addon/divi-builder/">Divi Builder</a>: Add support for Theme Builder usage restrictions based on pages and term IDs.
+<a href="https://broadcast.plainviewplugins.com/addon/toolset/">Toolset</a>: Add support for WPML in relationships.
+
+<strong>46.19</strong> 20210127
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/litespeed-cache/">LiteSpeed Cache</a>: Adds support for the <a href="https://wordpress.org/plugins/litespeed-cache/">LiteSpeed Cache</a> plugin.</li>
+<a href="https://broadcast.plainviewplugins.com/addon/divi-builder/">Divi Builder</a>: Prevent theme overwrites when using the <a href="https://broadcast.plainviewplugins.com/addon/sync-taxonomies/">Sync Taxonomies</a> add-on, in addition to when broadcasting.
+<a href="https://broadcast.plainviewplugins.com/addon/cornerstone/">Cornerstone</a>: Add support for images.
+<a href="https://broadcast.plainviewplugins.com/addon/gravity-forms/">Gravity Forms</a>: Added more support for Workflows.
+<a href="https://broadcast.plainviewplugins.com/addon/wpml/">WPML</a>: Force WPML to recount the taxonomy term stats after taxonomy sync.
+
+<strong>46.18</strong> 20201229
+
+<a href="https://broadcast.plainviewplugins.com/addon/divi-builder/">Divi Builder</a>: Added support for global modules in rows also.
+<a href="https://broadcast.plainviewplugins.com/addon/ns-cloner/">NS Cloner</a>: Add support for later linking using the queue add-on, which allows for big imports.
+<a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce</a>: Add support for <a href="https://woocommerce.com/products/woocommerce-bookings/">Bookings</a> resources and people.
+<a href="https://broadcast.plainviewplugins.com/addon/yoast-seo/">Yoast SEO</a>: Fix the SEO data cache not being emptied.
+
+<strong>46.17</strong> 20201215
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/cornerstone/">Cornerstone</a> adds support for the <a href="http://theme.co/cornerstone">Cornerstone Page Builder</a>.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Add action to allow for merging of existing course data, for example <a href="https://broadcast.plainviewplugins.com/snippet/learndash-preserve-the-registration-button-url/">the registration button URL (snippet)</a>.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Add support for broadcasting Uncanny Content via GB blocks.
+<a href="https://broadcast.plainviewplugins.com/addon/mailster/">Mailster</a>: New: Force showing of the Broadcast meta box, which is normally hidden due to broken Mailster CSS.
+<a href="https://broadcast.plainviewplugins.com/addon/mailster/">Mailster</a>: Add PHP Code wizard for copying templates between blogs.
+
+<strong>46.16</strong> 20201116
+
+<a href="https://broadcast.plainviewplugins.com/addon/wpml/">WPML</a>: Add support for the WooCommerce Multilingual plugin. This prevents translated child products from losing their custom fields when updating the parent language.
+
+<strong>46.15</strong> 20201111
+
+<a href="https://broadcast.plainviewplugins.com/addon/beaver-builder/">Beaver Builder</a>: Add support for parsing links.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for AE Post Blocks manual selections.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: When broadcasting a course in groups, broadcast the groups automatically if they do not exist on the child.
+<a href="https://broadcast.plainviewplugins.com/addon/mailster/">Mailster</a>: New: Force showing of the Broadcast meta box, which is normally hidden due to broken Mailster CSS.
+<a href="https://broadcast.plainviewplugins.com/addon/mailster/">Mailster</a>: Add support for forms and lists in conditions.
+<a href="https://broadcast.plainviewplugins.com/addon/polylang/">Polylang</a>: Add support for broadcasting string translations.
+<a href="https://broadcast.plainviewplugins.com/addon/toolset/">Toolset</a>: Add support for v3.4 relationships.
+
 <strong>46.14</strong> 20201002
 
 <a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for AE Post Blocks relationships.

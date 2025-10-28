@@ -142,6 +142,15 @@ class Beaver_Builder
 			if ( isset( $data->tax_post_category ) )
 			{
 				$bcd->taxonomies()->also_sync( 'post', 'category' );
+				$term_ids = explode( ',', $data->tax_post_category );
+				$bcd->taxonomies()->use_terms( $term_ids );
+			}
+
+			if ( isset( $data->tax_post_post_tag ) )
+			{
+				$bcd->taxonomies()->also_sync( 'post', 'post_tag' );
+				$term_ids = explode( ',', $data->tax_post_post_tag );
+				$bcd->taxonomies()->use_terms( $term_ids );
 			}
 
 			foreach( (array) $data as $key => $value )
@@ -214,6 +223,8 @@ class Beaver_Builder
 			if ( ! is_array( $data ) )
 				continue;
 
+			$this->debug( 'BB data is: %s', $data );
+
 			foreach( $data as $data_key => $data_value )
 				$data[ $data_key ] = $this->parse_data( $bcd, $data_value );
 
@@ -227,12 +238,31 @@ class Beaver_Builder
 				] );
 				if ( isset( $section->settings ) )
 				{
+					if ( isset( $section->settings->icon_field ) )
+					{
+						$new_ids = [];
+						foreach( $section->settings->icon_field as $image_id )
+						{
+							$new_id = $bcd->copied_attachments()->get( $image_id );
+							$new_ids []= $new_id;
+						}
+						$section->settings->icon_field = $new_ids;
+						$this->debug( 'New icon_field for %s is %s', $block_id, $new_ids );
+					}
 					if ( isset( $section->settings->text ) )
 					{
 						$section->settings->text = $this->parse_content( [
 							'broadcasting_data' => $bcd,
 							'content' => $section->settings->text,
 							'id' => $key . $block_id . 'text',
+						] );
+					}
+					if ( isset( $section->settings->link ) )
+					{
+						$section->settings->link = $this->parse_content( [
+							'broadcasting_data' => $bcd,
+							'content' => $section->settings->link,
+							'id' => $key . $block_id . 'link',
 						] );
 					}
 
@@ -338,8 +368,15 @@ class Beaver_Builder
 				continue;
 
 			$data = maybe_unserialize( $data );
+			$this->debug( 'Beaver builder %s data: %s',
+				$key,
+				$data
+			);
 			foreach( $data as $data_key => $data_value )
+			{
+				$this->debug( 'Preparsing key %s', $data_key );
 				$this->preparse_data( $bcd, $data_value );
+			}
 
 			$this->debug( 'Preparsing Beaver Builder %s', $key );
 			// Go through all of the data.
@@ -353,12 +390,30 @@ class Beaver_Builder
 
 				if ( isset( $section->settings ) )
 				{
+					if ( isset( $section->settings->icon_field ) )
+					{
+						$this->debug( 'Found icon_field in %s', $block_id );
+						foreach( $section->settings->icon_field as $image_id )
+						{
+							$bcd->try_add_attachment( $image_id );
+							$this->debug( 'Added attachment %s', $image_id );
+						}
+
+					}
 					if ( isset( $section->settings->text ) )
 					{
 						$section->settings->text = $this->preparse_content( [
 							'broadcasting_data' => $bcd,
 							'content' => $section->settings->text,
 							'id' => $key . $block_id . 'text',
+						] );
+					}
+					if ( isset( $section->settings->link ) )
+					{
+						$this->preparse_content( [
+							'broadcasting_data' => $bcd,
+							'content' => $section->settings->link,
+							'id' => $key . $block_id . 'link',
 						] );
 					}
 

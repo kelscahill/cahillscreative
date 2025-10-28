@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\premium_pack\h5p;
 
+use Exception;
+
 /**
 	@brief			Adds support for the <a href="https://wordpress.org/plugins/h5p/">H5P Interactive Content</a> plugin.
 	@plugin_group	3rd party compatability
@@ -82,8 +84,20 @@ class H5P
 
 		// Copy all files associated to this content.
 		$upload_dir = wp_upload_dir();
-		$path = sprintf( "%s/h5p/content/%s", $upload_dir[ 'basedir' ], $new_row_id );
-		$this->recursive_copy( $bcd->h5p->get( 'recursive_copy' ), $path );
+		$target = sprintf( "%s/h5p/content/%s", $upload_dir[ 'basedir' ], $new_row_id );
+		$source = $bcd->h5p->collection( 'recursive_copy' )->get( $item->id );
+		try
+		{
+			$this->recursive_copy( $source, $target );
+		}
+		catch ( Exception $e )
+		{
+			$this->debug( 'Warning: Unabled to copy files from %s to %s: %s',
+				$source,
+				$target,
+				$e->getMessage(),
+			);
+		}
 
 		return $new_row_id;
 	}
@@ -137,7 +151,7 @@ class H5P
 
 		// Remember this path for later.
 		$path = sprintf( "%s/h5p/content/%s", $bcd->upload_dir[ 'basedir' ], $item->id );
-		$bcd->h5p->set( 'recursive_copy', $path );
+		$bcd->h5p->collection( 'recursive_copy' )->set( $item->id, $path );
 	}
 
 	// --------------------------------------------------------------------------------------------

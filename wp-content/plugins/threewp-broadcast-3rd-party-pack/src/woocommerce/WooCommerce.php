@@ -19,6 +19,40 @@ extends \threewp_broadcast\premium_pack\base
 		do_copy_options as copy_option_trait_do_copy_options;
 	}
 	use \threewp_broadcast\premium_pack\classes\database_trait;
+	use \threewp_broadcast\premium_pack\classes\parse_custom_field_taxonomies_trait;
+
+	/**
+	 *	@brief	coupon_categories_meta_keys
+	 *	@since	2025-03-02 13:30:24
+	 **/
+	public static $coupon_categories_meta_keys =
+	[
+		'product_categories',
+		'exclude_product_categories',
+	];
+
+	/**
+		@brief
+		@since		2021-03-16 11:52:47
+	**/
+	public static $product_references = [
+		'_chained_product_detail' => 'keys',
+		'_chained_product_ids' => 'values',
+		'_children' => 'values',
+		'_crosssell_ids' => 'values',
+		'_upsell_ids' => 'values',
+		'_wc_pb_bundle_sell_ids' => 'values',
+	];
+
+	/**
+		@brief		An array of custom fields that contain images with commas.
+		@since		2022-03-23 19:20:06
+	**/
+	public static $image_gallery_commas = [
+		'_product_image_gallery',
+		'variation_image_gallery',
+		'_wc_additional_variation_images',
+	];
 
 	/**
 		@brief		Are we busy syncing stock?
@@ -27,14 +61,26 @@ extends \threewp_broadcast\premium_pack\base
 	public static $syncing_stock = false;
 
 	/**
+		@brief		These term meta keys need to be parsed for images.
+		@since		2022-04-04 13:04:57
+	**/
+	public static $term_meta_image_keys = [
+		'product_attribute_image',
+		'thumbnail_id',
+	];
+
+	/**
 		@brief		The keys that WC stores for each term.
 		@since		2016-10-05 09:56:01
 	**/
-	public static $term_meta_keys = [ 'display_type' ];
+	public static $term_meta_keys = [
+		'display_type',
+	];
 
 	public function _construct()
 	{
 		$this->add_action( 'broadcast_bulk_cloner_option_modifications_get_wizards' );
+		$this->add_action( 'broadcast_woocommerce_wc_update_order_item_meta' );
 		$this->add_filter( 'broadcast_wp_all_import_pro_maybe_import', 10, 2 );
 
 		$this->add_filter( 'threewp_broadcast_allowed_post_statuses' );
@@ -50,13 +96,17 @@ extends \threewp_broadcast\premium_pack\base
 		$this->add_filter( 'wc_memberships_allowed_meta_box_ids' );
 		$this->add_action( 'woocommerce_admin_process_product_object' );
 		$this->add_action( 'woocommerce_api_edit_order', 'update_order' );
-		$this->add_action( 'woocommerce_order_edit_status', 'update_order' );
+		//$this->add_action( 'woocommerce_order_edit_status', 'update_order' );
 		$this->add_action( 'woocommerce_order_status_changed', 'update_order' );
+
+		$this->add_action( 'woocommerce_decrease_coupon_usage_count', 'woocommerce_update_coupon_usage_count', 10, 2 );
+		$this->add_action( 'woocommerce_increase_coupon_usage_count', 'woocommerce_update_coupon_usage_count', 10, 2 );
 
 		$this->add_action( 'woocommerce_product_set_stock' );
 		$this->add_action( 'woocommerce_variation_set_stock', 'woocommerce_product_set_stock' );
 
 		new Add_To_Cart_Shortcode();
+		new WCFM_Marketplace();
 	}
 
 	// -------------------------------------------------------------------------------------------------------------------
@@ -73,6 +123,37 @@ extends \threewp_broadcast\premium_pack\base
 		$w->set_name( 'WooCommerce > E-mails > New Order > Recipient(s)' );
 		$w->set_option_name( 'woocommerce_new_order_settings' );
 		$w->set_option_key( 'recipient' );
+	}
+
+	/**
+		@brief		Update the meta of an order item on the child.
+		@since		2021-05-05 22:33:41
+	**/
+	public function broadcast_woocommerce_wc_update_order_item_meta( $action )
+	{
+		if ( $action->is_finished() )
+			return;
+
+		$bcd = $action->broadcasting_data;
+
+		// Update all of the meta.
+		foreach( $action->parent_item->meta as $key => $value )
+		{
+			if ( in_array( $key, [ '_product_id', '_variation_id' ] ) )
+				if ( isset( $bcd->woocommerce->order_item_bcd->$value ) )
+					$value = $bcd->woocommerce->order_item_bcd->$value->get_linked_post_on_this_blog();
+			if ( $key == 'coupon_data' )
+			{
+				$data = maybe_unserialize( $value );
+				$old_id = $data[ 'id' ];
+				$new_id = $bcd->equivalent_posts()->get( $bcd->parent_blog_id, $old_id, get_current_blog_id() );
+				$this->debug( 'Coupon %s is now %s', $old_id, $new_id );
+				$data[ 'id' ] = $new_id;
+				$value = $data;
+			}
+			wc_update_order_item_meta( $action->new_item_id, $key, $value );
+			$this->debug( 'Updated item meta %s for item %s to %s', $key, $action->new_item_id, $value );
+		}
 	}
 
 	/**
@@ -195,6 +276,11 @@ extends \threewp_broadcast\premium_pack\base
 		if ( function_exists( 'wc_get_order_statuses' ) )
 			$statuses = array_merge( $statuses, array_keys( wc_get_order_statuses() ) );
 
+		if ( function_exists( 'get_wc_booking_statuses' ) )
+			$statuses = array_merge( $statuses, array_keys( get_wc_booking_statuses() ) );
+
+		// For the bookings plugin.
+		$statuses []= 'confirmed';
 		return $statuses;
 	}
 
@@ -213,10 +299,14 @@ extends \threewp_broadcast\premium_pack\base
 		if ( ! isset( $bcd->woocommerce ) )
 			return;
 
+		$this->maybe_restore_appointments( $bcd );
 		$this->maybe_restore_automatewoo_workflow( $bcd );
+		$this->maybe_restore_bookable_product( $bcd );
+		$this->maybe_restore_composite_products( $bcd );
 		$this->maybe_restore_membership_plan( $bcd );
 		$this->maybe_restore_order( $bcd );
 		$this->maybe_restore_product( $bcd );
+		$this->maybe_restore_shop_coupon( $bcd );
 	}
 
 	/**
@@ -231,10 +321,13 @@ extends \threewp_broadcast\premium_pack\base
 
 		$bcd = $action->broadcasting_data;
 
+		$this->maybe_save_appointments( $bcd );
 		$this->maybe_save_automatewoo_workflow( $bcd );
+		$this->maybe_save_bookable_product( $bcd );
 		$this->maybe_save_membership_plan( $bcd );
 		$this->maybe_save_order( $bcd );
 		$this->maybe_save_product( $bcd );
+		$this->maybe_save_shop_coupon( $bcd );
 	}
 
 	/**
@@ -286,13 +379,15 @@ extends \threewp_broadcast\premium_pack\base
 				  $bcd->woocommerce_termmeta->collection( $term_id )->set( 'photo', $image_id );
 				}
 
-				// Thumbnail ID
-				$key = 'thumbnail_id';
-				$image_id = get_term_meta( $term_id, $key, true );
-				if ( $image_id > 0 )
+				// Meta with images.
+				foreach ( static::$term_meta_image_keys as $key )
 				{
-				  $bcd->try_add_attachment( $image_id );
-				  $bcd->woocommerce_termmeta->collection( $term_id )->set( 'thumbnail_id', $image_id );
+					$image_id = get_term_meta( $term_id, $key, true );
+					if ( $image_id > 0 )
+					{
+					  $bcd->try_add_attachment( $image_id );
+					  $bcd->woocommerce_termmeta->collection( $term_id )->set( $key, $image_id );
+					}
 				}
 
 				// And other terms.
@@ -336,8 +431,10 @@ extends \threewp_broadcast\premium_pack\base
 	{
 		$action->add_type( 'atum_supplier' );
 		$action->add_type( 'aw_workflow' );
+		$action->add_type( 'bookable_resource' );
 		$action->add_type( 'product' );
 		$action->add_type( 'product_variation' );
+		$action->add_type( 'shop_coupon' );
 		$action->add_type( 'shop_order' );
 		$action->add_type( 'shop_order_refund' );
 		$action->add_type( 'wc_membership_plan' );
@@ -428,16 +525,28 @@ extends \threewp_broadcast\premium_pack\base
 			update_term_meta( $new_term_id, $new_key, $new_value );
 		}
 
-		// Restore thumbnail ID.
-		$old_image_id = $bcd->woocommerce_termmeta->collection( $old_term_id )
-			->get( 'thumbnail_id', 0 );
-		if ( $old_image_id > 0 )
+		// Restore the term meta images.
+		foreach ( static::$term_meta_image_keys as $key )
 		{
-			$new_value = $bcd->copied_attachments()->get( $old_image_id );
-			if ( $new_value > 0 )
+			if ( $bcd->taxonomies()->blacklist_has( $action->old_term->taxonomy, $action->old_term->slug, $key ) )
 			{
-				$this->debug( 'Setting new thumbnail_id %s for term %s.', $new_value, $new_term_id );
-				update_term_meta( $new_term_id, 'thumbnail_id', $new_value );
+				$this->debug( 'Taxonomy term %s / %s has key %s blacklisted. Skipping.',
+					$action->old_term->taxonomy,
+					$action->old_term->slug,
+					$key
+				);
+				continue;
+			}
+			$old_image_id = $bcd->woocommerce_termmeta->collection( $old_term_id )
+				->get( $key, 0 );
+			if ( $old_image_id > 0 )
+			{
+				$new_value = $bcd->copied_attachments()->get( $old_image_id );
+				if ( $new_value > 0 )
+				{
+					$this->debug( 'Setting new image %s %s for term %s.', $key, $new_value, $new_term_id );
+					update_term_meta( $new_term_id, $key, $new_value );
+				}
 			}
 		}
 
@@ -543,10 +652,17 @@ extends \threewp_broadcast\premium_pack\base
 			$child_products = [];
 			$this->debug( 'This order is not linked. Should we link it? Begin search for parent of product(s).' );
 			$items = $this->get_order_items( $order );
+			$items = ( array ) $items;
 			$this->debug( 'The order has %s items.', count( $items ) );
 			foreach( $items as $item_id => $item )
 			{
 				$product_id = $item->meta->_product_id;
+
+				if ( ! $product_id )
+				{
+					$this->debug( 'Item %s has no product. Ignoring.', $item_id );
+					continue;
+				}
 				$this->debug( 'Item %s has product %s.', $item_id, $product_id );
 
 				// Load the broadcast data for this product.
@@ -589,8 +705,9 @@ extends \threewp_broadcast\premium_pack\base
 
 				if ( $parent_blog != $this_product_parent )
 					return $this->debug( "This product's parent blog does not match the one found previously: %s", $parent_blog );
-				if ( count( array_diff( $child_products, $this_product_children ) ) > 0 )
-					return $this->debug( "This product's children are not the same as those found previously: %s", $child_products );
+				if ( apply_filters( 'broadcast_woocommerce_order_sync_products_must_all_be_broadcasted_the_same', true, $order_id, $child_products ) )
+					if ( count( array_diff( $child_products, $this_product_children ) ) > 0 )
+						return $this->debug( "This product's children are not the same as those found previously: %s", $child_products );
 			}
 
 			if ( $parent_blog == 0 )
@@ -628,7 +745,10 @@ extends \threewp_broadcast\premium_pack\base
 				$this->debug( 'Broadcast the order to all product child blogs.' );
 				// And now broadcast the order to all product children blogs.
 				switch_to_blog( $parent_blog );
-				$bc->api()->broadcast_children( $order_parent[ 'post_id' ], $child_products );
+				// Allow plugins to prevent broadcasting to child sites by return an empty array.
+				$child_products = apply_filters( 'broadcast_woocommerce_broadcast_order_to_children', $child_products, $order_parent[ 'post_id' ] );
+				if ( count( $child_products ) > 0 )
+					$bc->api()->broadcast_children( $order_parent[ 'post_id' ], $child_products );
 				restore_current_blog();
 			}
 			else
@@ -666,6 +786,41 @@ extends \threewp_broadcast\premium_pack\base
 		$this->debug( 'Enabling v3 save_post workaround.' );
 
 		$this->__woocommerce_admin_process_product_object = true;
+	}
+
+	/**
+		@brief		Broadcast the usage count of the coupon.
+		@since		2021-04-12 09:36:21
+	**/
+	public function woocommerce_update_coupon_usage_count( $coupon, $usage_count )
+	{
+		// Allow people to choose whether to sync coupon usage count.
+		if ( ! apply_filters( 'woocommerce_update_coupon_usage_count', true, $coupon ) )
+			return;
+
+		$code = $coupon->get_code();
+		$this->debug( 'Usage count for coupon %s is %s', $code, $usage_count );
+
+		$amount = $coupon->get_amount();
+
+		$action = new \threewp_broadcast\actions\each_linked_post();
+		$action->post_id = $coupon->get_id();
+		$action->add_callback( function( $o ) use ( $code, $amount, $usage_count )
+		{
+			// Load the coupon on this blog.
+			$child_coupon = new \WC_Coupon( $code );
+			// Set the new coupon usage count.
+			$this->debug( 'Setting amount / usage count for coupon %s on %s to %s / %s',
+				$child_coupon->get_id(),
+				get_current_blog_id(),
+				$amount,
+				$usage_count
+			);
+			$child_coupon->set_amount( $amount );
+			$child_coupon->set_usage_count( $usage_count );
+			$child_coupon->save();
+		} );
+		$action->execute();
 	}
 
 	/**
@@ -718,6 +873,77 @@ extends \threewp_broadcast\premium_pack\base
 	// -------------------------------------------------------------------------------------------------------------------
 
 	/**
+		@brief		Save any appointment data.
+		@since		2021-02-10 19:20:09
+	**/
+	public function maybe_save_appointments( $bcd )
+	{
+		// Check that this product has any appointments.
+		$qty = $bcd->custom_fields()->get_single( '_wc_appointment_qty' );
+		if ( ! $qty )
+			return;
+
+		global $wpdb;
+		$bcd = $this->prepare_bcd( $bcd );
+
+		// Store all availability.
+		$key = 'wc_appointments_availability';
+		$table = $wpdb->prefix . $key;
+		$query = sprintf( "SELECT * FROM `%s` WHERE `kind` = 'availability#%s' AND `kind_id` = '%s'",
+			$table,
+			$bcd->post->post_type,
+			$bcd->post->ID
+		);
+		$this->debug( $query );
+		$result = $wpdb->get_results( $query );
+		$this->debug( '%s availability found.', count( $result ) );
+		$bcd->woocommerce->$key = $result;
+
+		// Store all relationships.
+		$key = 'wc_appointment_relationships';
+		$table = $wpdb->prefix . $key;
+		$query = sprintf( "SELECT * FROM `%s` WHERE `product_id` = '%s'", $table, $bcd->post->ID );
+		$this->debug( $query );
+		$result = $wpdb->get_results( $query );
+		$this->debug( '%s relationships found.', count( $result ) );
+		$bcd->woocommerce->$key = $result;
+	}
+
+	/**
+		@brief		Save the product bundle.
+		@since		2021-07-06 21:38:47
+	**/
+	public function maybe_save_bundle( $bcd )
+	{
+		if ( $bcd->woocommerce->product->get_type() != 'bundle' )
+            return;
+
+		global $wpdb;
+		$this->prepare_bcd( $bcd );
+
+		// Find all bundled products.
+		$table = $wpdb->prefix . 'woocommerce_bundled_items';
+		$query = sprintf( "SELECT * FROM `%s` WHERE `bundle_id` = '%s'", $table, $bcd->post->ID );
+		$this->debug( $query );
+		$results = $wpdb->get_results( $query );
+		$this->debug( 'Found bundled items: %s', $results );
+		$bcd->woocommerce
+            ->set( 'bundled_items', $results );
+
+        $bundled_item_ids = [];
+        foreach( $results as $result )
+            $bundled_item_ids []= $result->bundled_item_id;
+
+		$table = $wpdb->prefix . 'woocommerce_bundled_itemmeta';
+		$query = sprintf( "SELECT * FROM `%s` WHERE `bundled_item_id` IN (%s)", $table, implode( ',', $bundled_item_ids ) );
+		$this->debug( $query );
+		$results = $wpdb->get_results( $query );
+		$this->debug( 'Item meta: %s', $results );
+		$bcd->woocommerce
+            ->set( 'bundled_itemmeta', $results );
+	}
+
+	/**
 		@brief		Handle AutomateWoo workflows
 		@since		2016-10-05 17:13:39
 	**/
@@ -766,6 +992,44 @@ extends \threewp_broadcast\premium_pack\base
 	}
 
 	/**
+		@brief		Save bookable product data.
+		@since		2020-12-26 21:22:54
+	**/
+	public function maybe_save_bookable_product( $bcd )
+	{
+		$bcd = $this->prepare_bcd( $bcd );
+
+		if ( $bcd->custom_fields()->get_single( '_wc_booking_has_resources' ) == '1' )
+		{
+			$bcd->woocommerce->_wc_booking_has_resources = true;
+
+			// Save all relationships.
+			global $wpdb;
+			$table = $wpdb->prefix . 'wc_booking_relationships';
+			$query = sprintf( "SELECT * FROM `%s` WHERE `product_id` = '%s'",
+				$table,
+				$bcd->post->ID
+			);
+			$this->debug( $query );
+			$relationships = $wpdb->get_results( $query );
+			$this->debug( 'Relationships: %s', $relationships );
+			$bcd->woocommerce->wc_booking_relationships = $relationships;
+		}
+
+		if ( $bcd->custom_fields()->get_single( '_wc_booking_has_persons' ) == '1' )
+		{
+			$bcd->woocommerce->_wc_booking_has_persons = true;
+
+			$bookable_person = get_posts( [
+				'post_parent' => $bcd->post->ID,
+				'post_type' => 'bookable_person',
+			] );
+			$this->debug( '%d bookable_person found: %s', count( $bookable_person ), $bookable_person );
+			$bcd->woocommerce->bookable_person = $bookable_person;
+		}
+	}
+
+	/**
 		@brief		Save the membership plan data.
 		@since		2015-12-23 18:32:01
 	**/
@@ -776,8 +1040,7 @@ extends \threewp_broadcast\premium_pack\base
 
 		$rules = get_option( 'wc_memberships_rules' );
 
-		if ( ! isset( $bcd->woocommerce ) )
-			$bcd->woocommerce = (object)[];
+		$bcd = $this->prepare_bcd( $bcd );
 
 		$mp = (object)[];
 		$bcd->woocommerce->membership_plan = $mp;
@@ -806,8 +1069,7 @@ extends \threewp_broadcast\premium_pack\base
 		if ( $bcd->post->post_type != 'shop_order' )
 			return $this->debug( 'Post is not an order.' );
 
-		if ( ! isset( $bcd->woocommerce ) )
-			$bcd->woocommerce = (object)[];
+		$bcd = $this->prepare_bcd( $bcd );
 
 		// Save info about the order.
 		$bcd->woocommerce->order = new \WC_Order( $bcd->post->ID );
@@ -828,6 +1090,10 @@ extends \threewp_broadcast\premium_pack\base
 		] );
 		$this->debug( '%d refunds found: %s', count( $refunds ), $refunds );
 		$bcd->woocommerce->order_refunds = $refunds;
+
+        $action = $this->new_action( 'after_save_order' );
+        $action->broadcasting_data = $bcd;
+        $action->execute();
 	}
 
 	/**
@@ -840,8 +1106,7 @@ extends \threewp_broadcast\premium_pack\base
 		if ( ! in_array( $bcd->post->post_type, [ 'product', 'product_variation' ] ) )
 			return $this->debug( 'Post is not a product.' );
 
-		if ( ! isset( $bcd->woocommerce ) )
-			$bcd->woocommerce = (object)[];
+		$bcd = $this->prepare_bcd( $bcd );
 
 		$bcd->woocommerce->product = wc_get_product( $bcd->post->ID );
 		$this->debug( 'The product is: %s', $bcd->woocommerce->product );
@@ -849,16 +1114,34 @@ extends \threewp_broadcast\premium_pack\base
 
 		$this->save_attribute_taxonomies( $bcd );
 		$this->save_atum_inventory( $bcd );
+		$this->maybe_save_bundle( $bcd );
 		$this->save_category_images( $bcd );
 		$this->save_german_market( $bcd );
 		$this->save_image_gallery( $bcd );
-		$this->save_product_references( $bcd, '_children' );
-		$this->save_product_references( $bcd, '_crosssell_ids' );
-		$this->save_product_references( $bcd, '_upsell_ids' );
 		$this->save_swatch_images( $bcd );
 		$this->save_swatch_taxonomy_images( $bcd );
 		$this->save_variations( $bcd );
 		$this->save_yith_tabs( $bcd );
+	}
+
+	/**
+	 * maybe_save_shop_coupon
+	 *
+	 * @since		2025-03-02 13:26:33
+	 **/
+	public function maybe_save_shop_coupon( $bcd )
+	{
+		if ( $bcd->post->post_type != 'shop_coupon' )
+			return;
+
+		$taxonomies = $bcd->taxonomies()
+			->also_sync( null, 'product_cat' );
+		foreach( static::$coupon_categories_meta_keys as $key )
+		{
+			$ids = $bcd->custom_fields()->get_single( $key );
+			$ids = maybe_unserialize( $ids );
+			$taxonomies->use_terms( $ids );
+		}
 	}
 
 	/**
@@ -915,7 +1198,7 @@ extends \threewp_broadcast\premium_pack\base
 				continue;
 
 			$this->debug( 'Adding product category image %.', $image_id, $category->name );
-			$images->add_image( $term_id, 'thumbnail_id', $image_id );
+			$images->add_image( $category, 'thumbnail_id', $image_id );
 			$bcd->try_add_attachment( $image_id );
 		}
 	}
@@ -962,37 +1245,20 @@ extends \threewp_broadcast\premium_pack\base
 	**/
 	public function save_image_gallery( $bcd )
 	{
-		// Inform Broadcast of the images.
-		$ids = $bcd->custom_fields()->get_single( '_product_image_gallery' );
-		$ids = explode( ',', $ids );
-		if ( count( $ids ) < 1 )
-			return;
-		$this->debug( 'Adding image gallery: %s', $ids );
-		foreach( $ids as $id )
-			$bcd->try_add_attachment( $id );
-	}
-
-	/**
-		@brief		Save references to other products.
-		@since		2015-08-05 14:29:24
-	**/
-	public function save_product_references( $bcd, $type )
-	{
-		$ids = $bcd->custom_fields()->get_single( $type );
-		if ( ! $ids )
-			return $this->debug( 'No %s products.', $type );
-
-		$ids = maybe_unserialize( $ids );
-
-		if ( ! is_array( $ids ) )
-			return $this->debug( 'Not an array.' );
-
-		$products = ThreeWP_Broadcast()->collection();
-
-		foreach( $ids as $id )
-			$products->set( $id, ThreeWP_Broadcast()->get_post_broadcast_data( $bcd->parent_blog_id, $id ) );
-
-		$bcd->woocommerce->$type = $products;
+		foreach( static::$image_gallery_commas as $type )
+		{
+			// Inform Broadcast of the images.
+			$ids = $bcd->custom_fields()->get_single( $type );
+			if ( ! $ids )
+				continue;
+			$ids = explode( ',', $ids );
+			$ids = array_filter( $ids );
+			if ( count( $ids ) < 1 )
+				continue;
+			$this->debug( 'Adding %s image gallery: %s', $type, $ids );
+			foreach( $ids as $id )
+				$bcd->try_add_attachment( $id );
+		}
 	}
 
 	/**
@@ -1047,7 +1313,7 @@ extends \threewp_broadcast\premium_pack\base
 						continue;
 					$image_id = reset( $meta_value );
 					$this->debug( 'Found a swatch taxonomy image: %s', $image_id );
-					$images->add_image( $term_id, $meta_key, $image_id );
+					$images->add_image( $term, $meta_key, $image_id );
 					$bcd->try_add_attachment( $image_id );
 
 					// Save the rest of the terms.
@@ -1056,7 +1322,7 @@ extends \threewp_broadcast\premium_pack\base
 						{
 							$this_value = reset( $this_value );
 							$this->debug( 'Also saving term meta: %s: %s', $this_key, $this_value );
-							$images->add_value( $term_id, $this_key, $this_value );
+							$images->add_value( $term, $this_key, $this_value );
 						}
 				}
 			}
@@ -1073,7 +1339,7 @@ extends \threewp_broadcast\premium_pack\base
 
 		// This is a product. Is it a variation?
 		if ( ! $bcd->woocommerce->product->is_type( 'variable' ) )
-			return $this->debug( 'Post is not a variation.' );
+			return $this->debug( 'Product is not a variation.' );
 
 		// Instead of get_available_variations(), force ALL children to be retrieved.
 		$children = $bcd->woocommerce->product->get_children();
@@ -1130,6 +1396,56 @@ extends \threewp_broadcast\premium_pack\base
 	// -------------------------------------------------------------------------------------------------------------------
 	// --- RESTORE
 	// -------------------------------------------------------------------------------------------------------------------
+
+	/**
+		@brief		Save any appointment data.
+		@since		2021-02-10 19:20:09
+	**/
+	public function maybe_restore_appointments( $bcd )
+	{
+		$key = 'wc_appointments_availability';
+		if ( ! isset( $bcd->woocommerce->$key ) )
+			return;
+
+		global $wpdb;
+
+		// Handle availability.
+		$table = $wpdb->prefix . $key;
+
+		$this->debug( 'Deleting all existing availability.' );
+		$wpdb->delete( $table, [
+			'kind' => 'availability#' . $bcd->post->post_type,
+			'kind_id' => $bcd->new_post( 'ID' ),
+		] );
+
+		// Reinsert availability.
+		foreach( $bcd->woocommerce->$key as $row )
+		{
+			$new_row = clone( $row );
+			unset( $new_row->ID );
+			$new_row->kind_id = $bcd->new_post( 'ID' );
+			$this->debug( 'Inserting availability: %s', json_encode( $new_row ) );
+			$wpdb->insert( $table, ( array ) $new_row );
+		}
+
+		// Handle relationships.
+		$key = 'wc_appointment_relationships';
+		$table = $wpdb->prefix . $key;
+
+		$this->debug( 'Deleting all existing availability.' );
+		$wpdb->delete( $table, [
+			'product_id' => $bcd->new_post( 'ID' ),
+		] );
+
+		// Reinsert relationships.
+		foreach( $bcd->woocommerce->$key as $row )
+		{
+			$new_row = clone( $row );
+			$new_row->product_id = $bcd->new_post( 'ID' );
+			$this->debug( 'Inserting relationship: %s', json_encode( $new_row ) );
+			$wpdb->insert( $table, ( array ) $new_row );
+		}
+	}
 
 	/**
 		@brief		Restore AutomateWoo data.
@@ -1254,6 +1570,157 @@ extends \threewp_broadcast\premium_pack\base
 	}
 
 	/**
+		@brief		maybe_restore_bookable_product
+		@since		2020-12-25 11:07:53
+	**/
+	public function maybe_restore_bookable_product( $bcd )
+	{
+
+		if ( isset( $bcd->woocommerce->_wc_booking_has_resources ) )
+		{
+			//$bcd->woocommerce->wc_booking_relationships = $relationships;
+			$resource_ids = [];
+			foreach( [
+				'_resource_base_costs',
+				'_resource_block_costs',
+			] as $key )
+			{
+				$old_values = $bcd->custom_fields()->get_single( $key );
+				if ( ! $old_values )
+					continue;
+
+				$old_values = maybe_unserialize( $old_values );
+				$this->debug( 'Old values for %s: %s', $key, $old_values );
+
+				$new_values = [];
+				foreach( $old_values as $post_id => $cost )
+				{
+					$new_post_id = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $post_id, get_current_blog_id() );
+					$resource_ids[ $post_id ] = $new_post_id;
+					$new_values[ $new_post_id ] = $cost;
+				}
+
+				$bcd->custom_fields()->child_fields()->update_meta( $key, $new_values );
+			}
+
+			// Empty the relationships.
+			global $wpdb;
+			$table = $wpdb->prefix . 'wc_booking_relationships';
+			$query = sprintf( "DELETE FROM `%s` WHERE `product_id` = '%s'",
+				$table,
+				$bcd->new_post( 'ID' )
+			);
+			$this->debug( $query );
+			$wpdb->query( $query );
+
+			// Insert the new relationships.
+			foreach( $bcd->woocommerce->wc_booking_relationships as $old_relationship )
+			{
+				$old_resource_id = $old_relationship->resource_id;
+				$new_resource_id = $resource_ids[ $old_resource_id ];
+
+				$new_relationship = (object) [];
+				$new_relationship->product_id = $bcd->new_post( 'ID' );
+				$new_relationship->resource_id = $new_resource_id;
+				$new_relationship->sort_order = $old_relationship->sort_order;
+				$new_relationship = (array)$new_relationship;
+
+				$this->debug( 'Inserting relationship: %s', $new_relationship );
+				$wpdb->insert( $table, $new_relationship );
+			}
+		}
+
+		if ( isset( $bcd->woocommerce->_wc_booking_has_persons ) )
+		{
+			foreach( $bcd->woocommerce->bookable_person as $bookable_person )
+			{
+				$this->debug( 'Broadcasting bookable_person %d', $bookable_person->ID );
+				switch_to_blog( $bcd->parent_blog_id );
+				ThreeWP_Broadcast()->api()->broadcast_children( $bookable_person->ID, [ $bcd->current_child_blog_id ] );
+				restore_current_blog();
+			}
+		}
+	}
+
+	/**
+		@brief		WooCommerce Composite Products
+		@since		2022-04-08 21:36:29
+	**/
+	public function maybe_restore_composite_products( $bcd )
+	{
+		$cf_key = '_bto_data';
+		$data = $bcd->custom_fields()->get_single( $cf_key );
+		$data = maybe_unserialize( $data );
+		if ( ! $data )
+			return;
+		foreach( $data as $group_id => $group_data )
+		{
+			switch( $group_data[ 'query_type' ] )
+			{
+				case 'product_ids':
+					$new_assigned_ids = [];
+					foreach( $group_data[ 'assigned_ids' ] as $old_assigned_id )
+					{
+						$new_assigned_id = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $old_assigned_id, get_current_blog_id() );
+						$new_assigned_ids []= $new_assigned_id;
+					}
+					$data[ $group_id ][ 'assigned_ids' ] = $new_assigned_ids;
+					$this->debug( 'New assigned IDs: %s', $new_assigned_ids );
+
+					foreach( [
+						'default_id',
+						'default_id_categories',
+						'default_id_products',
+					] as $id_key )
+					{
+						if ( ! isset( $data[ $group_id ][ $id_key ] ) )
+							continue;
+						$old_value = $data[ $group_id ][ $id_key ];
+						$old_value = intval( $old_value );
+						if ( $old_value > 0 )
+						{
+							$new_value = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $old_value, get_current_blog_id() );
+							$data[ $group_id ][ $id_key ] = $new_value;
+							$this->debug( 'New %s: %s', $id_key, $new_value );
+						}
+					}
+				break;
+			}
+		}
+		$bcd->custom_fields()->child_fields()->update_meta( $cf_key, $data );
+
+		$cf_key = '_bto_scenario_data';
+		$data = $bcd->custom_fields()->get_single( $cf_key );
+		$data = maybe_unserialize( $data );
+		if ( ! $data )
+			return;
+		foreach( $data as $scenario_id => $scenario_data )
+		{
+			foreach( $scenario_data[ 'component_data' ] as $component_data_index => $components )
+			{
+				$new_components = [];
+				$this->debug( 'Old component_data %s components: %s', $component_data_index, $components );
+				foreach( $components as $component_index => $old_component_id )
+				{
+					// Zero is a valid component, apparently.
+					if ( $old_component_id < 1 )
+					{
+						$new_component_id = $old_component_id;
+					}
+					else
+					{
+						$new_component_id = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $old_component_id, get_current_blog_id() );
+					}
+					$new_components[ $component_index ] = $new_component_id;
+					$this->debug( 'Replaced old component_id %s with %s', $old_component_id, $new_component_id );
+				}
+				$data[ $scenario_id ][ 'component_data' ][ $component_data_index ] = $new_components;
+			}
+		}
+		$bcd->custom_fields()->child_fields()->update_meta( $cf_key, $data );
+	}
+
+	/**
 		@brief		Restore the membership plan data.
 		@since		2015-12-23 18:44:04
 	**/
@@ -1320,35 +1787,41 @@ extends \threewp_broadcast\premium_pack\base
 
 		$order_id = $bcd->new_post( 'ID' );
 		$order = new \WC_Order( $order_id );
-		$order_items = $this->get_order_items( $order );
 
-		// Delete all order items.
-		foreach( $order_items as $order_item_id => $order_item )
-		{
-			$this->debug( 'Deleting order item %d', $order_item_id );
-			wc_delete_order_item( $order_item_id );
-		}
+		$action = $this->new_action( 'delete_order_items' );
+		$action->broadcasting_data = $bcd;
+		$action->order_id = $order_id;
+		$action->order_items = $this->get_order_items( $order );
+		$action->execute();
+
+		if ( ! $action->is_finished() )
+			foreach( $action->order_items as $order_item_id => $order_item )
+			{
+				$this->debug( 'Deleting order item %d', $order_item_id );
+				wc_delete_order_item( $order_item_id );
+			}
 
 		// Add the new items from the parent order that don't exist on the child order.
 		$this->debug( 'Adding items %s', $bcd->woocommerce->order_items );
-		foreach( $bcd->woocommerce->order_items as $parent_item )
+		$bcd->woocommerce->new_order_items = ThreeWP_Broadcast()->collection();
+		$noi = $bcd->woocommerce->new_order_items; // Conv
+		$noi = $noi->collection( 'blog' )->collection( get_current_blog_id() );
+		foreach( $bcd->woocommerce->order_items as $parent_item_id => $parent_item )
 		{
 			$new_item_id = wc_add_order_item( $order_id, [
 				'order_item_name' => $parent_item->name,
+				'order_item_type' => $parent_item->type,
 			] );
+			$noi->set( $parent_item_id, $new_item_id );
 			$this->debug( 'Added item %d to order.', $new_item_id );
 
 			$this->debug( 'Handling database meta: %s', $parent_item->meta );
 
-			// Update all of the meta.
-			foreach( $parent_item->meta as $key => $value )
-			{
-				if ( in_array( $key, [ '_product_id', '_variation_id' ] ) )
-					if ( isset( $bcd->woocommerce->order_item_bcd->$value ) )
-						$value = $bcd->woocommerce->order_item_bcd->$value->get_linked_post_on_this_blog();
-				wc_update_order_item_meta( $new_item_id, $key, $value );
-				$this->debug( 'Updated item meta %s for item %s to %s', $key, $new_item_id, $value );
-			}
+			$action = $this->new_action( 'wc_update_order_item_meta' );
+			$action->broadcasting_data = $bcd;
+			$action->new_item_id = $new_item_id;
+			$action->parent_item = $parent_item;
+			$action->execute();
 		}
 
 		// Delete any existing refunds.
@@ -1372,6 +1845,11 @@ extends \threewp_broadcast\premium_pack\base
 			$refund_bcd = ThreeWP_Broadcast()->api()->broadcast_children( $refund->ID, [ $bcd->current_child_blog_id ] );
 			restore_current_blog();
 		}
+
+        $action = $this->new_action( 'after_restore_order' );
+        $action->broadcasting_data = $bcd;
+        $action->new_order_items = $noi;
+        $action->execute();
 	}
 
 	/**
@@ -1383,20 +1861,62 @@ extends \threewp_broadcast\premium_pack\base
 		if ( ! isset( $bcd->woocommerce->product ) )
 			return;
 
-		$this->restore_attribute_taxonomies( $bcd );
+		// Otherwise we're going to get duplicates all the time.
+		if ( $bcd->post->post_type != 'product_variation' )
+			$this->restore_attribute_taxonomies( $bcd );
+
 		$this->restore_atum_inventory( $bcd );
+		$this->restore_bundle( $bcd );
 		$this->restore_composite_product( $bcd );
 		$this->restore_german_market( $bcd );
 		$this->restore_image_gallery( $bcd );
-		$this->restore_product_references( $bcd, '_children' );
-		$this->restore_product_references( $bcd, '_crosssell_ids' );
-		$this->restore_product_references( $bcd, '_upsell_ids' );
+
+		foreach( static::$product_references as $reference_field => $type )
+			$this->restore_product_references( [
+				'bcd' => $bcd,
+				'key' => $reference_field,
+				'type' => $type,
+			] );
+
 		$this->restore_swatch_images( $bcd );
 		$this->restore_term_metas( $bcd );
 		$this->recount_terms();
 		$this->restore_variations( $bcd );
 		$this->restore_yith_badges( $bcd );
 		$this->restore_yith_tabs( $bcd );
+	}
+
+	/**
+	 * maybe_restore_shop_coupon
+	 *
+	 * @since		2025-03-02 13:36:48
+	 **/
+	public function maybe_restore_shop_coupon( $bcd )
+	{
+		foreach( [
+			'product_ids',
+			'exclude_product_ids',
+		] as $key )
+		{
+			$value = $bcd->custom_fields()->get_single( $key );
+			// Does the child even has this custom field.
+			if ( ! $value )
+				continue;
+			$values = explode( ',', $value );
+			$new_values = [];
+			foreach( $values as $value )
+			{
+				$new_value = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $value, get_current_blog_id() );
+				$new_values []= $new_value;
+			}
+
+			$new_values = implode( ',', $new_values );
+			$this->debug( 'Updating field %s with: %s', $key, $new_values );
+			$bcd->custom_fields()->child_fields()->update_meta( $key, $new_values );
+		}
+
+		foreach( static::$coupon_categories_meta_keys as $key )
+			$this->parse_custom_field_taxonomies_terms( $bcd, $key );
 	}
 
 	/**
@@ -1482,6 +2002,77 @@ extends \threewp_broadcast\premium_pack\base
 	}
 
 	/**
+		@brief		Restore the product bundle.
+		@since		2021-07-06 21:39:16
+	**/
+	public function restore_bundle( $bcd )
+	{
+		$items = $bcd->woocommerce->get( 'bundled_items' );
+
+        if ( ! $items )
+            return;
+
+		global $wpdb;
+
+		// Get all of the current products
+		$table = $wpdb->prefix . 'woocommerce_bundled_items';
+		$query = sprintf( "SELECT * FROM `%s` WHERE `bundle_id` = '%s'", $table, $bcd->post->ID );
+		$this->debug( $query );
+		$results = $wpdb->get_results( $query );
+		$this->debug( 'Found bundled items: %s', $results );
+
+		// And get their IDs, so we can clean out the meta table.
+        $bundled_item_ids = [];
+        foreach( $results as $result )
+            $bundled_item_ids []= $result->bundled_item_id;
+
+		// Remove all current products.
+		$table = $wpdb->prefix . 'woocommerce_bundled_items';
+		$query = sprintf( "DELETE FROM `%s` WHERE `bundle_id` = '%s'", $table, $bcd->new_post( 'ID' ) );
+		$this->debug( $query );
+		$results = $wpdb->get_results( $query );
+
+		$table = $wpdb->prefix . 'woocommerce_bundled_itemmeta';
+		$query = sprintf( "DELETE FROM `%s` WHERE `bundled_item_id` IN (%s)", $table, implode( ',', $bundled_item_ids ) );
+		$this->debug( $query );
+		$results = $wpdb->get_results( $query );
+
+		$bundled_itemmeta = $bcd->woocommerce
+            ->get( 'bundled_itemmeta' );
+
+		// Now we can start adding the new products.
+		$woocommerce_bundled_items_table = $wpdb->prefix . 'woocommerce_bundled_items';
+		$woocommerce_bundled_itemmeta_table = $wpdb->prefix . 'woocommerce_bundled_itemmeta';
+        foreach( $items as $item )
+        {
+			$new_item = clone( $item );
+			unset( $new_item->bundled_item_id );
+
+			$new_item->bundle_id = $bcd->new_post( 'ID' );
+
+			$new_product_id = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $item->product_id, get_current_blog_id() );
+			$new_item->product_id = $new_product_id;
+
+			// Insert the row.
+			$wpdb->insert( $woocommerce_bundled_items_table, (array) $new_item );
+			$new_bundled_item_id = $wpdb->insert_id;
+			$new_item->bundled_item_id = $new_bundled_item_id;
+			$this->debug( 'New bundled_item_id is %s: %s', $new_bundled_item_id, $new_item );
+
+			foreach( $bundled_itemmeta as $itemmeta )
+			{
+				if ( $itemmeta->bundled_item_id != $item->bundled_item_id )
+					continue;
+				$new_itemmeta = clone( $itemmeta );
+				unset( $new_itemmeta->meta_id );
+				$new_itemmeta->bundled_item_id = $new_bundled_item_id;
+				$this->debug( 'Inserting itemmeta %s', $new_itemmeta );
+				$wpdb->insert( $woocommerce_bundled_itemmeta_table, (array) $new_itemmeta );
+			}
+        }
+    }
+
+	/**
 		@brief		Restore a composite product.
 		@since		2019-06-10 17:29:43
 	**/
@@ -1550,42 +2141,59 @@ extends \threewp_broadcast\premium_pack\base
 	{
 		$cf = $bcd->custom_fields()
 			->child_fields();
-		$old_ids = $cf->get( '_product_image_gallery' );
-		if ( ! $old_ids )
-			return;
-		$old_ids = reset( $old_ids );
-		$old_ids = explode( ',', $old_ids );
-		$new_ids = [];
-		foreach( $old_ids as $old_id )
-			$new_ids []= $bcd->copied_attachments()->get( $old_id );
 
-		$new_ids = implode( ',', $new_ids );
-		$this->debug( 'Replacing image gallery with %s', $new_ids );
-		$cf->update_meta( '_product_image_gallery', $new_ids );
+		foreach( static::$image_gallery_commas as $type )
+		{
+			if ( $bcd->custom_fields()->protectlist_has( $type ) )
+			{
+				$this->debug( 'Field %s is protected. Skipping.', $type );
+				continue;
+			}
+			$old_ids = $cf->get( $type );
+			if ( ! $old_ids )
+				continue;
+			$old_ids = reset( $old_ids );
+			$old_ids = explode( ',', $old_ids );
+			$new_ids = [];
+			foreach( $old_ids as $old_id )
+				$new_ids []= $bcd->copied_attachments()->get( $old_id );
+
+			$new_ids = implode( ',', $new_ids );
+			$this->debug( 'Replacing gallery %s with %s', $type, $new_ids );
+			$cf->update_meta( $type, $new_ids );
+		}
 	}
 
 	/**
 		@brief		Restore the product references of a type.
 		@since		2015-08-05 14:34:11
 	**/
-	public function restore_product_references( $bcd, $type )
+	public function restore_product_references( $options )
 	{
-		if ( ! isset( $bcd->woocommerce->$type ) )
-			return $this->debug( 'No product references of type %s', $type );
+		$options = ( object) $options;
+
+		$old_ids = $options->bcd->custom_fields()->get_single( $options->key );
+
+		$old_ids = maybe_unserialize( $old_ids );
+
+		if ( ! $old_ids )
+			return;
 
 		$new_ids = [];
-		foreach( $bcd->woocommerce->$type as $old_id => $bcd_data )
+		foreach( $old_ids as $old_1 => $old_2 )
 		{
-			// Does this product exist on this blog?
-			if ( ! $bcd_data->has_linked_child_on_this_blog() )
-				continue;
-			$new_id = $bcd_data->get_linked_child_on_this_blog();
-			$new_ids []= $new_id;
+			if ( $options->type == 'keys' )
+				$old_id = $old_1;
+			else
+				$old_id = $old_2;
+			$new_id = $options->bcd->equivalent_posts()->get_or_broadcast( $options->bcd->parent_blog_id, $old_id, get_current_blog_id() );
+			if ( $options->type == 'keys' )
+				$new_ids[ $new_id ] = $old_2;
+			else
+				$new_ids []= $new_id;
 		}
 
-		$this->debug( 'Updating product references of type %s to %s', $type, $new_ids );
-
-		$bcd->custom_fields()->child_fields()->update_meta( $type, $new_ids );
+		$options->bcd->custom_fields()->child_fields()->update_meta( $options->key, $new_ids );
 	}
 
 	/**
@@ -1632,6 +2240,9 @@ extends \threewp_broadcast\premium_pack\base
 
 		foreach( $term_metas as $term_meta )
 		{
+			// We need this for info about the taxonomy.
+			$term = $term_meta->term;
+
 			// Find the equivalent term on this blog.
 			$new_term_id = $bcd->terms()->get( $term_meta->term_id );
 
@@ -1648,17 +2259,25 @@ extends \threewp_broadcast\premium_pack\base
 				$new_meta_value = $bcd->copied_attachments()->get( $term_meta->image_id );
 				if ( $new_meta_value < 1 )
 					$this->debug( 'Unable to find new attachment ID for %s.', intval( $term_meta->image_id ) );
-				else
-					$this->debug( 'Updating meta %s for term %s / %s with thumbnail ID %s / %s.', $term_meta->key, $term_meta->term_id, $new_term_id, $term_meta->image_id, $new_meta_value );
 			}
 
 			// Restoring neutral meta values doesn't require anything special.
 			if ( isset( $term_meta->value ) )
 				$new_meta_value = $term_meta->value;
 
-			$this->debug( 'Updating meta %s for term %s / %s with value %s.', $term_meta->key, $term_meta->term_id, $new_term_id, $new_meta_value );
 
-			update_term_meta( $new_term_id, $term_meta->key, $new_meta_value );
+
+			if ( ! $bcd->taxonomies()->blacklist_has( $term->taxonomy, $term->slug, $term_meta->key ) )
+			{
+				$this->debug( 'Updating meta %s for taxonomy "%s" term %s / %s with value %s.',
+					$term_meta->key,
+					$term->taxonomy,
+					$term_meta->term_id,
+					$new_term_id,
+					$new_meta_value
+				);
+				update_term_meta( $new_term_id, $term_meta->key, $new_meta_value );
+			}
 		}
 	}
 
@@ -1803,18 +2422,12 @@ extends \threewp_broadcast\premium_pack\base
 	**/
 	public function restore_yith_badges( $bcd )
 	{
-		$key = '_yith_wcbm_product_meta';
+		$key = '_yith_wcbm_badge_ids';
 		$value = $bcd->custom_fields()->get_single( $key );
-		$value = maybe_unserialize( $value );
-		if ( ! is_array( $value ) )
+		$badge_ids = maybe_unserialize( $value );
+		if ( ! is_array( $badge_ids ) )
 			return;
-		$this->debug( 'Found %s %s', $key, $value );
-		if ( ! isset( $value[ 'id_badge' ] ) )
-			return;
-		$badge_ids = $value[ 'id_badge' ];
-		$multiple = is_array( $badge_ids );
-		if ( ! $multiple )
-			$badge_ids = [ $badge_ids ];
+		$this->debug( 'Found yith badges: %s', $badge_ids );
 
 		$new_badge_ids = [];
 		foreach( $badge_ids as $badge_id )
@@ -1823,12 +2436,8 @@ extends \threewp_broadcast\premium_pack\base
 			$new_badge_ids []= $new_badge_id;
 		}
 
-		if ( ! $multiple )
-			$new_badge_ids = reset( $new_badge_ids );
-			$value[ 'id_badge' ] = $new_badge_ids;
-
-		$this->debug( 'Saving %s %s', $key, $value );
-		$bcd->custom_fields()->child_fields()->update_meta( $key, $value );
+		$this->debug( 'Saving %s %s', $key, $new_badge_ids );
+		$bcd->custom_fields()->child_fields()->update_meta( $key, $new_badge_ids );
 	}
 
 	/**
@@ -1949,7 +2558,7 @@ extends \threewp_broadcast\premium_pack\base
 
 		$r = (object) [];
 
-		$query = sprintf( "SELECT * FROM `%swoocommerce_order_items` WHERE `order_id` = '%d' AND `order_item_type` = 'line_item'",
+		$query = sprintf( "SELECT * FROM `%swoocommerce_order_items` WHERE `order_id` = '%d'",
 			$wpdb->prefix,
 			$order_id
 		);
@@ -1962,6 +2571,7 @@ extends \threewp_broadcast\premium_pack\base
 
 			$data->meta = (object) [];
 			$data->name = $item->order_item_name;
+			$data->type = $item->order_item_type;
 
 			$query = sprintf( "SELECT * FROM `%swoocommerce_order_itemmeta` WHERE `order_item_id` = '%d'",
 				$wpdb->prefix,
@@ -1988,6 +2598,17 @@ extends \threewp_broadcast\premium_pack\base
 	public function has_woocommerce()
 	{
 		return function_exists( 'wc_get_product' );
+	}
+
+	/**
+		@brief		Prepare the BCD to store WC data.
+		@since		2021-02-10 19:28:26
+	**/
+	public function prepare_bcd( $bcd )
+	{
+		if ( ! isset( $bcd->woocommerce ) )
+			$bcd->woocommerce = ThreeWP_Broadcast()->collection();
+		return $bcd;
 	}
 
 	/**

@@ -40,6 +40,17 @@ class Contact_Form_7
 		if ( ! $found )
 			throw new Exception( sprintf( 'No ID or title found in %s', $item->shortcode ) );
 
+		if ( isset( $item->id ) )
+		{
+			$id = intval( $item->id );
+			if ( (string) $id != (string) $item->id )
+			{
+				$this->debug( 'Found form hash %s', $item->id );
+				$form = wpcf7_get_contact_form_by_hash( $item->id );
+				$item->id = $form->id();
+			}
+		}
+
 		// Did we find just the title? Extract the ID.
 		if ( ! isset( $item->id ) )
 		{

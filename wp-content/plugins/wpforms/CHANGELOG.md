@@ -1,10 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file and formatted via [this recommendation](https://keepachangelog.com/).
 
+## [1.9.8.2] - 2025-10-14
+### Added
+- AI Forms can now support the Camera field.
+
+### Fixed
+- There was an error in the console when duplicating a Layout field containing a File Upload field.
+- Form Builder preview container height with empty state.
+
+## [1.9.8.1] - 2025-09-25
+### Changed
+- Disabled non-dismissible admin notice.
+
 ## [1.9.8] - 2025-09-23
 ### Added
 - New Camera field allowing users to use the device's camera to take a photo or video and instantly attach it to the form.
-- Added Camera option in the File Upload field where users can upload a photo or a video instantly instead of attaching a file.  
+- Added Camera option in the File Upload field where users can upload a photo or a video instantly instead of attaching a file.
 - Read-Only toggle option for form fields in the Form Builder Advanced Options.
 - Ability to disconnect Stripe accounts through the Settings > Payments admin page.
 - Settings to change Lowest and Highest Score Labels for the Rating field.

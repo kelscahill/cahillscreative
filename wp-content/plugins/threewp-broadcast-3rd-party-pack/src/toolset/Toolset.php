@@ -12,6 +12,7 @@ class Toolset
 {
 	use \threewp_broadcast\premium_pack\classes\broadcast_generic_option_ui_trait;
 	use \threewp_broadcast\premium_pack\classes\broadcast_generic_post_ui_trait;
+	use \threewp_broadcast\premium_pack\classes\database_trait;
 
 	const CONTENT_TEMPLATE_CUSTOM_FIELD = '_views_template';
 
@@ -21,15 +22,17 @@ class Toolset
 	**/
 	const VIEW_LOOP_ID_CUSTOM_FIELD = '_view_loop_id';
 
+	public static $association_types = [ 'child_id', 'parent_id', 'intermediary_id' ];
+
 	public function _construct()
 	{
 		$this->add_action( 'broadcast_php_code_load_wizards' );
 		$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
-		$this->add_action( 'threewp_broadcast_broadcasting_finished' );
 		$this->add_action( 'threewp_broadcast_broadcasting_started' );
 		$this->add_action( 'threewp_broadcast_post_action' );
 		$this->add_filter( 'toolset_filter_register_menu_pages', 100 );
 		$this->add_action( 'types_save_post_hook' );
+		$this->wp_types_group = new wp_types_group();
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -73,34 +76,9 @@ class Toolset
 		if ( ! isset( $bcd->toolset ) )
 			return;
 
-		if ( $this->has_types() )
-			$this->maybe_restore_type( $action );
 		$this->maybe_restore_content_template( $action );
+		$this->maybe_restore_relationships( $action );
 		$this->maybe_restore_view( $action );
-	}
-
-	/**
-		@brief		Restore the children.
-		@since		2016-03-09 08:07:38
-	**/
-	public function threewp_broadcast_broadcasting_finished( $action )
-	{
-		$bcd = $action->broadcasting_data;
-
-		if ( ! isset( $bcd->toolset_types ) )
-			return $this->debug( 'Nothing to do.' );
-
-		if ( ! $bcd->toolset_types->has( 'wpcf_post_relationship' ) )
-			return;
-
-		// Collect an array of all of the blogs where we are to broadcast the children.
-		$blogs = [];
-		foreach( $bcd->blogs as $blog )
-			$blogs []= $blog->id;
-
-		// Broadcast each child to the blogs.
-		foreach( $bcd->toolset_types->get( 'wpcf_post_relationship' ) as $post_id => $ignore )
-			ThreeWP_Broadcast()->api()->broadcast_children( $post_id, $blogs );
 	}
 
 	public function threewp_broadcast_broadcasting_started( $action )
@@ -111,14 +89,14 @@ class Toolset
 
 		if ( $this->has_types() )
 		{
+			$this->maybe_save_relationships( $action );
 			$this->debug( 'Unhooking Types...' );
 			remove_action( 'add_attachment', 'wpcf_admin_save_attachment_hook', 10 );
 			remove_action( 'add_attachment', 'wpcf_admin_add_attachment_hook', 10 );
 			remove_action( 'edit_attachment', 'wpcf_admin_save_attachment_hook', 10 );
 			remove_action( 'save_post', 'wpcf_admin_save_post_hook', 10, 2 );
 			remove_action( 'save_post', 'wpcf_fields_checkbox_save_check', 100, 1 );
-			remove_action( 'save_post', 'wpcf_pr_admin_save_post_hook', 20, 2 ); // Trigger afer main hook
-			$this->maybe_save_type( $action );
+			remove_action( 'save_post', 'wpcf_pr_admin_save_post_hook', 20, 2 ); // Trigger after main hook
 		}
 		if ( $this->has_views() )
 		{
@@ -258,37 +236,64 @@ class Toolset
 	}
 
 	/**
-		@brief		Maybe save the Types data.
-		@since		2016-03-08 23:11:29
+		@brief		Save the relationships.
+		@since		2020-10-21 22:12:48
 	**/
-	public function maybe_save_type( $action )
+	public function maybe_save_relationships( $action )
 	{
-		if ( ! $this->has_types() )
-			return $this->debug( 'Types not installed.' );
-
 		$bcd = $action->broadcasting_data;
+		$ts = $bcd->toolset;	// Conv.
 
-		$bcd->toolset_types = ThreeWP_Broadcast()->collection();
+		// Find the group ID for this post.
+		$connected_element = $this->get_connected_element_via_element_id( $bcd->post->ID );
+		if ( ! $connected_element )
+			return;
+		$this->debug( 'Connected element for this element: %s', $connected_element );
+		$ts->set( 'group', $connected_element );
 
-		// Look through the custom fields to see whether this post has a parent somewhere.
-		foreach( $bcd->custom_fields->original as $key => $value )
+		$group_id = $connected_element->group_id;
+		$ts->set( 'group_id', $group_id );
+		$this->debug( 'Group ID is %s', $group_id );
+
+		// Find all associations with this group ID.
+		$associations = $this->get_relationship_associations( $group_id );
+		$this->debug( 'Relationship associations: %s', $associations );
+
+		// And now that we know of all associations, we need to save the connection ID of each assocation.
+		$groups = ThreeWP_Broadcast()->collection();
+		foreach( $associations as $association_id => $association )
 		{
-			if ( strpos( $key, '_wpcf_belongs_' ) !== 0 )
+			if ( $this->is_broadcasting_relationship( $association->relationship_id ) )
+			{
+				$this->debug( 'We are already broadcasting relationship %s', $association->relationship_id );
+				unset( $associations->$association_id );
 				continue;
-			$this->debug( 'Saving link to parent post %s', $parent_post_id );
-			$parent_post_id = reset( $value );
-			$bcd->toolset_types->set( 'belongs_key', $key );
-			$bcd->toolset_types->set( 'belongs_value', $parent_post_id );
-			$bcd->toolset_types->set( 'belongs_bcd', ThreeWP_Broadcast()->get_post_broadcast_data( get_current_blog_id(), $parent_post_id ) );
+			}
+			foreach( static::$association_types as $type )
+			{
+				$id = $association->$type;
+				if ( $id < 1 )
+					continue;
+				if ( $groups->has( $id ) )
+					continue;
+				$group = $this->get_relationship_group_via_group_id( $id );
+				$this->debug( 'For %s %s, getting %s', $type, $id, $group );
+				$groups->set( $id, $group );
+			}
 		}
 
-		if ( ! isset( $bcd->_POST[ 'wpcf_post_relationship' ] ) )
-			return $this->debug( 'No wpcf post relationship found.' );
+		$relationship_ids = $this->array_rekey( $associations, 'relationship_id' );
+		// And now save all relationships that are used.
+		$relationships = $this->get_relationships_by_ids( $relationship_ids );
+		$relationships = $this->array_rekey( $relationships, 'slug' );
 
-		// We have to look at the _POST, since the relationship info isn't saved in the custom fields of the parent post, but the postmeta of the child post(s).
-		foreach( $bcd->_POST[ 'wpcf_post_relationship' ] as $parent_post_id => $child_posts )
-			if ( $parent_post_id == $bcd->post->ID )
-				$this->save_parent_post( $bcd );
+		$this->debug( 'Parent post associations: %s', $associations );
+		$this->debug( 'Parent groups: %s', $groups );
+		$this->debug( 'Parent relationships: %s', $relationships );
+
+		$ts->set( 'associations', $associations );
+		$ts->set( 'groups', $groups );
+		$ts->set( 'relationships', $relationships );
 	}
 
 	/**
@@ -314,25 +319,6 @@ class Toolset
 		$post= get_post( $content_template_id );
 
 		$bcd->toolset->collection( 'content_template' )->set( 'post', $post );
-	}
-
-	/**
-		@brief		Broadcast the parent post.
-		@since		2016-03-10 09:48:51
-	**/
-	public function save_parent_post( $bcd )
-	{
-		$relationships = $bcd->_POST[ 'wpcf_post_relationship' ];
-		$this->debug( 'The relationship array is: %s', $relationships );
-
-		$post_id = $bcd->post->ID;
-		if ( ! isset( $relationships[ $post_id ] ) )
-			return $this->debug( 'This post has no relationships.' );
-
-		// We want the relationships for just this parent post.
-		$relationships = $relationships[ $post_id ];
-
-		$bcd->toolset_types->set( 'wpcf_post_relationship', $relationships );
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -366,24 +352,133 @@ class Toolset
 	}
 
 	/**
-		@brief		Restore the type.
-		@since		2016-07-08 14:47:33
+		@brief		Restore the relationship data.
+		@since		2020-10-21 22:11:23
 	**/
-	public function maybe_restore_type( $action )
+	public function maybe_restore_relationships( $action )
 	{
-		$bcd = $action->broadcasting_data;
-
-		if ( ! isset( $bcd->toolset_types ) )
-			return $this->debug( 'Nothing to do.' );
-
-		if ( ! $bcd->toolset_types->has( 'belongs_key' ) )
+		$sync = apply_filters( 'broadcast_toolset_restore_relationships', true );
+		if ( ! $sync )
 			return;
 
-		$meta_key = $bcd->toolset_types->get( 'belongs_key' );
-		$parent_bcd = $bcd->toolset_types->get( 'belongs_bcd' );
-		$new_parent_post_id = $parent_bcd->get_linked_child_on_this_blog();
-		$this->debug( 'Replacing link to old parent %s with new parent %s.', $bcd->toolset_types->get( 'belongs_value' ), $new_parent_post_id );
-		$bcd->custom_fields()->child_fields()->update_meta( $meta_key, $new_parent_post_id );
+		$bcd = $action->broadcasting_data;
+		$ts = $bcd->toolset;	// Conv.
+
+		// No parent associations? Can't do anything.
+		$associations = $ts->get( 'associations' );
+		if ( ! $associations )
+			return;
+
+		// Delete all existing associations.
+		$group = $this->get_connected_element_via_element_id( $bcd->new_post( 'ID' ) );
+		// Might not have any yet.
+		$this->debug( 'Should we delete existing associations? %s', $group );
+		if ( $group )
+		{
+			// Remove the group from all assocations of the same type.
+			// We are going to put them back later.
+			$parent_group_id = $ts->get( 'group_id' );
+			$group_id = $group->group_id;
+			foreach( static::$association_types as $type )
+			{
+				foreach( $associations as $association )
+				{
+					if ( $association->$type != $parent_group_id )
+						continue;
+					$this->debug( 'Deleting assocation type %s for group %s', $type, $group->group_id );
+					$this->delete_association_type( $type, $group->group_id );
+				}
+			}
+		}
+
+		$parent_relationships = $ts->get( 'relationships' );
+		$parent_relationship_ids = $this->array_rekey( $parent_relationships, 'id' );
+		$child_relationships = $this->get_relationships_by_slugs( array_keys( $parent_relationships ) );
+		$child_relationships = $this->array_rekey( $child_relationships, 'slug' );
+		$this->debug( 'Child relationships: %s', $child_relationships );
+
+		// Restore the main group.
+		$parent_group = $ts->get( 'group' );
+		$parent_group->element_id = $bcd->new_post( 'ID' );
+
+		$group = $this->create_group( $parent_group );
+		$this->debug( 'Main group is %s', $group );
+
+		// To prevent recursion.
+		foreach( $associations as $association )
+			$this->broadcasting_relationship( $association->relationship_id );
+
+		// Restore the groups.
+		$parent_groups = $ts->get( 'groups' );
+		$child_blog_groups = ThreeWP_Broadcast()->collection();
+		foreach( $parent_groups as $parent_group )
+		{
+			if ( ! isset( $parent_group->group_id ) )
+			{
+				$this->debug( 'Parent group is not set properly: %s', $parent_group );
+				continue;
+			}
+			$parent_group_id = $parent_group->group_id;
+			$parent_element_id = $parent_group->element_id;
+			$this->debug( 'Getting equivalent element ID for %s', $parent_element_id );
+
+			if ( $parent_element_id == $bcd->post->ID )
+				$child_element_id = $bcd->new_post( 'ID' );
+			else
+				$child_element_id = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $parent_element_id );
+
+			$this->debug( 'Got equivalent element ID for %s: %s', $parent_element_id, $child_element_id );
+
+			$child_group = clone( $parent_group );
+			$child_group->element_id = $child_element_id;
+
+			// And now create the group on this blog.
+			$child_group = $this->create_group( $child_group );
+			$child_blog_groups->set( $parent_group_id, $child_group );
+		}
+
+		$this->debug( 'New child groups: %s', $child_blog_groups );
+
+		foreach( $associations as $association )
+			$this->not_broadcasting_relationship( $association->relationship_id );
+
+		// And now insert the new associations.
+		foreach( $associations as $association )
+		{
+			$new_association = clone( $association );
+			unset( $new_association->id );
+
+			// Fix the relationship.
+			$old_relationship_id = $association->relationship_id;
+			$relationship_slug = $parent_relationship_ids[ $old_relationship_id ]->slug;
+
+			if ( ! isset( $child_relationships[ $relationship_slug ] ) )
+			{
+				$this->debug( 'Warning! No relationship called %s.', $relationship_slug );
+				continue;
+			}
+			$new_relationship_id = $child_relationships[ $relationship_slug ]->id;
+			$new_association->relationship_id = $new_relationship_id;
+
+			$found = false;
+			foreach( static::$association_types as $type )
+			{
+				$old_group_id = $association->$type;
+				if ( $old_group_id < 1 )
+					continue;
+				$child_group = $child_blog_groups->get( $old_group_id );
+				if ( ! $child_group )
+					continue;
+				$found = true;
+				$new_group_id = $child_group->group_id;
+				$new_association->$type = $new_group_id;
+			}
+			if ( $found )
+			{
+				$this->create_association( $new_association );
+				$this->debug( 'New association: %s', $new_association );
+			}
+		}
 	}
 
 	/**
@@ -472,7 +567,7 @@ class Toolset
 		] );
 		$items = $this->array_rekey( $items, 'post_name' );
 		foreach( $items as $item )
-			$items_select->option( sprintf( '%s (%s)', $item->post_title, $item->ID ), $item->post_name );
+			$items_select->option( sprintf( '%s (%s)', $item->post_title, $item->ID ), $item->ID );
 
 		$blogs_select = $this->add_blog_list_input( [
 			// Blog selection input description
@@ -485,34 +580,6 @@ class Toolset
 			'name' => 'blogs',
 		] );
 
-		$fs = $form->fieldset( 'fs_actions' );
-		// Fieldset label
-		$fs->legend->label( __( 'Actions', 'threewp_broadcast' ) );
-
-		$nonexisting_action = $fs->select( 'nonexisting_action' )
-			// Input title
-			->description( __( 'What to do if the field group does not exist on the target blog.', 'threewp_broadcast' ) )
-			// Input label
-			->label( __( 'If the field group does not exist', 'threewp_broadcast' ) )
-			->options( [
-				// What to do if the Toolset field group does not exist.
-				__( 'Create the field group', 'threewp_broadcast' ) => 'create',
-				// What to do if the Toolset field group does not exist.
-				__( 'Skip this blog', 'threewp_broadcast' ) => 'skip',
-			] )
-			->value( 'create' );
-
-		$existing_action = $fs->select( 'existing_action' )
-			->description( 'What to do if the field group already exists on the target blog.' )
-			->label( 'If the field group exists' )
-			->options( [
-				// What to do if the Toolset field group already exists
-				__( 'Skip this blog', 'threewp_broadcast' ) => 'skip',
-				// What to do if the Toolset field group already exists
-				__( 'Overwrite the existing field group', 'threewp_broadcast' ) => 'overwrite',
-			] )
-			->value( 'overwrite' );
-
 		$submit = $form->primary_button( 'copy' )
 			->value( 'Copy' );
 
@@ -520,83 +587,9 @@ class Toolset
 		{
 			$form->post()->use_post_values();
 
-			$source_fields = get_option( 'wpcf-fields' );
-
-			// We need to find out which group fields are used.
-			$post_fields = ThreeWP_Broadcast()->collection();
-			foreach( $items_select->get_post_value() as $item_slug )
-			{
-				$item = $items[ $item_slug ];
-				$item_id = $item->ID;
-				$_wp_types_group_fields = get_post_meta( $item_id, '_wp_types_group_fields', true );
-				$_wp_types_group_fields = maybe_unserialize( $_wp_types_group_fields );
-				$this->debug( 'Item %s has field groups: %s', $item_slug, $_wp_types_group_fields );
-				$post_fields->set( $item_slug, $_wp_types_group_fields );
-			}
-
-			foreach ( $blogs_select->get_post_value() as $blog_id )
-			{
-				// Don't copy the type to ourself.
-				if ( $blog_id == get_current_blog_id() )
-					continue;
-				switch_to_blog( $blog_id );
-
-				$blog_items = get_posts( [
-					'posts_per_page' => -1,
-					'post_type' => $post_type,
-				] );
-				$blog_items = $this->array_rekey( $blog_items, 'post_name' );
-
-				foreach( $items_select->get_post_value() as $item_slug )
-				{
-					$broadcast = false;
-					if ( ! isset( $blog_items[ $item_slug ] ) )
-					{
-						$this->debug( 'Item %s not found on blog %s.', $item_slug, $blog_id );
-						if ( $nonexisting_action->get_post_value() == 'create' )
-						{
-							$this->debug( 'Creating item %s.', $item_slug );
-							$broadcast = true;
-						}
-					}
-					else
-					{
-						$this->debug( 'Item %s found on blog %s.', $item_slug, $blog_id );
-						if ( $existing_action->get_post_value() == 'overwrite' )
-						{
-							$this->debug( 'Overwriting item %s.', $item_slug );
-							$broadcast = true;
-						}
-					}
-
-					if ( $broadcast )
-					{
-						$original_post_id = $items[ $item_slug ]->ID;
-						restore_current_blog();
-						$this->debug( 'Broadcasting item %s.', $original_post_id );
-						ThreeWP_Broadcast()->api()->broadcast_children( $original_post_id, [ $blog_id ] );
-						switch_to_blog( $blog_id );
-
-						// Update the fields, if necessary.
-						$target_fields = get_option( 'wpcf-fields' );
-						if ( ! is_array( $target_fields ) )
-							$target_fields = [];
-						$this->debug( 'Current target fields: %s', $target_fields );
-
-						$item_fields = $post_fields->get( $item_slug );
-						$item_fields = explode( ',', $item_fields );
-						$item_fields = array_filter( $item_fields );
-
-						foreach( $item_fields as $item_field )
-							$target_fields[ $item_field ] = $source_fields[ $item_field ];
-
-						$this->debug( 'New target fields after merge: %s', $target_fields );
-						update_option( 'wpcf-fields', $target_fields );
-					}
-				}
-
-				restore_current_blog();
-			}
+			$blog_ids = $blogs_select->get_post_value();
+			foreach( $items_select->get_post_value() as $item_id )
+				ThreeWP_Broadcast()->api()->broadcast_children( $item_id, $blog_ids );
 			$r .= $this->info_message_box()->_( 'The selected items have been copied to the selected blogs.' );
 		}
 
@@ -676,6 +669,153 @@ class Toolset
 	}
 
 	/**
+		@brief		Note that we are broadcasting this relationship.
+		@details	To prevent recursion.
+		@since		2021-04-22 18:39:24
+	**/
+	public function broadcasting_relationship( $relationship_id )
+	{
+		if ( ! isset( $this->__broadcasting_relationships ) )
+			$this->__broadcasting_relationships = ThreeWP_Broadcast()->collection();
+		$this->__broadcasting_relationships->set( $relationship_id, $relationship_id );
+		$this->debug( 'We are currently broadcasting relationships: %s', implode( $this->__broadcasting_relationships->to_array() ) );
+		return $this;
+	}
+
+	/**
+		@brief		Create an association.
+		@since		2020-11-04 12:44:51
+	**/
+	public function create_association( $association )
+	{
+		global $wpdb;
+		$table = $wpdb->prefix . 'toolset_associations';
+		$wpdb->insert( $table, (array) $association );
+		$association->id = $wpdb->insert_id;
+	}
+
+	/**
+		@brief		Get or create a group for this post.
+		@since		2020-11-03 21:40:49
+	**/
+	public function create_group( $group )
+	{
+		$child_group = $this->get_connected_element_via_element_id( $group->element_id );
+		if ( $child_group )
+			return $child_group;
+
+		global $wpdb;
+		$data = (array) $group;
+		unset( $data[ 'id' ] );
+		unset( $data[ 'group_id' ] );
+
+		if ( function_exists( 'wpml_get_content_trid' ) )
+		{
+			$post = get_post( $group->element_id );
+			$type = 'post_' . $post->post_type;
+			$data[ 'wpml_trid' ] = wpml_get_content_trid( $type, $group->element_id );
+			$this->debug( 'WPML detected. Fetching trid for %s %s: %s', $type, $group->element_id, $data[ 'wpml_trid' ] );
+		}
+
+		$table = $wpdb->prefix . 'toolset_connected_elements';
+
+		// Find the current max.
+		$query = sprintf( "SELECT MAX( `group_id` ) FROM `%s`", $table );
+		$this->debug( $query );
+		$max = $wpdb->get_var( $query );
+		$max++;
+
+		$data[ 'group_id' ] = $max;
+		$this->debug( 'Creating group %s', $data );
+		$result = $wpdb->insert( $table, $data );
+
+		return $this->get_connected_element_via_element_id( $group->element_id );
+	}
+
+	/**
+		@brief		Delete associations where this group_id is the type.
+		@since		2021-04-20 21:21:09
+	**/
+	public function delete_association_type( $type, $group_id )
+	{
+		global $wpdb;
+		$table = $wpdb->prefix . 'toolset_associations';
+		$query = sprintf( "DELETE FROM `%s` WHERE `%s` = '%s'", $table, $type, $group_id );
+		$this->debug( $query );
+		$this->query( $query );
+	}
+
+	/**
+		@brief		Return the relationships on this blog.
+		@since		2020-10-22 22:15:15
+	**/
+	public function get_relationships_by_ids( $ids )
+	{
+		global $wpdb;
+		$table = $wpdb->prefix . 'toolset_relationships';
+		$query = sprintf( "SELECT * FROM `%s` WHERE `id` IN ( '%s' )", $table, implode( "','", array_keys( $ids ) ) );
+		$this->debug( $query );
+		$results = $wpdb->get_results( $query );
+		return $results;
+	}
+
+	/**
+		@brief		Return the relationships based on these slugs.
+		@since		2020-10-22 22:15:15
+	**/
+	public function get_relationships_by_slugs( $slugs )
+	{
+		global $wpdb;
+		$table = $wpdb->prefix . 'toolset_relationships';
+		$query = sprintf( "SELECT * FROM `%s` WHERE `slug` IN ( '%s' )", $table, implode( "','", $slugs ) );
+		$this->debug( $query );
+		$results = $wpdb->get_results( $query );
+		return $results;
+	}
+
+	/**
+		@brief		Return the associations for this group ID.
+		@since		2020-11-03 20:06:03
+	**/
+	public function get_relationship_associations( $group_id )
+	{
+		global $wpdb;
+		$table = $wpdb->prefix . 'toolset_associations';
+		$query = sprintf( "SELECT * FROM `%s` WHERE `child_id` = '%s' OR `parent_id` = '%s' OR `intermediary_id` = '%s' ", $table, $group_id, $group_id, $group_id );
+		$this->debug( $query );
+		$results = $wpdb->get_results( $query );
+		return $results;
+	}
+
+	/**
+		@brief		Return the group row based on the element ID.
+		@since		2020-11-03 20:28:27
+	**/
+	public function get_connected_element_via_element_id( $element_id )
+	{
+		global $wpdb;
+		$table = $wpdb->prefix . 'toolset_connected_elements';
+		$query = sprintf( "SELECT * FROM `%s` WHERE `element_id` = '%s'", $table, $element_id );
+		$this->debug( $query );
+		$result = $wpdb->get_row( $query );
+		return $result;
+	}
+
+	/**
+		@brief		Return the group row based on the group ID.
+		@since		2020-11-03 20:28:27
+	**/
+	public function get_relationship_group_via_group_id( $group_id )
+	{
+		global $wpdb;
+		$table = $wpdb->prefix . 'toolset_connected_elements';
+		$query = sprintf( "SELECT * FROM `%s` WHERE `group_id` = '%s'", $table, $group_id );
+		$this->debug( $query );
+		$result = $wpdb->get_row( $query );
+		return $result;
+	}
+
+	/**
 		@brief		Is Cred installed?
 		@since		2016-07-08 20:17:15
 	**/
@@ -700,5 +840,28 @@ class Toolset
 	public function has_views()
 	{
 		return defined( 'WPV_VERSION' );
+	}
+
+	/**
+		@brief		Are we already broadcasting this relationship?
+		@since		2021-04-22 18:39:24
+	**/
+	public function is_broadcasting_relationship( $relationship_id )
+	{
+		if ( ! isset( $this->__broadcasting_relationships ) )
+			$this->__broadcasting_relationships = ThreeWP_Broadcast()->collection();
+		return $this->__broadcasting_relationships->has( $relationship_id );
+	}
+
+	/**
+		@brief		We are no longer broadcasting this relationship.
+		@since		2021-04-22 18:39:24
+	**/
+	public function not_broadcasting_relationship( $relationship_id )
+	{
+		if ( ! isset( $this->__broadcasting_relationships ) )
+			$this->__broadcasting_relationships = ThreeWP_Broadcast()->collection();
+		$this->__broadcasting_relationships->forget( $relationship_id );
+		return $this;
 	}
 }

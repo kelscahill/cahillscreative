@@ -4,6 +4,7 @@ namespace threewp_broadcast\premium_pack\the_events_calendar;
 
 use \threewp_broadcast\actions;
 use \threewp_broadcast\broadcasting_data;
+use TEC\Events\Custom_Tables\V1\Migration\State;
 
 /**
 	@brief				Adds support for Modern Tribe's <a href="https://wordpress.org/plugins/the-events-calendar/">The Events Calendar</a> plugin with venues and organisers.
@@ -13,18 +14,45 @@ use \threewp_broadcast\broadcasting_data;
 class The_Events_Calendar
 	extends \threewp_broadcast\premium_pack\base
 {
+	use \threewp_broadcast\premium_pack\classes\database_trait;
+
 	public function _construct()
 	{
+		$this->add_action( 'tec_events_custom_tables_v1_after_save_occurrences' );
+		$this->add_action( 'tec_events_custom_tables_v1_update_post_after' );
+
 		$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
 		$this->add_action( 'threewp_broadcast_broadcasting_started' );
 		$this->add_action( 'threewp_broadcast_get_post_types' );
 		$this->add_action( 'threewp_broadcast_post_action' );
-		$this->add_action( 'tribe_events_update_meta', 100 );
+
+		if ( ! $this->tec_v6() )
+			$this->add_action( 'tribe_events_update_meta', 100 );
 	}
 
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Callbacks
 	// --------------------------------------------------------------------------------------------
+
+	/**
+		@brief		tec_events_custom_tables_v1_update_post_after
+		@since		2024-03-23 17:07:13
+	**/
+	public function tec_events_custom_tables_v1_update_post_after( $post_id )
+	{
+		$this->debug( 'tec_events_custom_tables_v1_update_post_after' );
+		ThreeWP_Broadcast()->api()->update_children( $post_id );
+	}
+
+	/**
+		@brief		TEC saves the occurrences in the DB table **after** the whole save_post action.
+		@since		2023-01-20 13:07:40
+	**/
+	public function tec_events_custom_tables_v1_after_save_occurrences( $post_id )
+	{
+		$this->debug( 'tec_events_custom_tables_v1_after_save_occurrences' );
+		ThreeWP_Broadcast()->api()->update_children( $post_id );
+	}
 
 	public function threewp_broadcast_broadcasting_before_restore_current_blog( $action )
 	{
@@ -36,9 +64,17 @@ class The_Events_Calendar
 		if ( ! isset( $bcd->the_events_calendar ) )
 			return;
 
+		if ( isset( $bcd->the_events_calendar->v6 ) )
+		{
+			$this->restore_v6_event( $bcd );
+		}
+		else
+		{
+			$this->restore_recurring( $bcd );
+		}
+
 		$this->restore_custom_fields( $bcd );
 		$this->restore_organiser( $bcd );
-		$this->restore_recurring( $bcd );
 		$this->restore_venue( $bcd );
 	}
 
@@ -65,9 +101,20 @@ class The_Events_Calendar
 
 		$bcd->the_events_calendar = (object)[];;
 
+		$v6 = $this->tec_v6();
+
+		if ( $v6 )
+		{
+			$bcd->the_events_calendar->v6 = ThreeWP_Broadcast()->collection();
+			$this->save_v6_event( $bcd );
+		}
+		else
+		{
+			$this->save_recurring( $bcd );
+		}
+
 		$this->save_custom_fields( $bcd );
 		$this->save_organiser( $bcd );
-		$this->save_recurring( $bcd );
 		$this->save_venue( $bcd );
 	}
 
@@ -154,29 +201,14 @@ class The_Events_Calendar
 	{
 		$tec = $bcd->the_events_calendar;
 
-		// Does this event have an organizer?
-		foreach( $bcd->custom_fields->original as $key => $value )
-		{
-			if ( $key != '_EventOrganizerID' )
-				continue;
+		$key = '_EventOrganizerID';
+		$values = $bcd->custom_fields()->get( $key );
 
-			$value = reset( $value );
-			$organiser_id = $value;
-			$this->debug( 'The organiser ID for this event is %s.', $organiser_id );
+		if ( ! $values )
+			return;
 
-			$organiser_post = false;
-			if ( $organiser_id > 0 )
-				$organiser_post = get_post( $organiser_id );
-			if ( ! $organiser_post )
-				$this->debug( 'No organiser post.' );
-			else
-			{
-				$tec->organiser = (object)[];
-				$tec->organiser->id = $organiser_id;
-				$tec->organiser->post = $organiser_post;
-				$tec->organiser->broadcast_data = ThreeWP_Broadcast()->get_post_broadcast_data( get_current_blog_id(), $organiser_id );
-			}
-		}
+		$this->debug( 'The organiser IDs for this event are %s.', $values );
+		$tec->organisers = $values;
 	}
 
 	/**
@@ -192,6 +224,56 @@ class The_Events_Calendar
 			'post_type' => 'tribe_events',
 			'posts_per_page' => -1,
 		] );
+	}
+
+	/**
+		@brief		Save this v6 event.
+		@since		2023-01-16 14:56:38
+	**/
+	public function save_v6_event( $bcd )
+	{
+		global $wpdb;
+		$tec = $bcd->the_events_calendar;
+
+		$tec_events = 'tec_events';
+		$source_table = $this->get_prefixed_table_name( $tec_events, $bcd->parent_blog_id );
+		$columns = $this->get_database_table_columns_string( $source_table, [
+			'except' => [ 'post_id' ],
+		] );
+		$v6 = $bcd->the_events_calendar->v6;
+		$v6->set( 'tec_events_columns', $columns );
+
+		$query = sprintf( "SELECT %s from `%s` WHERE `post_id` = '%s'",
+			$columns,
+			$source_table,
+			$bcd->post->ID
+		);
+		$event = $wpdb->get_row( $query );
+
+		if ( ! $event )
+			return;
+
+		$event_id = $event->event_id;
+		unset( $event->event_id );
+		$v6->set( 'tec_event', $event );
+
+		$tec_occurrences = 'tec_occurrences';
+		$source_table = $this->get_prefixed_table_name( $tec_occurrences, $bcd->parent_blog_id );
+		$columns = $this->get_database_table_columns_string( $source_table, [
+			'except' => [ 'occurrence_id', 'event_id', 'post_id' ],
+		] );
+		$v6 = $bcd->the_events_calendar->v6;
+		$v6->set( 'tec_events_columns', $columns );
+
+		$query = sprintf( "SELECT %s from `%s` WHERE `event_id` = '%s'",
+			$columns,
+			$source_table,
+			$event_id
+		);
+		$event = $wpdb->get_results( $query );
+		$v6->set( 'tec_occurrences', $event );
+
+		$this->debug( 'V6 data: %s', $v6 );
 	}
 
 	/**
@@ -326,19 +408,20 @@ class The_Events_Calendar
 	{
 		$tec = $bcd->the_events_calendar;
 
-		if ( ! isset( $tec->organiser ) )
+		if ( ! isset( $tec->organisers ) )
 			return;
 
-		switch_to_blog( $bcd->parent_blog_id );
-		$organiser_bcd = ThreeWP_Broadcast()->api()
-			->broadcast_children( $tec->organiser->id, [ $bcd->current_child_blog_id ] );
-		restore_current_blog();
+		$new_values = [];
+		foreach( $tec->organisers as $organiser_id )
+		{
+			$new_organiser_id = $bcd->equivalent_posts()->broadcast_once( $bcd->parent_blog_id, $organiser_id );
+			$new_values []= $new_organiser_id;
+		}
 
-		$new_organiser_id = $organiser_bcd->new_post( 'ID' );
-		$bcd->equivalent_posts()->set( $bcd->parent_blog_id, $tec->organiser->id, get_current_blog_id(), $new_organiser_id );
-
-		update_post_meta( $bcd->new_post( 'ID' ), '_EventOrganizerID', $new_organiser_id );
-		$this->debug( 'Setting new organiser ID: %s', $new_organiser_id );
+		$this->debug( 'Setting new organiser ID: %s', $new_values );
+		$bcd->custom_fields()
+			->child_fields()
+			->update_metas( '_EventOrganizerID', $new_values );
 	}
 
 	/**
@@ -366,6 +449,72 @@ class The_Events_Calendar
 			];
 			$this->debug( 'Setting parent of new event %s to %s', $child_bcd->new_post( 'ID' ), $bcd->new_post( 'ID' ) );
 			wp_update_post( $new_data );
+		}
+	}
+
+	/**
+		@brief		Restore the new v6 data of this event.
+		@since		2023-01-16 14:39:48
+	**/
+	public function restore_v6_event( $bcd )
+	{
+		global $wpdb;
+
+		$new_post_id = $bcd->new_post( 'ID' );
+		$v6 = $bcd->the_events_calendar->v6;
+
+		$name = 'tec_events';
+		$target_table = $this->get_prefixed_table_name( $name );
+
+		// Delete everything in the target table.
+		$this->debug( "Deleting all events for post %s in %s", $new_post_id, $target_table );
+		$query = sprintf( "DELETE FROM `%s` WHERE `post_id` = '%s'",
+			$target_table,
+			$new_post_id
+		);
+		$this->debug( $query );
+		$wpdb->get_results( $query );
+
+		// Insert the new event.
+		$new_data = $v6->get( 'tec_event' );
+
+		if ( ! $new_data )
+			return;
+
+		$new_data->post_id = $new_post_id;
+		$wpdb->insert( $target_table, (array) $new_data );
+		$event_id = $wpdb->insert_id;
+
+		$this->debug( 'Inserted event %s', $event_id );
+
+		$name = 'tec_occurrences';
+		$target_table = $this->get_prefixed_table_name( $name );
+
+		// Delete everything in the target table.
+		$this->debug( "Deleting all occurrences for event %s in %s", $event_id, $target_table );
+		$query = sprintf( "DELETE FROM `%s` WHERE `post_id` = '%s'",
+			$target_table,
+			$new_post_id
+		);
+		$this->debug( $query );
+		$wpdb->get_results( $query );
+
+		foreach( $v6->get( 'tec_occurrences' ) as $occurrence )
+		{
+			// Delete the occurrence with this hash.
+			$query = sprintf( "DELETE FROM `%s` WHERE `hash` = '%s'",
+				$target_table,
+				$occurrence->hash
+			);
+			$this->debug( $query );
+			$wpdb->get_results( $query );
+
+			$new_data = $occurrence;
+			$new_data->event_id = $event_id;
+			$new_data->post_id = $new_post_id;
+			$this->debug( 'Inserting occurrence %s', $new_data );
+			$wpdb->insert( $target_table, (array) $new_data );
+			$this->debug( 'Inserted occurrence %s', $wpdb->insert_id );
 		}
 	}
 
@@ -412,5 +561,17 @@ class The_Events_Calendar
 	public function post_is_event( $post )
 	{
 		return $post->post_type == 'tribe_events';
+	}
+
+	/**
+		@brief		Are we running v6 of TEC with the new database?
+		@since		2023-01-16 14:54:58
+	**/
+	public function tec_v6()
+	{
+		if ( ! $this->requirement_fulfilled() )
+			return false;
+
+		return tribe( State::class )->is_migrated();
 	}
 }

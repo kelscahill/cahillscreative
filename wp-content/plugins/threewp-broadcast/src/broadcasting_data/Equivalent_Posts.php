@@ -67,6 +67,8 @@ class Equivalent_Posts
 			$child = $broadcast_data->get_linked_post_on_this_blog();
 			if ( $child !== false )
 				$this->set( $parent_blog, $parent_post, $child_blog, $child );
+			else
+				return false;
 		}
 		return $this->equivalents[ $parent_blog ][ $parent_post ][ $child_blog ];
 	}

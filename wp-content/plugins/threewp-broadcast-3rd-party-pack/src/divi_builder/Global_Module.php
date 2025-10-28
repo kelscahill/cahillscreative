@@ -15,15 +15,6 @@ class Global_Module
 	}
 
 	/**
-		@brief		Return the name of the shortcode we are looking for.
-		@since		2017-01-11 23:03:36
-	**/
-	public function get_shortcode_name()
-	{
-		return 'et_pb_section';
-	}
-
-	/**
 		@brief		Add the post type, for manual broadcast.
 		@since		2016-07-26 19:07:17
 	**/

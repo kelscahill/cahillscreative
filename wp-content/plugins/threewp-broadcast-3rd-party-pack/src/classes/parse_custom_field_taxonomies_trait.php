@@ -56,4 +56,35 @@ trait parse_custom_field_taxonomies_trait
 
 		$bcd->custom_fields()->child_fields()->update_meta( $custom_field, $new_values );
 	}
+
+	/**
+		@brief		Parse the taxonomies found in this custom field using the terms() function from bcd.
+	 * @since		2025-03-02 13:48:22
+	 **/
+	 public function parse_custom_field_taxonomies_terms( $bcd, $custom_field )
+	{
+		$value = $bcd->custom_fields()->get_single( $custom_field );
+		// Does the child even has this custom field.
+		if ( ! $value )
+			return;
+		$value = maybe_unserialize( $value );
+		$this->debug( 'Taxonomies field %s found: %s', $custom_field, $value );
+
+		// Treat single values as arrays, just for simplicity.
+		$is_array = is_array( $value );
+		if ( ! $is_array )
+			$value = [ $value ];
+
+		$values = $value;
+		$new_values = [];
+		foreach( $values as $old_value )
+			$new_values []= $bcd->terms()->get( $old_value );
+
+		if ( ! $is_array )
+			$new_values = reset( $new_values );
+
+		$this->debug( 'Updating taxonomy terms() field %s with: %s', $custom_field, $new_values );
+
+		$bcd->custom_fields()->child_fields()->update_meta( $custom_field, $new_values );
+	}
 }

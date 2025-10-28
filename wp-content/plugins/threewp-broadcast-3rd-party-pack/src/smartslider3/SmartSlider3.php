@@ -35,7 +35,7 @@ class SmartSlider3
 		$this->debug( $query );
 		$result = $wpdb->get_row( $query );
 
-		if ( count( $result ) < 1 )
+		if ( ! $result )
 		{
 			$columns = '`title`, `type`, `params`, `time`, `thumbnail`, `ordering`';
 			$query = sprintf( "INSERT INTO `%snextend2_smartslider3_sliders` ( %s ) ( SELECT %s FROM `%snextend2_smartslider3_sliders` WHERE `id` ='%s' )",

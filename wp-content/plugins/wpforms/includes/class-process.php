@@ -666,9 +666,19 @@ class WPForms_Process {
 		// Mark the submission as spam if one of the spam checks failed and spam entries are stored.
 		$marked_as_spam = $this->spam_reason && $store_spam_entries;
 
-		// Does not proceed if a form is marked as spam.
+		// Proceed if the entry is not marked as spam.
 		if ( ! $marked_as_spam ) {
 			$this->process_complete( $form_id, $this->form_data, $this->fields, $entry, $this->entry_id );
+		} else {
+			/**
+			 * Fires in the case the entry was marked as spam during the form submission.
+			 *
+			 * @since 1.9.8.2
+			 *
+			 * @param int $entry_id Entry ID.
+			 * @param int $form_id  Form ID.
+			 */
+			do_action( 'wpforms_process_anti_spam_entry_marked_as_spam', $this->entry_id, $form_id );
 		}
 
 		$this->entry_confirmation_redirect( $this->form_data );

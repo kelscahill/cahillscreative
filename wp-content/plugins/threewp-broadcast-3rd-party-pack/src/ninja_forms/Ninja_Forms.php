@@ -11,6 +11,7 @@ class Ninja_Forms
 	extends \threewp_broadcast\premium_pack\classes\Shortcode_Preparser
 {
 	use \threewp_broadcast\premium_pack\classes\copy_options_trait;
+	use \threewp_broadcast\premium_pack\classes\database_trait;
 
 	/**
 		@brief		Constructor.
@@ -56,6 +57,7 @@ class Ninja_Forms
 
 		// Retrieve the form.
 		$query = sprintf( "SELECT * FROM `%snf3_forms` WHERE `id` = '%s'", $source_prefix, $item->id );
+		$this->debug( $query );
 		$form = $wpdb->get_row( $query );
 
 		restore_current_blog();
@@ -72,7 +74,8 @@ class Ninja_Forms
 
 		if ( count( $results ) < 1 )
 		{
-			$columns = '`title`, `key`, `created_at`, `updated_at`, `views`, `subs`';
+			$columns = $this->get_database_table_columns( $source_prefix . 'nf3_forms', [ 'except' => [ 'id' ] ] );
+			$columns = "`" . implode( "`,`", $columns ) . "`";
 			$query = sprintf( "INSERT INTO `%snf3_forms` ( %s ) ( SELECT %s FROM `%snf3_forms` WHERE `title` ='%s' )",
 				$target_prefix,
 				$columns,
@@ -94,7 +97,16 @@ class Ninja_Forms
 		// Update the form data.
 		$new_form_data = (array)$form;
 		unset( $new_form_data[ 'id' ] );
-		$wpdb->update( $target_prefix . 'nf3_forms', $new_form_data, [ 'id' => $new_form_id ] );
+		$formats = [];
+		foreach( $new_form_data as $index => $value )
+		{
+			if ( intval( $value ) == $value )
+				$formats []= '%d';
+			else
+				$formats []= '%s';
+		}
+		$this->debug( 'Updating %s, %s, %s', $target_prefix . 'nf3_forms', $new_form_data, [ 'id' => $new_form_id ] );
+		$wpdb->update( $target_prefix . 'nf3_forms', $new_form_data, [ 'id' => $new_form_id ], $formats );
 
 		// Form meta. Delete all existing values.
 		$query = sprintf( "DELETE FROM `%snf3_form_meta` WHERE `parent_id` = '%s'",
@@ -105,7 +117,8 @@ class Ninja_Forms
 		$wpdb->query( $query );
 
 		// And reinsert the fresh data.
-		$columns = '`key`, `value`';
+		$columns = $this->get_database_table_columns( $source_prefix . 'nf3_form_meta', [ 'except' => [ 'id', 'parent_id' ] ] );
+		$columns = "`" . implode( "`,`", $columns ) . "`";
 		$query = sprintf( "INSERT INTO `%snf3_form_meta` ( `parent_id`, %s ) ( SELECT %s, %s FROM `%snf3_form_meta` WHERE `parent_id` ='%s' )",
 			$target_prefix,
 			$columns,
@@ -136,9 +149,11 @@ class Ninja_Forms
 
 		$o = (object)[];
 		$o->form_id = $form->id;
-		$o->item_columns = [ 'label', 'key', 'type', 'created_at', 'updated_at' ];
+		$columns =
+		$o->item_columns = $this->get_database_table_columns( $source_prefix . 'nf3_fields', [ 'except' => [ 'id', 'parent_id' ] ] );
 		$o->item_table = 'fields';
 		$o->item_meta_table = 'field_meta';
+		$o->item_meta_columns = $this->get_database_table_columns( $source_prefix . 'nf3_field_meta', [ 'except' => [ 'id', 'parent_id' ] ] );
 		$o->new_form_id = $new_form_id;
 		$o->source_prefix = $source_prefix;
 		$o->target_prefix = $target_prefix;
@@ -147,9 +162,10 @@ class Ninja_Forms
 		unset( $o->option_key );	// So that it correctly sets the option_key again.
 
 		// Reuse the $o from previously.
-		$o->item_columns = [ 'title', 'key', 'type', 'active', 'created_at', 'updated_at' ];
+		$o->item_columns = $this->get_database_table_columns( $source_prefix . 'nf3_actions', [ 'except' => [ 'id', 'parent_id' ] ] );
 		$o->item_table = 'actions';
 		$o->item_meta_table = 'action_meta';
+		$o->item_meta_columns = $this->get_database_table_columns( $source_prefix . 'nf3_action_meta', [ 'except' => [ 'id', 'parent_id' ] ] );
 		$o->new_form_id = $new_form_id;
 		$this->replace_item_with_meta( $o );
 
@@ -189,7 +205,7 @@ class Ninja_Forms
 			$options->option_key = $options->item_table;
 
 		if ( ! isset( $options->item_meta_columns ) )
-			$options->item_meta_columns = [ 'key', 'value' ];
+			$options->item_meta_columns = [ 'key', 'value', 'meta_key', 'meta_value' ];
 
 		// Item meta must be deleted before the actions, because of their IDs.
 		$query = sprintf( "DELETE FROM `%snf3_%s` WHERE `parent_id` IN ( SELECT `id` FROM `%snf3_%s` WHERE `parent_id` = %s )",

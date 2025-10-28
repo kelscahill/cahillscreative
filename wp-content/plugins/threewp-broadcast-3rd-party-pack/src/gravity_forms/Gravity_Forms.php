@@ -13,6 +13,37 @@ class Gravity_Forms
 {
 	use \threewp_broadcast\premium_pack\classes\copy_options_trait;
 	use \threewp_broadcast\premium_pack\classes\database_trait;
+	use \threewp_broadcast\premium_pack\classes\parse_and_preparse_content_trait;
+
+	/**
+		@brief		Instance.
+		@since		2023-05-23 12:53:59
+	**/
+	public $acf_block;
+
+	/**
+		@brief		Instance.
+		@since		2023-05-23 12:53:59
+	**/
+	public $advanced_post_creation;
+
+	/**
+		@brief		Instance.
+		@since		2023-05-23 12:53:59
+	**/
+	public $gravity_booking;
+
+	/**
+		@brief		Instance.
+		@since		2023-05-23 12:53:59
+	**/
+	public $gravity_flow;
+
+	/**
+		@brief		Instance.
+		@since		2023-05-23 12:53:59
+	**/
+	public $gravity_views;
 
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Inherited
@@ -24,8 +55,13 @@ class Gravity_Forms
 	public function _construct()
 	{
 		parent::_construct();
-		$this->add_action( 'threewp_broadcast_menu' );
+		$this->add_action( 'broadcast_gf_addon_feed_sync', 100 );
 		$this->add_action( 'broadcast_gf_modify_form_meta' );
+		$this->add_action( 'threewp_broadcast_menu' );
+		$this->acf_block = new ACF_Block();
+		$this->advanced_post_creation = new Advanced_Post_Creation();
+		$this->gravity_booking = new Gravity_Booking();
+		$this->gravity_flow = new Gravity_Flow();
 		$this->gravity_views = new Gravity_Views();
 	}
 
@@ -37,7 +73,7 @@ class Gravity_Forms
 
 		$source_prefix = $wpdb->prefix;
 
-		$table = $this->rg_gf_table( 'form', $source_prefix );
+		$table = static::rg_gf_table( 'form', $source_prefix );
 		$this->database_table_must_exist( $table );
 		// Retrieve the form.
 		$query = sprintf( "SELECT * FROM `%s`", $table );
@@ -46,6 +82,11 @@ class Gravity_Forms
 		$source_forms = [];
 		foreach( $results as $result )
 			$source_forms[ $result->id ] = $result;
+		if ( ! isset( $source_forms[ $item->id ] ) )
+		{
+			$this->debug( 'Unable to find item %s.', $item->id );
+			return;
+		}
 		$form = $source_forms[ $item->id ];
 
 		// Gravityflow stores the feed order in an OPTION! Why not use the order column in the feeds table?
@@ -61,7 +102,7 @@ class Gravity_Forms
 		if ( ! $form )
 			throw new \Exception( 'No form found.' );
 
-		$table = $this->rg_gf_table( 'form', $target_prefix );
+		$table = static::rg_gf_table( 'form', $target_prefix );
 		$this->database_table_must_exist( $table );
 
 		$query = sprintf( "SELECT * FROM `%s`", $table );
@@ -90,10 +131,10 @@ class Gravity_Forms
 			if ( defined( 'BROADCAST_GRAVITY_FORMS_USE_ID' ) )
 				$columns = '`id`, ' . $columns;
 			$query = sprintf( "INSERT INTO `%s` ( %s ) ( SELECT %s FROM `%s` WHERE `id` ='%s' )",
-				$this->rg_gf_table( 'form', $target_prefix ),
+				static::rg_gf_table( 'form', $target_prefix ),
 				$columns,
 				$columns,
-				$this->rg_gf_table( 'form', $source_prefix ),
+				static::rg_gf_table( 'form', $source_prefix ),
 				$item->id
 			);
 			$this->debug( $query );
@@ -118,7 +159,7 @@ class Gravity_Forms
 		// Update active and trash status.
 		// The title can be changed when using the ID define.
 		$query = sprintf( "UPDATE `%s` SET `title` = '%s', `is_active` = '%d', `is_trash` = '%d' WHERE `id` = '%s'",
-			$this->rg_gf_table( 'form', $target_prefix ),
+			static::rg_gf_table( 'form', $target_prefix ),
 			$form->title,
 			$form->is_active,
 			$form->is_trash,
@@ -128,7 +169,7 @@ class Gravity_Forms
 		$result = $wpdb->get_results( $query );
 
 		// Delete the current form meta.
-		$table = $this->rg_gf_table( 'form_meta', $target_prefix );
+		$table = static::rg_gf_table( 'form_meta', $target_prefix );
 		$this->database_table_must_exist( $table );
 		$query = sprintf( "DELETE FROM `%s` WHERE `form_id` = '%s'",
 			$table,
@@ -138,75 +179,50 @@ class Gravity_Forms
 		$wpdb->query( $query );
 
 		// And reinsert the fresh data.
-		$table = $this->rg_gf_table( 'form_meta' );
+		$table = static::rg_gf_table( 'form_meta' );
 		$columns = $this->get_database_table_columns_string( $table, [ 'except' => [ 'form_id' ] ] );
 		$query = sprintf( "INSERT INTO `%s` ( `form_id`, %s ) ( SELECT %d, %s FROM `%s` WHERE `form_id` ='%s' )",
-			$this->rg_gf_table( 'form_meta' , $target_prefix ),
+			static::rg_gf_table( 'form_meta' , $target_prefix ),
 			$columns,
 			$new_form_id,
 			$columns,
-			$this->rg_gf_table( 'form_meta' , $source_prefix ),
+			static::rg_gf_table( 'form_meta' , $source_prefix ),
 			$form->id
 		);
 		$this->debug( $query );
 		$wpdb->get_results( $query );
 
 		// Form feeds
-		$table = $this->rg_gf_table( 'addon_feed' );
-		$columns = $this->get_database_table_columns_string( $table, [ 'except' => [ 'form_id' ] ] );
-		// Old => New
-		$feed_ids = [];
+		$table = static::rg_gf_table( 'addon_feed' );
 		if ( $this->database_table_exists( $table ) )
 		{
-			// Delete the old ones
-			$query = sprintf( "DELETE FROM `%s` WHERE `form_id` = '%s'",
-				$this->rg_gf_table( 'addon_feed', $target_prefix ),
-				$new_form_id
-			);
-			$wpdb->query( $query );
+			$source_feeds = $this->get_addon_feeds( $form->id, $source_prefix );
+			$target_feeds = $this->get_addon_feeds( $new_form_id, $target_prefix );
 
-			$query = sprintf( "SELECT * FROM `%s` WHERE `form_id` ='%s'",
-				$this->rg_gf_table( 'addon_feed', $source_prefix ),
-				$form->id
-			);
-			$this->debug( $query );
-			$results = $wpdb->get_results( $query );
+			$action = $this->new_action( 'addon_feed_sync' );
+			$action->broadcasting_data = $bcd;
+			$action->new_form = $new_form;
+			$action->source_feeds = $source_feeds;
+			$action->source_forms = $source_forms;
+			$action->source_form_id = $form->id;
+			$action->target_feeds = $target_feeds;
+			$action->target_forms = $target_forms;
+			$action->target_form_id = $new_form_id;
+			$action->execute();
 
-			foreach( $results as $result )
+			if ( is_array( $gravityflow_feed_order ) )
 			{
-				$result_meta = json_decode( $result->meta );
-				if ( $result_meta )
-				{
-					if ( isset( $result_meta->target_form_id ) )
-						$result_meta->target_form_id = $this->find_equivalent_form( [
-							'source_forms' => $source_forms,
-							'target_forms' => $target_forms,
-							'key' => 'id',
-							'value' => $result_meta->target_form_id,
-						] )->id;
-					$result->meta = json_encode( $result_meta );
-				}
-				$result_id = $result->id;
-				unset( $result->id );
-				$result->form_id = $new_form_id;
-				$this->debug( 'Inserting meta %s', $result );
-				$wpdb->insert( $table, (array)$result );
-				$feed_ids[ $result_id ] = $wpdb->insert_id;
+				$new_feed_order = [];
+				foreach( $gravityflow_feed_order as $old_feed_id )
+					$new_feed_order []= $action->feed_ids[ $old_feed_id ];
+				$this->debug( 'Updating gravityflow feed order: %s', $new_feed_order );
+				update_option( 'gravityflow_feed_order_' . $new_form_id, $new_feed_order );
 			}
-		}
-
-		if ( $gravityflow_feed_order )
-		{
-			$new_feed_order = [];
-			foreach( $gravityflow_feed_order as $old_feed_id )
-				$new_feed_order []= $feed_ids[ $old_feed_id ];
-			$this->debug( 'Updating gravityflow feed order: %s', $new_feed_order );
-			update_option( 'gravityflow_feed_order_' . $new_form_id, $new_feed_order );
 		}
 
 		// START: modify form meta.
 
-		$table = $this->rg_gf_table( 'form_meta' );
+		$table = static::rg_gf_table( 'form_meta' );
 		$query = sprintf( "SELECT * FROM `%s` WHERE `form_id` = '%s'",
 			$table,
 			$new_form_id
@@ -290,11 +306,59 @@ class Gravity_Forms
 	// --------------------------------------------------------------------------------------------
 
 	/**
+		@brief		Handle the syncing of addon feeds.
+		@since		2021-01-11 19:45:29
+	**/
+	public function broadcast_gf_addon_feed_sync( $action )
+	{
+		if ( $action->is_finished() )
+			return;
+
+		global $wpdb;
+
+		$table = static::rg_gf_table( 'addon_feed' );
+
+		// Delete existing feeds.
+		foreach( $action->target_feeds as $target_feed )
+		{
+			$query = sprintf( "DELETE FROM `%s` WHERE `id` = '%s'", $table, $target_feed->id );
+			$this->debug( 'Deleting target addon_feed %s: %s', $target_feed->id, $query );
+			$wpdb->query( $query );
+		}
+
+		// Add source feeds.
+		foreach( $action->source_feeds as $result )
+		{
+			$result_meta = json_decode( $result->meta );
+			if ( $result_meta )
+			{
+				if ( isset( $result_meta->target_form_id ) )
+				{
+					$result_meta->target_form_id = $this->find_equivalent_form( [
+						'source_forms' => $source_forms,
+						'target_forms' => $target_forms,
+						'key' => 'id',
+						'value' => $result_meta->target_form_id,
+					] )->id;
+				}
+				$result->meta = json_encode( $result_meta );
+			}
+			$result_id = $result->id;
+			unset( $result->id );
+			$result->form_id = $action->target_form_id;
+			$this->debug( 'Inserting meta %s', $result );
+			$wpdb->insert( $table, (array)$result );
+			$action->feed_ids[ $result_id ] = $wpdb->insert_id;
+		}
+	}
+
+	/**
 		@brief		Modify the form meta for this form.
 		@since		2017-11-20 19:46:36
 	**/
 	public function broadcast_gf_modify_form_meta( $action )
 	{
+		$bcd = $action->broadcasting_data;
 		$confirmations = json_decode( $action->meta->confirmations );
 		if ( $confirmations != false )
 		{
@@ -303,9 +367,9 @@ class Gravity_Forms
 			{
 				if ( $confirmation->type == 'page' )
 				{
-					$confirmation->pageId = $action->broadcasting_data
+					$confirmation->pageId = $bcd
 						->equivalent_posts()
-						->get_or_broadcast( $action->broadcasting_data->parent_blog_id, $confirmation->pageId, get_current_blog_id() );
+						->get_or_broadcast( $bcd->parent_blog_id, $confirmation->pageId, get_current_blog_id() );
 					$this->debug( 'Setting notification page to %s', $confirmation->pageId );
 					$confirmations->$confirmation_id = $confirmation;
 				}
@@ -317,7 +381,26 @@ class Gravity_Forms
 		if ( $display_meta != false )
 		{
 			foreach( $display_meta->fields as $index => $field )
+			{
 				$display_meta->fields[ $index ]->formId = $action->form_id;
+
+				// Go through each field and allow it to be parsed, for example via Search And Replace.
+				foreach( (array) $display_meta->fields[ $index ] as $key => $value )
+				{
+					if ( ! is_string( $value ) )
+						continue;
+					$id = 'gravity_forms_field_' . $index . '_' . $key;
+					$this->debug( "Parsing image element %s", $id );
+					$new_value = $this->parse_content( [
+						'broadcasting_data' => $bcd,
+						'content' => $value,
+						'id' => $id,
+					] );
+					if ( $new_value != $value )
+						$this->debug( 'Replacing %s with %s', $value, $new_value );
+					$display_meta->fields[ $index ]->$key = $new_value;
+				}
+			}
 			$display_meta->id = $action->form_id;
 			$action->meta->display_meta = json_encode( $display_meta );
 		}
@@ -351,10 +434,58 @@ class Gravity_Forms
 	}
 
 	/**
+		@brief		Return the addon_feeds of a blog.
+		@since		2021-01-12 22:21:39
+	**/
+	public function get_addon_feeds( $form_id, $prefix )
+	{
+		global $wpdb;
+		$query = sprintf( "SELECT * FROM `%s` WHERE `form_id` ='%s'",
+			static::rg_gf_table( 'addon_feed', $prefix ),
+			$form_id
+		);
+		$this->debug( $query );
+		return $wpdb->get_results( $query );
+	}
+
+	/**
+	 * Return a collection of all of the forms on this blog.
+	 *
+	 * @since		2025-02-21 10:55:13
+	 **/
+	public static function collect_form_data( $r = null )
+	{
+		if ( ! $r )
+			$r = ThreeWP_Broadcast()->collection();
+
+		$blog_id = get_current_blog_id();
+
+		global $wpdb;
+		$source_prefix = $wpdb->prefix;
+
+		$table = static::rg_gf_table( 'form', $source_prefix );
+
+		$bc_gf = broadcast_gravity_forms();
+
+		if ( $bc_gf->database_table_exists( $table ) )
+		{
+			$query = sprintf( "SELECT * FROM `%s`", $table );
+			$bc_gf->debug( $query );
+			$results = $wpdb->get_results( $query );
+			$forms = [];
+			foreach( $results as $result )
+				$forms[ $result->id ] = $result;
+			$r->collection( 'forms' )->set( $blog_id, $forms );
+		}
+
+		return $r;
+	}
+
+	/**
 		@brief		Decide which table name to return depending on GF version.
 		@since		2018-05-07 16:44:38
 	**/
-	public function rg_gf_table( $table, $prefix = null )
+	public static function rg_gf_table( $table, $prefix = null )
 	{
 		if ( ! $prefix )
 		{

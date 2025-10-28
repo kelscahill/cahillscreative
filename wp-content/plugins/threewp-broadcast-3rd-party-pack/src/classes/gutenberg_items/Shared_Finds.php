@@ -2,12 +2,14 @@
 
 namespace threewp_broadcast\premium_pack\classes\gutenberg_items;
 
+use Exception;
+
 /**
 	@brief		Handle the sharing of finds so that various add-ons can modify the same data.
 	@since		2020-01-31 08:14:38
 **/
 class Shared_Finds
-	extends \plainview\sdk_broadcast\collections\collection
+	extends \threewp_broadcast\premium_pack\classes\generic_items\Shared_Finds
 {
 	/**
 		@brief		Add a find.
@@ -17,42 +19,27 @@ class Shared_Finds
 	{
 		$key = static::get_key( $find );
 		$block_name = $find->original[ 'blockName' ];
-		$col = $this->collection( $block_name )
-			->collection( $key )
-			->collection( 'source' );
-		$col->set( 'find', $find )
-			->increase_counter();
+		$block_collection = $this->collection( $block_name );
+
+		if ( ! $block_collection->has( $key ) )
+		{
+			ThreeWP_Broadcast()->debug( 'Shared finds: adding block %s', $key );
+
+			$col = $block_collection->collection( $key )
+				->collection( 'source' );
+
+			$col->set( 'find', $find );
+		}
+		else
+		{
+			$col = $block_collection->collection( $key )->collection( 'source' );
+			ThreeWP_Broadcast()->debug( 'Duplicate counter for %s is now %s', $key, $col->get_counter() + 1 );
+		}
+
+		// For the sake of optimization, call this only once, once we have the $col.
+		$col->increase_counter();
+
 		return $col;
-	}
-
-	/**
-		@brief		Is this find ready to be replaced?
-		@since		2020-01-31 08:23:15
-	**/
-	public function can_be_replaced()
-	{
-		return $this->get_counter() < 1;
-	}
-
-	/**
-		@brief		Decrease the counter.
-		@since		2020-01-31 08:13:53
-	**/
-	public function decrease_counter()
-	{
-		$counter = $this->get( 'counter' );
-		$counter--;
-		$this->set( 'counter', $counter );
-		return $this;
-	}
-
-	/**
-		@brief		Get the counter value.
-		@since		2020-01-31 08:23:44
-	**/
-	public function get_counter()
-	{
-		return $this->get( 'counter', 0 );
 	}
 
 	/**
@@ -89,17 +76,5 @@ class Shared_Finds
 		$key = $find->original[ 'blockName' ];
 		$key .= json_encode( $find->original[ 'original' ] );
 		return md5( $key );
-	}
-
-	/**
-		@brief		Increase the counter.
-		@since		2020-01-31 08:13:53
-	**/
-	public function increase_counter()
-	{
-		$counter = $this->get( 'counter' );
-		$counter++;
-		$this->set( 'counter', $counter );
-		return $this;
 	}
 }

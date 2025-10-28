@@ -4,7 +4,7 @@ namespace threewp_broadcast\premium_pack\translatepress
 {
 
 /**
-	@brief				Adds support for the <a href="https://wordpress.org/plugins/translatepress-multilingual/">TranslatePress</a> plugin.
+	@brief				OBSOLETE: Adds support for the <a href="https://wordpress.org/plugins/translatepress-multilingual/">TranslatePress</a> plugin.
 	@plugin_group		3rd party compatability
 **/
 class TranslatePress
@@ -92,7 +92,10 @@ class TranslatePress
 
 			// We only want to insert the languages that exist.
 			if ( ! $this->database_table_exists( $table ) )
+			{
+				$this->debug( 'Table %s does not exist. Skipping language.', $table );
 				continue;
+			}
 
 			$query = sprintf( "SELECT * FROM `%s` WHERE `original_id` IN (%s)",
 				$table,
@@ -217,16 +220,6 @@ class TranslatePress
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Misc
 	// --------------------------------------------------------------------------------------------
-
-	/**
-		@brief		Return the complete database table name.
-		@since		2020-03-17 19:51:10
-	**/
-	public function database_table( $table )
-	{
-		global $wpdb;
-		return $wpdb->prefix . $table;
-	}
 
 	/**
 		@brief		Is TRP installed?

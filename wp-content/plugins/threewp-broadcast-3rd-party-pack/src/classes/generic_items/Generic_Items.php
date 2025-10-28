@@ -11,6 +11,8 @@ use \Exception;
 abstract class Generic_Items
 	extends \threewp_broadcast\premium_pack\base
 {
+	use \threewp_broadcast\premium_pack\classes\generic_items\Replace_Attachments_Trait;
+
 	public function _construct()
 	{
 		$this->add_action( 'threewp_broadcast_menu' );
@@ -50,13 +52,13 @@ abstract class Generic_Items
 			->value( $item->get_slug() );
 
 		$form->textarea( 'value' )
-			->description( 'One attribute per line that contains a single attachment ID.' )
+			->description( 'One attribute per line that contains a single attachment ID. Use a * for numbers 0 to 100.' )
 			->label( 'Single ID attributes' )
 			->rows( 5, 20 )
 			->trim()
 			->value( $item->get_value_text() );
 
-		$text = 'One attribute per line that contains multiple attachment IDs.';
+		$text = 'One attribute per line that contains multiple attachment IDs. Use a * for numbers 0 to 100.';
 		if ( isset( $generic_data->delimiters ) )
 			if ( $generic_data->delimiters )
 				$text .= ' Delimiters are written separated by spaces after the attribute.';
@@ -261,9 +263,13 @@ abstract class Generic_Items
 
 		foreach( $finds as $find )
 		{
-			$item = $find->original;
+			$shared_find_collection = $this->shared_finds()->get_find_collection( $find );
+			$shared_find = $shared_find_collection->get( 'find' );
+			$unmodified_find = $shared_find;
+			$item = $shared_find->original;
+			//$item = $find->original;
 
-			$replace_id_action = new actions\replace_id();
+			$replace_id_action = $this->new_replace_id_action();
 			$replace_id_action->called_class = get_called_class();
 			$replace_id_action->broadcasting_data = $bcd;
 			$replace_id_action->find = $find;
@@ -284,9 +290,16 @@ abstract class Generic_Items
 				$new_id = $this->replace_id( $bcd, $find, $old_id );
 				if ( $new_id )
 				{
-					$old_attribute = sprintf( '/(%s=[\"|\'])%s([\"|\'])/', $attribute, $old_id );
-					$new_attribute = sprintf( '${1}%s${2}', $new_id );
-					$item = preg_replace( $old_attribute, $new_attribute, $item );
+					if ( intval( $new_id ) > 0 )
+					{
+						$old_attribute = sprintf( '/(%s=[\"|\'])%s([\"|\'])/', $attribute, $old_id );
+						$new_attribute = sprintf( '${1}%s${2}', $new_id );
+						$item = preg_replace( $old_attribute, $new_attribute, $item );
+					}
+					else
+					{
+						$item = str_replace( $old_id, $new_id, $item );
+					}
 				}
 			}
 
@@ -319,12 +332,32 @@ abstract class Generic_Items
 				$item = preg_replace( $old_regexp, $new_regexp, $item );
 			}
 
-			$this->debug( 'Replacing %s <em>%s</em> with <em>%s</em>',
+			// Update the shared find.
+			$shared_find->original = $item;
+			$shared_find_collection->decrease_counter();
+
+			if ( ! $shared_find_collection->can_be_replaced() )
+			{
+				$this->debug( 'Cannot update this shared find yet.' );
+				continue;
+			}
+
+			$this->debug( 'Replacing %s <em>%s</em><br/>with<br/> <em>%s</em>',
 				$generic_data->singular,
 				htmlspecialchars( $find->original ),
 				htmlspecialchars( $item )
 			);
 			$action->content = str_replace( $find->original, $item, $action->content );
+
+			// Replace the content.
+			$original_content = $find->content;
+			$modified_content = ThreeWP_Broadcast()->update_attachment_ids( $bcd, $original_content );
+			$hash_before = md5( $action->content );
+			$action->content = str_replace( ']' . $original_content . '[', ']' . $modified_content . '[', $action->content );
+			$hash_after = md5( $action->content );
+
+			if ( $hash_before != $hash_after )
+				$this->debug( 'Content was modified also.' );
 		}
 	}
 
@@ -349,7 +382,6 @@ abstract class Generic_Items
 
 		foreach( $items as $item )
 		{
-			$this->debug( 'Looking for item: %s', $item->get_slug() );
 			$matches = ThreeWP_Broadcast()->find_shortcodes( $content, [ $item->get_slug() ] );
 
 			if ( count( $matches[ 0 ] ) < 1 )
@@ -372,10 +404,12 @@ abstract class Generic_Items
 				// Trim off everything after the first ]
 				$find->original = preg_replace( '/\].*/s', ']', $find->original );
 
+				$find->content = $matches[ 5 ][ $index ];
+
 				$this->debug( 'Found item %s as %s', $key, htmlspecialchars( $find->original ) );
 
 				// Extract the ID
-				foreach( $item->value as $attribute => $ignore )
+				foreach( $this->expand_values( $item->value ) as $attribute => $ignore )
 				{
 					// Does this item use this attribute?
 					if ( strpos( $find->original, $attribute . '=' ) === false )
@@ -385,7 +419,9 @@ abstract class Generic_Items
 					}
 
 					// Remove anything before the attribute
-					$string = preg_replace( '/.*' . $attribute .'=[\"|\']/', '', $find->original );
+					// That space is to ensure that we get only "image_id" and not "background_image_id".
+					$string = preg_replace( '/.* ' . $attribute .'=[\"|\']/', '', $find->original );
+
 					// And everything after the quotes.
 					$string = preg_replace( '/[\"|\'].*/s', '', $string );
 
@@ -440,9 +476,7 @@ abstract class Generic_Items
 					$this->debug( 'Found items %s in attribute %s', implode( ', ', $ids ), $attribute );
 				}
 
-				$this->debug( 'Adding this find to the array.' );
-
-				$parse_find_action = new actions\parse_find();
+				$parse_find_action = $this->new_parse_find_action();
 				$parse_find_action->called_class = get_called_class();
 				$parse_find_action->broadcasting_data = $bcd;
 				$parse_find_action->find = $find;
@@ -451,14 +485,24 @@ abstract class Generic_Items
 				if ( ! $parse_find_action->is_finished() )
 					$this->parse_find( $bcd, $find );
 
+				try
+				{
+					$find_collection = $this->shared_finds()->add_find( $find );
+					$this->debug( 'Adding this find to the array x %s: %s', $find_collection->get_counter(), $find );
+				}
+				catch( Exception $e )
+				{
+					$this->debug( $e->getMessage() );
+				}
+
 				$finds []= $find;
 			}
 		}
 
-		$this->debug( 'Found %s item occurrences in the content.', count( $finds ) );
-
 		if ( count( $finds ) < 1 )
 			return;
+
+		$this->debug( 'Found %s item occurrences in the content.', count( $finds ) );
 
 		$bcd->$slug->set( $action->id, $finds );
 	}
@@ -466,6 +510,29 @@ abstract class Generic_Items
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Misc functions
 	// --------------------------------------------------------------------------------------------
+
+	/**
+		@brief		Expand any wildcards in the item.
+		@since		2022-11-29 21:40:40
+	**/
+	public function expand_values( $array )
+	{
+		$r = ThreeWP_Broadcast()->collection();
+		foreach( $array as $key => $value )
+		{
+			if ( strpos( $key, '*' ) === false )
+				$r->set( $key, $value );
+			else
+			{
+				for( $counter = 0; $counter <= 100; $counter++ )
+				{
+					$new_key = str_replace( '*', $counter, $key );
+					$r->set( $new_key, $value );
+				}
+			}
+		}
+		return $r;
+	}
 
 	/**
 		@brief		Return any html that you want to display above the shortcode editor.
@@ -519,6 +586,24 @@ abstract class Generic_Items
 	}
 
 	/**
+		@brief		Create a parse find action.
+		@since		2021-02-05 16:49:19
+	**/
+	public function new_parse_find_action()
+	{
+		return new actions\parse_find();
+	}
+
+	/**
+		@brief		Create a replace_id action.
+		@since		2021-02-05 16:52:10
+	**/
+	public function new_replace_id_action()
+	{
+		return new actions\replace_id();
+	}
+
+	/**
 		@brief		Save the collection.
 		@since		2016-07-14 13:02:18
 	**/
@@ -526,6 +611,33 @@ abstract class Generic_Items
 	{
 		$this->update_site_option( $this->get_generic_data()->option_name, $this->items() );
 	}
+
+	/**
+		@brief		Return the Shared_Finds object.
+		@since		2020-01-31 08:15:43
+	**/
+	public function shared_finds()
+	{
+		$bc = ThreeWP_Broadcast();
+		$key = static::shared_finds_key();
+		if ( isset( $bc->$key ) )
+			return $bc->$key;
+		$bc->$key = $this->create_shared_finds();
+		$bc->$key->parent = $this;
+		return $bc->$key;
+	}
+
+	/**
+		@brief		Create the shared finds instance.
+		@since		2023-08-02 00:11:55
+	**/
+	public abstract function create_shared_finds();
+
+	/**
+		@brief		Return the key where the shared finds are stored.
+		@since		2023-08-02 00:06:22
+	**/
+	public abstract static function shared_finds_key();
 
 	/**
 		@brief		Load all of the items in their collection.

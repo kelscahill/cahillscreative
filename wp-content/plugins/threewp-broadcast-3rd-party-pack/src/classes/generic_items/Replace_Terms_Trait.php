@@ -21,8 +21,8 @@ trait Replace_Terms_Trait
 			$ids->set( $id, true );
 		}
 
-		foreach( $find->values as $attribute => $array )
-			foreach( $array[ 'ids' ] as $id )
+		foreach( $find->values as $attribute => $find_ids )
+			foreach( $find_ids as $id )
 			{
 				$id = intval( $id );
 				$ids->set( $id, true );
@@ -37,7 +37,8 @@ trait Replace_Terms_Trait
 			$taxonomy = $term->taxonomy;
 			$this->debug( 'Term %s belongs to taxonomy %s', $id, $taxonomy );
 			$find->collection( 'taxonomies' )->set( $id, $taxonomy );
-			$bcd->taxonomies()->also_sync( $bcd->post->post_type, $taxonomy );
+			$bcd->taxonomies()->also_sync( false, $taxonomy );	// False to force resyncing of the taxonomy.
+			$bcd->taxonomies()->use_term( $id );
 			$taxonomies->set( $taxonomy, true );
 		}
 
@@ -60,18 +61,6 @@ trait Replace_Terms_Trait
 	**/
 	public function replace_id( $broadcasting_data, $find, $old_id )
 	{
-		$taxonomy = $find->collection( 'taxonomies' )->get( $old_id );
-
-		if ( ! $taxonomy )
-			return;
-
-		// Has the taxonomy been synced?
-		if ( ! isset( $broadcasting_data->parent_blog_taxonomies[ $taxonomy ][ 'equivalent_terms' ] ) )
-		{
-			$this->debug( 'Asking broadcast to please sync %s', $taxonomy );
-			ThreeWP_Broadcast()->sync_terms( $broadcasting_data, $taxonomy );
-		}
-
 		$new_id = $broadcasting_data->terms()->get( $old_id );
 		if ( $new_id < 1 )
 			$new_id = 0;

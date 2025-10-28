@@ -6,12 +6,11 @@ use Exception;
 
 /**
 	@brief		Handles things related to blogs.
+	@details	Don't forget to use the files_trait.
 	@since		2020-03-12 16:08:47
 **/
 trait blogs_trait
 {
-	use files_trait;
-
 	/**
 		@brief		Change the ID of a blog if possible.
 		@since		2020-03-12 16:08:54
@@ -44,7 +43,7 @@ trait blogs_trait
 		// Rename all tables.
 		$old_blog_prefix = $wpdb->base_prefix . $old_id . '_';
 		$new_blog_prefix = $wpdb->base_prefix . $new_id . '_';
-		$tables = $wpdb->get_results( "SHOW TABLES LIKE '${old_blog_prefix}%'", ARRAY_N );
+		$tables = $wpdb->get_results( "SHOW TABLES LIKE '" . $old_blog_prefix . "%'", ARRAY_N );
 		foreach( $tables as $table )
 		{
 			$table = reset( $table );

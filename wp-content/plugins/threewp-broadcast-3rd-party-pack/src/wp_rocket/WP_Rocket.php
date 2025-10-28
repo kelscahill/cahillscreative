@@ -11,6 +11,24 @@ class WP_Rocket
 	public function _construct()
 	{
 		$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
+		$this->add_action( 'threewp_broadcast_trash_untrash_delete_post' );
+		add_action( 'broadcast_shortcodes_saved', function()
+		{
+			rocket_clean_domain();
+		} );
+	}
+
+	/**
+		@brief		Clears the rocket cache of this post ID.
+		@since		2022-12-05 17:32:42
+	**/
+	public static function clear_rocket_cache( $post_id )
+	{
+		if ( ! function_exists( 'rocket_clean_domain' ) )
+			return;
+		WP_Rocket::instance()->debug( 'Clearing cache for post %s', $post_id );
+		rocket_clean_minify();
+		rocket_clean_post( $post_id );
 	}
 
 	/**
@@ -28,11 +46,21 @@ class WP_Rocket
 
 		$this->debug( 'WP Rocket: Clearing cache for post %s.', $post_id );
 
-		// We have to do this manually do to the lovely $done variable in rocket_clean_post().
+		static::clear_rocket_cache( $post_id );
+	}
 
-		$purge_urls = rocket_get_purge_urls( $post_id, $post );
-		$purge_urls = apply_filters( 'rocket_post_purge_urls', $purge_urls, $post );
-		rocket_clean_files( $purge_urls );
-		rocket_clean_home_feeds();
+	/**
+		@brief		Trash the cache of each child site when any action is run on the parent.
+		@since		2022-12-08 21:25:57
+	**/
+	public function threewp_broadcast_trash_untrash_delete_post( $action )
+	{
+		$this->debug( 'Clearing post %s cache on site %s',
+			$action->child_post_id,
+			$action->child_blog_id,
+			);
+		switch_to_blog( $action->child_blog_id );
+		static::clear_rocket_cache( $action->child_post_id );
+		restore_current_blog();
 	}
 }

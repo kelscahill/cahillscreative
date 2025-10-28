@@ -9,6 +9,16 @@ namespace threewp_broadcast\premium_pack\classes;
 trait database_trait
 {
 	/**
+		@brief		Return the complete database table name.
+		@since		2020-03-17 19:51:10
+	**/
+	public function database_table( $table )
+	{
+		global $wpdb;
+		return $wpdb->prefix . $table;
+	}
+
+	/**
 		@brief		Check whether the database table exists.
 		@since		2018-02-16 09:44:57
 	**/
@@ -76,10 +86,19 @@ trait database_trait
 		@brief		Convenience method to return the prefixed table name.
 		@since		2020-01-23 09:27:22
 	**/
-	public static function get_prefixed_table_name( $table_name )
+	public static function get_prefixed_table_name( $table_name, $blog_id = null )
 	{
 		global $wpdb;
-		return sprintf( "%s%s", $wpdb->prefix, $table_name );
+
+		if ( $blog_id > 0 )
+			switch_to_blog( $blog_id );
+
+		$r = sprintf( "%s%s", $wpdb->prefix, $table_name );
+
+		if ( $blog_id > 0 )
+			restore_current_blog();
+
+		return $r;
 	}
 
 	/**
@@ -89,18 +108,14 @@ trait database_trait
 	public function sync_database_rows( $options )
 	{
 		$options = array_merge( [
-			/**
-				@brief		Ignore these columns.
-				@since		2019-12-11 18:36:27
-			**/
-			'debug_class' => $this,
-			'except' => [ 'id' ],
-			'source' => 'source',
-			'source_value' => '123',
-			'target' => 'target',
-			'target_value' => '234',
-			'unique_column' => 'field_key',
-			'value_column' => 'form_id',
+			'debug_class' => $this,				// Which class to use for debug() calls.
+			'except' => [ 'id' ],				// Do not sync these columns
+			'source' => 'source',				// Source table name
+			'source_value' => '123',			// The item value of the source.
+			'target' => 'target',				// Target table name
+			'target_value' => '234',			// The item value of the target to update.
+			'unique_column' => 'field_key',		// Which column to use as the unique row key.
+			'value_column' => 'form_id',		// From which column to fetch the value of the item.
 		], $options );
 
 		// Objects are easier to work with.

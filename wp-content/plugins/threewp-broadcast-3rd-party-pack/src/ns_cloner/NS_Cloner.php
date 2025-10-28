@@ -26,9 +26,11 @@ class NS_Cloner
 	**/
 	public function ns_cloner_after_everything( $cloner )
 	{
+		$this->debug( 'ns_cloner_after_everything find_unlinked_children_on_blog' );
 		$this->find_unlinked_children_on_blog( [
-			'parent_blog_id' => $cloner->source_id,
 			'child_blog_id' => $cloner->target_id,
+			'high_priority' => false,
+			'parent_blog_id' => $cloner->source_id,
 		] );
 	}
 
@@ -47,8 +49,9 @@ class NS_Cloner
 		$child_blog_id = reset( $child_blog_id );
 
 		$this->find_unlinked_children_on_blog( [
-			'parent_blog_id' => ns_cloner_request()->get( 'source_id' ),
 			'child_blog_id'  => $child_blog_id,
+			'high_priority' => false,
+			'parent_blog_id' => ns_cloner_request()->get( 'source_id' ),
 		] );
 	}
 
@@ -59,7 +62,9 @@ class NS_Cloner
 	**/
 	public function ns_cloner_process_finish()
 	{
+		$this->debug( 'ns_cloner_process_finish find_unlinked_children_on_blog' );
 		$this->find_unlinked_children_on_blog( [
+			'high_priority' => false,
 			'parent_blog_id' => ns_cloner_request()->get( 'source_id' ),
 			'child_blog_id'  => ns_cloner_request()->get( 'target_id' ),
 		] );

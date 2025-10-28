@@ -24,11 +24,20 @@ class restore_field
 	public $field;
 
 	/**
+		@brief		OUT: The new value of the field as requested by the action.
+		@details	This value is set automatically by the acf_update_value function and is used if snippets want to keep track of what was updated.
+		@since		2024-04-10 19:51:12
+	**/
+	public $new_value;
+
+	/**
 		@brief		Update the ACF value.
 		@since		2015-10-26 20:26:40
 	**/
 	public function acf_update_value( $value )
 	{
+		$this->new_value = $value;
+
 		if ( function_exists( 'acf_update_value' ) )
 			// acf pro
 			return acf_update_value( $value, $this->post_id, (array) $this->field );

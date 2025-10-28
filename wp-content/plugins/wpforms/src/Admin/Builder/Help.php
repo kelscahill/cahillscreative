@@ -184,6 +184,7 @@ class Help {
 			'settings/google_sheets'                  => 'google sheets',
 			'settings/dropbox'                        => 'dropbox',
 			'settings/google_calendar'                => 'google calendar',
+			'settings/airtable'                       => 'airtable',
 			'settings/google_drive'                   => 'google drive',
 			'settings/webhooks'                       => 'webhooks',
 			'settings/entry_automation'               => 'entry automation',
@@ -202,6 +203,7 @@ class Help {
 			'providers/mailerlite'                    => 'mailerlite',
 			'providers/mailpoet'                      => 'mailpoet',
 			'providers/make'                          => 'make',
+			'providers/n8n'                           => 'n8n',
 			'providers/zapier'                        => 'zapier',
 			'providers/salesforce'                    => 'salesforce',
 			'providers/sendinblue'                    => 'brevo',
@@ -1217,11 +1219,13 @@ class Help {
 				'/docs/how-to-install-and-use-zapier-addon-with-wpforms/',
 				'/docs/how-to-install-and-use-the-webhooks-addon-with-wpforms/',
 				'/docs/google-sheets-addon/',
+				'/docs/n8n-addon/',
 			],
 			'integration'               => [
 				'/docs/how-to-install-and-use-zapier-addon-with-wpforms/',
 				'/docs/how-to-install-and-use-the-webhooks-addon-with-wpforms/',
 				'/docs/google-sheets-addon/',
+				'/docs/n8n-addon/',
 			],
 			'crm'                       => [
 				'/docs/how-to-install-and-use-zapier-addon-with-wpforms/',
@@ -1231,6 +1235,7 @@ class Help {
 				'/docs/how-to-install-and-use-zapier-addon-with-wpforms/',
 				'/docs/how-to-install-and-use-the-webhooks-addon-with-wpforms/',
 				'/docs/google-sheets-addon/',
+				'/docs/n8n-addon/',
 			],
 			'paypal commerce'           => [
 				'/docs/paypal-commerce-addon/',
@@ -1268,6 +1273,12 @@ class Help {
 			],
 			'pdf'                       => [
 				'/docs/pdf-addon/',
+			],
+			'n8n'                       => [
+				'/docs/n8n-addon/',
+			],
+			'airtable'                  => [
+				'/docs/airtable-addon/',
 			],
 		];
 	}

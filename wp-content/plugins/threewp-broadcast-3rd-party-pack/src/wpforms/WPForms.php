@@ -17,6 +17,7 @@ class WPForms
 	public function _construct()
 	{
 		new WPForms_Shortcode();
+		new WPForms_Selector_Shortcode();
 		$this->add_action( 'threewp_broadcast_broadcasting_modify_post' );
 	}
 

@@ -7,6 +7,7 @@ namespace threewp_broadcast\premium_pack\polylang;
 	@plugin_group		3rd party compatability
 	@since				2014-11-12 19:51:37
 **/
+//#[AllowDynamicProperties]
 class Polylang
 	extends \threewp_broadcast\premium_pack\base
 {
@@ -19,10 +20,21 @@ class Polylang
 		$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
 		$this->add_action( 'threewp_broadcast_collect_post_type_taxonomies', 'threewp_broadcast_collect_post_type_taxonomies_3', 3 );
 		$this->add_action( 'threewp_broadcast_collect_post_type_taxonomies', 8 );
+		$this->add_action( 'threewp_broadcast_copy_attachment', 1000 );		// After everyone else is done.
+		$this->add_action( 'threewp_broadcast_find_unlinked_children_post_action', 5 );
 		$this->add_action( 'threewp_broadcast_menu' );
+		$this->add_action( 'threewp_broadcast_post_action', 5 );
 		$this->add_action( 'threewp_broadcast_synced_taxonomy' );
 		$this->add_action( 'threewp_broadcast_wp_update_term', 2 );		// Broadcast handles this at 5, so we have to do it before BC.
 		$this->add_action( 'threewp_broadcast_wp_insert_term', 2 );
+
+		// Handle the horrible pll_languages_list transient that breaks the PLL settings if it is regenerated during a blog switch.
+		$this->add_action( 'broadcast_polylang_delete_pll_languages_list_transient' );
+		$this->add_action( 'delete_post', 'schedule_delete_pll_languages_list_transient' );
+		$this->add_action( 'wp_trash_post', 'schedule_delete_pll_languages_list_transient' );
+		$this->add_action( 'untrash_post', 'schedule_delete_pll_languages_list_transient' );
+		$this->add_action( 'trashed_post', 'schedule_delete_pll_languages_list_transient' );
+		$this->add_action( 'untrashed_post', 'schedule_delete_pll_languages_list_transient' );
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -30,10 +42,31 @@ class Polylang
 	// --------------------------------------------------------------------------------------------
 
 	/**
-		@brief		menu_settings
+		@brief		Show the tabs for the menu item.
+		@since		2020-10-03 17:49:22
+	**/
+	public function admin_menu_tabs()
+	{
+		$tabs = $this->tabs();
+
+		$tabs->tab( 'settings' )
+			->callback_this( 'admin_settings' )
+			->heading( __( 'Broadcast Polylang Settings', 'threewp_broadcast' ) )
+			->name( __( 'Polylang Settings', 'threewp_broadcast' ) );
+
+		$tabs->tab( 'string_translations' )
+			->callback_this( 'admin_string_translations' )
+			->heading( __( 'Broadcast Polylang String Translations', 'threewp_broadcast' ) )
+			->name( __( 'Polylang String Translations', 'threewp_broadcast' ) );
+
+		echo $tabs->render();
+	}
+
+	/**
+		@brief		admin_settings
 		@since		2016-12-13 15:47:29
 	**/
-	public function menu_settings()
+	public function admin_settings()
 	{
 		$form = $this->form();
 		$r = '';
@@ -76,8 +109,85 @@ class Polylang
 		$r .= $form->display_form_table();
 		$r .= $form->close_tag();
 
-		// Settings page header
-		echo $this->wrap( $r, __( 'Broadcast Polylang Settings', 'threewp_broadcast' ) );
+		echo $r;
+	}
+
+	/**
+		@brief		Copy the string translations.
+		@since		2020-10-03 17:52:03
+	**/
+	public function admin_string_translations()
+	{
+		$form = $this->form();
+		$r = '';
+
+		$langs = [];
+		$languages_list = $this->get_languages_list();
+		foreach( $languages_list as $data )
+			$langs[ $data->term_id ] = $data->name;
+		$languages_select = $form->select( 'languages' )
+			->description( __( 'Select the string translations you wish to broadcast.', 'threewp_broadcast' ) )
+			->label( __( 'Languages', 'threewp_broadcast' ) )
+			->multiple()
+			->opts( $langs )
+			->required()
+			->autosize();
+
+		$blogs_select = $this->add_blog_list_input( [
+			// Blog selection input description
+			'description' => __( 'Select one or more blogs to which to broadcast the string translations.', 'threewp_broadcast' ),
+			'form' => $form,
+			// Blog selection input label
+			'label' => __( 'Blogs', 'threewp_broadcast' ),
+			'multiple' => true,
+			'name' => 'blogs',
+			'required' => false,
+		] );
+
+		$save = $form->primary_button( 'broadcast' )
+			->value( __( 'Broadcast string translations', 'threewp_broadcast' ) );
+
+		if ( $form->is_posting() )
+		{
+			$form->post();
+			$form->use_post_values();
+
+			$blogs = $blogs_select->get_post_value();
+			foreach( $languages_select->get_post_value() as $lang_id )
+			{
+				$lang = $languages_list[ $lang_id ];
+				$parent_slug = $lang->slug;
+				// Find the polylang_mo post for this lang.
+				$post_id = \PLL_MO::get_id( $languages_list[ $lang_id ] );
+				$meta_key = '_pll_strings_translations';
+				$meta_value = get_post_meta( $post_id, $meta_key, true );
+				foreach( $blogs as $blog_id )
+				{
+					switch_to_blog( $blog_id );
+					$this->clear_polylang_languages_cache();
+
+					// Find the equivalent language using the slug.
+					$languages_list = $this->get_languages_list();
+					foreach( $languages_list as $lang )
+					{
+						if ( $lang->slug != $parent_slug )
+							continue;
+						$child_post_id = \PLL_MO::get_id( $lang );
+						$this->debug( 'Updating child_post %s for language %s with %s', $child_post_id, $lang->term_id, $meta_value );
+						update_post_meta( $child_post_id, $meta_key, $meta_value );
+					}
+					restore_current_blog();
+				}
+			}
+
+			$r .= $this->info_message_box()->_( __( 'String translations broadcasted!', 'threewp_broadcast' ) );
+		}
+
+		$r .= $form->open_tag();
+		$r .= $form->display_form_table();
+		$r .= $form->close_tag();
+
+		echo $r;
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -95,8 +205,21 @@ class Polylang
 
 		$bcd = $action->broadcasting_data;
 
+		if ( ! isset( $bcd->polylang ) )
+			return;
+
+		if ( ! isset( $bcd->polylang->pll_is_translated_post_type ) )
+			return;
+
 		if ( ! $bcd->polylang->pll_is_translated_post_type )
 			return $this->debug( 'Not a translated post type.' );
+
+		global $wpdb;
+		$query = sprintf( "SELECT `option_value` FROM `%s` WHERE `option_name` = 'page_on_front'", $wpdb->options );
+		$this->debug( $query );
+		$page_id = $wpdb->get_var( $query );
+		$bcd->polylang->page_on_front = $page_id;
+		$this->debug(  'Saving page_on_front: %s', $page_id );
 
 		$this->clear_polylang_languages_cache();
 
@@ -192,6 +315,13 @@ class Polylang
 		if ( ! $bcd->polylang->pll_is_translated_post_type )
 			return $this->debug( 'Not a translated post type.' );
 
+		global $wpdb;
+		$page_id = $bcd->polylang->page_on_front;
+		$this->debug(  'Restoring page_on_front: %s', $page_id );
+		$wpdb->update( $wpdb->options, [ 'option_value' => $page_id ], [ 'option_name' => 'page_on_front' ] );
+
+		flush_rewrite_rules();
+
 		if ( isset( $bcd->polylang->no_language_action ) )
 		{
 			// Broadcast as normal, but use the blog default language.
@@ -244,6 +374,31 @@ class Polylang
 			PLL()->pref_lang = $bcd->polylang->old_pref_lang;
 			unset( $bcd->polylang->old_pref_lang );
 		}
+
+		$this->schedule_delete_pll_languages_list_transient();
+
+	}
+
+	/**
+		@brief		Schedule a deletion of all of the pll transients.
+		@since		2024-09-25 12:58:41
+	**/
+	public function schedule_delete_pll_languages_list_transient()
+	{
+		$this->debug( 'Scheduling broadcast_polylang_delete_pll_languages_list_transient event on %s', get_current_blog_id() );
+		wp_schedule_single_event( time() + 5, 'broadcast_polylang_delete_pll_languages_list_transient' );
+	}
+
+	/**
+		@brief		Delete all of the pll_languages_list transients on all blogs.
+		@details	This is due to the fact that PLL is not network aware and breaks its settings if the transient is regenerated during a blog switch.
+					The transient is regenerated when posts are created, updated, deleted, etc.
+		@since		2024-09-25 12:58:58
+	**/
+	public function broadcast_polylang_delete_pll_languages_list_transient()
+	{
+		$this->debug( 'Deleting pll_languages_list on blog %s', get_current_blog_id() );
+		delete_transient( 'pll_languages_list' );
 	}
 
 	/**
@@ -252,6 +407,9 @@ class Polylang
 	**/
 	public function threewp_broadcast_broadcasting_finished( $action )
 	{
+		if ( ! $this->has_polylang() )
+			return;
+
 		$this->clear_polylang_languages_cache();
 
 		if ( ! $this->get_site_option( 'update_all_translations' ) )
@@ -292,6 +450,7 @@ class Polylang
 		$this->prepare_bcd( $bcd );
 
 		$post = $bcd->post;
+
 		$bcd->polylang->pll_is_translated_post_type = pll_is_translated_post_type( $post->post_type );
 
 		if ( ! $bcd->polylang->pll_is_translated_post_type )
@@ -321,6 +480,8 @@ class Polylang
 				remove_action( 'set_object_terms', array( $pll->sync->taxonomies, 'set_object_terms' ), 10, 6 );
 			}
 		}
+
+		remove_filter( 'option_page_on_front', [ PLL()->static_pages, 'translate_page_on_front' ] );
 
 		$bcd->polylang->language = pll_get_post_language( $post->ID );
 		$bcd->polylang->translations = PLL()->model->post->get_translations( $post->ID );
@@ -413,13 +574,6 @@ class Polylang
 			if ( isset( PLL()->filters_term ) )
 				remove_filter( 'terms_clauses', array( PLL()->filters_term, 'terms_clauses' ), 10, 3 );
 
-			/**
-			$bcd->taxonomies()->also_sync_taxonomy( [
-				'post' => $bcd->post,
-				'post_id' => $bcd->post->ID,
-				'taxonomy' => $parent_post_taxonomy
-			] );
-			**/
 			$bcd->taxonomies()->also_sync( $bcd->post->post_type, $parent_post_taxonomy );
 			//add_filter( 'terms_clauses', array( PLL()->filters_term, 'terms_clauses' ), 10, 3 );
 			unset( $this->__collecting_more_terms );
@@ -438,8 +592,11 @@ class Polylang
 				}
 				else
 					foreach( $translations as $language => $term_id )
+					{
+						$bcd->taxonomies()->use_term( $term_id );
 						if ( ! isset( $bcd->parent_blog_taxonomies[ $parent_post_taxonomy ][ 'terms' ][ $term_id ] ) )
 							$bcd->parent_blog_taxonomies[ $parent_post_taxonomy ][ 'terms' ][ $term_id ] = get_term_by( 'id', $term_id, $parent_post_taxonomy );
+					}
 				$this->debug( 'Translations for taxonomy %s %s (%s): %s', $parent_post_taxonomy, $term->slug, $term->term_id, $translations );
 
 				// Save the translations for each of the term IDs, since we need the term ID for wp_insert_term for each lang.
@@ -448,6 +605,50 @@ class Polylang
 						->set( $term_id, $translations );
 			}
 		}
+	}
+
+	/**
+	 * Set the language of the image.
+	 *
+	 * @since		2025-05-14 19:23:41
+	 **/
+	public function threewp_broadcast_copy_attachment( $action )
+	{
+		$bc = ThreeWP_Broadcast();
+
+		// Retrieve the last broadcasting data.
+		$bcd = end( $bc->broadcasting );
+
+		if ( ! isset( $bcd->polylang->language ) )
+			return;
+
+		$this->debug( 'Setting image %s language to %s',
+			 $action->attachment_id,
+			 $bcd->polylang->language,
+		);
+		pll_set_post_language( $action->attachment_id, $bcd->polylang->language );
+	}
+
+	/**
+		@brief		threewp_broadcast_find_unlinked_children_post_action
+		@since		2022-12-17 14:54:16
+	**/
+	public function threewp_broadcast_find_unlinked_children_post_action( $action )
+	{
+		$action->post_get_posts_callbacks [ 'broadcast_polylang' ] = function( $the_action )
+		{
+			if ( count( $the_action->posts ) < 2 )
+				return;
+			foreach( $the_action->posts as $index => $post )
+			{
+				$post_language = pll_get_post_language( $post->ID );
+				if ( $post_language != $the_action->post_action->pll_post_language )
+				{
+					$this->debug( 'Removing post %s which is in %s', $post->ID, $post_language );
+					unset( $the_action->posts[ $index ] );
+				}
+			}
+		};
 	}
 
 	/**
@@ -496,11 +697,26 @@ class Polylang
 
 		$action->menu_page
 			->submenu( 'threewp_broadcast_polylang' )
-			->callback_this( 'menu_settings' )
+			->callback_this( 'admin_menu_tabs' )
 			// Menu item name
 			->menu_title( 'Polylang' )
 			// Page title
 			->page_title( 'Polylang Broadcast' );
+	}
+
+	/**
+		@brief		Broadcast needs help finding the correct languages for the post.
+		@since		2022-12-17 14:44:24
+	**/
+	public function threewp_broadcast_post_action( $action )
+	{
+		if ( $action->action != 'find_unlinked' )
+			return;
+		if ( ! $this->has_polylang() )
+			return;
+		$post_language = pll_get_post_language( $action->post_id );
+		$this->debug( 'Saved post language as %s', $post_language );
+		$action->pll_post_language = $post_language;
 	}
 
 	/**
@@ -610,7 +826,9 @@ class Polylang
 		if ( ! $polylang )
 			return;
 		// Else it thinks we have the languages from the previous blog.
+		$this->debug( 'Clean languages cache.' );
 		$polylang->model->clean_languages_cache();
+		wp_cache_delete( 'polylang_mo_ids' );
 	}
 
 	/**
@@ -620,7 +838,9 @@ class Polylang
 	public function get_languages_list()
 	{
 		global $polylang;
-		return $polylang->model->get_languages_list();
+		$r = $polylang->model->get_languages_list();
+		$r = $this->array_rekey( $r, 'term_id' );
+		return $r;
 	}
 
 	/**

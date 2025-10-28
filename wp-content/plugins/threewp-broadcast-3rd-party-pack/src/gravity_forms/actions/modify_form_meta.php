@@ -26,4 +26,16 @@ class modify_form_meta
 		@since		2017-11-22 19:46:51
 	**/
 	public $meta;
+
+	/**
+	 *	@brief	An array of forms on the source blog.
+	 *	@since	2024-11-20 17:35:41
+	 **/
+	public $source_forms;
+
+	/**
+	 *	@brief	An array of forms on the current / target blog.
+	 *	@since	2024-11-20 17:35:41
+	 **/
+	public $target_forms;
 }

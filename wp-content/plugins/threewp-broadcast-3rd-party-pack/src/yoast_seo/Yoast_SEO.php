@@ -10,8 +10,20 @@ namespace threewp_broadcast\premium_pack\yoast_seo;
 class Yoast_SEO
 	extends \threewp_broadcast\premium_pack\base
 {
+	/**
+		@brief		These custom fields must be handled separately if they are placed in the protect list.
+		@since		2021-11-30 17:40:49
+	**/
+	public static $protectable_custom_fields =
+	[
+		'_yoast_wpseo_meta-robots-nofollow',
+		'_yoast_wpseo_meta-robots-noindex',
+	];
+
 	public function _construct()
 	{
+		$this->add_action( 'broadcast_bulk_cloner_clone_these_tables' );
+		$this->add_action( 'threewp_broadcast_broadcasting_after_update_post' );
 		$this->add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog' );
 		$this->add_action( 'threewp_broadcast_broadcasting_started' );
 		$this->add_action( 'threewp_broadcast_collect_post_type_taxonomies' );
@@ -25,6 +37,20 @@ class Yoast_SEO
 	// --------------------------------------------------------------------------------------------
 
 	/**
+	 * Do not clone the contents of the indexeable table.
+	 *
+	 * @since		2025-04-22 15:46:26
+	 **/
+	public function broadcast_bulk_cloner_clone_these_tables( $action )
+	{
+		global $wpdb;
+		$table = $wpdb->prefix . 'yoast_indexable';
+		$action->skip_table_contents []= $table;
+
+		$this->debug( 'Telling Bulk Cloner to not clone the indexable table %s.', $table );
+	}
+
+	/**
 		@brief		Plugin settings.
 		@since		2016-10-30 15:35:24
 	**/
@@ -32,6 +58,11 @@ class Yoast_SEO
 	{
 		$form = $this->form2();
 		$r = '';
+
+		$modify_post_canonical = $form->checkbox( 'modify_post_canonical' )
+			->checked( $this->get_site_option( 'modify_post_canonical' ) )
+			->description( "Replace the parent site's URL in the canonical with the child site's URL" )
+			->label( "Modify the post's canonical URL" );
 
 		$keep_canonical_input = $form->checkbox( 'keep_canonical' )
 			->checked( $this->get_site_option( 'keep_canonical' ) )
@@ -48,6 +79,9 @@ class Yoast_SEO
 		{
 			$form->post();
 			$form->use_post_values();
+
+			$value = $modify_post_canonical->is_checked();
+			$this->update_site_option( 'modify_post_canonical', $value );
 
 			$value = $keep_canonical_input->is_checked();
 			$this->update_site_option( 'keep_canonical', $value );
@@ -72,7 +106,34 @@ class Yoast_SEO
 	{
 		return array_merge( [
 			'keep_canonical' => false,
+			'modify_post_canonical' => false,
 		], parent::site_options() );
+	}
+
+	/**
+		@brief		threewp_broadcast_broadcasting_after_update_post
+		@since		2021-11-30 17:16:30
+	**/
+	public function threewp_broadcast_broadcasting_after_update_post( $action )
+	{
+		$bcd = $action->broadcasting_data;
+
+		if ( ! isset( $bcd->yoast_seo ) )
+			return;
+
+		foreach( static::$protectable_custom_fields as $key )
+		{
+			$bcd->yoast_seo->forget( $key );
+			// Handling the nofollow custom field is very complicated...
+			if( $bcd->custom_fields()->protectlist_has( $key ) )
+			{
+				// nofollow = custom field is 1
+				// normal follow = no custom field (!)
+				$has_nofollow = $bcd->custom_fields()->child_fields()->has( $key );
+				$this->debug( 'Current %s status: %s', $key, intval( $has_nofollow ) );
+				$bcd->yoast_seo->set( $key, $has_nofollow );
+			}
+		}
 	}
 
 	/**
@@ -83,36 +144,83 @@ class Yoast_SEO
 	{
 		$bcd = $action->broadcasting_data;
 
-		// Handle the primary category.
-		$key = '_yoast_wpseo_primary_category';
-		$old_term_id = $bcd->custom_fields()->get_single( $key );
-		if ( $old_term_id > 0 )
+		// Modify the canonical?
+		if ( $this->get_site_option( 'modify_post_canonical' ) )
 		{
-			// Get the equivalent category here.
-			$new_term_id = $bcd->terms()->get( $old_term_id );
-			$this->debug( 'Setting new primary category: %s', $new_term_id );
+			$key = '_yoast_wpseo_canonical';
+
+			$old_canonical = $bcd->custom_fields()->get_single( $key );
+
+			$new_url = get_bloginfo( 'url' );
+			$new_canonical = str_replace(
+				$bcd->bloginfo_url,
+				$new_url,
+				$old_canonical,
+			);
+
 			$bcd->custom_fields()
 				->child_fields()
-				->update_meta( $key, $new_term_id );
+				->update_meta( $key, $new_canonical );
+		}
+
+		$this->clear_yoast_indexable( 'post', $bcd->new_post( 'ID' ) );
+
+		foreach( $bcd->parent_post_taxonomies as $taxonomy => $ignore )
+		{
+			// Handle the primary category.
+			$key = '_yoast_wpseo_primary_' . $taxonomy;
+			if ( $bcd->custom_fields()->protectlist_has( $key ) )
+				continue;
+			$old_term_id = $bcd->custom_fields()->get_single( $key );
+			if ( $old_term_id > 0 )
+			{
+				// Get the equivalent category here.
+				$new_term_id = $bcd->terms()->get( $old_term_id );
+				$this->debug( 'Setting new primary %s: %s', $taxonomy, $new_term_id );
+				$bcd->custom_fields()
+					->child_fields()
+					->update_meta( $key, $new_term_id );
+			}
 		}
 
 		$key = '_yoast_wpseo_opengraph-image-id';
-		$old_image_id = $bcd->custom_fields()->get_single( $key );
-		if ( $old_image_id > 0 )
+		if ( ! $bcd->custom_fields()->protectlist_has( $key ) )
 		{
-			$new_image_id = $bcd->copied_attachments()->get( $old_image_id );
-			$this->debug( 'Replacing %s with %s', $key, $new_image_id );
-			$bcd->custom_fields()
-				->child_fields()
-				->update_meta( $key, $new_image_id );
+			$old_image_id = $bcd->custom_fields()->get_single( $key );
+			if ( $old_image_id > 0 )
+			{
+				$new_image_id = $bcd->copied_attachments()->get( $old_image_id );
+				$this->debug( 'Replacing %s with %s', $key, $new_image_id );
+				$bcd->custom_fields()
+					->child_fields()
+					->update_meta( $key, $new_image_id );
 
-			$key = '_yoast_wpseo_opengraph-image';
-			$new_url = wp_get_attachment_url( $new_image_id );
-			$this->debug( 'Replacing %s with %s', $key, $new_url );
-			$bcd->custom_fields()
-				->child_fields()
-				->update_meta( $key, $new_url );
+				$key = '_yoast_wpseo_opengraph-image';
+				$new_url = wp_get_attachment_url( $new_image_id );
+				$this->debug( 'Replacing %s with %s', $key, $new_url );
+				$bcd->custom_fields()
+					->child_fields()
+					->update_meta( $key, $new_url );
+			}
 		}
+
+		if ( isset( $bcd->yoast_seo ) )
+			foreach( static::$protectable_custom_fields as $key )
+			{
+				if ( $bcd->yoast_seo->has( $key ) )
+				{
+					$value = $bcd->yoast_seo->get( $key );
+					$this->debug( 'Resetting %s to %s', $key, intval( $value ) );
+					if ( $value )
+						$bcd->custom_fields()
+							->child_fields()
+							->update_meta( $key, true );
+					else
+						$bcd->custom_fields()
+							->child_fields()
+							->delete_meta( $key );
+				}
+			}
 	}
 
 	/**
@@ -124,6 +232,8 @@ class Yoast_SEO
 		$this->maybe_disable_link_watcher();
 
 		$bcd = $action->broadcasting_data;
+
+		$bcd->bloginfo_url = get_bloginfo( 'url' );
 
 		$key = '_yoast_wpseo_opengraph-image-id';
 		$image_id = $bcd->custom_fields()->get_single( $key );
@@ -237,8 +347,9 @@ class Yoast_SEO
 			$meta[ $action->taxonomy ][ $action->new_term->term_id ][ $meta_key ] = $meta_value;
 		}
 
-		$this->debug( 'Saving new meta for term %s', $action->old_term->slug );
+		$this->debug( 'Saving new meta for term %s: %s', $action->old_term->slug, $meta );
 		update_option( 'wpseo_taxonomy_meta', $meta );
+		$this->clear_yoast_indexable( 'term', $action->new_term->term_id );
 	}
 
 	// -------------------------------------------------------------------------------------------------------------------
@@ -275,6 +386,32 @@ class Yoast_SEO
 				$this->debug( 'Disabling %s', $classname );
 				remove_action( 'save_post', [ $class, 'save_post' ], 10, 2 );
 			}
+	}
+
+	/**
+		@brief		Set up the bcd for ourselves.
+		@since		2020-12-16 20:48:37
+	**/
+	public function prepare_bcd( $bcd )
+	{
+		if ( isset( $bcd->yoast_seo ) )
+			return;
+		$bcd->yoast_seo = ThreeWP_Broadcast()->collection();
+	}
+
+	/**
+		@brief		Clear the yoast indexable of this object.
+		@since		2020-12-16 20:52:13
+	**/
+	public function clear_yoast_indexable( $type, $post_id )
+	{
+		global $wpdb;
+		$table = $wpdb->prefix . 'yoast_indexable';
+		$this->debug( 'Clearing yoast_indexable' );
+		$wpdb->delete( $table, [
+			'object_type' => $type,
+			'object_id' => $post_id,
+		] );
 	}
 
 	/**

@@ -85,6 +85,21 @@ class UberMenu
 			$ubermenu_settings[ $key ] = $new_value;
 		}
 
+		$key = 'item_image';
+		if ( isset( $ubermenu_settings[ $key ] ) )
+			if ( $ubermenu_settings[ $key ] > 0 )
+			{
+				$old_value = $ubermenu_settings[ $key ];
+
+				switch_to_blog( $parent_blog_id );
+				$new_value = ThreeWP_Broadcast()->api()->get_equivalent_image_id( $old_value, [ $current_blog_id ] );
+				restore_current_blog();
+				$new_value = reset( $new_value );
+
+				$this->debug( 'Replacing old %s %s with %s', $key, $old_value, $new_value );
+				$ubermenu_settings[ $key ] = $new_value;
+			}
+
 		// Handle taxonomies
 		foreach( [
 			'category' => 'dp_category',

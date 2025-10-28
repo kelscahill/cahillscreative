@@ -42,37 +42,21 @@ class Event_Organiser
 		if ( $eo->is_event )
 		{
 			global $wpdb;
-			// Is there an event in the events table?
-			$query = sprintf( "SELECT `event_id` FROM `%s` WHERE `post_id` = '%s'", $wpdb->eo_events, $bcd->new_post( 'ID' ) );
-			$this->debug( 'Find the event on this blog: %s', $query );
+
+			// Delete all events from the table.
+			$query = sprintf( "DELETE FROM `%s` WHERE `post_id` = '%s'", $wpdb->eo_events, $bcd->new_post( 'ID' ) );
+			$this->debug( $query );
 			$results = $this->query( $query );
 
-			if ( count( $results ) < 1 )
+			// Reinsert all events.
+			foreach( $eo->eo_events as $row )
 			{
-				$query = sprintf( "INSERT INTO `%s` SET `post_id` = %s", $wpdb->eo_events, $bcd->new_post( 'ID' ) );
-				$this->debug( 'Inserting event: %s', $query );
-				$event_id = $this->query_insert_id( $query );
+				$new_row = (array) $row;
+				unset( $new_row[ 'event_id' ] );
+				$new_row[ 'post_id' ] = $bcd->new_post( 'ID' );
+				$this->debug( 'Inserting event row %s', $new_row );
+				$wpdb->insert( $wpdb->eo_events, $new_row );
 			}
-			else
-			{
-				$result = reset( $results );
-				$event_id = $result[ 'event_id' ];
-				$this->debug( 'Event ID has been found to be %s.', $event_id );
-			}
-
-			// Update the row in the DB.
-			$updates = [ 'post_id' => $bcd->new_post( 'ID' ) ];
-			foreach( $eo->event_data as $key => $value )
-			{
-				if ( $key == 'event_id' )
-					continue;
-				if ( $key == 'post_id' )
-					continue;
-				$updates[ $key ] = $value;
-			}
-
-			$this->debug( 'Updating event.' );
-			$wpdb->update( $wpdb->eo_events, $updates, [ 'event_id' => $event_id ] );
 		}
 
 		// Update the venue meta data.
@@ -148,7 +132,7 @@ class Event_Organiser
 		$query = sprintf( "SELECT * FROM `%s` WHERE `post_id` = '%s'", $wpdb->eo_events, $bcd->post->ID );
 		$this->debug( 'Saving event data: %s', $query );
 		$results = $this->query( $query );
-		$eo->event_data = reset( $results );
+		$eo->eo_events = $results;
 
 		$this->debug( 'Handling event for post ID %s', $bcd->post->ID );
 		$venue_id = eo_get_venue( $bcd->post->ID );

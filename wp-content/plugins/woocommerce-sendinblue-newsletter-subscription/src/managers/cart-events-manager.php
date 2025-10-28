@@ -319,6 +319,13 @@ class CartEventsManagers
             $final_price = round((float) $unit_price * (float) $item['quantity'], 2);
             $item['price'] = (is_numeric($final_price) && !is_nan($final_price)) ? $final_price : 0;
 
+            $price_taxinc = 0.0;
+            if (!empty($cartitem['data'])) {
+                $raw_price_taxinc = wc_get_price_including_tax($cartitem['data'], ['qty' => $item['quantity']]);
+                $price_taxinc = (is_numeric($raw_price_taxinc) && !is_nan($raw_price_taxinc)) ? round((float) $raw_price_taxinc, 2) : 0.0;
+            }
+            $item['price_taxinc'] = $price_taxinc;
+
             $product = wc_get_product($cartitem['product_id']);
             $image_id = $variation->get_image_id() ? $variation->get_image_id() : $product->get_image_id();
             $item['image'] = wp_get_attachment_image_url($image_id, 'full');
@@ -389,6 +396,7 @@ class CartEventsManagers
             $item['variant_name'] = is_array($attributes) ? implode(',', $attributes) : '';
             $item['price'] = (!empty($orderitem->get_total()) && is_numeric($orderitem->get_total()) && ! is_nan($orderitem->get_total())) ? round($orderitem->get_total(), 2) : '';
             $item['tax'] = (!empty($orderitem->get_total_tax()) && is_numeric($orderitem->get_total_tax()) && ! is_nan($orderitem->get_total_tax())) ? round($orderitem->get_total_tax(), 2) : '';
+            $item['price_taxinc'] = round((float) $item['price'] + (float) $item['tax'], 2);
             $item['quantity'] = (!empty($orderitem->get_quantity()) && is_numeric($orderitem->get_quantity()) && !is_nan($orderitem->get_quantity())) ? (int) $orderitem->get_quantity() : '';
             $product = wc_get_product($orderitem['product_id']);
             $image_id = $variation->get_image_id() ? $variation->get_image_id() : $product->get_image_id();

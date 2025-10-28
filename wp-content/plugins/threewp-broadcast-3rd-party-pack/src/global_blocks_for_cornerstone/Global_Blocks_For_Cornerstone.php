@@ -3,7 +3,7 @@
 namespace threewp_broadcast\premium_pack\global_blocks_for_cornerstone;
 
 /**
-	@brief			Adds support for the <a href="https://wordpress.org/plugins/global-blocks-for-cornerstone/">Global Blocks for Cornerstone</a> plugin.
+	@brief			OBSOLETE. Replaced by Cornerstone add-on.
 	@plugin_group	3rd party compatability
 	@since			2017-01-11 22:51:31
 **/

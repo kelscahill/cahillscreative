@@ -168,6 +168,9 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 4. You can access your settings by clicking on “Settings” at the top right of the screen.
 
 == Changelog ==
+= 4.0.47 =
+* Included price with tax for individual products in the payloads of cart_updated and order_completed events
+
 = 4.0.46 =
 * Plugin Improvements to support Brevo Push
 
