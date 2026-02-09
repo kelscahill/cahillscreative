@@ -19,6 +19,7 @@ use DeliciousBrains\WPMDB\Pro\Cli\Export;
 use DeliciousBrains\WPMDB\Pro\Migration\Connection\Local;
 use DeliciousBrains\WPMDB\Pro\Migration\Connection\Remote;
 use DeliciousBrains\WPMDB\Pro\Migration\FinalizeComplete;
+use DeliciousBrains\WPMDB\Pro\Migration\Flush;
 use DeliciousBrains\WPMDB\Pro\Plugin\ProPluginManager;
 use DeliciousBrains\WPMDB\Pro\RemoteUpdates\RemoteUpdatesManager;
 use DeliciousBrains\WPMDB\Pro\UI\Template;
@@ -144,6 +145,7 @@ class RegisterPro
         $this->backups_manager        = $container->get(BackupsManager::class);
         $this->cli_export             = $container->get(Export::class);
         $this->remote_updates_manager = $container->get(RemoteUpdatesManager::class);
+        $this->flush                  = $container->get(Flush::class);
 
         // Register other class actions and filters
         $this->addons_facade->register();
@@ -163,6 +165,7 @@ class RegisterPro
         $this->logger->register();
         $this->backups_manager->register();
         $this->remote_updates_manager->register();
+        $this->flush->register();
 
         if (!class_exists('\DeliciousBrains\WPMDB\Pro\Cli\Extra\Cli')) {
             $this->cli_export->register();

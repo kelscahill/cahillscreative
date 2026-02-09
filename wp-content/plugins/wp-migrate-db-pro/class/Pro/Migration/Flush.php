@@ -1,43 +1,36 @@
 <?php
-/**
- * Backwards compatibility class.
- *
- * TODO: Remove after 2.0 beta, but test upgrade routines!
- */
-
 namespace DeliciousBrains\WPMDB\Pro\Migration;
 
 use DeliciousBrains\WPMDB\Common\Migration\Flush as Common_Flush;
-use DeliciousBrains\WPMDB\Common\Http\Helper;
-use DeliciousBrains\WPMDB\Common\Http\Http;
-use DeliciousBrains\WPMDB\Common\Http\RemotePost;
-use DeliciousBrains\WPMDB\Common\Util\Util;
+use DeliciousBrains\WPMDB\Common\MigrationPersistence\Persistence;
 
+/**
+ * Pro Migration Flush Handler
+ *
+ * Extends base flush functionality to support unauthenticated flush endpoints
+ * for pull migrations with user tables.
+ */
 class Flush extends Common_Flush
 {
     /**
-     * @var Helper
+     * Register Pro-specific flush actions.
+     * Adds the unauthenticated endpoint needed for pull migrations with user tables.
      */
-    private $http_helper;
-    /**
-     * @var Util
-     */
-    private $util;
-    /**
-     * @var RemotePost
-     */
-    private $remote_post;
-    /**
-     * @var Http
-     */
-    private $http;
+    public function register()
+    {
+        parent::register();
+        add_action('wp_ajax_nopriv_wpmdb_flush', array($this, 'ajax_nopriv_flush'));
+    }
 
-    public function __construct(
-        Helper $helper,
-        Util $util,
-        RemotePost $remote_post,
-        Http $http
-    ) {
-        parent::__construct($helper, $util, $remote_post, $http);
+    /**
+     * Handles the request to flush caches and cleanup migration when pulling with user tables being migrated.
+     *
+     * @return bool|null
+     */
+    function ajax_nopriv_flush()
+    {
+        Persistence::cleanupStateOptions();
+
+        return $this->http->end_ajax($this->flush());
     }
 }
