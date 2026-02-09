@@ -3,6 +3,7 @@
 // phpcs:disable Generic.Commenting.DocComment.MissingShort
 /** @noinspection PhpIllegalPsrClassPathInspection */
 
+use WPForms\Pro\Admin\Entries\ListTable;
 use WPForms\Pro\AntiSpam\Helpers as AntiSpamHelpers;
 use WPForms\Pro\Forms\Fields\FileUpload\Field as FileUploadField;
 
@@ -542,6 +543,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 
 		$results = $this->get_results(
 			"SELECT COUNT(CASE WHEN $publish THEN 1 END) as total,
+			        COUNT(CASE WHEN $this->table_name.status = '' THEN 1 END) AS published,
 					COUNT(CASE WHEN $this->table_name.viewed = 0 AND $publish THEN 1 END) AS unread,
                     COUNT(CASE WHEN $this->table_name.type = 'payment' AND $publish THEN 1 END) AS payment,
        				COUNT(CASE WHEN $this->table_name.starred = 1 AND $publish THEN 1 END) AS starred,
@@ -633,9 +635,11 @@ class WPForms_Entry_Handler extends WPForms_DB {
 		if (
 			empty( $args['advanced_search'] ) &&
 			! empty( $args['value_compare'] ) &&
+			$args['value_compare'] !== 'empty' &&
 			(
 				( isset( $args['value'] ) && ! wpforms_is_empty_string( $args['value'] ) ) ||
-				! empty( $args['field_id'] )
+				( isset( $args['field_id'] ) && is_numeric( $args['field_id'] ) ) ||
+				$args['value_compare'] === 'not_empty'
 			)
 		) {
 			$fields_table     = wpforms()->obj( 'entry_fields' )->table_name;
@@ -661,16 +665,16 @@ class WPForms_Entry_Handler extends WPForms_DB {
 
 		$ids = array_map( 'intval', (array) $args['entry_id'] );
 
-		// `Any form field does not contain` and `Any form field is not` are special cases.
+		// `Any form field - does not contain, is not and is not empty` are special cases.
 		$any_field_not =
 			empty( $args['advanced_search'] ) &&
 			( empty( $args['field_id'] ) || $args['field_id'] === 'any' ) &&
-			in_array( $args['value_compare'], [ 'is_not', 'contains_not' ], true );
+			in_array( $args['value_compare'], [ 'is_not', 'contains_not', 'not_empty' ], true );
 
 		if (
 			$any_field_not ||
 			! empty( $args['advanced_search'] ) ||
-			in_array( $args['value_compare'], [ 'is', 'contains' ], true )
+			in_array( $args['value_compare'], [ 'is', 'contains', 'empty' ], true )
 		) {
 			$ids = array_merge( $ids, $second_entry_ids );
 		} else {
@@ -702,6 +706,11 @@ class WPForms_Entry_Handler extends WPForms_DB {
 		$second_where = [
 			'arg_value' => $this->second_query_where_arg_value( $args ),
 		];
+
+		// Handle 'empty' comparison.
+		if ( $args['value_compare'] === 'empty' ) {
+			return $this->second_query_where_value_compare_is_empty( $args, $second_where, $fields_table );
+		}
 
 		if ( empty( $args['advanced_search'] ) && is_numeric( $args['field_id'] ) ) {
 			$args['field_id']             = wpforms_validate_field_id( $args['field_id'] );
@@ -758,6 +767,100 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	}
 
 	/**
+	 * Prepare a second query WHERE with arg_value item for `empty` comparison.
+	 * Specific field: entries where there is no non-empty value row for that field (missing row or empty string considered empty).
+	 *
+	 * @since 1.9.9
+	 *
+	 * @param array  $args         Arguments of the main `get_entries()` method.
+	 * @param array  $second_where WHERE array for the second query.
+	 * @param string $fields_table Fields table name.
+	 *
+	 * @return array Updated WHERE array.
+	 */
+	private function second_query_where_value_compare_is_empty( array $args, array $second_where, string $fields_table ): array {
+
+		$second_where['arg_value'] = '';
+		$form_ids                  = implode( ',', array_map( 'intval', (array) $args['form_id'] ) );
+
+		if ( empty( $args['advanced_search'] ) && is_numeric( $args['field_id'] ) ) {
+			$args['field_id']                          = wpforms_validate_field_id( $args['field_id'] );
+			$second_where['fields_entry_not_in_empty'] = "$this->table_name.`entry_id` NOT IN (
+					SELECT ef.`entry_id`
+					FROM {$fields_table} ef
+					WHERE ef.`field_id` = '{$args['field_id']}' AND TRIM(ef.`value`) <> '' AND ef.`value` IS NOT NULL " . ( ! empty( $form_ids ) ? "AND ef.`form_id` IN ( $form_ids )" : '' ) . '
+			)';
+
+			return $second_where;
+		}
+
+		return $this->second_query_where_value_compare_is_empty_any_field( $args, $fields_table, $form_ids );
+	}
+
+	/**
+	 * Prepare a second query WHERE with arg_value item for `empty` comparison.
+	 * Any field: entries where there is at least one field value that is empty ("" or NULL).
+	 *
+	 * @since 1.9.9
+	 *
+	 * @param array  $args         Arguments of the main `get_entries()` method.
+	 * @param string $fields_table Fields table name.
+	 * @param string $form_ids     Form IDs.
+	 *
+	 * @return array Updated WHERE array.
+	 */
+	private function second_query_where_value_compare_is_empty_any_field( array $args, string $fields_table, string $form_ids ): array {
+
+		$searchable_field_ids = [];
+		$form_ids_where       = ! empty( $form_ids ) ? "AND ef.`form_id` IN ( $form_ids )" : '';
+
+		if ( ! empty( $args['form_id'] ) && ! is_array( $args['form_id'] ) ) {
+			$form_data  = wpforms()->obj( 'form' )->get( (int) $args['form_id'], [ 'content_only' => true ] );
+			$fields     = is_array( $form_data ) && ! empty( $form_data['fields'] ) ? wp_list_pluck( $form_data['fields'], 'type', 'id' ) : [];
+			$disallowed = ListTable::get_columns_form_disallowed_fields();
+
+			$searchable_field_ids = array_keys( array_diff( $fields, $disallowed ) );
+		}
+
+		// Any form field: an entry should match if at least one searchable form field is empty.
+		if ( ! empty( $searchable_field_ids ) ) {
+			$field_ids_sql                         = implode( ',', array_map( 'intval', $searchable_field_ids ) );
+			$fields_count                          = count( $searchable_field_ids );
+			$second_where['fields_entry_in_empty'] = "(
+					(
+						SELECT COUNT( DISTINCT ef2.`field_id` )
+						FROM {$fields_table} ef2
+						WHERE ef2.`entry_id` = $this->table_name.`entry_id`
+							AND TRIM(ef2.`value`) <> '' AND ef2.`value` IS NOT NULL
+							" . ( ! empty( $form_ids ) ? "AND ef2.`form_id` IN ( $form_ids )" : '' ) . "
+							AND ef2.`field_id` IN ( {$field_ids_sql} )
+					) < {$fields_count}
+				)";
+
+			return $second_where;
+		}
+
+		// Fallback to previous logic if we can't determine searchable fields.
+		$second_where['fields_entry_in_empty'] = "(
+				EXISTS (
+					SELECT 1 FROM {$fields_table} ef
+					WHERE ef.`entry_id` = $this->table_name.`entry_id`
+						AND ( TRIM(ef.`value`) = '' OR ef.`value` IS NULL )
+						{$form_ids_where}
+					)
+					OR
+					NOT EXISTS (
+						SELECT 1 FROM {$fields_table} ef2
+						WHERE ef2.`entry_id` = $this->table_name.`entry_id`
+							AND TRIM(ef2.`value`) <> '' AND ef2.`value` IS NOT NULL
+ 						" . ( ! empty( $form_ids ) ? "AND ef2.`form_id` IN ( $form_ids )" : '' ) . '
+					)
+				)';
+
+		return $second_where;
+	}
+
+	/**
 	 * Prepare a second query WHERE with arg_value item.
 	 *
 	 * @since 1.6.9
@@ -766,7 +869,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 *
 	 * @return string
 	 */
-	protected function second_query_where_arg_value( $args ): string {
+	protected function second_query_where_arg_value( array $args ): string {
 
 		if ( empty( $args['value_compare'] ) ) {
 			return '';
@@ -776,12 +879,44 @@ class WPForms_Entry_Handler extends WPForms_DB {
 			return $this->second_query_where_arg_value_not_empty( $args );
 		}
 
+		// Support comparisons that don't require a term.
+		if ( $args['value_compare'] === 'not_empty' ) {
+			return $this->second_query_where_arg_value_compare_not_empty( $args );
+		}
+
+		// Support comparisons that don't require a term.
+		if ( $args['value_compare'] === 'empty' ) {
+			return '';
+		}
+
 		// If the sanitized search term is empty, we should return nothing in the case of direct logic.
 		if ( in_array( $args['value_compare'], [ 'is', 'contains' ], true ) ) {
 			return "$this->table_name.`entry_id` IN ( 0 )";
 		}
 
 		return '';
+	}
+
+	/**
+	 * Prepare a second query WHERE arg_value with not_empty comparison.
+	 *
+	 * @since 1.9.9
+	 *
+	 * @param array $args Arguments of the main `get_entries()` method.
+	 *
+	 * @return string
+	 */
+	private function second_query_where_arg_value_compare_not_empty( array $args ): string {
+
+		$fields_table = wpforms()->obj( 'entry_fields' )->table_name;
+		$field_scope  = '';
+
+		if ( empty( $args['advanced_search'] ) && isset( $args['field_id'] ) && is_numeric( $args['field_id'] ) ) {
+			$field_id    = wpforms_validate_field_id( $args['field_id'] );
+			$field_scope = " AND $fields_table.`field_id` = '{$field_id}'";
+		}
+
+		return "TRIM($fields_table.`value`) <> '' AND $fields_table.`value` IS NOT NULL" . $field_scope;
 	}
 
 	/**

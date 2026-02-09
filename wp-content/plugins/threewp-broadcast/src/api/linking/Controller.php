@@ -90,14 +90,14 @@ class Controller
 		$link_to_post_id = $post_id;
 
 		// Check the source.
-		switch_to_blog( $link_from_blog_id, $link_from_post_id );
+		switch_to_blog( $link_from_blog_id );
 		$from_post = get_post( $link_from_post_id );
 		restore_current_blog();
 		if ( ! $from_post )
 			return ThreeWP_Broadcast()->debug( 'Linking: Cannot link from nonexistent %s %s', $link_from_blog_id, $link_from_post_id );
 
 		// Check the target.
-		switch_to_blog( $link_to_blog_id, $link_to_post_id );
+		switch_to_blog( $link_to_blog_id );
 		$to_post = get_post( $link_to_post_id );
 		restore_current_blog();
 		if ( ! $to_post )

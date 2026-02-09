@@ -2,9 +2,11 @@
 
 namespace threewp_broadcast\traits;
 
-use \threewp_broadcast\ajax;
-use \threewp_broadcast\posts\actions\action as post_action;
-use \threewp_broadcast\posts\actions\bulk\wp_ajax;
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+use threewp_broadcast\ajax;
+use threewp_broadcast\posts\actions\action as post_action;
+use threewp_broadcast\posts\actions\bulk\wp_ajax;
 
 /**
 	@brief		Methods that have to do with posts and their broadcast data.
@@ -273,7 +275,7 @@ trait post_actions
 		$action->broadcast_data = $broadcast_data;
 		$action->execute();
 
-		echo $action->render();
+		echo $action->render();		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 	}
 
 	/**
@@ -647,16 +649,16 @@ trait post_actions
 
 			$edit_link = sprintf( '<a href="%s">%s</a>',
 				get_edit_post_link( $parent[ 'post_id' ] ),
-				__( 'Edit' )
+				__( 'Edit', 'threewp-broadcast' )
 			);
 			$view_link = sprintf( '<a href="%s">%s</a>',
 				get_permalink( $parent[ 'post_id' ] ),
-				__( 'View' )
+				__( 'View', 'threewp-broadcast' )
 			);
 
 			$links = sprintf( '%s: %s | %s',
 				// Parent post: VIEW / LINK, in the child post action popup.
-				__( 'Parent post', 'threewp_braodcast' ),
+				__( 'Parent post', 'threewp-broadcast' ),
 				$edit_link,
 				$view_link
 			);
@@ -696,11 +698,11 @@ trait post_actions
 				$blogname = $info->blogname ? $info->blogname : $info->domain . $info->path;
 				$edit_link = sprintf( '<a href="%s">%s</a>',
 					get_edit_post_link( $child_post_id ),
-					__( 'Edit' )
+					__( 'Edit', 'threewp-broadcast' )
 				);
 				$view_link = sprintf( '<a href="%s">%s</a>',
 					get_permalink( $child_post_id ),
-					__( 'View' )
+					__( 'View', 'threewp-broadcast' )
 				);
 				$select = $form->select( $child_blog_id )
 					->label( $blogname )

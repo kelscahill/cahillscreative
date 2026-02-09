@@ -82,7 +82,9 @@ class Divi extends \WPForms\Integrations\Divi\Divi {
 
 		parent::frontend_styles();
 
-		$this->divi_frontend_styles();
+		if ( $this->allow_frontend_styles() ) {
+			$this->divi_frontend_styles();
+		}
 	}
 
 	/**

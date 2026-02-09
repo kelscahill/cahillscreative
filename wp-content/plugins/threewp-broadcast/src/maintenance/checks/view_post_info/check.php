@@ -59,11 +59,12 @@ class check
 
 		if ( ! $post )
 		{
-			// Post 123 does not
-			$o->r .= $this->broadcast()->message( sprintf( __( 'Post %s does not exist.', 'threewp-broadcast' ), $post_id ) );
+			// Translators: Post 123 does not exist
+			$o->r .= $this->broadcast()->message( sprintf( __( 'Post %d does not exist.', 'threewp-broadcast' ), $post_id ) );
 			return;
 		}
 
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export	-- Used by network admin to debug posts.
 		$text = sprintf( '<pre>%s</pre>', stripslashes( var_export( $post, true ) ) );
 		$o->r .= $this->broadcast()->message( htmlspecialchars( $text ) );
 		$o->r .= '<pre>' . htmlspecialchars( $post->post_content ) . '</pre>';
@@ -91,6 +92,7 @@ class check
 			}
 		}
 
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export	-- Used by network admin to debug posts.
 		$text = sprintf( '<pre>%s</pre>', stripslashes( var_export( $metas, true ) ) );
 		$o->r .= $this->broadcast()->message( $text );
 
@@ -107,6 +109,7 @@ class check
 
 			$o->r .= $this->broadcast()->message( $text );
 
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export	-- Used by network admin to debug posts.
 			$text = var_export( $ad, true );
 			$o->r .= $this->broadcast()->message( $text );
 		}
@@ -114,10 +117,12 @@ class check
 		// Show all posts that have this post as the parent.
 		global $wpdb;
 		// We have to use a query since get_posts is post_status sensitive.
-		$query = sprintf( "SELECT `ID`, `post_title`, `post_type` FROM `%s` WHERE `post_parent` = '%d'",
+		$query = $wpdb->prepare( "SELECT `ID`, `post_title`, `post_type` FROM %i WHERE `post_parent` = %d",
+		[
 			$wpdb->posts,
 			$post_id
-		);
+		] );
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 		$child_posts = $wpdb->get_results( $query );
 
 		$child_post_ids = [];
@@ -125,6 +130,7 @@ class check
 			$child_post_ids[ $child_post->ID ] = sprintf( '%s / %s', $child_post->post_title, $child_post->post_type );
 		ksort( $child_post_ids );
 
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export	-- Used by network admin to debug posts.
 		$text = sprintf( '<pre>%s</pre>', stripslashes( var_export( $child_post_ids, true ) ) );
 		$o->r .= $this->broadcast()->message( $text );
 
@@ -133,6 +139,7 @@ class check
 		foreach( $taxonomies as $taxonomy_slug => $taxonomy )
 		{
 			$terms = get_the_terms( $post->ID, $taxonomy_slug );
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export	-- Used by network admin to debug posts.
 			$text = sprintf( '<pre>%s: %s</pre>', $taxonomy_slug, stripslashes( var_export( $terms, true ) ) );
 			$o->r .= $this->broadcast()->message( $text );
 		}
@@ -149,6 +156,7 @@ class check
 		foreach( $comments as $comment )
 		{
 			$meta = get_comment_meta( $comment->comment_ID );
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export	-- Used by network admin to debug posts.
 			$text = sprintf( '<pre>Comment: %s %s</pre>', stripslashes( var_export( $comment, true ) ), stripslashes( var_export( $meta, true ) ) );
 			$o->r .= $this->broadcast()->message( $text );
 		}

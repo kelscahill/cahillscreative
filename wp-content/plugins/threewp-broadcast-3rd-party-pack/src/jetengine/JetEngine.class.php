@@ -205,24 +205,41 @@ class JetEngine
 
 		foreach( $element->settings as $key => $value )
 		{
-			if ( ! str_starts_with( $key, 'jet_engine_query_id_' ) )
-				continue;
+			if ( str_starts_with( $key, 'jet_engine_query_id_' ) )
+			{
+				if ( ! $bcd->elementor_jet_engine_queries->has( $value ) )
+					continue;
 
-			if ( ! $bcd->elementor_jet_engine_queries->has( $value ) )
-				continue;
+				$old_row = $bcd->elementor_jet_engine_queries->get( $value );
 
-			$old_row = $bcd->elementor_jet_engine_queries->get( $value );
+				$this->queries()->insert_or_update( $old_row );
+				$new_row = $this->queries()->get_by_name( $this->queries()->get_name( $old_row ) );
 
-			$this->queries()->insert_or_update( $old_row );
-			$new_row = $this->queries()->get_by_name( $this->queries()->get_name( $old_row ) );
+				$element->settings->$key = $new_row->id;
+				$this->debug( 'Replaced old %s %s with %s',
+					$key,
+					$old_row->id,
+					$new_row->id,
+				);
+			}
 
-			$element->settings->$key = $new_row->id;
-			$this->debug( 'Replaced old %s %s with %s',
-				$key,
-				$old_row->id,
-				$new_row->id,
-			);
+			if ( $key == 'custom_query_id' )
+			{
+				if ( ! $bcd->elementor_jet_engine_queries->has( $value ) )
+					continue;
 
+				$old_row = $bcd->elementor_jet_engine_queries->get( $value );
+
+				$this->queries()->insert_or_update( $old_row );
+				$new_row = $this->queries()->get_by_name( $this->queries()->get_name( $old_row ) );
+
+				$element->settings->$key = $new_row->id;
+				$this->debug( 'Replaced old %s %s with %s',
+					$key,
+					$old_row->id,
+					$new_row->id,
+				);
+			}
 		}
 	}
 
@@ -241,15 +258,26 @@ class JetEngine
 
 		foreach( $element->settings as $key => $value )
 		{
-			if ( ! str_starts_with( $key, 'jet_engine_query_id_' ) )
-				continue;
-			$row = $this->queries()->get_by_id( $value );
-			$this->debug( 'Found %s: %s', $key, $row );
+			if ( str_starts_with( $key, 'jet_engine_query_id_' ) )
+			{
+				$row = $this->queries()->get_by_id( $value );
+				$this->debug( 'Found %s: %s', $key, $row );
 
-			if ( ! isset( $bcd->elementor_jet_engine_queries ) )
-				$bcd->elementor_jet_engine_queries = ThreeWP_Broadcast()->collection();
+				if ( ! isset( $bcd->elementor_jet_engine_queries ) )
+					$bcd->elementor_jet_engine_queries = ThreeWP_Broadcast()->collection();
 
-			$bcd->elementor_jet_engine_queries->set( $value, $row );
+				$bcd->elementor_jet_engine_queries->set( $value, $row );
+			}
+			if ( $key == 'custom_query_id' )
+			{
+				$row = $this->queries()->get_by_id( $value );
+
+				if ( ! isset( $bcd->elementor_jet_engine_queries ) )
+					$bcd->elementor_jet_engine_queries = ThreeWP_Broadcast()->collection();
+
+				$this->debug( 'Found %s: %s', $key, $row );
+				$bcd->elementor_jet_engine_queries->set( $value, $row );
+			}
 		}
 	}
 
@@ -965,7 +993,8 @@ class JetEngine
 				$equivalent_rel_id = $equivalent_relationships[ $rel_id ];
 				$this->debug( 'Equivalent relationship ID of %s is %s', $rel_id, $equivalent_rel_id );
 
-				$jet_rel_table = static::get_prefixed_table_name( 'jet_rel_' . $equivalent_rel_id );
+				//$jet_rel_table = static::get_prefixed_table_name( 'jet_rel_' . $equivalent_rel_id );
+				$jet_rel_table = static::get_prefixed_table_name( 'jet_rel_default' );
 
 				if ( ! isset( $rels_cleared[ $equivalent_rel_id ] ) )
 				{
@@ -999,6 +1028,7 @@ class JetEngine
 	public function delete_relationships( $post_id, $type, $equivalent_rel_id = '' )
 	{
 		global $wpdb;
+		/**
 		if ( $equivalent_rel_id == '' )
 		{
 			// Find all relationship tables and delete all relationships from there.
@@ -1014,8 +1044,10 @@ class JetEngine
 			}
 			return;
 		}
+		**/
 
-		$jet_rel_table = static::get_prefixed_table_name( 'jet_rel_' . $equivalent_rel_id );
+		//$jet_rel_table = static::get_prefixed_table_name( 'jet_rel_' . $equivalent_rel_id );
+		$jet_rel_table = static::get_prefixed_table_name( 'jet_rel_default' );
 		$query = sprintf( "DELETE FROM `%s` WHERE `%s` = '%s'",
 			$jet_rel_table,
 			$type,

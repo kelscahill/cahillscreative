@@ -322,11 +322,13 @@ class ApiManager
     }
 
     private function get_plugin_settings()
-    {
+    {      
         return new WP_REST_Response(
             array(
                 'settings' => $this->get_settings(),
                 'email_settings' => $this->get_email_settings(),
+                'user_connection_id' => get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null),
+                'is_plugin_info_updated' => get_option(SENDINBLUE_IS_PLUGIN_INFO_UPDATED, null),
             ), 200);
     }
 
@@ -572,9 +574,16 @@ class ApiManager
     private function set_connection($request)
     {
         $data = empty($request->get_body()) ? array() : json_decode($request->get_body(), true);
-
+        
         if (!empty($data['userconnection'])) {
-            (get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null) !== null) ? update_option(SENDINBLUE_WC_USER_CONNECTION_ID, $data['userconnection']) : add_option(SENDINBLUE_WC_USER_CONNECTION_ID, $data['userconnection']);
+            //check if the value being saved contains only alpha numeric
+            if (!preg_match('/^[a-zA-Z0-9]+$/', $data['userconnection'])) {
+                return new WP_REST_Response(array('invalid_data' => "Invalid Data"), 400);
+            }
+            
+            $userconnection = $data['userconnection'];
+            
+            update_option(SENDINBLUE_WC_USER_CONNECTION_ID, $userconnection);
 
             return new WP_REST_Response(array('success' => true), 201);
         }
@@ -645,14 +654,28 @@ class ApiManager
 
     private function save_settings($request)
     {
-        (get_option(SENDINBLUE_WC_SETTINGS, null) !== null) ? update_option(SENDINBLUE_WC_SETTINGS, $request->get_body()) : add_option(SENDINBLUE_WC_SETTINGS, $request->get_body());
+        $body = $request->get_body();
+        $data = json_decode($body, true);
+
+        if (!is_array($data)) {
+            return new WP_REST_Response(array('invalid_json' => "Invalid JSON body"), 400);
+        }
+
+        (get_option(SENDINBLUE_WC_SETTINGS, null) !== null) ? update_option(SENDINBLUE_WC_SETTINGS, $body) : add_option(SENDINBLUE_WC_SETTINGS, $body);
 
         return new WP_REST_Response(array('success' => true), 201);
     }
 
     private function email_settings($request)
     {
-        (get_option(SENDINBLUE_WC_EMAIL_SETTINGS, null) !== null) ? update_option(SENDINBLUE_WC_EMAIL_SETTINGS, $request->get_body()) : add_option(SENDINBLUE_WC_EMAIL_SETTINGS, $request->get_body());
+        $body = $request->get_body();
+        $data = json_decode($body, true);
+
+        if (!is_array($data)) {
+            return new WP_REST_Response(array('invalid_json' => "Invalid JSON body"), 400);
+        }
+
+        update_option(SENDINBLUE_WC_EMAIL_SETTINGS, $body);
 
         return new WP_REST_Response(array('success' => true), 201);
     }

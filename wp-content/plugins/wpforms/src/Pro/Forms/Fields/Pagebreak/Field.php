@@ -111,7 +111,7 @@ class Field extends FieldLite {
 
 		$top = ! empty( wpforms()->obj( 'frontend' )->pages['top'] ) ? wpforms()->obj( 'frontend' )->pages['top'] : false;
 
-		if ( empty( $top['indicator'] ) ) {
+		if ( empty( $top['indicator'] ) || $top['indicator'] === 'none' ) {
 			return;
 		}
 

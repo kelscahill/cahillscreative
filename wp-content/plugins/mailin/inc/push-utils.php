@@ -1,4 +1,5 @@
 <?php
+
 if (!defined( 'ABSPATH' )) { http_response_code(403); exit(); }
 
 if ( ! class_exists( 'SIB_Push_Utils' ) ) {
@@ -185,13 +186,11 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 		 * @return \WonderPush\Obj\Application
 		 */
 		public static function activate_push() {
-			$settings = SIB_Push_Settings::getSettings();
 			$app = self::get_push_application(self::DEFAULT_CACHE_TTL, true);
 			if (!$app) {
 				$app = self::create_push_application();
 			}
 			self::ensure_app_active($app);
-			$settings->save();
 			return $app;
 		}
 
@@ -211,7 +210,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 			if (!$credentials) {
 				throw new Exception('Cannot deactivate push application without API credentials');
 			}
-			$webSdkInitOptions = $app->getWebSdkInitOptions() ?: new \WonderPush\Obj\WebSdkInitOptions();
+			$webSdkInitOptions = new \WonderPush\Obj\WebSdkInitOptions();
 			$webSdkInitOptions->setResubscribe(false);
 			$payload = array(
 				'wordPressSnippetDeactivated' => true,
@@ -238,7 +237,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 
 			// Check push application
 			try {
-				$app = self::get_push_application();
+				$app = self::get_push_application(30 * 86400); // maxAge 30 days to use API key on a regular basis and avoid deactivation
 				if (!$app) return false;
 				return !$app->getWordPressSnippetDeactivated();
 			} catch (Exception $e) {
@@ -264,7 +263,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 				return $app;
 			}
 			// App needs activation
-			$webSdkInitOptions = $app->getWebSdkInitOptions() ?: new \WonderPush\Obj\WebSdkInitOptions();
+			$webSdkInitOptions = new \WonderPush\Obj\WebSdkInitOptions();
 			$webSdkInitOptions->setResubscribe(true);
 			$payload = array(
 				'wordPressSnippetDeactivated' => false,
@@ -277,6 +276,24 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 			$app = $wp->applications()->patch($app->getId(), $payload);
 			self::update_push_application_cache($app, 'activate');
 			return $app;
+		}
+
+		public static function update_settings() {
+			try {
+				$settings = SIB_Push_Settings::getSettings();
+				$credentials = $settings->getWonderPushCredentials();
+				if (!$credentials) {
+					throw new Exception('Cannot update push application settings without API credentials');
+				}
+				$wp = self::management_api_client($credentials);
+				$payload = array(
+					'brevoInitOptions' => self::brevo_init_options(),
+					'wonderPushInitOptions' => self::wonderpush_init_options(),
+				);
+				$wp->rest()->post('/brevoWordPressPlugin/updateSettings', $payload);
+			} catch (Exception $t) {
+				SIB_Push_Utils::log_warn('Could not update settings', $t);
+			}
 		}
 
 		/**
@@ -422,7 +439,7 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 
 		/**
 		 * Creates a new Management API client
-		 * @param \WonderPush\BrevoAPIKeyV3Credentials $credentials
+		 * @param \WonderPush\Credentials $credentials
 		 * @return \WonderPush\WonderPush
 		 */
 		public static function management_api_client($credentials) {
@@ -522,11 +539,11 @@ if ( ! class_exists( 'SIB_Push_Utils' ) ) {
 		}
 
 		/**
-		 * @param WonderPush\BrevoAPIKeyV3Credentials $credentials
+		 * @param WonderPush\Credentials $credentials
 		 * @return string
 		 */
 		private static function get_application_cache_key($credentials) {
-			return "sib_push_app_" . $credentials->apiKey;
+			return "sib_push_app_" . ($credentials instanceof \WonderPush\AccessTokenCredentials ? $credentials->accessToken : $credentials->apiKey);
 		}
 
 		/**

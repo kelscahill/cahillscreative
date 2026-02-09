@@ -1045,6 +1045,16 @@ class WPForms_Entries_Single {
 					// Wrap the fields.
 					echo '<div class="wpforms-entries-fields-wrapper' . esc_attr( $view ) . '">';
 
+						/**
+						 * Fires before the entry fields.
+						 *
+						 * @since 1.9.8.6
+						 *
+						 * @param object $entry     Entry.
+						 * @param array  $form_data Form data.
+						 */
+						do_action( 'wpforms_entries_single_before_fields', $entry, $form_data );
+
 						// Display the fields and their values.
 						foreach ( $fields as $field ) {
 
@@ -1071,6 +1081,16 @@ class WPForms_Entries_Single {
 
 							$this->print_field( $field, $form_data );
 						}
+
+						/**
+						 * Fires after the entry fields.
+						 *
+						 * @since 1.9.8.6
+						 *
+						 * @param object $entry     Entry.
+						 * @param array  $form_data Form data.
+						 */
+						do_action( 'wpforms_entries_single_after_fields', $entry, $form_data );
 
 					echo '</div>';
 					remove_filter( 'wp_kses_allowed_html', [ $this, 'modify_allowed_tags_entry_field_value' ] );
@@ -1927,6 +1947,7 @@ class WPForms_Entries_Single {
 	 * Entry Actions metabox.
 	 *
 	 * @since 1.1.5
+	 * @since 1.9.9 Adds the ability to add description text after the action link.
 	 *
 	 * @param object $entry     Submitted entry values.
 	 * @param array  $form_data Form data and settings.
@@ -2087,6 +2108,7 @@ class WPForms_Entries_Single {
 					foreach ( $action_links as $slug => $link ) {
 
 						$link_is_disabled = isset( $link['disabled'] ) && ! empty( $link['disabled_by'] ) && is_array( $link['disabled_by'] ) && $link['disabled'];
+						$description      = ! empty( $link['description'] ) ? sprintf( '<span class="description notice notice-error"> %s </span>', $link['description'] ) : '';
 
 						if ( $link_is_disabled ) {
 
@@ -2101,22 +2123,24 @@ class WPForms_Entries_Single {
 							);
 
 							printf(
-								'<p class="wpforms-entry-%s" title="%s"><span class="dashicons %s"></span>%s</p>',
+								'<p class="wpforms-entry-%1$s" title="%2$s"><span class="dashicons %3$s"></span>%4$s %5$s</p>',
 								esc_attr( $slug ),
 								esc_attr( $title ),
 								esc_attr( $link['icon'] ),
-								esc_html( $link['label'] )
+								esc_html( $link['label'] ),
+								wp_kses_post( $description )
 							);
 
 						} else {
 
 							printf(
-								'<p class="wpforms-entry-%s"><a href="%s" %s><span class="dashicons %s"></span>%s</a></p>',
+								'<p class="wpforms-entry-%1$s"><a href="%2$s" %3$s><span class="dashicons %4$s"></span>%5$s</a> %6$s</p>',
 								esc_attr( $slug ),
 								esc_url( $link['url'] ),
 								! empty( $link['target'] ) ? 'target="_blank" rel="noopener noreferrer"' : '',
 								esc_attr( $link['icon'] ),
-								esc_html( $link['label'] )
+								esc_html( $link['label'] ),
+								wp_kses_post( $description )
 							);
 
 						}
@@ -2516,7 +2540,8 @@ class WPForms_Entries_Single {
 		$choices         = $this->form_data['fields'][ $field['id'] ]['choices'];
 		$type            = in_array( $field['type'], [ 'radio', 'payment-multiple' ], true ) ? 'radio' : 'checkbox';
 		$is_image_choice = ! empty( $this->form_data['fields'][ $field['id'] ]['choices_images'] );
-		$template_name   = $is_image_choice ? 'image-choice' : 'choice';
+		$is_images_hide  = ! empty( $this->form_data['fields'][ $field['id'] ]['choices_images_hide'] );
+		$template_name   = $is_image_choice && ! $is_images_hide ? 'image-choice' : 'choice';
 		$is_dynamic      = ! empty( $field['dynamic'] );
 
 		if ( $is_dynamic ) {
@@ -2534,6 +2559,13 @@ class WPForms_Entries_Single {
 
 			if ( ! $is_dynamic ) {
 				$choice['label'] = $this->get_choice_label( $field, $choice, $key );
+			}
+
+			// If this is the Radio field and the selected choice is "Other",
+			// pass the actual entered text to the template so it can be displayed.
+			if ( $field['type'] === 'radio' && $is_checked && ! empty( $choice['other'] ) ) {
+				$choice['is_other']    = true;
+				$choice['other_value'] = isset( $field['value'] ) ? (string) $field['value'] : '';
 			}
 
 			$choices_html .= wpforms_render(
@@ -2623,6 +2655,15 @@ class WPForms_Entries_Single {
 			$active_choices = array_map( 'absint', $active_choices );
 
 			return in_array( $key, $active_choices, true );
+		}
+
+		// Special handling: when the "Other" choice was selected for Radio, the saved value_raw equals the Other label.
+		if ( ( $field['type'] === 'radio' ) && ! empty( $choice['other'] ) ) {
+			$other_label = isset( $choice['label'] ) ? (string) $choice['label'] : '';
+
+			if ( isset( $field['value_raw'] ) && (string) $field['value_raw'] === $other_label ) {
+				return true;
+			}
 		}
 
 		// Determine if Show Values is enabled.

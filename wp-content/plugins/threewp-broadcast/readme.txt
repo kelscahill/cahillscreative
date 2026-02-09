@@ -2,11 +2,11 @@
 Contributors: edward_plainview
 Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
-Requires at least: 4.6
+Requires at least: 6.2
 Requires PHP: 8.0
-Stable tag: 51.11
+Stable tag: 52.02
 Tags: multipost, sharing, duplicate, syndication, marketing
-Tested up to: 6.8
+Tested up to: 6.9.1
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -371,6 +371,31 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 52.02 20260207 =
+
+* Fix: Fatal error when displaying info about old version of the add-on packs when trying to view the Broadcast settings tab.
+
+= 52.01 20260207 =
+
+* Fix: Avoid fatal errors when the user does not broadcast custom fields, but uses add-ons that require custom fields.
+* Fix: Asking the API to broadcast a post ID with the value 0 will return 0.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/avada-builder/">Avada Builder</a>: Adds support for the <a href="https://avada.com/">Avada Builder</a> page builder.
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/content-update-scheduler/">Content Update Scheduler</a>: adds support for the <a href="https://wordpress.org/plugins/content-update-scheduler/">Content Update Scheduler</a> plugin.
+
+= 51.14 20260122 =
+
+* Fix the correct upload tag.
+
+= 51.13 20260122 =
+
+* Lots of php 8.2 warnings fixed.
+* Updated SDK.
+
+= 51.12 20251129 =
+
+* Fix: Prevent warning when deciding what to do with the canonical when not looking at a page.
+* Updated "tested up to" value.
 
 = 51.11 20250928 =
 

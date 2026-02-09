@@ -3,7 +3,7 @@
  * Plugin Name: Brevo - Email, SMS, Web Push, Chat, and more.
  * Plugin URI: https://www.brevo.com/?r=wporg
  * Description: Manage your contact lists, subscription forms and all email and marketing-related topics from your wp panel, within one single plugin
- * Version: 3.2.8
+ * Version: 3.3.1
  * Author: Brevo
  * Author URI: https://www.brevo.com/?r=wporg
  * License: GPLv2 or later
@@ -109,6 +109,7 @@ if ( ! class_exists( 'SIB_Manager' ) ) {
 		private const ROUTE_PATH = 'path';
 		private const PERMISSION_CALLBACK = 'permission_callback';
 		private const API_NAMESPACE = "mailin/v1";
+		private const HTTP_STATUS = 'status';
 
 		/** Main setting option name */
 		const MAIN_OPTION_NAME = 'sib_main_option';
@@ -1751,7 +1752,6 @@ EOT;
 			activate_plugin( $current_plugin_path_name );
 		}
 
-
 		public function brevo_wp_load()
 		{
 			$installationId = get_option( SIB_Manager::INSTALLATION_ID );
@@ -1784,16 +1784,19 @@ EOT;
 			return $attributes;
 		}
 
-		static function create_brevo_rest_endpoints() {
-			$routes = array(
+		static function create_brevo_rest_endpoints() 
+		{
+			$authenticated_routes = array(
 				array(
 					self::ROUTE_PATH       => '/mailin_disconnect',
 					self::ROUTE_METHODS    => 'DELETE',
 					self::ROUTE_CALLBACK   => function ($request) {
 						return self::mailin_disconnect($request);
-					},
-					self::PERMISSION_CALLBACK => '__return_true',
-				),
+					}
+				)
+			);
+
+			$routes = array(
 				array(
 					self::ROUTE_PATH       => '/testconnection',
 					self::ROUTE_METHODS    => 'GET',
@@ -1806,6 +1809,10 @@ EOT;
 
 			foreach ($routes as $route) {
 				self::register_route($route);
+			}
+
+			foreach ($authenticated_routes as $route) {
+				self::register_route_authenticated($route);
 			}
 		}
 
@@ -1824,13 +1831,62 @@ EOT;
 			);
 		}
 
+private static function register_route_authenticated(array $route)		{
+			$path = $route[self::ROUTE_PATH];
+			$methods = $route[self::ROUTE_METHODS];
+			$callback = $route[self::ROUTE_CALLBACK];
+
+			if(empty($path)) {
+				return;
+			}
+
+			$arguments = array(
+				self::ROUTE_METHODS    => $methods,
+				self::ROUTE_CALLBACK   => $callback,
+				self::PERMISSION_CALLBACK   => array(self::class, 'validate_auth')
+			);
+
+			register_rest_route(self::API_NAMESPACE, $path, $arguments);
+		}
+
+		public static function validate_auth()
+		{
+			nocache_headers();
+
+			$user_connection_id = $_GET['id'] ?? '';
+
+            if (!empty($user_connection_id)) {
+                $installationId = get_option( SIB_Manager::INSTALLATION_ID );
+				
+                if ($user_connection_id != $installationId) {
+                    return new WP_Error(
+						'rest_forbidden', 
+						__('You are not authorized to complete this request.',"mailin"),
+						 array( 
+							self::HTTP_STATUS => 401 
+						)
+					);
+                } else {
+                    return true;
+                }
+            } else {
+				return new WP_Error(
+					'rest_forbidden', 
+					__('You are not authorized to complete this request.',"mailin"),
+					 array( 
+						self::HTTP_STATUS => 401 
+					)
+				);
+			}
+		}
+
         private static function mailin_disconnect($request) {
 			$request = $request->get_params();
 			$user_connection_id = isset($request['id']) ? $request['id'] : '';
             if (!empty($user_connection_id)) {
                 $installationId = get_option( SIB_Manager::INSTALLATION_ID );
 				
-                if ($user_connection_id == $installationId) {
+                if ($user_connection_id === $installationId) {
                     self::delete_connection();
                 } else {
                     return new WP_REST_Response(

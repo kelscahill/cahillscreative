@@ -43,7 +43,7 @@ class Data
 		// Since when is the time savings function monitoring
 		$row->th()->text( __( 'Monitoring since', 'threewp-broadcast' ) );
 		$since = $this->get( 'since', time() );
-		$row->td()->text( date( 'Y-m-d', $since ) );
+		$row->td()->text( gmdate( 'Y-m-d', $since ) );
 
 		$row = $table->body()->row();
 		// How many posts have been created during time savings monitoring

@@ -21,5 +21,14 @@ $image     = ! empty( $image_url ) ? sprintf( '<img src="%s" alt="%s"/>', esc_ur
 			<?php echo wp_kses_post( $image ); ?>
 		<?php endif; ?>
 	</div>
-	<div><?php echo wp_kses_post( $choice['label'] ); ?></div>
+	<div>
+		<?php
+		// If this is the "Other" choice and a value exists, show it as "Label: Value".
+		if ( ! empty( $choice['is_other'] ) && $is_checked && isset( $choice['other_value'] ) ) {
+			echo wp_kses_post( $choice['label'] ) . ': ' . esc_html( $choice['other_value'] );
+		} else {
+			echo wp_kses_post( $choice['label'] );
+		}
+		?>
+	</div>
 </div>

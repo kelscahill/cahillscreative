@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\premium_pack;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 /**
 	@brief		This is the class that manages all of the Broadcast packs.
 	@details	The reason for it being in this namespace is due to being moved from the premium pack and not wanting to break backward compatability.
@@ -41,10 +43,12 @@ class ThreeWP_Broadcast_Plugin_Pack
 		$r .= $this->get_plugins_table();
 
 		$r .= $this->p( sprintf(
+			// Translators: %s is email link to author.
 			__( 'The developer can be contacted at: %s', 'threewp-broadcast' ),
 			'<a href="mailto:info@plainviewplugins.com">info@plainviewplugins.com</a>'
 		) );
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 		echo $r;
 	}
 
@@ -74,6 +78,7 @@ class ThreeWP_Broadcast_Plugin_Pack
 			->name( __( 'Uninstall', 'threewp-broadcast' ) )
 			->sort_order( 75 );
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 		echo $tabs->render();
 	}
 
@@ -108,7 +113,8 @@ class ThreeWP_Broadcast_Plugin_Pack
 				else
 					$url ='index.php';
 				$this->message(
-					__( 'The plugin and all associated settings and database tables have been removed. Please %sfollow this link to complete the uninstallation procedure%s.', 'threewp-broadcast' ),
+					// Translators: 1 and 2 are HTML anchor links
+					__( 'The plugin and all associated settings and database tables have been removed. Please %1$sfollow this link to complete the uninstallation procedure%2$s.', 'threewp-broadcast' ),
 					sprintf( '<a href="%s" title="%s">', $url, $this->_( 'This link will take you to the index page' ) ),
 					'</a>' );
 				return;
@@ -119,6 +125,7 @@ class ThreeWP_Broadcast_Plugin_Pack
 		$r .= $form->display_form_table();
 		$r .= $form->close_tag();
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 		echo $r;
 	}
 

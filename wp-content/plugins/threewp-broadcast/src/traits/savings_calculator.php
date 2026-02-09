@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\traits;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 /**
 	@brief		Keep track of the time saved by using Broadcast.
 	@details	None of this needs to be translated, since it's not critical.
@@ -31,7 +33,8 @@ trait savings_calculator
 		$new_post_basic_setup = $fs->number( 'new_post_basic_setup' )
 			// Desc for time savings
 			->description( sprintf(
-				__( "How many seconds it takes to switch blogs, start a new post and paste text into the title and content boxes. This varies depending on how efficient you are and how fast your webhost is. %s seconds is the default value.", 'threewp-broadcast' ),
+				// Translators: %d is a default amount of time in seconds.
+				__( "How many seconds it takes to switch blogs, start a new post and paste text into the title and content boxes. This varies depending on how efficient you are and how fast your webhost is. %d seconds is the default value.", 'threewp-broadcast' ),
 				$defaults[ 'new_post_basic_setup' ]
 				)
 			)
@@ -45,7 +48,8 @@ trait savings_calculator
 		$time_per_attachment = $fs->number( 'time_per_attachment' )
 			// Desc for time savings
 			->description( sprintf(
-				__( "How many seconds to add for each image that is attached to the post. %s seconds is the default value to upload the image, caption it and then insert it into the post.", 'threewp-broadcast' ),
+				// Translators: %d is a default second time.
+				__( "How many seconds to add for each image that is attached to the post. %d seconds is the default value to upload the image, caption it and then insert it into the post.", 'threewp-broadcast' ),
 				$defaults[ 'time_per_attachment' ]
 				)
 			)
@@ -62,7 +66,8 @@ trait savings_calculator
 		$updated_post_discount = $fs->number( 'updated_post_discount' )
 			// Desc for time savings
 			->description( sprintf(
-				__( "How long, in percent, it takes to update a post, compared to created a brand new post. %s%% is a nice, round, number.", 'threewp-broadcast' ),
+				// Translators: 1 is a number.
+				__( "How long, in percent, it takes to update a post, compared to created a brand new post. %1\$s%% is a nice, round, number.", 'threewp-broadcast' ),
 				$defaults[ 'updated_post_discount' ]
 				)
 			)
@@ -137,7 +142,7 @@ trait savings_calculator
 		$r .= $form->display_form_table();
 		$r .= $form->close_tag();
 
-		echo $r;
+		echo $r;	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 	}
 
 	/**

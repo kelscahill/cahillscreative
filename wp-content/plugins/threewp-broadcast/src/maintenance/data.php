@@ -83,7 +83,7 @@ class data
 		$user_id = $bc->user_id();
 		$filename = self::get_filename( $user_id );
 
-		unlink( $filename );
+		wp_delete_file( $filename );
 
 		return self::load( $this->controller );
 	}

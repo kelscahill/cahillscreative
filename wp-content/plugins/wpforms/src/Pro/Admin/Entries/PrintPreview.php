@@ -420,7 +420,8 @@ class PrintPreview {
 		$choices         = $this->form_data['fields'][ $field['id'] ]['choices'];
 		$type            = in_array( $field['type'], [ 'radio', 'payment-multiple' ], true ) ? 'radio' : 'checkbox';
 		$is_image_choice = ! empty( $this->form_data['fields'][ $field['id'] ]['choices_images'] );
-		$template_name   = $is_image_choice ? 'image-choice' : 'choice';
+		$is_images_hide  = ! empty( $this->form_data['fields'][ $field['id'] ]['choices_images_hide'] );
+		$template_name   = $is_image_choice && ! $is_images_hide ? 'image-choice' : 'choice';
 		$is_dynamic      = ! empty( $field['dynamic'] );
 
 		$value = ! empty( $is_dynamic ) ? $field['value'] : wpforms_get_choices_value( $field, $this->form_data );
@@ -441,6 +442,13 @@ class PrintPreview {
 
 			if ( ! $is_dynamic ) {
 				$choice['label'] = $this->entries_single->get_choice_label( $field, $choice, $key );
+			}
+
+			// If this is the Radio field and the selected choice is "Other",
+			// pass the actual entered text to the template so it can be displayed.
+			if ( $field['type'] === 'radio' && $is_checked && ! empty( $choice['other'] ) ) {
+				$choice['is_other']    = true;
+				$choice['other_value'] = isset( $field['value'] ) ? (string) $field['value'] : '';
 			}
 
 			$choices_html .= wpforms_render(
@@ -499,6 +507,15 @@ class PrintPreview {
 			$active_choices = array_map( 'absint', $active_choices );
 
 			return in_array( $key, $active_choices, true );
+		}
+
+		// Special handling: when the "Other" choice was selected for Radio, the saved value_raw equals the Other label.
+		if ( ( $field['type'] === 'radio' ) && ! empty( $choice['other'] ) ) {
+			$other_label = isset( $choice['label'] ) ? (string) $choice['label'] : '';
+
+			if ( isset( $field['value_raw'] ) && (string) $field['value_raw'] === $other_label ) {
+				return true;
+			}
 		}
 
 		// Determine if Show Values is enabled.

@@ -85,7 +85,7 @@ abstract class LicenseApiCache extends CacheBase {
 		 *
 		 * @param bool $allow True or false.
 		 */
-		return (bool) apply_filters( $this->plugin_slug . '_license_api_' . $this->type . '_cache_allow_load', $allow ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+		return (bool) apply_filters( $this->plugin_slug . '_license_api_' . $this->type . '_cache_allow_load', $allow ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 	}
 
 	/**
@@ -118,7 +118,7 @@ abstract class LicenseApiCache extends CacheBase {
 			 *
 			 * @return int
 			 */
-			'cache_ttl'     => (int) apply_filters( $this->plugin_slug . '_license_api_' . $this->type . '_cache_ttl', HOUR_IN_SECONDS * self::CACHE_TIME ), // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+			'cache_ttl'     => (int) apply_filters( $this->plugin_slug . '_license_api_' . $this->type . '_cache_ttl', HOUR_IN_SECONDS * self::CACHE_TIME ), // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 			'update_action' => $this->plugin_slug . '_license_api_' . $this->type . '_cache',
 			'query_args'    => [
 				'tgm-updater-key'         => wpforms()->is_pro() ? wpforms_get_license_key() : 'lite',

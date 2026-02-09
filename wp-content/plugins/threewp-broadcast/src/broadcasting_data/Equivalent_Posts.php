@@ -34,6 +34,9 @@ class Equivalent_Posts
 	**/
 	public function broadcast_once( $parent_blog, $parent_post, $child_blog = null )
 	{
+		if ( $parent_post < 1 )
+			return 0;
+
 		if ( $child_blog === null )
 			$child_blog = get_current_blog_id();
 
@@ -54,6 +57,9 @@ class Equivalent_Posts
 	**/
 	public function get( $parent_blog, $parent_post, $child_blog = null )
 	{
+		if ( $parent_post < 1 )
+			return 0;
+
 		if ( $child_blog === null )
 			$child_blog = get_current_blog_id();
 
@@ -79,6 +85,9 @@ class Equivalent_Posts
 	**/
 	public function get_or_broadcast( $parent_blog, $parent_post, $child_blog = null )
 	{
+		if ( $parent_post < 1 )
+			return 0;
+
 		if ( $child_blog === null )
 			$child_blog = get_current_blog_id();
 

@@ -26,6 +26,8 @@ $field_options   = [
 $display_options = [
 	'maintain-layout' => esc_html__( 'Maintain Layout', 'wpforms' ),
 	'compact'         => esc_html__( 'Compact View', 'wpforms' ),
+	'entry-date'      => esc_html__( 'Entry Date', 'wpforms' ),
+	'entry-id'        => esc_html__( 'Entry ID', 'wpforms' ),
 ];
 
 if ( ! empty( $entry->entry_notes ) ) {
@@ -74,10 +76,10 @@ $display_options = (array) apply_filters( 'wpforms_pro_admin_entries_print_previ
 			// Only the first entry should display the form title.
 			if ( $has_header ) {
 				// i.e. → "User Registration Form - ".
-				printf( '%s - ', esc_html( $form_title ) );
+				echo esc_html( $form_title );
 			}
 			?>
-			<span>
+			<span class="entry-id"><?php echo $has_header ? ' - ' : ''; ?>
 				<?php
 				printf( /* translators: %d - entry ID. */
 					esc_html__( 'Entry #%d', 'wpforms' ),
@@ -85,6 +87,7 @@ $display_options = (array) apply_filters( 'wpforms_pro_admin_entries_print_previ
 				);
 				?>
 			</span>
+			<p class="entry-date"><?php echo esc_html( wpforms_date_format( $entry->date ) ); ?></p>
 		</h1>
 
 		<?php

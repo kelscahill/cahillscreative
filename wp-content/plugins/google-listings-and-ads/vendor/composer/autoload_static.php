@@ -21,15 +21,15 @@ class ComposerStaticInit34bf83c9b42bffe4e88d69b8031e6cfc
     );
 
     public static $prefixLengthsPsr4 = array (
-        'p' => 
+        'p' =>
         array (
             'phpseclib3\\' => 11,
         ),
-        'b' => 
+        'b' =>
         array (
             'bcmath_compat\\' => 14,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Php81\\' => 23,
             'Symfony\\Polyfill\\Php80\\' => 23,
@@ -40,17 +40,17 @@ class ComposerStaticInit34bf83c9b42bffe4e88d69b8031e6cfc
             'Symfony\\Contracts\\Translation\\' => 30,
             'Symfony\\Component\\Validator\\' => 28,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psr\\Log\\' => 8,
             'Psr\\Cache\\' => 10,
             'ParagonIE\\ConstantTime\\' => 23,
         ),
-        'M' => 
+        'M' =>
         array (
             'Monolog\\' => 8,
         ),
-        'G' => 
+        'G' =>
         array (
             'Google\\Type\\' => 12,
             'Google\\Rpc\\' => 11,
@@ -73,11 +73,11 @@ class ComposerStaticInit34bf83c9b42bffe4e88d69b8031e6cfc
             'GPBMetadata\\Google\\Ads\\GoogleAds\\' => 33,
             'GPBMetadata\\ApiCore\\' => 20,
         ),
-        'F' => 
+        'F' =>
         array (
             'Firebase\\JWT\\' => 13,
         ),
-        'A' => 
+        'A' =>
         array (
             'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Psr\\Http\\Message\\' => 68,
             'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Psr\\Http\\Client\\' => 67,
@@ -96,196 +96,196 @@ class ComposerStaticInit34bf83c9b42bffe4e88d69b8031e6cfc
     );
 
     public static $prefixDirsPsr4 = array (
-        'phpseclib3\\' => 
+        'phpseclib3\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib',
         ),
-        'bcmath_compat\\' => 
+        'bcmath_compat\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpseclib/bcmath_compat/src',
         ),
-        'Symfony\\Polyfill\\Php81\\' => 
+        'Symfony\\Polyfill\\Php81\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php81',
         ),
-        'Symfony\\Polyfill\\Php80\\' => 
+        'Symfony\\Polyfill\\Php80\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
-        'Symfony\\Polyfill\\Php73\\' => 
+        'Symfony\\Polyfill\\Php73\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php73',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
+        'Symfony\\Polyfill\\Intl\\Normalizer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
         ),
-        'Symfony\\Polyfill\\Ctype\\' => 
+        'Symfony\\Polyfill\\Ctype\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Symfony\\Contracts\\Translation\\' => 
+        'Symfony\\Contracts\\Translation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/translation-contracts',
         ),
-        'Symfony\\Component\\Validator\\' => 
+        'Symfony\\Component\\Validator\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/validator',
         ),
-        'Psr\\Log\\' => 
+        'Psr\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
-        'Psr\\Cache\\' => 
+        'Psr\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
-        'ParagonIE\\ConstantTime\\' => 
+        'ParagonIE\\ConstantTime\\' =>
         array (
             0 => __DIR__ . '/..' . '/paragonie/constant_time_encoding/src',
         ),
-        'Monolog\\' => 
+        'Monolog\\' =>
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
-        'Google\\Type\\' => 
+        'Google\\Type\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/src/Type',
         ),
-        'Google\\Rpc\\' => 
+        'Google\\Rpc\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/src/Rpc',
         ),
-        'Google\\Protobuf\\' => 
+        'Google\\Protobuf\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/protobuf/src/Google/Protobuf',
         ),
-        'Google\\LongRunning\\' => 
+        'Google\\LongRunning\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/longrunning/src/LongRunning',
         ),
-        'Google\\Iam\\' => 
+        'Google\\Iam\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/src/Iam',
         ),
-        'Google\\Cloud\\' => 
+        'Google\\Cloud\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/src/Cloud',
         ),
-        'Google\\Api\\' => 
+        'Google\\Api\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/src/Api',
         ),
-        'Google\\ApiCore\\LongRunning\\' => 
+        'Google\\ApiCore\\LongRunning\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/longrunning/src/ApiCore/LongRunning',
         ),
-        'Google\\ApiCore\\' => 
+        'Google\\ApiCore\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/gax/src',
         ),
-        'Google\\Ads\\GoogleAds\\' => 
+        'Google\\Ads\\GoogleAds\\' =>
         array (
             0 => __DIR__ . '/..' . '/googleads/google-ads-php/src/Google/Ads/GoogleAds',
         ),
-        'GPBMetadata\\Google\\Type\\' => 
+        'GPBMetadata\\Google\\Type\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Type',
         ),
-        'GPBMetadata\\Google\\Rpc\\' => 
+        'GPBMetadata\\Google\\Rpc\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Rpc',
         ),
-        'GPBMetadata\\Google\\Protobuf\\' => 
+        'GPBMetadata\\Google\\Protobuf\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/protobuf/src/GPBMetadata/Google/Protobuf',
         ),
-        'GPBMetadata\\Google\\Longrunning\\' => 
+        'GPBMetadata\\Google\\Longrunning\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/longrunning/metadata/Longrunning',
         ),
-        'GPBMetadata\\Google\\Logging\\' => 
+        'GPBMetadata\\Google\\Logging\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Logging',
         ),
-        'GPBMetadata\\Google\\Iam\\' => 
+        'GPBMetadata\\Google\\Iam\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Iam',
         ),
-        'GPBMetadata\\Google\\Cloud\\' => 
+        'GPBMetadata\\Google\\Cloud\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Cloud',
         ),
-        'GPBMetadata\\Google\\Api\\' => 
+        'GPBMetadata\\Google\\Api\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Api',
         ),
-        'GPBMetadata\\Google\\Ads\\GoogleAds\\' => 
+        'GPBMetadata\\Google\\Ads\\GoogleAds\\' =>
         array (
             0 => __DIR__ . '/..' . '/googleads/google-ads-php/metadata/Google/Ads/GoogleAds',
         ),
-        'GPBMetadata\\ApiCore\\' => 
+        'GPBMetadata\\ApiCore\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/gax/metadata/ApiCore',
         ),
-        'Firebase\\JWT\\' => 
+        'Firebase\\JWT\\' =>
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Psr\\Http\\Message\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Psr\\Http\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
             1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Psr\\Http\\Client\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Psr\\Http\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Psr\\Container\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\League\\ISO3166\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\League\\ISO3166\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/iso3166/src',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\League\\Container\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\League\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/container/src',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Psr7\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Psr7\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Promise\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\GuzzleHttp\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Google\\Service\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Google\\Service\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/apiclient-services/src',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Google\\Auth\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Google\\Auth\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/auth/src',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Google\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Vendor\\Google\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/apiclient/src',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Util\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Util\\' =>
         array (
             0 => __DIR__ . '/../..' . '/bin',
         ),
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\' => 
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
@@ -492,6 +492,7 @@ class ComposerStaticInit34bf83c9b42bffe4e88d69b8031e6cfc
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\Migration20220524T1653383133' => __DIR__ . '/../..' . '/src/DB/Migration/Migration20220524T1653383133.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\Migration20231109T1653383133' => __DIR__ . '/../..' . '/src/DB/Migration/Migration20231109T1653383133.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\Migration20240813T1653383133' => __DIR__ . '/../..' . '/src/DB/Migration/Migration20240813T1653383133.php',
+        'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\Migration20250910T1653383133' => __DIR__ . '/../..' . '/src/DB/Migration/Migration20250910T1653383133.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\MigrationInterface' => __DIR__ . '/../..' . '/src/DB/Migration/MigrationInterface.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\MigrationVersion141' => __DIR__ . '/../..' . '/src/DB/Migration/MigrationVersion141.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Migration\\Migrator' => __DIR__ . '/../..' . '/src/DB/Migration/Migrator.php',
@@ -499,7 +500,6 @@ class ComposerStaticInit34bf83c9b42bffe4e88d69b8031e6cfc
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\ProductMetaQueryHelper' => __DIR__ . '/../..' . '/src/DB/ProductMetaQueryHelper.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Query' => __DIR__ . '/../..' . '/src/DB/Query.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\QueryInterface' => __DIR__ . '/../..' . '/src/DB/QueryInterface.php',
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Query\\AdsRecommendationsQuery' => __DIR__ . '/../..' . '/src/DB/Query/AdsRecommendationsQuery.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Query\\AttributeMappingRulesQuery' => __DIR__ . '/../..' . '/src/DB/Query/AttributeMappingRulesQuery.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Query\\BudgetRecommendationQuery' => __DIR__ . '/../..' . '/src/DB/Query/BudgetRecommendationQuery.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Query\\MerchantIssueQuery' => __DIR__ . '/../..' . '/src/DB/Query/MerchantIssueQuery.php',
@@ -509,7 +509,6 @@ class ComposerStaticInit34bf83c9b42bffe4e88d69b8031e6cfc
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Table' => __DIR__ . '/../..' . '/src/DB/Table.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\TableInterface' => __DIR__ . '/../..' . '/src/DB/TableInterface.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\TableManager' => __DIR__ . '/../..' . '/src/DB/TableManager.php',
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Table\\AdsRecommendationsTable' => __DIR__ . '/../..' . '/src/DB/Table/AdsRecommendationsTable.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Table\\AttributeMappingRulesTable' => __DIR__ . '/../..' . '/src/DB/Table/AttributeMappingRulesTable.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Table\\BudgetRecommendationTable' => __DIR__ . '/../..' . '/src/DB/Table/BudgetRecommendationTable.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\DB\\Table\\MerchantIssueTable' => __DIR__ . '/../..' . '/src/DB/Table/MerchantIssueTable.php',
@@ -639,7 +638,6 @@ class ComposerStaticInit34bf83c9b42bffe4e88d69b8031e6cfc
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Jobs\\StartHook' => __DIR__ . '/../..' . '/src/Jobs/StartHook.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Jobs\\StartOnHookInterface' => __DIR__ . '/../..' . '/src/Jobs/StartOnHookInterface.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Jobs\\SyncableProductsBatchedActionSchedulerJobTrait' => __DIR__ . '/../..' . '/src/Jobs/SyncableProductsBatchedActionSchedulerJobTrait.php',
-        'Automattic\\WooCommerce\\GoogleListingsAndAds\\Jobs\\UpdateAdsRecommendations' => __DIR__ . '/../..' . '/src/Jobs/UpdateAdsRecommendations.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Jobs\\UpdateAllProducts' => __DIR__ . '/../..' . '/src/Jobs/UpdateAllProducts.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Jobs\\UpdateCoupon' => __DIR__ . '/../..' . '/src/Jobs/UpdateCoupon.php',
         'Automattic\\WooCommerce\\GoogleListingsAndAds\\Jobs\\UpdateMerchantPriceBenchmarks' => __DIR__ . '/../..' . '/src/Jobs/UpdateMerchantPriceBenchmarks.php',

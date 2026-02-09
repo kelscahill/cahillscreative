@@ -40,19 +40,22 @@ class check
 
 		$row = $table->head()->row();
 		$row->td( 'key' )->text( __( 'Auto drafts', 'threewp-broadcast' ) );
-		$query = sprintf( "SELECT COUNT( * ) FROM `%s` WHERE `post_status` = 'auto-draft'", $wpdb->posts );
+		$query = $wpdb->prepare( "SELECT COUNT( * ) FROM %i WHERE `post_status` = 'auto-draft'", [ $wpdb->posts ] );
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 		$value = $wpdb->get_var( $query );
 		$row->td( 'value' )->text( $value );
 
 		$row = $table->head()->row();
 		$row->td( 'key' )->text( __( 'Extra postmeta data', 'threewp-broadcast' ) );
-		$query = sprintf( "SELECT COUNT( * ) FROM `%s` WHERE `post_id` NOT IN ( SELECT `ID` FROM `%s` )", $wpdb->postmeta, $wpdb->posts );
+		$query = $wpdb->prepare( "SELECT COUNT( * ) FROM %i WHERE `post_id` NOT IN ( SELECT `ID` FROM %i )", [ $wpdb->postmeta, $wpdb->posts ] );
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 		$value = $wpdb->get_var( $query );
 		$row->td( 'value' )->text( $value );
 
 		$row = $table->head()->row();
 		$row->td( 'key' )->text( __( 'Revisions', 'threewp-broadcast' ) );
-		$query = sprintf( "SELECT COUNT( * ) FROM `%s` WHERE `post_type` = 'revision'", $wpdb->posts );
+		$query = $wpdb->prepare( "SELECT COUNT( * ) FROM %i WHERE `post_type` = 'revision'", [ $wpdb->posts ] );
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 		$value = $wpdb->get_var( $query );
 		$row->td( 'value' )->text( $value );
 
@@ -78,11 +81,11 @@ class check
 
 			if ( $delete_extra_postmeta->pressed() )
 			{
-				$query = sprintf( "DELETE FROM `%s` WHERE `post_id` NOT IN ( SELECT `ID` FROM `%s` )",
-					$wpdb->postmeta,
-					$wpdb->posts
+				$query = $wpdb->prepare( "DELETE FROM %i WHERE `post_id` NOT IN ( SELECT `ID` FROM %i )",
+					[ $wpdb->postmeta, $wpdb->posts ]
 				);
 				$this->broadcast()->debug( $query );
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 				$wpdb->query( $query );
 				$o->r .= $this->broadcast()->info_message_box()
 					->_( __( 'The postmeta table has been cleaned up.', 'threewp-broadcast' ) );
@@ -90,8 +93,9 @@ class check
 
 			if ( $delete_auto_drafts->pressed() )
 			{
-				$query = sprintf( "DELETE FROM `%s` WHERE `post_status` = 'auto-draft'", $wpdb->posts );
+				$query = $wpdb->prepare( "DELETE FROM %i WHERE `post_status` = 'auto-draft'", [ $wpdb->posts ] );
 				$this->broadcast()->debug( $query );
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 				$wpdb->query( $query );
 				$o->r .= $this->broadcast()->info_message_box()
 					->_( __( 'All auto drafts have been deleted.', 'threewp-broadcast' ) );
@@ -99,8 +103,9 @@ class check
 
 			if ( $delete_revisions->pressed() )
 			{
-				$query = sprintf( "DELETE FROM `%s` WHERE `post_type` = 'revision'", $wpdb->posts );
+				$query = $wpdb->prepare( "DELETE FROM %i WHERE `post_type` = 'revision'", [ $wpdb->posts ] );
 				$this->broadcast()->debug( $query );
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 				$wpdb->query( $query );
 				$o->r .= $this->broadcast()->info_message_box()
 					->_( __( 'All revision posts have been deleted.', 'threewp-broadcast' ) );

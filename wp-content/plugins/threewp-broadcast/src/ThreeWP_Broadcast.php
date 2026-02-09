@@ -2,8 +2,10 @@
 
 namespace threewp_broadcast;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 use Exception;
-use \threewp_broadcast\broadcast_data\blog;
+use threewp_broadcast\broadcast_data\blog;
 
 #[\AllowDynamicProperties]
 class ThreeWP_Broadcast
@@ -408,6 +410,7 @@ class ThreeWP_Broadcast
 	{
 		// Don't overwrite the permalink if we're in the editing window.
 		// This allows the user to change the permalink.
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- The script name will ALWAYS exist.
 		if ( $_SERVER[ 'SCRIPT_NAME' ] == '/wp-admin/post.php' )
 			return $link;
 
@@ -485,6 +488,7 @@ class ThreeWP_Broadcast
 
 			foreach( $action->term_ids as $term_id )
 			{
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Some plugins will prevent using wp_set_object_terms and require forcefully setting the terms.
 				$result = $wpdb->insert( $wpdb->term_relationships,
 					[
 						'object_id' => $bcd->new_post( 'ID' ),
@@ -665,20 +669,24 @@ class ThreeWP_Broadcast
         if ( in_array( $post_type, $canonical_skipped_post_types ) )
         {
         	if ( $this->debugging() )
-        		echo sprintf ("<!-- Broadcast SEO settings are configured to skip this post type: $post_type. --> \n", $post_type );
+        		echo wp_kses_post ("<!-- Broadcast SEO settings are configured to skip this post type: $post_type. -->\n" );
             return;
         }
 
         // A linked parent is required for the replacement canonical.
         global $blog_id;
         global $post;
-        $broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
-        $linked_parent = $broadcast_data->get_linked_parent();
-        if ( $linked_parent === false)
+
+        if ( $post )
         {
-        	if ( $this->debugging() )
-        		echo sprintf ("<!-- Broadcast could not find a linked parent for the canonical. --> \n");
-            return;
+			$broadcast_data = $this->get_post_broadcast_data( $blog_id, $post->ID );
+			$linked_parent = $broadcast_data->get_linked_parent();
+			if ( $linked_parent === false)
+			{
+				if ( $this->debugging() )
+					echo wp_kses_post("<!-- Broadcast could not find a linked parent for the canonical. -->\n");
+				return;
+			}
         }
 
         // Check if post types are limited
@@ -698,7 +706,7 @@ class ThreeWP_Broadcast
             if ( ! $override )
             {
             	if ( $this->debugging() )
-	                echo sprintf ( "<!-- Broadcast is not replacing the canonical after the broadcast_override_canonical_url filter. -->\n" );
+	                echo wp_kses_post( "<!-- Broadcast is not replacing the canonical after the broadcast_override_canonical_url filter. -->\n" );
                 return;
             }
         }
@@ -706,7 +714,7 @@ class ThreeWP_Broadcast
         else
         {
             if ( $this->debugging() )
-            	echo sprintf ("<!-- Broadcast SEO settings limit post types to $canonical_limit_post_types which does not include $post_type. -->\n");
+            	echo wp_kses_post("<!-- Broadcast SEO settings limit post types to $canonical_limit_post_types which does not include $post_type. -->\n");
             return;
         }
 
@@ -726,9 +734,10 @@ class ThreeWP_Broadcast
 
 		if ( $action->html_tag )
 		{
-            if ( $this->debugging() )
-            	echo sprintf ("<!-- Broadcast canonical -->\n");
-			echo sprintf( $action->html_tag, $action->url );
+			if ( $this->debugging() )
+				echo wp_kses_post("<!-- Broadcast canonical -->\n");
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Generated clean
+			echo ( sprintf( $action->html_tag, $action->url ) );
 		}
 
 		if ( $action->disable_rel_canonical )

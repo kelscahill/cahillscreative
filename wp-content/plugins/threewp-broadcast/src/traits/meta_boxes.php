@@ -2,7 +2,9 @@
 
 namespace threewp_broadcast\traits;
 
-use \threewp_broadcast\meta_box;
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+use threewp_broadcast\meta_box;
 
 /**
 	@brief		Methods related to the broadcast meta box.
@@ -92,7 +94,7 @@ trait meta_boxes
 		foreach( $meta_box_data->js as $key => $value )
 			wp_enqueue_script( $key, $value, '', $this->plugin_version );
 
-		echo $meta_box_data->html->render();
+		echo $meta_box_data->html->render();	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 	}
 
 	/**
@@ -110,7 +112,7 @@ trait meta_boxes
 		if ( count( $incompatible_plugins ) > 0 )
 		{
 			$meta_box_data->html->put( 'incompatible_plugins1',
-				$this->p( __( 'Please disable the following incompatible plugins before using Broadcasting:' ), 'threewp-broadcast' )
+				$this->p( __( 'Please disable the following incompatible plugins before using Broadcasting:', 'threewp-broadcast' ) )
 			);
 			$incompatible_plugins = $this->get_plugin_info_array( $incompatible_plugins );
 			// Extract only the middle part.
@@ -158,8 +160,8 @@ trait meta_boxes
 			restore_current_blog();
 			$meta_box_data->html->put( 'already_broadcasted',  sprintf( '<p>%s</p>',
 				sprintf(
-					// broadcasted is linked.
-					__( 'This post is a %sbroadcasted%s child post. It cannot be broadcasted further.', 'threewp-broadcast' ),
+					// Translators: Anchor link open and close.
+					__( 'This post is a %1$sbroadcasted%2$s child post. It cannot be broadcasted further.', 'threewp-broadcast' ),
 					'<a href="' . $edit_url . '">',
 					'</a>'
 					)
@@ -269,6 +271,7 @@ trait meta_boxes
 			$label_raw = '';
 			if ( $blog->is_linked() )
 			{
+				// Translators: The name of the blog.
 				$title = sprintf( __( 'Edit the child post on blog %s', 'threewp-broadcast' ), htmlspecialchars( $label ) );
 				$label_raw .= sprintf( '<a class="child_edit_link" href="%s" title="%s"><span class="dashicons dashicons-admin-links"></span></a>',
 					$blog->get_edit_url(),

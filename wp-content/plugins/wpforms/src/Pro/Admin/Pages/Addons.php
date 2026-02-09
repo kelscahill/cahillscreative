@@ -453,28 +453,42 @@ class Addons {
 	private function get_addons_with_settings_link(): array {
 
 		return [
-			'tab'          => [
+			'tab'           => [
 				'wpforms-geolocation',
 			],
-			'integrations' => [
-				'wpforms-aweber',
-				'wpforms-mailchimp',
-				'wpforms-google-sheets',
-				'wpforms-sendinblue',
-				'wpforms-zapier',
+			'integrations'  => [
 				'wpforms-activecampaign',
+				'wpforms-airtable',
+				'wpforms-aweber',
 				'wpforms-campaign-monitor',
+				'wpforms-convertkit',
 				'wpforms-drip',
+				'wpforms-dropbox',
 				'wpforms-getresponse',
+				'wpforms-google-calendar',
+				'wpforms-google-drive',
+				'wpforms-google-sheets',
 				'wpforms-hubspot',
+				'wpforms-mailchimp',
 				'wpforms-mailerlite',
+				'wpforms-mailpoet',
+				'wpforms-notion',
+				'wpforms-pipedrive',
 				'wpforms-salesforce',
+				'wpforms-sendinblue',
+				'wpforms-slack',
+				'wpforms-twilio',
+				'wpforms-zapier',
+				'wpforms-zoho-crm',
 			],
-			'payments'     => [
-				'wpforms-stripe',
+			'payments'      => [
+				'wpforms-authorize-net',
 				'wpforms-paypal-commerce',
 				'wpforms-square',
-				'wpforms-authorize-net',
+				'wpforms-stripe',
+			],
+			'payments_page' => [
+				'wpforms-coupons',
 			],
 		];
 	}
@@ -523,6 +537,16 @@ class Addons {
 						'view' => 'payments',
 					],
 					admin_url( "admin.php#wpforms-setting-row-{$clear_slug}-heading" )
+				);
+				break;
+
+			case 'payments_page':
+				$link = add_query_arg(
+					[
+						'page' => 'wpforms-payments',
+						'view' => $clear_slug,
+					],
+					admin_url( 'admin.php' )
 				);
 				break;
 

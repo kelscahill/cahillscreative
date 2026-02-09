@@ -22,6 +22,7 @@ class json
 		$r = json_encode( $output );
 		if ( $this->__display )
 		{
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Generated clean
 			echo $r;
 			die();
 		}

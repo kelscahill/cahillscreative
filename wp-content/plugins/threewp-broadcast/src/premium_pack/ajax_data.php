@@ -30,6 +30,7 @@ class ajax_data
 		$r = json_encode( $output );
 		if ( $this->display )
 		{
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 			echo $r;
 			die();
 		}

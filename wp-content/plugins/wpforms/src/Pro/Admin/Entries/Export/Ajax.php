@@ -222,9 +222,11 @@ class Ajax {
 			'status'      => $args['status'],
 		];
 
-		if ( $args['search']['term'] !== '' ) {
+		$comparison = $args['search']['comparison'] ?? '';
+
+		if ( $args['search']['term'] !== '' || in_array( $comparison, [ 'empty', 'not_empty' ], true ) ) {
 			$db_args['value']         = $args['search']['term'];
-			$db_args['value_compare'] = $args['search']['comparison'];
+			$db_args['value_compare'] = $comparison;
 			$db_args['field_id']      = $args['search']['field'];
 		}
 

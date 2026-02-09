@@ -15,6 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="field-value-choice field-value-choice-<?php echo esc_attr( $choice_type ); ?> <?php echo $is_checked ? ' field-value-choice-checked' : ''; ?>">
 	<label>
 		<input type="<?php echo esc_attr( $choice_type ); ?>"<?php echo $is_checked ? ' checked' : ''; ?> disabled>
-		<?php echo wp_kses_post( $choice['label'] ); ?>
+		<?php
+		// If this is the "Other" choice and a value exists, show it as "Label: Value".
+		if ( ! empty( $choice['is_other'] ) && $is_checked && isset( $choice['other_value'] ) ) {
+			echo wp_kses_post( $choice['label'] ) . ': ' . esc_html( $choice['other_value'] );
+		} else {
+			echo wp_kses_post( $choice['label'] );
+		}
+		?>
 	</label>
 </div>

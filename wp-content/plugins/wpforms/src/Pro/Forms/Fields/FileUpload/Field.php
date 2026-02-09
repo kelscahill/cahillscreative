@@ -146,8 +146,6 @@ class Field extends FieldLite {
 		add_filter( 'wpforms_process_after_filter', [ $this, 'upload_complete' ], PHP_INT_MAX, 3 );
 		add_action( 'wpforms_process_entry_saved', [ $this, 'create_protection' ], 10, 5 );
 
-		add_filter( 'wpforms_pro_fields_entry_preview_is_field_support_preview_file-upload_field', '__return_false' );
-
 		// Update smart tag value for protected files.
 		add_filter( 'wpforms_smart_tags_formatted_field_value', [ $this, 'smart_tags_formatted_field_value' ], 10, 4 );
 
@@ -612,20 +610,6 @@ class Field extends FieldLite {
 				true
 			);
 		}
-	}
-
-	/**
-	 * Input name.
-	 *
-	 * The input name is the name in which the data is expected to be sent in from the client.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @return string
-	 */
-	public function get_input_name(): string {
-
-		return sprintf( 'wpforms_%d_%d', $this->form_id, $this->field_id );
 	}
 
 	/**
@@ -2028,13 +2012,13 @@ class Field extends FieldLite {
 	 *
 	 * @since 1.9.4
 	 *
-	 * @param string $form_id Form ID.
+	 * @param string|int $form_id Form ID.
 	 *
 	 * @return string
 	 */
 	public static function get_form_files_path( $form_id ): string {
 
-		$form_data = wpforms()->obj( 'form' )->get( $form_id );
+		$form_data = wpforms()->obj( 'form' )->get( $form_id, [ 'cap' => false ] );
 
 		if ( empty( $form_data ) ) {
 			return '';

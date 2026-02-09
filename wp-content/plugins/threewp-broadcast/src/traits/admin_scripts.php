@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\traits;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 /**
 	@brief		Handle the printing / display of admin scripts.
 	@since		2014-12-03 18:56:48
@@ -57,6 +59,6 @@ trait admin_scripts
 	public function admin_scripts_print()
 	{
 		foreach( $this->admin_scripts() as $key => $script )
-			echo $script;
+			echo $script;		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- inline js
 	}
 }

@@ -85,7 +85,8 @@ extends \threewp_broadcast\maintenance\checks\check
 		$o->results = $this->broadcast()->query( $query );
 		if ( count( $o->results ) !== 1 )
 		{
-			$o->r .= $this->broadcast()->error_message_box()->_( __( 'Row %s in the broadcast data table was not found!', 'threewp-broadcast' ), $row_id );
+			// Translators: Row NUMBER in the
+			$o->r .= $this->broadcast()->error_message_box()->_( __( 'Row %1$s in the broadcast data table was not found!', 'threewp-broadcast' ), $row_id );
 			return;
 		}
 

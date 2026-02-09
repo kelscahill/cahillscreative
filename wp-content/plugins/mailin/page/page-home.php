@@ -376,7 +376,7 @@ if ( ! class_exists( 'SIB_Page_Home' ) ) {
 					<div class="card-body">
 						<div class="sib-ma-alert sib-ma-active alert alert-success" role="alert" style="display: none;"><?php esc_attr_e( 'Your Marketing Automation script is installed correctly.', 'mailin' ); ?></div>
 						<div class="sib-ma-alert sib-ma-inactive alert alert-danger" role="alert" style="display: none;"><?php esc_attr_e( 'Your Marketing Automation script has been uninstalled', 'mailin' ); ?></div>
-						<div class="sib-ma-alert sib-ma-disabled alert alert-danger" role="alert" style="display: none;"><?php esc_attr_e( 'You have not enabled automation in Brevo. Please do so by choosing the Automation application here: ', 'mailin' ); ?> <a href="https://account-app.brevo.com/account/apps/" target="_blank" rel="noopener">account-app.brevo.com/account/apps/</a> <?php esc_attr_e( 'Thanks', 'mailin' ) ?></div>
+						<div class="sib-ma-alert sib-ma-disabled alert alert-danger" role="alert" style="display: none;"><?php esc_attr_e( 'Brevo Automation could not be activated. Please click ', 'mailin' ); ?><a href="https://app.brevo.com/automation/onboarding" target="_blank" rel="noopener"><?php esc_attr_e( 'here', 'mailin' ); ?></a><?php esc_attr_e( ' to complete activation', 'mailin' ); ?></div>
 						<input type="hidden" id="sib-ma-unistall" value="<?php esc_attr_e( 'Your Marketing Automation script will be uninstalled, you won\'t have access to any Marketing Automation data and workflows', 'mailin' ); ?>">
 						<div class="row">
 							<p class="col-md-4 text-left"><?php esc_attr_e( 'Activate Marketing Automation through Brevo', 'mailin' ); ?></p>

@@ -23,7 +23,9 @@ class Custom_Fields
 	public function __construct( $broadcasting_data )
 	{
 		$this->broadcasting_data = $broadcasting_data;
-		$this->items = & $this->broadcasting_data->custom_fields->original;
+
+		if ( is_object( $this->broadcasting_data->custom_fields ) )
+			$this->items = & $this->broadcasting_data->custom_fields->original;
 	}
 
 	/**

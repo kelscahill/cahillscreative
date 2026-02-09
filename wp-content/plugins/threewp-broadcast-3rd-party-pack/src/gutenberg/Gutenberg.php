@@ -54,6 +54,11 @@ class Gutenberg
 			->heading( 'Patterns' )
 			->name( 'Patterns' );
 
+		$tabs->tab( 'bc_gb_templates' )
+			->callback_this( 'bc_gb_templates' )
+			->heading( 'Templates' )
+			->name( 'Templates' );
+
 		echo $tabs->render();
 	}
 
@@ -67,6 +72,19 @@ class Gutenberg
 			'post_type' => 'wp_block',
 			'label_plural' => 'patterns',
 			'label_singular' => 'pattern',
+		] );
+	}
+
+	/**
+		@brief		Broadcast templates.
+		@since		2024-08-22 11:25:30
+	**/
+	public function bc_gb_templates()
+	{
+		echo $this->broadcast_generic_post_ui( [
+			'post_type' => 'wp_template',
+			'label_plural' => 'templates',
+			'label_singular' => 'template',
 		] );
 	}
 

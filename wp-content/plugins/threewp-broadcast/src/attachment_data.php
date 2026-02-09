@@ -48,7 +48,10 @@ class attachment_data
 		$r->post = get_post( $r->id );
 
 		if ( ! $r->post )
-			throw new Exception( sprintf( 'The attachment ID %s does not have an associated post.', $r->id ) );
+		{
+			$message = sprintf( 'The attachment ID %s does not have an associated post.', $r->id );
+			throw new Exception( esc_html( $message ) );
+		}
 
 		$metadata = wp_get_attachment_metadata( $r->id );
 		// Does the file have metadata?
@@ -59,7 +62,10 @@ class attachment_data
 		$r->filename_base = basename( $r->filename_path );
 
 		if ( $r->filename_path == '' )
-			throw new Exception( sprintf( 'The attachment ID %s does not have a filename.', $r->id ) );
+		{
+			$message = sprintf( 'The attachment ID %s does not have a filename.', $r->id );
+			throw new Exception( esc_html( $message ) );
+		}
 
 		// Allow the CDN Workaround plugin to modify the URL if necessary.
 		$r->post->guid = apply_filters( 'threewp_broadcast_get_attachment_guid', $r->post->guid, $r->id );

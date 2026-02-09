@@ -658,6 +658,9 @@ extends \threewp_broadcast\premium_pack\base
 			$this->debug( 'Forcing WPML to recount the terms for taxonomy: %s, %s', $taxonomy, $terms );
 
 			$wpml_wp_api->wp_update_term_count( $terms, $taxonomy, true );
+
+			// Else WPML will wait until shutdown, which is the main blog not this child blog.
+			wp_defer_term_counting( false );
 		}
 	}
 

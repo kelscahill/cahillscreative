@@ -66,7 +66,8 @@ extends \threewp_broadcast\maintenance\checks\check
 						$blogs = $filter->execute()->blogs;
 
 						if ( count( $blogs ) < 1 )
-							$r .= $this->broadcast()->p( __( '%s does not have access to any blogs.', 'threewp-broadcast' ), $user->data->user_login );
+							// Translators: USERNAME does not have...
+							$r .= $this->broadcast()->p( __( '%1$s does not have access to any blogs.', 'threewp-broadcast' ), $user->data->user_login );
 						else
 						{
 							$blogs_ul = [];
@@ -74,8 +75,8 @@ extends \threewp_broadcast\maintenance\checks\check
 							{
 								$blogs_ul []= sprintf( '<a href="%s/wp-admin">%s</a>', $blog->siteurl, $blog->get_name() );
 							}
-							// Use x has access to the following blogs: ul-blogs-ul
-							$r .= $this->broadcast()->p( __( '%s has access to the following blogs: %s%s%s', 'threewp-broadcast' ),
+							// Translators: USERNAME has access... OPEN_UL, list of blog names, CLOSE_UL
+							$r .= $this->broadcast()->p( __( '%1$s has access to the following blogs: %2$s%3$s%4$s', 'threewp-broadcast' ),
 								$user->data->user_login,
 								'<ul>',
 								$this->broadcast()->implode_html( $blogs_ul ),

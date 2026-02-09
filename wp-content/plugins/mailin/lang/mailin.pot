@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Brevo - Email, SMS, Web Push, Chat, and more. 3.2.8\n"
+"Project-Id-Version: Brevo - Email, SMS, Web Push, Chat, and more. 3.3.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/mailin\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-31T09:38:35+00:00\n"
+"POT-Creation-Date: 2025-12-10T13:45:39+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: mailin\n"
@@ -32,7 +32,7 @@ msgstr ""
 
 #. Author of the plugin
 #: sendinblue.php
-#: inc/sib-api-manager.php:562
+#: inc/sib-api-manager.php:563
 #: page/page-home.php:43
 #: page/page-home.php:557
 #: page/page-home.php:794
@@ -175,25 +175,25 @@ msgstr ""
 msgid "Learn more"
 msgstr ""
 
-#: inc/push-admin.php:816
+#: inc/push-admin.php:845
 msgid "Brevo push notification sent."
 msgstr ""
 
 #. translators: %d is the number of subscribers, %s is the date and time
-#: inc/push-admin.php:833
+#: inc/push-admin.php:862
 msgid "Brevo will send a notification to %d subscribers on %s."
 msgstr ""
 
 #. translators: %d is the number of subscribers
-#: inc/push-admin.php:836
+#: inc/push-admin.php:865
 msgid "Brevo notification sent to %d subscribers."
 msgstr ""
 
-#: inc/push-admin.php:839
+#: inc/push-admin.php:868
 msgid "Brevo notification sent but the target audience is empty."
 msgstr ""
 
-#: inc/push-admin.php:844
+#: inc/push-admin.php:873
 msgid "Brevo notification could not be sent."
 msgstr ""
 
@@ -205,8 +205,8 @@ msgstr ""
 msgid "Unsubscribe from news updates"
 msgstr ""
 
-#: inc/push-utils.php:320
-#: inc/push-utils.php:390
+#: inc/push-utils.php:337
+#: inc/push-utils.php:407
 msgid "My WordPress Site"
 msgstr ""
 
@@ -218,52 +218,52 @@ msgstr ""
 msgid "Your cart is about to expire! Don't miss out the brand you love! 😍"
 msgstr ""
 
-#: inc/sib-api-manager.php:546
+#: inc/sib-api-manager.php:547
 msgid "Subscription confirmed"
 msgstr ""
 
-#: inc/sib-api-manager.php:548
+#: inc/sib-api-manager.php:549
 msgid "Please confirm subscription"
 msgstr ""
 
-#: inc/sib-api-manager.php:561
+#: inc/sib-api-manager.php:562
 #: page/page-home.php:793
 msgid "no-reply@"
 msgstr ""
 
-#: inc/sib-api-manager.php:699
+#: inc/sib-api-manager.php:700
 msgid "Contact synchronization has started."
 msgstr ""
 
-#: inc/sib-api-manager.php:704
+#: inc/sib-api-manager.php:705
 msgid "Something went wrong. PLease try again."
 msgstr ""
 
-#: inc/sib-api-manager.php:802
+#: inc/sib-api-manager.php:803
 msgid "Unsubscribe"
 msgstr ""
 
-#: inc/sib-api-manager.php:822
+#: inc/sib-api-manager.php:823
 msgid "Your request has been taken into account."
 msgstr ""
 
-#: inc/sib-api-manager.php:824
+#: inc/sib-api-manager.php:825
 msgid "The user has been unsubscribed"
 msgstr ""
 
-#: inc/sib-api-manager.php:909
+#: inc/sib-api-manager.php:910
 msgid "Thank you for subscribing"
 msgstr ""
 
-#: inc/sib-api-manager.php:911
+#: inc/sib-api-manager.php:912
 msgid "Please Try Again"
 msgstr ""
 
-#: inc/sib-api-manager.php:936
+#: inc/sib-api-manager.php:937
 msgid "You have just subscribed to the newsletter of "
 msgstr ""
 
-#: inc/sib-api-manager.php:939
+#: inc/sib-api-manager.php:940
 msgid "-Brevo"
 msgstr ""
 
@@ -975,11 +975,15 @@ msgid "Your Marketing Automation script has been uninstalled"
 msgstr ""
 
 #: page/page-home.php:379
-msgid "You have not enabled automation in Brevo. Please do so by choosing the Automation application here: "
+msgid "Brevo Automation could not be activated. Please click "
 msgstr ""
 
 #: page/page-home.php:379
-msgid "Thanks"
+msgid "here"
+msgstr ""
+
+#: page/page-home.php:379
+msgid " to complete activation"
 msgstr ""
 
 #: page/page-home.php:380

@@ -3,6 +3,7 @@
 namespace WPForms\Pro\Admin\Education\Builder;
 
 use WPForms\Admin\Education;
+use WPForms\Admin\Education\Helpers;
 use WPForms\Helpers\Form;
 
 /**
@@ -11,6 +12,15 @@ use WPForms\Helpers\Form;
  * @since 1.6.6
  */
 class Fields extends Education\Builder\Fields {
+
+	/**
+	 * License data.
+	 *
+	 * @since 1.9.9
+	 *
+	 * @var array|null
+	 */
+	private $license_data;
 
 	/**
 	 * Hooks.
@@ -36,7 +46,7 @@ class Fields extends Education\Builder\Fields {
 	 *
 	 * @return bool
 	 */
-	private function is_valid_license() {
+	private function is_valid_license(): bool {
 
 		// Avoid multiple calculations.
 		static $is_valid = null;
@@ -68,7 +78,7 @@ class Fields extends Education\Builder\Fields {
 	 */
 	public function add_fields( $fields ) {
 
-		$nonce = wp_create_nonce( 'wpforms-admin' );
+		$nonce = (string) wp_create_nonce( 'wpforms-admin' );
 
 		foreach ( $fields as $group => $group_data ) {
 			$fields = $this->fields_add_group_fields( $fields, $group, $nonce );
@@ -88,7 +98,7 @@ class Fields extends Education\Builder\Fields {
 	 *
 	 * @return array
 	 */
-	private function fields_add_group_fields( $fields, $group, $nonce ) {
+	private function fields_add_group_fields( array $fields, string $group, string $nonce ): array {
 
 		$addons_slugs = array_column( $this->addons->get_available(), 'slug' );
 		$group_fields = $fields[ $group ]['fields'];
@@ -96,13 +106,12 @@ class Fields extends Education\Builder\Fields {
 		$edu_fields   = $this->fields->set_values( $edu_fields, 'class', 'education-modal', 'empty' );
 
 		foreach ( $edu_fields as $edu_field ) {
-
 			// Skip if in the current group already exist field of this type.
 			if ( ! empty( wp_list_filter( $group_fields, [ 'type' => $edu_field['type'] ] ) ) ) {
 				continue;
 			}
 
-			// Also skip if field is provided by addon, which is not available.
+			// Also skip if the field is provided by addon, which is not available.
 			if (
 				! empty( $edu_field['addon'] ) &&
 			    ! in_array( $edu_field['addon'], $addons_slugs, true )
@@ -236,12 +245,14 @@ class Fields extends Education\Builder\Fields {
 	 *
 	 * @since 1.7.6
 	 *
-	 * @param array $atts  Button attributes.
-	 * @param array $field Button properties.
+	 * @param array|mixed $atts  Button attributes.
+	 * @param array       $field Button properties.
 	 *
 	 * @return array Attributes array.
 	 */
-	public function no_license_fields_attributes( $atts, $field ) {
+	public function no_license_fields_attributes( $atts, array $field ): array {
+
+		$atts = (array) $atts;
 
 		if ( empty( $field['action'] ) ) {
 			return $atts;
@@ -254,7 +265,31 @@ class Fields extends Education\Builder\Fields {
 	}
 
 	/**
-	 * The form preview addon fields notice.
+	 * Get license data.
+	 *
+	 * @since 1.9.9
+	 *
+	 * @return array
+	 */
+	private function get_license_data(): array {
+
+		if ( $this->license_data ) {
+			return $this->license_data;
+		}
+
+		$license = (array) get_option( 'wpforms_license', [] );
+
+		$this->license_data = [
+			$license['key'] ?? '',
+			$license['type'] ?? '',
+			$this->is_valid_license(),
+		];
+
+		return $this->license_data;
+	}
+
+	/**
+	 * The 'form preview' addon fields notice.
 	 *
 	 * @since 1.9.4
 	 *
@@ -262,24 +297,39 @@ class Fields extends Education\Builder\Fields {
 	 */
 	public function form_preview_notice( array $form_data ): void {
 
+		if ( $this->maybe_print_quiz_notice( $form_data ) ) {
+			return;
+		}
+
+		$this->print_addon_fields_notice( $form_data );
+	}
+
+	/**
+	 * Print addon fields notice.
+	 *
+	 * @since 1.9.9
+	 *
+	 * @param array $form_data Form data.
+	 *
+	 * @noinspection HtmlUnknownTarget
+	 */
+	private function print_addon_fields_notice( array $form_data ): void {
+
 		$dismissed  = get_user_meta( get_current_user_id(), 'wpforms_dismissed', true );
 		$edu_addons = Form::get_form_addons_edu_data( $form_data );
 
-		// Check the form has addon fields OR if not dismissed.
 		if ( ! empty( $dismissed['edu-addon-fields-form-preview-notice'] ) || empty( $edu_addons ) ) {
 			return;
 		}
 
-		$actions          = wp_list_pluck( $edu_addons, 'action' );
-		$license          = (array) get_option( 'wpforms_license', [] );
-		$license_key      = $license['key'] ?? '';
-		$license_type     = $license['type'] ?? '';
-		$license_is_valid = $this->is_valid_license();
+		$actions = wp_list_pluck( $edu_addons, 'action' );
 
-		if ( ! $license_is_valid || in_array( $license_type, [ 'basic', 'plus' ], true ) ) {
+		[ $license_key, $license_type, $license_is_valid ] = $this->get_license_data();
+
+		if ( $this->should_print_upgrade_notice( $license_is_valid, $license_type ) ) {
 			$content = sprintf(
 				wp_kses( /* translators: %s - WPForms.com announcement page URL. */
-					__( 'They will not be present in the published form. <a href="%s" target="_blank" rel="noopener noreferrer">Upgrade now</a> to unlock these features.', 'wpforms' ),
+					__( 'They will not be present in the published form. <a href="%1$s" target="_blank" rel="noopener noreferrer">Upgrade now</a> to unlock these features.', 'wpforms' ),
 					[
 						'a' => [
 							'href'   => [],
@@ -310,5 +360,78 @@ class Fields extends Education\Builder\Fields {
 		}
 
 		$this->print_form_preview_notice( $args );
+	}
+
+	/**
+	 * Print the Quiz addon notice.
+	 *
+	 * @since 1.9.9
+	 *
+	 * @param array $form_data Form data.
+	 *
+	 * @return bool
+	 * @noinspection HtmlUnknownTarget
+	 */
+	private function maybe_print_quiz_notice( array $form_data ): bool {
+
+		if ( empty( $form_data['settings']['quiz']['enabled'] ) ) {
+			return false;
+		}
+
+		$dismissed     = get_user_meta( get_current_user_id(), 'wpforms_dismissed', true );
+		$quiz_edu_data = Helpers::get_edu_addons()['wpforms-quiz'] ?? [];
+
+		if ( ! empty( $dismissed['edu-quiz-form-preview-notice'] ) || empty( $quiz_edu_data ) ) {
+			return false;
+		}
+
+		[ $license_key, $license_type, $license_is_valid ] = $this->get_license_data();
+
+		if ( $this->should_print_upgrade_notice( $license_is_valid, $license_type ) ) {
+			$content = sprintf(
+				wp_kses( /* translators: %s - Upgrade to Pro page URL. */
+					__( 'Quiz functionality will not be present in the published form. <a href="%1$s" target="_blank" rel="noopener noreferrer">Upgrade now</a> to unlock the Quiz Addon.', 'wpforms' ),
+					[
+						'a' => [
+							'href'   => [],
+							'target' => [],
+							'rel'    => [],
+						],
+					]
+				),
+				add_query_arg(
+					[ 'license_key' => sanitize_text_field( $license_key ) ],
+					wpforms_admin_upgrade_link( 'Builder - Settings', 'AI Form - Quiz Addon in Pro notice' )
+				)
+			);
+		} else {
+			$content = esc_html__( 'Quiz functionality is not available until the Quiz addon activated.', 'wpforms' );
+		}
+
+		$args = [
+			'class'           => 'wpforms-alert-warning',
+			'title'           => esc_html__( 'Your Form Uses the Quiz Addon', 'wpforms' ),
+			'content'         => $content,
+			'dismiss_section' => 'quiz-form-preview-notice',
+		];
+
+		$this->print_form_preview_notice( $args );
+
+		return true;
+	}
+
+	/**
+	 * Whether the Upgrade notice should be displayed.
+	 *
+	 * @since 1.9.9
+	 *
+	 * @param bool|null $license_is_valid Whether the license is valid.
+	 * @param string    $license_type     The license type.
+	 *
+	 * @return bool
+	 */
+	private function should_print_upgrade_notice( ?bool $license_is_valid, string $license_type ): bool {
+
+		return ! $license_is_valid || in_array( $license_type, [ 'basic', 'plus' ], true );
 	}
 }

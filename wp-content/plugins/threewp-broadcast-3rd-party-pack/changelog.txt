@@ -1,3 +1,21 @@
+<strong>52.01</strong> 20250207
+
+Removed Tao Schedule Update because it has been abandoned.
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/avada-builder/">Avada Builder</a>: Adds support for the <a href="https://avada.com/">Avada Builder</a> page builder.
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/content-update-scheduler/">Content Update Scheduler</a>: adds support for the <a href="https://wordpress.org/plugins/content-update-scheduler/">Content Update Scheduler</a> plugin.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for the Jet Engine Smart Filter select widget.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for Jet Engine query builder custom_query_ids in listings.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for dynamic titles.
+<a href="https://broadcast.plainviewplugins.com/addon/learndash">LearnDash</a>: Add support for protecting various settings (certificate, prerequisite, etc) in the course data using the custom field protect list.
+<a href="https://broadcast.plainviewplugins.com/addon/wpml/">WPML</a>: Fix term count during broadcasting.
+
+<strong>51.12</strong> 20251129
+
+<a href="https://broadcast.plainviewplugins.com/addon/advanced-custom-fields/">ACF</a>: Fix warning / error when handling image fields that are arrays and not json encoded arrays.
+<a href="https://broadcast.plainviewplugins.com/addon/gutenberg/">Gutenberg</a>: Allow broadcasting of templates via the menu: Admin > Broadcast > Gutenberg
+<a href="https://broadcast.plainviewplugins.com/addon/jetengine/">JetEngine</a>: Use default table for fetching relationships, not the separate DB table.
+
 <strong>51.11</strong> 20250928
 
 New add-on: <a href="https://broadcast.plainviewplugins.com/addon/code-snippets-pro/">Code Snippets Pro</a>: Adds support for the <a href="https://wordpress.org/plugins/code-snippets/">Code Snippets Pro plugin</a>.

@@ -583,10 +583,17 @@ class Elementor
 				'any_child_of',
 			] ) )
 			{
-				$old_post_id = $parts[ 3 ];
-				$new_post_id = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $old_post_id, get_current_blog_id() );
-				$parts[ 3 ] = $new_post_id;
-				$this->debug( 'Replacing post %s with %s', $old_post_id, $new_post_id );
+				if ( isset( $parts[ 3 ] ) )
+				{
+					$old_post_id = $parts[ 3 ];
+					$this->debug( 'Found condition ID of %s', $old_post_id );
+					if ( $old_post_id > 0 )
+					{
+						$new_post_id = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $old_post_id, get_current_blog_id() );
+						$parts[ 3 ] = $new_post_id;
+						$this->debug( 'Replacing post %s with %s', $old_post_id, $new_post_id );
+					}
+				}
 			}
 
 			// This is handled by in_, above.
@@ -793,6 +800,32 @@ class Elementor
 							$this->debug( 'Found %s image %s.', $image_setting, $image_id );
 					}
 				}
+
+			if ( isset( $element->settings->__dynamic__->title) )
+			{
+				$title = $element->settings->__dynamic__->title;
+
+				if ( strpos( $title, 'query_id' ) !== false )
+				{
+					$this->debug( 'Handling dynamic title %s', htmlspecialchars( $title ) );
+					$old_settings = $title;
+					$old_settings = preg_replace( '/.*settings="/', '', $old_settings );
+					$old_settings = preg_replace( '/".*/', '', $old_settings );
+					$old_settings_decoded = urldecode( $old_settings );
+					$old_settings_decoded = json_decode( $old_settings_decoded );
+
+					$old_query_id = $old_settings_decoded->query_id;
+
+					$element->settings->custom_query_id = $old_query_id;
+
+					$action = $this->new_action( 'preparse_element' );
+					$action->broadcasting_data = $bcd;
+					$action->element = $element;
+					broadcast_jetengine()->broadcast_elementor_preparse_element( $action );
+
+					unset( $element->settings->custom_query_id );
+				}
+			}
 		}
 
 		if ( $element->elType == 'widget' )
@@ -1213,6 +1246,45 @@ class Elementor
 				'bcd' => $bcd,
 			] );
 
+		if ( isset( $element->settings->__dynamic__->title) )
+		{
+			$title = $element->settings->__dynamic__->title;
+
+			if ( strpos( $title, 'query_id' ) !== false )
+			{
+				$this->debug( 'Handling dynamic title %s', htmlspecialchars( $title ) );
+				$old_settings = $title;
+				$old_settings = preg_replace( '/.*settings="/', '', $old_settings );
+				$old_settings = preg_replace( '/".*/', '', $old_settings );
+				$old_settings_decoded = urldecode( $old_settings );
+				$old_settings_decoded = json_decode( $old_settings_decoded );
+
+				$old_query_id = $old_settings_decoded->query_id;
+
+				$element->settings->custom_query_id = $old_query_id;
+
+				$action = $this->new_action( 'parse_element' );
+				$action->broadcasting_data = $bcd;
+				$action->element = $element;
+				broadcast_jetengine()->broadcast_elementor_parse_element( $action );
+
+				$new_query_id = $element->settings->custom_query_id;
+
+				unset( $element->settings->custom_query_id );
+
+				$new_settings_decoded = $old_settings_decoded;
+				$new_settings_decoded->query_id= $new_query_id;
+				$new_settings = json_encode( $new_settings_decoded );
+				$new_settings = urlencode( $new_settings );
+				$element->settings->__dynamic__->title = str_replace(
+					$old_settings,
+					$new_settings,
+					$element->settings->__dynamic__->title
+				);
+				$this->debug( 'Replaced dynamic title query ID %s with %s', $old_query_id, $new_query_id );
+			}
+		}
+
 		if ( $element->elType == 'widget' )
 		{
 			// Handle id / url pairs in all widgets.
@@ -1447,13 +1519,14 @@ class Elementor
 					if ( isset( $element->settings->lisitng_id ) )
 					{
 						$new_id = $bcd->equivalent_posts()->broadcast_once( $bcd->parent_blog_id, $element->settings->lisitng_id );
-						$this->debug( 'In %s, replacing %s with %s.', $element->widgetType, $element->settings->lisitng_id, $new_id );
+						$this->debug( 'In %s, replacing lisitng_id %s with %s.', $element->widgetType, $element->settings->lisitng_id, $new_id );
 						$element->settings->lisitng_id = $new_id;
 					}
 					break;
 				case 'jet-smart-filters-checkboxes':
 				case 'jet-smart-filters-radio':
 				case 'jet-smart-filters-range':
+				case 'jet-smart-filters-select':
 					if ( isset( $element->settings->filter_id ) )
 					{
 						$new_post_ids = [];

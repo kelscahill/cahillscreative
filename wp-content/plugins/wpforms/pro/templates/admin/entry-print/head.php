@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $min        = wpforms_get_min_suffix();
+$wp_min     = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 $form_title = isset( $form_data['settings']['form_title'] ) ? ucfirst( $form_data['settings']['form_title'] ) : '';
 
 ?>
@@ -25,13 +26,15 @@ $form_title = isset( $form_data['settings']['form_title'] ) ? ucfirst( $form_dat
 	<meta name="robots" content="noindex,nofollow,noarchive">
 	<?php // phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet, WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
 	<link rel="stylesheet"
-		  href="<?php echo esc_url( WPFORMS_PLUGIN_URL . 'assets/lib/font-awesome/font-awesome.min.css' ); ?>"
-		  type="text/css">
+		href="<?php echo esc_url( WPFORMS_PLUGIN_URL . 'assets/lib/font-awesome/css/all.min.css' ); ?>"
+		type="text/css">
 	<link rel="stylesheet"
-		  href="<?php echo esc_url( WPFORMS_PLUGIN_URL . "assets/pro/css/entry-print{$min}.css" ); ?>"
-		  type="text/css">
-	<script type="text/javascript" src="<?php echo esc_url( includes_url( 'js/utils.js' ) ); ?>"></script>
-	<script type="text/javascript" src="<?php echo esc_url( includes_url( 'js/jquery/jquery.js' ) ); ?>"></script>
+		href="<?php echo esc_url( WPFORMS_PLUGIN_URL . 'assets/lib/font-awesome/css/v4-shims.min.css' ); ?>"
+		type="text/css">
+	<link rel="stylesheet" href="<?php echo esc_url( WPFORMS_PLUGIN_URL . "assets/pro/css/entry-print{$min}.css" ); ?>"
+		type="text/css">
+	<script type="text/javascript" src="<?php echo esc_url( includes_url( "js/utils{$wp_min}.js" ) ); ?>"></script>
+	<script type="text/javascript" src="<?php echo esc_url( includes_url( "js/jquery/jquery{$wp_min}.js" ) ); ?>"></script>
 	<script type="text/javascript"
 			src="<?php echo esc_url( WPFORMS_PLUGIN_URL . "assets/pro/js/admin/entries/print-entry{$min}.js" ); ?>"></script>
 	<meta name="robots" content="noindex,nofollow,noarchive">

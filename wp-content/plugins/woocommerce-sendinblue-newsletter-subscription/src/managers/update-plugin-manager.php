@@ -287,7 +287,6 @@ class UpdatePluginManagers
         $settings['shop_version'] = SENDINBLUE_WORDPRESS_SHOP_VERSION;
         $settings['plugin_version'] = SENDINBLUE_WC_PLUGIN_VERSION;
         $settings['language'] = current(explode("_", get_locale()));
-        $settings['callback'] = get_site_url() . '/index.php?pagename=sendinblue-callback';
 
         $key = $this
             ->api_manager

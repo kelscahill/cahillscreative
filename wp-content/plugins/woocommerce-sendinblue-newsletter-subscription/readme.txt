@@ -168,6 +168,21 @@ If you need some assistance, you can post an issue in the Support tab, or send u
 4. You can access your settings by clicking on “Settings” at the top right of the screen.
 
 == Changelog ==
+=
+= 4.0.51 =
+* Security Update: Patched a potential vulnerability in the plugin code that could allow attackers to execute code in administrator contexts
+* Improved plugin security through enhanced input sanitization and output escaping.
+* Included support for a banner on the plugin page to inform users about future account and security notices.
+
+= 4.0.50 =
+* Plugin improvements related to callback url
+
+= 4.0.49 =
+* Plugin improvements related to anonymous tracking
+
+= 4.0.48 =
+* Plugin improvements related to Automation Tracking Events
+
 = 4.0.47 =
 * Included price with tax for individual products in the payloads of cart_updated and order_completed events
 

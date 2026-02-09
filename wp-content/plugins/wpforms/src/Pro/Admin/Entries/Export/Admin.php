@@ -517,6 +517,8 @@ class Admin {
 			<option value="contains_not" <?php selected( 'contains_not', $search['comparison'] ); ?>><?php esc_html_e( 'does not contain', 'wpforms' ); ?></option>
 			<option value="is" <?php selected( 'is', $search['comparison'] ); ?>><?php esc_html_e( 'is', 'wpforms' ); ?></option>
 			<option value="is_not" <?php selected( 'is_not', $search['comparison'] ); ?>><?php esc_html_e( 'is not', 'wpforms' ); ?></option>
+			<option value="empty" <?php selected( 'empty', $search['comparison'] ); ?>><?php esc_html_e( 'is empty', 'wpforms' ); ?></option>
+			<option value="not_empty" <?php selected( 'not_empty', $search['comparison'] ); ?>><?php esc_html_e( 'is not empty', 'wpforms' ); ?></option>
 		</select>
 		<input type="text" name="search[term]" class="wpforms-search-box-term" value="<?php echo esc_attr( $search['term'] ); ?>">
 

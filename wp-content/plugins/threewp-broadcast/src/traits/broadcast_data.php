@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\traits;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 use threewp_broadcast\broadcast_data as data;			// Else if conflicts with the trait name. *sigh*
 
 /**

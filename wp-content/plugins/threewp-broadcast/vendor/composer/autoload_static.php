@@ -24,8 +24,12 @@ class ComposerStaticInitd86fd562f397608bc7c550fc81c43400
         ),
         'plainview\\sdk_broadcast\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src/sdk',
+            0 => __DIR__ . '/..' . '/plainview/sdk',
         ),
+    );
+
+    public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
@@ -33,6 +37,7 @@ class ComposerStaticInitd86fd562f397608bc7c550fc81c43400
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitd86fd562f397608bc7c550fc81c43400::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitd86fd562f397608bc7c550fc81c43400::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitd86fd562f397608bc7c550fc81c43400::$classMap;
 
         }, null, ClassLoader::class);
     }

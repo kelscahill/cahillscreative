@@ -49,20 +49,30 @@ class Handler {
 
 		$url_args = $this->get_entries_page_args();
 
-		// Check if the page is the entries list page.
+		// Check if the page is the entry list page.
 		if ( empty( $url_args ) || empty( $url_args['view'] ) ) {
 			return true;
 		}
 
-		$available_views = [
-			'list',
-			'edit',
-			'print',
-			'details',
-			'survey',
-		];
+		/**
+		 * Allow modifying the list of entries page views that are valid.
+		 *
+		 * @since 1.9.8.6
+		 *
+		 * @param array $available_views List of valid entries page views.
+		 */
+		$allowlist = (array) apply_filters(
+			'wpforms_pro_admin_entries_handler_entries_page_views_allowlist',
+			[
+				'list',
+				'edit',
+				'print',
+				'details',
+				'survey',
+			]
+		);
 
-		return in_array( sanitize_key( $url_args['view'] ), $available_views, true );
+		return in_array( sanitize_key( $url_args['view'] ), $allowlist, true );
 	}
 
 	/**

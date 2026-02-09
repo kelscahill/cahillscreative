@@ -203,22 +203,25 @@ class Page {
 			'restored',
 		];
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		if ( isset( $_GET['paged'] ) && (int) $_GET['paged'] < 2 ) {
 			$remove_args[] = 'paged';
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		if ( ! isset( $_GET['search']['term'] ) || wpforms_is_empty_string( $_GET['search']['term'] ) ) {
-			$remove_args[] = 'search';
+			$comparison = isset( $_GET['search']['comparison'] ) ? sanitize_text_field( wp_unslash( $_GET['search']['comparison'] ) ) : '';
+
+			if ( ! $this->is_comparison_without_term( $comparison ) ) {
+				$remove_args[] = 'search';
+			}
 		}
 
 		if ( empty( $this->get_filtered_dates() ) ) {
 			$remove_args[] = 'date';
 		}
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$_SERVER['REQUEST_URI'] = remove_query_arg( $remove_args, $_SERVER['REQUEST_URI'] );
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 	}
 
 	/**
@@ -462,7 +465,7 @@ class Page {
 	 *
 	 * @return array $entries_id Entry IDs.
 	 */
-	private function process_trash_data( $form_id ) {
+	private function process_trash_data( int $form_id ) {
 
 		// Check if entries filtered.
 		// This also checks if there's entry ids provided. See: FilterSearch Trait.
@@ -514,7 +517,7 @@ class Page {
 	 *
 	 * @return int  $trashed Number of trashed entries.
 	 */
-	private function process_trash_with_ids( $entry_ids, $form_id ) {
+	private function process_trash_with_ids( $entry_ids, $form_id ): int {
 
 		$trashed = 0;
 		$user_id = get_current_user_id();
@@ -580,9 +583,15 @@ class Page {
 			return false;
 		}
 
-		$expected = [ 'field', 'comparison', 'term' ];
+		$expected   = [ 'field', 'comparison', 'term' ];
+		$comparison = isset( $_GET['search']['comparison'] ) ? sanitize_text_field( wp_unslash( $_GET['search']['comparison'] ) ) : '';
 
 		foreach ( $expected as $field ) {
+
+			if ( $field === 'term' && $this->is_comparison_without_term( $comparison ) ) {
+				continue;
+			}
+
 			if ( ! isset( $_GET['search'][ $field ] ) || $_GET['search'][ $field ] === '' ) {
 				return false;
 			}
@@ -599,7 +608,7 @@ class Page {
 	 *
 	 * @return string
 	 */
-	protected function get_filter_search_html() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity
+	protected function get_filter_search_html(): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity
 
 		$form_id = $this->get_filtered_form_id();
 		$data    = $this->get_filter_search_parts();
@@ -613,17 +622,18 @@ class Page {
 			'contains_not' => __( 'does not contain', 'wpforms' ),
 			'is'           => __( 'is', 'wpforms' ),
 			'is_not'       => __( 'is not', 'wpforms' ),
+			'empty'        => __( 'is empty', 'wpforms' ),
+			'not_empty'    => __( 'is not empty', 'wpforms' ),
 		];
-		$comparison  = isset( $comparisons[ $data['comparison'] ] ) ? $comparisons[ $data['comparison'] ] : $comparisons['contains'];
-		$field       = isset( $data['field'] ) ? $data['field'] : '';
-		$term        = isset( $data['term'] ) ? $data['term'] : '';
+		$comparison  = $comparisons[ $data['comparison'] ] ?? $comparisons['contains'];
+		$field       = $data['field'] ?? '';
+		$term        = $data['term'] ?? '';
 
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		if ( ! empty( $_GET['search']['term'] ) && wpforms_is_empty_string( $term ) ) {
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$term = htmlspecialchars( wp_unslash( $_GET['search']['term'] ) );
 		}
-		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		if ( is_numeric( $field ) && $form_id ) {
 			$meta = wpforms()->obj( 'form' )->get_field( $form_id, $field );
@@ -634,6 +644,14 @@ class Page {
 		} else {
 			$advanced_options = Helpers::get_search_fields_advanced_options();
 			$field            = ! empty( $advanced_options[ $field ] ) ? $advanced_options[ $field ] : __( 'any form field', 'wpforms' );
+		}
+
+		if ( $this->is_comparison_without_term( $data['comparison'] ) ) {
+			return sprintf( /* translators: %1$s - field name, %2$s - operation. */
+				__( 'where %1$s %2$s', 'wpforms' ),
+				'<em>' . esc_html( $field ) . '</em>',
+				esc_html( $comparison )
+			);
 		}
 
 		return sprintf( /* translators: %1$s - field name, %2$s - operation, %3$s term. */
@@ -650,8 +668,23 @@ class Page {
 	 * @since 1.8.6
 	 *
 	 * @return array
+	 *
+	 * @noinspection PhpMissingReturnTypeInspection
 	 */
 	private function get_filtered_dates() {
+
+		/**
+		 * Filter the date range for the entry list page.
+		 *
+		 * @since 1.9.8.6
+		 *
+		 * @param array $dates Date range in the Y-m-d format. The 1st element is the start date, the 2nd element is the end date.
+		 */
+		$dates = (array) apply_filters( 'wpforms_pro_admin_entries_page_get_filtered_dates', [] );
+
+		if ( ! empty( $dates ) ) {
+			return array_map( 'sanitize_text_field', $dates );
+		}
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( empty( $_GET['date'] ) ) {
@@ -671,7 +704,7 @@ class Page {
 	 *
 	 * @return array
 	 */
-	public function get_filters_html() {
+	public function get_filters_html(): array {
 
 		$filters = [
 			'.search-box' => $this->get_filter_search_html(),
@@ -809,11 +842,15 @@ class Page {
 	 *
 	 * @return bool
 	 */
-	protected function is_list_filtered() {
+	protected function is_list_filtered(): bool {
 
 		$search_parts = $this->get_filter_search_parts();
 		$dates        = $this->get_filtered_dates();
 		$is_filtered  = ! empty( $dates ) || ( isset( $search_parts['term'] ) && ! wpforms_is_empty_string( $search_parts['term'] ) );
+
+		if ( ! $is_filtered && ! empty( $search_parts['comparison'] ) && $this->is_comparison_without_term( $search_parts['comparison'] ) ) {
+			$is_filtered = true;
+		}
 
 		/**
 		 * Allows to mark the entries list as filtered or not, based on certain conditions.
@@ -878,7 +915,8 @@ class Page {
 			<?php
 
 			// Show empty entries table after delete bulk action.
-			$is_deleted = isset( $_REQUEST['deleted'] ) && $_REQUEST['deleted'] === '1'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$is_deleted  = isset( $_REQUEST['deleted'] ) && $_REQUEST['deleted'] === '1'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$is_filtered = $this->is_list_filtered();
 
 			if (
 				empty( $this->entries->items ) &&
@@ -886,7 +924,7 @@ class Page {
 				$this->entries->counts['trash'] === 0 &&
 				! $is_deleted &&
 				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				! isset( $_GET['search'] ) && ! isset( $_GET['date'] ) && ! isset( $_GET['type'] ) && ! isset( $_GET['status'] )
+				! $is_filtered && ! isset( $_GET['type'] ) && ! isset( $_GET['status'] )
 			) {
 
 				// Output no entries screen.
@@ -1098,8 +1136,22 @@ class Page {
 	 * @since 1.8.6
 	 *
 	 * @param array $form_data Form data and settings.
+	 *
+	 * @noinspection PhpMissingParamTypeInspection, ReturnTypeCanBeDeclaredInspection
 	 */
 	public function list_form_actions( $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity
+
+		$actions = [ 'all_entries', 'payments', 'edit_form', 'view_form', 'export_entries', 'read_entries', 'delete_entries' ];
+
+		/**
+		 * Filter the list of entries list form actions.
+		 *
+		 * @since 1.9.8.6
+		 *
+		 * @param array $actions   List of entries list form actions.
+		 * @param array $form_data Form data and settings.
+		 */
+		$actions = (array) apply_filters( 'wpforms_pro_admin_entries_page_actions', $actions, $form_data );
 
 		$base = add_query_arg(
 			[
@@ -1149,7 +1201,7 @@ class Page {
 
 		$read_url_args = [ 'action' => 'markread' ];
 
-		if ( isset( $_GET['status'] ) && ! empty( $_GET['status'] ) ) {
+		if ( ! empty( $_GET['status'] ) ) {
 			$read_url_args['status'] = sanitize_key( $_GET['status'] );
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
@@ -1201,47 +1253,48 @@ class Page {
 
 			<div class="form-details-actions">
 
-				<?php if ( $this->is_list_filtered() ) : ?>
+				<?php if ( in_array( 'all_entries', $actions, true ) && $this->is_list_filtered() ) : ?>
 					<a href="<?php echo esc_url( $base ); ?>" class="form-details-actions-entries">
 						<span class="dashicons dashicons-list-view"></span>
 						<?php esc_html_e( 'All Entries', 'wpforms' ); ?>
 					</a>
 				<?php endif; ?>
-
-				<?php if ( isset( $payments_url ) ) : ?>
+				<?php if ( in_array( 'payments', $actions, true ) && isset( $payments_url ) ) : ?>
 					<a href="<?php echo esc_url( $payments_url ); ?>" class="form-details-actions-view-payments">
 						<span class="fa fa-credit-card"></span>
 						<?php esc_html_e( 'View Payments', 'wpforms' ); ?>
 					</a>
 				<?php endif; ?>
 
-				<?php if ( wpforms_current_user_can( 'edit_form_single', $this->form_id ) ) : ?>
+				<?php if ( in_array( 'edit_form', $actions, true ) && wpforms_current_user_can( 'edit_form_single', $this->form_id ) ) : ?>
 					<a href="<?php echo esc_url( $edit_url ); ?>" class="form-details-actions-edit">
 						<span class="dashicons dashicons-edit"></span>
 						<?php $is_form_template ? esc_html_e( 'Edit This Template', 'wpforms' ) : esc_html_e( 'Edit This Form', 'wpforms' ); ?>
 					</a>
 				<?php endif; ?>
 
-				<?php if ( wpforms_current_user_can( 'view_form_single', $this->form_id ) ) : ?>
+				<?php if ( in_array( 'view_form', $actions, true ) && wpforms_current_user_can( 'view_form_single', $this->form_id ) ) : ?>
 					<a href="<?php echo esc_url( $preview_url ); ?>" class="form-details-actions-preview" target="_blank" rel="noopener noreferrer">
 						<span class="dashicons dashicons-visibility"></span>
 						<?php $is_form_template ? esc_html_e( 'Preview Template', 'wpforms' ) : esc_html_e( 'Preview Form', 'wpforms' ); ?>
 					</a>
 				<?php endif; ?>
 
-				<?php if ( ! $is_form_template ) : ?>
+				<?php if ( in_array( 'export_entries', $actions, true ) && ! $is_form_template ) : ?>
 					<a href="<?php echo esc_url( $export_url ); ?>" class="form-details-actions-export">
 						<span class="dashicons dashicons-migrate"></span>
 						<?php echo $this->is_list_filtered() ? esc_html__( 'Export Filtered', 'wpforms' ) : esc_html__( 'Export All', 'wpforms' ); ?>
 					</a>
 				<?php endif; ?>
 
-				<a href="<?php echo esc_url( $read_url ); ?>" class="form-details-actions-read">
-					<span class="dashicons dashicons-marker"></span>
-					<?php esc_html_e( 'Mark All Read', 'wpforms' ); ?>
-				</a>
+				<?php if ( in_array( 'read_entries', $actions, true ) ) : ?>
+					<a href="<?php echo esc_url( $read_url ); ?>" class="form-details-actions-read">
+						<span class="dashicons dashicons-marker"></span>
+						<?php esc_html_e( 'Mark All Read', 'wpforms' ); ?>
+					</a>
+				<?php endif; ?>
 
-				<?php if ( wpforms_current_user_can( 'delete_entries_form_single', $this->form_id ) ) : ?>
+				<?php if ( in_array( 'delete_entries', $actions, true ) && wpforms_current_user_can( 'delete_entries_form_single', $this->form_id ) ) : ?>
 					<?php $status = ! empty( $_GET['status'] ) ? sanitize_key( $_GET['status'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 
 					<a href="<?php echo esc_url( $delete_url ); ?>" class="form-details-actions-removeall" data-page="<?php echo esc_attr( $status ); ?>">
@@ -1277,7 +1330,7 @@ class Page {
 			<div class="form-list">
 				<ul>
 					<?php
-					foreach ( $this->forms as $key => $form ) {
+					foreach ( $this->forms as $form ) {
 						if ( $this->form_id === $form->ID ) {
 							continue;
 						}
@@ -1372,9 +1425,11 @@ class Page {
 	 *
 	 * @param array $strings JS strings.
 	 *
-	 * @return mixed
+	 * @return array
 	 */
-	public function js_strings( $strings ) {
+	public function js_strings( $strings ): array {
+
+		$strings = (array) $strings;
 
 		$strings['lang_code']    = sanitize_key( wpforms_get_language_code() );
 		$strings['default_date'] = [];
@@ -1417,5 +1472,19 @@ class Page {
 		</div>
 
 		<?php
+	}
+
+	/**
+	 * Check if the comparison type does not require a search term.
+	 *
+	 * @since 1.9.9
+	 *
+	 * @param string $comparison Comparison operator.
+	 *
+	 * @return bool
+	 */
+	private function is_comparison_without_term( string $comparison ): bool {
+
+		return in_array( $comparison, [ 'empty', 'not_empty' ], true );
 	}
 }

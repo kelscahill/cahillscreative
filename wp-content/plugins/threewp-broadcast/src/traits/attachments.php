@@ -2,9 +2,10 @@
 
 namespace threewp_broadcast\traits;
 
-use threewp_broadcast\attachment_data;
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-use \Exception;
+use threewp_broadcast\attachment_data;
+use Exception;
 
 trait attachments
 {
@@ -146,7 +147,7 @@ trait attachments
 				break;
 			case 'randomize':
 				$filename = $bcd->attachment_data->filename_base;
-				$filename = preg_replace( '/(.*)\./', '\1_' . rand( 1000000, 9999999 ) .'.', $filename );
+				$filename = preg_replace( '/(.*)\./', '\1_' . wp_rand( 1000000, 9999999 ) .'.', $filename );
 				$bcd->attachment_data->filename_base = $filename;
 				$this->debug( 'Maybe copy attachment: Randomizing new attachment filename to %s.', $bcd->attachment_data->filename_base );
 				// Tell BC to copy the attachment.

@@ -567,17 +567,64 @@ class Field extends FieldLite {
 			wpforms_html_attributes( $wrap['id'], $wrap['class'], $wrap['data'], $wrap['attr'] )
 		);
 
-		if ( $format === self::DEFAULTS['date_format'] ) {
-			$this->field_display_date_dropdown_element( 'month', $ranges['months_label'], $ranges['months'], $field, $field_required, $form_id );
-			$this->field_display_date_dropdown_element( 'day', $ranges['days_label'], $ranges['days'], $field, $field_required, $form_id );
-		} else {
-			$this->field_display_date_dropdown_element( 'day', $ranges['days_label'], $ranges['days'], $field, $field_required, $form_id );
-			$this->field_display_date_dropdown_element( 'month', $ranges['months_label'], $ranges['months'], $field, $field_required, $form_id );
-		}
-
-		$this->field_display_date_dropdown_element( 'year', $ranges['years_label'], $ranges['years'], $field, $field_required, $form_id );
+		$this->display_date_dropdown_parts( $format, $ranges, $field, $field_required, $form_id );
 
 		echo '</div>';
+	}
+
+	/**
+	 * Display the date dropdown parts in the correct order.
+	 *
+	 * @since 1.9.8.3
+	 *
+	 * @param string $format         Date format.
+	 * @param array  $ranges         Date dropdowns ranges data.
+	 * @param array  $field          Field data and settings.
+	 * @param string $field_required Whether this field required or not, has an HTML attribute or empty.
+	 * @param int    $form_id        Form ID.
+	 */
+	private function display_date_dropdown_parts( string $format, array $ranges, array $field, string $field_required, $form_id ): void {
+
+		$format = str_replace(
+			[ 'mm', 'dd', 'yyyy' ],
+			[ 'm', 'd', 'Y' ],
+			$format
+		);
+
+		$separators = [ '/', '.' ];
+
+		foreach ( $separators as $sep ) {
+			if ( strpos( $format, $sep ) !== false ) {
+				$format_parts = explode( $sep, $format );
+
+				break;
+			}
+		}
+
+		if ( empty( $format_parts ) || ! is_array( $format_parts ) ) {
+			$format_parts = [ 'm', 'd', 'Y' ];
+		}
+
+		foreach ( $format_parts as $part ) {
+
+			switch ( $part ) {
+				case 'm':
+					$this->field_display_date_dropdown_element( 'month', $ranges['months_label'], $ranges['months'], $field, $field_required, $form_id );
+					break;
+
+				case 'd':
+					$this->field_display_date_dropdown_element( 'day', $ranges['days_label'], $ranges['days'], $field, $field_required, $form_id );
+					break;
+
+				case 'Y':
+					$this->field_display_date_dropdown_element( 'year', $ranges['years_label'], $ranges['years'], $field, $field_required, $form_id );
+					break;
+
+				default:
+					// Unknown part, do nothing.
+					break;
+			}
+		}
 	}
 
 	/**
@@ -782,14 +829,13 @@ class Field extends FieldLite {
 					! empty( $field_submit['date']['d'] ) &&
 					! empty( $field_submit['date']['y'] )
 				) {
-					if (
-						$date_format === 'dd/mm/yyyy' ||
-						$date_format === self::ALT_DATE_FORMAT
-					) {
-						$date = $field_submit['date']['d'] . '/' . $field_submit['date']['m'] . '/' . $field_submit['date']['y'];
-					} else {
-						$date = $field_submit['date']['m'] . '/' . $field_submit['date']['d'] . '/' . $field_submit['date']['y'];
-					}
+					$date_format = str_replace(
+						[ 'mm', 'dd', 'yyyy' ],
+						[ 'm', 'd', 'Y' ],
+						$date_format
+					);
+
+					$date = str_replace( [ 'd', 'm', 'Y' ], [ $field_submit['date']['d'], $field_submit['date']['m'], $field_submit['date']['y'] ], $date_format );
 				} else {
 					// So we are missing some values.
 					// We can't process date further, as we won't be able to retrieve its unix time.
@@ -829,14 +875,7 @@ class Field extends FieldLite {
 		}
 
 		// Always store the date in m/d/Y format so it is strtotime() compatible.
-		if (
-			( $date_format === 'dd/mm/yyyy' || $date_format === self::ALT_DATE_FORMAT ) &&
-			! empty( $date )
-		) {
-			[ $d, $m, $y ] = explode( '/', $date );
-
-			$date = "$m/$d/$y";
-		}
+		$date = $this->convert_date_to_mdy( $date, $date_format );
 
 		// Calculate unix time if we have a date.
 		if ( ! empty( $date ) ) {
@@ -852,6 +891,51 @@ class Field extends FieldLite {
 			'time'  => sanitize_text_field( $time ),
 			'unix'  => $unix,
 		];
+	}
+
+	/**
+	 * Convert date to m/d/Y format.
+	 * Always store the date in m/d/Y format so it is strtotime() compatible.
+	 *
+	 * @since 1.9.8.3
+	 *
+	 * @param string $date        Date string.
+	 * @param string $date_format Date format.
+	 *
+	 * @return string
+	 */
+	private function convert_date_to_mdy( string $date, string $date_format ): string {
+
+		$separators = [ '/', '.' ];
+
+		foreach ( $separators as $sep ) {
+			if ( strpos( $date_format, $sep ) !== false ) {
+				$date_parts   = explode( $sep, $date );
+				$format_parts = explode( $sep, $date_format );
+
+				break;
+			}
+		}
+
+		// If format is not recognized, return the original date.
+		// For `F j, Y` format we can't reliably convert it back to m/d/Y.
+		if ( empty( $date_parts ) || empty( $format_parts ) || count( $date_parts ) !== 3 || count( $format_parts ) !== 3 ) {
+			return $date;
+		}
+
+		$mdy = [];
+
+		foreach ( $format_parts as $index => $part ) {
+			$mdy[ $part ] = $date_parts[ $index ];
+		}
+
+		if ( ! empty( $mdy['m'] ) && ! empty( $mdy['d'] ) && ! empty( $mdy['Y'] ) ) {
+			$date = "{$mdy['m']}/{$mdy['d']}/{$mdy['Y']}";
+		} elseif ( ! empty( $mdy['mm'] ) && ! empty( $mdy['dd'] ) && ! empty( $mdy['yyyy'] ) ) {
+			$date = "{$mdy['mm']}/{$mdy['dd']}/{$mdy['yyyy']}";
+		}
+
+		return $date;
 	}
 
 	/**

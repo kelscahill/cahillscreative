@@ -181,6 +181,14 @@ class WPForms_Entry_Fields_Handler extends WPForms_DB {
 
 			$where['arg_value'] = "`value` <> ''";
 
+		} elseif ( $args['value_compare'] === 'empty' ) {
+
+			$where['arg_value'] = "TRIM(`value`) = ''";
+
+		} elseif ( $args['value_compare'] === 'not_empty' ) {
+
+			$where['arg_value'] = "TRIM(`value`) <> '' AND `value` IS NOT NULL";
+
 		}
 
 		// Process dates.
@@ -310,7 +318,7 @@ class WPForms_Entry_Fields_Handler extends WPForms_DB {
 		 *
 		 * @since 1.4.3
 		 *
-		 * @param array $fields    Fields data array.
+		 * @param array $field     Field data.
 		 * @param array $form_data Form data.
 		 * @param int   $entry_id  Entry id.
 		 */
@@ -322,8 +330,7 @@ class WPForms_Entry_Fields_Handler extends WPForms_DB {
 			return;
 		}
 
-		$show_values = $form_data['fields'][ $field['id'] ]['show_values'] ?? false;
-		$value       = $show_values ? wpforms_get_choices_value( $field, $form_data ) : ( $field['value'] ?? '' );
+		$value = $this->get_choice_value( $field, $form_data );
 
 		if ( ! isset( $value ) || $value === '' ) {
 			return;
@@ -352,6 +359,26 @@ class WPForms_Entry_Fields_Handler extends WPForms_DB {
 		}
 
 		$this->add( $data );
+	}
+
+	/**
+	 * Return choice value, but exclude fields with Other choices.
+	 *
+	 * @since 1.9.8.3
+	 * @since 1.9.9 Exclude fields with Dynamic choices.
+	 *
+	 * @param array $field     Field data.
+	 * @param array $form_data Form data.
+	 *
+	 * @return string
+	 */
+	private function get_choice_value( array $field, array $form_data ): string {
+
+		if ( ! empty( $field['is_other'] ) || ! empty( $field['dynamic'] ) ) {
+			return $field['value'] ?? '';
+		}
+
+		return wpforms_get_choices_value( $field, $form_data );
 	}
 
 	/**

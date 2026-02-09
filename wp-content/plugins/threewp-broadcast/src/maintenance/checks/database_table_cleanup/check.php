@@ -61,16 +61,16 @@ class check
 						$ids = $table->bulk_actions()->get_rows();
 						global $wpdb;
 
-
 						foreach( $ids as $id )
 						{
-							$query = sprintf( "DROP TABLE `%s`", $id );
+							$query = $wpdb->prepare( "DROP TABLE %i", [ $id ] );
 							$this->broadcast()->debug( $query );
+							// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 							$wpdb->query( $query );
 						}
 
 						$o->r .= $this->broadcast()->info_message_box()
-							->_( __( 'The selected tables have been deleted. Please reload the page.', 'threewp_broadcast' ) );
+							->_( __( 'The selected tables have been deleted. Please reload the page.', 'threewp-broadcast' ) );
 					break;
 				}
 			}
@@ -94,10 +94,12 @@ class check
 
 		$query = sprintf( "SHOW TABLES" );
 		$bc->debug( $query );
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Nothing to prepare. Just show tables.
 		$tables = $wpdb->get_col( $query );
 
-		$query = sprintf( "SELECT `blog_id` FROM `%s`", $wpdb->blogs );
+		$query = $wpdb->prepare( "SELECT `blog_id` FROM %i", [ $wpdb->blogs ] );
 		$bc->debug( $query );
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 		$ids = $wpdb->get_col( $query );
 		$ids = array_combine( $ids, $ids );
 

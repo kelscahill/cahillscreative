@@ -296,6 +296,13 @@ class CartEventsManagers
         $data['total_before_tax'] = (!empty( $totals['cart_contents_total']) && is_numeric($totals['cart_contents_total']) && !is_nan($totals['cart_contents_total'])) ? $totals['cart_contents_total'] : 0;
         $data['tax'] = (!empty($totals['total_tax']) && is_numeric($totals['total_tax']) && !is_nan($totals['total_tax'])) ? $totals['total_tax'] : 0;
         $data['total'] = (!empty( $totals['total']) && is_numeric($totals['total']) && !is_nan($totals['total'])) ? $totals['total'] : 0;
+        
+        $data['subtotal_parsed'] = self::parsePrice($data['subtotal']);
+        $data['discount_parsed'] = self::parsePrice($data['discount']);
+        $data['shipping_parsed'] = self::parsePrice($data['shipping']);
+        $data['total_before_tax_parsed'] = self::parsePrice($data['total_before_tax']);
+        $data['tax_parsed'] = self::parsePrice($data['tax']);
+        $data['total_parsed'] = self::parsePrice($data['total']);
         $data['currency'] = is_string(get_woocommerce_currency()) ? get_woocommerce_currency() : '';
         $data['url'] = is_string(wc_get_cart_url()) ? wc_get_cart_url() : '';
         $data['checkouturl'] = is_string(wc_get_checkout_url()) ? wc_get_checkout_url() : '';
@@ -325,6 +332,9 @@ class CartEventsManagers
                 $price_taxinc = (is_numeric($raw_price_taxinc) && !is_nan($raw_price_taxinc)) ? round((float) $raw_price_taxinc, 2) : 0.0;
             }
             $item['price_taxinc'] = $price_taxinc;
+            
+            $item['price_parsed'] = self::parsePrice($item['price']);
+            $item['price_taxinc_parsed'] = self::parsePrice($item['price_taxinc']);
 
             $product = wc_get_product($cartitem['product_id']);
             $image_id = $variation->get_image_id() ? $variation->get_image_id() : $product->get_image_id();
@@ -375,6 +385,14 @@ class CartEventsManagers
         $data['total_before_tax'] = (float) ($data['subtotal'] - $data['discount']);
         $data['tax'] = (!empty($order->get_total_tax()) && is_numeric($order->get_total_tax()) && !is_nan($order->get_total_tax())) ? round($order->get_total_tax(), 2) : 0;
         $data['revenue'] = (!empty($order->get_total()) && is_numeric($order->get_total()) && !is_nan($order->get_total())) ? (float) $order->get_total() : 0;
+        
+        $data['subtotal_parsed'] = self::parsePrice($data['subtotal']);
+        $data['total_parsed'] = self::parsePrice($data['total']);
+        $data['discount_parsed'] = self::parsePrice($data['discount']);
+        $data['shipping_parsed'] = self::parsePrice($data['shipping']);
+        $data['total_before_tax_parsed'] = self::parsePrice($data['total_before_tax']);
+        $data['tax_parsed'] = self::parsePrice($data['tax']);
+        $data['revenue_parsed'] = self::parsePrice($data['revenue']);
         $data['currency'] = (!empty($order->get_currency()) && is_string($order->get_currency())) ? $order->get_currency() : '';
         $data['url'] = (!empty($order->get_checkout_order_received_url()) && is_string($order->get_checkout_order_received_url())) ? $order->get_checkout_order_received_url() : '';
 
@@ -397,6 +415,10 @@ class CartEventsManagers
             $item['price'] = (!empty($orderitem->get_total()) && is_numeric($orderitem->get_total()) && ! is_nan($orderitem->get_total())) ? round($orderitem->get_total(), 2) : '';
             $item['tax'] = (!empty($orderitem->get_total_tax()) && is_numeric($orderitem->get_total_tax()) && ! is_nan($orderitem->get_total_tax())) ? round($orderitem->get_total_tax(), 2) : '';
             $item['price_taxinc'] = round((float) $item['price'] + (float) $item['tax'], 2);
+            
+            $item['price_parsed'] = self::parsePrice($item['price']);
+            $item['tax_parsed'] = self::parsePrice($item['tax']);
+            $item['price_taxinc_parsed'] = self::parsePrice($item['price_taxinc']);
             $item['quantity'] = (!empty($orderitem->get_quantity()) && is_numeric($orderitem->get_quantity()) && !is_nan($orderitem->get_quantity())) ? (int) $orderitem->get_quantity() : '';
             $product = wc_get_product($orderitem['product_id']);
             $image_id = $variation->get_image_id() ? $variation->get_image_id() : $product->get_image_id();
@@ -442,6 +464,9 @@ class CartEventsManagers
 
         $data['shipping_tax'] = $order->get_shipping_tax() ?? "";
         $data['discount_tax'] = $order->get_discount_tax() ?? "";
+        
+        $data['shipping_tax_parsed'] = self::parsePrice($data['shipping_tax']);
+        $data['discount_tax_parsed'] = self::parsePrice($data['discount_tax']);
         $data['discount_code'] = $order->get_coupon_codes() ?? "";
         $data['fee_lines'] = [];
         $fees = $order->get_fees();
@@ -452,6 +477,10 @@ class CartEventsManagers
                 $item['fee_name'] = $fee->get_name() ?? "";
                 $item['fee_total'] = $fee->get_total() ?? "";
                 $item['fee_tax'] = $fee->get_total_tax() ?? "";
+                
+                $item['fee_total_parsed'] = self::parsePrice($item['fee_total']);
+                $item['fee_tax_parsed'] = self::parsePrice($item['fee_tax']);
+                
                 array_push($data['fee_lines'], $item);
             }
         }
@@ -589,5 +618,51 @@ class CartEventsManagers
         }
 
         return null;
+    }
+    public static function parsePrice($priceInput) {
+        // If input is already numeric, convert to float directly
+        if (is_numeric($priceInput)) {
+            return round((float)$priceInput, 2);
+        }
+        
+        // If input is null or empty, return 0.0
+        if ($priceInput === null || $priceInput === '') {
+            return 0.0;
+        }
+        
+        // Convert to string and process
+        $priceStr = trim((string) $priceInput);
+
+        $priceStr = preg_replace('/[^\d.,\s]/u', '', $priceStr);
+
+        $priceStr = preg_replace('/\s+/u', '', $priceStr);
+
+        $hasComma = strpos($priceStr, ',') !== false;
+        $hasDot = strpos($priceStr, '.') !== false;
+
+        if ($hasComma && $hasDot) {
+            $lastComma = strrpos($priceStr, ',');
+            $lastDot = strrpos($priceStr, '.');
+
+            if ($lastComma > $lastDot) {
+                // Format: 1.234,56 → dot is thousands, comma is decimal
+                $priceStr = str_replace('.', '', $priceStr);
+                $priceStr = str_replace(',', '.', $priceStr);
+            } else {
+                // Format: 1,234.56 → comma is thousands, dot is decimal
+                $priceStr = str_replace(',', '', $priceStr);
+            }
+        } elseif ($hasComma) {
+            // Format: 1000,50 → comma is decimal
+            $priceStr = str_replace(',', '.', $priceStr);
+        }
+        // If only dot or none, assume dot is decimal and proceed
+        if (is_numeric($priceStr)) {
+            $normalized = str_replace(',', '.', $priceStr);
+            $floatVal = (float)$normalized;
+            return round($floatVal, 2);
+        }
+
+        return 0.0;
     }
 }

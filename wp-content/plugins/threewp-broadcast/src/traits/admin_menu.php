@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\traits;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 use \threewp_broadcast\maintenance;
 
 /**
@@ -32,9 +34,8 @@ trait admin_menu
 
 	public function admin_menu_broadcast_info()
 	{
-		$r = $this->html_css();
-		$r .= file_get_contents( __DIR__ . '/../../html/broadcast_info.html' );
-		echo $r;
+		$r = file_get_contents( __DIR__ . '/../../html/broadcast_info.html' );
+		echo wp_kses_post( $r );
 	}
 
 	/**
@@ -44,16 +45,14 @@ trait admin_menu
 	public function admin_menu_maintenance()
 	{
 		$maintenance = new maintenance\controller;
-		echo $maintenance;
+		echo $maintenance;	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output is cleaned in the controller.
 	}
 
 	public function admin_menu_premium_pack_info()
 	{
-		$r = '';
-		$r .= $this->html_css();
+		$r_safe = $this->html_css();
 		$contents = file_get_contents( __DIR__ . '/../../html/premium_pack_info.html' );
-		$r .= $this->wrap( $contents, $this->_( 'Broadcast add-on packs info' ) );
-		echo $r;
+		$this->wrap( $contents, $this->_( 'Broadcast add-on packs info' ) );
 	}
 
 	public function admin_menu_settings()
@@ -81,10 +80,11 @@ trait admin_menu
 			if ( $pack_version != $bc_major_version )
 			{
 				$message = $this->p(
-					__( 'Network admin! To ensure compatibility, please upgrade your version of the Broadcast %s add-on pack (%s) to match the major version of Broadcast itself: %s', 'threewp-broadcast' ),
-					$pack->get( 'name' ),
-					$constants[ $define ],
-					$bc_major_version
+						// Translators: add-on pack name, version number, version number.
+						__( 'Network admin! To ensure compatibility, please upgrade your version of the Broadcast %1$s add-on pack (%2$s) to match the major version of Broadcast itself: %3$s', 'threewp-broadcast' ),
+						$pack->get( 'name' ),
+						$constants[ $define ],
+						$bc_major_version
 				);
 
 				$r .= sprintf( '<div class="inline error notice">%s</div>', $message );
@@ -102,7 +102,8 @@ trait admin_menu
 
 		$fs->markup( 'm_custom_field_handling2' )
 			->p( sprintf(
-				__( 'You can use wildcards: %s will match all fields that start with %s and end with %s. If you wish to match all fields except a few, use %s in the blacklist and then the exceptions in the whitelist.', 'threewp-broadcast' ),
+				// Translators: 1-4 are all field name examples.
+				__( 'You can use wildcards: %1$s will match all fields that start with %2$s and end with %3$s. If you wish to match all fields except a few, use %4$s in the blacklist and then the exceptions in the whitelist.', 'threewp-broadcast' ),
 				'<code>field_*123</code>',
 				'<code>field_</code>',
 				'<code>123</code>',
@@ -112,7 +113,8 @@ trait admin_menu
 
 		$fs->markup( 'm_custom_field_handling3' )
 			->markup(
-				sprintf( __( 'For more detailed documentation, see the %scustom field documentation page%s', 'threewp-broadcast' ),
+				// Translators: 1 is anchor open, 2 is anchor close.
+				sprintf( __( 'For more detailed documentation, see the %1$scustom field documentation page%2$s', 'threewp-broadcast' ),
 				'<a href="https://broadcast.plainviewplugins.com/doc/custom-fields/">',
 				'</a>'
 			) );
@@ -160,6 +162,7 @@ trait admin_menu
 			->cols( 40, 10 )
 			->label( __( 'Custom post types to broadcast', 'threewp-broadcast' ) )
 			->value( $post_types );
+		// Translators: %s is a list of post type slugs.
 		$label = sprintf( __( 'A list of custom post types that have broadcasting enabled. The default value is %s.', 'threewp-broadcast' ), '<code>post<br/>page</code>' );
 		$post_types_input->description->set_unfiltered_label( $label );
 
@@ -170,6 +173,7 @@ trait admin_menu
 		$blog_post_types = array_flip( $blog_post_types );
 
 		$blog_post_types_m1 = __( 'Custom post types must be specified using their internal Wordpress names on a new line each. It is not possible to automatically make a list of available post types on the whole network because of a limitation within Wordpress (the current blog knows only of its own custom post types).', 'threewp-broadcast' );
+		// Translators: %s is a comma separated list of post types.
 		$blog_post_types_m2 = sprintf( __( 'The custom post types registered on <em>this</em> blog are: %s', 'threewp-broadcast' ),
 			'<code>' . implode( ', ', $blog_post_types ) . '</code>',
 		);
@@ -397,7 +401,8 @@ trait admin_menu
 
 		$fs->markup( 'm_taxonomy_handling4' )
 			->markup(
-				sprintf( __( 'For more detailed documentation, see the %staxonomy handling documentation page%s', 'threewp-broadcast' ),
+				// Translators: 1 is a anchor open and 2 is anchor close.
+				sprintf( __( 'For more detailed documentation, see the %1$staxonomy handling documentation page%2$s', 'threewp-broadcast' ),
 				'<a href="https://broadcast.plainviewplugins.com/doc/taxonomy-handling/">',
 				'</a>'
 			) );
@@ -487,10 +492,10 @@ trait admin_menu
 
 			$r .= $this->info_message_box()->_( __( 'Settings saved!', 'threewp-broadcast' ) );
 
-			echo $r;
+			echo $r;	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 			$_POST = [];
 			$function = __FUNCTION__;
-			echo $this->$function();
+			echo $this->$function(); 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 			return;
 		}
 
@@ -498,6 +503,7 @@ trait admin_menu
 		$r .= $form->display_form_table();
 		$r .= $form->close_tag();
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 		echo $r;
 	}
 
@@ -508,7 +514,7 @@ trait admin_menu
 	public function admin_menu_system_info()
 	{
 		$table = $this->get_system_info_table();
-		echo $table;
+		echo wp_kses_post( $table );
 	}
 
 	public function admin_menu_tabs()
@@ -539,7 +545,7 @@ trait admin_menu
 			->name( __( 'Uninstall', 'threewp-broadcast' ) )
 			->sort_order( 90 );		// Always last.
 
-		echo $tabs->render();
+		echo $tabs->render();	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 	}
 
 	/**
@@ -573,7 +579,7 @@ trait admin_menu
 
 		if ( isset( $_GET[ 'action' ] ) )
 		{
-			switch( $_GET[ 'action' ] )
+			switch( esc_html( $_GET[ 'action' ] ) )
 			{
 				case 'user_delete':
 					$tabs->tab( 'user_delete' )
@@ -651,7 +657,7 @@ trait admin_menu
 		$action->tabs = $tabs;
 		$action->execute();
 
-		echo $tabs->render();
+		echo $tabs->render();	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 	}
 
 	/**

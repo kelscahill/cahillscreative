@@ -227,6 +227,12 @@ class KeywordFilter {
 				$fields[ $key ] = $this->prepare_address_field( $field );
 			}
 
+			// Exclude radio fields unless it's an Other option.
+			if ( $field['type'] === 'radio' && empty( $field['is_other'] ) ) {
+				unset( $fields[ $key ] );
+				continue;
+			}
+
 			if ( ! in_array( $field['type'], $filtered_fields, true ) ) {
 				unset( $fields[ $key ] );
 			}

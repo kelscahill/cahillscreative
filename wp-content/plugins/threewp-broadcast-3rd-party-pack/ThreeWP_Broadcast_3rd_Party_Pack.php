@@ -6,10 +6,10 @@ Author URI:		http://plainviewplugins.com
 Description:	A pack of add-ons that make Broadcast compatible with 3rd party plugins.
 Plugin Name:	Broadcast 3rd Party Pack
 Plugin URI:		https://broadcast.plainviewplugins.com
-Version:		51.11
+Version:		52.01
 */
 
-define( 'BROADCAST_3RD_PARTY_PACK_VERSION', 51.11 );
+define( 'BROADCAST_3RD_PARTY_PACK_VERSION', 52.01 );
 
 /**
 	@brief		This class handles the loading of the pack.
@@ -54,6 +54,8 @@ class threewp_broadcast_3rd_party_pack_loader
 	**/
 	public function pack()
 	{
+		if ( ! trait_exists( '\\threewp_broadcast\\premium_pack\\classes\\updater\\edd' ) )
+			return;
 		if ( $this->plugin_pack === false )
 		{
 			require_once( __DIR__ . '/vendor/autoload.php' );

@@ -28,21 +28,30 @@ class SIB_Model_Users {
 	/** Create Table */
 	public static function createTable() {
 		global $wpdb;
-		// create list table.
-		$creation_query =
-			'CREATE TABLE IF NOT EXISTS ' . $wpdb->prefix . self::TABLE_NAME . ' (
-			`id` int(20) NOT NULL AUTO_INCREMENT,
-			`email` varchar(255),
-            `code` varchar(100),
-            `listIDs` longtext,
-            `redirectUrl` varchar(255),
-            `info` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci,
-            `frmid` int(2),
-			`user_added_date` DATETIME NOT NULL,
-			PRIMARY KEY (`id`)
-			);';
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-		$wpdb->query($creation_query);
+		$table_name = $wpdb->prefix . self::TABLE_NAME;
+
+		//Check if table exists
+		$table_check_query = 'SHOW TABLES LIKE ' . "'" . $table_name.  "'" . ';';
+		$wpdb->query($table_check_query);
+
+		//table doesnot exist
+		if (empty($wpdb->last_result)) {
+			// create list table.
+			$creation_query =
+				'CREATE TABLE IF NOT EXISTS ' . $table_name . ' (
+				`id` int(20) NOT NULL AUTO_INCREMENT,
+				`email` varchar(255),
+				`code` varchar(100),
+				`listIDs` longtext,
+				`redirectUrl` varchar(255),
+				`info` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+				`frmid` int(2),
+				`user_added_date` DATETIME NOT NULL,
+				PRIMARY KEY (`id`)
+				);';
+			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+			$wpdb->query($creation_query);
+		}
 	}
 
 	/**

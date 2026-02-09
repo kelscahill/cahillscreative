@@ -17,7 +17,12 @@ if ( ! class_exists( 'SIB_Push_API' ) ) {
 			add_action( 'wp_ajax_sib_push_management_api', array('SIB_Push_API', 'ajax_management_api'));
 			add_action( 'wp_ajax_sib_push_upload', array('SIB_Push_API', 'ajax_upload'));
 			add_action( 'wp_ajax_sib_push_force_create_cart_reminder_campaign', array('SIB_Push_API', 'ajax_force_create_cart_reminder_campaign'));
+			add_action('updated_option', array('SIB_Push_API', 'updated_option'), 10, 3);
 			self::prepare();
+		}
+
+		private static function prepare_cache_key() {
+			return 'sib_push_prepare_' . md5( SIB_Manager::$access_key );
 		}
 
 		private static function prepare() {
@@ -29,13 +34,14 @@ if ( ! class_exists( 'SIB_Push_API' ) ) {
 					$settings->setShowPush ( SIB_Push_Utils::get_show_push() );
 					if ( $settings->getShowPush() ) $settings->save();
 				}
-				if ( get_transient( 'sib_push_prepare_' . md5( SIB_Manager::$access_key ) ) === 'prepared' ) {
+				if ( get_transient( self::prepare_cache_key() ) === 'prepared' ) {
 					return;
 				}
+				set_transient( self::prepare_cache_key(), 'prepared', 86400 );
 				if ( SIB_Push_Utils::get_push_application() ) {
+					SIB_Push_Utils::update_settings();
 					return;
 				}
-				set_transient( 'sib_push_prepare_' . md5( SIB_Manager::$access_key ), 'prepared', 86400 );
 				SIB_Push_Utils::create_push_application( 'prepare' );
 				$settings->save();
 			} catch ( \WonderPush\Errors\Server $e ) {
@@ -49,6 +55,13 @@ if ( ! class_exists( 'SIB_Push_API' ) ) {
 				// Ignore
 			} catch ( Exception $e ) {
 				SIB_Push_Utils::log_debug('Error creating application', $e);
+			}
+		}
+
+		public static function updated_option($option, $old_value, $value) {
+			if ( $option === 'siteurl' && SIB_Push_Utils::get_push_application() ) {
+				// Site url's changed, bust prepare cache hoping that the next request will get the right plugin url
+				delete_transient( self::prepare_cache_key() );
 			}
 		}
 
@@ -258,6 +271,7 @@ if ( ! class_exists( 'SIB_Push_API' ) ) {
 				'ampButtonHeight' => (int)$settings->getAmpButtonHeight(),
 				'additionalInitOptionsJson' => $settings->getAdditionalInitOptionsJson(),
 				'hideAdminBarShortcut' => $settings->getHideAdminBarShortcut(),
+				'sendOnlyToThisDomain' => $settings->getSendOnlyToThisDomain(),
 			);
 		}
 
@@ -286,6 +300,7 @@ if ( ! class_exists( 'SIB_Push_API' ) ) {
 						 'disableAmpTopSubscribeButton',
 						 'disableThankYouEvent',
 						 'hideAdminBarShortcut',
+						 'sendOnlyToThisDomain',
 					 ) as $key) {
 				if (array_key_exists($key, $_POST)) {
 					$settings->{"set" . ucfirst($key)}($_POST[$key] === 'true');

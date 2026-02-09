@@ -2,11 +2,13 @@
 
 namespace threewp_broadcast\traits;
 
-use \Exception;
-use \plainview\sdk_broadcast\collections\collection;
-use \threewp_broadcast\attachment_data;
-use \threewp_broadcast\broadcasting_data;
-use \threewp_broadcast\broadcast_data\blog;
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+use Exception;
+use plainview\sdk_broadcast\collections\collection;
+use threewp_broadcast\attachment_data;
+use threewp_broadcast\broadcasting_data;
+use threewp_broadcast\broadcast_data\blog;
 
 /**
 	@brief		Methods related to actual broadcasting of a post.
@@ -500,7 +502,7 @@ trait broadcasting
 				if ( $time > 1 )
 				{
 					$time += $gmt_offset;
-					$dated_post->$column = date( 'Y-m-d H:i:s', $time );
+					$dated_post->$column = gmdate( 'Y-m-d H:i:s', $time );
 				}
 				$this->debug( 'Setting %s date column to %s', $column, $dated_post->$column );
 			}

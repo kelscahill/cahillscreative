@@ -124,8 +124,8 @@ extends \threewp_broadcast\maintenance\checks\check
 		$counter = min( data::$rows_per_step, $max );
 
 		$r = $this->broadcast()->p(
-			// the next 500 of 1000 relations
-			__( 'Checking the next %s of %s relations.', 'threewp-broadcast' ),
+			// Translators: the next NUMBER of MAX_NUMBER relations
+			__( 'Checking the next %1$d of %2$d relations.', 'threewp-broadcast' ),
 			$counter,
 			$max
 		);
@@ -320,7 +320,8 @@ extends \threewp_broadcast\maintenance\checks\check
 
 
 		$r .= $this->broadcast()->p(
-			__( '%s rows left to check...', 'threewp-broadcast' ),
+			// Translators: NUMBER rows left to check
+			__( '%d rows left to check...', 'threewp-broadcast' ),
 			count( $this->data->ids_to_check )
 		);
 
@@ -411,7 +412,8 @@ extends \threewp_broadcast\maintenance\checks\check
 		$this->data->ids_to_check = $this->data->ids;
 
 		$r = $this->broadcast()->p(
-			__( 'Beginning to check broadcast data. %s rows to check.', 'threewp-broadcast' ),
+			// Translators: NUMBER rows to check
+			__( 'Beginning to check broadcast data. %d rows to check.', 'threewp-broadcast' ),
 			count( $this->data->ids_to_check )
 		);
 		$r .= $this->next_step( 'check_ids' );

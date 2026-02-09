@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\premium_pack;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 /**
 	@brief		A parent class for all official Broadcast plugin packs (Premium, 3rd Party, Control, Efficiency and Utilities).
 	@details	Saves me from repeating myself regarding the construction and uninstall, among other things.
@@ -10,7 +12,7 @@ namespace threewp_broadcast\premium_pack;
 abstract class Plugin_Pack
 	extends \plainview\sdk_broadcast\wordpress\base
 {
-	use \plainview\sdk_broadcast\wordpress\updater\edd;
+	use \threewp_broadcast\premium_pack\classes\updater\edd;
 
 	/**
 		@brief		The language domain to use.

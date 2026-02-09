@@ -15,10 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 printf(
-	'<div class="field-value-choice field-value-choice-%1$s%2$s"><label><input type="%1$s"%3$s disabled>%4$s</label></div>',
+	'<div class="field-value-choice field-value-choice-%1$s%2$s"><label><input type="%1$s"%3$s disabled>%4$s%5$s</label></div>',
 	esc_attr( $choice_type ),
 	$is_checked ? ' field-value-choice-checked' : '',
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	$is_checked ? ' checked' : '',
-	wp_kses_post( $choice['label'] )
+	wp_kses_post( $choice['label'] ),
+	! empty( $choice['is_other'] ) && $is_checked && isset( $choice['other_value'] ) ?
+		sprintf( ': %s', esc_html( $choice['other_value'] ) )
+		: ''
 );

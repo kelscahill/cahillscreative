@@ -22,7 +22,7 @@ class Builder {
 	 *
 	 * @since 1.8.9
 	 */
-	private function hooks() {
+	private function hooks(): void {
 
 		$this->layout_hooks();
 
@@ -36,7 +36,7 @@ class Builder {
 	 *
 	 * @since 1.8.9
 	 */
-	public function enqueue_assets() {
+	public function enqueue_assets(): void {
 
 		$min = wpforms_get_min_suffix();
 
@@ -65,24 +65,25 @@ class Builder {
 		$form_data = wpforms_decode( $form->post_content ?? '' );
 
 		$strings['repeater'] = [
-			'size_notice_text'                => esc_html__( 'Field size cannot be changed when used in a repeater.', 'wpforms' ),
-			'size_notice_tooltip'             => esc_html__( 'When a field is placed inside a column, the field size always equals the column width.', 'wpforms' ),
-			'not_allowed_fields'              => $this->field_obj->get_not_allowed_fields(),
-			'rows_limit_max'                  => Field::ROWS_LIMIT_MAX,
-			'not_allowed'                     => esc_html__( 'Not Allowed', 'wpforms' ),
+			'size_notice_text'                    => esc_html__( 'Field size cannot be changed when used in a repeater.', 'wpforms' ),
+			'size_notice_tooltip'                 => esc_html__( 'When a field is placed inside a column, the field size always equals the column width.', 'wpforms' ),
+			'not_allowed_fields'                  => $this->field_obj->get_not_allowed_fields(),
+			'rows_limit_max'                      => Field::ROWS_LIMIT_MAX,
+			'not_allowed'                         => esc_html__( 'Not Allowed', 'wpforms' ),
 			/* translators: %s - Field name. */
-			'not_allowed_alert_text'          => esc_html__( 'The %s field can’t be placed inside a Repeater field.', 'wpforms' ),
-			'move_to_rows_rejected_alert'     => esc_html__( 'Only one field is allowed in each column when the Display option is set to Rows.', 'wpforms' ),
-			'cant_switch_to_rows_alert'       => esc_html__( 'You can’t change Display to Rows because only one field per column is allowed.', 'wpforms' ),
-			'cl_notice_text'                  => esc_html__( 'Conditional Logic cannot be enabled when the field is inside a Repeater.', 'wpforms' ),
-			'cl_notice_text_grp'              => esc_html__( 'Conditional Logic has been disabled because this field has been placed inside a Repeater.', 'wpforms' ),
-			'calculation_notice_text'         => esc_html__( 'Calculation cannot be enabled when the field is inside a Repeater.', 'wpforms' ),
-			'calculation_notice_text_grp'     => esc_html__( 'Calculation has been disabled because this field has been placed inside a Repeater.', 'wpforms' ),
-			'calculation_notice_tooltip'      => esc_html__( 'When a field is placed inside a Repeater field, Calculation is disabled.', 'wpforms' ),
-			'delete_confirm'                  => esc_html__( 'Are you sure you want to delete the Repeater field? Deleting this field will also delete the fields inside it.', 'wpforms' ),
-			'enabled_cf_alert_text'           => esc_html__( 'Conversational Forms cannot be enabled because your form contains a Repeater field.', 'wpforms' ),
-			'field_add_cf_alert_text'         => esc_html__( 'The Repeater field cannot be used when Conversational Forms is enabled.', 'wpforms' ),
-			'addons_requirements'             => [
+			'not_allowed_alert_text'              => esc_html__( 'The %s field can’t be placed inside a Repeater field.', 'wpforms' ),
+			'move_to_rows_rejected_alert'         => esc_html__( 'Only one field is allowed in each column when the Display option is set to Rows.', 'wpforms' ),
+			'multi_select_to_rows_rejected_alert' => esc_html__( 'These fields cannot be dragged here.', 'wpforms' ),
+			'cant_switch_to_rows_alert'           => esc_html__( 'You can\'t change Display to Rows because only one field per column is allowed.', 'wpforms' ),
+			'cl_notice_text'                      => esc_html__( 'Conditional Logic cannot be enabled when the field is inside a Repeater.', 'wpforms' ),
+			'cl_notice_text_grp'                  => esc_html__( 'Conditional Logic has been disabled because this field has been placed inside a Repeater.', 'wpforms' ),
+			'calculation_notice_text'             => esc_html__( 'Calculation cannot be enabled when the field is inside a Repeater.', 'wpforms' ),
+			'calculation_notice_text_grp'         => esc_html__( 'Calculation has been disabled because this field has been placed inside a Repeater.', 'wpforms' ),
+			'calculation_notice_tooltip'          => esc_html__( 'When a field is placed inside a Repeater field, Calculation is disabled.', 'wpforms' ),
+			'delete_confirm'                      => esc_html__( 'Are you sure you want to delete the Repeater field? Deleting this field will also delete the fields inside it.', 'wpforms' ),
+			'enabled_cf_alert_text'               => esc_html__( 'Conversational Forms cannot be enabled because your form contains a Repeater field.', 'wpforms' ),
+			'field_add_cf_alert_text'             => esc_html__( 'The Repeater field cannot be used when Conversational Forms is enabled.', 'wpforms' ),
+			'addons_requirements'                 => [
 				'wpforms-form-abandonment' => RequirementsAlerts::is_inside_repeater_allowed( 'wpforms-form-abandonment' ),
 				'wpforms-save-resume'      => RequirementsAlerts::is_inside_repeater_allowed( 'wpforms-save-resume' ),
 				'wpforms-geolocation'      => RequirementsAlerts::is_inside_repeater_allowed( 'wpforms-geolocation' ),
@@ -90,19 +91,19 @@ class Builder {
 				'wpforms-lead-forms'       => RequirementsAlerts::is_inside_repeater_allowed( 'wpforms-lead-forms' ),
 				'wpforms-google-sheets'    => RequirementsAlerts::is_inside_repeater_allowed( 'wpforms-google-sheets' ),
 			],
-			'addons_requirements_alert_text'  => [
+			'addons_requirements_alert_text'      => [
 				'wpforms-form-abandonment' => RequirementsAlerts::get_repeater_alert_text( 'Form Abandonment' ),
 				'wpforms-save-resume'      => RequirementsAlerts::get_repeater_alert_text( 'Save and Resume' ),
 				'wpforms-lead-forms'       => esc_html__( 'Lead Forms cannot be enabled because your form contains a Repeater field.', 'wpforms' ),
 				'wpforms-google-sheets'    => RequirementsAlerts::get_repeater_alert_text( 'Google Sheets' ),
 			],
-			'is_google_sheets_has_connection' => ! empty( $form_data['providers']['google-sheets'] ),
-			'addons_requirements_alert'       => [
+			'is_google_sheets_has_connection'     => ! empty( $form_data['providers']['google-sheets'] ),
+			'addons_requirements_alert'           => [
 				'wpforms-geolocation' => RequirementsAlerts::get_repeater_alert( 'Geolocation', 'wpforms-geolocation' ),
 				'wpforms-signatures'  => RequirementsAlerts::get_repeater_alert( 'Signatures', 'wpforms-signatures' ),
 				'wpforms-lead-forms'  => esc_html__( 'The Repeater field cannot be used when Lead Forms is enabled.', 'wpforms' ),
 			],
-			'fields_mapping'                  => [
+			'fields_mapping'                      => [
 				'title'   => esc_html__( 'Are you sure you want to move this field?', 'wpforms' ),
 				'and'     => esc_html__( 'and', 'wpforms' ),
 				/* translators: %s - Addon name. */
@@ -184,7 +185,7 @@ class Builder {
 	 *
 	 * @param array $field Field settings.
 	 */
-	private function field_options_advanced( $field ) {
+	private function field_options_advanced( $field ): void {
 
 		// Size.
 		$this->field_obj->field_option(
@@ -208,8 +209,10 @@ class Builder {
 	 * @since 1.8.9
 	 *
 	 * @param array $field Field settings.
+	 *
+	 * @noinspection HtmlUnknownAttribute
 	 */
-	private function field_option_display_selector( $field ) {
+	private function field_option_display_selector( $field ): void {
 
 		$this->field_obj->field_element(
 			'label',
@@ -224,12 +227,11 @@ class Builder {
 		$inputs = '';
 
 		foreach ( Field::DISPLAY_VALUES as $value ) {
-
 			$inputs .= sprintf(
-				'<input type="radio" name="fields[%1$d][display]" id="wpforms-field-option-%1$d-display-%2$s" value="%2$s"%3$s><label for="wpforms-field-option-%1$d-display-%2$s" class="display-%2$s"></label>',
+				'<input type="radio" name="fields[%1$d][display]" id="wpforms-field-option-%1$d-display-%2$s" value="%2$s" %3$s><label for="wpforms-field-option-%1$d-display-%2$s" class="display-%2$s"></label>',
 				(int) $field['id'],
 				esc_attr( $value ),
-				$field['display'] === $value ? ' checked' : ''
+				$field['display'] === $value ? 'checked' : ''
 			);
 		}
 
@@ -250,7 +252,7 @@ class Builder {
 	 *
 	 * @param array $field Field settings.
 	 */
-	private function field_option_button_type( $field ) {
+	private function field_option_button_type( $field ): void {
 
 		$output = $this->field_obj->field_element(
 			'label',
@@ -298,7 +300,7 @@ class Builder {
 	 *
 	 * @param array $field Field settings.
 	 */
-	private function field_option_button_labels( $field ) {
+	private function field_option_button_labels( $field ): void {
 
 		printf(
 			'<div class="wpforms-clear wpforms-field-option-row wpforms-field-option-row-button-labels %1$s"
@@ -360,7 +362,7 @@ class Builder {
 	 *
 	 * @param array $field Field settings.
 	 */
-	private function field_option_limit( $field ) {
+	private function field_option_limit( $field ): void {
 
 		printf(
 			'<div class="wpforms-clear wpforms-field-option-row wpforms-field-option-row-rows-limit"
@@ -452,7 +454,7 @@ class Builder {
 	 *
 	 * @return string
 	 */
-	private function get_field_preview_display_rows_buttons( $class_name = '' ): string {
+	private function get_field_preview_display_rows_buttons( string $class_name = '' ): string {
 
 		return sprintf(
 			'<div class="wpforms-field-repeater-display-rows-buttons %1$s">

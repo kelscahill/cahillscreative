@@ -268,6 +268,16 @@ if ( ! class_exists( 'SIB_Push_Settings' ) ) {
 			return $this->set('hideAdminBarShortcut', $value ? true : false);
 		}
 
+		public function getSendOnlyToThisDomain() {
+			$storedValue = $this->get('sendOnlyToThisDomain');
+			if ($storedValue === null) return true; // Default to true
+			return $storedValue ? true : false;
+		}
+
+		public function setSendOnlyToThisDomain($value) {
+			return $this->set('sendOnlyToThisDomain', $value ? true : false);
+		}
+
 		public function save() {
 			update_option(SIB_Manager::PUSH_SETTINGS_OPTION_NAME, $this->settings);
 		}

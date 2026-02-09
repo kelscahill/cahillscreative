@@ -56,7 +56,8 @@ class AdminManager
     public function adminOptions()
     {
         try {
-            $user_connection_id = get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null);
+            $user_connection_id = preg_replace('/[^a-zA-Z0-9]/', '', get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null));
+
             if (!empty($user_connection_id)) {
                 $settingsUrl = SendinblueClient::INTEGRATION_URL . $user_connection_id . SendinblueClient::SETTINGS_URL;
                 $smsCampaignUrl = SendinblueClient::SMS_CAMPAIGN_URL;
@@ -85,7 +86,6 @@ class AdminManager
             $query_params['consumerSecret'] = $key->consumer_secret;
             $query_params['language'] = current(explode("_", get_locale()));
             $query_params['url'] = get_home_url();
-            $query_params['callback'] = $query_params['url'] . '/index.php?pagename=sendinblue-callback';
 
             $connectUrl = SendinblueClient::INTEGRATION_URL . SendinblueClient::CONNECT_URL . '?' . http_build_query($query_params);
 
@@ -99,6 +99,9 @@ class AdminManager
     public function brevo_hook_javascript_footer()
     {
         $is_checkout = is_checkout();
+        if (!$is_checkout) {
+            return;
+        }
         $is_account_page = is_account_page();
         $ajax_url = admin_url('admin-ajax.php');
         $output = '<script type="text/javascript">

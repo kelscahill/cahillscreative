@@ -14,7 +14,7 @@
 		"psr-4":
 		{
 			"threewp_broadcast\\": "src/",
-			"plainview\\sdk_broadcast\\": "src/sdk/"
+			"plainview\\sdk_broadcast\\": "vendor/plainview/sdk/"
 		}
 	},
 	"minimum-stability": "dev",

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-31T09:20:20+00:00\n"
-"PO-Revision-Date: 2025-07-31 11:41+0200\n"
+"POT-Creation-Date: 2025-12-10T13:45:33+00:00\n"
+"PO-Revision-Date: 2025-12-10 14:52+0100\n"
 "Last-Translator: Stéphane Jaïs <stephane.jais@brevo.com>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -88,136 +88,149 @@ msgstr "Date"
 msgid "Time"
 msgstr "Heure"
 
-#: push/components/editor/AudienceEditor.js:54
+#: push/components/editor/AudienceEditor.js:55
 msgid "subscribed contact"
 msgid_plural "subscribed contacts"
 msgstr[0] "contact abonné"
 msgstr[1] "contacts abonnés"
 
-#: push/components/editor/AudienceEditor.js:55
+#: push/components/editor/AudienceEditor.js:56
 msgid "subscribed device"
 msgid_plural "subscribed devices"
 msgstr[0] "appareil abonné"
 msgstr[1] "appareils abonnés"
 
-#: push/components/editor/AudienceEditor.js:135
+#: push/components/editor/AudienceEditor.js:137
 #: push/pages/settings/BlogSettings.js:57
 msgid "Everybody"
 msgstr "Tout le monde"
 
-#: push/components/editor/AudienceEditor.js:139
+#: push/components/editor/AudienceEditor.js:141
 msgid "Based on their website activity"
 msgstr "Selon leur activité sur le site"
 
-#: push/components/editor/AudienceEditor.js:148
+#: push/components/editor/AudienceEditor.js:150
 msgid "New push subscribers"
 msgstr "Nouveaux abonnés push"
 
-#: push/components/editor/AudienceEditor.js:152
+#: push/components/editor/AudienceEditor.js:154
 msgid "Based on language"
 msgstr "Selon la langue"
 
-#: push/components/editor/AudienceEditor.js:156
+#: push/components/editor/AudienceEditor.js:158
 msgid "Based on timezone"
 msgstr "Selon le fuseau horaire"
 
-#: push/components/editor/AudienceEditor.js:160
+#: push/components/editor/AudienceEditor.js:162
 msgid "From a Brevo segment"
 msgstr "Depuis un segment Brevo"
 
-#: push/components/editor/AudienceEditor.js:164
+#: push/components/editor/AudienceEditor.js:166
 msgid "From a Brevo list"
 msgstr "Depuis une liste Brevo"
 
-#: push/components/editor/AudienceEditor.js:167
+#: push/components/editor/AudienceEditor.js:169
 #: push/components/editor/fields.js:113
 msgid "Audience"
 msgstr "Audience"
 
-#: push/components/editor/AudienceEditor.js:167
+#: push/components/editor/AudienceEditor.js:169
 msgid "Please choose an audience"
 msgstr "Veuillez choisir une audience"
 
-#: push/components/editor/AudienceEditor.js:167
+#: push/components/editor/AudienceEditor.js:169
 msgid "Select an audience:"
 msgstr "Choisir une audience :"
 
-#: push/components/editor/AudienceEditor.js:171
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:173
+#: push/components/editor/AudienceEditor.js:178
 #: push/components/editor/scheduling/UrlInput.js:101
 msgid "Select an audience"
 msgstr "Veuillez choisir une audience"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "All push subscribers"
 msgstr "Tous les abonnés au push"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "Push subscribers that have visited in the last %d days"
 msgstr "Les abonnés au push ayant visité le site dans les %d derniers jours"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "Push subscribers that have not visited for at least %d days"
 msgstr ""
 "Les abonnés au push n’ayant pas visité le site dans les %d derniers jours"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "active"
 msgstr "actif"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "inactive"
 msgstr "inactif"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "Push subscribers that have %s in the last %d days"
 msgstr "Les abonnés au push qui %s dans les derniers %d jours"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "purchased"
 msgstr "ont acheté"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "not purchased"
 msgstr "n’ont pas acheté"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "Push subscribers that have subscribed to push in the last %d days"
 msgstr "Les abonnés au push qui se sont abonnés dans les %d derniers jours"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "Push subscribers that have a device in %s"
 msgstr "Les abonnés au push qui ont un appareil en %s"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "Push subscribers that are in your Brevo segment “%s”"
 msgstr "Les abonnés au push qui sont dans votre segment Brevo “%s”"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "unknown"
 msgstr "inconnu"
 
-#: push/components/editor/AudienceEditor.js:176
+#: push/components/editor/AudienceEditor.js:178
 msgid "Push subscribers that are in your Brevo list “%s”"
 msgstr "Les abonnés au push qui sont dans votre liste Brevo “%s”"
 
-#: push/components/editor/AudienceEditor.js:200
+#: push/components/editor/AudienceEditor.js:202
 msgid "Send to all platforms"
 msgstr "Envoyer à toutes les plateformes"
 
-#: push/components/editor/AudienceEditor.js:201
+#: push/components/editor/AudienceEditor.js:203
+#: push/components/editor/AudienceEditor.js:241
 msgid "Send only to %s"
 msgstr "Envoyer seulement à %s"
 
-#: push/components/editor/AudienceEditor.js:202
+#: push/components/editor/AudienceEditor.js:204
 msgid "Select one or more platforms"
 msgstr "Sélectionnez une ou plusieurs plateformes"
 
-#: push/components/editor/AudienceEditor.js:210
+#: push/components/editor/AudienceEditor.js:212
 msgid "Choose one or more platforms"
 msgstr "Choisissez une ou plusieurs plateformes"
 
-#: push/components/editor/AudienceEditor.js:220
+#: push/components/editor/AudienceEditor.js:240
+msgid "Send to all domains"
+msgstr "Envoyer à tous les domaines"
+
+#: push/components/editor/AudienceEditor.js:242
+msgid "Select one or more domains"
+msgstr "Sélectionnez un ou plusieurs domaines"
+
+#: push/components/editor/AudienceEditor.js:248
+msgid "Choose one or more domains"
+msgstr "Choisissez un ou plusieurs domaines"
+
+#: push/components/editor/AudienceEditor.js:258
 msgid ""
 "Enable contact creation in Advanced Settings to use Brevo segmentation for "
 "push notifications."
@@ -225,58 +238,58 @@ msgstr ""
 "Activez la création de contacts dans les Réglages Avancés pour utiliser la "
 "segmentation Brevo avec les notifications push."
 
-#: push/components/editor/AudienceEditor.js:220
+#: push/components/editor/AudienceEditor.js:258
 #: push/components/subscription/SubscriptionDialogSettings.js:172
 #: push/pages/Settings.js:17 push/pages/settings/AdvancedSettings.js:35
 msgid "Advanced settings"
 msgstr "Réglages avancés"
 
-#: push/components/editor/AudienceEditor.js:230
-#: push/components/editor/AudienceEditor.js:251 push/MainLayout.js:93
+#: push/components/editor/AudienceEditor.js:268
+#: push/components/editor/AudienceEditor.js:289 push/MainLayout.js:93
 msgid "Loading..."
 msgstr "Chargement…"
 
-#: push/components/editor/AudienceEditor.js:241
+#: push/components/editor/AudienceEditor.js:279
 msgid "No segments found"
 msgstr "Pas de segment trouvé"
 
-#: push/components/editor/AudienceEditor.js:241
+#: push/components/editor/AudienceEditor.js:279
 msgid "Select segment"
 msgstr "Sélectionner segment"
 
-#: push/components/editor/AudienceEditor.js:262
+#: push/components/editor/AudienceEditor.js:300
 msgid "No lists found"
 msgstr "Pas de liste trouvée"
 
-#: push/components/editor/AudienceEditor.js:262
+#: push/components/editor/AudienceEditor.js:300
 msgid "Select list"
 msgstr "Sélectionner liste"
 
-#: push/components/editor/AudienceEditor.js:280
+#: push/components/editor/AudienceEditor.js:318
 msgid "Please select one or more languages"
 msgstr "Veuillez sélectionner une ou plusieurs langues"
 
-#: push/components/editor/AudienceEditor.js:280
+#: push/components/editor/AudienceEditor.js:318
 msgid "Select languages"
 msgstr "Sélectionner langues"
 
-#: push/components/editor/AudienceEditor.js:302
+#: push/components/editor/AudienceEditor.js:340
 msgid "Please select one or more timezones"
 msgstr "Veuillez choisir un ou plusieurs fuseaux horaires"
 
-#: push/components/editor/AudienceEditor.js:302
+#: push/components/editor/AudienceEditor.js:340
 msgid "Select timezones"
 msgstr "Sélectionner fuseau horaire"
 
-#: push/components/editor/AudienceEditor.js:313
+#: push/components/editor/AudienceEditor.js:351
 msgid "Number of days"
 msgstr "Nombre de jours"
 
-#: push/components/editor/AudienceEditor.js:332
+#: push/components/editor/AudienceEditor.js:370
 msgid "This audience is not supported by the editor yet."
 msgstr "Cette audience n’est pas encore prise en charge par cet éditeur."
 
-#: push/components/editor/AudienceEditor.js:332
+#: push/components/editor/AudienceEditor.js:370
 msgid "Edit the audience on wonderpush.com"
 msgstr "Modifier l’audience sur wonderpush.com"
 
@@ -3021,10 +3034,24 @@ msgstr "Titre de la notification"
 #: push/pages/settings/BlogSettings.js:79
 msgid ""
 "The notification title to use for all outgoing notifications. Defaults to "
-"your site's title: “%s”."
+"your site's title: \"%s\"."
 msgstr ""
 "Le titre de la notification à utiliser pour toutes les notifications "
 "sortantes. Par défaut le titre de votre site : “%s”."
+
+#: push/pages/settings/BlogSettings.js:79
+msgid "Send notifications only to this domain"
+msgstr "N’envoyer des notifications qu’à ce domaine"
+
+#: push/pages/settings/BlogSettings.js:79
+msgid ""
+"If checked, notifications sent from this WordPress site will only be "
+"delivered to subscribers of this specific domain. Useful when multiple "
+"WordPress sites share the same Brevo application."
+msgstr ""
+"Si cette option est cochée, les notifications envoyées depuis ce site "
+"WordPress ne seront transmises qu'aux abonnés de ce domaine spécifique. "
+"Utile lorsque plusieurs sites WordPress partagent la même application Brevo."
 
 #: push/pages/settings/BlogSettings.js:79
 msgid "Who should we notify by default?"

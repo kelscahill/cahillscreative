@@ -106,8 +106,8 @@ class Support_Integration implements Integration_Interface {
 	 * @return void
 	 */
 	public function register_hooks() {
-		// Add page.
-		\add_filter( 'wpseo_submenu_pages', [ $this, 'add_page' ], \PHP_INT_MAX );
+		// Add page using PHP_INT_MAX - 1 to allow other items (like Brand Insights) to be positioned after.
+		\add_filter( 'wpseo_submenu_pages', [ $this, 'add_page' ], ( \PHP_INT_MAX - 1 ) );
 
 		// Are we on the settings page?
 		if ( $this->current_page_helper->get_current_yoast_seo_page() === self::PAGE ) {
@@ -181,8 +181,8 @@ class Support_Integration implements Integration_Interface {
 	public function get_script_data() {
 		return [
 			'preferences'       => [
-				'hasPremiumSubscription' => $this->addon_manager->has_valid_subscription( WPSEO_Addon_Manager::PREMIUM_SLUG ),
-				'hasWooSeoSubscription'  => $this->addon_manager->has_valid_subscription( WPSEO_Addon_Manager::WOOCOMMERCE_SLUG ),
+				'hasPremiumSubscription' => $this->addon_manager->has_active_addons() && $this->addon_manager->has_valid_subscription( WPSEO_Addon_Manager::PREMIUM_SLUG ),
+				'hasWooSeoSubscription'  => $this->addon_manager->has_active_addons() && $this->addon_manager->has_valid_subscription( WPSEO_Addon_Manager::WOOCOMMERCE_SLUG ),
 				'isRtl'                  => \is_rtl(),
 				'pluginUrl'              => \plugins_url( '', \WPSEO_FILE ),
 				'upsellSettings'         => [

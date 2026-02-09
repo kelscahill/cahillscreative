@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sendinblue plugin\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/mailin\n"
-"POT-Creation-Date: 2025-07-31T09:38:35+00:00\n"
+"POT-Creation-Date: 2025-12-10T13:45:39+00:00\n"
 "PO-Revision-Date: 2025-07-31 11:40+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -38,7 +38,7 @@ msgstr ""
 "seul plugin"
 
 #. Author of the plugin
-#: sendinblue.php inc/sib-api-manager.php:562 page/page-home.php:43
+#: sendinblue.php inc/sib-api-manager.php:563 page/page-home.php:43
 #: page/page-home.php:557 page/page-home.php:794
 msgid "Brevo"
 msgstr "Brevo"
@@ -183,25 +183,25 @@ msgstr ""
 msgid "Learn more"
 msgstr "En savoir plus"
 
-#: inc/push-admin.php:816
+#: inc/push-admin.php:845
 msgid "Brevo push notification sent."
 msgstr "Notification push Brevo envoyée."
 
 #. translators: %d is the number of subscribers, %s is the date and time
-#: inc/push-admin.php:833
+#: inc/push-admin.php:862
 msgid "Brevo will send a notification to %d subscribers on %s."
 msgstr "Brevo enverra une notification à %d abonnés le %s."
 
 #. translators: %d is the number of subscribers
-#: inc/push-admin.php:836
+#: inc/push-admin.php:865
 msgid "Brevo notification sent to %d subscribers."
 msgstr "Notification Brevo envoyée à %d abonnés."
 
-#: inc/push-admin.php:839
+#: inc/push-admin.php:868
 msgid "Brevo notification sent but the target audience is empty."
 msgstr "Notification Brevo envoyée mais l'audience cible est vide."
 
-#: inc/push-admin.php:844
+#: inc/push-admin.php:873
 msgid "Brevo notification could not be sent."
 msgstr "La notification Brevo n'a pas pu être envoyée."
 
@@ -213,7 +213,7 @@ msgstr "S’abonner aux mises à jour"
 msgid "Unsubscribe from news updates"
 msgstr "Se désabonner des mises à jour"
 
-#: inc/push-utils.php:320 inc/push-utils.php:390
+#: inc/push-utils.php:337 inc/push-utils.php:407
 msgid "My WordPress Site"
 msgstr "Mon Site WordPress"
 
@@ -227,51 +227,51 @@ msgstr ""
 "Votre panier est sur le point d’expirer ! Ne ratez rien des marques que vous "
 "aimez ! 😍"
 
-#: inc/sib-api-manager.php:546
+#: inc/sib-api-manager.php:547
 msgid "Subscription confirmed"
 msgstr "Inscription newsletter confirmée"
 
-#: inc/sib-api-manager.php:548
+#: inc/sib-api-manager.php:549
 msgid "Please confirm subscription"
 msgstr "Confirmer l'inscription"
 
-#: inc/sib-api-manager.php:561 page/page-home.php:793
+#: inc/sib-api-manager.php:562 page/page-home.php:793
 msgid "no-reply@"
 msgstr "no-reply@"
 
-#: inc/sib-api-manager.php:699
+#: inc/sib-api-manager.php:700
 msgid "Contact synchronization has started."
 msgstr "La synchronisation des contacts a commencé."
 
-#: inc/sib-api-manager.php:704
+#: inc/sib-api-manager.php:705
 msgid "Something went wrong. PLease try again."
 msgstr "Un problème est survenu. Veuillez réessayer."
 
-#: inc/sib-api-manager.php:802
+#: inc/sib-api-manager.php:803
 msgid "Unsubscribe"
 msgstr "Se désabonner"
 
-#: inc/sib-api-manager.php:822
+#: inc/sib-api-manager.php:823
 msgid "Your request has been taken into account."
 msgstr "Votre demande a bien été prise en compte."
 
-#: inc/sib-api-manager.php:824
+#: inc/sib-api-manager.php:825
 msgid "The user has been unsubscribed"
 msgstr "L'utilisateur s'est désinscrit"
 
-#: inc/sib-api-manager.php:909
+#: inc/sib-api-manager.php:910
 msgid "Thank you for subscribing"
 msgstr "Merci pour votre inscription"
 
-#: inc/sib-api-manager.php:911
+#: inc/sib-api-manager.php:912
 msgid "Please Try Again"
 msgstr "Veuillez ré-essayer"
 
-#: inc/sib-api-manager.php:936
+#: inc/sib-api-manager.php:937
 msgid "You have just subscribed to the newsletter of "
 msgstr "Vous vous êtes inscrit à la newsletter de "
 
-#: inc/sib-api-manager.php:939
+#: inc/sib-api-manager.php:940
 msgid "-Brevo"
 msgstr "-Brevo"
 
@@ -635,9 +635,9 @@ msgstr "Processus d'inscription"
 #: page/page-form.php:682
 msgid ""
 "Confirmation emails will be sent through your own email server, but you have "
-"no guarantees on their deliverability. <br/> <a href=\"https://app-smtp."
-"brevo.com/\" target=\"_blank\" rel=\"noopener\">Click here</a> to send your "
-"emails through Brevo in order to improve your deliverability and get "
+"no guarantees on their deliverability. <br/> <a href=\"https://app-"
+"smtp.brevo.com/\" target=\"_blank\" rel=\"noopener\">Click here</a> to send "
+"your emails through Brevo in order to improve your deliverability and get "
 "statistics"
 msgstr ""
 "Les emails de confirmations seront envoyé via votre propre serveur mail, "
@@ -1068,16 +1068,16 @@ msgid "Your Marketing Automation script has been uninstalled"
 msgstr "Le script Marketing Automation a été désinstallé"
 
 #: page/page-home.php:379
-msgid ""
-"You have not enabled automation in Brevo. Please do so by choosing the "
-"Automation application here: "
-msgstr ""
-"Vous n'avez pas activé l'automation dans Brevo. Veuillez le faire en "
-"choisissant l'application Automation ici: "
+msgid "Brevo Automation could not be activated. Please click "
+msgstr "Brevo Automatisations n'a pas pu être activée. Cliquez "
 
 #: page/page-home.php:379
-msgid "Thanks"
-msgstr "Merci"
+msgid "here"
+msgstr "ici"
+
+#: page/page-home.php:379
+msgid " to complete activation"
+msgstr " pour finaliser l'activation"
 
 #: page/page-home.php:380
 msgid ""
@@ -1389,6 +1389,9 @@ msgstr "Titre du Widget"
 msgid "Form to use"
 msgstr "Formulaire à utiliser"
 
+#~ msgid "Thanks"
+#~ msgstr "Merci"
+
 #~ msgid "deactivate web push"
 #~ msgstr "désactiver web push"
 
@@ -1653,9 +1656,10 @@ msgstr "Formulaire à utiliser"
 
 #~ msgid ""
 #~ "Confirmation emails will be sent through your own email server, but you "
-#~ "have no guarantees on their deliverability. <a href=\"https://app-smtp."
-#~ "brevo.com\" target=\"_blank\">Click here</a> to send your emails through "
-#~ "Sendinblue in order to improve your deliverability and get statistics"
+#~ "have no guarantees on their deliverability. <a href=\"https://app-"
+#~ "smtp.brevo.com\" target=\"_blank\">Click here</a> to send your emails "
+#~ "through Sendinblue in order to improve your deliverability and get "
+#~ "statistics"
 #~ msgstr ""
 #~ "Les emails de confirmation seront envoyés par votre propre serveur email. "
 #~ "Vous n'avez donc aucune garantie sur la délivrabilité de vos emails. Pour "

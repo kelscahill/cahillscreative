@@ -207,7 +207,12 @@ class ACF
 						$tempfield->name = sprintf( '%s_%s_%s', $action->field->name, $id, $name );
 
 						if ( $this->has_acf_pro() )
+						{
+							// Ignore tabs and messages.
+							if ( ! isset( $v[ $tempfield->key ] ) )
+								continue;
 							$tempfield->value = $v[ $tempfield->key ];
+						}
 
 						$tempfield->flexible_content = true;
 						$tempfield->field_index = $sub_index;
@@ -959,15 +964,16 @@ class ACF
 		$acf_field = new acf\field( $field );
 
 		// Try handle json encoded also.
-		if ( strpos( $field->value, '{' ) !== false )
-		{
-			$json_decoded = json_decode( $field->value );
-			if ( $json_decoded !== null )
+		if ( is_string( $field->value ) )
+			if ( strpos( $field->value, '{' ) !== false )
 			{
-				$field->value = (array) $json_decoded;
-				$acf_field->json_encoded = true;
+				$json_decoded = json_decode( $field->value );
+				if ( $json_decoded !== null )
+				{
+					$field->value = (array) $json_decoded;
+					$acf_field->json_encoded = true;
+				}
 			}
-		}
 
 		// ACF4 and 5 handle things differently. Of course.
 		if ( $this->has_acf_pro() )

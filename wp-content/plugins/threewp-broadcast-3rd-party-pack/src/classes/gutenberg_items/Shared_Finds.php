@@ -8,6 +8,7 @@ use Exception;
 	@brief		Handle the sharing of finds so that various add-ons can modify the same data.
 	@since		2020-01-31 08:14:38
 **/
+#[\AllowDynamicProperties]
 class Shared_Finds
 	extends \threewp_broadcast\premium_pack\classes\generic_items\Shared_Finds
 {
@@ -59,7 +60,7 @@ class Shared_Finds
 		{
 			$source = $r->collection( 'source' );
 			// This is a deep clone, since we have objects stored in here also.
-			$source = unserialize( serialize( $source ) );
+			@ $source = unserialize( serialize( $source ) );
 			ThreeWP_Broadcast()->debug( 'Cloning new %s for blog %s: %s', $key, get_current_blog_id(), $source );
 			$r->set( $blog_key, $source );
 		}

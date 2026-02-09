@@ -284,6 +284,18 @@ class Loader {
 				'hook' => 'admin_init',
 			],
 			[
+				'name' => 'Admin\Pages\SugarCalendar',
+				'hook' => 'admin_init',
+			],
+			[
+				'name' => 'Admin\Pages\Duplicator',
+				'hook' => 'admin_init',
+			],
+			[
+				'name' => 'Admin\Pages\UncannyAutomator',
+				'hook' => 'admin_init',
+			],
+			[
 				'name' => 'Forms\Fields\Richtext\EntryViewContent',
 			],
 			[
@@ -892,6 +904,7 @@ class Loader {
 			'Builder\Payments',
 			'Builder\DidYouKnow',
 			'Builder\Geolocation',
+			'Builder\Quiz',
 			'Builder\Confirmations',
 			'Builder\Notifications',
 			'Builder\PDF',

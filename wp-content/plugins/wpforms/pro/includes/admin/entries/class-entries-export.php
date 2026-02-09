@@ -225,7 +225,17 @@ class WPForms_Entries_Export {
 		$cols['date_gmt'] = esc_html__( 'Date GMT', 'wpforms' );
 		$cols['entry_id'] = esc_html__( 'ID', 'wpforms' );
 
-		return apply_filters( 'wpforms_export_get_csv_cols', $cols, $this->entry_type );
+		/**
+		 * Filter the CSV columns.
+		 *
+		 * @since 1.1.5
+		 * @since 1.9.8.6 Added $form_id parameter.
+		 *
+		 * @param array  $cols       Array of the columns.
+		 * @param string $entry_type Entry type.
+		 * @param int    $form_id    Form ID.
+		 */
+		return (array) apply_filters( 'wpforms_entries_export_get_csv_cols', $cols, $this->entry_type, $this->form_id );
 	}
 
 	/**

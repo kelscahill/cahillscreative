@@ -58,22 +58,25 @@ class check
 
 		global $wpdb;
 		$table = $this->broadcast()->broadcast_data_table();
-		$query = sprintf( 'SELECT * FROM `%s` LIMIT %d OFFSET %d',
+		$query = $wpdb->prepare( 'SELECT * FROM %i LIMIT %d OFFSET %d',
+		[
 			$table,
 			$this->data->per_page,
 			$this->data->counter
-		);
+		] );
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 		$rows = $wpdb->get_results( $query );
 
 		$r .= wpautop( sprintf( 'Checking from row %d.', $this->data->counter ) );
 
 		foreach( $rows as $row )
 		{
-			$delete_query = sprintf( "DELETE FROM `%s` WHERE `id` = %d", $table, $row->id );
+			$delete_query = $wpdb->prepare( "DELETE FROM %i WHERE `id` = %d", [ $table, $row->id ] );
 
 			if ( ! $this->blog_and_post_exists( $row->blog_id, $row->post_id ) )
 			{
 				$r .= wpautop( sprintf( "Row %d: Blog %d post %d no longer exists. Deleting row.", $row->id, $row->blog_id, $row->post_id ) );
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 				$wpdb->get_results( $delete_query );
 				continue;
 			}
@@ -99,6 +102,7 @@ class check
 				if ( ! $this->blog_and_post_exists( $parent[ 'blog_id' ], $parent[ 'post_id' ] ) )
 				{
 					$r .= wpautop( sprintf( "Row %d: Parent post %d / %d no longer exists. Deleting row.", $row->id, $parent[ 'blog_id' ], $parent[ 'post_id' ] ) );
+					// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 					$wpdb->get_results( $delete_query );
 				}
 			}
@@ -123,7 +127,8 @@ class check
 	{
 		global $wpdb;
 		$table = $this->broadcast()->broadcast_data_table();
-		$query = sprintf( 'SELECT COUNT(*) as row_count FROM `%s`', $table );
+		$query = $wpdb->prepare( 'SELECT COUNT(*) as row_count FROM %i', [ $table ] );
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 		$count = $wpdb->get_var( $query );
 
 		$this->data->counter = 0;
@@ -131,7 +136,8 @@ class check
 		$this->data->per_page = 100;
 
 		$r = $this->broadcast()->p(
-			__( 'Beginning to check broadcast data. %s SQL rows to check.', 'threewp-broadcast' ),
+			// Translators: NUMBER of SQL rows to check.
+			__( 'Beginning to check broadcast data. %d SQL rows to check.', 'threewp-broadcast' ),
 			$count
 		);
 		$r .= $this->next_step( 'check_rows' );

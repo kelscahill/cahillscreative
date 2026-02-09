@@ -4,7 +4,7 @@
 class SendinblueApiClient
 {
     const API_BASE_URL = 'https://api.brevo.com/v3';
-    const API_STAGING_BASE_URL = 'https://api-staging.51b.dev/v3';
+    const API_STAGING_BASE_URL = 'https://api-staging-rke.51b.dev/v3';
     const HTTP_METHOD_GET = 'GET';
     const HTTP_METHOD_POST = 'POST';
     const HTTP_METHOD_PUT = 'PUT';
@@ -16,7 +16,7 @@ class SendinblueApiClient
     const RESPONSE_CODE_ACCEPTED = 202;
     const RESPONSE_CODE_NO_CONTENT = 204;
     const RESPONSE_CODE_UNAUTHORIZED = 401;
-    const PLUGIN_VERSION = '3.2.8';
+    const PLUGIN_VERSION = '3.3.0';
     const USER_AGENT = 'sendinblue_plugins/wordpress';
 
     private $apiKey;

@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\traits;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 /**
 	@brief		Provides methods related to actions.
 	@since		2017-11-23 21:44:51

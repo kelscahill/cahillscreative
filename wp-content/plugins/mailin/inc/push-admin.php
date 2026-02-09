@@ -139,14 +139,14 @@ if ( ! class_exists( 'SIB_Push_Admin' ) ) {
 			$send_notification_delay_seconds = (int)$send_notification_delay_seconds;
 
 			// Defaults
-			$default_target_brevo_segment_id = $settings->getDefaultTargetSegmentId() ?: '';
-			$default_target_brevo_list_id = $settings->getDefaultTargetListId() ?: '';
+			$default_target_brevo_segment_id = (string)$settings->getDefaultTargetSegmentId() ?: '';
+			$default_target_brevo_list_id = (string)$settings->getDefaultTargetListId() ?: '';
 
 			// Brevo segment IDs
-			$target_brevo_segment_ids = get_post_meta($post->ID, 'sib_push_target_brevo_segment_ids', true) ?: '';
+			$target_brevo_segment_ids = (string)get_post_meta($post->ID, 'sib_push_target_brevo_segment_ids', true) ?: '';
 			$target_brevo_segment_ids = array_filter(explode(self::METADATA_MULTIVALUE_SEPARATOR, $target_brevo_segment_ids ?: $default_target_brevo_segment_id));
 			// Brevo list IDs
-			$target_brevo_list_ids = get_post_meta($post->ID, 'sib_push_target_brevo_list_ids', true) ?: '';
+			$target_brevo_list_ids = (string)get_post_meta($post->ID, 'sib_push_target_brevo_list_ids', true) ?: '';
 			$target_brevo_list_ids = array_filter(explode(self::METADATA_MULTIVALUE_SEPARATOR, $target_brevo_list_ids ?: $default_target_brevo_list_id));
 			$target_tags = get_post_meta($post->ID, 'sib_push_target_tags', true) ?: '';
 			$target_tags = array_filter(explode(self::METADATA_MULTIVALUE_SEPARATOR, $target_tags));
@@ -757,6 +757,7 @@ if ( ! class_exists( 'SIB_Push_Admin' ) ) {
 				if ($icon_image) $web->setIcon($icon_image);
 				if ($big_picture) $web->setImage($big_picture);
 				$params = new \WonderPush\Params\DeliveriesCreateParams();
+				$params->setDeliverySource('brevoWordPressPlugin');
 				$params->setInheritUrlParameters(true);
 				$params->setNotification($notification);
 				$brevoSegmentIds = array();
@@ -786,6 +787,18 @@ if ( ! class_exists( 'SIB_Push_Admin' ) ) {
 				if ($send_notification_delay_seconds !== null && $send_notification_delay_seconds > 0) {
 					$params->setDeliveryTime('' . $send_notification_delay_seconds . 's');
 				}
+
+				// Set filterWebDomains if sendOnlyToThisDomain is enabled
+				$settings = SIB_Push_Settings::getSettings();
+				if ($settings->getSendOnlyToThisDomain()) {
+					$current_site_url = home_url();
+					$parsed_current = parse_url($current_site_url);
+					if ($parsed_current) {
+						$current_origin = $parsed_current['scheme'] . '://' . $parsed_current['host'] . (isset($parsed_current['port']) ? (':' . $parsed_current['port']) : '');
+						$params->setFilterWebDomains(array($current_origin));
+					}
+				}
+
 				// Deduplicate notifications
 				$last_sent_timestamp = get_post_meta($post->ID, self::POST_META_LAST_NOTIFICATION_TIMESTAMP, true);
 				$elapsed = current_time('timestamp') - ($last_sent_timestamp ? $last_sent_timestamp : 0);

@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\maintenance;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 #[\AllowDynamicProperties]
 class controller
 {
@@ -42,7 +44,7 @@ class controller
 		}
 		if ( isset( $_GET[ 'do_check' ] ) )
 		{
-			$id = $_GET[ 'do_check' ];
+			$id = esc_html( $_GET[ 'do_check' ] );
 			if ( $this->data->checks->has( $id ) )
 			{
 				$check = $this->data->checks->get( $id );
@@ -52,11 +54,12 @@ class controller
 				$this->data->save();
 			}
 			else
-				wp_die( sprintf( 'Check %s does not exist!', htmlspecialchars( $id ) ) );
+				wp_die( esc_html( sprintf( 'Check %s does not exist!', $id ) ) );
 		}
 		else
 			$r = $this->get_table();
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- previously cleaned
 		return $r;
 	}
 

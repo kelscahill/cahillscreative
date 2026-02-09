@@ -82,6 +82,7 @@ class Child_Fields
 		if ( is_string( $value ) )
 			$value_text = htmlspecialchars( $value );
 		else
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- Used by network admin for debugging.
 			$value_text = '<pre>' . htmlspecialchars( var_export( $value, true ) ) . '</pre>';
 		ThreeWP_Broadcast()->debug( 'Child fields: updating %s on blog %s post %s with %s', $key, get_current_blog_id(), $this->broadcasting_data->new_post( 'ID' ), $value_text );
 		update_post_meta( $this->broadcasting_data->new_post( 'ID' ), $key, $value );

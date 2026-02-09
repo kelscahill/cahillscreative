@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\traits;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 /**
 	@brief		Misc functions that look better being placed here.
 	@since		2018-01-24 15:25:10
@@ -61,8 +63,9 @@ trait misc
 	**/
 	public function create_broadcast_data_id_column()
 	{
-		$query = sprintf( "ALTER TABLE `%s` ADD `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'ID of row' FIRST;",
-			$this->broadcast_data_table()
+		global $wpdb;
+		$query = $wpdb->prepare( "ALTER TABLE %i ADD `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'ID of row' FIRST;",
+			[ $this->broadcast_data_table() ]
 		);
 		$this->query( $query );
 	}
@@ -289,17 +292,20 @@ trait misc
 
 		$row = $table->body()->row();
 		$row->td()->text_( 'Wordpress upload directory array' );
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- Used by network admin during debugging.
 		$row->td()->text( '<pre>' . var_export( wp_upload_dir(), true ) . '</pre>' );
 
 		$this->paths[ 'ABSPATH' ] = ABSPATH;
 		$this->paths[ 'WP_PLUGIN_DIR' ] = WP_PLUGIN_DIR;
 		$row = $table->body()->row();
 		$row->td()->text_( 'Plugin paths' );
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- Used by network admin during debugging.
 		$row->td()->text( '<pre>' . var_export( $this->paths(), true ) . '</pre>' );
 
 		$row = $table->body()->row();
 		$row->td()->text_( 'PHP maximum execution time' );
 		$count = ini_get ( 'max_execution_time' );
+		// Translators: 1 or more seconds.
 		$text = $this->p( _n( '%d second', '%d seconds', $count, 'threewp-broadcast' ), $count );
 		$row->td()->text( $text );
 
@@ -325,7 +331,7 @@ trait misc
 
 <code>ini_set('display_errors','On');</code>
 <code>define('WP_DEBUG', true);</code>
-",		$this->p( __( 'Add the following lines to your wp-config.php to help find out why errors or blank screens are occurring:' ) ), 'threewp-broadcast' ) );
+",		$this->p( __( 'Add the following lines to your wp-config.php to help find out why errors or blank screens are occurring:', 'threewp-broadcast' ) ) ) );
 		$row->td()->text( $text );
 
 		$row = $table->body()->row();
@@ -576,9 +582,8 @@ trait misc
 
 		$this->debug( 'wp_uninitialize_site %s', $site );
 
-		$query = sprintf( "SELECT `post_id` FROM `%s` WHERE `blog_id` = '%s'",
-			$this->broadcast_data_table(),
-			$site_id
+		$query = $wpdb->prepare( "SELECT `post_id` FROM %i WHERE `blog_id` = %d",
+			[ $this->broadcast_data_table(), $site_id ],
 		);
 		$this->debug( $query );
 		$post_ids = $wpdb->get_col( $query );

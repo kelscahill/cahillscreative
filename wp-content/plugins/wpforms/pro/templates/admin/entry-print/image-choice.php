@@ -18,9 +18,12 @@ $image_url = ! empty( $choice['image'] ) ? $choice['image'] : null;
 $image     = ! empty( $image_url ) ? sprintf( '<img src="%s" alt="%s"/>', esc_url( $image_url ), esc_attr( $choice['label'] ) ) : '';
 
 printf(
-	'<div class="field-value-choice field-value-choice-image field-value-choice-%1$s%2$s"><div class="field-value-choice-image-wrapper">%3$s</div><div>%4$s</div></div>',
+	'<div class="field-value-choice field-value-choice-image field-value-choice-%1$s%2$s"><div class="field-value-choice-image-wrapper">%3$s</div><div>%4$s%5$s</div></div>',
 	esc_attr( $choice_type ),
 	$is_checked ? ' field-value-choice-checked' : '',
 	wp_kses_post( $image ),
-	wp_kses_post( $choice['label'] )
+	wp_kses_post( $choice['label'] ),
+	! empty( $choice['is_other'] ) && $is_checked && isset( $choice['other_value'] ) ?
+		sprintf( ': %s', esc_html( $choice['other_value'] ) )
+		: ''
 );

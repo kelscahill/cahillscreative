@@ -2,6 +2,8 @@
 
 namespace threewp_broadcast\traits;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 /**
 	@brief		Methods related to terms and taxonomies.
 	@since		2014-10-19 15:44:39

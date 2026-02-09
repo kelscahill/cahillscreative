@@ -6,7 +6,7 @@
  * Author: Brevo
  * Text Domain: woocommerce-sendinblue-newsletter-subscription
  * Domain Path: /languages
- * Version: 4.0.47
+ * Version: 4.0.51
  * Author URI: https://www.brevo.com/?r=wporg
  * Requires at least: 4.3
  * Tested up to: 6.8.1
@@ -47,12 +47,13 @@ define('SENDINBLUE_WC_SETTINGS', 'sendinblue_woocommerce_user_connection_setting
 define('SENDINBLUE_WC_EMAIL_SETTINGS', 'sendinblue_woocommerce_email_options_settings');
 define('SENDINBLUE_WC_VERSION_SENT', 'sendinblue_woocommerce_version_sent');
 define('API_KEY_V3_OPTION_NAME', 'sib_wc_api_key_v3');
-define('SENDINBLUE_WC_PLUGIN_VERSION', '4.0.47');
+define('SENDINBLUE_WC_PLUGIN_VERSION', '4.0.51');
 define('SENDINBLUE_WORDPRESS_SHOP_VERSION', $GLOBALS['wp_version']);
 define('SENDINBLUE_WOOCOMMERCE_UPDATE', 'sendinblue_plugin_update_call_apiv3');
 define('SENDINBLUE_REDIRECT', 'sendinblue_woocommerce_redirect');
 define('SENDINBLUE_WC_ECOMMERCE_REQ', 'sendinblue_woocommerce_ecommerce_requires');
 define('SENDINBLUE_ECOMMERCE_CALLED_TIME', 'ecommerce_called_time');
+define('SENDINBLUE_IS_PLUGIN_INFO_UPDATED', 'sendinblue_is_plugin_info_updated');
 
 require_once SENDINBLUE_WC_ROOT_PATH . '/src/managers/api-manager.php';
 require_once SENDINBLUE_WC_ROOT_PATH . '/src/managers/admin-manager.php';
@@ -153,43 +154,31 @@ function sendinblue_woocommerce_init()
         delete_option(SENDINBLUE_REDIRECT);
         wp_redirect(add_query_arg('page', 'sendinblue', admin_url('admin.php')));
     }
-    add_filter('rewrite_rules_array', 'sendinblue_woocommerce_rewrites');
-    add_action('template_redirect', 'sendinblue_woocommerce_callback');
 
     load_plugin_textdomain( SENDINBLUE_WC_TEXTDOMAIN , false, dirname(plugin_basename(__FILE__)) . '/languages');
+    update_plugin_information();
     $admin_manager = new AdminManager();
     $admin_manager->run();
 }
 
-function sendinblue_woocommerce_rewrites($wp_rules)
+function update_plugin_information()
 {
-    add_rewrite_rule("sendinblue-callback\$", "index.php?pagename=sendinblue-callback");
+    $settings = get_option(SENDINBLUE_WC_SETTINGS, null);
+    $settings = empty($settings) ? null : json_decode($settings, true);
+    $hasUserConBeenUpdated = get_option(SENDINBLUE_IS_PLUGIN_INFO_UPDATED, false);
 
-    return $wp_rules;
-}
+    if (is_array($settings) && $hasUserConBeenUpdated !== true) {
+        $userConIdInSettings = isset($settings['userConnectionId']) ? $settings['userConnectionId'] : "";
+        $userConIdInSettings = preg_replace('/[^a-zA-Z0-9]/', '', $userConIdInSettings);
+        $userConIdInOption =  get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null);
 
-function sendinblue_woocommerce_callback()
-{
-    $pageNameVar = get_query_var('pagename');
-    if ($pageNameVar == 'sendinblue-callback') {
-        $result = array('status' => false);
-        $user_connection_id = filter_input(INPUT_POST, 'user_connection_id');
-
-        if(empty($user_connection_id)) {
-            $query_string = $_SERVER['QUERY_STRING'] ?? $_SERVER['QUERY_STRING'];
-
-            if (!empty($query_string)) {
-                parse_str($query_string, $queries);
-                $user_connection_id = $queries['user_connection_id'] ?? $queries['user_connection_id'];
-            }
+        if (!empty($userConIdInOption) &&  
+                !empty( $userConIdInSettings) &&
+                ($userConIdInOption != $userConIdInSettings)) 
+                {
+            update_option(SENDINBLUE_WC_USER_CONNECTION_ID, $userConIdInSettings);
+            update_option(SENDINBLUE_IS_PLUGIN_INFO_UPDATED, true);
         }
-
-        if(isset($user_connection_id) && !empty($user_connection_id)) {
-            (get_option(SENDINBLUE_WC_USER_CONNECTION_ID, null) !== null) ? update_option(SENDINBLUE_WC_USER_CONNECTION_ID, $user_connection_id) : add_option(SENDINBLUE_WC_USER_CONNECTION_ID, $user_connection_id);
-            header('HTTP/1.1 200 OK', true);
-            $result = array('status' => true);
-        }
-        wp_send_json($result);
     }
 }
 
@@ -206,7 +195,6 @@ function sendinblue_woocommerce_activate()
         return;
     }
     global $wp_rewrite;
-    add_filter('rewrite_rules_array', 'sendinblue_woocommerce_rewrites');
     $wp_rewrite->flush_rules();
     (get_option(SENDINBLUE_REDIRECT, null) !== null) ? update_option(SENDINBLUE_REDIRECT, true) : add_option(SENDINBLUE_REDIRECT, true);
 }
@@ -226,6 +214,7 @@ function sendinblue_woocommerce_uninstall()
     $api_manager->flush_option_keys(SENDINBLUE_WC_EMAIL_SETTINGS);
     $api_manager->flush_option_keys(SENDINBLUE_WOOCOMMERCE_UPDATE);
     $api_manager->flush_option_keys(SENDINBLUE_WC_ECOMMERCE_REQ);
+    $api_manager->flush_option_keys(SENDINBLUE_IS_PLUGIN_INFO_UPDATED);
 }
 
 function sendinblue_woocommerce_update()
@@ -241,3 +230,47 @@ add_action('update_to_sendinblue_new_plugin', 'sendinblue_woocommerce_update');
 register_activation_hook(SENDINBLUE_WC_ROOT_PATH . '/woocommerce-sendinblue.php', 'sendinblue_woocommerce_activate');
 register_deactivation_hook(SENDINBLUE_WC_ROOT_PATH . '/woocommerce-sendinblue.php', 'sendinblue_woocommerce_deactivate');
 register_uninstall_hook(SENDINBLUE_WC_ROOT_PATH . '/woocommerce-sendinblue.php', 'sendinblue_woocommerce_uninstall');
+
+add_action( 'admin_notices', function () {
+    $screen = get_current_screen();
+    $hasUserConBeenUpdated = get_option(SENDINBLUE_IS_PLUGIN_INFO_UPDATED, false);
+    if ($hasUserConBeenUpdated != true) {
+        return;
+    }
+
+    if ( $screen && $screen->id === 'plugins') {
+        ?>
+        <div class="notice notice-info is-dismissible">
+            <p>
+                <strong>Brevo:</strong>
+                Your account may have been compromised. Please check for any suspicious activity in your WordPress admin panel.
+            </p>
+        </div>
+        <?php
+    }
+});
+
+add_action(
+    'after_plugin_row_' . plugin_basename( __FILE__ ),
+    function () {
+        $hasUserConBeenUpdated = get_option( SENDINBLUE_IS_PLUGIN_INFO_UPDATED, false );
+
+        if ($hasUserConBeenUpdated != true) {
+            return;
+        }
+
+        global $wp_list_table;
+        $colspan = $wp_list_table->get_column_count();
+        ?>
+        <tr class="plugin-update-tr">
+            <td colspan="<?php echo esc_attr( $colspan ); ?>" class="plugin-update colspanchange">
+                <div class="update-message notice inline notice-warning notice-alt is-dismissible">
+                    <p>
+                        <strong>Brevo:</strong> Your account may have been compromised. Please check for any suspicious activity in your WordPress admin panel.
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <?php
+    }
+);

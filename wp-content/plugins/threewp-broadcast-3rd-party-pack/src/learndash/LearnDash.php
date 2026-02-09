@@ -1299,6 +1299,7 @@ class LearnDash
 			$options[ $course->ID ] = sprintf( '%s (%s)', $course->post_title, $course->ID );
 
 		$courses_to_broadcast = $fs->select( 'courses_to_broadcast' )
+			->css_style( 'max-width: 100em' )
 			->description( __( 'Select the courses you wish to broadcast.', 'threewp_broadcast' ) )
 			->label( __( 'Courses to broadcast', 'threewp_broadcast' ) )
 			->opts( $options )
@@ -2108,11 +2109,11 @@ class LearnDash
 			{
 				$new_value = [];
 				foreach( $data[ $key ] as $value )
-					$new_value []= $bcd->equivalent_posts()->get( $bcd->parent_blog_id, $value, get_current_blog_id() );
+					$new_value []= $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $value, get_current_blog_id() );
 			}
 			else
 			{
-				$new_value = $bcd->equivalent_posts()->get( $bcd->parent_blog_id, $data[ $key ], get_current_blog_id() );
+				$new_value = $bcd->equivalent_posts()->get_or_broadcast( $bcd->parent_blog_id, $data[ $key ], get_current_blog_id() );
 			}
 			$this->debug( 'Updating meta value %s to %s', $key, $new_value );
 			$data[ $key ] = $new_value;
@@ -2128,6 +2129,10 @@ class LearnDash
 				$action->broadcasting_data = $bcd;
 				$action->keys = [];
 
+				// Put in all keys from the custom field protect list.
+				foreach( $bcd->custom_fields->protectlist as $key )
+					$action->keys []= $key;
+
 				if ( static::$keep_sfwd_courses_course_access_list )
 					$action->keys []= 'sfwd-courses_course_access_list';
 
@@ -2135,11 +2140,14 @@ class LearnDash
 
 				foreach( $action->keys as $key )
 				{
-					if ( isset( $old_meta[ $key ] ) )
-					{
-						$this->debug( 'Merging old %s: %s', $key, $old_meta[ $key ] );
-						$data[ $key ] = $old_meta[ $key ];
-					}
+					if ( ! isset( $old_meta[ $key ] ) )
+						continue;
+
+					if ( $old_meta[ $key ] == 0 )
+						continue;
+
+					$this->debug( 'Merging old %s: %s', $key, $old_meta[ $key ] );
+					$data[ $key ] = $old_meta[ $key ];
 				}
 			}
 		}

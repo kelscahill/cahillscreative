@@ -163,7 +163,7 @@ class Edit {
 			add_action( 'wpforms_entry_details_sidebar_details_action', [ $this, 'display_edit_button' ], 10, 2 );
 		}
 
-		// Check edit entry page.
+		// Check the edit entry page.
 		if ( ! wpforms_is_admin_page( 'entries', 'edit' ) ) {
 			return;
 		}
@@ -275,7 +275,7 @@ class Edit {
 		// Frontend form base styles.
 		wp_enqueue_style(
 			'wpforms-base',
-			WPFORMS_PLUGIN_URL . 'assets/css/frontend/classic/wpforms-base.css',
+			WPFORMS_PLUGIN_URL . "assets/css/frontend/classic/wpforms-base{$min}.css",
 			[],
 			WPFORMS_VERSION
 		);
@@ -421,7 +421,7 @@ class Edit {
 	}
 
 	/**
-	 * Setup entry edit page data.
+	 * Setup entry edits page data.
 	 *
 	 * This function does the error checking and variable setup.
 	 *
@@ -447,7 +447,7 @@ class Edit {
 			return;
 		}
 
-		// Check if entry has trash status.
+		// Check if the entry has trash status.
 		if ( $entry->status === 'trash' ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			$this->abort_message = esc_html__( 'You can\'t edit this entry because it\'s in the trash.', 'wpforms' );
@@ -945,7 +945,7 @@ class Edit {
 
 		$field_type = ! empty( $field['type'] ) ? $field['type'] : '';
 
-		// We can't display the field of unknown type or field, that is not displayable.
+		// We can't display the field of an unknown type or field that is not displayable.
 		if ( ! $this->is_field_displayable( $field_type, $field, $form_data ) ) {
 			return;
 		}
@@ -974,7 +974,7 @@ class Edit {
 
 		/*
 		 * Clean extra user-defined CSS classes to avoid styling issues.
-		 * This makes Edit screen look similar to View screen in terms of visual structure:
+		 * This makes the Edit screen look similar to the View screen in terms of visual structure:
 		 * each field one by one on a single row, no columns, etc.
 		 */
 		$field['css'] = '';
@@ -1068,7 +1068,7 @@ class Edit {
 	}
 
 	/**
-	 * Add Update Button to Entry Meta Details metabox actions.
+	 * Add the Update Button to Entry Meta Details metabox actions.
 	 *
 	 * @since 1.6.0
 	 *
@@ -1084,7 +1084,7 @@ class Edit {
 		printf(
 			'<div id="publishing-action">
 				<button class="button button-primary button-large wpforms-submit" id="wpforms-edit-entry-update">%s</button>
-				<img src="%sassets/images/submit-spin.svg" class="wpforms-submit-spinner" style="display: none;">
+				<img src="%sassets/images/submit-spin.svg" class="wpforms-submit-spinner" style="display: none;" alt="">
 			</div>',
 			esc_html__( 'Update', 'wpforms' ),
 			esc_url( WPFORMS_PLUGIN_URL )
@@ -1330,38 +1330,39 @@ class Edit {
 
 		// Get saved fields data from DB.
 		$entry_fields_obj = wpforms()->obj( 'entry_fields' );
-		$dbdata_result    = $entry_fields_obj->get_fields(
+		$db_data_result   = $entry_fields_obj->get_fields(
 			[
 				'entry_id' => $this->entry_id,
 				'number'   => 1000,
 			]
 		);
-		$dbdata_fields    = [];
+		$db_data_fields   = [];
 
-		if ( ! empty( $dbdata_result ) ) {
-			$dbdata_fields = array_combine( wp_list_pluck( $dbdata_result, 'field_id' ), $dbdata_result );
-			$dbdata_fields = array_map( 'get_object_vars', $dbdata_fields );
+		if ( ! empty( $db_data_result ) ) {
+			$db_data_fields = array_combine( wp_list_pluck( $db_data_result, 'field_id' ), $db_data_result );
+			$db_data_fields = array_map( 'get_object_vars', $db_data_fields );
 		}
 
 		$this->date_modified = current_time( 'Y-m-d H:i:s', true );
 
 		foreach ( $this->fields as $field ) {
+			/** This filter is documented in wpforms/pro/includes/class-entry-fields.php */
 			$save_field          = apply_filters( 'wpforms_entry_save_fields', $field, $this->form_data, $this->entry_id ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName, WPForms.Comments.PHPDocHooks.RequiredHookDocumentation
 			$field_id            = $save_field['id'];
 			$field_type          = empty( $save_field['type'] ) ? '' : $save_field['type'];
 			$save_field['value'] = empty( $save_field['value'] ) && $save_field['value'] !== '0' ? '' : (string) $save_field['value'];
-			$dbdata_value_exist  = isset( $dbdata_fields[ $field_id ]['value'] );
+			$db_data_value_exist = isset( $db_data_fields[ $field_id ]['value'] );
 
-			// Process the field only if the value was changed or not existed in DB at all. Also check if the field is editable.
+			// Process the field only if the value was changed or not existed in DB at all. Also, check if the field is editable.
 			if (
-				( $dbdata_value_exist && (string) $dbdata_fields[ $field_id ]['value'] === $save_field['value'] ) ||
+				( $db_data_value_exist && (string) $db_data_fields[ $field_id ]['value'] === $save_field['value'] ) ||
 				! $this->is_field_entries_editable( $field_type, $this->form_data['fields'][ $field_id ], $this->form_data )
 			) {
 				continue;
 			}
 
 			// Add field data to DB if it doesn't exist and isn't empty.
-			if ( ! $dbdata_value_exist && $save_field['value'] !== '' ) {
+			if ( ! $db_data_value_exist && $save_field['value'] !== '' ) {
 				$data = [
 					'entry_id' => $this->entry_id,
 					'form_id'  => (int) $this->form_data['id'],
@@ -1384,9 +1385,9 @@ class Edit {
 			}
 
 			// Update field data in DB if it exists and isn't empty.
-			if ( $dbdata_value_exist && $save_field['value'] !== '' ) {
+			if ( $db_data_value_exist && $save_field['value'] !== '' ) {
 				$entry_fields_obj->update(
-					wpforms_validate_field_id( $dbdata_fields[ $field_id ]['id'] ),
+					wpforms_validate_field_id( $db_data_fields[ $field_id ]['id'] ),
 					[
 						'value' => $save_field['value'],
 						'date'  => $this->date_modified,
@@ -1397,8 +1398,8 @@ class Edit {
 			}
 
 			// Delete field data in DB if it exists and the value is empty.
-			if ( $dbdata_value_exist && $save_field['value'] === '' ) {
-				$entry_fields_obj->delete( wpforms_validate_field_id( $dbdata_fields[ $field_id ]['id'] ) );
+			if ( $db_data_value_exist && $save_field['value'] === '' ) {
+				$entry_fields_obj->delete( wpforms_validate_field_id( $db_data_fields[ $field_id ]['id'] ) );
 			}
 
 			$updated_fields[ $field_id ] = $field;
@@ -1678,7 +1679,7 @@ class Edit {
 	}
 
 	/**
-	 * Add entry log record to the entry_meta table.
+	 * Add the entry log record to the entry_meta table.
 	 *
 	 * @since 1.6.6
 	 *
@@ -1700,7 +1701,7 @@ class Edit {
 	}
 
 	/**
-	 * Add a removed file to entry meta.
+	 * Add a removed file to the entry meta.
 	 *
 	 * @since 1.6.6
 	 *
@@ -1824,7 +1825,7 @@ class Edit {
 	}
 
 	/**
-	 * Maybe remove attachment from the entry field.
+	 * Maybe remove the attachment from the entry field.
 	 *
 	 * @since 1.6.6
 	 *
@@ -1854,17 +1855,17 @@ class Edit {
 			return false;
 		}
 
-		$dbdata_field_id = array_map(
+		$db_data_field_id = array_map(
 			'get_object_vars',
 			$entry_fields
 		);
 
-		if ( ! isset( $dbdata_field_id[0]['id'] ) ) {
+		if ( ! isset( $db_data_field_id[0]['id'] ) ) {
 			return false;
 		}
 
 		wpforms()->obj( 'entry_fields' )->update(
-			wpforms_validate_field_id( $dbdata_field_id[0]['id'] ),
+			wpforms_validate_field_id( $db_data_field_id[0]['id'] ),
 			[
 				'value' => '',
 				'date'  => $this->date_modified,

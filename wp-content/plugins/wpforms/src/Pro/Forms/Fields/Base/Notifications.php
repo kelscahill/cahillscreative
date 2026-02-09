@@ -240,7 +240,7 @@ abstract class Notifications {
 		}
 
 		if ( $this->email_type === 'html' ) {
-			return '<tr><td class="field-repeater-name field-name"><strong>' . esc_html( $label ) . '</strong></td><td class="field-value"></td></tr>';
+			return '<tr><td class="field-repeater-name field-name" colspan="2"><strong>' . esc_html( $label ) . '</strong></td></tr>';
 		}
 
 		// In plain email all HTML tags deleted automatically before sending, so we can skip escaping at all.

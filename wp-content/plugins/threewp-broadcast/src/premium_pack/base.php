@@ -124,6 +124,7 @@ class base
 		$directory = ThreeWP_Broadcast()->paths( 'path_from_plugin_directory' ) . '/src/premium_pack/lang/';
 		// Allow people to load their own pot files.
 		$directory = apply_filters( 'Broadcast_Pack_language_directory', $directory );
+		// phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- For add-ons, since they aren't hosted on wp.org
 		load_plugin_textdomain( $this->language_domain, false, $directory );
 	}
 

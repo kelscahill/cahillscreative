@@ -441,18 +441,6 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Get the input name for the field.
-	 *
-	 * @since 1.9.8
-	 *
-	 * @return string
-	 */
-	protected function get_input_name(): string {
-
-		return sprintf( 'wpforms_%d_%d', $this->form_id, $this->field_id );
-	}
-
-	/**
 	 * Define additional field properties.
 	 *
 	 * @since 1.9.8

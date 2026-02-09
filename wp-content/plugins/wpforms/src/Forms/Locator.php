@@ -644,7 +644,7 @@ class Locator {
 		// Escaped above.
 		return sprintf(
 			'<span class="wpforms-locations-list-item">%s</span>',
-			$location_edit_link . $location_link
+			$location_edit_link . wp_kses_post( urldecode( $location_link ) )
 		);
 	}
 
@@ -1043,14 +1043,14 @@ class Locator {
 		 *
 		 * @since 1.7.4
 		 */
-		do_action( FormsLocatorScanTask::DELETE_ACTION ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+		do_action( FormsLocatorScanTask::DELETE_ACTION ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 
 		/**
 		 * Run Forms Locator scan action.
 		 *
 		 * @since 1.7.4
 		 */
-		do_action( FormsLocatorScanTask::RESCAN_ACTION ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+		do_action( FormsLocatorScanTask::RESCAN_ACTION ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 	}
 
 	/**

@@ -725,7 +725,7 @@
         </div>
 		<div class="settings-button">
 			<a
-				href=<?php echo $settingsUrl ?>
+				href="<?php echo esc_url( $settingsUrl ); ?>"
 				target="_blank"
 				class="connect-button"
 				style="background-color: #006a43; padding: 15px 22px; font-size: 16px;"

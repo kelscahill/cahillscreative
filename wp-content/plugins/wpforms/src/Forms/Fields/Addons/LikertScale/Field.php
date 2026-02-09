@@ -98,17 +98,17 @@ class Field extends WPForms_Field {
 			false
 		);
 		$fld    = sprintf(
-			'<ul data-next-id="%s" class="choices-list %s" data-field-id="%d" data-field-type="%s" data-choice-type="%s">',
+			'<ul id="wpforms-field-option-%1$d-rows-list" data-next-id="%2$s" class="choices-list wpforms-undo-redo-container %3$s" data-field-id="%1$d" data-field-type="%4$s" data-choice-type="%5$s">',
+			esc_attr( $field['id'] ),
 			max( array_keys( $values ) ) + 1,
 			! empty( $field['single_row'] ) ? 'wpforms-hidden' : '',
-			$field['id'],
 			$this->type,
 			'rows'
 		);
 
 		foreach ( $values as $key => $value ) {
 			$fld .= sprintf( '<li data-key="%d">', $key );
-			$fld .= '<span class="move"><i class="fa fa-bars" aria-hidden="true"></i></span>';
+			$fld .= '<span class="move"><i class="fa fa-grip-lines" aria-hidden="true"></i></span>';
 			$fld .= sprintf( '<input type="text" name="fields[%s][rows][%s]" value="%s" class="label">', esc_attr( $field['id'] ), $key, esc_attr( $value ) );
 			$fld .= '<a class="add" href="#" title="' . esc_attr__( 'Add likert scale row', 'wpforms-lite' ) . '"><i class="fa fa-plus-circle"></i></a>';
 			$fld .= '<a class="remove" href="# title="' . esc_attr__( 'Remove likert scale row', 'wpforms-lite' ) . '"><i class="fa fa-minus-circle"></i></a>';
@@ -177,11 +177,17 @@ class Field extends WPForms_Field {
 			],
 			false
 		);
-		$fld    = sprintf( '<ul data-next-id="%s" class="choices-list" data-field-id="%d" data-field-type="%s" data-choice-type="%s">', max( array_keys( $values ) ) + 1, $field['id'], $this->type, 'columns' );
+		$fld    = sprintf(
+			'<ul id="wpforms-field-option-%1$d-columns-list" data-next-id="%2$s" class="choices-list wpforms-undo-redo-container" data-field-id="%1$d" data-field-type="%3$s" data-choice-type="%4$s">',
+			esc_attr( $field['id'] ),
+			max( array_keys( $values ) ) + 1,
+			$this->type,
+			'columns'
+		);
 
 		foreach ( $values as $key => $value ) {
 			$fld .= sprintf( '<li data-key="%d">', $key );
-			$fld .= '<span class="move"><i class="fa fa-bars" aria-hidden="true"></i></span>';
+			$fld .= '<span class="move"><i class="fa fa-grip-lines" aria-hidden="true"></i></span>';
 			$fld .= sprintf( '<input type="text" name="fields[%s][columns][%s]" value="%s">', $field['id'], $key, esc_attr( $value ) );
 			$fld .= '<a class="add" href="#" title="' . esc_attr__( 'Add likert scale column', 'wpforms-lite' ) . '"><i class="fa fa-plus-circle"></i></a>';
 			$fld .= '<a class="remove" href="# title="' . esc_attr__( 'Remove likert scale column', 'wpforms-lite' ) . '"><i class="fa fa-minus-circle"></i></a>';

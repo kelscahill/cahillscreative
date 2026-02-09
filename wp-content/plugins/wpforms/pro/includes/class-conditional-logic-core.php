@@ -94,7 +94,7 @@ class WPForms_Conditional_Logic_Core {
 		?>
 		<script type="text/html" id="tmpl-wpforms-conditional-block">
 			<# var containerID = data.fieldName.replace(/]/g, '').replace(/\[/g, '-'); #>
-			<div class="wpforms-conditional-groups" id="wpforms-conditional-groups-{{ containerID }}">
+			<div class="wpforms-conditional-groups wpforms-undo-redo-container" id="wpforms-conditional-groups-{{ containerID }}">
 				<h4>
 					<select name="{{ data.fieldName }}[conditional_type]">
 						<# _.each(data.actions, function(key, val) { #>
@@ -190,20 +190,47 @@ class WPForms_Conditional_Logic_Core {
 
 		if ( ! empty( $args['form'] ) ) {
 			$form_fields = wpforms_get_form_fields( $args['form'], wpforms_get_conditional_logic_form_fields_supported() );
-		} else {
+		}
+
+		if ( empty( $form_fields ) || ! is_array( $form_fields ) ) {
 			$form_fields = [];
 		}
 
+		/**
+		 * Filter the list of form fields available for Conditional Logic builder.
+		 *
+		 * Allows addons to modify or extend the fields list used for the first
+		 * Conditional Logic select.
+		 *
+		 * @since 1.9.8.6
+		 *
+		 * @param array $form_fields Form fields data.
+		 * @param array $args        Builder block args.
+		 */
+		$form_fields = (array) apply_filters( 'wpforms_conditional_logic_core_form_fields', $form_fields, $args );
+
 		// Define data.
-		$type       = ! empty( $args['type'] ) ? $args['type'] : 'field';
-		$panel      = ! empty( $args['panel'] ) ? $args['panel'] : false; // notifications/connections.
-		$parent     = ! empty( $args['parent'] ) ? $args['parent'] : false; // settings.
-		$subsection = ! empty( $args['subsection'] ) ? $args['subsection'] : false;
-		$index      = isset( $args['index'] ) ? esc_attr( $args['index'] ) : '';
-		$index      = is_numeric( $index ) ? absint( $index ) : $index;
-		$field      = ! empty( $args['field'] ) ? $args['field'] : false;
-		$reference  = ! empty( $args['reference'] ) ? $args['reference'] : '';
-		$data_attrs = '';
+		$type                      = ! empty( $args['type'] ) ? $args['type'] : 'field';
+		$panel                     = ! empty( $args['panel'] ) ? $args['panel'] : false; // notifications/connections.
+		$parent                    = ! empty( $args['parent'] ) ? $args['parent'] : false; // settings.
+		$subsection                = ! empty( $args['subsection'] ) ? $args['subsection'] : false;
+		$index                     = isset( $args['index'] ) ? esc_attr( $args['index'] ) : '';
+		$index                     = is_numeric( $index ) ? absint( $index ) : $index;
+		$field                     = ! empty( $args['field'] ) ? $args['field'] : false;
+		$data_attrs                = '';
+		$operators                 = [
+			'==' => __( 'is', 'wpforms' ),
+			'!=' => __( 'is not', 'wpforms' ),
+			'e'  => __( 'empty', 'wpforms' ),
+			'!e' => __( 'not empty', 'wpforms' ),
+			'c'  => __( 'contains', 'wpforms' ),
+			'!c' => __( 'does not contain', 'wpforms' ),
+			'^'  => __( 'starts with', 'wpforms' ),
+			'~'  => __( 'ends with', 'wpforms' ),
+			'>'  => __( 'greater than', 'wpforms' ),
+			'<'  => __( 'less than', 'wpforms' ),
+		];
+		$disabled_choice_operators = [ 'c', '!c', '^', '~', '>', '<' ];
 
 		ob_start();
 
@@ -455,7 +482,7 @@ class WPForms_Conditional_Logic_Core {
 
 														$selected = selected( $selected, $form_field['id'], false );
 
-														printf( '<option value="%s" %s>%s</option>', wpforms_validate_field_id( $form_field['id'] ), esc_attr( $selected ), esc_html( $field_label ) );
+														printf( '<option value="%s" %s>%s</option>', esc_attr( $form_field['id'] ), esc_attr( $selected ), esc_html( $field_label ) );
 													}
 												}
 
@@ -477,27 +504,31 @@ class WPForms_Conditional_Logic_Core {
 												esc_attr( $rule_id )
 											);
 
-												$operator = ! empty( $rule['operator'] ) ? $rule['operator'] : false;
+												$selected_operator = ! empty( $rule['operator'] ) ? $rule['operator'] : false;
 
-												printf( '<option value="==" %s>%s</option>', selected( $operator, '==', false ), esc_html__( 'is', 'wpforms' ) );
-												printf( '<option value="!=" %s>%s</option>', selected( $operator, '!=', false ), esc_html__( 'is not', 'wpforms' ) );
-												printf( '<option value="e" %s>%s</option>', selected( $operator, 'e', false ), esc_html__( 'empty', 'wpforms' ) );
-												printf( '<option value="!e" %s>%s</option>', selected( $operator, '!e', false ), esc_html__( 'not empty', 'wpforms' ) );
+												foreach ( $operators as $operator_key => $operator_label ) {
+													$is_text_field = ! empty( $rule['field'] ) && ! empty( $form_fields[ $rule['field'] ]['type'] ) && in_array( $form_fields[ $rule['field'] ]['type'], $text_and_numbers_fields, true );
+													$disabled      = ! $is_text_field && in_array( $operator_key, $disabled_choice_operators, true );
 
-												// Only text based fields support
-												// these additional operators.
-												$disabled = '';
+													/**
+													 * Allow disabling of operators for certain fields.
+													 *
+													 * @since 1.9.8.6
+													 *
+													 * @param bool   $disabled     Is the operator disabled?
+													 * @param string $operator_key Operator key.
+													 * @param array  $rule         Current rule.
+													 */
+													$disabled = (bool) apply_filters( 'wpforms_conditional_logic_core_operator_is_disabled', $disabled, $operator_key, $rule );
 
-												if ( ! empty( $rule['field'] ) && ! empty( $form_fields[ $rule['field'] ]['type'] ) ) {
-													$disabled = in_array( $form_fields[ $rule['field'] ]['type'], $text_and_numbers_fields, true ) ? '' : ' disabled';
+													printf(
+														'<option value="%1$s" %2$s%3$s>%4$s</option>',
+														esc_attr( $operator_key ),
+														selected( $selected_operator, $operator_key, false ),
+														disabled( $disabled, true, false ),
+														esc_html( $operator_label )
+													);
 												}
-
-												printf( '<option value="c" %s%s>%s</option>', selected( $operator, 'c', false ), esc_attr( $disabled ), esc_html__( 'contains', 'wpforms' ) );
-												printf( '<option value="!c" %s%s>%s</option>', selected( $operator, '!c', false ), esc_attr( $disabled ), esc_html__( 'does not contain', 'wpforms' ) );
-												printf( '<option value="^" %s%s>%s</option>', selected( $operator, '^', false ), esc_attr( $disabled ), esc_html__( 'starts with', 'wpforms' ) );
-												printf( '<option value="~" %s%s>%s</option>', selected( $operator, '~', false ), esc_attr( $disabled ), esc_html__( 'ends with', 'wpforms' ) );
-												printf( '<option value=">" %s%s>%s</option>', selected( $operator, '>', false ), esc_attr( $disabled ), esc_html__( 'greater than', 'wpforms' ) );
-												printf( '<option value="<" %s%s>%s</option>', selected( $operator, '<', false ), esc_attr( $disabled ), esc_html__( 'less than', 'wpforms' ) );
 
 											echo '</select>';
 
@@ -542,11 +573,29 @@ class WPForms_Conditional_Logic_Core {
 														esc_attr( $disabled )
 													);
 
-														echo '<option value="">' . esc_html__( '--- Select Choice ---', 'wpforms' ) . '</option>';
+														/**
+														 * Filter placeholder for the 3rd CL field select.
+														 *
+														 * @since 1.9.8.6
+														 *
+														 * @param string $placeholder Placeholder text.
+														 * @param array  $rule        Current rule.
+														 * @param array  $form_fields Available form fields.
+														 * @param array  $args        Builder block args.
+														 */
+														$placeholder = (string) apply_filters( 'wpforms_conditional_logic_core_value_placeholder', __( '--- Select Choice ---', 'wpforms' ), $rule, $form_fields, $args );
+
+														echo '<option value="">' . esc_html( $placeholder ) . '</option>';
 
 														if ( ! empty( $form_fields[ $rule['field'] ]['choices'] ) ) {
 
 															foreach ( $form_fields[ $rule['field'] ]['choices'] as $option_id => $option ) {
+
+																// Do not allow to select Other option.
+																if ( isset( $option['other'] ) ) {
+																	continue;
+																}
+
 																$value = isset( $rule['value'] ) ? $rule['value'] : '';
 																$label = ! isset( $option['label'] ) || trim( $option['label'] ) === ''
 																	? sprintf( /* translators: %d - choice number. */
@@ -711,7 +760,7 @@ class WPForms_Conditional_Logic_Core {
 							default:
 								// phpcs:disable WPForms.Comments.PHPDocHooks.RequiredHookDocumentation, WPForms.PHP.ValidateHooks.InvalidHookName
 
-								/*
+								/**
 								 * Allows developers to extend conditional logic with own rule operators.
 								 *
 								 * @since 1.2.3
@@ -805,6 +854,18 @@ class WPForms_Conditional_Logic_Core {
 								break;
 						}
 					} // End `if()`.
+
+					/**
+					 * Allows developers to extend conditional logic with own rules.
+					 *
+					 * @since 1.9.8.6
+					 *
+					 * @param bool  $pass_rule Have we passed the rule?
+					 * @param array $rule      Rule data.
+					 * @param array $form_data Form data and settings.
+					 * @param array $fields    Submitted fields.
+					 */
+					$pass_rule = (bool) apply_filters( 'wpforms_conditional_logic_core_process', $pass_rule, $rule, $form_data, $fields );
 
 					if ( ! $pass_rule ) {
 						$pass_group = false;

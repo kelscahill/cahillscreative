@@ -369,6 +369,7 @@ class broadcasting_data
 		}
 
 		if ( $this->_POST === null )
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- we need to save the whole POST for processing / restoration later.
 			$this->_POST = $_POST;
 
 		if ( $this->parent_blog_id === null )
