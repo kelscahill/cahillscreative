@@ -1,0 +1,8 @@
+This folder contains the BerlinDB package.
+https://github.com/berlindb/core/
+
+Modifications from the original:
+- Namespace has been changed
+- Filenames have have been changed to fit with WP Coding standards
+- Core files have been moved into `engine`
+- a new folder added with project specific settings

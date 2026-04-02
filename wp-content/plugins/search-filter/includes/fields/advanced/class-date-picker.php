@@ -21,61 +21,149 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Handles the setup + display of the Date Picker
  */
 class Date_Picker extends Advanced {
-	public $icons             = array(
+
+	/**
+	 * Calculate the interaction type for this field.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return string The interaction type.
+	 */
+	protected function calc_interaction_type(): string {
+		// Single date picker is always choice.
+		return 'choice';
+	}
+
+	/**
+	 * List of components this field relies on.
+	 *
+	 * @var array
+	 */
+	public $components = array(
+		'date-picker',
+	);
+
+	/**
+	 * List of icons the input type supports.
+	 *
+	 * @var array
+	 */
+	public $icons = array(
 		'event',
 		'clear',
 	);
+
+	/**
+	 * The input type for this field.
+	 *
+	 * @var string
+	 */
 	public static $input_type = 'date_picker';
-	public static $type       = 'advanced';
 
+	/**
+	 * The type of field.
+	 *
+	 * @var string
+	 */
+	public static $type = 'advanced';
+
+	/**
+	 * List of supported styles for this field.
+	 *
+	 * @var array
+	 */
 	public static $styles = array(
-		'inputColor',
-		'inputBackgroundColor',
-		'inputSelectedColor',
-		'inputSelectedBackgroundColor',
-		'inputBorderColor',
-		'inputBorderHoverColor',
-		'inputBorderFocusColor',
-		'inputIconColor',
-		'inputInteractiveColor',
-		'inputInteractiveHoverColor',
-		'inputClearColor',
-		'inputClearHoverColor',
 
-		'labelColor',
-		'labelBackgroundColor',
-		'labelPadding',
-		'labelMargin',
-		'labelScale',
+		'fieldMargin'                  => true,
+		// 'fieldPadding'                 => true,
+		'inputMargin'                  => true,
+		'labelBorderStyle'             => true,
+		'labelBorderRadius'            => true,
+		'descriptionBorderStyle'       => true,
+		'descriptionBorderRadius'      => true,
+		'inputClearPadding'            => true,
+		'inputBorderRadius'            => true,
+		'inputBorderAccentColor'       => true,
 
-		'descriptionColor',
-		'descriptionBackgroundColor',
-		'descriptionPadding',
-		'descriptionMargin',
-		'descriptionScale',
+		'inputScale'                   => true,
+		'inputColor'                   => true,
+		'inputBackgroundColor'         => true,
+		'inputPlaceholderColor'        => true,
+		'inputSelectedColor'           => true,
+		'inputSelectedBackgroundColor' => true,
+		'inputBorder'                  => true,
+		'inputBorderHoverColor'        => true,
+		'inputBorderFocusColor'        => true,
+		'inputIconColor'               => true,
+		'inputInteractiveColor'        => true,
+		'inputInteractiveHoverColor'   => true,
+		'inputClearColor'              => true,
+		'inputClearHoverColor'         => true,
+		'inputShadow'                  => true,
+		'inputPadding'                 => true,
+		'inputGap'                     => true,
+		'inputIconSize'                => true,
+		'inputIconPadding'             => true,
+		'inputClearSize'               => true,
+
+
+		'labelColor'                   => true,
+		'labelBackgroundColor'         => true,
+		'labelPadding'                 => true,
+		'labelMargin'                  => true,
+		'labelScale'                   => true,
+
+		'descriptionColor'             => true,
+		'descriptionBackgroundColor'   => true,
+		'descriptionPadding'           => true,
+		'descriptionMargin'            => true,
+		'descriptionScale'             => true,
+
+
+		// 'dropdownAttachment' => true,
+		'dropdownScale'                => true,
+		'dropdownMargin'               => true,
+		'dropdownBorder'               => true,
+		'dropdownBorderRadius'         => true,
+		'dropdownOptionPadding'        => true,
+		'dropdownOptionIndentDepth'    => true,
+		'dropdownShadow'               => true,
 	);
+	/**
+	 * The processed (cached) styles.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_styles    The processed styles, null if not processed yet.
+	 */
+	protected static $processed_styles = null;
 
-	public static $data_support = array(
-		// Each entry is a group of settings that need to have certain conditions.
-		array(
-			'dataType'          => 'post_attribute',
-			'dataPostAttribute' => array( 'post_published_date' ),
-		),
-	);
-
+	/**
+	 * List of setting support for this field.
+	 *
+	 * @var array
+	 */
 	public static $setting_support = array(
-		/*
+		'addClass'                => true,
+		'width'                   => true,
+		'queryId'                 => true,
+		'stylesId'                => true,
+		'type'                    => true,
+		'label'                   => true,
+		'showLabel'               => true,
+		'showDescription'         => true,
+		'description'             => true,
+		'inputType'               => true,
 		'dataType'                => array(
 			'values' => array(
-				'post_attribute',
+				'post_attribute' => true,
 			),
 		),
 		'dataPostAttribute'       => array(
 			'values' => array(
-				'post_published_date',
+				'post_published_date' => true,
 			),
-		), */
-		'showLabel'               => true,
+		),
 		'placeholder'             => true,
 		'dateDisplayFormat'       => true,
 		'dateDisplayFormatCustom' => true,
@@ -84,8 +172,31 @@ class Date_Picker extends Advanced {
 		'inputShowIcon'           => true,
 	);
 
+	/**
+	 * The processed (cached) setting support.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_setting_support    The processed settings, null if not processed yet.
+	 */
+	protected static $processed_setting_support = null;
+
+	/**
+	 * Get the label for this field type.
+	 *
+	 * @return string The label.
+	 */
 	public static function get_label() {
 		return __( 'Date Picker', 'search-filter' );
+	}
+
+	/**
+	 * Get the description for the input type.
+	 *
+	 * @return string The label.
+	 */
+	public static function get_description() {
+		return __( 'Allow users to filter by choosing a date from a calendar.' );
 	}
 
 	/**
@@ -100,7 +211,7 @@ class Date_Picker extends Advanced {
 		$value       = isset( $values[0] ) ? $values[0] : '';
 		$render_data = array(
 			'uid'   => self::get_instance_id( 'date-picker' ),
-			'value' => wp_date( $this->attributes['dateDisplayFormat'], strtotime( $value ) ),
+			'value' => wp_date( $this->get_attribute( 'dateDisplayFormat' ), strtotime( $value ) ),
 		);
 		$this->set_render_data( $render_data );
 
@@ -118,11 +229,11 @@ class Date_Picker extends Advanced {
 	 * @return string
 	 */
 	public function get_url_name() {
-		if ( ! $this->has_init() ) {
+		if ( ! $this->get_attribute( 'dataType' ) ) {
 			return parent::get_url_name();
 		}
-		if ( 'post_attribute' === $this->attributes['dataType'] ) {
-			$data_source = $this->attributes['dataPostAttribute'];
+		if ( 'post_attribute' === $this->get_attribute( 'dataType' ) ) {
+			$data_source = $this->get_attribute( 'dataPostAttribute' );
 			return $data_source;
 		}
 		return parent::get_url_name();
@@ -130,6 +241,9 @@ class Date_Picker extends Advanced {
 
 	/**
 	 * Gets the WP_Query args based on the field value.
+	 *
+	 * @param array $query_args The query arguments.
+	 * @return array The modified query arguments.
 	 */
 	public function apply_wp_query_args( $query_args = array() ) {
 
@@ -140,7 +254,10 @@ class Date_Picker extends Advanced {
 		if ( $this->get_attribute( 'dataPostAttribute' ) !== 'post_published_date' ) {
 			return parent::apply_wp_query_args( $query_args );
 		}
-
+		// Only set if a value is selected.
+		if ( ! $this->has_values() ) {
+			return parent::apply_wp_query_args( $query_args );
+		}
 		$value = $this->get_value();
 		$date  = explode( '-', $value );
 		if ( count( $date ) !== 3 ) {

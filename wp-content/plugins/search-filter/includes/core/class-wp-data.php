@@ -55,13 +55,16 @@ class WP_Data {
 	/**
 	 * A wrapper for the WP function `get_post_types`
 	 *
+	 * @param array  $args     Array of arguments to filter post types.
+	 * @param string $operator Operator to use for filtering (default 'and').
 	 * @return array
 	 */
 	public static function get_post_types( $args = array(), $operator = 'and' ) {
 
 		$default_args = array( 'public' => true );
 		$args         = wp_parse_args( $args, $default_args );
-		$key          = md5( serialize( $args ) ) . '_' . $operator;
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Necessary for data storage, never gets saved to the DB.
+		$key = md5( serialize( $args ) ) . '_' . $operator;
 		if ( ! isset( self::$post_types[ $key ] ) ) {
 			self::$post_types[ $key ] = get_post_types( $args, 'objects', $operator );
 		}
@@ -97,6 +100,7 @@ class WP_Data {
 	/**
 	 * A wrapper for the WP function `get_users`
 	 *
+	 * @param array $args Array of arguments to filter users.
 	 * @return array
 	 */
 	public static function get_post_authors( $args = array() ) {
@@ -138,6 +142,7 @@ class WP_Data {
 	 * @return array
 	 */
 	public static function get_terms( $args ) {
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Necessary for data storage, input is sanitized.
 		$key = md5( serialize( $args ) );
 		if ( ! isset( self::$terms[ $key ] ) ) {
 			self::$terms[ $key ] = get_terms( $args );

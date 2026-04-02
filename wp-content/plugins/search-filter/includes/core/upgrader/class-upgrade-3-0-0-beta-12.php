@@ -1,4 +1,10 @@
 <?php
+/**
+ * Upgrade routine for version 3.0.0 Beta 12.
+ *
+ * @package Search_Filter
+ * @since 3.0.0
+ */
 
 namespace Search_Filter\Core\Upgrader;
 
@@ -6,11 +12,28 @@ use Search_Filter\Core\CSS_Loader;
 use Search_Filter\Fields;
 use Search_Filter\Styles\Style;
 
-class Upgrade_3_0_0_Beta_12 {
+// If this file is called directly, abort.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-	public static function upgrade() {
+/**
+ * Handles database and settings upgrades for version 3.0.0 Beta 12.
+ *
+ * @since 3.0.0
+ */
+class Upgrade_3_0_0_Beta_12 extends Upgrade_Base {
+
+	/**
+	 * Performs the upgrade routine for version 3.0.0 Beta 12.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return Upgrade_Result The result of the upgrade.
+	 */
+	protected static function do_upgrade() {
 		// Disable CSS save so we don't rebuild the CSS file for every field, query and style.
-		add_filter( 'search-filter/core/css-loader/save-css/can-save', array( __CLASS__, 'disable_css_save' ), 10, 2 );
+		add_filter( 'search-filter/core/css-loader/save-css/can-save', array( __CLASS__, 'disable_css_save' ), 10 );
 
 		// First, update any fields that are using the `filter` type to `choice`,
 		// do it directly using the DB because otherwise the fields will throw an error.
@@ -114,21 +137,36 @@ class Upgrade_3_0_0_Beta_12 {
 		remove_filter( 'search-filter/core/css-loader/save-css/can-save', array( __CLASS__, 'disable_css_save' ), 10 );
 		// Now build the CSS once.
 		CSS_Loader::save_css();
+
+		return Upgrade_Result::success();
 	}
 
+	/**
+	 * Disables CSS save during upgrade to prevent rebuilding CSS for every change.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool Always returns false to disable CSS save.
+	 */
 	public static function disable_css_save() {
 		return false;
 	}
 
+	/**
+	 * Upgrades style attributes from the previous format to the new format.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $previous_attributes The previous style attributes.
+	 * @return array The upgraded style attributes.
+	 */
 	public static function upgrade_styles_attributes( $previous_attributes ) {
 		// Start with the default attributes as a base for the structure.
 		$default_attributes = Style::generate_default_attributes();
 		// Use a map to map the old attributes to the new ones.
 		$attribute_map = array(
 			'labelColor'                   => 'labelTextColor',
-			// 'labelBackgroundColor'         => '',
 			'descriptionColor'             => 'labelTextColor',
-			// 'descriptionBackgroundColor'   => '',
 			'inputColor'                   => 'textColor',
 			'inputBackgroundColor'         => 'backgroundColor',
 			'inputSelectedColor'           => 'activeTextColor',

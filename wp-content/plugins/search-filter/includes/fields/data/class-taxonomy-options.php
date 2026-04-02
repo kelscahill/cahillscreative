@@ -73,6 +73,7 @@ class Option {
 	}
 }
 
+// phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
 /**
  * Handles the options for a taxonomy field.
  *
@@ -150,23 +151,15 @@ class Taxonomy_Options {
 	private $show_count_brackets = false;
 
 	/**
-	 * The option values with corresponding labels.
-	 *
-	 * Necessary when using hierarchical taxonomies to avoid
-	 * traversing nested options multiple times.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var array
-	 */
-	private $options_labels = array();
-	/**
 	 * Initialise the class.
 	 *
 	 * This is called from the field class.
 	 *
-	 * @param array $taxonomy_terms The taxonomy terms.
-	 * @param int   $field_id       The field ID.
+	 * @param string $taxonomy_name The taxonomy name.
+	 * @param array  $taxonomy_terms The taxonomy terms.
+	 * @param int    $field_id       The field ID.
+	 * @param bool   $show_count Whether to show the count.
+	 * @param bool   $show_count_brackets Whether to show the count brackets.
 	 */
 	public function init( $taxonomy_name, $taxonomy_terms, $field_id, $show_count = false, $show_count_brackets = false ) {
 
@@ -191,47 +184,81 @@ class Taxonomy_Options {
 			// We need to expose these for our JS app to use.
 			$this->term_parents[ $term->term_id ] = array();
 			$this->add_term_identifier( $term );
-			$this->add_option_label( $term );
 		}
 	}
 
+	/**
+	 * Add a term identifier to the list.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_Term $term The term to add.
+	 */
 	public function add_term_identifier( $term ) {
 		$this->term_identifiers[] = $this->get_term_identifiers( $term );
 	}
 
+	/**
+	 * Get all term parents.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return array The term parents.
+	 */
 	public function get_all_term_parents() {
 		return $this->term_parents;
 	}
 
+	/**
+	 * Get all term identifiers.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return array The term identifiers.
+	 */
 	public function get_all_term_identifiers() {
 		return $this->term_identifiers;
 	}
 
-	public function get_options_labels() {
-		return $this->options_labels;
-	}
-
-	public function add_option_label( $term ) {
-		$this->options_labels[ $term->slug ] = $term->name;
-	}
-
 	/**
 	 * Get the IDs of child terms for a given term.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int $term_id The term ID.
+	 *
+	 * @return array The child term IDs.
 	 */
 	private function get_child_terms_ids( $term_id ) {
 		return isset( $this->terms_by_parent[ $term_id ] ) ? $this->terms_by_parent[ $term_id ] : array();
 	}
 
+	/**
+	 * Get hierarchical term options.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $type Type of options to return, 'flat' or 'nested'.
+	 * @param int    $max_depth Maximum depth to recurse.
+	 *
+	 * @return array The term options.
+	 */
 	public function get_hierarchical_term_options( $type = 'flat', $max_depth = 0 ) {
 		$this->prepare_hierarchical_terms_data();
 		return $this->get_ordered_term_options_recursive( $type, 0, 0, $max_depth );
 	}
 
-	public function get_term_options( $max_depth = 0 ) {
+	/**
+	 * Get term options.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return array The term options.
+	 */
+	public function get_term_options() {
 		$options = array();
 		foreach ( $this->taxonomy_terms as $term ) {
 			$this->add_term_identifier( $term );
-			$this->add_option_label( $term );
 			$option = $this->create_term_option( $term, 0 );
 			do_action( 'search-filter/fields/data/taxonomy/update_option', $option, null );
 			Choice::add_option_to_array( $options, $option->get(), $this->field_id );
@@ -239,6 +266,15 @@ class Taxonomy_Options {
 		return $options;
 	}
 
+	/**
+	 * Get term identifiers for a term.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_Term $term The term to get identifiers for.
+	 *
+	 * @return array The term identifiers.
+	 */
 	public function get_term_identifiers( $term ) {
 		return array(
 			'id'   => $term->term_id,
@@ -251,10 +287,10 @@ class Taxonomy_Options {
 	 *
 	 * Additionally adds a depth attribute to each option so we know the level of nesting.
 	 *
-	 * @param [type]  $terms
-	 * @param [type]  $terms_by_parent
-	 * @param [type]  $term_id
-	 * @param integer $depth
+	 * @param string $type Type of options to return, `flat` or `nested`.
+	 * @param int    $term_id The ID of the term to start from (0 for root).
+	 * @param int    $depth Current depth in the hierarchy.
+	 * @param int    $max_depth Maximum depth to recurse.
 	 * @return array
 	 */
 	public function get_ordered_term_options_recursive( $type, $term_id, $depth = 0, $max_depth = 0 ) {

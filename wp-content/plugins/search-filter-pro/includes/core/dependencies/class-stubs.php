@@ -2,6 +2,8 @@
 /**
  * This class setups stubs for the input types, to prevent fatal errors when
  * upgrading to beta-2.
+ *
+ * @package Search_Filter_Pro
  */
 
 namespace Search_Filter_Pro\Core\Dependencies;
@@ -23,9 +25,11 @@ class Stubs {
 	 */
 	public static function init() {
 		add_action( 'search-filter/fields/register', array( __CLASS__, 'register_fields' ), 10 );
-
 	}
 
+	/**
+	 * Register stub field types to prevent fatal errors.
+	 */
 	public static function register_fields() {
 		// Load stubs to prevent fatal errors if S&F free is still on 3.0.0-beta-2.
 

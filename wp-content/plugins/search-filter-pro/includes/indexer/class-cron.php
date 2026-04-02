@@ -1,6 +1,16 @@
 <?php
+/**
+ * Cron tasks for indexer maintenance.
+ *
+ * @link       https://searchandfilter.com
+ * @since      3.0.0
+ * @package    Search_Filter_Pro
+ * @subpackage Search_Filter_Pro/Indexer
+ */
+
 namespace Search_Filter_Pro\Indexer;
 
+use Search_Filter\Options;
 use Search_Filter_Pro\Core\Dependencies;
 use Search_Filter_Pro\Util;
 use Search_Filter_Pro\Indexer;
@@ -31,6 +41,7 @@ class Cron {
 		// Check for missed tasks.
 		add_action( 'admin_init', array( __CLASS__, 'validate' ) );
 		// Create the schedule.
+		// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected -- Interval defined in schedules() method.
 		add_filter( 'cron_schedules', array( __CLASS__, 'schedules' ) );
 		// Add the cron job action.
 		add_action( self::CRON_HOOK, array( __CLASS__, 'run_task' ) );
@@ -45,7 +56,7 @@ class Cron {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array $schedules
+	 * @param array $schedules The WordPress cron schedules array.
 	 *
 	 * @return array    The schedules.
 	 */
@@ -68,7 +79,6 @@ class Cron {
 		if ( ! wp_next_scheduled( self::CRON_HOOK ) ) {
 			wp_schedule_event( time(), self::CRON_INTERVAL_NAME, self::CRON_HOOK );
 		}
-
 	}
 
 	/**
@@ -92,10 +102,20 @@ class Cron {
 		if ( ! Dependencies::is_search_filter_enabled() ) {
 			return;
 		}
-		
-		Indexer::check_for_errors();
+
+		Util::error_log( 'Cron: run_task', 'notice' );
+
+		// Ensure we're not using the cache when we check for errors.
+		wp_using_ext_object_cache( false );
+
+		// Check for errors.
+		Task_Runner::check_for_errors();
+
+		// Validate tables if flagged.
+		Table_Validator::maybe_validate();
+
 		// Maybe spawn a new process.
-		Async::hook_dispatch_request();
+		Indexer::async_process_queue();
 	}
 
 	/**
@@ -117,7 +137,7 @@ class Cron {
 			// This means our scheduled event has been missed by more then 5 minutes.
 			// So lets run manually and reschedule.
 			self::run_task();
-			Util::error_log( 'Expired indexer cron job found, re-running and rescheduling.', 'error' );
+			Util::error_log( 'Expired indexer cron job found, re-running and rescheduling.', 'warning' );
 			wp_clear_scheduled_hook( self::CRON_HOOK );
 			wp_schedule_event( time(), self::CRON_INTERVAL_NAME, self::CRON_HOOK );
 		}

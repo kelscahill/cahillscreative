@@ -24,6 +24,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class I18n {
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ), 1 );
 	}
@@ -39,6 +42,5 @@ class I18n {
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);
-
 	}
 }

@@ -19,8 +19,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Handles shortcode functionality for the plugin.
+ */
 class Shortcodes {
+
+	/**
+	 * Initialize the shortcodes feature.
+	 */
 	public static function init() {
+		// Setup the shortcodes feature once features are initialized.
+		add_action( 'search-filter/settings/features/init', array( __CLASS__, 'setup' ), 10 );
+
+		// Preload the option.
+		add_filter( 'search-filter/options/preload', array( __CLASS__, 'preload_option' ) );
+	}
+
+	/**
+	 * Preload the shortcodes option.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $options_to_preload The options to preload.
+	 * @return array The updated options array.
+	 */
+	public static function preload_option( $options_to_preload ) {
+		// Preload the shortcodes option.
+		$options_to_preload[] = 'shortcodes';
+		return $options_to_preload;
+	}
+
+	/**
+	 * Setup the shortcodes feature.
+	 */
+	public static function setup() {
 
 		// Check to make sure the shortcodes feature is enabled.
 		if ( ! Features::is_enabled( 'shortcodes' ) ) {
@@ -30,7 +62,7 @@ class Shortcodes {
 		Rest_API::init();
 
 		// Hook into the shortcode and display the results if the `results` attribute is set.
-		add_filter( 'search-filter/fields/shortcode/override', array( __CLASS__, 'override_shortcode' ), 10, 2 );
+		add_filter( 'search-filter/frontend/shortcode/override', array( __CLASS__, 'override_shortcode' ), 10, 2 );
 
 		// Add the query integration option to add "shortcode" the dropdown list.
 		add_action( 'search-filter/settings/init', array( __CLASS__, 'add_shortcode_integration_settings' ), 1 );
@@ -126,7 +158,7 @@ class Shortcodes {
 	 * @since 3.0.0
 	 *
 	 * @param array  $attributes The attributes.
-	 * @param string $id The query ID.
+	 * @param object $query The query object.
 	 * @return array The attributes.
 	 */
 	public static function update_query_attributes( $attributes, $query ) {
@@ -142,9 +174,9 @@ class Shortcodes {
 			return $attributes;
 		}
 
-		$attributes['queryContainer'] = '.search-filter-query--id-' . $id;
-		$attributes['queryPaginationSelector'] = '.search-filter-query--id-' . $id . ' a.page-numbers';
-		
+		$attributes['queryContainer']          = '.search-filter-query--id-' . $id;
+		$attributes['queryPaginationSelector'] = ".search-filter-query--id-{$id} a.page-numbers, .search-filter-query--id-{$id} .pagination a, .search-filter-query--id-{$id} .wp-pagenavi a";
+
 		if ( empty( $attributes['queryPostsContainer'] ) ) {
 			$attributes['queryPostsContainer'] = '.search-filter-query--id-' . $id . ' .search-filter-query-posts';
 		}
@@ -161,7 +193,6 @@ class Shortcodes {
 
 		$depends_conditions = array(
 			'relation' => 'AND',
-			'action'   => 'hide',
 			'rules'    => array(
 				array(
 					'option'  => 'queryIntegration',
@@ -207,7 +238,7 @@ class Shortcodes {
 			return $override;
 		}
 
-		$query_id       = absint( $attributes['query'] );
+		$query_id = absint( $attributes['query'] );
 
 		$theme_template_paths = array(
 			'search-filter/' . $query_id . '.php',
@@ -223,7 +254,7 @@ class Shortcodes {
 				break;
 			}
 		}
-		
+
 		// If no theme template was found, look for the plugin template.
 		if ( empty( $results_template_path ) ) {
 			$results_template_path = plugin_dir_path( SEARCH_FILTER_PRO_BASE_FILE ) . 'includes/features/shortcodes/template.php';
@@ -231,23 +262,34 @@ class Shortcodes {
 
 		$results_template_path = apply_filters( 'search-filter-pro/shortcodes/results/template_path', $results_template_path, $query_id );
 
-		// Get paged variable.  `paged` is used for for most archives.
-		// $page is used for static homepage / single pages.
+		// Get the query object.
+		$search_filter_query = \Search_Filter\Queries\Query::get_instance( $query_id );
+		if ( is_wp_error( $search_filter_query ) ) {
+			return $override;
+		}
+
+		$render_settings = $search_filter_query->get_render_settings();
+
 		$paged = 1;
-		if ( get_query_var( 'paged' ) ) {
+		// If we pass a custom `paginationKey`, then use the render settings `currentPage`,
+		// otherwise it'll always be `1` - especially if  called too early.
+		if ( isset( $render_settings['paginationKey'] ) && isset( $render_settings['currentPage'] ) ) {
+			$paged = $render_settings['currentPage'];
+		} elseif ( get_query_var( 'paged' ) ) {
 			$paged = get_query_var( 'paged' );
 		} elseif ( get_query_var( 'page' ) ) {
 			$paged = get_query_var( 'page' );
 		}
-		
+
 		$args = array(
 			'post_type'              => 'post',
 			'paged'                  => $paged,
 			'search_filter_query_id' => absint( $query_id ),
 		);
 
+		do_action( 'search-filter-pro/shortcodes/results/query/start', $query_id );
 		$query = new \WP_Query( $args );
-
+		do_action( 'search-filter-pro/shortcodes/results/query/finish', $query_id );
 		// For legacy support, add the old pagination functions which work around issues with WP pagination
 		// not only working on the posts post type.
 		if ( ! function_exists( 'search_filter_get_previous_posts_link' ) && ! function_exists( 'search_filter_get_next_posts_link' ) ) {
@@ -259,19 +301,22 @@ class Shortcodes {
 
 		$output = '<div class="search-filter-query ' . esc_attr( 'search-filter-query--id-' . $query_id ) . '">';
 
+		$template_functions = plugin_dir_path( SEARCH_FILTER_PRO_BASE_FILE ) . 'includes/features/shortcodes/functions.php';
+		if ( file_exists( $template_functions ) ) {
+			require_once $template_functions;
+		}
+
+		$template_output = '';
 		// Now the query & functions are ready, include the template.
 		if ( file_exists( $results_template_path ) ) {
-
-			$template_functions = plugin_dir_path( SEARCH_FILTER_PRO_BASE_FILE ) . 'includes/features/shortcodes/functions.php';
-			if ( file_exists( $template_functions ) ) {
-				require_once $template_functions;
-			}
-
 			ob_start();
 			// Include the template.
 			include $results_template_path;
-			$output .= ob_get_clean();
+			$template_output .= ob_get_clean();
 		}
+
+		$template_output = apply_filters( 'search-filter-pro/shortcodes/results/template_output', $template_output, $query, $query_id );
+		$output         .= $template_output;
 
 		$output .= '</div>';
 

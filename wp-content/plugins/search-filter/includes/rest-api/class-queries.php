@@ -13,7 +13,9 @@ namespace Search_Filter\Rest_API;
 
 use Search_Filter\Database\Queries\Queries as Queries_Query;
 use Search_Filter\Queries\Query;
+use Search_Filter\Queries\Settings;
 use Search_Filter\Rest_API;
+use Search_Filter\Settings\Sanitize;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,7 +23,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Handles query record operations via REST API.
  *
+ * @since 3.0.0
  */
 class Queries {
 	/**
@@ -148,7 +152,7 @@ class Queries {
 						'attributes'  => array(
 							'type'              => 'object',
 							'required'          => false,
-							'sanitize_callback' => 'Search_Filter\\Core\\Sanitize::deep_clean',
+							'sanitize_callback' => array( $this, 'sanitize_attributes' ),
 						),
 						'context'     => array(
 							'type'              => 'string',
@@ -200,7 +204,12 @@ class Queries {
 	}
 
 	/**
-	 * Fetch queries
+	 * Fetch queries.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response REST response.
 	 */
 	public function get_records( \WP_REST_Request $request ) {
 		$params     = $request->get_params();
@@ -219,45 +228,45 @@ class Queries {
 		$query_items = $query->items;
 		$records     = array();
 
-		if ( $query ) {
+		foreach ( $query_items as $record ) {
+			$query_record = array(
+				'id'            => $record->get_id(),
+				'name'          => $record->get_name(),
+				'status'        => $record->get_status(),
+				'attributes'    => $record->get_attributes(),
+				'date_created'  => $record->get_date_created(),
+				'date_modified' => $record->get_date_modified(),
+				'context'       => $record->get_context(),
+				'integration'   => $record->get_integration(),
+			);
 
-			foreach ( $query_items as $record ) {
-				$query_record = array(
-					'id'            => $record->get_id(),
-					'name'          => $record->get_name(),
-					'status'        => $record->get_status(),
-					'attributes'    => $record->get_attributes(),
-					'date_created'  => $record->get_date_created(),
-					'date_modified' => $record->get_date_modified(),
-					'context'       => $record->get_context(),
-					'integration'   => $record->get_integration(),
-				);
-
-				$query_item = Query::find( array( 'id' => $record->get_id() ) );
-				if ( ! is_wp_error( $query_item ) ) {
-					$query_record['fields'] = count( $query_item->get_fields() );
-				}
-				array_push( $records, $query_record );
+			$query_item = Query::get_instance( $record->get_id() );
+			if ( ! is_wp_error( $query_item ) ) {
+				$query_record['fields'] = count( $query_item->get_fields() );
 			}
+			array_push( $records, $query_record );
 		}
 
 		$records = apply_filters( 'search-filter/rest-api/records/queries/get_records/records', $records );
 
 		$records_response = rest_ensure_response( $records );
 
-		if ( $query ) {
-			// These headers are using on all our admin screen queries for total count + paged,
-			// but they are only used with `getEntityRecords` when the `per_page`
-			// param is passed in the request when using,
-			$records_response->header( 'X-WP-Total', $query->found_items );
-			$records_response->header( 'X-WP-TotalPages', $query->max_num_pages );
-		}
+		// These headers are using on all our admin screen queries for total count + paged,
+		// but they are only used with `getEntityRecords` when the `per_page`
+		// param is passed in the request when using.
+		$records_response->header( 'X-WP-Total', (string) $query->found_items );
+		$records_response->header( 'X-WP-TotalPages', (string) $query->max_num_pages );
 
 		return $records_response;
 	}
 
 	/**
 	 * Create a new record.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response REST response.
 	 */
 	public function create_record( \WP_REST_Request $request ) {
 		$params      = $request->get_params();
@@ -267,7 +276,7 @@ class Queries {
 		$section_instance = new Query();
 		$section_instance->set_name( $params['name'] );
 		$section_instance->set_attributes( $params['attributes'], true );
-		$section_instance->set_status( $params['status'], true );
+		$section_instance->set_status( $params['status'] );
 		$section_instance->set_context( $context );
 		$section_instance->set_integration( $integration );
 
@@ -280,8 +289,14 @@ class Queries {
 
 		return rest_ensure_response( $section_instance->get_record() );
 	}
+
 	/**
 	 * Update existing record.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response REST response.
 	 */
 	public function update_record( \WP_REST_Request $request ) {
 
@@ -314,7 +329,12 @@ class Queries {
 	}
 
 	/**
-	 * Update existing record
+	 * Delete existing record.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response REST response.
 	 */
 	public function delete_record( \WP_REST_Request $request ) {
 
@@ -329,8 +349,14 @@ class Queries {
 		$response = array( 'id' => $id );
 		return rest_ensure_response( $response );
 	}
+
 	/**
-	 * Delete trashed records
+	 * Delete trashed records.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response REST response.
 	 */
 	public function delete_trashed_records( \WP_REST_Request $request ) {
 
@@ -349,12 +375,17 @@ class Queries {
 
 
 	/**
-	 * Fetch record by section and ID
+	 * Fetch record by section and ID.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response|\WP_Error REST response or error.
 	 */
 	public function get_record( \WP_REST_Request $request ) {
 
 		$params = $request->get_params();
-		$id     = $params['id'];
+		$id     = absint( $params['id'] );
 
 		// Then this won't be a real record...
 		$record = apply_filters( 'search-filter/admin/get_record/pre_lookup', false, $id, 'queries' );
@@ -366,7 +397,7 @@ class Queries {
 			return rest_ensure_response( $response );
 		}
 
-		$instance = Query::find( array( 'id' => $id ) );
+		$instance = Query::get_instance( $id );
 
 		// Bail if nothing found.
 		if ( is_wp_error( $instance ) ) {
@@ -389,7 +420,20 @@ class Queries {
 
 		$record = apply_filters( 'search-filter/admin/get_record/queries/record', $record, $id, $item );
 
-		// TODO - We need to find a way to properly send an error response
 		return rest_ensure_response( $record );
+	}
+
+	/**
+	 * Sanitize attributes
+	 *
+	 * Allows for granular control over each settings sanitization
+	 * via a settings `sanitize` property.
+	 *
+	 * @param array $attributes The attributes to sanitize.
+	 * @return array The sanitized attributes.
+	 */
+	public function sanitize_attributes( $attributes ) {
+		$settings = Settings::get();
+		return Sanitize::settings( $attributes, $settings );
 	}
 }

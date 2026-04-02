@@ -19,32 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$init_fields = array(
-	'search'   => array(
-		'text' => '\Search_Filter\Fields\Search\Text',
-	),
-	'choice'   => array(
-		'select'   => '\Search_Filter\Fields\Choice\Select',
-		'radio'    => '\Search_Filter\Fields\Choice\Radio',
-		'checkbox' => '\Search_Filter\Fields\Choice\Checkbox',
-		'button'   => '\Search_Filter\Fields\Choice\Button',
-	),
-	'range'    => array(),
-	'advanced' => array(
-		'date_picker' => '\Search_Filter\Fields\Advanced\Date_Picker',
-	),
-	'control'  => array(
-		'submit' => '\Search_Filter\Fields\Control\Submit',
-		'reset'  => '\Search_Filter\Fields\Control\Reset',
-		'sort'   => '\Search_Filter\Fields\Control\Sort',
-	),
-);
-
-foreach ( $init_fields as $field_type => $input_types ) {
-	foreach ( $input_types as $input_type => $class_name ) {
-		Field_Factory::register_field_input( $field_type, $input_type, $class_name );
-	}
-}
 /**
  * Instantiates fields using the correct class.
  */
@@ -67,16 +41,64 @@ class Field_Factory {
 		'advanced' => array(),
 		'control'  => array(),
 	);
+
+	/**
+	 * Initialize the field factory and register field types.
+	 */
+	public static function init() {
+		if ( self::$has_registered_types ) {
+			return;
+		}
+
+		$init_fields = array(
+			'search'   => array(
+				'text'         => '\Search_Filter\Fields\Search\Text',
+				'autocomplete' => '\Search_Filter\Fields\Search\Autocomplete',
+			),
+			'choice'   => array(
+				'select'   => '\Search_Filter\Fields\Choice\Select',
+				'radio'    => '\Search_Filter\Fields\Choice\Radio',
+				'checkbox' => '\Search_Filter\Fields\Choice\Checkbox',
+				'button'   => '\Search_Filter\Fields\Choice\Button',
+			),
+			'range'    => array(
+				'select' => '\Search_Filter\Fields\Range\Select',
+				'radio'  => '\Search_Filter\Fields\Range\Radio',
+				'number' => '\Search_Filter\Fields\Range\Number',
+				'slider' => '\Search_Filter\Fields\Range\Slider',
+			),
+			'advanced' => array(
+				'date_picker' => '\Search_Filter\Fields\Advanced\Date_Picker',
+			),
+			'control'  => array(
+				'submit'    => '\Search_Filter\Fields\Control\Submit',
+				'reset'     => '\Search_Filter\Fields\Control\Reset',
+				'sort'      => '\Search_Filter\Fields\Control\Sort',
+				'per_page'  => '\Search_Filter\Fields\Control\Per_Page',
+				'selection' => '\Search_Filter\Fields\Control\Selection',
+				'load_more' => '\Search_Filter\Fields\Control\Load_More',
+			),
+		);
+
+		foreach ( $init_fields as $field_type => $input_types ) {
+			foreach ( $input_types as $input_type => $class_name ) {
+				self::register_field_input( $field_type, $input_type, $class_name );
+			}
+		}
+
+		self::register();
+		self::$has_registered_types = true;
+	}
 	/**
 	 * Initialises mapping of classes for our different field + input types
 	 *
 	 * @return void
 	 */
-	public static function register_types() {
-		if ( ! self::$has_registered_types ) {
-			do_action( 'search-filter/fields/register' );
-			self::$has_registered_types = true;
+	private static function register() {
+		if ( self::$has_registered_types ) {
+			return;
 		}
+		do_action( 'search-filter/fields/register' );
 	}
 	/**
 	 * Sets has registered field
@@ -98,32 +120,27 @@ class Field_Factory {
 	 * @throws Exception For various conditions, such as invalid field type or input type.
 	 */
 	public static function register_field_input( $field_type, $input_type, $class_name ) {
-		/**
-		 * Note: using phpcs:ignore after the exceptions because the rule `WordPress.Security.EscapeOutput.ExceptionNotEscaped`
-		 * is being triggered because the last argument is not escaped - but this is not used in the message or displayed to the user,
-		 * it's a constant/error code used in our custom exception class.
-		 */
 		if ( true === self::$has_registered_types ) {
-			throw new Exception( esc_html__( 'You can only register fields inside the action "search-filter/fields/register".', 'search-filter' ), SEARCH_FILTER_EXCEPTION_FIELD_NOT_READY ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			throw new Exception( esc_html( __( 'You can only register fields inside the action "search-filter/fields/register".', 'search-filter' ) ), SEARCH_FILTER_EXCEPTION_FIELD_NOT_READY ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 
 		if ( ! isset( self::$fields[ $field_type ] ) ) {
 			/* translators: %s is the internal field type - eg search/filter/control */
-			throw new Exception( sprintf( esc_html__( 'The field type "%1$s" has not been found.', 'search-filter' ), esc_html( $field_type ) ), SEARCH_FILTER_EXCEPTION_FIELD_INVALID_TYPE ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			throw new Exception( esc_html( sprintf( __( 'The field type "%1$s" has not been found.', 'search-filter' ), $field_type ) ), SEARCH_FILTER_EXCEPTION_FIELD_INVALID_TYPE ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 
 		if ( isset( self::$fields[ $field_type ][ $input_type ] ) ) {
 			/* translators: %1$s is the internal field type - eg search/filter/control', %2$s is the internal input type - eg radio/checkbox/text */
-			throw new Exception( sprintf( esc_html__( 'The input type "%1$s" has already been registered for the "%2$s" field type.', 'search-filter' ), esc_html( $input_type ), esc_html( $field_type ) ), SEARCH_FILTER_EXCEPTION_FIELD_EXISTS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			throw new Exception( esc_html( sprintf( __( 'The input type "%1$s" has already been registered for the "%2$s" field type.', 'search-filter' ), $input_type, $field_type ) ), SEARCH_FILTER_EXCEPTION_FIELD_EXISTS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 
 		// Make sure it exists.
 		if ( ! class_exists( $class_name ) ) {
 			/* translators: %s is the PHP class name */
-			throw new Exception( sprintf( esc_html__( 'The class `%1$s` cannot be found.', 'search-filter' ), esc_html( $class_name ) ), SEARCH_FILTER_EXCEPTION_FIELD_CLASS_MISSING ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			throw new Exception( esc_html( sprintf( __( 'The class `%1$s` cannot be found.', 'search-filter' ), $class_name ) ), SEARCH_FILTER_EXCEPTION_FIELD_CLASS_MISSING ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 
-		// Remove this once we hit 3.1.x.
+		// Legacy stub loading - mark for deprecation after 3.2.0.
 		if ( defined( 'SEARCH_FILTER_PRO_VERSION' ) && version_compare( SEARCH_FILTER_PRO_VERSION, '3.0.2', '<' ) ) {
 			// Run the static init function `register` if it exists.
 			if ( method_exists( $class_name, 'render' ) ) {
@@ -148,11 +165,30 @@ class Field_Factory {
 	public static function update_field_input( $field_type, $input_type, $class_name ) {
 
 		if ( true === self::$has_registered_types ) {
-			// Use phpcs ignore - we're using a custom exception class and the second paramater is not out.
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-			throw new Exception( esc_html__( 'You can only update fields inside the action "search-filter/fields/register".', 'search-filter' ), SEARCH_FILTER_EXCEPTION_FIELD_NOT_READY );
+			throw new Exception( esc_html( __( 'You can only update fields inside the action "search-filter/fields/register".', 'search-filter' ) ), SEARCH_FILTER_EXCEPTION_FIELD_NOT_READY ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
-		// TODO - we need to check if the field + input type exist first.
+
+		if ( ! isset( self::$fields[ $field_type ] ) ) {
+			/* translators: %s is the internal field type - eg search/filter/control */
+			throw new Exception( esc_html( sprintf( __( 'The field type "%1$s" has not been found.', 'search-filter' ), $field_type ) ), SEARCH_FILTER_EXCEPTION_FIELD_INVALID_TYPE ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
+		}
+
+		// Make sure it exists.
+		if ( ! class_exists( $class_name ) ) {
+			/* translators: %s is the PHP class name */
+			throw new Exception( esc_html( sprintf( __( 'The class `%1$s` cannot be found.', 'search-filter' ), $class_name ) ), SEARCH_FILTER_EXCEPTION_FIELD_CLASS_MISSING ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
+		}
+
+		// Legacy stub loading - mark for deprecation after 3.2.0.
+		if ( defined( 'SEARCH_FILTER_PRO_VERSION' ) && version_compare( SEARCH_FILTER_PRO_VERSION, '3.0.2', '<' ) ) {
+			// Run the static init function `register` if it exists.
+			if ( method_exists( $class_name, 'render' ) ) {
+				$class_name::register();
+			}
+		} elseif ( self::class_ready( $class_name ) === true ) {
+			$class_name::register();
+		}
+
 		self::$fields[ $field_type ][ $input_type ] = $class_name;
 		return true;
 	}
@@ -174,7 +210,7 @@ class Field_Factory {
 	 * Gets a field input class by attributes field type and input type.
 	 *
 	 * @param array $attributes  Field attributes, can vary based on the `type` attribute.
-	 * @return string
+	 * @return string|null
 	 */
 	private static function get_field_class( $attributes ) {
 		$field_atts = self::get_field_atts( $attributes );
@@ -206,22 +242,16 @@ class Field_Factory {
 	public static function get_field_atts( $attributes ) {
 
 		if ( ! isset( $attributes['type'] ) ) {
-			// Use phpcs ignore - we're using a custom exception class and the second paramater is not out.
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-			throw new Exception( esc_html__( 'The field type has not been set.', 'search-filter' ), SEARCH_FILTER_EXCEPTION_FIELD_INVALID_TYPE );
+			throw new Exception( esc_html( __( 'The field type has not been set.', 'search-filter' ) ), SEARCH_FILTER_EXCEPTION_FIELD_INVALID_TYPE ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 
 		$field_type = $attributes['type'];
 		if ( ! isset( self::$fields[ $field_type ] ) ) {
-			// Use phpcs ignore - we're using a custom exception class and the second paramater is not out.
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-			throw new Exception( esc_html__( 'Invalid field type.', 'search-filter' ), SEARCH_FILTER_EXCEPTION_FIELD_INVALID_TYPE );
+			throw new Exception( esc_html( __( 'Invalid field type.', 'search-filter' ) ), SEARCH_FILTER_EXCEPTION_FIELD_INVALID_TYPE ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 
 		if ( ! isset( $attributes['inputType'] ) && ! isset( $attributes['controlType'] ) ) {
-			// Use phpcs ignore - we're using a custom exception class and the second paramater is not out.
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-			throw new Exception( esc_html__( 'The input or control type has not been set.', 'search-filter' ), SEARCH_FILTER_EXCEPTION_FIELD_INVALID_INPUT_TYPE );
+			throw new Exception( esc_html( __( 'The input or control type has not been set.', 'search-filter' ) ), SEARCH_FILTER_EXCEPTION_FIELD_INVALID_INPUT_TYPE ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 
 		$input_type = '';
@@ -248,8 +278,8 @@ class Field_Factory {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param object $class_ref The class reference.
-	 * @return bool True if the class is ready.
+	 * @param class-string $class_ref The class reference.
+	 * @return bool|\WP_Error True if the class is ready.
 	 *
 	 * @throws Exception If the class does not have a render method or a create method.
 	 */
@@ -259,31 +289,26 @@ class Field_Factory {
 			return new \WP_Error( 'search_filter_field_class_not_found', __( 'Class not found.', 'search-filter' ), array( 'status' => 404 ) );
 		}
 
-		/**
-		 * Note: using phpcs:ignore after the exceptions because the rule `WordPress.Security.EscapeOutput.ExceptionNotEscaped`
-		 * is being triggered because the last argument is not escaped - but this is not used in the message or displayed to the user,
-		 * it's a constant/error code used in our custom exception class.
-		 */
 		// Make sure that it has a render method.
 		if ( ! method_exists( $class_ref, 'render' ) ) {
 			/* translators: %s is the class name */
-			throw new Exception( sprintf( esc_html__( 'The class `%1$s` does not have a public `render()` method.', 'search-filter' ), esc_html( $class_ref ) ), SEARCH_FILTER_EXCEPTION_FIELD_NO_RENDER_METHOD ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			throw new Exception( esc_html( sprintf( __( 'The class `%1$s` does not have a public `render()` method.', 'search-filter' ), $class_ref ) ), SEARCH_FILTER_EXCEPTION_FIELD_NO_RENDER_METHOD ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 		// Make sure that it has a create method.
 		if ( ! method_exists( $class_ref, 'create' ) ) {
 			/* translators: %s is the class name */
-			throw new Exception( sprintf( esc_html__( 'The class `%1$s` does not have a public static `create()` method.', 'search-filter' ), esc_html( $class_ref ) ), SEARCH_FILTER_EXCEPTION_FIELD_NO_CREATE_METHOD ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			throw new Exception( esc_html( sprintf( __( 'The class `%1$s` does not have a public static `create()` method.', 'search-filter' ), $class_ref ) ), SEARCH_FILTER_EXCEPTION_FIELD_NO_CREATE_METHOD ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 
 		// Make sure that it has a type property thats not empty.
 		if ( empty( $class_ref::$type ) ) {
 			/* translators: %s is the class name */
-			throw new Exception( sprintf( esc_html__( 'The class `%1$s` does not have a type set.', 'search-filter' ), esc_html( $class_ref ) ), SEARCH_FILTER_EXCEPTION_FIELD_NO_TYPE ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			throw new Exception( esc_html( sprintf( __( 'The class `%1$s` does not have a type set.', 'search-filter' ), $class_ref ) ), SEARCH_FILTER_EXCEPTION_FIELD_NO_TYPE ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 		// Make sure that it has an input type property thats not empty.
 		if ( empty( $class_ref::$input_type ) ) {
 			/* translators: %s is the class name */
-			throw new Exception( sprintf( esc_html__( 'The class `%1$s` does not have a input type set.', 'search-filter' ), esc_html( $class_ref ) ), SEARCH_FILTER_EXCEPTION_FIELD_NO_INPUT_TYPE ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			throw new Exception( esc_html( sprintf( __( 'The class `%1$s` does not have a input type set.', 'search-filter' ), $class_ref ) ), SEARCH_FILTER_EXCEPTION_FIELD_NO_INPUT_TYPE ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 
 		return true;
@@ -299,7 +324,7 @@ class Field_Factory {
 	 * @param array $attributes  Field attributes, can vary based on the `type` attribute.
 	 * @param array $context Context for the field.
 	 *
-	 * @return class|false False if no class was found.
+	 * @return mixed|false False if no class was found.
 	 * @throws Exception For various conditions, such as invalid field type or input type in the attributes.
 	 */
 	public static function create( $attributes, $context = array() ) {
@@ -321,8 +346,8 @@ class Field_Factory {
 	 *
 	 * Figures out which class to instantiate and returns the result.
 	 *
-	 * @param stdClass $item  The database record for the field.
-	 * @return class
+	 * @param \Search_Filter\Database\Rows\Field $item  The database record for the field.
+	 * @return \Search_Filter\Fields\Field|\WP_Error
 	 * @throws Exception For multiple conditions, such as invalid field type or input type.
 	 */
 	public static function create_from_record( $item ) {
@@ -343,27 +368,13 @@ class Field_Factory {
 	 *
 	 * Figures out which class to instantiate and returns the result.
 	 *
-	 * @param number $id  The database record for the field.
-	 * @return class
+	 * @param int $id  The database record for the field.
+	 * @return Field|\WP_Error
 	 * @throws Exception For multiple conditions, such as invalid field type or input type.
 	 */
 	public static function create_from_id( $id ) {
-		$field = Field::find( array( 'id' => $id ) );
-
-		if ( is_wp_error( $field ) ) {
-			return $field;
-		}
-
-		// Lookup the class associated with the input type.
-		$field_class_ref = self::get_field_class( $field->get_attributes() );
-
-		if ( self::class_ready( $field_class_ref ) === true ) {
-			// Now create an instance of the correct Field class.
-			$field = $field_class_ref::create_from_record( $field->get_record() );
-			return $field;
-		}
-		// TODO - we probably want to throw an exception or error here.
-		return new \WP_Error( 'search_filter_field_unable_to_create', __( 'Unable to create field.', 'search-filter' ), array( 'status' => 404 ) );
+		$field = Field::get_instance( $id );
+		return $field;
 	}
 
 	/**
@@ -371,5 +382,30 @@ class Field_Factory {
 	 */
 	public static function get_field_input_types() {
 		return self::$fields;
+	}
+
+	/**
+	 * Gets the field type label.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $field_type The field type.
+	 * @return string The label for the field type.
+	 */
+	public static function get_field_type_label( $field_type ) {
+
+		$field_type_labels = array(
+			'search'   => __( 'Search', 'search-filter' ),
+			'choice'   => __( 'Choice', 'search-filter' ),
+			'range'    => __( 'Range', 'search-filter' ),
+			'advanced' => __( 'Advanced', 'search-filter' ),
+			'control'  => __( 'Control', 'search-filter' ),
+		);
+
+		if ( isset( $field_type_labels[ $field_type ] ) ) {
+			return $field_type_labels[ $field_type ];
+		}
+
+		return '';
 	}
 }

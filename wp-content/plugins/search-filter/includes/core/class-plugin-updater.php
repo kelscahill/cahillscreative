@@ -125,7 +125,8 @@ class Plugin_Updater {
 		$this->version     = $_api_data['version'];
 		$this->wp_override = isset( $_api_data['wp_override'] ) ? (bool) $_api_data['wp_override'] : false;
 		$this->beta        = ! empty( $this->api_data['beta'] ) ? true : false;
-		$this->cache_key   = 'edd_sl_' . md5( serialize( $this->slug . $this->api_data['license'] . $this->beta ) );
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Necessary for data storage, input is sanitized.
+		$this->cache_key = 'edd_sl_' . md5( serialize( $this->slug . $this->api_data['license'] . $this->beta ) );
 
 		$edd_plugin_data[ $this->slug ] = $this->api_data;
 
@@ -168,8 +169,8 @@ class Plugin_Updater {
 	 *
 	 * @uses api_request()
 	 *
-	 * @param array $_transient_data Update array build by WordPress.
-	 * @return array Modified update array with custom plugin data.
+	 * @param object $_transient_data Update array build by WordPress.
+	 * @return object Modified update array with custom plugin data.
 	 */
 	public function check_update( $_transient_data ) {
 
@@ -427,25 +428,20 @@ class Plugin_Updater {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param stdClass $data    The data to convert.
+	 * @param \stdClass $data    The data to convert.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	private function convert_object_to_array( $data ) {
-		$new_data = array();
-		foreach ( $data as $key => $value ) {
-			$new_data[ $key ] = $value;
-		}
-
-		return $new_data;
+		return get_object_vars( $data );
 	}
 
 	/**
 	 * Disable SSL verification in order to prevent download update failures
 	 *
-	 * @param array  $args    The arguments to filter.
-	 * @param string $url    The URL to filter.
-	 * @return object    The filtered arguments.
+	 * @param array<string, mixed> $args    The arguments to filter.
+	 * @param string               $url    The URL to filter.
+	 * @return array<string, mixed>    The filtered arguments.
 	 */
 	public function http_request_args( $args, $url ) {
 
@@ -476,7 +472,7 @@ class Plugin_Updater {
 		// Do a quick status check on this domain if we haven't already checked it.
 		$store_hash = md5( $this->api_url );
 		if ( ! is_array( $edd_plugin_url_available ) || ! isset( $edd_plugin_url_available[ $store_hash ] ) ) {
-			$test_url_parts = parse_url( $this->api_url );
+			$test_url_parts = wp_parse_url( $this->api_url );
 
 			$scheme = ! empty( $test_url_parts['scheme'] ) ? $test_url_parts['scheme'] : 'http';
 			$host   = ! empty( $test_url_parts['host'] ) ? $test_url_parts['host'] : '';
@@ -498,13 +494,13 @@ class Plugin_Updater {
 		}
 
 		if ( false === $edd_plugin_url_available[ $store_hash ] ) {
-			return;
+			return false;
 		}
 
 		$data = array_merge( $this->api_data, $_data );
 
 		if ( $data['slug'] !== $this->slug ) {
-			return;
+			return false;
 		}
 
 		if ( $this->api_url === trailingslashit( home_url() ) ) {
@@ -563,6 +559,7 @@ class Plugin_Updater {
 	 * Show the plugin changelog.
 	 */
 	public function show_changelog() {
+		// phpcs:disable WordPress.Security.NonceVerification -- Plugin update check, not user-submitted form data.
 
 		global $edd_plugin_data;
 
@@ -634,6 +631,7 @@ class Plugin_Updater {
 		}
 
 		exit;
+		// phpcs:enable WordPress.Security.NonceVerification
 	}
 
 	/**
@@ -670,10 +668,10 @@ class Plugin_Updater {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param string $value    The value to cache.
-	 * @param string $cache_key    The cache key to set.
+	 * @param object|false $value    The value to cache.
+	 * @param string       $cache_key    The cache key to set.
 	 */
-	public function set_version_info_cache( $value = '', $cache_key = '' ) {
+	public function set_version_info_cache( $value = false, $cache_key = '' ) {
 
 		if ( empty( $cache_key ) ) {
 			$cache_key = $this->cache_key;
@@ -681,10 +679,10 @@ class Plugin_Updater {
 
 		$data = array(
 			'timeout' => strtotime( '+3 hours', time() ),
-			'value'   => json_encode( $value ),
+			'value'   => wp_json_encode( $value ),
 		);
 
-		update_option( $cache_key, $data, 'no' );
+		update_option( $cache_key, $data, false );
 	}
 
 	/**

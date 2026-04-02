@@ -65,29 +65,29 @@ class Base {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $key
+	 * @param string $key The property key to check.
 	 * @return mixed
 	 */
 	public function __isset( $key = '' ) {
 
-		// No more uppercase ID properties ever
+		// No more uppercase ID properties ever.
 		if ( 'ID' === $key ) {
 			$key = 'id';
 		}
 
-		// Class method to try and call
+		// Class method to try and call.
 		$method = "get_{$key}";
 
-		// Return property if exists
+		// Return property if exists.
 		if ( method_exists( $this, $method ) ) {
 			return true;
 
-			// Return get method results if exists
+			// Return get method results if exists.
 		} elseif ( property_exists( $this, $key ) ) {
 			return true;
 		}
 
-		// Return false if not exists
+		// Return false if not exists.
 		return false;
 	}
 
@@ -96,29 +96,29 @@ class Base {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $key
+	 * @param string $key The property key to get.
 	 * @return mixed
 	 */
 	public function __get( $key = '' ) {
 
-		// No more uppercase ID properties ever
+		// No more uppercase ID properties ever.
 		if ( 'ID' === $key ) {
 			$key = 'id';
 		}
 
-		// Class method to try and call
+		// Class method to try and call.
 		$method = "get_{$key}";
 
-		// Return property if exists
+		// Return property if exists.
 		if ( method_exists( $this, $method ) ) {
 			return call_user_func( array( $this, $method ) );
 
-			// Return get method results if exists
+			// Return get method results if exists.
 		} elseif ( property_exists( $this, $key ) ) {
 			return $this->{$key};
 		}
 
-		// Return null if not exists
+		// Return null if not exists.
 		return null;
 	}
 
@@ -140,14 +140,14 @@ class Base {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $string
-	 * @param string $sep
+	 * @param string $str The string to append prefix to.
+	 * @param string $sep The separator to use between prefix and string.
 	 * @return string
 	 */
-	protected function apply_prefix( $string = '', $sep = '_' ) {
+	protected function apply_prefix( $str = '', $sep = '_' ) {
 		return ! empty( $this->prefix )
-			? "{$this->prefix}{$sep}{$string}"
-			: $string;
+			? "{$this->prefix}{$sep}{$str}"
+			: $str;
 	}
 
 	/**
@@ -162,32 +162,32 @@ class Base {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $string
-	 * @param string $sep
+	 * @param string $str The string to get first letters from.
+	 * @param string $sep The separator to use between words.
 	 * @return string
 	 */
-	protected function first_letters( $string = '', $sep = '_' ) {
+	protected function first_letters( $str = '', $sep = '_' ) {
 
-		// Set empty default return value
+		// Set empty default return value.
 		$retval = '';
 
-		// Bail if empty or not a string
-		if ( empty( $string ) || ! is_string( $string ) ) {
+		// Bail if empty or not a string.
+		if ( empty( $str ) || ! is_string( $str ) ) {
 			return $retval;
 		}
 
-		// Trim spaces off the ends
-		$unspace = trim( $string );
+		// Trim spaces off the ends.
+		$unspace = trim( $str );
 		$accents = remove_accents( $unspace );
 		$lower   = strtolower( $accents );
 		$parts   = explode( $sep, $lower );
 
-		// Loop through parts and concatenate the first letters together
+		// Loop through parts and concatenate the first letters together.
 		foreach ( $parts as $part ) {
 			$retval .= substr( $part, 0, 1 );
 		}
 
-		// Return the result
+		// Return the result.
 		return $retval;
 	}
 
@@ -206,41 +206,41 @@ class Base {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $name The name of the database table
+	 * @param string $name The name of the database table.
 	 *
-	 * @return string Sanitized database table name
+	 * @return string Sanitized database table name.
 	 */
 	protected function sanitize_table_name( $name = '' ) {
 
-		// Bail if empty or not a string
+		// Bail if empty or not a string.
 		if ( empty( $name ) || ! is_string( $name ) ) {
-			return false;
+			return '';
 		}
 
-		// Trim spaces off the ends
+		// Trim spaces off the ends.
 		$unspace = trim( $name );
 
-		// Only non-accented table names (avoid truncation)
+		// Only non-accented table names (avoid truncation).
 		$accents = remove_accents( $unspace );
 
-		// Only lowercase characters, hyphens, and dashes (avoid index corruption)
+		// Only lowercase characters, hyphens, and dashes (avoid index corruption).
 		$lower = sanitize_key( $accents );
 
-		// Replace hyphens with single underscores
+		// Replace hyphens with single underscores.
 		$under = str_replace( '-', '_', $lower );
 
-		// Single underscores only
+		// Single underscores only.
 		$single = str_replace( '__', '_', $under );
 
-		// Remove trailing underscores
+		// Remove trailing underscores.
 		$clean = trim( $single, '_' );
 
-		// Bail if table name was garbaged
+		// Bail if table name was garbaged.
 		if ( empty( $clean ) ) {
-			return false;
+			return '';
 		}
 
-		// Return the cleaned table name
+		// Return the cleaned table name.
 		return $clean;
 	}
 
@@ -248,21 +248,21 @@ class Base {
 	 * Set class variables from arguments.
 	 *
 	 * @since 1.0.0
-	 * @param array $args
+	 * @param array $args The arguments array to set as class variables.
 	 */
 	protected function set_vars( $args = array() ) {
 
-		// Bail if empty or not an array
+		// Bail if empty or not an array.
 		if ( empty( $args ) ) {
 			return;
 		}
 
-		// Cast to an array
+		// Cast to an array.
 		if ( ! is_array( $args ) ) {
 			$args = (array) $args;
 		}
 
-		// Set all properties
+		// Set all properties.
 		foreach ( $args as $key => $value ) {
 			$this->{$key} = $value;
 		}
@@ -279,10 +279,10 @@ class Base {
 	 */
 	protected function get_db() {
 
-		// Default database return value (might change)
+		// Default database return value (might change).
 		$retval = false;
 
-		// Look for a commonly used global database interface
+		// Look for a commonly used global database interface.
 		if ( isset( $GLOBALS[ $this->db_global ] ) ) {
 			$retval = $GLOBALS[ $this->db_global ];
 		}
@@ -304,7 +304,7 @@ class Base {
 		 * environments, you will need to adjust accordingly.
 		 */
 
-		// Return the database interface
+		// Return the database interface.
 		return $retval;
 	}
 
@@ -313,26 +313,26 @@ class Base {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param mixed $result
+	 * @param mixed $result The result to check for success.
 	 * @return bool
 	 */
 	protected function is_success( $result = false ) {
 
-		// Bail if no row exists
+		// Bail if no row exists.
 		if ( empty( $result ) ) {
 			$retval = false;
 
-			// Bail if an error occurred
+			// Bail if an error occurred.
 		} elseif ( is_wp_error( $result ) ) {
 			$this->last_error = $result;
 			$retval           = false;
 
-			// No errors
+			// No errors.
 		} else {
 			$retval = true;
 		}
 
-		// Return the result
+		// Return the result.
 		return (bool) $retval;
 	}
 }

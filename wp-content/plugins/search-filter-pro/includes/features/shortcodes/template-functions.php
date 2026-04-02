@@ -1,5 +1,20 @@
 <?php
+/**
+ * Template functions for shortcodes.
+ *
+ * @package Search_Filter_Pro
+ */
 
+// If this file is called directly, abort.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Get the current page number.
+ *
+ * @return int The current page number.
+ */
 function search_filter_pagination_get_current_page() {
 	$paged = 1;
 	if ( get_query_var( 'paged' ) ) {
@@ -10,8 +25,14 @@ function search_filter_pagination_get_current_page() {
 	return $paged;
 }
 /**
+ * Get the next posts link.
+ *
  * This part is a hacky, but we need to redeclare an old function that was used for pagination
  * in our old template files to prevent them from causing critical errors.
+ *
+ * @param string|null $label    The link label.
+ * @param int         $max_page The maximum page number.
+ * @return string     The next posts link.
  */
 function search_filter_get_next_posts_link( $label = null, $max_page = 0 ) {
 	global $wp_query;
@@ -40,8 +61,8 @@ function search_filter_get_next_posts_link( $label = null, $max_page = 0 ) {
 		 * @param string $attributes Attributes for the anchor tag.
 		 */
 		$attr = apply_filters( 'next_posts_link_attributes', '' );
-		
-		$link   = search_filter_get_next_posts_page_link( $max_page );
+
+		$link = search_filter_get_next_posts_page_link( $max_page );
 		$link = $link ? esc_url( $link ) : '';
 
 		return sprintf(
@@ -51,10 +72,17 @@ function search_filter_get_next_posts_link( $label = null, $max_page = 0 ) {
 			preg_replace( '/&([^#])(?![a-z]{1,8};)/i', '&#038;$1', $label )
 		);
 	}
+	return '';
 }
 
+/**
+ * Get the previous posts link.
+ *
+ * @param string|null $label The link label.
+ * @return string     The previous posts link.
+ */
 function search_filter_get_previous_posts_link( $label = null ) {
-	
+
 	$paged = 1;
 	if ( get_query_var( 'paged' ) ) {
 		$paged = get_query_var( 'paged' );
@@ -85,6 +113,7 @@ function search_filter_get_previous_posts_link( $label = null ) {
 			preg_replace( '/&([^#])(?![a-z]{1,8};)/i', '&#038;$1', $label )
 		);
 	}
+	return '';
 }
 
 
@@ -100,7 +129,7 @@ function search_filter_get_previous_posts_link( $label = null ) {
  * @return string|void The link URL for next posts page.
  */
 function search_filter_get_next_posts_page_link( $max_page = 0 ) {
-	
+
 	$paged = search_filter_pagination_get_current_page();
 
 	if ( ! is_single() ) {
@@ -129,7 +158,7 @@ function search_filter_get_next_posts_page_link( $max_page = 0 ) {
  * @return string|void The link for the previous posts page.
  */
 function search_filter_get_previous_posts_page_link() {
-	
+
 	$paged = search_filter_pagination_get_current_page();
 
 	if ( ! is_single() ) {

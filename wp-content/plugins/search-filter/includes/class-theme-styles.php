@@ -42,6 +42,15 @@ class Theme_Styles {
 	 */
 	protected static $theme_json_file_cache = array();
 
+
+	/**
+	 * Reference to the theme style record.
+	 *
+	 * @since 3.0.0
+	 * @var Style|null|false
+	 */
+	private static $theme_style = null;
+
 	/**
 	 * Init.
 	 *
@@ -50,18 +59,37 @@ class Theme_Styles {
 	public static function init() {
 		// Needs to run after i18n is loaded.
 		add_action( 'init', array( __CLASS__, 'maybe_setup_theme_styles' ), 2 );
-		add_action( 'after_switch_theme', 'Search_Filter\\Theme_Styles::after_theme_changes' );
+		add_action( 'after_switch_theme', array( __CLASS__, 'after_theme_changes' ) );
 	}
+
+	/**
+	 * Handles actions after theme changes.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function after_theme_changes() {
 		self::disable_theme_style();
 	}
-	// Check if we need to setup a new record for the theme.
-	public static function maybe_setup_theme_styles() {
 
+	/**
+	 * Check if we need to setup a new record for the theme.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function maybe_setup_theme_styles() {
+		// Don't try to setup theme styles in the frontend.
+		if ( ! is_admin() ) {
+			return;
+		}
 		self::maybe_create_theme_style();
 		self::check_theme_style_version();
 	}
 
+	/**
+	 * Check if the theme style version needs updating.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function check_theme_style_version() {
 		// Try to see if we need to update the theme style.
 
@@ -82,7 +110,7 @@ class Theme_Styles {
 			)
 		);
 
-		// Check to see if its version is higher than the last stored verion:
+		// Check to see if its version is higher than the last stored verion.
 		$theme_versions             = self::get_theme_json_versions();
 		$should_refresh_theme_style = false;
 
@@ -101,7 +129,7 @@ class Theme_Styles {
 		$theme_style_supports  = $theme_style_meta['supports'];
 		$active_theme_supports = self::get_theme_supports();
 
-		// Check they match by looping their props and array key names/indexes:
+		// Check they match by looping their props and array key names/indexes.
 		$compare_keys = array_merge( array_keys( $active_theme_supports ), array_keys( $theme_style_supports ) );
 		foreach ( $compare_keys as $key ) {
 			if ( ! isset( $theme_style_supports[ $key ] ) ) {
@@ -125,8 +153,14 @@ class Theme_Styles {
 			self::refresh_theme_style();
 		}
 	}
+
+	/**
+	 * Refresh the theme style with current theme data.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function refresh_theme_style() {
-		$theme_data = static::get_theme_data();
+		$theme_data = self::get_theme_data();
 		$color_map  = array(
 			'text'              => 'textColor',
 			'background'        => 'backgroundColor',
@@ -172,6 +206,12 @@ class Theme_Styles {
 		Style::update_meta( $theme_style->get_id(), 'version_data', $version_data );
 	}
 
+	/**
+	 * Get theme support settings for search-filter-styles.
+	 *
+	 * @since 3.0.0
+	 * @return array Theme support settings.
+	 */
 	public static function get_theme_supports() {
 		if ( current_theme_supports( 'search-filter-styles' ) ) {
 			$theme_supports_setting = get_theme_support( 'search-filter-styles' );
@@ -191,6 +231,12 @@ class Theme_Styles {
 		}
 		return array();
 	}
+
+	/**
+	 * Maybe create a new theme style record if one doesn't exist.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function maybe_create_theme_style() {
 		// TODO - check if we need to setup a new record for the theme.
 		// Try to fetch a styles preset with the context of 'theme'.
@@ -200,8 +246,14 @@ class Theme_Styles {
 		}
 		self::create_theme_style();
 	}
+
+	/**
+	 * Create a new theme style record.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function create_theme_style() {
-		$theme_data = static::get_theme_data();
+		$theme_data = self::get_theme_data();
 
 		if ( $theme_data === null || ! isset( $theme_data['color'] ) ) {
 			// TODO - maybe delete the style record if there is no theme data?
@@ -215,7 +267,11 @@ class Theme_Styles {
 		$theme_style->save();
 	}
 
-	// Remove function
+	/**
+	 * Disable the theme style.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function disable_theme_style() {
 		$theme_style = self::get_theme_style();
 		if ( ! $theme_style ) {
@@ -260,17 +316,20 @@ class Theme_Styles {
 	 * @since 3.0.0
 	 */
 	private static function get_theme_style() {
-		$theme_style = Style::find(
+		if ( self::$theme_style !== null ) {
+			return self::$theme_style;
+		}
+		$theme_style       = Style::find(
 			array(
 				'context' => 'theme',
 			)
 		);
-
+		self::$theme_style = $theme_style;
 		if ( is_wp_error( $theme_style ) || empty( $theme_style ) ) {
-			return false;
+			self::$theme_style = false;
 		}
 
-		return $theme_style;
+		return self::$theme_style;
 	}
 
 	/**
@@ -293,53 +352,59 @@ class Theme_Styles {
 		$options = array();
 		$options = wp_parse_args( $options, array( 'with_supports' => true ) );
 
-		if ( static::$plugin_styles !== null ) {
-			return static::$plugin_styles;
+		if ( self::$plugin_styles !== null ) {
+			return self::$plugin_styles;
 		}
 
-		static::$plugin_styles = array();
+		self::$plugin_styles = array();
 
 		if ( wp_theme_has_theme_json() ) {
 
-			$theme_json_file = static::get_file_path_from_theme( 'theme.json' );
+			$theme_json_file = self::get_file_path_from_theme( 'theme.json' );
 			$wp_theme        = wp_get_theme();
 			if ( '' !== $theme_json_file ) {
-				$theme_json_data = static::read_json_file( $theme_json_file );
+				$theme_json_data = self::read_json_file( $theme_json_file );
 			} else {
 				$theme_json_data = array();
 			}
 
-			static::$plugin_styles = static::get_plugin_styles_from_theme_json( $theme_json_data );
+			self::$plugin_styles = self::get_plugin_styles_from_theme_json( $theme_json_data );
 			// TODO - cache the plugin styles from theme.json and only update when the file changes.
 
 			if ( $wp_theme->parent() ) {
 				// Get parent theme.json.
-				$parent_theme_json_file = static::get_file_path_from_theme( 'theme.json', true );
+				$parent_theme_json_file = self::get_file_path_from_theme( 'theme.json', true );
 				if ( '' !== $parent_theme_json_file ) {
-					$parent_theme_json_data    = static::read_json_file( $parent_theme_json_file );
-					$parent_plugin_styles_data = static::get_plugin_styles_from_theme_json( $parent_theme_json_data );
-					static::$plugin_styles     = array_replace_recursive( $parent_plugin_styles_data, static::$plugin_styles );
+					$parent_theme_json_data    = self::read_json_file( $parent_theme_json_file );
+					$parent_plugin_styles_data = self::get_plugin_styles_from_theme_json( $parent_theme_json_data );
+					self::$plugin_styles       = array_replace_recursive( $parent_plugin_styles_data, self::$plugin_styles );
 				}
 			}
 		}
 
 		if ( current_theme_supports( 'search-filter-styles' ) ) {
-			$theme_supports        = self::get_theme_supports();
-			static::$plugin_styles = array_replace_recursive( $theme_supports, static::$plugin_styles );
+			$theme_supports      = self::get_theme_supports();
+			self::$plugin_styles = array_replace_recursive( $theme_supports, self::$plugin_styles );
 		}
-		return static::$plugin_styles;
+		return self::$plugin_styles;
 	}
 
+	/**
+	 * Get the theme.json file versions for parent and current theme.
+	 *
+	 * @since 3.0.0
+	 * @return array Array with parent_version and current_version keys.
+	 */
 	private static function get_theme_json_versions() {
 		$theme_version   = 0;
-		$theme_json_file = static::get_file_path_from_theme( 'theme.json' );
+		$theme_json_file = self::get_file_path_from_theme( 'theme.json' );
 		if ( file_exists( $theme_json_file ) ) {
 			$theme_version = filemtime( $theme_json_file );
 		}
 
 		$parent_theme_version = 0;
 		if ( is_child_theme() ) {
-			$parent_theme_json_file = static::get_file_path_from_theme( 'theme.json', true );
+			$parent_theme_json_file = self::get_file_path_from_theme( 'theme.json', true );
 			if ( file_exists( $parent_theme_json_file ) ) {
 				$parent_theme_version = filemtime( $parent_theme_json_file );
 			}
@@ -383,14 +448,14 @@ class Theme_Styles {
 	 */
 	protected static function read_json_file( $file_path ) {
 		if ( $file_path ) {
-			if ( array_key_exists( $file_path, static::$theme_json_file_cache ) ) {
-				return static::$theme_json_file_cache[ $file_path ];
+			if ( array_key_exists( $file_path, self::$theme_json_file_cache ) ) {
+				return self::$theme_json_file_cache[ $file_path ];
 			}
 
 			$decoded_file = wp_json_file_decode( $file_path, array( 'associative' => true ) );
 			if ( is_array( $decoded_file ) ) {
-				static::$theme_json_file_cache[ $file_path ] = $decoded_file;
-				return static::$theme_json_file_cache[ $file_path ];
+				self::$theme_json_file_cache[ $file_path ] = $decoded_file;
+				return self::$theme_json_file_cache[ $file_path ];
 			}
 		}
 

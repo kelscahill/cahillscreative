@@ -11,7 +11,10 @@
 namespace Search_Filter_Pro;
 
 use Search_Filter\Features\Settings as Features_Settings;
-
+use Search_Filter_Pro\Features\Advanced;
+use Search_Filter_Pro\Features\Beta_Features;
+use Search_Filter_Pro\Features\Caching;
+use Search_Filter_Pro\Features\Debugger;
 use Search_Filter_Pro\Features\Shortcodes;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -35,7 +38,17 @@ class Features {
 	 * @since    3.0.0
 	 */
 	public static function init() {
+		// Important - must be run as soon as features are ready so we can modify other settings before they're setup.
 		add_action( 'search-filter/settings/features/init', array( __CLASS__, 'init_features' ), 10 );
+
+		// Init features classes
+		// They neeed to be init early so they can hook into settings
+		// and preload options as needed.
+		Shortcodes::init();
+		Beta_Features::init();
+		Advanced::init();
+		Caching::init();
+		Debugger::init();
 	}
 
 	/**
@@ -64,7 +77,54 @@ class Features {
 		);
 		Features_Settings::add_setting( $setting, $setting_args );
 
-		// Init the shortcodes features. TODO - this should probably go somewhere else.
-		Shortcodes::init();
+		$setting = array(
+			'name'          => 'betaFeatures',
+			'label'         => __( 'Beta Features', 'search-filter' ),
+			'description'   => __( 'Early preview access to powerful new (beta) features!', 'search-filter' ),
+			'default'       => true,
+			'type'          => 'string',
+			'inputType'     => 'Group',
+			'settingsGroup' => 'beta-features',
+			// 'link'        => 'https://searchandfilter.com/documentation/using-the-block-editor/',
+			'icon'          => 'wordpress',
+			'iconColor'     => '#0073aa',
+		);
+
+		$setting_args = array(
+			'position' => array(
+				'placement' => 'after',
+				'setting'   => 'debugMode',
+			),
+		);
+		Features_Settings::add_setting( $setting, $setting_args );
+
+		$setting = array(
+			'name'          => 'advancedFeatures',
+			'label'         => __( 'Advanced Settings', 'search-filter' ),
+			'description'   => __( 'Configure advanced settings & features. For advanced users and builders.', 'search-filter' ),
+			'default'       => true,
+			'type'          => 'string',
+			'inputType'     => 'Group',
+			'settingsGroup' => 'advanced-features',
+			// 'link'        => 'https://searchandfilter.com/documentation/using-the-block-editor/',
+			'icon'          => 'wordpress',
+			'iconColor'     => '#0073aa',
+		);
+
+		Features_Settings::add_setting( $setting, $setting_args );
+
+		$setting = array(
+			'name'          => 'caching',
+			'label'         => __( 'Caching', 'search-filter-pro' ),
+			'description'   => __( 'Configure caching layers to optimize performance across the Search & Filter frontend - caching is always disabled for admin users.', 'search-filter-pro' ),
+			'default'       => true,
+			'type'          => 'string',
+			'inputType'     => 'Group',
+			'settingsGroup' => 'caching',
+			'icon'          => 'wordpress',
+			'iconColor'     => '#0073aa',
+		);
+
+		Features_Settings::add_setting( $setting, $setting_args );
 	}
 }

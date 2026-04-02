@@ -21,46 +21,145 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Checkbox extends Choice {
 
+	/**
+	 * Calculate the interaction type for this field.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return string The interaction type.
+	 */
+	protected function calc_interaction_type(): string {
+		return 'choice';
+	}
+
+	/**
+	 * List of supported styles for this field.
+	 *
+	 * @var array
+	 */
 	public static $styles = array(
-		'inputColor',
-		'inputActiveIconColor',
-		'inputInactiveIconColor',
 
-		'labelColor',
-		'labelBackgroundColor',
-		'labelPadding',
-		'labelMargin',
-		'labelScale',
+		'fieldMargin'                => true,
+		// 'fieldPadding'               => true,
+		'inputMargin'                => true,
+		'labelBorderStyle'           => true,
+		'labelBorderRadius'          => true,
+		'descriptionBorderStyle'     => true,
+		'descriptionBorderRadius'    => true,
+		'inputCheckboxTristate'      => true,
+		'inputScale'                 => true,
+		'inputLabelColor'            => true,
+		'inputActiveIconColor'       => true,
+		'inputInactiveIconColor'     => true,
+		'inputIconSize'              => array(
+			// Empty conditions means its supported.
+			'conditions' => array(),
+			// Add a variation to override the default styles variables.
+			'variation'  => array(
+				// Structure must match that of the setting.
+				'style' => array(
+					'variables' => array(
+						// Add extra padding to the left and right.
+						'input-icon-size' => array(
+							'value' => 'calc(1.25 * var(--search-filter-scale-base-size))',
+							'type'  => 'unit',
+						),
+					),
+				),
+			),
+		),
+		'inputOptionPadding'         => true,
+		'inputOptionGap'             => true,
+		'inputOptionIndentDepth'     => true,
 
-		'descriptionColor',
-		'descriptionBackgroundColor',
-		'descriptionPadding',
-		'descriptionMargin',
-		'descriptionScale',
+		'labelColor'                 => true,
+		'labelBackgroundColor'       => true,
+		'labelPadding'               => true,
+		'labelMargin'                => true,
+		'labelScale'                 => true,
+
+		'descriptionColor'           => true,
+		'descriptionBackgroundColor' => true,
+		'descriptionPadding'         => true,
+		'descriptionMargin'          => true,
+		'descriptionScale'           => true,
 	);
 
-	public $icons             = array(
+	/**
+	 * The processed (cached) styles.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_styles    The processed styles, null if not processed yet.
+	 */
+	protected static $processed_styles = null;
+
+	/**
+	 * List of components this field relies on.
+	 *
+	 * @var array
+	 */
+	public $components = array(
+		'checkbox',
+	);
+
+	/**
+	 * List of icons the input type supports.
+	 *
+	 * @var array
+	 */
+	public $icons = array(
 		'checkbox',
 		'checkbox-checked',
 		'checkbox-mixed',
 	);
+
+	/**
+	 * The input type for this field.
+	 *
+	 * @var string
+	 */
 	public static $input_type = 'checkbox';
-	public static $type       = 'choice';
 
-	public static $data_support = array(
-		// Each entry is a group of settings that need to have certain conditions.
-		array(
-			'dataType'          => 'post_attribute',
-			'dataPostAttribute' => array( 'post_type', 'post_status', 'post_author' ),
-		),
-		array(
-			'dataType' => 'taxonomy',
-		),
-	);
+	/**
+	 * The type of field.
+	 *
+	 * @var string
+	 */
+	public static $type = 'choice';
 
+	/**
+	 * List of setting support for this field.
+	 *
+	 * @var array
+	 */
 	public static $setting_support = array(
-		'showLabel'               => true,
-		'multipleMatchMethod'     => array(
+		'addClass'                       => true,
+		'width'                          => true,
+		'queryId'                        => true,
+		'stylesId'                       => true,
+		'type'                           => true,
+		'label'                          => true,
+		'showLabel'                      => true,
+		'showDescription'                => true,
+		'description'                    => true,
+		'inputType'                      => true,
+		'dataType'                       => array(
+			'values' => array(
+				'post_attribute' => true,
+				'taxonomy'       => true,
+			),
+		),
+		'dataTaxonomy'                   => true,
+		'dataPostAttribute'              => array(
+			'values' => array(
+				'post_type'   => true,
+				'post_status' => true,
+			),
+		),
+		'dataPostTypes'                  => true,
+		'dataPostStati'                  => true,
+		'multipleMatchMethod'            => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -69,8 +168,9 @@ class Checkbox extends Choice {
 				),
 			),
 		),
-		'dataLimitOptionsCount'   => true,
-		'taxonomyHierarchical'    => array(
+		'dataTotalNumberOfOptions'       => true,
+		'dataTotalNumberOfOptionsNotice' => true,
+		'taxonomyHierarchical'           => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -79,7 +179,7 @@ class Checkbox extends Choice {
 				),
 			),
 		),
-		'taxonomyOrderBy'         => array(
+		'taxonomyOrderBy'                => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -88,7 +188,7 @@ class Checkbox extends Choice {
 				),
 			),
 		),
-		'taxonomyOrderDir'        => array(
+		'taxonomyOrderDir'               => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -97,7 +197,7 @@ class Checkbox extends Choice {
 				),
 			),
 		),
-		'taxonomyTermsConditions' => array(
+		'taxonomyTermsConditions'        => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -106,7 +206,7 @@ class Checkbox extends Choice {
 				),
 			),
 		),
-		'taxonomyTerms'           => array(
+		'taxonomyTerms'                  => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -115,7 +215,7 @@ class Checkbox extends Choice {
 				),
 			),
 		),
-		'inputOptionsOrder'       => array(
+		'inputOptionsOrder'              => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -124,7 +224,7 @@ class Checkbox extends Choice {
 				),
 			),
 		),
-		'hideEmpty'               => array(
+		'hideEmpty'                      => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -133,7 +233,7 @@ class Checkbox extends Choice {
 				),
 			),
 		),
-		'showCount'               => array(
+		'showCount'                      => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -142,8 +242,19 @@ class Checkbox extends Choice {
 				),
 			),
 		),
-		'showCountPosition'       => true,
+		'showCountPosition'              => true,
+		'showCountBrackets'              => true,
+		'hideFieldWhenEmpty'             => true,
 	);
+
+	/**
+	 * The processed (cached) setting support.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_setting_support    The processed settings, null if not processed yet.
+	 */
+	protected static $processed_setting_support = null;
 
 	/**
 	 * Get the label for the field.
@@ -154,6 +265,15 @@ class Checkbox extends Choice {
 	 */
 	public static function get_label() {
 		return __( 'Checkbox', 'search-filter' );
+	}
+
+	/**
+	 * Get the description for the input type.
+	 *
+	 * @return string The label.
+	 */
+	public static function get_description() {
+		return __( 'Allow users to filter by choosing from checkboxes.', 'search-filter' );
 	}
 
 	/**
@@ -182,7 +302,14 @@ class Checkbox extends Choice {
 		);
 		$this->set_render_escape_callbacks( $esc_callbacks );
 	}
-	public function update_option( &$option, &$parent ) {
+
+	/**
+	 * Update an individual option with checkbox-specific properties.
+	 *
+	 * @param array $option The option to update.
+	 * @param array $parent_item The parent option.
+	 */
+	public function update_option( &$option, &$parent_item ) {
 
 		// Important: we also need to escape each option as we're bypassing
 		// the render_escape_callback for `options`.
@@ -211,9 +338,8 @@ class Checkbox extends Choice {
 				);
 			}
 			// Now check to see:
-			// - if it has children and they are all checked, set it to checked
-			// - if it has children and some are checked, set it to mixed
-			// $checked_state = $is_checked ? 'true' : 'false';
+			// - if it has children and they are all checked, set it to checked.
+			// - if it has children and some are checked, set it to mixed.
 			$no_of_options = count( $option['options'] );
 			if ( $option['childStates']['true'] === $no_of_options ) {
 				$checked_state = 'true';
@@ -227,19 +353,19 @@ class Checkbox extends Choice {
 		// If there is a parent, we need to update the parent's childStates and tell
 		// it what the state of the current option is (so we can calc the parent's
 		// true/false/mixed state).
-		if ( ! empty( $parent ) ) {
+		if ( ! empty( $parent_item ) ) {
 			// $parent_data = $parent->get();
-			if ( ! isset( $parent['childStates'] ) ) {
-				$parent['childStates'] = array(
+			if ( ! isset( $parent_item['childStates'] ) ) {
+				$parent_item['childStates'] = array(
 					'true'  => 0,
 					'false' => 0,
 					'mixed' => 0,
 				);
 			}
-			if ( ! isset( $parent['childStates'][ $checked_state ] ) ) {
-				$parent['childStates'][ $checked_state ] = 0;
+			if ( ! isset( $parent_item['childStates'][ $checked_state ] ) ) {
+				$parent_item['childStates'][ $checked_state ] = 0;
 			}
-			++$parent['childStates'][ $checked_state ];
+			++$parent_item['childStates'][ $checked_state ];
 		}
 
 		$type         = 'checkbox';
@@ -264,15 +390,42 @@ class Checkbox extends Choice {
 		$option['activeClass']  = esc_attr( $active_class );
 		$option['svgLink']      = esc_attr( $svg_link );
 		$option['isActive']     = boolval( $is_active );
-		$option['uid']          = esc_attr( self::get_instance_id( 'checkable' ) );
+		$option['uid']          = (int) self::get_instance_id( 'checkable' );
 		// TODO: Unfortunately we need add a `hasChildren` prop to the option for our jsx template vars templates.
 		// Remove once the jsx template vars supports using `count` in a a conditionally rendered statement.
-		$option['hasChildren'] = esc_attr( $has_children );
+		$option['hasChildren'] = (bool) $has_children;
 	}
-	public function prep_render_options( &$options, &$parent ) {
+
+	/**
+	 * Prepare render options by updating each option.
+	 *
+	 * @param array $options The options to prepare.
+	 * @param array $parent_item  The parent option.
+	 * @return array The prepared options.
+	 */
+	public function prep_render_options( &$options, &$parent_item ) {
 		foreach ( $options as &$option ) {
-			$this->update_option( $option, $parent );
+			$this->update_option( $option, $parent_item );
 		}
 		return $options;
+	}
+
+	/**
+	 * Gets the components array.
+	 *
+	 * Checkboxes are unique in that they have use the checkbox component when
+	 * tristate is enabled, otherwise they fallback to build in handling.
+	 *
+	 * @return array The components array.
+	 */
+	public function get_components() {
+
+		if ( $this->get_attribute( 'inputCheckboxTristate' ) !== 'no' ) {
+			$components = array( 'checkbox' );
+		} else {
+			$components = array();
+		}
+
+		return apply_filters( 'search-filter/fields/field/get_components', $components, $this );
 	}
 }

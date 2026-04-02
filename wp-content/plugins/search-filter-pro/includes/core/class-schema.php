@@ -19,42 +19,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Defines the general Schema of the data used
  */
-class Schema extends \Search_Filter\Core\Schema {
-	/**
-	 * The reference to the tables that are created.
-	 *
-	 * @var array
-	 */
-	private $tables = array();
+class Schema {
 
 	/**
-	 * Init the database tables.
+	 * Initialize schema setup.
 	 *
-	 * @since    3.0.0
+	 * Currently a placeholder for any pre-registration schema setup.
+	 * Pro tables are registered via the 'search-filter-pro/schema/register' hook.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return void
 	 */
-	protected function init_db() {
-		$this->tables['index'] = new \Search_Filter_Pro\Indexer\Database\Index_Table();
-		// If the table does not exist, then create the table.
-		if ( ! $this->tables['index']->exists() ) {
-			$this->tables['index']->install();
-		}
+	public static function init(): void {
+		// Placeholder for any pre-registration schema setup.
+		// Actual table registration happens via Schema::register() hook.
+	}
 
-		$this->tables['index_cache'] = new \Search_Filter_Pro\Indexer\Cache\Table();
-		// If the table does not exist, then create the table.
-		if ( ! $this->tables['index_cache']->exists() ) {
-			$this->tables['index_cache']->install();
-		}
-
-		$this->tables['tasks'] = new \Search_Filter_Pro\Task_Runner\Database\Tasks_Table();
-		// If the table does not exist, then create the table.
-		if ( ! $this->tables['tasks']->exists() ) {
-			$this->tables['tasks']->install();
-		}
-
-		$this->tables['tasks_meta'] = new \Search_Filter_Pro\Task_Runner\Database\Tasks_Meta_Table();
-		// If the table does not exist, then create the table.
-		if ( ! $this->tables['tasks_meta']->exists() ) {
-			$this->tables['tasks_meta']->install();
-		}
+	/**
+	 * Fire the schema registration hook.
+	 *
+	 * Called during WordPress 'init' action at priority 1.
+	 * Extensions should use this hook to register additional tables.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @example
+	 * add_action( 'search-filter-pro/schema/register', function() {
+	 *     \Search_Filter_Pro\Database\Table_Manager::register(
+	 *         'my_custom_table',
+	 *         '\My_Extension\Database\Custom_Table'
+	 *     );
+	 * });
+	 */
+	public static function register() {
+		do_action( 'search-filter-pro/schema/register' );
 	}
 }

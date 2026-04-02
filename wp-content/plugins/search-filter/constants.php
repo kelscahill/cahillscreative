@@ -13,7 +13,11 @@ if ( ! defined( 'SEARCH_FILTER_SLUG' ) ) {
 }
 
 if ( ! defined( 'SEARCH_FILTER_VERSION' ) ) {
-	define( 'SEARCH_FILTER_VERSION', '3.1.6' );
+	define( 'SEARCH_FILTER_VERSION', '3.2.3' );
+}
+
+if ( ! defined( 'SEARCH_FILTER_MIN_PRO_VERSION_SUPPORTED' ) ) {
+	define( 'SEARCH_FILTER_MIN_PRO_VERSION_SUPPORTED', '3.2.0' );
 }
 
 if ( ! defined( 'SEARCH_FILTER_URL' ) ) {
@@ -64,8 +68,7 @@ define( 'SEARCH_FILTER_EXCEPTION_SETTING_INVALID_CONDITIONS', 600 );
 define( 'SEARCH_FILTER_EXCEPTION_SETTING_INVALID_OPTION', 601 );
 define( 'SEARCH_FILTER_EXCEPTION_SETTINGS_REGISTERY_EXISTS', 602 );
 
-
-$env_path = plugin_dir_path( __FILE__ ) . 'env.php';
-if ( file_exists( $env_path ) ) {
-	require_once $env_path;
-}
+// Table Manager exception codes.
+define( 'SEARCH_FILTER_EXCEPTION_TABLE_EXISTS', 4001 );
+define( 'SEARCH_FILTER_EXCEPTION_TABLE_NOT_FOUND', 4002 );
+define( 'SEARCH_FILTER_EXCEPTION_TABLE_CLASS_MISSING', 4003 );

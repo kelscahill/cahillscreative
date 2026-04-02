@@ -8,6 +8,7 @@
  */
 
 namespace Search_Filter_Pro\Integrations;
+
 use Search_Filter_Pro\Core\Plugin_Installer;
 
 // If this file is called directly, abort.
@@ -16,9 +17,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * WPML integration handler.
  */
 class Wpml {
 
+	/**
+	 * The plugin file.
+	 *
+	 * @var string
+	 */
 	private static $plugin_file = 'search-filter-wpml/search-filter-wpml.php';
 	/**
 	 * Init
@@ -64,5 +71,4 @@ class Wpml {
 
 		return false;
 	}
-
 }

@@ -1,0 +1,61 @@
+<?php
+/**
+ * Add error codes + data to exceptions.
+ *
+ * Copy of Search_Filter\Core\Exception - for logic paths that require
+ * no reliance on the base plugin being active.
+ *
+ * @link       https://searchandfilter.com
+ * @since      3.0.0
+ *
+ * @package    Search_Filter
+ * @subpackage Search_Filter/Core
+ */
+
+namespace Search_Filter_Pro\Core;
+
+// If this file is called directly, abort.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Add custom error codes + data to exceptions.
+ */
+class Exception extends \Exception {
+	/**
+	 * Sanitized error code.
+	 *
+	 * @var string
+	 */
+	protected $error_code;
+
+	/**
+	 * Extra error data.
+	 *
+	 * @var array
+	 */
+	protected $error_data;
+
+	/**
+	 * Setup exception.
+	 *
+	 * @param string          $message          User-friendly translated error message, e.g. 'Setting is invalid.'.
+	 * @param int             $code             Machine-readable error code, e.g 101.
+	 * @param \Throwable|null $previous         The previously thrown exception.
+	 * @param int             $http_status_code Proper HTTP status code to respond with, e.g. 400.
+	 * @param array           $data             Extra error data.
+	 */
+	public function __construct( string $message, int $code, $previous = null, int $http_status_code = 400, array $data = array() ) {
+		$this->error_data = array_merge( array( 'status' => $http_status_code ), $data );
+		parent::__construct( $message, $code, $previous );
+	}
+	/**
+	 * Returns error data.
+	 *
+	 * @return array
+	 */
+	public function get_error_data() {
+		return $this->error_data;
+	}
+}

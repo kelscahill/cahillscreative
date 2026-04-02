@@ -1,10 +1,25 @@
 <?php
+/**
+ * Log Row Class.
+ *
+ * @package     Database
+ * @subpackage  Rows
+ * @copyright   Copyright (c) 2020
+ * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       3.0.0
+ */
+
 namespace Search_Filter\Database\Rows;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Log row class.
+ *
+ * @since 3.0.0
+ */
 class Log extends \Search_Filter\Database\Engine\Row {
 
 	/**
@@ -26,6 +41,14 @@ class Log extends \Search_Filter\Database\Engine\Row {
 	public $message = '';
 
 	/**
+	 * The date the field was created.
+	 *
+	 * @since 3.2.0
+	 * @var int
+	 */
+	public $date_created = 0;
+
+	/**
 	 * The level of the log.
 	 *
 	 * @since 3.0.0
@@ -37,17 +60,18 @@ class Log extends \Search_Filter\Database\Engine\Row {
 	/**
 	 * Log constructor.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param $item
+	 * @param object $item The log item data.
 	 */
 	public function __construct( $item ) {
 		parent::__construct( $item );
 
 		// This is optional, but recommended. Set the type of each column, and prepare.
-		$this->id      = (int) $this->id;
-		$this->message = (string) $this->message;
-		$this->level   = (string) $this->level;
+		$this->id           = (int) $this->id;
+		$this->message      = (string) $this->message;
+		$this->level        = (string) $this->level;
+		$this->date_created = empty( $this->date_created ) ? 0 : strtotime( (string) $this->date_created );
 	}
 
 	/**

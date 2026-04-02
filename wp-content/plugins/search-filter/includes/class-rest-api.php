@@ -11,12 +11,16 @@
 namespace Search_Filter;
 
 use Search_Filter\Admin\Screens;
+use Search_Filter\Core\Asset_Loader;
+use Search_Filter\Core\CSS_Loader;
 use Search_Filter\Core\Notices;
 use Search_Filter\Settings;
 use Search_Filter\Fields;
 use Search_Filter\Fields\Field;
 use Search_Filter\Fields\Field_Factory;
 use Search_Filter\Queries\Query;
+use Search_Filter\Styles\Tokens;
+use Search_Filter\Features;
 use WP_REST_Request;
 
 // If this file is called directly, abort.
@@ -34,45 +38,51 @@ class Rest_API {
 	/**
 	 * The bulk class.
 	 *
-	 * @var Records
+	 * @var Rest_API\Bulk
 	 */
 	private $bulk;
 	/**
 	 * The queries class.
 	 *
-	 * @var Queries
+	 * @var Rest_API\Queries
 	 */
 	private $queries;
 	/**
 	 * The fields class.
 	 *
-	 * @var Fields
+	 * @var Rest_API\Fields
 	 */
 	private $fields;
 	/**
 	 * The styles class.
 	 *
-	 * @var Styles
+	 * @var Rest_API\Styles
 	 */
 	private $styles;
 	/**
 	 * The data class.
 	 *
-	 * @var Records
+	 * @var Rest_API\Data
 	 */
 	private $data;
 	/**
-	 * The data class.
+	 * The integrations class.
 	 *
-	 * @var Integrations
+	 * @var Rest_API\Integrations
 	 */
 	private $integrations;
 	/**
-	 * The data class.
+	 * The features class.
 	 *
-	 * @var Features
+	 * @var Rest_API\Features
 	 */
 	private $features;
+	/**
+	 * The debug logs class.
+	 *
+	 * @var Rest_API\Logs
+	 */
+	private $logs;
 	/**
 	 * Attach main hook.
 	 */
@@ -84,8 +94,9 @@ class Rest_API {
 		$this->data         = new \Search_Filter\Rest_API\Data();
 		$this->features     = new \Search_Filter\Rest_API\Features();
 		$this->integrations = new \Search_Filter\Rest_API\Integrations();
+		$this->logs         = new \Search_Filter\Rest_API\Logs();
 
-		add_action( 'rest_pre_serve_request', array( $this, 'add_rest_api_request_action' ), 10, 4 );
+		add_filter( 'rest_pre_serve_request', array( $this, 'add_rest_api_request_action' ), 10, 3 );
 
 		add_action( 'rest_api_init', array( $this, 'add_routes' ) );
 	}
@@ -96,10 +107,9 @@ class Rest_API {
 	 * @param bool            $served The served status.
 	 * @param mixed           $result The result.
 	 * @param WP_REST_Request $request The request object.
-	 * @param WP_REST_Server  $server The server object.
 	 * @return bool The served status.
 	 */
-	public function add_rest_api_request_action( $served, $result, $request, $server ) {
+	public function add_rest_api_request_action( $served, $result, $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Required by WordPress REST API filter signature.
 		// if route starts with `/search-filter/v1/` then we need to add the action.
 		$routes                 = array( '/search-filter/', '/search-filter-pro/' );
 		$is_search_filter_route = false;
@@ -197,22 +207,46 @@ class Rest_API {
 		// TODO - need to return a suitable response.
 		return rest_ensure_response( true );
 	}
+
+	/**
+	 * Update the assets version.
+	 *
+	 * @param array $params Parameters from the request.
+	 */
+	public function update_assets_version( $params ) {
+		$version = $params['version'];
+		Asset_Loader::set_db_version( $version );
+
+		// Resave all styles.
+		$styles = \Search_Filter\Styles::get();
+		foreach ( $styles as $style ) {
+			if ( is_wp_error( $style ) ) {
+				continue;
+			}
+			$style->save();
+		}
+		CSS_Loader::save_css();
+
+		return rest_ensure_response( true );
+	}
+
 	/**
 	 * Fetch the admin data
 	 */
 	public function get_admin_data() {
 
 		$admin_data = array(
-			'pro'  => array(
+			'pro'           => array(
 				'isEnabled'         => \Search_Filter\Core\Dependants::is_search_filter_pro_enabled(),
 				'isRequirementsMet' => \Search_Filter\Core\Dependants::is_search_filter_pro_requirements_met(),
 				'isInstalled'       => \Search_Filter\Core\Dependants::is_search_filter_pro_installed(),
 				'enableNonce'       => wp_create_nonce( self::ENABLE_PRO_NONCE ),
 			),
-			'site' => array(
+			'site'          => array(
 				'url'   => home_url(),
 				'email' => wp_get_current_user()->user_email,
 			),
+			'assetsVersion' => Asset_Loader::get_db_version(),
 		);
 		$admin_data = apply_filters( 'search-filter/rest-api/get_admin_data', $admin_data );
 		return rest_ensure_response( $admin_data );
@@ -247,17 +281,28 @@ class Rest_API {
 			$cleaned_matrix[ $field_type ]['inputTypes'] = array();
 
 			foreach ( $input_types as $input_type => $input_type_class ) {
-				$cleaned_matrix[ $field_type ]['inputTypes'][ $input_type ] = $input_type_class::get_label();
+				$cleaned_matrix[ $field_type ]['inputTypes'][ $input_type ] = array(
+					'label'       => $input_type_class::get_label(),
+					'settings'    => array_merge( $input_type_class::get_setting_support_names(), $input_type_class::get_style_support_names() ),
+					'requiresPro' => $input_type_class::requires_pro(),
+				);
 			}
 		}
 		return rest_ensure_response( $cleaned_matrix );
 	}
 
 	/**
-	 * Fetch the default styles
+	 * Fetch the default styles preset.
 	 */
-	public function get_default_styles() {
+	public function get_default_styles_preset() {
 		return rest_ensure_response( Styles::get_default_styles_id() );
+	}
+
+	/**
+	 * Fetch the defaults tokens for styles.
+	 */
+	public function get_tokens() {
+		return rest_ensure_response( Tokens::get() );
 	}
 
 	/**
@@ -326,11 +371,11 @@ class Rest_API {
 		return rest_ensure_response( $screen_options );
 	}
 	/**
-	 * Set the default styles
+	 * Set the default styles preset.
 	 *
 	 * @param array $params Parameters from the request.
 	 */
-	public function set_default_styles( $params ) {
+	public function set_default_styles_preset( $params ) {
 		$id = $params['id'];
 		Styles::set_default_styles_id( $id );
 		return rest_ensure_response( $id );
@@ -392,8 +437,8 @@ class Rest_API {
 	/**
 	 * Sanitize the admin sections
 	 *
-	 * @param WP_REST_Request $request
-	 * @return void
+	 * @param array<string> $sections The sections to sanitize.
+	 * @return array<string>
 	 */
 	public function sanitize_sections( $sections ) {
 		return array_map( 'sanitize_key', $sections );
@@ -402,8 +447,9 @@ class Rest_API {
 	 * Get the notices.
 	 *
 	 * @since 3.0.0
+	 * @return \WP_REST_Response
 	 */
-	public function get_admin_notices( \WP_REST_Request $request ) {
+	public function get_admin_notices() {
 		$notices = Notices::get_notices();
 		return rest_ensure_response( $notices );
 	}
@@ -411,8 +457,8 @@ class Rest_API {
 	/**
 	 * Dismiss a notice.
 	 *
-	 * @param \WP_REST_Request $request
-	 * @return void
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response
 	 */
 	public function dismiss_admin_notice( \WP_REST_Request $request ) {
 		$id = $request->get_param( 'id' );
@@ -423,6 +469,9 @@ class Rest_API {
 	 * Get the context fields IDs.
 	 *
 	 * @since 3.0.0
+	 *
+	 * @param WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response
 	 */
 	public function get_context_fields_ids( WP_REST_Request $request ) {
 
@@ -457,6 +506,9 @@ class Rest_API {
 		$this->data->add_routes();
 		$this->features->add_routes();
 		$this->integrations->add_routes();
+
+		// Always register logs routes - disabled states handled in endpoint callbacks.
+		$this->logs->add_routes();
 
 		Settings::add_routes();
 
@@ -499,6 +551,22 @@ class Rest_API {
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_admin_data' ),
+				'permission_callback' => array( $this, 'permissions' ),
+			)
+		);
+		register_rest_route(
+			'search-filter/v1',
+			'/admin/assets-version',
+			array(
+				'methods'             => \WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'update_assets_version' ),
+				'args'                => array(
+					'version' => array(
+						'type'              => 'number',
+						'required'          => true,
+						'sanitize_callback' => 'absint',
+					),
+				),
 				'permission_callback' => array( $this, 'permissions' ),
 			)
 		);
@@ -570,22 +638,23 @@ class Rest_API {
 				'permission_callback' => array( $this, 'permissions' ),
 			)
 		);
+
 		register_rest_route(
 			'search-filter/v1',
-			'/admin/styles/default',
+			'/admin/styles/defaults/preset',
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_default_styles' ),
+				'callback'            => array( $this, 'get_default_styles_preset' ),
 				'permission_callback' => array( $this, 'permissions' ),
 			)
 		);
 
 		register_rest_route(
 			'search-filter/v1',
-			'/admin/styles/default',
+			'/admin/styles/defaults/preset',
 			array(
 				'methods'             => \WP_REST_Server::EDITABLE,
-				'callback'            => array( $this, 'set_default_styles' ),
+				'callback'            => array( $this, 'set_default_styles_preset' ),
 				'permission_callback' => array( $this, 'permissions' ),
 				'args'                => array(
 					'id' => array(
@@ -594,6 +663,16 @@ class Rest_API {
 						'sanitize_callback' => 'absint',
 					),
 				),
+			)
+		);
+
+		register_rest_route(
+			'search-filter/v1',
+			'/admin/styles/tokens',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_tokens' ),
+				'permission_callback' => array( $this, 'permissions' ),
 			)
 		);
 
@@ -684,7 +763,7 @@ class Rest_API {
 			'search-filter/v1',
 			'/field/data',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
+				'methods'             => \WP_REST_Server::EDITABLE,
 				'callback'            => array( $this, 'get_field_data' ),
 				'args'                => array(
 					'attributes' => array(
@@ -720,12 +799,12 @@ class Rest_API {
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'taxonomy'         => array(
+					'archiveTaxonomy'  => array(
 						'type'              => 'string',
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_key',
 					),
-					'postType'         => array(
+					'archivePostType'  => array(
 						'type'              => 'string',
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_key',
@@ -746,6 +825,57 @@ class Rest_API {
 					'queryId' => array(
 						'type'              => 'string',
 						'required'          => false,
+						'sanitize_callback' => 'sanitize_key',
+					),
+				),
+				'permission_callback' => array( $this, 'permissions' ),
+				'allow_batch'         => true,
+			)
+		);
+		register_rest_route(
+			'search-filter/v1',
+			'/settings/options/query/taxonomies',
+			array(
+				'methods'             => array( \WP_REST_Server::READABLE ),
+				'callback'            => array( $this, 'get_query_taxonomies_options' ),
+				'args'                => array(
+					'queryId' => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_key',
+					),
+				),
+				'permission_callback' => array( $this, 'permissions' ),
+				'allow_batch'         => true,
+			)
+		);
+		register_rest_route(
+			'search-filter/v1',
+			'/settings/options/query/archive/taxonomies',
+			array(
+				'methods'             => array( \WP_REST_Server::READABLE ),
+				'callback'            => array( $this, 'get_query_archive_taxonomies_options' ),
+				'args'                => array(
+					'archivePostType' => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_key',
+					),
+				),
+				'permission_callback' => array( $this, 'permissions' ),
+				'allow_batch'         => true,
+			)
+		);
+		register_rest_route(
+			'search-filter/v1',
+			'/settings/options/query/archive/taxonomy_terms',
+			array(
+				'methods'             => array( \WP_REST_Server::READABLE ),
+				'callback'            => array( $this, 'get_query_archive_taxonomy_terms_options' ),
+				'args'                => array(
+					'archiveTaxonomy' => array(
+						'type'              => 'string',
+						'required'          => true,
 						'sanitize_callback' => 'sanitize_key',
 					),
 				),
@@ -806,12 +936,12 @@ class Rest_API {
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_key',
 					),
-					'taxonomy'        => array(
+					'archiveTaxonomy' => array(
 						'type'              => 'string',
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_key',
 					),
-					'postType'        => array(
+					'archivePostType' => array(
 						'type'              => 'string',
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_key',
@@ -874,7 +1004,6 @@ class Rest_API {
 					'requests' => array(
 						'required' => true,
 						'type'     => 'array',
-						// 'maxItems' => $this->get_max_batch_size(),
 						'items'    => array(
 							'type'       => 'object',
 							'properties' => array(
@@ -933,10 +1062,7 @@ class Rest_API {
 
 			$responses = rest_preload_api_request(
 				$responses,
-				array(
-					'path'   => $request['path'],
-					'method' => $request['method'],
-				)
+				$request['path']
 			);
 		}
 
@@ -980,27 +1106,25 @@ class Rest_API {
 					break;
 				}
 				$archive_type = $params['archiveType'];
-				if ( 'post_type' === $archive_type && isset( $params['postType'] ) ) {
-					$post_type      = $params['postType'];
+				if ( 'post_type' === $archive_type && isset( $params['archivePostType'] ) ) {
+					$post_type      = $params['archivePostType'];
 					$post_type_data = array(
-						'disabled' => true,
-						'value'    => array( $post_type ),
-						'message'  => __( 'Synced with integration settings.', 'search-filter' ),
+						'disabled'       => true,
+						'value'          => array( $post_type ),
+						'notice'         => __( 'Post type set via location settings.', 'search-filter' ),
+						'noticePosition' => 'after',
+						'noticeLevel'    => 'info',
 					);
 
-				} elseif ( 'taxonomy' === $archive_type && isset( $params['taxonomy'] ) ) {
-					$taxonomy = get_taxonomy( $params['taxonomy'] );
+				} elseif ( 'taxonomy' === $archive_type && isset( $params['archiveTaxonomy'] ) ) {
+					$taxonomy = get_taxonomy( $params['archiveTaxonomy'] );
 					if ( $taxonomy ) {
 						$post_type_data = array(
 							'disabled' => true,
 							'value'    => is_array( $taxonomy->object_type ) ? array_values( $taxonomy->object_type ) : array( $taxonomy->object_type ),
 							'message'  => __( 'This option is restricted by the Taxonomy Archive you have selected.', 'search-filter' ),
 						);
-					} else {
-						// TODO - error.
 					}
-				} else {
-					// TODO - error.
 				}
 				break;
 			case 'search':
@@ -1018,7 +1142,7 @@ class Rest_API {
 	 *
 	 * @param WP_REST_Request $request The request.
 	 *
-	 * @return string The request result as JSON.
+	 * @return \WP_REST_Response
 	 */
 	public function query_post_types( WP_REST_Request $request ) {
 		$display_params = $request->get_params();
@@ -1043,41 +1167,48 @@ class Rest_API {
 	/**
 	 * Get the available taxonomies based on the current query settings.
 	 *
+	 * @return \WP_REST_Response
+	 */
+	public function get_taxonomies_options() {
+		$json_taxonomies = Settings::get_taxonomies_w_archive();
+		$json            = array(
+			'options' => $json_taxonomies,
+		);
+		return rest_ensure_response( $json );
+	}
+	/**
+	 * Get the available taxonomies based on the current query settings.
+	 *
 	 * @param WP_REST_Request $request The request.
 	 *
-	 * @return string The request result as JSON.
+	 * @return \WP_REST_Response
 	 */
-	public function get_taxonomies_options( WP_REST_Request $request ) {
+	public function get_query_taxonomies_options( WP_REST_Request $request ) {
 		$query_id = $request->get_param( 'queryId' );
-		// If no query param has been passed fetch all taxonomies with archive enabled.
-		if ( is_null( $query_id ) || empty( $query_id ) ) {
-			$json_taxonomies = Settings::get_taxonomies_w_archive();
-			$json            = array(
-				'options' => $json_taxonomies,
-			);
-			return rest_ensure_response( $json );
-		}
+
 		// If no query param has been passed fetch all post types with archive enabled.
 		// TODO - consider showing all taxonomies rather than limiting it to queryId.
-		$query = Query::find( array( 'id' => $query_id ) );
+		$query = Query::get_instance( absint( $query_id ) );
 		if ( is_wp_error( $query ) ) {
-			return array(
-				'options' => array(),
+			return rest_ensure_response(
+				array(
+					'options' => array(),
+				)
 			);
 		}
 
 		$post_types = array();
-
 		if ( $query->get_attribute( 'archiveType' ) === 'taxonomy' ) {
-			$taxonomy = get_taxonomy( $query->get_attribute( 'taxonomy' ) );
+			$taxonomy = get_taxonomy( $query->get_attribute( 'archiveTaxonomy' ) );
 			if ( ! $taxonomy ) {
-				return array(
-					'options' => array(),
+				return rest_ensure_response(
+					array(
+						'options' => array(),
+					)
 				);
 			}
 			$post_types = is_array( $taxonomy->object_type ) ? $taxonomy->object_type : array( $taxonomy->object_type );
-
-		} elseif ( $query->get_attribute( 'archiveType' ) === 'post_type' ) {
+		} else {
 			$post_types = $query->get_attribute( 'postTypes' );
 		}
 		// Grab all the taxonomy associated with the selecte post types as an array.
@@ -1107,11 +1238,91 @@ class Rest_API {
 	}
 
 	/**
+	 * Get the available taxonomies based on the current query settings.
+	 *
+	 * @param WP_REST_Request $request The request.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function get_query_archive_taxonomies_options( WP_REST_Request $request ) {
+
+		$post_type = $request->get_param( 'archivePostType' );
+		$params    = $request->get_params();
+
+		$post_type = apply_filters( 'search-filter/rest-api/get_query_archive_taxonomies/post_type', $post_type, $params );
+
+		if ( empty( $post_type ) ) {
+			return rest_ensure_response(
+				array(
+					'options' => array(),
+				)
+			);
+		}
+
+		$taxonomy_names  = get_object_taxonomies( $post_type, 'names' );
+		$json_taxonomies = array();
+		foreach ( $taxonomy_names as $taxonomy_name ) {
+			$taxonomy = get_taxonomy( $taxonomy_name );
+			if ( $taxonomy ) {
+				$item          = array();
+				$item['value'] = $taxonomy->name;
+				$item['label'] = $taxonomy->label;
+				array_push( $json_taxonomies, $item );
+			}
+		}
+		$json = array(
+			'options' => $json_taxonomies,
+		);
+		return rest_ensure_response( $json );
+	}
+	/**
+	 * Get the available taxonomies based on the current query settings.
+	 *
+	 * @param WP_REST_Request $request The request.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function get_query_archive_taxonomy_terms_options( WP_REST_Request $request ) {
+
+		$taxonomy = $request->get_param( 'archiveTaxonomy' );
+		$params   = $request->get_params();
+
+		$taxonomy = apply_filters( 'search-filter/rest-api/get_query_archive_taxonomy_terms/taxonomy', $taxonomy, $params );
+
+		if ( empty( $taxonomy ) ) {
+			return rest_ensure_response(
+				array(
+					'options' => array(),
+				)
+			);
+		}
+
+		$taxonomy_terms = get_terms(
+			array(
+				'taxonomy'   => $taxonomy,
+				'hide_empty' => false,
+				'output'     => 'objects',
+			)
+		);
+		$json_terms     = array();
+		foreach ( $taxonomy_terms as $taxonomy_term ) {
+			$item          = array();
+			$item['value'] = $taxonomy_term->slug;
+			$item['label'] = $taxonomy_term->name;
+			array_push( $json_terms, $item );
+		}
+		$json = array(
+			'options' => $json_terms,
+		);
+		return rest_ensure_response( $json );
+	}
+
+	/**
 	 * Get the available taxonomy terms for a particular taxonomy.
 	 *
-	 * @param WP_REST_Request $request
+	 * @param WP_REST_Request $request The REST request object.
 	 *
-	 * @return string The request result as JSON.
+	 * @return \WP_REST_Response
 	 */
 	public function get_taxonomy_terms_options( WP_REST_Request $request ) {
 		$taxonomy = $request->get_param( 'dataTaxonomy' );
@@ -1130,7 +1341,7 @@ class Rest_API {
 	 *
 	 * @param WP_REST_Request $request The request.
 	 *
-	 * @return string The request result as JSON.
+	 * @return \WP_REST_Response
 	 */
 	public function get_post_types_options( WP_REST_Request $request ) {
 
@@ -1147,7 +1358,7 @@ class Rest_API {
 
 		// TODO - consider showing all post types rather than limiting it to queryId.
 		$post_types = array();
-		$query      = Query::find( array( 'id' => $query_id ) );
+		$query      = Query::get_instance( absint( $query_id ) );
 		if ( ! is_wp_error( $query ) ) {
 			$post_types = $query->get_attribute( 'postTypes' );
 		}
@@ -1177,7 +1388,7 @@ class Rest_API {
 	 *
 	 * @param WP_REST_Request $request The request.
 	 *
-	 * @return string The request result as JSON.
+	 * @return \WP_REST_Response
 	 */
 	public function get_results_url( WP_REST_Request $request ) {
 		$display_params = $request->get_params();
@@ -1199,13 +1410,13 @@ class Rest_API {
 	 *
 	 * @param WP_REST_Request $request The request.
 	 *
-	 * @return string The request result as JSON.
+	 * @return \WP_REST_Response
 	 */
 	public function get_post_stati_options( WP_REST_Request $request ) {
 
 		$query_id = $request->get_param( 'queryId' );
 
-		// If no query param has been passed fetch all post stati
+		// If no query param has been passed fetch all post stati.
 		if ( is_null( $query_id ) || empty( $query_id ) ) {
 			$json = array(
 				'options' => Settings::get_post_stati(),
@@ -1215,7 +1426,7 @@ class Rest_API {
 
 		// TODO - consider showing all post types rather than limiting it to queryId.
 		$post_stati = array();
-		$query      = Query::find( array( 'id' => $query_id ) );
+		$query      = Query::get_instance( absint( $query_id ) );
 		if ( ! is_wp_error( $query ) ) {
 			$post_stati = $query->get_attribute( 'postStatus' );
 		}
@@ -1242,20 +1453,26 @@ class Rest_API {
 	/**
 	 * Gets the list of saved queries.
 	 *
-	 * @param WP_REST_Request $request The request.
-	 *
-	 * @return string The request result as JSON.
+	 * @return \WP_REST_Response
 	 */
-	public function get_queries_options( WP_REST_Request $request ) {
+	public function get_queries_options() {
 
 		// Important: always use this function to get the list, so we can
 		// reliably get the first query ID for preloading.
 		$queries_list = Queries::get_queries_list();
 		$queries      = array();
 		foreach ( $queries_list as $item ) {
+			$label = '';
+			if ( 'enabled' === $item->status ) {
+				$label = $item->name;
+			} else {
+				// Translators: %s is the name of the query.
+				$label = sprintf( __( '%s (disabled)', 'search-filter' ), $item->name );
+			}
+
 			$query_data = array(
 				'value' => strval( $item->id ),
-				'label' => $item->name,
+				'label' => $label,
 			);
 
 			array_push( $queries, $query_data );
@@ -1272,7 +1489,7 @@ class Rest_API {
 	 *
 	 * @param WP_REST_Request $request The request.
 	 *
-	 * @return string The request result as JSON.
+	 * @return \WP_REST_Response
 	 */
 	public function get_styles_options( WP_REST_Request $request ) {
 		$params = $request->get_params();
@@ -1297,8 +1514,7 @@ class Rest_API {
 
 			array_push( $styles, $style_data );
 		}
-		// TODO - reformat response, don't use `data` props, just return
-		// the data or send an error.
+		// TODO - reformat response, don't use `data` props, just return the data or send an error.
 		$return = array(
 			'options' => $styles,
 		);

@@ -1,10 +1,10 @@
 === Search & Filter ===
 Contributors: codeamp
 Tags: search, filter, taxonomy, tag, category, product, shop, post type
-Requires at least: 6.2
-Tested up to: 6.7
+Requires at least: 6.5
+Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 3.1.6
+Stable tag: 3.2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,6 +29,78 @@ Create powerful search and filtering experiences for your users and customers.
 
 
 == Changelog ==
+
+= 3.2.3 =
+* Fix - issues with the styles editor not saving styles.
+* Fix - PHP warnings when $post is NULL on save_post.
+* Fix - missing custom class & width setting in our field editor.
+* Fix - layout issues in wp-admin with Jetpack.
+* Fix - issues with <fieldset> nesting in checkboxes and radios.
+* Fix - an issue with our the admin UI not updating after enabling/disabling integrations.
+* Fix - a JS error on the frontend causing URLs not to update correctly after searching.
+* Fix - an issue with woocommerce fields not working with the selection field.
+
+= 3.2.2 =
+* New - enable Divi integration.
+* Fix - an issue with select fields not displaying properly with numeric ACF data types when a site hasn't upgraded to the new styles system.
+* Fix - an issue with the button field not being interactive in some circumstances.
+
+= 3.2.1 =
+* Fix - an issue with our admin JS not loading in some circumstances.
+
+= 3.2.0 =
+* Change - renamed the CSS class `search-filter-component-popup` to `search-filter-component-popover`.
+* Change - updated field hook names for consistency & added deprecation warnings (for admin users only).
+* New - Admin UI redesign - UX improvements, grid views, performance enhancements, better support for different screen sizes, easy access controls & much more.
+* New - Admin - add tooltips for disabled settings.
+* New - Blocks - reworked to a unified block system, seperate blocks for each field type, bug fixes and tons of quality of life improvements.
+* New - Fields - Discover field Locations.
+* New - Import & export all data - queries, fields, styles and settings - includes bulk and individual import & export options.
+* New - Styles - Editor rework - create accessible styles presets quicker than ever.
+* New - Styles - add placeholder color option.
+* New - Styles - add input customization: border accent, divider, border styling (color, radius, width, style), shadow, and padding.
+* New - Styles - add label & description border options (radius, color, style, width).
+* New - Styles - add dropdown customization: border styling, shadow, item padding, attachment mode (attached/floating), gap, indent depth, and scale.
+* New - Fields - Results Per Page - allow users to change the numbers of results per page.
+* New - Fields - show counts for active selections in select fields.
+* New - Queries - include and exclude pages & posts from queries.
+* New - Queries - add support for random ordering & random ordering with a seed (for pagination support).
+* New - Queries - add offset paramater.
+* New - Frontend performance improvements & dynamic asset loading - only load the components and & CSS that's needed.
+* New - added `filter_next_query` action to the shortcode as part of the v2 feature parity work - `[searchandfilter query="123" action="filter_next_query"]`
+* New - select specific taxonomy archives or term archive for filtering.
+* New - Fields - Add term ordering
+* New - Accessibility improvements.
+* New - Fields - Disable text search in choice select fields.
+* New - Fields - Allow toggling of tri-state checkboxes or classic selection mode.
+* Improvement - block editor - show the connected Search & Filter query in the query loop preview.
+* Improvement - allow upto 150 results per page and usage of `-1` to show all posts.
+* Improvement - dynamically calculate popup z-index values for better compatibility.
+* Improvement - performance - reduced the number of frontend queries by roughly 50%.
+* Improvement - allow additional strings to be customised for the select input type and screen readers.
+* Improvement - set the max number of options in choice fields to 100.
+* Improvement - add the Query ID to the block editor modal.
+* Improvement - track WP_Query query data in the debugging tools.
+* Improvement - better support WooCommerce ordering arguments via the dropdown or default option (in the customizer).
+* Fix - issues with inline counts not wrapping.
+* Fix - issues with background gradients in the styles editor.
+* Fix - issues with generating CSS files for styles presets.
+* Fix - issues with commas in field values.
+* Fix - issues with archives not setting defaults in a field with post tags and categories.
+* Fix - PHP errors when trying to use queries that are not initialised yet.
+* Fix - issues unhooking from the WooCommerce collections block.
+* Fix - an issue with the query loop where the post type was not being overriden if it was set to "post" in the query block.
+* Fix - the JavaScript `foundPosts` variable was reporting 1 post found in cases when there should be none.
+* Fix - issues with field input widths when margins were unset.
+* Fix - issue with initialising the datepicker on mobile.
+* Fix - issue with radio buttons not clearing their values correctly.
+* Fix - a rendering issue when using Google translate.
+* Fix - issues with default settings & features not being applied correctly on new installs.
+* Fix - issues with attribute resolution in the editor.
+* Fix - issues with custom CSS classnames not being applied to fields.
+* Fix - an issue where order by count was not working.
+* Fix - issues copying shortcodes to the clipboard on Macs.
+* Fix - support for the media post type.
 
 = 3.1.6 =
 * Improvement - platform updates to support extensions.

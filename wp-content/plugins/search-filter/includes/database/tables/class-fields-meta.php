@@ -1,32 +1,36 @@
 <?php
+/**
+ * Fields Meta Database Table.
+ *
+ * @package Search_Filter
+ * @since 3.0.0
+ */
+
 namespace Search_Filter\Database\Tables;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Class for managing the fields meta database table.
+ *
+ * @since 3.0.0
+ */
 class Fields_Meta extends \Search_Filter\Database\Engine\Table {
 
 	/**
 	 * Table name, without the global table prefix.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	public $name = 'fieldmeta';
 
 	/**
-	 * Database version key (saved in _options or _sitemeta)
-	 *
-	 * @since 1.0.0
-	 * @var   string
-	 */
-	protected $db_version_key = 'search_filter_fieldmeta_table_version';
-
-	/**
 	 * Optional description.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	public $description = 'Fields Meta';
@@ -34,7 +38,7 @@ class Fields_Meta extends \Search_Filter\Database\Engine\Table {
 	/**
 	 * Database version.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   mixed
 	 */
 	protected $version = '3.0.0';
@@ -42,7 +46,7 @@ class Fields_Meta extends \Search_Filter\Database\Engine\Table {
 	/**
 	 * Key => value array of versions => methods.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   array
 	 */
 	protected $upgrades = array();
@@ -50,7 +54,7 @@ class Fields_Meta extends \Search_Filter\Database\Engine\Table {
 	/**
 	 * Setup this database table.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 */
 	protected function set_schema() {
 		$this->schema = "

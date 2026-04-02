@@ -79,7 +79,6 @@ class Plugin_Data {
 		$this->api_url  = trailingslashit( $_api_url );
 		$this->api_data = $_api_data;
 		$this->beta     = ! empty( $this->api_data['beta'] ) ? true : false;
-
 	}
 
 	/**
@@ -134,7 +133,7 @@ class Plugin_Data {
 		// Do a quick status check on this domain if we haven't already checked it.
 		$store_hash = md5( $this->api_url );
 		if ( ! is_array( $edd_plugin_url_available ) || ! isset( $edd_plugin_url_available[ $store_hash ] ) ) {
-			$test_url_parts = parse_url( $this->api_url );
+			$test_url_parts = wp_parse_url( $this->api_url );
 
 			$scheme = ! empty( $test_url_parts['scheme'] ) ? $test_url_parts['scheme'] : 'http';
 			$host   = ! empty( $test_url_parts['host'] ) ? $test_url_parts['host'] : '';
@@ -156,12 +155,12 @@ class Plugin_Data {
 		}
 
 		if ( false === $edd_plugin_url_available[ $store_hash ] ) {
-			return;
+			return false;
 		}
 
 		$data = array_merge( $this->api_data, $_data );
 
-		if ( $this->api_url == trailingslashit( home_url() ) ) {
+		if ( $this->api_url === trailingslashit( home_url() ) ) {
 			return false; // Don't allow a plugin to ping itself.
 		}
 

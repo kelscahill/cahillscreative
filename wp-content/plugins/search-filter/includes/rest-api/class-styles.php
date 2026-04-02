@@ -22,7 +22,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Handles style preset operations via REST API.
  *
+ * @since 3.0.0
  */
 class Styles {
 	/**
@@ -99,6 +101,11 @@ class Styles {
 							'required'          => true,
 							'sanitize_callback' => 'Search_Filter\\Core\\Sanitize::deep_clean',
 						),
+						'tokens'     => array(
+							'type'              => 'object',
+							'required'          => true,
+							'sanitize_callback' => 'Search_Filter\\Core\\Sanitize::deep_clean',
+						),
 						'context'    => array(
 							'type'              => 'string',
 							'required'          => false,
@@ -146,6 +153,11 @@ class Styles {
 							'required'          => false,
 							'sanitize_callback' => 'Search_Filter\\Core\\Sanitize::deep_clean',
 						),
+						'tokens'     => array(
+							'type'              => 'object',
+							'required'          => true,
+							'sanitize_callback' => 'Search_Filter\\Core\\Sanitize::deep_clean',
+						),
 						'context'    => array(
 							'type'              => 'string',
 							'required'          => false,
@@ -182,8 +194,14 @@ class Styles {
 		$count_data = Util::get_records_section_status_counts( $query, $args );
 		return rest_ensure_response( $count_data );
 	}
+
 	/**
-	 * Fetch styles records
+	 * Fetch styles records.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response REST response.
 	 */
 	public function get_records( \WP_REST_Request $request ) {
 		$params     = $request->get_params();
@@ -192,47 +210,45 @@ class Styles {
 		$query_args = apply_filters( 'search-filter/rest-api/records/styles/get_records/query_args', $query_args );
 		$query_args = Util::get_records_query_args( $query_args );
 
-		$query_args['orderby'] = 'context';
-		$query_args['order']   = 'DESC';
-
 		$query       = new Styles_Query( $query_args );
 		$query_items = $query->items;
 		$records     = array();
 
-		if ( $query ) {
-			// $records_data->max_num_pages = $query->max_num_pages;
-			foreach ( $query_items as $record ) {
-				$query_record = array(
-					'id'            => $record->get_id(),
-					'name'          => $record->get_name(),
-					'status'        => $record->get_status(),
-					'attributes'    => $record->get_attributes(),
-					'date_created'  => $record->get_date_created(),
-					'date_modified' => $record->get_date_modified(),
-					'context'       => $record->get_context(),
-				);
+		foreach ( $query_items as $record ) {
+			$query_record = array(
+				'id'            => $record->get_id(),
+				'name'          => $record->get_name(),
+				'status'        => $record->get_status(),
+				'attributes'    => $record->get_attributes(),
+				'tokens'        => (object) $record->get_tokens(),
+				'date_created'  => $record->get_date_created(),
+				'date_modified' => $record->get_date_modified(),
+				'context'       => $record->get_context(),
+			);
 
-				array_push( $records, $query_record );
-			}
+			array_push( $records, $query_record );
 		}
 
 		$records = apply_filters( 'search-filter/rest-api/records/styles/get_records/records_data', $records );
 
 		$records_response = rest_ensure_response( $records );
 
-		if ( $query ) {
-			// These headers are using on all our admin screen queries for total count + paged,
-			// but they are only used with `getEntityRecords` when the `per_page`
-			// param is passed in the request when using,
-			$records_response->header( 'X-WP-Total', $query->found_items );
-			$records_response->header( 'X-WP-TotalPages', $query->max_num_pages );
-		}
+		// These headers are using on all our admin screen queries for total count + paged,
+		// but they are only used with `getEntityRecords` when the `per_page`
+		// param is passed in the request when using.
+		$records_response->header( 'X-WP-Total', (string) $query->found_items );
+		$records_response->header( 'X-WP-TotalPages', (string) $query->max_num_pages );
 
 		return $records_response;
 	}
 
 	/**
 	 * Create a new record.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response REST response.
 	 */
 	public function create_record( \WP_REST_Request $request ) {
 		$params  = $request->get_params();
@@ -241,7 +257,8 @@ class Styles {
 		$section_instance = new Style();
 		$section_instance->set_name( $params['name'] );
 		$section_instance->set_attributes( $params['attributes'], true );
-		$section_instance->set_status( $params['status'], true );
+		$section_instance->set_tokens( $params['tokens'] );
+		$section_instance->set_status( $params['status'] );
 		$section_instance->set_context( $context );
 
 		$section_instance = apply_filters( 'search-filter/rest-api/styles/create_record/instance', $section_instance, 'styles', $params );
@@ -253,8 +270,14 @@ class Styles {
 
 		return rest_ensure_response( $section_instance->get_record() );
 	}
+
 	/**
 	 * Update existing record.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response REST response.
 	 */
 	public function update_record( \WP_REST_Request $request ) {
 
@@ -271,6 +294,9 @@ class Styles {
 		if ( isset( $params['attributes'] ) ) {
 			$section_instance->set_attributes( $params['attributes'], true );
 		}
+		if ( isset( $params['tokens'] ) ) {
+			$section_instance->set_tokens( $params['tokens'] );
+		}
 		if ( isset( $params['context'] ) ) {
 			$section_instance->set_context( $params['context'] );
 		}
@@ -283,7 +309,12 @@ class Styles {
 	}
 
 	/**
-	 * Update existing record
+	 * Delete existing record.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response REST response.
 	 */
 	public function delete_record( \WP_REST_Request $request ) {
 
@@ -297,8 +328,14 @@ class Styles {
 		$response = array( 'id' => $id );
 		return rest_ensure_response( $response );
 	}
+
 	/**
-	 * Delete trashed records
+	 * Delete trashed records.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response REST response.
 	 */
 	public function delete_trashed_records( \WP_REST_Request $request ) {
 
@@ -315,17 +352,31 @@ class Styles {
 		return rest_ensure_response( $response );
 	}
 
+	/**
+	 * Get a style record by ID.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int $id The record ID.
+	 * @return object|\WP_Error The style record object or error.
+	 */
 	private function get_record_by_id( $id ) {
 		$section_record = Style::find( array( 'id' => $id ) );
 		// Bail if nothing found.
 		if ( is_wp_error( $section_record ) ) {
 			return $section_record;
 		}
+
 		return $section_record->get_record();
 	}
 
 	/**
-	 * Fetch record by section and ID
+	 * Fetch record by section and ID.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response|object|\WP_Error REST response, record object, or error.
 	 */
 	public function get_record( \WP_REST_Request $request ) {
 
@@ -369,6 +420,7 @@ class Styles {
 			'name'          => $item->get_name(),
 			'status'        => $item->get_status(),
 			'attributes'    => $item->get_attributes(),
+			'tokens'        => (object) $item->get_tokens(),
 			'date_created'  => $item->get_date_created(),
 			'date_modified' => $item->get_date_modified(),
 			'context'       => $item->get_context(),
@@ -376,7 +428,7 @@ class Styles {
 
 		$record = apply_filters( 'search-filter/admin/get_record/styles/record', $record, $id, $item );
 
-		// TODO - We need to find a way to properly send an error response
+		// TODO - We need to find a way to properly send an error response.
 		return rest_ensure_response( $record );
 	}
 }

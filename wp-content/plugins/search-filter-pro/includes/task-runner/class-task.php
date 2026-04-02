@@ -60,6 +60,14 @@ class Task {
 	private $object_id;
 
 	/**
+	 * The task parent ID.
+	 *
+	 * @since 3.0.1
+	 * @var int
+	 */
+	private $parent_id = 0;
+
+	/**
 	 * The task date modified.
 	 *
 	 * @var int
@@ -70,6 +78,7 @@ class Task {
 	 * Copy of the record.
 	 *
 	 * @var \Search_Filter_Pro\Task_Runner\Database\Task_Row
+	 * @phpstan-ignore property.onlyWritten (Reserved for future use)
 	 */
 	private $record;
 
@@ -80,7 +89,7 @@ class Task {
 	 *
 	 * @var string
 	 */
-	private static $table = 'search_filter_task';
+	protected static $table = 'search_filter_task';
 
 	/**
 	 * Constructor.
@@ -94,7 +103,7 @@ class Task {
 	/**
 	 * Load the record from the database.
 	 *
-	 * @param Search_Filter_Pro\Task_Runner\Database\Task_Row $item  The record row to load.
+	 * @param \Search_Filter_Pro\Task_Runner\Database\Task_Row $item  The record row to load.
 	 */
 	public function load_record( $item ) {
 		$data = array(
@@ -103,6 +112,7 @@ class Task {
 			'action'        => $item->get_action(),
 			'status'        => $item->get_status(),
 			'object_id'     => $item->get_object_id(),
+			'parent_id'     => $item->get_parent_id(),
 			'date_modified' => $item->get_date_modified(),
 			'record'        => $item,
 		);
@@ -133,6 +143,9 @@ class Task {
 		if ( isset( $data['object_id'] ) ) {
 			$this->object_id = $data['object_id'];
 		}
+		if ( isset( $data['parent_id'] ) ) {
+			$this->parent_id = $data['parent_id'];
+		}
 		if ( isset( $data['date_modified'] ) ) {
 			$this->date_modified = $data['date_modified'];
 		}
@@ -160,9 +173,10 @@ class Task {
 		if ( $this->status ) {
 			$data['status'] = $this->status;
 		}
-		if ( $this->object_id ) {
-			$data['object_id'] = $this->object_id;
-		}
+		// Always include object_id and parent_id (even if 0) to match schema.
+		$data['object_id'] = $this->object_id;
+		$data['parent_id'] = $this->parent_id;
+
 		if ( $this->date_modified ) {
 			$data['date_modified'] = $this->date_modified;
 		}
@@ -219,6 +233,16 @@ class Task {
 	public function get_object_id() {
 		return $this->object_id;
 	}
+
+	/**
+	 * Get the parent ID of the task.
+	 *
+	 * @since 3.0.1
+	 * @return int The parent ID of the task.
+	 */
+	public function get_parent_id() {
+		return $this->parent_id;
+	}
 	/**
 	 * Get the date modified of the task.
 	 *
@@ -238,7 +262,7 @@ class Task {
 	 */
 	public function save( $extra_args = array() ) {
 		// TODO: figure out some good permissions.
-		// Need to create new permissions for:
+		// Need to create new permissions for:.
 			// - edit_search_filter_fields.
 			// - edit_search_filter_queries.
 			// - edit_search_filter_styles.
@@ -275,10 +299,7 @@ class Task {
 	 * @return bool True if deleted, false if not.
 	 */
 	public function delete() {
-		/*
-		 if ( ! current_user_can( 'manage_options' ) ) {
-			return false;
-		} */
+
 		if ( $this->id > 0 ) {
 			$result   = self::destroy( $this->id );
 			$this->id = 0;
@@ -295,14 +316,10 @@ class Task {
 	 * @return bool True if deleted, false if not.
 	 */
 	public static function destroy( $id ) {
-		/*
-		 if ( ! current_user_can( 'manage_options' ) ) {
-			return false;
-		} */
 
 		$query = new Database\Tasks_Query();
 
-		// Cast to bool, as delete will return an int of number of deleted items on success
+		// Cast to bool, as delete will return an int of number of deleted items on success.
 		// or false on failure.
 		return (bool) $query->delete_item( absint( $id ) );
 	}
@@ -358,7 +375,7 @@ class Task {
 	 * Gets meta data for the field.
 	 *
 	 * @param string $meta_key  The key of the meta data to get.
-	 * @param string $single    Whether to retreive a single instance or all.
+	 * @param bool   $single    Whether to retreive a single instance or all.
 	 */
 	public function get_meta( $meta_key, $single = false ) {
 		if ( empty( $meta_key ) ) {

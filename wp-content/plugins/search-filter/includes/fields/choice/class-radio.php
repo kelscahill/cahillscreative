@@ -22,6 +22,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Radio extends Choice {
 
 	/**
+	 * Calculate the interaction type for this field.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return string The interaction type.
+	 */
+	protected function calc_interaction_type(): string {
+		return 'choice';
+	}
+
+	/**
 	 * List of icons the input type supports.
 	 *
 	 * @var array
@@ -36,22 +47,60 @@ class Radio extends Choice {
 	 * @var array
 	 */
 	public static $styles = array(
-		'inputColor',
-		'inputActiveIconColor',
-		'inputInactiveIconColor',
+		'fieldMargin'                => true,
+		// 'fieldPadding'               => true,
+		'inputMargin'                => true,
+		'labelBorderStyle'           => true,
+		'labelBorderRadius'          => true,
+		'descriptionBorderStyle'     => true,
+		'descriptionBorderRadius'    => true,
 
-		'labelColor',
-		'labelBackgroundColor',
-		'labelPadding',
-		'labelMargin',
-		'labelScale',
+		'inputScale'                 => true,
+		'inputLabelColor'            => true,
+		'inputActiveIconColor'       => true,
+		'inputInactiveIconColor'     => true,
+		'inputOptionPadding'         => true,
+		'inputOptionGap'             => true,
+		'inputOptionIndentDepth'     => true,
+		'inputIconSize'              => array(
+			// Empty conditions means its supported.
+			'conditions' => array(),
+			// Add a variation to override the default styles variables.
+			'variation'  => array(
+				// Structure must match that of the setting.
+				'style' => array(
+					'variables' => array(
+						// Add extra padding to the left and right.
+						'input-icon-size' => array(
+							'value' => 'calc(1.25 * var(--search-filter-scale-base-size))',
+							'type'  => 'unit',
+						),
+					),
+				),
+			),
+		),
 
-		'descriptionColor',
-		'descriptionBackgroundColor',
-		'descriptionPadding',
-		'descriptionMargin',
-		'descriptionScale',
+		'labelColor'                 => true,
+		'labelBackgroundColor'       => true,
+		'labelPadding'               => true,
+		'labelMargin'                => true,
+		'labelScale'                 => true,
+
+		'descriptionColor'           => true,
+		'descriptionBackgroundColor' => true,
+		'descriptionPadding'         => true,
+		'descriptionMargin'          => true,
+		'descriptionScale'           => true,
 	);
+
+	/**
+	 * The processed (cached) styles.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_styles    The processed styles, null if not processed yet.
+	 */
+	protected static $processed_styles = null;
 
 	/**
 	 * The input type name.
@@ -68,30 +117,39 @@ class Radio extends Choice {
 	public static $type = 'choice';
 
 	/**
-	 * Supported data types.
-	 *
-	 * @var array
-	 */
-	public static $data_support = array(
-		// Each entry is a group of settings that need to have certain conditions.
-		array(
-			'dataType'          => 'post_attribute',
-			'dataPostAttribute' => array( 'post_type', 'post_status', 'post_author' ),
-		),
-		array(
-			'dataType' => 'taxonomy',
-		),
-	);
-
-	/**
 	 * Supported settings.
 	 *
 	 * @var array
 	 */
 	public static $setting_support = array(
-		'showLabel'               => true,
-		'dataLimitOptionsCount'   => true,
-		'taxonomyHierarchical'    => array(
+		'addClass'                       => true,
+		'width'                          => true,
+		'queryId'                        => true,
+		'stylesId'                       => true,
+		'type'                           => true,
+		'label'                          => true,
+		'showLabel'                      => true,
+		'showDescription'                => true,
+		'description'                    => true,
+		'inputType'                      => true,
+		'dataType'                       => array(
+			'values' => array(
+				'post_attribute' => true,
+				'taxonomy'       => true,
+			),
+		),
+		'dataTaxonomy'                   => true,
+		'dataPostAttribute'              => array(
+			'values' => array(
+				'post_type'   => true,
+				'post_status' => true,
+			),
+		),
+		'dataPostTypes'                  => true,
+		'dataPostStati'                  => true,
+		'dataTotalNumberOfOptions'       => true,
+		'dataTotalNumberOfOptionsNotice' => true,
+		'taxonomyHierarchical'           => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -100,7 +158,7 @@ class Radio extends Choice {
 				),
 			),
 		),
-		'taxonomyOrderBy'         => array(
+		'taxonomyOrderBy'                => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -109,7 +167,7 @@ class Radio extends Choice {
 				),
 			),
 		),
-		'taxonomyOrderDir'        => array(
+		'taxonomyOrderDir'               => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -118,7 +176,7 @@ class Radio extends Choice {
 				),
 			),
 		),
-		'taxonomyTermsConditions' => array(
+		'taxonomyTermsConditions'        => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -127,7 +185,7 @@ class Radio extends Choice {
 				),
 			),
 		),
-		'taxonomyTerms'           => array(
+		'taxonomyTerms'                  => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -136,7 +194,7 @@ class Radio extends Choice {
 				),
 			),
 		),
-		'inputOptionsOrder'       => array(
+		'inputOptionsOrder'              => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -145,9 +203,9 @@ class Radio extends Choice {
 				),
 			),
 		),
-		'taxonomyFilterArchive'   => true,
-		'inputOptionsAddDefault'  => true,
-		'hideEmpty'               => array(
+		'taxonomyNavigatesArchive'       => true,
+		'inputOptionsAddDefault'         => true,
+		'hideEmpty'                      => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -156,7 +214,8 @@ class Radio extends Choice {
 				),
 			),
 		),
-		'showCount'               => array(
+		'inputOptionsDefaultLabel'       => true,
+		'showCount'                      => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -165,8 +224,19 @@ class Radio extends Choice {
 				),
 			),
 		),
-		'showCountPosition'       => true,
+		'showCountPosition'              => true,
+		'showCountBrackets'              => true,
+		'hideFieldWhenEmpty'             => true,
 	);
+
+	/**
+	 * The processed (cached) setting support.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_setting_support    The processed settings, null if not processed yet.
+	 */
+	protected static $processed_setting_support = null;
 
 	/**
 	 * Get the label for the field.
@@ -179,6 +249,14 @@ class Radio extends Choice {
 		return __( 'Radio', 'search-filter' );
 	}
 
+	/**
+	 * Get the description for the input type.
+	 *
+	 * @return string The label.
+	 */
+	public static function get_description() {
+		return __( 'Allow users to filter by using radio buttons.', 'search-filter' );
+	}
 	/**
 	 * Override the init_render_data and setup render data + escaping functions.
 	 *
@@ -235,7 +313,7 @@ class Radio extends Choice {
 		$option['options'] = isset( $option['options'] ) ? $this->prep_render_options( $option['options'] ) : array();
 
 		$has_children = false;
-		if ( isset( $option['options'] ) && count( $option['options'] ) > 0 ) {
+		if ( count( $option['options'] ) > 0 ) {
 			$has_children = true;
 		}
 
@@ -254,7 +332,7 @@ class Radio extends Choice {
 
 		$type         = 'radio';
 		$svg_link     = "#sf-svg-{$type}{$svg_modifier}";
-		$is_active    = $checked_state === 'true' || $checked_state === 'mixed';
+		$is_active    = $checked_state === 'true'; // || $checked_state === 'mixed';
 		$class_name   = 'search-filter-input-' . $type;
 		$active_class = $is_active ? ' ' . $class_name . '--is-active' : '';
 
@@ -266,9 +344,9 @@ class Radio extends Choice {
 		$option['activeClass']  = esc_attr( $active_class );
 		$option['svgLink']      = esc_attr( $svg_link );
 		$option['isActive']     = boolval( $is_active );
-		$option['uid']          = esc_attr( self::get_instance_id( 'checkable' ) );
+		$option['uid']          = (int) self::get_instance_id( 'checkable' );
 		// TODO: Unfortunately we need add a `hasChildren` prop to the option for our jsx template vars templates.
 		// Remove once the jsx template vars supports using `count` in a a conditionally rendered statement.
-		$option['hasChildren'] = esc_attr( $has_children );
+		$option['hasChildren'] = (bool) $has_children;
 	}
 }

@@ -8,12 +8,13 @@
  * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since       1.1.0
  */
+
 namespace Search_Filter\Database\Queries;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
-// TODO Remove the need for this dependency
+// TODO Remove the need for this dependency.
 use WP_Meta_Query;
 
 /**

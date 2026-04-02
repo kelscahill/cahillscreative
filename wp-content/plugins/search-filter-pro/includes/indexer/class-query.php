@@ -1,8 +1,25 @@
 <?php
+/**
+ * Indexer query builder.
+ *
+ * @link       https://searchandfilter.com
+ * @since      3.0.0
+ * @package    Search_Filter_Pro
+ * @subpackage Search_Filter_Pro/Indexer
+ */
+
 namespace Search_Filter_Pro\Indexer;
 
-use Search_Filter_Pro\Indexer\Database\Index_Query;
+use Search_Filter\Fields;
+use Search_Filter\Query\Template_Data;
 use Search_Filter_Pro\Util;
+use Search_Filter_Pro\Indexer\Bucket\Updater as Bucket_Updater;
+use Search_Filter_Pro\Indexer\Bucket\Query as Bucket_Query;
+use Search_Filter_Pro\Indexer\Parent_Map\Converter as Parent_Map_Converter;
+use Search_Filter_Pro\Indexer\Bitmap;
+use Search_Filter_Pro\Indexer\Strategy\Index_Strategy_Factory;
+use Search_Filter_Pro\Cache\Tiered_Cache;
+use Search_Filter_Pro\Cache;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,7 +38,7 @@ class Query {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @var Search_Filter\Queries\Query
+	 * @var \Search_Filter\Queries\Query
 	 */
 	private $query;
 
@@ -42,47 +59,6 @@ class Query {
 	 * @var array
 	 */
 	private $fields_by_id = array();
-
-	/**
-	 * Field result IDs.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var null|array
-	 */
-	private $field_result_ids = null;
-
-	/**
-	 * Object Parents.
-	 *
-	 * Keep track of an objects parents for
-	 * converting later.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var null|array
-	 */
-	private $object_parents = array();
-
-	/**
-	 * The result IDs.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var array
-	 */
-	private $result_ids = array();
-
-	/**
-	 * The unfilteredresult IDs.
-	 *
-	 * It will be null if the main query is already unfiltered.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var array
-	 */
-	private $unfiltered_result_ids = null;
 
 	/**
 	 * The result IDs.
@@ -112,6 +88,60 @@ class Query {
 	private $cache_query_args = array();
 
 	/**
+	 * Field result IDs stored as bitmaps.
+	 *
+	 * @since 3.0.7
+	 * @var array [field_id => Bitmap]
+	 */
+	private $field_result_bitmaps = array();
+
+	/**
+	 * The result bitmap (filtered).
+	 *
+	 * @since 3.0.7
+	 * @var Bitmap|null
+	 */
+	private $result_bitmap = null;
+
+	/**
+	 * The unfiltered result bitmap.
+	 *
+	 * When collapse_children is enabled, this contains child IDs (converted from parent IDs)
+	 * for intersection with value bitmaps in get_field_value_matched_bitmap().
+	 *
+	 * @since 3.0.7
+	 * @var Bitmap|null
+	 */
+	private $unfiltered_result_bitmap = null;
+
+	/**
+	 * Unfiltered result bitmap in collapsed (parent) form.
+	 *
+	 * When collapse_children is enabled, this is the parent-space representation of
+	 * unfiltered_result_bitmap. Both contain the same logical result set:
+	 * - unfiltered_result_bitmap: expanded to child IDs (for index intersection)
+	 * - unfiltered_result_bitmap_collapsed: parent IDs (for validity filtering in counts)
+	 *
+	 * Only set when collapse_children is enabled.
+	 *
+	 * @since 3.2.0
+	 * @var Bitmap|null
+	 */
+	private $unfiltered_result_bitmap_collapsed = null;
+
+	/**
+	 * Value bitmaps loaded for each field (for data reuse).
+	 *
+	 * Structure: [field_id => ['value' => ['bitmap' => Bitmap, 'count' => int]]]
+	 * These are loaded during field queries and can be reused for counting,
+	 * eliminating redundant database queries.
+	 *
+	 * @since 3.0.7
+	 * @var array
+	 */
+	private $field_value_bitmaps = array();
+
+	/**
 	 * The unfiltered cache key.
 	 *
 	 * @since 3.0.0
@@ -131,12 +161,29 @@ class Query {
 	 */
 	private $field_cache_args = array();
 
+	/**
+	 * Whether the unfiltered query is needed for accurate counts.
+	 *
+	 * True when there are fields with showCount/hideEmpty AND
+	 * (query has match_any OR field has match_any OR has bucket strategy fields).
+	 *
+	 * @since 3.0.7
+	 *
+	 * @var bool
+	 */
+	private $needs_unfiltered_query = false;
 
-	private $field_has_match_any = false;
-
-	private $query_has_match_any = false;
-
-	private $enable_caching = true;
+	/**
+	 * Whether the query has fields that need counts.
+	 *
+	 * This is used to determine if we need to run an unfiltered query
+	 * for accurate counts.
+	 *
+	 * @since 3.0.7
+	 *
+	 * @var bool
+	 */
+	private $has_fields_needing_counts = false;
 
 	/**
 	 * Whether the query has a search term.
@@ -148,75 +195,459 @@ class Query {
 	private $has_search = null;
 
 	/**
+	 * BM25-ordered post IDs from search (for relevance ordering).
+	 *
+	 * When search fields are used, this stores the post IDs in
+	 * BM25 relevance order so we can preserve ordering in WP_Query.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @var array|null
+	 */
+	private $search_ordered_ids = null;
+
+	/**
+	 * Parent map sources derived from query post types.
+	 *
+	 * Used to filter parent map lookups to only relevant sources.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var array
+	 */
+	private $parent_map_sources = array();
+
+	/**
 	 * Construct.
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param Search_Filter\Queries\Query $query The S&F query object.
+	 * @param \Search_Filter\Queries\Query $query The S&F query object.
 	 */
 	public function __construct( $query ) {
 
+		/**
+		 * Fires when indexer query initialization starts.
+		 *
+		 * @param \Search_Filter\Queries\Query $query The S&F query object.
+		 */
 		do_action( 'search-filter-pro/indexer/query/init/start', $query );
-		// Disable caching for admins.
-		// TODO - we should use S&F roles to handle this.
-		if ( current_user_can( 'administrator' ) ) {
-			$this->enable_caching = false;
-		}
 
 		$this->query  = $query;
 		$this->fields = $query->get_fields();
 
+		// Derive parent map sources from query post types for source-isolated lookups.
+		$post_types               = $query->get_attribute( 'postTypes' );
+		$this->parent_map_sources = Parent_Map_Converter::post_types_to_sources( $post_types );
+
+		$this->parent_map_sources = apply_filters( 'search-filter-pro/indexer/query/parent_map_sources', $this->parent_map_sources, $query );
 		// Start off as `null` so we know if any fields were applied to the query.
 		// A null initial state also helps to determine how to initially combine
 		// result IDs.
-		$post__in           = null;
-		$field_relationship = $query->get_attribute( 'fieldRelationship' );
+		$post__in                 = null;
+		$query_field_relationship = $query->get_attribute( 'fieldRelationship' );
 
 		// Setup the combine type for the fields.
 		$combine_type = '';
-		if ( $field_relationship === 'any' ) {
-			$combine_type              = 'merge';
-			$this->query_has_match_any = true;
-		} elseif ( $field_relationship === 'all' ) {
+		if ( $query_field_relationship === 'any' ) {
+			$combine_type = 'merge';
+		} elseif ( $query_field_relationship === 'all' ) {
 			$combine_type = 'intersect';
 		}
 
-
 		$field_cache_args = array();
-		foreach ( $this->fields as $field ) {
 
+		$taxonomy_archive_filter = null;
+
+		// Need to figure out if we're filtering a tax archive.
+		$is_tax_archive = false;
+		$wp_query_args  = array();
+		$wp_query       = $query->get_wp_query();
+
+		if ( $wp_query ) {
+			if ( ( $wp_query->is_tax() || $wp_query->is_category() || $wp_query->is_tag() ) && $wp_query->is_archive() ) {
+				$is_tax_archive = true;
+			}
+			if ( property_exists( $wp_query, 'query' ) ) {
+				$wp_query_args = $wp_query->query;
+			}
+		}
+
+		// Remove our query arg in case they made it through (eg when we filter the loop block args
+		// our query info gets added to `->query` instead of `->query_vars`).
+		if ( isset( $wp_query_args['search_filter_query_id'] ) ) {
+			unset( $wp_query_args['search_filter_query_id'] );
+		}
+		if ( isset( $wp_query_args['search_filter_queries'] ) ) {
+			unset( $wp_query_args['search_filter_queries'] );
+		}
+
+		if ( isset( $wp_query_args['posts_per_page'] ) ) {
+			unset( $wp_query_args['posts_per_page'] );
+		}
+		if ( isset( $wp_query_args['paged'] ) ) {
+			unset( $wp_query_args['paged'] );
+		}
+
+		// When using bitmap operations, collect bitmaps directly to avoid conversions.
+		$all_filter_field_bitmaps = array();
+
+		// Collect all fields.
+		$fields_by_strategy = array(
+			'bitmap' => array(),
+			'bucket' => array(),
+			'search' => array(),
+			'none'   => array(),
+		);
+
+		// First pass: collect fields that can be batched.
+		foreach ( $this->fields as $field ) {
 			if ( is_wp_error( $field ) ) {
 				continue;
 			}
 
+			if ( $is_tax_archive && method_exists( $field, 'navigates_taxonomy_archive' ) ) {
+				$navigates_taxonomy_archive = $field->navigates_taxonomy_archive();
+				// Make sure the current archive matches the the field before setting it
+				// as we can only ever have 1 activate at a time.
+				if ( $navigates_taxonomy_archive && Template_Data::get_tax_archive() === $navigates_taxonomy_archive ) {
+					$taxonomy_archive_filter = $navigates_taxonomy_archive;
+				}
+			}
+
 			$this->fields_by_id[ $field->get_id() ] = $field;
-			
 			if ( count( $field->get_values() ) === 0 ) {
 				continue;
 			}
 
+			Fields::register_active_field( $field );
+
 			$field_cache_args[ $field->get_id() ] = $field->get_values();
 
-			$field_post_ids = $this->field_query( $field );
+			$field_interaction_type = $field->get_interaction_type();
+			$field_strategy         = Index_Strategy_Factory::get_by_interaction_type( $field_interaction_type );
 
-			if ( $field_post_ids !== null ) {
-				$post__in = self::combine_arrays( $post__in, $field_post_ids, $combine_type );
+			// Recheck field support via the strategy `supports()` method as it can be overriden on a per field basis.
+			if ( $field_strategy && $field_strategy->supports( $field ) ) {
+				$fields_by_strategy[ $field_strategy->get_type() ][] = $field;
+			} else {
+				$fields_by_strategy['none'][] = $field;
 			}
 		}
 
+		// Determine if we should use collapsed bitmaps (for hierarchical posts, product variations, etc.).
+		$collapse_children = apply_filters( 'search-filter-pro/indexer/query/collapse_children', false, $this->get_query() );
+
+		// ============================================================
+		// Bitmap strategy fields
+		// ============================================================
+
+		// Run batch query.
+		if ( ! empty( $fields_by_strategy['bitmap'] ) ) {
+			// Run batch query.
+			$field_bitmap_configs = array();
+			foreach ( $fields_by_strategy['bitmap'] as $choice_field ) {
+				// We can specify which values to get or all.
+				// TODO - depending on if we need counts etc, we might not need to get all values.
+				$field_bitmap_configs[ $choice_field->get_id() ] = array(
+					'values' => array(), // Query  all values.
+				);
+			}
+
+			// Always load regular bitmaps (child-level), never collapsed.
+			// Filtering must happen at child level to avoid false positives.
+			// We'll convert to parent IDs after intersection.
+			$batched_field_bitmaps = \Search_Filter_Pro\Indexer\Bitmap\Database\Index_Query_Direct::get_batched_field_bitmaps( $field_bitmap_configs );
+
+			// Loop and build result ID bitmaps.
+			foreach ( $fields_by_strategy['bitmap'] as $field ) {
+
+				$field_id = $field->get_id();
+
+				// Process bitmap field results.
+
+				// Flag that we have a field that is using counts or hide empty logic.
+
+				// Track match type for each field.
+				$has_multiple_match_method = $field->get_attribute( 'multipleMatchMethod' ) !== '' && $field->get_attribute( 'multipleMatchMethod' ) !== null;
+				$multiple_match_method     = $has_multiple_match_method ? $field->get_attribute( 'multipleMatchMethod' ) : 'any';
+
+				$hide_empty               = $field->get_attribute( 'hideEmpty' ) === 'yes';
+				$show_count               = $field->get_attribute( 'showCount' ) === 'yes';
+				$needs_count_calculations = $hide_empty || $show_count;
+				if ( $needs_count_calculations ) {
+					$this->has_fields_needing_counts = true;
+				}
+
+				// Bitmap fields with 'any' match need unfiltered query to calculate option counts.
+				if ( $multiple_match_method === 'any' && $needs_count_calculations ) {
+					$this->needs_unfiltered_query = true;
+				}
+
+				if ( ! isset( $batched_field_bitmaps[ $field_id ] ) ) {
+					continue;
+				}
+
+				$value_bitmaps = $batched_field_bitmaps[ $field_id ]; // ALL values from DB.
+
+				if ( empty( $value_bitmaps ) ) {
+					continue;
+				}
+
+				// Extract selected values.
+				$selected_bitmaps = array();
+				$field_values     = $this->get_bitmap_field_values( $field );
+
+				foreach ( $field_values as $value ) {
+					if ( isset( $value_bitmaps[ $value ] ) ) {
+						$bitmap             = $value_bitmaps[ $value ]['bitmap'];
+						$selected_bitmaps[] = $bitmap;
+					} else {
+						// Value has no results, so use empty bitmap.
+						$selected_bitmaps[] = new Bitmap();
+					}
+				}
+
+				// Combine based on match method.
+				$result_bitmap = null;
+				if ( $multiple_match_method === 'any' ) {
+					// Union: red OR blue.
+					$result_bitmap = array_shift( $selected_bitmaps );
+					foreach ( $selected_bitmaps as $bitmap ) {
+						$result_bitmap = $result_bitmap->union( $bitmap );
+					}
+				} else {
+
+					// Intersection: red AND blue.
+					$result_bitmap = array_shift( $selected_bitmaps );
+					foreach ( $selected_bitmaps as $bitmap ) {
+						$result_bitmap = $result_bitmap->intersect( $bitmap );
+					}
+				}
+
+				// Store results.
+				$this->field_result_bitmaps[ $field_id ] = $result_bitmap;
+				$this->field_value_bitmaps[ $field_id ]  = $value_bitmaps;
+
+				// Store in the filters array.
+				$all_filter_field_bitmaps[] = $result_bitmap;
+			}
+		}
+
+		// ============================================================
+		// Bucket strategy fields
+		// ============================================================
+		if ( ! empty( $fields_by_strategy['bucket'] ) ) {
+			foreach ( $fields_by_strategy['bucket'] as $field ) {
+
+				// Process bucket field results.
+				$field_values = $field->get_values();
+				$field_id     = $field->get_id();
+
+				// Extract min/max from field values.
+				$min = $field_values[0] ?? null;
+				$max = $field_values[1] ?? null;
+
+				// Bucket strategy fields ALWAYS need unfiltered query.
+				$this->needs_unfiltered_query = true;
+
+				// Bucket fields use buckets.
+				if ( Bucket_Updater::has_field_data( $field_id ) ) {
+					$result_bitmap = Bucket_Query::get_range_bitmap( $field_id, $min, $max );
+					if ( $result_bitmap ) {
+						// Store results.
+						$this->field_result_bitmaps[ $field_id ] = $result_bitmap;
+
+						// Store in the filters array.
+						$all_filter_field_bitmaps[] = $result_bitmap;
+					}
+				}
+			}
+		}
+
+		// Allow custom query implementation for fields that don't have strategy.
+		$this->field_result_bitmaps = apply_filters( 'search-filter-pro/indexer/query/field_result_bitmaps', $this->field_result_bitmaps, $fields_by_strategy );
+
+		// Batch combine all filter field results.
+		$combined_bitmap = null;
+		if ( ! empty( $all_filter_field_bitmaps ) ) {
+			$combined_bitmap = self::combine_bitmaps( $all_filter_field_bitmaps, $combine_type );
+
+			// Apply parent conversion for final WP_Query post__in when collapse_children is enabled.
+			// IMPORTANT: We convert a COPY to parents for post__in, keeping $combined_bitmap as child IDs.
+			// This is because:
+			// - Field_Queries needs child IDs in result_bitmap for proper counting intersection
+			// - WP_Query needs parent IDs in post__in to return parent products
+			// - They serve different purposes and need different ID types!
+			if ( $collapse_children && $combined_bitmap && ! $combined_bitmap->is_empty() ) {
+				$parent_bitmap = Parent_Map_Converter::convert_bitmap_to_parents( $combined_bitmap, $this->parent_map_sources );
+				$post__in      = $parent_bitmap ? $parent_bitmap->to_post_ids() : null;
+			} else {
+				$post__in = $combined_bitmap ? $combined_bitmap->to_post_ids() : null;
+			}
+		}
+
+		// ============================================================
+		// Search strategy fields
+		// ============================================================
+		// TODO - we need to know if there are fields that need counts,  if so,
+		// we still need to execute the search queries, if not, we can bypass.
+
+		$search_failed_query      = false;
+		$all_search_field_bitmaps = array();
+		$all_search_ordered_ids   = array(); // Store BM25-ordered IDs for relevance ordering.
+		if ( ! empty( $fields_by_strategy['search'] ) ) {
+
+			// Skip search logic if there are no posts from filtering.
+			foreach ( $fields_by_strategy['search'] as $field ) {
+
+				// Process search field using inverted index.
+				$field_id    = $field->get_id();
+				$field_value = $field->get_value();
+
+				// Use inverted index search for 50-100x speedup with BM25 scoring.
+				$search_query = new \Search_Filter_Pro\Indexer\Search\Query_Builder();
+
+				// Determine search constraint based on whether we need unfiltered query.
+				// If unfiltered query needed for counts, run search unconstrained.
+				// Otherwise, apply filter constraint for performance (FastBit optimization).
+				$search_constraint = $this->needs_unfiltered_query ? null : $post__in;
+
+				// Get query language for filtering (null = search all languages).
+				$query_language = apply_filters( 'search-filter-pro/indexer/search/query_language', null, $field );
+
+				// Execute search and get array result (preserves BM25 order).
+				$search_ordered_ids = $search_query->search(
+					$field_value,
+					array(
+						'field_id'           => $field_id,  // Constrain to this field's postings.
+						'allowed_object_ids' => $search_constraint,
+						'return_format'      => 'array',  // Return array to preserve BM25 order.
+						'limit'              => -1, // No limit, we want all matching posts.
+						'language'           => $query_language,
+					)
+				);
+
+				// Store ordered IDs for relevance ordering (first search field takes precedence).
+				if ( empty( $all_search_ordered_ids ) ) {
+					$all_search_ordered_ids = $search_ordered_ids;
+				}
+
+				// Convert to bitmap for integration with existing combiner.
+				$search_bitmap = Bitmap::from_post_ids( $search_ordered_ids );
+
+				// Store bitmap result (integrates with existing bitmap combiner).
+				$this->field_result_bitmaps[ $field_id ] = $search_bitmap;
+				if ( $combine_type === 'intersect' && $search_bitmap->is_empty() ) {
+					$search_failed_query = true;
+					// TODO - should this be a `continue` so that we can figure out
+					// counts for other fields?
+					break;
+				}
+
+				$all_search_field_bitmaps[] = $search_bitmap;
+			}
+
+			// Store the BM25-ordered IDs for relevance ordering.
+			$this->search_ordered_ids = $all_search_ordered_ids;
+		}
+
+		// Allow custom search query implementations.
+		$search_result = apply_filters(
+			'search-filter-pro/indexer/query/search/result',
+			array(
+				'bitmaps' => $all_search_field_bitmaps,
+				'failed'  => $search_failed_query,
+			),
+			$fields_by_strategy,
+			$this->field_result_bitmaps,
+			$combine_type
+		);
+
+		// Handle search results logic.
+		if ( $search_result['failed'] ) {
+			$post__in = array(); // Signify no results found.
+		} elseif ( ! empty( $search_result['bitmaps'] ) ) {
+			// Combine search field results.
+			$combined_search_bitmap = self::combine_bitmaps( $search_result['bitmaps'], $combine_type );
+
+			// If search was run unconstrained (for counts), combine with filter results.
+			// Otherwise, search was already constrained so use search results directly.
+			if ( $this->needs_unfiltered_query && $combined_bitmap !== null ) {
+				// Search ran unconstrained - must combine with filters for final result.
+				$combined_bitmap = $combined_bitmap->intersect( $combined_search_bitmap );
+
+				// Parent conversion for search + filters combination (convert copy for post__in).
+				if ( $collapse_children && $combined_bitmap && ! $combined_bitmap->is_empty() ) {
+					$parent_bitmap = Parent_Map_Converter::convert_bitmap_to_parents( $combined_bitmap, $this->parent_map_sources );
+					$post__in      = $parent_bitmap ? $parent_bitmap->to_post_ids() : null;
+				} else {
+					$post__in = $combined_bitmap ? $combined_bitmap->to_post_ids() : null;
+				}
+			} elseif ( $combined_search_bitmap !== null ) {
+				// Search was already constrained by filters - use search results directly.
+				// Parent conversion for search-only results (convert copy for post__in).
+				if ( $collapse_children && $combined_search_bitmap && ! $combined_search_bitmap->is_empty() ) {
+					$parent_bitmap = Parent_Map_Converter::convert_bitmap_to_parents( $combined_search_bitmap, $this->parent_map_sources );
+					$post__in      = $parent_bitmap ? $parent_bitmap->to_post_ids() : null;
+				} else {
+					$post__in = $combined_search_bitmap ? $combined_search_bitmap->to_post_ids() : null;
+				}
+			}
+		}
 
 		if ( is_array( $post__in ) && empty( $post__in ) ) {
 			// Add a post ID of 0 to force the query to return no results.
 			$post__in = array( 0 );
 		}
-		
+
+		// Usually if a queries field relationship is set to `any` we'd need an unfiltered query
+		// to get accurate counts for the other options in the field, but lets be sure we have
+		// choice fields that really do need those counts as a micro optimization, we could for
+		// find ourselves in a situation with only a search field, in which case requesting an
+		// unfiltered query would be unnecessary.
+		if ( $query_field_relationship === 'any' && $this->has_fields_needing_counts ) {
+			$this->needs_unfiltered_query = true;
+		}
+
+		// We need to handle S&F queries that filter taxonomy archives.
+		// If a query has a field that is filtering / associated with the archive,
+		// then we'll need to unset wp_query tax archive and let the field handle it.
+		if ( $taxonomy_archive_filter ) {
+			// Then we need to unset the WP Query taxonomy filter and let the field handle it.
+			// If its a category, then we need to unset `category_name` from the query args.
+			// If its a tag, then we need to unset `tag` from the query args.
+			// If its a taxonomy then we need unset the taxonomy name.
+			// NOTE: WordPress docs say this way of filtering a query by tag/category/taxonomy
+			// is deperecated, yet its used for all archives.
+			$unset_key = $taxonomy_archive_filter;
+			if ( $taxonomy_archive_filter === 'category' ) {
+				$unset_key = 'category_name';
+			} elseif ( $taxonomy_archive_filter === 'post_tag' ) {
+				$unset_key = 'tag';
+			}
+			if ( isset( $wp_query_args[ $unset_key ] ) ) {
+				unset( $wp_query_args[ $unset_key ] );
+			}
+		}
+
 		// Get the query args from the query settings.
-		$query_args = $query->apply_wp_query_args( array() );
+		$query_args = $query->apply_wp_query_args( $wp_query_args );
 
 		// Apply the query args for fields that are not handled by the indexer.
-		$query_args = $query->apply_fields_wp_query_args( $query_args, $query );
+		foreach ( $fields_by_strategy['none'] as $field ) {
+			// Apply any field-specific query args.
+			$query_args = $field->apply_wp_query_args( $query_args );
+		}
 
-		// Apply any user defined query args.
+		/**
+		 * Filters the WP_Query args for the search query.
+		 *
+		 * Applies any user defined query args.
+		 *
+		 * @param array                        $query_args The query args.
+		 * @param \Search_Filter\Queries\Query $query      The S&F query object.
+		 */
 		$query_args = apply_filters( 'search-filter/query/query_args', $query_args, $query );
 
 		// Use the query args for the cache key (we don't need all the extra args to identify
@@ -226,50 +657,129 @@ class Query {
 		$this->cache_key        = $cache_key;
 		$this->field_cache_args = $field_cache_args;
 
-		// Create the query args for the full extended query.
-		$full_query_args = $this->create_full_query_args( $query_args, $post__in );
+		if ( $this->needs_unfiltered_query && ! empty( $field_cache_args ) ) {
+			// ============================================================
+			// STRATEGY 1: Run unfiltered query, derive filtered results
+			// ============================================================
 
-		$result_ids = $this->result_lookup( $cache_key, $full_query_args );
-
-		$this->set_result_ids( $result_ids );
-
-		// Initially set the unfiltered result IDs to the same as the filtered result IDs,
-		// we'll check if anything was filtered and run an additional query later if needed.
-		$unfiltered_result_ids = $result_ids;
-
-		/*
-		 * To get accurate counts, we need the query IDs without other filters applied when
-		 * the field relationship is set to `any`.
-		 *
-		 * Fortunately this should already be cached, as it would represent the query when first
-		 * visiting a page and no filters are applied yet.
-		 *
-		 * TODO: we need to make sure that the query args would match the query args when visiting
-		 * the page for the first time, so we can get a successful cache hit.
-		 *
-		 * ** If any field has a match of `any` or the query does, then we need the unfiltered query
-		 * to build counts for the other options in the field.
-		 */
-		if ( ( $this->query_has_match_any || $this->field_has_match_any ) && ! empty( $field_cache_args ) ) {
-			// Unfiltered IDs are required for accurate counts when using `any` relationship.
+			// Build cache key for unfiltered query (no field filters).
 			$unfiltered_cache_key       = $this->create_cache_key( $query_args, array() );
 			$this->unfiltered_cache_key = $unfiltered_cache_key;
-			// Generate the query args for the unfiltered query.
-			$unfiltered_full_query_args = $this->create_full_query_args( $query_args, $post__in, false );
-			// Try to get the results from the cache, if not generate them.
-			$unfiltered_result_ids = $this->result_lookup( $unfiltered_cache_key, $unfiltered_full_query_args );
 
+			// Run the unfiltered query (base query without post__in from field results).
+			$unfiltered_full_query_args = $this->create_full_query_args( $query_args );
+			$unfiltered_result_ids      = $this->result_lookup( $unfiltered_cache_key, $unfiltered_full_query_args );
+
+			// Create the bitmaps (even if empty) unless the result lookup failed.
+			if ( $unfiltered_result_ids !== false ) {
+
+				// Create unfiltered bitmap, converting to child IDs when collapse_children is enabled.
+				// This is needed because Field_Queries intersects unfiltered_bitmap with value bitmaps
+				// (which contain child IDs), so we need matching ID spaces.
+				if ( $collapse_children && ! empty( $unfiltered_result_ids ) ) {
+					// Build both bitmaps in single pass (optimized).
+					$bitmaps                                  = Parent_Map_Converter::convert_to_children_with_bitmaps( $unfiltered_result_ids, $this->parent_map_sources );
+					$this->unfiltered_result_bitmap_collapsed = $bitmaps['parent_bitmap'];
+					$this->unfiltered_result_bitmap           = $bitmaps['child_bitmap'];
+				} else {
+					$this->unfiltered_result_bitmap = Bitmap::from_post_ids( $unfiltered_result_ids );
+				}
+
+				// Derive filtered results by intersecting unfiltered with field results.
+				// When collapse_children is enabled:
+				// - post__in contains parent IDs
+				// - unfiltered_result_ids contains parent IDs (from WP_Query)
+				// - Intersection works (parent ∩ parent)
+				// - But Field_Queries needs child IDs in result_bitmap.
+				$result_ids = $this->derive_filtered_ids_from_unfiltered( $unfiltered_result_ids, $post__in );
+
+				// Set result_bitmap: use child IDs when collapse_children is enabled.
+				if ( $collapse_children && ! empty( $result_ids ) ) {
+					// Build child bitmap in single pass (optimized). Parent bitmap already set above.
+					$bitmaps             = Parent_Map_Converter::convert_to_children_with_bitmaps( $result_ids, $this->parent_map_sources );
+					$search_child_bitmap = $bitmaps['child_bitmap'];
+
+					if ( $combined_bitmap && ! $combined_bitmap->is_empty() ) {
+						// Intersect with filter bitmap to get only matching children.
+						$this->result_bitmap = $combined_bitmap->intersect( $search_child_bitmap );
+					} else {
+						// No filter bitmap - use all children from search results.
+						$this->result_bitmap = $search_child_bitmap;
+					}
+				} else {
+					// Normal case (no collapse): use WP_Query results directly.
+					$this->result_bitmap = Bitmap::from_post_ids( $result_ids );
+				}
+			}
+		} else {
+			// ============================================================
+			// STRATEGY 2: Run filtered query only (no unfiltered needed)
+			// ============================================================
+
+			// Run the filtered query (with post__in from field results).
+			$full_query_args = $this->create_full_query_args( $query_args, $post__in );
+			$result_ids      = $this->result_lookup( $cache_key, $full_query_args );
+
+			// Create the bitmaps (even if empty) unless the result lookup failed.
+			if ( $result_ids !== false ) {
+				// When collapse_children is enabled, post__in contains parent IDs, so WP_Query
+				// returns parent IDs. But Field_Queries needs child IDs in result_bitmap.
+				if ( $collapse_children && ! empty( $result_ids ) ) {
+					// Build both bitmaps in single pass (optimized).
+					$bitmaps                                  = Parent_Map_Converter::convert_to_children_with_bitmaps( $result_ids, $this->parent_map_sources );
+					$this->unfiltered_result_bitmap_collapsed = $bitmaps['parent_bitmap'];
+					$search_child_bitmap                      = $bitmaps['child_bitmap'];
+
+					if ( $combined_bitmap && ! $combined_bitmap->is_empty() ) {
+						// Intersect with filter bitmap to get only matching children.
+						$this->result_bitmap = $combined_bitmap->intersect( $search_child_bitmap );
+					} else {
+						// No filter bitmap - use all children from search results.
+						$this->result_bitmap = $search_child_bitmap;
+					}
+
+					// Use child bitmap for unfiltered - Field_Queries intersects
+					// unfiltered_bitmap with value bitmaps (child IDs), so we need matching ID spaces.
+					$this->unfiltered_result_bitmap = $search_child_bitmap;
+				} else {
+					// Normal case (no collapse): WP_Query results are already the right IDs.
+					$this->result_bitmap            = Bitmap::from_post_ids( $result_ids );
+					$this->unfiltered_result_bitmap = $this->result_bitmap; // Same for both.
+				}
+			}
 		}
 
-		// Update the unfiltered result IDs.
-		$this->set_unfiltered_result_ids( $unfiltered_result_ids );
+		$updated_post__in = $this->get_updated_post__in( $query_args, $post__in );
+
+		$query_args['post__in'] = $updated_post__in;
+
+		// Remove any IDs from `post__not_in` that are in `post__in`.
+		if ( isset( $query_args['post__not_in'] ) ) {
+
+			if ( ! is_array( $query_args['post__not_in'] ) ) {
+				$query_args['post__not_in'] = array();
+			}
+			// Lets ensure they're using integers.
+			$post__not_in = array_map( 'absint', $query_args['post__not_in'] );
+			// If there are posts in `post__in`, then remove the `post__not_in` IDs from `post__in`.
+			if ( count( $query_args['post__in'] ) > 0 ) {
+				$query_args['post__in'] = array_diff( $query_args['post__in'], $post__not_in );
+				unset( $query_args['post__not_in'] );
+			}
+		}
+
+		// Apply BM25 relevance ordering if search was used.
+		if ( ! empty( $this->search_ordered_ids ) && ! empty( $query_args['post__in'] ) ) {
+			$query_args = $this->apply_relevance_ordering( $query_args );
+		}
 
 		$this->query_args = $query_args;
-		$updated_post__in = $this->get_updated_post__in( $query_args, $post__in );
-		// Convert any object IDs to their parents.
-		$resolved_post__in = $this->resolve_parents( $updated_post__in );
-		$this->query_args['post__in'] = $resolved_post__in;
 
+		/**
+		 * Fires when indexer query initialization finishes.
+		 *
+		 * @param \Search_Filter\Queries\Query $query The S&F query object.
+		 */
 		do_action( 'search-filter-pro/indexer/query/init/finish', $query );
 	}
 
@@ -284,9 +794,14 @@ class Query {
 	 */
 	private function result_lookup( $cache_key, $query_args ) {
 
+		/**
+		 * Fires when result lookup starts.
+		 */
+		do_action( 'search-filter-pro/indexer/query/result_lookup/start' );
+
 		$result_ids = false;
 
-		if ( $this->enable_caching ) {
+		if ( Cache::enabled() ) {
 			// Try to get the cached IDs.
 			$result_ids = $this->get_query_cache( $cache_key );
 		}
@@ -294,9 +809,14 @@ class Query {
 		// If not cached, then run the query.
 		if ( ! $result_ids ) {
 
+			/**
+			 * Filters the query args before result lookup.
+			 *
+			 * @param array                        $query_args The query args.
+			 * @param \Search_Filter\Queries\Query $query      The S&F query object.
+			 */
 			$query_args = apply_filters( 'search-filter-pro/indexer/query/result_lookup/query_args', $query_args, $this->get_query() );
 
-			
 			// Before we run the query, we need to remove the `pre_get_posts` hooks that
 			// are already attached to prevent infinite loops.
 			\Search_Filter\Query\Selector::detach_pre_get_posts_hooks();
@@ -304,19 +824,26 @@ class Query {
 
 			// Remove existing hooks from our plugin to prevent infinite loops.
 			do_action( 'search-filter/query/pre_get_posts/detach' );
+
 			$full_query = new \WP_Query( $query_args );
+
 			// Re-attach the hooks.
 			do_action( 'search-filter/query/pre_get_posts/attach' );
 
 			\Search_Filter\Query\Selector::attach_pre_get_posts_hooks();
 			\Search_Filter\Query::attach_pre_get_posts_hooks();
-	
-			if ( $this->enable_caching ) {
+
+			if ( Cache::enabled() ) {
 				$this->add_query_cache( $cache_key, $full_query->posts );
 			}
 
 			$result_ids = $full_query->posts;
 		}
+
+		/**
+		 * Fires when result lookup finishes.
+		 */
+		do_action( 'search-filter-pro/indexer/query/result_lookup/finish' );
 
 		return $result_ids;
 	}
@@ -344,6 +871,7 @@ class Query {
 		$cache_query_args['applied_fields'] = $field_cache_args;
 		$cache_key                          = build_query( $cache_query_args );
 
+		$cache_key = apply_filters( 'search-filter-pro/indexer/query/cache_key', $cache_key, $this->get_query() );
 		return $cache_key;
 	}
 
@@ -354,15 +882,13 @@ class Query {
 	 *
 	 * @param array $query_args The query args.
 	 * @param array $result__post_in The result post in.
-	 * @param bool  $filtered Whether the query is filtered.
 	 * @return array The full query args.
 	 */
-	private function create_full_query_args( $query_args, $result__post_in, $filtered = true ) {
+	private function create_full_query_args( $query_args, $result__post_in = array() ) {
 
-		if ( $filtered ) {
+		if ( ! empty( $result__post_in ) && is_array( $result__post_in ) ) {
+
 			// Then update the post__in, and combine it with an existing post__in if its there.
-			$post__in = $result__post_in;
-
 			$post__in = $this->get_updated_post__in( $query_args, $result__post_in );
 
 			// Then update the post__in in the query args.
@@ -378,8 +904,6 @@ class Query {
 			'nopaging'               => true,
 			'update_post_meta_cache' => false,
 			'update_post_term_cache' => false,
-			// 'lang'             => '',
-			// 'cache_results'    => false,
 		);
 
 		$full_query_args = wp_parse_args( $extend_query_args, $query_args );
@@ -392,14 +916,14 @@ class Query {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array $query_args The query args.
-	 * @param array $query_post__in The query post in.
+	 * @param array      $query_args     The query args.
+	 * @param array|null $query_post__in The query post in (can be null if no filters applied).
 	 * @return array The updated post in.
 	 */
 	private function get_updated_post__in( $query_args, $query_post__in ) {
 		$query_args_post__in = isset( $query_args['post__in'] ) ? $query_args['post__in'] : array();
 
-		// If $query_post__in is null, then there are no filters applied to intersect with, 
+		// If $query_post__in is null, then there are no filters applied to intersect with,
 		// use the query args post__in if it exists otherwise return an empty array.
 		if ( $query_post__in === null ) {
 			return $query_args_post__in;
@@ -421,27 +945,39 @@ class Query {
 	}
 
 	/**
-	 * Get the updated post__in.
+	 * Derive filtered results from unfiltered results and field post__in.
 	 *
-	 * @since 3.0.0
+	 * This is used when we run only the unfiltered query for performance,
+	 * then derive the filtered results via array intersection.
 	 *
-	 * @param array $query_args The query args.
-	 * @param array $query_post__in The query post in.
-	 * @return array The updated post in.
+	 * @since 3.0.7
+	 *
+	 * @param array      $unfiltered_ids The unfiltered query result IDs.
+	 * @param array|null $post__in       The post IDs from field filtering (can be null if no fields applied).
+	 * @return array The filtered result IDs.
 	 */
-	private function resolve_parents( $post__in ) {
-
-		if ( empty( $this->object_parents ) ) {
-			return $post__in;
+	private function derive_filtered_ids_from_unfiltered( $unfiltered_ids, $post__in ) {
+		// Edge case 1: No field filters applied ($post__in is null).
+		// Filtered results = unfiltered results.
+		if ( $post__in === null ) {
+			return $unfiltered_ids;
 		}
 
-		// TODO - can we make this faster - we could mark their positions when
-		// we combine the arrays so we don't have to loop through it all again.
-		$resolved_post__in = array();
-		foreach ( $post__in as $post_id ) {
-			$resolved_post__in[] = isset( $this->object_parents[ $post_id ] ) ? $this->object_parents[ $post_id ] : $post_id;
+		// Edge case 2: Field filters resulted in no matches ($post__in is [0]).
+		// Force no results.
+		if ( is_array( $post__in ) && count( $post__in ) === 1 && $post__in[0] === 0 ) {
+			return array( 0 );
 		}
-		return $resolved_post__in;
+
+		// Standard case: Intersect unfiltered results with field post__in.
+		$filtered_ids = self::array_intersect( $unfiltered_ids, $post__in );
+
+		// If intersection is empty, force no results.
+		if ( empty( $filtered_ids ) ) {
+			return array( 0 );
+		}
+
+		return $filtered_ids;
 	}
 
 	/**
@@ -456,7 +992,7 @@ class Query {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @return Search_Filter\Queries\Query The query.
+	 * @return \Search_Filter\Queries\Query The query.
 	 */
 	public function get_query() {
 		return $this->query;
@@ -465,28 +1001,41 @@ class Query {
 	/**
 	 * Get the query cache result.
 	 *
+	 * Uses Tiered_Cache which checks all layers: Memory → APCu → wp_cache → Database.
+	 *
 	 * @since 3.0.0
 	 *
 	 * @param string $cache_key The cache key.
 	 * @return array|bool The query cache or false if not found.
 	 */
 	private function get_query_cache( $cache_key ) {
-		$query_id = $this->query->get_id();
+		$cache = $this->get_cache_instance();
 
-		$value = Query_Cache::get_value(
-			array(
-				'query_id'  => $query_id,
-				'field_id'  => 0,
-				'type'      => 'query',
-				'cache_key' => $cache_key,
-			)
-		);
+		$found      = false;
+		$cached_ids = $cache->get( $cache_key, $found );
 
-		if ( $value === false || $value === null ) {
-			return false;
+		if ( $found ) {
+			return $cached_ids;
 		}
 
-		return explode( ',', $value );
+		return false;
+	}
+
+	/**
+	 * Get the Tiered_Cache instance for this query.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return Tiered_Cache
+	 */
+	private function get_cache_instance() {
+		$query_id = $this->query->get_id();
+		$ttl      = $this->has_search() ? 2 * HOUR_IN_SECONDS : 12 * HOUR_IN_SECONDS;
+
+		return new Tiered_Cache(
+			'query_cache_' . $query_id,
+			array( 'ttl' => $ttl )
+		);
 	}
 
 	/**
@@ -519,46 +1068,49 @@ class Query {
 	/**
 	 * Set the query cache result for given query args.
 	 *
+	 * Uses Tiered_Cache which stores in all layers: Memory → APCu → wp_cache → Database.
+	 *
 	 * @since 3.0.0
 	 *
 	 * @param string $cache_key The cache key.
 	 * @param array  $ids        The IDs to cache.
 	 */
 	private function add_query_cache( $cache_key, $ids ) {
-		$query_id = $this->query->get_id();
-		$data     = array(
-			'query_id'    => $query_id,
-			'field_id'    => 0,
-			'type'        => 'query',
-			'cache_key'   => $cache_key,
-			'cache_value' => implode( ',', $ids ),
-		);
-
-		if ( $this->has_search() ) {
-			$data['expires'] = time() + HOUR_IN_SECONDS;
-		}
-		Query_Cache::update_item( $data );
+		$cache = $this->get_cache_instance();
+		$cache->set( $cache_key, $ids );
 	}
 
 	/**
-	 * Get the result IDs.
+	 * Get the result bitmap (filtered).
 	 *
-	 * @since 3.0.0
-	 *
-	 * @return array The result IDs.
+	 * @since 3.0.7
+	 * @return Bitmap|null
 	 */
-	public function get_result_ids() {
-		return $this->result_ids;
+	public function get_result_bitmap() {
+		return $this->result_bitmap;
 	}
+
 	/**
-	 * Get the count result IDs.
+	 * Get the unfiltered result bitmap.
 	 *
-	 * @since 3.0.0
-	 *
-	 * @return array The result IDs.
+	 * @since 3.0.7
+	 * @return Bitmap|null
 	 */
-	public function get_unfiltered_result_ids() {
-		return $this->unfiltered_result_ids;
+	public function get_unfiltered_result_bitmap() {
+		return $this->unfiltered_result_bitmap;
+	}
+
+	/**
+	 * Get unfiltered result bitmap in collapsed (parent) form.
+	 *
+	 * Returns the parent-space representation of unfiltered_result_bitmap.
+	 * Only set when collapse_children is enabled.
+	 *
+	 * @since 3.2.0
+	 * @return Bitmap|null
+	 */
+	public function get_unfiltered_result_bitmap_collapsed() {
+		return $this->unfiltered_result_bitmap_collapsed;
 	}
 
 	/**
@@ -572,297 +1124,67 @@ class Query {
 		return $this->query_args;
 	}
 
-	/**
-	 * Set the result IDs.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param array $result_ids The result IDs.
-	 */
-	public function set_result_ids( $result_ids ) {
-		$this->result_ids = $result_ids;
-	}
-	/**
-	 * Set the result IDs.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param array $result_ids The result IDs.
-	 */
-	public function set_unfiltered_result_ids( $result_ids ) {
-		$this->unfiltered_result_ids = $result_ids;
-	}
 
 	/**
-	 * Run the individual field query.
+	 * Batch combine multiple bitmaps efficiently.
 	 *
-	 * @since 3.0.0
+	 * @since 3.2.0
 	 *
-	 * @param Field $field The field to run the query for.
-	 * @return array|null  The result IDs or null if there was no field query.
+	 * @param array  $bitmaps     Array of Bitmap objects to combine.
+	 * @param string $combine_type The combine type (merge or intersect).
+	 * @return Bitmap|null The combined bitmap or null if no bitmaps provided.
 	 */
-	public function field_query( $field ) {
+	public static function combine_bitmaps( $bitmaps, $combine_type = 'intersect' ) {
 
-		if ( $field->get_query_type() !== 'indexer' ) {
+		if ( empty( $bitmaps ) ) {
 			return null;
 		}
 
-		$field_type = $field->get_attribute( 'type' );
-		if ( $field_type === 'search' ) {
-			return $this->search( $field );
-		} elseif ( $field_type === 'choice' ) {
-			return $this->choice( $field );
-		} elseif ( $field_type === 'range' ) {
-			return $this->range( $field );
-		} elseif ( $field_type === 'advanced' ) {
-			return $this->advanced( $field );
+		// If only one bitmap, return it directly.
+		if ( count( $bitmaps ) === 1 ) {
+			return reset( $bitmaps );
 		}
 
-		// Return null so we know there was no field query.
-		return null;
-	}
+		$combined = null;
+		foreach ( $bitmaps as $bitmap ) {
 
-	/**
-	 * Run the search field query.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param Field $field The field to run the query for.
-	 * @return array  The result IDs.
-	 */
-	public function search( $field ) {
-
-		$field_value = $field->get_value();
-		$field_id    = $field->get_id();
-
-		if ( empty( $field_value ) ) {
-			return array();
-		}
-		
-		$field_post_ids = array();
-
-		global $wpdb;
-		$table_name = $wpdb->prefix . 'search_filter_index';
-		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedPlaceholder, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
-		$results = $wpdb->get_results( $wpdb->prepare( 'SELECT object_id, object_parent_id FROM %i WHERE field_id = %d AND value LIKE %s', $table_name, $field_id, '%' . $field_value . '%' ) );
-
-		if ( $results === null ) {
-			return array();
-		}
-
-		foreach ( $results as $result_item ) {
-			$field_post_ids[] = $result_item->object_id;
-		}
-
-		$this->field_result_ids[ $field_id ] = $field_post_ids;
-
-		return $field_post_ids;
-	}
-	/**
-	 * Run the choice field query.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param Field $field The field to run the query for.
-	 * @return array  The result IDs.
-	 */
-	public function choice( $field ) {
-
-		$field_values = $field->get_values();
-		$query_id     = $field->get_query_id();
-		$field_id     = $field->get_id();
-
-		$this->init_field_values_ids( $query_id, $field_id, $field_values );
-
-		/*
-		 * It's important to set a default match mode of "any" if the field doesn't have one set.
-		 * Fields that don't have a match mode, will only be able to have 1 value assigned to a post
-		 * such as post type, or author.
-		 *
-		 * This means they will default to "any" match mode.
-		 */
-		$has_multiple_match_method = $field->get_attribute( 'multipleMatchMethod' ) !== '' && $field->get_attribute( 'multipleMatchMethod' ) !== null;
-		$multiple_match_method     = $has_multiple_match_method ? $field->get_attribute( 'multipleMatchMethod' ) : 'any';
-
-		if ( $multiple_match_method === 'any' ) {
-			$this->field_has_match_any = true;
-		}
-
-		if ( empty( $field_values ) ) {
-			return array();
-		}
-
-		$field_values = $this->get_choice_field_values( $field );
-
-		$field_post_ids = null; // Start off as null so we know if its the first combination.
-
-		if ( empty( $field_values ) ) {
-			return $field_post_ids;
-		}
-
-		foreach ( $field_values as $field_value ) {
-			$ids = $this->get_field_value_ids( $query_id, $field_id, $field_value );
-
-			$combine_type = '';
-			if ( $multiple_match_method === 'any' ) {
-				$combine_type = 'merge';
-			} elseif ( $multiple_match_method === 'all' ) {
-				$combine_type = 'intersect';
+			// Skip anything thats not a bitmap.
+			if ( ! $bitmap instanceof Bitmap ) {
+				continue;
 			}
-			$field_post_ids = self::combine_arrays( $field_post_ids, $ids, $combine_type );
-		}
 
-		$this->field_result_ids[ $field_id ] = $field_post_ids;
+			// Init the first bitmap.
+			if ( $combined === null ) {
+				$combined = $bitmap;
+				continue;
+			}
 
-		return $field_post_ids;
-	}
-
-
-
-	/**
-	 * Run the range field query.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param Field $field The field to run the query for.
-	 * @return array  The result IDs.
-	 */
-	public function range( $field ) {
-
-		$field_values = $field->get_values();
-
-		if ( empty( $field_values ) ) {
-			// Return null so we know there was no range query.
-			return null;
-		}
-
-		$field_id = $field->get_id();
-
-		$value_conditions = array(
-			'relation' => 'AND',
-		);
-		if ( isset( $field_values[0] ) && $field_values[0] !== '' ) {
-			$value_conditions[] = array(
-				'compare'  => '>=',
-				'value'    => $field_values[0],
-				'decimals' => absint( $field->get_attribute( 'rangeDecimalPlaces' ) ),
-			);
-		}
-		if ( isset( $field_values[1] ) && $field_values[1] !== '' ) {
-			$value_conditions[] = array(
-				'compare'  => '<=',
-				'value'    => $field_values[1],
-				'decimals' => absint( $field->get_attribute( 'rangeDecimalPlaces' ) ),
-			);
-		}
-
-		$args  = array(
-			'fields'      => 'object_id',
-			'groupby'     => 'object_id',
-			'number'      => 0,
-			'field_id'    => $field_id,
-			'value_query' => $value_conditions,
-		);
-		$query = new Index_Query( $args );
-
-		$this->field_result_ids[ $field_id ] = $query->items;
-
-		return $this->field_result_ids[ $field_id ];
-	}
-	/**
-	 * Run the advanced field query.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param Field $field The field to run the query for.
-	 * @return array  The result IDs.
-	 */
-	public function advanced( $field ) {
-
-		$field_values = $field->get_values();
-
-		if ( empty( $field_values ) ) {
-			// Return null so we know there was no advanced query.
-			return null;
-		}
-
-		$field_id = $field->get_id();
-
-		$field_input_type = $field->get_attribute( 'inputType' );
-
-		$value_conditions = array(
-			'relation' => 'AND',
-		);
-
-		if ( $field_input_type === 'date_picker' ) {
-
-			$field_values = array_map(
-				function( $value ) {
-					return str_replace( '-', '', $value );
-				},
-				$field_values
-			);
-
-			if ( count( $field_values ) === 2 ) {
-				if ( isset( $field_values[0] ) && $field_values[0] !== '' ) {
-					$value_conditions[] = array(
-						'compare' => '>=',
-						'value'   => $field_values[0],
-						'type'    => 'DATE',
-					);
+			if ( $combine_type === 'merge' ) {
+				if ( $bitmap->is_empty() ) {
+					// Skip empty bitmaps for merge.
+					continue;
 				}
-				if ( isset( $field_values[1] ) && $field_values[1] !== '' ) {
-					$value_conditions[] = array(
-						'compare' => '<=',
-						'value'   => $field_values[1],
-						'type'    => 'DATE',
-					);
+				// Union the bitmaps.
+				$combined = $combined->union( $bitmap );
+
+			} elseif ( $combine_type === 'intersect' ) {
+
+				// No need to check for empty bitmaps, intersection already handles it.
+				$combined = $combined->intersect( $bitmap );
+
+				// Early exit if intersection becomes empty.
+				if ( $combined->is_empty() ) {
+					break;
 				}
 			}
-
-			// TODO need to properly check if we're dealing with a range or single value.
-			if ( count( $field_values ) === 1 ) {
-				$value_conditions[] = array(
-					'compare' => '=',
-					'value'   => $field_values[0],
-					'type'    => 'DATE',
-				);
-			}
 		}
 
-		$args  = array(
-			'fields'      => 'object_id',
-			'groupby'     => 'object_id',
-			'number'      => 0,
-			'field_id'    => $field_id,
-			'value_query' => $value_conditions,
-		);
-		$query = new Index_Query( $args );
-
-		$this->field_result_ids[ $field_id ] = $query->items;
-
-		return $this->field_result_ids[ $field_id ];
-	}
-	/**
-	 * Combine two arrays based on the operator.
-	 *
-	 * @param null|array $source_array      The source array.
-	 * @param array      $add_array         The array to add to the source array.
-	 * @param string     $combine_type              The combine type (merge or intersect).
-	 * @return mixed
-	 */
-	private static function combine_arrays( $source_array, $add_array, $combine_type = 'intersect' ) {
-		$combined_array = array();
-		// If its the source array is null then return the add array.
-		if ( $source_array === null ) {
-			return $add_array;
+		// If no valid bitmaps were found, return empty (not null).
+		if ( $combined === null ) {
+			return new Bitmap();
 		}
-		if ( $combine_type === 'intersect' ) {
-			$combined_array = self::array_intersect( $source_array, $add_array );
-		} elseif ( $combine_type === 'merge' ) {
-			$combined_array = array_merge( $source_array, $add_array );
-		}
-		return $combined_array;
+
+		return $combined;
 	}
 
 	/**
@@ -893,15 +1215,16 @@ class Query {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param Field $field The field to get the values for.
+	 * @param \Search_Filter\Fields\Field $field The field to get the values for.
 	 * @return array  The transformed field values.
 	 */
-	private function get_choice_field_values( $field ) {
+	private function get_bitmap_field_values( $field ) {
 
 		$field_values = $field->get_values();
+
 		// We might need to transform the url values to a DB stored format.
 
-		// Author fields use slugs in the URL, but IDs in the database.
+		// Author fields use slugs in the URL, but use IDs in the database.
 		if ( $field->get_attribute( 'dataType' ) === 'post_attribute' ) {
 			$attribute_data_type = $field->get_attribute( 'dataPostAttribute' );
 			if ( $attribute_data_type === 'post_author' ) {
@@ -910,141 +1233,7 @@ class Query {
 		}
 		return $field_values;
 	}
-	/**
-	 * Get the result IDs for a field value.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param int   $field_id    The field ID.
-	 * @param mixed $field_value The field value.
-	 * @return array  The IDs.
-	 */
-	private function get_field_value_ids( $query_id, $field_id, $field_value ) {
 
-		$value  = null;
-		$values = array();
-
-		// Whether to collapse children into parents, if so, we need to record the object
-		// parent IDs for conversion later.
-		$collapse_children_into_parents = apply_filters( 'search-filter-pro/indexer/query/collapse_children', true, $this->query );
-		if ( $this->enable_caching ) {
-			$value = Query_Cache::get_value(
-				array(
-					'query_id'  => $query_id,
-					'field_id'  => $field_id,
-					'type'      => 'query',
-					'cache_key' => $field_value,
-				)
-			);
-
-			$values = explode( ',', $value );
-			if ( $value === false ) {
-				return array();
-			}
-
-			if ( $collapse_children_into_parents ) {
-				$result_parents = Query_Cache::get_value(
-					array(
-						'query_id'  => $query_id,
-						'field_id'  => $field_id,
-						'type'      => 'query-parents',
-						'cache_key' => $field_value,
-					)
-				);
-				if ( $result_parents ) {
-					$result_parents = json_decode( $result_parents, true );
-					foreach ( $result_parents as $object_id => $parent_id ) {
-						$this->object_parents[ $object_id ] = $parent_id;
-					}
-				}
-			}
-		}
-
-		if ( $value === null ) {
-			// There is no item in the DB, so we need to try to build it.
-			$query = new Index_Query(
-				array(
-					'field_id' => $field_id,
-					'value'    => $field_value,
-					'number'   => 0,
-					'fields'   => array( 'object_id', 'object_parent_id' ),
-				)
-			);
-
-			if ( is_wp_error( $query ) ) {
-				return array();
-			}
-
-			$query_cache_value = '';
-			$query_parents     = array();
-
-			$values      = array();
-			$items_count = count( $query->items );
-			for ( $i = 0; $i < $items_count; $i++ ) {
-				$item = $query->items[ $i ];
-				if ( absint( $item->object_parent_id ) !== 0 ) {
-					// Store the parents for caching seperately.
-					$query_parents[ $item->object_id ] = $item->object_parent_id;
-					// Update the parent reference.
-					$this->object_parents[ $item->object_id ] = $item->object_parent_id;
-				}
-				$values[]           = $item->object_id;
-				$query_cache_value .= $item->object_id;
-				if ( $i < $items_count - 1 ) {
-					$query_cache_value .= ',';
-				}
-			}
-
-			if ( $this->enable_caching ) {
-				Query_Cache::update_item(
-					array(
-						'query_id'    => $query_id,
-						'field_id'    => $field_id,
-						'type'        => 'query',
-						'cache_key'   => $field_value,
-						'cache_value' => $query_cache_value,
-					)
-				);
-
-				if ( $collapse_children_into_parents ) {
-					Query_Cache::update_item(
-						array(
-							'query_id'    => $query_id,
-							'field_id'    => $field_id,
-							'type'        => 'query-parents',
-							'cache_key'   => $field_value,
-							'cache_value' => wp_json_encode( $query_parents ),
-						)
-					);
-				}
-			}
-		}
-
-		return $values;
-	}
-
-	/**
-	 * Perform a DB query to get the field values IDs for a field.
-	 *
-	 * Doesn't need to return anything, just update the Query_Cache local
-	 * cache so we have the results ready for the individual calls.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param int   $query_id    The query ID.
-	 * @param int   $field_id    The field ID.
-	 * @param array $field_values The field values.
-	 */
-	private function init_field_values_ids( $query_id, $field_id, $field_values ) {
-		Query_Cache::get_items(
-			array(
-				'query_id'      => $query_id,
-				'field_id'      => $field_id,
-				'type'          => 'query',
-				'cache_key__in' => $field_values,
-			)
-		);
-	}
 	/**
 	 * Whether the query has a search term.
 	 *
@@ -1082,41 +1271,56 @@ class Query {
 	}
 
 	/**
-	 * Gets the field result IDs.
+	 * Gets the field result bitmap.
 	 *
-	 * @since 3.0.0
+	 * @since 3.0.7
 	 *
 	 * @param int $field_id The field ID.
-	 * @return array The field result IDs.
+	 * @return Bitmap|null The field result bitmap.
 	 */
-	public function get_field_result_ids( $field_id ) {
-		if ( ! isset( $this->field_result_ids[ $field_id ] ) ) {
+	public function get_field_result_bitmap( $field_id ) {
+		if ( ! isset( $this->field_result_bitmaps[ $field_id ] ) ) {
 			return null;
 		}
-		return $this->field_result_ids[ $field_id ];
+		return $this->field_result_bitmaps[ $field_id ];
 	}
 
 	/**
-	 * Gets the combined result IDs of all the fields excluding the
+	 * Get value bitmaps loaded for a field.
+	 *
+	 * Returns all value bitmaps that were loaded during field query,
+	 * enabling data reuse for counting without redundant database queries.
+	 *
+	 * @since 3.0.7
+	 *
+	 * @param int $field_id Field ID.
+	 * @return array|null Array of value bitmaps or null if not loaded.
+	 */
+	public function get_field_value_bitmaps( $field_id ) {
+		if ( ! isset( $this->field_value_bitmaps[ $field_id ] ) ) {
+			return null;
+		}
+		return $this->field_value_bitmaps[ $field_id ];
+	}
+
+	/**
+	 * Gets the combined result bitmaps of all the fields excluding the
 	 * specified field ID.
 	 *
-	 * Required to calculate the counts of fields that are using match
-	 * mode `any`.
+	 * @since 3.0.7
 	 *
 	 * @param mixed $exclude_field_id The field ID to exclude.
-	 * @return mixed
+	 * @return Bitmap|null The combined bitmap or null.
 	 */
-	public function get_combined_result_field_ids_excluding( $exclude_field_id ) {
+	public function get_combined_result_field_bitmaps_excluding( $exclude_field_id ) {
 
-		if ( ! is_array( $this->field_result_ids ) ) {
+		if ( empty( $this->field_result_bitmaps ) ) {
 			return null;
 		}
 
 		if ( ! isset( $this->fields_by_id[ $exclude_field_id ] ) ) {
 			return null;
 		}
-
-		$combined_result_ids = null;
 
 		$field_relationship = $this->query->get_attribute( 'fieldRelationship' );
 		// Setup the combine type for the fields.
@@ -1126,11 +1330,15 @@ class Query {
 		} elseif ( $field_relationship === 'all' ) {
 			$combine_type = 'intersect';
 		}
+
 		// Need to make sure any other fields that accidentally share the same URL
 		// var are not included.
 		$exclude_url_name = $this->fields_by_id[ $exclude_field_id ]->get_url_name();
 
-		foreach ( $this->field_result_ids as $field_id => $field_result_ids ) {
+		// Batch approach: collect all bitmaps first, then combine once.
+		$all_field_result_bitmaps = array();
+
+		foreach ( $this->field_result_bitmaps as $field_id => $field_result_bitmap ) {
 			// Make sure we ignore fields with the same url name.
 			if ( ! isset( $this->fields_by_id[ $field_id ] ) ) {
 				continue;
@@ -1138,12 +1346,54 @@ class Query {
 			$field    = $this->fields_by_id[ $field_id ];
 			$url_name = $field->get_url_name();
 			if ( ( $field_id !== $exclude_field_id ) && ( $exclude_url_name !== $url_name ) ) {
-				if ( $field_result_ids !== null ) {
-					$combined_result_ids = self::combine_arrays( $combined_result_ids, $field_result_ids, $combine_type );
+				if ( $field_result_bitmap !== null ) {
+					$all_field_result_bitmaps[] = $field_result_bitmap;
 				}
 			}
 		}
-		return $combined_result_ids;
+
+		// Batch combine bitmaps for better performance.
+		return self::combine_bitmaps( $all_field_result_bitmaps, $combine_type );
 	}
 
+	/**
+	 * Apply BM25 relevance ordering to post__in.
+	 *
+	 * Reorders the post__in array to match the BM25 relevance scores
+	 * from search, and sets orderby to 'post__in' to preserve the order.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param array $query_args The query args.
+	 * @return array Modified query args with relevance ordering.
+	 */
+	private function apply_relevance_ordering( $query_args ) {
+		if ( empty( $this->search_ordered_ids ) || empty( $query_args['post__in'] ) ) {
+			return $query_args;
+		}
+
+		// Create a lookup of BM25 positions (lower = higher relevance).
+		$position_lookup = array_flip( $this->search_ordered_ids );
+
+		// Get the final post IDs that need to be ordered.
+		$final_post_ids = $query_args['post__in'];
+
+		// Sort by BM25 position, keeping posts not in search results at the end.
+		usort(
+			$final_post_ids,
+			function ( $a, $b ) use ( $position_lookup ) {
+				$pos_a = isset( $position_lookup[ $a ] ) ? $position_lookup[ $a ] : PHP_INT_MAX;
+				$pos_b = isset( $position_lookup[ $b ] ) ? $position_lookup[ $b ] : PHP_INT_MAX;
+				return $pos_a - $pos_b;
+			}
+		);
+
+		$query_args['post__in'] = $final_post_ids;
+
+		// Set orderby to preserve the BM25 relevance order.
+		// This tells WP_Query (and our Query_Optimizer) to use FIELD() ordering.
+		$query_args['orderby'] = 'post__in';
+
+		return $query_args;
+	}
 }

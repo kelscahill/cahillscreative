@@ -37,7 +37,7 @@ class Settings_Data {
 		$settings_data = array(
 			array(
 				'name'      => 'useBackgroundProcessing',
-				'label'     => __( 'Use background processing', 'search-filter-pro' ),
+				'label'     => __( 'Use Background Processing', 'search-filter-pro' ),
 				'help'      => __( 'Run the indexer in the background. Otherwise, you will need to keep the dashboard open until the indexing process completes.', 'search-filter-pro' ),
 				'default'   => 'yes',
 				'type'      => 'string',
@@ -52,13 +52,13 @@ class Settings_Data {
 						'label' => __( 'No', 'search-filter-pro' ),
 					),
 				),
-			   // 'link'        => '',
+				// 'link'        => '',
 			),
 			array(
 				'name'      => 'enableOnFrontend',
-				'label'     => __( 'Enable on frontend', 'search-filter-pro' ),
+				'label'     => __( 'Index Frontend Updates', 'search-filter-pro' ),
 				'help'      => __( 'Watch for updates to posts on the frontend and resync them.', 'search-filter-pro' ),
-				'default'   => 'yes',
+				'default'   => 'no',
 				'type'      => 'string',
 				'inputType' => 'Toggle',
 				'options'   => array(
@@ -71,7 +71,6 @@ class Settings_Data {
 						'label' => __( 'No', 'search-filter-pro' ),
 					),
 				),
-			   // 'link'        => '',
 			),
 		);
 		return $settings_data;

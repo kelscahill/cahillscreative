@@ -10,6 +10,7 @@
 namespace Search_Filter\Settings;
 
 use Search_Filter\Core\Exception;
+use Search_Filter\Util;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -71,11 +72,13 @@ class Processed_Settings {
 	 *
 	 * @param array $settings The settings to process.
 	 * @param array $attributes The state of the settings.
-	 * @param array $ghost_attributes State that may not be in resolved settings, but needs to kept.
+	 * @param array $external_store External store data to merge with attributes.
+	 * @param array $ghost_attributes State that may not be in resolved settings, but needs to be kept.
+	 * @param bool  $get_all_attributes Whether to get all attributes regardless of visibility.
 	 */
-	public function __construct( $settings, $attributes, $external_store = array(), $ghost_attributes = array() ) {
+	public function __construct( $settings, $attributes, $external_store = array(), $ghost_attributes = array(), $get_all_attributes = false ) {
 
-		$processed_settings = $this->process_settings( $settings, $attributes, $external_store, $ghost_attributes );
+		$processed_settings = $this->process_settings( $settings, $attributes, $external_store, $ghost_attributes, $get_all_attributes );
 		$this->attributes   = $processed_settings['attributes'];
 		// Now remove the ghost attributes from the final attributes.
 		foreach ( $ghost_attributes as $attribute_key ) {
@@ -115,7 +118,9 @@ class Processed_Settings {
 	 *
 	 * @param array $settings The settings to process.
 	 * @param array $attributes The attributes of the settings.
+	 * @param array $external_store External store data to merge with attributes.
 	 * @param array $ghost_attributes Attributes that may not be in resolved settings, but needs to be used as input state.
+	 * @param bool  $get_all_attributes Whether to get all attributes regardless of visibility.
 	 * @return array {
 	 *     Array of processed settings.
 	 *
@@ -123,28 +128,45 @@ class Processed_Settings {
 	 *     @type array $attributes The processed attributes.
 	 * }
 	 */
-	public function process_settings( $settings, $attributes, $external_store = array(), $ghost_attributes = array() ) {
+	public function process_settings( $settings, $attributes, $external_store = array(), $ghost_attributes = array(), $get_all_attributes = false ) {
 		$new_settings   = array();
 		$new_attributes = array();
 
 		foreach ( $settings as $setting ) {
 			// Process the setting.
-			$processed_setting = $this->process_setting( $setting, $attributes, $external_store );
+			$processed_setting = $this->process_setting( $setting, $attributes, $external_store, $get_all_attributes );
 			$setting_name      = $setting->get_name();
 
 			// Now process the attributes.
 			$setting_is_visible = $processed_setting->get_data( 'isVisible' );
-			$setting_options    = $processed_setting->get_options_array();
-			$has_options        = count( $setting_options ) > 0;
 
 			// If the settings is not visible, then remove the attributes for it if it exists.
-			if ( $setting_is_visible === true ) {
+			if ( $setting_is_visible === true || $get_all_attributes === true ) {
 				if ( isset( $attributes[ $setting_name ] ) ) {
 					$new_attributes[ $setting_name ] = $attributes[ $setting_name ];
-				} elseif ( $setting->has_data( 'default' ) ) {
-					$new_attributes[ $setting_name ] = $setting->get_data( 'default' );
-				} elseif ( $has_options ) {
-					$new_attributes[ $setting_name ] = $setting_options[0]['value'];
+				} elseif ( $setting->has_prop( 'default' ) && ! empty( $setting->get_prop( 'default' ) ) ) {
+					$new_attributes[ $setting_name ] = $setting->get_prop( 'default' );
+				} elseif ( $setting->get_prop( 'requireSelection' ) !== true ) {
+					$options = array();
+					// Try get the value of any resolved dependant options.
+					if ( $setting->has_support( 'dependantOptions' ) ) {
+						$resolved_options = $setting->get_prop( 'resolvedOptions' );
+						if ( ! empty( $resolved_options ) ) {
+							$options = $resolved_options;
+						}
+					} else {
+						// Otherwise use the options from the setting.
+						$options = $processed_setting->get_options_array();
+					}
+					if ( count( $options ) > 0 ) {
+						if ( $setting->get_prop( 'type' ) === 'object' ) {
+							continue;
+						} elseif ( $setting->get_prop( 'type' ) === 'array' ) {
+							$new_attributes[ $setting_name ] = array( $options[0]['value'] );
+						} else {
+							$new_attributes[ $setting_name ] = $options[0]['value'];
+						}
+					}
 				}
 			}
 			$new_settings[] = $processed_setting;
@@ -165,7 +187,7 @@ class Processed_Settings {
 
 		// State has changed, so need to run through the process again.
 		if ( count( $updated_settings ) > 0 ) {
-			$next_processed_settings = $this->process_settings( $new_settings, $new_attributes, $external_store, $ghost_attributes );
+			$next_processed_settings = $this->process_settings( $new_settings, $new_attributes, $external_store, $ghost_attributes, $get_all_attributes );
 			$new_settings            = $next_processed_settings['settings'];
 			$new_attributes          = $next_processed_settings['attributes'];
 		}
@@ -219,10 +241,47 @@ class Processed_Settings {
 	 *
 	 * @param object $setting The setting to process.
 	 * @param array  $state The state of the settings.
+	 * @param array  $external_store External store data to merge with attributes.
+	 * @param bool   $get_all_attributes Whether to get all attributes regardless of visibility.
 	 * @return object The processed setting.
 	 */
-	public function process_setting( $setting, $state, $external_store ) {
-		$setting->update( array( 'isVisible' => $this->is_setting_visible( $setting, $state, $external_store ) ) );
+	public function process_setting( $setting, $state, $external_store, $get_all_attributes = false ) {
+		// Merge attributes with external store data.
+		$store = array(
+			'attributes' => $state,
+		);
+		$store = array_merge( $store, $external_store );
+
+		$is_visible = $this->is_setting_visible( $setting, $store );
+		$setting->update( array( 'isVisible' => $is_visible ) );
+
+		if ( ! $is_visible && ! $get_all_attributes ) {
+			return $setting;
+		}
+
+		if ( $setting->has_support( 'dependantOptions' ) ) {
+
+			$options = $setting->get_options();
+			if ( empty( $options ) ) {
+				return $setting;
+			}
+
+			$resolved_options = array();
+
+			foreach ( $options as $option ) {
+
+				if ( ! isset( $option['dependsOn'] ) ) {
+					$resolved_options[] = $option;
+					continue;
+				}
+
+				if ( $this->conditions_met( $store, $option['dependsOn'], $setting->get_name() . '-' . $option['value'] ) ) {
+					$resolved_options[] = $option;
+				}
+			}
+			$setting->set_prop( 'resolvedOptions', $resolved_options );
+		}
+
 		return $setting;
 	}
 
@@ -231,23 +290,17 @@ class Processed_Settings {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param object $setting The setting to check.
-	 * @param array  $attributes The attributes of the settings.
+	 * @param Setting $setting The setting to check.
+	 * @param array   $store The store of the settings.
 	 * @return bool True if the setting is visible after checking dependencies.
 	 */
-	public function is_setting_visible( $setting, $attributes, $external_store ) {
+	public function is_setting_visible( Setting $setting, array $store ) {
 		$depends_on = $setting->get_data( 'dependsOn' );
 		if ( empty( $depends_on ) ) {
 			return true;
 		}
 
 		$setting_name = $setting->get_name();
-
-		// Merge attributes with external store data.
-		$store = array(
-			'attributes' => $attributes,
-		);
-		$store = array_merge( $store, $external_store );
 
 		if ( $this->conditions_met( $store, $depends_on, $setting_name ) ) {
 			return true;
@@ -268,11 +321,11 @@ class Processed_Settings {
 	 *
 	 * @throws Exception If the conditions are invalid.
 	 */
-	public function conditions_met( $store, $conditions, $setting_name ) {
+	public function conditions_met( array $store, array $conditions, string $setting_name ) {
 		// If there are no valid rules lets assume the condition is met.
-		if ( ! is_array( $conditions ) || ! isset( $conditions['rules'] ) || count( $conditions['rules'] ) === 0 || ! isset( $conditions['relation'] ) ) {
+		if ( ! isset( $conditions['rules'] ) || count( $conditions['rules'] ) === 0 || ! isset( $conditions['relation'] ) ) {
 			// No conditions so return true.
-			// TODO - show an warning in debug log.
+			Util::error_log( 'Found empty conditions array for setting `' . $setting_name . '`' );
 			return true;
 		}
 
@@ -302,6 +355,7 @@ class Processed_Settings {
 				$option     = isset( $rule['option'] ) ? $rule['option'] : '';
 				$value      = isset( $rule['value'] ) ? $rule['value'] : '';
 				$store_name = isset( $rule['store'] ) ? $rule['store'] : 'attributes';
+
 				/*
 				 * Note: using phpcs:ignore after the exceptions because the rule `WordPress.Security.EscapeOutput.ExceptionNotEscaped`
 				 * is being triggered because the last argument is not escaped - but this is not used in the message or displayed to the user,
@@ -309,23 +363,23 @@ class Processed_Settings {
 				 */
 				if ( ! isset( $store[ $store_name ] ) ) {
 					// Translators: %1$s is the store name, %2$s is the setting name.
-					throw new Exception( sprintf( esc_html__( 'Store `%1$s` missing for setting `%2$s`' ), esc_html( $store_name ), esc_html( $setting_name ) ), SEARCH_FILTER_EXCEPTION_SETTING_INVALID_CONDITIONS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+					throw new Exception( esc_html( sprintf( __( 'Store `%1$s` missing for setting `%2$s`', 'search-filter' ), $store_name, $setting_name ) ), SEARCH_FILTER_EXCEPTION_SETTING_INVALID_CONDITIONS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 				}
 				if ( ! isset( $rule['option'] ) ) {
 					// Translators: %s is the setting name.
-					throw new Exception( sprintf( esc_html__( 'Invalid `dependsOn` conditions for setting `%1$s`, option missing.' ), esc_html( $setting_name ) ), SEARCH_FILTER_EXCEPTION_SETTING_INVALID_CONDITIONS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+					throw new Exception( esc_html( sprintf( __( 'Invalid `dependsOn` conditions for setting `%1$s`, option missing.', 'search-filter' ), $setting_name ) ), SEARCH_FILTER_EXCEPTION_SETTING_INVALID_CONDITIONS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 				}
 				if ( ! isset( $rule['compare'] ) ) {
 					// Translators: %s is the setting name.
-					throw new Exception( sprintf( esc_html__( 'Invalid `dependsOn` conditions for setting `%1$s`, compare missing.' ), esc_html( $setting_name ) ), SEARCH_FILTER_EXCEPTION_SETTING_INVALID_CONDITIONS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+					throw new Exception( esc_html( sprintf( __( 'Invalid `dependsOn` conditions for setting `%1$s`, compare missing.', 'search-filter' ), $setting_name ) ), SEARCH_FILTER_EXCEPTION_SETTING_INVALID_CONDITIONS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 				}
 				if ( ! isset( $rule['value'] ) && $compare !== 'EXISTS' && $compare !== 'NOT EXISTS' ) {
 					// Translators: %s is the setting name.
-					throw new Exception( sprintf( esc_html__( 'Invalid `dependsOn` conditions for setting `%1$s`, value missing.' ), esc_html( $setting_name ) ), SEARCH_FILTER_EXCEPTION_SETTING_INVALID_CONDITIONS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+					throw new Exception( esc_html( sprintf( __( 'Invalid `dependsOn` conditions for setting `%1$s`, value missing.', 'search-filter' ), $setting_name ) ), SEARCH_FILTER_EXCEPTION_SETTING_INVALID_CONDITIONS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 				}
 				if ( ! in_array( $compare, $this->valid_compares, true ) ) {
 					// Translators: %s is the setting name.
-					throw new Exception( sprintf( esc_html__( 'Invalid `dependsOn` conditions for setting `%1$s`, compare invalid.' ), esc_html( $setting_name ) ), SEARCH_FILTER_EXCEPTION_SETTING_INVALID_CONDITIONS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+					throw new Exception( esc_html( sprintf( __( 'Invalid `dependsOn` conditions for setting `%1$s`, compare invalid.', 'search-filter' ), $setting_name ) ), SEARCH_FILTER_EXCEPTION_SETTING_INVALID_CONDITIONS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 				}
 
 				if ( $compare === 'EXISTS' ) {
@@ -402,30 +456,62 @@ class Processed_Settings {
 	/**
 	 * Check if a state value is in a setting value.
 	 *
+	 * Returns true if the state value (or any of its values if it's an array)
+	 * exists within the provided value array.
+	 *
 	 * @since 3.0.0
 	 *
-	 * @param string $name The name of the state value.
-	 * @param mixed  $value The value to check.
+	 * @param string $name  The name of the state value.
+	 * @param mixed  $value The value(s) to check against (should be an array).
 	 * @param array  $state The state of the settings.
 	 * @return bool True if the state value is in the setting value.
 	 */
 	private function is_in( $name, $value, $state ) {
-		// TODO.
-		return false;
+		if ( ! isset( $state[ $name ] ) ) {
+			return false;
+		}
+
+		$state_value = $state[ $name ];
+
+		// Ensure $value is an array for comparison.
+		if ( ! is_array( $value ) ) {
+			$value = array( $value );
+		}
+
+		// If state value is an array, check if any of its values are in $value.
+		if ( is_array( $state_value ) ) {
+			foreach ( $state_value as $item ) {
+				if ( in_array( $item, $value, true ) ) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		// State value is scalar, check if it's in $value array.
+		return in_array( $state_value, $value, true );
 	}
 	/**
 	 * Check if a state value is not in a setting value.
 	 *
+	 * Returns true if the state value (and all of its values if it's an array)
+	 * does not exist within the provided value array.
+	 *
 	 * @since 3.0.0
 	 *
-	 * @param string $name The name of the state value.
-	 * @param mixed  $value The value to check.
+	 * @param string $name  The name of the state value.
+	 * @param mixed  $value The value(s) to check against (should be an array).
 	 * @param array  $state The state of the settings.
 	 * @return bool True if the state value is not in the setting value.
 	 */
 	private function is_not_in( $name, $value, $state ) {
-		// TODO.
-		return false;
+		// If the state value doesn't exist, it's not in the value array.
+		if ( ! isset( $state[ $name ] ) ) {
+			return true;
+		}
+
+		// Simply return the inverse of is_in().
+		return ! $this->is_in( $name, $value, $state );
 	}
 	/**
 	 * Check if a state value exists.

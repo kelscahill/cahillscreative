@@ -3,16 +3,18 @@
  * Plugin Name:       Search & Filter Pro
  * Plugin URI:        http://searchandfilter.com
  * Description:       Build powerful search experiences for your website or store with powerful pro features.
- * Version:           3.1.8
+ * Version:           3.2.3
  * Author:            Code Amp
  * Author URI:        https://codeamp.com
  * Update URI:        https://searchandfilter.com
  * Text Domain:       search-filter
  * Domain Path:       /languages
  * Requires at least: 6.5
- * Tested up to: 6.7
- * WC requires at least: 9.1
- * WC tested up to: 9.6
+ * Tested up to: 6.9
+ * WC requires at least: 9.4
+ * WC tested up to: 10.5
+ *
+ * @package Search_Filter_Pro
  */
 
 // If this file is called directly, abort.
@@ -68,7 +70,7 @@ run_search_filter_pro();
  */
 add_action(
 	'before_woocommerce_init',
-	function() {
+	function () {
 		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
 			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', SEARCH_FILTER_PRO_BASE_FILE, true );
 		}

@@ -1,4 +1,13 @@
 <?php
+/**
+ * Notices functionality for the plugin.
+ *
+ * @link       http://searchandfilter.com
+ * @since      3.0.0
+ *
+ * @package    Search_Filter
+ * @subpackage Search_Filter/Core
+ */
 
 namespace Search_Filter\Core;
 
@@ -25,10 +34,11 @@ class Notices {
 	 * Add a notice.
 	 *
 	 * @param string $message The message to add.
-	 * @param string $type    The type of notice.
+	 * @param string $status  The type of notice.
 	 * @param string $id      The ID of the notice.
+	 * @param array  $actions The actions to add to the notice.
 	 */
-	public static function add_notice( $message, $status, $id = '', $actions = array() ) {
+	public static function add_notice( string $message, string $status, string $id = '', array $actions = array() ) {
 
 		if ( empty( $id ) ) {
 			$id = self::get_new_id();
@@ -62,7 +72,7 @@ class Notices {
 	 * @return string The new ID.
 	 */
 	private static function get_new_id() {
-		return md5( time() );
+		return md5( (string) time() );
 	}
 
 	/**
@@ -71,8 +81,11 @@ class Notices {
 	 * @param string $id The ID of the notice.
 	 * @return bool True if dismissed, false if not.
 	 */
-	public static function is_notice_dismissed( $id ) {
-		$dismissed_notices = Options::get_option_value( 'dismissed-notices' );
+	public static function is_notice_dismissed( string $id ) {
+		$dismissed_notices = Options::get( 'dismissed-notices', array() );
+		if ( ! is_array( $dismissed_notices ) ) {
+			$dismissed_notices = array();
+		}
 		return isset( $dismissed_notices[ $id ] ) && $dismissed_notices[ $id ];
 	}
 	/**
@@ -80,9 +93,12 @@ class Notices {
 	 *
 	 * @param string $id The ID of the notice.
 	 */
-	public static function dismiss_notice( $id ) {
-		$dismissed_notices        = Options::get_option_value( 'dismissed-notices' );
+	public static function dismiss_notice( string $id ) {
+		$dismissed_notices = Options::get( 'dismissed-notices', array() );
+		if ( ! is_array( $dismissed_notices ) ) {
+			$dismissed_notices = array();
+		}
 		$dismissed_notices[ $id ] = true;
-		Options::update_option_value( 'dismissed-notices', $dismissed_notices );
+		Options::update( 'dismissed-notices', $dismissed_notices );
 	}
 }

@@ -1,12 +1,23 @@
 <?php
+/**
+ * Logs Query Class.
+ *
+ * @package     Database
+ * @subpackage  Queries
+ * @copyright   Copyright (c) 2020
+ * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       3.0.0
+ */
 
 namespace Search_Filter\Database\Queries;
+
+use Search_Filter\Database\Table_Manager;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Query class for the options table.
+ * Query class for the logs table.
  *
  * @since 3.0.0
  */
@@ -15,7 +26,7 @@ class Logs extends \Search_Filter\Database\Queries\Records {
 	/**
 	 * Name of the database table to query.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $table_name = 'logs';
@@ -25,7 +36,7 @@ class Logs extends \Search_Filter\Database\Queries\Records {
 	 *
 	 * This is used to avoid collisions with JOINs.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $table_alias = 'ql';
@@ -33,7 +44,7 @@ class Logs extends \Search_Filter\Database\Queries\Records {
 	/**
 	 * Name of class used to setup the database schema.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $table_schema = '\\Search_Filter\\Database\\Schemas\\Logs';
@@ -45,7 +56,7 @@ class Logs extends \Search_Filter\Database\Queries\Records {
 	 *
 	 * This is used to automatically generate action hooks.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $item_name = 'log';
@@ -57,7 +68,7 @@ class Logs extends \Search_Filter\Database\Queries\Records {
 	 *
 	 * This is used to automatically generate action hooks.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $item_name_plural = 'logs';
@@ -67,7 +78,7 @@ class Logs extends \Search_Filter\Database\Queries\Records {
 	 *
 	 * This is used when looping through return values to guarantee their shape.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   mixed
 	 */
 	protected $item_shape = '\\Search_Filter\\Database\\Rows\\Log';
@@ -83,4 +94,17 @@ class Logs extends \Search_Filter\Database\Queries\Records {
 	 * @var string
 	 */
 	protected $cache_group = 'logs';
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $query The query arguments.
+	 */
+	public function __construct( $query = array() ) {
+
+		Table_Manager::use( 'logs' );
+		parent::__construct( $query );
+	}
 }

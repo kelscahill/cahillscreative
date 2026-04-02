@@ -1,4 +1,14 @@
 <?php
+/**
+ * Option Row Class.
+ *
+ * @package     Database
+ * @subpackage  Rows
+ * @copyright   Copyright (c) 2020
+ * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       3.0.0
+ */
+
 namespace Search_Filter\Database\Rows;
 
 use Search_Filter\Core\Data_Store;
@@ -7,6 +17,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Option row class.
+ *
+ * @since 3.0.0
+ */
 class Option extends \Search_Filter\Database\Engine\Row {
 
 	/**
@@ -34,16 +49,16 @@ class Option extends \Search_Filter\Database\Engine\Row {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @var mixed
+	 * @var string
 	 */
-	public $value = null;
+	public $value = '';
 
 	/**
-	 * Fields constructor.
+	 * Options constructor.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param $item
+	 * @param object $item The item to construct the row from.
 	 */
 	public function __construct( $item ) {
 		parent::__construct( $item );
@@ -52,6 +67,7 @@ class Option extends \Search_Filter\Database\Engine\Row {
 		$this->id    = (int) $this->id;
 		$this->name  = (string) $this->name;
 		$this->value = (string) $this->value;
+
 		Data_Store::set( 'option', $this->name, $this );
 	}
 
@@ -96,11 +112,6 @@ class Option extends \Search_Filter\Database\Engine\Row {
 		// Numeric strings are always valid JSON.
 		if ( is_numeric( $value ) ) {
 			return true;
-		}
-
-		// A non-string value can never be a JSON string.
-		if ( ! is_string( $value ) ) {
-			return false;
 		}
 
 		// Any non-numeric JSON string must be longer than 2 characters.

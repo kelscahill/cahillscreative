@@ -1,7 +1,11 @@
 <?php
 /**
  * Fields Schema Class.
+ *
+ * @package Search_Filter
+ * @since   3.0.0
  */
+
 namespace Search_Filter\Database\Schemas;
 
 // Exit if accessed directly.

@@ -36,10 +36,10 @@ class Query_Render_Store {
 	/**
 	 * Gets the render data for a query.
 	 *
-	 * @param string $query_id The query ID.
+	 * @param int $query_id The query ID.
 	 * @return array
 	 */
-	public static function get_render_data( $query_id ) {
+	public static function get_render_data( int $query_id ) {
 		if ( ! isset( self::$render_data[ $query_id ] ) ) {
 			return array();
 		}
@@ -48,11 +48,11 @@ class Query_Render_Store {
 	/**
 	 * Sets the render data for a query.
 	 *
-	 * @param string $query_id The query ID.
+	 * @param int    $query_id The query ID.
 	 * @param string $key      The key to set.
 	 * @param mixed  $data     The data to set.
 	 */
-	public static function set_render_data_value( $query_id, $key, $data ) {
+	public static function set_render_data_value( int $query_id, string $key, $data ) {
 		if ( ! isset( self::$render_data[ $query_id ] ) ) {
 			self::$render_data[ $query_id ] = array();
 		}
@@ -62,11 +62,11 @@ class Query_Render_Store {
 	/**
 	 * Gets a value from the render data.
 	 *
-	 * @param string $query_id The query ID.
+	 * @param int    $query_id The query ID.
 	 * @param string $key      The key to get.
 	 * @return mixed
 	 */
-	public static function get_render_data_value( $query_id, $key ) {
+	public static function get_render_data_value( int $query_id, string $key ) {
 		if ( ! isset( self::$render_data[ $query_id ] ) ) {
 			return false;
 		}

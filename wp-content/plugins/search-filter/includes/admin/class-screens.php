@@ -25,21 +25,21 @@ class Screens {
 	/**
 	 * Stores the current screen name, -1 if not set yet.
 	 *
-	 * @var int/string
+	 * @var int|string
 	 */
 	private static $screen_name = -1;
 
 	/**
 	 * Stores the status of if we're in one of our admin screens.
 	 *
-	 * @var int/string
+	 * @var int|bool
 	 */
 	private static $is_search_filter_screen = -1;
 
 	/**
 	 * Stores the pages as an array so we can also pass to our JS app.
 	 *
-	 * @var int/string
+	 * @var array
 	 */
 	private static $pages = array();
 
@@ -101,7 +101,15 @@ class Screens {
 	 * @since    3.0.0
 	 */
 	public static function admin_pages() {
-		add_menu_page( __( 'Dashboard', 'search-filter' ), __( 'Search & Filter', 'search-filter' ), 'manage_options', 'search-filter', array( __CLASS__, 'search_filter_screen_main' ), self::get_icon(), '100.23243' );
+		add_menu_page(
+			__( 'Dashboard', 'search-filter' ),
+			__( 'Search & Filter', 'search-filter' ),
+			'manage_options',
+			'search-filter',
+			array( __CLASS__, 'search_filter_screen_main' ),
+			self::get_icon(),
+			100.23243
+		);
 	}
 
 	/**
@@ -162,7 +170,7 @@ class Screens {
 	 * @since    3.0.0
 	 */
 	public static function search_filter_screen_main() {
-		echo "<div id='sfa-screen-main' class='search-filter-admin'></div>";
+		echo "<div id='search-filter-admin' class='search-filter-admin'></div>";
 	}
 
 	/**
@@ -198,7 +206,8 @@ class Screens {
 				</g>
 			</svg>
 		<?php
-		$svg  = trim( ob_get_clean() );
+		$svg = trim( ob_get_clean() );
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Required for generating valid inline SVG data URIs.
 		$icon = 'data:image/svg+xml;base64,' . base64_encode( $svg );
 		return $icon;
 	}
@@ -223,22 +232,44 @@ class Screens {
 	 * @return boolean
 	 */
 	public static function is_search_filter_screen() {
+
+		// Early exit if not in admin.
+		if ( ! is_admin() ) {
+			return false;
+		}
+
 		if ( -1 === self::$is_search_filter_screen ) {
-			$screen_names = array(
-				'toplevel_page_search-filter',
-				'edit-search-filter-query',
-				'search-filter-query',
-				'search-filter',
-				'search-filter_page_search-filter-query',
-				'search-filter_page_search-filter-styles',
-			);
 
 			self::$is_search_filter_screen = false;
-			if ( in_array( self::get_screen_name(), $screen_names, true ) ) {
-				self::$is_search_filter_screen = true;
+
+			// Use get_current_screen() if its available, otherwise try $pagenow.
+			$current_screen = null;
+			if ( function_exists( 'get_current_screen' ) ) {
+				$current_screen = \get_current_screen();
+			}
+
+			if ( $current_screen !== null ) {
+				$screen_name  = $current_screen->id;
+				$screen_names = array(
+					'toplevel_page_search-filter',
+					'edit-search-filter-query',
+					'search-filter-query',
+					'search-filter',
+					'search-filter_page_search-filter-query',
+					'search-filter_page_search-filter-styles',
+				);
+				if ( in_array( $screen_name, $screen_names, true ) ) {
+					self::$is_search_filter_screen = true;
+				}
+			} else {
+				global $pagenow;
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- We just need to check the page name.
+				if ( $pagenow === 'admin.php' && isset( $_GET['page'] ) && strpos( sanitize_text_field( wp_unslash( $_GET['page'] ) ), 'search-filter' ) === 0 ) {
+					self::$is_search_filter_screen = true;
+				}
 			}
 		}
-		return self::$is_search_filter_screen;
+		return apply_filters( 'search-filter/admin/screens/is_search_filter_screen', self::$is_search_filter_screen );
 	}
 
 	/**
@@ -290,17 +321,21 @@ class Screens {
 				'fields'                   => array(
 					'itemsPerPage' => '10',
 					'columns'      => array( 'id', 'name', 'type', 'query', 'status', 'date', 'actions' ),
+					'view'         => 'grid',
 				),
 				'queryEditConnectedFields' => array(
 					'itemsPerPage' => '10',
 					'columns'      => array( 'id', 'name', 'type', 'status', 'date', 'actions' ),
+					'view'         => 'grid',
 				),
 				'queries'                  => array(
 					'itemsPerPage' => '10',
 					'columns'      => array( 'id', 'name', 'fields', 'status', 'date', 'actions' ),
+					'view'         => 'table',
 				),
 				'styles'                   => array(
 					'itemsPerPage' => '10',
+					'view'         => 'grid',
 					// 'columns' => array( 'name', 'status', 'date' ),
 				),
 			);

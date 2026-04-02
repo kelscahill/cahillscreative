@@ -8,6 +8,7 @@
  * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since       1.0.0
  */
+
 namespace Search_Filter\Database\Engine;
 
 // Exit if accessed directly.
@@ -52,7 +53,7 @@ class Column extends Base {
 	 * See: https://dev.mysql.com/doc/en/storage-requirements.html
 	 *
 	 * @since 1.0.0
-	 * @var   string
+	 * @var   string|bool
 	 */
 	public $length = false;
 
@@ -107,7 +108,7 @@ class Column extends Base {
 	public $default = '';
 
 	/**
-	 * auto_increment, etc...
+	 * Auto_increment, etc...
 	 *
 	 * See: https://dev.mysql.com/doc/en/data-type-defaults.html
 	 *
@@ -311,7 +312,7 @@ class Column extends Base {
 	 * Use in conjunction with a database index for speedy queries.
 	 *
 	 * @since 1.0.0
-	 * @var   string
+	 * @var   string|bool
 	 */
 	public $cache_key = false;
 
@@ -422,10 +423,10 @@ class Column extends Base {
 	 */
 	public function __construct( $args = array() ) {
 
-		// Parse arguments
+		// Parse arguments.
 		$r = $this->parse_args( $args );
 
-		// Maybe set variables from arguments
+		// Maybe set variables from arguments.
 		if ( ! empty( $r ) ) {
 			$this->set_vars( $r );
 		}
@@ -442,12 +443,12 @@ class Column extends Base {
 	 */
 	private function parse_args( $args = array() ) {
 
-		// Parse arguments
+		// Parse arguments.
 		$r = wp_parse_args(
 			$args,
 			array(
 
-				// Table
+				// Table.
 				'name'          => '',
 				'type'          => '',
 				'length'        => '',
@@ -461,7 +462,7 @@ class Column extends Base {
 				'collation'     => $this->get_db()->collate,
 				'comment'       => '',
 
-				// Query
+				// Query.
 				'pattern'       => false,
 				'searchable'    => false,
 				'sortable'      => false,
@@ -471,36 +472,36 @@ class Column extends Base {
 				'in'            => true,
 				'not_in'        => true,
 
-				// Special
+				// Special.
 				'primary'       => false,
 				'created'       => false,
 				'modified'      => false,
 				'uuid'          => false,
 
-				// Cache
+				// Cache.
 				'cache_key'     => false,
 
-				// Validation
+				// Validation.
 				'validate'      => '',
 
-				// Capabilities
+				// Capabilities.
 				'caps'          => array(),
 
-				// Backwards Compatibility
+				// Backwards Compatibility.
 				'aliases'       => array(),
 
-				// Column Relationships
+				// Column Relationships.
 				'relationships' => array(),
 			)
 		);
 
-		// Force some arguments for special column types
+		// Force some arguments for special column types.
 		$r = $this->special_args( $r );
 
-		// Set the args before they are sanitized
+		// Set the args before they are sanitized.
 		$this->set_vars( $r );
 
-		// Return array
+		// Return array.
 		return $this->validate_args( $r );
 	}
 
@@ -513,7 +514,7 @@ class Column extends Base {
 	 */
 	private function validate_args( $args = array() ) {
 
-		// Sanitization callbacks
+		// Sanitization callbacks.
 		$callbacks = array(
 			'name'          => 'sanitize_key',
 			'type'          => 'strtoupper',
@@ -549,23 +550,23 @@ class Column extends Base {
 			'relationships' => array( $this, 'sanitize_relationships' ),
 		);
 
-		// Default args array
+		// Default args array.
 		$r = array();
 
-		// Loop through and try to execute callbacks
+		// Loop through and try to execute callbacks.
 		foreach ( $args as $key => $value ) {
 
-			// Callback is callable
+			// Callback is callable.
 			if ( isset( $callbacks[ $key ] ) && is_callable( $callbacks[ $key ] ) ) {
 				$r[ $key ] = call_user_func( $callbacks[ $key ], $value );
 
-				// Callback is malformed so just let it through to avoid breakage
+				// Callback is malformed so just let it through to avoid breakage.
 			} else {
 				$r[ $key ] = $value;
 			}
 		}
 
-		// Return sanitized arguments
+		// Return sanitized arguments.
 		return $r;
 	}
 
@@ -578,11 +579,11 @@ class Column extends Base {
 	 */
 	private function special_args( $args = array() ) {
 
-		// Primary key columns are always used as cache keys
+		// Primary key columns are always used as cache keys.
 		if ( ! empty( $args['primary'] ) ) {
 			$args['cache_key'] = true;
 
-			// All UUID columns need to follow a very specific pattern
+			// All UUID columns need to follow a very specific pattern.
 		} elseif ( ! empty( $args['uuid'] ) ) {
 			$args['name']       = 'uuid';
 			$args['type']       = 'varchar';
@@ -593,7 +594,7 @@ class Column extends Base {
 			$args['sortable']   = false;
 		}
 
-		// Return args
+		// Return args.
 		return (array) $args;
 	}
 
@@ -627,15 +628,15 @@ class Column extends Base {
 	 */
 	private function is_type( $type = '' ) {
 
-		// If string, cast to array
+		// If string, cast to array.
 		if ( is_string( $type ) ) {
 			$type = (array) $type;
 		}
 
-		// Make them lowercase
+		// Make them lowercase.
 		$types = array_map( 'strtolower', $type );
 
-		// Return if match or not
+		// Return if match or not.
 		return (bool) in_array( strtolower( $this->type ), $types, true );
 	}
 
@@ -688,27 +689,27 @@ class Column extends Base {
 	 * Sanitize the default value
 	 *
 	 * @since 1.0.0
-	 * @param string $default
+	 * @param string $default_value The default value to sanitize.
 	 * @return string|null
 	 */
-	private function sanitize_default( $default = '' ) {
+	private function sanitize_default( $default_value = '' ) {
 
-		// Null
-		if ( ( true === $this->allow_null ) && is_null( $default ) ) {
+		// Null.
+		if ( ( true === $this->allow_null ) && is_null( $default_value ) ) {
 			return null;
 
-			// String
-		} elseif ( is_string( $default ) ) {
-			return wp_kses_data( $default );
+			// String.
+		} elseif ( is_string( $default_value ) ) {
+			return wp_kses_data( $default_value );
 
-			// Integer
+			// Integer.
 		} elseif ( $this->is_numeric() ) {
-			return (int) $default;
+			return (int) $default_value;
 		}
 
-		// TODO datetime, decimal, and other column types
+		// TODO datetime, decimal, and other column types.
 
-		// Unknown, so return the default's default
+		// Unknown, so return the default's default.
 		return '';
 	}
 
@@ -716,20 +717,20 @@ class Column extends Base {
 	 * Sanitize the pattern
 	 *
 	 * @since 1.0.0
-	 * @param mixed $pattern
+	 * @param mixed $pattern The pattern to sanitize.
 	 * @return string
 	 */
 	private function sanitize_pattern( $pattern = false ) {
 
-		// Allowed patterns
+		// Allowed patterns.
 		$allowed_patterns = array( '%s', '%d', '%f' );
 
-		// Return pattern if allowed
+		// Return pattern if allowed.
 		if ( in_array( $pattern, $allowed_patterns, true ) ) {
 			return $pattern;
 		}
 
-		// Fallback to digit or string
+		// Fallback to digit or string.
 		return $this->is_numeric()
 			? '%d'
 			: '%s';
@@ -739,34 +740,34 @@ class Column extends Base {
 	 * Sanitize the validation callback
 	 *
 	 * @since 1.0.0
-	 * @param string $callback Default empty string. A callable PHP function name or method
-	 * @return string The most appropriate callback function for the value
+	 * @param string $callback Default empty string. A callable PHP function name or method.
+	 * @return string The most appropriate callback function for the value.
 	 */
 	private function sanitize_validation( $callback = '' ) {
 
-		// Return callback if it's callable
+		// Return callback if it's callable.
 		if ( is_callable( $callback ) ) {
 			return $callback;
 		}
 
-		// UUID special column
+		// UUID special column.
 		if ( true === $this->uuid ) {
 			$callback = array( $this, 'validate_uuid' );
 
-			// Datetime fallback
+			// Datetime fallback.
 		} elseif ( $this->is_type( 'datetime' ) ) {
 			$callback = array( $this, 'validate_datetime' );
 
-			// Decimal fallback
+			// Decimal fallback.
 		} elseif ( $this->is_type( 'decimal' ) ) {
 			$callback = array( $this, 'validate_decimal' );
 
-			// Intval fallback
+			// Intval fallback.
 		} elseif ( $this->is_numeric() ) {
 			$callback = 'intval';
 		}
 
-		// Return the callback
+		// Return the callback.
 		return $callback;
 	}
 
@@ -781,23 +782,23 @@ class Column extends Base {
 	 * updated to support different default values based on the environment.
 	 *
 	 * @since 1.0.0
-	 * @param string $value Default ''. A datetime value that needs validating
-	 * @return string A valid datetime value
+	 * @param string $value Default ''. A datetime value that needs validating.
+	 * @return string A valid datetime value.
 	 */
 	public function validate_datetime( $value = '' ) {
 
-		// Handle "empty" values
+		// Handle "empty" values.
 		if ( empty( $value ) || ( '0000-00-00 00:00:00' === $value ) ) {
 			$value = ! empty( $this->default )
 				? $this->default
 				: '';
 
-			// Convert to MySQL datetime format via gmdate() && strtotime
+			// Convert to MySQL datetime format via gmdate() && strtotime.
 		} elseif ( function_exists( 'gmdate' ) ) {
 			$value = gmdate( 'Y-m-d H:i:s', strtotime( $value ) );
 		}
 
-		// Return the validated value
+		// Return the validated value.
 		return $value;
 	}
 
@@ -813,18 +814,18 @@ class Column extends Base {
 	 * value is longer than specified.
 	 *
 	 * @since 1.0.0
-	 * @param mixed $value    Default empty string. The decimal value to validate
-	 * @param int   $decimals Default 9. The number of decimal points to accept
+	 * @param mixed $value    Default empty string. The decimal value to validate.
+	 * @param int   $decimals Default 9. The number of decimal points to accept.
 	 * @return float
 	 */
 	public function validate_decimal( $value = 0, $decimals = 9 ) {
 
-		// Protect against non-numeric values
+		// Protect against non-numeric values.
 		if ( ! is_numeric( $value ) ) {
 			$value = 0;
 		}
 
-		// Protect against non-numeric decimals
+		// Protect against non-numeric decimals.
 		if ( ! is_numeric( $decimals ) ) {
 			$decimals = 9;
 		}
@@ -834,16 +835,16 @@ class Column extends Base {
 			? -1
 			: 1;
 
-		// Only numbers and period
+		// Only numbers and period.
 		$value = preg_replace( '/[^0-9\.]/', '', (string) $value );
 
-		// Format to number of decimals, and cast as float
-		$formatted = number_format( $value, $decimals, '.', '' );
+		// Format to number of decimals, and cast as float.
+		$formatted = number_format( (float) $value, $decimals, '.', '' );
 
-		// Adjust for negative values
+		// Adjust for negative values.
 		$retval = $formatted * $negative_exponent;
 
-		// Return
+		// Return.
 		return $retval;
 	}
 
@@ -857,21 +858,22 @@ class Column extends Base {
 	 * From http://php.net/manual/en/function.uniqid.php#94959
 	 *
 	 * @since 1.0.0
-	 * @param string $value The UUID value (empty on insert, string on update)
+	 * @param string $value The UUID value (empty on insert, string on update).
 	 * @return string Generated UUID.
 	 */
 	public function validate_uuid( $value = '' ) {
 
-		// Default URN UUID prefix
+		// Default URN UUID prefix.
 		$prefix = 'urn:uuid:';
 
-		// Bail if not empty and correctly prefixed
-		// (UUIDs should _never_ change once they are set)
+		// Bail if not empty and correctly prefixed.
+		// (UUIDs should _never_ change once they are set).
 		if ( ! empty( $value ) && ( 0 === strpos( $value, $prefix ) ) ) {
 			return $value;
 		}
 
-		// Put the pieces together
+		// Put the pieces together.
+		// phpcs:disable WordPress.WP.AlternativeFunctions.rand_mt_rand -- Using mt_rand for performance in UUID generation, cryptographic randomness not required.
 		$value = sprintf(
 			"{$prefix}%04x%04x-%04x-%04x-%04x-%04x%04x%04x",
 			// 32 bits for "time_low"
@@ -880,7 +882,7 @@ class Column extends Base {
 			// 16 bits for "time_mid"
 			mt_rand( 0, 0xffff ),
 			// 16 bits for "time_hi_and_version",
-			// four most significant bits holds version number 4
+			// four most significant bits holds version number 4.
 			mt_rand( 0, 0x0fff ) | 0x4000,
 			// 16 bits, 8 bits for "clk_seq_hi_res",
 			// 8 bits for "clk_seq_low",
@@ -891,8 +893,9 @@ class Column extends Base {
 			mt_rand( 0, 0xffff ),
 			mt_rand( 0, 0xffff )
 		);
+		// phpcs:enable WordPress.WP.AlternativeFunctions.rand_mt_rand
 
-		// Return the new UUID
+		// Return the new UUID.
 		return $value;
 	}
 
@@ -909,52 +912,54 @@ class Column extends Base {
 	 */
 	public function get_create_string() {
 
-		// Default return val
+		// Default return val.
 		$retval = '';
 
-		// Bail if no name
+		// Bail if no name.
 		if ( ! empty( $this->name ) ) {
 			$retval .= $this->name;
 		}
 
-		// Type
+		// Type.
 		if ( ! empty( $this->type ) ) {
 			$retval .= " {$this->type}";
 		}
 
-		// Length
+		// Length.
 		if ( ! empty( $this->length ) ) {
 			$retval .= '(' . $this->length . ')';
 		}
 
-		// Unsigned
+		// Unsigned.
 		if ( ! empty( $this->unsigned ) ) {
 			$retval .= ' unsigned';
 		}
 
-		// Zerofill
+		// Zerofill.
+		// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf -- Placeholder for future implementation.
 		if ( ! empty( $this->zerofill ) ) {
-			// TBD
+			// TBD.
 		}
 
-		// Binary
+		// Binary.
+		// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf -- Placeholder for future implementation.
 		if ( ! empty( $this->binary ) ) {
-			// TBD
+			// TBD.
 		}
 
-		// Allow null
+		// Allow null.
 		if ( ! empty( $this->allow_null ) ) {
 			$retval .= ' NOT NULL ';
 		}
 
-		// Default
+		// Default.
 		if ( ! empty( $this->default ) ) {
 			$retval .= " default '{$this->default}'";
 
-			// A literal false means no default value
+			// A literal false means no default value.
 		} elseif ( false !== $this->default ) {
 
-			// Numeric
+			// Numeric.
 			if ( $this->is_numeric() ) {
 				$retval .= " default '0'";
 			} elseif ( $this->is_type( 'datetime' ) ) {
@@ -964,26 +969,12 @@ class Column extends Base {
 			}
 		}
 
-		// Extra
+		// Extra.
 		if ( ! empty( $this->extra ) ) {
 			$retval .= " {$this->extra}";
 		}
 
-		// Encoding
-		if ( ! empty( $this->encoding ) ) {
-
-		} else {
-
-		}
-
-		// Collation
-		if ( ! empty( $this->collation ) ) {
-
-		} else {
-
-		}
-
-		// Return the create string
+		// Return the create string.
 		return $retval;
 	}
 }

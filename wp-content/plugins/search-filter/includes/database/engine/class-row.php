@@ -8,6 +8,7 @@
  * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since       1.0.0
  */
+
 namespace Search_Filter\Database\Engine;
 
 // Exit if accessed directly.
@@ -33,7 +34,7 @@ class Row extends Base {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param mixed Null by default, Array/Object if not
+	 * @param mixed $item Null by default, Array/Object if not.
 	 */
 	public function __construct( $item = null ) {
 		if ( ! empty( $item ) ) {
@@ -46,7 +47,7 @@ class Row extends Base {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $data
+	 * @param array $data Data to initialize the row with.
 	 */
 	private function init( $data = array() ) {
 		$this->set_vars( $data );

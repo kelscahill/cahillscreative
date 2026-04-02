@@ -61,7 +61,25 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 	protected static $groups_order = array();
 
 	/**
-	 * The setting section name
+	 * The setting section name.
+	 *
+	 * @var string
 	 */
 	protected static $section = 'queries';
+
+	/**
+	 * Prepare the setting.
+	 *
+	 * Allow overrides via filter.
+	 *
+	 * @param array $setting The setting to prepare.
+	 * @param array $args Optional. Additional arguments for preparing the setting.
+	 *
+	 * @return \Search_Filter\Settings\Setting The prepared setting.
+	 */
+	protected static function prepare_setting( array $setting, array $args = array() ) {
+		$setting = apply_filters( 'search-filter/queries/settings/prepare_setting/before', $setting, $args );
+
+		return parent::prepare_setting( $setting );
+	}
 }

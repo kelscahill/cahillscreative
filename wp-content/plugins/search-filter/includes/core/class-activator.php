@@ -27,7 +27,7 @@ class Activator {
 	 * @since    3.0.0
 	 */
 	public static function activate() {
-		\Search_Filter\Integrations\Gutenberg\Cron::init();
+		\Search_Filter\Core\Cron::init();
 		do_action( 'search-filter/core/activator/activate' );
 	}
 }

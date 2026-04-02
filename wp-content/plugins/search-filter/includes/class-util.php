@@ -10,6 +10,7 @@
 namespace Search_Filter;
 
 use Search_Filter\Core\Deprecations;
+use Search_Filter\Database\Transaction;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,13 +21,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * A helper class with functions used across the plugin
  */
 class Util {
+
 	/**
-	 * Stores a copy of any options retrieved to save additional calls to the same options later
-	 * in page processing
+	 * Logged messages for deduplication within a request.
 	 *
 	 * @var array
 	 */
-	private static $options = array();
+	private static $logged_messages = array();
 
 	/**
 	 * TODO - deprecate this function.
@@ -40,7 +41,6 @@ class Util {
 		return $file_ext;
 	}
 
-
 	/**
 	 * Get the data for the object that gets passed to JS app
 	 *
@@ -53,39 +53,6 @@ class Util {
 			'homeUrl'      => home_url( '/' ),
 			'dashboardUrl' => admin_url( 'admin.php?page=search-filter' ),
 		);
-	}
-
-
-	/**
-	 * Wrapper for the WP `get_option` function, implementing defaults if they do not exist yet
-	 *
-	 * @param string $option_name  The option key required.
-	 *
-	 * @return mixed  The value for the option
-	 */
-	public static function get_option( $option_name ) {
-
-		// check to see if we've looked this up before, if so return the existing value.
-		if ( isset( self::$options[ $option_name ] ) ) {
-			return self::$options[ $option_name ];
-		}
-
-		// TODO - set defaults externally.
-		$option_defaults = array(
-			'search_filter_lazy_load_js' => 0,
-			'search_filter_load_js_css'  => 1,
-		);
-
-		$option_value = get_option( $option_name );
-
-		// if option is not set, and there is a default for it, use the default.
-		if ( ( false === $option_value ) && ( isset( $option_defaults[ $option_name ] ) ) ) {
-			$option_value = $option_defaults[ $option_name ];
-		}
-
-		self::$options[ $option_name ] = $option_value;
-
-		return $option_value;
 	}
 
 	/**
@@ -154,25 +121,57 @@ class Util {
 	/**
 	 * Log an error message to the error log.
 	 *
-	 * Only if WP_DEBUG is enabled.
+	 * Only if WP_DEBUG is enabled. Automatically defers logging if called
+	 * during an active database transaction to prevent DB access issues.
 	 *
-	 * TODO - we could start tracking the issues in the DB to
-	 * present to the user via admin or export file.
+	 * This is a duplicate of the function in the parent plugin,
+	 * because we need to use it when the parent plugin is not
+	 * loaded.
 	 *
 	 * @param string $message The error message.
+	 * @param string $level   The log level (error, warning, notice).
+	 * @param bool   $once    If true, only log this message once per request.
 	 */
-	public static function error_log( $message, $level = 'error' ) {
+	public static function error_log( $message, $level = 'error', $once = false ) {
+		// If inside a transaction, defer logging to prevent DB access.
+		if ( Transaction::is_active() ) {
+			Transaction::defer(
+				function () use ( $message, $level, $once ) {
+					self::do_error_log( $message, $level, $once );
+				}
+			);
+			return;
+		}
+
+		self::do_error_log( $message, $level, $once );
+	}
+
+	/**
+	 * Actually perform the logging (internal, bypasses transaction check).
+	 *
+	 * @param string $message The error message.
+	 * @param string $level   The log level (error, warning, notice).
+	 * @param bool   $once    If true, only log this message once per request.
+	 */
+	private static function do_error_log( $message, $level = 'error', $once = false ) {
+		// Handle once-per-request deduplication.
+		if ( $once ) {
+			$key = md5( $level . $message );
+			if ( isset( self::$logged_messages[ $key ] ) ) {
+				return;
+			}
+			self::$logged_messages[ $key ] = true;
+		}
 
 		$log_level       = 'errors';
 		$log_to_database = 'no';
 
-		if ( did_action( 'search-filter/settings/features/init' ) && Features::is_enabled( 'debugMode' ) ) {
-			$log_level = Debugger::get_setting_value( 'logLevel' );
+		if ( did_action( 'search-filter/settings/features/init' ) && Features::is_enabled( 'debugMode' ) && class_exists( '\Search_Filter\Debugger' ) ) {
+			$log_level = \Search_Filter\Features::get_setting_value( 'debugger', 'logLevel' );
 			if ( $log_level === null ) {
 				$log_level = 'errors';
 			}
-
-			$log_to_database = Debugger::get_setting_value( 'logToDatabase' );
+			$log_to_database = \Search_Filter\Features::get_setting_value( 'debugger', 'logToDatabase' );
 			if ( $log_to_database === null ) {
 				$log_to_database = 'no';
 			}
@@ -194,16 +193,16 @@ class Util {
 			$pid = getmypid() . ' | ';
 		}
 
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG === true ) {
+		if ( self::is_debug_logging_enabled() ) {
 			// Translators: %1$s is the process ID, %2$s is the message.
 			$full_message = wp_kses_post( sprintf( '%1$sSearch & Filter: %2$s', $pid, $message ) );
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( $full_message );
 		}
 
-		if ( did_action( 'search-filter/settings/features/init' ) && Features::is_enabled( 'debugMode' ) && $log_to_database === 'yes' ) {
+		if ( did_action( 'search-filter/settings/features/init' ) && Features::is_enabled( 'debugMode' ) && $log_to_database === 'yes' && class_exists( '\Search_Filter\Debugger' ) ) {
 			$full_message = sprintf( '%1$sSearch & Filter: %2$s', $pid, $message );
-			Debugger::create_log(
+			\Search_Filter\Debugger::create_log(
 				array(
 					'message' => sanitize_text_field( $full_message ),
 					'level'   => $level,
@@ -212,6 +211,14 @@ class Util {
 		}
 	}
 
+	/**
+	 * Is debug logging enabled?
+	 *
+	 * @return bool
+	 */
+	public static function is_debug_logging_enabled() {
+		return defined( 'WP_DEBUG' ) && WP_DEBUG === true && defined( 'WP_DEBUG_LOG' ) && ! empty( WP_DEBUG_LOG );
+	}
 
 	/**
 	 * Sort an array.
@@ -360,11 +367,52 @@ class Util {
 	 * @return mixed
 	 */
 	public static function get_request_var( $var_name ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput -- This is a utility function that returns raw request data. Nonce verification and sanitization must be done by the caller.
 		if ( isset( $_GET[ $var_name ] ) ) {
-			return $_GET[ $var_name ];
+			return wp_unslash( $_GET[ $var_name ] );
 		} elseif ( isset( $_POST[ $var_name ] ) ) {
-			return $_POST[ $var_name ];
+			return wp_unslash( $_POST[ $var_name ] );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput
 		return null;
+	}
+
+	/**
+	 * Check if an array is associative.
+	 *
+	 * @param array $check_array The array to check.
+	 * @return bool
+	 */
+	public static function is_assoc_array( $check_array ) {
+		return is_array( $check_array ) && array_keys( $check_array ) !== range( 0, count( $check_array ) - 1 );
+	}
+
+	/**
+	 * Check if the current request is a frontend request.
+	 *
+	 * Excludes ajax, rest and cron requests explicitly.
+	 *
+	 * @return bool
+	 */
+	public static function is_frontend_request() {
+		return ( ! is_admin() || wp_doing_ajax() ) && ! wp_is_serving_rest_request() && ! wp_doing_cron() && ! wp_is_json_request();
+	}
+
+	/**
+	 * Check if we're only in the admin, exclude AJAX and REST requests.
+	 *
+	 * @return bool
+	 */
+	public static function is_admin_only() {
+		return is_admin() && ! wp_doing_ajax() && ! wp_is_serving_rest_request() && ! wp_doing_cron() && ! wp_is_json_request();
+	}
+
+	/**
+	 * Check if we're only on the frontend, exclude AJAX, REST, cron and JSON requests.
+	 *
+	 * @return bool
+	 */
+	public static function is_frontend_only() {
+		return ! is_admin() && ! wp_doing_ajax() && ! wp_is_serving_rest_request() && ! wp_doing_cron() && ! wp_is_json_request();
 	}
 }

@@ -1,15 +1,38 @@
 <?php
+/**
+ * Upgrade routine for version 3.0.2.
+ *
+ * @package Search_Filter
+ * @since 3.0.2
+ */
 
 namespace Search_Filter\Core\Upgrader;
 
 use Search_Filter\Core\CSS_Loader;
 
-class Upgrade_3_0_2 {
+// If this file is called directly, abort.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-	public static function upgrade() {
+/**
+ * Handles database and settings upgrades for version 3.0.2.
+ *
+ * @since 3.0.2
+ */
+class Upgrade_3_0_2 extends Upgrade_Base {
+
+	/**
+	 * Performs the upgrade routine for version 3.0.2.
+	 *
+	 * @since 3.0.2
+	 *
+	 * @return Upgrade_Result The result of the upgrade.
+	 */
+	protected static function do_upgrade() {
 
 		// Disable CSS save so we don't rebuild the CSS file for every field, query and style resaving.
-		add_filter( 'search-filter/core/css-loader/save-css/can-save', array( __CLASS__, 'disable_css_save' ), 10, 2 );
+		add_filter( 'search-filter/core/css-loader/save-css/can-save', array( __CLASS__, 'disable_css_save' ), 10 );
 
 		// Resave queries.
 		$queries = \Search_Filter\Queries::find(
@@ -75,8 +98,17 @@ class Upgrade_3_0_2 {
 
 		// Now build the CSS once.
 		CSS_Loader::save_css();
+
+		return Upgrade_Result::success();
 	}
 
+	/**
+	 * Disables CSS save during upgrade to prevent rebuilding CSS for every change.
+	 *
+	 * @since 3.0.2
+	 *
+	 * @return bool Always returns false to disable CSS save.
+	 */
 	public static function disable_css_save() {
 		return false;
 	}

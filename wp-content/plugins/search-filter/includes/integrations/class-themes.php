@@ -34,9 +34,7 @@ class Themes {
 			new \Search_Filter\Integrations\Themes\Astra();
 		} elseif ( $template_name === 'twentytwentyone' ) {
 			new \Search_Filter\Integrations\Themes\Twentytwentyone();
-		} elseif ( $template_name === 'blocksy' ) {
-			// TODO: Not working well, leave out for now.
-			// new \Search_Filter\Integrations\Themes\Blocksy();
 		}
+		// TODO: Blocksy theme integration ($template_name = 'blocksy' ) - Not working well, leave out for now.
 	}
 }

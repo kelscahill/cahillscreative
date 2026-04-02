@@ -22,7 +22,7 @@ class Tasks_Query extends \Search_Filter\Database\Queries\Records {
 	/**
 	 * Name of the database table to query.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $table_name = 'tasks';
@@ -32,7 +32,7 @@ class Tasks_Query extends \Search_Filter\Database\Queries\Records {
 	 *
 	 * This is used to avoid collisions with JOINs.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $table_alias = 'qtr';
@@ -40,7 +40,7 @@ class Tasks_Query extends \Search_Filter\Database\Queries\Records {
 	/**
 	 * Name of class used to setup the database schema.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $table_schema = '\\Search_Filter_Pro\\Task_Runner\\Database\\Tasks_Schema';
@@ -52,7 +52,7 @@ class Tasks_Query extends \Search_Filter\Database\Queries\Records {
 	 *
 	 * This is used to automatically generate action hooks.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $item_name = 'task';
@@ -64,7 +64,7 @@ class Tasks_Query extends \Search_Filter\Database\Queries\Records {
 	 *
 	 * This is used to automatically generate action hooks.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $item_name_plural = 'tasks';
@@ -74,7 +74,7 @@ class Tasks_Query extends \Search_Filter\Database\Queries\Records {
 	 *
 	 * This is used when looping through return values to guarantee their shape.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   mixed
 	 */
 	protected $item_shape = '\\Search_Filter_Pro\\Task_Runner\\Database\\Task_Row';

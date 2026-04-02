@@ -22,6 +22,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Compatibility {
 
+	/**
+	 * Initialize compatibility checks.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function init() {
 		self::wpengine();
 		self::query_monitor();

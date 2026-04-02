@@ -19,9 +19,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Elementor integration handler.
  */
 class Elementor {
 
+	/**
+	 * The plugin file.
+	 *
+	 * @var string
+	 */
 	private static $plugin_file = 'search-filter-elementor/search-filter-elementor.php';
 	/**
 	 * Init
@@ -52,7 +58,7 @@ class Elementor {
 		$is_elementor_enabled = self::elementor_enabled();
 
 		$update_integration_settings = array(
-			'isPluginEnabled' => $is_elementor_enabled,
+			'isIntegrationEnabled' => $is_elementor_enabled,
 		);
 
 		// If we detect Elementor is enabled, then lets also set the plugin installed
@@ -60,7 +66,7 @@ class Elementor {
 		// folder name and it we would initially detect is as not installed by using
 		// by using `plugin_exists()` which is unreliable.
 		if ( $is_elementor_enabled ) {
-			$update_integration_settings['isPluginInstalled'] = true;
+			$update_integration_settings['isIntegrationInstalled'] = true;
 		}
 
 		// Also check if the extension plugin is installed.
@@ -75,6 +81,13 @@ class Elementor {
 		// not there...
 	}
 
+	/**
+	 * Install the Elementor extension.
+	 *
+	 * @param bool   $installed Whether the extension is already installed.
+	 * @param string $extension The extension name.
+	 * @return bool
+	 */
 	public static function install_extension( $installed, $extension ) {
 		if ( $extension !== 'elementor' ) {
 			return $installed;
@@ -102,6 +115,11 @@ class Elementor {
 		return false;
 	}
 
+	/**
+	 * Enable the Elementor extension.
+	 *
+	 * @param string $extension The extension name.
+	 */
 	public static function enable_extension( $extension ) {
 		if ( $extension !== 'elementor' ) {
 			return;
@@ -110,6 +128,11 @@ class Elementor {
 			Dependants::enable_plugin( self::$plugin_file );
 		}
 	}
+	/**
+	 * Disable the Elementor extension.
+	 *
+	 * @param string $extension The extension name.
+	 */
 	public static function disable_extension( $extension ) {
 		if ( $extension !== 'elementor' ) {
 			return;
@@ -126,7 +149,7 @@ class Elementor {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @return bool    True if Relevanssi is enabled.
+	 * @return int    The number of times the elementor/loaded action has been fired.
 	 */
 	private static function elementor_enabled() {
 		return did_action( 'elementor/loaded' );
@@ -155,6 +178,5 @@ class Elementor {
 		if ( ! $is_enabled && $is_plugin_enabled && $is_extension_enabled ) {
 			\Search_Filter\Integrations::enable( 'elementor', true );
 		}
-
 	}
 }

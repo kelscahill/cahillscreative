@@ -10,6 +10,7 @@
 
 namespace Search_Filter\Fields\Control;
 
+use Search_Filter\Core\Deprecations;
 use Search_Filter\Fields\Control;
 use Search_Filter\Queries\Query;
 
@@ -22,53 +23,168 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Sort extends Control {
 
+	/**
+	 * Array of styles settings the field supports.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var array
+	 */
 	public static $styles = array(
-		'inputColor',
-		'inputBackgroundColor',
-		'inputSelectedColor',
-		'inputSelectedBackgroundColor',
-		'inputBorderColor',
-		'inputBorderHoverColor',
-		'inputBorderFocusColor',
-		'inputIconColor',
-		'inputInteractiveColor',
-		'inputInteractiveHoverColor',
-		'inputClearColor',
-		'inputClearHoverColor',
 
-		'labelColor',
-		'labelBackgroundColor',
-		'labelPadding',
-		'labelMargin',
-		'labelScale',
+		'fieldMargin'                   => true,
+		'inputMargin'                   => true,
+		'labelBorderStyle'              => true,
+		'labelBorderRadius'             => true,
+		'descriptionBorderStyle'        => true,
+		'descriptionBorderRadius'       => true,
+		'inputClearPadding'             => true,
+		'inputBorderRadius'             => true,
 
-		'descriptionColor',
-		'descriptionBackgroundColor',
-		'descriptionPadding',
-		'descriptionMargin',
-		'descriptionScale',
+		'inputScale'                    => true,
+		'inputColor'                    => true,
+		'inputBackgroundColor'          => true,
+		'inputPlaceholderColor'         => true,
+		'inputSelectedColor'            => true,
+		'inputSelectedBackgroundColor'  => true,
+		'inputBorder'                   => true,
+		'inputBorderHoverColor'         => true,
+		'inputBorderFocusColor'         => true,
+		'inputIconColor'                => true,
+		'inputInteractiveColor'         => true,
+		'inputInteractiveHoverColor'    => true,
+		'inputClearColor'               => true,
+		'inputClearHoverColor'          => true,
+		'inputShadow'                   => true,
+		'inputPadding'                  => true,
+		'inputGap'                      => true,
+		'inputTogglePadding'            => true,
+		'inputToggleSize'               => true,
+		'inputClearSize'                => array(
+			'conditions' => array(),
+			'variation'  => array(
+				'style' => array(
+					'variables' => array(
+						'input-clear-size' => array(
+							'value' => 'var(--search-filter-scale-base-size)',
+							'type'  => 'unit',
+						),
+					),
+				),
+			),
+		),
+		'inputNoResultsText'            => true,
+		'inputEnableSearch'             => true,
+		'inputSingularResultsCountText' => true,
+		'inputPluralResultsCountText'   => true,
+
+		'labelColor'                    => true,
+		'labelBackgroundColor'          => true,
+		'labelPadding'                  => true,
+		'labelMargin'                   => true,
+		'labelScale'                    => true,
+
+		'descriptionColor'              => true,
+		'descriptionBackgroundColor'    => true,
+		'descriptionPadding'            => true,
+		'descriptionMargin'             => true,
+		'descriptionScale'              => true,
 	);
 
+	/**
+	 * The processed (cached) styles.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_styles    The processed styles, null if not processed yet.
+	 */
+	protected static $processed_styles = null;
+
+	/**
+	 * Assoc array of settings the field supports.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var array
+	 */
 	public static $setting_support = array(
-		'showLabel'     => true,
-		'placeholder'   => true,
-		'inputShowIcon' => true,
+		'addClass'        => true,
+		'width'           => true,
+		'queryId'         => true,
+		'stylesId'        => true,
+		'type'            => true,
+		'label'           => true,
+		'showLabel'       => true,
+		'showDescription' => true,
+		'description'     => true,
+		'controlType'     => true,
+		'placeholder'     => true,
+		'sortOptions'     => true,
 	);
 
-	// TODO - we don't want to use "input type" to define "control type".
+	/**
+	 * The processed (cached) setting support.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_setting_support    The processed settings, null if not processed yet.
+	 */
+	protected static $processed_setting_support = null;
+
+	/**
+	 * The input type name.
+	 *
+	 * TODO - we don't want to use "input type" to define "control type".
+	 *
+	 * @var string
+	 */
 	public static $input_type = 'sort';
 
+	/**
+	 * The type.
+	 *
+	 * @var string
+	 */
 	public static $type = 'control';
+	/**
+	 * List of components this field relies on.
+	 *
+	 * @var array
+	 */
+	public $components = array(
+		'combobox',
+	);
 
+	/**
+	 * Array of icon names to load.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var array
+	 */
 	public $icons = array(
 		'arrow-down',
 		'clear',
 	);
 
+	/**
+	 * Get the label for the input type.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return string The label.
+	 */
 	public static function get_label() {
 		return __( 'Sort', 'search-filter' );
 	}
-
+	/**
+	 * Get the description for the input type.
+	 *
+	 * @return string The label.
+	 */
+	public static function get_description() {
+		return __( 'Allow users to sort results.', 'search-filter' );
+	}
 	/**
 	 * The main function that constructs the main part of the filter,
 	 * this could contain a single input or multiple inputs
@@ -91,6 +207,10 @@ class Sort extends Control {
 	 */
 	public function apply_wp_query_args( $query_args = array() ) {
 
+		// Only apply if a value is selected.
+		if ( ! $this->has_values() ) {
+			return parent::apply_wp_query_args( $query_args );
+		}
 		$value = $this->get_value();
 		// TODO - maybe str_replace ' ' with '+' first.
 		$sort_parts = explode( '+', $value );
@@ -154,11 +274,12 @@ class Sort extends Control {
 					// If this is a custom field order, we need to remove the associated meta query
 					// if it exists.
 					if ( $order_params['orderBy'] === 'custom_field' && ! empty( $query_args['meta_query'] ) ) {
-						$meta_key                 = $order_params['metaKey'];
-						$meta_query_names         = array(
+						$meta_key         = $order_params['metaKey'];
+						$meta_query_names = array(
 							$meta_key . '_base',
 							$meta_key . '_clause',
 						);
+						// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required for custom field sorting.
 						$query_args['meta_query'] = $this->remove_meta_query_by_names( $query_args['meta_query'], $meta_query_names );
 					}
 				}
@@ -169,10 +290,12 @@ class Sort extends Control {
 
 		if ( ! empty( $sort_args['meta_query'] ) ) {
 			if ( ! isset( $query_args['meta_query'] ) ) {
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required for custom field sorting.
 				$query_args['meta_query'] = array(
 					'relation' => 'AND',
 				);
 			}
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required for custom field sorting.
 			$query_args['meta_query'][] = $sort_args['meta_query'];
 		}
 
@@ -228,11 +351,89 @@ class Sort extends Control {
 	 * @return string
 	 */
 	public function get_url_name() {
-		if ( ! $this->has_init() ) {
+		if ( ! $this->get_attribute( 'dataType' ) ) {
 			return parent::get_url_name();
 		}
 		$url_name = 'sort';
+		// Legacy support for incorrectly named filter.
+		Deprecations::add_filter( 'search-filter/field/url_name', '3.2.0', 'search-filter/fields/field/url_name' );
 		$url_name = apply_filters( 'search-filter/field/url_name', $url_name, $this );
+		// Filter the URL name.
+		$url_name = apply_filters( 'search-filter/fields/field/url_name', $url_name, $this );
+
 		return $url_name;
+	}
+
+	/**
+	 * Create the local options array.
+	 *
+	 * @since 3.0.0
+	 */
+	public function create_options() {
+
+		if ( ! $this->has_init() ) {
+			return;
+		}
+
+		do_action( 'search-filter/fields/control/create_options/start', $this );
+
+		$sort_options = $this->get_attribute( 'sortOptions' );
+
+		if ( ! is_array( $sort_options ) ) {
+			return;
+		}
+
+		$values                 = $this->get_values();
+		$options                = array();
+		$existing_option_values = array();
+
+		foreach ( $sort_options as $sort_option ) {
+
+			// Skip options without labels.
+			if ( empty( $sort_option['label'] ) ) {
+				continue;
+			}
+
+			$option_value = $sort_option['orderBy'] . '+' . $sort_option['order'];
+			if ( $sort_option['orderBy'] === 'custom_field' ) {
+				$option_value = $sort_option['metaKey'] . '+' . $sort_option['order'];
+			}
+
+			// Make sure we don't have duplicates, this causes errors with unique
+			// keys when rendering.
+			if ( in_array( $option_value, $existing_option_values, true ) ) {
+				continue;
+			}
+
+			$options[] = array(
+				'label' => $sort_option['label'],
+				'value' => $option_value,
+			);
+
+			if ( in_array( $option_value, $values, true ) ) {
+				$this->value_labels[ $option_value ] = $sort_option['label'];
+			}
+
+			$existing_option_values[] = $option_value;
+		}
+
+		// Allow overriding for custom options.
+		$options = apply_filters( 'search-filter/fields/control/options', $options, $this );
+
+		// After create options hook.
+		do_action( 'search-filter/fields/control/create_options/finish', $this );
+		$this->set_options( $options );
+	}
+	/**
+	 * Get the list of options based on data attributes
+	 *
+	 * @return array
+	 */
+	public function get_options() {
+		if ( ! parent::has_options() ) {
+			$this->create_options();
+		}
+
+		return $this->options;
 	}
 }

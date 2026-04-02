@@ -18,9 +18,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * WPML Integration Class
+ *
+ * @since 3.0.0
  */
 class Wpml {
 
+	/**
+	 * The plugin file for the WPML extension.
+	 *
+	 * @var string
+	 */
 	private static $plugin_file = 'search-filter-wpml/search-filter-wpml.php';
 	/**
 	 * Init
@@ -49,7 +57,7 @@ class Wpml {
 		$is_wpml_enabled = self::is_wpml_enabled();
 
 		$update_integration_settings = array(
-			'isPluginEnabled' => $is_wpml_enabled,
+			'isIntegrationEnabled' => $is_wpml_enabled,
 		);
 
 		// If we detect WPML is enabled, then lets also set the plugin installed
@@ -57,7 +65,7 @@ class Wpml {
 		// folder name and it we would initially detect is as not installed by using
 		// by using `plugin_exists()` which is unreliable.
 		if ( $is_wpml_enabled ) {
-			$update_integration_settings['isPluginInstalled'] = true;
+			$update_integration_settings['isIntegrationInstalled'] = true;
 		}
 
 		// Also check if the extension plugin is installed.
@@ -68,6 +76,13 @@ class Wpml {
 		$wpml_integration->update( $update_integration_settings );
 	}
 
+	/**
+	 * Enable the WPML extension.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $extension The extension to enable.
+	 */
 	public static function enable_extension( $extension ) {
 		if ( $extension !== 'wpml' ) {
 			return;
@@ -76,6 +91,13 @@ class Wpml {
 			Dependants::enable_plugin( self::$plugin_file );
 		}
 	}
+	/**
+	 * Disable the WPML extension.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $extension The extension to disable.
+	 */
 	public static function disable_extension( $extension ) {
 		if ( $extension !== 'wpml' ) {
 			return;

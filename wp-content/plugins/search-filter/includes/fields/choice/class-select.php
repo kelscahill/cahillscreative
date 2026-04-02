@@ -18,35 +18,109 @@ use Search_Filter\Fields\Choice;
 class Select extends Choice {
 
 	/**
+	 * Calculate the interaction type for this field.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return string The interaction type.
+	 */
+	protected function calc_interaction_type(): string {
+		return 'choice';
+	}
+
+	/**
 	 * List of styles the input type supports.
 	 *
 	 * @var array
 	 */
 	public static $styles = array(
-		'inputColor',
-		'inputBackgroundColor',
-		'inputSelectedColor',
-		'inputSelectedBackgroundColor',
-		'inputBorderColor',
-		'inputBorderHoverColor',
-		'inputBorderFocusColor',
-		'inputIconColor',
-		'inputInteractiveColor',
-		'inputInteractiveHoverColor',
-		'inputClearColor',
-		'inputClearHoverColor',
 
-		'labelColor',
-		'labelBackgroundColor',
-		'labelPadding',
-		'labelMargin',
-		'labelScale',
+		'fieldMargin'                  => true,
+		// 'fieldPadding'                 => true,
+		'inputMargin'                  => true,
+		'labelBorderStyle'             => true,
+		'labelBorderRadius'            => true,
+		'descriptionBorderStyle'       => true,
+		'descriptionBorderRadius'      => true,
+		'inputClearPadding'            => true,
+		'inputBorderRadius'            => true,
 
-		'descriptionColor',
-		'descriptionBackgroundColor',
-		'descriptionPadding',
-		'descriptionMargin',
-		'descriptionScale',
+
+		'inputScale'                   => true,
+		'inputColor'                   => true,
+		'inputBackgroundColor'         => true,
+		'inputPlaceholderColor'        => true,
+		'inputSelectedColor'           => true,
+		'inputSelectedBackgroundColor' => true,
+		'inputBorder'                  => true,
+		'inputBorderHoverColor'        => true,
+		'inputBorderFocusColor'        => true,
+		'inputBorderAccentColor'       => true,
+		'inputBorderDivider'           => true,
+		'inputIconColor'               => true,
+		'inputInteractiveColor'        => true,
+		'inputInteractiveHoverColor'   => true,
+		'inputClearColor'              => true,
+		'inputClearHoverColor'         => true,
+		'inputShadow'                  => true,
+		'inputPadding'                 => true,
+		'inputSelectionGap'            => true,
+		'inputTogglePadding'           => true,
+		'inputToggleSize'              => true,
+		'inputGap'                     => true,
+		'inputClearSize'               => array(
+			'conditions' => array(),
+			'variation'  => array(
+				'style' => array(
+					'variables' => array(
+						'input-clear-size' => array(
+							'value' => 'var(--search-filter-scale-base-size)',
+							'type'  => 'unit',
+						),
+					),
+				),
+			),
+		),
+
+		'labelColor'                   => true,
+		'labelBackgroundColor'         => true,
+		'labelPadding'                 => true,
+		'labelMargin'                  => true,
+		'labelScale'                   => true,
+
+		'descriptionColor'             => true,
+		'descriptionBackgroundColor'   => true,
+		'descriptionPadding'           => true,
+		'descriptionMargin'            => true,
+		'descriptionScale'             => true,
+
+		'dropdownGap'                  => true,
+		'dropdownAttachment'           => true,
+		'dropdownScale'                => true,
+		'dropdownMargin'               => true,
+		'dropdownBorder'               => true,
+		'dropdownBorderRadius'         => true,
+		'dropdownOptionPadding'        => true,
+		'dropdownOptionIndentDepth'    => true,
+		'dropdownShadow'               => true,
+	);
+
+	/**
+	 * The processed (cached) styles.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_styles    The processed styles, null if not processed yet.
+	 */
+	protected static $processed_styles = null;
+
+	/**
+	 * List of components this field relies on.
+	 *
+	 * @var array
+	 */
+	public $components = array(
+		'combobox',
 	);
 
 	/**
@@ -74,49 +148,39 @@ class Select extends Choice {
 	public static $type = 'choice';
 
 	/**
-	 * Supported data types.
-	 *
-	 * @var array
-	 */
-	public static $data_support = array(
-		// Each entry is a group of settings that need to have certain conditions.
-		// Each entry is seperate, only one entry needs to be matched to show the
-		// input type.
-		array(
-			'dataType'          => 'post_attribute',
-			'dataPostAttribute' => array( 'post_type', 'post_status', 'post_author' ),
-		),
-		array(
-			'dataType' => 'taxonomy',
-		),
-	);
-
-
-	/**
 	 * Supported settings.
 	 *
 	 * @var array
 	 */
 	public static $setting_support = array(
-
-		/*
-		'dataType'          => array(
+		'addClass'                       => true,
+		'width'                          => true,
+		'queryId'                        => true,
+		'stylesId'                       => true,
+		'type'                           => true,
+		'label'                          => true,
+		'showLabel'                      => true,
+		'showDescription'                => true,
+		'description'                    => true,
+		'dataType'                       => array(
 			'values' => array(
-				'post_attribute',
-				'taxonomy',
+				'post_attribute' => true,
+				'taxonomy'       => true,
 			),
 		),
-		'dataPostAttribute' => array(
+		'dataTaxonomy'                   => true,
+		'dataPostAttribute'              => array(
 			'values' => array(
-				'post_type',
-				'post_status',
+				'post_type'   => true,
+				'post_status' => true,
 			),
 		),
-		*/
-		'showLabel'               => true,
-		'placeholder'             => true,
-		'multiple'                => true,
-		'multipleMatchMethod'     => array(
+		'dataPostTypes'                  => true,
+		'dataPostStati'                  => true,
+		'inputType'                      => true,
+		'placeholder'                    => true,
+		'multiple'                       => true,
+		'multipleMatchMethod'            => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -130,8 +194,9 @@ class Select extends Choice {
 				),
 			),
 		),
-		'dataLimitOptionsCount'   => true,
-		'taxonomyHierarchical'    => array(
+		'dataTotalNumberOfOptions'       => true,
+		'dataTotalNumberOfOptionsNotice' => true,
+		'taxonomyHierarchical'           => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -140,7 +205,7 @@ class Select extends Choice {
 				),
 			),
 		),
-		'taxonomyOrderBy'         => array(
+		'taxonomyOrderBy'                => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -149,7 +214,7 @@ class Select extends Choice {
 				),
 			),
 		),
-		'taxonomyOrderDir'        => array(
+		'taxonomyOrderDir'               => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -158,7 +223,7 @@ class Select extends Choice {
 				),
 			),
 		),
-		'taxonomyTermsConditions' => array(
+		'taxonomyTermsConditions'        => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -167,7 +232,7 @@ class Select extends Choice {
 				),
 			),
 		),
-		'taxonomyTerms'           => array(
+		'taxonomyTerms'                  => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -176,7 +241,7 @@ class Select extends Choice {
 				),
 			),
 		),
-		'inputOptionsOrder'       => array(
+		'inputOptionsOrder'              => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -185,7 +250,7 @@ class Select extends Choice {
 				),
 			),
 		),
-		'inputOptionsAddDefault'  => array(
+		'inputOptionsAddDefault'         => array(
 			'conditions' => array(
 				array(
 					'option'  => 'multiple',
@@ -194,7 +259,8 @@ class Select extends Choice {
 				),
 			),
 		),
-		'taxonomyFilterArchive'   => array(
+		'inputOptionsDefaultLabel'       => true,
+		'taxonomyNavigatesArchive'       => array(
 			'conditions' => array(
 				array(
 					'option'  => 'multiple',
@@ -203,7 +269,7 @@ class Select extends Choice {
 				),
 			),
 		),
-		'hideEmpty'               => array(
+		'hideEmpty'                      => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -212,7 +278,7 @@ class Select extends Choice {
 				),
 			),
 		),
-		'showCount'               => array(
+		'showCount'                      => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -221,26 +287,23 @@ class Select extends Choice {
 				),
 			),
 		),
-		'showCountPosition'       => true,
-		'inputShowIcon'           => true,
+		'showCountPosition'              => true,
+		'showCountBrackets'              => true,
+		'inputNoResultsText'             => true,
+		'inputEnableSearch'              => true,
+		'inputSingularResultsCountText'  => true,
+		'inputPluralResultsCountText'    => true,
+		'hideFieldWhenEmpty'             => true,
 	);
 
 	/**
-	 * Get the conditions for the data type.
+	 * The processed (cached) setting support.
 	 *
-	 * @since 3.0.0
-	 *
-	 * @return array The conditions.
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_setting_support    The processed settings, null if not processed yet.
 	 */
-	public static function data_conditions() {
-		return array(
-			array(
-				'option'  => 'multiple',
-				'compare' => '=',
-				'value'   => 'yes',
-			),
-		);
-	}
+	protected static $processed_setting_support = null;
 
 	/**
 	 * Get the label for the field.
@@ -254,20 +317,14 @@ class Select extends Choice {
 	}
 
 	/**
-	 * Override the default attributes
+	 * Get the description for the input type.
 	 *
-	 * @param array $defaults The default field attributes.
-	 * @return array The new defaults
+	 * @return string The label.
 	 */
-	public function get_default_attributes( $defaults = array() ) {
-		$defaults                = \Search_Filter\Fields\Settings::get_defaults_by_context( 'admin/field/choice' );
-		$defaults['type']        = 'choice';
-		$defaults['placeholder'] = '';
-		$defaults['multiple']    = 'no';
-		$defaults                = apply_filters( 'search-filter/field/default_attributes', $defaults, $this );
-
-		return wp_parse_args( $defaults, $defaults );
+	public static function get_description() {
+		return __( 'Allow users to filter from a dropdown list of options.', 'search-filter' );
 	}
+
 	/**
 	 * Override the init and setup render data + escaping functions.
 	 *
@@ -282,12 +339,11 @@ class Select extends Choice {
 			'selectionLabel'  => '',
 			'multiple'        => false,
 			'selection'       => array(),
-			// 'inputScale'            => $this->attributes['inputScale'],
-			'placeholderText' => $this->attributes['placeholder'],
+			'placeholderText' => $this->get_attribute( 'placeholder' ),
 		);
 
 		// Init multiple.
-		$multiple                = $this->attributes['multiple'] === 'yes' ? true : false;
+		$multiple                = $this->get_attribute( 'multiple' ) === 'yes' ? true : false;
 		$render_data['multiple'] = $multiple;
 
 		// Set options.

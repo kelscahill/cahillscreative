@@ -49,29 +49,51 @@ class Number extends Range {
 	 * @var array
 	 */
 	public static $styles = array(
-		'inputColor',
-		'inputBackgroundColor',
-		'inputBorderColor',
-		'inputBorderHoverColor',
-		'inputBorderFocusColor',
-		'inputIconColor',
-		'inputActiveIconColor',
-		'inputInactiveIconColor',
-		'inputClearColor',
-		'inputClearHoverColor',
+		'fieldMargin'                => true,
+		'inputMargin'                => true,
+		'labelBorderStyle'           => true,
+		'labelBorderRadius'          => true,
+		'descriptionBorderStyle'     => true,
+		'descriptionBorderRadius'    => true,
+		'inputBorderRadius'          => true,
 
-		'labelColor',
-		'labelBackgroundColor',
-		'labelPadding',
-		'labelMargin',
-		'labelScale',
+		'inputScale'                 => true,
+		'inputColor'                 => true,
+		'inputBackgroundColor'       => true,
+		'inputPlaceholderColor'      => true,
+		'inputBorder'                => true,
+		'inputBorderHoverColor'      => true,
+		'inputBorderFocusColor'      => true,
+		'inputIconColor'             => true,
+		'inputActiveIconColor'       => true,
+		'inputInactiveIconColor'     => true,
+		'inputClearColor'            => true,
+		'inputClearHoverColor'       => true,
+		'inputShadow'                => true,
+		'inputPadding'               => true,
 
-		'descriptionColor',
-		'descriptionBackgroundColor',
-		'descriptionPadding',
-		'descriptionMargin',
-		'descriptionScale',
+		'labelColor'                 => true,
+		'labelBackgroundColor'       => true,
+		'labelPadding'               => true,
+		'labelMargin'                => true,
+		'labelScale'                 => true,
+
+		'descriptionColor'           => true,
+		'descriptionBackgroundColor' => true,
+		'descriptionPadding'         => true,
+		'descriptionMargin'          => true,
+		'descriptionScale'           => true,
 	);
+
+
+	/**
+	 * The processed (cached) styles.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_styles    The processed styles, null if not processed yet.
+	 */
+	protected static $processed_styles = null;
 
 	/**
 	 * The input type.
@@ -83,6 +105,14 @@ class Number extends Range {
 	public static $input_type = 'number';
 
 	/**
+	 * List of components this field relies on.
+	 *
+	 * @var array
+	 */
+	public $components = array(
+		'range',
+	);
+	/**
 	 * The setting support.
 	 *
 	 * @since 3.0.0
@@ -90,33 +120,70 @@ class Number extends Range {
 	 * @var array
 	 */
 	public static $setting_support = array(
-		'autoSubmit'             => true,
-		'autoSubmitDelay'        => true,
-		'showLabel'              => true,
-		'labelInitialVisibility' => true,
-		'labelToggleVisibility'  => true,
-		'rangeAutodetectMin'     => true,
-		'rangeAutodetectMax'     => true,
-		'rangeMin'               => true,
-		'rangeMax'               => true,
-		'rangeStep'              => true,
-		'rangeDecimalPlaces'     => true,
-		'rangeDecimalCharacter'  => true,
-		'rangeThousandCharacter' => true,
-		'rangeValuePrefix'       => true,
-		'rangeValueSuffix'       => true,
-		'rangeSeparator'         => true,
+		'addClass'                     => true,
+		'width'                        => true,
+		'queryId'                      => true,
+		'stylesId'                     => true,
+		'type'                         => true,
+		'label'                        => true,
+		'showLabel'                    => true,
+		'showDescription'              => true,
+		'description'                  => true,
+		'dataType'                     => array(
+			'values' => array(
+				'custom_field' => true,
+			),
+		),
+		'inputType'                    => true,
+
+		'autoSubmit'                   => true,
+		'autoSubmitDelay'              => true,
+		'labelInitialVisibility'       => true,
+		'labelToggleVisibility'        => true,
+		'rangeAutodetectMin'           => true,
+		'rangeAutodetectMax'           => true,
+		'rangeMin'                     => true,
+		'rangeMax'                     => true,
+		'rangeStep'                    => true,
+		'rangeDecimalPlaces'           => true,
+		'rangeDecimalCharacter'        => true,
+		'rangeThousandCharacter'       => true,
+		'rangeValuePrefix'             => true,
+		'rangeValueSuffix'             => true,
+		'rangeSeparator'               => true,
+		'hideFieldWhenEmpty'           => true,
+
+		'dataUrlName'                  => true,
+		'dataCustomField'              => true,
+		'dataCustomFieldIndexerNotice' => true,
 	);
 
 	/**
-	 * The type of the field.
+	 * The processed (cached) setting support.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_setting_support    The processed settings, null if not processed yet.
+	 */
+	protected static $processed_setting_support = null;
+
+	/**
+	 * Get the label for the input type.
 	 *
 	 * @since 3.0.0
 	 *
-	 * @var string
+	 * @return string The label.
 	 */
 	public static function get_label() {
 		return __( 'Number', 'search-filter' );
+	}
+	/**
+	 * Get the description for the input type.
+	 *
+	 * @return string The label.
+	 */
+	public static function get_description() {
+		return __( 'Allow users to filter by ranges by choosing from a dropdown.', 'search-filter' );
 	}
 
 	/**
@@ -139,7 +206,5 @@ class Number extends Range {
 			'value' => 'esc_attr',
 		);
 		$this->set_render_escape_callbacks( $esc_callbacks );
-
 	}
-
 }

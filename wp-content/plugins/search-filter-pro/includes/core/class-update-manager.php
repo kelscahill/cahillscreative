@@ -34,9 +34,23 @@ class Update_Manager {
 	 */
 	private static $registered_updaters = array();
 
+	/**
+	 * Initialize the update manager.
+	 */
 	public static function init() {
-		// Run at priority of 20 to run after the core updater.
-		add_action( 'admin_init', array( __CLASS__, 'init_updates' ), 10 );
+		add_action( 'init', array( __CLASS__, 'init_updates' ), 10 );
+
+		/*
+		 * Return early if we can see that we don't have the required version.
+		 *
+		 * Super important as we need to use this class to handle updates when
+		 * the base plugin is disabled.  The `found_update` and `no_update` hooks
+		 * use the base plugin class `Options`.
+		 */
+		if ( ! Dependencies::is_search_filter_required_version() ) {
+			return false;
+		}
+
 		add_action( 'search-filter-pro/core/plugin-updater/found_update', array( __CLASS__, 'found_update' ) );
 		add_action( 'search-filter-pro/core/plugin-updater/no_update', array( __CLASS__, 'no_update' ) );
 	}
@@ -49,6 +63,7 @@ class Update_Manager {
 	public static function init_updates() {
 		foreach ( self::$registered_updaters as $updater_name => $update_config ) {
 			// Setup the updater.
+			$config = apply_filters( 'search-filter-pro/core/update_manager/config', $update_config, $updater_name );
 			self::$registered_updaters[ $updater_name ]['updater'] = new \Search_Filter_Pro\Core\Plugin_Updater(
 				License_Server::get_endpoint(),
 				$update_config['file'],
@@ -79,7 +94,7 @@ class Update_Manager {
 	 *
 	 * @since 3.0.5
 	 *
-	 * @param array $args {
+	 * @param array $args Configuration arguments.
 	 *     @type string $file    The extension file.
 	 *     @type string $id      The extension item ID.
 	 *     @type string $version The extension version.
@@ -127,7 +142,7 @@ class Update_Manager {
 	 */
 	public static function found_update( $updater_name ) {
 		// Check to see if we already know about this update.
-		$known_updates = \Search_Filter\Options::get_option_value( 'update-manager_known-updates' );
+		$known_updates = \Search_Filter\Options::get( 'update-manager_known-updates' );
 		if ( ! $known_updates ) {
 			$known_updates = array();
 		}
@@ -139,7 +154,7 @@ class Update_Manager {
 
 		// Otherwise, add it to the list of known updates, and invalide the other caches.
 		$known_updates[] = $updater_name;
-		\Search_Filter\Options::update_option_value( 'update-manager_known-updates', $known_updates );
+		\Search_Filter\Options::update( 'update-manager_known-updates', $known_updates );
 
 		// Loop through all the registered updaters and delete their caches,
 		// excluding any we already know about, and excluding the current updater.
@@ -168,7 +183,7 @@ class Update_Manager {
 	 */
 	public static function no_update( $updater_name ) {
 		// Check to see if we already know about this update.
-		$known_updates = \Search_Filter\Options::get_option_value( 'update-manager_known-updates' );
+		$known_updates = \Search_Filter\Options::get( 'update-manager_known-updates' );
 		if ( ! $known_updates ) {
 			$known_updates = array();
 		}
@@ -177,15 +192,15 @@ class Update_Manager {
 		if ( in_array( $updater_name, $known_updates, true ) ) {
 			// Then remove it and update the option value.
 			$known_updates = array_diff( $known_updates, array( $updater_name ) );
-			\Search_Filter\Options::update_option_value( 'update-manager_known-updates', $known_updates );
+			\Search_Filter\Options::update( 'update-manager_known-updates', $known_updates );
 		}
 	}
-	
+
 	/**
 	 * Add the legacy extensions for the update manager.
 	 *
 	 * Works around issues with old or broken versions of our extensions in circulation,
-	 * allowing for us to manually
+	 * allowing for us to manually register them in our update manager.
 	 *
 	 * @return void
 	 */
@@ -213,7 +228,7 @@ class Update_Manager {
 			$plugin_file = self::get_plugin_file_path( 'search-filter-elementor/search-filter-elementor.php' );
 
 			if ( file_exists( $plugin_file ) ) {
-				// Add Beaver Builder Extension.
+				// Add Elementor Extension.
 				$extension_update_package = array(
 					'file'    => $plugin_file,
 					'id'      => \Search_Filter_Elementor_Extension::PLUGIN_UPDATE_ID,
@@ -255,10 +270,11 @@ class Update_Manager {
 
 	/**
 	 * Get the plugin file path.
+	 *
 	 * @since 3.1.8
 	 *
 	 * @param string $relative_path The relative path to the plugin file.
-	 * 
+	 *
 	 * @return string The absolute path to the plugin file.
 	 */
 	private static function get_plugin_file_path( $relative_path ) {

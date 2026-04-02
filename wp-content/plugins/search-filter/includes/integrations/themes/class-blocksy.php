@@ -27,7 +27,7 @@ class Blocksy {
 	 */
 	public function __construct() {
 		add_filter( 'current_screen', array( $this, 'current_screen' ), 21 );
-		// add_filter( 'wp_print_scripts', array( $this, 'load_backend_dynamic_css' ), 21 );
+		add_filter( 'wp_enqueue_scripts', array( $this, 'load_backend_dynamic_css' ), 21 );
 	}
 
 	/**
@@ -50,7 +50,6 @@ class Blocksy {
 		if ( ! is_admin() ) {
 			return;
 		}
-
 		if ( $this->has_enqueued_backend_styles ) {
 			return;
 		}
@@ -60,11 +59,5 @@ class Blocksy {
 		}
 
 		$this->has_enqueued_backend_styles = true;
-
-		if ( ! class_exists( '\Blocksy_Dynamic_Css' ) ) {
-			return;
-		}
-		$blocksy_css = new \Blocksy_Dynamic_Css();
-		$blocksy_css->load_backend_dynamic_css();
 	}
 }

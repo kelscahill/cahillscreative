@@ -1,4 +1,13 @@
 <?php
+/**
+ * Records Query Class.
+ *
+ * @package     Database
+ * @subpackage  Queries
+ * @copyright   Copyright (c) 2020
+ * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       3.0.0
+ */
 
 namespace Search_Filter\Database\Queries;
 
@@ -57,7 +66,7 @@ class Records extends \Search_Filter\Database\Engine\Query {
 
 			if ( ! in_array( $condition, $valid_conditions, true ) ) {
 				Util::error_log( 'Invalid condition in query: ' . $condition, 'error' );
-				return false;
+				return '';
 			}
 
 			$where_clause_parts[] = "{$key} {$condition} {$value}";
@@ -124,7 +133,10 @@ class Records extends \Search_Filter\Database\Engine\Query {
 					),
 				);
 
-				$where_sub_clauses[] = '( ' . $this->build_where_clause_parts_sql( $add_where ) . ' )';
+				$where_clause_parts_sql = $this->build_where_clause_parts_sql( $add_where );
+				if ( ! empty( $where_clause_parts_sql ) ) {
+					$where_sub_clauses[] = '( ' . $where_clause_parts_sql . ' )';
+				}
 			}
 
 			$add_where_clause .= '(' . implode( ' OR ', $where_sub_clauses ) . ')';
@@ -219,9 +231,9 @@ class Records extends \Search_Filter\Database\Engine\Query {
 	 * Add an item to the database, throw exceptions on error instead of
 	 * leaving it to wpdb to display & handle.
 	 *
-	 * @param mixed $item
-	 * @return bool
-	 * @throws \Exception
+	 * @param mixed $item The item to add.
+	 * @return int|false The inserted ID or false on failure.
+	 * @throws \Exception If database error occurs.
 	 */
 	public function add_item_with_exceptions( $item ) {
 
@@ -236,7 +248,7 @@ class Records extends \Search_Filter\Database\Engine\Query {
 		$result = $this->add_item( $item );
 
 		if ( ! empty( $this->get_db()->last_error ) ) {
-			throw new \Exception( $this->get_db()->last_error );
+			throw new \Exception( esc_html( $this->get_db()->last_error ) );
 		}
 
 		// Restore suppress errors & show errors.
@@ -256,7 +268,6 @@ class Records extends \Search_Filter\Database\Engine\Query {
 		$table      = $this->get_table_name();
 		$save_items = array();
 
-		// Most of what's in this loop is copied from the `add_item` method.
 		foreach ( $items as $data ) {
 			// Get the primary column name.
 			$primary = $this->get_primary_column_name();
@@ -325,9 +336,7 @@ class Records extends \Search_Filter\Database\Engine\Query {
 		if ( ! empty( $save_items ) ) {
 			// $this->get_db()->insert() calls `$wpdb->__insert_replace_helper
 			// So lets replace it with our own method for handling multiple inserts.
-			$result = ! empty( $save_items )
-				? $this->multiple_insert_replace_helper( $table, $save_items )
-				: false;
+			$result = $this->multiple_insert_replace_helper( $table, $save_items );
 
 			// Bail on failure.
 			if ( ! $this->is_success( $result ) ) {
@@ -396,7 +405,7 @@ class Records extends \Search_Filter\Database\Engine\Query {
 	 *
 	 * * Note: This is all taken directly from $wpdb...
 	 *
-	 * @since 4.2.0
+	 * @since 3.2.0
 	 *
 	 * @param string          $table  Table name.
 	 * @param array           $data   Array of values keyed by their field names.
@@ -405,15 +414,17 @@ class Records extends \Search_Filter\Database\Engine\Query {
 	 *                     False for invalid values.
 	 */
 	protected function process_fields( $table, $data, $format ) {
+
+		if ( false === $data ) {
+			return false;
+		}
 		// This has been greatly simplified.
 		$data = $this->process_field_formats( $data, $format );
 		if ( false === $data ) {
 			return false;
 		}
 		$data = $this->process_field_lengths( $data, $table );
-		if ( false === $data ) {
-			return false;
-		}
+
 		return $data;
 	}
 
@@ -421,7 +432,7 @@ class Records extends \Search_Filter\Database\Engine\Query {
 	/**
 	 * For string fields, records the maximum string length that field can safely save.
 	 *
-	 * @since 4.2.1
+	 * @since 3.2.0
 	 *
 	 * @param array  $data {
 	 *      Array of values, formats, and charsets keyed by their field names,

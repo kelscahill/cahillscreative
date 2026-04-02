@@ -9,6 +9,7 @@
 
 namespace Search_Filter_Pro\Integrations;
 
+use Search_Filter\Fields\Field;
 use Search_Filter\Fields\Settings as Fields_Settings;
 use Search_Filter\Integrations\Settings as Integrations_Settings;
 
@@ -37,7 +38,9 @@ class Relevanssi {
 	 */
 	public static function init() {
 		add_action( 'search-filter/settings/init', array( __CLASS__, 'update_integration' ), 10 );
-		add_filter( 'search-filter/field/get_data_support', array( __CLASS__, 'update_field_data_support' ), 10, 3 );
+
+		add_filter( 'search-filter/fields/settings/prepare_setting/before', array( __CLASS__, 'add_relevanssi_data_type' ), 10, 1 );
+		add_filter( 'search-filter/fields/field/get_setting_support', array( __CLASS__, 'update_field_setting_support' ), 10, 3 );
 	}
 
 
@@ -55,11 +58,11 @@ class Relevanssi {
 
 		$is_relevanssi_enabled       = self::relevanssi_enabled();
 		$update_integration_settings = array(
-			'isPluginEnabled'      => $is_relevanssi_enabled,
+			'isIntegrationEnabled' => $is_relevanssi_enabled,
 			'isExtensionInstalled' => true,
 		);
 		if ( $is_relevanssi_enabled ) {
-			$update_integration_settings['isPluginInstalled'] = true;
+			$update_integration_settings['isIntegrationInstalled'] = true;
 		}
 
 		$relevanssi_integration->update( $update_integration_settings );
@@ -79,10 +82,9 @@ class Relevanssi {
 	 * @since 3.0.0
 	 */
 	public static function setup() {
-		self::add_relevanssi_option_to_search_field();
 
-		add_filter( 'search-filter/query/query_args', array( __CLASS__, 'disable_relevanssi_query' ), 10, 2 );
-		add_filter( 'search-filter/field/search/wp_query_args', array( __CLASS__, 'get_search_wp_query_args' ), 10, 2 );
+		add_filter( 'search-filter/query/query_args', array( __CLASS__, 'disable_relevanssi_query' ), 100, 2 );
+		add_filter( 'search-filter/fields/search/wp_query_args', array( __CLASS__, 'get_search_wp_query_args' ), 10, 2 );
 	}
 
 	/**
@@ -101,37 +103,13 @@ class Relevanssi {
 	}
 
 	/**
-	 * Add the Relevanssi option to the data type setting.
-	 *
-	 * @since 3.0.0
-	 */
-	protected static function add_relevanssi_option_to_search_field() {
-		$data_type_setting = Fields_Settings::get_setting( 'dataType' );
-		if ( ! $data_type_setting ) {
-			return;
-		}
-
-		$relevanssi_data_type_option = array(
-			'label'     => __( 'Relevanssi', 'search-filter' ),
-			'value'     => 'relevanssi',
-			'dependsOn' => array(
-				'relation' => 'AND',
-				'rules'    => array(
-					array(
-						'option'  => 'type',
-						'compare' => '=',
-						'value'   => 'search',
-					),
-				),
-			),
-		);
-		$data_type_setting->add_option( $relevanssi_data_type_option, array( 'after' => 'search' ) );
-	}
-
-	/**
 	 * Disable Relevanssi from taking over our queries.
 	 *
 	 * @since 3.0.0
+	 *
+	 * @param array                        $args  The query arguments.
+	 * @param \Search_Filter\Queries\Query $query The query object.
+	 * @return array The query arguments.
 	 */
 	public static function disable_relevanssi_query( $args, $query ) {
 		if ( in_array( $query->get_id(), self::$enabled_relevanssi_queries, true ) ) {
@@ -145,41 +123,69 @@ class Relevanssi {
 		// Unhook new Relevanssi free and premium.
 		remove_filter( 'posts_request', 'relevanssi_prevent_default_request' );
 		remove_filter( 'posts_pre_query', 'relevanssi_query', 99 );
-
 		return $args;
 	}
+
 	/**
-	 * Update the field data support for the Relevanssi integration.
+	 * Add custom field data type.
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array $matrix    The matrix to update.
-	 * @return array    The updated matrix.
+	 * @param array $setting The setting.
+	 *
+	 * @return array The setting.
 	 */
-	public static function update_field_data_support( $data_support, $type, $input_type ) {
+	public static function add_relevanssi_data_type( array $setting ) {
 
-		$supported_matrix = array(
-			'search' => array( 'text', 'autocomplete' ),
-		);
-
-		if ( ! isset( $supported_matrix[ $type ] ) ) {
-			return $data_support;
+		if ( $setting['name'] !== 'dataType' ) {
+			return $setting;
 		}
 
-		if ( ! in_array( $input_type, $supported_matrix[ $type ], true ) ) {
-			return $data_support;
+		if ( ! is_array( $setting['options'] ) ) {
+			return $setting;
 		}
 
-		$data_support[] = array(
-			'dataType' => 'relevanssi',
+		$setting['options'][] = array(
+			'label' => __( 'Relevanssi', 'search-filter' ),
+			'value' => 'relevanssi',
 		);
 
-		return $data_support;
+		return $setting;
 	}
+	/**
+	 * Get the field setting support.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param    array  $setting_support    The setting support to get the setting support for.
+	 * @param    string $type    The type to get the setting support for.
+	 * @param    string $input_type    The input type to get the setting support for.
+	 * @return   array    The setting support.
+	 */
+	public static function update_field_setting_support( $setting_support, $type, $input_type ) {
+
+		// Add support pro feature support to choice fields.
+		if ( $type === 'search' && $input_type === 'text' ) {
+			// Add support for the relelvanssi data type.
+			$setting_support = Field::add_setting_support_value(
+				$setting_support,
+				'dataType',
+				array( 'relevanssi' => true )
+			);
+
+		}
+
+		return $setting_support;
+	}
+
 	/**
 	 * Get the WP_Query args for the search field.
 	 *
 	 * @since 3.0.0
+	 *
+	 * @param array $args  The query arguments.
+	 * @param Field $field The field object.
+	 * @return array The query arguments.
 	 */
 	public static function get_search_wp_query_args( $args, $field ) {
 
@@ -198,9 +204,7 @@ class Relevanssi {
 		// When searching, relevance should be the only orderby paramater
 		// otherwise it doesn't work.
 		$args['orderby'] = 'relevance';
-		if ( isset( $args['order'] ) ) {
-			unset( $args['order'] );
-		}
+		$args['order']   = 'DESC';
 
 		return $args;
 	}

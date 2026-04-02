@@ -1,4 +1,12 @@
 <?php
+/**
+ * Template data controller class
+ *
+ * @link       https://searchandfilter.com
+ * @since      3.0.0
+ * @package    Search_Filter
+ * @subpackage Search_Filter/Query
+ */
 
 namespace Search_Filter\Query;
 
@@ -18,48 +26,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Template_Data {
 
 	/**
-	 * The current archive type
-	 *
-	 * @var string
-	 */
-	private static $archive_type = '';
-
-	/**
-	 * The current taxonomy
-	 *
-	 * @var string
-	 */
-	private static $taxonomy = '';
-
-	/**
-	 * The current term
-	 *
-	 * @var string
-	 */
-	private static $term = '';
-
-	/**
-	 * The current post type
-	 *
-	 * @var string
-	 */
-	private static $post_type = '';
-
-	/**
-	 * The current post type
-	 *
-	 * @var string
-	 */
-	private static $post_id = '';
-
-	/**
-	 * The current post type
-	 *
-	 * @var string
-	 */
-	private static $is_search = false;
-
-	/**
 	 * Tracks and pre-calculated templates.
 	 *
 	 * @var array
@@ -70,14 +36,14 @@ class Template_Data {
 	 *
 	 * @since    3.0.0
 	 */
-	public static function init() {
-	}
+	public static function init() {}
 
-	public static function is_taxonomy_archive() {
-		return self::$archive_type === 'taxonomy';
-	}
-
-	private static function get_tax_archive_terms() {
+	/**
+	 * Get the terms for the current tax archive.
+	 *
+	 * @return array
+	 */
+	public static function get_tax_archive_terms() {
 		$terms = array();
 		$term  = get_queried_object();
 
@@ -95,6 +61,23 @@ class Template_Data {
 
 		return $wp_query->tax_query->queried_terms[ $taxonomy ]['terms'];
 	}
+	/**
+	 * Get the taxonomoy for the current taxonomy term archive.
+	 *
+	 * Returns false on archives with more than one term.
+	 *
+	 * @return false|string
+	 */
+	public static function get_tax_archive() {
+		$term = get_queried_object();
+
+		// Check if $term is a term object.
+		if ( ! is_a( $term, 'WP_Term' ) ) {
+			return false;
+		}
+
+		return $term->taxonomy;
+	}
 
 	/**
 	 * Detect whether the current tax archive, is a single term archive
@@ -105,7 +88,7 @@ class Template_Data {
 	 * @return boolean
 	 */
 	public static function is_singular_taxonomy_term_archive() {
-		if ( ! is_tax() ) {
+		if ( ! self::is_taxonomy_archive() ) {
 			return false;
 		}
 		if ( count( self::get_tax_archive_terms() ) !== 1 ) {
@@ -114,6 +97,12 @@ class Template_Data {
 		return true;
 	}
 
+	/**
+	 * Detect whether the current tax archive, is a single term archive
+	 * and has multiple post types.
+	 *
+	 * @return boolean
+	 */
 	public static function taxonomy_term_archive_has_multiple_post_types() {
 		if ( ! is_tax() ) {
 			return false;
@@ -127,7 +116,13 @@ class Template_Data {
 		return self::taxonomy_term_has_multiple_post_types( $taxonomy_name );
 	}
 
-	public static function taxonomy_term_has_multiple_post_types( $taxonomy_name ) {
+	/**
+	 * Checks whether a taxonomy has multiple post types.
+	 *
+	 * @param string $taxonomy_name The taxonomy name.
+	 * @return boolean True if the taxonomy has multiple post types, false otherwise.
+	 */
+	public static function taxonomy_term_has_multiple_post_types( string $taxonomy_name ) {
 		$taxonomy = get_taxonomy( $taxonomy_name );
 		if ( ! $taxonomy ) {
 			return false;
@@ -145,9 +140,9 @@ class Template_Data {
 	 * @since 3.0.0
 	 *
 	 * @param  string $taxonomy_name The taxonomy to get the URL for.
-	 * @return string
+	 * @return array
 	 */
-	public static function get_term_template_link( $taxonomy_name ) {
+	public static function get_term_template_link( string $taxonomy_name ) {
 
 		if ( isset( self::$taxonomy_templates[ $taxonomy_name ] ) ) {
 			return self::$taxonomy_templates[ $taxonomy_name ];
@@ -172,7 +167,7 @@ class Template_Data {
 		);
 		$term  = ( count( $terms ) === 1 ) ? $terms[0] : null;
 		if ( $term === null ) {
-			return '';
+			return array();
 		}
 		$term_template_link = self::get_term_link_template( $term );
 		return array( $term_template_link );
@@ -187,7 +182,7 @@ class Template_Data {
 	 * @param  \WP_Term $term The term to get the URL for.
 	 * @return string
 	 */
-	private static function get_term_link_template( $term ) {
+	private static function get_term_link_template( \WP_Term $term ) {
 		$taxonomy_name = $term->taxonomy;
 
 		$term_link          = get_term_link( $term, $taxonomy_name );
@@ -195,7 +190,14 @@ class Template_Data {
 		return $term_template_link;
 	}
 
-	private static function parse_term_link_template( $url, $term ) {
+	/**
+	 * Parse the term link template.
+	 *
+	 * @param string   $url The URL to parse.
+	 * @param \WP_Term $term The term to parse the URL for.
+	 * @return string
+	 */
+	private static function parse_term_link_template( string $url, \WP_Term $term ) {
 
 		$taxonomy_name = $term->taxonomy;
 		$term_slug     = $term->slug;
@@ -228,12 +230,13 @@ class Template_Data {
 	 *
 	 * @since 3.0.4
 	 *
-	 * @param string $post_type The post type
+	 * @param string $post_type The post type.
+	 * @return array
 	 */
-	public static function get_post_type_only_taxonomies( $post_type ) {
+	public static function get_only_post_type_taxonomies( string $post_type ) {
 
 		$post_type_only_taxonomies = array();
-		$all_post_type_taxonomies  = get_object_taxonomies( $post_type, 'objects' );
+		$all_post_type_taxonomies  = get_object_taxonomies( $post_type, 'names' );
 
 		foreach ( $all_post_type_taxonomies as $taxonomy_name ) {
 			if ( self::taxonomy_term_has_multiple_post_types( $taxonomy_name ) ) {
@@ -241,16 +244,34 @@ class Template_Data {
 			}
 			$post_type_only_taxonomies[] = $taxonomy_name;
 		}
-		// Check to make sure the tax
+		// Check to make sure the tax.
 		return $post_type_only_taxonomies;
 	}
 
-	public static function get_taxonomy_template( $taxonomy_name ) {
+	/**
+	 * Gets the taxonomy template for a given taxonomy.
+	 *
+	 * @param string $taxonomy_name The taxonomy name.
+	 * @return array The taxonomy template array.
+	 */
+	public static function get_taxonomy_template( string $taxonomy_name ) {
 		if ( isset( self::$taxonomy_templates[ $taxonomy_name ] ) ) {
 			return self::$taxonomy_templates[ $taxonomy_name ];
 		}
+		return array();
 	}
-	public static function set_taxonomy_template( $taxonomy_name, $depth, $term ) {
+
+	/**
+	 * Set the taxonomy template.
+	 *
+	 * @since 3.0.4
+	 *
+	 * @param string   $taxonomy_name The taxonomy name.
+	 * @param int      $depth The depth of the taxonomy.
+	 * @param \WP_Term $term The term to set the template for.
+	 * @return void
+	 */
+	public static function set_taxonomy_template( string $taxonomy_name, int $depth, \WP_Term $term ) {
 
 		if ( ! isset( self::$taxonomy_templates[ $taxonomy_name ] ) ) {
 			self::$taxonomy_templates[ $taxonomy_name ] = array();
@@ -261,5 +282,42 @@ class Template_Data {
 			return;
 		}
 		self::$taxonomy_templates[ $taxonomy_name ][ $depth ] = self::get_term_link_template( $term );
+	}
+
+	/**
+	 * Detect whether the current archive is a taxonomy archive, including
+	 * category, tag, and custom taxonomies.
+	 *
+	 * @param string $taxonomy The taxonomy to check.
+	 * @return boolean
+	 */
+	public static function is_taxonomy_archive( string $taxonomy = '' ) {
+
+		if ( ! is_archive() ) {
+			return false;
+		}
+
+		if ( empty( $taxonomy ) ) {
+			if ( is_category() ) {
+				return true;
+			}
+			if ( is_tag() ) {
+				return true;
+			}
+			if ( is_tax() ) {
+				return true;
+			}
+		}
+
+		if ( $taxonomy === 'category' && is_category() ) {
+			return true;
+		}
+		if ( $taxonomy === 'post_tag' && is_tag() ) {
+			return true;
+		}
+		if ( is_tax( $taxonomy ) ) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -11,11 +11,14 @@
 namespace Search_Filter_Pro;
 
 use Search_Filter\Core\SVG_Loader;
-use \Search_Filter\Queries\Query;
+use Search_Filter\Queries\Query;
 use Search_Filter\Database\Queries\Queries as Queries_Query;
 use Search_Filter\Queries\Settings as Queries_Settings;
-use Search_Filter_Pro\Indexer\Async;
-use Search_Filter_Pro\Indexer\Query_Cache;
+use Search_Filter_Pro\Cache\Tiered_Cache;
+use Search_Filter_Pro\Indexer\Stats;
+use Search_Filter_Pro\Indexer\Task_Runner as Indexer_Task_Runner;
+use Search_Filter_Pro\Indexer\Table_Validator;
+use Search_Filter_Pro\Fields\Indexer as Fields_Indexer;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -32,7 +35,9 @@ class Queries {
 	 */
 	public static function init() {
 		add_action( 'search-filter/settings/queries/init', array( __CLASS__, 'register_query_settings' ), 1 );
+		add_filter( 'search-filter/queries/settings/prepare_setting/before', array( __CLASS__, 'update_query_container_settings_group' ), 10, 1 );
 		add_action( 'search-filter/settings/queries/init', array( __CLASS__, 'register_spinner_settings' ), 1 );
+		add_action( 'search-filter/settings/queries/init', array( __CLASS__, 'register_infinite_scroll_spinner_settings' ), 1 );
 		add_action( 'search-filter/settings/queries/init', array( __CLASS__, 'register_groups' ), 1 );
 		add_action( 'search-filter/settings/queries/init', array( __CLASS__, 'add_single_integrations' ), 1 );
 		add_action( 'search-filter/settings/queries/init', array( __CLASS__, 'upgrade_sort_order' ), 1 );
@@ -47,6 +52,13 @@ class Queries {
 		add_filter( 'search-filter/queries/query/apply_wp_query_args', array( __CLASS__, 'add_meta_query' ), 1, 2 );
 		add_filter( 'search-filter/queries/query/create_attributes_css', array( __CLASS__, 'create_attributes_css' ), 10, 2 );
 		add_filter( 'search-filter/record/set_attributes', array( __CLASS__, 'set_scroll_to_attributes' ), 1, 3 );
+		add_filter( 'search-filter/record/set_attributes', array( __CLASS__, 'set_results_update_page_attributes' ), 1, 2 );
+
+		// Run queued table validations.
+		// Validate tables after query is updated.
+		add_action( 'search-filter/record/save', array( __CLASS__, 'query_post_save' ), 11, 2 );
+		// Validate tables after query is deleted (query is gone, counts are accurate).
+		add_action( 'search-filter/record/destroy', array( __CLASS__, 'query_post_destroy' ), 10, 2 );
 
 		// TODO - we need to load icons permanently in admin screens, and only enqueue when needed
 		// in the frontend.
@@ -54,7 +66,7 @@ class Queries {
 			'spinner-circle' => SEARCH_FILTER_PRO_PATH . 'assets/images/svg/spinner-circle.svg',
 		);
 		foreach ( $icons as $icon => $file ) {
-			SVG_Loader::register( $icon, $file );
+			SVG_Loader::register( $icon, $file, false );
 			SVG_Loader::enqueue( $icon );
 		}
 	}
@@ -78,6 +90,27 @@ class Queries {
 
 		// ID of 0 means a new query.
 		if ( $updated_instance->get_id() === 0 ) {
+			return;
+		}
+
+		/**
+		 * Filters whether query resync detection is enabled.
+		 *
+		 * When disabled, query saves will not trigger automatic index rebuilds.
+		 * Useful for tests that manually control indexing.
+		 *
+		 * @since 3.2.0
+		 *
+		 * @param bool  $enabled          Whether resync detection is enabled. Default true.
+		 * @param Query $updated_instance The query being updated.
+		 */
+		$resync_enabled = apply_filters(
+			'search-filter-pro/indexer/enable_resync_detection',
+			true,
+			$updated_instance
+		);
+
+		if ( ! $resync_enabled ) {
 			return;
 		}
 
@@ -117,7 +150,7 @@ class Queries {
 		// Instead, always clear the caches after saving a query, so many settings
 		// can influence counts its not worth it to try to do it more efficiently.
 		// These are regenerated frequently enough, its not going to be a big impact.
-		Query_Cache::clear_caches_by_query_id( $updated_instance->get_id() );
+		Tiered_Cache::invalidate_query_cache( $updated_instance->get_id() );
 	}
 
 	/**
@@ -139,6 +172,27 @@ class Queries {
 		}
 
 		if ( ! $is_new ) {
+			return;
+		}
+
+		/**
+		 * Filters whether query resync detection is enabled.
+		 *
+		 * When disabled, new query creation will not trigger automatic indexing.
+		 * Useful for tests that manually control indexing.
+		 *
+		 * @since 3.2.0
+		 *
+		 * @param bool  $enabled Whether resync detection is enabled. Default true.
+		 * @param Query $query   The newly created query.
+		 */
+		$resync_enabled = apply_filters(
+			'search-filter-pro/indexer/enable_resync_detection',
+			true,
+			$query
+		);
+
+		if ( ! $resync_enabled ) {
 			return;
 		}
 
@@ -164,8 +218,29 @@ class Queries {
 			return;
 		}
 
-		$query = Query::find( array( 'id' => $query_id ) );
+		$query = Query::get_instance( $query_id );
 		if ( is_wp_error( $query ) ) {
+			return;
+		}
+
+		/**
+		 * Filters whether query resync detection is enabled.
+		 *
+		 * When disabled, query deletion will not trigger index data removal.
+		 * Useful for tests that manually control indexing.
+		 *
+		 * @since 3.2.0
+		 *
+		 * @param bool  $enabled Whether resync detection is enabled. Default true.
+		 * @param Query $query   The query being deleted.
+		 */
+		$resync_enabled = apply_filters(
+			'search-filter-pro/indexer/enable_resync_detection',
+			true,
+			$query
+		);
+
+		if ( ! $resync_enabled ) {
 			return;
 		}
 
@@ -173,12 +248,58 @@ class Queries {
 	}
 
 	/**
+	 * Handle post-save event for query updates.
+	 *
+	 * Stores useIndexer as meta for efficient validation queries,
+	 * then flags tables for validation.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param Query  $query   The saved query instance.
+	 * @param string $section The section being saved.
+	 */
+	public static function query_post_save( $query, $section ) {
+		if ( $section !== 'query' ) {
+			return;
+		}
+
+		// Store use_indexer as meta for efficient validation queries.
+		$use_indexer = $query->get_attribute( 'useIndexer' ) === 'yes' ? 'yes' : 'no';
+		Query::update_meta( $query->get_id(), 'use_indexer', $use_indexer );
+
+		// This will drop tables based on if queries or fields need them.
+		Table_Validator::needs_revalidating();
+	}
+
+	/**
+	 * Handle post-destroy event for query deletion.
+	 *
+	 * Triggers table validation after query is deleted so that
+	 * unused tables can be dropped.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param int    $query_id The ID of the deleted query.
+	 * @param string $section  The section being deleted from.
+	 */
+	public static function query_post_destroy( $query_id, $section ) {
+		if ( $section !== 'query' ) {
+			return;
+		}
+
+		// Query is now deleted, run validation on all dynamic indexer tables.
+		// This will drop tables if no fields use a particular strategy
+		// anymore or if there are no queries using the indexer we'll remove
+		// indexer tables entirely.
+		Table_Validator::needs_revalidating();
+	}
+
+	/**
 	 * Remove the indexer data for a query.
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param    Query  $query    The query being saved.
-	 * @param    string $section  The section being saved.
+	 * @param    Query $query    The query being saved.
 	 * @return   void
 	 */
 	private static function remove_query_indexer_data( $query ) {
@@ -187,7 +308,7 @@ class Queries {
 		Indexer::clear_all_query_data( $query );
 
 		// Then queue a remove task.
-		Indexer::add_task(
+		Indexer_Task_Runner::add_task(
 			array(
 				'action' => 'remove_query',
 				'meta'   => array(
@@ -196,11 +317,14 @@ class Queries {
 			)
 		);
 
-		Indexer::try_clear_status();
+		Indexer_Task_Runner::try_clear_status();
 
 		self::clear_fields_wp_cache( $query );
 
-		Async::hook_dispatch_request();
+		Indexer::async_process_queue();
+
+		// Invalidate stats cache so query/field counts recalculate.
+		Stats::flag_refresh();
 	}
 	/**
 	 * Rebuild the query index.
@@ -216,7 +340,7 @@ class Queries {
 		Indexer::clear_all_query_data( $query );
 
 		// Then queue a rebuild task.
-		Indexer::add_task(
+		Indexer_Task_Runner::add_task(
 			array(
 				'action' => 'rebuild_query',
 				'meta'   => array(
@@ -225,11 +349,14 @@ class Queries {
 			)
 		);
 
-		Indexer::try_clear_status();
+		Indexer_Task_Runner::try_clear_status();
 
 		self::clear_fields_wp_cache( $query );
 
-		Async::hook_dispatch_request();
+		Indexer::async_process_queue();
+
+		// Invalidate stats cache so query/field counts recalculate.
+		Stats::flag_refresh();
 	}
 
 	/**
@@ -248,7 +375,7 @@ class Queries {
 				Util::error_log( 'Field error when clearing fields wp cache.', 'error' );
 				continue;
 			}
-			Fields::clear_field_wp_cache( $field );
+			Fields_Indexer::clear_field_wp_cache( $field );
 		}
 	}
 
@@ -293,7 +420,7 @@ class Queries {
 		$db_query      = new Queries_Query( array( 'id' => $updated_instance->get_id() ) );
 		$db_query_item = null;
 		if ( count( $db_query->items ) === 0 ) {
-			return;
+			return 'ignore';
 		}
 		$db_query_item = $db_query->items[0];
 		$old_value     = $db_query_item->get_status();
@@ -309,11 +436,11 @@ class Queries {
 		}
 
 		// If we went from a non indexable status to an indexable status.
-		if ( ! in_array( $old_value, $index_stati ) && in_array( $new_value, $index_stati ) ) {
+		if ( ! in_array( $old_value, $index_stati, true ) && in_array( $new_value, $index_stati, true ) ) {
 			return 'add';
 		}
 
-		if ( ! in_array( $new_value, $index_stati ) && in_array( $old_value, $index_stati ) ) {
+		if ( ! in_array( $new_value, $index_stati, true ) && in_array( $old_value, $index_stati, true ) ) {
 			return 'remove';
 		}
 
@@ -326,6 +453,23 @@ class Queries {
 	 * @since    3.0.0
 	 */
 	public static function register_groups() {
+
+		Queries_Settings::add_group(
+			array(
+				'name'  => 'results',
+				'label' => __(
+					'Results',
+					'search-filter-pro'
+				),
+			),
+			array(
+				'position' => array(
+					'placement' => 'after',
+					'group'     => 'tax_query',
+				),
+			)
+		);
+
 		Queries_Settings::add_group(
 			array(
 				'name'  => 'meta_query',
@@ -333,14 +477,11 @@ class Queries {
 					'Post Meta',
 					'search-filter-pro'
 				),
-			)
-		);
-		Queries_Settings::add_group(
+			),
 			array(
-				'name'  => 'results',
-				'label' => __(
-					'Live Search',
-					'search-filter-pro'
+				'position' => array(
+					'placement' => 'after',
+					'group'     => 'tax_query',
 				),
 			)
 		);
@@ -367,6 +508,22 @@ class Queries {
 				'label'     => __( 'Loading Icon', 'search-filter-pro' ),
 				'type'      => 'editor',
 				'subgroups' => $spinner_subgroups,
+				'preview'   => array(
+					'type'            => 'spinner',
+					'attributePrefix' => 'spinner',
+				),
+			)
+		);
+		Queries_Settings::add_group(
+			array(
+				'name'      => 'infinite_scroll_spinner',
+				'label'     => __( 'Infinite Scroll Icon', 'search-filter-pro' ),
+				'type'      => 'editor',
+				'subgroups' => $spinner_subgroups,
+				'preview'   => array(
+					'type'            => 'spinner',
+					'attributePrefix' => 'infiniteScrollSpinner',
+				),
 			)
 		);
 		Queries_Settings::add_group(
@@ -466,7 +623,6 @@ class Queries {
 			),
 			'dependsOn' => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsDynamicUpdate',
@@ -499,7 +655,38 @@ class Queries {
 			),
 			'dependsOn' => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
+				'rules'    => array(
+					array(
+						'option'  => 'resultsDynamicUpdate',
+						'value'   => 'yes',
+						'compare' => '=',
+					),
+				),
+			),
+		);
+
+		Queries_Settings::add_setting( $setting );
+
+		$setting = array(
+			'name'      => 'resultsUpdatePage',
+			'label'     => __( 'Update Page', 'search-filter' ),
+			'help'      => __( 'Update the page when fetching new results.', 'search-filter' ),
+			'group'     => 'results',
+			'type'      => 'string',
+			'default'   => 'yes',
+			'inputType' => 'Hidden',
+			'options'   => array(
+				array(
+					'value' => 'yes',
+					'label' => __( 'Yes', 'search-filter' ),
+				),
+				array(
+					'value' => 'no',
+					'label' => __( 'No', 'search-filter' ),
+				),
+			),
+			'dependsOn' => array(
+				'relation' => 'AND',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsDynamicUpdate',
@@ -532,7 +719,6 @@ class Queries {
 			),
 			'dependsOn' => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsDynamicUpdate',
@@ -545,58 +731,8 @@ class Queries {
 
 		Queries_Settings::add_setting( $setting );
 
-		/*
-			array(
-				'name'      => 'offset',
-				'label'     => __( 'Offset', 'search-filter' ),
-				'type'      => 'number',
-				'group'     => 'queries',
-
-				'inputType' => 'Number',
-				'min'       => '0',
-				'max'       => '100',
-				'default'   => '0',
-			),
-			array(
-				'name'      => 'post__in',
-				'label'     => __( 'Include Posts', 'search-filter' ),
-				'type'      => 'string',
-				'group'     => 'queries',
-
-				'inputType' => 'Text',
-				'default'   => '',
-			),
-			array(
-				'name'      => 'post__not_in',
-				'label'     => __( 'Exclude Posts', 'search-filter' ),
-				'type'      => 'string',
-				'group'     => 'queries',
-
-				'inputType' => 'Text',
-				'default'   => '',
-			),
-		*/
-
-		$setting = array(
-			'name'      => 'queryContainer',
-			'label'     => __( 'Results Container', 'search-filter' ),
-			'help'      => __( 'The CSS selector that contains your results.', 'search-filter' ),
-			'group'     => 'results',
-			'type'      => 'string',
-			'inputType' => 'Text',
-			'dependsOn' => array(
-				'relation' => 'AND',
-				'action'   => 'hide',
-				'rules'    => array(
-					array(
-						'option'  => 'resultsDynamicUpdate',
-						'value'   => 'yes',
-						'compare' => '=',
-					),
-				),
-			),
-		);
-		Queries_Settings::add_setting( $setting );
+		// Note: queryContainer setting moved to base plugin for a11y skip links support.
+		// It's now always visible (not just when AJAX is enabled).
 
 		$setting = array(
 			'name'      => 'dynamicSections',
@@ -605,9 +741,9 @@ class Queries {
 			'group'     => 'results',
 			'type'      => 'string',
 			'inputType' => 'Text',
+			'default'   => '',
 			'dependsOn' => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsDynamicUpdate',
@@ -625,10 +761,9 @@ class Queries {
 			'label'     => __( 'Additional Dynamic Sections', 'search-filter' ),
 			'group'     => 'results',
 			'type'      => 'string',
-			'inputType' => 'hidden',
+			'inputType' => 'Hidden',
 			'dependsOn' => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsDynamicUpdate',
@@ -650,7 +785,6 @@ class Queries {
 			'inputType' => 'ScrollTo',
 			'dependsOn' => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsDynamicUpdate',
@@ -678,19 +812,39 @@ class Queries {
 					'value' => 'load_more',
 					'label' => __( 'Load more', 'search-filter' ),
 				),
-				/*
-				 array(
+				array(
 					'value' => 'infinite_scroll',
 					'label' => __( 'Infinite scroll', 'search-filter' ),
-				), */
+				),
 			),
+			'dependsOn' => array(
+				'relation' => 'AND',
+				'rules'    => array(
+					array(
+						'option'  => 'resultsDynamicUpdate',
+						'value'   => 'yes',
+						'compare' => '=',
+					),
+				),
+			),
+		);
+
+		Queries_Settings::add_setting( $setting );
+
+		$setting = array(
+			'name'      => 'resultsLoadMoreNotice',
+			'content'   => __( 'Add the Load More button using the Control -> Load  More field.', 'search-filter-pro' ),
+			'group'     => 'results',
+			'type'      => 'string',
+			'inputType' => 'Notice',
+			'status'    => 'info',
 			'dependsOn' => array(
 				'relation' => 'AND',
 				'action'   => 'hide',
 				'rules'    => array(
 					array(
-						'option'  => 'resultsDynamicUpdate',
-						'value'   => 'yes',
+						'option'  => 'resultsPaginationType',
+						'value'   => 'load_more',
 						'compare' => '=',
 					),
 				),
@@ -706,9 +860,9 @@ class Queries {
 			'group'     => 'results',
 			'type'      => 'string',
 			'inputType' => 'Text',
+			'default'   => '',
 			'dependsOn' => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsDynamicUpdate',
@@ -717,7 +871,6 @@ class Queries {
 					),
 					array(
 						'relation' => 'OR',
-						'action'   => 'hide',
 						'rules'    => array(
 							array(
 								'option'  => 'resultsPaginationType',
@@ -737,16 +890,42 @@ class Queries {
 		Queries_Settings::add_setting( $setting );
 
 		$setting = array(
+			'name'        => 'infiniteScrollOffset',
+			'label'       => __( 'Scroll Offset', 'search-filter' ),
+			'help'        => __( 'CSS margin value for when infinite scroll triggers (e.g., -100px triggers 100px before reaching bottom).', 'search-filter' ),
+			'group'       => 'results',
+			'type'        => 'string',
+			'inputType'   => 'Text',
+			'default'     => '-100px',
+			'placeholder' => '-100px',
+			'dependsOn'   => array(
+				'relation' => 'AND',
+				'rules'    => array(
+					array(
+						'option'  => 'resultsDynamicUpdate',
+						'value'   => 'yes',
+						'compare' => '=',
+					),
+					array(
+						'option'  => 'resultsPaginationType',
+						'value'   => 'infinite_scroll',
+						'compare' => '=',
+					),
+				),
+			),
+		);
+		Queries_Settings::add_setting( $setting );
+
+		$setting = array(
 			'name'      => 'queryPaginationSelector',
 			'label'     => __( 'Pagination Selector', 'search-filter' ),
 			'help'      => __( 'Enter a CSS selector to target pagination links.  Allows dynamic update of results after clicking a pagination link.', 'search-filter' ),
 			'group'     => 'results',
 			'type'      => 'string',
-			'default'   => '',
 			'inputType' => 'Text',
+			'default'   => '',
 			'dependsOn' => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsDynamicUpdate',
@@ -764,6 +943,96 @@ class Queries {
 
 		Queries_Settings::add_setting( $setting );
 
+		// Accessibility announcement settings (for screen readers).
+		$live_search_depends_on = array(
+			'relation' => 'AND',
+			'rules'    => array(
+				array(
+					'option'  => 'resultsDynamicUpdate',
+					'value'   => 'yes',
+					'compare' => '=',
+				),
+			),
+		);
+
+		$setting = array(
+			'name'      => 'a11yLoadingText',
+			'label'     => __( 'Loading Text', 'search-filter-pro' ),
+			'help'      => __( 'Screen reader announcement when results are loading.', 'search-filter-pro' ),
+			'group'     => 'accessibility',
+			'type'      => 'string',
+			'inputType' => 'Text',
+			'default'   => __( 'Loading results...', 'search-filter-pro' ),
+			'dependsOn' => $live_search_depends_on,
+		);
+		Queries_Settings::add_setting( $setting );
+
+		$setting = array(
+			'name'      => 'a11yLoadingMoreText',
+			'label'     => __( 'Loading More Text', 'search-filter-pro' ),
+			'help'      => __( 'Screen reader announcement when loading more results.', 'search-filter-pro' ),
+			'group'     => 'accessibility',
+			'type'      => 'string',
+			'inputType' => 'Text',
+			'default'   => __( 'Loading more results...', 'search-filter-pro' ),
+			'dependsOn' => $live_search_depends_on,
+		);
+		Queries_Settings::add_setting( $setting );
+
+		$setting = array(
+			'name'      => 'a11yLoadedMoreText',
+			'label'     => __( 'Loaded More Text', 'search-filter-pro' ),
+			// translators: %1$d and %2$d are not placeholders but used to explain their usage - keep in tact.
+			'help'      => __( 'Screen reader announcement after loading more. Use %1$d for current page and %2$d for total pages.', 'search-filter-pro' ),
+			'group'     => 'accessibility',
+			'type'      => 'string',
+			'inputType' => 'Text',
+			// Translators: %1$d is current page number, %2$d is total pages.
+			'default'   => __( 'Loaded more results. Page %1$d of %2$d', 'search-filter-pro' ),
+			'dependsOn' => $live_search_depends_on,
+		);
+		Queries_Settings::add_setting( $setting );
+
+		$setting = array(
+			'name'      => 'a11yErrorText',
+			'label'     => __( 'Error Text', 'search-filter-pro' ),
+			'help'      => __( 'Screen reader announcement when loading fails.', 'search-filter-pro' ),
+			'group'     => 'accessibility',
+			'type'      => 'string',
+			'inputType' => 'Text',
+			'default'   => __( 'Error loading results', 'search-filter-pro' ),
+			'dependsOn' => $live_search_depends_on,
+		);
+		Queries_Settings::add_setting( $setting );
+	}
+
+	/**
+	 * Upgrade the sort order setting.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $setting The setting.
+	 *
+	 * @return array The setting.
+	 */
+	public static function update_query_container_settings_group( array $setting ) {
+
+		$query_container_settings = array(
+			'queryContainer',
+			'queryContainerNotice',
+		);
+
+		if ( ! in_array( $setting['name'], $query_container_settings, true ) ) {
+			return $setting;
+		}
+
+		// Move the query container setting + notice to the results group.
+		$setting['group'] = 'results';
+
+		if ( $setting['name'] === 'queryContainerNotice' ) {
+			$setting['content'] = __( 'The results container must be set to use live search & accessibility features.', 'search-filter-pro' );
+		}
+		return $setting;
 	}
 
 	/**
@@ -788,7 +1057,6 @@ class Queries {
 			'step'        => 1,
 			'dependsOn'   => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsShowSpinner',
@@ -816,7 +1084,6 @@ class Queries {
 			'enableAlpha' => true,
 			'dependsOn'   => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsShowSpinner',
@@ -844,7 +1111,6 @@ class Queries {
 			'enableAlpha' => true,
 			'dependsOn'   => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsShowSpinner',
@@ -872,7 +1138,6 @@ class Queries {
 			'inputType' => 'AlignmentMatrix',
 			'dependsOn' => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsShowSpinner',
@@ -906,7 +1171,6 @@ class Queries {
 			'allowReset' => false,
 			'dependsOn'  => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsShowSpinner',
@@ -931,16 +1195,15 @@ class Queries {
 			'subgroup'   => 'dimensions',
 			'default'    => array(
 				'top'    => '12px',
-				'right'  => '0',
-				'bottom' => '0',
-				'left'   => '0',
+				'right'  => '0px',
+				'bottom' => '0px',
+				'left'   => '0px',
 			),
 			'type'       => 'string',
 			'inputType'  => 'Box',
 			'allowReset' => false,
 			'dependsOn'  => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsShowSpinner',
@@ -969,7 +1232,6 @@ class Queries {
 			'allowReset' => false,
 			'dependsOn'  => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsShowSpinner',
@@ -998,7 +1260,6 @@ class Queries {
 			'allowReset' => false,
 			'dependsOn'  => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'option'  => 'resultsShowSpinner',
@@ -1015,7 +1276,126 @@ class Queries {
 		);
 
 		Queries_Settings::add_setting( $setting );
+	}
 
+	/**
+	 * Register the settings for the infinite scroll spinner.
+	 *
+	 * @since    3.0.0
+	 */
+	public static function register_infinite_scroll_spinner_settings() {
+
+		$infinite_scroll_depends_on = array(
+			'relation' => 'AND',
+			'rules'    => array(
+				array(
+					'option'  => 'resultsDynamicUpdate',
+					'value'   => 'yes',
+					'compare' => '=',
+				),
+				array(
+					'option'  => 'resultsPaginationType',
+					'value'   => 'infinite_scroll',
+					'compare' => '=',
+				),
+			),
+		);
+
+		$setting = array(
+			'name'        => 'infiniteScrollSpinnerScale',
+			'label'       => __( 'Scale', 'search-filter' ),
+			'help'        => __( 'Scale of the loading icon.', 'search-filter' ),
+			'default'     => 3,
+			'group'       => 'infinite_scroll_spinner',
+			'subgroup'    => 'dimensions',
+			'type'        => 'number',
+			'inputType'   => 'Range',
+			'placeholder' => __( 'Choose a scale', 'search-filter' ),
+			'min'         => 1,
+			'max'         => 10,
+			'step'        => 1,
+			'dependsOn'   => $infinite_scroll_depends_on,
+		);
+
+		Queries_Settings::add_setting( $setting );
+
+		$setting = array(
+			'name'        => 'infiniteScrollSpinnerForegroundColor',
+			'label'       => __( 'Color', 'search-filter' ),
+			'group'       => 'infinite_scroll_spinner',
+			'subgroup'    => 'color',
+			'type'        => 'string',
+			'inputType'   => 'ColorPicker',
+			'enableAlpha' => true,
+			'dependsOn'   => $infinite_scroll_depends_on,
+		);
+
+		Queries_Settings::add_setting( $setting );
+
+		$setting = array(
+			'name'        => 'infiniteScrollSpinnerBackgroundColor',
+			'label'       => __( 'Background color', 'search-filter' ),
+			'group'       => 'infinite_scroll_spinner',
+			'subgroup'    => 'color',
+			'type'        => 'string',
+			'inputType'   => 'ColorPicker',
+			'enableAlpha' => true,
+			'dependsOn'   => $infinite_scroll_depends_on,
+		);
+
+		Queries_Settings::add_setting( $setting );
+
+		$setting = array(
+			'name'       => 'infiniteScrollSpinnerPadding',
+			'label'      => __( 'Padding', 'search-filter' ),
+			'group'      => 'infinite_scroll_spinner',
+			'subgroup'   => 'dimensions',
+			'default'    => array(
+				'top'    => '12px',
+				'right'  => '12px',
+				'bottom' => '12px',
+				'left'   => '12px',
+			),
+			'type'       => 'string',
+			'inputType'  => 'Box',
+			'allowReset' => false,
+			'dependsOn'  => $infinite_scroll_depends_on,
+		);
+
+		Queries_Settings::add_setting( $setting );
+
+		$setting = array(
+			'name'       => 'infiniteScrollSpinnerMargin',
+			'label'      => __( 'Margin', 'search-filter' ),
+			'group'      => 'infinite_scroll_spinner',
+			'subgroup'   => 'dimensions',
+			'default'    => array(
+				'top'    => '12px',
+				'right'  => '0px',
+				'bottom' => '12px',
+				'left'   => '0px',
+			),
+			'type'       => 'string',
+			'inputType'  => 'Box',
+			'allowReset' => false,
+			'dependsOn'  => $infinite_scroll_depends_on,
+		);
+
+		Queries_Settings::add_setting( $setting );
+
+		$setting = array(
+			'name'       => 'infiniteScrollSpinnerBorderRadius',
+			'label'      => __( 'Border Radius', 'search-filter' ),
+			'group'      => 'infinite_scroll_spinner',
+			'subgroup'   => 'border',
+			'default'    => '4px',
+			'type'       => 'string',
+			'inputType'  => 'BorderRadius',
+			'allowReset' => false,
+			'dependsOn'  => $infinite_scroll_depends_on,
+		);
+
+		Queries_Settings::add_setting( $setting );
 	}
 
 	/**
@@ -1073,6 +1453,31 @@ class Queries {
 				'key'               => 'spinnerBorderRadius',
 				'sanitize_callback' => 'Search_Filter_Pro\\Queries::santize_border_radius',
 			),
+			// Infinite scroll spinner CSS vars.
+			'--search-filter-infinite-scroll-spinner-foreground-color' => array(
+				'key'               => 'infiniteScrollSpinnerForegroundColor',
+				'sanitize_callback' => 'Search_Filter_Pro\\Queries::sanitize_hex_color',
+			),
+			'--search-filter-infinite-scroll-spinner-background-color' => array(
+				'key'               => 'infiniteScrollSpinnerBackgroundColor',
+				'sanitize_callback' => 'Search_Filter_Pro\\Queries::sanitize_hex_color',
+			),
+			'--search-filter-infinite-scroll-spinner-scale' => array(
+				'key'               => 'infiniteScrollSpinnerScale',
+				'sanitize_callback' => 'absint',
+			),
+			'--search-filter-infinite-scroll-spinner-margin' => array(
+				'key'               => 'infiniteScrollSpinnerMargin',
+				'sanitize_callback' => 'Search_Filter\\Util::sanitize_css_box',
+			),
+			'--search-filter-infinite-scroll-spinner-padding' => array(
+				'key'               => 'infiniteScrollSpinnerPadding',
+				'sanitize_callback' => 'Search_Filter\\Util::sanitize_css_box',
+			),
+			'--search-filter-infinite-scroll-spinner-border-radius' => array(
+				'key'               => 'infiniteScrollSpinnerBorderRadius',
+				'sanitize_callback' => 'Search_Filter_Pro\\Queries::santize_border_radius',
+			),
 		);
 
 		foreach ( $mapped_css_vars as $css_var => $attribute ) {
@@ -1128,6 +1533,29 @@ class Queries {
 		}
 
 		$attributes['resultsScrollToSelector'] = $scroll_to_selector;
+		return $attributes;
+	}
+
+	/**
+	 * Filter the query attributes and set the `resultsUpdatePage` attribute.
+	 *
+	 * @since    3.0.0
+	 *
+	 * @param    array  $attributes   The attributes to set the scroll to.
+	 * @param    string $record_type  The record type.
+	 * @return   array    The attributes with the scroll to set.
+	 */
+	public static function set_results_update_page_attributes( $attributes, $record_type ) {
+		if ( $record_type !== 'query' ) {
+			return $attributes;
+		}
+
+		// Only set the attribute if live search is enabled.
+		$live_search = isset( $attributes['resultsDynamicUpdate'] ) && $attributes['resultsDynamicUpdate'] === 'yes';
+		if ( $live_search && ! isset( $attributes['resultsUpdatePage'] ) ) {
+			$attributes['resultsUpdatePage'] = 'yes';
+		}
+
 		return $attributes;
 	}
 
@@ -1206,7 +1634,7 @@ class Queries {
 				continue;
 			}
 
-			$valid_queries++;
+			++$valid_queries;
 			$new_item       = array(
 				'key'     => sanitize_text_field( $meta_query_item['key'] ),
 				'value'   => sanitize_text_field( $meta_query_item['value'] ),
@@ -1221,11 +1649,14 @@ class Queries {
 			return $query_args;
 		}
 
+		// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		if ( ! isset( $query_args['meta_query'] ) ) {
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			$query_args['meta_query'] = array(
 				'relation' => 'AND',
 			);
 		}
+		// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		$query_args['meta_query'] = array_merge( $query_args['meta_query'], $meta_queries );
 
 		return $query_args;
@@ -1327,7 +1758,7 @@ class Queries {
 		if ( trim( $value ) === '' ) {
 			return '';
 		}
-		// Split the value
+		// Split the value.
 		$parts = explode( ' ', $value );
 		if ( count( $parts ) !== 2 ) {
 			return '';
@@ -1373,7 +1804,6 @@ class Queries {
 		} else {
 			return self::sanitize_css_var( $value['top']['width'] ) . ' ' . self::sanitize_css_var( $value['right']['width'] ) . ' ' . self::sanitize_css_var( $value['bottom']['width'] ) . ' ' . self::sanitize_css_var( $value['left']['width'] );
 		}
-		return '';
 	}
 
 	/**
@@ -1393,7 +1823,6 @@ class Queries {
 		} else {
 			return self::sanitize_css_var( $value['top']['style'] ) . ' ' . self::sanitize_css_var( $value['right']['style'] ) . ' ' . self::sanitize_css_var( $value['bottom']['style'] ) . ' ' . self::sanitize_css_var( $value['left']['style'] );
 		}
-		return '';
 	}
 
 	/**
@@ -1413,7 +1842,6 @@ class Queries {
 		} else {
 			return self::sanitize_css_var( $value['top']['color'] ) . ' ' . self::sanitize_css_var( $value['right']['color'] ) . ' ' . self::sanitize_css_var( $value['bottom']['color'] ) . ' ' . self::sanitize_css_var( $value['left']['color'] );
 		}
-		return '';
 	}
 
 	/**
@@ -1506,4 +1934,3 @@ class Queries {
 		$sort_order_setting->add_option( $custom_field_option );
 	}
 }
-

@@ -8,9 +8,9 @@
  * @package    Search_Filter
  */
 
-namespace Search_Filter\Integrations\WooCommerce;
+namespace Search_Filter\Integrations\Woocommerce;
 
-use Search_Filter\Integrations\WooCommerce;
+use Search_Filter\Integrations\Woocommerce;
 use Search_Filter\Settings;
 use WP_REST_Request;
 
@@ -24,6 +24,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Rest_API {
 
+	/**
+	 * Initialize the REST API.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function init() {
 		add_action( 'rest_api_init', array( __CLASS__, 'add_routes' ) );
 	}
@@ -53,14 +58,14 @@ class Rest_API {
 	/**
 	 * Get the available taxonomy terms for a particular taxonomy.
 	 *
-	 * @param \WP_REST_Request $request
+	 * @param \WP_REST_Request $request The request object.
 	 *
 	 * @return \WP_REST_Response
 	 */
 	public static function get_woocommerce_terms_options( \WP_REST_Request $request ) {
 		$data_source = $request->get_param( 'dataWoocommerce' );
 
-		$taxonomy = WooCommerce::get_taxonomy_name_from_data_source( $data_source );
+		$taxonomy = Woocommerce::get_taxonomy_name_from_data_source( $data_source );
 
 		if ( empty( $taxonomy ) ) {
 			return rest_ensure_response( array( 'options' => array() ) );

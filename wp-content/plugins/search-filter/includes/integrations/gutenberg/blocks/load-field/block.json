@@ -1,0 +1,26 @@
+{
+	"category": "search-filter",
+	"usesContext": [],
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"customClassName": false
+	},
+	"textdomain": "search-filter",
+	"name": "search-filter/load-field",
+	"title": "Load Field",
+	"description": "Utility block for loading an existing field.",
+	"attributes": {
+		"fieldId": {
+			"default": "",
+			"type": "string"
+		},
+		"alignment": {
+			"default": "",
+			"type": "string"
+		}
+	}
+}

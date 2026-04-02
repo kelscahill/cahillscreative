@@ -9,6 +9,8 @@
  */
 
 use Search_Filter\Features;
+use Search_Filter\Database\Table_Manager;
+use Search_Filter\Database\Engine\Table;
 
 require_once plugin_dir_path( __FILE__ ) . 'autoload.php';
 
@@ -17,13 +19,16 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-global $wpdb;
-
 if ( is_multisite() ) {
-	// Get all blogs in the network and deactivate plugin on each one.
-	$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
-	foreach ( $blog_ids as $next_blog_id ) {
-		switch_to_blog( $next_blog_id );
+	// Get all sites in the network and run uninstall on each one.
+	$site_ids = get_sites(
+		array(
+			'fields' => 'ids',
+			'number' => 0, // No limit.
+		)
+	);
+	foreach ( $site_ids as $site_id ) {
+		switch_to_blog( $site_id );
 		search_filter_uninstall();
 		restore_current_blog();
 	}
@@ -38,19 +43,43 @@ if ( is_multisite() ) {
  */
 function search_filter_uninstall() {
 
-	$schema = new Search_Filter\Core\Schema();
-	$schema->init();
-
 	Features::init();
 
 	if ( Features::is_enabled( 'removeDataOnUninstall' ) ) {
 
-		$tables = $schema->get_tables();
+		// Register all tables so we can uninstall them.
+		// Fields tables.
+		Table_Manager::register( 'fields', \Search_Filter\Database\Tables\Fields::class );
+		Table_Manager::register( 'fieldmeta', \Search_Filter\Database\Tables\Fields_Meta::class );
 
-		foreach ( $tables as $table ) {
-			if ( $table->exists() ) {
+		// Queries tables.
+		Table_Manager::register( 'queries', \Search_Filter\Database\Tables\Queries::class );
+		Table_Manager::register( 'querymeta', \Search_Filter\Database\Tables\Queries_Meta::class );
+
+		// Styles tables.
+		Table_Manager::register( 'styles', \Search_Filter\Database\Tables\Style_Presets::class );
+		Table_Manager::register( 'stylemeta', \Search_Filter\Database\Tables\Styles_Meta::class );
+
+		// Options table.
+		Table_Manager::register( 'options', \Search_Filter\Database\Tables\Options::class );
+
+		// Logs table.
+		Table_Manager::register( 'logs', \Search_Filter\Database\Tables\Logs::class );
+
+		// Uninstall all registered tables.
+		foreach ( Table_Manager::get_registered() as $key ) {
+			$table = Table_Manager::get( $key );
+			if ( $table && $table->exists() ) {
 				$table->uninstall();
 			}
+		}
+
+		// Delete the consolidated table version registry.
+		delete_option( Table::OPTION_NAME );
+
+		// Delete network registry for multisite.
+		if ( is_multisite() ) {
+			delete_network_option( get_main_network_id(), Table::OPTION_NAME );
 		}
 
 		delete_option( 'search_filter_default_styles' );

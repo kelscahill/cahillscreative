@@ -18,9 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Search_Filter\Fields\Field_Factory;
 use Search_Filter\Rest_API;
-use Search_Filter\Admin\Screens;
-use Search_Filter\Core\Scripts;
-use Search_Filter\Compatibility;
+use Search_Filter\Core\Dependants;
+use Search_Filter\Options;
+
 /**
  * The main entry point for the plugin
  *
@@ -30,15 +30,6 @@ use Search_Filter\Compatibility;
  * @since 3.0.0
  */
 class Search_Filter {
-	/**
-	 * The loader that's responsible for maintaining and registering all hooks that power
-	 * the plugin.
-	 *
-	 * @since    3.0.0
-	 * @access   protected
-	 * @var      Search_Filter_Loader    $loader    Maintains and registers all hooks for the plugin.
-	 */
-	protected $loader;
 
 	/**
 	 * The unique identifier of this plugin.
@@ -62,7 +53,7 @@ class Search_Filter {
 	 *
 	 * @since    3.0.0
 	 * @access   protected
-	 * @var      string    $rest_api
+	 * @var      Rest_API    $rest_api
 	 */
 	protected $rest_api;
 	/**
@@ -95,34 +86,62 @@ class Search_Filter {
 		$this->plugin_name = 'search-filter';
 		$this->version     = SEARCH_FILTER_VERSION;
 
-		$this->load_dependencies();
 		$this->set_locale(); // Needs to go after load_dependencies.
 		$this->load_rest_api();
 
-		Compatibility::init();
+		\Search_Filter\Compatibility::init();
 
 		add_action( 'plugins_loaded', array( $this, 'init_dependencies' ), 1 );
-
-		// Correctly load public / admin classes & hooks.
-		if ( ( ! is_admin() ) || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
-			$this->define_frontend_hooks();
-		} elseif ( is_admin() ) {
-			$this->define_admin_hooks();
-		}
 	}
+
+	/**
+	 * Initialize plugin dependencies in the correct order.
+	 */
 	public function init_dependencies() {
 
 		/**
-		 * ORDER IS IMPORTANT !
+		 * ORDER IS IMPORTANT.
 		 */
-		$schema = new Search_Filter\Core\Schema();
-		$schema->init();
+		\Search_Filter\Core\Schema::init();
+
+		// Init options to setup the table.
+		\Search_Filter\Options::init();
+
+		// Always hook update check in admin (before any blocking checks).
+		// This ensures Free updates are visible even when blocked due to Pro version incompatibility.
+		add_action( 'init', array( __CLASS__, 'init_updates' ), 20 );
+
+		// Since 3.2.0, we need to check for if the pro plugin is installed and at the right version otherwise
+		// some of the class changes will cause PHP errors.  We need to do this after the DB has init, but before
+		// the field factory is registered.
+		if ( Dependants::is_search_filter_pro_enabled() && ! Dependants::min_pro_version_supported() ) {
+			// Add admin notice.
+			add_action(
+				'admin_notices',
+				function () {
+
+					echo '<div class="notice notice-error"><p>';
+					printf(
+						// translators: 1: Plugin name, 2: Search & Filter version, 3: Plugin name, 4: Minimum supported Pro version.
+						esc_html__( 'Important: Your version of %1$s is is not compatible with Search & Filter %2$s. Please update %3$s to version %4$s or deactivate the pro plugin.', 'search-filter' ),
+						'<strong>' . esc_html__( 'Search & Filter Pro', 'search-filter' ) . '</strong>',
+						esc_html( SEARCH_FILTER_VERSION ),
+						'<strong>' . esc_html__( 'Search & Filter Pro', 'search-filter' ) . '</strong>',
+						esc_html( SEARCH_FILTER_MIN_PRO_VERSION_SUPPORTED )
+					);
+					echo '</p></div>';
+				}
+			);
+			add_filter( 'search-filter/frontend/should_init', '__return_false' );
+			return;
+		}
 
 		// Fields must be registered before settings (so they can register their own settings).
-		Field_Factory::register_types();
+		Field_Factory::init();
 		\Search_Filter\Theme_Styles::init();
 		\Search_Filter\Core\CSS_Loader::init();
 		\Search_Filter\Core\Upgrader::init();
+		\Search_Filter\Components::init();
 
 		/**
 		 * Setup the CSS_Loader.
@@ -164,10 +183,31 @@ class Search_Filter {
 		\Search_Filter\Styles::init();
 		\Search_Filter\Queries::init();
 
+		\Search_Filter\Core\Cron::init();
 		\Search_Filter\Debugger::init();
+		\Search_Filter\Compatibility::register();
+
+		\Search_Filter\Core\Schema::register();
+		\Search_Filter\Core\Asset_Loader::init();
+
+		// Preload commonly used options now that tables are set up.
+		// This must happen after Schema::register() (which sets up tables) but before
+		// the 'init' hook fires (when Features/Integrations access these options).
+		if ( ! is_admin() ) {
+			Options::preload();
+		}
+
 		// This matches the settings init hooks found in the above classes, so it
 		// should be fired close to the last one (in Styles) has been fired.
 		add_action( 'init', array( __CLASS__, 'after_register_settings' ), 2 );
+
+		// Correctly load public / admin classes & hooks.
+		if ( ( ! is_admin() ) || wp_doing_ajax() ) {
+			// Init frontend class and hooks.
+			\Search_Filter\Frontend::init();
+		} elseif ( is_admin() ) {
+			\Search_Filter\Admin::init();
+		}
 	}
 
 	/**
@@ -176,31 +216,9 @@ class Search_Filter {
 	 * @return void
 	 */
 	public static function after_register_settings() {
+		// Then trigger a generic ready hook for all settings.
 		// TODO - this hook doesn't match our naming convention.
 		do_action( 'search-filter/settings/init' );
-	}
-	/**
-	 * Load the required dependencies for this plugin.
-	 *
-	 * Include the following files that make up the plugin:
-	 *
-	 * - Search_Filter\Core\Loader. Orchestrates the hooks of the plugin.
-	 * - Search_Filter\Core\I18n. Defines internationalization functionality.
-	 * - Search_Filter\Admin. Defines all hooks for the admin area.
-	 * - Search_Filter\Frontend. Defines all hooks for the public side of the site.
-	 *
-	 * Create an instance of the loader which will be used to register the hooks
-	 * with WordPress.
-	 *
-	 * @since    3.0.0
-	 * @access   private
-	 */
-	private function load_dependencies() {
-		/**
-		 * The class responsible for orchestrating the actions and fields of the
-		 * core plugin.
-		 */
-		$this->loader = new Search_Filter\Core\Loader();
 	}
 
 	/**
@@ -217,64 +235,6 @@ class Search_Filter {
 	}
 
 	/**
-	 * Register all of the hooks related to the admin area functionality
-	 * of the plugin.
-	 *
-	 * @since    3.0.0
-	 * @access   private
-	 */
-	private function define_admin_hooks() {
-
-		$plugin_admin = new \Search_Filter\Admin( $this->get_plugin_name(), $this->get_version() );
-
-		// Scripts & css.
-		add_action( 'admin_print_scripts', array( Scripts::class, 'output_init_js' ), 10 );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles', 10 );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts', 10 );
-		$this->loader->add_action( 'plugin_action_links', $plugin_admin, 'plugin_action_links', 10, 2 );
-
-		// Plugin updater.
-		add_action( 'admin_init', array( \Search_Filter\Admin::class, 'update_plugin' ), 20 );
-
-		// Data.
-
-		// Setup Admin Screens.
-		$this->loader->add_filter( 'init', Screens::class, 'init', 2 );
-		$this->loader->add_filter( 'submenu_file', Screens::class, 'modify_active_submenu', 20, 2 );
-		$this->loader->add_action( 'admin_menu', Screens::class, 'admin_pages', 9 );
-		$this->loader->add_action( 'admin_menu', Screens::class, 'admin_pages_more_menu_items', 10 );
-		$this->loader->add_action( 'admin_footer', Screens::class, 'admin_footer', 20 );
-		$this->loader->add_action( 'admin_head', Screens::class, 'menu_css', 20 );
-
-		// We want to get in as early as possible, and remove all admin notices
-		// This is the closest action before admin_notices that I can find.
-		$this->loader->add_action( 'in_admin_header', Screens::class, 'remove_admin_notices', 200 );
-	}
-	/**
-	 * Register all of the hooks related to the public-facing functionality
-	 * of the plugin.
-	 *
-	 * @since    3.0.0
-	 * @access   private
-	 */
-	private function define_frontend_hooks() {
-
-		$plugin_frontend = new Search_Filter\Frontend( $this->get_plugin_name(), $this->get_version() );
-		$plugin_frontend->init();
-
-		// Scripts & css.
-		add_action( 'wp_print_scripts', array( Scripts::class, 'output_init_js' ), 0 );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_frontend, 'enqueue_styles', 20 );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_frontend, 'enqueue_scripts', 20 );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_frontend, 'add_js_data', 21 );
-
-		// Use a really low priority so that we load after other plugins, eg Elementor loads popups in
-		// `wp_footer` and we want to load after them just in case they have S&F fields.
-		add_action( 'wp_footer', array( Search_Filter\Core\SVG_Loader::class, 'output' ), 100 );
-		add_action( 'wp_footer', array( Search_Filter\Frontend::class, 'data' ), 100 );
-	}
-
-	/**
 	 * Init the rest api class
 	 *
 	 * @return void
@@ -285,54 +245,23 @@ class Search_Filter {
 
 
 
-
 	/**
-	 * Init plugin schema class (post types, taxonomies etc)
+	 * Check for plugin updates.
 	 *
-	 * @since    3.0.0
-	 *
-	 * @return void
+	 * @since 3.0.0
 	 */
-	private function init_universal_classes() {
-	}
-
-	/**
-	 * Run the loader to execute all of the hooks with WordPress.
-	 *
-	 * @since    3.0.0
-	 */
-	public function run() {
-		$this->loader->run();
-	}
-
-	/**
-	 * The name of the plugin used to uniquely identify it within the context of
-	 * WordPress and to define internationalization functionality.
-	 *
-	 * @since     3.0.0
-	 * @return    string    The name of the plugin.
-	 */
-	public function get_plugin_name() {
-		return $this->plugin_name;
-	}
-
-	/**
-	 * The reference to the class that orchestrates the hooks with the plugin.
-	 *
-	 * @since     3.0.0
-	 * @return    Search_Filter_Loader    Orchestrates the hooks of the plugin.
-	 */
-	public function get_loader() {
-		return $this->loader;
-	}
-
-	/**
-	 * Retrieve the version number of the plugin.
-	 *
-	 * @since     3.0.0
-	 * @return    string    The version number of the plugin.
-	 */
-	public function get_version() {
-		return $this->version;
+	public static function init_updates() {
+		// Setup the updater.
+		$edd_updater = new \Search_Filter\Core\Plugin_Updater(
+			'https://license.searchandfilter.com',
+			SEARCH_FILTER_BASE_FILE,
+			array(
+				'version' => SEARCH_FILTER_VERSION,
+				'license' => 'search-filter-extension-free',
+				'item_id' => 514539,
+				'author'  => 'Search & Filter',
+				'beta'    => false,
+			)
+		);
 	}
 }

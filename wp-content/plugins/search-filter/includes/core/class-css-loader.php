@@ -12,7 +12,6 @@
 namespace Search_Filter\Core;
 
 use Search_Filter\Options;
-use Search_Filter\Styles;
 use Search_Filter\Util;
 
 /**
@@ -43,9 +42,39 @@ class CSS_Loader {
 	 */
 	private static $loaders = array();
 
+	/**
+	 * Whether CSS regeneration is already queued for this request.
+	 *
+	 * @since 3.0.0
+	 * @var bool
+	 */
+	private static $regeneration_queued = false;
 
+	/**
+	 * Initializes the CSS loader.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function init() {
 		do_action( 'search-filter/core/css-loader/init' );
+
+		// Preload the asset version option.
+		add_filter( 'search-filter/options/preload', array( __CLASS__, 'preload_option' ) );
+	}
+
+	/**
+	 * Preload the css version option.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $options_to_preload The options to preload.
+	 * @return array
+	 */
+	public static function preload_option( $options_to_preload ) {
+		// Preload and set the default in case it doesn't exist.
+		$options_to_preload[] = array( 'css-mode', 'file-system' );
+		$options_to_preload[] = array( 'css-version-id', 0 );
+		return $options_to_preload;
 	}
 
 	/**
@@ -53,16 +82,18 @@ class CSS_Loader {
 	 *
 	 * @since    3.0.0
 	 *
+	 * @param string $section The section to generate CSS for.
 	 * @return string The generated CSS.
 	 */
 	private static function generate( $section = '' ) {
 		$css = '';
 
-		// Uncomment this when we split the CSS into multiple files.
 		/*
-		if( $section !== '' && isset( self::$loaders[ $section ] ) ) {
-			$css .= self::$loaders[ $section ]();
-		} else { */
+		 * Uncomment this when we split the CSS into multiple files.
+		 * if( $section !== '' && isset( self::$loaders[ $section ] ) ) {
+		 *     $css .= self::$loaders[ $section ]();
+		 * } else {
+		 */
 		foreach ( self::$loaders as $section => $handler ) {
 			$css .= $handler();
 		}
@@ -73,8 +104,51 @@ class CSS_Loader {
 		return $css;
 	}
 
+	/**
+	 * Registers a CSS handler for a section.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string   $section The section name.
+	 * @param callable $handler The handler function that returns CSS.
+	 */
 	public static function register_handler( $section, $handler ) {
 		self::$loaders[ $section ] = $handler;
+	}
+
+	/**
+	 * Checks if a handler is registered for a section.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $section The section name.
+	 * @return bool True if handler exists, false otherwise.
+	 */
+	public static function has_handler( $section ) {
+		return isset( self::$loaders[ $section ] );
+	}
+
+	/**
+	 * Removes a CSS handler for a section.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $section The section name.
+	 */
+	public static function remove_handler( $section ) {
+		unset( self::$loaders[ $section ] );
+	}
+
+	/**
+	 * Reset the CSS loader.
+	 *
+	 * Clears all registered CSS handlers.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function reset() {
+		self::$loaders             = array();
+		self::$regeneration_queued = false;
 	}
 	/**
 	 * Cleas the CSS from scripts and markup.
@@ -96,9 +170,9 @@ class CSS_Loader {
 	 *
 	 * If not possible, changes the CSS mode of the plugin.
 	 *
-	 * @param array $regenerate_ids The IDs of the styles to regenerate.
+	 * @param string $section The section to save the CSS for.
 	 */
-	public static function save_css( $section = '' ) {
+	public static function save_css( string $section = '' ) {
 		// TODO - need to figure out if we hyphenate the function and variable names...
 		$can_save = apply_filters( 'search-filter/core/css-loader/save-css/can-save', true, $section );
 		if ( ! $can_save ) {
@@ -108,7 +182,10 @@ class CSS_Loader {
 		// Stash CSS in uploads directory.
 		if ( ! function_exists( 'WP_Filesystem' ) ) {
 			// Load the filesystem class if its not yet available.
-			require_once ABSPATH . 'wp-admin/includes/file.php';
+			$file_path = ABSPATH . 'wp-admin/includes/file.php';
+			if ( file_exists( $file_path ) ) {
+				require_once $file_path;
+			}
 		}
 		$upload_dir = wp_upload_dir(); // Grab uploads folder array.
 		$sf_dir     = trailingslashit( $upload_dir['basedir'] ) . 'search-filter/'; // Set storage directory path.
@@ -125,7 +202,8 @@ class CSS_Loader {
 			}
 		}
 
-		$file_result = file_put_contents( $sf_dir . 'style.css', $css ); // Finally, store the file.
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Using file_put_contents for better compatibility with various hosting environments.
+		$file_result = file_put_contents( $sf_dir . 'style.css', $css, LOCK_EX ); // Finally, store the file with exclusive lock.
 		if ( $file_result !== false ) {
 			// Success.
 			self::set_mode( 'file-system' );
@@ -140,50 +218,99 @@ class CSS_Loader {
 	}
 
 	/**
+	 * Queue CSS regeneration on shutdown.
+	 *
+	 * Sets a dirty flag in the database and registers a shutdown callback.
+	 * Multiple calls in the same request only register once.
+	 * Multiple concurrent requests coordinate via the dirty flag.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function queue_regeneration() {
+		if ( self::$regeneration_queued ) {
+			return; // Already queued for this request.
+		}
+		self::$regeneration_queued = true;
+
+		// Set dirty flag in database (cross-process coordination).
+		Options::update( 'css-needs-regeneration', 'yes' );
+
+		// Register shutdown callback.
+		Async::register_callback( array( __CLASS__, 'maybe_regenerate_css' ) );
+	}
+
+	/**
+	 * Conditionally regenerate CSS after delay.
+	 *
+	 * Waits 2 seconds to let concurrent requests settle, then checks
+	 * the dirty flag with a fresh database read. If still dirty,
+	 * clears the flag and regenerates CSS.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function maybe_regenerate_css() {
+		// Delay to let concurrent requests settle.
+		sleep( 2 );
+
+		// Fresh read bypassing Options cache.
+		$dirty_value = Options::get_direct( 'css-needs-regeneration' );
+
+		if ( ! $dirty_value || $dirty_value !== 'yes' ) {
+			return; // Already handled by another process.
+		}
+
+		// Clear flag BEFORE generating (new saves will re-set it).
+		Options::update( 'css-needs-regeneration', 'no' );
+
+		// Generate and save CSS.
+		self::save_css();
+	}
+
+	/**
 	 * Set the CSS mode (file-system or inline).
 	 *
 	 * @param string $mode The mode to set - file-system or inline.
 	 */
-	private static function set_mode( $mode ) {
-		Options::update_option_value( 'css-mode', sanitize_key( $mode ) );
+	private static function set_mode( string $mode ) {
+		Options::update( 'css-mode', sanitize_key( $mode ) );
 	}
 
 	/**
 	 * Updates the CSS version ID to bust the cache.
 	 */
 	private static function set_version_id() {
-		$version_id = Options::get_option_value( 'css-version-id' );
-		if ( ! $version_id ) {
-			$version_id = 1;
-		}
+		$version_id = absint( Options::get( 'css-version-id', 0 ) );
 		++$version_id;
 		// I guess we don't want this number to grow forever, so when it hits 1000 reset it.
 		if ( $version_id === 1000 ) {
 			$version_id = 1;
 		}
-		Options::update_option_value( 'css-version-id', absint( $version_id ) );
+		Options::update( 'css-version-id', $version_id );
 	}
 
-
+	/**
+	 * Gets the CSS version ID.
+	 *
+	 * @return string The CSS version ID.
+	 */
 	public static function get_version_id() {
-		return Options::get_option_value( 'css-version-id' );
+		return Options::get( 'css-version-id', 0 );
 	}
 
 	/**
 	 * Gets the CSS version.
 	 *
-	 * @param int $plugin_version The plugin version to be used as a fallback.
-	 *
-	 * @return int The CSS version.
+	 * @return string The CSS version.
 	 */
-	public static function get_version( $plugin_version = -1 ) {
-		$version = 0;
-		if ( 'file-system' === self::get_mode() ) {
-			$version = absint( self::get_version_id() );
-		} elseif ( $plugin_version ) {
-			$version = $plugin_version;
+	public static function get_version() {
+		if ( self::get_mode() === 'file-system' ) {
+			$version = self::get_version_id();
+			if ( empty( $version ) ) {
+				$version = '0';
+			}
+			return $version;
 		}
-		return $version;
+		return SEARCH_FILTER_VERSION;
 	}
 
 	/**
@@ -192,7 +319,7 @@ class CSS_Loader {
 	 * @return string The CSS mode.
 	 */
 	public static function get_mode() {
-		return Options::get_option_value( 'css-mode' );
+		return Options::get( 'css-mode' );
 	}
 
 	/**
@@ -216,9 +343,7 @@ class CSS_Loader {
 	 * @return string The CSS file URL.
 	 */
 	public static function get_css_url() {
-		if ( 'file-system' === self::get_mode() ) {
-			$url = trailingslashit( self::uploads_url() ) . 'search-filter/style.css';
-			return $url;
-		}
+		$url = trailingslashit( self::uploads_url() ) . 'search-filter/style.css';
+		return $url;
 	}
 }

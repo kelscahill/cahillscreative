@@ -9,7 +9,7 @@
  */
 
 if ( ! defined( 'SEARCH_FILTER_PRO_VERSION' ) ) {
-	define( 'SEARCH_FILTER_PRO_VERSION', '3.1.8' );
+	define( 'SEARCH_FILTER_PRO_VERSION', '3.2.3' );
 }
 
 if ( ! defined( 'SEARCH_FILTER_PRO_URL' ) ) {
@@ -20,22 +20,28 @@ if ( ! defined( 'SEARCH_FILTER_PRO_PATH' ) ) {
 	define( 'SEARCH_FILTER_PRO_PATH', plugin_dir_path( __FILE__ ) );
 }
 
+// Extensions declare their "tested upto" version - bump this every time the
+// core plugins make breaking changes to apis extensions rely on - this will
+// prevent them from loading.
+if ( ! defined( 'SEARCH_FILTER_PRO_EXTENSION_REQUIRES_VERSION' ) ) {
+	define( 'SEARCH_FILTER_PRO_EXTENSION_REQUIRES_VERSION', '3.2.0' );
+}
+
 // The required version number of the Search & Filter base plugin.
 if ( ! defined( 'SEARCH_FILTER_PRO_REQUIRED_BASE_VERSION' ) ) {
-	define( 'SEARCH_FILTER_PRO_REQUIRED_BASE_VERSION', '3.1.0' );
+	define( 'SEARCH_FILTER_PRO_REQUIRED_BASE_VERSION', '3.2.0' );
 }
 
 // The recommended version number of the Search & Filter base plugin.
 if ( ! defined( 'SEARCH_FILTER_PRO_RECOMMENDED_BASE_VERSION' ) ) {
-	define( 'SEARCH_FILTER_PRO_RECOMMENDED_BASE_VERSION', '3.1.3' );
+	define( 'SEARCH_FILTER_PRO_RECOMMENDED_BASE_VERSION', '3.2.2' );
 }
 
 // Define exception codes.
 define( 'SEARCH_FILTER_PRO_TASK_RUNNER_LOCK_ERROR', '600' );
 
 
-// Include the environment constants.
-$env_path = plugin_dir_path( __FILE__ ) . 'env.php';
-if ( file_exists( $env_path ) ) {
-	require_once $env_path;
-}
+// Table Manager exception codes.
+define( 'SEARCH_FILTER_PRO_EXCEPTION_TABLE_EXISTS', 4001 );
+define( 'SEARCH_FILTER_PRO_EXCEPTION_TABLE_NOT_FOUND', 4002 );
+define( 'SEARCH_FILTER_PRO_EXCEPTION_TABLE_CLASS_MISSING', 4003 );

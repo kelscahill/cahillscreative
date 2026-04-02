@@ -9,8 +9,6 @@
 
 namespace Search_Filter_Pro;
 
-use Search_Filter\Features;
-
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -22,6 +20,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Util {
 
 	/**
+	 * Logged messages for deduplication within a request.
+	 *
+	 * @var array
+	 */
+	private static $logged_messages = array();
+
+	/**
 	 * Converts a shorthand byte value to an integer byte value.
 	 *
 	 * Wrapper for wp_convert_hr_to_bytes(), moved to load.php in WordPress 4.6 from media.php
@@ -31,7 +36,7 @@ class Util {
 	 * @link https://secure.php.net/manual/en/function.ini-get.php
 	 * @link https://secure.php.net/manual/en/faq.using.php#faq.using.shorthandbytes
 	 *
-	 * @param string $value A (PHP ini) byte value, either shorthand or ordinary.
+	 * @param string|int $value A (PHP ini) byte value, either shorthand or ordinary.
 	 * @return int An integer byte value.
 	 */
 	public static function convert_hr_to_bytes( $value ) {
@@ -116,6 +121,7 @@ class Util {
 			return wp_raise_memory_limit( 'admin' );
 		}
 
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Fallback when wp_raise_memory_limit() doesn't exist.
 		$current_limit     = @ini_get( 'memory_limit' );
 		$current_limit_int = self::convert_hr_to_bytes( $current_limit );
 
@@ -123,18 +129,20 @@ class Util {
 			return false;
 		}
 
-		$wp_max_limit       = WP_MAX_MEMORY_LIMIT;
+		$wp_max_limit       = defined( 'WP_MAX_MEMORY_LIMIT' ) ? WP_MAX_MEMORY_LIMIT : '256M';
 		$wp_max_limit_int   = self::convert_hr_to_bytes( $wp_max_limit );
 		$filtered_limit     = apply_filters( 'admin_memory_limit', $wp_max_limit );
 		$filtered_limit_int = self::convert_hr_to_bytes( $filtered_limit );
 
 		if ( -1 === $filtered_limit_int || ( $filtered_limit_int > $wp_max_limit_int && $filtered_limit_int > $current_limit_int ) ) {
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.IniSet.memory_limit_Disallowed -- Fallback when wp_raise_memory_limit() doesn't exist.
 			if ( false !== @ini_set( 'memory_limit', $filtered_limit ) ) {
 				return $filtered_limit;
 			} else {
 				return false;
 			}
 		} elseif ( -1 === $wp_max_limit_int || $wp_max_limit_int > $current_limit_int ) {
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.IniSet.memory_limit_Disallowed -- Fallback when wp_raise_memory_limit() doesn't exist.
 			if ( false !== @ini_set( 'memory_limit', $wp_max_limit ) ) {
 				return $wp_max_limit;
 			} else {
@@ -152,7 +160,7 @@ class Util {
 	 *
 	 * Credit goes to the Action Scheduler Libary - https://github.com/woocommerce/action-scheduler/
 	 */
-	public static function clear_caches() {
+	public static function clear_object_caches() {
 		/*
 		 * Calling wp_cache_flush_runtime() lets us clear the runtime cache without invalidating the external object
 		 * cache, so we will always prefer this method (as compared to calling wp_cache_flush()) when it is available.
@@ -188,28 +196,67 @@ class Util {
 	/**
 	 * Log an error message to the error log.
 	 *
-	 * Only if WP_DEBUG is enabled.
+	 * Only if WP_DEBUG is enabled. Automatically defers logging if called
+	 * during an active database transaction to prevent DB access issues.
 	 *
 	 * This is a duplicate of the function in the parent plugin,
 	 * because we need to use it when the parent plugin is not
 	 * loaded.
 	 *
-	 * TODO - we could start tracking the issues in the DB to
-	 * present to the user via admin or export file.
+	 * @param string $message The error message.
+	 * @param string $level   The log level (error, warning, notice).
+	 * @param bool   $once    If true, only log this message once per request.
+	 */
+	public static function error_log( $message, $level = 'error', $once = false ) {
+
+		// If the base plugin is not loaded, Transaction won't exist.
+		if ( class_exists( '\Search_Filter\Database\Transaction' ) ) {
+			// If inside a transaction, defer logging to prevent DB access.
+			if ( \Search_Filter\Database\Transaction::is_active() ) {
+				\Search_Filter\Database\Transaction::defer(
+					function () use ( $message, $level, $once ) {
+						self::do_error_log( $message, $level, $once );
+					}
+				);
+				return;
+			}
+		}
+
+		self::do_error_log( $message, $level, $once );
+	}
+
+	/**
+	 * Actually perform the logging (internal, bypasses transaction check).
 	 *
 	 * @param string $message The error message.
+	 * @param string $level   The log level (error, warning, notice).
+	 * @param bool   $once    If true, only log this message once per request.
 	 */
-	public static function error_log( $message, $level = 'error' ) {
+	private static function do_error_log( $message, $level = 'error', $once = false ) {
+		// Handle once-per-request deduplication.
+		if ( $once ) {
+			$key = md5( $level . $message );
+			if ( isset( self::$logged_messages[ $key ] ) ) {
+				return;
+			}
+			self::$logged_messages[ $key ] = true;
+		}
 
 		$log_level       = 'errors';
 		$log_to_database = 'no';
 
-		if ( did_action( 'search-filter/settings/features/init' ) && Features::is_enabled( 'debugMode' ) && class_exists( '\Search_Filter\Debugger' ) ) {
-			$log_level = \Search_Filter\Debugger::get_setting_value( 'logLevel' );
+		$has_base_plugin = class_exists( '\Search_Filter\Features' ) && class_exists( '\Search_Filter\Debugger' );
+
+		if (
+			$has_base_plugin &&
+			did_action( 'search-filter/settings/features/init' ) &&
+			\Search_Filter\Features::is_enabled( 'debugMode' )
+		) {
+			$log_level = \Search_Filter\Features::get_setting_value( 'debugger', 'logLevel' );
 			if ( $log_level === null ) {
 				$log_level = 'errors';
 			}
-			$log_to_database = \Search_Filter\Debugger::get_setting_value( 'logToDatabase' );
+			$log_to_database = \Search_Filter\Features::get_setting_value( 'debugger', 'logToDatabase' );
 			if ( $log_to_database === null ) {
 				$log_to_database = 'no';
 			}
@@ -231,24 +278,30 @@ class Util {
 			$pid = getmypid() . ' | ';
 		}
 
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG === true ) {
+		if ( self::is_debug_logging_enabled() ) {
 			// Translators: %1$s is the process ID, %2$s is the message.
 			$full_message = wp_kses_post( sprintf( '%1$sSearch & Filter Pro: %2$s', $pid, $message ) );
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( $full_message );
 		}
 
-		if ( did_action( 'search-filter/settings/features/init' ) && Features::is_enabled( 'debugMode' ) && $log_to_database === 'yes' && class_exists( '\Search_Filter\Debugger' ) ) {
+		if ( $log_to_database === 'yes' ) {
 			$full_message = sprintf( '%1$sSearch & Filter Pro: %2$s', $pid, $message );
-			\Search_Filter\Debugger::create_log(
-				array(
-					'message' => sanitize_text_field( $full_message ),
-					'level'   => $level,
-				)
+			Database\Queries\Logs_Direct::resilient_create_log(
+				sanitize_text_field( $full_message ),
+				$level
 			);
 		}
 	}
 
+	/**
+	 * Is debug logging enabled?
+	 *
+	 * @return bool
+	 */
+	public static function is_debug_logging_enabled() {
+		return defined( 'WP_DEBUG' ) && WP_DEBUG === true && defined( 'WP_DEBUG_LOG' ) && ! empty( WP_DEBUG_LOG );
+	}
 	/**
 	 * Get author IDs from author slugs.
 	 *
@@ -273,13 +326,11 @@ class Util {
 	/**
 	 * Check if we're only in the admin, exclude AJAX and REST requests.
 	 *
+	 * Important: must be kept here in pro so it can be called when S&F base is not loaded.
+	 *
 	 * @return bool
 	 */
 	public static function is_admin_only() {
-		return is_admin() && ! wp_doing_ajax() && ! wp_is_serving_rest_request() && ! wp_doing_cron();
-	}
-
-	public static function is_frontend_only() {
-		return ! is_admin() && ! wp_doing_ajax() && ! wp_is_serving_rest_request() && ! wp_doing_cron();
+		return is_admin() && ! wp_doing_ajax() && ! wp_is_serving_rest_request() && ! wp_doing_cron() && ! wp_is_json_request();
 	}
 }

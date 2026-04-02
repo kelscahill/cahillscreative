@@ -96,11 +96,8 @@ class Dependencies {
 	 * @return   boolean
 	 */
 	public static function is_plugin_installed( $plugin_path ) {
-		if ( ! function_exists( '\get_plugins' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-		$plugins = \get_plugins();
-		return isset( $plugins[ $plugin_path ] );
+		// Fast path: just check if the file exists.
+		return file_exists( WP_PLUGIN_DIR . '/' . $plugin_path );
 	}
 
 	/**
@@ -108,20 +105,23 @@ class Dependencies {
 	 *
 	 * @since    3.0.0
 	 *
-	 * @return   string
+	 * @return   string|false
 	 */
 	public static function get_base_plugin_version() {
-		if ( ! function_exists( '\get_plugins' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		// Fast path: if active, constant is already in memory.
+		if ( defined( 'SEARCH_FILTER_VERSION' ) ) {
+			return SEARCH_FILTER_VERSION;
 		}
-		// Use get_plugins to get the plugin version (so we can get the version even if it's not activated).
-		$plugins     = \get_plugins();
-		$plugin_path = 'search-filter/search-filter.php';
-		if ( ! isset( $plugins[ $plugin_path ] ) ) {
+		// Slow path: parse single plugin file header (only if inactive).
+		$plugin_file = WP_PLUGIN_DIR . '/search-filter/search-filter.php';
+		if ( ! file_exists( $plugin_file ) ) {
 			return false;
 		}
-		$search_filter_version = $plugins[ $plugin_path ]['Version'];
-		return $search_filter_version;
+		if ( ! function_exists( '\get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$plugin_data = \get_plugin_data( $plugin_file, false, false );
+		return $plugin_data['Version'] ?? false;
 	}
 
 	/**
@@ -191,6 +191,12 @@ class Dependencies {
 		return $actions;
 	}
 
+	/**
+	 * Modify the base plugin action links.
+	 *
+	 * @param array $actions The action links.
+	 * @return array Modified action links.
+	 */
 	private static function modify_base_plugin_links( $actions ) {
 		if ( isset( $actions['deactivate'] ) ) {
 			unset( $actions['deactivate'] );
@@ -199,5 +205,4 @@ class Dependencies {
 
 		return $actions;
 	}
-
 }

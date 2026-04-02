@@ -11,7 +11,10 @@
 
 namespace Search_Filter\Fields;
 
+use Search_Filter\Core\Asset_Loader;
+use Search_Filter\Core\Component_Loader;
 use Search_Filter\Core\CSS_Loader;
+use Search_Filter\Core\Deprecations;
 use Search_Filter\Util;
 use Search_Filter\Database\Queries\Fields as Field_Query;
 use Search_Filter\Fields;
@@ -19,7 +22,9 @@ use Search_Filter\Styles;
 use Search_Filter\Styles\Style;
 use Search_Filter\Record_Base;
 use Search_Filter\Core\Exception;
+use Search_Filter\Features;
 use Search_Filter\Queries;
+use Search_Filter\Queries\Query;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -62,6 +67,15 @@ class Field extends Record_Base {
 	 * @var      string    $base_class    ID
 	 */
 	public static $base_class = 'Search_Filter\\Fields';
+
+	/**
+	 * Usually we only want to instantiate & lookup a record once,
+	 * so store the instance for easy re-use later.
+	 *
+	 * @var array
+	 */
+	protected static $instances = array();
+
 	/**
 	 * Reference to the query ID
 	 *
@@ -81,6 +95,13 @@ class Field extends Record_Base {
 	protected $uid = 0;
 
 	/**
+	 * List of component dependencies.
+	 *
+	 * @var array
+	 */
+	public $components = array();
+
+	/**
 	 * Array of icon names to load.
 	 *
 	 * @since    3.0.0
@@ -98,6 +119,14 @@ class Field extends Record_Base {
 	 */
 	public static $styles = array();
 	/**
+	 * The processed (cached) styles.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_styles    The processed styles, null if not processed yet.
+	 */
+	protected static $processed_styles = null;
+	/**
 	 * Assoc array of data type settings the field supports.
 	 *
 	 * @since    3.0.0
@@ -113,6 +142,15 @@ class Field extends Record_Base {
 	 * @var      array    $setting_support    A nested array of setting types.
 	 */
 	public static $setting_support = array();
+
+	/**
+	 * The processed (cached) setting support.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_setting_support    The processed settings, null if not processed yet.
+	 */
+	protected static $processed_setting_support = null;
 
 	/**
 	 * The input type name.
@@ -138,6 +176,13 @@ class Field extends Record_Base {
 	private $values = array();
 
 	/**
+	 * The labels for the values
+	 *
+	 * @var array
+	 */
+	protected $value_labels = array();
+
+	/**
 	 * Saved field html attributes
 	 *
 	 * @var array
@@ -158,9 +203,9 @@ class Field extends Record_Base {
 	 */
 	protected $options = array();
 	/**
-	 * Whether or not we have already calculated the options.
+	 * Whether the options have been initialised for this field.
 	 *
-	 * @var array
+	 * @var bool
 	 */
 	private $options_init = false;
 
@@ -192,11 +237,15 @@ class Field extends Record_Base {
 	public $supports = array();
 
 	/**
-	 * Minimum settings to init.
+	 * Track if the regiseterd function has been run.
 	 *
-	 * @var array
+	 * This is used to prevent the function from running multiple times.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var bool
 	 */
-	private $default_attributes = array();
+	protected static $has_registered = false;
 
 	/**
 	 * Extra render data to be passed to to the render function.
@@ -235,16 +284,9 @@ class Field extends Record_Base {
 	/**
 	 * Additional data that can be used to generate the field.
 	 *
-	 * @var string
+	 * @var array
 	 */
 	private $connected_data = array();
-
-	/**
-	 * The nice name of the input type, used for labels etc.
-	 *
-	 * @var string
-	 */
-	public $labels = array();
 
 	/**
 	 * Handlers for the field class.
@@ -255,18 +297,28 @@ class Field extends Record_Base {
 	 */
 	public static $handlers = array();
 
+	/**
+	 * The locations the field is used in.
+	 *
+	 * @var array|null
+	 */
+	private $locations = null;
 
 	/**
 	 * The render attributes.
+	 *
+	 * @var array
 	 */
 	private $render_attributes = array();
 
 	/**
-	 * Query type to use for the field.
+	 * Whether or not the field requires the pro plugin.
 	 *
-	 * @var string
+	 * @since    3.0.0
+	 *
+	 * @var      bool
 	 */
-	private $query_type = 'wp_query';
+	protected static $requires_pro = false;
 
 	/**
 	 * Get the generated CSS.
@@ -286,36 +338,26 @@ class Field extends Record_Base {
 	}
 
 	/**
-	 * Overridable function for setting field defaults.
-	 *
-	 * @return array New default attributes.
-	 */
-	public function get_default_attributes() {
-		// TODO - defaults should be set based on the fields settings.
-		// We need to apply the `dependsOn`/ conditional logic to get the necessary defaults.
-		// We should probably also "clean" the attributes before saving to remove settings/keys
-		// that are not needed anymore by the field.
-		$defaults = \Search_Filter\Fields\Settings::get_defaults();
-		$defaults = apply_filters( 'search-filter/field/default_attributes', $defaults, $this );
-		return $defaults;
-	}
-
-	/**
 	 * Get the supported styles for the field.
 	 *
 	 * @return array
 	 */
 	public static function get_styles_support() {
-		return apply_filters( 'search-filter/field/get_style_support', static::$styles, static::$type, static::$input_type );
-	}
 
-	/**
-	 * Get the supported data types for the input type.
-	 *
-	 * @return array
-	 */
-	public static function get_data_support() {
-		return apply_filters( 'search-filter/field/get_data_support', static::$data_support, static::$type, static::$input_type );
+		if ( static::$processed_styles ) {
+			return static::$processed_styles;
+		}
+
+		$styles_support = static::$styles;
+
+		// Legacy support for incorrectly named filter.
+		Deprecations::add_filter( 'search-filter/fields/field/get_style_support', '3.2.0', 'search-filter/fields/field/get_styles_support' );
+		$styles_support = apply_filters( 'search-filter/fields/field/get_style_support', $styles_support, static::$type, static::$input_type );
+
+		$styles_support = apply_filters( 'search-filter/fields/field/get_styles_support', $styles_support, static::$type, static::$input_type );
+
+		static::$processed_styles = $styles_support;
+		return static::$processed_styles;
 	}
 
 	/**
@@ -324,6 +366,10 @@ class Field extends Record_Base {
 	 * @return array
 	 */
 	public static function get_setting_support() {
+
+		if ( static::$processed_setting_support ) {
+			return static::$processed_setting_support;
+		}
 		$parsed_setting_support = array();
 
 		foreach ( static::$setting_support as $setting_name => $support ) {
@@ -335,8 +381,6 @@ class Field extends Record_Base {
 			} elseif ( isset( $support['conditions'] ) ) {
 				// Always wrap the conditions in an OR relation, so we can insert alternative
 				// routes when we extend the conditions.
-				// And always wrap the current set conditions in an AND relation as all of them
-				// should be met.
 				$parsed_setting_support[ $setting_name ]['conditions'] = array(
 					'relation' => 'OR',
 					'rules'    => array(
@@ -346,12 +390,91 @@ class Field extends Record_Base {
 						),
 					),
 				);
-			} elseif ( isset( $support['values'] ) ) {
+			}
+			if ( isset( $support['values'] ) ) {
 				$parsed_setting_support[ $setting_name ]['values'] = $support['values'];
 			}
 		}
 
-		return apply_filters( 'search-filter/field/get_setting_support', $parsed_setting_support, static::$type, static::$input_type );
+		// Legacy support for incorrectly named filter.
+		Deprecations::add_filter( 'search-filter/field/get_setting_support', '3.2.0', 'search-filter/fields/field/get_setting_support' );
+		$parsed_setting_support = apply_filters( 'search-filter/field/get_setting_support', $parsed_setting_support, static::$type, static::$input_type );
+
+		$parsed_setting_support = apply_filters( 'search-filter/fields/field/get_setting_support', $parsed_setting_support, static::$type, static::$input_type );
+
+		static::$processed_setting_support = $parsed_setting_support;
+		return static::$processed_setting_support;
+	}
+
+	/**
+	 * Get the names of the settings that the field supports.
+	 *
+	 * Ignores conditions so we know what the complete set of settings.
+	 *
+	 * @return array
+	 */
+	public static function get_setting_support_names() {
+		return array_keys( static::get_setting_support() );
+	}
+	/**
+	 * Get the names of the settings that the field supports.
+	 *
+	 * Ignores conditions so we know what the complete set of settings.
+	 *
+	 * @return array
+	 */
+	public static function get_style_support_names() {
+		return array_keys( static::get_styles_support() );
+	}
+
+	/**
+	 * Get the interaction type for this field.
+	 *
+	 * Returns how this field interacts with data:
+	 * - 'choice': Discrete value selection
+	 * - 'range': Numeric or date ranges
+	 * - 'search': Full-text search
+	 * - null: No data interaction
+	 *
+	 * This method calls calc_interaction_type() to get the raw value, then applies
+	 * the filter hook. Subclasses should override calc_interaction_type() instead
+	 * of this method.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return string|null The interaction type.
+	 */
+	public function get_interaction_type(): ?string {
+		$interaction_type = $this->calc_interaction_type();
+
+		/**
+		 * Filter the interaction type for a field.
+		 *
+		 * @since 3.2.0
+		 *
+		 * @param string|null $interaction_type The interaction type ('choice', 'range', 'search', or null).
+		 * @param Field       $field            The field instance.
+		 */
+		return apply_filters(
+			'search-filter/fields/field/get_interaction_type',
+			$interaction_type,
+			$this
+		);
+	}
+
+	/**
+	 * Calculate the interaction type for this field.
+	 *
+	 * Subclasses should override this method to return their specific interaction type.
+	 * The base implementation returns the field's type attribute for backwards compatibility.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return string|null The raw interaction type before filtering.
+	 */
+	protected function calc_interaction_type(): ?string {
+		// Default: return field type for 3rd party backwards compatibility.
+		return $this->get_attribute( 'type' );
 	}
 
 	/**
@@ -364,6 +487,7 @@ class Field extends Record_Base {
 	 * @param array  $setting_support The setting support to add the conditions to.
 	 * @param string $setting_name    The setting name to add the conditions to.
 	 * @param array  $new_conditions  The new conditions to add.
+	 * @param bool   $is_required     Whether the setting is required.
 	 *
 	 * @return array The updated setting support.
 	 */
@@ -374,12 +498,13 @@ class Field extends Record_Base {
 			'rules'    => array(
 				array(
 					'relation' => 'AND',
-					'rules'    => array(), // Push here to add required conditions
+					'rules'    => array(), // Push here to add required conditions.
 				),
 				// Push here to add alternative logic routes.
 			),
 		);
 
+		// Preserve existing conditions.
 		if ( isset( $setting_support[ $setting_name ] ) ) {
 			if ( is_array( $setting_support[ $setting_name ] ) && isset( $setting_support[ $setting_name ]['conditions'] ) ) {
 				$conditions = $setting_support[ $setting_name ]['conditions'];
@@ -394,12 +519,36 @@ class Field extends Record_Base {
 
 		return $conditions;
 	}
+
+	/**
+	 * Add values to a setting support.
+	 *
+	 * @param array  $setting_support The setting support to add values to.
+	 * @param string $setting_name    The setting name to add values to.
+	 * @param array  $values          The values to add.
+	 *
+	 * @return array The updated setting support.
+	 */
+	public static function add_setting_support_value( $setting_support, $setting_name, $values ) {
+		// Progressively init values so can preserve existing values.
+		if ( ! isset( $setting_support[ $setting_name ] ) || is_bool( $setting_support[ $setting_name ] ) ) {
+			$setting_support[ $setting_name ] = array();
+		}
+		if ( ! isset( $setting_support [ $setting_name ]['values'] ) ) {
+			$setting_support[ $setting_name ]['values'] = array();
+		}
+
+		$setting_support[ $setting_name ]['values'] = array_merge(
+			$setting_support[ $setting_name ]['values'],
+			$values
+		);
+
+		return $setting_support;
+	}
 	/**
 	 * Init the field from already loaded attributes.
 	 */
 	public function init() {
-
-		parent::init();
 
 		if ( $this->uid === 0 ) {
 			$this->uid = self::get_instance_id( 'field' );
@@ -421,18 +570,29 @@ class Field extends Record_Base {
 
 		// Setup values from the URL.
 		$this->parse_url_value();
+
+		parent::init();
 	}
 
 	/**
 	 * Inits the data from a DB record.
 	 *
-	 * @param [type] $item Database record.
+	 * @param \Search_Filter\Database\Rows\Field $item Database record.
 	 */
 	public function load_record( $item ) {
-		parent::load_record( $item );
+		$this->set_id( $item->get_id() );
+		$this->set_status( $item->get_status() );
+		$this->set_name( $item->get_name() );
+		$this->set_record( $item );
+		$this->set_attributes( $item->get_attributes() );
+		$this->set_date_modified( $item->get_date_modified() );
+		$this->set_date_created( $item->get_date_created() );
+
 		$this->set_context( $item->get_context() );
 		$this->set_context_path( $item->get_context_path() );
 		$this->set_css( $item->get_css() );
+
+		$this->init();
 	}
 
 	/**
@@ -442,7 +602,13 @@ class Field extends Record_Base {
 	 */
 	public function get_url_name() {
 		$url_name = 'field_' . $this->get_id();
+
+		// Legacy support for incorrectly named filter.
+		Deprecations::add_filter( 'search-filter/field/url_name', '3.2.0', 'search-filter/fields/field/url_name' );
 		$url_name = apply_filters( 'search-filter/field/url_name', $url_name, $this );
+		// Filter the URL name.
+		$url_name = apply_filters( 'search-filter/fields/field/url_name', $url_name, $this );
+
 		return $url_name;
 	}
 
@@ -452,10 +618,11 @@ class Field extends Record_Base {
 	 * We usually want this to be empty, but sometimes a field
 	 * will want to link to something like a taxonomy archive.
 	 *
-	 * @return string The name to be used in the URL
+	 * @return array The name to be used in the URL
 	 */
 	public function get_url_template() {
-		return apply_filters( 'search-filter/field/url_template', array(), $this );
+		// Filter the URL template.
+		return apply_filters( 'search-filter/fields/field/url_template', array(), $this );
 	}
 
 	/**
@@ -465,12 +632,21 @@ class Field extends Record_Base {
 		$url_param_name = self::url_prefix() . $this->get_url_name();
 
 		// Allow override via hook.
-		$values = apply_filters( 'search-filter/field/parse_url_value', '', $this );
+		$values = apply_filters( 'search-filter/fields/field/parse_url_value', '', $this );
 		if ( ! empty( $values ) ) {
-			$this->set_values( explode( ',', $values ) );
+			// Split by comma, then restore any unit separators back to commas.
+			$parsed_values = explode( ',', $values );
+			$parsed_values = array_map(
+				function ( $v ) {
+					return str_replace( "\x1F", ',', $v );
+				},
+				$parsed_values
+			);
+			$this->set_values( $parsed_values );
 		}
 
-		// Notice: the request var has not been sanitized yet, its the raw value from the either $_GET or $_POST.
+		// Notice: the request var has not been sanitized yet, its the raw value from the either $_GET or $_POST
+		// with wp_unslash already applied.
 		$request_var = Util::get_request_var( $url_param_name );
 
 		// Proceed as normal by trying to get the value from the URL.
@@ -478,10 +654,18 @@ class Field extends Record_Base {
 			return;
 		}
 
-		$values = sanitize_text_field( wp_unslash( $request_var ) );
+		$values = sanitize_text_field( $request_var );
 
 		if ( $values !== '' ) {
-			$this->set_values( explode( ',', $values ) );
+			// Split by comma, then restore any unit separators back to commas.
+			$parsed_values = explode( ',', $values );
+			$parsed_values = array_map(
+				function ( $v ) {
+					return str_replace( "\x1F", ',', $v );
+				},
+				$parsed_values
+			);
+			$this->set_values( $parsed_values );
 		}
 	}
 
@@ -540,7 +724,11 @@ class Field extends Record_Base {
 	 * @return array The updated WP_Query args.
 	 */
 	public function apply_wp_query_args( $query_args = array() ) {
+		// Legacy support for incorrectly named filter.
+		Deprecations::add_filter( 'search-filter/field/wp_query_args', '3.2.0', 'search-filter/fields/field/wp_query_args' );
 		$query_args = apply_filters( 'search-filter/field/wp_query_args', $query_args, $this );
+		// Filter the WP_Query args.
+		$query_args = apply_filters( 'search-filter/fields/field/wp_query_args', $query_args, $this );
 		return $query_args;
 	}
 
@@ -611,8 +799,6 @@ class Field extends Record_Base {
 		if ( isset( $this->attributes['alignment'] ) && ! empty( $this->attributes['alignment'] ) ) {
 			$this->html_classes[] = 'search-filter-field--align-text-' . $this->get_attribute( 'alignment' );
 		}
-
-		// Add block editor class.
 		if ( isset( $this->attributes['align'] ) && ! empty( $this->attributes['align'] ) ) {
 			$this->html_classes[] = 'search-filter-field--align-' . $this->get_attribute( 'align' );
 		}
@@ -648,27 +834,7 @@ class Field extends Record_Base {
 	public function get_uid() {
 		return $this->uid;
 	}
-	/**
-	 * Get a style attribute.
-	 *
-	 * First looks to see if we've overriden the attribute locally,
-	 * if not, then try to load it from the style record.
-	 *
-	 * @param string $name The attribute name.
-	 *
-	 * @return mixed The attribute value.
-	 */
-	public function get_style_attribute( $name ) {
-		if ( isset( $this->attributes[ $name ] ) ) {
-			return $this->attributes[ $name ];
-		} else {
-			$style = Style::find( array( 'id' => $this->get_calc_styles_id() ) );
-			if ( ! is_wp_error( $style ) ) {
-				return $style->get_attribute_by_type( $this->get_attribute( 'type' ), self::get_input_type(), $name );
-			}
-		}
-		return null;
-	}
+
 	/**
 	 * Get the styles ID.  If its 0, its the default styles ID, so use that.
 	 *
@@ -690,6 +856,7 @@ class Field extends Record_Base {
 	 * Add a class to the field
 	 *
 	 * @param string $class_name Class name.
+	 * @param string $position   Position to add the class ('after' or 'before').
 	 *
 	 * @since    3.0.0
 	 */
@@ -715,6 +882,8 @@ class Field extends Record_Base {
 	 * Get the html attributes
 	 *
 	 * @since    3.0.0
+	 *
+	 * @return array  The html attributes array.
 	 */
 	public function get_html_attributes() {
 		return $this->html_attributes;
@@ -724,6 +893,8 @@ class Field extends Record_Base {
 	 * Get the html classes
 	 *
 	 * @since    3.0.4
+	 *
+	 * @return array  The html classes array.
 	 */
 	public function get_html_classes() {
 		return $this->html_classes;
@@ -734,15 +905,45 @@ class Field extends Record_Base {
 	 * Get the values that are set for this field
 	 *
 	 * @since    3.0.0
+	 *
+	 * @return array  The values array.
 	 */
 	public function get_values() {
 		return apply_filters( 'search-filter/fields/field/values', $this->values, $this );
 	}
 
 	/**
-	 * If there are any values set for this field
+	 * Set the values labels.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $value_labels The value labels to set.
+	 * @param bool  $replace      Whether to replace the existing value labels.
+	 */
+	public function set_value_labels( $value_labels, $replace = false ) {
+		if ( $replace ) {
+			$this->value_labels = $value_labels;
+		} else {
+			$this->value_labels = array_replace( $this->value_labels, $value_labels );
+		}
+	}
+	/**
+	 * Get the values that are set for this field
 	 *
 	 * @since    3.0.0
+	 *
+	 * @return array  The value + label pairs array.
+	 */
+	public function get_value_labels() {
+		return apply_filters( 'search-filter/fields/field/value_labels', $this->value_labels, $this );
+	}
+
+	/**
+	 * If there are any values set for this field.
+	 *
+	 * @since    3.0.0
+	 *
+	 * @return bool  True if the field has values, false otherwise.
 	 */
 	protected function has_values() {
 		return count( $this->get_values() ) > 0;
@@ -766,7 +967,7 @@ class Field extends Record_Base {
 	 * @since 3.0.0
 	 *
 	 * @param string $key The key to set.
-	 * @param array  $data An associative array of data.
+	 * @param mixed  $data The data to store.
 	 */
 	public function update_connected_data( $key, $data ) {
 		$this->connected_data[ $key ] = $data;
@@ -861,17 +1062,30 @@ class Field extends Record_Base {
 		return $json_data;
 	}
 
+	/**
+	 * Initializes render data for the field.
+	 *
+	 * Override in child classes to set up field-specific render data.
+	 */
 	protected function init_render_data() {
 		// Override in child classes.
 	}
 	/**
 	 * Display the HTML output of the filter
 	 *
-	 * @param string $return_output   Whether to echo or return the output.
-	 *
 	 * @since    3.0.0
+	 *
+	 * @param bool $return_output Whether to return the output or echo it.
+	 *
+	 * @return string|void Nothing if $return_output is false, otherwise the field HTML.
 	 */
 	public function render( $return_output = false ) {
+		if ( ! $this->has_init() ) {
+			return;
+		}
+		if ( ! $this->is_enabled() ) {
+			return;
+		}
 		// We don't want to modify the internal values.
 		$attributes = $this->get_attributes();
 
@@ -882,7 +1096,7 @@ class Field extends Record_Base {
 		do_action( "search-filter/fields/{$this->name}/render/before", $attributes );
 
 		// Modify args before render.
-		$attributes = apply_filters( 'search-filter/fields/field/render/attributes', $attributes, $this->name );
+		$attributes = apply_filters( 'search-filter/fields/field/render/attributes', $attributes, $this );
 		$attributes = apply_filters( "search-filter/fields/{$this->name}/render/attributes", $attributes );
 
 		// Copy the modified attributes to the render data object to keep
@@ -901,9 +1115,12 @@ class Field extends Record_Base {
 
 		$html_attributes['class'] = implode( ' ', $html_classes );
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Util::get_attributes_html() handles escaping.
 		echo '<div ' . Util::get_attributes_html( $html_attributes ) . '>';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- build() returns escaped HTML.
 		echo $this->build();
 		echo '</div>';
+
 		$output = ob_get_clean();
 
 		// Modify output html.
@@ -911,6 +1128,7 @@ class Field extends Record_Base {
 		$output = apply_filters( "search-filter/fields/{$this->name}/render/output", $output, $attributes );
 
 		if ( ! $return_output ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output already escaped by filters.
 			echo $output;
 		}
 
@@ -918,13 +1136,39 @@ class Field extends Record_Base {
 		do_action( 'search-filter/fields/field/render/after', $attributes, $this->name );
 		do_action( "search-filter/fields/{$this->name}/render/after", $attributes );
 
+		if ( Features::is_enabled( 'dynamicAssetLoading' ) ) {
+			$this->enqueue_assets();
+		}
+
 		if ( $return_output ) {
 			return $output;
 		}
 	}
 
 	/**
+	 * Enqueue the assets for the field.
+	 *
+	 * @since 3.1.3
+	 */
+	public function enqueue_assets() {
+		// Try to enqueue any assets required by the field.
+		$components_to_load = $this->get_components();
+
+		// Ensure the frontend is enqueued, we can't solely rely on the dependencies of the
+		// components to trigger the frontend because there might not be any individual components
+		// that need loading.
+		Asset_Loader::enqueue( array( 'search-filter-frontend', 'search-filter-frontend-ugc' ) );
+
+		foreach ( $components_to_load as $component_name ) {
+			$component_handle = Component_Loader::get_handle( $component_name );
+			Asset_Loader::enqueue( array( $component_handle ) );
+		}
+	}
+
+	/**
 	 * Return this fields input type
+	 *
+	 * @return string  The attribute input type.
 	 */
 	public static function get_input_type() {
 		return static::$input_type;
@@ -942,12 +1186,16 @@ class Field extends Record_Base {
 
 	/**
 	 * Gets a fields options.
+	 *
+	 * @return array  The options array with value/label pairs.
 	 */
 	public function get_options() {
 		return $this->options;
 	}
 	/**
 	 * Gets a fields options.
+	 *
+	 * @return bool
 	 */
 	public function has_options() {
 		return $this->options_init;
@@ -961,17 +1209,18 @@ class Field extends Record_Base {
 	public function set_render_data( $data ) {
 		$this->render_data = $data;
 	}
-	/**
+
+	/*
 	 * Updates the render data.
 	 *
 	 * @param array $data An associative array of data.
-	 */
-	/*
+	 *
 	public function update_render_data( $data ) {
 		$existing_data = $this->get_render_data();
 		$combined_data = wp_parse_args( $data, $existing_data );
 		$this->set_render_data( $combined_data );
-	} */
+	}
+	*/
 	/**
 	 * Sets the callbacks to be used for escaping the render data.
 	 *
@@ -988,7 +1237,10 @@ class Field extends Record_Base {
 	 * @return string The template base directory.
 	 */
 	public function get_template_dir() {
-		$field_type = $this->attributes['type'];
+		if ( ! $this->get_attribute( 'type' ) ) {
+			return '';
+		}
+		$field_type = $this->get_attribute( 'type' );
 		return SEARCH_FILTER_PATH . 'includes' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $field_type;
 	}
 
@@ -1002,11 +1254,14 @@ class Field extends Record_Base {
 	 * @return string The field markup.
 	 */
 	public function build() {
-		$field_type   = $this->attributes['type'];
+		if ( ! $this->get_attribute( 'type' ) ) {
+			return '';
+		}
+		$field_type   = $this->get_attribute( 'type' );
 		$input_type   = $field_type === 'control' ? $this->get_attribute( 'controlType' ) : self::get_input_type();
 		$template_dir = $this->get_template_dir();
 
-		$data            = $this->attributes;
+		$data            = $this->get_attributes();
 		$data['options'] = $this->get_options();
 
 		// TODO - not every label needs an ID, maybe this should be moved into the individual field classes?
@@ -1018,16 +1273,14 @@ class Field extends Record_Base {
 		$data_raw     = wp_parse_args( $this->render_data, $data );
 		$data_escaped = $this->escape_render_data( $data_raw, $this->render_escape_callbacks );
 
-		// TODO.
 		$data            = apply_filters( 'search-filter/field/build/data', $data_escaped, $this->name );
 		$template_output = '';
 		if ( file_exists( $template_dir . DIRECTORY_SEPARATOR . $input_type . '.php' ) ) {
 			ob_start();
 			include $template_dir . DIRECTORY_SEPARATOR . $input_type . '.php';
 			$template_output = ob_get_clean();
-		} else {
-			// TODO - throw warning about extending the Field class and implementing this method.
 		}
+		// TODO - throw warning about extending the Field class and implementing this method.
 		return $template_output;
 	}
 
@@ -1067,40 +1320,75 @@ class Field extends Record_Base {
 	 * Sets the Field context (admin, block-editor, elementor, beaverbuilder etc)
 	 *
 	 * @param string $context The context to set.
-	 * @param string $path The path of the context.
 	 */
 	public function set_context( $context ) {
 		$this->context = $context;
 	}
+
 	/**
 	 * Sets the Field context path - eg 'post/123'
 	 *
-	 * @param string $context The context to set.
 	 * @param string $path The path of the context.
 	 */
 	public function set_context_path( $path ) {
 		$this->context_path = $path;
 	}
+
 	/**
-	 * Gets the query ID based on the query integration setting.
+	 * Gets the Field context.
 	 *
-	 * @return string The URL prefix.
+	 * @return string The context.
+	 */
+	public function get_context() {
+		return $this->context;
+	}
+	/**
+	 * Gets the Field context path.
+	 *
+	 * @return string The context path.
+	 */
+	public function get_context_path() {
+		return $this->context_path;
+	}
+
+	/**
+	 * Get the ID of the connected query for the field.
+	 *
+	 * @return int The query ID.
 	 */
 	public function get_query_id() {
 		return $this->query_id;
 	}
-	public function refresh_query_id() {
-		if ( isset( $this->attributes['queryId'] ) ) {
-			$this->query_id = absint( $this->attributes['queryId'] );
+
+	/**
+	 * Get the connected query instance.
+	 *
+	 * @return \Search_Filter\Queries\Query|null
+	 */
+	public function get_query() {
+		$query = Query::get_instance( $this->get_query_id() );
+		if ( is_wp_error( $query ) ) {
+			return null;
 		}
+		return $query;
+	}
+
+	/**
+	 * Refresh the query ID from the field attributes.
+	 *
+	 * @since 3.0.0
+	 */
+	public function refresh_query_id() {
+		$this->query_id = absint( $this->get_attribute( 'queryId' ) );
 	}
 
 	/**
 	 * Saves the field
 	 *
+	 * @param array $args The arguments to save the field with.
 	 * @return int The saved field ID.
 	 */
-	public function save( $args = array() ) {
+	public function save( array $args = array() ) {
 		$this->refresh_query_id();
 		$this->regenerate_css();
 
@@ -1120,8 +1408,7 @@ class Field extends Record_Base {
 	 * @return string The URL prefix.
 	 */
 	public static function url_prefix() {
-		// TODO.
-		return '_';
+		return apply_filters( 'search-filter/fields/field/url_prefix', '_' );
 	}
 
 	/**
@@ -1144,32 +1431,7 @@ class Field extends Record_Base {
 		if ( isset( $context['path'] ) ) {
 			$new_field->set_context_path( $context['path'] );
 		}
-		return $new_field;
-	}
-
-	/**
-	 * Process the attributes and run init local vars
-	 *
-	 * @param array $attributes  Field attributes.
-	 *
-	 * @since    3.0.0
-	 */
-	public function set_attributes( $attributes, $replace = false ) {
-		parent::set_attributes( $attributes, $replace );
-		$this->refresh_query_id();
-		$this->init();
-	}
-	/**
-	 * Creates a new instance of the field from a database record.
-	 *
-	 * @param StdClass $item The database record.
-	 *
-	 * @return Field The new instance of the field class.
-	 */
-	public static function create_from_record( $item ) {
-		$static_class = static::class;
-		$new_field    = new $static_class();
-		$new_field->load_record( $item );
+		$new_field->init();
 		return $new_field;
 	}
 
@@ -1178,15 +1440,12 @@ class Field extends Record_Base {
 	 *
 	 * @param array  $conditions  Column name => value pairs.
 	 * @param string $return_type  Whether to return the object or the record.
-	 * @return self|\Search_Filter\Database\Rows\Field|\WP_Error
+	 * @return \Search_Filter\Fields\Field|\Search_Filter\Database\Rows\Field|\WP_Error|null
 	 *
 	 * @throws Exception If the conditions are not an array.
 	 */
-	public static function find( $conditions, $return_type = 'object' ) {
-		// If conditions are not an array then throw an exception.
-		if ( ! is_array( $conditions ) ) {
-			throw new Exception( 'Conditions must be an array.', SEARCH_FILTER_EXCEPTION_BAD_FIND_CONDITIONS );
-		}
+	public static function find( array $conditions, string $return_type = 'object' ) {
+
 		$query_args = array(
 			'number'  => 1, // Only retrieve a single record.
 			'orderby' => 'date_published',
@@ -1218,7 +1477,7 @@ class Field extends Record_Base {
 	/**
 	 * Generates a unique ID based on the subject.
 	 *
-	 * @param array $subject The subject to generate the ID for.
+	 * @param string|int $subject The subject to generate the ID for.
 	 *
 	 * @return int The instance ID.
 	 */
@@ -1236,8 +1495,18 @@ class Field extends Record_Base {
 	 *
 	 * @param string $icon_name The name of the icon to add.
 	 */
-	public function add_icon( $icon_name ) {
+	public function add_icon( string $icon_name ) {
 		$this->icons[] = $icon_name;
+	}
+
+	/**
+	 * Gets the components array.
+	 *
+	 * @return array The components array.
+	 */
+	public function get_components() {
+		$components = apply_filters( 'search-filter/fields/field/get_components', $this->components, $this );
+		return $components;
 	}
 
 	/**
@@ -1252,8 +1521,10 @@ class Field extends Record_Base {
 
 	/**
 	 * Deletes an icon name from the icons array.
+	 *
+	 * @param string $icon_name The name of the icon to delete.
 	 */
-	public function remove_icon( $icon_name ) {
+	public function remove_icon( string $icon_name ) {
 		$index = array_search( $icon_name, $this->icons, true );
 		if ( false !== $index ) {
 			unset( $this->icons[ $index ] );
@@ -1266,26 +1537,14 @@ class Field extends Record_Base {
 	 * @since   3.0.0
 	 */
 	public function regenerate_css() {
+
+		// Prevent updating the CSS until the user has opted-in to version 2.
+		$assets_version = Asset_Loader::get_db_version();
+		if ( $assets_version !== 2 ) {
+			return;
+		}
+
 		$this->css = $this->generate_css();
-	}
-
-
-	/**
-	 * Gets the query mode for the field.
-	 *
-	 * @return string The query mode.
-	 */
-	public function get_query_type() {
-		return apply_filters( 'search-filter/fields/field/get_query_type', $this->query_type, $this );
-	}
-
-	/**
-	 * Sets the query mode for the field.
-	 *
-	 * @param string $query_type The query mode.
-	 */
-	public function set_query_type( $query_type ) {
-		$this->query_type = $query_type;
 	}
 
 	/**
@@ -1295,6 +1554,13 @@ class Field extends Record_Base {
 	 */
 	private function generate_css() {
 		$css = '';
+
+		$attributes_css = Style::create_attributes_css( $this->get_attributes() );
+
+		if ( empty( $attributes_css ) ) {
+			return $css;
+		}
+
 		// Get the base styles class for the ID.
 		// Increase specificity to override the template styles which are added using styles + input types.
 		$styles_class = '.search-filter-field.search-filter-field--id-' . intval( $this->get_id() );
@@ -1303,7 +1569,7 @@ class Field extends Record_Base {
 
 		$css .= $styles_class . '{';
 		// Now try to parse any styles attributes.
-		$css .= CSS_Loader::clean_css( Style::create_attributes_css( $this->get_attributes() ) );
+		$css .= CSS_Loader::clean_css( $attributes_css );
 		// Normally we only generate CSS vars for style attributes, but setting the margin
 		// upfront on any field overrides block spacing, so lets only set the margin if it
 		// the property is set.
@@ -1328,7 +1594,7 @@ class Field extends Record_Base {
 	 *
 	 * @return string The generated CSS.
 	 */
-	public function create_attributes_css( $attributes ) {
+	public function create_attributes_css( array $attributes ) {
 		$css = '';
 		$css = apply_filters( 'search-filter/styles/style/create_attributes_css', $css, $attributes );
 		return $css;
@@ -1337,14 +1603,101 @@ class Field extends Record_Base {
 	/**
 	 * Gets the attributes as an array.
 	 *
+	 * @param bool $unfiltered Whether to return the unfiltered attributes.
 	 * @return array
 	 */
-	public function get_attributes( $unfiltered = false ) {
+	public function get_attributes( bool $unfiltered = false ) {
 		$attributes = parent::get_attributes( $unfiltered );
 		if ( ! $unfiltered ) {
 			$attributes = apply_filters( 'search-filter/fields/field/get_attributes', $attributes, $this );
 		}
 		return $attributes;
+	}
+
+	/**
+	 * Adds a location for the field.
+	 *
+	 * @since   3.1.7
+	 *
+	 * @param string $location The location to add.
+	 */
+	public function add_location( string $location ) {
+		$location  = (string) $location;
+		$locations = $this->get_locations();
+		if ( ! in_array( $location, $locations, true ) ) {
+			$locations[] = $location;
+			$this->set_locations( $locations );
+		}
+	}
+
+	/**
+	 * Removes a location for the field.
+	 *
+	 * @since   3.1.7
+	 *
+	 * @param string $location The location to remove.
+	 */
+	public function remove_location( string $location ) {
+		$location  = (string) $location;
+		$locations = $this->get_locations();
+		if ( in_array( $location, $locations, true ) ) {
+			$index = array_search( $location, $locations, true );
+			if ( false !== $index ) {
+				unset( $locations[ $index ] );
+			}
+			$this->set_locations( $locations );
+		}
+	}
+
+	/**
+	 * Sets the locations for the field.
+	 *
+	 * TODO - we should require save to commit locations but right now it just
+	 * commits the location to meta immediately.
+	 *
+	 * @since   3.1.7
+	 *
+	 * @param array $locations The locations to set.
+	 */
+	public function set_locations( array $locations ) {
+		self::delete_meta( $this->get_id(), 'locations' );
+		$locations = array_unique( $locations );
+
+		foreach ( $locations as $location ) {
+			self::add_meta( $this->get_id(), 'locations', $location );
+		}
+		$this->locations = $locations;
+	}
+
+	/**
+	 * Gets the locations for the field.
+	 *
+	 * @return array The locations.
+	 */
+	public function get_locations() {
+		if ( $this->locations !== null ) {
+			return $this->locations;
+		}
+		$this->locations = array();
+		$locations       = self::get_meta( $this->get_id(), 'locations' );
+		if ( ! empty( $locations ) ) {
+			$locations = array_unique( $locations );
+			foreach ( $locations as $location ) {
+				$this->locations[] = (string) $location;
+			}
+		}
+		return $this->locations;
+	}
+
+	/**
+	 * Checks if the field has a location.
+	 *
+	 * @param string $location The location to check.
+	 * @return bool True if the field has the location, false otherwise.
+	 */
+	public function has_location( string $location ) {
+		$locations = $this->get_locations();
+		return in_array( (string) $location, $locations, true );
 	}
 
 	/**
@@ -1355,7 +1708,7 @@ class Field extends Record_Base {
 	 *
 	 * @return mixed The attribute value or false if no attribute found.
 	 */
-	public function get_attribute( $attribute_name, $unfiltered = false ) {
+	public function get_attribute( string $attribute_name, bool $unfiltered = false ) {
 		$attribute = parent::get_attribute( $attribute_name, $unfiltered );
 		if ( ! $unfiltered ) {
 			$attribute = apply_filters( 'search-filter/fields/field/get_attribute', $attribute, $attribute_name, $this );
@@ -1374,13 +1727,19 @@ class Field extends Record_Base {
 	}
 
 	/**
+	 * Get the description for the input type.
+	 *
+	 * @return string The label.
+	 */
+	public static function get_description() {
+		return '';
+	}
+
+	/**
 	 * Stub function for registering any settings/apis etc that need to exist
 	 * permanently for this field.
-	 *
-	 * TODO - this is probably being overwritten by the last class to call this?
 	 */
-	public static function register() {
-	}
+	public static function register() {}
 
 	/**
 	 * Add a handler to the field.
@@ -1389,7 +1748,7 @@ class Field extends Record_Base {
 	 * @param mixed  $handler The handler.
 	 * @return void
 	 */
-	public static function add_handler( $name, $handler ) {
+	public static function add_handler( string $name, $handler ) {
 		self::$handlers[ $name ] = $handler;
 	}
 
@@ -1399,7 +1758,7 @@ class Field extends Record_Base {
 	 * @param string $name The name of the handler.
 	 * @return mixed The handler.
 	 */
-	public static function get_handler( $name ) {
+	public static function get_handler( string $name ) {
 		if ( isset( self::$handlers[ $name ] ) ) {
 			return self::$handlers[ $name ];
 		}
@@ -1421,9 +1780,18 @@ class Field extends Record_Base {
 	 * @param string $name The name of the handler.
 	 * @return void
 	 */
-	public static function remove_handler( $name ) {
+	public static function remove_handler( string $name ) {
 		if ( isset( self::$handlers[ $name ] ) ) {
 			unset( self::$handlers[ $name ] );
 		}
+	}
+
+	/**
+	 * Check if the field requires the Pro version.
+	 *
+	 * @return bool True if the field requires Pro, false otherwise.
+	 */
+	public static function requires_pro() {
+		return static::$requires_pro;
 	}
 }

@@ -3,7 +3,7 @@
  * Plugin Name:       Search & Filter
  * Plugin URI:        http://searchandfilter.com
  * Description:       Build powerful search experiences for your website or store.
- * Version:           3.1.6
+ * Version:           3.2.3
  * Author:            Code Amp
  * Author URI:        http://codeamp.com
  * License:           GPL-2.0+
@@ -12,9 +12,11 @@
  * Text Domain:       search-filter
  * Domain Path:       /languages
  * Requires at least: 6.5
- * Tested up to: 6.7
- * WC requires at least: 9.1
- * WC tested up to: 9.6
+ * Tested up to: 6.9
+ * WC requires at least: 9.4
+ * WC tested up to: 10.5
+ *
+ * @package Search_Filter
  */
 
 // If this file is called directly, abort.
@@ -54,9 +56,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-search-filter.php';
  * @since    3.0.0
  */
 function run_search_filter() {
-
-	$plugin = new Search_Filter();
-	$plugin->run();
+	new Search_Filter();
 }
 run_search_filter();
 

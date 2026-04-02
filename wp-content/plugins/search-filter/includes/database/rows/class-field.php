@@ -1,4 +1,14 @@
 <?php
+/**
+ * Field Row Class.
+ *
+ * @package     Database
+ * @subpackage  Rows
+ * @copyright   Copyright (c) 2020
+ * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       3.0.0
+ */
+
 namespace Search_Filter\Database\Rows;
 
 use Search_Filter\Core\Data_Store;
@@ -7,23 +17,98 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Field row class.
+ *
+ * @since 3.0.0
+ */
 class Field extends \Search_Filter\Database\Engine\Row {
-	public $id   = 0;
+	/**
+	 * The ID of the field.
+	 *
+	 * @since 3.0.0
+	 * @var int
+	 */
+	public $id = 0;
+
+	/**
+	 * The name of the field.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
 	public $name = '';
+
+	/**
+	 * The attributes of the field.
+	 *
+	 * @since 3.0.0
+	 * @var array
+	 */
 	public $attributes;
-	public $status        = '';
-	public $context       = '';
-	public $context_path  = '';
-	public $query_id      = 0;
-	public $css           = '';
-	public $date_created  = false;
-	public $date_modified = false;
+
+	/**
+	 * The status of the field.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $status = '';
+
+	/**
+	 * The context of the field.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $context = '';
+
+	/**
+	 * The context path of the field.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $context_path = '';
+
+	/**
+	 * The query ID of the field.
+	 *
+	 * @since 3.0.0
+	 * @var int
+	 */
+	public $query_id = 0;
+
+	/**
+	 * The CSS of the field.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $css = '';
+
+	/**
+	 * The date the field was created.
+	 *
+	 * @since 3.0.0
+	 * @var int
+	 */
+	public $date_created = 0;
+
+	/**
+	 * The date the field was modified.
+	 *
+	 * @since 3.0.0
+	 * @var int
+	 */
+	public $date_modified = 0;
+
 	/**
 	 * Fields constructor.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param $item
+	 * @param object $item The field item data.
 	 */
 	public function __construct( $item ) {
 		parent::__construct( $item );
@@ -32,13 +117,13 @@ class Field extends \Search_Filter\Database\Engine\Row {
 		$this->id           = (int) $this->id;
 		$this->name         = (string) $this->name;
 		$this->status       = (string) $this->status;
-		$this->attributes   = json_decode( $this->attributes, true );
+		$this->attributes   = is_string( $this->attributes ) ? json_decode( $this->attributes, true ) : $this->attributes;
 		$this->query_id     = (int) $this->query_id;
 		$this->context      = (string) $this->context;
 		$this->context_path = (string) $this->context_path;
 
-		$this->date_created  = false === $this->date_created ? 0 : strtotime( $this->date_created );
-		$this->date_modified = false === $this->date_modified ? 0 : strtotime( $this->date_modified );
+		$this->date_created  = empty( $this->date_created ) ? 0 : strtotime( (string) $this->date_created );
+		$this->date_modified = empty( $this->date_modified ) ? 0 : strtotime( (string) $this->date_modified );
 
 		Data_Store::set( 'field', $this->id, $this );
 	}
@@ -99,7 +184,7 @@ class Field extends \Search_Filter\Database\Engine\Row {
 		return $this->context;
 	}
 	/**
-	 * Get the contet path.
+	 * Get the context path.
 	 *
 	 * @return string The context path.
 	 */

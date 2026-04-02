@@ -10,6 +10,7 @@
 namespace Search_Filter\Integrations;
 
 use Search_Filter\Core\Dependants;
+use Search_Filter_Pro\Util;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -64,7 +65,9 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 	protected static $groups_order = array();
 
 	/**
-	 * The setting section name
+	 * The setting section name.
+	 *
+	 * @var string
 	 */
 	protected static $section = 'integrations';
 
@@ -77,22 +80,41 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 	 */
 	public static function init( $settings = array(), $groups = array() ) {
 
+		// We init the settings throughought the frontend and admin of the app.
+		// However, we only need to know the integration installation status (which loads
+		// some wp-admin specific includes) in our admin screens/endpoints - prevent
+		// checking installation status on the frontend or regular ajax requests.
+		$is_admin_like_request = ( is_admin() && ! wp_doing_ajax() ) || wp_is_serving_rest_request() || wp_is_json_request();
+
+		if ( ! $is_admin_like_request ) {
+			parent::init( $settings, $groups );
+			return;
+		}
+
+		// We only need to check if an integration is installed in admin.
 		$parsed_settings = array();
 		foreach ( $settings as $setting ) {
-
-			// Update isPluginInstalled based on  the file supplied.
-			if ( array_key_exists( 'pluginFile', $setting ) ) {
-				if ( is_array( $setting['pluginFile'] ) ) {
-					foreach ( $setting['pluginFile'] as $plugin_file ) {
-						if ( Dependants::is_plugin_installed( $plugin_file ) ) {
-							$setting['isPluginInstalled'] = true;
-							// Bail at the first match.
-							break;
+			if ( array_key_exists( 'integrationPaths', $setting ) ) {
+				$is_integration_installed = $setting['isIntegrationInstalled'] ?? false;
+				if ( is_array( $setting['integrationPaths'] ) ) {
+					foreach ( $setting['integrationPaths'] as $integration_path ) {
+						if ( $setting['integrationType'] === 'plugin' ) {
+							if ( Dependants::is_plugin_installed( $integration_path ) ) {
+								$is_integration_installed = true;
+								// Bail at the first match.
+								break;
+							}
+						} elseif ( $setting['integrationType'] === 'theme' ) {
+							if ( Dependants::is_theme_installed( $integration_path ) ) {
+								$is_integration_installed = true;
+								// Bail at the first match.
+								break;
+							}
 						}
 					}
 				}
+				$setting['isIntegrationInstalled'] = apply_filters( 'search-filter/integrations/is_installed', $is_integration_installed, $setting['name'] );
 			}
-
 			$parsed_settings[] = $setting;
 		}
 

@@ -100,10 +100,13 @@ class Plugin_Installer {
 		if ( is_wp_error( $api ) ) {
 			$response['error_message'] = $api->get_error_message();
 			$response['status']        = 'error';
-		} else {
+		} elseif ( is_object( $api ) && property_exists( $api, 'name' ) && property_exists( $api, 'download_link' ) ) {
 			$response['status'] = 'success';
 			$response['name']   = $api->name;
 			$response['url']    = $api->download_link;
+		} else {
+			$response['status']        = 'error';
+			$response['error_message'] = __( 'Invalid plugin data received', 'search-filter-pro' );
 		}
 		return $response;
 	}
@@ -182,4 +185,3 @@ class Plugin_Installer {
 		return $status;
 	}
 }
-

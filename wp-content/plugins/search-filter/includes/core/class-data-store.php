@@ -27,36 +27,36 @@ class Data_Store {
 	 * @var array
 	 */
 	private static $data = array(
-		'field'   => array(),
-		'query'   => array(),
-		'style'   => array(),
-		'options' => array(),
+		'field'  => array(),
+		'query'  => array(),
+		'style'  => array(),
+		'option' => array(),
 	);
 	/**
 	 * Get data from the store.
 	 *
-	 * @param string $type The type of data to get.
-	 * @param string $key  The key to get.
+	 * @param string     $type The type of data to get.
+	 * @param string|int $key  The key to get.
 	 *
-	 * @return mixed|false
+	 * @return mixed|null The data if found, null if not.
 	 */
-	public static function get( $type, $key ) {
+	public static function get( string $type, $key ) {
 		if ( ! isset( self::$data[ $type ] ) ) {
-			return false;
+			return null;
 		}
 		if ( ! isset( self::$data[ $type ][ $key ] ) ) {
-			return false;
+			return null;
 		}
 		return self::$data[ $type ][ $key ];
 	}
 	/**
 	 * Set data in the store.
 	 *
-	 * @param string $type  The type of data to set.
-	 * @param string $key   The key to set.
-	 * @param mixed  $value The value to set.
+	 * @param string     $type  The type of data to set.
+	 * @param string|int $key   The key to set.
+	 * @param mixed      $value The value to set.
 	 */
-	public static function set( $type, $key, $value ) {
+	public static function set( string $type, $key, $value ) {
 		if ( ! isset( self::$data[ $type ] ) ) {
 			self::$data[ $type ] = array();
 		}
@@ -66,11 +66,11 @@ class Data_Store {
 	/**
 	 * Remove the an item with with given key.
 	 *
-	 * @param string $type  The type of data to remove e.i field, query, style.
-	 * @param string $key The key to remove.
+	 * @param string     $type  The type of data to remove e.i field, query, style.
+	 * @param string|int $key The key to remove.
 	 * @return void
 	 */
-	public static function forget( $type, $key ) {
+	public static function forget( string $type, $key ) {
 		unset( self::$data[ $type ][ $key ] );
 	}
 
@@ -80,16 +80,16 @@ class Data_Store {
 	 * @param string $type  The type of data to remove e.i field, query, style.
 	 * @return void
 	 */
-	public static function flush( $type ) {
+	public static function flush( string $type ) {
 		unset( self::$data[ $type ] );
 	}
 
 	/**
-	 * Remove all data for all types.
+	 * Reset the data store, clearing all cached data.
 	 *
 	 * @return void
 	 */
-	public static function flush_all() {
+	public static function reset() {
 		self::$data = array();
 	}
 }

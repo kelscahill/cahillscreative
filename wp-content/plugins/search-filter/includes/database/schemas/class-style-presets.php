@@ -1,7 +1,11 @@
 <?php
 /**
  * Style Presets Schema Class.
+ *
+ * @package Search_Filter
+ * @since   3.0.0
  */
+
 namespace Search_Filter\Database\Schemas;
 
 // Exit if accessed directly.
@@ -24,7 +28,7 @@ class Style_Presets extends Schema {
 	 */
 	public $columns = array(
 
-		// id
+		// id.
 		array(
 			'name'     => 'id',
 			'type'     => 'bigint',
@@ -35,7 +39,7 @@ class Style_Presets extends Schema {
 			'sortable' => true,
 		),
 
-		// status
+		// status.
 		array(
 			'name'     => 'status',
 			'type'     => 'varchar',
@@ -43,17 +47,17 @@ class Style_Presets extends Schema {
 			'sortable' => true,
 		),
 
-		// date_created
+		// date_created.
 		array(
 			'name'       => 'date_created',
 			'type'       => 'datetime',
-			'default'    => '', // Defaults to current time in query class
+			'default'    => '', // Defaults to current time in query class.
 			'created'    => true,
 			'date_query' => true,
 			'sortable'   => true,
 		),
 
-		// date_modified
+		// date_modified.
 		array(
 			'name'       => 'date_modified',
 			'type'       => 'datetime',
@@ -71,10 +75,16 @@ class Style_Presets extends Schema {
 			'searchable' => true,
 		),
 
-		// attributes (json object).
+		// Attributes (json object).
 		array(
 			'name' => 'attributes',
 			'type' => 'longtext',
+		),
+
+		// Tokens (json object).
+		array(
+			'name' => 'tokens',
+			'type' => 'text',
 		),
 
 		// Context.

@@ -62,6 +62,8 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 
 	/**
 	 * The setting section name
+	 *
+	 * @var string
 	 */
 	protected static $section = 'features';
 }

@@ -1,19 +1,44 @@
 <?php
+/**
+ * Upgrade routine for version 3.0.7.
+ *
+ * @package Search_Filter
+ * @since 3.0.7
+ */
 
 namespace Search_Filter\Core\Upgrader;
 
-class Upgrade_3_0_7 {
+// If this file is called directly, abort.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-	public static function upgrade() {
+/**
+ * Handles database and settings upgrades for version 3.0.7.
+ *
+ * @since 3.0.7
+ */
+class Upgrade_3_0_7 extends Upgrade_Base {
+
+	/**
+	 * Performs the upgrade routine for version 3.0.7.
+	 *
+	 * @since 3.0.7
+	 *
+	 * @return Upgrade_Result The result of the upgrade.
+	 */
+	protected static function do_upgrade() {
 		// Disable CSS save so we don't rebuild the CSS file for every field, query and style resaving.
-		add_filter( 'search-filter/core/css-loader/save-css/can-save', array( __CLASS__, 'disable_css_save' ), 10, 2 );
+		add_filter( 'search-filter/core/css-loader/save-css/can-save', array( __CLASS__, 'disable_css_save' ), 10 );
 
 		// When we upgrade to 3.0.6, try to invalidate all the update caches manually.
 		// Because the Upgrade Manager doesn't exist yet in the extension plugins, we
 		// should do this manually for this upgrade only, showing any related updates asap.
 		$plugins_slugs = array( 'search-filter-pro', 'search-filter', 'search-filter-bb', 'search-filter-elementor' );
 		foreach ( $plugins_slugs as $plugin_slug ) {
-			$cache_key             = 'edd_sl_' . md5( serialize( $plugin_slug . 'search-filter-extension-free' . false ) );
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- String is safe, required to match format used by the actual updater class.
+			$cache_key = 'edd_sl_' . md5( serialize( $plugin_slug . 'search-filter-extension-free' . false ) );
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- String is safe, required to match format used by the actual updater class.
 			$api_request_cache_key = 'edd_api_request_' . md5( serialize( $plugin_slug . 'search-filter-extension-free' . false ) );
 			delete_option( $cache_key );
 			delete_option( $api_request_cache_key );
@@ -61,8 +86,17 @@ class Upgrade_3_0_7 {
 
 		// Remove the filter to renable CSS save.
 		remove_filter( 'search-filter/core/css-loader/save-css/can-save', array( __CLASS__, 'disable_css_save' ), 10 );
+
+		return Upgrade_Result::success();
 	}
 
+	/**
+	 * Disables CSS save during upgrade to prevent rebuilding CSS for every change.
+	 *
+	 * @since 3.0.7
+	 *
+	 * @return bool Always returns false to disable CSS save.
+	 */
 	public static function disable_css_save() {
 		return false;
 	}

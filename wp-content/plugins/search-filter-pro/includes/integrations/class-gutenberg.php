@@ -9,10 +9,9 @@
 
 namespace Search_Filter_Pro\Integrations;
 
-use Search_Filter\Admin\Screens;
+use Search_Filter\Core\Asset_Loader;
+use Search_Filter\Integrations;
 use Search_Filter\Queries\Settings as Queries_Settings;
-use Search_Filter_Pro\Core\Scripts;
-use Search_Filter_Pro\Util;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,41 +26,69 @@ class Gutenberg {
 	/**
 	 * Init
 	 *
-	 * @since 3.0.0
+	 * @since    3.0.0
 	 */
 	public static function init() {
 		if ( ! function_exists( 'register_block_type' ) ) {
 			// Gutenberg is not active.
 			return;
 		}
-		add_action( 'search-filter/settings/queries/init', array( __CLASS__, 'register_settings' ), 2 );
-		add_filter( 'search-filter/queries/query/get_attributes', array( __CLASS__, 'update_query_attributes' ), 2, 2 );
-		add_filter( 'render_block', array( __CLASS__, 'render_query_block' ), 10, 3 );
-		add_action( 'enqueue_block_editor_assets', array( __CLASS__, 'editor_assets' ), 20 );
-
+		add_action( 'search-filter/integrations/gutenberg/asset_handle', array( __CLASS__, 'block_editor_asset_handle' ), 20 );
+		add_action( 'search-filter/settings/init', array( __CLASS__, 'setup' ), 1 );
 	}
 
-	public static function editor_assets() {
+	/**
+	 * Setup the Gutenberg integration.
+	 */
+	public static function setup() {
 
-		if ( Screens::is_search_filter_screen() ) {
-			// For some reason, using some FSE / block editor themes, the `enqueue_block_editor_assets`
-			// hook is called on our screens.
-			// If we're on one of our admin screens, then we don't need to load the assets.
+		if ( ! Integrations::is_enabled( 'blockeditor' ) ) {
 			return;
 		}
 
-		$asset_file = SEARCH_FILTER_PRO_PATH . 'assets/js/admin/gutenberg.asset.php';
-		if ( file_exists( $asset_file ) ) {
-			$asset               = require $asset_file;
-			$script_dependencies = array_merge( array( 'search-filter-gutenberg' ), $asset['dependencies'] );
-			wp_enqueue_script( 'search-filter-pro-gutenberg', Scripts::get_admin_assets_url() . 'js/admin/gutenberg.js', $script_dependencies, $asset['version'], false );
-			wp_enqueue_style( 'search-filter-pro-gutenberg', Scripts::get_admin_assets_url() . 'css/admin/gutenberg.css', array( 'search-filter-gutenberg' ), $asset['version'] );
-		} else {
-			Util::error_log( 'Block Editor script asset file not found: ' . $asset_file, 'error' );
-		}
+		self::register_settings();
+		add_filter( 'search-filter/queries/query/get_attributes', array( __CLASS__, 'update_query_attributes' ), 2, 2 );
+		// Priority needs to be lower than `11` - before the render_block filter in S&F Free Gutenberg
+		// extension class, which will unset the connected query IDs.
+		add_filter( 'render_block', array( __CLASS__, 'render_query_block' ), 10, 2 );
+		add_action( 'search-filter/integrations/gutenberg/register_assets', array( __CLASS__, 'register_assets' ), 19 );
 	}
 
-	
+	/**
+	 * Register the assets for the Gutenberg editor.
+	 *
+	 * Ensure we load our assets at the same time as the S&F plugin so the block
+	 * scripts & styles are setup correctly in the editor.
+	 *
+	 * @since 3.2.0
+	 */
+	public static function register_assets() {
+
+		$asset_configs = array(
+			array(
+				'name'   => 'search-filter-pro-gutenberg',
+				'script' => array(
+					'src'          => SEARCH_FILTER_PRO_URL . 'assets/admin/block-editor.js',
+					'asset_path'   => SEARCH_FILTER_PRO_PATH . 'assets/admin/block-editor.asset.php',
+					'dependencies' => array( 'search-filter-gutenberg' ), // Additional dependencies.
+				),
+				'style'  => array(
+					'src'          => SEARCH_FILTER_PRO_URL . 'assets/admin/block-editor.css',
+					'dependencies' => array( 'search-filter-gutenberg' ),
+				),
+			),
+		);
+
+		$assets = Asset_Loader::create( $asset_configs );
+		Asset_Loader::register( $assets );
+	}
+
+	/**
+	 * Override the default asset handle.
+	 */
+	public static function block_editor_asset_handle() {
+		return 'search-filter-pro-gutenberg';
+	}
 
 	/**
 	 * Modify the query block and add a classname if our query is attached.
@@ -70,10 +97,10 @@ class Gutenberg {
 	 *
 	 * @param string $block_content    The block content.
 	 * @param array  $block            The block.
-	 * @param array  $connected_queries    The connected queries.
 	 * @return string    The modified block content.
 	 */
-	public static function render_query_block( $block_content, $block, $connected_queries ) {
+	public static function render_query_block( $block_content, $block ) {
+
 		if ( $block['blockName'] !== 'core/query' ) {
 			return $block_content;
 		}
@@ -107,7 +134,6 @@ class Gutenberg {
 		// Find the first <div> tag in the block markup.
 		$content->next_tag( array( 'div' ) );
 
-		// Add a custom class.
 		foreach ( $connected_query_ids as $connected_query_id ) {
 			$content->add_class( 'search-filter-query' );
 			$content->add_class( 'search-filter-query--id-' . $connected_query_id );
@@ -134,15 +160,16 @@ class Gutenberg {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array $attributes    The attributes to update.
-	 * @param int   $id            The ID of the query.
+	 * @param array  $attributes    The attributes to update.
+	 * @param object $query         The query object.
 	 * @return array    The updated attributes.
 	 */
 	public static function update_query_attributes( $attributes, $query ) {
 
 		$id = $query->get_id();
 
-		// We want `queryContainer` and `queryPaginationSelector` to be set automatically.
+		// We want `queryPostsContainer` and `queryPaginationSelector` to be set automatically.
+		// `queryContainer` handled in base plugin.
 		if ( ! isset( $attributes['integrationType'] ) ) {
 			return $attributes;
 		}
@@ -153,7 +180,6 @@ class Gutenberg {
 		$query_integration = $attributes['queryIntegration'];
 
 		if ( $query_integration === 'query_block' ) {
-			$attributes['queryContainer']          = '.search-filter-query--id-' . $id;
 			$attributes['queryPostsContainer']     = '.search-filter-query--id-' . $id . ' .wp-block-post-template';
 			$attributes['queryPaginationSelector'] = '.search-filter-query--id-' . $id . ' .wp-block-query-pagination a';
 		}
@@ -170,7 +196,6 @@ class Gutenberg {
 
 		$depends_conditions = array(
 			'relation' => 'AND',
-			'action'   => 'hide',
 			'rules'    => array(
 				array(
 					'option'  => 'queryIntegration',
@@ -179,12 +204,6 @@ class Gutenberg {
 				),
 			),
 		);
-
-		// Get the object for the data_type setting so we can grab its options.
-		$query_container = Queries_Settings::get_setting( 'queryContainer' );
-		if ( $query_container ) {
-			$query_container->add_depends_condition( $depends_conditions );
-		}
 
 		$query_posts_container = Queries_Settings::get_setting( 'queryPostsContainer' );
 		if ( $query_posts_container ) {
@@ -195,6 +214,5 @@ class Gutenberg {
 		if ( $pagination_selector ) {
 			$pagination_selector->add_depends_condition( $depends_conditions );
 		}
-
 	}
 }

@@ -1,24 +1,42 @@
 <?php
+/**
+ * Upgrade routines for version 3.1.0
+ *
+ * @package Search_Filter_Pro
+ */
 
 namespace Search_Filter_Pro\Core\Upgrader;
 
-use Search_Filter_Pro\Indexer\Query_Cache;
+use Search_Filter_Pro\Cache\Tiered_Cache;
 use Search_Filter\Fields;
 
-class Upgrade_3_1_0 {
+// If this file is called directly, abort.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-	public static function upgrade() {
+/**
+ * Handles upgrade to version 3.1.0
+ */
+class Upgrade_3_1_0 extends Upgrade_Base {
 
+	/**
+	 * Run the upgrade.
+	 *
+	 * @since 3.1.0
+	 * @return Upgrade_Result
+	 */
+	protected static function do_upgrade() {
 		// Disable CSS save so we don't rebuild the CSS file for every field, query and style resaving.
-		add_filter( 'search-filter/core/css-loader/save-css/can-save', array( __CLASS__, 'disable_css_save' ), 10, 2 );
+		add_filter( 'search-filter/core/css-loader/save-css/can-save', array( __CLASS__, 'disable_css_save' ), 10 );
 
 		$fields = Fields::find(
 			array(
 				'number' => 0,
 			)
 		);
-		foreach ( $fields as $field ) {
 
+		foreach ( $fields as $field ) {
 			if ( is_wp_error( $field ) ) {
 				continue;
 			}
@@ -28,7 +46,7 @@ class Upgrade_3_1_0 {
 				continue;
 			}
 
-			// Now check to see if autodetec min/max is set. If so, delete
+			// Now check to see if autodetect min/max is set. If so, delete
 			// any min/max that might be present.
 			if ( $field->get_attribute( 'rangeAutodetectMin' ) === 'yes' ) {
 				$field->delete_attribute( 'rangeMin' );
@@ -51,10 +69,22 @@ class Upgrade_3_1_0 {
 				continue;
 			}
 			// Clear query caches.
-			Query_Cache::clear_caches_by_query_id( $query->get_id() );
+			Tiered_Cache::invalidate_query_cache( $query->get_id() );
 		}
 
 		// Remove the filter to renable CSS save.
 		remove_filter( 'search-filter/core/css-loader/save-css/can-save', array( __CLASS__, 'disable_css_save' ), 10 );
+
+		return Upgrade_Result::success();
+	}
+
+	/**
+	 * Disable CSS save during upgrade.
+	 *
+	 * @since 3.1.0
+	 * @return bool
+	 */
+	public static function disable_css_save() {
+		return false;
 	}
 }

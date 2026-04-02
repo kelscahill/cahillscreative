@@ -11,6 +11,7 @@
 namespace Search_Filter_Pro;
 
 use Search_Filter\Features;
+use Search_Filter_Pro\Indexer\Task_Runner as Indexer_Task_Runner;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -42,7 +43,6 @@ class Heartbeat {
 			return;
 		}
 		// Now check the status of the indexer.
-		Indexer::check_for_errors();
+		Indexer_Task_Runner::check_for_errors();
 	}
-
 }

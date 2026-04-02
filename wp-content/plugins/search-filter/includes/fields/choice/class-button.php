@@ -21,47 +21,152 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Button extends Choice {
 
+	/**
+	 * Calculate the interaction type for this field.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return string The interaction type.
+	 */
+	protected function calc_interaction_type(): string {
+		return 'choice';
+	}
+
+	/**
+	 * The input type for this field.
+	 *
+	 * @var string
+	 */
 	public static $input_type = 'button';
-	public static $type       = 'choice';
 
-	public static $styles       = array(
-		'inputColor',
-		'inputBackgroundColor',
-		'inputSelectedColor',
-		'inputSelectedBackgroundColor',
-		'inputBorderColor',
-		'inputBorderHoverColor',
-		'inputBorderFocusColor',
-		'inputInteractiveColor',
-		'inputInteractiveHoverColor',
+	/**
+	 * The type of field.
+	 *
+	 * @var string
+	 */
+	public static $type = 'choice';
 
-		'labelColor',
-		'labelBackgroundColor',
-		'labelPadding',
-		'labelMargin',
-		'labelScale',
+	/**
+	 * List of supported styles for this field.
+	 *
+	 * @var array
+	 */
+	public static $styles = array(
 
-		'descriptionColor',
-		'descriptionBackgroundColor',
-		'descriptionPadding',
-		'descriptionMargin',
-		'descriptionScale',
-	);
-	public static $data_support = array(
-		// Each entry is a group of settings that need to have certain conditions.
-		array(
-			'dataType'          => 'post_attribute',
-			'dataPostAttribute' => array( 'post_type', 'post_status', 'post_author' ),
+		'fieldMargin'                  => true,
+		// 'fieldPadding'               => true,
+		'inputMargin'                  => true,
+		'labelBorderStyle'             => true,
+		'labelBorderRadius'            => true,
+		'descriptionBorderStyle'       => true,
+		'descriptionBorderRadius'      => true,
+		'inputClearPadding'            => true,
+		'inputBorderRadius'            => true,
+
+		'inputScale'                   => true,
+		'inputColor'                   => true,
+		'inputBackgroundColor'         => true,
+		'inputSelectedColor'           => true,
+		'inputSelectedBackgroundColor' => true,
+		'inputBorder'                  => true,
+		'inputBorderHoverColor'        => true,
+		'inputBorderFocusColor'        => true,
+		'inputInteractiveColor'        => true,
+		'inputInteractiveHoverColor'   => true,
+		'inputShadow'                  => true,
+		'inputPadding'                 => array(
+			// Empty conditions means its supported.
+			'conditions' => array(),
+			// Add a variation to override the default styles variables.
+			'variation'  => array(
+				// Structure must match that of the setting.
+				'style' => array(
+					'variables' => array(
+						// Add extra padding to the left and right.
+						'input-padding-right' => array(
+							'value' => 'calc(0.6 * var(--search-filter-scale-base-size))',
+							'type'  => 'spacing-unit',
+						),
+						'input-padding-left'  => array(
+							'value' => 'calc(0.6 * var(--search-filter-scale-base-size))',
+							'type'  => 'spacing-unit',
+						),
+					),
+				),
+			),
 		),
-		array(
-			'dataType' => 'taxonomy',
+		// Add spacing between the buttons.
+		'inputGap'                     => array(
+			// Empty conditions means its supported.
+			'conditions' => array(),
+			// Add a variation to override the default styles variables.
+			'variation'  => array(
+				// Structure must match that of the setting.
+				'style' => array(
+					'variables' => array(
+						'input-gap' => array(
+							'value' => 'calc(0.45 * var(--search-filter-scale-base-size))',
+							'type'  => 'spacing-unit',
+						),
+					),
+				),
+			),
 		),
+		'labelColor'                   => true,
+		'labelBackgroundColor'         => true,
+		'labelPadding'                 => true,
+		'labelMargin'                  => true,
+		'labelScale'                   => true,
+
+		'descriptionColor'             => true,
+		'descriptionBackgroundColor'   => true,
+		'descriptionPadding'           => true,
+		'descriptionMargin'            => true,
+		'descriptionScale'             => true,
 	);
 
+	/**
+	 * The processed (cached) styles.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_styles    The processed styles, null if not processed yet.
+	 */
+	protected static $processed_styles = null;
+
+	/**
+	 * List of setting support for this field.
+	 *
+	 * @var array
+	 */
 	public static $setting_support = array(
-		'showLabel'               => true,
-		'multiple'                => true,
-		'multipleMatchMethod'     => array(
+		'addClass'                       => true,
+		'width'                          => true,
+		'queryId'                        => true,
+		'stylesId'                       => true,
+		'type'                           => true,
+		'label'                          => true,
+		'showLabel'                      => true,
+		'showDescription'                => true,
+		'description'                    => true,
+		'inputType'                      => true,
+		'dataType'                       => array(
+			'values' => array(
+				'post_attribute' => true,
+				'taxonomy'       => true,
+			),
+		),
+		'dataTaxonomy'                   => true,
+		'dataPostAttribute'              => array(
+			'values' => array(
+				'post_type'   => true,
+				'post_status' => true,
+			),
+		),
+		'dataPostTypes'                  => true,
+		'dataPostStati'                  => true,
+		'multiple'                       => true,
+		'multipleMatchMethod'            => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -75,8 +180,9 @@ class Button extends Choice {
 				),
 			),
 		),
-		'dataLimitOptionsCount'   => true,
-		'taxonomyHierarchical'    => array(
+		'dataTotalNumberOfOptions'       => true,
+		'dataTotalNumberOfOptionsNotice' => true,
+		'taxonomyHierarchical'           => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -85,7 +191,7 @@ class Button extends Choice {
 				),
 			),
 		),
-		'taxonomyOrderBy'         => array(
+		'taxonomyOrderBy'                => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -94,7 +200,7 @@ class Button extends Choice {
 				),
 			),
 		),
-		'taxonomyOrderDir'        => array(
+		'taxonomyOrderDir'               => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -103,7 +209,7 @@ class Button extends Choice {
 				),
 			),
 		),
-		'taxonomyTermsConditions' => array(
+		'taxonomyTermsConditions'        => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -112,7 +218,7 @@ class Button extends Choice {
 				),
 			),
 		),
-		'taxonomyTerms'           => array(
+		'taxonomyTerms'                  => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -121,7 +227,7 @@ class Button extends Choice {
 				),
 			),
 		),
-		'inputOptionsOrder'       => array(
+		'inputOptionsOrder'              => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -130,7 +236,7 @@ class Button extends Choice {
 				),
 			),
 		),
-		'inputOptionsAddDefault'  => array(
+		'inputOptionsAddDefault'         => array(
 			'conditions' => array(
 				array(
 					'option'  => 'multiple',
@@ -139,7 +245,8 @@ class Button extends Choice {
 				),
 			),
 		),
-		'taxonomyFilterArchive'   => array(
+		'inputOptionsDefaultLabel'       => true,
+		'taxonomyNavigatesArchive'       => array(
 			'conditions' => array(
 				array(
 					'option'  => 'multiple',
@@ -148,7 +255,7 @@ class Button extends Choice {
 				),
 			),
 		),
-		'hideEmpty'               => array(
+		'hideEmpty'                      => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -157,7 +264,7 @@ class Button extends Choice {
 				),
 			),
 		),
-		'showCount'               => array(
+		'showCount'                      => array(
 			'conditions' => array(
 				array(
 					'option'  => 'dataType',
@@ -166,12 +273,38 @@ class Button extends Choice {
 				),
 			),
 		),
-		'showCountPosition'       => false,
+		'showCountPosition'              => false,
+		'showCountBrackets'              => true,
+		'hideFieldWhenEmpty'             => true,
 	);
 
+	/**
+	 * The processed (cached) setting support.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_setting_support    The processed settings, null if not processed yet.
+	 */
+	protected static $processed_setting_support = null;
+
+	/**
+	 * Get the label for this field type.
+	 *
+	 * @return string The label.
+	 */
 	public static function get_label() {
 		return __( 'Button', 'search-filter' );
 	}
+
+	/**
+	 * Get the description for the input type.
+	 *
+	 * @return string The label.
+	 */
+	public static function get_description() {
+		return __( 'Allow users to filter by choosing options from a button group.', 'search-filter' );
+	}
+
 	/**
 	 * Override the init_render_data and setup render data + escaping functions.
 	 *

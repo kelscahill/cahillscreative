@@ -8,6 +8,7 @@
  * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since       1.0.0
  */
+
 namespace Search_Filter\Database\Engine;
 
 // Exit if accessed directly.
@@ -39,16 +40,16 @@ class Schema extends Base {
 	 */
 	public function __construct() {
 
-		// Bail if no columns
+		// Bail if no columns.
 		if ( empty( $this->columns ) || ! is_array( $this->columns ) ) {
 			return;
 		}
 
-		// Juggle original columns array
+		// Juggle original columns array.
 		$columns       = $this->columns;
 		$this->columns = array();
 
-		// Loop through columns and create objects from them
+		// Loop through columns and create objects from them.
 		foreach ( $columns as $column ) {
 			if ( is_array( $column ) ) {
 				$this->columns[] = new Column( $column );
@@ -67,10 +68,10 @@ class Schema extends Base {
 	 */
 	protected function to_string() {
 
-		// Default return value
+		// Default return value.
 		$retval = '';
 
-		// Bail if no columns to convert
+		// Bail if no columns to convert.
 		if ( empty( $this->columns ) ) {
 			return $retval;
 		}
@@ -82,7 +83,7 @@ class Schema extends Base {
 			}
 		}
 
-		// Return the string
+		// Return the string.
 		return $retval;
 	}
 }

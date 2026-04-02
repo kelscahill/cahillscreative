@@ -8,6 +8,7 @@
  * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since       1.0.0
  */
+
 namespace Search_Filter\Database\Queries;
 
 // Exit if accessed directly.
@@ -20,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
  * the `Base` query class. It extends `Meta` so the `compare` key accepts
  * the same parameters as the ones passed to `Meta`.
  *
- * @since 1.0.0
+ * @since 3.0.0
  */
 class Compare extends Meta {
 
@@ -29,7 +30,7 @@ class Compare extends Meta {
 	 *
 	 * "First-order" means that it's an array with a 'key' or 'value'.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param array  $clause       Query clause (passed by reference).
 	 * @param array  $parent_query Parent query array.
@@ -109,13 +110,14 @@ class Compare extends Meta {
 				case 'IN':
 				case 'NOT IN':
 					$compare_string = '(' . substr( str_repeat( ',%s', count( $value ) ), 1 ) . ')';
-					$where          = $wpdb->prepare( $compare_string, $value );
+					// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $compare_string contains dynamic placeholders.
+					$where = $wpdb->prepare( $compare_string, $value );
 					break;
 
 				case 'BETWEEN':
 				case 'NOT BETWEEN':
 					$value = array_slice( $value, 0, 2 );
-					$where = $wpdb->prepare( '%s AND %s', $value );
+					$where = $wpdb->prepare( '%s AND %s', $value[0], $value[1] );
 					break;
 
 				case 'LIKE':
@@ -144,14 +146,6 @@ class Compare extends Meta {
 			if ( $where ) {
 				$sql_chunks['where'][] = "{$column} {$compare} {$where}";
 			}
-		}
-
-		/*
-		 * Multiple WHERE clauses (for meta_key and meta_value) should
-		 * be joined in parentheses.
-		 */
-		if ( 1 < count( $sql_chunks['where'] ) ) {
-			$sql_chunks['where'] = array( '( ' . implode( ' AND ', $sql_chunks['where'] ) . ' )' );
 		}
 
 		return $sql_chunks;

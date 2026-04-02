@@ -11,13 +11,14 @@
 namespace Search_Filter;
 
 use Search_Filter\Admin\Screens;
-use Search_Filter\Core\Exception;
+use Search_Filter\Core\Asset_Loader;
 use Search_Filter\Core\Scripts;
-use Search_Filter\Util;
 use Search_Filter\Core\Icons;
 use Search_Filter\Fields\Field;
+use Search_Filter\Fields\Settings_Data;
 use Search_Filter\Queries\Query;
 use Search_Filter\Styles\Style;
+use Search_Filter\Features;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -29,110 +30,235 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Admin {
 
-	/**
-	 * The ID of this plugin.
-	 *
-	 * @since    3.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
-	 */
-	private $plugin_name;
 
 	/**
-	 * The version of this plugin.
+	 * Whether to load the full block editor assets.
 	 *
-	 * @since    3.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
+	 * @since 3.2.0
+	 * @var bool
 	 */
-	private $version;
+	private static $should_load_full_block_editor = false;
 
 	/**
-	 * Initialize the class and set its properties.
+	 * Initialize the admin functionality.
 	 *
-	 * @since    3.0.0
-	 * @param  string $plugin_name The name of this plugin.
-	 * @param  string $version     The version of this plugin.
+	 * @since 3.0.0
 	 */
-	public function __construct( $plugin_name, $version ) {
-		$this->plugin_name = $plugin_name;
-		$this->version     = $version;
+	public static function init() {
+
+		// Scripts & css.
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'register_assets' ), 10 );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ), 10 );
+		add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
+
+		// Data.
+
+		// Setup Admin Screens.
+		add_filter( 'init', array( Screens::class, 'init' ), 2 );
+		add_filter( 'submenu_file', array( Screens::class, 'modify_active_submenu' ), 20, 2 );
+		add_action( 'admin_menu', array( Screens::class, 'admin_pages' ), 9 );
+		add_action( 'admin_menu', array( Screens::class, 'admin_pages_more_menu_items' ), 10 );
+		add_action( 'admin_footer', array( Screens::class, 'admin_footer' ), 20 );
+		add_action( 'admin_head', array( Screens::class, 'menu_css' ), 20 );
+
+		add_filter( 'admin_body_class', array( __CLASS__, 'admin_body_class' ), 20 );
+
+		// We want to get in as early as possible, and remove all admin notices
+		// This is the closest action before admin_notices that we can find.
+		add_action( 'in_admin_header', array( Screens::class, 'remove_admin_notices' ), 200 );
+
+		// Block editor hooks to enable the correct assets loading on our screens.
+		add_filter( 'should_load_block_editor_scripts_and_styles', array( __CLASS__, 'set_block_editor_script_and_styles' ), 10 );
+		add_action( 'current_screen', array( __CLASS__, 'set_screen_to_block_editor' ), 10 );
 	}
 
 	/**
-	 * Remove UGC styles from admin.
-	 */
-	public function remove_ugc_styles( $styles ) {
-
-		$position = array_search( 'search-filter-ugc-styles', $styles, true );
-		if ( $position !== false ) {
-			unset( $styles[ $position ] );
-		}
-		return $styles;
-	}
-
-	/**
-	 * Register the stylesheets for the admin area.
+	 * Register the assets for the admin area.
 	 *
-	 * @since    3.0.0
+	 * @since 3.2.0
 	 */
-	public function enqueue_styles() {
+	public static function register_assets() {
 
 		if ( ! Screens::is_search_filter_screen() ) {
 			return;
 		}
-		Icons::load();
 
-		// TODO - I'm not sure instantiating the frontend class is the best way to do this.
-		// I prefer to keep the frontend or script loader class as a singleton.
-		add_filter( 'search-filter/frontend/enqueue_styles', array( $this, 'remove_ugc_styles' ) );
-		$plugin_frontend = new \Search_Filter\Frontend( $this->plugin_name, $this->version );
-		$plugin_frontend->enqueue_styles();
-		remove_filter( 'search-filter/frontend/enqueue_styles', array( $this, 'remove_ugc_styles' ) );
+		// Register the frontend assets.
+		\Search_Filter\Frontend::register_assets();
 
-		$registered_styles = array(
-			$this->plugin_name . '-flatpickr' => array(
-				'src'     => Scripts::get_admin_assets_url() . 'css/vendor/flatpickr.min.css',
-				'deps'    => array(),
-				'version' => $this->version,
-				'media'   => 'all',
-			),
-			$this->plugin_name . '-screen'    => array(
-				'src'     => Scripts::get_admin_assets_url() . 'css/admin/app.css',
-				'deps'    => array( 'wp-components' ),
-				'version' => $this->version,
-				'media'   => 'all',
-			),
-			$this->plugin_name . '-admin'     => array(
-				'src'     => Scripts::get_admin_assets_url() . 'css/admin/admin.css',
-				'deps'    => array( 'wp-components', 'wp-block-editor' ),
-				'version' => $this->version,
-				'media'   => 'all',
-			),
-		);
+		// Load all registered components assets.
+		\Search_Filter\Components::register_assets();
 
-		$registered_styles = apply_filters( 'search-filter/admin/register_styles', $registered_styles );
+		// Setup the JS data for the admin screen.
+		$admin_data                   = array();
+		$admin_data['editorSettings'] = wp_parse_args( self::get_editor_settings(), self::get_default_editor_settings() );
 
-		foreach ( $registered_styles as $handle => $args ) {
-			wp_register_style( $handle, $args['src'], $args['deps'], $args['version'], $args['media'] );
-		}
-
-		do_action( 'enqueue_block_editor_assets' );
-
-		$enqueued_styles = array();
-
-		foreach ( $registered_styles as $handle => $args ) {
-			if ( wp_style_is( $handle, 'registered' ) ) {
-				wp_enqueue_style( $handle );
-				$enqueued_styles[] = $handle;
+		// Inject frontend + component CSS into editor styles pipeline so
+		// EditorStyles scopes our selectors with .editor-styles-wrapper,
+		// giving them equal specificity to theme styles in field previews.
+		$all_assets  = \Search_Filter\Frontend::get_registered_assets();
+		$plugins_url = plugins_url();
+		foreach ( $all_assets as $handle => $asset ) {
+			if ( strpos( $handle, 'ugc' ) !== false ) {
+				continue;
+			}
+			if ( empty( $asset['style']['src'] ) ) {
+				continue;
+			}
+			$file_path = str_replace( $plugins_url, WP_PLUGIN_DIR, $asset['style']['src'] );
+			if ( file_exists( $file_path ) ) {
+				$css = file_get_contents( $file_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reading local plugin CSS file, not a remote URL.
+				if ( $css ) {
+					$admin_data['editorSettings']['styles'][] = array(
+						'css' => $css,
+					);
+				}
 			}
 		}
 
-		$enqueued_styles = apply_filters( 'search-filter/admin/enqueue_styles', $enqueued_styles );
+		$admin_data['editor']      = array(
+			'previewContainerClasses' => array(),
+		);
+		$admin_data['editor']      = apply_filters( 'search-filter/admin/editor/settings', $admin_data['editor'] );
+		$admin_data['path']        = wp_parse_url( admin_url(), PHP_URL_PATH );
+		$admin_data['restNonce']   = wp_create_nonce( 'wp_rest' );
+		$admin_data['popoverNode'] = Features::get_setting_value( 'compatibility', 'popoverNode' );
 
-		foreach ( $enqueued_styles as $handle ) {
-			wp_enqueue_style( $handle );
+		$basic_settings  = Settings_Data::get_basic_settings();
+		$layout_settings = Settings_Data::get_layout_settings();
+		$color_settings  = array_values(
+			array_filter(
+				array_merge( $basic_settings, $layout_settings ),
+				function ( $setting ) {
+					$meta_type = $setting['style']['type'] ?? '';
+
+					return $meta_type === 'color';
+				}
+			)
+		);
+
+		$admin_data['colorSettings'] = array_reduce(
+			$color_settings,
+			function ( $carry, $item ) {
+				$group_value = Settings_Data::get_property( $item, 'style.group' );
+
+				if ( $group_value ) {
+					$carry[ $group_value ][] = $item;
+				}
+
+				return $carry;
+			},
+			array()
+		);
+
+		// Register dynamic (aka lazy loaded) screens.
+		$admin_data['dynamicScreens'] = self::register_dynamic_screens();
+
+		// Register the admin assets.
+		$asset_configs = array(
+			array(
+				'name'   => 'search-filter-admin',
+				'script' => array(
+					'src'          => SEARCH_FILTER_URL . 'assets/admin/app.js',
+					'asset_path'   => SEARCH_FILTER_PATH . 'assets/admin/app.asset.php',
+					'dependencies' => array( 'search-filter-frontend' ), // Additional dependencies.
+					'footer'       => true,
+					'data'         => array(
+						'identifier' => 'window.searchAndFilter.admin',
+						'value'      => $admin_data,
+						'position'   => 'before',
+					),
+				),
+				'style'  => array(
+					'src'          => SEARCH_FILTER_URL . 'assets/admin/app.css',
+					'dependencies' => array( 'wp-components', 'wp-block-editor', 'search-filter-frontend' ),
+				),
+			),
+		);
+
+		$assets = Asset_Loader::create( $asset_configs );
+		Asset_Loader::register( $assets );
+
+		/*
+		 * These two scripts should technically only be added if our check to
+		 * self::should_load_block_editor_script_and_styles() returns true, however many plugins still try
+		 * to load block editor assets based on the screen setting `is_block_editor()` or just the
+		 * presence of the action `enqueue_block_editor_assets`
+		 *
+		 * They're added so that we don't get JS warnings/errors in the console.
+		 *
+		 * Copied from ./wp-admin/edit-form-blocks.php
+		*/
+
+		// Needed to pass the apiVersion to the block editor and prevent warnings.
+		wp_add_inline_script(
+			'wp-blocks',
+			'wp.blocks.unstable__bootstrapServerSideBlockDefinitions(' .
+			wp_json_encode( get_block_editor_server_block_settings(), JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) .
+			');'
+		);
+
+		$editor_settings = $admin_data['editorSettings'];
+		// Needed to setup block categories and prevent "The block {name} is registered with an invalid
+		// category {category}" warnings.
+		wp_add_inline_script(
+			'wp-blocks',
+			sprintf( 'wp.blocks.setCategories( %s );', wp_json_encode( isset( $editor_settings['blockCategories'] ) ? $editor_settings['blockCategories'] : array(), JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) ),
+			'after'
+		);
+	}
+
+	/**
+	 * Setup our admin screen to  `is_block_editor` as soon as the screen
+	 * name is ready.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param \WP_Screen $current_screen The current screen object.
+	 */
+	public static function set_screen_to_block_editor( $current_screen ) {
+		if ( ! Screens::is_search_filter_screen() ) {
+			return;
 		}
+
+		if ( ! $current_screen->is_block_editor() ) {
+			$current_screen->is_block_editor( true );
+		}
+	}
+
+	/**
+	 * Enqueue the assets for the admin area.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function enqueue_assets() {
+		if ( ! Screens::is_search_filter_screen() ) {
+			return;
+		}
+
+		// Enqueue the frontend assets (minus UGC).
+		$exclude_handles = array(
+			'search-filter-frontend-ugc',
+			'search-filter-ugc-styles', // Legacy UGC handle.
+		);
+		\Search_Filter\Frontend::enqueue_assets( $exclude_handles, true );
+		// Enqueue all registered components assets.
+		\Search_Filter\Components::enqueue_assets( true );
+
+		// Load the icons.
+		Icons::load();
+
+		// Enqueue the block editor assets.
+		do_action( 'enqueue_block_editor_assets' );
+
+		// Enqueue the admin assets.
+		Asset_Loader::enqueue( array( 'search-filter-admin' ) );
+
+		$preload_paths = self::get_preload_api_paths();
+		Scripts::preload_api_requests( $preload_paths );
+
+		// Remove directory assets we don't need.
+		remove_action( 'enqueue_block_editor_assets', 'wp_enqueue_editor_block_directory_assets' );
 	}
 
 	/**
@@ -140,7 +266,7 @@ class Admin {
 	 *
 	 * @return array The rest api paths to preload.
 	 */
-	private function get_preload_api_paths() {
+	private static function get_preload_api_paths() {
 		// Setup defaults.
 		$section = '';
 		$context = '';
@@ -155,23 +281,35 @@ class Admin {
 			'/search-filter/v1/admin/data',
 			'/search-filter/v1/admin/pages',
 			'/search-filter/v1/integrations',
-			// '/search-filter/v1/features', // TODO - for some settings we're switching over to a new settings endpoint.
 			'/search-filter/v1/admin/field-input-types',
-			'/search-filter/v1/admin/styles/default',
+			'/search-filter/v1/admin/styles/defaults/preset',
+			'/search-filter/v1/admin/styles/tokens',
+
+			// Load the admin settings objects.
 			'/search-filter/v1/admin/settings?section=queries',
 			'/search-filter/v1/admin/settings?section=fields',
 			'/search-filter/v1/admin/settings?section=styles',
 			'/search-filter/v1/admin/settings?section=features',
 			'/search-filter/v1/admin/settings?section=debugger',
-			'/search-filter/v1/settings?section=features', // This is the new endpoint to load the data.
-			'/search-filter/v1/settings?section=debugger',
+			'/search-filter/v1/admin/settings?section=dynamic-assets',
 			'/search-filter/v1/admin/settings?section=integrations',
+
+			// Load the settings data.
+			// TODO - this is a newer endpoint for loading data, which also
+			// supplies defaults where necessary - we should migrate over
+			// to using this where possible.
+			'/search-filter/v1/settings?section=features',
+			'/search-filter/v1/settings?section=debugger',
+			'/search-filter/v1/settings?section=integrations',
+			'/search-filter/v1/settings?section=dynamic-assets',
+
 			'/search-filter/v1/admin/screen/options',
 			'/search-filter/v1/admin/screen/dashboard',
 			'/search-filter/v1/admin/notices',
 		);
 
 		// Parse URL args.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Reading URL parameters for admin display navigation only, no state changes.
 		$rest_args = array();
 		if ( isset( $_GET['section'] ) ) {
 			$section = sanitize_key( $_GET['section'] );
@@ -214,6 +352,7 @@ class Admin {
 		} elseif ( isset( $_GET['new'] ) ) {
 			$id = 0;
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		// Lets preload the initial set of results for all sections.
 		$items_per_page = 10;
@@ -254,9 +393,8 @@ class Admin {
 		if ( 'queries' === $section && $id > 0 ) {
 			// Then lets preload the connected fields.
 			$preload_paths[] = '/search-filter/v1/settings/options/post-types?queryId=' . absint( $id );
-			$preload_paths[] = '/search-filter/v1/settings/options/taxonomies?queryId=' . absint( $id );
 
-			$query = Query::find( array( 'id' => $id ) );
+			$query = Query::get_instance( $id );
 			if ( ! is_wp_error( $query ) ) {
 				$integration_type = $query->get_attribute( 'integrationType' );
 				if ( $integration_type === 'single' ) {
@@ -268,14 +406,20 @@ class Admin {
 				} elseif ( $integration_type === 'archive' ) {
 					$archive_type = $query->get_attribute( 'archiveType' );
 					if ( $archive_type === 'post_type' ) {
-						$post_type = $query->get_attribute( 'postType' );
-						if ( $post_type && $post_type !== '' ) {
-							$preload_paths[] = "/search-filter/v1/settings/results-url?integrationType={$integration_type}&archiveType={$archive_type}&postType={$post_type}";
+						$post_type = $query->get_attribute( 'archivePostType' );
+						if ( $post_type ) {
+							$query_id        = absint( $id );
+							$preload_paths[] = "/search-filter/v1/settings/results-url?integrationType={$integration_type}&archiveType={$archive_type}&archivePostType={$post_type}";
+							$preload_paths[] = "/search-filter/v1/settings/options/query/archive/taxonomies?queryId={$query_id}&archivePostType={$post_type}";
 						}
 					} elseif ( $archive_type === 'taxonomy' ) {
-						$taxonomy = $query->get_attribute( 'taxonomy' );
-						if ( $taxonomy && $taxonomy !== '' ) {
-							$preload_paths[] = "/search-filter/v1/settings/results-url?integrationType={$integration_type}&archiveType={$archive_type}&taxonomy={$taxonomy}";
+						$taxonomy = $query->get_attribute( 'archiveTaxonomy' );
+						if ( $taxonomy ) {
+							$preload_paths[] = "/search-filter/v1/settings/results-url?integrationType={$integration_type}&archiveType={$archive_type}&archiveTaxonomy={$taxonomy}";
+						}
+						$taxonomy_filter_terms = $query->get_attribute( 'archiveTaxonomyFilterTerms' );
+						if ( $taxonomy_filter_terms === 'custom' ) {
+							$preload_paths[] = "/search-filter/v1/settings/options/query/archive/taxonomy_terms?queryId={$id}&archiveTaxonomy={$taxonomy}";
 						}
 					}
 				}
@@ -284,6 +428,7 @@ class Admin {
 			// Always preload the default style.
 			$default_style_id = Styles::get_default_styles_id();
 			$preload_paths[]  = '/search-filter/v1/records/styles/' . $default_style_id;
+
 			// Preload the currently connected style.
 			if ( $id > 0 ) {
 				$style = Field::find( array( 'id' => absint( $id ) ), 'record' );
@@ -298,12 +443,11 @@ class Admin {
 					if ( $query_id !== 0 ) {
 						$preload_paths[] = '/search-filter/v1/records/queries/' . $query_id;
 						$preload_paths[] = '/search-filter/v1/settings/options/post-types?queryId=' . absint( $query_id );
-						$preload_paths[] = '/search-filter/v1/settings/options/taxonomies?queryId=' . absint( $query_id );
+						$preload_paths[] = '/search-filter/v1/settings/options/query/taxonomies?queryId=' . absint( $query_id );
 					}
 				}
 			}
 		} elseif ( 'styles' === $section ) {
-			$preload_paths[] = '/search-filter/v1/admin/styles/default';
 			if ( $id > 0 ) {
 				$style = Style::find( array( 'id' => absint( $id ) ), 'record' );
 				if ( ! is_wp_error( $style ) ) {
@@ -319,7 +463,16 @@ class Admin {
 
 		return $preload_paths;
 	}
-	public function plugin_action_links( $links, $plugin_file ) {
+
+	/**
+	 * Add settings link to plugin action links.
+	 *
+	 * @since 3.0.0
+	 * @param array  $links      Plugin action links.
+	 * @param string $plugin_file Plugin file.
+	 * @return array Modified plugin action links.
+	 */
+	public static function plugin_action_links( $links, $plugin_file ) {
 		if ( $plugin_file !== 'search-filter/search-filter.php' ) {
 			return $links;
 		}
@@ -327,73 +480,49 @@ class Admin {
 		$links['settings'] = '<a href="' . esc_url( admin_url( 'admin.php?page=search-filter' ) ) . '">' . esc_html__( 'Settings', 'search-filter' ) . '</a>';
 		return $links;
 	}
+
 	/**
-	 * Register the JavaScript for the admin area.
+	 * Add custom CSS class to admin body.
 	 *
-	 * @since    3.0.0
+	 * @since 3.0.0
+	 * @param string $classes Space-separated list of CSS classes.
+	 * @return string Modified CSS classes.
 	 */
-	public function enqueue_scripts() {
-
-		if ( ! Screens::is_search_filter_screen() ) {
-			return;
+	public static function admin_body_class( $classes ) {
+		if ( Screens::is_search_filter_screen() ) {
+			$classes .= ' search-filter-admin-screen';
 		}
+		return $classes;
+	}
 
-		// TODO - I'm not sure instantiating the frontend class is the best way to do this.
-		// I prefer to keep the frontend or script loader class as a singleton.
-		$plugin_frontend = new \Search_Filter\Frontend( $this->plugin_name, $this->version );
-		$plugin_frontend->enqueue_scripts();
-		$plugin_frontend->add_js_data();
+	/**
+	 * Register dynamic screens that should be conditionally available.
+	 *
+	 * @return array Dynamic screens configuration.
+	 */
+	private static function register_dynamic_screens() {
+		$dynamic_screens = array(
+			'configs'    => array(),
+			'components' => array(),
+		);
 
-		$asset = require SEARCH_FILTER_PATH . 'assets/js/admin/app.asset.php';
-
-		$registered_scripts = array(
-			'search-filter-admin' => array(
-				'src'     => Scripts::get_admin_assets_url() . 'js/admin/app.js',
-				'deps'    => $asset['dependencies'],
-				'version' => $asset['version'],
-				'footer'  => true,
+		// Always register debug logs screen config - lazy loaded only when section=logs.
+		// Disabled states (debugMode off, logToDatabase off) handled in REST API.
+		$dynamic_screens['configs']['logs'] = array(
+			'component'  => 'Logs',
+			'scriptUrl'  => SEARCH_FILTER_URL . 'assets/admin-screens/logs.js',
+			'cssUrl'     => SEARCH_FILTER_URL . 'assets/admin-screens/logs.css',
+			'section'    => 'logs',
+			'capability' => 'manage_options',
+			'props'      => array(
+				'apiNamespace' => 'search-filter/v1',
 			),
 		);
-		$registered_scripts = apply_filters( 'search-filter/admin/register_scripts', $registered_scripts );
 
-		foreach ( $registered_scripts as $handle => $args ) {
-			wp_register_script( $handle, $args['src'], $args['deps'], $args['version'], $args['footer'] );
-		}
+		// Allow other plugins/extensions to register dynamic screens.
+		$dynamic_screens = apply_filters( 'search-filter/admin/screens/dynamic', $dynamic_screens );
 
-		$enqueued_scripts = array_keys( $registered_scripts );
-		$enqueued_scripts = apply_filters( 'search-filter/admin/enqueue_scripts', $enqueued_scripts );
-
-		foreach ( $enqueued_scripts as $handle ) {
-			if ( wp_script_is( $handle, 'registered' ) ) {
-				wp_enqueue_script( $handle );
-			}
-		}
-
-		// Setup the JS data for the admin screen.
-		$admin_data                   = array();
-		$admin_data['editorSettings'] = wp_parse_args( $this->get_editor_settings(), $this->get_default_editor_settings() );
-		$admin_data['editor']         = array(
-			'previewContainerClasses' => array(),
-		);
-		$admin_data['editor']         = apply_filters( 'search-filter/admin/editor/settings', $admin_data['editor'] );
-		$admin_data['path']           = wp_parse_url( admin_url(), PHP_URL_PATH );
-		$admin_data['restNonce']      = wp_create_nonce( 'wp_rest' );
-
-		Scripts::attach_globals(
-			'search-filter-admin',
-			'admin',
-			(object) $admin_data
-		);
-
-		$preload_paths = $this->get_preload_api_paths();
-		Scripts::preload_api_requests( $preload_paths );
-
-		// Set our admin screen as "block editor" to auto load assets.
-		$current_screen = get_current_screen();
-		$current_screen->is_block_editor( true );
-
-		// Remove directory assets we don't need.
-		remove_action( 'enqueue_block_editor_assets', 'wp_enqueue_editor_block_directory_assets' );
+		return $dynamic_screens;
 	}
 
 	/**
@@ -401,7 +530,7 @@ class Admin {
 	 *
 	 * TODO - keep an eye on global styles project as this will all probably change
 	 */
-	public function get_editor_settings() {
+	private static function get_editor_settings() {
 
 		$editor_settings = array();
 
@@ -409,12 +538,19 @@ class Admin {
 		wp_enqueue_style( 'wp-format-library' );
 
 		// Need this to trigger so we load theme block editor assets.
-		// TODO - we have an issue with using this + Woocommerce...
 		$custom_settings = array(
 			'siteUrl' => \site_url(),
 			'styles'  => \get_block_editor_theme_styles(),
 		);
-		$editor_settings = \get_block_editor_settings( $custom_settings, null );
+
+		// Create a context for our admin screens.
+		$context = new \WP_Block_Editor_Context(
+			array(
+				'name' => 'search-filter/admin',
+			)
+		);
+
+		$editor_settings = \get_block_editor_settings( $custom_settings, $context );
 
 		// Non GB, lets just support color palette for now.
 		if ( empty( $editor_settings['colors'] ) ) {
@@ -431,7 +567,7 @@ class Admin {
 	 *
 	 * @return array
 	 */
-	public function get_default_editor_settings() {
+	private static function get_default_editor_settings() {
 		$editor_settings = array(
 			'alignWide'                   => false,
 			'allowedBlockTypes'           => true,
@@ -466,19 +602,6 @@ class Admin {
 				'vw',
 			),
 			'styles'                      => array(),
-			/*
-			'styles' => array(
-				array(
-					'css' => '',
-					'__unstableType' => 'presets',
-					'isGlobalStyles' => true,
-				),
-				array(
-					'assets' => '', // This can be a string of any html, like <svg>...</svg> - which we need.
-					'__unstableType' => 'svgs',
-					'isGlobalStyles' => false,
-				)
-			), */
 			'__experimentalFeatures'      => array(
 				'appearanceTools'               => false,
 				'useRootPaddingAwareAlignments' => true,
@@ -585,22 +708,31 @@ class Admin {
 	}
 
 	/**
-	 * Check for plugin updates.
+	 * Filter to determine if we should load the full block editor scripts and styles.
 	 *
-	 * @since 3.0.0
+	 * @since 3.2.0
+	 *
+	 * @param bool $should_load Whether to load the block editor scripts and styles.
+	 * @return bool Modified value.
 	 */
-	public static function update_plugin() {
-		// Setup the updater.
-		$edd_updater = new \Search_Filter\Core\Plugin_Updater(
-			'https://license.searchandfilter.com',
-			SEARCH_FILTER_BASE_FILE,
-			array(
-				'version' => SEARCH_FILTER_VERSION,
-				'license' => 'search-filter-extension-free',
-				'item_id' => 514539,
-				'author'  => 'Search & Filter',
-				'beta'    => false,
-			)
-		);
+	public static function set_block_editor_script_and_styles( $should_load ) {
+		if ( ! Screens::is_search_filter_screen() ) {
+			return $should_load;
+		}
+		return self::should_load_block_editor_script_and_styles();
+	}
+
+	/**
+	 * Determine if we should load the full block editor scripts and styles.
+	 *
+	 * We nearly always have this as false, however in the future we'll likely want to
+	 * load the full block editor.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return bool Whether to load the full block editor scripts and styles.
+	 */
+	public static function should_load_block_editor_script_and_styles() {
+		return apply_filters( 'search-filter/admin/should_load_full_block_editor', self::$should_load_full_block_editor );
 	}
 }

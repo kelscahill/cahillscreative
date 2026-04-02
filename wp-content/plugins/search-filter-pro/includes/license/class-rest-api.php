@@ -1,4 +1,10 @@
 <?php
+/**
+ * License REST API endpoints.
+ *
+ * @package Search_Filter_Pro
+ */
+
 namespace Search_Filter_Pro\License;
 
 use Search_Filter\Options;
@@ -19,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Rest_API {
 
-	const PLUGIN_ITEM_ID   = 526297;
+	const PLUGIN_ITEM_ID = 526297;
 	/**
 	 * Init the cron class.
 	 *
@@ -123,7 +129,7 @@ class Rest_API {
 		return rest_ensure_response( $license_data );
 	}
 
-	
+
 
 	/**
 	 * Check whether the license data object seems to be connected.
@@ -189,7 +195,7 @@ class Rest_API {
 			)
 		);
 
-		// Make sure the response came back okay
+		// Make sure the response came back okay.
 		if ( is_wp_error( $response ) ) {
 			$license_data['errorMessage'] = __( "Couldn't retreive license information - `wp_remote_post` failed.", 'search-filter-pro' );
 			return rest_ensure_response( $license_data );
@@ -219,7 +225,7 @@ class Rest_API {
 				$license_data['error'] = $remote_license_data->error;
 			}
 
-			Options::update_option_value( 'license-data', $license_data );
+			Options::update( 'license-data', $license_data );
 
 			if ( $remote_license_status === 'valid' ) {
 				// Once we have a valid license key and it's activated
@@ -236,14 +242,12 @@ class Rest_API {
 	 * Disconnect the license.
 	 *
 	 * @since 3.0.0
-	 *
-	 * @param \WP_REST_Request $request The request object.
 	 */
-	public static function disconnect( \WP_REST_Request $request ) {
+	public static function disconnect() {
 
 		$license_data = License_Server::get_license_data();
 		$license      = $license_data['license'];
-		// data to send in our API request
+		// Data to send in our API request.
 		$api_params = array(
 			'edd_action' => 'deactivate_license',
 			'license'    => $license,
@@ -262,7 +266,7 @@ class Rest_API {
 			)
 		);
 
-		// make sure the response came back okay
+		// Make sure the response came back okay.
 		if ( is_wp_error( $response ) ) {
 			$license_data['errorMessage'] = __( "Couldn't disconnect license - `wp_remote_post` failed.", 'search-filter-pro' );
 			return rest_ensure_response( $license_data );
@@ -280,7 +284,7 @@ class Rest_API {
 				'error'        => '',
 				'errorMessage' => '',
 			);
-			Options::update_option_value( 'license-data', $license_data );
+			Options::update( 'license-data', $license_data );
 
 			// Now update the status to disconnected in the response.
 			$license_data['status'] = 'disconnected';
@@ -295,10 +299,8 @@ class Rest_API {
 	 * Refresh the license status.
 	 *
 	 * @since 3.0.0
-	 *
-	 * @param \WP_REST_Request $request The request object.
 	 */
-	public static function refresh( \WP_REST_Request $request ) {
+	public static function refresh() {
 		$license_data = License_Server::get_license_data();
 		if ( self::is_license_key_connected( $license_data ) ) {
 			$license_data['license'] = self::obfuscate_license_key( $license_data['license'] );
@@ -320,6 +322,9 @@ class Rest_API {
 	/**
 	 * Hide the license key be converting all but the last 4
 	 * characters to an asterix.
+	 *
+	 * @param string $key The license key to obfuscate.
+	 * @return string The obfuscated license key.
 	 */
 	private static function obfuscate_license_key( $key ) {
 		$length = strlen( $key );

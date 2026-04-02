@@ -19,9 +19,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Handles data retrieval operations via REST API.
  *
+ * @since 3.0.0
  */
 class Data {
+	/**
+	 * Constructor.
+	 *
+	 * @since 3.0.0
+	 */
 	public function __construct() {}
 	/**
 	 * Check request permissions
@@ -37,7 +44,7 @@ class Data {
 	/**
 	 * Get post types
 	 *
-	 * @return void
+	 * @return \WP_REST_Response
 	 */
 	public function get_post_types() {
 		$post_types = get_post_types( array( 'public' => true ), 'objects' );
@@ -51,9 +58,9 @@ class Data {
 	 *
 	 * TODO - this is almost a duplicate of the get_taxonomies_options in /includes/class-rest-api.php
 	 *
-	 * @return void
+	 * @return \WP_REST_Response
 	 */
-	public function get_taxonomies( \WP_REST_Request $request ) {
+	public function get_taxonomies() {
 		$taxonomies      = WP_Data::get_taxonomies();
 		$json_taxonomies = array();
 		foreach ( $taxonomies as $taxonomy ) {
@@ -69,7 +76,8 @@ class Data {
 	 *
 	 * TODO - this is almost a duplicate of the get_taxonomies_options in /includes/class-rest-api.php
 	 *
-	 * @return void
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response
 	 */
 	public function get_taxonomy_terms( \WP_REST_Request $request ) {
 		$json_terms = array();
@@ -89,26 +97,34 @@ class Data {
 	/**
 	 * Get post by ID
 	 *
-	 * @return void
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response
 	 */
 	public function get_post( \WP_REST_Request $request ) {
 		$id   = $request->get_param( 'id' );
 		$post = get_post( $id );
 		if ( $post ) {
-			$post->permalink = get_permalink( $post->ID );
-			return rest_ensure_response( $post );
+			$post_data = array(
+				'ID'         => $post->ID,
+				'post_title' => $post->post_title,
+				'permalink'  => get_permalink( $post->ID ),
+				'post_type'  => $post->post_type,
+			);
+			return rest_ensure_response( $post_data );
 		} else {
-			return new \WP_Error( 'no_post', 'No post found', array( 'status' => 404 ) );
+			return rest_convert_error_to_response( new \WP_Error( 'no_post', 'No post found', array( 'status' => 404 ) ) );
 		}
 	}
 	/**
 	 * Get posts by query args
 	 *
-	 * @return void
+	 * @param \WP_REST_Request $request The request object.
+	 *
+	 * @return \WP_REST_Response
 	 */
 	public function get_query( \WP_REST_Request $request ) {
 		$args['s']              = $request->get_param( 'search' );
-		$args['post_type']      = $request->get_param( 'postType' );
+		$args['post_type']      = $request->get_param( 'post_type' );
 		$args['posts_per_page'] = $request->get_param( 'per_page' );
 		$args['paged']          = $request->get_param( 'paged' );
 		$args['orderby']        = $request->get_param( 'orderby' );
@@ -119,9 +135,13 @@ class Data {
 
 		// Add permalink to each post.
 		foreach ( $query->posts as $post ) {
-			$updated_post            = $post;
-			$updated_post->permalink = get_permalink( $post->ID );
-			$posts[]                 = $updated_post;
+			$post_data = array(
+				'ID'         => $post->ID,
+				'post_title' => $post->post_title,
+				'permalink'  => get_permalink( $post->ID ),
+				'post_type'  => $post->post_type,
+			);
+			$posts[]   = $post_data;
 		}
 		$query = array(
 			'foundPosts' => $query->found_posts,
@@ -193,32 +213,32 @@ class Data {
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_query' ),
 				'args'                => array(
-					'paged'    => array(
+					'paged'     => array(
 						'type'              => 'number',
 						'required'          => false,
 						'sanitize_callback' => 'absint',
 					),
-					'orderby'  => array(
+					'orderby'   => array(
 						'type'              => 'string',
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'order'    => array(
+					'order'     => array(
 						'type'              => 'string',
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'per_page' => array(
+					'per_page'  => array(
 						'type'              => 'number',
 						'required'          => false,
 						'sanitize_callback' => 'absint',
 					),
-					'search'   => array(
+					'search'    => array(
 						'type'              => 'string',
 						'required'          => false,
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'postType' => array(
+					'post_type' => array(
 						'type'              => 'array',
 						'required'          => false,
 						'sanitize_callback' => 'Search_Filter\\Core\\Sanitize::deep_clean',

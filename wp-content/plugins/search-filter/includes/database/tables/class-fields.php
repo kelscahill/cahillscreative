@@ -1,4 +1,11 @@
 <?php
+/**
+ * Fields Database Table.
+ *
+ * @package Search_Filter
+ * @since 3.0.0
+ */
+
 namespace Search_Filter\Database\Tables;
 
 use Search_Filter\Core\Data_Store;
@@ -7,28 +14,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Class for managing the fields database table.
+ *
+ * @since 3.0.0
+ */
 class Fields extends \Search_Filter\Database\Engine\Table {
 
 	/**
 	 * Table name, without the global table prefix.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	public $name = 'fields';
 
 	/**
-	 * Database version key (saved in _options or _sitemeta)
-	 *
-	 * @since 1.0.0
-	 * @var   string
-	 */
-	protected $db_version_key = 'search_filter_fields_table_version';
-
-	/**
 	 * Optional description.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	public $description = 'Fields';
@@ -36,7 +40,7 @@ class Fields extends \Search_Filter\Database\Engine\Table {
 	/**
 	 * Database version.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   mixed
 	 */
 	protected $version = '3.0.1';
@@ -44,7 +48,7 @@ class Fields extends \Search_Filter\Database\Engine\Table {
 	/**
 	 * Key => value array of versions => methods.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   array
 	 */
 	protected $upgrades = array(
@@ -54,7 +58,7 @@ class Fields extends \Search_Filter\Database\Engine\Table {
 	/**
 	 * Setup this database table.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 */
 	protected function set_schema() {
 		$this->schema = "
@@ -73,12 +77,18 @@ class Fields extends \Search_Filter\Database\Engine\Table {
 			";
 	}
 
-	// Clear the data_store cache when the table is dropped.
+	/**
+	 * Drop the table.
+	 *
+	 * @return bool
+	 */
 	public function drop() {
-		// Drop the table
-		parent::drop();
+		// Drop the table.
+		$dropped = parent::drop();
 
+		// Clear the data_store cache when the table is dropped.
 		Data_Store::flush( 'field' );
+		return $dropped;
 	}
 
 	/**

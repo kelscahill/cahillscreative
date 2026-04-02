@@ -11,19 +11,22 @@
 
 namespace Search_Filter\Rest_API;
 
-use Search_Filter\Core\WP_Data;
-use Search_Filter\Features as Search_Filter_Features;
-use Search_Filter\Options;
-
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
+ * Handles feature management operations via REST API.
  *
+ * @since 3.0.0
  */
 class Features {
+	/**
+	 * Constructor.
+	 *
+	 * @since 3.0.0
+	 */
 	public function __construct() {}
 	/**
 	 * Check request permissions
@@ -37,14 +40,25 @@ class Features {
 	}
 
 	/**
-	 * Get posts by query args
+	 * Get features data.
 	 *
-	 * @return void
+	 * @since 3.0.0
+	 *
+	 * @return \WP_REST_Response REST response.
 	 */
-	public function get_features_data( \WP_REST_Request $request ) {
-		$features = Search_Filter_Features::get_features();
+	public function get_features_data() {
+		$features = \Search_Filter\Features::get_all();
 		return rest_ensure_response( $features );
 	}
+
+	/**
+	 * Update features data.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request The REST request object.
+	 * @return \WP_REST_Response REST response.
+	 */
 	public function update_features_data( \WP_REST_Request $request ) {
 		$data = $request->get_param( 'data' );
 		if ( ! is_array( $data ) ) {
@@ -62,7 +76,7 @@ class Features {
 		}
 
 		// Save the data as in the options table.
-		Options::update_option_value( 'features', $updated_feature_data );
+		\Search_Filter\Features::update_all( $updated_feature_data );
 
 		return rest_ensure_response( $updated_feature_data );
 	}
@@ -71,30 +85,5 @@ class Features {
 	 * Add rest routes.
 	 */
 	public function add_routes() {
-
-		register_rest_route(
-			'search-filter/v1',
-			'/features',
-			array(
-				'args' => array(),
-				array(
-					'methods'             => \WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_features_data' ),
-					'permission_callback' => array( $this, 'permissions' ),
-				),
-				array(
-					'methods'             => \WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_features_data' ),
-					'permission_callback' => array( $this, 'permissions' ),
-					'args'                => array(
-						'data' => array(
-							'type'              => 'object',
-							'required'          => false,
-							'sanitize_callback' => 'Search_Filter\\Core\\Sanitize::deep_clean',
-						),
-					),
-				),
-			)
-		);
 	}
 }

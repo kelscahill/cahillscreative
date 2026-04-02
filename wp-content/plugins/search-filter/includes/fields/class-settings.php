@@ -12,6 +12,8 @@
 namespace Search_Filter\Fields;
 
 use Search_Filter\Queries\Query;
+use Search_Filter\Settings\Setting;
+use Search_Filter\Util;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -72,21 +74,33 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 	protected static $section = 'fields';
 
 	/**
-	 * Track extended block settings    .
+	 * Legacy mapped data support.
+	 *
+	 * @since 3.2.0
 	 *
 	 * @var array
 	 */
-	private static $extended_blocks = array();
+	private static $legacy_data_support = array();
+
+	/**
+	 * Whether to use legacy data support.
+	 *
+	 * @since 3.2.0
+	 * @var bool
+	 */
+	private static $use_legacy_data_support = false;
 
 	/**
 	 * Init the settings.
 	 *
-	 * @param    array  $settings    The settings to add.
-	 * @param    array  $groups    The groups to add.
-	 * @param    string $register_name    The name of settings in the register.
+	 * @param    array $settings    The settings to add.
+	 * @param    array $groups    The groups to add.
 	 */
-	public static function init( $settings = array(), $groups = array(), $register_name = '' ) {
-		parent::init( $settings, $groups, $register_name );
+	public static function init( $settings = array(), $groups = array() ) {
+		parent::init( $settings, $groups );
+
+		// Init the upgrades for legacy data type support.
+		self::init_upgrades();
 	}
 
 
@@ -95,8 +109,8 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array $settings The settings.
-	 * @param array $attributes The attributes.
+	 * @param array<string, mixed> $settings The settings (unused).
+	 * @param array<string, mixed> $attributes The attributes.
 	 *
 	 * @return array The external store.
 	 */
@@ -109,7 +123,7 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 			return $store;
 		}
 
-		$query = Query::find( array( 'id' => $attributes['queryId'] ), 'record' );
+		$query = Query::get_instance( absint( $attributes['queryId'] ) );
 		if ( is_wp_error( $query ) ) {
 			return $store;
 		}
@@ -121,125 +135,474 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 	 * Prepare the setting.
 	 *
 	 * @param array $setting The setting to prepare.
+	 * @param array $args Optional. Additional arguments for preparing the setting.
 	 *
-	 * @return \Search_Filter\Settings\Setting The prepared setting.
+	 * @return Setting The prepared setting.
 	 */
-	protected static function prepare_setting( $setting, $args = array() ) {
+	protected static function prepare_setting( array $setting, array $args = array() ) {
 
 		$setting = apply_filters( 'search-filter/fields/settings/prepare_setting/before', $setting, $args );
 
+		// Handle any setting upgrades.
+		$setting = self::apply_setting_upgrades( $setting );
+
 		// Update the dependsOn conditions based on field support.
 		// Build the conditions based on the various supporting properties.
-		$setting_name = $setting['name'];
-		if ( $setting['tab'] === 'styles' ) {
-			$setting = static::build_styles_conditions( $setting );
-		} else {
-			$setting = static::build_settings_conditions( $setting );
-		}
+		$setting = static::build_settings_conditions( $setting );
+		// Allow for setting variations making it possible to override any setting
+		// based in field type & input type.
+		$setting = static::build_variations( $setting );
 
-		// Now build the dynamic options.
-		if ( $setting_name === 'controlType' ) {
-			$setting['options'] = static::build_control_type_options();
-		} elseif ( $setting_name === 'inputType' ) {
-			$setting['options'] = static::build_input_type_options();
-		}
-
-		if ( array_key_exists( 'extend_block_types', $args ) ) {
-			$types = $args['extend_block_types'];
-			// Then we need to add the setting to the extensions list.
-			foreach ( $types as $type ) {
-				if ( ! array_key_exists( $type, self::$extended_blocks ) ) {
-					self::$extended_blocks[ $type ] = array();
-				}
-				$modified_setting = $setting;
-
-				// Unset defaults for block editor attributes.  In our blocks we
-				// have tons of extra attributes that may or may not be needed.
-				if ( isset( $modified_setting['default'] ) ) {
-					unset( $modified_setting['default'] );
-				}
-				self::$extended_blocks[ $type ][] = $modified_setting;
-			}
-		}
 		$setting = parent::prepare_setting( $setting );
 		return $setting;
 	}
 
 	/**
-	 * Get the extended blocks.
+	 * Apply upgrades to the setting.
+	 *
+	 * @param array $setting The setting to apply upgrades to.
+	 *
+	 * @return array The updated setting.
 	 */
-	public static function get_extended_blocks() {
-		return self::$extended_blocks;
+	protected static function apply_setting_upgrades( $setting ) {
+
+		/**
+		 * Pre 3.2.0 settings contexts used to specify each type of field context, ie
+		 * `admin/field/search`, `admin/field/advanced`, `block/field/search` etc.
+		 *
+		 * A bit of a crude check to see if there is more than 2 contexts, but in 99% of cases this will be true.
+		 *
+		 * Now we only use `admin/field` and `block/admin`.
+		 */
+		if ( isset( $setting['context'] ) && is_array( $setting['context'] ) && count( $setting['context'] ) > 2 ) {
+			foreach ( $setting['context'] as $context ) {
+				$has_field_context = false;
+				$has_block_context = false;
+				if ( strpos( $context, 'admin/field' ) ) {
+					$has_field_context = true;
+				} elseif ( strpos( $context, 'block/field' ) !== false ) {
+					$has_block_context = true;
+				}
+				$setting['context'] = array();
+				if ( $has_field_context ) {
+					$setting['context'][] = 'admin/field';
+				}
+				if ( $has_block_context ) {
+					$setting['context'][] = 'block/field';
+				}
+			}
+		}
+
+		return $setting;
+	}
+	/**
+	 * Initialize upgrades for legacy data support.
+	 *
+	 * @return void
+	 */
+	protected static function init_upgrades() {
+		/**
+		 * Pre 3.2.0 we used to build input type conditions from the hook 'search-filter/fields/field/get_data_support',
+		 * but now we use the 'search-filter/fields/field/get_setting_support' hook instead.
+		 */
+		if ( has_filter( 'search-filter/fields/field/get_data_support' ) || has_filter( 'search-filter/field/get_data_support' ) ) {
+			self::$use_legacy_data_support = true;
+
+			$input_type_matrix = Field_Factory::get_field_input_types();
+
+			foreach ( $input_type_matrix as $field_type => $input_types ) {
+
+				self::$legacy_data_support[ $field_type ] = array();
+				foreach ( $input_types as $input_type => $input_type_class ) {
+					$setting_data_support = apply_filters( 'search-filter/fields/field/get_data_support', array(), $field_type, $input_type );
+					// Legacy hook name.
+					$setting_data_support = apply_filters( 'search-filter/field/get_data_support', $setting_data_support, $field_type, $input_type );
+
+					// Convert this to our expected format: `settingName => values => array( ...values... )`.
+					foreach ( $setting_data_support as $data_support ) {
+						foreach ( $data_support as $setting_name => $values ) {
+							if ( ! isset( self::$legacy_data_support[ $field_type ][ $input_type ][ $setting_name ] ) ) {
+								self::$legacy_data_support[ $field_type ][ $input_type ][ $setting_name ] = array();
+							}
+							// Can be single value or an array of values.
+							if ( ! is_array( $values ) ) {
+								$values = array( $values );
+							}
+							foreach ( $values as $value ) {
+								self::$legacy_data_support[ $field_type ][ $input_type ][ $setting_name ][ $value ] = true;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
-	 * Build the style conditions based on the style support settings.
+	 * Apply legacy data support values to the setting values.
 	 *
-	 * @param array $setting The setting to build the conditions for.
-	 * @return array The style setting with conditions.
+	 * @since 3.2.0
+	 *
+	 * @param array  $setting_values The setting values to update.
+	 * @param string $setting_name The setting name.
+	 * @param string $field_type The field type.
+	 * @param string $input_type The input type.
+	 * @return array The updated setting values.
 	 */
-	protected static function build_styles_conditions( $setting ) {
+	protected static function apply_setting_support_legacy_values( $setting_values, $setting_name, $field_type, $input_type ) {
 
+		if ( ! self::$use_legacy_data_support ) {
+			return $setting_values;
+		}
+		if ( ! isset( self::$legacy_data_support[ $field_type ] ) ) {
+			return $setting_values;
+		}
+		if ( ! isset( self::$legacy_data_support[ $field_type ][ $input_type ] ) ) {
+			return $setting_values;
+		}
+		if ( ! isset( self::$legacy_data_support[ $field_type ][ $input_type ][ $setting_name ] ) ) {
+			return $setting_values;
+		}
+
+		return array_merge( self::$legacy_data_support[ $field_type ][ $input_type ][ $setting_name ], $setting_values );
+	}
+
+	/**
+	 * Applies upgrades to setting support arrays for backwards compatibility.
+	 *
+	 * @param array $setting_supports The setting supports to upgrade.
+	 * @return array The upgraded setting supports.
+	 */
+	protected static function apply_setting_support_upgrades( $setting_supports ) {
+		/**
+		 * Legacy: styles settings used to be flat arrays but now are associative arrays that can either be
+		 * true, or a nested arrays with properties, such as `conditions` just like regular settings support.
+		 * If we have a non-assoc array, convert it to a keyed array with every value set to true.
+		 */
+		if ( ! Util::is_assoc_array( $setting_supports ) ) {
+			$setting_supports = array_fill_keys( $setting_supports, true );
+		}
+
+		return $setting_supports;
+	}
+
+	/**
+	 * Build the styles (variables) overrides based on the field input types.
+	 *
+	 * @param array $setting The setting to build the overrides for.
+	 * @return array The setting with overrides.
+	 */
+	protected static function build_variations( $setting ) {
 		$input_type_matrix = Field_Factory::get_field_input_types();
 		$setting_name      = $setting['name'];
 
-		$support_matrix = array();
+		// Note: while this logic is implemented to add variations for any setting prop
+		// its only currently used for styles settings, specifically for overriding variables.
+		$variations = array();
 
 		foreach ( $input_type_matrix as $field_type => $input_types ) {
 
 			foreach ( $input_types as $input_type => $input_type_class ) {
 
-				// Build the conditions.
-				$style_supports = $input_type_class::get_styles_support();
+				$setting_supports = array();
 
-				if ( ! in_array( $setting_name, $style_supports, true ) ) {
+				if ( $setting['tab'] === 'styles' ) {
+					$setting_supports = $input_type_class::get_styles_support();
+				} else {
+					$setting_supports = $input_type_class::get_setting_support();
+				}
+
+				// Legacy: styles settings used to be flat arrays but now are associative arrays that can either be
+				// true, or a nested arrays with properties, such as `conditions` just like regular settings support.
+				// If we have a non-assoc array, convert it to a keyed array with every value set to true.
+				if ( ! Util::is_assoc_array( $setting_supports ) ) {
 					continue;
 				}
 
-				if ( ! isset( $support_matrix[ $field_type ] ) ) {
-					$support_matrix[ $field_type ] = array();
+				if ( ! array_key_exists( $setting_name, $setting_supports ) ) {
+					continue;
 				}
-				$support_matrix[ $field_type ][] = $input_type;
+
+				$setting_config = $setting_supports[ $setting_name ];
+				if ( ! isset( $setting_config['variation'] ) ) {
+					continue;
+				}
+
+				$variation = $setting_config['variation'];
+
+				if ( empty( $variation ) ) {
+					continue;
+				}
+
+				// Add the field type to the overrides if its not already set.
+				if ( ! isset( $variations[ $field_type ] ) ) {
+					$variations[ $field_type ] = array();
+				}
+
+				// Add the variables override.
+				$variations[ $field_type ][ $input_type ] = $variation;
 			}
 		}
 
-		$field_type_depends_conditions = array();
-		foreach ( $support_matrix as $field_type => $input_types ) {
-			$input_type_depends_conditions = array();
-			foreach ( $input_types as $input_type ) {
-				// Build depends conditions for each field type, search, filter, or control.
-				$option                          = $field_type === 'control' ? 'controlType' : 'inputType';
-				$input_type_depends_conditions[] = array(
-					'option'  => $option,
-					'compare' => '=',
-					'value'   => $input_type,
-				);
-			}
-
-			$field_type_depends_conditions[] = array(
-				'relation' => 'AND',
-				'rules'    => array(
-					array(
-						'option'  => 'type',
-						'compare' => '=',
-						'value'   => $field_type,
-					),
-					array(
-						'relation' => 'OR',
-						'rules'    => $input_type_depends_conditions,
-					),
-				),
-			);
-		}
-
-		if ( count( $field_type_depends_conditions ) > 0 ) {
-			$setting['dependsOn'] = array(
-				'relation' => 'OR',
-				'rules'    => $field_type_depends_conditions,
-			);
+		if ( ! empty( $variations ) ) {
+			$setting['variations'] = $variations;
 		}
 
 		return $setting;
+	}
+
+	/**
+	 * Gets the variation of a setting based on field attributes.
+	 *
+	 * @param array $setting The setting to get the variation for.
+	 * @param array $attributes The field attributes.
+	 * @return array|null The variation if found, null otherwise.
+	 */
+	public static function get_variation( $setting, $attributes ) {
+		if ( ! isset( $setting['variations'] ) ) {
+			return null;
+		}
+		if ( empty( $attributes ) ) {
+			return null;
+		}
+		if ( ! isset( $attributes['type'] ) ) {
+			return null;
+		}
+
+		$field_type = $attributes['type'];
+		if ( ! isset( $setting['variations'][ $field_type ] ) ) {
+			return null;
+		}
+
+		if ( $field_type === 'control' && ! isset( $attributes['controlType'] ) ) {
+			return null;
+		} elseif ( ! isset( $attributes['inputType'] ) ) {
+			return null;
+		}
+
+		$input_type = '';
+		if ( $field_type === 'control' ) {
+			$input_type = $attributes['controlType'];
+		} else {
+			$input_type = $attributes['inputType'];
+		}
+
+		if ( ! isset( $setting['variations'][ $field_type ][ $input_type ] ) ) {
+			return null;
+		}
+
+		return $setting['variations'][ $field_type ][ $input_type ];
+	}
+
+	/**
+	 * Build support matrices for a setting.
+	 *
+	 * Builds both the setting-level matrix and option-level matrices in a single pass
+	 * through all field types and input types, with optimization applied during construction.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $setting The setting to build matrices for.
+	 * @return array Array with 'matrix' and 'options' keys containing optimized dependency matrices.
+	 */
+	protected static function build_support_matrices( $setting ) {
+		$input_type_matrix = Field_Factory::get_field_input_types();
+		$setting_name      = $setting['name'];
+		$is_reserved       = isset( $setting['isReserved'] ) && $setting['isReserved'] === true;
+		$field_type_count  = count( $input_type_matrix );
+
+		$support_matrix = array(
+			'matrix'  => array(),
+			'options' => array(),
+		);
+
+		// Optimization tracking for setting matrix.
+		$setting_global_all_true  = 0;
+		$setting_global_all_false = 0;
+
+		// Optimization tracking for option matrices (keyed by option value).
+		$options_global_counts = array();
+
+		foreach ( $input_type_matrix as $field_type => $input_types ) {
+			$input_type_count = count( $input_types );
+
+			// Track counts for optimization (setting matrix).
+			$setting_enabled_count  = 0;
+			$setting_disabled_count = 0;
+
+			// Track counts for optimization (each option matrix).
+			$options_counts = array();
+
+			foreach ( $input_types as $input_type => $input_type_class ) {
+
+				// Get the setting support config for this input type.
+				$setting_supports = array();
+				if ( $setting['tab'] === 'styles' ) {
+					$setting_supports = $input_type_class::get_styles_support();
+				} else {
+					$setting_supports = $input_type_class::get_setting_support();
+				}
+
+				$setting_supports = self::apply_setting_support_upgrades( $setting_supports );
+
+				if ( ! array_key_exists( $setting_name, $setting_supports ) ) {
+					continue;
+				}
+
+				$setting_config = $setting_supports[ $setting_name ];
+
+				// Setting config can be `true` or an array with `values` and `conditions` props.
+				if ( $setting_config === false ) {
+					// Then this setting is not supported.
+					++$setting_disabled_count;
+					continue;
+				} elseif ( $setting_config === true ) {
+					// Add to setting matrix.
+					if ( ! isset( $support_matrix['matrix'][ $field_type ] ) ) {
+						$support_matrix['matrix'][ $field_type ] = array();
+					}
+					$support_matrix['matrix'][ $field_type ][] = array( $input_type, true );
+					++$setting_enabled_count;
+					continue;
+				} elseif ( ! is_array( $setting_config ) ) {
+					// Then this setting is not supported.
+					continue;
+				}
+
+				// If conditions are not set, then values must be, which means the setting is supported.
+				if ( ! isset( $setting_config['conditions'] ) ) {
+					++$setting_enabled_count;
+				}
+
+				$setting_conditions = isset( $setting_config['conditions'] ) ? $setting_config['conditions'] : array();
+
+				// Add to setting matrix (unless it's a reserved setting).
+				if ( ! $is_reserved ) {
+					if ( ! isset( $support_matrix['matrix'][ $field_type ] ) ) {
+						$support_matrix['matrix'][ $field_type ] = array();
+					}
+					$support_matrix['matrix'][ $field_type ][] = array( $input_type, $setting_conditions );
+				}
+
+				// Handle option-specific values.
+				$setting_values = isset( $setting_config['values'] ) ? $setting_config['values'] : array();
+				// Backwards compat for the old `get_data_support` hook.
+				$setting_values = self::apply_setting_support_legacy_values( $setting_values, $setting['name'], $field_type, $input_type );
+
+				if ( ! empty( $setting_values ) && isset( $setting['options'] ) && ! empty( $setting['options'] ) ) {
+					$setting_options = $setting['options'];
+					foreach ( $setting_options as $option ) {
+						if ( ! isset( $option['value'] ) ) {
+							continue;
+						}
+						$option_value = $option['value'];
+
+						// Initialize tracking for this option if needed.
+						if ( ! isset( $options_counts[ $option_value ] ) ) {
+							$options_counts[ $option_value ] = array(
+								'enabled'  => 0,
+								'disabled' => 0,
+							);
+						}
+
+						// Setup the support matrix for this option.
+						if ( ! array_key_exists( $option_value, $support_matrix['options'] ) ) {
+							$support_matrix['options'][ $option_value ] = array();
+						}
+						// Init the field type if it doesn't exist.
+						if ( ! isset( $support_matrix['options'][ $option_value ][ $field_type ] ) ) {
+							$support_matrix['options'][ $option_value ][ $field_type ] = array();
+						}
+
+						// Check if this value exists in the options.
+						if ( ! array_key_exists( $option_value, $setting_values ) ) {
+							// Then the option is not supported.
+							$support_matrix['options'][ $option_value ][ $field_type ][] = array( $input_type, false );
+							++$options_counts[ $option_value ]['disabled'];
+						} else {
+							$depends_condition = null;
+							if ( is_bool( $setting_values[ $option_value ] ) ) {
+								$depends_condition = $setting_values[ $option_value ];
+							} elseif ( is_array( $setting_values[ $option_value ] ) ) {
+								// Unlike the settings conditions which are pre-parsed, option conditions can be flat arrays,
+								// which need to be grouped together as a rule set if there are multiple.
+
+								// If there is only 1 condition, then we can collapse the array.
+								if ( count( $setting_values[ $option_value ] ) === 1 ) {
+									$depends_condition = $setting_values[ $option_value ][0];
+								} else {
+									// Otherwise combine them into a ruleset.
+									$depends_condition = array(
+										'relation' => 'AND',
+										'rules'    => $setting_values[ $option_value ],
+									);
+								}
+							} else {
+								continue;
+							}
+
+							$support_matrix['options'][ $option_value ][ $field_type ][] = array( $input_type, $depends_condition );
+
+							// Track enabled/disabled for optimization.
+							if ( $depends_condition === true ) {
+								++$options_counts[ $option_value ]['enabled'];
+							} elseif ( $depends_condition === false ) {
+								++$options_counts[ $option_value ]['disabled'];
+							} elseif ( empty( $depends_condition ) ) {
+								++$options_counts[ $option_value ]['enabled'];
+							}
+						}
+					}
+				}
+			}
+
+			// Optimize setting matrix for this field type.
+			if ( $input_type_count > 0 && isset( $support_matrix['matrix'][ $field_type ] ) ) {
+				if ( $setting_disabled_count === $input_type_count ) {
+					$support_matrix['matrix'][ $field_type ] = false;
+					++$setting_global_all_false;
+				} elseif ( $setting_enabled_count === $input_type_count ) {
+					$support_matrix['matrix'][ $field_type ] = true;
+					++$setting_global_all_true;
+				}
+			}
+
+			// Optimize each option matrix for this field type.
+			foreach ( $options_counts as $option_value => $counts ) {
+				// Initialize global counts for this option if needed.
+				if ( ! isset( $options_global_counts[ $option_value ] ) ) {
+					$options_global_counts[ $option_value ] = array(
+						'all_true'  => 0,
+						'all_false' => 0,
+					);
+				}
+
+				if ( $input_type_count > 0 && isset( $support_matrix['options'][ $option_value ][ $field_type ] ) ) {
+					if ( $counts['disabled'] === $input_type_count ) {
+						$support_matrix['options'][ $option_value ][ $field_type ] = false;
+						++$options_global_counts[ $option_value ]['all_false'];
+					} elseif ( $counts['enabled'] === $input_type_count ) {
+						$support_matrix['options'][ $option_value ][ $field_type ] = true;
+						++$options_global_counts[ $option_value ]['all_true'];
+					}
+				}
+			}
+		}
+
+		// Global optimization: setting matrix.
+		if ( $setting_global_all_true === $field_type_count || $setting_global_all_false === $field_type_count ) {
+			$support_matrix['matrix'] = array();
+		}
+
+		// Global optimization: option matrices.
+
+		foreach ( $options_global_counts as $option_value => $global_counts ) {
+			if ( $global_counts['all_true'] === $field_type_count || $global_counts['all_false'] === $field_type_count ) {
+				$support_matrix['options'][ $option_value ] = array();
+			}
+		}
+
+		return $support_matrix;
 	}
 
 	/**
@@ -249,234 +612,60 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 	 * @return array The setting with conditions.
 	 */
 	protected static function build_settings_conditions( $setting ) {
+		// Phase 1: Build optimized matrices in a single pass.
+		$matrices = self::build_support_matrices( $setting );
 
-		$input_type_matrix = Field_Factory::get_field_input_types();
-		$setting_name      = $setting['name'];
+		// Phase 2: Build setting-level conditions from optimized matrix.
+		$setting_conditions = static::get_depends_conditions_from_matrix( $matrices['matrix'] );
+		if ( ! empty( $setting_conditions ) ) {
+			$existing             = isset( $setting['dependsOn'] ) ? $setting['dependsOn'] : null;
+			$setting['dependsOn'] = self::merge_depends_conditions( $existing, $setting_conditions );
 
-		$support_matrix = array(
-			'matrix'  => array(),
-			'options' => array(),
-		);
-		foreach ( $input_type_matrix as $field_type => $input_types ) {
-
-			foreach ( $input_types as $input_type => $input_type_class ) {
-
-				// Build the conditions.
-				$setting_supports = $input_type_class::get_setting_support();
-
-				if ( ! array_key_exists( $setting_name, $setting_supports ) ) {
-					continue;
-				}
-
-				$setting_config = $setting_supports[ $setting_name ];
-
-				$setting_conditions = isset( $setting_config['conditions'] ) ? $setting_config['conditions'] : array();
-				$setting_values     = isset( $setting_config['values'] ) ? $setting_config['values'] : array();
-
-				// Only support settings that have been set to true, or an array of values
-				// which means they support specific options only.
-				$is_reserved = isset( $setting['isReserved'] ) && $setting['isReserved'] === true;
-				if ( ( $setting_values !== true && ! is_array( $setting_values ) ) && ! $is_reserved ) {
-					continue;
-				}
-
-				if ( ! $is_reserved ) {
-					// Reserved settings don't need a dependency matrix.
-					if ( ! isset( $support_matrix['matrix'][ $field_type ] ) ) {
-						$support_matrix['matrix'][ $field_type ] = array();
-					}
-					$support_matrix['matrix'][ $field_type ][] = array( $input_type, $setting_conditions );
-				}
-
-				// Now loop through the options and build their matrix.
-				if ( is_array( $setting_values ) ) {
-					foreach ( $setting_values as $setting_value ) {
-						if ( ! array_key_exists( $setting_value, $support_matrix['options'] ) ) {
-							$support_matrix['options'][ $setting_value ] = array();
-						}
-
-						if ( ! isset( $support_matrix['options'][ $setting_value ][ $field_type ] ) ) {
-							$support_matrix['options'][ $setting_value ][ $field_type ] = array();
-						}
-
-						$support_matrix['options'][ $setting_value ][ $field_type ][] = array( $input_type, $setting_conditions );
-					}
-				}
+			// Copy the dependency action or set default to 'auto'.
+			$dependency_action = 'auto';
+			if ( $existing && isset( $existing['action'] ) ) {
+				$dependency_action = $existing['action'];
+				unset( $existing['action'] );
 			}
+			$setting['dependsOn']['action'] = $dependency_action;
 		}
 
-		// Now loop throught the support matrix and build the depends conditions.
-		$setting_matrix = $support_matrix['matrix'];
-		$options_matrix = $support_matrix['options'];
-
-		$setting_depends_conditions = static::get_depends_conditions_from_matrix( $setting_matrix );
-		if ( ! empty( $setting_depends_conditions ) ) {
-			if ( isset( $setting['dependsOn'] ) ) {
-				// Then there are already some conditions we need to honor.
-				$old_conditions = $setting['dependsOn'];
-				// Combine the old conditions and the new ones using AND relationship.
-				$setting['dependsOn'] = array(
-					'relation' => 'AND',
-					'rules'    => array( $old_conditions, $setting_depends_conditions ),
-				);
-			} else {
-				$setting['dependsOn'] = $setting_depends_conditions;
-			}
-		}
-
-		// Now loop through options that may have conditions.
-		if ( isset( $setting['options'] ) && ! empty( $setting['options'] ) ) {
-
+		// Phase 3: Build option-level conditions from optimized matrices.
+		if ( isset( $setting['options'] ) && ! empty( $setting['options'] ) && ! empty( $matrices['options'] ) ) {
 			$setting_options = $setting['options'];
+
 			foreach ( $setting_options as $option_key => $option ) {
 				if ( ! isset( $option['value'] ) ) {
 					continue;
 				}
-				if ( isset( $options_matrix[ $option['value'] ] ) ) {
-					$option_depends_conditions = static::get_depends_conditions_from_matrix( $options_matrix[ $option['value'] ] );
-					if ( ! empty( $option_depends_conditions ) ) {
-						if ( isset( $option['dependsOn'] ) ) {
-							// Then there are already some conditions we need to honor.
-							$old_conditions = $option['dependsOn'];
-							// Combine the old conditions and the new ones using AND relationship.
-							$option['dependsOn'] = array(
-								'relation' => 'AND',
-								'rules'    => array( $old_conditions, $option_depends_conditions ),
-							);
-						} else {
-							$option['dependsOn'] = $option_depends_conditions;
+
+				$option_value = $option['value'];
+
+				if ( isset( $matrices['options'][ $option_value ] ) ) {
+					$option_conditions = static::get_depends_conditions_from_matrix( $matrices['options'][ $option_value ] );
+
+					if ( ! empty( $option_conditions ) ) {
+						$existing            = isset( $option['dependsOn'] ) ? $option['dependsOn'] : null;
+						$option['dependsOn'] = self::merge_depends_conditions( $existing, $option_conditions );
+
+						// Copy the dependency action or set default to 'auto'.
+						$dependency_action = 'auto';
+						if ( $existing && isset( $existing['action'] ) ) {
+							$dependency_action = $existing['action'];
+							unset( $existing['action'] );
 						}
+						$option['dependsOn']['action'] = $dependency_action;
 					}
 				}
+
 				// Update the option.
 				$setting_options[ $option_key ] = $option;
 			}
 
 			$setting['options'] = $setting_options;
 		}
+
 		return $setting;
-	}
-
-	/**
-	 * Build the input type options based the field input types
-	 * data support setting.
-	 *
-	 * @return array The input type options.
-	 */
-	protected static function build_input_type_options() {
-		$input_type_matrix = Field_Factory::get_field_input_types();
-		// Now build the inputType options and conditions from the matrix.
-		$input_type_options_list = array();
-		foreach ( $input_type_matrix as $field_type => $input_types ) {
-			foreach ( $input_types as $input_type => $input_type_class ) {
-				// Build the data type conditions.
-				$data_supports = $input_type_class::get_data_support();
-
-				$all_criteria_conditions = array();
-				foreach ( $data_supports as $match_criteria ) {
-					$match_conditions = array();
-					foreach ( $match_criteria as $setting_name => $setting_criteria ) {
-						$condition = array();
-
-						if ( is_scalar( $setting_criteria ) ) {
-							$condition = array(
-								'option'  => $setting_name,
-								'compare' => '=',
-								'value'   => $setting_criteria,
-							);
-						} elseif ( is_array( $setting_criteria ) ) {
-							$conditions = array();
-							foreach ( $setting_criteria as $setting_value ) {
-								$condition    = array(
-									'option'  => $setting_name,
-									'compare' => '=',
-									'value'   => $setting_value,
-								);
-								$conditions[] = $condition;
-							}
-							$condition = array(
-								'relation' => 'OR',
-								'rules'    => $conditions,
-							);
-						}
-						$match_conditions[] = $condition;
-
-					}
-
-					$all_criteria_conditions[] = array(
-						'relation' => 'AND',
-						'rules'    => $match_conditions,
-					);
-				}
-
-				// Always add the condition that the field type must match.
-				$option_depends_rules = array(
-					// Make the type of field mandatory.
-					array(
-						'option'  => 'type',
-						'compare' => '=',
-						'value'   => $field_type,
-					),
-				);
-
-				// If we have generated conditions, add them.
-				if ( ! empty( $all_criteria_conditions ) ) {
-					$option_depends_rules[] = array(
-						'relation' => 'OR',
-						'rules'    => $all_criteria_conditions,
-					);
-				}
-
-				if ( ! isset( $input_type_options_list[ $input_type ] ) ) {
-					$input_type_options_list[ $input_type ] = array(
-						'label'           => $input_type_class::get_label(),
-						'value'           => $input_type,
-						'conditions_list' => array(),
-					);
-				}
-
-				// Collect all the conditions for this input type.
-				$input_type_options_list[ $input_type ]['conditions_list'][] = array(
-					'relation' => 'AND',
-					'rules'    => $option_depends_rules,
-				);
-			}
-		}
-		$input_type_options = array();
-		// Check for any input types that are used multiple times and
-		// create combined conditions for them.
-		foreach ( $input_type_options_list as $input_type => $option_to_combine ) {
-			$combined_option      = array(
-				'label'     => $option_to_combine['label'],
-				'value'     => $option_to_combine['value'],
-				'dependsOn' => array(
-					'relation' => 'OR',
-					'rules'    => $option_to_combine['conditions_list'],
-				),
-			);
-			$input_type_options[] = $combined_option;
-		}
-		return $input_type_options;
-	}
-
-	/**
-	 * Build the control type options based the control input types.
-	 *
-	 * @return array The control type options.
-	 */
-	protected static function build_control_type_options() {
-		$input_type_matrix = Field_Factory::get_field_input_types();
-		// Now build the controlType options and conditions from the matrix.
-		$control_type_options = array();
-		foreach ( $input_type_matrix['control'] as $control_type => $control_type_class ) {
-			$option = array(
-				'label' => $control_type_class::get_label(),
-				'value' => $control_type,
-			);
-
-			$control_type_options[] = $option;
-		}
-		return $control_type_options;
 	}
 
 	/**
@@ -488,57 +677,89 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 	 */
 	public static function get_depends_conditions_from_matrix( $matrix ) {
 		$field_type_depends_conditions = array();
+		$unique_field_types            = array();
 
-		foreach ( $matrix as $field_type => $input_types ) {
+		foreach ( $matrix as $field_type => $supported_input_types ) {
+			$unique_field_types[]                    = $field_type;
+			$input_type_depends_conditions           = array();
+			$input_type_depends_not_equal_conditions = array();
 
-			$input_type_depends_conditions = array();
-			foreach ( $input_types as $input_data ) {
-				$input_type       = $input_data[0];
-				$extra_conditions = $input_data[1];
-				$option           = $field_type === 'control' ? 'controlType' : 'inputType';
-				$option_condition = array(
-					'option'  => $option,
-					'compare' => '=',
-					'value'   => $input_type,
-				);
-				if ( count( $extra_conditions ) > 0 ) {
-					$input_type_depends_conditions[] = array(
-						'relation' => 'AND',
-						'rules'    => array(
-							$option_condition,
-							$extra_conditions,
-						),
+			if ( is_array( $supported_input_types ) ) {
+				foreach ( $supported_input_types as $input_data ) {
+					$input_type       = $input_data[0];
+					$extra_conditions = $input_data[1];
+					$is_supported     = true;
+					if ( is_bool( $extra_conditions ) && $extra_conditions === false ) {
+						// If the extra conditions are false, then we don't need to add any conditions .
+						$is_supported = false;
+					}
+					$option           = $field_type === 'control' ? 'controlType' : 'inputType';
+					$option_condition = array(
+						'option'  => $option,
+						'compare' => $is_supported ? '=' : '!=', // Change the compare type based on if its supported.
+						'value'   => $input_type,
 					);
-				} else {
-					$input_type_depends_conditions[] = $option_condition;
+					if ( $is_supported ) {
+						if ( is_array( $extra_conditions ) && count( $extra_conditions ) > 0 ) {
+							$input_type_depends_conditions[] = array(
+								'relation' => 'AND',
+								'rules'    => array( $option_condition, $extra_conditions ),
+							);
+						} else {
+							$input_type_depends_conditions[] = $option_condition;
+						}
+					} else {
+						// Unsupported conditions need to be grouped together with AND relation (all conditions must be met).
+						$input_type_depends_not_equal_conditions[] = $option_condition;
+					}
+				}
+
+				$conditions = array(
+					array(
+						'option'  => 'type',
+						'compare' => '=',
+						'value'   => $field_type,
+					),
+				);
+				if ( count( $input_type_depends_conditions ) > 0 ) {
+					$conditions[] = array(
+						'relation' => 'OR',
+						'rules'    => $input_type_depends_conditions,
+					);
+				}
+				if ( count( $input_type_depends_not_equal_conditions ) > 0 ) {
+					$conditions[] = array(
+						'relation' => 'AND',
+						'rules'    => $input_type_depends_not_equal_conditions,
+					);
+				}
+
+				$field_type_depends_conditions[] = array(
+					'relation' => 'AND',
+					'rules'    => $conditions,
+				);
+			} elseif ( is_bool( $supported_input_types ) ) {
+
+				if ( $supported_input_types === true ) {
+					// If the field type is supported, then we can just add a simple condition, which
+					// is ORed with other field types.
+					$field_type_depends_conditions[] = array(
+						'option'  => 'type',
+						'compare' => '=',
+						'value'   => $field_type,
+					);
 				}
 			}
-
-			$conditions = array(
-				array(
-					'option'  => 'type',
-					'compare' => '=',
-					'value'   => $field_type,
-				),
-				array(
-					'relation' => 'OR',
-					'rules'    => $input_type_depends_conditions,
-				),
-			);
-
-			$field_type_depends_conditions[] = array(
-				'relation' => 'AND',
-				'rules'    => $conditions,
-			);
 		}
 
 		if ( count( $field_type_depends_conditions ) > 0 ) {
-			return array(
+			$field_type_depends_conditions = array(
 				'relation' => 'OR',
 				'rules'    => $field_type_depends_conditions,
 			);
 		}
-		return array();
+
+		return $field_type_depends_conditions;
 	}
 
 	/**
@@ -575,6 +796,7 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 	 * Gets settings based on context.
 	 *
 	 * @param string $context The context to get settings for.
+	 * @param string $return_as Optional. Format to return settings in. Default 'objects'.
 	 *
 	 * @return array The settings.
 	 */
@@ -586,6 +808,7 @@ class Settings extends \Search_Filter\Settings\Section_Base {
 	 * Gets settings by tab.
 	 *
 	 * @param string $tab The tab to get settings for.
+	 * @param string $return_as Optional. Format to return settings in. Default 'objects'.
 	 *
 	 * @return array The settings.
 	 */

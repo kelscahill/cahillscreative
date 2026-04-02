@@ -1,8 +1,17 @@
 <?php
+/**
+ * Astra Theme Integration.
+ *
+ * @package Search_Filter
+ * @since 3.0.0
+ */
+
 namespace Search_Filter\Integrations\Themes;
 
 /**
- * Class for handling the Astra theme integration with Search & Filter
+ * Class for handling the Astra theme integration with Search & Filter.
+ *
+ * @since 3.0.0
  */
 class Astra {
 	/**

@@ -1,16 +1,32 @@
 <?php
+/**
+ * Queries Query Class.
+ *
+ * @package     Database
+ * @subpackage  Queries
+ * @copyright   Copyright (c) 2020
+ * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       3.0.0
+ */
 
 namespace Search_Filter\Database\Queries;
+
+use Search_Filter\Database\Table_Manager;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Query class for the queries table.
+ *
+ * @since 3.0.0
+ */
 class Queries extends \Search_Filter\Database\Queries\Records {
 
 	/**
 	 * Name of the database table to query.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $table_name = 'queries';
@@ -20,7 +36,7 @@ class Queries extends \Search_Filter\Database\Queries\Records {
 	 *
 	 * This is used to avoid collisions with JOINs.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $table_alias = 'qq';
@@ -28,7 +44,7 @@ class Queries extends \Search_Filter\Database\Queries\Records {
 	/**
 	 * Name of class used to setup the database schema.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $table_schema = '\\Search_Filter\\Database\\Schemas\\Queries';
@@ -40,7 +56,7 @@ class Queries extends \Search_Filter\Database\Queries\Records {
 	 *
 	 * This is used to automatically generate action hooks.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $item_name = 'query';
@@ -52,7 +68,7 @@ class Queries extends \Search_Filter\Database\Queries\Records {
 	 *
 	 * This is used to automatically generate action hooks.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	protected $item_name_plural = 'queries';
@@ -62,7 +78,7 @@ class Queries extends \Search_Filter\Database\Queries\Records {
 	 *
 	 * This is used when looping through return values to guarantee their shape.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   mixed
 	 */
 	protected $item_shape = '\\Search_Filter\\Database\\Rows\\Query';
@@ -78,4 +94,26 @@ class Queries extends \Search_Filter\Database\Queries\Records {
 	 * @var string
 	 */
 	protected $cache_group = 'queries';
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $query The query arguments.
+	 */
+	public function __construct( $query = array() ) {
+
+		// Register all tables so we can uninstall them.
+		if ( ! Table_Manager::has( 'queries' ) ) {
+			Table_Manager::register( 'queries', \Search_Filter\Database\Tables\Queries::class );
+		}
+		if ( ! Table_Manager::has( 'querymeta' ) ) {
+			Table_Manager::register( 'querymeta', \Search_Filter\Database\Tables\Queries_Meta::class );
+		}
+		Table_Manager::use( 'queries' );
+		Table_Manager::use( 'querymeta' );
+
+		parent::__construct( $query );
+	}
 }

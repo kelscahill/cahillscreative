@@ -173,6 +173,30 @@ abstract class Section_Base {
 		}
 		return $defaults;
 	}
+	/**
+	 * Get the settings defaults.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $setting_name The name of the setting.
+	 * @return array|null The default value or null if not found.
+	 */
+	public static function get_default_value( $setting_name ) {
+		$settings = static::get_prepared_settings();
+
+		if ( ! isset( $settings[ $setting_name ] ) ) {
+			return null;
+		}
+
+		if ( $settings[ $setting_name ]->has_prop( 'default' ) ) {
+			return $settings[ $setting_name ]->get_prop( 'default' );
+		}
+		if ( count( $settings[ $setting_name ]->get_options_array() ) > 0 ) {
+			return $settings[ $setting_name ]->get_options_array()[0]['value'];
+		}
+
+		return null;
+	}
 
 	/**
 	 * Get the settings by property.
@@ -295,7 +319,7 @@ abstract class Section_Base {
 	 *
 	 * @param    string $name    The name of the setting to get.
 	 *
-	 * @return   object|false    The setting object or false if not found.
+	 * @return   Setting|false    The setting object or false if not found.
 	 */
 	public static function get_setting( $name ) {
 		if ( ! isset( static::$settings[ $name ] ) ) {
@@ -328,16 +352,16 @@ abstract class Section_Base {
 	 * @return Setting The prepared setting.
 	 * @throws Exception If the setting is invalid.
 	 */
-	protected static function prepare_setting( $setting, $args = array() ) {
+	protected static function prepare_setting( array $setting, array $args = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Params required when extending this class.
 		if ( ! isset( $setting['name'] ) || empty( trim( $setting['name'] ) ) ) {
-			throw new Exception( esc_html__( 'Your setting must have a name', 'search-filter' ), SEARCH_FILTER_EXCEPTION_SETTING_INVALID_NAME );
+			throw new Exception( esc_html( __( 'Your setting must have a name', 'search-filter' ) ), SEARCH_FILTER_EXCEPTION_SETTING_INVALID_NAME ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 
 		$name = $setting['name'];
 
 		if ( isset( static::$settings[ $name ] ) ) {
-			/* translators: %s is the setting name. */
-			throw new Exception( sprintf( esc_html__( 'A setting with the name `%1$s` already exists', 'search-filter' ), esc_html( $name ) ), SEARCH_FILTER_EXCEPTION_SETTING_EXISTS );
+			// translators: %1$s is the setting name.
+			throw new Exception( esc_html( sprintf( __( 'A setting with the name `%1$s` already exists', 'search-filter' ), $name ) ), SEARCH_FILTER_EXCEPTION_SETTING_EXISTS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 
 		$section = static::$section;
@@ -360,15 +384,17 @@ abstract class Section_Base {
 	 * There is probably some other nuance here we're not copying over, but for now, this generates
 	 * a solid initial attributes for a settings section after resolving dependencies.
 	 *
-	 * @param string $attributes    The curent attributes of the section.
-	 * @param array  $args     Args for parsing the settings.
-	 *                        - `filters` - is an array of:
-	 *                            - `type` & 'value' objects, type can be `tab`, `context`, `group`,
-	 *                        - `ghost_state` - an array of keys to keep in the attributes when resolving.
+	 * @param array $attributes    The curent attributes of the section.
+	 * @param array $args     Args for parsing the settings.
+	 *                       - `filters` - is an array of:
+	 *                           - `type` & 'value' objects, type can be `tab`, `context`, `group`,
+	 *                       - `ghost_state` - an array of keys to keep in the attributes when resolving.
+	 * @param bool  $resolve_data Whether to resolve the data for the settings (settings that fetch their data via the rest API).
+	 * @param bool  $get_all_attributes Whether to get all attributes for the settings regardless of their visibility.
 	 *
 	 * @since    3.0.0
 	 */
-	public static function get_processed_settings( $attributes, $args = array() ) {
+	public static function get_processed_settings( $attributes, $args = array(), $resolve_data = false, $get_all_attributes = false ) {
 		$settings = static::get_ordered();
 
 		if ( isset( $args['filters'] ) && is_array( $args['filters'] ) ) {
@@ -379,6 +405,9 @@ abstract class Section_Base {
 						$tab_name = isset( $filter['value'] ) ? $filter['value'] : '';
 						foreach ( $settings as $setting ) {
 							if ( $setting->get_data( 'tab' ) === $tab_name ) {
+								if ( $resolve_data ) {
+									$setting->resolve_data();
+								}
 								$filtered_settings[] = $setting;
 							}
 						}
@@ -389,6 +418,9 @@ abstract class Section_Base {
 								continue;
 							}
 							if ( in_array( $context, $setting->get_data( 'context' ), true ) ) {
+								if ( $resolve_data ) {
+									$setting->resolve_data();
+								}
 								$filtered_settings[] = $setting;
 							}
 						}
@@ -396,6 +428,9 @@ abstract class Section_Base {
 						$group = isset( $filter['value'] ) ? $filter['value'] : '';
 						foreach ( $settings as $setting ) {
 							if ( $setting->get_data( 'group' ) === $group ) {
+								if ( $resolve_data ) {
+									$setting->resolve_data();
+								}
 								$filtered_settings[] = $setting;
 							}
 						}
@@ -408,21 +443,20 @@ abstract class Section_Base {
 		$ghost_state = isset( $args['ghost_state'] ) ? $args['ghost_state'] : array();
 
 		$external_store     = static::get_external_store( $settings, $attributes );
-		$processed_settings = new Processed_Settings( $settings, $attributes, $external_store, $ghost_state );
+		$processed_settings = new Processed_Settings( $settings, $attributes, $external_store, $ghost_state, $get_all_attributes );
 		return $processed_settings;
 	}
-
 	/**
 	 * Get the external store.
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array $settings The settings.
-	 * @param array $attributes The attributes.
+	 * @param array<string, mixed> $settings The settings (unused in base class, used in child classes).
+	 * @param array<string, mixed> $attributes The attributes (unused in base class, used in child classes).
 	 *
 	 * @return array The external store.
 	 */
-	protected static function get_external_store( $settings, $attributes ) {
+	protected static function get_external_store( $settings, $attributes ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- Method signature required for child class implementations.
 		return array();
 	}
 	/**
@@ -501,5 +535,42 @@ abstract class Section_Base {
 	 */
 	protected static function prepare_group( $group ) {
 		return $group;
+	}
+
+	/**
+	 * Reset the settings section back to default.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function reset() {
+		static::$settings        = array();
+		static::$settings_order  = array();
+		static::$source_settings = array();
+
+		static::$groups        = array();
+		static::$groups_order  = array();
+		static::$source_groups = array();
+	}
+
+	/**
+	 * Merge new depends conditions with existing ones.
+	 *
+	 * If existing conditions are present, combines them with new conditions using AND relation.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array|null $existing_conditions Existing dependsOn conditions.
+	 * @param array      $new_conditions New conditions to merge.
+	 * @return array Combined conditions.
+	 */
+	public static function merge_depends_conditions( $existing_conditions, $new_conditions ) {
+		if ( ! empty( $existing_conditions ) ) {
+			// Combine the existing conditions with new ones using AND relationship.
+			return array(
+				'relation' => 'AND',
+				'rules'    => array( $existing_conditions, $new_conditions ),
+			);
+		}
+		return $new_conditions;
 	}
 }

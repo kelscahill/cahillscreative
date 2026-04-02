@@ -1,34 +1,50 @@
 <?php
+/**
+ * Twenty Twenty-One Theme Integration.
+ *
+ * @package Search_Filter
+ * @since 3.0.0
+ */
+
 namespace Search_Filter\Integrations\Themes;
 
 use Search_Filter\Util;
 
 /**
- * Class for handling the Neve theme integration with Search & Filter
+ * Class for handling the Twenty Twenty-One theme integration with Search & Filter.
+ *
+ * @since 3.0.0
  */
 class Twentytwentyone {
 	/**
 	 * Initialise the integration
 	 */
 	public function __construct() {
-		add_filter( 'search-filter/frontend/register_styles', array( $this, 'register_styles' ) );
-		add_filter( 'search-filter/frontend/enqueue_styles', array( $this, 'enqueue_styles' ) );
+		add_filter( 'search-filter/core/asset-loader/register', array( $this, 'register_assets' ) );
+		add_filter( 'search-filter/core/asset-loader/enqueue', array( $this, 'enqueue_styles' ) );
 	}
 	/**
-	 * Add wp-edit-blocks as a dependency so that the Neve CSS gets loaded in our admin screens.
+	 * Add twentytwentyone styles to the registered assets
 	 *
 	 * @since    3.0.0
 	 *
-	 * @param    array $registered_styles Styles to register.
+	 * @param    array $registered_assets Styles to register.
 	 */
-	public function register_styles( $registered_styles ) {
-		$registered_styles['search-filter-twentytwentyone'] = array(
-			'src'     => trailingslashit( plugin_dir_url( dirname( __DIR__, 2 ) ) ) . 'assets/css/integrations/twentytwentyone.css',
-			'deps'    => array( 'search-filter' ),
-			'version' => SEARCH_FILTER_VERSION,
-			'media'   => 'all',
+	public function register_assets( $registered_assets ) {
+		if ( isset( $registered_assets['search-filter-twentytwentyone'] ) ) {
+			return $registered_assets;
+		}
+		$registered_assets['search-filter-twentytwentyone'] = array(
+			'name'   => 'search-filter-twentytwentyone',
+			'script' => array(),
+			'style'  => array(
+				'src'          => trailingslashit( plugin_dir_url( dirname( __DIR__, 2 ) ) ) . 'assets/integrations/themes/twentytwentyone.css',
+				'dependencies' => array( 'search-filter-frontend' ),
+				'version'      => SEARCH_FILTER_VERSION,
+				'media'        => 'all',
+			),
 		);
-		return $registered_styles;
+		return $registered_assets;
 	}
 
 	/**

@@ -8,6 +8,7 @@
  * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since       1.0.0
  */
+
 namespace Search_Filter\Database\Queries;
 
 // Exit if accessed directly.
@@ -31,7 +32,7 @@ use Search_Filter\Database\Engine\Base;
  *
  * @link https://developer.wordpress.org/reference/classes/wp_query/
  *
- * @since 1.0.0
+ * @since 3.0.0
  */
 class Date extends Base {
 
@@ -40,7 +41,7 @@ class Date extends Base {
 	 *
 	 * See Date::__construct() for information on date query arguments.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   array
 	 */
 	public $queries = array();
@@ -48,7 +49,7 @@ class Date extends Base {
 	/**
 	 * The default relation between top-level queries. Can be either 'AND' or 'OR'.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	public $relation = 'AND';
@@ -56,7 +57,7 @@ class Date extends Base {
 	/**
 	 * The column to query against. Can be changed via the query arguments.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	public $column = 'date_created';
@@ -64,8 +65,8 @@ class Date extends Base {
 	/**
 	 * The value comparison operator. Can be changed via the query arguments.
 	 *
-	 * @since 1.0.0
-	 * @var   array
+	 * @since 3.0.0
+	 * @var   string
 	 */
 	public $compare = '=';
 
@@ -73,7 +74,7 @@ class Date extends Base {
 	 * The start of week operator. Can be changed via the query arguments.
 	 *
 	 * @since 1.1.0
-	 * @var   array
+	 * @var   int
 	 */
 	public $start_of_week = 0;
 
@@ -88,7 +89,7 @@ class Date extends Base {
 	/**
 	 * Supported time-related parameter keys.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   array
 	 */
 	public $time_keys = array(
@@ -112,7 +113,7 @@ class Date extends Base {
 	/**
 	 * Supported comparison types
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   array
 	 */
 	public $comparison_keys = array(
@@ -160,7 +161,7 @@ class Date extends Base {
 	 * 'compare'. When 'compare' is 'IN' or 'NOT IN', arrays are accepted; when 'compare' is 'BETWEEN' or 'NOT
 	 * BETWEEN', arrays of two valid values are required. See individual argument descriptions for accepted values.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param array $date_query {
 	 *     Array of date query clauses.
@@ -241,7 +242,7 @@ class Date extends Base {
 	public function __construct( $date_query = array() ) {
 
 		// Bail if empty or not an array.
-		if ( empty( $date_query ) || ! is_array( $date_query ) ) {
+		if ( empty( $date_query ) ) {
 			return;
 		}
 
@@ -257,7 +258,7 @@ class Date extends Base {
 			$date_query = array( $date_query );
 		}
 
-		// Set the queries
+		// Set the queries.
 		$this->queries = $this->sanitize_query( $date_query );
 	}
 
@@ -268,10 +269,10 @@ class Date extends Base {
 	 * each first-order clause contains all the necessary keys from
 	 * `$defaults`.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param array $queries
-	 * @param array $parent_query
+	 * @param array $queries      Array of date query clauses.
+	 * @param array $parent_query Parent query array.
 	 *
 	 * @return array Sanitized queries.
 	 */
@@ -341,7 +342,7 @@ class Date extends Base {
 	 * Checks to see if the current clause has any time-related keys.
 	 * If so, it's first-order.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param  array $query Query clause.
 	 *
@@ -359,11 +360,11 @@ class Date extends Base {
 	 *
 	 * @param array $query A date query or a date subquery.
 	 *
-	 * @return string The current unix timestamp.
+	 * @return int The current unix timestamp.
 	 */
 	public function get_now( $query = array() ) {
 
-		// Use now if passed
+		// Use now if passed.
 		$retval = ! empty( $query['now'] ) && is_numeric( $query['now'] )
 			? absint( $query['now'] )
 			: time();
@@ -374,7 +375,7 @@ class Date extends Base {
 	/**
 	 * Determines and validates what comparison operator to use.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param array $query A date query or a date subquery.
 	 *
@@ -382,7 +383,7 @@ class Date extends Base {
 	 */
 	public function get_column( $query = array() ) {
 
-		// Use column if passed
+		// Use column if passed.
 		$retval = ! empty( $query['column'] )
 			? esc_sql( $this->validate_column( $query['column'] ) )
 			: $this->column;
@@ -393,7 +394,7 @@ class Date extends Base {
 	/**
 	 * Determines and validates what comparison operator to use.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param array $query A date query or a date subquery.
 	 *
@@ -401,7 +402,7 @@ class Date extends Base {
 	 */
 	public function get_compare( $query = array() ) {
 
-		// Compare must be in the allowed array
+		// Compare must be in the allowed array.
 		$retval = ! empty( $query['compare'] ) && in_array( $query['compare'], $this->comparison_keys, true )
 			? strtoupper( $query['compare'] )
 			: $this->compare;
@@ -412,14 +413,14 @@ class Date extends Base {
 	/**
 	 * Determines and validates what relation to use.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param array $query A date query or a date subquery.
 	 * @return string The relation operator.
 	 */
 	public function get_relation( $query = array() ) {
 
-		// Relation must be in the allowed array
+		// Relation must be in the allowed array.
 		$retval = ! empty( $query['relation'] ) && in_array( $query['relation'], $this->relation_keys, true )
 			? strtoupper( $query['relation'] )
 			: $this->relation;
@@ -434,11 +435,11 @@ class Date extends Base {
 	 *
 	 * @param array $query A date query or a date subquery.
 	 *
-	 * @return string The comparison operator.
+	 * @return int The start of week day number (0-6).
 	 */
 	public function get_start_of_week( $query = array() ) {
 
-		// Use start of week if passed and valid
+		// Use start of week if passed and valid.
 		$retval = isset( $query['start_of_week'] ) && ( 6 >= (int) $query['start_of_week'] ) && ( 0 <= (int) $query['start_of_week'] )
 			? $query['start_of_week']
 			: $this->start_of_week;
@@ -501,9 +502,9 @@ class Date extends Base {
 				$_year = $date_query['year'];
 			}
 
-			$max_days_of_year = gmdate( 'z', gmmktime( 0, 0, 0, 12, 31, $_year ) ) + 1;
+			$max_days_of_year = (int) gmdate( 'z', gmmktime( 0, 0, 0, 12, 31, $_year ) ) + 1;
 
-			// Otherwise we use the max of 366 (leap-year)
+			// Otherwise we use the max of 366 (leap-year).
 		} else {
 			$max_days_of_year = 366;
 		}
@@ -620,14 +621,14 @@ class Date extends Base {
 			}
 		}
 
-		// Return if valid or not
+		// Return if valid or not.
 		return $valid;
 	}
 
 	/**
 	 * Validates a column name parameter.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param string $column The user-supplied column name.
 	 *
@@ -640,9 +641,9 @@ class Date extends Base {
 	/**
 	 * Generate WHERE clause to be appended to a main query.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @return string MySQL WHERE clauses.
+	 * @return array MySQL WHERE clauses.
 	 */
 	public function get_sql() {
 		$sql = $this->get_sql_clauses();
@@ -650,10 +651,10 @@ class Date extends Base {
 		/**
 		 * Filters the date query clauses.
 		 *
-		 * @since 1.0.0
+		 * @since 3.0.0
 		 *
-		 * @param string $sql Clauses of the date query.
-		 * @param Date   $this  The Date query instance.
+		 * @param array  $sql      Clauses of the date query.
+		 * @param self   $instance The Date query instance.
 		 */
 		return apply_filters( 'get_date_sql', $sql, $this );
 	}
@@ -664,7 +665,7 @@ class Date extends Base {
 	 * Called by the public Date::get_sql(), this method is abstracted
 	 * out to maintain parity with the other Query classes.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @return array {
 	 *     Array containing JOIN and WHERE SQL clauses to append to the main query.
@@ -689,7 +690,7 @@ class Date extends Base {
 	 * If nested subqueries are found, this method recurses the tree to
 	 * produce the properly nested SQL.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param array $query Query to parse.
 	 * @param int   $depth Optional. Number of tree levels deep we currently are.
@@ -726,7 +727,7 @@ class Date extends Base {
 
 				// This is a first-order clause.
 				if ( $this->is_first_order_clause( $clause ) ) {
-					// Get clauses & where count
+					// Get clauses & where count.
 					$clause_sql  = $this->get_sql_for_clause( $clause, $query );
 					$where_count = count( $clause_sql['where'] );
 
@@ -770,7 +771,7 @@ class Date extends Base {
 			$sql['where'] = '( ' . "\n  " . $indent . implode( ' ' . "\n  " . $indent . $relation . ' ' . "\n  " . $indent, $sql_chunks['where'] ) . "\n" . $indent . ')';
 		}
 
-		// Filter and return
+		// Filter and return.
 		return apply_filters( 'get_date_sql_for_query', $sql, $query, $depth, $this );
 	}
 
@@ -794,7 +795,7 @@ class Date extends Base {
 		// The sub-parts of a $where part.
 		$where_parts = array();
 
-		// Get first-order clauses
+		// Get first-order clauses.
 		$now           = $this->get_now( $query );
 		$column        = $this->get_column( $query );
 		$compare       = $this->get_compare( $query );
@@ -820,45 +821,72 @@ class Date extends Base {
 		}
 
 		// Specific value queries.
-		if ( isset( $query['year'] ) && $value = $this->build_numeric_value( $compare, $query['year'] ) ) {
-			$where_parts[] = "YEAR( {$column} ) {$compare} {$value}";
+		if ( isset( $query['year'] ) ) {
+			$value = $this->build_numeric_value( $compare, $query['year'] );
+			if ( $value ) {
+				$where_parts[] = "YEAR( {$column} ) {$compare} {$value}";
+			}
 		}
 
-		if ( isset( $query['month'] ) && $value = $this->build_numeric_value( $compare, $query['month'] ) ) {
-			$where_parts[] = "MONTH( {$column} ) {$compare} {$value}";
-		} elseif ( isset( $query['monthnum'] ) && $value = $this->build_numeric_value( $compare, $query['monthnum'] ) ) {
-			$where_parts[] = "MONTH( {$column} ) {$compare} {$value}";
+		if ( isset( $query['month'] ) ) {
+			$value = $this->build_numeric_value( $compare, $query['month'] );
+			if ( $value ) {
+				$where_parts[] = "MONTH( {$column} ) {$compare} {$value}";
+			}
+		} elseif ( isset( $query['monthnum'] ) ) {
+			$value = $this->build_numeric_value( $compare, $query['monthnum'] );
+			if ( $value ) {
+				$where_parts[] = "MONTH( {$column} ) {$compare} {$value}";
+			}
 		}
 
-		if ( isset( $query['week'] ) && false !== ( $value = $this->build_numeric_value( $compare, $query['week'] ) ) ) {
-			$where_parts[] = $this->build_mysql_week( $column, $start_of_week ) . " {$compare} {$value}";
-		} elseif ( isset( $query['w'] ) && false !== ( $value = $this->build_numeric_value( $compare, $query['w'] ) ) ) {
-			$where_parts[] = $this->build_mysql_week( $column, $start_of_week ) . " {$compare} {$value}";
+		if ( isset( $query['week'] ) ) {
+			$value = $this->build_numeric_value( $compare, $query['week'] );
+			if ( false !== $value ) {
+				$where_parts[] = $this->build_mysql_week( $column, $start_of_week ) . " {$compare} {$value}";
+			}
+		} elseif ( isset( $query['w'] ) ) {
+			$value = $this->build_numeric_value( $compare, $query['w'] );
+			if ( false !== $value ) {
+				$where_parts[] = $this->build_mysql_week( $column, $start_of_week ) . " {$compare} {$value}";
+			}
 		}
 
-		if ( isset( $query['dayofyear'] ) && $value = $this->build_numeric_value( $compare, $query['dayofyear'] ) ) {
-			$where_parts[] = "DAYOFYEAR( {$column} ) {$compare} {$value}";
+		if ( isset( $query['dayofyear'] ) ) {
+			$value = $this->build_numeric_value( $compare, $query['dayofyear'] );
+			if ( $value ) {
+				$where_parts[] = "DAYOFYEAR( {$column} ) {$compare} {$value}";
+			}
 		}
 
-		if ( isset( $query['day'] ) && $value = $this->build_numeric_value( $compare, $query['day'] ) ) {
-			$where_parts[] = "DAYOFMONTH( {$column} ) {$compare} {$value}";
+		if ( isset( $query['day'] ) ) {
+			$value = $this->build_numeric_value( $compare, $query['day'] );
+			if ( $value ) {
+				$where_parts[] = "DAYOFMONTH( {$column} ) {$compare} {$value}";
+			}
 		}
 
-		if ( isset( $query['dayofweek'] ) && $value = $this->build_numeric_value( $compare, $query['dayofweek'] ) ) {
-			$where_parts[] = "DAYOFWEEK( {$column} ) {$compare} {$value}";
+		if ( isset( $query['dayofweek'] ) ) {
+			$value = $this->build_numeric_value( $compare, $query['dayofweek'] );
+			if ( $value ) {
+				$where_parts[] = "DAYOFWEEK( {$column} ) {$compare} {$value}";
+			}
 		}
 
-		if ( isset( $query['dayofweek_iso'] ) && $value = $this->build_numeric_value( $compare, $query['dayofweek_iso'] ) ) {
-			$where_parts[] = "WEEKDAY( {$column} ) + 1 {$compare} {$value}";
+		if ( isset( $query['dayofweek_iso'] ) ) {
+			$value = $this->build_numeric_value( $compare, $query['dayofweek_iso'] );
+			if ( $value ) {
+				$where_parts[] = "WEEKDAY( {$column} ) + 1 {$compare} {$value}";
+			}
 		}
 
-		// Straight value compare
+		// Straight value compare.
 		if ( isset( $query['value'] ) ) {
 			$value         = $this->build_value( $compare, $query['value'] );
 			$where_parts[] = "{$column} {$compare} $value";
 		}
 
-		// Hour/Minute/Second
+		// Hour/Minute/Second.
 		if ( isset( $query['hour'] ) || isset( $query['minute'] ) || isset( $query['second'] ) ) {
 
 			// Avoid notices.
@@ -888,16 +916,16 @@ class Date extends Base {
 	/**
 	 * Builds and validates a value string based on the comparison operator.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param string       $compare The compare operator to use
-	 * @param string|array $value The value
+	 * @param string                $compare The compare operator to use.
+	 * @param string|array|int|null $value   The value.
 	 *
 	 * @return string|false|int The value to be used in SQL or false on error.
 	 */
 	public function build_numeric_value( $compare = '=', $value = null ) {
 
-		// Bail if null value
+		// Bail if null value.
 		if ( is_null( $value ) ) {
 			return false;
 		}
@@ -947,7 +975,7 @@ class Date extends Base {
 	/**
 	 * Builds and validates a value string based on the comparison operator.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param string       $compare The compare operator to use.
 	 * @param string|array $value The value.
@@ -1009,23 +1037,23 @@ class Date extends Base {
 	 * either the maximum or minimum values (controlled by the $default_to parameter). Alternatively you can
 	 * pass a string that will be run through strtotime().
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param string|array $datetime       An array of parameters or a strtotime() string
-	 * @param bool         $default_to_max Whether to round up incomplete dates. Supported by values
-	 *                                     of $datetime that are arrays, or string values that are a
-	 *                                     subset of MySQL date format ('Y', 'Y-m', 'Y-m-d', 'Y-m-d H:i').
-	 *                                     Default: false.
-	 * @param string|int   $now            The current unix timestamp.
+	 * @param string|array|int $datetime       An array of parameters or a strtotime() string or a unix timestamp.
+	 * @param bool             $default_to_max Whether to round up incomplete dates. Supported by values
+	 *                                         of $datetime that are arrays, or string values that are a
+	 *                                         subset of MySQL date format ('Y', 'Y-m', 'Y-m-d', 'Y-m-d H:i').
+	 *                                         Default: false.
+	 * @param string|int       $now            The current unix timestamp.
 	 *
 	 * @return string|false A MySQL format date/time or false on failure
 	 */
 	public function build_mysql_datetime( $datetime = '', $default_to_max = false, $now = 0 ) {
 
-		// Datetime is string
+		// Datetime is string.
 		if ( is_string( $datetime ) ) {
 
-			// Define matches so linters don't complain
+			// Define matches so linters don't complain.
 			$matches = array();
 
 			/*
@@ -1033,20 +1061,20 @@ class Date extends Base {
 			 * the level of precision and support the 'inclusive' parameter.
 			 */
 
-			// Y
+			// Y.
 			if ( preg_match( '/^(\d{4})$/', $datetime, $matches ) ) {
 				$datetime = array(
 					'year' => intval( $matches[1] ),
 				);
 
-				// Y-m
+				// Y-m.
 			} elseif ( preg_match( '/^(\d{4})\-(\d{2})$/', $datetime, $matches ) ) {
 				$datetime = array(
 					'year'  => intval( $matches[1] ),
 					'month' => intval( $matches[2] ),
 				);
 
-				// Y-m-d
+				// Y-m-d.
 			} elseif ( preg_match( '/^(\d{4})\-(\d{2})\-(\d{2})$/', $datetime, $matches ) ) {
 				$datetime = array(
 					'year'  => intval( $matches[1] ),
@@ -1054,7 +1082,7 @@ class Date extends Base {
 					'day'   => intval( $matches[3] ),
 				);
 
-				// Y-m-d H:i
+				// Y-m-d H:i.
 			} elseif ( preg_match( '/^(\d{4})\-(\d{2})\-(\d{2}) (\d{2}):(\d{2})$/', $datetime, $matches ) ) {
 				$datetime = array(
 					'year'   => intval( $matches[1] ),
@@ -1064,7 +1092,7 @@ class Date extends Base {
 					'minute' => intval( $matches[5] ),
 				);
 
-				// Y-m-d H:i:s
+				// Y-m-d H:i:s.
 			} elseif ( preg_match( '/^(\d{4})\-(\d{2})\-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/', $datetime, $matches ) ) {
 				$datetime = array(
 					'year'   => intval( $matches[1] ),
@@ -1077,62 +1105,62 @@ class Date extends Base {
 			}
 		}
 
-		// No match; may be int or string
+		// No match; may be int or string.
 		if ( ! is_array( $datetime ) ) {
 
-			// Maybe format or use as-is
+			// Maybe format or use as-is.
 			$datetime = ! is_int( $datetime )
 				? strtotime( $datetime, $now )
 				: absint( $datetime );
 
-			// Return formatted
+			// Return formatted.
 			return gmdate( 'Y-m-d H:i:s', $datetime );
 		}
 
-		// Map to ints
+		// Map to ints.
 		$datetime = array_map( 'absint', $datetime );
 
-		// Year
+		// Year.
 		if ( ! isset( $datetime['year'] ) ) {
 			$datetime['year'] = gmdate( 'Y', $now );
 		}
 
-		// Month
+		// Month.
 		if ( ! isset( $datetime['month'] ) ) {
 			$datetime['month'] = ! empty( $default_to_max )
 				? 12
 				: 1;
 		}
 
-		// Day
+		// Day.
 		if ( ! isset( $datetime['day'] ) ) {
 			$datetime['day'] = ! empty( $default_to_max )
 				? (int) gmdate( 't', gmmktime( 0, 0, 0, $datetime['month'], 1, $datetime['year'] ) )
 				: 1;
 		}
 
-		// Hour
+		// Hour.
 		if ( ! isset( $datetime['hour'] ) ) {
 			$datetime['hour'] = ! empty( $default_to_max )
 				? 23
 				: 0;
 		}
 
-		// Minute
+		// Minute.
 		if ( ! isset( $datetime['minute'] ) ) {
 			$datetime['minute'] = ! empty( $default_to_max )
 				? 59
 				: 0;
 		}
 
-		// Second
+		// Second.
 		if ( ! isset( $datetime['second'] ) ) {
 			$datetime['second'] = ! empty( $default_to_max )
 				? 59
 				: 0;
 		}
 
-		// Combine and return
+		// Combine and return.
 		return sprintf(
 			'%04d-%02d-%02d %02d:%02d:%02d',
 			$datetime['year'],
@@ -1150,7 +1178,7 @@ class Date extends Base {
 	 *
 	 * Uses the WordPress site option, if set.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param string $column        Database column.
 	 * @param int    $start_of_week Day that week starts on. 0 = Sunday.
@@ -1162,12 +1190,12 @@ class Date extends Base {
 		// When does the week start?
 		switch ( $start_of_week ) {
 
-			// Monday
+			// Monday.
 			case 1:
 				$retval = "WEEK( {$column}, 1 )";
 				break;
 
-			// Tuesday - Saturday
+			// Tuesday - Saturday.
 			case 2:
 			case 3:
 			case 4:
@@ -1176,14 +1204,14 @@ class Date extends Base {
 				$retval = "WEEK( DATE_SUB( {$column}, INTERVAL {$start_of_week} DAY ), 0 )";
 				break;
 
-			// Sunday
+			// Sunday.
 			case 0:
 			default:
 				$retval = "WEEK( {$column}, 0 )";
 				break;
 		}
 
-		// Return SQL
+		// Return SQL.
 		return $retval;
 	}
 
@@ -1194,10 +1222,10 @@ class Date extends Base {
 	 * However if multiple values are passed, a pseudo-decimal time will be created
 	 * in order to be able to accurately compare against.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param string   $column  The column to query against. Needs to be pre-validated!
-	 * @param string   $compare The comparison operator. Needs to be pre-validated!
+	 * @param string   $column  The column to query against. Needs to be pre-validated.
+	 * @param string   $compare The comparison operator. Needs to be pre-validated.
 	 * @param int|null $hour    Optional. An hour value (0-23).
 	 * @param int|null $minute  Optional. A minute value (0-59).
 	 * @param int|null $second  Optional. A second value (0-59).
@@ -1206,46 +1234,64 @@ class Date extends Base {
 	 */
 	public function build_time_query( $column, $compare, $hour = null, $minute = null, $second = null ) {
 
-		// Have to have at least one
+		// Have to have at least one.
 		if ( ! isset( $hour ) && ! isset( $minute ) && ! isset( $second ) ) {
 			return false;
 		}
 
-		// Complex combined queries aren't supported for multi-value queries
+		// Complex combined queries aren't supported for multi-value queries.
 		if ( in_array( $compare, $this->multi_value_keys, true ) ) {
 			$retval = array();
 
-			// Hour
-			if ( isset( $hour ) && false !== ( $value = $this->build_numeric_value( $compare, $hour ) ) ) {
-				$retval[] = "HOUR( {$column} ) {$compare} {$value}";
+			// Hour.
+			if ( isset( $hour ) ) {
+				$value = $this->build_numeric_value( $compare, $hour );
+				if ( false !== $value ) {
+					$retval[] = "HOUR( {$column} ) {$compare} {$value}";
+				}
 			}
 
-			// Minute
-			if ( isset( $minute ) && false !== ( $value = $this->build_numeric_value( $compare, $minute ) ) ) {
-				$retval[] = "MINUTE( {$column} ) {$compare} {$value}";
+			// Minute.
+			if ( isset( $minute ) ) {
+				$value = $this->build_numeric_value( $compare, $minute );
+				if ( false !== $value ) {
+					$retval[] = "MINUTE( {$column} ) {$compare} {$value}";
+				}
 			}
 
-			// Second
-			if ( isset( $second ) && false !== ( $value = $this->build_numeric_value( $compare, $second ) ) ) {
-				$retval[] = "SECOND( {$column} ) {$compare} {$value}";
+			// Second.
+			if ( isset( $second ) ) {
+				$value = $this->build_numeric_value( $compare, $second );
+				if ( false !== $value ) {
+					$retval[] = "SECOND( {$column} ) {$compare} {$value}";
+				}
 			}
 
 			return implode( ' AND ', $retval );
 		}
 
-		// Cases where just one unit is set
+		// Cases where just one unit is set.
 
-		// Hour
-		if ( isset( $hour ) && ! isset( $minute ) && ! isset( $second ) && false !== ( $value = $this->build_numeric_value( $compare, $hour ) ) ) {
-			return "HOUR( {$column} ) {$compare} {$value}";
+		// Hour.
+		if ( isset( $hour ) && ! isset( $minute ) && ! isset( $second ) ) {
+			$value = $this->build_numeric_value( $compare, $hour );
+			if ( false !== $value ) {
+				return "HOUR( {$column} ) {$compare} {$value}";
+			}
 
-			// Minute
-		} elseif ( ! isset( $hour ) && isset( $minute ) && ! isset( $second ) && false !== ( $value = $this->build_numeric_value( $compare, $minute ) ) ) {
-			return "MINUTE( {$column} ) {$compare} {$value}";
+			// Minute.
+		} elseif ( ! isset( $hour ) && isset( $minute ) && ! isset( $second ) ) {
+			$value = $this->build_numeric_value( $compare, $minute );
+			if ( false !== $value ) {
+				return "MINUTE( {$column} ) {$compare} {$value}";
+			}
 
-			// Second
-		} elseif ( ! isset( $hour ) && ! isset( $minute ) && isset( $second ) && false !== ( $value = $this->build_numeric_value( $compare, $second ) ) ) {
-			return "SECOND( {$column} ) {$compare} {$value}";
+			// Second.
+		} elseif ( ! isset( $hour ) && ! isset( $minute ) && isset( $second ) ) {
+			$value = $this->build_numeric_value( $compare, $second );
+			if ( false !== $value ) {
+				return "SECOND( {$column} ) {$compare} {$value}";
+			}
 		}
 
 		// Single units were already handled. Since hour & second isn't allowed,
@@ -1254,10 +1300,11 @@ class Date extends Base {
 			return false;
 		}
 
-		// Defaults
-		$format = $time = '';
+		// Defaults.
+		$format = '';
+		$time   = '';
 
-		// Hour
+		// Hour.
 		if ( null !== $hour ) {
 			$format .= '%H.';
 			$time   .= sprintf( '%02d', $hour ) . '.';
@@ -1266,27 +1313,27 @@ class Date extends Base {
 			$time   .= '0.';
 		}
 
-		// Minute
+		// Minute.
 		$format .= '%i';
 		$time   .= sprintf( '%02d', $minute );
 
-		// Second
+		// Second.
 		if ( isset( $second ) ) {
 			$format .= '%s';
 			$time   .= sprintf( '%02d', $second );
 		}
 
-		// Build the SQL
+		// Build the SQL.
 		$query = "DATE_FORMAT( {$column}, %s ) {$compare} %f";
 
-		// Return the prepared SQL
+		// Return the prepared SQL.
 		return $this->get_db()->prepare( $query, $format, $time );
 	}
 
 	/**
 	 * Test if the supplied date is valid for the Gregorian calendar.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @link https://www.php.net/manual/en/function.checkdate.php
 	 *
@@ -1299,13 +1346,13 @@ class Date extends Base {
 	 */
 	public function checkdate( $month = 0, $day = 0, $year = 0, $source_date = '' ) {
 
-		// Check the date
+		// Check the date.
 		$retval = checkdate( $month, $day, $year );
 
 		/**
 		 * Filters whether the given date is valid for the Gregorian calendar.
 		 *
-		 * @since 1.0.0
+		 * @since 3.0.0
 		 *
 		 * @param bool   $checkdate   Whether the given date is valid.
 		 * @param string $source_date Date to check.

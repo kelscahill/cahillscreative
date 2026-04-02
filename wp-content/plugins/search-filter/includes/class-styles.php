@@ -12,9 +12,12 @@ namespace Search_Filter;
 
 use Search_Filter\Core\CSS_Loader;
 use Search_Filter\Database\Queries\Style_Presets as Style_Presets_Query;
+use Search_Filter\Database\Table_Manager;
 use Search_Filter\Styles\Style;
 use Search_Filter\Styles\Settings as Styles_Settings;
 use Search_Filter\Fields\Settings as Fields_Settings;
+use Search_Filter\Styles\Generate;
+use Search_Filter\Styles\Tokens;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -53,18 +56,16 @@ class Styles {
 		// TODO - store a reference to the query with these args for re-using.
 		$query  = new Style_Presets_Query( $query_args );
 		$styles = array();
-		if ( $query ) {
-			if ( ! $return_record ) {
-				foreach ( $query->items as $record ) {
-					try {
-						$styles[] = Style::create_from_record( $record );
-					} catch ( \Exception $e ) {
-						$styles[] = new \WP_Error( 'invalid_style', $e->getMessage(), array( 'status' => 400 ) );
-					}
+		if ( ! $return_record ) {
+			foreach ( $query->items as $record ) {
+				try {
+					$styles[] = Style::create_from_record( $record );
+				} catch ( \Exception $e ) {
+					$styles[] = new \WP_Error( 'invalid_style', $e->getMessage(), array( 'status' => 400 ) );
 				}
-			} else {
-				$styles = $query->items;
 			}
+		} else {
+			$styles = $query->items;
 		}
 		return $styles;
 	}
@@ -120,11 +121,14 @@ class Styles {
 	 * @return void
 	 */
 	public static function init() {
-		add_action( 'search-filter/settings/init', 'Search_Filter\\Styles::add_default_styles', 1 );
-		add_action( 'search-filter/record/save', 'Search_Filter\\Styles::save_css', 10, 2 );
+		add_action( 'search-filter/settings/init', array( __CLASS__, 'add_default_styles' ), 1 );
+		add_action( 'search-filter/record/save', array( __CLASS__, 'save_css' ), 10, 2 );
 
 		// Register settings.
 		add_action( 'init', array( __CLASS__, 'register_settings' ), 2 );
+
+		// Register table with Table_Manager.
+		add_action( 'search-filter/schema/register', array( __CLASS__, 'register_tables' ) );
 	}
 	/**
 	 * Register the CSS handler.
@@ -132,7 +136,17 @@ class Styles {
 	 * @since    3.0.0
 	 */
 	public static function register_css_handler() {
-		CSS_Loader::register_handler( 'styles', 'Search_Filter\\Styles::get_css' );
+		CSS_Loader::register_handler( 'styles', array( __CLASS__, 'get_css' ) );
+	}
+
+	/**
+	 * Register and init the styles tables.
+	 *
+	 * @since    3.2.0
+	 */
+	public static function register_tables() {
+		Table_Manager::register( 'styles', \Search_Filter\Database\Tables\Style_Presets::class, true );
+		Table_Manager::register( 'styles_meta', \Search_Filter\Database\Tables\Styles_Meta::class, true );
 	}
 
 	/**
@@ -150,6 +164,12 @@ class Styles {
 	 * @return void
 	 */
 	public static function add_default_styles() {
+
+		// Don't try to add default styles in the frontend.
+		if ( ! is_admin() ) {
+			return;
+		}
+
 		$styles = self::find(
 			array(
 				'number'        => 1,
@@ -173,9 +193,8 @@ class Styles {
 		$new_style->set_attributes( $default_styles['attributes'] );
 		$new_style->save();
 		$new_id = $new_style->get_id();
-		self::set_default_styles_id( $new_id );
 
-		self::save_css( $new_id, 'style' );
+		self::set_default_styles_id( $new_id );
 	}
 
 	/**
@@ -210,9 +229,28 @@ class Styles {
 		if ( $section !== 'style' ) {
 			return;
 		}
-		CSS_Loader::save_css( 'styles' );
+		CSS_Loader::queue_regeneration();
 	}
 
+
+	/**
+	 * Creates the CSS rules for multiple tokens objects.
+	 *
+	 * @param array $tokens The tokens to create the CSS rules for.
+	 * @return string The CSS rules.
+	 */
+	private static function create_css_tokens_rules( $tokens ) {
+		$css = '';
+		foreach ( $tokens as $token_name => $token ) {
+			$css_variable_name = '--search-filter-token-' . $token_name;
+			$declaration       = Generate::create_declaration( $css_variable_name, $token['default'], $token['type'] );
+			// If the declaration is empty, skip it.
+			if ( $declaration !== '' ) {
+				$css .= $declaration . ';';
+			}
+		}
+		return $css;
+	}
 	/**
 	 * Loop through styles presets, and build their CSS.
 	 *
@@ -228,6 +266,94 @@ class Styles {
 			)
 		);
 
+		$css .= '.search-filter-base {';
+		// First, create the default tokens from the default values.
+		$tokens = Tokens::get();
+		$css   .= self::create_css_tokens_rules( $tokens );
+		$css   .= '
+			--search-filter-input-selection-background-color: color-mix(in srgb, var(--search-filter-input-selected-background-color) 80%, transparent);
+		';
+
+		$variation_css = '';
+
+		// Second, map the CSS vars to the tokens according the the settings config.
+		$style_settings = Styles_Settings::get();
+		foreach ( $style_settings as $setting_name => $setting ) {
+
+			$setting_style = $setting->get_prop( 'style' );
+			if ( ! $setting_style ) {
+				continue;
+			}
+			if ( ! isset( $setting_style['variables'] ) ) {
+				continue;
+			}
+
+			// Setup the setting CSS variables.
+			foreach ( $setting_style['variables'] as $variable_name => $variable_config ) {
+				// Setup the setting CSS variable name.
+				$css_variable_name = '--search-filter-' . $variable_name;
+				// If there is no value, skip it.
+				if ( ! isset( $variable_config['value'] ) ) {
+					continue;
+				}
+				// Try to get the mapped token or variable, fall back to value.
+				$css_value = Generate::variable_value( $variable_config['value'] );
+
+				if ( ! empty( $css_value ) ) {
+					$variable_type = $variable_config['type'] ?? 'string';
+					$declaration   = Generate::create_declaration( $css_variable_name, $css_value, $variable_type );
+					if ( ! empty( $declaration ) ) {
+						$css .= $declaration . ';';
+					}
+				}
+			}
+
+			// Now setup any variations that may have different variables.
+			// Get any variation variables.
+			$variations = $setting->get_prop( 'variations' );
+			if ( ! empty( $variations ) ) {
+				foreach ( $variations as $field_type => $input_types ) {
+					foreach ( $input_types as $input_type => $variation ) {
+						if ( ! isset( $variation['style'] ) ) {
+							continue;
+						}
+						if ( ! isset( $variation['style']['variables'] ) ) {
+							continue;
+						}
+						if ( ! is_array( $variation['style']['variables'] ) ) {
+							continue;
+						}
+
+						$variation_variables = $variation['style']['variables'];
+						$variation_css      .= '.search-filter-field--type-' . $field_type . '.search-filter-field--input-type-' . $input_type . ' {';
+
+						// Setup the setting CSS variables.
+						foreach ( $variation_variables as $variable_name => $variable_config ) {
+							// Setup the setting CSS variable name.
+							$css_variable_name = '--search-filter-' . $variable_name;
+							// If there is no value, skip it.
+							if ( ! isset( $variable_config['value'] ) ) {
+								continue;
+							}
+							// Try to get the mapped token or variable, fall back to value.
+							$css_value = Generate::variable_value( $variable_config['value'] );
+							if ( ! empty( $css_value ) ) {
+								$declaration = Generate::create_declaration( $css_variable_name, $css_value );
+								if ( ! empty( $declaration ) ) {
+									$variation_css .= $declaration . ';';
+								}
+							}
+						}
+
+						$variation_css .= "}\r\n";
+					}
+				}
+			}
+		}
+		$css .= "}\r\n";
+		$css .= $variation_css;
+
+		// Finally, generate the CSS for the records.
 		if ( count( $all_records ) > 0 ) {
 			foreach ( $all_records as $record ) {
 				$css .= self::get_record_css( $record ) . "\r\n";

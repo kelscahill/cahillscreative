@@ -128,14 +128,15 @@ class Plugin_Updater {
 
 		global $edd_plugin_data;
 
-		$this->api_url               = trailingslashit( $_api_url );
-		$this->api_data              = $_api_data;
-		$this->name                  = plugin_basename( $_plugin_file );
-		$this->slug                  = basename( $_plugin_file, '.php' );
-		$this->version               = isset( $_api_data['version'] ) ? $_api_data['version'] : '0.0.0';
-		$this->wp_override           = isset( $_api_data['wp_override'] ) ? (bool) $_api_data['wp_override'] : false;
-		$this->beta                  = ! empty( $this->api_data['beta'] ) ? true : false;
-		$this->cache_key             = 'edd_sl_' . md5( serialize( $this->slug . $this->api_data['license'] . $this->beta ) );
+		$this->api_url     = trailingslashit( $_api_url );
+		$this->api_data    = $_api_data;
+		$this->name        = plugin_basename( $_plugin_file );
+		$this->slug        = basename( $_plugin_file, '.php' );
+		$this->version     = isset( $_api_data['version'] ) ? $_api_data['version'] : '0.0.0';
+		$this->wp_override = isset( $_api_data['wp_override'] ) ? (bool) $_api_data['wp_override'] : false;
+		$this->beta        = ! empty( $this->api_data['beta'] ) ? true : false;
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Matches EDD SL cache key generation pattern.
+		$this->cache_key = 'edd_sl_' . md5( serialize( $this->slug . $this->api_data['license'] . $this->beta ) );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$this->force_check = isset( $_REQUEST['force-check'] ) ? true : false; // When a user is on `update-core` and presses `force check` make sure we bypass our cache too.
@@ -153,7 +154,6 @@ class Plugin_Updater {
 
 		// Set up hooks.
 		$this->init();
-
 	}
 
 	/**
@@ -181,7 +181,6 @@ class Plugin_Updater {
 		remove_action( 'after_plugin_row_' . $this->name, 'wp_plugin_update_row', 10 );
 		add_action( 'after_plugin_row_' . $this->name, array( $this, 'show_update_notification' ), 10, 2 );
 		add_action( 'admin_init', array( $this, 'show_changelog' ) );
-
 	}
 
 	/**
@@ -195,7 +194,7 @@ class Plugin_Updater {
 	 * @uses api_request()
 	 *
 	 * @param array $_transient_data Update array build by WordPress.
-	 * @return array Modified update array with custom plugin data.
+	 * @return \stdClass Modified update object with custom plugin data.
 	 */
 	public function check_update( $_transient_data ) {
 
@@ -243,11 +242,9 @@ class Plugin_Updater {
 				// Make sure the plugin property is set to the plugin's name/location. See issue 1463 on Software Licensing's GitHub repo.
 				$_transient_data->response[ $this->name ]->plugin = $this->name;
 
-			} else {
+			} elseif ( $refreshed_cache ) {
 				// Only trigger the no update action if we just refreshed the cache.
-				if ( $refreshed_cache ) {
-					do_action( 'search-filter-pro/core/plugin-updater/no_update', $this->name );
-				}
+				do_action( 'search-filter-pro/core/plugin-updater/no_update', $this->name );
 			}
 
 			$_transient_data->last_checked           = time();
@@ -464,17 +461,12 @@ class Plugin_Updater {
 	 *
 	 * @since 3.6.5
 	 *
-	 * @param stdClass $data    The data to convert.
+	 * @param \stdClass $data    The data to convert.
 	 *
 	 * @return array
 	 */
 	private function convert_object_to_array( $data ) {
-		$new_data = array();
-		foreach ( $data as $key => $value ) {
-			$new_data[ $key ] = $value;
-		}
-
-		return $new_data;
+		return (array) $data;
 	}
 
 	/**
@@ -482,7 +474,7 @@ class Plugin_Updater {
 	 *
 	 * @param array  $args    The arguments to filter.
 	 * @param string $url    The URL to filter.
-	 * @return object    The filtered arguments.
+	 * @return array    The filtered arguments.
 	 */
 	public function http_request_args( $args, $url ) {
 
@@ -491,7 +483,6 @@ class Plugin_Updater {
 			$args['sslverify'] = $verify_ssl;
 		}
 		return $args;
-
 	}
 
 	/**
@@ -514,7 +505,7 @@ class Plugin_Updater {
 		// Do a quick status check on this domain if we haven't already checked it.
 		$store_hash = md5( $this->api_url );
 		if ( ! is_array( $edd_plugin_url_available ) || ! isset( $edd_plugin_url_available[ $store_hash ] ) ) {
-			$test_url_parts = parse_url( $this->api_url );
+			$test_url_parts = wp_parse_url( $this->api_url );
 
 			$scheme = ! empty( $test_url_parts['scheme'] ) ? $test_url_parts['scheme'] : 'http';
 			$host   = ! empty( $test_url_parts['host'] ) ? $test_url_parts['host'] : '';
@@ -536,13 +527,13 @@ class Plugin_Updater {
 		}
 
 		if ( false === $edd_plugin_url_available[ $store_hash ] ) {
-			return;
+			return false;
 		}
 
 		$data = array_merge( $this->api_data, $_data );
 
 		if ( $data['slug'] !== $this->slug ) {
-			return;
+			return false;
 		}
 
 		if ( $this->api_url === trailingslashit( home_url() ) ) {
@@ -604,6 +595,7 @@ class Plugin_Updater {
 
 		global $edd_plugin_data;
 
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- WordPress plugin update system doesn't use nonces for changelog display.
 		if ( empty( $_REQUEST['edd_sl_action'] ) || 'view_plugin_changelog' !== $_REQUEST['edd_sl_action'] ) {
 			return;
 		}
@@ -636,6 +628,7 @@ class Plugin_Updater {
 				'url'        => home_url(),
 				'beta'       => ! empty( $data['beta'] ),
 			);
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 			$verify_ssl = $this->verify_ssl();
 			$request    = wp_remote_post(
@@ -701,7 +694,6 @@ class Plugin_Updater {
 		}
 
 		return $cache['value'];
-
 	}
 
 	/**
@@ -709,8 +701,8 @@ class Plugin_Updater {
 	 *
 	 * @since 3.6.5
 	 *
-	 * @param string $value    The value to cache.
-	 * @param string $cache_key    The cache key to set.
+	 * @param object|false|string $value    The value to cache.
+	 * @param string              $cache_key    The cache key to set.
 	 */
 	public function set_version_info_cache( $value = '', $cache_key = '' ) {
 
@@ -721,11 +713,10 @@ class Plugin_Updater {
 
 		$data = array(
 			'timeout' => strtotime( '+3 hours', time() ),
-			'value'   => json_encode( $value ),
+			'value'   => wp_json_encode( $value ),
 		);
 
-		update_option( $cache_key, $data, 'no' );
-
+		update_option( $cache_key, $data, false );
 	}
 
 	/**
@@ -737,7 +728,6 @@ class Plugin_Updater {
 
 	/**
 	 * Fetch updates and add them to the cache.
-	 * 
 	 */
 	public function refresh_cache() {
 		$version_info = $this->api_request(

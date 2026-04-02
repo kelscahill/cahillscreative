@@ -48,7 +48,7 @@ class Settings {
 	 * @since 3.0.0
 	 *
 	 * @param string $registry_name The name of the register.
-	 * @param array  $class_name The class name of the settings handler.
+	 * @param string $class_name The class name of the settings handler.
 	 *
 	 * @throws Exception If the register name already exists.
 	 */
@@ -57,7 +57,7 @@ class Settings {
 			self::$registry[ $registry_name ] = $class_name;
 		} else {
 			// translators: %s is the registery identifier name.
-			throw new Exception( sprintf( esc_html__( 'There settings registry for `%1$s` already exists.', 'search-filter' ), esc_html( $registry_name ) ), SEARCH_FILTER_EXCEPTION_SETTINGS_REGISTERY_EXISTS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			throw new Exception( esc_html( sprintf( __( 'There settings registry for `%1$s` already exists.', 'search-filter' ), $registry_name ) ), SEARCH_FILTER_EXCEPTION_SETTINGS_REGISTERY_EXISTS ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception code is a constant.
 		}
 	}
 
@@ -68,13 +68,25 @@ class Settings {
 	 *
 	 * @param string $register_name The name of the register.
 	 *
-	 * @return array
+	 * @return array|false
 	 */
-	public static function get_register_class( $register_name ) {
+	public static function get_register_class( string $register_name ) {
+
 		if ( isset( self::$registry[ $register_name ] ) ) {
 			return self::$registry[ $register_name ];
 		}
 		return false;
+	}
+
+	/**
+	 * Reset the Settings class.
+	 *
+	 * Clears the settings registry.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function reset() {
+		self::$registry = array();
 	}
 
 	/**
@@ -144,16 +156,56 @@ class Settings {
 		$settings       = array();
 		$settings_class = self::get_register_class( $section );
 		if ( $settings_class ) {
-			$defaults        = call_user_func( array( $settings_class, 'get_defaults' ) );
-			$settings_option = Options::get_option_value( $section );
-			if ( $settings_option ) {
-				$settings = wp_parse_args( $settings_option, $defaults );
+			$settings_defaults = call_user_func( array( $settings_class, 'get_defaults' ) );
+			$settings_option   = Options::get( $section );
+			if ( ! $settings_option ) {
+				// Only use defaults if the option doesn't exist yet.
+				// Don't combine defaults with settings because settings that shouldn't be present
+				// (conditionally hidden) would be set values, when they should not be present.
+				$settings = $settings_defaults;
+			} else {
+				$settings = $settings_option;
 			}
 		}
 
 		return rest_ensure_response( $settings );
 	}
 
+	/**
+	 * Get all settings data for all registered settings sections
+	 * directly from the options table.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return array
+	 */
+	public static function get_all_settings_data() {
+		$all_settings = array();
+
+		foreach ( self::$registry as $section => $settings_class ) {
+			$settings_option = Options::get( $section );
+			if ( $settings_option ) {
+				$all_settings[ $section ] = $settings_option;
+			}
+		}
+		return $all_settings;
+	}
+	/**
+	 * Sets settings data for supplied sections & valuees directly to
+	 * the options table.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array<string, mixed> $settings_data The settings data to set.
+	 * @return array<string, mixed>
+	 */
+	public static function set_all_settings_data( $settings_data ) {
+		$results = array();
+		foreach ( $settings_data as $section => $data ) {
+			$results[ $section ] = Options::update( $section, $data );
+		}
+		return $results;
+	}
 	/**
 	 * Update the settings data.
 	 *
@@ -170,15 +222,40 @@ class Settings {
 			return rest_ensure_response( array( 'error' => 'Invalid data' ) );
 		}
 
+		$previous_settings_data = Options::get( $section ) ?? array();
+
 		$updated_settings_data = array();
+
+		// Keep track of which settings changed including their old value -> new value.
+		// Only fire the hook after the save.
+		$changed_settings = array();
 		foreach ( $data as $feature => $value ) {
 			if ( isset( $data[ $feature ] ) ) {
+
+				// Track existing value so we can detect what changed (and fire hooks later).
+				$existing_value = $previous_settings_data[ $feature ] ?? null;
+				// Check if the value has changed.
+				if ( $existing_value !== $value ) {
+					$changed_settings[ $feature ] = array(
+						'previous_value' => $existing_value,
+						'value'          => $value,
+					);
+				}
+
+				// Don't use existing values for storage to allow settings to be unset.
+				// If they're not passed in $data, it means they've gone.
 				$updated_settings_data[ $feature ] = $value;
 			}
 		}
 
 		// Save the data as in the options table.
-		Options::update_option_value( $section, $updated_settings_data );
+		Options::update( $section, $updated_settings_data );
+
+		do_action( 'search-filter/settings/updated', $section, $updated_settings_data, $previous_settings_data );
+
+		foreach ( $changed_settings as $setting_key => $change_data ) {
+			do_action( 'search-filter/settings/setting/updated', $section, $setting_key, $change_data['value'], $change_data['previous_value'] );
+		}
 
 		return rest_ensure_response( $updated_settings_data );
 	}
@@ -220,6 +297,8 @@ class Settings {
 	 *
 	 * @since 3.0.0
 	 *
+	 * @param array  $args     The query arguments.
+	 * @param string $operator The operator for the query.
 	 * @return array
 	 */
 	public static function get_post_types( $args = array(), $operator = 'and' ) {

@@ -11,11 +11,12 @@
 
 namespace Search_Filter\Styles;
 
+use Search_Filter\Core\Asset_Loader;
 use Search_Filter\Core\CSS_Loader;
-use Search_Filter\Core\Sanitize;
 use Search_Filter\Fields\Field_Factory;
 use Search_Filter\Record_Base;
 use Search_Filter\Styles\Settings as Styles_Settings;
+
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -60,15 +61,32 @@ class Style extends Record_Base {
 	 * @var      string    $base_class    ID
 	 */
 	public static $base_class = 'Search_Filter\\Styles';
-	// public static $settings_class = 'Search_Filter\\Settings\\Style';
+
+	/**
+	 * Usually we only want to instantiate & lookup a record once,
+	 * so store the instance for easy re-use later.
+	 *
+	 * @var array
+	 */
+	protected static $instances = array();
+
 	/**
 	 * Context for the styles preset, eg, "theme"
 	 *
 	 * @since    3.0.0
 	 * @access   protected
-	 * @var      string    $name    Name
+	 * @var      string    $context    Context
 	 */
 	protected $context = '';
+
+	/**
+	 * Tokens for the styles.
+	 *
+	 * @since    3.2.0
+	 * @access   protected
+	 * @var      array    $tokens    Tokens
+	 */
+	protected $tokens = array();
 	/**
 	 * The CSS string for this style preset.
 	 *
@@ -77,45 +95,39 @@ class Style extends Record_Base {
 	private $css = '';
 
 	/**
-	 * The spacing sizes used for margins and paddings.
-	 *
-	 * @var array
-	 */
-	private static $spacing_sizes = array(
-		'20' => '0.44rem',
-		'30' => '0.67rem',
-		'40' => '1rem',
-		'50' => '1.5rem',
-		'60' => '2.25rem',
-		'70' => '3.38rem',
-		'80' => '5.06rem',
-	);
-
-	/**
-	 * Overridable function for setting default attributes.
-	 *
-	 * @return array New default attributes.
-	 */
-	public function get_default_attributes() {
-		// It would be good to use Processed_Settings here, but its not ready
-		// until wp `init` has fired... maybe we can refactor this still.
-		// For now, `generate_default_attributes` does the job but it must be
-		// called later, when we need it.
-		return array();
-	}
-	/**
 	 * Sets the styles context (theme)
 	 *
-	 * @param string $context The context to set
+	 * @param string $context The context to set.
 	 */
 	public function set_context( $context ) {
 		$this->context = $context;
 	}
+
 	/**
 	 * Gets the styles context
 	 */
 	public function get_context() {
 		return $this->context;
+	}
+
+	/**
+	 * Sets the styles tokens
+	 *
+	 * @param array $tokens The tokens to set.
+	 */
+	public function set_tokens( $tokens ) {
+		$this->tokens = $tokens;
+	}
+
+	/**
+	 * Gets the styles tokens
+	 *
+	 * @return array The tokens
+	 */
+	public function get_tokens() {
+		// Populate with the default tokens if they don't exist yet.
+		$default_tokens = Tokens::get_defaults();
+		return wp_parse_args( $this->tokens, $default_tokens );
 	}
 
 	/**
@@ -136,15 +148,30 @@ class Style extends Record_Base {
 	/**
 	 * Inits the data from a DB record.
 	 *
-	 * @param [type] $item Database record.
+	 * @param \Search_Filter\Database\Rows\Style_Preset $item Database record.
 	 */
 	public function load_record( $item ) {
-		parent::load_record( $item );
+		$this->set_id( $item->get_id() );
+		$this->set_status( $item->get_status() );
+		$this->set_name( $item->get_name() );
+		$this->set_record( $item );
+		$this->set_attributes( $item->get_attributes() );
+		$this->set_tokens( $item->get_tokens() );
+		$this->set_date_modified( $item->get_date_modified() );
+		$this->set_date_created( $item->get_date_created() );
 		$this->set_context( $item->get_context() );
 		$this->set_css( $item->get_css() );
+
+		$this->init();
 	}
 
-	public function save( $args = array() ) {
+	/**
+	 * Save the style.
+	 *
+	 * @param array $args The arguments to save the style with.
+	 * @return int The ID of the saved style.
+	 */
+	public function save( array $args = array() ) {
 		// Update the CSS.
 
 		$has_id = false;
@@ -156,6 +183,7 @@ class Style extends Record_Base {
 		$extra_args = array(
 			'context' => $this->get_context(),
 			'css'     => $this->get_css(),
+			'tokens'  => wp_json_encode( (object) $this->get_tokens() ),
 		);
 		$record_id  = parent::save( $extra_args );
 
@@ -177,6 +205,13 @@ class Style extends Record_Base {
 	 * @since   3.0.0
 	 */
 	public function regenerate_css() {
+
+		// Prevent updating the CSS until the user has opted-in to version 2.
+		$assets_version = Asset_Loader::get_db_version();
+		if ( $assets_version !== 2 ) {
+			return;
+		}
+
 		$this->css = $this->generate_css();
 	}
 
@@ -188,9 +223,36 @@ class Style extends Record_Base {
 	public function generate_css() {
 		$css = '';
 
+		$base_styles_class = '.search-filter-style--id-' . intval( $this->get_id() );
+
+		$css .= $base_styles_class . '{';
+
+		// Setup the styles tokens.
+		$styles_tokens = Tokens::get();
+		$preset_tokens = $this->get_tokens();
+		foreach ( $styles_tokens as $token_name => $token ) {
+
+			$default_value = isset( $token['default'] ) ? $token['default'] : '';
+			$value         = isset( $preset_tokens[ $token_name ] ) ? $preset_tokens[ $token_name ] : $default_value;
+
+			if ( ! isset( $token['type'] ) ) {
+				continue;
+			}
+
+			$css_variable_name = '--search-filter-token-' . $token_name;
+
+			// Try to create the rule.
+			$declaration = Generate::create_declaration( $css_variable_name, $value, $token['type'] );
+			if ( empty( $declaration ) ) {
+				continue;
+			}
+			$css .= $declaration . ';';
+		}
+		$css .= '}';
+
 		$attributes        = $this->get_attributes();
 		$input_type_matrix = Field_Factory::get_field_input_types();
-		$cleaned_matrix    = array();
+
 		foreach ( $input_type_matrix as $field_type => $input_types ) {
 			$input_types_keys = array_keys( $input_types );
 
@@ -219,7 +281,7 @@ class Style extends Record_Base {
 					'filters'     => array(
 						array(
 							'type'  => 'context',
-							'value' => 'admin/field/' . $field_type,
+							'value' => 'admin/field',
 						),
 					),
 				);
@@ -228,13 +290,15 @@ class Style extends Record_Base {
 				// Ensure any missing settings are setup so we can generate valid CSS.
 				$resolved_input_type_attributes = wp_parse_args( $attributes[ $field_type ][ $input_type ], $processed_settings->get_attributes() );
 
+				$attributes_css = self::create_attributes_css( $resolved_input_type_attributes );
+				if ( empty( $attributes_css ) ) {
+					continue;
+				}
 				// Get the base styles class for the ID.
-				$styles_class  = '.search-filter-style--id-' . intval( $this->get_id() );
-				$styles_class .= '.search-filter-style--' . sanitize_key( $field_type ) . '-' . sanitize_key( $input_type );
+				$styles_class = $base_styles_class . '.search-filter-style--' . sanitize_key( $field_type ) . '-' . sanitize_key( $input_type );
 
 				$css .= $styles_class . '{';
-
-				$css .= CSS_Loader::clean_css( self::create_attributes_css( $resolved_input_type_attributes ) );
+				$css .= CSS_Loader::clean_css( $attributes_css );
 				$css .= '}';
 			}
 		}
@@ -273,7 +337,7 @@ class Style extends Record_Base {
 					'filters'     => array(
 						array(
 							'type'  => 'context',
-							'value' => 'admin/field/' . $field_type,
+							'value' => 'admin/field',
 						),
 					),
 				);
@@ -287,8 +351,8 @@ class Style extends Record_Base {
 	/**
 	 * Get attributes by type / input type combination.
 	 *
-	 * @param string $type
-	 * @param string $input_type
+	 * @param string $type The field type.
+	 * @param string $input_type The input type.
 	 * @return array
 	 */
 	public function get_attributes_by_type( $type, $input_type ) {
@@ -302,27 +366,6 @@ class Style extends Record_Base {
 	}
 
 	/**
-	 * Get a singe attribute by type / input type combination.
-	 *
-	 * @param string $type
-	 * @param string $input_type
-	 * @param string $attribute_name
-	 * @return array
-	 */
-	public function get_attribute_by_type( $type, $input_type, $attribute_name ) {
-		if ( ! isset( $this->attributes[ $type ] ) ) {
-			return false;
-		}
-		if ( ! isset( $this->attributes[ $type ][ $input_type ] ) ) {
-			return false;
-		}
-		if ( ! isset( $this->attributes[ $type ][ $input_type ][ $attribute_name ] ) ) {
-			return false;
-		}
-		return $this->attributes[ $type ][ $input_type ][ $attribute_name ];
-	}
-
-	/**
 	 * Parses the attributes into CSS styles (variables).
 	 *
 	 * @since   3.0.0
@@ -333,194 +376,55 @@ class Style extends Record_Base {
 	 */
 	public static function create_attributes_css( $attributes ) {
 
-		// Handle colors first:
-		$mapped_css_vars = array(
-			'--search-filter-label-color'                  => 'labelColor',
-			'--search-filter-label-background-color'       => 'labelBackgroundColor',
-			'--search-filter-description-color'            => 'descriptionColor',
-			'--search-filter-description-background-color' => 'descriptionBackgroundColor',
-			'--search-filter-input-color'                  => 'inputColor',
-			'--search-filter-input-background-color'       => 'inputBackgroundColor',
-			'--search-filter-input-border-color'           => 'inputBorderColor',
-			'--search-filter-input-border-hover-color'     => 'inputBorderHoverColor',
-			'--search-filter-input-border-focus-color'     => 'inputBorderFocusColor',
-			'--search-filter-input-icon-color'             => 'inputIconColor',
-			'--search-filter-input-clear-color'            => 'inputClearColor',
-			'--search-filter-input-clear-hover-color'      => 'inputClearHoverColor',
-			'--search-filter-input-selected-color'         => 'inputSelectedColor',
-			'--search-filter-input-selected-background-color' => 'inputSelectedBackgroundColor',
-			'--search-filter-input-selection-color'        => 'inputSelectedColor',
-			'--search-filter-input-active-icon-color'      => 'inputActiveIconColor',
-			'--search-filter-input-inactive-icon-color'    => 'inputInactiveIconColor',
-			'--search-filter-input-interactive-color'      => 'inputInteractiveColor',
-			'--search-filter-input-interactive-hover-color' => 'inputInteractiveHoverColor',
-		);
-		$modified_colors = array(
-			// Use colormix to add transparency to the existing css variable color...
-			'--search-filter-input-placeholder-color'   => array(
-				'rule'       => 'color-mix(in srgb, var(--search-filter-input-color) 67%, transparent)',
-				'depends_on' => '--search-filter-input-color',
-			),
-			'--search-filter-input-border-accent-color' => array(
-				'rule'       => 'color-mix(in srgb, var(--search-filter-input-border-focus-color) 47%, transparent)',
-				'depends_on' => '--search-filter-input-border-focus-color',
-			),
-			'--search-filter-input-selection-background-color' => array(
-				'rule'       => 'color-mix(in srgb, var(--search-filter-input-selected-background-color) 80%, transparent)',
-				'depends_on' => '--search-filter-input-selected-background-color',
-			),
-		);
+		$style_settings = Styles_Settings::get();
+		$css            = '';
 
-		$css              = '';
-		$found_color_vars = array();
-		foreach ( $mapped_css_vars as $css_var => $attribute_key ) {
-			if ( ! isset( $attributes[ $attribute_key ] ) ) {
+		foreach ( $style_settings as $setting_name => $setting ) {
+
+			$setting_style = $setting->get_prop( 'style' );
+			if ( ! $setting_style ) {
 				continue;
 			}
-			$css               .= safecss_filter_attr( $css_var . ':' . $attributes[ $attribute_key ] );
-			$css               .= ';';
-			$found_color_vars[] = $css_var;
-		}
-
-		foreach ( $modified_colors as $css_var => $css_config ) {
-			// Don't add the modifier colors if the source var wasn't found based on the attributes.
-			if ( ! in_array( $css_config['depends_on'], $found_color_vars, true ) ) {
+			if ( ! isset( $setting_style['variables'] ) ) {
 				continue;
 			}
-			// safecss_filter_attr doesn't support color-mix, but considering our rule is not coming
-			// from user input, it should be fine not to sanitize here. It's possible to add a custom
-			// filter to allow it though - https://core.trac.wordpress.org/ticket/62353 .
-			$css .= $css_var . ':' . $css_config['rule'];
-			$css .= ';';
-		}
 
-		// Handle the rest of the attributes.
-		$mapped_css_vars = array(
-			'--search-filter-label-scale'       => 'labelScale',
-			'--search-filter-description-scale' => 'descriptionScale',
-			'--search-filter-input-scale'       => 'inputScale',
-		);
+			$style_variables = $setting_style['variables'];
+			$style_value     = isset( $setting_style['value'] ) ? $setting_style['value'] : '';
 
-		foreach ( $mapped_css_vars as $css_var => $attribute_key ) {
-			if ( isset( $attributes[ $attribute_key ] ) && $attributes[ $attribute_key ] !== '' ) {
-				$css .= $css_var . ':' . sanitize_key( $attributes[ $attribute_key ] );
-				$css .= ';';
+			if ( ! isset( $attributes[ $setting_name ] ) ) {
+				continue;
 			}
-		}
 
-		// Now handle the field padding and margins which are handled completely differently.
-		$mapped_css_vars = array(
-			'--search-filter-field-padding'       => 'fieldPadding',
-			'--search-filter-field-margin'        => 'fieldMargin',
-			'--search-filter-input-margin'        => 'inputMargin',
-			'--search-filter-label-padding'       => 'labelPadding',
-			'--search-filter-label-margin'        => 'labelMargin',
-			'--search-filter-description-padding' => 'descriptionPadding',
-			'--search-filter-description-margin'  => 'descriptionMargin',
-		);
-		foreach ( $mapped_css_vars as $css_var => $attribute_key ) {
-			if ( isset( $attributes[ $attribute_key ] ) && $attributes[ $attribute_key ] !== '' ) {
-				$css .= $css_var . ':' . self::get_dimension_value( $attributes[ $attribute_key ] );
-				$css .= ';';
+			$value = $attributes[ $setting_name ];
+
+			if ( empty( $value ) ) {
+				continue;
 			}
+
+			// Setup the setting CSS variables.
+			$css .= Generate::css_setting_variables( $style_variables, $style_value, $value );
 		}
 
-		// We also want to calculate the horizontal margin for input fields, so we can
-		// do a CSS calc to get the correct width.
+		// Special case of input margins and manually setting the left and right values.
 		if ( isset( $attributes['inputMargin'] ) ) {
-			$css .= '--search-filter-input-margin-left:' . self::get_single_dimension_value( $attributes['inputMargin'], 'left' ) . ';';
-			$css .= '--search-filter-input-margin-right:' . self::get_single_dimension_value( $attributes['inputMargin'], 'right' ) . ';';
+			$css .= '--search-filter-input-margin-left:' . Generate::get_single_dimension_value( $attributes['inputMargin'], 'left' ) . ';';
+			$css .= '--search-filter-input-margin-right:' . Generate::get_single_dimension_value( $attributes['inputMargin'], 'right' ) . ';';
 		}
 
-		// And add the count justification.
+		// Add the count position styles - special cases since they're not considered style/design tokens.
 		if ( isset( $attributes['showCountPosition'] ) ) {
-			$value = $attributes['showCountPosition'] === 'inline' ? 'flex-start' : 'space-between';
-			$css  .= '--search-filter-count-justification:' . $value . ';';
+			$is_inline = $attributes['showCountPosition'] !== 'space-between';
+			$css      .= '--search-filter-input-label-display:' . ( $is_inline ? 'block' : 'flex' ) . ';';
+			$css      .= '--search-filter-input-label-width:' . ( $is_inline ? 'auto' : '100%' ) . ';';
+			$css      .= '--search-filter-count-justification:' . ( $is_inline ? 'unset' : 'space-between' ) . ';';
 		}
 
 		$css = apply_filters( 'search-filter/styles/style/create_attributes_css', $css, $attributes );
 		return $css;
 	}
 
-	public static function get_dimension_value( $value ) {
-		if ( ! is_array( $value ) ) {
-			return '';
-		}
-		// Make sure we have all 4 values.
-		$sides           = array( 'top', 'right', 'bottom', 'left' );
-		$css_value       = '';
-		$processed_value = '';
-		// Now we can go through and build the CSS value.
-		foreach ( $sides as $side ) {
-			if ( ! isset( $value[ $side ] ) ) {
-				$processed_value = '0';
-			} else {
-				$side_value = $value[ $side ];
-				// Get spacing CSS variable from preset value if provided.
-				// TODO - we need to know if the value is coming from a GB preset, or if we supplied it
-				// as a default.
-				if ( is_string( $side_value ) && str_contains( $side_value, 'var:preset|spacing|' ) ) {
-					$index_to_splice = strrpos( $side_value, '|' ) + 1;
-					$source_slug     = substr( $side_value, $index_to_splice );
 
-					// if the source slug starts with `search-filter-`, then we need to remove it.
-					if ( strpos( $source_slug, 'search-filter-' ) === 0 ) {
-						$spacing_size = substr( $source_slug, strlen( 'search-filter-' ) );
-						if ( isset( self::$spacing_sizes[ $spacing_size ] ) ) {
-							$processed_value = self::$spacing_sizes[ $spacing_size ];
-						}
-					} else {
-						$slug            = \_wp_to_kebab_case( $source_slug );
-						$processed_value = "var(--wp--preset--spacing--$slug)";
-					}
-				} else {
-					$processed_value = $side_value;
-				}
-			}
-			$css_value .= "$processed_value ";
-		}
-		return trim( $css_value );
-	}
-	public static function get_single_dimension_value( $value, $side ) {
-		if ( ! is_array( $value ) ) {
-			return '0px';
-		}
-		// Make sure we have all 4 values.
-		$sides           = array( 'right', 'left' );
-		$css_value       = '';
-		$processed_value = '0px';
-		// Now we can go through and build the CSS value.
-		if ( ! isset( $value[ $side ] ) ) {
-			$processed_value = '0px';
-		} else {
-			$side_value = $value[ $side ];
-
-			// Get spacing CSS variable from preset value if provided.
-			// TODO - we need to know if the value is coming from a GB preset, or if we supplied it
-			// as a default.
-			if ( is_string( $side_value ) && str_contains( $side_value, 'var:preset|spacing|' ) ) {
-				$index_to_splice = strrpos( $side_value, '|' ) + 1;
-				$source_slug     = substr( $side_value, $index_to_splice );
-
-				// if the source slug starts with `search-filter-`, then we need to remove it.
-				if ( strpos( $source_slug, 'search-filter-' ) === 0 ) {
-					$spacing_size = substr( $source_slug, strlen( 'search-filter-' ) );
-					if ( isset( self::$spacing_sizes[ $spacing_size ] ) ) {
-						$processed_value = self::$spacing_sizes[ $spacing_size ];
-					}
-				} else {
-					$slug            = \_wp_to_kebab_case( $source_slug );
-					$processed_value = "var(--wp--preset--spacing--$slug)";
-				}
-			} elseif ( intval( $side_value ) === 0 ) {
-					$processed_value = '0px';
-			} else {
-				$processed_value = $side_value;
-			}
-		}
-		$css_value .= "$processed_value";
-		return trim( $css_value );
-	}
 
 	/**
 	 * Gets the attributes of the style.

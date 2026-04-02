@@ -22,6 +22,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Search extends Search_Base {
 
 	/**
+	 * Calculate the interaction type for this field.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return string The interaction type.
+	 */
+	protected function calc_interaction_type(): string {
+		return 'search';
+	}
+
+	/**
 	 * The type of the field.
 	 *
 	 * @since 3.0.0
@@ -51,11 +62,11 @@ class Search extends Search_Base {
 		// Handle the built in data types.
 		$data_type = $this->get_attribute( 'dataType' );
 		$value     = $this->get_value();
+
 		if ( $data_type === 'post_attribute' || empty( $data_type ) ) {
 			$attribute_data_type = $this->get_attribute( 'dataPostAttribute' );
 			if ( ( $attribute_data_type === 'default' ) || ( $attribute_data_type === '' ) ) {
 				$query_args['s'] = $this->get_value();
-
 				// If we have ordering by relevance set in the query, then override the orderby
 				// completely.  Relevance doesn't work when combined with multiple order parameter,
 				// and it should be the only one set when searching.
@@ -95,7 +106,7 @@ class Search extends Search_Base {
 			$taxonomy_name  = $this->get_attribute( 'dataTaxonomy' );
 			$taxonomy_terms = $this->search_taxonomy_term_labels( $value, $taxonomy_name, 'slug' );
 			if ( ! isset( $query_args['tax_query'] ) ) {
-				$query_args['tax_query'] = array();
+				$query_args['tax_query'] = array(); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 			}
 			if ( ! empty( $taxonomy_terms ) ) {
 				$query_args['tax_query'][] = array(
@@ -107,17 +118,21 @@ class Search extends Search_Base {
 				$query_args = $this->add_fail_query_args( $query_args );
 			}
 		} elseif ( $data_type === 'custom_field' ) {
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			if ( ! isset( $query_args['meta_query'] ) ) {
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				$query_args['meta_query'] = array();
 			}
-			$custom_field               = $this->get_attribute( 'dataCustomField' );
-			$query_args['meta_query'][] = array(
-				'key'     => $custom_field,
-				'value'   => $value,
-				'compare' => 'LIKE',
-			);
-			return $query_args;
+			$custom_field = $this->get_attribute( 'dataCustomField' );
+			if ( ! empty( $custom_field ) ) {
+				$query_args['meta_query'][] = array(
+					'key'     => $custom_field,
+					'value'   => $value,
+					'compare' => 'LIKE',
+				);
+			}
 		}
+
 		return parent::apply_wp_query_args( $query_args );
 	}
 
@@ -146,11 +161,7 @@ class Search extends Search_Base {
 	public function search_post_titles( $search_term ) {
 		$matched_post_titles = array();
 
-		$query = \Search_Filter\Queries\Query::find(
-			array(
-				'id' => $this->get_query_id(),
-			)
-		);
+		$query = \Search_Filter\Queries\Query::get_instance( $this->get_query_id() );
 
 		if ( is_wp_error( $query ) ) {
 			return $matched_post_titles;
@@ -181,17 +192,13 @@ class Search extends Search_Base {
 	 * @since 3.0.0
 	 *
 	 * @param    string $search_term    The search term to search for.
-	 * @param    string $return    The return type to return.
+	 * @param    string $return_type    The return type to return.
 	 * @return   array    The matched post type labels.
 	 */
-	public function search_post_type_labels( $search_term, $return = 'name' ) {
+	public function search_post_type_labels( $search_term, $return_type = 'name' ) {
 		$matched_post_types = array();
 
-		$query = \Search_Filter\Queries\Query::find(
-			array(
-				'id' => $this->get_query_id(),
-			)
-		);
+		$query = \Search_Filter\Queries\Query::get_instance( $this->get_query_id() );
 
 		if ( is_wp_error( $query ) ) {
 			return $matched_post_types;
@@ -200,11 +207,15 @@ class Search extends Search_Base {
 		$query_post_types = $query->get_attribute( 'postTypes' );
 		foreach ( $query_post_types as $query_post_type ) {
 			$post_type = get_post_type_object( $query_post_type );
+			// Skip if post type doesn't exist.
+			if ( ! $post_type ) {
+				continue;
+			}
 			// Check to see if the post type label starts with the search term.
 			if ( strpos( strtolower( $post_type->label ), strtolower( $search_term ) ) === 0 ) {
-				if ( $return === 'name' ) {
+				if ( $return_type === 'name' ) {
 					$matched_post_types[] = $post_type->name;
-				} elseif ( $return === 'label' ) {
+				} elseif ( $return_type === 'label' ) {
 					$matched_post_types[] = $post_type->label;
 				}
 			}
@@ -219,17 +230,13 @@ class Search extends Search_Base {
 	 * @since 3.0.0
 	 *
 	 * @param    string $search_term    The search term to search for.
-	 * @param    string $return    The return type to return.
+	 * @param    string $return_type    The return type to return.
 	 * @return   array    The matched post stati labels.
 	 */
-	public function search_post_stati_labels( $search_term, $return = 'name' ) {
+	public function search_post_stati_labels( $search_term, $return_type = 'name' ) {
 		$matched_post_stati = array();
 
-		$query = \Search_Filter\Queries\Query::find(
-			array(
-				'id' => $this->get_query_id(),
-			)
-		);
+		$query = \Search_Filter\Queries\Query::get_instance( $this->get_query_id() );
 
 		if ( is_wp_error( $query ) ) {
 			return $matched_post_stati;
@@ -241,9 +248,9 @@ class Search extends Search_Base {
 			$post_status = get_post_status_object( $query_post_status );
 			// Check to see if the post type label starts with the search term.
 			if ( strpos( strtolower( $post_status->label ), strtolower( $search_term ) ) === 0 ) {
-				if ( $return === 'name' ) {
+				if ( $return_type === 'name' ) {
 					$matched_post_stati[] = $post_status->name;
-				} elseif ( $return === 'label' ) {
+				} elseif ( $return_type === 'label' ) {
 					$matched_post_stati[] = $post_status->label;
 				}
 			}
@@ -258,10 +265,10 @@ class Search extends Search_Base {
 	 *
 	 * @param    string $search_term    The search term to search for.
 	 * @param    string $taxonomy_name    The taxonomy name to search for.
-	 * @param    string $return    The return type to return.
+	 * @param    string $return_type    The return type to return.
 	 * @return   array    The matched taxonomy term labels.
 	 */
-	public function search_taxonomy_term_labels( $search_term, $taxonomy_name, $return = 'name' ) {
+	public function search_taxonomy_term_labels( $search_term, $taxonomy_name, $return_type = 'name' ) {
 		$matched_terms = array();
 
 		global $wpdb;
@@ -269,14 +276,18 @@ class Search extends Search_Base {
 		$terms_conditions = $this->get_attribute( 'taxonomyTermsConditions' );
 		$terms            = $this->get_attribute( 'taxonomyTerms' );
 
-		// Enforce the terms to be numbers.
-		$terms = array_map( 'absint', $terms );
+		// Enforce the terms to be numbers (handle null case).
+		$terms = is_array( $terms ) ? array_map( 'absint', $terms ) : array();
 
 		$terms_sql = '';
-		if ( $terms_conditions === 'include_terms' ) {
-			$terms_sql = $wpdb->prepare( " AND {$wpdb->terms}.term_id IN (%d)", implode( ',', $terms ) );
-		} elseif ( $terms_conditions === 'exclude_terms' ) {
-			$terms_sql = $wpdb->prepare( " AND {$wpdb->terms}.term_id NOT IN (%d)", implode( ',', $terms ) );
+		if ( $terms_conditions === 'include_terms' && ! empty( $terms ) ) {
+			$placeholders = implode( ',', array_fill( 0, count( $terms ), '%d' ) );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Placeholders are dynamically generated, values are prepared.
+			$terms_sql = $wpdb->prepare( " AND {$wpdb->terms}.term_id IN ({$placeholders})", $terms );
+		} elseif ( $terms_conditions === 'exclude_terms' && ! empty( $terms ) ) {
+			$placeholders = implode( ',', array_fill( 0, count( $terms ), '%d' ) );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Placeholders are dynamically generated, values are prepared.
+			$terms_sql = $wpdb->prepare( " AND {$wpdb->terms}.term_id NOT IN ({$placeholders})", $terms );
 		}
 
 		$search_query = $wpdb->prepare( "SELECT {$wpdb->terms}.name, {$wpdb->terms}.slug FROM {$wpdb->terms} LEFT JOIN {$wpdb->term_taxonomy} ON {$wpdb->terms}.term_id = {$wpdb->term_taxonomy}.term_id WHERE {$wpdb->term_taxonomy}.taxonomy = %s AND {$wpdb->terms}.name LIKE %s", $taxonomy_name, $search_term . '%' );
@@ -284,12 +295,13 @@ class Search extends Search_Base {
 			$search_query .= $terms_sql;
 		}
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Query is prepared above.
 		$query_result = $wpdb->get_results( $search_query );
 
 		foreach ( $query_result as $term ) {
-			if ( $return === 'name' ) {
+			if ( $return_type === 'name' ) {
 				$matched_terms[] = $term->name;
-			} elseif ( $return === 'slug' ) {
+			} elseif ( $return_type === 'slug' ) {
 				$matched_terms[] = $term->slug;
 			}
 		}
@@ -309,20 +321,34 @@ class Search extends Search_Base {
 		global $wpdb;
 		$matched_values = array();
 
-		$where = '';
 		if ( $search_term !== '' ) {
-			$where = $wpdb->prepare( " WHERE meta_value LIKE '%s' AND meta_key='%s' ", $search_term . '%', $custom_field );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query_result = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT DISTINCT(meta_value)
+					FROM %i
+					WHERE meta_value LIKE %s AND meta_key = %s
+					ORDER BY meta_value ASC
+					LIMIT 0, 10',
+					$wpdb->postmeta,
+					$search_term . '%',
+					$custom_field
+				)
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$query_result = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT DISTINCT(meta_value)
+					FROM %i
+					WHERE meta_key = %s
+					ORDER BY meta_value ASC
+					LIMIT 0, 10',
+					$wpdb->postmeta,
+					$custom_field
+				)
+			);
 		}
-
-		$query_result = $wpdb->get_results(
-			"
-			SELECT DISTINCT(`meta_value`) 
-			FROM $wpdb->postmeta
-			$where
-			ORDER BY `meta_value` ASC
-			LIMIT 0, 10
-			"
-		);
 
 		foreach ( $query_result as $k => $v ) {
 			$matched_values[] = $v->meta_value;

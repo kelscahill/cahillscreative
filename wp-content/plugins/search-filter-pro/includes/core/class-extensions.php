@@ -40,6 +40,8 @@ class Extensions {
 
 	/**
 	 * Init
+	 *
+	 * @return void
 	 */
 	public static function init() {}
 
@@ -57,20 +59,21 @@ class Extensions {
 	 *     @type string $file           The extension file.
 	 *     @type string $license        The extension license.
 	 *     @type bool   $beta           Whether the extension is a beta version.
+	 *     @type string $tested_up_to   The tested up to version.
 	 * }
 	 */
 	public static function add( $extension_name, $args ) {
 		$defaults = array(
-			'file'    => '',
-			'id'      => '',
-			'version' => '',
-			'license' => 'search-filter-extension-free',
-			'beta'    => false,
+			'file'         => '',
+			'id'           => '',
+			'version'      => '',
+			'license'      => 'search-filter-extension-free',
+			'beta'         => false,
+			'tested_up_to' => '',
 		);
 		$args     = wp_parse_args( $args, $defaults );
 		self::$registered_extensions[ $extension_name ] = new Extension( $extension_name, $args );
 		Update_Manager::add( $args );
-
 	}
 
 	/**
@@ -78,6 +81,7 @@ class Extensions {
 	 *
 	 * @since 3.0.0
 	 *
+	 * @param string $extension_name The extension name.
 	 * @return Extension|false
 	 */
 	public static function get( $extension_name ) {
@@ -98,7 +102,7 @@ class Extensions {
 	 * @return boolean
 	 */
 	public static function has_upgraded( $extension_name, $active_version ) {
-		$database_version = Options::get_option_value( 'extension-' . $extension_name . '_version' );
+		$database_version = Options::get( 'extension-' . $extension_name . '_version' );
 		if ( ! $database_version ) {
 			return true;
 		}

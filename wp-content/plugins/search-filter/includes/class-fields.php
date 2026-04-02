@@ -10,10 +10,13 @@
 
 namespace Search_Filter;
 
+use Search_Filter\Core\Component_Loader;
 use Search_Filter\Core\CSS_Loader;
 use Search_Filter\Fields\Field;
+use Search_Filter\Database\Rows\Field as Field_Record;
 use Search_Filter\Database\Queries\Fields as Field_Query;
 use Search_Filter\Core\SVG_Loader;
+use Search_Filter\Database\Table_Manager;
 use Search_Filter\Fields\Field_Factory;
 use Search_Filter\Fields\Settings as Fields_Settings;
 use Search_Filter\Fields\Settings_Data;
@@ -22,12 +25,11 @@ use Search_Filter\Fields\Settings_Data;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
 /**
  * A controller for managing all things to do with fields
  */
 class Fields {
-
-	const SHORTCODE_TAG = 'searchandfilter';
 
 	/**
 	 * Keeps track of which fields are active on page load so we can load their data on page load
@@ -43,17 +45,32 @@ class Fields {
 	private static $active_field_configs = array();
 
 	/**
+	 * Map of short names to full table keys.
+	 *
+	 * @var array<string, string>
+	 */
+	const TABLE_KEY_MAP = array(
+		'fields' => 'fields',
+		'meta'   => 'fieldmeta',
+	);
+
+	/**
 	 * Initialize the class
 	 *
 	 * @since    3.0.0
 	 */
 	public static function init() {
-		// Register the shortcode.
-		add_shortcode( self::SHORTCODE_TAG, array( __CLASS__, 'shortcode' ) );
+
 		add_action( 'search-filter/record/save', array( __CLASS__, 'save_css' ), 10, 2 );
 
 		// Register settings.
 		add_action( 'init', array( __CLASS__, 'register_settings' ), 2 );
+
+		// On delete post, remove the field location.
+		add_action( 'delete_post', array( __CLASS__, 'remove_fields_from_post' ), 10 );
+
+		// Register table with Table_Manager.
+		add_action( 'search-filter/schema/register', array( __CLASS__, 'register_tables' ) );
 	}
 
 	/**
@@ -62,8 +79,10 @@ class Fields {
 	 * @since    3.0.0
 	 */
 	public static function register_css_handler() {
-		CSS_Loader::register_handler( 'fields', 'Search_Filter\\Fields::get_css' );
+		CSS_Loader::register_handler( 'fields', array( __CLASS__, 'get_css' ) );
 	}
+
+
 	/**
 	 * Initialises and registers the settings.
 	 *
@@ -73,76 +92,89 @@ class Fields {
 		// Register settings.
 		Fields_Settings::init( Settings_Data::get(), Settings_Data::get_groups() );
 	}
+
 	/**
-	 * The main `[searchandfilter]` shortcode.
+	 * Find fields by location.
 	 *
-	 * @since    3.0.0
-	 *
-	 * @param array $attributes  The supplied shortcode attributes.
+	 * @since 3.0.0
+	 * @param string $location The location to search for.
+	 * @param string $return_as Return format (objects or array).
+	 * @return array The fields found.
 	 */
-	public static function shortcode( $attributes ) {
-
-		// This allows us to override the shortcode output in the legacy plugin.
-		// TODO - remove this when we remove the legacy plugin - September 2024?
-		$override = apply_filters( 'search-filter/fields/shortcode/override', false, $attributes );
-		if ( $override ) {
-			return $override;
-		}
-
-		$defaults = array(
-			'field'  => '',
-			'query'  => '',
-			/**
-			 * Assume we're in the most likely sceanrio, a shortcode used within a rich
-			 * text editor (ie after `the_content` has been applied). This will probably
-			 * run esc_html on our attributes
-			 */
-			'decode' => in_the_loop() ? 'yes' : 'no',
+	public static function find_fields_by_location( $location, $return_as = 'objects' ) {
+		$fields = self::find(
+			array(
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				'meta_query' => array(
+					array(
+						'key'     => 'locations',
+						'value'   => $location,
+						'compare' => '=',
+					),
+				),
+			),
+			$return_as
 		);
-
-		$attributes = shortcode_atts( $defaults, $attributes, self::SHORTCODE_TAG );
-
-		if ( 'yes' === $attributes['decode'] ) {
-			$attributes = array_map( 'wp_specialchars_decode', $attributes );
+		if ( is_wp_error( $fields ) ) {
+			return array();
 		}
+		return $fields;
+	}
 
-		$output = '';
-		// Get the field data associated with the ID.
-		// TODO - throw error if no field is passed
-		// TODO - field should be identified using name or ID, not 'field' if its in get_field, we already know that.
-		$conditions = array(
-			'status' => 'enabled',
-		);
-		// Then we want to display a field.
-		if ( is_numeric( $attributes['field'] ) ) {
-			// Lookup by ID.
-			$conditions['id'] = absint( $attributes['field'] );
-		} else {
-			// Search by name.
-			$conditions['name'] = $attributes['field'];
-			// If the query arg is passed, use that (because duplicate names are allowed).
-			if ( isset( $attributes['query'] ) && '' !== $attributes['query'] ) {
-				$conditions['query_id'] = absint( $attributes['query'] );
+	/**
+	 * Remove fields from a post.
+	 *
+	 * @since 3.0.0
+	 * @param int $post_id The post ID.
+	 */
+	public static function remove_fields_from_post( $post_id ) {
+		self::remove_fields_from_location( 'post/' . $post_id );
+	}
+	/**
+	 * Remove fields from a specific location.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param int|string $location The location.
+	 */
+	public static function remove_fields_from_location( $location ) {
+
+		$fields = self::find_fields_by_location( $location, 'records' );
+
+		foreach ( $fields as $field_record ) {
+			$field = null;
+			// Try to get an existing instance if it exists.
+			if ( Field::has_instance( $field_record->get_id() ) ) {
+				$field = Field::get_instance( $field_record->get_id() );
+			} else {
+				try {
+					$field = Field_Factory::create_from_record( $field_record );
+					Field::set_instance( $field );
+				} catch ( \Exception $e ) {
+					continue;
+				}
+			}
+			if ( $field ) {
+				$field->remove_location( $location );
 			}
 		}
-		$field = Field::find( $conditions );
-		if ( is_wp_error( $field ) ) {
-			$output = $field->get_error_message();
-		} else {
-			$output = $field->render( true );
-		}
-		return $output;
 	}
 
 	/**
 	 * Keep track of active fields to preload their data.
 	 *
-	 * @param array $config The field render config.
+	 * @param Field $field The field object.
 	 */
 	public static function register_active_field( $field ) {
+		// Make sure we don't register the same field twice.
+		foreach ( self::$active_fields as $active_field ) {
+			if ( $active_field->get_id() === $field->get_id() ) {
+				return;
+			}
+		}
 		self::$active_fields[] = $field;
-		// self::$active_field_configs[ 'field_' . $config['id'] ] = $config;
 		SVG_Loader::enqueue_array( $field->get_icons() );
+		Component_Loader::enqueue_array( $field->get_components() );
 	}
 	/**
 	 * Keep track of active fields to preload their data.
@@ -162,10 +194,10 @@ class Fields {
 	 * TODO - we don't want to return the whole query - this doesn't match the other
 	 * find() functions across our other apis.
 	 *
-	 * @param array $conditions Column name => value pairs.
-	 * @param bool  $return_as Return the query, object, or record.
+	 * @param array  $conditions Column name => value pairs.
+	 * @param string $return_as Return the query, object, or record.
 	 *
-	 * @return array
+	 * @return array|Field_Query
 	 */
 	public static function find( $conditions, $return_as = 'objects' ) {
 		$query_args = array(
@@ -185,26 +217,23 @@ class Fields {
 		if ( $return_as === 'query' ) {
 			return $query;
 		}
-
 		$fields = array();
-		if ( $query ) {
-			if ( $return_as === 'objects' ) {
-				foreach ( $query->items as $record ) {
-					try {
-						$fields[] = Field_Factory::create_from_record( $record );
-					} catch ( \Exception $e ) {
-						$fields[] = new \WP_Error( 'invalid_field', $e->getMessage(), array( 'status' => 400 ) );
-					}
+		if ( $return_as === 'objects' ) {
+			foreach ( $query->items as $record ) {
+				try {
+					$fields[] = Field_Factory::create_from_record( $record );
+				} catch ( \Exception $e ) {
+					$fields[] = new \WP_Error( 'invalid_field', $e->getMessage(), array( 'status' => 400 ) );
 				}
-			} elseif ( $return_as === 'records' ) {
-				$fields = $query->items;
 			}
+		} elseif ( $return_as === 'records' ) {
+			$fields = $query->items;
 		}
 		return $fields;
 	}
 
 	/**
-	 * Gets all styles records.
+	 * Gets all fields records.
 	 */
 	public static function get() {
 		return self::find( array( 'number' => 0 ) );
@@ -237,7 +266,7 @@ class Fields {
 		if ( $section !== 'field' ) {
 			return;
 		}
-		CSS_Loader::save_css( 'fields' );
+		CSS_Loader::queue_regeneration();
 	}
 	/**
 	 * Loop through styles presets, and build their CSS.
@@ -273,10 +302,10 @@ class Fields {
 	 *
 	 * @since   3.0.0
 	 *
-	 * @param Record $record Associative array of style group data.
+	 * @param Field_Record $record The field record.
 	 * @return string The generated CSS.
 	 */
-	public static function get_record_css( $record ) {
+	public static function get_record_css( Field_Record $record ) {
 		$css  = '';
 		$name = $record->get_name();
 		// Use cached version.
@@ -286,5 +315,50 @@ class Fields {
 			$css .= CSS_Loader::clean_css( $cached_css );
 		}
 		return $css;
+	}
+
+	/**
+	 * Register and init the fields tables.
+	 *
+	 * @since    3.2.0
+	 */
+	public static function register_tables() {
+
+		// Register all tables so we can uninstall them.
+		if ( ! Table_Manager::has( 'fields' ) ) {
+			Table_Manager::register( 'fields', \Search_Filter\Database\Tables\Fields::class );
+		}
+		if ( ! Table_Manager::has( 'fieldmeta' ) ) {
+			Table_Manager::register( 'fieldmeta', \Search_Filter\Database\Tables\Fields_Meta::class );
+		}
+	}
+
+
+	/**
+	 * Get a field table instance.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $type Table type: 'fields' or 'meta'. Default 'fields'.
+	 * @param bool   $should_use Whether the table should be used based on settings.
+	 * @return \Search_Filter\Database\Engine\Table|null The table instance, or null if not registered.
+	 */
+	public static function get_table( $type = 'fields', $should_use = true ) {
+		$key = self::TABLE_KEY_MAP[ $type ] ?? 'fields';
+		return Table_Manager::get( $key, $should_use );
+	}
+
+	/**
+	 * Get a field table name.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $type Table type: 'fields' or 'meta'. Default 'fields'.
+	 * @param bool   $should_use Whether the table should be used based on settings.
+	 * @return string The prefixed table name, or empty string if table not registered.
+	 */
+	public static function get_table_name( $type = 'fields', $should_use = true ) {
+		$table = self::get_table( $type, $should_use );
+		return $table ? $table->get_table_name() : '';
 	}
 }

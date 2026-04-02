@@ -1,10 +1,18 @@
 <?php
+/**
+ * Cron Class
+ *
+ * @link       https://searchandfilter.com
+ * @since      3.0.0
+ * @package    Search_Filter/Integrations/Gutenberg
+ */
+
 namespace Search_Filter\Integrations\Gutenberg;
 
 use Search_Filter\Fields;
 use Search_Filter\Fields\Field;
 use Search_Filter\Integrations\Gutenberg;
-use Search_Filter\Util;
+use Search_Filter\Options;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -14,56 +22,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Handles the cron tasks.
  *
- * Mostly clears up expired / orphaned data.
+ * Clears up expired / orphaned data.
  *
  * @since 3.0.0
  */
 class Cron {
 
-	public static function init() {
-		add_action( 'init', array( __CLASS__, 'validate' ) );
-		// Create the schedule.
-		add_filter( 'cron_schedules', array( __CLASS__, 'schedules' ) );
-		// Add the cron job action.
-		add_action( 'search-filter/integrations/gutenberg/cron', array( __CLASS__, 'run_task' ) );
-		// Attach the cron job to the init action.
-		add_action( 'search-filter/core/activator/activate', array( __CLASS__, 'activate' ) );
-		// Remove the scheduled cron job on plugin deactivation.
-		add_action( 'search-filter/core/deactivator/deactivate', array( __CLASS__, 'deactivate' ) );
-	}
 	/**
-	 * Setup the interval/frequency for the cron job.
+	 * Initialize the cron tasks.
 	 *
-	 * @param array $schedules
-	 */
-	public static function schedules( $schedules ) {
-		// Create a search_filter_2days interval.
-		if ( ! isset( $schedules['search_filter_2days'] ) ) {
-			$schedules['search_filter_2days'] = array(
-				'interval' => DAY_IN_SECONDS * 2,
-				'display'  => __( 'Once every 2 days', 'search-filter' ),
-			);
-		}
-		return $schedules;
-	}
-
-	/**
-	 * Make sure the cron job is scheduled.
-	 */
-	public static function activate() {
-		// If the cron job is not scheduled, schedule it.
-		if ( ! wp_next_scheduled( 'search-filter/integrations/gutenberg/cron' ) ) {
-			wp_schedule_event( time(), 'search_filter_2days', 'search-filter/integrations/gutenberg/cron' );
-		}
-	}
-
-	/**
-	 * Deactivate the cron job.
+	 * Attaches to the centralized maintenance cron.
 	 *
 	 * @since 3.0.0
 	 */
-	public static function deactivate() {
-		wp_clear_scheduled_hook( 'search-filter/integrations/gutenberg/cron' );
+	public static function init() {
+		// Attach to the centralized maintenance cron.
+		add_action( 'search-filter/cron/maintenance', array( __CLASS__, 'run_task' ) );
 	}
 
 	/**
@@ -72,31 +46,9 @@ class Cron {
 	 * @since 3.0.0
 	 */
 	public static function run_task() {
-		// Hook the task into shutdown so we don't affect the request.
-		add_action( 'shutdown', array( __CLASS__, 'remove_orphaned_fields' ) );
-	}
-
-	/**
-	 * Validate the cron job.
-	 *
-	 * @since 3.0.0
-	 */
-	public static function validate() {
-		$next_event = wp_get_scheduled_event( 'search-filter/integrations/gutenberg/cron' );
-		if ( ! $next_event ) {
-			return;
-		}
-
-		$time_diff   = $next_event->timestamp - time();
-		$time_3_days = 3 * DAY_IN_SECONDS;
-
-		if ( $time_diff < 0 && -$time_diff > $time_3_days ) {
-			// This means our scheduled event has been missed by more then 3 days.
-			// So lets run manually and reschedule.
-			self::run_task();
-			Util::error_log( 'Expired cron job found, re-running and rescheduling.', 'error' );
-			wp_clear_scheduled_hook( 'search-filter/integrations/gutenberg/cron' );
-			wp_schedule_event( time(), 'search_filter_2days', 'search-filter/integrations/gutenberg/cron' );
+		// Only run if we have legacy blocks.
+		if ( Options::get( 'gutenberg-has-legacy-blocks' ) === 'yes' ) {
+			add_action( 'shutdown', array( __CLASS__, 'remove_orphaned_fields' ) );
 		}
 	}
 
@@ -122,10 +74,10 @@ class Cron {
 				// 1. If the context path is empty, then its likely an error / legacy, so remove it.
 				Field::destroy( $field_id );
 			} elseif ( $field_record->get_status() === 'draft' ) {
-				// 2. If a field status is draft, then remove it after 7 days.
+				// 2. If a field status is draft, then remove it after 2 days.
 				$date_created = $field_record->get_date_created();
 				$date_diff    = time() - $date_created;
-				if ( $date_diff >= ( WEEK_IN_SECONDS * 2 ) ) {
+				if ( $date_diff >= ( DAY_IN_SECONDS * 2 ) ) {
 					Field::destroy( $field_id );
 				}
 			} elseif ( strpos( $field_context_path, 'post/' ) === 0 ) {
@@ -145,7 +97,7 @@ class Cron {
 				}
 			} elseif ( strpos( $field_context_path, 'site-editor/' ) === 0 ) {
 				// 4. If a context path is set to site-editor/[theme]//[type]-[post-type] - then check the post exists, and check the field exists there.
-				$location_path = absint( str_replace( 'site-editor/', '', $field_context_path ) );
+				$location_path = str_replace( 'site-editor/', '', $field_context_path );
 				$template      = \get_block_template( $location_path, 'wp_template' );
 				// Post name is usually in the format: "archive-post".
 				if ( $template && \get_post( $template->wp_id ) ) {
@@ -165,11 +117,9 @@ class Cron {
 				$widget_id = Field::get_meta( $field_id, 'widget_id', true );
 				if ( $widget_id === '' ) {
 					Field::destroy( $field_id );
-				} else {
+				} elseif ( ! self::sidebars_have_widget( $widget_id ) ) {
 					// Now check to see if the widget exists.
-					if ( ! self::sidebars_have_widget( $widget_id ) ) {
-						Field::destroy( $field_id );
-					}
+					Field::destroy( $field_id );
 				}
 			}
 		}
@@ -185,15 +135,12 @@ class Cron {
 	 *
 	 * @return bool True if the post has the field ID, false if not.
 	 */
-	private static function post_has_field_id( $post_id, $field_id ) {
+	private static function post_has_field_id( int $post_id, int $field_id ) {
 		$post_content_fields = Gutenberg::get_post_content_fields( $post_id );
 
-		if ( ! isset( $post_content_field['fieldId'] ) ) {
-			return false;
-		}
-
 		foreach ( $post_content_fields as $post_content_field ) {
-			if ( absint( $post_content_field['fieldId'] ) === $field_id ) {
+			// get_post_content_fields returns Field objects, not arrays.
+			if ( $post_content_field->get_id() === $field_id ) {
 				return true;
 			}
 		}

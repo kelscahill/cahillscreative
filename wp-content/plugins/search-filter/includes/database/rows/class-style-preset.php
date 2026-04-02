@@ -1,4 +1,14 @@
 <?php
+/**
+ * Style Preset Row Class.
+ *
+ * @package     Database
+ * @subpackage  Rows
+ * @copyright   Copyright (c) 2020
+ * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       3.0.0
+ */
+
 namespace Search_Filter\Database\Rows;
 
 use Search_Filter\Core\Data_Store;
@@ -7,21 +17,90 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Style preset row class.
+ *
+ * @since 3.0.0
+ */
 class Style_Preset extends \Search_Filter\Database\Engine\Row {
-	public $id   = 0;
+	/**
+	 * The ID of the style preset.
+	 *
+	 * @since 3.0.0
+	 * @var int
+	 */
+	public $id = 0;
+
+	/**
+	 * The name of the style preset.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
 	public $name = '';
-	public $attributes;
-	public $context       = '';
-	public $css           = '';
-	public $status        = '';
-	public $date_created  = false;
-	public $date_modified = false;
+
+	/**
+	 * The attributes of the style preset.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $attributes = '';
+
+	/**
+	 * The tokens of the style preset.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $tokens = '';
+
+	/**
+	 * The context of the style preset.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $context = '';
+
+	/**
+	 * The CSS of the style preset.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $css = '';
+
+	/**
+	 * The status of the style preset.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $status = '';
+
+	/**
+	 * The date the style preset was created.
+	 *
+	 * @since 3.0.0
+	 * @var int
+	 */
+	public $date_created = 0;
+
+	/**
+	 * The date the style preset was modified.
+	 *
+	 * @since 3.0.0
+	 * @var int
+	 */
+	public $date_modified = 0;
+
 	/**
 	 * Styles Preset constructor.
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param $item
+	 * @param object $item The style preset item data.
 	 */
 	public function __construct( $item ) {
 		parent::__construct( $item );
@@ -30,10 +109,11 @@ class Style_Preset extends \Search_Filter\Database\Engine\Row {
 		$this->id         = (int) $this->id;
 		$this->name       = (string) $this->name;
 		$this->attributes = json_decode( $this->attributes, true );
+		$this->tokens     = json_decode( $this->tokens, true );
 		$this->context    = (string) $this->context;
 
-		$this->date_created  = false === $this->date_created ? 0 : strtotime( $this->date_created );
-		$this->date_modified = false === $this->date_modified ? 0 : strtotime( $this->date_modified );
+		$this->date_created  = empty( $this->date_created ) ? 0 : strtotime( (string) $this->date_created );
+		$this->date_modified = empty( $this->date_modified ) ? 0 : strtotime( (string) $this->date_modified );
 
 		Data_Store::set( 'style', $this->id, $this );
 	}
@@ -41,7 +121,7 @@ class Style_Preset extends \Search_Filter\Database\Engine\Row {
 	/**
 	 * Retrieves the HTML to display the information about this book.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @return string HTML output to display this record's data.
 	 */
@@ -81,6 +161,14 @@ class Style_Preset extends \Search_Filter\Database\Engine\Row {
 		$attributes       = (array) $this->attributes;
 		$attributes['id'] = $this->id;
 		return $attributes;
+	}
+	/**
+	 * Get the tokens.
+	 *
+	 * @return array Assoc array of the attributes.
+	 */
+	public function get_tokens() {
+		return (array) $this->tokens;
 	}
 	/**
 	 * Get the context.

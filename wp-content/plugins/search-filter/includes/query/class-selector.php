@@ -29,7 +29,7 @@ class Selector {
 	/**
 	 * Stores a local copy of our queries.
 	 *
-	 * @var [type]
+	 * @var array
 	 */
 	private static $queries = array();
 
@@ -39,7 +39,7 @@ class Selector {
 	 * @since    3.0.0
 	 */
 	public static function init() {
-		add_action( 'init', 'Search_Filter\\Query\\Selector::init_queries', 21 );
+		add_action( 'init', array( __CLASS__, 'init_queries' ), 21 );
 
 		// Initially attach the hooks.
 		self::attach_pre_get_posts_hooks();
@@ -49,16 +49,22 @@ class Selector {
 		add_action( 'search-filter/query/pre_get_posts/detach', array( __CLASS__, 'detach_pre_get_posts_hooks' ), 10 );
 	}
 
+	/**
+	 * Attach the pre_get_posts hooks.
+	 */
 	public static function attach_pre_get_posts_hooks() {
 		// Priority is important.  We ideally want this to be after the default priority of 10
 		// as that's where most user functions will be called.
-		add_action( 'pre_get_posts', 'Search_Filter\\Query\\Selector::attach_ids', 20 );
-		add_action( 'pre_get_posts', 'Search_Filter\\Query\\Selector::attach_queries', 20 );
+		add_action( 'pre_get_posts', array( __CLASS__, 'attach_ids' ), 20 );
+		add_action( 'pre_get_posts', array( __CLASS__, 'attach_queries' ), 20 );
 	}
 
+	/**
+	 * Detach the pre_get_posts hooks.
+	 */
 	public static function detach_pre_get_posts_hooks() {
-		remove_action( 'pre_get_posts', 'Search_Filter\\Query\\Selector::attach_ids', 20 );
-		remove_action( 'pre_get_posts', 'Search_Filter\\Query\\Selector::attach_queries', 20 );
+		remove_action( 'pre_get_posts', array( __CLASS__, 'attach_ids' ), 20 );
+		remove_action( 'pre_get_posts', array( __CLASS__, 'attach_queries' ), 20 );
 	}
 
 	/**
@@ -71,6 +77,12 @@ class Selector {
 				'number' => 0,
 			)
 		);
+		foreach ( self::$queries as $query ) {
+			$existing_instance = Query::has_instance( $query->get_id() );
+			if ( ! $existing_instance ) {
+				Query::set_instance( $query );
+			}
+		}
 	}
 
 	/**
@@ -80,22 +92,23 @@ class Selector {
 	 *
 	 * @param \WP_Query $wp_query The WP_Query instance.
 	 */
-	public static function attach_ids( $wp_query ) {
+	public static function attach_ids( \WP_Query $wp_query ) {
 		$search_filter_id = $wp_query->get( 'search_filter_query_id' );
 		if ( empty( $search_filter_id ) ) {
 			return;
 		}
-		// TODO - we probably want to re-use the already looked up self::$queries.
-		$query = Query::find(
-			array(
-				'id'     => $search_filter_id,
-				'status' => 'enabled',
-			)
-		);
+
+		$query = Query::get_instance( $search_filter_id );
 
 		if ( is_wp_error( $query ) ) {
 			return;
 		}
+
+		if ( $query->get_status() !== 'enabled' ) {
+			return;
+		}
+
+		$fields = $query->get_fields();
 
 		$wp_query->set( 'search_filter_queries', array( $query ) );
 	}
@@ -105,24 +118,15 @@ class Selector {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param \WP_Query $query The WP_Query instance.
+	 * @param \WP_Query $wp_query The WP_Query instance.
 	 */
-	public static function attach_queries( $wp_query ) {
+	public static function attach_queries( \WP_Query $wp_query ) {
 
 		// TODO - store the integration settings in seperate columns so we can look them up,
 		// rather than looping through all of them on every page load.
 		foreach ( self::$queries as $saved_query ) {
-			$attributes    = $saved_query->get_attributes();
-			$should_attach = false;
 
-			if ( ! $should_attach ) {
-				// Based on the integration type, check if we need to attach to this query.
-				if ( self::should_attach_wp_search_query( $attributes, $wp_query ) ) {
-					$should_attach = true;
-				} elseif ( self::should_attach_archive_query( $saved_query, $wp_query ) ) {
-					$should_attach = true;
-				}
-			}
+			$should_attach = $saved_query->should_attach_to_query( $wp_query );
 
 			// Allow for custom integration types.
 			$should_attach = apply_filters( 'search-filter/query/selector/should_attach', $should_attach, $saved_query, $wp_query );
@@ -131,127 +135,5 @@ class Selector {
 				$wp_query->set( 'search_filter_queries', array( $saved_query ) );
 			}
 		}
-	}
-
-	/**
-	 * Detect whether the query is the one used on WP Search Results page (yoursite.com/?s=) and
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param array     $attributes The query attributes.
-	 * @param \WP_Query $query The WP_Query instance.
-	 *
-	 * @return bool True if the query should be attached, false if not.
-	 */
-	public static function should_attach_wp_search_query( $attributes, $query ) {
-
-		$integration_type = $attributes['integrationType'];
-
-		if ( $integration_type !== 'search' ) {
-			return false;
-		}
-
-		if ( is_admin() ) {
-			return false;
-		}
-
-		if ( ! $query->is_main_query() ) {
-			return false;
-		}
-
-		if ( ! is_search() ) {
-			return false;
-		}
-
-		if ( is_archive() ) {
-			return false;
-		}
-
-		if ( ( $query->is_search() ) && ( isset( $query->query['s'] ) ) ) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Detect whether the query is the one used on WP Search Results page (yoursite.com/?s=) and
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param array  $attributes The query attributes.
-	 * @param object $query  The WP Query object.
-	 *
-	 * @return bool True if the query should be attached, false if not.
-	 */
-	public static function should_attach_archive_query( $query, $wp_query ) {
-
-		if ( $query->get_attribute( 'integrationType' ) !== 'archive' ) {
-			return false;
-		}
-
-		// TODO - this should be extendable.
-		// It its set to main_query, or its unset, then set to true by default.
-		$should_attach_archive = $query->get_attribute( 'archiveIntegration' ) === 'main_query' || empty( $query->get_attribute( 'archiveIntegration' ) );
-
-		if ( ! $should_attach_archive ) {
-			return false;
-		}
-
-		if ( is_admin() ) {
-			return false;
-		}
-
-		if ( ! $wp_query->is_main_query() ) {
-			return false;
-		}
-
-		// Now check if we need to attach to a specific taxonomy archive or post type archive.
-		$archive_type = $query->get_attribute( 'archiveType' );
-
-		// Check for the special case of the blog first.
-		if ( $archive_type === 'post_type' ) {
-			$post_type = $query->get_attribute( 'postType' );
-			if ( $post_type === 'post' ) {
-				// If the reading setting "homepage displays" is set to "posts".
-				if ( is_home() ) {
-					return true;
-				}
-			}
-		}
-		// So its not the blog, so bail if its not an archive.
-		if ( ! $wp_query->is_archive() ) {
-			return false;
-		}
-		if ( $archive_type === 'post_type' ) {
-			$post_type = $query->get_attribute( 'postType' );
-			if ( $wp_query->is_post_type_archive( $post_type ) ) {
-				return true;
-			}
-
-			// We should not filter taxonomies that belong to multiple post types.
-			$archive_filter_taxonomies = $query->get_attribute( 'archiveFilterTaxonomies' );
-			if ( $archive_filter_taxonomies === 'yes' && Template_Data::is_singular_taxonomy_term_archive() && ! Template_Data::taxonomy_term_archive_has_multiple_post_types() ) {
-				$taxonomies = get_object_taxonomies( $post_type );
-				foreach ( $taxonomies as $taxonomy ) {
-					if ( $wp_query->is_tax( $taxonomy ) ) {
-						return true;
-					}
-				}
-			}
-		} elseif ( $archive_type === 'taxonomy' ) {
-			$taxonomy = $query->get_attribute( 'taxonomy' );
-			if ( $taxonomy === 'category' ) {
-				if ( $wp_query->is_category() ) {
-					return true;
-				}
-			} elseif ( $taxonomy === 'post_tag' ) {
-				if ( $wp_query->is_tag() ) {
-					return true;
-				}
-			} elseif ( $wp_query->is_tax( $taxonomy ) && Template_Data::is_singular_taxonomy_term_archive() ) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

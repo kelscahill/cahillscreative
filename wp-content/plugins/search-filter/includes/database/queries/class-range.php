@@ -1,7 +1,14 @@
 <?php
 /**
  * Base Custom Database Table Range Query Class.
+ *
+ * @package     Database
+ * @subpackage  Queries
+ * @copyright   Copyright (c) 2020
+ * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       3.0.0
  */
+
 namespace Search_Filter\Database\Queries;
 
 // Exit if accessed directly.
@@ -10,31 +17,24 @@ defined( 'ABSPATH' ) || exit;
 use Search_Filter\Database\Engine\Base;
 
 /**
- * Class for generating SQL clauses that filter a primary query according to date.
+ * Class for generating SQL clauses that filter a primary query according to range.
  *
- * Is heavily inspired by the WP_Date_Query class in WordPress, with changes to make
- * it more flexible for custom tables and their columns.
- *
- * Date is a helper that allows primary query classes, such as WP_Query, to filter
- * their results by date columns, by generating `WHERE` subclauses to be attached to the
+ * Range is a helper that allows primary query classes, such as WP_Query, to filter
+ * their results by range columns, by generating `WHERE` subclauses to be attached to the
  * primary SQL query string.
- *
- * Attempting to filter by an invalid date value (eg month=13) will generate SQL that will
- * return no results. In these cases, a _doing_it_wrong() error notice is also thrown.
- * See Date::validate_date_values().
  *
  * @link https://developer.wordpress.org/reference/classes/wp_query/
  *
- * @since 1.0.0
+ * @since 3.0.0
  */
 class Range extends Base {
 
 	/**
-	 * Array of date queries.
+	 * Array of range queries.
 	 *
-	 * See Date::__construct() for information on date query arguments.
+	 * See Range::__construct() for information on range query arguments.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   array
 	 */
 	public $queries = array();
@@ -42,7 +42,7 @@ class Range extends Base {
 	/**
 	 * The default relation between top-level queries. Can be either 'AND' or 'OR'.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	public $relation = 'AND';
@@ -50,7 +50,7 @@ class Range extends Base {
 	/**
 	 * The column to query against. Can be changed via the query arguments.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	public $column = 'id';
@@ -58,8 +58,8 @@ class Range extends Base {
 	/**
 	 * The value comparison operator. Can be changed via the query arguments.
 	 *
-	 * @since 1.0.0
-	 * @var   array
+	 * @since 3.0.0
+	 * @var   string
 	 */
 	public $compare = '=';
 
@@ -67,7 +67,7 @@ class Range extends Base {
 	/**
 	 * Supported comparison types
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   array
 	 */
 	public $comparison_keys = array(
@@ -110,7 +110,7 @@ class Range extends Base {
 	/**
 	 * Supported range-related parameter keys.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   array
 	 */
 	public $range_keys = array(
@@ -125,55 +125,36 @@ class Range extends Base {
 	 * 'compare'. When 'compare' is 'IN' or 'NOT IN', arrays are accepted; when 'compare' is 'BETWEEN' or 'NOT
 	 * BETWEEN', arrays of two valid values are required. See individual argument descriptions for accepted values.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param array $range_query {
-	 *     Array of date query clauses.
+	 *     Array of range query clauses.
 	 *
 	 *     @type array ...$0 {
-	 *         @type string $column           Optional. The column to query against. If undefined, inherits the value of
-	 *                                        'date_created'. Accepts 'date_created', 'date_created_gmt',
-	 *                                        'post_modified','post_modified_gmt', 'comment_date', 'comment_date_gmt'.
-	 *                                        Default 'date_created'.
+	 *         @type string $column           Optional. The column to query against.
 	 *         @type string $compare          Optional. The comparison operator. Accepts '=', '!=', '>', '>=', '<', '<=',
 	 *                                        'IN', 'NOT IN', 'BETWEEN', 'NOT BETWEEN'. Default '='.
-	 *         @type string $relation         Optional. The boolean relationship between the date queries. Accepts 'OR' or 'AND'.
+	 *         @type string $relation         Optional. The boolean relationship between the range queries. Accepts 'OR' or 'AND'.
 	 *                                        Default 'OR'.
 	 *
 	 *         @type array  ...$0 {
-	 *             Optional. An array of first-order clause parameters, or another fully-formed date query.
+	 *             Optional. An array of first-order clause parameters, or another fully-formed range query.
 	 *
 	 *             @type string|array $before {
-	 *                 Optional. Date to retrieve posts before. Accepts `strtotime()`-compatible string,
-	 *                 or array of 'year', 'month', 'day' values.
 	 *
-	 *                 @type string $year  The four-digit year. Default empty. Accepts any four-digit year.
-	 *                 @type string $month Optional when passing array.The month of the year.
-	 *                                     Default (string:empty)|(array:1). Accepts numbers 1-12.
-	 *                 @type string $day   Optional when passing array.The day of the month.
-	 *                                     Default (string:empty)|(array:1). Accepts numbers 1-31.
 	 *             }
 	 *             @type string|array $after {
-	 *                 Optional. Date to retrieve posts after. Accepts `strtotime()`-compatible string,
-	 *                 or array of 'year', 'month', 'day' values.
 	 *
-	 *                 @type string $year  The four-digit year. Accepts any four-digit year. Default empty.
-	 *                 @type string $month Optional when passing array. The month of the year. Accepts numbers 1-12.
-	 *                                     Default (string:empty)|(array:12).
-	 *                 @type string $day   Optional when passing array.The day of the month. Accepts numbers 1-31.
-	 *                                     Default (string:empty)|(array:last day of month).
 	 *             }
 	 *             @type string       $column        Optional. Used to add a clause comparing a column other than the
-	 *                                               column specified in the top-level `$column` parameter. Accepts
-	 *                                               'date_created', 'date_created_gmt', 'post_modified', 'post_modified_gmt',
-	 *                                               'comment_date', 'comment_date_gmt'. Default is the value of
+	 *                                               column specified in the top-level `$column` parameter.  Default is the value of
 	 *                                               top-level `$column`.
 	 *             @type string       $compare       Optional. The comparison operator. Accepts '=', '!=', '>', '>=',
 	 *                                               '<', '<=', 'IN', 'NOT IN', 'BETWEEN', 'NOT BETWEEN'. 'IN',
 	 *                                               'NOT IN', 'BETWEEN', and 'NOT BETWEEN'. Comparisons support
 	 *                                               arrays in some time-related parameters. Default '='.
 	 *
-	 *             @type bool         $inclusive     Optional. Include results from dates specified in 'before' or
+	 *             @type bool         $inclusive     Optional. Include results from ranges specified in 'before' or
 	 *                                               'after'. Default false.
 	 *             @type int|array    $year          Optional. The four-digit year number. Accepts any four-digit year
 	 *                                               or an array of years if `$compare` supports it. Default empty.
@@ -204,7 +185,7 @@ class Range extends Base {
 	public function __construct( $range_query = array() ) {
 
 		// Bail if empty or not an array.
-		if ( empty( $range_query ) || ! is_array( $range_query ) ) {
+		if ( empty( $range_query ) ) {
 			return;
 		}
 
@@ -213,7 +194,7 @@ class Range extends Base {
 		$this->compare  = $this->get_compare( $range_query );
 		$this->relation = $this->get_relation( $range_query );
 
-		// Set the queries
+		// Set the queries.
 		$this->queries = $this->sanitize_query( $range_query );
 	}
 
@@ -224,10 +205,10 @@ class Range extends Base {
 	 * each first-order clause contains all the necessary keys from
 	 * `$defaults`.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param array $queries
-	 * @param array $parent_query
+	 * @param array $queries      Array of range query clauses.
+	 * @param array $parent_query Parent query array.
 	 *
 	 * @return array Sanitized queries.
 	 */
@@ -283,17 +264,17 @@ class Range extends Base {
 	}
 
 	/**
-	 * Determines and validates what comparison operator to use.
+	 * Determines and validates what column to query against.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param array $query A date query or a date subquery.
+	 * @param array $query A range query or a range subquery.
 	 *
-	 * @return string The comparison operator.
+	 * @return string The column to query against.
 	 */
 	public function get_column( $query = array() ) {
 
-		// Use column if passed
+		// Use column if passed.
 		$retval = ! empty( $query['column'] )
 			? esc_sql( $this->validate_column( $query['column'] ) )
 			: $this->column;
@@ -304,9 +285,9 @@ class Range extends Base {
 	/**
 	 * Determines and validates what comparison operator to use.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param array $query A date query or a date subquery.
+	 * @param array $query A range query or a range subquery.
 	 *
 	 * @return string The comparison operator.
 	 */
@@ -323,14 +304,14 @@ class Range extends Base {
 	/**
 	 * Determines and validates what relation to use.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param array $query A date query or a date subquery.
+	 * @param array $query A range query or a range subquery.
 	 * @return string The relation operator.
 	 */
 	public function get_relation( $query = array() ) {
 
-		// Relation must be in the allowed array
+		// Relation must be in the allowed array.
 		$retval = ! empty( $query['relation'] ) && in_array( $query['relation'], $this->relation_keys, true )
 			? strtoupper( $query['relation'] )
 			: $this->relation;
@@ -341,7 +322,7 @@ class Range extends Base {
 	/**
 	 * Validates a column name parameter.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param string $column The user-supplied column name.
 	 *
@@ -354,20 +335,20 @@ class Range extends Base {
 	/**
 	 * Generate WHERE clause to be appended to a main query.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @return string MySQL WHERE clauses.
+	 * @return array MySQL WHERE clauses.
 	 */
 	public function get_sql() {
 		$sql = $this->get_sql_clauses();
 
 		/**
-		 * Filters the date query clauses.
+		 * Filters the range query clauses.
 		 *
-		 * @since 1.0.0
+		 * @since 3.0.0
 		 *
-		 * @param string $sql Clauses of the date query.
-		 * @param Date   $this  The Date query instance.
+		 * @param array  $sql      Clauses of the range query.
+		 * @param self   $instance The Range query instance.
 		 */
 		return apply_filters( 'get_range_sql', $sql, $this );
 	}
@@ -375,10 +356,10 @@ class Range extends Base {
 	/**
 	 * Generate SQL clauses to be appended to a main query.
 	 *
-	 * Called by the public Date::get_sql(), this method is abstracted
+	 * Called by the public Range::get_sql(), this method is abstracted
 	 * out to maintain parity with the other Query classes.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @return array {
 	 *     Array containing JOIN and WHERE SQL clauses to append to the main query.
@@ -402,7 +383,7 @@ class Range extends Base {
 	 * Checks to see if the current clause has any range-related keys.
 	 * If so, it's first-order.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param  array $query Query clause.
 	 *
@@ -418,7 +399,7 @@ class Range extends Base {
 	 * If nested subqueries are found, this method recurses the tree to
 	 * produce the properly nested SQL.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @param array $query Query to parse.
 	 * @param int   $depth Optional. Number of tree levels deep we currently are.
@@ -454,7 +435,7 @@ class Range extends Base {
 			} elseif ( is_array( $clause ) ) {
 				// This is a first-order clause.
 				if ( $this->is_first_order_clause( $clause ) ) {
-					// Get clauses & where count
+					// Get clauses & where count.
 					$clause_sql  = $this->get_sql_for_clause( $clause, $query );
 					$where_count = count( $clause_sql['where'] );
 
@@ -498,17 +479,17 @@ class Range extends Base {
 			$sql['where'] = '( ' . "\n  " . $indent . implode( ' ' . "\n  " . $indent . $relation . ' ' . "\n  " . $indent, $sql_chunks['where'] ) . "\n" . $indent . ')';
 		}
 
-		// Filter and return
+		// Filter and return.
 		return apply_filters( 'get_range_sql_for_query', $sql, $query, $depth, $this );
 	}
 
 	/**
-	 * Turns a first-order date query into SQL for a WHERE clause.
+	 * Turns a first-order range query into SQL for a WHERE clause.
 	 *
 	 * @since  1.0.0
 	 *
-	 * @param  array $query        Date query clause.
-	 * @param  array $parent_query Parent query of the current date query.
+	 * @param  array $query        Range query clause.
+	 * @param  array $parent_query Parent query of the current range query.
 	 *
 	 * @return array {
 	 *     Array containing JOIN and WHERE SQL clauses to append to the main query.
@@ -522,7 +503,7 @@ class Range extends Base {
 		// The sub-parts of a $where part.
 		$where_parts = array();
 
-		// Get first-order clauses
+		// Get first-order clauses.
 		$column    = $this->get_column( $query );
 		$compare   = $this->get_compare( $query );
 		$inclusive = ! empty( $query['inclusive'] );
@@ -564,10 +545,10 @@ class Range extends Base {
 	/**
 	 * Builds and validates a value string based on the comparison operator.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param string       $compare The compare operator to use
-	 * @param string|array $value The value
+	 * @param string       $compare The compare operator to use.
+	 * @param string|array $value   The value.
 	 *
 	 * @return string|false|int The value to be used in SQL or false on error.
 	 */
@@ -623,10 +604,10 @@ class Range extends Base {
 	/**
 	 * Builds and validates a value string based on the comparison operator.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param string       $compare The compare operator to use
-	 * @param string|array $value The value
+	 * @param string       $compare The compare operator to use.
+	 * @param string|array $value   The value.
 	 *
 	 * @return string|false|int The value to be used in SQL or false on error.
 	 */

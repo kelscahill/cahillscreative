@@ -19,15 +19,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Handles Beaver Builder integration and extension management.
  */
 class Beaver_Builder {
 
+	/**
+	 * Extension plugin file path.
+	 *
+	 * @var string
+	 */
 	private static $plugin_file = 'search-filter-bb/search-filter-bb.php';
 
 	/**
 	 * Init
 	 *
 	 * @since    3.0.0
+	 *
+	 * @return void
 	 */
 	public static function init() {
 		add_action( 'search-filter/settings/init', array( __CLASS__, 'update_integration' ), 10 );
@@ -39,9 +47,11 @@ class Beaver_Builder {
 
 
 	/**
-	 * Update the ACF integration in the integrations section.
+	 * Update the Beaver Builder integration in the integrations section.
 	 *
 	 * @since 3.0.0
+	 *
+	 * @return void
 	 */
 	public static function update_integration() {
 		// We want to disable coming soon notice and enable the integration toggle.
@@ -53,7 +63,7 @@ class Beaver_Builder {
 		$is_beaver_builder_enabled = self::beaver_builder_enabled();
 
 		$update_integration_settings = array(
-			'isPluginEnabled' => $is_beaver_builder_enabled,
+			'isIntegrationEnabled' => $is_beaver_builder_enabled,
 		);
 
 		// If we detect Beaver Builder is enabled, then lets also set the plugin installed
@@ -61,7 +71,7 @@ class Beaver_Builder {
 		// folder name and it we would initially detect is as not installed by using
 		// by using `plugin_exists()` which is unreliable.
 		if ( $is_beaver_builder_enabled ) {
-			$update_integration_settings['isPluginInstalled'] = true;
+			$update_integration_settings['isIntegrationInstalled'] = true;
 		}
 		// Also check if the extension plugin is installed.
 		if ( Dependants::is_plugin_installed( self::$plugin_file ) ) {
@@ -75,6 +85,13 @@ class Beaver_Builder {
 		// not there...
 	}
 
+	/**
+	 * Install the Beaver Builder extension.
+	 *
+	 * @param bool   $installed Whether the extension is already installed.
+	 * @param string $extension The extension name.
+	 * @return bool
+	 */
 	public static function install_extension( $installed, $extension ) {
 		if ( $extension !== 'beaverbuilder' ) {
 			return $installed;
@@ -106,6 +123,12 @@ class Beaver_Builder {
 		return false;
 	}
 
+	/**
+	 * Enable the Beaver Builder extension.
+	 *
+	 * @param string $extension The extension name.
+	 * @return void
+	 */
 	public static function enable_extension( $extension ) {
 		if ( $extension !== 'beaverbuilder' ) {
 			return;
@@ -114,6 +137,11 @@ class Beaver_Builder {
 			Dependants::enable_plugin( self::$plugin_file );
 		}
 	}
+	/**
+	 * Disable the Beaver Builder extension.
+	 *
+	 * @param string $extension The extension name.
+	 */
 	public static function disable_extension( $extension ) {
 		if ( $extension !== 'beaverbuilder' ) {
 			return;
@@ -125,18 +153,18 @@ class Beaver_Builder {
 		}
 	}
 	/**
-	 * Check if BB is enabled.
+	 * Check if Beaver Builder is enabled.
 	 *
 	 * @since 3.0.0
 	 *
-	 * @return bool    True if Relevanssi is enabled.
+	 * @return bool True if Beaver Builder is enabled.
 	 */
 	private static function beaver_builder_enabled() {
 		return defined( 'FL_BUILDER_VERSION' );
 	}
 
 	/**
-	 * Validate the BB integration settings.
+	 * Validate the Beaver Builder integration settings.
 	 *
 	 * @since 3.0.0
 	 */

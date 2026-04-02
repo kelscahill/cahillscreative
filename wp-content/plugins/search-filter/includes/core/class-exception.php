@@ -39,13 +39,13 @@ class Exception extends \Exception {
 	/**
 	 * Setup exception.
 	 *
-	 * @param string $message          User-friendly translated error message, e.g. 'Setting is invalid.'.
-	 * @param int    $code             Machine-readable error code, e.g 101.
-	 * @param array  $previous         The previously thrown exception.
-	 * @param int    $http_status_code Proper HTTP status code to respond with, e.g. 400.
-	 * @param array  $data             Extra error data.
+	 * @param string          $message          User-friendly translated error message, e.g. 'Setting is invalid.'.
+	 * @param int             $code             Machine-readable error code, e.g 101.
+	 * @param \Throwable|null $previous         The previously thrown exception.
+	 * @param int             $http_status_code Proper HTTP status code to respond with, e.g. 400.
+	 * @param array           $data             Extra error data.
 	 */
-	public function __construct( $message, $code, $previous = null, $http_status_code = 400, $data = array() ) {
+	public function __construct( string $message, int $code, $previous = null, int $http_status_code = 400, array $data = array() ) {
 		$this->error_data = array_merge( array( 'status' => $http_status_code ), $data );
 		parent::__construct( $message, $code, $previous );
 	}

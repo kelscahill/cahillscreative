@@ -28,16 +28,16 @@ class Wp {
 	/**
 	 * Stores a local copy of the WP_Query object.
 	 *
-	 * @var WP_Query
+	 * @var \WP_Query
 	 */
 	private $wp_query;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param WP_Query $query The instantiated WP_Query object.
+	 * @param \WP_Query $query The instantiated WP_Query object.
 	 */
-	public function __construct( $query ) {
+	public function __construct( \WP_Query &$query ) {
 		$this->wp_query = $query;
 	}
 
@@ -62,6 +62,10 @@ class Wp {
 				if ( $should_run_wp_query === false ) {
 					continue;
 				}
+
+				$query->set_wp_query( $this->wp_query );
+
+				do_action_ref_array( 'search-filter/query/attach_wp_query', array( &$this->wp_query, &$query ) );
 
 				// Important - the active query must be registered before the field args are applied.
 				// This is to allow setting default values in the pro plugin based on whether a query
@@ -111,7 +115,6 @@ class Wp {
 		if ( ! empty( $this->wp_query->get( 'search_filter_queries' ) ) ) {
 			// TODO - add an option to define if we want to inherit the query or not.
 			$query_args = array();
-			// $query_args = $this->wp_query->query_vars;
 
 			// The return the fields for the query.
 			$queries = $this->wp_query->get( 'search_filter_queries' );

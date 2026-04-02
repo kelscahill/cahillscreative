@@ -21,13 +21,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Handles integration-related operations via REST API.
  *
+ * @since 3.0.0
  */
 class Integrations {
 	/**
 	 * Check request permissions
-	 *
-	 * TODO
 	 *
 	 * @return bool
 	 */
@@ -40,12 +40,10 @@ class Integrations {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param \WP_REST_Request $request The request object.
-	 *
-	 * @return array The integration data.
+	 * @return \WP_REST_Response The integration data.
 	 */
-	public function get_integration_data( \WP_REST_Request $request ) {
-		$integrations = Search_Filter_Integrations::get_integrations();
+	public function get_integration_data() {
+		$integrations = Search_Filter_Integrations::get_all();
 		return rest_ensure_response( $integrations );
 	}
 
@@ -57,7 +55,7 @@ class Integrations {
 	 *
 	 * @param \WP_REST_Request $request The request object.
 	 *
-	 * @return array The updated integration data.
+	 * @return \WP_REST_Response The updated integration data.
 	 */
 	public function update_integrations_data( \WP_REST_Request $request ) {
 		$data = $request->get_param( 'data' );
@@ -76,7 +74,7 @@ class Integrations {
 		}
 
 		// Save the data as in the options table.
-		Options::update_option_value( 'integrations', $updated_integration_data );
+		Options::update( 'integrations', $updated_integration_data );
 
 		return rest_ensure_response( $updated_integration_data );
 	}
@@ -88,14 +86,14 @@ class Integrations {
 	 *
 	 * @param \WP_REST_Request $request The request object.
 	 *
-	 * @return array The updated integration data.
+	 * @return \WP_REST_Response The updated integration data.
 	 */
 	public function update_integration_data( \WP_REST_Request $request ) {
 		$name  = $request->get_param( 'name' );
 		$value = $request->get_param( 'value' );
 
 		// Get the integrations options.
-		$integrations = Search_Filter_Integrations::get_integrations();
+		$integrations = Search_Filter_Integrations::get_all();
 		// Update the integration data.
 		$integrations[ $name ] = $value;
 
@@ -106,7 +104,7 @@ class Integrations {
 		}
 
 		// Save the data as in the options table.
-		Options::update_option_value( 'integrations', $integrations );
+		Options::update( 'integrations', $integrations );
 
 		return rest_ensure_response(
 			array(
@@ -115,6 +113,7 @@ class Integrations {
 			)
 		);
 	}
+
 	/**
 	 * Run the install an extension hook.
 	 *
@@ -122,35 +121,112 @@ class Integrations {
 	 *
 	 * @param \WP_REST_Request $request The request object.
 	 *
-	 * @return array The updated integration data.
+	 * @return \WP_REST_Response The updated integration data.
 	 */
-	public function install_extension( \WP_REST_Request $request ) {
-		$name = $request->get_param( 'name' );
+	public function install_extension_rest( \WP_REST_Request $request ) {
+		return rest_ensure_response(
+			$this->install_extension(
+				$request->get_param( 'name' ) ?? ''
+			)
+		);
+	}
 
+
+	/**
+	 * Run the install an extension hook.
+	 *
+	 * @since 3.0.6
+	 *
+	 * @param string $name The name of the extension to install.
+	 *
+	 * @return array|\WP_REST_Response The updated integration data or error response.
+	 */
+	public function install_extension( $name ) {
 		// Get the integrations options.
-		$integrations = Search_Filter_Integrations::get_integrations();
+		$integrations = Search_Filter_Integrations::get_all();
 		// Enable the integration.
 		$did_install           = apply_filters( 'search-filter/integrations/install-extension', false, $name );
 		$integrations[ $name ] = $did_install;
 		// Save the data as in the options table.
-		Options::update_option_value( 'integrations', $integrations );
+		Options::update( 'integrations', $integrations );
 
 		$extension_setting = Integrations_Settings::get_setting( $name );
+		if ( ! $extension_setting ) {
+			return rest_convert_error_to_response( new \WP_Error( 'extension_not_found', 'Extension not found' ) );
+		}
 		$extension_setting->update(
 			array(
 				'isExtensionInstalled' => $did_install,
 			)
 		);
 
-		$response = array(
+		$result = array(
 			'value'   => $integrations,
 			'setting' => $extension_setting->get_data(),
 		);
 
 		if ( ! $did_install ) {
-			$response['error'] = __( 'Failed to install extension.', 'search-filter' );
+			$result['error'] = __( 'Failed to install extension.', 'search-filter' );
 		}
-		return rest_ensure_response( $response );
+
+		return $result;
+	}
+
+		/**
+		 * Run bulk update operations for integrations.
+		 *
+		 * @since 3.1.7
+		 *
+		 * @param \WP_REST_Request $request The request object.
+		 *
+		 * @return array The updated integrations data.
+		 */
+	public function bulk_update_integrations( \WP_REST_Request $request ) {
+		// Keyed array of integration names and sub-arrays of options.
+		$data         = $request->get_param( 'integrations' ) ?? array();
+		$integrations = Search_Filter_Integrations::get_all();
+		$result       = array(
+			'settings' => $integrations,
+			'updates'  => array(),
+		);
+
+		foreach ( $data as $name => $options ) {
+			// Setup result array.
+			$result['updates'][ $name ] = array();
+
+			// If $options is a boolean, assume we mean to install it if it should be enabled.
+			$install = is_bool( $options )
+				? $options
+				: $options['install'] ?? false;
+			$enabled = is_bool( $options )
+				? $options
+				: $options['enabled'] ?? null;
+
+			// Check if integration install should be attempted.
+			if ( $install ) {
+				$installation = $this->install_extension( $name );
+				$error        = $installation['error'] ?? false;
+
+				$result['updates'][ $name ]['install'] = $error ? false : true;
+			}
+
+			if ( is_bool( $enabled ) ) {
+				$integrations[ $name ]                 = $enabled;
+				$result['updates'][ $name ]['enabled'] = $enabled;
+
+				if ( $enabled ) {
+					Search_Filter_Integrations::enable( $name );
+				} else {
+					Search_Filter_Integrations::disable( $name );
+				}
+			}
+		}
+
+		$result['settings'] = $integrations;
+
+		Options::update( 'integrations', $result['settings'] );
+
+		return $result;
 	}
 
 	/**
@@ -165,7 +241,7 @@ class Integrations {
 				'args' => array(),
 				array(
 					'methods'             => \WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'install_extension' ),
+					'callback'            => array( $this, 'install_extension_rest' ),
 					'permission_callback' => array( $this, 'permissions' ),
 					'args'                => array(
 						'name' => array(
@@ -195,6 +271,25 @@ class Integrations {
 						'data' => array(
 							'type'              => 'object',
 							'required'          => false,
+							'sanitize_callback' => 'Search_Filter\\Core\\Sanitize::deep_clean',
+						),
+					),
+				),
+			)
+		);
+		register_rest_route(
+			'search-filter/v1',
+			'/integrations/bulk',
+			array(
+				'args' => array(),
+				array(
+					'methods'             => \WP_REST_Server::EDITABLE,
+					'callback'            => array( $this, 'bulk_update_integrations' ),
+					'permission_callback' => array( $this, 'permissions' ),
+					'args'                => array(
+						'integrations' => array(
+							'type'              => 'object',
+							'required'          => true,
 							'sanitize_callback' => 'Search_Filter\\Core\\Sanitize::deep_clean',
 						),
 					),

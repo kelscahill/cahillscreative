@@ -18,74 +18,76 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Generates the markup for a Text field
+ * Toggle field for binary filtering options.
  */
 class Toggle extends Choice {
 
+	/**
+	 * Field icons.
+	 *
+	 * @var array
+	 */
 	public $icons = array();
 
+	/**
+	 * Supported features.
+	 *
+	 * @var array
+	 */
 	public $supports = array(
 		'autoSubmit',
 	);
+
+	/**
+	 * Get the label for the input type.
+	 *
+	 * @return string The label.
+	 */
 	public static function get_label() {
 		return __( 'Toggle', 'search-filter' );
 	}
-	public static $styles = array(
-		'inputColor',
-		'inputBackgroundColor',
-		'inputBorderColor',
-		'inputBorderHoverColor',
-		'inputBorderFocusColor',
-		'inputIconColor',
-		'inputActiveIconColor',
-		'inputInactiveIconColor',
-		'inputClearColor',
-		'inputClearHoverColor',
 
-		'labelColor',
-		'labelBackgroundColor',
-		'labelPadding',
-		'labelMargin',
-		'labelScale',
-
-		'descriptionColor',
-		'descriptionBackgroundColor',
-		'descriptionPadding',
-		'descriptionMargin',
-		'descriptionScale',
-	);
-
-	public function __construct() {
-		parent::__construct();
-		$this->set_labels(
-			array(
-				'name' => __( 'Toggle', 'search-filter-pro' ),
-			)
-		);
+	/**
+	 * Get the description for the input type.
+	 *
+	 * @return string The label.
+	 */
+	public static function get_description() {
+		return __( 'Allow users to filter by using a toggle.' );
 	}
 
 	/**
-	 * Override the init and setup render data + escaping functions.
+	 * Supported styles for toggle field.
 	 *
-	 * @since    3.0.0
+	 * @var array
 	 */
-	public function init() {
-		parent::init();
+	public static $styles = array(
+		'inputColor'                 => true,
+		'inputBackgroundColor'       => true,
+		'inputBorder'                => true,
+		'inputBorderHoverColor'      => true,
+		'inputBorderFocusColor'      => true,
+		'inputIconColor'             => true,
+		'inputActiveIconColor'       => true,
+		'inputInactiveIconColor'     => true,
+		'inputClearColor'            => true,
+		'inputClearHoverColor'       => true,
+		'inputShadow'                => true,
+		'inputPadding'               => true,
+		'inputGap'                   => true,
 
-		$value       = $this->get_value();
-		$render_data = array(
-			'uid'   => self::get_instance_id( 'toggle' ),
-			'value' => $value,
-		);
-		$this->set_render_data( $render_data );
+		'labelColor'                 => true,
+		'labelBackgroundColor'       => true,
+		'labelPadding'               => true,
+		'labelMargin'                => true,
+		'labelScale'                 => true,
 
-		$esc_callbacks = array(
-			'uid'   => 'absint',
-			'value' => 'esc_attr',
-		);
-		$this->set_render_escape_callbacks( $esc_callbacks );
-
-	}
+		'descriptionColor'           => true,
+		'descriptionBackgroundColor' => true,
+		'descriptionPadding'         => true,
+		'descriptionMargin'          => true,
+		'descriptionScale'           => true,
+	);
 
 	/**
 	 * Parses a value from the URL.
@@ -93,12 +95,10 @@ class Toggle extends Choice {
 	public function parse_url_value() {
 		$url_param_name = self::url_prefix() . $this->get_url_name();
 
-		if ( ! method_exists( '\Search_Filter\Util', 'get_request_var' ) ) {
-			return;
-		}
-		// Notice: the request var has not been sanitized yet, its the raw value from the either $_GET or $_POST.
+		// Notice: the request var has not been sanitized yet, its the raw value from the either $_GET or $_POST
+		// but with wp_unslash already applied.
 		$request_var = Util::get_request_var( $url_param_name );
-		$value       = $request_var !== null ? urldecode_deep( sanitize_text_field( wp_unslash( $request_var ) ) ) : '';
+		$value       = sanitize_text_field( $request_var ?? '' );
 
 		if ( $value !== '' ) {
 			$this->set_values( array( $value ) );

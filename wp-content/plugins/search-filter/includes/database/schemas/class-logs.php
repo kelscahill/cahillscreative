@@ -1,7 +1,11 @@
 <?php
 /**
  * Logs Schema Class.
+ *
+ * @package Search_Filter
+ * @since   3.0.0
  */
+
 namespace Search_Filter\Database\Schemas;
 
 // Exit if accessed directly.
@@ -46,6 +50,15 @@ class Logs extends Schema {
 			'name'     => 'level',
 			'type'     => 'varchar',
 			'length'   => '20',
+			'sortable' => true,
+		),
+
+		// Date Created.
+		array(
+			'name'     => 'date_created',
+			'type'     => 'datetime',
+			'default'  => 'CURRENT_TIMESTAMP',
+			'created'  => true,
 			'sortable' => true,
 		),
 	);

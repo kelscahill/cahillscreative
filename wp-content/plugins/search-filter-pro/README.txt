@@ -1,10 +1,10 @@
 === Search & Filter Pro ===
 Contributors: codeamp
 Tags: search, filter, taxonomy, tag, category, product, shop, post type
-Requires at least: 6.0
-Tested up to: 6.7
+Requires at least: 6.5
+Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 3.1.8
+Stable tag: 3.2.3
 
 Create powerful search and filtering experiences for your users and customers.
 
@@ -22,8 +22,66 @@ Create powerful search and filtering experiences for your users and customers.
 
 == Changelog ==
 
-= 3.1.8 =
-* Hotfix - workaround for an issue introduced in the Beaver Builder extension.
+= 3.2.3 =
+* New - Divi Integration added to the integrations screen.
+* Improvement - disable indexer syncing on frontend updates by default.
+* Improvement - faster indexing and more reliable error handling.
+* Fix - an issue with tables not upgrading in some circumstances.
+* Fix - add polyfills for `mb_..`  functions to support the new search indexer.
+* Fix - a php error with range fields and `number_format()` in certain environments.
+* Fix - missing css class & width options for fields.
+* Fix - an issue where post meta conditions were not saving properly.
+* Fix - a regression with the "hide empty" setting in fields that don't use the indexer.
+* Fix - issues with sites using litespeed and slow/failing indexing processes.
+
+= 3.2.2 =
+* Fix - an issue with inconsistent deselection when using the selection field.
+
+= 3.2.1 =
+* Fix - an issue using and undefined function when the base plugin is not loaded.
+* Fix - add hardening to prevent using base plugin classes unless fully loaded.
+
+= 3.2.0 =
+* New - Reworked indexer - specialised indexing tables for different types of data with 10x improvements to frontend query speeds.
+* New - Enhanced Search - enable via beta features - create search indexes for lightning fast searches at volume.
+* New - Faster indexing - enable via beta feaures - rebuild the indexer upto 10x faster.
+* New - Large Query Optimizer - enable via beta feaures - works around issues with some hosts where using a large `post__in` causes significant slow downs.
+* New - accessibility improvements - announce result counts and no results scenarios after live search has completed for all integration types.
+* New - support searching SKUs for WooCommerce products.
+* New - add support for ACF range fields.
+* New - Customize url prefixes - its no longer required to use underscores before your field names `_`.
+* New - dynamic update of fields & options on user interaction (before a submit).
+* New - default option "inherit search value from the current query" for search fields.
+* New - indexed range fields set their min/max values according to the current search criteria.
+* New - add support for the "hide field when empty" setting to selection fields and range fields.
+* New - option "Show Field Label" for selection fields.
+* New - added WooCommerce "Custom Attribute" data type.
+* New - added WooCommerce Weight and Dimensions data types for choice & range fields.
+* Change - disable Relevanssi for autocomplete fields - we are unable to provide relevant suggestions based on indexer configuration.
+* Improvement - Autocomplete fields submit on selection, have more reliable submission and don't submit the results unless "Auto submit on type" is enabled.
+* Improvement - Fields - fix delays when choosing auto submit suggestions and add an option to control auto submit when typing.
+* Improvement - better reliability and compatibility with the "load more" button.
+* Improvement - autocomplete fields don't use nonces by default to better support sites with cache - enable via Advanced Settings.
+* Fix - Fields - issues with the datepicker field when using the indexer.
+* Fix - indexing issues with large WooCommerce imports (enable batch indexing)
+* Fix - various issues detecting taxonomy archives (include WooCommerce archives).
+* Fix - issues with the Load More pagination not calculating the correct number of pages.
+* Fix - a JS issue when a field could not be found in the html markup.
+* Fix - issues with JS errors in admin when adjusting range field settings.
+* Fix - upper range limit was not preselected in the field if it used decimals.
+* Fix - issues displaying range fields in the styles editor.
+* Fix - show prefix and suffix for range values in the selections field.
+* Fix - issue when clearing a range selection field not unsetting.
+* Fix - various issues with default value detection.
+* Fix - toggled fields were not keeping their state after a search was submitted.
+* Fix - issue with custom fields only showing upto 60 options after applying the `get_attributes` filter.
+* Fix - issue with child pages not showing in the results when using the indexer.
+* Fix - issues with `post__not_in` not working when using the indexer.
+* Fix - products brands were not indexing correctly for variations.
+* Fix - issues with range sliders not working correctly with product variations when using the indexer.
+* Fix - issues ordering custom fields options and ACF fields options.
+* Fix - allow for `.` to be used as the thousands seperator when decimals are disabled in range input types.
+* Fix - issues with displaying and filtering custom field options with a value of `0`.
 
 = 3.1.7 =
 * Improvement - update integrations list.

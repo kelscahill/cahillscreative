@@ -10,10 +10,13 @@
 namespace Search_Filter\Integrations;
 
 use Search_Filter\Admin\Screens;
-use Search_Filter\Core\Exception;
+use Search_Filter\Components;
+use Search_Filter\Core\Asset_Loader;
 use Search_Filter\Core\Icons;
 use Search_Filter\Core\Scripts;
 use Search_Filter\Core\SVG_Loader;
+use Search_Filter\Features;
+use Search_Filter\Features\Shortcodes\Shortcode_Parser;
 use Search_Filter\Fields;
 use Search_Filter\Fields\Field;
 use Search_Filter\Fields\Field_Factory;
@@ -22,10 +25,9 @@ use Search_Filter\Integrations\Gutenberg\Block_Parser;
 use Search_Filter\Integrations\Gutenberg\Cron;
 use Search_Filter\Queries;
 use Search_Filter\Queries\Query;
-use Search_Filter\Fields\Settings as Fields_Settings;
-use Search_Filter\Integrations\Gutenberg\Shortcode_Parser;
+use Search_Filter\Integrations\Gutenberg\Legacy_Blocks;
 use Search_Filter\Styles;
-use Search_Filter\Util;
+use Search_Filter\Queries\Settings as Queries_Settings;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -76,24 +78,6 @@ class Gutenberg {
 	private static $post_queries = array();
 
 	/**
-	 * Block attributes that are added dynamically, ie by an extension plugin.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var array
-	 */
-	private static $extended_block_attributes = array();
-
-	/**
-	 * A backup of the global WP_Query object.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var \WP_Query
-	 */
-	private static $global_wp_query_backup = null;
-
-	/**
 	 * Init
 	 *
 	 * @since    3.0.0
@@ -103,7 +87,10 @@ class Gutenberg {
 			// Gutenberg is not active.
 			return;
 		}
+
 		add_action( 'search-filter/settings/init', array( __CLASS__, 'setup' ), 1 );
+
+		Legacy_Blocks::init();
 	}
 
 	/**
@@ -123,19 +110,15 @@ class Gutenberg {
 		 * Admin facing.
 		 */
 		// Needs a low priority to get added before editor_script. TODO.
-		add_action( 'enqueue_block_editor_assets', array( __CLASS__, 'editor_assets' ), 20 );
-		add_action( 'init', array( __CLASS__, 'register_extended_attributes' ), 20 );
+		add_action( 'enqueue_block_editor_assets', array( __CLASS__, 'editor_assets' ), 1 );
+
 		add_action( 'init', array( __CLASS__, 'register_blocks' ), 20 );
 
 		add_filter( 'block_editor_rest_api_preload_paths', array( __CLASS__, 'get_preload_api_paths' ), 10, 2 );
-		add_filter( 'block_type_metadata', array( __CLASS__, 'block_type_metadata' ), 10, 1 );
 
 		// Update fields when blocks are updated.
 		add_action( 'save_post', array( __CLASS__, 'save_post' ), 20, 2 );
-		// When a post is deleted, remove entries from our tables.
-		add_filter( 'delete_post', array( __CLASS__, 'delete_post' ), 10, 1 );
 
-		add_action( 'rest_save_sidebar', array( __CLASS__, 'save_sidebar' ), 20 );
 		add_action( 'rest_after_save_widget', array( __CLASS__, 'save_widget' ), 20, 3 );
 		add_action( 'rest_delete_widget', array( __CLASS__, 'delete_widget' ), 20, 1 );
 
@@ -147,11 +130,79 @@ class Gutenberg {
 		/**
 		 * Frontend facing.
 		 */
+
 		// Add support for filtering the Query Loop block.
 		add_filter( 'pre_render_block', array( __CLASS__, 'pre_render_query_block' ), 10, 2 );
-		add_filter( 'render_block', array( __CLASS__, 'render_query_block' ), 10, 2 );
+		// Modify the rest request to see the query with our integration.
+		add_filter( 'rest_post_query', array( __CLASS__, 'update_rest_post_query' ), 10, 2 );
+		// Cleanup the connected query IDs after render.  Priority is important, hooks will usually use a priority of `10`
+		// so we need to be higher in case extensions (ie, the pro plugin) need access to the connected query IDs.
+		add_filter( 'render_block', array( __CLASS__, 'render_query_block' ), 11, 2 );
 		add_filter( 'render_block_data', array( __CLASS__, 'render_query_block_data' ), 100, 2 );
+		add_filter( 'render_block_context', array( __CLASS__, 'render_query_block_context' ), 100, 1 );
+
+		add_action( 'search-filter/features/dynamic-assets/preload_assets', array( __CLASS__, 'preload_assets' ), 10, 1 );
+
+		add_filter( 'search-filter/queries/query/get_attributes', array( __CLASS__, 'update_query_attributes' ), 2, 2 );
+
+		self::register_settings();
 	}
+
+	/**
+	 * Update the query attributes.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array  $attributes    The attributes to update.
+	 * @param object $query         The query object.
+	 * @return array    The updated attributes.
+	 */
+	public static function update_query_attributes( $attributes, $query ) {
+
+		$id = $query->get_id();
+
+		// Set the `queryContainer` automatically for adding our a11y labels and props.
+		if ( ! isset( $attributes['integrationType'] ) ) {
+			return $attributes;
+		}
+
+		if ( ! isset( $attributes['queryIntegration'] ) ) {
+			return $attributes;
+		}
+		$query_integration = $attributes['queryIntegration'];
+
+		if ( $query_integration === 'query_block' ) {
+			$attributes['queryContainer'] = '.search-filter-query--id-' . $id;
+		}
+
+		return $attributes;
+	}
+
+	/**
+	 * Add conditions to the queryContainer setting so its hidden when using the query loop block
+	 *
+	 * @since 3.2.0
+	 */
+	public static function register_settings() {
+
+		$depends_conditions = array(
+			'relation' => 'AND',
+			'rules'    => array(
+				array(
+					'option'  => 'queryIntegration',
+					'compare' => '!=',
+					'value'   => 'query_block',
+				),
+			),
+		);
+
+		// Get the object for the data_type setting so we can grab its options.
+		$query_container = Queries_Settings::get_setting( 'queryContainer' );
+		if ( $query_container ) {
+			$query_container->add_depends_condition( $depends_conditions );
+		}
+	}
+
 	/**
 	 * Add custom category to block inserter.
 	 *
@@ -169,177 +220,139 @@ class Gutenberg {
 	}
 
 	/**
-	 * Register the extended attributes.
+	 * Add editor input type data to the block editor.
+	 *
+	 * Builds and outputs JavaScript data for the block editor about available
+	 * input types, including whether they require Pro features.
 	 *
 	 * @since 3.0.0
 	 */
-	public static function register_extended_attributes() {
-		$attributes = array(
-			'search'         => array(),
-			'choice'         => array(),
-			'range'          => array(),
-			'advanced'       => array(),
-			'control'        => array(),
-			'reusable-field' => array(),
-		);
+	public static function add_editor_input_type_data() {
+		$input_type_matrix = Field_Factory::get_field_input_types();
+		$input_type_data   = array();
+		foreach ( $input_type_matrix as $field_type => $input_types ) {
 
-		$attributes = apply_filters( 'search-filter/integrations/gutenberg/add_attributes', $attributes );
+			$input_type_data[ $field_type ] = array();
 
-		$extended_blocks = Fields_Settings::get_extended_blocks();
-		foreach ( $extended_blocks as $block_type => $settings ) {
-			foreach ( $settings as $setting ) {
-				$attributes[ $block_type ][ $setting['name'] ] = array();
-				if ( isset( $setting['type'] ) ) {
-					$attributes[ $block_type ][ $setting['name'] ]['type'] = $setting['type'];
-				}
-				/*
-				if ( isset( $setting['default'] ) ) {
-					$attributes[ $block_type ][ $setting['name'] ]['default'] = $setting['default'];
-				} */
+			foreach ( $input_types as $input_type => $input_type_class ) {
+				$input_type_data[ $field_type ][ $input_type ] = array(
+					// 'label'       => $input_type_class::get_label(),
+					'requiresPro' => $input_type_class::requires_pro(),
+				);
 			}
 		}
-		self::$extended_block_attributes = $attributes;
+
+		$data   = array(
+			'inputTypeData' => $input_type_data,
+			'isProEnabled'  => \Search_Filter\Core\Dependants::is_search_filter_pro_enabled(),
+			'popoverNode'   => Features::get_setting_value( 'compatibility', 'popoverNode' ),
+			'adminUrl'      => admin_url( 'admin.php?page=search-filter' ),
+		);
+		$script = '
+		if ( ! window.searchAndFilter.admin ) {
+			window.searchAndFilter.admin = {};
+		}
+		window.searchAndFilter.admin.blockEditor = ' . wp_json_encode( $data ) . ';';
+		wp_add_inline_script( 'search-filter-gutenberg', $script, 'before' );
 	}
 
 	/**
-	 * Add dynamic attributes the our blocks - useful when attributes (settings in our case) are added
-	 * via PHP, and we need them to be added to our block registration.
+	 * Register the assets for the Gutenberg editor.
+	 *
+	 * @since 3.2.0
+	 */
+	private static function register_assets() {
+
+		$component_handles = Components::get_assets_handles();
+
+		$asset_configs = array(
+			array(
+				'name'   => 'search-filter-gutenberg',
+				'script' => array(
+					'src'          => SEARCH_FILTER_URL . 'assets/admin/block-editor.js',
+					'asset_path'   => SEARCH_FILTER_PATH . 'assets/admin/block-editor.asset.php',
+					'dependencies' => array_merge( array( 'search-filter-frontend' ), $component_handles['scripts'] ), // Additional dependencies.
+				),
+				'style'  => array(
+					'src'          => SEARCH_FILTER_URL . 'assets/admin/block-editor.css',
+					'dependencies' => array_merge( array( 'wp-components', 'search-filter-frontend' ), $component_handles['styles'] ),
+				),
+			),
+		);
+
+		$asset_configs = apply_filters( 'search-filter/integrations/gutenberg/register_assets/configs', $asset_configs );
+
+		$assets = Asset_Loader::create( $asset_configs );
+		Asset_Loader::register( $assets );
+
+		do_action( 'search-filter/integrations/gutenberg/register_assets' );
+	}
+
+	/**
+	 * Get the asset handle for Gutenberg integration.
 	 *
 	 * @since 3.0.0
+	 *
+	 * @return string The asset handle.
 	 */
-	public static function add_dynamic_attributes() {
-		return array( 'addAttributes' => self::$extended_block_attributes );
+	public static function get_asset_handle() {
+		return apply_filters( 'search-filter/integrations/gutenberg/asset_handle', 'search-filter-gutenberg' );
 	}
 
+
 	/**
-	 * Register the stylesheets for the gutenberg editor.
+	 * Register the blocks for the gutenberg editor.
 	 *
 	 * @since    3.0.0
 	 */
 	public static function register_blocks() {
-		// TODO - I'm not sure instantiating the frontend class is the best way to do this.
-		// I prefer to keep the frontend or script loader class as a singleton.
-		// When on the frontend, we're actually doing this twice, once via the frontend init
-		// and again here. Needs to be refactored.
-		$plugin_frontend = new \Search_Filter\Frontend( SEARCH_FILTER_SLUG, SEARCH_FILTER_VERSION );
-		$plugin_frontend->register_scripts();
-		$plugin_frontend->add_js_data();
-		// Instantiate the frontend so we can register the styles.
-		$plugin_frontend->register_styles();
-
-		// Setup the main Gutenberg script dependencies.
-		// Load our plugins for the block editor.
-		wp_register_script( 'search-filter-block-editor-plugins', Scripts::get_admin_assets_url() . 'js/admin/block-editor-plugins.js', array( 'wp-plugins', 'wp-edit-post', 'wp-element', 'search-filter-gutenberg' ), SEARCH_FILTER_VERSION, false );
-
-		$asset_file = SEARCH_FILTER_PATH . 'assets/js/admin/gutenberg.asset.php';
-		if ( file_exists( $asset_file ) ) {
-			$asset               = require $asset_file;
-			$script_dependencies = array_merge( array( 'search-filter' ), $asset['dependencies'] );
-			wp_register_script( 'search-filter-gutenberg', Scripts::get_admin_assets_url() . 'js/admin/gutenberg.js', $script_dependencies, $asset['version'], false );
-		} else {
-			Util::error_log( 'Block Editor script asset file not found: ' . $asset_file, 'error' );
+		// If we're on one of our admin screens, then we don't need to load our own blocks.
+		// Setup is already done via class-admin.php.
+		if ( Screens::is_search_filter_screen() ) {
+			return;
 		}
 
-		$blocks_dir = realpath( plugin_dir_path( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'gutenberg' . DIRECTORY_SEPARATOR . 'blocks' . DIRECTORY_SEPARATOR;
+		// Register the frontend assets.
+		\Search_Filter\Frontend::register_assets();
+		// Load all registered components assets.
+		\Search_Filter\Components::register_assets();
 
-		register_block_type_from_metadata(
-			$blocks_dir . 'search' . DIRECTORY_SEPARATOR,
-			array(
-				'editor_script'   => 'search-filter-gutenberg',
-				'style_handles'   => array( 'search-filter' ),
-				'render_callback' => array( 'Search_Filter\\Integrations\\Gutenberg', 'render_search_field' ),
-			)
-		);
-		register_block_type_from_metadata(
-			$blocks_dir . 'choice' . DIRECTORY_SEPARATOR,
-			array(
-				'editor_script'   => 'search-filter-gutenberg',
-				'style_handles'   => array( 'search-filter' ),
-				'render_callback' => array( 'Search_Filter\\Integrations\\Gutenberg', 'render_choice_field' ),
-			)
-		);
-		register_block_type_from_metadata(
-			$blocks_dir . 'range' . DIRECTORY_SEPARATOR,
-			array(
-				'editor_script'   => 'search-filter-gutenberg',
-				'style_handles'   => array( 'search-filter' ),
-				'render_callback' => array( 'Search_Filter\\Integrations\\Gutenberg', 'render_range_field' ),
-			)
-		);
-		register_block_type_from_metadata(
-			$blocks_dir . 'advanced' . DIRECTORY_SEPARATOR,
-			array(
-				'editor_script'   => 'search-filter-gutenberg',
-				'style_handles'   => array( 'search-filter' ),
-				'render_callback' => array( 'Search_Filter\\Integrations\\Gutenberg', 'render_advanced_field' ),
-			)
-		);
-		register_block_type_from_metadata(
-			$blocks_dir . 'control' . DIRECTORY_SEPARATOR,
-			array(
-				'editor_script'   => 'search-filter-gutenberg',
-				'style_handles'   => array( 'search-filter' ),
-				'render_callback' => array( 'Search_Filter\\Integrations\\Gutenberg', 'render_control_field' ),
-			)
-		);
-		register_block_type_from_metadata(
-			$blocks_dir . 'reusable' . DIRECTORY_SEPARATOR,
-			array(
-				'editor_script'   => 'search-filter-gutenberg',
-				'style_handles'   => array( 'search-filter' ),
-				'render_callback' => array( 'Search_Filter\\Integrations\\Gutenberg', 'render_reusable_field' ),
-			)
-		);
-	}
+		// Register our gutenberg scripts & styles.
+		self::register_assets();
 
-	/**
-	 * Filters a blocks metadata.
-	 *
-	 * We need to dynamically add the new attributes from any extensions in to the PHP registration of the block
-	 * so that the the correct attributes and defaults are shown on the frontend.
-	 *
-	 * Specifically avoiding `register_block_type` (where we could dynamically create the attributes when we register
-	 * the block) in favor of using `register_block_type_from_metadata` as it has better support in the .org
-	 * repository, so we'll use this hook to add the additional attributes.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param array $metadata The block metadata.
-	 * @return array
-	 */
-	public static function block_type_metadata( $metadata ) {
-		$search_filter_block_types = array(
-			'search-filter/search'         => 'search',
-			'search-filter/choice'         => 'choice',
-			'search-filter/range'          => 'range',
-			'search-filter/advanced'       => 'advanced',
-			'search-filter/control'        => 'control',
-			'search-filter/reusable-field' => 'reusable-field',
+		// Add global variables that need to be available before the
+		// block editor JS is initialised.
+		self::add_editor_input_type_data();
+
+		// Register block dynamically from the field factory.
+		$input_type_matrix = Field_Factory::get_field_input_types();
+
+		$blocks_dir   = realpath( plugin_dir_path( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'gutenberg' . DIRECTORY_SEPARATOR . 'blocks' . DIRECTORY_SEPARATOR;
+		$asset_handle = self::get_asset_handle();
+
+		// Important: if we don't register this block via PHP, in some setups, it
+		// won't show up in the block inserter.
+		register_block_type(
+			$blocks_dir . 'load-field' . DIRECTORY_SEPARATOR,
+			array(
+				'editor_script'        => $asset_handle,
+				'editor_style_handles' => array( $asset_handle, 'search-filter-frontend' ),
+			)
 		);
 
-		$search_filter_block_names = array_keys( $search_filter_block_types );
+		foreach ( $input_type_matrix as $field_type => $input_types ) {
 
-		if ( ! in_array( $metadata['name'], $search_filter_block_names, true ) ) {
-			return $metadata;
+			foreach ( $input_types as $input_type => $input_type_class ) {
+				register_block_type(
+					$blocks_dir . $field_type . DIRECTORY_SEPARATOR . $input_type . DIRECTORY_SEPARATOR,
+					array(
+						'editor_script'        => $asset_handle,
+						'editor_style_handles' => array( $asset_handle, 'search-filter-frontend' ),
+						'render_callback'      => array( __CLASS__, 'render_field' ),
+					)
+				);
+			}
 		}
-
-		if ( ! isset( $search_filter_block_types[ $metadata['name'] ] ) ) {
-			return $metadata;
-		}
-
-		$block_type = $search_filter_block_types[ $metadata['name'] ];
-
-		if ( ! isset( self::$extended_block_attributes[ $block_type ] ) ) {
-			return $metadata;
-		}
-
-		$additional_attributes = self::$extended_block_attributes[ $block_type ];
-
-		if ( ! isset( $metadata['attributes'] ) ) {
-			$metadata['attributes'] = array();
-		}
-		$metadata['attributes'] = array_merge( $metadata['attributes'], $additional_attributes );
-		return $metadata;
 	}
 
 	/**
@@ -347,21 +360,22 @@ class Gutenberg {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array $preload_paths  Existing api paths.
-	 * @return array
+	 * @param (string|string[])[]      $preload_paths  Existing api paths.
+	 * @param \WP_Block_Editor_Context $block_editor_context The block editor context.
+	 * @return (string|string[])[]
 	 */
-	public static function get_preload_api_paths( $preload_paths, $block_editor_context ) {
+	public static function get_preload_api_paths( $preload_paths, \WP_Block_Editor_Context $block_editor_context ) {
 
 		if ( Screens::is_search_filter_screen() ) {
 			// If we're on one of our admin screens, then we don't need to add this to the preload.
-			return;
+			return $preload_paths;
 		}
 
 		$default_style_id = Styles::get_default_styles_id();
 		$preload_paths[]  = '/search-filter/v1/queries';
-		$preload_paths[]  = '/search-filter/v1/styles';
 		$preload_paths[]  = '/search-filter/v1/admin/field-input-types';
-		$preload_paths[]  = '/search-filter/v1/admin/styles/default';
+		$preload_paths[]  = '/search-filter/v1/admin/styles/defaults/preset';
+		$preload_paths[]  = '/search-filter/v1/admin/styles/tokens';
 		$preload_paths[]  = '/search-filter/v1/records/styles/' . $default_style_id;
 		$preload_paths[]  = '/search-filter/v1/admin/settings?section=queries';
 		$preload_paths[]  = '/search-filter/v1/admin/settings?section=fields';
@@ -371,25 +385,29 @@ class Gutenberg {
 		//
 		if ( $block_editor_context->name === 'core/edit-post' ) {
 			$post_content = $block_editor_context->post->post_content;
-			$post_blocks  = Block_Parser::extract_blocks( $post_content );
+			$post_fields  = Block_Parser::extract_fields( $post_content );
 
-			foreach ( $post_blocks as $post_block ) {
-				if ( isset( $post_block['styleId'] ) ) {
-					$style_path = '/search-filter/v1/records/styles/' . $post_block['styleId'];
+			foreach ( $post_fields as $post_field ) {
+				if ( is_wp_error( $post_field ) ) {
+					continue;
+				}
+				$field_attributes = $post_field->get_attributes();
+				if ( isset( $field_attributes['styleId'] ) ) {
+					$style_path = '/search-filter/v1/records/styles/' . $field_attributes['styleId'];
 					if ( ! in_array( $style_path, $preload_paths, true ) ) {
 						$preload_paths[] = $style_path;
 					}
 				}
 
-				if ( isset( $post_block['queryId'] ) ) {
-					$query_path = '/search-filter/v1/records/queries/' . $post_block['queryId'] . '?context=edit';
+				if ( isset( $field_attributes['queryId'] ) ) {
+					$query_path = '/search-filter/v1/records/queries/' . $field_attributes['queryId'] . '?context=edit';
 					if ( ! in_array( $query_path, $preload_paths, true ) ) {
 						$preload_paths[] = $query_path;
 					}
 				}
 
-				if ( isset( $post_block['fieldId'] ) ) {
-					$field_path = '/search-filter/v1/records/fields/' . $post_block['fieldId'] . '?context=edit';
+				if ( isset( $field_attributes['fieldId'] ) ) {
+					$field_path = '/search-filter/v1/records/fields/' . $field_attributes['fieldId'] . '?context=edit';
 					if ( ! in_array( $field_path, $preload_paths, true ) ) {
 						$preload_paths[] = $field_path;
 					}
@@ -417,6 +435,24 @@ class Gutenberg {
 
 		return $preload_paths;
 	}
+
+	/**
+	 * Parse the post content and preload field assets.
+	 *
+	 * @param string $post_content The post content.
+	 * @return void
+	 */
+	public static function preload_assets( $post_content ) {
+		// TODO - parse the page and look for our field ID, then preload those records (✔️), plus the selected style + query records (❌).
+		$field_blocks = Block_Parser::extract_fields( $post_content );
+
+		foreach ( $field_blocks as $field_block ) {
+			if ( is_wp_error( $field_block ) ) {
+				continue;
+			}
+			$field_block->enqueue_assets();
+		}
+	}
 	/**
 	 * Display inline footer scripts and SVGs
 	 *
@@ -432,89 +468,81 @@ class Gutenberg {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array $block_attributes  The saved block attributes.
+	 * @param array  $block_attributes  The saved block attributes.
+	 * @param string $content           The block content.
+	 * @param object $block             The block object.
 	 * @return string
 	 */
-	public static function render_field( $block_attributes ) {
+	public static function render_field( $block_attributes, $content = '', $block = null ) {
 		$args = array();
 		$args = wp_parse_args( $args, $block_attributes );
 
+		if ( ! isset( $block_attributes['fieldId'] ) ) {
+			return '';
+		}
 		ob_start();
-		try {
-			$field = Field_Factory::create( $block_attributes );
-		} catch ( \Exception $e ) {
-			echo esc_html( $e->getMessage() );
+		$field = Field::get_instance( absint( $block_attributes['fieldId'] ) );
+		if ( is_wp_error( $field ) ) {
+			echo esc_html( $field->get_error_message() );
+			return ob_get_clean();
 		}
-		if ( $field ) {
-			$field->add_html_class( 'wp-block-search-filter-' . $block_attributes['type'], 'before' );
-			$field->render();
+
+		$wrapper_attributes = \WP_Block_Supports::get_instance()->apply_block_supports();
+
+		// We can have `style`, `class`, `id`, or `aria-label` in the wrapper attributes.
+		foreach ( $wrapper_attributes as $attribute_name => $attribute_value ) {
+			if ( $attribute_name === 'class' ) {
+				$field->add_html_class( $attribute_value, 'before' );
+			} else {
+				$field->add_html_attribute( $attribute_name, $attribute_value );
+			}
 		}
+
+		// Add legacy CSS classes for backwards compatibility when on old assets version.
+		if ( Asset_Loader::get_db_version() === 1 ) {
+			$legacy_class = self::get_legacy_class_for_block( $block );
+			if ( $legacy_class ) {
+				$field->add_html_class( $legacy_class );
+			}
+		}
+
+		$field->render();
 		$output = ob_get_clean();
+
 		return $output;
 	}
+
 	/**
-	 * Renders a search field.
+	 * Get legacy CSS class name for a new block.
 	 *
-	 * @since 3.0.0
+	 * Maps new block names back to their legacy equivalents for backwards compatibility.
 	 *
-	 * @param array $block_attributes  The saved block attributes.
-	 * @return string
+	 * @param \WP_Block|null $block The block object.
+	 * @return string|null Legacy CSS class name, or null if not applicable.
 	 */
-	public static function render_search_field( $block_attributes ) {
-		$block_attributes['type'] = 'search';
-		if ( ! isset( $block_attributes['inputType'] ) ) {
-			$block_attributes['inputType'] = 'search-text';
+	private static function get_legacy_class_for_block( $block ) {
+		if ( ! $block ) {
+			return null;
 		}
-		return self::render_field( $block_attributes );
+
+		$block_name = $block->name;
+
+		// Map new block names to legacy CSS classes.
+		if ( strpos( $block_name, 'search-filter/search-' ) === 0 ) {
+			return 'wp-block-search-filter-search';
+		} elseif ( strpos( $block_name, 'search-filter/choice-' ) === 0 ) {
+			return 'wp-block-search-filter-choice';
+		} elseif ( strpos( $block_name, 'search-filter/range-' ) === 0 ) {
+			return 'wp-block-search-filter-range';
+		} elseif ( strpos( $block_name, 'search-filter/advanced-' ) === 0 ) {
+			return 'wp-block-search-filter-advanced';
+		} elseif ( strpos( $block_name, 'search-filter/control-' ) === 0 ) {
+			return 'wp-block-search-filter-control';
+		}
+
+		return null;
 	}
-	/**
-	 * Renders a choice field.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param array $block_attributes  The saved block attributes.
-	 * @return string
-	 */
-	public static function render_choice_field( $block_attributes ) {
-		$block_attributes['type'] = 'choice';
-		return self::render_field( $block_attributes );
-	}
-	/**
-	 * Renders a range field.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param array $block_attributes  The saved block attributes.
-	 * @return string
-	 */
-	public static function render_range_field( $block_attributes ) {
-		$block_attributes['type'] = 'range';
-		return self::render_field( $block_attributes );
-	}
-	/**
-	 * Renders a advanced field.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param array $block_attributes  The saved block attributes.
-	 * @return string
-	 */
-	public static function render_advanced_field( $block_attributes ) {
-		$block_attributes['type'] = 'advanced';
-		return self::render_field( $block_attributes );
-	}
-	/**
-	 * Renders a control field.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param array $block_attributes  The saved block attributes.
-	 * @return string
-	 */
-	public static function render_control_field( $block_attributes ) {
-		$block_attributes['type'] = 'control';
-		return self::render_field( $block_attributes );
-	}
+
 	/**
 	 * Renders a reusable field.
 	 *
@@ -525,18 +553,35 @@ class Gutenberg {
 	 */
 	public static function render_reusable_field( $block_attributes ) {
 		$field_id = absint( $block_attributes['fieldId'] );
-		$field    = Field::find(
-			array(
-				'status' => 'enabled',
-				'id'     => $field_id,
-			)
-		);
+		$field    = Field::get_instance( $field_id );
+
+		$display_errors = is_user_logged_in() && current_user_can( 'manage_options' );
+
 		if ( is_wp_error( $field ) ) {
-			if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+			if ( $display_errors ) {
 				return '<em>' . __( 'Field not found', 'search-filter' ) . '</em>';
 			}
 			return '';
 		}
+
+		if ( $field->get_status() !== 'enabled' ) {
+			if ( $display_errors ) {
+				return '<em>' . __( 'Field not enabled', 'search-filter' ) . '</em>';
+			}
+			return '';
+		}
+
+		$wrapper_attributes = \WP_Block_Supports::get_instance()->apply_block_supports();
+
+		// We can have `style`, `class`, `id`, or `aria-label` in the wrapper attributes.
+		foreach ( $wrapper_attributes as $attribute_name => $attribute_value ) {
+			if ( $attribute_name === 'class' ) {
+				$field->add_html_class( $attribute_value, 'before' );
+			} else {
+				$field->add_html_attribute( $attribute_name, $attribute_value );
+			}
+		}
+
 		return $field->render( true );
 	}
 
@@ -550,25 +595,15 @@ class Gutenberg {
 	public static function editor_assets() {
 		if ( Screens::is_search_filter_screen() ) {
 			// For some reason, using some FSE / block editor themes, the `enqueue_block_editor_assets`
-			// hook is called on our screens.
-			// If we're on one of our admin screens, then we don't need to load the assets.
+			// hook is called on our screens aside from when we run it.
+			// Return early as we don't want to load our block editor specific assets.
 			return;
 		}
 
 		Icons::load();
 
-		$css_file_ext = '.css';
-
-		wp_enqueue_style( 'search-filter-gutenberg', Scripts::get_admin_assets_url() . 'css/admin/gutenberg' . $css_file_ext, array( 'wp-components' ), SEARCH_FILTER_VERSION, 'all' );
-		wp_enqueue_script( 'search-filter-block-editor-plugins' );
 		// Add our inline JS and SVGs.
-		add_action( 'admin_print_footer_scripts', 'Search_Filter\\Integrations\\Gutenberg::footer_scripts', 1 );
-
-		Scripts::attach_globals(
-			'search-filter-gutenberg',
-			'admin',
-			self::add_dynamic_attributes()
-		);
+		add_action( 'admin_print_footer_scripts', array( __CLASS__, 'footer_scripts' ), 1 );
 
 		// Preload settings data for settings.  It's important to only load the queries list + styles list
 		// to reduce the number of api requests when fields initially resolve.
@@ -580,57 +615,6 @@ class Gutenberg {
 			'search-filter-gutenberg'
 		);
 	}
-
-	/**
-	 * Formats our settings into block attributes
-	 *
-	 * TODO - Currently not in use, but maybe we should take this approach again
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param string $type The block type.
-	 *
-	 * @return array
-	 */
-	public static function get_block_attributes_json( $type ) {
-
-		$fields_settings = Fields_Settings::get();
-
-		$context    = 'block/field/' . $type;
-		$attributes = array();
-		// Loop through the settings object.
-		foreach ( $fields_settings as $fields_setting ) {
-			// Ensure that type + context are set.
-			if ( isset( $fields_setting['type'] ) && isset( $fields_setting['context'] ) && is_array( $fields_setting['context'] ) ) {
-				// if the setting has a matching context then add it to the block attributes.
-				if ( in_array( $context, $fields_setting['context'], true ) ) {
-
-					if ( $fields_setting['type'] !== 'slot' ) {
-						$default   = isset( $fields_setting['default'] ) ? $fields_setting['default'] : '';
-						$attribute = array(
-							'default' => $default,
-							'type'    => $fields_setting['type'],
-						);
-						if ( isset( $fields_setting['items'] ) ) {
-							$attribute['items'] = $fields_setting['items'];
-						}
-						$attributes[ $fields_setting['name'] ] = $attribute;
-					}
-				}
-			}
-		}
-		// Add fieldId attribute to the block.
-		$attributes['fieldId']   = array(
-			'default' => '',
-			'type'    => 'string',
-		);
-		$attributes['alignment'] = array(
-			'default' => '',
-			'type'    => 'string',
-		);
-		return $attributes;
-	}
-
 
 	/**
 	 * Get the post fields records.
@@ -666,155 +650,35 @@ class Gutenberg {
 			return;
 		}
 
-		$status = 'disabled';
-		if ( $post->post_status === 'publish' ) {
-			$status = 'enabled';
+		// Edge case - sometimes a post can be NULL and still trigger `save_post`.
+		if ( ! $post ) {
+			return;
 		}
 
-		$updated_field_ids = array();
-		if ( has_blocks( $post ) ) {
-			// Check for any saved blocks and update their attributes.
-			$updated_field_ids = self::update_fields_from_blocks_content( $post->post_content, $status );
+		// Edge case - sometimes a post's content can be NULL.
+		if ( ! $post->post_content ) {
+			return;
 		}
 
-		// TODO - although not strictly necessary right now, we probably want to add IDs for fields that
-		// don't have fieldId, usually this would be considered an error as one should be generated when
-		// adding a post, but in the future it may be possible to create block editor posts server side,
-		// and doing this would support that use case.
+		$fields          = Block_Parser::extract_fields( $post->post_content );
+		$found_field_ids = array();
 
-		// We also need to check our DB for any fields that are no longer in use and delete them.
-		// TODO - check how this is working with the site editor updates.
-		$post_field_records = self::get_post_field_records( $post_id );
+		foreach ( $fields as $field ) {
+			$found_field_ids[] = $field->get_id();
 
-		foreach ( $post_field_records as $item ) {
-			// If there are fields assigned to this post, but no longer connected to any blocks
-			// then we need to delete them.
-			if ( ! in_array( $item->get_id(), $updated_field_ids, true ) ) {
-				Field::destroy( $item->get_id() );
+			// Ensure we add the location to the field.
+			$field->add_location( 'post/' . $post_id );
+		}
+
+		$existing_fields_for_location = Fields::find_fields_by_location( 'post/' . $post_id );
+
+		// We need to remove any fields that are no longer in the content.
+		foreach ( $existing_fields_for_location as $existing_field ) {
+			if ( in_array( $existing_field->get_id(), $found_field_ids, true ) ) {
+				continue;
 			}
+			$existing_field->remove_location( 'post/' . $post_id );
 		}
-	}
-
-	/**
-	 * Returns an array containing the references of
-	 * the passed blocks and their inner blocks.
-	 * Taken from wp-includes/block-template-utils.phjp
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param array $blocks array of blocks.
-	 *
-	 * @return array block references to the passed blocks and their inner blocks.
-	 */
-	public static function flatten_blocks( &$blocks ) {
-		$all_blocks = array();
-		$queue      = array();
-		foreach ( $blocks as &$block ) {
-			$queue[] = &$block;
-		}
-
-		while ( count( $queue ) > 0 ) {
-			$block = &$queue[0];
-			array_shift( $queue );
-			$all_blocks[] = &$block;
-
-			if ( ! empty( $block['innerBlocks'] ) ) {
-				foreach ( $block['innerBlocks'] as &$inner_block ) {
-					$queue[] = &$inner_block;
-				}
-			}
-		}
-
-		return $all_blocks;
-	}
-
-	/**
-	 * Update fields from blocks content.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param string $content The content from the post.
-	 * @param string $status  The desired status to set.
-	 *
-	 * @return array The updated fields.
-	 */
-	public static function update_fields_from_blocks_content( $content, $status = '' ) {
-		// Check for any saved blocks and update their attributes.
-		$blocks = parse_blocks( $content );
-		// TODO - maybe we should just parse this ourselves (the code for this is already on
-		// github), and only look for our blocks.
-		// Would surely be a faster regex as we don't care about the rest, or if blocks
-		// are nested.
-
-		$blocks = self::flatten_blocks( $blocks );
-		// TODO - we should be able to extend these - so we can
-		// include the range and advanced only in the pro plugin.
-		$block_types_to_find = array(
-			'search-filter/search',
-			'search-filter/choice',
-			'search-filter/range',
-			'search-filter/advanced',
-			'search-filter/control',
-		);
-
-		$block_types_to_attribute_type = array(
-			'search-filter/search'   => 'search',
-			'search-filter/choice'   => 'choice',
-			'search-filter/range'    => 'range',
-			'search-filter/advanced' => 'advanced',
-			'search-filter/control'  => 'control',
-		);
-		// Track which fields are in use.
-		$updated_field_ids = array();
-		foreach ( $blocks as $block ) {
-			if ( isset( $block['blockName'] ) && in_array( $block['blockName'], $block_types_to_find, true ) ) {
-				$attributes = $block['attrs'];
-				// Update saved field attributes based on block attributes.
-				if ( isset( $attributes['fieldId'] ) ) {
-					$field_id = $attributes['fieldId'];
-
-					// TODO - check if field_context is valid.
-					$updated_field_ids[] = absint( $field_id );
-					$field_record        = Field::find( array( 'id' => $field_id ), 'record' );
-					if ( is_wp_error( $field_record ) ) {
-						continue;
-					}
-
-					$field = Field::create_from_record( $field_record );
-					if ( is_wp_error( $field ) ) {
-						continue;
-					}
-
-					// Based on depends on conditions, get the settings for this field.
-					// This will handle the issue of block attributes being missing when they're
-					// set to the default value as well as popuplate anything thats missing.
-					$args = array(
-						'filters' => array(
-							array(
-								'type'  => 'context',
-								'value' => 'admin/field/' . $field->get_attribute( 'type' ),
-							),
-						),
-					);
-
-					$attributes['type'] = $block_types_to_attribute_type[ $block['blockName'] ];
-
-					$processed_settings = Fields_Settings::get_processed_settings( $attributes, $args );
-					$new_attributes     = $processed_settings->get_attributes();
-
-					$field->set_attributes( wp_parse_args( $attributes, $new_attributes ), true );
-
-					if ( ! empty( $status ) ) {
-						$field->set_status( $status );
-					}
-					$field->save();
-				} else {
-					Util::error_log( 'There is a block found in post content without a fieldId.', 'warning' );
-				}
-			}
-		}
-
-		return $updated_field_ids;
 	}
 
 	/**
@@ -844,22 +708,10 @@ class Gutenberg {
 			return;
 		}
 
-		// Check for any saved blocks and update their attributes.
-		// Assume the existing sidebar ID is valid.
-		$sidebar_id = $existing_sidebar_id;
-		// If sidebar in request is empty, the widget changed sidebar.
-		if ( ! empty( $request['sidebar'] ) ) {
-			$sidebar_id = $request['sidebar'];
-		}
-		// Set any widgets in the inactive sidebar to disabled.
-		$status = 'enabled';
-		if ( $sidebar_id === 'wp_inactive_widgets' ) {
-			$status = 'disabled';
-		}
+		$fields = Block_Parser::extract_fields( $widget_content );
 
-		$updated_field_ids = self::update_fields_from_blocks_content( $widget_content, $status );
-		foreach ( $updated_field_ids as $field_id ) {
-			$update_result = Field::update_meta( $field_id, 'widget_id', $id );
+		foreach ( $fields as $field ) {
+			$field->add_location( 'widget/' . $id );
 		}
 	}
 
@@ -871,112 +723,7 @@ class Gutenberg {
 	 * @param int $widget_id The widget ID.
 	 */
 	public static function delete_widget( $widget_id ) {
-		// Lookup field with this widget ID.
-		$query_args            = array(
-			'meta_query' => array(
-				array(
-					'key'     => 'widget_id',
-					'value'   => $widget_id,
-					'compare' => '=',
-				),
-			),
-		);
-		$widget_fields_records = Fields::find( $query_args, 'records' );
-
-		if ( count( $widget_fields_records ) === 0 ) {
-			return;
-		}
-
-		// Delete the field.
-		foreach ( $widget_fields_records as $item ) {
-			Field::destroy( $item->get_id() );
-		}
-	}
-
-	/**
-	 * On save sidebar, update related fields.
-	 *
-	 * @since 3.0.0
-	 */
-	public static function save_sidebar() {
-		/**
-		 * We need to do an additional check to see if any of our fields
-		 * are in the inactive sidebar, and if they are, then we need to make
-		 * sure they are disabled.
-		 *
-		 * This only applies to the new block editor powered widget screen.
-		 *
-		 * This covers the unusual use case, where removing a saved widget
-		 * (block) puts it in the inactive widgets (sometimes), but you can
-		 * only see this after refreshing the widgets screen, after_save_widget
-		 * is not fired for some reason.
-		 *
-		 * Steps to reproduce:
-		 * 1. Ensure inactive sidebar is closed (not 100% sure this needs to be done)
-		 * 2. Create a new field block in a widget sidebar (not in inactive sidebar)
-		 * 3. Update some attribute in the block (label for example)
-		 * 4. Press Update
-		 * 5. From the dropdown menu (in the block toolbar) choose "Remove...[name]"
-		 * 6. Press Update.
-		 * 7. Notice inactive widgets is still empty
-		 * 8. Refresh the widgets screen
-		 * 9. Notice inactive widgets is now populated with the field block.
-		 */
-
-		$sidebars_widgets = wp_get_sidebars_widgets();
-
-		// We only want to track the widgets that got moved into inactive in this weird way...
-		if ( ! isset( $sidebars_widgets['wp_inactive_widgets'] ) ) {
-			return;
-		}
-		$inactive_widget_ids = $sidebars_widgets['wp_inactive_widgets'];
-
-		// Lookup fields with that are associated with widgets.
-		$query_args            = array(
-			'meta_query' => array(
-				array(
-					'key'     => 'widget_id',
-					'compare' => 'EXISTS',
-				),
-			),
-		);
-		$widget_fields_records = Fields::find( $query_args, 'records' );
-		if ( count( $widget_fields_records ) === 0 ) {
-			return;
-		}
-		foreach ( $widget_fields_records as $item ) {
-			$widget_id = Field::get_meta( $item->get_id(), 'widget_id', true );
-			if ( in_array( $widget_id, $inactive_widget_ids, true ) ) {
-				// We found a field that should be disabled.
-				if ( $item->get_status() === 'enabled' ) {
-					// Then we need to disable it.
-					$field = Field_Factory::create_from_record( $item );
-					if ( is_wp_error( $field ) ) {
-						continue;
-					}
-					$field->set_status( 'disabled' );
-					$field->save();
-				}
-			}
-		}
-	}
-	/**
-	 * Check if a post contains fields.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param int $post_id The post ID.
-	 *
-	 * @return bool True if the post has fields, false if not.
-	 */
-	private static function post_has_fields( $post_id ) {
-
-		$post_fields = self::get_post_content_fields( $post_id );
-		// Use post fields first.
-		if ( count( $post_fields ) > 0 ) {
-			return true;
-		}
-		return false;
+		Fields::remove_fields_from_location( 'widget/' . $widget_id );
 	}
 
 	/**
@@ -1002,17 +749,19 @@ class Gutenberg {
 
 		$content = $post->post_content;
 		// Extract the fields on the page.
-		$post_blocks = Block_Parser::extract_blocks( $content );
-		// $post_shortcodes = Shortcode_Parser::extract_shortcodes( $content );
-		$fields = array();
+		$post_blocks = Block_Parser::extract_fields( $content );
+		$fields      = array();
 
 		foreach ( $post_blocks as $post_block ) {
 			$fields[] = $post_block;
 		}
 
-		$post_shortcodes = Shortcode_Parser::extract_shortcodes( $content );
-		foreach ( $post_shortcodes as $post_shortcode ) {
-			$fields[] = $post_shortcode;
+		// Check for any shortcodes in the block editor content.
+		if ( Features::is_enabled( 'shortcodes' ) ) {
+			$post_shortcodes = Shortcode_Parser::extract_fields( $content );
+			foreach ( $post_shortcodes as $post_shortcode ) {
+				$fields[] = $post_shortcode;
+			}
 		}
 
 		self::$post_fields[ $post_id ] = $fields;
@@ -1067,6 +816,23 @@ class Gutenberg {
 	}
 
 	/**
+	 * Wire up the S&F query to the query block preview query.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param mixed $args    The WP_Query args.
+	 * @param mixed $request The REST request.
+	 * @return mixed
+	 */
+	public static function update_rest_post_query( $args, $request ) {
+		if ( isset( $request['searchFilterQueryId'] ) && ! empty( $request['searchFilterQueryId'] ) ) {
+			// Modify $args (WP_Query args) to add our query ID.
+			$args['search_filter_query_id'] = absint( $request['searchFilterQueryId'] );
+		}
+		return $args;
+	}
+
+	/**
 	 * Filters the query block data so we can a posts per page setting.
 	 *
 	 * It seems using pre_get_posts doesn't on its own doesn't have the desired effect.
@@ -1092,25 +858,55 @@ class Gutenberg {
 			return $block_data;
 		}
 
-		$query_id       = $connected_query_ids[0];
-		$query          = \Search_Filter\Queries\Query::find( array( 'id' => $query_id ) );
-		$posts_per_page = $query->get_attribute( 'postsPerPage' );
+		// Update the block attributes not to use the global query.
+		$block_data['attrs']['query']['inherit'] = false;
 
-		if ( ! $posts_per_page ) {
+		$query_id = $connected_query_ids[0];
+		$query    = Query::get_instance( absint( $query_id ) );
+
+		if ( is_wp_error( $query ) ) {
 			return $block_data;
 		}
+
+		$posts_per_page = $query->get_query_posts_per_page();
+
+		if ( empty( $posts_per_page ) ) {
+			return $block_data;
+		}
+
 		$block_data['attrs']['query']['perPage'] = (string) $posts_per_page;
 		return $block_data;
 	}
 
-	private static function needs_query_block_global_query_override( $block_data ) {
-		$is_assigned_to_search_filter = isset( $block_data['attrs']['searchFilterQueryId'] ) && absint( $block_data['attrs']['searchFilterQueryId'] ) !== 0;
-		if ( $block_data['attrs']['query']['inherit'] === true && $is_assigned_to_search_filter ) {
-			return true;
+	/**
+	 * Filters the query block data so we can a posts per page setting.
+	 *
+	 * It seems using pre_get_posts doesn't on its own doesn't have the desired effect.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $context The block context data.
+	 * @return array
+	 */
+	public static function render_query_block_context( $context ) {
+		// Target any block that receives query context from a parent Query block.
+		if ( ! isset( $context['query'] ) ) {
+			return $context;
 		}
-		return false;
-	}
 
+		// Make sure we're in a connected S&F query.
+		$connected_query_ids = self::get_active_query_ids();
+		if ( count( $connected_query_ids ) === 0 ) {
+			return $context;
+		}
+
+		// Disable the inherit flag so the post template runs a normal query.
+		if ( isset( $context['query']['inherit'] ) ) {
+			$context['query']['inherit'] = false;
+		}
+
+		return $context;
+	}
 
 	/**
 	 * Try to connect a query block to our query.
@@ -1119,7 +915,7 @@ class Gutenberg {
 	 *
 	 * @param array  $block The block config.
 	 * @param string $query_integration_name The name of the integration.
-	 * @return bool
+	 * @param string $block_name The name of the block.
 	 */
 	public static function try_connect_to_query_loop( $block, $query_integration_name = 'query_block', $block_name = 'core/query' ) {
 		if ( $block['blockName'] !== $block_name ) {
@@ -1131,19 +927,10 @@ class Gutenberg {
 			return;
 		}
 
-		/*
-		 * First check to see if the query has specifically been assigned to this query block.
-		 * If so that's the simplest case and we can return early.
-		 */
-		if ( self::needs_query_block_global_query_override( $block ) ) {
-			Util::error_log( "Found a query loop that we can't reach, its set to 'default' but should be set to 'custom'.", 'warning' );
-			return;
-		}
-
 		$query_search_filter_id = isset( $block['attrs']['searchFilterQueryId'] ) ? absint( $block['attrs']['searchFilterQueryId'] ) : 0;
 		if ( $query_search_filter_id !== 0 ) {
 			// Then we can connect this query to the query block.
-			$query = Query::find( array( 'id' => $query_search_filter_id ) );
+			$query = Query::get_instance( absint( $query_search_filter_id ) );
 			if ( ! is_wp_error( $query ) ) {
 				$pagination_key = isset( $block['attrs']['queryId'] ) ? 'query-' . $block['attrs']['queryId'] . '-page' : 'query-page';
 				$query->set_render_config_value( 'paginationKey', $pagination_key );
@@ -1151,7 +938,6 @@ class Gutenberg {
 					'connected_queries' => array( $query ),
 				);
 				self::$is_tracking_query  = true;
-
 				self::attach_query_vars_filter();
 				return;
 			}
@@ -1160,7 +946,7 @@ class Gutenberg {
 		if ( ! is_singular() ) {
 			// This method only supports query loops on singular pages
 			// We have a different implementation for accessing the archives.
-			return false;
+			return;
 		}
 		// Get current post ID.
 		$post_id = get_queried_object_id();
@@ -1175,9 +961,8 @@ class Gutenberg {
 		$post_fields    = self::get_post_content_fields( $post_id ); // Get the fields embedded in the post.
 
 		if ( count( $post_query_ids ) === 0 && count( $post_fields ) === 0 ) {
-			return false;
+			return;
 		}
-
 		self::$is_tracking_query = true;
 		$attributes              = $block['attrs'];
 		$query_search_filter_id  = isset( $attributes['searchFilterQueryId'] ) ? absint( $attributes['searchFilterQueryId'] ) : 0;
@@ -1189,7 +974,11 @@ class Gutenberg {
 		$field_post_query_ids = array();
 		// Loop through the fields once and setup the data we need.
 		foreach ( $post_fields as $field ) {
-			$field_post_query_ids[] = $field['queryId'];
+			if ( is_wp_error( $field ) ) {
+				continue;
+			}
+			$field_attributes       = $field->get_attributes();
+			$field_post_query_ids[] = absint( $field_attributes['queryId'] );
 		}
 
 		$related_query_ids = array_unique( array_merge( $post_query_ids, $field_post_query_ids ) );
@@ -1198,11 +987,9 @@ class Gutenberg {
 		foreach ( $related_query_ids as $query_id ) {
 			// If there are fields assigned to this post, but no longer connected to any blocks
 			// then we need to delete them.
-			$query = null;
+			$query = Query::get_instance( $query_id );
 
-			try {
-				$query = new Query( $query_id );
-			} catch ( \Exception $e ) {
+			if ( is_wp_error( $query ) ) {
 				continue;
 			}
 
@@ -1211,8 +998,8 @@ class Gutenberg {
 			if ( $integration_type !== 'single' && $integration_type !== 'dynamic' ) {
 				continue;
 			}
-			$is_single = $integration_type === 'single';
 
+			$is_single = $integration_type === 'single';
 			// Stop if we're using single integration and the post IDs don't match.
 			$single_location = $query->get_attribute( 'singleLocation' );
 			if ( $is_single && ( absint( $single_location ) !== absint( $post_id ) ) ) {
@@ -1225,6 +1012,7 @@ class Gutenberg {
 			}
 
 			$query_loop_autodetect = $query->get_attribute( 'queryLoopAutodetect' );
+
 			/**
 			 * Check if a field should affect the query.
 			 *
@@ -1249,11 +1037,21 @@ class Gutenberg {
 			self::attach_query_vars_filter();
 		}
 	}
+	/**
+	 * Attach the query vars filter.
+	 *
+	 * @since 3.0.0
+	 */
 	private static function attach_query_vars_filter() {
-		add_action( 'query_loop_block_query_vars', array( __CLASS__, 'query_loop_block_query_vars' ), 20, 3 );
+		add_filter( 'query_loop_block_query_vars', array( __CLASS__, 'query_loop_block_query_vars' ), 20, 3 );
 	}
+	/**
+	 * Detach the query vars filter.
+	 *
+	 * @since 3.0.0
+	 */
 	private static function detach_query_vars_filter() {
-		remove_action( 'query_loop_block_query_vars', array( __CLASS__, 'query_loop_block_query_vars' ), 20, 3 );
+		remove_filter( 'query_loop_block_query_vars', array( __CLASS__, 'query_loop_block_query_vars' ), 20 );
 	}
 	/**
 	 * Get the IDs of the active queries.
@@ -1298,9 +1096,10 @@ class Gutenberg {
 	 * Cleanup the query block hooks and tracking data.
 	 *
 	 * @since 3.0.0
+	 *
+	 * @param array $block The block data.
 	 */
-	public static function cleanup_query_block( $block ) {
-
+	public static function cleanup_query_block( $block ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Unused for now, probably needed later.
 		if ( ! self::$is_tracking_query ) {
 			return;
 		}
@@ -1319,51 +1118,43 @@ class Gutenberg {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array  $query_vars The query vars.
-	 * @param Block  $block      The block config.
-	 * @param string $page       The page.
+	 * @param array     $query_vars The query vars.
+	 * @param \WP_Block $block      The block config.
+	 * @param int       $page       The page.
 	 *
 	 * @return array The updated query vars.
 	 */
-	public static function query_loop_block_query_vars( $query_vars, $block, $page ) {
+	public static function query_loop_block_query_vars( array $query_vars, \WP_Block $block, int $page ) {
 		// Still not sure why exactly, but we need to set the posts_per_page and
 		// override the offest that gets added by `query_loop_block_query_vars`.
-		$connected_queries                   = self::$current_query_data['connected_queries'];
+		$connected_queries = self::$current_query_data['connected_queries'];
+
 		$query_vars['search_filter_queries'] = $connected_queries;
+
 		// TODO - there should only be one connected query, lets throw an error if we find more.
 		foreach ( $connected_queries as $query ) {
-			$offset   = 0;
-			$per_page = $query->get_attribute( 'postsPerPage' );
-			if (
+			$offset       = 0;
+			$per_page     = $query->get_query_posts_per_page();
+			$query_offset = $query->get_attribute( 'offset' );
+
+			if ( $query_offset !== null ) {
+				// Use our own offset value if it exists (3.2.0 and higher).
+				$offset = (int) $query_offset;
+			} elseif (
 				isset( $block->context['query']['offset'] ) &&
 				is_numeric( $block->context['query']['offset'] )
 			) {
+				// Fallback to supporting offset from the Query Loop.
 				$offset = absint( $block->context['query']['offset'] );
 			}
 
 			$query_vars['offset']         = ( $per_page * ( $page - 1 ) ) + $offset;
-			$query_vars['posts_per_page'] = $per_page;
+			$query_vars['posts_per_page'] = $query->get_query_posts_per_page();
+
+			// For some reason, if the post type is  set to `post` our plugin doesn't
+			// override it via the normal means, so lets manually set it in this hook.
+			$query_vars['post_type'] = $query->get_attribute( 'postTypes' );
 		}
 		return $query_vars;
-	}
-
-	/**
-	 * Remove fields from our tables when a post is deleted.
-	 *
-	 * @param number $post_id The post ID.
-	 * @return void
-	 */
-	public static function delete_post( $post_id ) {
-		if ( wp_is_post_revision( $post_id ) ) {
-			return;
-		}
-		if ( wp_is_post_autosave( $post_id ) ) {
-			return;
-		}
-		$post_field_records = self::get_post_field_records( $post_id );
-
-		foreach ( $post_field_records as $item ) {
-			Field::destroy( $item->get_id() );
-		}
 	}
 }

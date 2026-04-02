@@ -1,0 +1,687 @@
+# Copyright (C) 2025 Code Amp
+# This file is distributed under the same license as the Search & Filter Pro plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Search & Filter Pro 3.2.0-beta\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/search-filter-pro\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-04-12T15:18:13+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: search-filter\n"
+
+#. Plugin Name of the plugin
+#: search-filter-pro.php
+msgid "Search & Filter Pro"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: search-filter-pro.php
+msgid "http://searchandfilter.com"
+msgstr ""
+
+#. Description of the plugin
+#: search-filter-pro.php
+msgid "Build powerful search experiences for your website or store with powerful pro features."
+msgstr ""
+
+#. Author of the plugin
+#: search-filter-pro.php
+msgid "Code Amp"
+msgstr ""
+
+#. Author URI of the plugin
+#: search-filter-pro.php
+msgid "https://codeamp.com"
+msgstr ""
+
+#: includes/class-features.php:50
+msgid "The indexer enables support for dynamic fields and options, advanced field types and improves query performance on the frontend."
+msgstr ""
+
+#: includes/class-fields.php:365
+msgid "Post Author"
+msgstr ""
+
+#: includes/class-fields.php:386
+msgid "Author conditions"
+msgstr ""
+
+#: includes/class-fields.php:395
+msgid "All authors"
+msgstr ""
+
+#: includes/class-fields.php:399
+msgid "Restrict to specific authors"
+msgstr ""
+
+#: includes/class-fields.php:403
+msgid "Exclude specific authors"
+msgstr ""
+
+#: includes/class-fields.php:407
+msgid "Restrict by roles"
+msgstr ""
+
+#: includes/class-fields.php:411
+msgid "Restrict by capabilities"
+msgstr ""
+
+#: includes/class-fields.php:436
+msgid "Post Authors"
+msgstr ""
+
+#: includes/class-fields.php:486
+msgid "Author roles"
+msgstr ""
+
+#: includes/class-fields.php:487
+msgid "All roles"
+msgstr ""
+
+#: includes/class-fields.php:527
+msgid "Author capabilities"
+msgstr ""
+
+#: includes/class-fields.php:528
+msgid "All capabilities"
+msgstr ""
+
+#: includes/class-fields.php:695
+msgid "Post Title + Content"
+msgstr ""
+
+#: includes/class-fields.php:856
+msgid "Auto submit"
+msgstr ""
+
+#: includes/class-fields.php:857
+msgid "Automatically submit after interacting."
+msgstr ""
+
+#: includes/class-fields.php:871
+msgid "Auto submit delay"
+msgstr ""
+
+#: includes/class-fields.php:872
+msgid "Leave empty for default."
+msgstr ""
+
+#: includes/class-fields.php:873
+msgid "Delay in milliseconds before auto submit."
+msgstr ""
+
+#: includes/class-fields.php:900
+msgid "Hide field when empty"
+msgstr ""
+
+#: includes/class-fields.php:901
+msgid "Hides the field when there are no results that match."
+msgstr ""
+
+#: includes/class-fields.php:954
+msgid "Search Suggestions Logic"
+msgstr ""
+
+#: includes/class-fields.php:955
+msgid "Whether to show suggestions that start with the search term or contain it."
+msgstr ""
+
+#: includes/class-fields.php:964
+msgid "Beginning only"
+msgstr ""
+
+#: includes/class-fields.php:968
+msgid "Any position"
+msgstr ""
+
+#: includes/class-fields.php:996
+msgid "Loading Text"
+msgstr ""
+
+#: includes/class-fields.php:997
+msgid "Text to display when the field is loading options."
+msgstr ""
+
+#: includes/class-fields.php:1001
+msgid "Looking for suggestions…"
+msgstr ""
+
+#: includes/class-fields.php:1051
+msgid "Default value"
+msgstr ""
+
+#: includes/class-fields.php:1052
+msgid "Enter a default value for this field."
+msgstr ""
+
+#: includes/class-fields.php:1060
+msgid "None"
+msgstr ""
+
+#: includes/class-fields.php:1064
+msgid "Inherit from current location"
+msgstr ""
+
+#: includes/class-fields.php:1084
+#: includes/class-queries.php:1459
+msgid "Custom"
+msgstr ""
+
+#: includes/class-fields.php:1109
+msgid "Inherit from archives"
+msgstr ""
+
+#: includes/class-fields.php:1110
+msgid "Inherit the default value from an archive."
+msgstr ""
+
+#: includes/class-fields.php:1120
+#: includes/class-fields.php:1156
+#: includes/class-fields.php:1196
+#: includes/class-fields.php:1254
+#: includes/class-queries.php:428
+#: includes/class-queries.php:460
+#: includes/class-queries.php:493
+#: includes/class-queries.php:526
+#: includes/fields/class-range.php:125
+#: includes/fields/class-range.php:175
+msgid "Yes"
+msgstr ""
+
+#: includes/class-fields.php:1124
+#: includes/class-fields.php:1160
+#: includes/class-fields.php:1200
+#: includes/class-fields.php:1258
+#: includes/class-queries.php:432
+#: includes/class-queries.php:464
+#: includes/class-queries.php:497
+#: includes/class-queries.php:530
+#: includes/fields/class-range.php:129
+#: includes/fields/class-range.php:179
+msgid "No"
+msgstr ""
+
+#: includes/class-fields.php:1145
+msgid "Inherit from search"
+msgstr ""
+
+#: includes/class-fields.php:1146
+msgid "Inherit the default value from the search query."
+msgstr ""
+
+#: includes/class-fields.php:1185
+msgid "Inherit from posts"
+msgstr ""
+
+#: includes/class-fields.php:1186
+msgid "Inherit the default value from single posts, pages or CPTs."
+msgstr ""
+
+#: includes/class-fields.php:1220
+msgid "Custom default value"
+msgstr ""
+
+#: includes/class-fields.php:1221
+msgid "Enter a custom default value for this field."
+msgstr ""
+
+#: includes/class-fields.php:1244
+msgid "Initially apply to query"
+msgstr ""
+
+#: includes/class-fields.php:1245
+msgid "Pre-apply the default value to the query when first loading the page."
+msgstr ""
+
+#: includes/class-fields.php:1319
+msgid "Initial visibility"
+msgstr ""
+
+#: includes/class-fields.php:1369
+msgid "Leave blank to use default"
+msgstr ""
+
+#: includes/class-fields.php:1628
+#: includes/class-queries.php:1503
+msgid "Custom Field"
+msgstr ""
+
+#: includes/class-indexer.php:243
+msgid "Count"
+msgstr ""
+
+#: includes/class-queries.php:391
+msgid "Use Indexer"
+msgstr ""
+
+#: includes/class-queries.php:392
+msgid "Use the indexer instead of the WordPress query."
+msgstr ""
+
+#: includes/class-queries.php:418
+msgid "Live Search"
+msgstr ""
+
+#: includes/class-queries.php:419
+msgid "Loads new results without refreshing the page."
+msgstr ""
+
+#: includes/class-queries.php:442
+msgid "Custom Field query"
+msgstr ""
+
+#: includes/class-queries.php:451
+msgid "Update URL"
+msgstr ""
+
+#: includes/class-queries.php:452
+msgid "Enable the browser history and allow searches to be bookmarkable."
+msgstr ""
+
+#: includes/class-queries.php:484
+msgid "Show Loading Icon"
+msgstr ""
+
+#: includes/class-queries.php:485
+msgid "Show the loading icon when fetching new results."
+msgstr ""
+
+#: includes/class-queries.php:517
+msgid "Fade Results"
+msgstr ""
+
+#: includes/class-queries.php:518
+msgid "Fade out the results when loading."
+msgstr ""
+
+#: includes/class-queries.php:582
+msgid "Results Container"
+msgstr ""
+
+#: includes/class-queries.php:583
+msgid "The CSS selector that contains your results."
+msgstr ""
+
+#: includes/class-queries.php:603
+msgid "Dynamic Sections"
+msgstr ""
+
+#: includes/class-queries.php:604
+msgid "Additional CSS selector(s) that also need to be updated dynamically.  Must be unique."
+msgstr ""
+
+#: includes/class-queries.php:625
+msgid "Additional Dynamic Sections"
+msgstr ""
+
+#: includes/class-queries.php:646
+msgid "Scroll To"
+msgstr ""
+
+#: includes/class-queries.php:647
+msgid "Scroll the window after fetching new results."
+msgstr ""
+
+#: includes/class-queries.php:668
+msgid "Pagination Type"
+msgstr ""
+
+#: includes/class-queries.php:675
+msgid "Default"
+msgstr ""
+
+#: includes/class-queries.php:679
+#: includes/fields/control/class-load-more.php:78
+msgid "Load more"
+msgstr ""
+
+#: includes/class-queries.php:704
+msgid "Posts Container"
+msgstr ""
+
+#: includes/class-queries.php:705
+msgid "The container that only contains the posts (no other query data)."
+msgstr ""
+
+#: includes/class-queries.php:741
+msgid "Pagination Selector"
+msgstr ""
+
+#: includes/class-queries.php:742
+msgid "Enter a CSS selector to target pagination links.  Allows dynamic update of results after clicking a pagination link."
+msgstr ""
+
+#: includes/class-queries.php:778
+msgid "Scale"
+msgstr ""
+
+#: includes/class-queries.php:779
+msgid "Scale of the loading icon."
+msgstr ""
+
+#: includes/class-queries.php:785
+msgid "Choose a scale"
+msgstr ""
+
+#: includes/class-queries.php:811
+msgid "Color"
+msgstr ""
+
+#: includes/class-queries.php:839
+msgid "Background color"
+msgstr ""
+
+#: includes/class-queries.php:867
+msgid "Position"
+msgstr ""
+
+#: includes/class-queries.php:895
+msgid "Padding"
+msgstr ""
+
+#: includes/class-queries.php:929
+msgid "Margin"
+msgstr ""
+
+#: includes/class-queries.php:963
+msgid "Border"
+msgstr ""
+
+#: includes/class-queries.php:992
+msgid "Border Radius"
+msgstr ""
+
+#: includes/features/class-shortcodes.php:56
+msgid "Results shortcode"
+msgstr ""
+
+#: includes/features/class-shortcodes.php:80
+msgid "Results Shortcode"
+msgstr ""
+
+#: includes/features/class-shortcodes.php:117
+msgid "Use shortcodes to display fields or results on your site.  Adds various options to the admin UI."
+msgstr ""
+
+#: includes/fields/advanced/class-date-picker.php:128
+msgid "Date Picker"
+msgstr ""
+
+#: includes/fields/choice/class-color-picker.php:32
+msgid "Color Picker"
+msgstr ""
+
+#: includes/fields/choice/class-toggle.php:31
+msgid "Toggle"
+msgstr ""
+
+#: includes/fields/class-range.php:116
+msgid "Auto detect minimum value"
+msgstr ""
+
+#: includes/fields/class-range.php:142
+msgid "Minimum value"
+msgstr ""
+
+#: includes/fields/class-range.php:166
+msgid "Auto detect maximum value"
+msgstr ""
+
+#: includes/fields/class-range.php:192
+msgid "Maximum value"
+msgstr ""
+
+#: includes/fields/class-range.php:216
+msgid "Step amount"
+msgstr ""
+
+#: includes/fields/class-range.php:232
+msgid "Decimal places"
+msgstr ""
+
+#: includes/fields/class-range.php:250
+msgid "Decimal character"
+msgstr ""
+
+#: includes/fields/class-range.php:280
+msgid "Thousand character"
+msgstr ""
+
+#: includes/fields/class-range.php:299
+msgid "Value prefix"
+msgstr ""
+
+#: includes/fields/class-range.php:318
+msgid "Value suffix"
+msgstr ""
+
+#: includes/fields/class-range.php:337
+msgid "Separator text"
+msgstr ""
+
+#: includes/fields/class-range.php:361
+msgid "Text position"
+msgstr ""
+
+#: includes/fields/class-range.php:368
+msgid "Above"
+msgstr ""
+
+#: includes/fields/class-range.php:372
+msgid "Below"
+msgstr ""
+
+#: includes/fields/control/class-selection.php:58
+msgid "Selection"
+msgstr ""
+
+#: includes/fields/range/class-number.php:119
+msgid "Number"
+msgstr ""
+
+#: includes/fields/range/class-radio.php:115
+msgid "Radio"
+msgstr ""
+
+#: includes/fields/range/class-select.php:125
+msgid "Select"
+msgstr ""
+
+#: includes/fields/range/class-slider.php:117
+msgid "Slider"
+msgstr ""
+
+#: includes/fields/search/class-autocomplete.php:101
+msgid "Autocomplete"
+msgstr ""
+
+#: includes/fields/search/class-autocomplete.php:366
+msgid "The field ID."
+msgstr ""
+
+#: includes/fields/search/class-text.php:86
+msgid "Text"
+msgstr ""
+
+#: includes/integrations/class-acf.php:242
+msgid "ACF Field"
+msgstr ""
+
+#: includes/integrations/class-acf.php:333
+msgid "Group / Parent"
+msgstr ""
+
+#: includes/integrations/class-acf.php:334
+msgid "Choose Group"
+msgstr ""
+
+#: includes/integrations/class-acf.php:403
+msgid "Field"
+msgstr ""
+
+#: includes/integrations/class-acf.php:404
+msgid "Choose Field"
+msgstr ""
+
+#: includes/integrations/class-relevanssi.php:115
+msgid "Relevanssi"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1153
+msgid "Show on backorder"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1200
+msgid "Show out of stock"
+msgstr ""
+
+#: assets/js/admin/app.js:645
+#: assets/js/admin/gutenberg.js:425
+msgid "Find Query"
+msgstr ""
+
+#: assets/js/admin/app.js:652
+#: assets/js/admin/gutenberg.js:432
+msgid "Search for a query"
+msgstr ""
+
+#: assets/js/admin/app.js:817
+msgid "More options"
+msgstr ""
+
+#: assets/js/admin/app.js:1957
+#: assets/js/admin/gutenberg.js:2345
+msgid "Priority Support"
+msgstr ""
+
+#: assets/js/admin/app.js:2595
+#: assets/js/admin/app.js:2622
+msgid "Test connection"
+msgstr ""
+
+#: assets/js/admin/app.js:2605
+msgid "Unable to use background processing for the indexer. You can disable it via the settings screen."
+msgstr ""
+
+#: assets/js/admin/app.js:2632
+msgid "Unable to connect to Search & Filter update servers. Please check your internet connection or firewall settings. <a>Contact support for help</a>."
+msgstr ""
+
+#: assets/js/admin/app.js:3027
+#: assets/js/admin/app.js:3717
+#: assets/js/admin/gutenberg.js:107
+#: assets/js/admin/gutenberg.js:799
+msgid "Add condition"
+msgstr ""
+
+#: assets/js/admin/app.js:3051
+#: assets/js/admin/gutenberg.js:823
+msgid "If conditions are met:"
+msgstr ""
+
+#: assets/js/admin/app.js:3057
+#: assets/js/admin/gutenberg.js:829
+msgid "Hide field"
+msgstr ""
+
+#: assets/js/admin/app.js:3063
+#: assets/js/admin/gutenberg.js:835
+msgid "Show field"
+msgstr ""
+
+#: assets/js/admin/app.js:3066
+#: assets/js/admin/gutenberg.js:838
+msgid "Match mode"
+msgstr ""
+
+#: assets/js/admin/app.js:3072
+#: assets/js/admin/gutenberg.js:844
+msgid "All conditions"
+msgstr ""
+
+#: assets/js/admin/app.js:3075
+#: assets/js/admin/gutenberg.js:847
+msgid "Any condition"
+msgstr ""
+
+#: assets/js/admin/app.js:3083
+#: assets/js/admin/gutenberg.js:855
+msgid "No conditions have been set, this field will always be visible."
+msgstr ""
+
+#: assets/js/admin/app.js:3169
+#: assets/js/admin/gutenberg.js:941
+msgid "Search meta keys"
+msgstr ""
+
+#: assets/js/admin/app.js:3212
+#: assets/js/admin/gutenberg.js:984
+msgid "Loading…"
+msgstr ""
+
+#: assets/js/admin/app.js:3436
+#: assets/js/admin/gutenberg.js:1208
+msgid "Choose a field"
+msgstr ""
+
+#: assets/js/admin/app.js:3443
+#: assets/js/admin/gutenberg.js:1215
+msgid "Compare type"
+msgstr ""
+
+#: assets/js/admin/app.js:3448
+#: assets/js/admin/gutenberg.js:1220
+msgid "Enter a value"
+msgstr ""
+
+#: assets/js/admin/app.js:3452
+#: assets/js/admin/gutenberg.js:1224
+msgid "No fields available for the connected query."
+msgstr ""
+
+#: assets/js/admin/app.js:3464
+#: assets/js/admin/gutenberg.js:1236
+msgid "Enter capability"
+msgstr ""
+
+#: assets/js/admin/app.js:3465
+#: assets/js/admin/gutenberg.js:1237
+msgid "Capability"
+msgstr ""
+
+#: assets/js/admin/app.js:3470
+#: assets/js/admin/app.js:3916
+#: assets/js/admin/gutenberg.js:306
+#: assets/js/admin/gutenberg.js:1242
+msgid "Remove condition"
+msgstr ""
+
+#: assets/js/admin/app.js:3475
+#: assets/js/admin/app.js:3920
+#: assets/js/admin/gutenberg.js:310
+#: assets/js/admin/gutenberg.js:1247
+msgid "Remove"
+msgstr ""
+
+#: assets/js/admin/app.js:3725
+#: assets/js/admin/gutenberg.js:115
+msgid "No conditions have been set."
+msgstr ""
+
+#. translators: %d: number of conditions
+#: assets/js/admin/app.js:3730
+#: assets/js/admin/gutenberg.js:120
+msgid "%d condition has been set."
+msgid_plural "%d conditions have been set."
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/js/admin/app.js:4093
+#: assets/js/admin/gutenberg.js:543
+msgid "Search for a field"
+msgstr ""

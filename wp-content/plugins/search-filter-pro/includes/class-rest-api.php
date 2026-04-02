@@ -113,20 +113,27 @@ class Rest_API {
 		global $wpdb;
 		$data = array();
 
-		$where = '';
 		if ( $search_term !== '' ) {
-			$where = $wpdb->prepare( " WHERE meta_key LIKE '%s' ", $search_term . '%' );
-		}
+			$query = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-		$query = $wpdb->query(
-			"
-			SELECT DISTINCT(BINARY `meta_key`) as meta_key_binary, `meta_key`
-			FROM $wpdb->postmeta
-			$where
-			ORDER BY `meta_key` ASC
-			LIMIT 0, 15
-		"
-		);
+				$wpdb->prepare(
+					"SELECT DISTINCT(BINARY `meta_key`) as meta_key_binary, `meta_key`
+					FROM $wpdb->postmeta
+					WHERE meta_key LIKE %s
+					ORDER BY `meta_key` ASC
+					LIMIT 0, 15",
+					$search_term . '%'
+				)
+			);
+		} else {
+			$query = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+				"SELECT DISTINCT(BINARY `meta_key`) as meta_key_binary, `meta_key`
+				FROM $wpdb->postmeta
+				ORDER BY `meta_key` ASC
+				LIMIT 0, 15"
+			);
+		}
 
 		foreach ( $wpdb->last_result as $k => $v ) {
 			$data[] = $v->meta_key;
@@ -166,11 +173,9 @@ class Rest_API {
 	/**
 	 * Get the available post authors based on the current query settings.
 	 *
-	 * @param WP_REST_Request $request The request.
-	 *
-	 * @return string The request result as JSON.
+	 * @return WP_REST_Response The request result as JSON.
 	 */
-	public function get_post_authors_options( WP_REST_Request $request ) {
+	public function get_post_authors_options() {
 		// Post stati are generic (not assigned to post types etc), so get them all.
 		$json = array(
 			'options' => Helpers::get_post_authors(),
@@ -181,11 +186,9 @@ class Rest_API {
 	/**
 	 * Get the available post author roles.
 	 *
-	 * @param WP_REST_Request $request The request.
-	 *
-	 * @return string The request result as JSON.
+	 * @return WP_REST_Response The request result as JSON.
 	 */
-	public function get_post_author_roles_options( WP_REST_Request $request ) {
+	public function get_post_author_roles_options() {
 		$json = array(
 			'options' => Helpers::get_user_roles(),
 		);
@@ -195,11 +198,9 @@ class Rest_API {
 	/**
 	 * Get the available post author capabilities.
 	 *
-	 * @param WP_REST_Request $request The request.
-	 *
-	 * @return string The request result as JSON.
+	 * @return WP_REST_Response The request result as JSON.
 	 */
-	public function get_post_author_capabilities_options( WP_REST_Request $request ) {
+	public function get_post_author_capabilities_options() {
 		$json = array(
 			'options' => Helpers::get_user_capabilities(),
 		);

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Task Runner REST API endpoints.
+ *
+ * @package Search_Filter_Pro
+ */
+
 namespace Search_Filter_Pro\Task_Runner;
 
 use Search_Filter_Pro\Task_Runner;
@@ -63,14 +69,30 @@ class Rest_API {
 		);
 	}
 
+	/**
+	 * Test endpoint for the task runner.
+	 *
+	 * @return \WP_REST_Response The response.
+	 */
 	public static function test_endpoint() {
-		return rest_ensure_response( "1" );
+		return rest_ensure_response( '1' );
 	}
 
+	/**
+	 * Test the background process connection.
+	 *
+	 * @return \WP_REST_Response The response.
+	 */
 	public static function test_connection() {
 		$result = Task_Runner::test_background_process();
 		return rest_ensure_response( $result );
 	}
+
+	/**
+	 * Check if user has required permissions.
+	 *
+	 * @return bool True if user can manage options.
+	 */
 	public static function permissions() {
 		return current_user_can( 'manage_options' );
 	}

@@ -1,4 +1,11 @@
 <?php
+/**
+ * Stub for load more control field compatibility.
+ *
+ * @link       https://searchandfilter.com
+ * @since      3.0.0
+ * @package    Search_Filter_Pro/Core/Dependencies
+ */
 
 namespace Search_Filter_Pro\Core\Dependencies;
 
@@ -8,9 +15,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Handles dependencies stubs.
+ * Stub for load more control field to prevent fatal errors during upgrades.
  */
 class Stub_Control_Load_More extends Stub {
-	public static $type       = 'control';
+	/**
+	 * Field type.
+	 *
+	 * @var string
+	 */
+	public static $type = 'control';
+
+	/**
+	 * Input type.
+	 *
+	 * @var string
+	 */
 	public static $input_type = 'load_more';
 }

@@ -14,21 +14,29 @@ use Search_Filter\Core\Notices;
 use Search_Filter\Features;
 use Search_Filter\Fields\Field;
 use Search_Filter\Options;
+use Search_Filter\Util as Base_Util;
 use Search_Filter\Queries\Query as Search_Filter_Query;
 use Search_Filter\Queries as Search_Filter_Queries;
-use Search_Filter_Pro\Task_Runner\Task;
-use Search_Filter_Pro\Indexer\Database\Index_Query;
-use Search_Filter_Pro\Indexer\Database\Index_Table;
 use Search_Filter_Pro\Indexer\Field_Queries;
 use Search_Filter_Pro\Indexer\Query as Indexer_Query;
-use Search_Filter_Pro\Indexer\Query_Cache;
+use Search_Filter_Pro\Indexer\Legacy\Query as Legacy_Indexer_Query;
 use Search_Filter_Pro\Indexer\Query_Store;
 use Search_Filter_Pro\Indexer\Rest_API;
 use Search_Filter_Pro\Indexer\Settings_Data;
 use Search_Filter_Pro\Indexer\Settings as Indexer_Settings;
-use Search_Filter_Pro\Task_Runner\Database\Tasks_Query;
 use Search_Filter\Fields\Settings as Fields_Settings;
-use Search_Filter_Pro\Indexer\Async;
+use Search_Filter\Core\Async;
+use Search_Filter_Pro\Indexer\Stats;
+use Search_Filter_Pro\Indexer\Parent_Map\Database\Query as Parent_Map_Query;
+use Search_Filter_Pro\Indexer\Strategy\Index_Strategy_Factory;
+use Search_Filter_Pro\Indexer\Task_Runner as Indexer_Task_Runner;
+use Search_Filter_Pro\Indexer\Post_Sync;
+use Search_Filter_Pro\Indexer\Bitmap\Manager as Bitmap_Manager;
+use Search_Filter_Pro\Indexer\Bucket\Manager as Bucket_Manager;
+use Search_Filter_Pro\Indexer\Search\Manager as Search_Manager;
+use Search_Filter_Pro\Indexer\Legacy\Manager as Legacy_Manager;
+use Search_Filter_Pro\Indexer\Parent_Map\Manager as Parent_Map_Manager;
+use Search_Filter_Pro\Cache\Tiered_Cache;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -38,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The main indexer class.
  */
-final class Indexer extends Task_Runner {
+final class Indexer {
 
 	/**
 	 * The task type for the task runner.
@@ -46,13 +54,6 @@ final class Indexer extends Task_Runner {
 	 * @var string
 	 */
 	protected static $type = 'indexer';
-
-	/**
-	 * The size of the page when fetching posts to index.
-	 *
-	 * @var string
-	 */
-	private static $query_page_size = 200;
 
 	/**
 	 * The queue of posts to resync.
@@ -132,31 +133,20 @@ final class Indexer extends Task_Runner {
 	private static $strings = array();
 
 	/**
-	 * Option name for indexer progress.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var string
-	 */
-	private static $progress_data_option_name = 'indexer-progress';
-
-	/**
-	 * Which field types to index.
-	 *
-	 * @var array
-	 */
-	private static $indexed_field_types = array(
-		'choice',
-		'advanced',
-		'range',
-	);
-
-	/**
 	 * Init the indexer.
 	 *
 	 * @since    3.0.0
 	 */
 	public static function init() {
+		// Register orchestrators.
+		Bitmap_Manager::register();
+		Bucket_Manager::register();
+		Search_Manager::register();
+		Legacy_Manager::register();
+		Parent_Map_Manager::register();
+
+		// Preload the migration completed option.
+		add_filter( 'search-filter/options/preload', array( __CLASS__, 'preload_migration_completed_option' ) );
 
 		// Init strings.
 		add_action( 'init', array( __CLASS__, 'init_strings' ), 2 );
@@ -166,13 +156,63 @@ final class Indexer extends Task_Runner {
 		add_action( 'search-filter/settings/fields/init', array( __CLASS__, 'add_count_to_order_field' ), 11 );
 
 		// Add support for orderby setting for post attribute fields.
-		add_filter( 'search-filter/field/get_setting_support', array( __CLASS__, 'get_field_setting_support' ), 10, 3 );
+		add_filter( 'search-filter/fields/field/get_setting_support', array( __CLASS__, 'get_field_setting_support' ), 10, 3 );
 	}
 
+	/**
+	 * Queue async processing of the indexer task queue.
+	 *
+	 * Registers a shutdown callback to start the task runner.
+	 * This centralizes the async processing logic in one place.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function async_process_queue() {
+		Async::register_callback( array( Indexer_Task_Runner::class, 'maybe_start_process' ) );
+	}
+
+	/**
+	 * Initialize indexer strings.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function init_strings() {
 		self::$strings = array(
 			'indexer_error' => __( 'There has been an issue with the indexing process. Check the error log for more information.', 'search-filter-pro' ),
 		);
+	}
+
+	/**
+	 * Check if we need to keep using the legacy indexing methods.
+	 *
+	 * @since 3.2.0
+	 * @return bool True if legacy indexing should be used, false for new.
+	 */
+	public static function migration_completed() {
+
+		$flag = Options::get( 'indexer-migration-completed', 'yes' );
+
+		// Option is "no" = upgrading user not yet migrated.
+		if ( $flag === 'no' ) {
+			return false;
+		}
+
+		// Else 'yes' = migrated user or new user.
+		return true;
+	}
+
+	/**
+	 * Preload the migration completed option.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $options_to_preload The options to preload.
+	 * @return array The updated options array.
+	 */
+	public static function preload_migration_completed_option( $options_to_preload ) {
+		// Preload the migration completed option.
+		$options_to_preload[] = array( 'indexer-migration-completed', 'yes' );
+		return $options_to_preload;
 	}
 	/**
 	 * Load the indexer.
@@ -180,34 +220,43 @@ final class Indexer extends Task_Runner {
 	 * @since 3.0.0
 	 */
 	public static function load_indexer() {
+
+		// Register indexer sub settings.
+		Indexer_Settings::init( Settings_Data::get(), Settings_Data::get_groups() );
+
 		if ( ! Features::is_enabled( 'indexer' ) ) {
 			return;
 		}
 
 		Indexer\Cron::init();
 
-		// Register indexer sub settings.
-		Indexer_Settings::init( Settings_Data::get(), Settings_Data::get_groups() );
 		do_action( 'search-filter/settings/register/indexer' );
 
 		// Preload indexer settings paths.
-		add_action( 'search-filter/admin/get_preload_api_paths', array( __CLASS__, 'add_preload_api_paths' ) );
+		add_filter( 'search-filter/admin/get_preload_api_paths', array( __CLASS__, 'add_preload_api_paths' ) );
+
+		// Init managers.
+		Bitmap_Manager::init(); // @phpstan-ignore staticMethod.resultUnused (Registers hooks and initializes state)
+		Bucket_Manager::init(); // @phpstan-ignore staticMethod.resultUnused (Registers hooks and initializes state)
+		Search_Manager::init(); // @phpstan-ignore staticMethod.resultUnused (Registers hooks and initializes state)
 
 		// Init REST API endpoints.
 		Rest_API::init();
 
-		// Handles field queries, counts etc.
-		Field_Queries::init();
+		add_action( 'search-filter/settings/init', array( __CLASS__, 'load_field_queries' ), 11 );
 
-		// Init the query cache.
-		Query_Cache::init();
+		// Initialize indexing strategies (bitmap, bucket, search).
+		Index_Strategy_Factory::init();
+
+		// Hook bucket rebuild automation.
+		add_action( 'search-filter-pro/indexer/bucket/rebuild', array( __CLASS__, 'schedule_bucket_rebuild' ), 10, 1 );
 
 		// Reset the objects count when tasks have finished.
-		add_action( 'search-filter/task_runner/finished', array( __CLASS__, 'finish_task' ) );
+		// phpcs:ignore Squiz.Commenting.InlineComment.InvalidEndChar -- Commented out code.
+		// add_action( 'search-filter-pro/task_runner/finished', array( __CLASS__, 'finish_tasks' ) );
 
 		// Prevent running queries as a WP_Query when the indexer is enabled.
 		add_filter( 'search-filter/query/run_wp_query', array( __CLASS__, 'remove_wp_query' ), 1, 2 );
-		add_filter( 'search-filter/fields/field/get_query_type', array( __CLASS__, 'set_field_to_indexer_query' ), 1, 2 );
 		// Build the indexer posts query.
 		add_action( 'pre_get_posts', array( __CLASS__, 'build_posts_query' ), 100, 1 );
 
@@ -220,16 +269,38 @@ final class Indexer extends Task_Runner {
 		add_action( 'added_post_meta', array( __CLASS__, 'changed_post_meta' ), 10, 2 );
 		add_action( 'updated_post_meta', array( __CLASS__, 'changed_post_meta' ), 10, 2 );
 		add_action( 'deleted_post_meta', array( __CLASS__, 'changed_post_meta' ), 10, 2 );
+		// phpcs:ignore Squiz.Commenting.InlineComment.InvalidEndChar -- Commented out code.
 		// add_action( 'added_term_relationship', array( __CLASS__, 'added_term_relationship' ), 10, 1 );
+		// phpcs:ignore Squiz.Commenting.InlineComment.InvalidEndChar -- Commented out code.
 		// add_action( 'deleted_term_relationship', array( __CLASS__, 'deleted_term_relationship' ), 10, 1 );
 
-		add_action( 'shutdown', array( __CLASS__, 'resync_queue' ), 100 ); // This must be a lower priority (before) than the async shutdown hook.
+		add_action( 'shutdown', array( __CLASS__, 'resync_queue' ), 0 ); // Must run BEFORE Async::run_callbacks (priority 100).
 
 		// Check for errors and display notices.
 		add_action( 'init', array( __CLASS__, 'add_hooks' ), 10 );
 	}
 
+	/**
+	 * Load the field queries.
+	 *
+	 * Field Queries depend on Debugger settings to be loaded first, so we have to
+	 * init on the debug/init action hook or regular settings/init hook.
+	 *
+	 * @since 3.2.0
+	 */
+	public static function load_field_queries() {
 
+		// Initialize Field_Queries (orchestrator pattern).
+		// Field_Queries will check migration status at runtime and delegate
+		// to Legacy\Field_Queries if needed.
+		Field_Queries::init();
+	}
+
+	/**
+	 * Add count to order field options.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function add_count_to_order_field() {
 		// Add the count to order field.
 		// Add the author option to the dataPostAttribute setting.
@@ -244,7 +315,6 @@ final class Indexer extends Task_Runner {
 			'value'     => 'count',
 			'dependsOn' => array(
 				'relation' => 'AND',
-				'action'   => 'hide',
 				'rules'    => array(
 					array(
 						'store'   => 'query',
@@ -274,7 +344,16 @@ final class Indexer extends Task_Runner {
 		$options_order_setting->update( $setting_data );
 	}
 
-
+	/**
+	 * Get field setting support based on field type and input type.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array  $setting_support The setting support configuration.
+	 * @param string $type            The field type.
+	 * @param string $input_type      The input type.
+	 * @return array The modified setting support configuration.
+	 */
 	public static function get_field_setting_support( $setting_support, $type, $input_type ) {
 
 		// Add show count + hide empty to choice fields, for indexed queries.
@@ -313,7 +392,6 @@ final class Indexer extends Task_Runner {
 		}
 
 		return $setting_support;
-
 	}
 	/**
 	 * Add the preload API paths.
@@ -345,7 +423,7 @@ final class Indexer extends Task_Runner {
 	 * Init the admin hooks & messages.
 	 */
 	public static function add_notices() {
-		if ( ! self::has_reached_error_limit() ) {
+		if ( ! Indexer_Task_Runner::has_reached_error_limit() ) {
 			return;
 		}
 		// Display a message to the user if there are any issues with the task runner.
@@ -363,20 +441,27 @@ final class Indexer extends Task_Runner {
 		self::maybe_schedule_resync( $post_id );
 	}
 
+	/**
+	 * Maybe schedule a post to be resynced.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int $post_id The post ID to check.
+	 */
 	private static function maybe_schedule_resync( $post_id ) {
 		if ( ! self::should_resync( $post_id ) ) {
 			return;
 		}
 
-		if ( ! Util::is_frontend_only() ) {
+		if ( ! Base_Util::is_frontend_only() ) {
 			// If we're in the admin, then resync in the current proces, usually
 			// get done in the shutdown hook.  We don't want to run this on the
 			// frontend.
 			self::resync_post_queue( $post_id );
 			return;
 		}
-		
-		if ( ! self::is_enabled_on_frontend() ) {
+
+		if ( ! Indexer_Task_Runner::is_enabled_on_frontend() ) {
 			return;
 		}
 		// Otherwise if we are on the frontend, then add the task the queue
@@ -386,11 +471,10 @@ final class Indexer extends Task_Runner {
 			'status'    => 'pending',
 			'object_id' => $post_id,
 		);
-		self::add_task( $task_data );
-		Async::hook_dispatch_request();
-		return;
+		Indexer_Task_Runner::add_task( $task_data );
+		self::async_process_queue();
 	}
-	
+
 	/**
 	 * On attachment added schedule the post to be resynced.
 	 *
@@ -407,9 +491,9 @@ final class Indexer extends Task_Runner {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param    array   $form_fields    The form fields.
-	 * @param    WP_Post $post_before    The post before.
-	 * @param    WP_Post $post_after    The post after.
+	 * @param    array    $form_fields    The form fields.
+	 * @param    \WP_Post $post_before    The post before.
+	 * @param    \WP_Post $post_after     The post after.
 	 */
 	public static function attachment_updated( $form_fields, $post_before, $post_after ) {
 		self::maybe_schedule_resync( $post_after->ID );
@@ -431,7 +515,8 @@ final class Indexer extends Task_Runner {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param    int $post_id    The post ID to save.
+	 * @param int $meta    The meta ID.
+	 * @param int $post_id The post ID to save.
 	 */
 	public static function changed_post_meta( $meta, $post_id ) {
 		self::maybe_schedule_resync( $post_id );
@@ -455,7 +540,6 @@ final class Indexer extends Task_Runner {
 	 * @param    int $post_id    The post ID to delete.
 	 */
 	public static function delete_post( $post_id ) {
-		// TODO - remove the post from the index.
 		self::remove_post( $post_id );
 	}
 
@@ -507,14 +591,20 @@ final class Indexer extends Task_Runner {
 
 			self::$indexed_queries[ $query->get_id() ] = $query;
 
-			$post_types_to_index = array_merge( $post_types_to_index, $query->get_attribute( 'postTypes' ) );
+			$query_post_types = $query->get_attribute( 'postTypes' );
+			if ( is_array( $query_post_types ) ) {
+				$post_types_to_index = array_unique( array_merge( $post_types_to_index, $query_post_types ) );
+			}
 
 			foreach ( $post_types_to_index as $post_type ) {
 				// Map the post stati to the post type.
 				if ( ! isset( self::$indexed_post_stati_matrix[ $post_type ] ) ) {
 					self::$indexed_post_stati_matrix[ $post_type ] = array();
 				}
-				self::$indexed_post_stati_matrix[ $post_type ] = array_unique( array_merge( self::$indexed_post_stati_matrix[ $post_type ], $query->get_attribute( 'postStatus' ) ) );
+				$query_post_status = $query->get_attribute( 'postStatus' );
+				if ( is_array( $query_post_status ) ) {
+					self::$indexed_post_stati_matrix[ $post_type ] = array_unique( array_merge( self::$indexed_post_stati_matrix[ $post_type ], $query_post_status ) );
+				}
 
 				// Map the queries to the post type.
 				if ( ! isset( self::$indexed_queries_by_post_type[ $post_type ] ) ) {
@@ -529,7 +619,10 @@ final class Indexer extends Task_Runner {
 				self::$indexed_fields_by_post_type[ $post_type ] = array_merge( self::$indexed_fields_by_post_type[ $post_type ], $query_fields );
 			}
 
-			$indexed_post_stati = array_merge( $indexed_post_stati, $query->get_attribute( 'postStatus' ) );
+			$query_post_status = $query->get_attribute( 'postStatus' );
+			if ( is_array( $query_post_status ) ) {
+				$indexed_post_stati = array_merge( $indexed_post_stati, $query_post_status );
+			}
 
 			$fields = $query->get_fields();
 			foreach ( $fields as $field ) {
@@ -543,6 +636,14 @@ final class Indexer extends Task_Runner {
 		self::$indexed_post_stati = array_unique( $indexed_post_stati );
 
 		do_action( 'search-filter-pro/indexer/init_sync_data/finish' );
+
+		return array(
+			'post_types'          => self::$indexed_post_types,
+			'post_stati'          => self::$indexed_post_stati,
+			'queries'             => self::$indexed_queries,
+			'fields'              => self::$indexed_fields,
+			'fields_by_post_type' => self::$indexed_fields_by_post_type,
+		);
 	}
 
 
@@ -559,66 +660,15 @@ final class Indexer extends Task_Runner {
 	}
 
 	/**
-	 * Get the individual object indexed count.
+	 * Get the indexed fields by post type.
 	 *
 	 * @since 3.0.0
 	 *
-	 * @return int    The number of objects in the count result.
+	 * @return array    The indexed fields keyed by post type.
 	 */
-	public static function get_indexed_objects_count() {
-
-		// Add the filter to do a custom select.
-		add_filter( 'search_filter_index_rows_query_clauses', array( __CLASS__, 'update_index_query_unique_count_clauses' ) );
-
-		$query = new Index_Query(
-			array(
-				// Need to set this to count so the query is handled a count
-				// query in BerlinDB.
-				'count'  => true,
-				'number' => -1,
-			)
-		);
-
-		// Remove the filter after the query is run.
-		remove_filter( 'search_filter_index_rows_query_clauses', array( __CLASS__, 'update_index_query_unique_count_clauses' ) );
-
-		// Items contains the count of the objects.
-		return $query->items;
-	}
-
-	/**
-	 * To avoid big queries, better we update the SQL to select distinct columns.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param array $clauses The clauses to update.
-	 * @return array    The updated clauses.
-	 */
-	public static function update_index_query_unique_count_clauses( $clauses ) {
-		// Make sure we use distinct on the object ID to only count unique object_ids.
-		$clauses['fields'] = 'COUNT( DISTINCT object_id ) as COUNT';
-		return $clauses;
-	}
-
-	/**
-	 * Get the number of rows in the index.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @return int    The number of rows in the index.
-	 */
-	public static function get_indexed_rows_count() {
-		$query = new Index_Query(
-			array(
-				// Need to set this to count so the query is handled as a count
-				// query in BerlinDB.
-				'count'  => true,
-				'number' => -1,
-			)
-		);
-
-		// Items contains the count of the objects.
-		return $query->items;
+	public static function get_indexed_fields_by_post_type() {
+		self::init_sync_data();
+		return self::$indexed_fields_by_post_type;
 	}
 
 	/**
@@ -657,12 +707,11 @@ final class Indexer extends Task_Runner {
 	 *
 	 * @param    int   $post_id           The post ID to resync.
 	 * @param    array $args              Additional arguments, such as specific fields to sync.
+	 * @param    bool  $clear_caches      Whether to clear the object caches after resyncing.
 	 */
-	public static function resync_post( $post_id, $args = array() ) {
-		if ( ! self::should_resync( $post_id ) ) {
-			return;
-		}
-		self::process_post_sync( $post_id, $args );
+	public static function resync_post( $post_id, $args = array(), $clear_caches = true ) {
+		// Delegate to Post_Sync.
+		Post_Sync::resync_post( $post_id, $args, $clear_caches );
 	}
 
 	/**
@@ -671,8 +720,7 @@ final class Indexer extends Task_Runner {
 	 *
 	 * @since    3.0.0
 	 *
-	 * @param    int   $post_id           The post ID to resync.
-	 * @param    array $args              Additional arguments, such as specific fields to sync.
+	 * @param    int $post_id           The post ID to resync.
 	 */
 	public static function resync_post_queue( $post_id ) {
 		if ( ! self::should_resync( $post_id ) ) {
@@ -686,21 +734,43 @@ final class Indexer extends Task_Runner {
 	 *
 	 * @since    3.0.0
 	 *
-	 * @param    int   $post_id           The post ID to resync.
-	 * @param    array $args              Additional arguments, such as specific fields to sync.
+	 * @param    int $post_id           The post ID to remove.
 	 */
 	public static function remove_post( $post_id ) {
 		if ( ! self::should_resync( $post_id ) ) {
 			return;
 		}
 
-		$query = new Index_Query();
-		// TODO - we need to add the object type to the index.
-		// Delete the items from the index.
-		$query->delete_items( array( 'object_id' => $post_id ) );
-
-		// Figure out which caches to clear base on the post type.
 		$post_type = get_post_type( $post_id );
+
+		// Clear legacy index if migration not complete (non-search fields only).
+		if ( ! self::migration_completed() ) {
+			// Bulk delete all references to the object.
+			Indexer\Legacy\Updater::clear_object_index( $post_id );
+		}
+
+		// Clear indexes for all relevant fields.
+		// TODO - we could bulk clear these in each index table rather than looping
+		// through each field.
+		if ( $post_type ) {
+			$indexed_fields_by_post_type = self::get_indexed_fields_by_post_type();
+
+			if ( isset( $indexed_fields_by_post_type[ $post_type ] ) ) {
+				foreach ( $indexed_fields_by_post_type[ $post_type ] as $field ) {
+
+					// Clear new indexes (bitmap/bucket/search) via strategy.
+					$strategy = Index_Strategy_Factory::for_field( $field );
+					if ( $strategy ) {
+						$strategy->clear( $field->get_id(), $post_id );
+					}
+				}
+			}
+		}
+
+		// Remove from parent mapping table (for variations).
+		Parent_Map_Query::delete_mapping( $post_id );
+
+		// Clear caches.
 		self::clear_caches_by_post_type( $post_type );
 	}
 
@@ -722,11 +792,7 @@ final class Indexer extends Task_Runner {
 		}
 
 		foreach ( self::$indexed_queries_by_post_type[ $post_type ] as $query ) {
-			Query_Cache::delete_items(
-				array(
-					'query_id' => $query->get_id(),
-				)
-			);
+			Tiered_Cache::invalidate_query_cache( $query->get_id() );
 		}
 	}
 
@@ -739,11 +805,15 @@ final class Indexer extends Task_Runner {
 		if ( empty( self::$resync_queue ) ) {
 			return;
 		}
-		$items         = apply_filters( 'search-filter-pro/indexer/resync_queue/items', self::$resync_queue );
+
+		$items              = apply_filters( 'search-filter-pro/indexer/resync_queue/items', self::$resync_queue );
 		self::$resync_queue = array();
 
+		// Flag indexed objects stats as needing refresh (batched per request).
+		Stats::flag_refresh();
+
 		// Add tasks to queue and try to launch a background process.
-		if ( self::get_processing_method() === 'background' ) {
+		if ( Indexer_Task_Runner::get_processing_method() === 'background' ) {
 			// Otherwise if we are on the frontend, then add the task the queue
 			// and try to process it.
 			foreach ( $items as $sync_item ) {
@@ -752,592 +822,45 @@ final class Indexer extends Task_Runner {
 					'status'    => 'pending',
 					'object_id' => $sync_item,
 				);
-				self::add_task( $task_data );
+				Indexer_Task_Runner::add_task( $task_data );
 			}
 
-			Async::hook_dispatch_request();
+			self::async_process_queue();
 
 		} else {
 			foreach ( $items as $sync_item ) {
-				self::process_post_sync( $sync_item );
+				Post_Sync::process_post_sync( $sync_item );
 			}
+			// The task runner already clears caches automatically
+			// so manually clear them here seen as we're bypassing it.
+			Util::clear_object_caches();
 		}
-
-	}
-
-	/**
-	 * Resync a post.
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param    int   $post_id    The post ID to resync.
-	 * @param    array $args       Additional arguments to pass to the sync.
-	 *                             Currently 'fields' and 'action' is supported.
-	 */
-	private static function process_post_sync( $post_id, $args = array() ) {
-
-		wp_using_ext_object_cache( false );
-
-		$post = get_post( $post_id );
-		if ( ! $post ) {
-			// Then remove any data for this post.
-			return;
-		}
-
-		/**
-		 * Get the fields to sync, if '$args['fields']' is not set, then
-		 * sync all the fields that are connected to the post type.
-		 */
-		$fields_to_sync = self::$indexed_fields_by_post_type[ $post->post_type ];
-		if ( isset( $args['fields'] ) ) {
-			$fields_to_sync = $args['fields'];
-		}
-
-		// absint will convert the false value to 0 in the event of an issue.
-		$post_parent_id = absint( wp_get_post_parent_id( $post_id ) );
-
-		$query_ids = array();
-		// Loop through the fields synced to the post.
-		foreach ( $fields_to_sync as $field ) {
-			// Then get the new sync data for this field.
-			self::sync_field_index( $field, $post_id, $post_parent_id );
-			// Track which connected queries have been updated.
-			$query_ids[] = $field->get_query_id();
-		}
-
-		// Clear the caches for the associated queries.
-		foreach ( $query_ids as $query_id ) {
-			Query_Cache::clear_caches_by_query_id( $query_id );
-		}
-	}
-
-	
-
-	/**
-	 * Clear the index for a field.
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param    Field $field    The field to clear the index for.
-	 * @param    int   $object_id  The post ID to clear the index for.
-	 * @param    int   $object_parent_id  The post parent ID to clear the index for.
-	 */
-	public static function clear_field_index( $field, $object_id = -1, $object_parent_id = -1 ) {
-		$query = new Index_Query();
-
-		$delete_where = array(
-			'field_id' => $field->get_id(),
-		);
-		if ( $object_id !== -1 ) {
-			$delete_where['object_id'] = $object_id;
-		}
-		if ( $object_parent_id !== -1 ) {
-			$delete_where['object_parent_id'] = $object_parent_id;
-		}
-
-		$query->delete_items( $delete_where );
-	}
-
-	/**
-	 * Sync the index for a field + post.
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param    Field $field             The field to sync.
-	 * @param    int   $object_id         The object ID to sync.
-	 * @param    int   $object_parent_id  The object parent ID to sync.
-	 */
-	public static function sync_field_index( $field, $object_id, $object_parent_id = 0 ) {
-
-		// Now clear them as we'll rebuild them.
-		self::clear_field_index( $field, $object_id );
-
-		$item_attributes = array(
-			'object_id'        => $object_id,
-			'object_parent_id' => $object_parent_id,
-			'field_id'         => $field->get_id(),
-		);
-
-		// Allow the build of the index items to be short circuited.
-		$values = apply_filters( 'search-filter-pro/indexer/sync_field_index/override_values', null, $field, $object_id );
-
-		// If we get an array instead of null, then it's an override.
-		if ( is_array( $values ) ) {
-
-			// Build items from the values.
-			$items = self::build_index_items_from_values( $item_attributes, $values );
-
-			// Add the items to the DB.
-			self::add_items_to_index( $items );
-
-			// Clear any caches related to this field - make sure this is after
-			// the items have been added to the index in case of collisions.
-			Query_Cache::clear_caches_by_field_id( $field->get_id() );
-
-			return;
-		}
-
-		// The index items to add to the DB.
-		$values = array();
-
-		$type = $field->get_attribute( 'type' );
-
-		if ( ! in_array( $type, self::$indexed_field_types, true ) ) {
-			// Don't do anything with search or control.
-			return;
-		}
-
-		// Get the options.
-		$data_type = $field->get_attribute( 'dataType' );
-
-		if ( $data_type === 'taxonomy' ) {
-			// Generate taxonomy insert data.
-			$values = self::get_post_taxonomy_values( $object_id, $field->get_attribute( 'dataTaxonomy' ) );
-
-		} elseif ( $data_type === 'post_attribute' ) {
-
-			$attribute_data_type = $field->get_attribute( 'dataPostAttribute' );
-
-			if ( $attribute_data_type === 'post_type' ) {
-				// Generate post type insert data.
-				$values = self::get_post_type_values( $object_id );
-
-			} elseif ( $attribute_data_type === 'post_status' ) {
-				// Generate post status insert data.
-				$values = self::get_post_status_values( $object_id );
-
-			} elseif ( $attribute_data_type === 'post_author' ) {
-				// Generate post status insert data.
-				$values = self::get_post_author_values( $object_id );
-
-			} elseif ( $attribute_data_type === 'post_published_date' ) {
-				// Generate post date insert data.
-				$values = self::get_post_date_values( $object_id );
-			}
-		} elseif ( $data_type === 'custom_field' ) {
-			$values = self::get_post_custom_field_values( $object_id, $field->get_attribute( 'dataCustomField' ) );
-		}
-
-		// Build items from the values.
-		$items = self::build_index_items_from_values( $item_attributes, $values );
-
-		// Add the items.
-		self::add_items_to_index( $items );
-
-		// Clear any caches related to this field - make sure this is after
-		// the items have been added to the index in case of collisions.
-		Query_Cache::clear_caches_by_field_id( $field->get_id() );
-	}
-
-	/**
-	 * Build the index items from the values.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param    array $item_attributes    The item attributes to get the data for.
-	 * @param    array $values    The values to get the index items for.
-	 * @return   array    The index items for the values.
-	 */
-	private static function build_index_items_from_values( $item_attributes, $values ) {
-		$items = array();
-		foreach ( $values as $value ) {
-			$items[] = self::build_index_item_with_value( $item_attributes, $value );
-		}
-		return $items;
-	}
-
-	/**
-	 * Get the index items for a field + post.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param    int $field_id    The field ID to get the data for.
-	 * @param    int $object_id    The object ID to get the data for.
-	 * @return   array    The index items for the field + post.
-	 */
-	public static function get_field_index_items( $field_id, $object_id = -1 ) {
-		$query_args = array(
-			'field_id' => $field_id,
-		);
-		if ( $object_id !== -1 ) {
-			$query_args['object_id'] = $object_id;
-		}
-		$query = new Index_Query( $query_args );
-
-		if ( is_wp_error( $query ) ) {
-			return array();
-		}
-		return $query->items;
-	}
-
-	/**
-	 * Get the index values for a post taxonomy.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param    int    $post_id    The post ID to get the data for.
-	 * @param    string $taxonomy_name    The taxonomy name to get the data for.
-	 * @return   array    The index values for the post taxonomy.
-	 */
-	private static function get_post_taxonomy_values( $post_id, $taxonomy_name ) {
-		$terms = get_the_terms( $post_id, $taxonomy_name );
-		if ( is_wp_error( $terms ) || $terms === false ) {
-			return array();
-		}
-
-		$values = array();
-		foreach ( $terms as $term ) {
-			// Add each term to the item.
-			$values[] = $term->slug;
-
-			// Loop through and attach all parents they exist.
-			$parent_id = $term->parent;
-			while ( $parent_id !== 0 ) {
-				$parent_term = get_term( $parent_id, $taxonomy_name );
-				$parent_id   = $parent_term->parent;
-				if ( ! in_array( $parent_term->slug, $values, true ) ) {
-					$values[] = $parent_term->slug;
-				}
-			}
-		}
-		return $values;
-	}
-
-
-	/**
-	 * Get the index values for a posts post type.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param    int $post_id    The post ID to get the data for.
-	 * @return   array    The index values for the post type.
-	 */
-	private static function get_post_type_values( $post_id ) {
-		$post_type = get_post_type( $post_id );
-		if ( $post_type === false ) {
-			return array();
-		}
-		return array( $post_type );
-	}
-
-	/**
-	 * Get the index values for a posts post status.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param    int $post_id    The post ID to get the data for.
-	 * @return   array    The index values for the post status.
-	 */
-	private static function get_post_status_values( $post_id ) {
-		$post_status = get_post_status( $post_id );
-		if ( $post_status === false ) {
-			return array();
-		}
-		return array( $post_status );
-	}
-
-	/**
-	 * Get the index values for a post author.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param    int $post_id    The post ID to get the data for.
-	 * @return   array    The index values for the post author.
-	 */
-	private static function get_post_author_values( $post_id ) {
-		$post_author = get_post_field( 'post_author', $post_id );
-		if ( $post_author === false ) {
-			return array();
-		}
-		return array( $post_author );
-	}
-
-	/**
-	 * Get the index values for a post date.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param    int $post_id    The post ID to get the data for.
-	 * @return   array    The index values for the post date.
-	 */
-	private static function get_post_date_values( $post_id ) {
-		$post_date = get_post_field( 'post_date', $post_id );
-		if ( $post_date === false ) {
-			return array();
-		}
-		return array( $post_date );
-	}
-
-	/**
-	 * Get the index values for a post custom field.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param    int    $post_id    The post ID to get the data for.
-	 * @param    string $custom_field_key    The custom field key to get the data for.
-	 * @return   array    The index values for the custom field.
-	 */
-	private static function get_post_custom_field_values( $post_id, $custom_field_key ) {
-		// Get the custom field data.
-		$custom_field_data = get_post_meta( $post_id, $custom_field_key );
-
-		if ( $custom_field_data === false ) {
-			return array();
-		}
-
-		$values = array();
-		foreach ( $custom_field_data as $custom_field_value ) {
-			if ( is_scalar( $custom_field_value ) ) {
-				// Add the item to the list.
-				$values[] = $custom_field_value;
-
-			} elseif ( is_array( $custom_field_value ) ) {
-				// Loop through the array and add each value to the list..
-				foreach ( $custom_field_value as $array_value ) {
-					if ( is_scalar( $custom_field_value ) ) {
-						// Build the item and add it to the list.
-						$values[] = $array_value;
-					}
-				}
-			}
-		}
-		return $values;
-	}
-
-	/**
-	 * Add items to the index.
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param    array $items    The items to add to the index.
-	 */
-	private static function add_items_to_index( $items ) {
-
-		if ( empty( $items ) ) {
-			return;
-		}
-
-		$query = new Index_Query();
-		// Add the items to the DB.
-		$query->add_items( $items );
-	}
-
-	/**
-	 * Build an index item and with its value.
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param    array $item    The item to build.
-	 * @param    mixed $value   The value to add to the item.
-	 * @return   array          The item with the value added.
-	 */
-	public static function build_index_item_with_value( $item, $value ) {
-		$item['value'] = $value;
-		return $item;
 	}
 
 	/**
 	 * Clear the index.
 	 *
+	 * Clears all index data: legacy index (if migration not complete),
+	 * bitmap index, bucket index, and search index.
+	 *
 	 * @since    3.0.0
 	 */
 	public static function clear_index() {
-		$index_table = new Index_Table();
-		// If the table does not exist, then create the table.
-		if ( $index_table->exists() ) {
-			$index_table->truncate();
-		}
-	}
-
-	/**
-	 * Run a task.
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param    \Search_Filter_Pro\Task_Runner\Task $task    The task to process.
-	 */
-	protected static function run_task( &$task ) {
-
-		Util::error_log( 'Run task: ' . $task->get_action(), 'notice' );
-
-		do_action( 'search-filter-pro/indexer/run_task/start', $task );
-
-		switch ( $task->get_action() ) {
-			case 'clear_index':
-				self::clear_index();
-				break;
-			case 'rebuild':
-				self::task_rebuild( $task );
-				break;
-			case 'rebuild_query':
-				self::task_rebuild_query( $task );
-				break;
-			case 'remove_query':
-				self::task_remove_query( $task );
-				break;
-			case 'rebuild_field':
-				self::task_rebuild_field( $task );
-				break;
-			case 'remove_field':
-				self::task_remove_field( $task );
-				break;
-			case 'sync_post':
-				self::task_post_sync( $task );
-				break;
-			default:
-				Util::error_log( 'Unknown task action: ' . $task->get_action(), 'error' );
-				break;
+		// Only clear legacy if migration NOT complete.
+		if ( ! self::migration_completed() ) {
+			Indexer\Legacy\Updater::reset();
 		}
 
-		do_action( 'search-filter-pro/indexer/run_task/finish', $task );
-	}
-	/**
-	 * Rebuild the query index from scratch.
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param    Task $task    The task to process.
-	 */
-	private static function task_rebuild_query( $task ) {
+		// Always clear new indexes.
+		Indexer\Bucket\Updater::reset();
+		Indexer\Bitmap\Updater::reset();
+		Indexer\Search\Indexer::reset();
 
-		$query_id = $task->get_meta( 'query_id', true );
-		if ( ! $query_id ) {
-			$task->set_status( 'error' );
-			$task->save();
-			Util::error_log( 'Query ID not set for rebuild query task.', 'error' );
-			return;
-		}
+		// Clear query cache to prevent stale cached results.
+		Tiered_Cache::reset();
 
-		// Lookup the query and get the post types.
-		$query = Search_Filter_Query::find( array( 'id' => $query_id ) );
-		if ( is_wp_error( $query ) ) {
-			$task->set_status( 'error' );
-			$task->save();
-			Util::error_log( 'Query not found for rebuild query task.', 'error' );
-			return;
-		}
-
-		// Make sure there are post types set.
-		$post_types = $query->get_attribute( 'postTypes' );
-		if ( empty( $post_types ) ) {
-			$task->set_status( 'error' );
-			$task->save();
-			Util::error_log( 'Post types not found for rebuild query task.', 'error' );
-			return;
-		}
-
-		// Check to see if we're just starting the rebuild.
-		$page_number = $task->get_meta( 'page_number', true );
-		if ( ! $page_number ) {
-			// Clear any existing tasks and index, this should have been done
-			// already, the first time wouldn't catch any tasks in progress.
-			self::clear_all_query_data( $query, array( 'id__not_in' => array( $task->get_id() ) ) );
-		}
-
-		/*
-		 * Add query ID to the task so we don't rebuild the indexes for
-		 * all connected fields to an object.
-		 */
-		$additional_task_data = array(
-			'meta' => array( 'query_id' => $query_id ),
-		);
-		self::generate_rebuild_index_tasks( $task, $post_types, $additional_task_data );
-	}
-
-	/**
-	 * Removes the index for a query (and clears up any related tasks).
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param    Task $task    The task to process.
-	 */
-	private static function task_remove_query( $task ) {
-
-		// Get the query ID.
-		$query_id = $task->get_meta( 'query_id' );
-		if ( ! $query_id ) {
-			Util::error_log( 'Query ID not found for remove query task.', 'error' );
-			$task->set_status( 'error' );
-			$task->save();
-			return;
-		}
-
-		// Get the query.
-		$query = Search_Filter_Query::find( array( 'id' => $query_id ) );
-		if ( is_wp_error( $query ) ) {
-			$task->set_status( 'error' );
-			$task->save();
-			Util::error_log( 'Query not found for remove query task.', 'error' );
-			return;
-		}
-
-		// Clear any existing tasks and index, this should have been done
-		// already, the first time wouldn't catch any tasks in progress.
-		self::clear_all_query_data( $query, array( 'id__not_in' => array( $task->get_id() ) ) );
-
-		$task->set_status( 'complete' );
-		$task->save();
-	}
-
-	/**
-	 * Rebuild the field index from scratch.
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param    Task $task    The task to process.
-	 */
-	private static function task_rebuild_field( $task ) {
-
-		$field_id = $task->get_meta( 'field_id', true );
-		if ( ! $field_id ) {
-			$task->set_status( 'error' );
-			$task->save();
-			Util::error_log( 'Field ID not set for rebuild field task.', 'error' );
-			return;
-		}
-
-		// Lookup the field and get the post types.
-		$field = Field::find( array( 'id' => $field_id ) );
-		if ( is_wp_error( $field ) ) {
-			$task->set_status( 'error' );
-			$task->save();
-			Util::error_log( 'Field not found for rebuild field task.', 'error' );
-			return;
-		}
-
-		// Lookup the field and get the post types.
-		$query = Search_Filter_Query::find( array( 'id' => $field->get_query_id() ) );
-		if ( is_wp_error( $query ) ) {
-			$task->set_status( 'error' );
-			$task->save();
-			Util::error_log( 'Query not found for rebuild field task.', 'error' );
-			return;
-		}
-
-		// Make sure there are post types set.
-		$post_types = $query->get_attribute( 'postTypes' );
-		if ( empty( $post_types ) ) {
-			$task->set_status( 'error' );
-			$task->save();
-			Util::error_log( 'Post types not found for rebuild field task.', 'error' );
-			return;
-		}
-
-		// Check to see if we're just starting the rebuild.
-		$page_number = $task->get_meta( 'page_number', true );
-		if ( ! $page_number ) {
-			// If so clear out the existing tasks and index.
-			self::clear_all_field_data( $field, array( 'id__not_in' => array( $task->get_id() ) ) );
-		}
-
-		/*
-		 * Add query ID to the task so we don't rebuild the indexes for
-		 * all connected fields to an object.
-		 */
-		$additional_task_data = array(
-			'meta' => array( 'field_id' => $field_id ),
-		);
-		self::generate_rebuild_index_tasks( $task, $post_types, $additional_task_data );
+		// Invalidate stats cache.
+		Stats::flag_refresh();
 	}
 
 	/**
@@ -1345,11 +868,23 @@ final class Indexer extends Task_Runner {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param    Field $field    The field to clear the index for.
+	 * @param Field $field The field to clear the index for.
+	 * @param array $args  Optional arguments.
 	 */
 	public static function clear_all_field_data( $field, $args = array() ) {
-		// If so clear out the old data.
-		self::clear_field_index( $field );
+		$field_id = $field->get_id();
+
+		// Clear ALL index types to handle type transitions.
+		// When a field type changes (e.g., range→choice), we need to clear the old
+		// index type's data, not just the current one.
+		foreach ( Index_Strategy_Factory::get_all() as $strategy ) {
+			$strategy->clear( $field_id );
+		}
+
+		// Clear legacy if migration not complete.
+		if ( ! self::migration_completed() ) {
+			Indexer\Legacy\Updater::clear_field_index( $field_id );
+		}
 
 		// Delete any existing tasks for this field.
 		$clear_tasks_args = wp_parse_args(
@@ -1366,7 +901,19 @@ final class Indexer extends Task_Runner {
 			)
 		);
 
-		self::clear_tasks( $clear_tasks_args );
+		Indexer_Task_Runner::clear_tasks( $clear_tasks_args );
+
+		// Increment generation to invalidate any opportunistic process that starts
+		// during the window between clearing tasks and building new ones.
+		// With multiple admin tabs polling, this window could be exploited.
+		Indexer_Task_Runner::increment_generation();
+
+		// Invalidate running process to prevent race conditions.
+		// Any running process will detect the generation mismatch and exit.
+		Indexer_Task_Runner::reset_process_locks();
+
+		// Clear query cache for this field's query.
+		Tiered_Cache::invalidate_query_cache( $field->get_query_id() );
 	}
 
 	/**
@@ -1374,9 +921,19 @@ final class Indexer extends Task_Runner {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param    Search_Filter_Query $query    The query to clear the index for.
+	 * @param Search_Filter_Query $query The query to clear the index for.
+	 * @param array               $args  Optional arguments.
 	 */
 	public static function clear_all_query_data( $query, $args = array() ) {
+		// Increment generation FIRST to invalidate any opportunistic process
+		// that starts during the window between clearing tasks and building new ones.
+		Indexer_Task_Runner::increment_generation();
+
+		// Invalidate running process to prevent race conditions.
+		// This ensures any running process will detect the change and exit
+		// before we modify the task queue.
+		Indexer_Task_Runner::reset_process_locks();
+
 		// Loop through the queries fields, and delete tasks and index data.
 		$query_fields = $query->get_fields(
 			array(
@@ -1398,7 +955,7 @@ final class Indexer extends Task_Runner {
 			)
 		);
 
-		self::clear_tasks( $clear_tasks_args );
+		Indexer_Task_Runner::clear_tasks( $clear_tasks_args );
 
 		foreach ( $query_fields as $field ) {
 			// Clear any existing tasks and index, this should have been done
@@ -1412,455 +969,29 @@ final class Indexer extends Task_Runner {
 	}
 
 	/**
-	 * Removes the index for a field (and clears up any related tasks).
+	 * Schedule bucket rebuild task.
 	 *
-	 * @since    3.0.0
+	 * Callback for bucket rebuild action hooks. Adds task to queue
+	 * for automated bucket rebuilding when overflow threshold exceeded.
 	 *
-	 * @param    Task $task    The task to process.
+	 * @since 3.0.9
+	 *
+	 * @param int $field_id Field ID that needs rebuild.
 	 */
-	private static function task_remove_field( $task ) {
-
-		// Get the query ID.
-		$field_id = $task->get_meta( 'field_id' );
-		if ( ! $field_id ) {
-			Util::error_log( 'Field ID not found for remove field task.', 'error' );
-			$task->set_status( 'error' );
-			$task->save();
-			return;
-		}
-
-		// Get the field.
-		$field = Field::find( array( 'id' => $field_id ) );
-		if ( is_wp_error( $field ) ) {
-			$task->set_status( 'error' );
-			$task->save();
-			Util::error_log( 'Field not found for remove field task.', 'error' );
-			return;
-		}
-
-		// Clear any existing tasks and index, this should have been done
-		// already, the first time wouldn't catch any tasks in progress.
-		self::clear_all_field_data( $field, array( 'id__not_in' => array( $task->get_id() ) ) );
-
-		$task->set_status( 'complete' );
-		$task->save();
-	}
-
-	/**
-	 * Rebuild the index from scratch.
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param    Task $task    The task to process.
-	 */
-	private static function task_rebuild( &$task ) {
-		self::init_sync_data();
-		$page_number = $task->get_meta( 'page_number', true );
-
-		if ( ! $page_number ) {
-			self::clear_index();
-			// Clear any other indexer related tasks.
-			self::clear_tasks(
-				array(
-					'id__not_in' => array( $task->get_id() ),
-				)
-			);
-		}
-		self::generate_rebuild_index_tasks( $task, self::$indexed_post_types );
-	}
-
-	/**
-	 * Rebuild the index from scratch.
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param    Task  $task                    The task to process.
-	 * @param    array $post_types              The post types to rebuild.
-	 * @param    array $additional_task_data    Additional data to pass to the task.
-	 */
-	private static function generate_rebuild_index_tasks( &$task, $post_types, $additional_task_data = array() ) {
-		$page_number = $task->get_meta( 'page_number', true );
-		$is_starting = false;
-		if ( ! $page_number ) {
-			$page_number = 1;
-			$is_starting = true;
-		}
-		$page_number = absint( $page_number );
-
-		$page_size = self::$query_page_size;
-
-		$query     = new \WP_Query(
-			array(
-				'post_type'              => $post_types,
-				'posts_per_page'         => $page_size,
-				'paged'                  => $page_number,
-				'post_status'            => 'any',
-				'fields'                 => 'ids',
-				'cache_results'          => false,
-				'suppress_filters'       => true,
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
-				'lang'                   => '',
-			)
+	public static function schedule_bucket_rebuild( $field_id ) {
+		// Add rebuild task to queue.
+		$task_data = array(
+			'action' => 'rebuild_bucket',
+			'status' => 'pending',
+			'meta'   => array(
+				'field_id' => $field_id,
+			),
 		);
 
-		if ( $is_starting ) {
-			$data = array(
-				'total'   => $query->found_posts,
-				'current' => 0,
-			);
-			self::update_progress_data( $data );
-		}
+		Indexer_Task_Runner::add_task( $task_data );
 
-		foreach ( $query->posts as $post_id ) {
-			$task_data = array(
-				'action'    => 'sync_post',
-				'status'    => 'pending',
-				'object_id' => $post_id,
-			);
-			$task_data = wp_parse_args( $task_data, $additional_task_data );
-			self::add_task( $task_data );
-		}
-
-		// If we've reached the max number of pages, then we're done.
-		if ( $page_number >= $query->max_num_pages ) {
-			$task->set_status( 'complete' );
-			$task->save();
-			$task->delete_meta( 'page_number' );
-			return;
-		}
-
-		// Else, update the page number and run again.
-		$task->update_meta(
-			'page_number',
-			$page_number + 1
-		);
-	}
-
-	/**
-	 * Get the indexer progress option name.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @return string The indexer progress option name.
-	 */
-	private static function get_progress_data_option_name() {
-		return self::$progress_data_option_name;
-	}
-
-	/**
-	 * Get the indexer progress.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @return array The indexer progress.
-	 */
-	public static function get_progress_data() {
-		$option_name = self::get_progress_data_option_name();
-		return Options::get_option_value( $option_name );
-	}
-
-	/**
-	 * Clear the indexer progress.
-	 *
-	 * @since 3.0.0
-	 */
-	public static function clear_progress_data() {
-		$option_name = self::get_progress_data_option_name();
-		Options::delete_option( $option_name );
-	}
-
-	/**
-	 * Update the indexer progress.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param array $data The data to update.
-	 */
-	private static function update_progress_data( $data ) {
-		$indexer_progress = self::get_progress_data();
-		$default          = array(
-			'current' => 0,
-			'total'   => 0,
-			'time'    => time(),
-		);
-		if ( ! $indexer_progress ) {
-			$indexer_progress = $default;
-		}
-		$new_indexer_progress = wp_parse_args( $data, $indexer_progress );
-
-		$option_name = self::get_progress_data_option_name();
-		Options::update_option_value( $option_name, $new_indexer_progress );
-	}
-
-
-	/**
-	 * Clear the objects count when tasks have finished.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param Task $task The task that has finished.
-	 */
-	public static function finish_task( $task ) {
-	}
-
-	/**
-	 * Sync a post.
-	 *
-	 * @since    3.0.0
-	 *
-	 * @param    Task $task    The task to process.
-	 */
-	private static function task_post_sync( $task ) {
-		$post_id = $task->get_object_id();
-		$fields  = array();
-
-		$field_id = $task->get_meta( 'field_id', true );
-		$query_id = $task->get_meta( 'query_id', true );
-
-		// Check field ID before query ID, because field resync attaches
-		// the query_id for easier management and deletion.
-		if ( $field_id ) {
-			$field = Field::find( array( 'id' => $field_id ) );
-			if ( ! is_wp_error( $field ) ) {
-				$fields[] = $field;
-			}
-		} elseif ( $query_id ) {
-			// If no specific field IDs found, then see if we have a query.
-			$query = Search_Filter_Query::find( array( 'id' => $query_id ) );
-			if ( ! is_wp_error( $query ) ) {
-				$query_fields = $query->get_fields();
-				foreach ( $query_fields as $query_field ) {
-					$fields[] = $query_field;
-				}
-			}
-		} else {
-			self::init_sync_data();
-			$fields = self::$indexed_fields;
-		}
-
-		$args = array(
-			'fields' => $fields,
-		);
-
-		self::resync_post( $post_id, $args );
-
-		$task->set_status( 'complete' );
-		$task->save();
-
-		// Update the indexer progress.
-		$indexer_progress = self::get_progress_data();
-		$default          = array(
-			'current' => 0,
-			'total'   => 0,
-			'time'    => time(),
-		);
-		if ( ! $indexer_progress ) {
-			$indexer_progress = $default;
-		}
-
-		$indexer_progress['current']++;
-		self::update_progress_data( $indexer_progress );
-	}
-
-	/**
-	 * Reset the indexer and related tasks.
-	 *
-	 * @since 3.0.0
-	 */
-	public static function reset() {
-		self::reset_tasks();
-		self::clear_index();
-		self::clear_progress_data();
-		self::reset_error_count();
-		self::reset_process_locks();
-	}
-
-	/**
-	 * Run the indexer process.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param string $process_key Optional process key to run.
-	 */
-	public static function run_processing( $process_key = null ) {
-
-		$index_method = self::get_processing_method();
-
-		self::set_status( 'processing' );
-
-		if ( $process_key === null ) {
-			// TODO - should we reset things here? when this is null,
-			// it's implied were starting a new process, and its actually
-			// forced... so
-			$process_key = self::create_process_key();
-		}
-
-		if ( $process_key ) {
-
-			// Important: create_process_lock_time() should be called as
-			// soon as possible after create_process_key() so that both
-			// always exist.
-			self::create_process_lock_time();
-
-			$index_method = self::get_processing_method();
-
-			if ( $index_method === 'background' ) {
-				self::spawn_run_process( $process_key );
-			} else {
-				// Run manually.
-				self::run_tasks( $process_key );
-				self::reset_process_locks();
-			}
-		}
-	}
-
-	/**
-	 * Get the indexer processing method.
-	 *
-	 * @since 3.0.6
-	 *
-	 * @return string The indexer method.
-	 */
-	public static function get_processing_method() {
-
-		if ( ! self::can_use_background_processing() ) {
-			return 'manual';
-		}
-
-		return self::get_background_processing_option();
-	}
-
-	public static function get_background_processing_option() {
-		
-		$default_method = 'background';
-
-		$indexer_options_value = Options::get_option_value( 'indexer' );
-		if ( $indexer_options_value && isset( $indexer_options_value['useBackgroundProcessing'] ) ) {
-			return $indexer_options_value['useBackgroundProcessing'] === 'yes' ? 'background' : 'manual';
-		}
-
-		return $default_method;
-	}
-	/**
-	 * Check if the indexer is enabled on the frontend.
-	 *
-	 * @since 3.0.6
-	 *
-	 * @return bool Whether the indexer is enabled on the frontend.
-	 */
-	public static function is_enabled_on_frontend() {
-		$indexer_options_value = Options::get_option_value( 'indexer' );
-		if ( $indexer_options_value && isset( $indexer_options_value['enableOnFrontend'] ) ) {
-			return $indexer_options_value['enableOnFrontend'] === 'yes' ? true : false;
-		}
-		return true;
-	}
-
-	/**
-	 * Spawn a new indexer process.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param string $process_key The process key to spawn.
-	 */
-	public static function spawn_run_process( $process_key ) {
-
-		// Abort if we have errored.
-		if ( self::get_status() === 'error' ) {
-			return;
-		}
-
-		$headers = array(
-			'Cache-Control' => 'no-cache',
-		);
-
-		// Try get and pass any http auth credentials if they exist to send in our rest api request.
-		$credentials = \Search_Filter_Pro\Core\Authentication::get_http_auth_credentials();
-		if ( ! empty( $credentials ) ) {
-			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-			$headers['Authorization'] = 'Basic ' . base64_encode( $credentials['username'] . ':' . $credentials['password'] );
-		}
-
-		$options = array(
-			'method'    => 'GET',
-			'headers'   => $headers,
-			'timeout'   => 0.01,
-			'blocking'  => false,
-			'cookies'   => $_COOKIE,
-			'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
-		);
-
-		$rest_url = add_query_arg( 'process_key', $process_key, get_rest_url( null, 'search-filter-pro/v1/indexer/process' ) );
-		$result   = wp_remote_post( $rest_url, $options );
-		return $result;
-	}
-
-	/**
-	 * Check for errors.
-	 *
-	 * @since 3.0.0
-	 */
-	public static function check_for_errors() {
-		self::validate_process();
-	}
-
-	/**
-	 * Check if a process should be started and if so, start it.
-	 *
-	 * @since 3.0.0
-	 */
-	public static function maybe_start_process() {
-
-		wp_using_ext_object_cache( false );
-
-		// No tasks so don't do anything.
-		if ( self::has_finished_tasks() ) {
-			return;
-		}
-
-		if ( self::get_status() === 'paused' ) {
-			return;
-		}
-
-		// Already a lock in place, so a process is running.
-		if ( self::has_process_key() ) {
-			return;
-		}
-
-		// Try to spawn a new process.
-		self::run_processing();
-	}
-
-	/**
-	 * Is calculating returns whether the indexer is currently calculating
-	 * which posts to index.
-	 */
-	public static function get_task_type() {
-		$current_indexer_task = self::get_next_task();
-
-		if ( ! $current_indexer_task ) {
-			return '';
-		}
-
-		$task_action = $current_indexer_task->get_action();
-
-		$rebuild_tasks = array( 'rebuild', 'rebuild_field', 'rebuild_query' );
-		if ( in_array( $task_action, $rebuild_tasks, true ) ) {
-			return 'rebuild';
-		}
-
-		$remove_tasks = array( 'remove_query', 'remove_field' );
-		if ( in_array( $task_action, $remove_tasks, true ) ) {
-			return 'remove';
-		}
-
-		$sync_tasks = array( 'sync_post' );
-		if ( $current_indexer_task && in_array( $current_indexer_task->get_action(), $sync_tasks, true ) ) {
-			return 'sync';
-		}
-
-		return '';
+		// Trigger async processing.
+		self::async_process_queue();
 	}
 
 	/**
@@ -1875,67 +1006,6 @@ final class Indexer extends Task_Runner {
 			return false;
 		}
 		return $run_wp_query;
-	}
-
-	/**
-	 * Should we apply the field to the WP_Query.
-	 *
-	 * @param bool                $should_apply Whether to apply the field.
-	 * @param Field               $field The field to check.
-	 * @param Search_Filter_Query $query The query to check.
-	 * @return bool Whether to apply the field.
-	 */
-	public static function should_apply_wp_query_field( $should_apply, $field, $query ) {
-		if ( $query->get_attribute( 'useIndexer' ) !== 'yes' ) {
-			return $should_apply;
-		}
-
-		if ( ! in_array( $field->get_attribute( 'type' ), self::$indexed_field_types, true ) ) {
-			return $should_apply;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Should we apply the field to the indexer.
-	 *
-	 * @param bool  $should_apply Whether to apply the field.
-	 * @param Field $field The field to check.
-	 * @return bool Whether to apply the field.
-	 */
-	public static function should_apply_indexer_field( $should_apply, $field ) {
-
-		if ( in_array( $field->get_attribute( 'type' ), self::$indexed_field_types, true ) ) {
-			return true;
-		}
-
-		return false;
-	}
-
-
-	/**
-	 * Hook into the field query type to change it to indexer where applicable.
-	 *
-	 * @param string $query_type The query type.
-	 * @param Field  $field      The field.
-	 * @return string The query type.
-	 */
-	public static function set_field_to_indexer_query( $query_type, $field ) {
-		$query = Fields::get_field_query( $field );
-		if ( ! $query ) {
-			return $query_type;
-		}
-
-		if ( $query->get_attribute( 'useIndexer' ) !== 'yes' ) {
-			return $query_type;
-		}
-
-		if ( in_array( $field->get_attribute( 'type' ), self::$indexed_field_types, true ) ) {
-			return 'indexer';
-		}
-
-		return $query_type;
 	}
 
 	/**
@@ -1956,7 +1026,8 @@ final class Indexer extends Task_Runner {
 		// Track the IDs of the queries so we can log an error if there is more than one.
 		$attached_query_ids = array();
 
-		$wp_query_args = array();
+		// Get the original query args and preserve them.
+		$indexer_query_args = array();
 
 		foreach ( $queries as $query ) {
 			$attached_query_ids[] = $query->get_id();
@@ -1966,23 +1037,30 @@ final class Indexer extends Task_Runner {
 				continue;
 			}
 
-
 			Search_Filter_Queries::register_active_query( $query->get_id() );
+
+			$query->set_wp_query( $wp_query );
+
+			do_action_ref_array( 'search-filter/query/attach_wp_query', array( &$wp_query, &$query ) );
 
 			$indexer_query = Query_Store::get_query( $query->get_id() );
 
 			if ( $indexer_query === null ) {
 				// Create a new indexer query.
-				$indexer_query = new Indexer_Query( $query );
+				if ( self::migration_completed() ) {
+					$indexer_query = new Indexer_Query( $query );
+				} else {
+					$indexer_query = new Legacy_Indexer_Query( $query );
+				}
 				// Add to the store.
 				Query_Store::add_query( $indexer_query );
 			}
 			// Apply the query args.
-			$wp_query_args = wp_parse_args( $indexer_query->get_query_args(), $wp_query_args );
+			$indexer_query_args = wp_parse_args( $indexer_query->get_query_args(), $indexer_query_args );
 		}
 
 		// Now try to update the query from the provided args.
-		foreach ( $wp_query_args as $key => $value ) {
+		foreach ( $indexer_query_args as $key => $value ) {
 			$wp_query->set( $key, $value );
 		}
 

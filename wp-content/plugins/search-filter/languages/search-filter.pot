@@ -1,0 +1,3163 @@
+# Copyright (C) 2025 Code Amp
+# This file is distributed under the GPL-2.0+.
+msgid ""
+msgstr ""
+"Project-Id-Version: Search & Filter 3.2.0-beta\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/search-filter\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-05-04T15:07:57+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.8.1\n"
+"X-Domain: search-filter\n"
+
+#. Plugin Name of the plugin
+#: includes/admin/class-screens.php:104
+#: includes/integrations/class-gutenberg.php:158
+#: assets/admin/app.js:25571
+#: assets/admin/app.js:32000
+#: assets/admin/app.js:32005
+#: assets/admin/block-editor.js:30300
+msgid "Search & Filter"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "http://searchandfilter.com"
+msgstr ""
+
+#. Description of the plugin
+msgid "Build powerful search experiences for your website or store."
+msgstr ""
+
+#. Author of the plugin
+msgid "Code Amp"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "http://codeamp.com"
+msgstr ""
+
+#: includes/admin/class-screens.php:55
+#: includes/admin/class-screens.php:104
+#: assets/admin/app.js:13159
+#: assets/admin/app.js:30933
+#: assets/admin/block-editor.js:37561
+msgid "Dashboard"
+msgstr ""
+
+#: includes/admin/class-screens.php:58
+#: assets/admin/app.js:13166
+#: assets/admin/app.js:19790
+#: assets/admin/app.js:28794
+#: assets/admin/app.js:30937
+#: assets/admin/block-editor.js:30234
+#: assets/admin/block-editor.js:37565
+msgid "Queries"
+msgstr ""
+
+#: includes/admin/class-screens.php:62
+#: assets/admin/app.js:13170
+#: assets/admin/app.js:30935
+#: assets/admin/app.js:31593
+#: assets/admin/block-editor.js:37563
+msgid "Fields"
+msgstr ""
+
+#: includes/admin/class-screens.php:66
+#: includes/fields/class-settings-data.php:56
+#: assets/admin/app.js:13174
+#: assets/admin/app.js:30939
+#: assets/admin/block-editor.js:37567
+msgid "Styles"
+msgstr ""
+
+#: includes/admin/class-screens.php:71
+#: includes/class-admin.php:316
+#: assets/admin/app.js:13181
+#: assets/admin/app.js:18906
+#: assets/admin/app.js:30943
+#: assets/admin/block-editor.js:37038
+#: assets/admin/block-editor.js:37571
+msgid "Settings"
+msgstr ""
+
+#: includes/admin/class-screens.php:75
+#: assets/admin/app.js:13185
+#: assets/admin/app.js:19317
+#: assets/admin/app.js:19446
+#: assets/admin/app.js:30941
+#: assets/admin/block-editor.js:37569
+msgid "Integrations"
+msgstr ""
+
+#: includes/admin/class-screens.php:79
+#: assets/admin/app.js:13189
+msgid "Help"
+msgstr ""
+
+#: includes/admin/class-screens.php:83
+#: assets/admin/app.js:19923
+msgid "Upgrade"
+msgstr ""
+
+#: includes/class-integrations.php:268
+msgid "Manage plugins"
+msgstr ""
+
+#. Translators: 1: Integration name, ie "WooCommerce".
+#: includes/class-integrations.php:272
+msgid "Looks like you're using %s, enable the integration?"
+msgstr ""
+
+#: includes/class-integrations.php:278
+#: assets/admin/app.js:23802
+#: assets/admin/app.js:23897
+#: assets/admin/app.js:25394
+#: assets/admin/app.js:30359
+#: assets/admin/block-editor.js:32295
+#: assets/admin/block-editor.js:32390
+#: assets/admin/block-editor.js:33069
+#: assets/admin/block-editor.js:34690
+msgid "Enable"
+msgstr ""
+
+#: includes/class-integrations.php:284
+msgid "Manage integrations"
+msgstr ""
+
+#. translators: %s: Record type, %s: Field ID
+#: includes/class-record-base.php:187
+msgid "Couldn't init a `%1$s` with the id `%2$s`."
+msgstr ""
+
+#: includes/class-record-base.php:572
+#: includes/class-record-base.php:601
+msgid "Record not found."
+msgstr ""
+
+#: includes/class-rest-api.php:235
+#: includes/fields/class-settings-data.php:190
+#: assets/admin/app.js:26232
+#: assets/admin/block-editor.js:35968
+msgid "Search"
+msgstr ""
+
+#: includes/class-rest-api.php:236
+#: includes/fields/class-settings-data.php:195
+#: assets/admin/app.js:26240
+#: assets/admin/block-editor.js:35976
+msgid "Choice"
+msgstr ""
+
+#: includes/class-rest-api.php:237
+#: includes/fields/class-settings-data.php:200
+#: assets/admin/app.js:26247
+#: assets/admin/block-editor.js:35983
+msgid "Range"
+msgstr ""
+
+#: includes/class-rest-api.php:238
+#: includes/fields/class-settings-data.php:127
+#: includes/fields/class-settings-data.php:205
+#: assets/admin/app.js:26257
+#: assets/admin/block-editor.js:35993
+msgid "Advanced"
+msgstr ""
+
+#: includes/class-rest-api.php:239
+#: includes/fields/class-settings-data.php:210
+#: assets/admin/app.js:26264
+#: assets/admin/block-editor.js:36000
+msgid "Control"
+msgstr ""
+
+#: includes/class-rest-api.php:545
+#: includes/rest-api/class-bulk.php:67
+#: includes/rest-api/class-bulk.php:101
+#: includes/rest-api/class-bulk.php:121
+#: includes/rest-api/class-bulk.php:135
+msgid "Section of the resource."
+msgstr ""
+
+#: includes/class-rest-api.php:649
+#: includes/rest-api/class-bulk.php:61
+#: includes/rest-api/class-bulk.php:95
+#: includes/rest-api/class-fields.php:129
+#: includes/rest-api/class-queries.php:124
+#: includes/rest-api/class-styles.php:118
+msgid "Unique identifier for the resource."
+msgstr ""
+
+#: includes/class-rest-api.php:971
+msgid "Setting the post type is not available with your Query Integration configuration."
+msgstr ""
+
+#: includes/class-rest-api.php:988
+msgid "Synced with integration settings."
+msgstr ""
+
+#: includes/class-rest-api.php:997
+msgid "This option is restricted by the Taxonomy Archive you have selected."
+msgstr ""
+
+#. translators: %s is the registery identifier name.
+#: includes/class-settings.php:60
+msgid "There settings registry for `%1$s` already exists."
+msgstr ""
+
+#: includes/class-styles.php:165
+msgid "New Styles"
+msgstr ""
+
+#: includes/class-theme-styles.php:221
+#: assets/admin/app.js:30494
+#: assets/admin/block-editor.js:34825
+msgid "Theme"
+msgstr ""
+
+#. translators: %1$s: Plugin name, %2$s: Opening anchor tag, %3$s: Closing anchor tag, %4$s: Changelog link.
+#: includes/core/class-plugin-updater.php:321
+msgid "There is a new version of %1$s available. %2$sView version %3$s details%4$s."
+msgstr ""
+
+#. translators: %1$s: Plugin name, %2$s: Opening anchor tag, %3$s: Closing anchor tag, %4$s: Changelog link, %5$s: Update now anchor tag.
+#: includes/core/class-plugin-updater.php:330
+msgid "There is a new version of %1$s available. %2$sView version %3$s details%4$s or %5$supdate now%6$s."
+msgstr ""
+
+#: includes/core/class-plugin-updater.php:582
+msgid "You do not have permission to install plugin updates"
+msgstr ""
+
+#: includes/core/class-plugin-updater.php:582
+msgid "Error"
+msgstr ""
+
+#: includes/debugger/class-settings-data.php:40
+msgid "Log level"
+msgstr ""
+
+#: includes/debugger/class-settings-data.php:41
+msgid "Choose which kinds of messages to log."
+msgstr ""
+
+#: includes/debugger/class-settings-data.php:48
+msgid "All"
+msgstr ""
+
+#: includes/debugger/class-settings-data.php:52
+msgid "Warnings"
+msgstr ""
+
+#: includes/debugger/class-settings-data.php:56
+msgid "Errors"
+msgstr ""
+
+#: includes/debugger/class-settings-data.php:62
+msgid "Log to database"
+msgstr ""
+
+#: includes/debugger/class-settings-data.php:63
+msgid "Choose whether to log to the database."
+msgstr ""
+
+#: includes/debugger/class-settings-data.php:70
+#: includes/fields/class-settings-data.php:245
+#: includes/fields/class-settings-data.php:386
+#: includes/fields/class-settings-data.php:815
+#: includes/fields/class-settings-data.php:855
+#: includes/fields/class-settings-data.php:901
+#: includes/fields/class-settings-data.php:924
+#: includes/fields/class-settings-data.php:948
+#: includes/fields/class-settings-data.php:1316
+#: includes/fields/class-settings-data.php:1341
+#: includes/fields/class-settings-data.php:1407
+#: includes/fields/class-settings-data.php:1799
+#: includes/fields/class-settings-data.php:1819
+#: includes/fields/class-settings-data.php:1920
+#: includes/queries/class-settings-data.php:147
+#: includes/queries/class-settings-data.php:298
+#: includes/queries/class-settings-data.php:495
+msgid "Yes"
+msgstr ""
+
+#: includes/debugger/class-settings-data.php:74
+#: includes/fields/class-settings-data.php:249
+#: includes/fields/class-settings-data.php:390
+#: includes/fields/class-settings-data.php:819
+#: includes/fields/class-settings-data.php:859
+#: includes/fields/class-settings-data.php:905
+#: includes/fields/class-settings-data.php:928
+#: includes/fields/class-settings-data.php:952
+#: includes/fields/class-settings-data.php:1320
+#: includes/fields/class-settings-data.php:1345
+#: includes/fields/class-settings-data.php:1411
+#: includes/fields/class-settings-data.php:1803
+#: includes/fields/class-settings-data.php:1823
+#: includes/fields/class-settings-data.php:1924
+#: includes/queries/class-settings-data.php:151
+#: includes/queries/class-settings-data.php:302
+#: includes/queries/class-settings-data.php:499
+msgid "No"
+msgstr ""
+
+#: includes/features/class-settings-data.php:40
+msgid "Lazy load JavaScript"
+msgstr ""
+
+#: includes/features/class-settings-data.php:41
+msgid "Ensures that Search & Filter JavaScript files are loaded only when needed - speeding up the other pages on your site.  Some classic themes may not support this."
+msgstr ""
+
+#: includes/features/class-settings-data.php:51
+msgid "Remove data on uninstall"
+msgstr ""
+
+#: includes/features/class-settings-data.php:52
+msgid "Removes all Search & Filter data when uninstalling this plugin.  Disable this to to keep your data if you plan to re-install later."
+msgstr ""
+
+#: includes/features/class-settings-data.php:62
+msgid "Debugging tools"
+msgstr ""
+
+#: includes/features/class-settings-data.php:63
+msgid "Enables the debugging admin bar menu and logging options - helping to provide additional information when troubleshooting issues."
+msgstr ""
+
+#: includes/features/class-settings-data.php:74
+msgid "Shortcodes"
+msgstr ""
+
+#: includes/features/class-settings-data.php:75
+msgid "Use shortcodes to display fields across your site.  Adds various options to the admin UI."
+msgstr ""
+
+#: includes/fields/advanced/class-date-picker.php:88
+msgid "Date Picker"
+msgstr ""
+
+#: includes/fields/choice/class-button.php:173
+msgid "Button"
+msgstr ""
+
+#: includes/fields/choice/class-checkbox.php:163
+msgid "Checkbox"
+msgstr ""
+
+#: includes/fields/choice/class-radio.php:179
+msgid "Radio"
+msgstr ""
+
+#: includes/fields/choice/class-select.php:266
+msgid "Select"
+msgstr ""
+
+#: includes/fields/class-field-factory.php:107
+msgid "You can only register fields inside the action \"search-filter/fields/register\"."
+msgstr ""
+
+#. translators: %s is the internal field type - eg search/filter/control
+#: includes/fields/class-field-factory.php:112
+msgid "The field type \"%1$s\" has not been found."
+msgstr ""
+
+#. translators: %1$s is the internal field type - eg search/filter/control', %2$s is the internal input type - eg radio/checkbox/text
+#: includes/fields/class-field-factory.php:117
+msgid "The input type \"%1$s\" has already been registered for the \"%2$s\" field type."
+msgstr ""
+
+#. translators: %s is the PHP class name
+#: includes/fields/class-field-factory.php:123
+msgid "The class `%1$s` cannot be found."
+msgstr ""
+
+#: includes/fields/class-field-factory.php:153
+msgid "You can only update fields inside the action \"search-filter/fields/register\"."
+msgstr ""
+
+#. translators: %1$s is the internal field type - eg search/filter/control, %2$s is the internal input type - eg radio/checkbox/text
+#: includes/fields/class-field-factory.php:189
+msgid "Class not found for `%1$s` / `%2$s`."
+msgstr ""
+
+#: includes/fields/class-field-factory.php:211
+msgid "The field type has not been set."
+msgstr ""
+
+#: includes/fields/class-field-factory.php:218
+msgid "Invalid field type."
+msgstr ""
+
+#: includes/fields/class-field-factory.php:224
+msgid "The input or control type has not been set."
+msgstr ""
+
+#. translators: %1$s is the internal input type - eg radio/checkbox/text, %2$s is the internal field type - eg search/filter/control
+#: includes/fields/class-field-factory.php:236
+msgid "The input type `%1$s` does not have a class associated with it for field type `%2$s`. Use `register_field_input`."
+msgstr ""
+
+#: includes/fields/class-field-factory.php:259
+#: includes/fields/class-field-factory.php:339
+msgid "Class not found."
+msgstr ""
+
+#. translators: %s is the class name
+#: includes/fields/class-field-factory.php:270
+msgid "The class `%1$s` does not have a public `render()` method."
+msgstr ""
+
+#. translators: %s is the class name
+#: includes/fields/class-field-factory.php:275
+msgid "The class `%1$s` does not have a public static `create()` method."
+msgstr ""
+
+#. translators: %s is the class name
+#: includes/fields/class-field-factory.php:281
+msgid "The class `%1$s` does not have a type set."
+msgstr ""
+
+#. translators: %s is the class name
+#: includes/fields/class-field-factory.php:286
+msgid "The class `%1$s` does not have a input type set."
+msgstr ""
+
+#: includes/fields/class-field.php:1300
+#: assets/admin/block-editor.js:41610
+msgid "Field not found."
+msgstr ""
+
+#: includes/fields/class-settings-data.php:48
+msgid "General"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:52
+msgid "Query integration"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:60
+msgid "Data"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:64
+#: assets/admin/app.js:28468
+#: assets/admin/block-editor.js:37210
+msgid "Type"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:68
+msgid "Input"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:72
+msgid "Field Dimensions"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:77
+msgid "Input Dimensions"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:82
+msgid "Input Colors"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:87
+#: includes/integrations/class-woocommerce.php:1329
+msgid "Options"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:91
+#: includes/fields/class-settings-data.php:222
+#: includes/fields/class-settings-data.php:1089
+#: assets/admin/app.js:43318
+#: assets/admin/app.js:43560
+#: assets/admin/block-editor.js:38750
+#: assets/admin/block-editor.js:38992
+msgid "Label"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:95
+msgid "Label Dimensions"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:100
+msgid "Label Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:105
+#: includes/fields/class-settings-data.php:397
+msgid "Description"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:109
+msgid "Description Dimensions"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:114
+msgid "Description Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:119
+msgid "Dimensions"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:123
+msgid "Behaviour"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:145
+#: includes/queries/class-settings-data.php:31
+#: includes/queries/class-settings-data.php:225
+#: assets/admin/app.js:28481
+#: assets/admin/app.js:28795
+#: assets/admin/block-editor.js:30235
+#: assets/admin/block-editor.js:37223
+msgid "Query"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:149
+msgid "Connect with a query. The query settings may affect available options."
+msgstr ""
+
+#: includes/fields/class-settings-data.php:152
+msgid "Choose a saved query"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:178
+msgid "Field Type"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:184
+msgid "Select a Field Type"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:185
+msgid "Changing this option will reset your data and input attributes."
+msgstr ""
+
+#: includes/fields/class-settings-data.php:224
+msgid "If the label is not shown it will still be available to screen readers"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:226
+#: assets/admin/app.js:28168
+#: assets/admin/block-editor.js:30209
+msgid "New field"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:229
+msgid "Enter a Label"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:235
+msgid "Show label"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:255
+#: includes/fields/class-settings-data.php:419
+#: includes/fields/class-settings-data.php:1865
+msgid "Scale"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:263
+#: includes/fields/class-settings-data.php:427
+#: includes/fields/class-settings-data.php:1873
+msgid "Choose a scale"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:281
+#: includes/fields/class-settings-data.php:495
+#: includes/fields/class-settings-data.php:2032
+msgid "Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:303
+#: includes/fields/class-settings-data.php:517
+#: includes/fields/class-settings-data.php:2045
+msgid "Background Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:326
+#: includes/fields/class-settings-data.php:446
+#: includes/fields/class-settings-data.php:1993
+msgid "Padding"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:346
+#: includes/fields/class-settings-data.php:466
+#: includes/fields/class-settings-data.php:2006
+#: includes/fields/class-settings-data.php:2020
+msgid "Margin"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:376
+msgid "Show description"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:403
+msgid "Enter a description"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:541
+msgid "Data Type"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:546
+msgid "Select a Data Type"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:550
+msgid "Post Attributes"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:564
+#: includes/fields/class-settings-data.php:661
+#: includes/queries/class-settings-data.php:93
+#: includes/queries/class-settings-data.php:177
+msgid "Taxonomy"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:591
+#: includes/integrations/class-woocommerce.php:1666
+msgid "Data Source"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:596
+msgid "Choose Post Attributes source"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:600
+#: includes/fields/class-settings-data.php:1201
+#: includes/queries/class-settings-data.php:89
+#: includes/queries/class-settings-data.php:109
+#: includes/queries/class-settings-data.php:398
+msgid "Post Type"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:614
+#: includes/fields/class-settings-data.php:1635
+#: includes/queries/class-settings-data.php:348
+msgid "Post Status"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:628
+#: includes/fields/class-settings-data.php:1205
+#: includes/queries/class-settings-data.php:402
+msgid "Published Date"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:662
+msgid "If you don't see your taxonomy - check that it is set to public and it is available for your post type."
+msgstr ""
+
+#: includes/fields/class-settings-data.php:667
+msgid "Choose a Taxonomy"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:700
+msgid "Choose a Control Type"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:721
+msgid "Input Type"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:722
+msgid "Choose the type of input control."
+msgstr ""
+
+#: includes/fields/class-settings-data.php:722
+msgid "Your data settings will affect the input types that are available"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:728
+msgid "Select an Input Type"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:745
+msgid "Placeholder text"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:751
+msgid "The text that appears inside the field before a user has typed anything"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:762
+msgid "No results text"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:765
+msgid "No results"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:768
+msgid "The text that appears when no results have been found."
+msgstr ""
+
+#: includes/fields/class-settings-data.php:773
+msgid "Results Count Text (Singular)"
+msgstr ""
+
+#. translators: %d is not a placeholder but used to explain its usage - keep in tact.
+#: includes/fields/class-settings-data.php:775
+#: includes/fields/class-settings-data.php:788
+msgid "Use `%d` to position the number of results. Used for screen readers."
+msgstr ""
+
+#. translators: %d is the number of results.
+#: includes/fields/class-settings-data.php:779
+msgid "%d result available"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:786
+msgid "Results Count Text (Plural)"
+msgstr ""
+
+#. translators: %d is the number of results.
+#: includes/fields/class-settings-data.php:792
+msgid "%d results available"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:806
+msgid "Multiple selection"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:826
+msgid "Match mode"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:827
+msgid "Choose whether results must match all the selected options or just one of them."
+msgstr ""
+
+#: includes/fields/class-settings-data.php:835
+msgid "Match all"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:839
+msgid "Match any"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:846
+msgid "Add a default option"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:869
+msgid "Default option label"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:872
+msgid "All items"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:892
+msgid "Hide options with no results"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:915
+msgid "Show the count number"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:938
+msgid "Show brackets around the count"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:939
+msgid "Count numbers in the preview may not be accurate."
+msgstr ""
+
+#: includes/fields/class-settings-data.php:972
+msgid "Count position"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:981
+msgid "Inline"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:985
+msgid "Space between"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1002
+msgid "Limit number of options"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1020
+msgid "Order Options"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1029
+#: includes/fields/class-settings-data.php:1181
+#: includes/fields/class-settings-data.php:1498
+#: includes/integrations/class-woocommerce.php:1283
+msgid "Inherit"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1049
+msgid "Alphabetically"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1069
+msgid "Numerically"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1126
+#: includes/fields/class-settings-data.php:1489
+#: includes/integrations/class-woocommerce.php:1274
+msgid "Order Direction"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1135
+#: includes/fields/class-settings-data.php:1502
+#: includes/integrations/class-woocommerce.php:1287
+msgid "Ascending"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1139
+#: includes/fields/class-settings-data.php:1506
+#: includes/integrations/class-woocommerce.php:1291
+msgid "Descending"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1168
+msgid "Sort Options"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1185
+#: includes/fields/class-settings-data.php:1463
+#: includes/integrations/class-woocommerce.php:1248
+#: includes/queries/class-settings-data.php:382
+#: assets/admin/app.js:23937
+#: assets/admin/block-editor.js:32430
+msgid "ID"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1189
+#: includes/queries/class-settings-data.php:386
+msgid "Author"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1193
+#: includes/queries/class-settings-data.php:390
+msgid "Title"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1197
+#: includes/fields/class-settings-data.php:1471
+#: includes/integrations/class-woocommerce.php:1256
+#: includes/queries/class-settings-data.php:394
+msgid "Slug"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1209
+#: includes/queries/class-settings-data.php:406
+msgid "Modified Date"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1213
+#: includes/queries/class-settings-data.php:410
+msgid "Parent ID"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1217
+#: includes/queries/class-settings-data.php:414
+msgid "Comment Count"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1221
+#: includes/queries/class-settings-data.php:418
+msgid "Relevance"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1225
+#: includes/queries/class-settings-data.php:422
+msgid "Menu Order"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1229
+#: includes/queries/class-settings-data.php:426
+msgid "Restricted Posts Order"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1306
+msgid "Hierarchical"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1307
+msgid "Indent child terms for hierarchical taxonomies"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1330
+msgid "Limit hierarchical depth"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1364
+msgid "Hierarchical depth"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1396
+msgid "Use archive URL"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1397
+msgid "Enabling this option will use the taxonomy archive URL"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1450
+msgid "Order Terms By"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1459
+#: includes/integrations/class-woocommerce.php:1244
+#: assets/admin/app.js:30496
+#: assets/admin/block-editor.js:34827
+msgid "Default"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1467
+#: includes/integrations/class-woocommerce.php:1252
+#: assets/admin/app.js:23829
+#: assets/admin/app.js:42459
+#: assets/admin/block-editor.js:32322
+#: assets/admin/block-editor.js:37877
+#: assets/admin/block-editor.js:41180
+msgid "Name"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1475
+#: includes/integrations/class-woocommerce.php:1260
+msgid "Count"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1479
+#: includes/integrations/class-woocommerce.php:1264
+msgid "Term Group"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1517
+msgid "Terms conditions"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1526
+msgid "Show all terms"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1530
+msgid "Restrict terms"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1534
+msgid "Exclude terms"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1544
+msgid "Taxonomy terms"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1596
+msgid "Posts Types"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1597
+msgid "Choose post types"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1598
+msgid "Leave empty to choose all available post types.  Available post types are controlled by your query settings."
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1734
+msgid "Display format"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1741
+msgid "Choose a date format for displaying"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1775
+msgid "Enter a custom format for displaying the date."
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1789
+msgid "Show Month Dropdown"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1809
+msgid "Show Year Dropdown"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1829
+msgid "Add a class"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1830
+msgid "Separate class names with a space"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1837
+msgid "Add a CSS class to the field"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1849
+#: assets/admin/app.js:30026
+#: assets/admin/block-editor.js:34357
+msgid "Styles preset"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1853
+msgid "Styles are inherited from the selected preset."
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1857
+msgid "Select styles to apply"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1881
+msgid "Width"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1891
+msgid "25%"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1895
+msgid "50%"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1899
+msgid "75%"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1903
+msgid "100%"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1910
+msgid "Show icon"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1971
+msgid "Align"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1978
+#: includes/fields/class-settings-data.php:1989
+msgid "Align the field inside its container."
+msgstr ""
+
+#: includes/fields/class-settings-data.php:1982
+msgid "Alignment"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:2058
+msgid "Selected Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:2071
+msgid "Selected Background Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:2086
+msgid "Border Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:2098
+msgid "Border Hover Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:2110
+msgid "Border Focus Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:2123
+msgid "Icon Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:2135
+msgid "Active Icon Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:2147
+msgid "Inactive Icon Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:2159
+msgid "Interactive Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:2172
+msgid "Interactive Hover Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:2185
+msgid "Clear Color"
+msgstr ""
+
+#: includes/fields/class-settings-data.php:2197
+msgid "Clear Hover Color"
+msgstr ""
+
+#: includes/fields/control/class-reset.php:49
+#: assets/admin/app.js:29547
+#: assets/admin/block-editor.js:31323
+msgid "Reset"
+msgstr ""
+
+#: includes/fields/control/class-sort.php:78
+msgid "Sort"
+msgstr ""
+
+#: includes/fields/control/class-submit.php:74
+msgid "Submit"
+msgstr ""
+
+#: includes/fields/search/class-text.php:95
+msgid "Text"
+msgstr ""
+
+#: includes/integrations/class-gutenberg.php:545
+#: assets/admin/block-editor.js:41763
+msgid "Field not found"
+msgstr ""
+
+#: includes/integrations/class-gutenberg.php:552
+msgid "Field not enabled"
+msgstr ""
+
+#: includes/integrations/class-legacy.php:61
+msgid "Legacy shortcodes"
+msgstr ""
+
+#: includes/integrations/class-legacy.php:62
+msgid "Notice: this feature will be removed by September 2025."
+msgstr ""
+
+#: includes/integrations/class-legacy.php:63
+msgid "Enables the old Search & Filter shortcodes used on the wordpress.org version of the plugin - it is made available to ensure a smooth upgrade process. Disable when the migration is complete."
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:41
+msgid "Block Editor"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:42
+msgid "Add blocks for search, filter and control fields and a re-usable field block.  Integrate fields directly with the query block."
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:43
+msgid "Enable Block Editor integration"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:44
+msgid "Disable Block Editor integration"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:57
+#: includes/integrations/class-woocommerce.php:1501
+msgid "WooCommerce"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:58
+msgid "Create filters using WooCommerce data and add support for filtering the shop, products query block and shortcodes."
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:72
+msgid "Advanced Custom Fields"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:73
+msgid "Create search and filter fields powered by your ACF data."
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:89
+msgid "Elementor"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:90
+msgid "Adds Elementor widgets for search, filter and control fields. Integrate queries with the grid widget, shop widget and portfolio widget."
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:107
+msgid "Beaver Builder"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:108
+msgid "Adds Beaver Builder modules for search, filter and control fields. Integrate fields and queries with the grid module, shop module and portfolio module."
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:125
+msgid "WPML"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:126
+msgid "Add multilingual support with the WPML plugin. Enables translation of fields and supports queries in multiple languages."
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:140
+msgid "Polylang"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:141
+msgid "Add multilingual support with the Polylang plugin. Enables translation of fields and supports queries in multiple languages."
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:158
+msgid "GenerateBlocks"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:159
+msgid "Adds support for the GenerateBlocks 2.0 Query and Looper blocks."
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:176
+msgid "Relevanssi"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:177
+msgid "Adds Relevanssi integration for search fields."
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:194
+msgid "Divi"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:195
+msgid "Adds Divi modules for search, filter and control fields. Integrate queries with the WooCommerce products module, blog module and portfolio module."
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:211
+msgid "Bricks Builder"
+msgstr ""
+
+#: includes/integrations/class-settings-data.php:212
+msgid "Adds elements for search, filter and control fields. Integrates queries with the query loop."
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1199
+msgid "Shop Link"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1200
+msgid "This is your WooCommerce shop URL"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1201
+#: includes/queries/class-settings-data.php:545
+#: includes/queries/class-settings-data.php:577
+#: includes/queries/class-settings-data.php:609
+#: includes/queries/class-settings-data.php:634
+msgid "Fetching..."
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1235
+msgid "Order By"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1302
+msgid "Options Conditions"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1311
+msgid "Show all options"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1315
+msgid "Restrict options"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1319
+msgid "Exclude options"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1388
+#: includes/integrations/class-woocommerce.php:1421
+msgid "WooCommerce Shop"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1438
+msgid "WooCommerce Collections block"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1464
+msgid "WooCommerce Products Shortcode"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1629
+msgid "Tags"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1633
+msgid "Categories"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1637
+msgid "Brands"
+msgstr ""
+
+#. Translators: %s is the attribute name.
+#: includes/integrations/class-woocommerce.php:1646
+msgid "Attribute: %1$s"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1667
+msgid "Select a WooCommerce data type"
+msgstr ""
+
+#: includes/integrations/class-woocommerce.php:1673
+msgid "Choose WooCommerce source"
+msgstr ""
+
+#: includes/integrations/gutenberg/class-cron.php:44
+msgid "Once every 2 days"
+msgstr ""
+
+#: includes/queries/class-query.php:251
+msgid "Choose a Post/Page first"
+msgstr ""
+
+#: includes/queries/class-query.php:300
+msgid "Unable to get link - try adding some terms first."
+msgstr ""
+
+#: includes/queries/class-query.php:316
+msgid "Unable to get link."
+msgstr ""
+
+#: includes/queries/class-settings-data.php:27
+#: includes/queries/class-settings-data.php:51
+msgid "Location"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:35
+msgid "Taxonomies"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:55
+msgid "Choose the location of your query and results."
+msgstr ""
+
+#: includes/queries/class-settings-data.php:60
+msgid "Dynamic"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:65
+#: includes/queries/class-settings-data.php:205
+msgid "Single Post / Page / CPT"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:69
+msgid "Archive"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:71
+msgid "Includes taxonomy and author archives."
+msgstr ""
+
+#: includes/queries/class-settings-data.php:75
+msgid "Search (default)"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:81
+msgid "Archive Type"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:110
+msgid "If you don't see your post type, check that `public` and `has_archive` are enabled."
+msgstr ""
+
+#: includes/queries/class-settings-data.php:138
+msgid "Include Taxonomy Archives"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:139
+msgid "Enables filtering in the related taxonomy archives."
+msgstr ""
+
+#: includes/queries/class-settings-data.php:178
+msgid "If you don't see your taxonomy, ensure `public` is enabled"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:210
+msgid "Search for a post, page or CPT"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:226
+msgid "Unlock more methods with the Pro add-on"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:234
+msgid "Main query"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:253
+msgid "Query Loop block"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:289
+msgid "Autodetect Query"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:292
+msgid "Attempts to auto detect any queries on the current page."
+msgstr ""
+
+#: includes/queries/class-settings-data.php:324
+msgid "Post Types"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:331
+msgid "The post types to use for this query."
+msgstr ""
+
+#: includes/queries/class-settings-data.php:363
+msgid "Posts Per Page"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:364
+msgid "Set to -1 to show all posts (use with caution)."
+msgstr ""
+
+#: includes/queries/class-settings-data.php:374
+msgid "Sort Order"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:441
+msgid "Sticky Posts"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:450
+msgid "Ignore"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:454
+msgid "Show"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:458
+msgid "Exclude"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:462
+msgid "Only"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:468
+msgid "Field Relationship"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:476
+msgid "Require all"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:480
+msgid "Require any"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:486
+msgid "Exclude Current Post"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:487
+msgid "Excludes the current post (any post type) from the query."
+msgstr ""
+
+#: includes/queries/class-settings-data.php:520
+msgid "Taxonomy conditions"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:543
+#: includes/queries/class-settings-data.php:607
+#: includes/queries/class-settings-data.php:632
+msgid "Results Link"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:544
+#: includes/queries/class-settings-data.php:608
+#: includes/queries/class-settings-data.php:633
+msgid "This is where the results will be shown"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:575
+msgid "Term link"
+msgstr ""
+
+#: includes/queries/class-settings-data.php:576
+msgid "Taxonomy term archives use this base URL."
+msgstr ""
+
+#: includes/rest-api/class-bulk.php:167
+msgid "Invalid JSON data."
+msgstr ""
+
+#: includes/rest-api/class-fields.php:189
+msgid "Foreign ID."
+msgstr ""
+
+#: includes/rest-api/class-integrations.php:151
+msgid "Failed to install extension."
+msgstr ""
+
+#: includes/rest-api/class-integrations.php:210
+msgid "Unique integration name."
+msgstr ""
+
+#: includes/rest-api/class-queries.php:185
+msgid "Query ID."
+msgstr ""
+
+#: includes/settings/class-section-base.php:334
+msgid "Your setting must have a name"
+msgstr ""
+
+#. translators: %s is the setting name.
+#: includes/settings/class-section-base.php:341
+msgid "A setting with the name `%1$s` already exists"
+msgstr ""
+
+#. Translators: %s is the name of the setting.
+#: includes/settings/class-setting.php:185
+msgid "An option in the setting `%1$s` does not have valid values"
+msgstr ""
+
+#: assets/admin/app.js:12920
+#: assets/admin/app.js:13279
+#: assets/admin/block-editor.js:30066
+msgid "More options"
+msgstr ""
+
+#: assets/admin/app.js:13145
+#: assets/admin/app.js:18512
+#: assets/admin/app.js:19038
+#: assets/admin/block-editor.js:36644
+msgid "Upgrade to Pro"
+msgstr ""
+
+#: assets/admin/app.js:13154
+msgid "Enable Pro"
+msgstr ""
+
+#: assets/admin/app.js:13156
+msgid "Professional"
+msgstr ""
+
+#: assets/admin/app.js:18509
+#: assets/admin/block-editor.js:36641
+msgid "Pro setting"
+msgstr ""
+
+#: assets/admin/app.js:18528
+#: assets/admin/app.js:18900
+#: assets/admin/app.js:19070
+#: assets/admin/app.js:19311
+#: assets/admin/app.js:28174
+#: assets/admin/app.js:28618
+#: assets/admin/app.js:28804
+#: assets/admin/app.js:30036
+#: assets/admin/app.js:30201
+#: assets/admin/app.js:31571
+#: assets/admin/app.js:31641
+#: assets/admin/block-editor.js:30215
+#: assets/admin/block-editor.js:30244
+#: assets/admin/block-editor.js:34367
+#: assets/admin/block-editor.js:34532
+#: assets/admin/block-editor.js:36660
+#: assets/admin/block-editor.js:37032
+#: assets/admin/block-editor.js:37360
+msgid "Learn more"
+msgstr ""
+
+#: assets/admin/app.js:18570
+#: assets/admin/block-editor.js:36702
+msgid "Settings updated."
+msgstr ""
+
+#: assets/admin/app.js:18582
+#: assets/admin/app.js:18633
+#: assets/admin/app.js:19212
+#: assets/admin/app.js:31132
+#: assets/admin/block-editor.js:35333
+#: assets/admin/block-editor.js:36714
+#: assets/admin/block-editor.js:36765
+msgid "Saving…"
+msgstr ""
+
+#: assets/admin/app.js:18613
+#: assets/admin/app.js:18828
+#: assets/admin/app.js:19218
+#: assets/admin/app.js:34041
+#: assets/admin/app.js:34065
+#: assets/admin/app.js:34131
+#: assets/admin/app.js:34199
+#: assets/admin/app.js:41769
+#: assets/admin/app.js:42116
+#: assets/admin/app.js:42294
+#: assets/admin/app.js:42350
+#: assets/admin/app.js:42534
+#: assets/admin/block-editor.js:21727
+#: assets/admin/block-editor.js:21751
+#: assets/admin/block-editor.js:21817
+#: assets/admin/block-editor.js:21885
+#: assets/admin/block-editor.js:29495
+#: assets/admin/block-editor.js:29842
+#: assets/admin/block-editor.js:36745
+#: assets/admin/block-editor.js:36960
+#: assets/admin/block-editor.js:37712
+#: assets/admin/block-editor.js:37768
+#: assets/admin/block-editor.js:37952
+#: assets/admin/block-editor.js:39764
+#: assets/admin/block-editor.js:40205
+#: assets/admin/block-editor.js:41605
+msgid "Loading…"
+msgstr ""
+
+#: assets/admin/app.js:18692
+#: assets/admin/app.js:19052
+#: assets/admin/app.js:20036
+#: assets/admin/app.js:23550
+#: assets/admin/app.js:23666
+#: assets/admin/app.js:23842
+#: assets/admin/app.js:24442
+#: assets/admin/app.js:26369
+#: assets/admin/app.js:29439
+#: assets/admin/block-editor.js:21667
+#: assets/admin/block-editor.js:31215
+#: assets/admin/block-editor.js:32045
+#: assets/admin/block-editor.js:32161
+#: assets/admin/block-editor.js:32335
+#: assets/admin/block-editor.js:33499
+#: assets/admin/block-editor.js:36105
+#: assets/admin/block-editor.js:36824
+msgid "Enabled"
+msgstr ""
+
+#: assets/admin/app.js:18692
+#: assets/admin/app.js:19052
+#: assets/admin/app.js:20036
+#: assets/admin/app.js:23558
+#: assets/admin/app.js:23674
+#: assets/admin/app.js:23842
+#: assets/admin/app.js:24445
+#: assets/admin/app.js:26369
+#: assets/admin/app.js:29439
+#: assets/admin/block-editor.js:21667
+#: assets/admin/block-editor.js:31215
+#: assets/admin/block-editor.js:32053
+#: assets/admin/block-editor.js:32169
+#: assets/admin/block-editor.js:32335
+#: assets/admin/block-editor.js:33502
+#: assets/admin/block-editor.js:36105
+#: assets/admin/block-editor.js:36824
+msgid "Disabled"
+msgstr ""
+
+#: assets/admin/app.js:18897
+#: assets/admin/block-editor.js:37029
+msgid "Manage Search & Filter settings."
+msgstr ""
+
+#. translators: %s: plugin name.
+#: assets/admin/app.js:19017
+msgid "%s is not installed."
+msgstr ""
+
+#. translators: %s: plugin name.
+#: assets/admin/app.js:19024
+msgid "%s is installed but not active."
+msgstr ""
+
+#: assets/admin/app.js:19031
+msgid "Find out more"
+msgstr ""
+
+#: assets/admin/app.js:19038
+msgid "Coming soon"
+msgstr ""
+
+#: assets/admin/app.js:19038
+msgid "Pro integration"
+msgstr ""
+
+#: assets/admin/app.js:19060
+#: assets/admin/app.js:19065
+msgid "Install extension"
+msgstr ""
+
+#: assets/admin/app.js:19200
+msgid "Integrations updated."
+msgstr ""
+
+#: assets/admin/app.js:19308
+msgid "Manage integrations with features, plugins and themes."
+msgstr ""
+
+#: assets/admin/app.js:19413
+msgid "No integrations enabled"
+msgstr ""
+
+#. translators: %d: number of disabled integrations
+#: assets/admin/app.js:19425
+msgid "+ %d more disabled"
+msgstr ""
+
+#. translators: %d: number of disabled integrations
+#: assets/admin/app.js:19437
+msgid "+ %d more enabled"
+msgstr ""
+
+#. translators: %d: number of disabled integrations
+#: assets/admin/app.js:19438
+msgid "+ %d disabled"
+msgstr ""
+
+#: assets/admin/app.js:19443
+msgid "Manage Integrations"
+msgstr ""
+
+#: assets/admin/app.js:19634
+#: assets/admin/app.js:30945
+#: assets/admin/block-editor.js:37573
+msgid "Help & Support"
+msgstr ""
+
+#: assets/admin/app.js:19638
+msgid "Find answers to common questions and learn how to use Search & Filter v3."
+msgstr ""
+
+#: assets/admin/app.js:19642
+msgid "Getting started"
+msgstr ""
+
+#: assets/admin/app.js:19646
+msgid "V3 migration guide"
+msgstr ""
+
+#: assets/admin/app.js:19650
+msgid "View documentation"
+msgstr ""
+
+#: assets/admin/app.js:19651
+msgid "Get help from our team and the rest of the Search & Filter community.  Join us on Slack or sign up to our mailing list."
+msgstr ""
+
+#: assets/admin/app.js:19655
+msgid "Slack workspace"
+msgstr ""
+
+#: assets/admin/app.js:19659
+msgid "Mailing list for news & offers"
+msgstr ""
+
+#: assets/admin/app.js:19664
+msgid "Contact us with bugs, issues and feature requests via:"
+msgstr ""
+
+#: assets/admin/app.js:19666
+msgid "Email"
+msgstr ""
+
+#: assets/admin/app.js:19670
+msgid "Twitter"
+msgstr ""
+
+#: assets/admin/app.js:19678
+#: assets/admin/app.js:32267
+msgid "Feedback"
+msgstr ""
+
+#: assets/admin/app.js:19688
+#: assets/admin/app.js:19810
+#: assets/admin/app.js:19838
+#: assets/admin/app.js:19866
+msgid "Documentation"
+msgstr ""
+
+#: assets/admin/app.js:19698
+msgid "Community"
+msgstr ""
+
+#: assets/admin/app.js:19742
+msgid "Search & Filter version 3"
+msgstr ""
+
+#: assets/admin/app.js:19747
+msgid "Join our <community>community</community> or get in touch with us via our <email>email</email> or <twitter>twitter</twitter>."
+msgstr ""
+
+#: assets/admin/app.js:19800
+msgid "Configure queries"
+msgstr ""
+
+#: assets/admin/app.js:19801
+#: assets/admin/app.js:19829
+#: assets/admin/app.js:19857
+msgid "Configure"
+msgstr ""
+
+#: assets/admin/app.js:19807
+#: assets/admin/app.js:28798
+#: assets/admin/block-editor.js:30238
+msgid "New query"
+msgstr ""
+
+#: assets/admin/app.js:19808
+#: assets/admin/app.js:19836
+#: assets/admin/app.js:19864
+msgid "New"
+msgstr ""
+
+#: assets/admin/app.js:19808
+msgid "Create and modify query integrations."
+msgstr ""
+
+#: assets/admin/app.js:19818
+msgid "Reusable fields"
+msgstr ""
+
+#: assets/admin/app.js:19828
+msgid "Configure fields"
+msgstr ""
+
+#: assets/admin/app.js:19835
+msgid "Add a Field"
+msgstr ""
+
+#: assets/admin/app.js:19836
+msgid "Use fields to search and filter queries on your site."
+msgstr ""
+
+#: assets/admin/app.js:19846
+#: assets/admin/app.js:30025
+#: assets/admin/block-editor.js:34356
+msgid "Styles presets"
+msgstr ""
+
+#: assets/admin/app.js:19856
+msgid "Configure styles"
+msgstr ""
+
+#: assets/admin/app.js:19863
+msgid "Add Styles"
+msgstr ""
+
+#: assets/admin/app.js:19864
+msgid "Create styles presets to style your fields and integrate with your theme."
+msgstr ""
+
+#: assets/admin/app.js:19890
+msgid "Upgrade to professional for tons of additional features and dedicated support."
+msgstr ""
+
+#: assets/admin/app.js:19897
+msgid "More info"
+msgstr ""
+
+#: assets/admin/app.js:19912
+msgid "Overview"
+msgstr ""
+
+#: assets/admin/app.js:20023
+#: assets/admin/app.js:26342
+#: assets/admin/app.js:29425
+#: assets/admin/block-editor.js:21654
+#: assets/admin/block-editor.js:31201
+#: assets/admin/block-editor.js:36078
+msgid "Add name"
+msgstr ""
+
+#: assets/admin/app.js:20024
+#: assets/admin/block-editor.js:21655
+msgid "Query name"
+msgstr ""
+
+#: assets/admin/app.js:23188
+#: assets/admin/block-editor.js:31688
+msgid "Items per page"
+msgstr ""
+
+#: assets/admin/app.js:23351
+#: assets/admin/block-editor.js:31851
+msgid "Show columns"
+msgstr ""
+
+#: assets/admin/app.js:23540
+#: assets/admin/app.js:23656
+#: assets/admin/block-editor.js:32035
+#: assets/admin/block-editor.js:32151
+msgid "Undo"
+msgstr ""
+
+#: assets/admin/app.js:23550
+#: assets/admin/app.js:23558
+#: assets/admin/app.js:23666
+#: assets/admin/app.js:23674
+#: assets/admin/block-editor.js:32045
+#: assets/admin/block-editor.js:32053
+#: assets/admin/block-editor.js:32161
+#: assets/admin/block-editor.js:32169
+msgid "Restored"
+msgstr ""
+
+#: assets/admin/app.js:23566
+#: assets/admin/app.js:23682
+#: assets/admin/app.js:23842
+#: assets/admin/app.js:24448
+#: assets/admin/block-editor.js:32061
+#: assets/admin/block-editor.js:32177
+#: assets/admin/block-editor.js:32335
+#: assets/admin/block-editor.js:33505
+msgid "Trashed"
+msgstr ""
+
+#: assets/admin/app.js:23574
+#: assets/admin/app.js:23690
+#: assets/admin/app.js:24459
+#: assets/admin/block-editor.js:32069
+#: assets/admin/block-editor.js:32185
+#: assets/admin/block-editor.js:33516
+msgid "Deleted"
+msgstr ""
+
+#: assets/admin/app.js:23777
+#: assets/admin/app.js:23886
+#: assets/admin/app.js:28267
+#: assets/admin/app.js:42322
+#: assets/admin/app.js:42389
+#: assets/admin/app.js:42571
+#: assets/admin/block-editor.js:32270
+#: assets/admin/block-editor.js:32379
+#: assets/admin/block-editor.js:34247
+#: assets/admin/block-editor.js:37740
+#: assets/admin/block-editor.js:37807
+#: assets/admin/block-editor.js:37989
+msgid "Edit"
+msgstr ""
+
+#: assets/admin/app.js:23792
+#: assets/admin/app.js:23908
+#: assets/admin/app.js:25400
+#: assets/admin/app.js:30369
+#: assets/admin/block-editor.js:32285
+#: assets/admin/block-editor.js:32401
+#: assets/admin/block-editor.js:33075
+#: assets/admin/block-editor.js:34700
+msgid "Disable"
+msgstr ""
+
+#: assets/admin/app.js:23815
+#: assets/admin/block-editor.js:32308
+msgid "Restore"
+msgstr ""
+
+#: assets/admin/app.js:23825
+#: assets/admin/block-editor.js:32318
+msgid "Delete"
+msgstr ""
+
+#: assets/admin/app.js:23839
+#: assets/admin/block-editor.js:32332
+msgid "Status"
+msgstr ""
+
+#: assets/admin/app.js:23847
+#: assets/admin/block-editor.js:32340
+msgid "Date"
+msgstr ""
+
+#: assets/admin/app.js:23851
+#: assets/admin/block-editor.js:32344
+msgid " at "
+msgstr ""
+
+#: assets/admin/app.js:23916
+#: assets/admin/app.js:25406
+#: assets/admin/app.js:30376
+#: assets/admin/block-editor.js:32409
+#: assets/admin/block-editor.js:33081
+#: assets/admin/block-editor.js:34707
+msgid "Trash"
+msgstr ""
+
+#: assets/admin/app.js:23922
+#: assets/admin/app.js:25412
+#: assets/admin/app.js:30381
+#: assets/admin/block-editor.js:32415
+#: assets/admin/block-editor.js:33087
+#: assets/admin/block-editor.js:34712
+msgid "Delete Permanently"
+msgstr ""
+
+#: assets/admin/app.js:24133
+#: assets/admin/block-editor.js:33363
+msgid "Number of results"
+msgstr ""
+
+#: assets/admin/app.js:24549
+#: assets/admin/block-editor.js:33606
+msgid "Emptied trash."
+msgstr ""
+
+#. translators: %d is the number of records deleted. %s is the name of the section.
+#: assets/admin/app.js:24563
+#: assets/admin/block-editor.js:33620
+msgid "Deleted %1$d %2$s."
+msgstr ""
+
+#. translators: %1$s: the status name applied (deleted, updated, trashed etc). %2$d: is the number of records updated. %3$s: is the name of the section. eg "Updated 10 fields"
+#: assets/admin/app.js:24574
+#: assets/admin/block-editor.js:33631
+msgid "%1$s %2$d %3$s."
+msgstr ""
+
+#. translators: %d is the number of records updated. %s is the name of the section. eg "Updated 10 fields"
+#: assets/admin/app.js:24580
+#: assets/admin/block-editor.js:33637
+msgid "Updated %1$d %2$s."
+msgstr ""
+
+#: assets/admin/app.js:24749
+#: assets/admin/block-editor.js:33806
+msgid "Reload"
+msgstr ""
+
+#: assets/admin/app.js:24759
+#: assets/admin/block-editor.js:33816
+msgid "Empty Trash"
+msgstr ""
+
+#: assets/admin/app.js:24906
+#: assets/admin/app.js:31066
+#: assets/admin/block-editor.js:32581
+#: assets/admin/block-editor.js:35267
+msgid "Items"
+msgstr ""
+
+#: assets/admin/app.js:24907
+#: assets/admin/app.js:31067
+#: assets/admin/block-editor.js:32582
+#: assets/admin/block-editor.js:35268
+msgid "Item"
+msgstr ""
+
+#: assets/admin/app.js:24908
+#: assets/admin/app.js:31068
+#: assets/admin/block-editor.js:32583
+#: assets/admin/block-editor.js:35269
+msgid "Add New Item"
+msgstr ""
+
+#: assets/admin/app.js:24909
+#: assets/admin/block-editor.js:32584
+msgid "Looks like there are no enabled items"
+msgstr ""
+
+#: assets/admin/app.js:24910
+#: assets/admin/block-editor.js:32585
+msgid "Looks like there are no disabled items"
+msgstr ""
+
+#. Translators: Plural name of the data type ( eg Queries, Fields ).
+#: assets/admin/app.js:25305
+#: assets/admin/block-editor.js:32980
+msgid "No %s found, try another search term."
+msgstr ""
+
+#. Translators: Plural name of the data type ( eg Queries, Fields ).
+#: assets/admin/app.js:25311
+#: assets/admin/block-editor.js:32986
+msgid "No %s found for your filters."
+msgstr ""
+
+#: assets/admin/app.js:25320
+#: assets/admin/app.js:30714
+#: assets/admin/block-editor.js:32995
+#: assets/admin/block-editor.js:35045
+msgid "Trash is empty."
+msgstr ""
+
+#: assets/admin/app.js:25372
+#: assets/admin/block-editor.js:33047
+msgid "Bulk actions"
+msgstr ""
+
+#: assets/admin/app.js:25426
+#: assets/admin/block-editor.js:33101
+msgid "Bulk Edit"
+msgstr ""
+
+#. Translators: Number of items selected for bulk edit (many, 2 or more)
+#: assets/admin/app.js:25442
+#: assets/admin/block-editor.js:33117
+msgid "%d items selected"
+msgstr ""
+
+#. Translators: Singular item selected for bulk edit
+#: assets/admin/app.js:25444
+#: assets/admin/block-editor.js:33119
+msgid "%d item selected"
+msgstr ""
+
+#: assets/admin/app.js:25444
+#: assets/admin/block-editor.js:33119
+msgid "No items selected"
+msgstr ""
+
+#. Translators: Plural name of the data type ( eg Queries, Fields etc ).
+#: assets/admin/app.js:25454
+#: assets/admin/app.js:30782
+#: assets/admin/block-editor.js:33129
+#: assets/admin/block-editor.js:35113
+msgid "Fetching %s…"
+msgstr ""
+
+#: assets/admin/app.js:25687
+#: assets/admin/block-editor.js:30416
+msgid "Fetching styles…"
+msgstr ""
+
+#: assets/admin/app.js:25869
+#: assets/admin/block-editor.js:30598
+msgid "Updating options…"
+msgstr ""
+
+#: assets/admin/app.js:26161
+#: assets/admin/block-editor.js:35897
+#: assets/admin/block-editor.js:40286
+msgid "The query changed your field settings."
+msgstr ""
+
+#: assets/admin/app.js:26249
+#: assets/admin/block-editor.js:35985
+msgid "Pro"
+msgstr ""
+
+#: assets/admin/app.js:26343
+#: assets/admin/block-editor.js:36079
+msgid "Field name"
+msgstr ""
+
+#: assets/admin/app.js:26610
+#: assets/admin/block-editor.js:36346
+msgid "Inheriting from the styles preset."
+msgstr ""
+
+#: assets/admin/app.js:28116
+#: assets/admin/block-editor.js:13406
+msgid "Find Query"
+msgstr ""
+
+#: assets/admin/app.js:28123
+#: assets/admin/block-editor.js:13413
+msgid "Search for a query"
+msgstr ""
+
+#: assets/admin/app.js:28164
+#: assets/admin/block-editor.js:30205
+msgid "Reusable Fields"
+msgstr ""
+
+#: assets/admin/app.js:28165
+#: assets/admin/block-editor.js:30206
+msgid "Field"
+msgstr ""
+
+#: assets/admin/app.js:28166
+#: assets/admin/block-editor.js:30207
+msgid "Add New Field"
+msgstr ""
+
+#: assets/admin/app.js:28167
+#: assets/admin/block-editor.js:30208
+msgid "Edit field"
+msgstr ""
+
+#: assets/admin/app.js:28169
+#: assets/admin/block-editor.js:30210
+msgid "Looks like there are no enabled fields."
+msgstr ""
+
+#: assets/admin/app.js:28170
+#: assets/admin/block-editor.js:30211
+msgid "Looks like there are no disabled fields."
+msgstr ""
+
+#: assets/admin/app.js:28171
+#: assets/admin/block-editor.js:30212
+msgid "Customize the options related to this field."
+msgstr ""
+
+#: assets/admin/app.js:28293
+#: assets/admin/block-editor.js:34273
+msgid "Duplicate"
+msgstr ""
+
+#: assets/admin/app.js:28413
+#: assets/admin/block-editor.js:37155
+msgid "Add this field to your site by using the <strong>Reusable Field Block</strong> or by using the shortcode below."
+msgstr ""
+
+#: assets/admin/app.js:28431
+#: assets/admin/block-editor.js:37173
+msgid "Copied shortcode"
+msgstr ""
+
+#: assets/admin/app.js:28433
+#: assets/admin/app.js:28869
+#: assets/admin/app.js:29854
+#: assets/admin/app.js:33437
+#: assets/admin/block-editor.js:14492
+#: assets/admin/block-editor.js:30645
+#: assets/admin/block-editor.js:34039
+#: assets/admin/block-editor.js:37175
+msgid "Copy"
+msgstr ""
+
+#: assets/admin/app.js:28436
+#: assets/admin/block-editor.js:37178
+msgid "Fetching Field data..."
+msgstr ""
+
+#: assets/admin/app.js:28455
+#: assets/admin/block-editor.js:37197
+msgid "Info"
+msgstr ""
+
+#: assets/admin/app.js:28522
+#: assets/admin/block-editor.js:37264
+msgid "Edit post"
+msgstr ""
+
+#: assets/admin/app.js:28527
+#: assets/admin/block-editor.js:37269
+msgid "View post"
+msgstr ""
+
+#: assets/admin/app.js:28561
+#: assets/admin/block-editor.js:37303
+#: assets/admin/block-editor.js:41926
+msgid "Filter by query"
+msgstr ""
+
+#: assets/admin/app.js:28614
+#: assets/admin/app.js:30191
+#: assets/admin/app.js:31567
+#: assets/admin/app.js:31637
+#: assets/admin/block-editor.js:34522
+#: assets/admin/block-editor.js:37356
+msgid "Add New"
+msgstr ""
+
+#: assets/admin/app.js:28615
+#: assets/admin/block-editor.js:37357
+msgid "Create, edit, and manage the fields on your site."
+msgstr ""
+
+#: assets/admin/app.js:28656
+#: assets/admin/app.js:33435
+#: assets/admin/block-editor.js:14490
+#: assets/admin/block-editor.js:37398
+msgid "Copied shortcode."
+msgstr ""
+
+#: assets/admin/app.js:28658
+#: assets/admin/block-editor.js:37400
+msgid "Shortcode"
+msgstr ""
+
+#: assets/admin/app.js:28699
+#: assets/admin/block-editor.js:37441
+msgid "Copy Shortcode"
+msgstr ""
+
+#: assets/admin/app.js:28705
+#: assets/admin/app.js:31741
+#: assets/admin/block-editor.js:37447
+msgid "Duplicated field (disabled)."
+msgstr ""
+
+#: assets/admin/app.js:28789
+#: assets/admin/block-editor.js:30229
+msgid "Looks like there are no enabled connected fields."
+msgstr ""
+
+#: assets/admin/app.js:28790
+#: assets/admin/block-editor.js:30230
+msgid "Looks like there are no disabled connected fields."
+msgstr ""
+
+#: assets/admin/app.js:28796
+#: assets/admin/block-editor.js:30236
+msgid "Add new query"
+msgstr ""
+
+#: assets/admin/app.js:28797
+#: assets/admin/block-editor.js:30237
+msgid "Edit query"
+msgstr ""
+
+#: assets/admin/app.js:28799
+#: assets/admin/block-editor.js:30239
+msgid "Looks like there are no enabled queries."
+msgstr ""
+
+#: assets/admin/app.js:28800
+#: assets/admin/block-editor.js:30240
+msgid "Looks like there are no disabled queries."
+msgstr ""
+
+#: assets/admin/app.js:28801
+#: assets/admin/block-editor.js:30241
+msgid "Customize the options related to this query."
+msgstr ""
+
+#: assets/admin/app.js:28870
+#: assets/admin/app.js:29855
+#: assets/admin/block-editor.js:30646
+#: assets/admin/block-editor.js:34040
+msgid "Download"
+msgstr ""
+
+#: assets/admin/app.js:28871
+#: assets/admin/app.js:29470
+#: assets/admin/app.js:30037
+#: assets/admin/block-editor.js:30647
+#: assets/admin/block-editor.js:31246
+#: assets/admin/block-editor.js:34368
+msgid "Export"
+msgstr ""
+
+#. Translators: %s is the name admin section - Queries, Fields, Styles.
+#: assets/admin/app.js:28873
+#: assets/admin/block-editor.js:30649
+msgid "Export \"%s\""
+msgstr ""
+
+#. Translators: %s is the name admin section - Queries, Fields, Styles.
+#: assets/admin/app.js:28875
+#: assets/admin/block-editor.js:30651
+msgid "All %s"
+msgstr ""
+
+#: assets/admin/app.js:28876
+#: assets/admin/app.js:30038
+#: assets/admin/app.js:30747
+#: assets/admin/block-editor.js:30652
+#: assets/admin/block-editor.js:34369
+#: assets/admin/block-editor.js:35078
+msgid "Export All"
+msgstr ""
+
+#: assets/admin/app.js:28877
+#: assets/admin/block-editor.js:30653
+msgid "Building export data"
+msgstr ""
+
+#: assets/admin/app.js:28878
+#: assets/admin/block-editor.js:30654
+msgid "Copied"
+msgstr ""
+
+#: assets/admin/app.js:29167
+#: assets/admin/block-editor.js:30943
+msgid "This is the theme preset, it cannot be edited."
+msgstr ""
+
+#: assets/admin/app.js:29179
+#: assets/admin/block-editor.js:30955
+msgid "Field label"
+msgstr ""
+
+#: assets/admin/app.js:29180
+#: assets/admin/block-editor.js:30956
+msgid "Field description."
+msgstr ""
+
+#: assets/admin/app.js:29185
+#: assets/admin/block-editor.js:30961
+msgid "Placeholder"
+msgstr ""
+
+#: assets/admin/app.js:29193
+#: assets/admin/app.js:30043
+#: assets/admin/block-editor.js:30969
+#: assets/admin/block-editor.js:34374
+msgid "Option 1"
+msgstr ""
+
+#: assets/admin/app.js:29196
+#: assets/admin/app.js:30046
+#: assets/admin/block-editor.js:30972
+#: assets/admin/block-editor.js:34377
+msgid "Option 2"
+msgstr ""
+
+#: assets/admin/app.js:29199
+#: assets/admin/app.js:30049
+#: assets/admin/block-editor.js:30975
+#: assets/admin/block-editor.js:34380
+msgid "Option 3"
+msgstr ""
+
+#: assets/admin/app.js:29426
+#: assets/admin/block-editor.js:31202
+msgid "Styles name"
+msgstr ""
+
+#: assets/admin/app.js:29535
+#: assets/admin/block-editor.js:31311
+msgid "Style options"
+msgstr ""
+
+#: assets/admin/app.js:29555
+#: assets/admin/block-editor.js:31331
+msgid "Copy styles"
+msgstr ""
+
+#: assets/admin/app.js:29564
+#: assets/admin/block-editor.js:31340
+msgid "Paste styles"
+msgstr ""
+
+#: assets/admin/app.js:29757
+#: assets/admin/block-editor.js:33956
+msgid "Previous input type"
+msgstr ""
+
+#: assets/admin/app.js:29757
+#: assets/admin/block-editor.js:33956
+msgid "Previous input type (unavailable)"
+msgstr ""
+
+#: assets/admin/app.js:29770
+#: assets/admin/block-editor.js:33969
+msgid "Next input type"
+msgstr ""
+
+#: assets/admin/app.js:29770
+#: assets/admin/block-editor.js:33969
+msgid "Next input type (unavailable)"
+msgstr ""
+
+#: assets/admin/app.js:29856
+#: assets/admin/block-editor.js:34041
+msgid "Import"
+msgstr ""
+
+#. Translators: %s is the name of the admin section - Queries, Fields, Styles.
+#: assets/admin/app.js:29858
+#: assets/admin/block-editor.js:34043
+msgid "Import %s"
+msgstr ""
+
+#: assets/admin/app.js:29859
+#: assets/admin/block-editor.js:34044
+msgid "Importing data"
+msgstr ""
+
+#: assets/admin/app.js:29860
+#: assets/admin/block-editor.js:34045
+msgid "Imported"
+msgstr ""
+
+#. Translators: %d is the number of records imported.
+#: assets/admin/app.js:29902
+#: assets/admin/app.js:29940
+#: assets/admin/block-editor.js:34087
+#: assets/admin/block-editor.js:34125
+msgid "Imported %d records."
+msgstr ""
+
+#: assets/admin/app.js:29927
+#: assets/admin/block-editor.js:34112
+msgid "Upload file"
+msgstr ""
+
+#: assets/admin/app.js:29933
+#: assets/admin/block-editor.js:34118
+msgid "Paste import data here or upload a file."
+msgstr ""
+
+#: assets/admin/app.js:29938
+#: assets/admin/block-editor.js:34123
+msgid "Error: Invalid data"
+msgstr ""
+
+#: assets/admin/app.js:29938
+#: assets/admin/block-editor.js:34123
+msgid "Error: An unkown error occured"
+msgstr ""
+
+#: assets/admin/app.js:30027
+#: assets/admin/block-editor.js:34358
+msgid "Add New Preset"
+msgstr ""
+
+#: assets/admin/app.js:30028
+#: assets/admin/block-editor.js:34359
+msgid "Edit preset"
+msgstr ""
+
+#: assets/admin/app.js:30029
+#: assets/admin/block-editor.js:34360
+msgid "Delete preset"
+msgstr ""
+
+#: assets/admin/app.js:30030
+#: assets/admin/block-editor.js:34361
+msgid "New preset"
+msgstr ""
+
+#: assets/admin/app.js:30031
+#: assets/admin/block-editor.js:34362
+msgid "Looks like there are no enabled styles."
+msgstr ""
+
+#: assets/admin/app.js:30032
+#: assets/admin/block-editor.js:34363
+msgid "Looks like there are no disabled styles."
+msgstr ""
+
+#: assets/admin/app.js:30033
+#: assets/admin/block-editor.js:34364
+msgid "Customize the colors for the style preset."
+msgstr ""
+
+#: assets/admin/app.js:30086
+#: assets/admin/block-editor.js:34417
+msgid "Input type"
+msgstr ""
+
+#: assets/admin/app.js:30141
+#: assets/admin/block-editor.js:34472
+msgid "Fetching Styles data..."
+msgstr ""
+
+#: assets/admin/app.js:30197
+#: assets/admin/block-editor.js:34528
+msgid "Import styles"
+msgstr ""
+
+#: assets/admin/app.js:30198
+#: assets/admin/block-editor.js:34529
+msgid "Create, edit, and manage the styles for your fields."
+msgstr ""
+
+#: assets/admin/app.js:30344
+#: assets/admin/block-editor.js:34675
+msgid "Set as default"
+msgstr ""
+
+#: assets/admin/app.js:30348
+#: assets/admin/block-editor.js:34679
+msgid "Duplicated style (disabled)."
+msgstr ""
+
+#. Translators: %s is the record status - eg - Enabled, Disabled, Trashed
+#: assets/admin/app.js:30433
+#: assets/admin/block-editor.js:34764
+msgid "%s styles."
+msgstr ""
+
+#: assets/admin/app.js:30531
+#: assets/admin/block-editor.js:34862
+msgid "Preview with"
+msgstr ""
+
+#: assets/admin/app.js:30645
+#: assets/admin/block-editor.js:34976
+msgid "Default saved."
+msgstr ""
+
+#: assets/admin/app.js:30714
+#: assets/admin/block-editor.js:35045
+msgid "Import sample styles"
+msgstr ""
+
+#: assets/admin/app.js:30875
+#: assets/admin/block-editor.js:35206
+msgid "Back to "
+msgstr ""
+
+#: assets/admin/app.js:31069
+#: assets/admin/block-editor.js:35270
+msgid "Edit item"
+msgstr ""
+
+#: assets/admin/app.js:31070
+#: assets/admin/block-editor.js:35271
+msgid "New item"
+msgstr ""
+
+#: assets/admin/app.js:31078
+#: assets/admin/block-editor.js:35279
+msgid "Saved"
+msgstr ""
+
+#. Translators: %1$s: the singular name of the section - Field, Query, Style, etc. %2$s: the current status of the record - enabled, disabled, trashed.
+#: assets/admin/app.js:31088
+#: assets/admin/block-editor.js:35289
+msgid "This %1$s is <strong>%2$s</strong>."
+msgstr ""
+
+#. Translators: %1$s: the singular name of the section - Field, Query, Style, etc. %2$s: the current status of the record - enabled, disabled, trashed.
+#: assets/admin/app.js:31101
+#: assets/admin/block-editor.js:35302
+msgid "The name must not be empty."
+msgstr ""
+
+#: assets/admin/app.js:31131
+#: assets/admin/app.js:42473
+#: assets/admin/block-editor.js:35332
+#: assets/admin/block-editor.js:37891
+#: assets/admin/block-editor.js:41194
+msgid "Save"
+msgstr ""
+
+#: assets/admin/app.js:31133
+#: assets/admin/block-editor.js:35334
+#: assets/admin/block-editor.js:39777
+msgid "Update"
+msgstr ""
+
+#: assets/admin/app.js:31134
+#: assets/admin/block-editor.js:35335
+msgid "Move to Trash"
+msgstr ""
+
+#: assets/admin/app.js:31135
+#: assets/admin/block-editor.js:35336
+msgid "Updating…"
+msgstr ""
+
+#: assets/admin/app.js:31177
+#: assets/admin/block-editor.js:35378
+msgid "disabled"
+msgstr ""
+
+#: assets/admin/app.js:31188
+#: assets/admin/block-editor.js:35389
+msgid "Leave screen?"
+msgstr ""
+
+#: assets/admin/app.js:31188
+#: assets/admin/block-editor.js:35389
+msgid "Changes that you made may not be saved."
+msgstr ""
+
+#. Translators: %1$s: the singular name of the record type - Field, Query, Style, etc.
+#: assets/admin/app.js:31273
+#: assets/admin/block-editor.js:35474
+msgid "%s saved."
+msgstr ""
+
+#. Translators: %1$s: the singular name of the record type - Field, Query, Style, etc.
+#: assets/admin/app.js:31277
+#: assets/admin/app.js:42433
+#: assets/admin/block-editor.js:35478
+#: assets/admin/block-editor.js:37851
+msgid "%s created."
+msgstr ""
+
+#. Translators: %1$s: the singular name of the record type - Field, Query, Style, etc.
+#: assets/admin/app.js:31327
+#: assets/admin/block-editor.js:35528
+msgid "%s moved to trash."
+msgstr ""
+
+#: assets/admin/app.js:31537
+msgid "Fetching Query data..."
+msgstr ""
+
+#: assets/admin/app.js:31568
+msgid "Manage the fields connected to this query."
+msgstr ""
+
+#: assets/admin/app.js:31577
+msgid "Connected Fields"
+msgstr ""
+
+#: assets/admin/app.js:31638
+msgid "Create, edit, and manage the queries and integrations on your site."
+msgstr ""
+
+#: assets/admin/app.js:31683
+msgid "Duplicated query (disabled)."
+msgstr ""
+
+#: assets/admin/app.js:31804
+msgid "Get the the Pro extension and upgrade your Search & Filter experience!"
+msgstr ""
+
+#: assets/admin/app.js:31809
+msgid "<ExternalLink>Get it here</ExternalLink>"
+msgstr ""
+
+#: assets/admin/app.js:31820
+msgid "Pro features"
+msgstr ""
+
+#: assets/admin/app.js:31820
+msgid "Input types including range sliders, advanced date pickers and more."
+msgstr ""
+
+#: assets/admin/app.js:31820
+msgid "Advanced query controls"
+msgstr ""
+
+#: assets/admin/app.js:31820
+msgid "Control fields such as pagination and current selection"
+msgstr ""
+
+#: assets/admin/app.js:31820
+msgid "Dynamic results - results update instantly without refreshing the page"
+msgstr ""
+
+#: assets/admin/app.js:31820
+msgid "Dynamic fields & options - fields update to show only relevant options to your users"
+msgstr ""
+
+#: assets/admin/app.js:31820
+msgid "Our indexer, enabling you to have lightning fast searches with complex data"
+msgstr ""
+
+#: assets/admin/app.js:31820
+msgid "Deep custom field support + an ACF integration that supports repeater fields, flexible content fields, subgroups and more."
+msgstr ""
+
+#: assets/admin/app.js:31820
+msgid "Page builder integrations for Elementor and Beaver Builder"
+msgstr ""
+
+#: assets/admin/app.js:31825
+msgid "Get access today"
+msgstr ""
+
+#: assets/admin/app.js:31825
+msgid "Coming soon to Pro"
+msgstr ""
+
+#: assets/admin/app.js:31825
+msgid "More input types such as color pickers, maps and star ratings"
+msgstr ""
+
+#: assets/admin/app.js:31825
+msgid "Integrations for Pods and Meta Box."
+msgstr ""
+
+#: assets/admin/app.js:31825
+msgid "Page builder integrations for Divi, Bricks & WP Bakery Page Builder."
+msgstr ""
+
+#: assets/admin/app.js:32157
+msgid "There was an error, try again or email us <a>support@searchandfilter.com</a>."
+msgstr ""
+
+#: assets/admin/app.js:32164
+msgid "Message sent"
+msgstr ""
+
+#: assets/admin/app.js:32275
+#: assets/admin/block-editor.js:39782
+msgid "Close"
+msgstr ""
+
+#: assets/admin/app.js:32281
+msgid "Have an issue, suggestion or feature request? We want to hear from you!"
+msgstr ""
+
+#: assets/admin/app.js:32289
+msgid "Share email address"
+msgstr ""
+
+#: assets/admin/app.js:32294
+msgid "Email address"
+msgstr ""
+
+#: assets/admin/app.js:32309
+msgid "Share site URL"
+msgstr ""
+
+#: assets/admin/app.js:32315
+msgid "Message will be sent anonymously"
+msgstr ""
+
+#: assets/admin/app.js:32318
+msgid "Message"
+msgstr ""
+
+#: assets/admin/app.js:32338
+msgid "Take screenshot"
+msgstr ""
+
+#: assets/admin/app.js:32344
+msgid "Clear screenshots"
+msgstr ""
+
+#: assets/admin/app.js:32352
+msgid "I consent to allow Search & Filter to collect the above data in order to process feedback."
+msgstr ""
+
+#: assets/admin/app.js:32361
+msgid "Send message"
+msgstr ""
+
+#: assets/admin/app.js:32719
+#: assets/admin/block-editor.js:13475
+msgid "Find Reusable Field"
+msgstr ""
+
+#: assets/admin/app.js:33510
+#: assets/admin/block-editor.js:14565
+#: assets/admin/block-editor.js:41636
+msgid "Clear"
+msgstr ""
+
+#: assets/admin/app.js:33889
+#: assets/admin/block-editor.js:18635
+msgid "Search meta keys"
+msgstr ""
+
+#: assets/admin/app.js:41541
+#: assets/admin/block-editor.js:29265
+msgid "Solid"
+msgstr ""
+
+#: assets/admin/app.js:41548
+#: assets/admin/block-editor.js:29272
+msgid "Gradient"
+msgstr ""
+
+#: assets/admin/app.js:42315
+#: assets/admin/app.js:42382
+#: assets/admin/block-editor.js:37733
+#: assets/admin/block-editor.js:37800
+msgid "No queries found, <button>create a query</button> first."
+msgstr ""
+
+#: assets/admin/app.js:42382
+#: assets/admin/block-editor.js:37800
+msgid "No queries found, create a query first."
+msgstr ""
+
+#: assets/admin/app.js:42454
+#: assets/admin/block-editor.js:37872
+msgid "Create query"
+msgstr ""
+
+#: assets/admin/app.js:42468
+#: assets/admin/block-editor.js:37886
+#: assets/admin/block-editor.js:39782
+#: assets/admin/block-editor.js:41189
+msgid "Cancel"
+msgstr ""
+
+#: assets/admin/app.js:42518
+#: assets/admin/block-editor.js:37936
+msgid "No styles found, create a styles preset first."
+msgstr ""
+
+#: assets/admin/app.js:42564
+#: assets/admin/block-editor.js:37982
+msgid "No styles found, <button>create a styles preset</button> first."
+msgstr ""
+
+#: assets/admin/app.js:42833
+#: assets/admin/block-editor.js:38251
+msgid "Add condition"
+msgstr ""
+
+#: assets/admin/app.js:42842
+#: assets/admin/block-editor.js:38260
+msgid "No conditions have been set."
+msgstr ""
+
+#. translators: %d: number of conditions
+#: assets/admin/app.js:42847
+#: assets/admin/block-editor.js:38265
+msgid "%d condition has been set."
+msgid_plural "%d conditions have been set."
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/admin/app.js:42998
+#: assets/admin/block-editor.js:38416
+msgid "Remove condition"
+msgstr ""
+
+#: assets/admin/app.js:43002
+#: assets/admin/app.js:43388
+#: assets/admin/app.js:43639
+#: assets/admin/block-editor.js:38420
+#: assets/admin/block-editor.js:38820
+#: assets/admin/block-editor.js:39071
+msgid "Remove"
+msgstr ""
+
+#: assets/admin/app.js:43020
+#: assets/admin/block-editor.js:38452
+msgid "Move up"
+msgstr ""
+
+#: assets/admin/app.js:43022
+#: assets/admin/block-editor.js:38454
+msgid "Move down"
+msgstr ""
+
+#: assets/admin/app.js:43178
+#: assets/admin/app.js:43428
+#: assets/admin/block-editor.js:38610
+#: assets/admin/block-editor.js:38860
+msgid "Add order"
+msgstr ""
+
+#: assets/admin/app.js:43325
+#: assets/admin/app.js:43573
+#: assets/admin/block-editor.js:38757
+#: assets/admin/block-editor.js:39005
+msgid "Toggle settings"
+msgstr ""
+
+#: assets/admin/app.js:43364
+#: assets/admin/app.js:43615
+#: assets/admin/block-editor.js:38796
+#: assets/admin/block-editor.js:39047
+msgid "Include posts without custom field"
+msgstr ""
+
+#: assets/admin/app.js:43384
+#: assets/admin/app.js:43635
+#: assets/admin/block-editor.js:38816
+#: assets/admin/block-editor.js:39067
+msgid "Remove order"
+msgstr ""
+
+#. Translators: %1$s: the singular name of the record type - Field, Query, Style, etc.
+#: assets/admin/block-editor.js:39712
+msgid "%s updated."
+msgstr ""
+
+#: assets/admin/block-editor.js:39735
+msgid "Unsaved changes will be lost, would you like to continue?"
+msgstr ""
+
+#: assets/admin/block-editor.js:39753
+msgid "Edit Query"
+msgstr ""
+
+#: assets/admin/block-editor.js:40419
+#: assets/admin/block-editor.js:40429
+#: assets/admin/block-editor.js:40431
+msgid "Warning: "
+msgstr ""
+
+#: assets/admin/block-editor.js:40419
+msgid "query not found."
+msgstr ""
+
+#: assets/admin/block-editor.js:40421
+msgid "Status: "
+msgstr ""
+
+#: assets/admin/block-editor.js:40421
+msgid "found query"
+msgstr ""
+
+#: assets/admin/block-editor.js:40427
+msgid "Show query"
+msgstr ""
+
+#: assets/admin/block-editor.js:40429
+msgid "found multiple queries, select a Search & Filter query in the query loop inspector."
+msgstr ""
+
+#: assets/admin/block-editor.js:40431
+msgid "found multiple queries using this ID - you can only assign one."
+msgstr ""
+
+#: assets/admin/block-editor.js:41089
+#: assets/admin/block-editor.js:41174
+msgid "Create re-usable field"
+msgstr ""
+
+#: assets/admin/block-editor.js:41104
+msgid "Convert to reusable field"
+msgstr ""
+
+#: assets/admin/block-editor.js:41104
+msgid "Reusable fields can be managed via the Search & Filter dashboard."
+msgstr ""
+
+#: assets/admin/block-editor.js:41267
+msgid "Add a search field."
+msgstr ""
+
+#: assets/admin/block-editor.js:41268
+msgid "Search Field"
+msgstr ""
+
+#: assets/admin/block-editor.js:41270
+#: assets/admin/block-editor.js:41331
+#: assets/admin/block-editor.js:41394
+#: assets/admin/block-editor.js:41460
+#: assets/admin/block-editor.js:41520
+#: assets/admin/block-editor.js:41819
+msgid "search"
+msgstr ""
+
+#: assets/admin/block-editor.js:41270
+#: assets/admin/block-editor.js:41331
+#: assets/admin/block-editor.js:41394
+#: assets/admin/block-editor.js:41460
+#: assets/admin/block-editor.js:41520
+#: assets/admin/block-editor.js:41819
+msgid "filter"
+msgstr ""
+
+#: assets/admin/block-editor.js:41270
+#: assets/admin/block-editor.js:41331
+#: assets/admin/block-editor.js:41394
+#: assets/admin/block-editor.js:41460
+#: assets/admin/block-editor.js:41520
+#: assets/admin/block-editor.js:41819
+msgid "field"
+msgstr ""
+
+#: assets/admin/block-editor.js:41270
+#: assets/admin/block-editor.js:41331
+#: assets/admin/block-editor.js:41394
+#: assets/admin/block-editor.js:41460
+#: assets/admin/block-editor.js:41520
+#: assets/admin/block-editor.js:41819
+msgid "control"
+msgstr ""
+
+#: assets/admin/block-editor.js:41328
+msgid "Add a choice field."
+msgstr ""
+
+#: assets/admin/block-editor.js:41329
+msgid "Choice Filter Field"
+msgstr ""
+
+#: assets/admin/block-editor.js:41391
+msgid "Add a range field."
+msgstr ""
+
+#: assets/admin/block-editor.js:41392
+msgid "Range Filter Field"
+msgstr ""
+
+#: assets/admin/block-editor.js:41457
+msgid "Add a filter field."
+msgstr ""
+
+#: assets/admin/block-editor.js:41458
+msgid "Advanced Filter Field"
+msgstr ""
+
+#: assets/admin/block-editor.js:41517
+msgid "Add a control field."
+msgstr ""
+
+#: assets/admin/block-editor.js:41518
+msgid "Control Field"
+msgstr ""
+
+#: assets/admin/block-editor.js:41598
+msgid "Reusable Field Settings"
+msgstr ""
+
+#: assets/admin/block-editor.js:41618
+msgid "Browse"
+msgstr ""
+
+#: assets/admin/block-editor.js:41631
+msgid "Field:"
+msgstr ""
+
+#: assets/admin/block-editor.js:41765
+msgid "Select a Reusable Field"
+msgstr ""
+
+#: assets/admin/block-editor.js:41771
+msgid "Fetching field…"
+msgstr ""
+
+#: assets/admin/block-editor.js:41817
+msgid "Add a reusable field."
+msgstr ""
+
+#: assets/admin/block-editor.js:41818
+msgid "Reusable Field"
+msgstr ""
+
+#: assets/admin/block-editor.js:41914
+msgid "Search & Filter Query"
+msgstr ""
+
+#: assets/admin/block-editor.js:41927
+msgid "Connect with a specific Search & Filter query using an ID - useful if you have multiple query loops on a page."
+msgstr ""
+
+#: includes/integrations/gutenberg/blocks/advanced/block.json
+msgctxt "block title"
+msgid "Advanced Field"
+msgstr ""
+
+#: includes/integrations/gutenberg/blocks/advanced/block.json
+msgctxt "block description"
+msgid "Filter queries using advanced field types such as maps and date pickers."
+msgstr ""
+
+#: includes/integrations/gutenberg/blocks/choice/block.json
+msgctxt "block title"
+msgid "Choice Field"
+msgstr ""
+
+#: includes/integrations/gutenberg/blocks/choice/block.json
+msgctxt "block description"
+msgid "Filter queries by choosing from a set of options."
+msgstr ""
+
+#: includes/integrations/gutenberg/blocks/control/block.json
+msgctxt "block title"
+msgid "Control Field"
+msgstr ""
+
+#: includes/integrations/gutenberg/blocks/control/block.json
+msgctxt "block description"
+msgid "Allow users to control a query"
+msgstr ""
+
+#: includes/integrations/gutenberg/blocks/range/block.json
+msgctxt "block title"
+msgid "Range Field"
+msgstr ""
+
+#: includes/integrations/gutenberg/blocks/range/block.json
+msgctxt "block description"
+msgid "Filter queries by choosing from a number range."
+msgstr ""
+
+#: includes/integrations/gutenberg/blocks/reusable/block.json
+msgctxt "block title"
+msgid "Reusable Field"
+msgstr ""
+
+#: includes/integrations/gutenberg/blocks/reusable/block.json
+msgctxt "block description"
+msgid "Insert a Reusable Field"
+msgstr ""
+
+#: includes/integrations/gutenberg/blocks/search/block.json
+msgctxt "block title"
+msgid "Search Field"
+msgstr ""
+
+#: includes/integrations/gutenberg/blocks/search/block.json
+msgctxt "block description"
+msgid "Enter search terms to narrow down queries"
+msgstr ""

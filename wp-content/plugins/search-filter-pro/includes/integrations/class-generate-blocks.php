@@ -19,9 +19,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * GenerateBlocks integration handler.
  */
 class Generate_Blocks {
 
+	/**
+	 * The plugin file.
+	 *
+	 * @var string
+	 */
 	private static $plugin_file = 'search-filter-generate-blocks/search-filter-generate-blocks.php';
 	/**
 	 * Init
@@ -52,7 +58,7 @@ class Generate_Blocks {
 		$is_generateblocks_enabled = self::generateblocks_enabled();
 
 		$update_integration_settings = array(
-			'isPluginEnabled' => $is_generateblocks_enabled,
+			'isIntegrationEnabled' => $is_generateblocks_enabled,
 		);
 
 		// If we detect Generateblocks is enabled, then lets also set the plugin installed
@@ -60,7 +66,7 @@ class Generate_Blocks {
 		// folder name and it we would initially detect is as not installed by using
 		// by using `plugin_exists()` which is unreliable.
 		if ( $is_generateblocks_enabled ) {
-			$update_integration_settings['isPluginInstalled'] = true;
+			$update_integration_settings['isIntegrationInstalled'] = true;
 		}
 
 		// Also check if the extension plugin is installed.
@@ -69,9 +75,15 @@ class Generate_Blocks {
 		}
 
 		$generateblocks_integration->update( $update_integration_settings );
-
 	}
 
+	/**
+	 * Install the GenerateBlocks extension.
+	 *
+	 * @param bool   $installed Whether the extension is already installed.
+	 * @param string $extension The extension name.
+	 * @return bool
+	 */
 	public static function install_extension( $installed, $extension ) {
 		if ( $extension !== 'generateblocks' ) {
 			return $installed;
@@ -99,6 +111,11 @@ class Generate_Blocks {
 		return false;
 	}
 
+	/**
+	 * Enable the GenerateBlocks extension.
+	 *
+	 * @param string $extension The extension name.
+	 */
 	public static function enable_extension( $extension ) {
 		if ( $extension !== 'generateblocks' ) {
 			return;
@@ -107,6 +124,11 @@ class Generate_Blocks {
 			Dependants::enable_plugin( self::$plugin_file );
 		}
 	}
+	/**
+	 * Disable the GenerateBlocks extension.
+	 *
+	 * @param string $extension The extension name.
+	 */
 	public static function disable_extension( $extension ) {
 		if ( $extension !== 'generateblocks' ) {
 			return;
@@ -141,7 +163,6 @@ class Generate_Blocks {
 		if ( ! $is_enabled && $is_plugin_enabled && $is_extension_enabled ) {
 			\Search_Filter\Integrations::enable( 'generateblocks', true );
 		}
-
 	}
 
 
@@ -155,5 +176,4 @@ class Generate_Blocks {
 	private static function generateblocks_enabled() {
 		return defined( 'GENERATEBLOCKS_VERSION' ) || defined( 'GENERATEBLOCKS_PRO_VERSION' );
 	}
-
 }

@@ -12,6 +12,8 @@ namespace Search_Filter_Pro;
 
 use Search_Filter_Pro\Integrations\Acf;
 use Search_Filter_Pro\Integrations\Beaver_Builder;
+use Search_Filter_Pro\Integrations\Bricks;
+use Search_Filter_Pro\Integrations\Divi;
 use Search_Filter_Pro\Integrations\Elementor;
 use Search_Filter_Pro\Integrations\Generate_Blocks;
 use Search_Filter_Pro\Integrations\Wpml;
@@ -19,6 +21,7 @@ use Search_Filter_Pro\Integrations\Gutenberg;
 use Search_Filter_Pro\Integrations\Polylang;
 use Search_Filter_Pro\Integrations\Relevanssi;
 use Search_Filter_Pro\Integrations\Woocommerce;
+use Search_Filter_Pro\Integrations\Translate_Press;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -41,8 +44,11 @@ class Integrations {
 	 * @since    3.0.0
 	 */
 	public static function init() {
-		// TODO check this is loading after our database is init.
+		// Setup after integration settings have init.
 		add_action( 'search-filter/settings/integrations/init', array( __CLASS__, 'init_integrations' ) );
+
+		// Divi needs to hook in before integations are init to modify `isIntegrationInstalled`.
+		Divi::init();
 	}
 
 	/**
@@ -60,5 +66,7 @@ class Integrations {
 		Wpml::init();
 		Polylang::init();
 		Generate_Blocks::init();
+		Bricks::init();
+		Translate_Press::init();
 	}
 }

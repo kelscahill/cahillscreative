@@ -1,4 +1,13 @@
 <?php
+/**
+ * Query store for indexer queries.
+ *
+ * @link       https://searchandfilter.com
+ * @since      3.0.0
+ * @package    Search_Filter_Pro
+ * @subpackage Search_Filter_Pro/Indexer
+ */
+
 namespace Search_Filter_Pro\Indexer;
 
 // If this file is called directly, abort.
@@ -19,7 +28,7 @@ class Query_Store {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @var Search_Filter\Queries\Query
+	 * @var Query[]
 	 */
 	private static $queries = array();
 
@@ -28,10 +37,12 @@ class Query_Store {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param Search_Filter\Queries\Query $query The S&F query object.
+	 * @param Query $query The indexer query object.
 	 */
 	public static function add_query( $query ) {
-		self::$queries[ $query->get_id() ] = $query;
+		if ( ! isset( self::$queries[ $query->get_id() ] ) ) {
+			self::$queries[ $query->get_id() ] = $query;
+		}
 	}
 
 	/**
@@ -40,7 +51,7 @@ class Query_Store {
 	 * @since 3.0.0
 	 *
 	 * @param int $query_id The S&F query ID.
-	 * @return Search_Filter\Queries\Query|null The S&F query object or null if not found.
+	 * @return Query|null The indexer query object or null if not found.
 	 */
 	public static function get_query( $query_id ) {
 		if ( isset( self::$queries[ $query_id ] ) ) {
@@ -67,7 +78,7 @@ class Query_Store {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param Search_Filter\Queries\Query $query The S&F query object.
+	 * @param Query $query The indexer query object.
 	 */
 	public static function update_query( $query ) {
 		$query_id = $query->get_id();
@@ -86,5 +97,16 @@ class Query_Store {
 	 */
 	public static function has_query( $query_id ) {
 		return isset( self::$queries[ $query_id ] );
+	}
+
+	/**
+	 * Clear all stored queries (for testing).
+	 *
+	 * Resets the query store to prevent Indexer_Query persistence between tests.
+	 *
+	 * @since 3.2.0
+	 */
+	public static function clear() {
+		self::$queries = array();
 	}
 }

@@ -37,7 +37,7 @@ class Settings_Data {
 		$settings_data = array(
 			array(
 				'name'      => 'logLevel',
-				'label'     => __( 'Log level', 'search-filter' ),
+				'label'     => __( 'Log Level', 'search-filter' ),
 				'help'      => __( 'Choose which kinds of messages to log.', 'search-filter' ),
 				'default'   => 'errors',
 				'type'      => 'string',
@@ -59,7 +59,7 @@ class Settings_Data {
 			),
 			array(
 				'name'      => 'logToDatabase',
-				'label'     => __( 'Log to database', 'search-filter' ),
+				'label'     => __( 'Log To Database', 'search-filter' ),
 				'help'      => __( 'Choose whether to log to the database.', 'search-filter' ),
 				'default'   => 'no',
 				'type'      => 'string',
@@ -72,6 +72,29 @@ class Settings_Data {
 					array(
 						'value' => 'no',
 						'label' => __( 'No', 'search-filter' ),
+					),
+				),
+			),
+			array(
+				'name'      => 'viewLog',
+				'label'     => __( 'View Logs', 'search-filter' ),
+				'inputType' => 'Button',
+				'variant'   => 'secondary',
+				'action'    => array(
+					'type'     => 'navigate',
+					'label'    => __( 'View Logs', 'search-filter' ),
+					'location' => array(
+						'section' => 'logs',
+					),
+				),
+				'dependsOn' => array(
+					'relation' => 'AND',
+					'rules'    => array(
+						array(
+							'option'  => 'logToDatabase',
+							'compare' => '=',
+							'value'   => 'yes',
+						),
 					),
 				),
 			),

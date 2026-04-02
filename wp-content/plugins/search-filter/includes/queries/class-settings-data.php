@@ -20,6 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class that contains the settings for our queries
  */
 class Settings_Data {
+	/**
+	 * Get the settings groups.
+	 *
+	 * @return array The settings groups data.
+	 */
 	public static function get_groups() {
 		$groups_data = array(
 			array(
@@ -33,6 +38,10 @@ class Settings_Data {
 			array(
 				'name'  => 'tax_query',
 				'label' => __( 'Taxonomies', 'search-filter' ),
+			),
+			array(
+				'name'  => 'accessibility',
+				'label' => __( 'Accessibility', 'search-filter' ),
 			),
 		);
 		return $groups_data;
@@ -72,7 +81,7 @@ class Settings_Data {
 					),
 					array(
 						'value' => 'search',
-						'label' => __( 'Search (default)', 'search-filter' ),
+						'label' => __( 'Search (Global)', 'search-filter' ),
 					),
 				),
 			),
@@ -105,7 +114,7 @@ class Settings_Data {
 				),
 			),
 			array(
-				'name'         => 'postType',
+				'name'         => 'archivePostType',
 				'label'        => __( 'Post Type', 'search-filter' ),
 				'help'         => __( "If you don't see your post type, check that `public` and `has_archive` are enabled.", 'search-filter' ),
 				'type'         => 'string',
@@ -139,16 +148,20 @@ class Settings_Data {
 				'help'      => __( 'Enables filtering in the related taxonomy archives.', 'search-filter' ),
 				'type'      => 'string',
 				'group'     => 'location',
-				'inputType' => 'Toggle',
-				'default'   => 'no',
+				'inputType' => 'ButtonGroup',
+				'default'   => 'none',
 				'options'   => array(
 					array(
-						'value' => 'yes',
-						'label' => __( 'Yes', 'search-filter' ),
+						'value' => 'none',
+						'label' => __( 'None', 'search-filter' ),
 					),
 					array(
-						'value' => 'no',
-						'label' => __( 'No', 'search-filter' ),
+						'value' => 'all',
+						'label' => __( 'All Taxonomies', 'search-filter' ),
+					),
+					array(
+						'value' => 'custom',
+						'label' => __( 'Selected Taxonomies', 'search-filter' ),
 					),
 				),
 				'dependsOn' => array(
@@ -173,7 +186,38 @@ class Settings_Data {
 				),
 			),
 			array(
-				'name'         => 'taxonomy',
+				'name'         => 'archivePostTypeTaxonomies',
+				'label'        => __( 'Taxonomy Archives', 'search-filter' ),
+				'help'         => __( 'Allow filtering on connected taxonomy archives.', 'search-filter' ),
+				'type'         => 'array',
+				'group'        => 'location',
+				'inputType'    => 'MultiSelect',
+				'placeholder'  => __( 'Select taxonomies', 'search-filter' ),
+				'items'        => array(
+					'type' => 'string',
+				),
+				'options'      => array(),
+				'default'      => array(),
+				'dependsOn'    => array(
+					'relation' => 'AND',
+					'rules'    => array(
+						array(
+							'option'  => 'archiveFilterTaxonomies',
+							'compare' => '=',
+							'value'   => 'custom',
+						),
+					),
+				),
+				'dataProvider' => array(
+					'route' => '/settings/options/query/archive/taxonomies',
+					'args'  => array(
+						'archivePostType',
+						'integrationType',
+					),
+				),
+			),
+			array(
+				'name'         => 'archiveTaxonomy',
 				'label'        => __( 'Taxonomy', 'search-filter' ),
 				'help'         => __( "If you don't see your taxonomy, ensure `public` is enabled", 'search-filter' ),
 				'default'      => 'category',
@@ -199,7 +243,86 @@ class Settings_Data {
 					'route' => '/settings/options/taxonomies',
 				),
 			),
-
+			array(
+				'name'      => 'archiveTaxonomyFilterTerms',
+				'label'     => __( 'Filter Term Archives', 'search-filter' ),
+				'help'      => __( 'Filter taxonomy term archives.', 'search-filter' ),
+				'type'      => 'string',
+				'group'     => 'location',
+				'inputType' => 'ButtonGroup',
+				'default'   => 'all',
+				'options'   => array(
+					array(
+						'value' => 'all',
+						'label' => __( 'All Terms', 'search-filter' ),
+					),
+					array(
+						'value' => 'custom',
+						'label' => __( 'Selected terms', 'search-filter' ),
+					),
+				),
+				'dependsOn' => array(
+					'relation' => 'OR',
+					'rules'    => array(
+						array(
+							'relation' => 'AND',
+							'rules'    => array(
+								array(
+									'option'  => 'integrationType',
+									'compare' => '=',
+									'value'   => 'archive',
+								),
+								array(
+									'option'  => 'archiveType',
+									'compare' => '=',
+									'value'   => 'taxonomy',
+								),
+							),
+						),
+					),
+				),
+			),
+			array(
+				'name'         => 'archiveTaxonomyTerms',
+				'label'        => __( 'Taxonomy Term Archives', 'search-filter' ),
+				'help'         => __( 'Enables filtering on specific term archives only.', 'search-filter' ),
+				'type'         => 'array',
+				'group'        => 'location',
+				'inputType'    => 'MultiSelect',
+				'placeholder'  => __( 'Choose Term Archives', 'search-filter' ),
+				'items'        => array(
+					'type' => 'string',
+				),
+				'options'      => array(),
+				'default'      => array(),
+				'dependsOn'    => array(
+					'relation' => 'AND',
+					'rules'    => array(
+						array(
+							'option'  => 'integrationType',
+							'compare' => '=',
+							'value'   => 'archive',
+						),
+						array(
+							'option'  => 'archiveType',
+							'compare' => '=',
+							'value'   => 'taxonomy',
+						),
+						array(
+							'option'  => 'archiveTaxonomyFilterTerms',
+							'compare' => '=',
+							'value'   => 'custom',
+						),
+					),
+				),
+				'dataProvider' => array(
+					'route' => '/settings/options/query/archive/taxonomy_terms',
+					'args'  => array(
+						'archiveTaxonomy',
+						// 'integrationType',
+					),
+				),
+			),
 			array(
 				'name'        => 'singleLocation',
 				'label'       => __( 'Single Post / Page / CPT', 'search-filter' ),
@@ -219,7 +342,6 @@ class Settings_Data {
 					),
 				),
 			),
-
 			array(
 				'name'      => 'queryIntegration',
 				'label'     => __( 'Query', 'search-filter' ),
@@ -286,10 +408,10 @@ class Settings_Data {
 
 			array(
 				'name'      => 'queryLoopAutodetect',
-				'label'     => __( 'Autodetect Query Loop', 'search-filter' ),
+				'label'     => __( 'Autodetect Query', 'search-filter' ),
 				'group'     => 'location',
 				'type'      => 'string',
-				'help'      => __( 'Attempts to auto detect any query loops on the current page.', 'search-filter' ),
+				'help'      => __( 'Attempts to auto detect any queries on the current page.', 'search-filter' ),
 				'inputType' => 'Toggle',
 				'default'   => 'yes',
 				'options'   => array(
@@ -338,8 +460,8 @@ class Settings_Data {
 						'integrationType',
 						'queryIntegration',
 						'archiveType',
-						'postType',
-						'taxonomy',
+						'archivePostType',
+						'archiveTaxonomy',
 					),
 				),
 			),
@@ -361,12 +483,53 @@ class Settings_Data {
 			array(
 				'name'      => 'postsPerPage',
 				'label'     => __( 'Posts Per Page', 'search-filter' ),
+				'help'      => __( 'Set to -1 to show all posts (use with caution).', 'search-filter' ),
 				'type'      => 'string',
 				'group'     => 'query',
 				'inputType' => 'Number',
-				'min'       => '1',
-				'max'       => '100',
+				'min'       => '-1',
 				'default'   => '10',
+			),
+			array(
+				'name'      => 'offset',
+				'label'     => __( 'Offset', 'search-filter' ),
+				'help'      => __( 'Number of posts to skip (offset) in the query results.', 'search-filter' ),
+				'type'      => 'number',
+				'group'     => 'query',
+				'inputType' => 'Number',
+				'min'       => '0',
+				'max'       => '100',
+				'default'   => '0',
+				'dependsOn' => array(
+					'relation' => 'AND',
+					'rules'    => array(
+						array(
+							'option'  => 'postsPerPage',
+							'compare' => '>',
+							'value'   => '0',
+						),
+					),
+				),
+			),
+			array(
+				'name'      => 'postsPerPageNotice',
+				'content'   => __( 'Using a high posts per page setting can cause performance issues.', 'search-filter-pro' ),
+				'group'     => 'query',
+				'type'      => 'string',
+				'inputType' => 'Notice',
+				'status'    => 'warning',
+				'dependsOn' => array(
+					'relation' => 'AND',
+					'action'   => 'hide',
+					'rules'    => array(
+						array(
+							'option'  => 'postsPerPage',
+							'value'   => '100',
+							'compare' => '>',
+						),
+
+					),
+				),
 			),
 			array(
 				'name'            => 'sortOrder',
@@ -424,11 +587,14 @@ class Settings_Data {
 						'value' => 'post__in',
 						'label' => __( 'Restricted Posts Order', 'search-filter' ),
 					),
-					// TODO - add support for rand with a seed to stop getting different results each page load.
-					// array(
-					// 'value' => 'rand',
-					// 'label' => __( 'Random', 'search-filter' ),
-					// ),
+					array(
+						'value' => 'rand',
+						'label' => __( 'Random', 'search-filter' ),
+					),
+					array(
+						'value' => 'rand()',
+						'label' => __( 'Random (consistent)', 'search-filter' ),
+					),
 				),
 				'default'         => array(),
 				'inputType'       => 'SortOrder',
@@ -515,6 +681,69 @@ class Settings_Data {
 				),
 			),
 			array(
+				'name'      => 'queryPostsIncludeExclude',
+				'label'     => __( 'Exclude/Restrict Posts', 'search-filter' ),
+				'group'     => 'query',
+				'type'      => 'string',
+
+				'help'      => __( 'Restrict to specific posts or exclude them.', 'search-filter' ),
+				'default'   => '',
+				'inputType' => 'Select',
+				'options'   => array(
+					array(
+						'value' => 'none',
+						'label' => __( 'No Restriction', 'search-filter' ),
+					),
+					array(
+						'value' => 'include',
+						'label' => __( 'Restrict', 'search-filter' ),
+					),
+					array(
+						'value' => 'exclude',
+						'label' => __( 'Exclude', 'search-filter' ),
+					),
+				),
+			),
+
+			array(
+				'name'        => 'queryRestrictPostIds',
+				'label'       => __( 'Restrict Posts', 'search-filter' ),
+				'group'       => 'query',
+				'type'        => 'string',
+				'default'     => '',
+				'inputType'   => 'PostMultiSelect',
+				'placeholder' => __( 'Search for a post, page or CPT', 'search-filter' ),
+				'dependsOn'   => array(
+					'relation' => 'AND',
+					'rules'    => array(
+						array(
+							'option'  => 'queryPostsIncludeExclude',
+							'compare' => '=',
+							'value'   => 'include',
+						),
+					),
+				),
+			),
+			array(
+				'name'        => 'queryExcludePostIds',
+				'label'       => __( 'Exclude Posts', 'search-filter' ),
+				'group'       => 'query',
+				'type'        => 'string',
+				'default'     => '',
+				'inputType'   => 'PostMultiSelect',
+				'placeholder' => __( 'Search for a post, page or CPT', 'search-filter' ),
+				'dependsOn'   => array(
+					'relation' => 'AND',
+					'rules'    => array(
+						array(
+							'option'  => 'queryPostsIncludeExclude',
+							'compare' => '=',
+							'value'   => 'exclude',
+						),
+					),
+				),
+			),
+			array(
 				'name'      => 'taxonomyQuery',
 				'label'     => __( 'Taxonomy conditions', 'search-filter' ),
 				'group'     => 'tax_query',
@@ -523,6 +752,21 @@ class Settings_Data {
 				'dependsOn' => array(
 					'relation' => 'OR',
 					'rules'    => array(
+						array(
+							'relation' => 'AND',
+							'rules'    => array(
+								array(
+									'option'  => 'integrationType',
+									'compare' => '=',
+									'value'   => 'archive',
+								),
+								array(
+									'option'  => 'archiveType',
+									'compare' => '!=',
+									'value'   => 'taxonomy',
+								),
+							),
+						),
 						array(
 							'option'  => 'integrationType',
 							'compare' => '!=',
@@ -548,7 +792,7 @@ class Settings_Data {
 					'args'  => array(
 						'integrationType',
 						'archiveType',
-						'postType',
+						'archivePostType',
 					),
 				),
 				'dependsOn'    => array(
@@ -580,7 +824,7 @@ class Settings_Data {
 					'args'  => array(
 						'integrationType',
 						'archiveType',
-						'taxonomy',
+						'archiveTaxonomy',
 					),
 				),
 				'dependsOn'    => array(
@@ -655,16 +899,126 @@ class Settings_Data {
 					),
 				),
 			),
-			/*
-			array(
-				'name'      => 'excludeIds',
-				'label'     => __( 'Exclude Posts', 'search-filter' ),
-				'type'      => 'string',
-				'group'     => 'query',
 
+			// Results settings.
+			array(
+				'name'      => 'queryContainer',
+				'label'     => __( 'Results Container', 'search-filter' ),
+				'help'      => __( 'CSS selector for your results container.', 'search-filter' ),
+				'group'     => 'accessibility',
+				'type'      => 'string',
 				'inputType' => 'Text',
 				'default'   => '',
-			), */
+			),
+			array(
+				'name'      => 'queryContainerNotice',
+				'content'   => __( 'The results container must be set to use accessibility features.', 'search-filter-pro' ),
+				'group'     => 'accessibility',
+				'type'      => 'string',
+				'inputType' => 'Notice',
+				'status'    => 'warning',
+				'default'   => __( 'Skip to search results', 'search-filter' ),
+				'dependsOn' => array(
+					'relation' => 'AND',
+					'action'   => 'hide',
+					'rules'    => array(
+						array(
+							'option'  => 'queryContainer',
+							'value'   => '',
+							'compare' => '=',
+						),
+					),
+				),
+			),
+			array(
+				'name'      => 'a11yQueryContainerLabel',
+				'label'     => __( 'Results Container Label', 'search-filter' ),
+				'help'      => __( 'Accessible name for the results container (aria-label). Helps screen readers identify the region.', 'search-filter' ),
+				'group'     => 'accessibility',
+				'type'      => 'string',
+				'inputType' => 'Text',
+				'default'   => __( 'Search Results', 'search-filter' ),
+			),
+			array(
+				'name'      => 'a11yQueryContainerLabelNotice',
+				'content'   => __( 'An accessible label must be set for the results container.', 'search-filter-pro' ),
+				'group'     => 'accessibility',
+				'type'      => 'string',
+				'inputType' => 'Notice',
+				'status'    => 'warning',
+				'default'   => __( 'Skip to search results', 'search-filter' ),
+				'dependsOn' => array(
+					'relation' => 'AND',
+					'action'   => 'hide',
+					'rules'    => array(
+						array(
+							'option'  => 'a11yQueryContainerLabel',
+							'value'   => '',
+							'compare' => '=',
+						),
+					),
+				),
+			),
+			array(
+				'name'      => 'a11ySkipLinkLabel',
+				'label'     => __( 'Skip Link Label', 'search-filter' ),
+				'help'      => __( 'Accessible skip link text for screen readers.', 'search-filter' ),
+				'group'     => 'accessibility',
+				'type'      => 'string',
+				'inputType' => 'Text',
+				'default'   => __( 'Skip to search results', 'search-filter' ),
+			),
+			array(
+				'name'      => 'a11ySkipLinkClass',
+				'label'     => __( 'Skip Link Class', 'search-filter' ),
+				'help'      => __( "CSS class for the skip link. Use your theme's skip link class for better integration.", 'search-filter' ),
+				'group'     => 'accessibility',
+				'type'      => 'string',
+				'inputType' => 'Text',
+				'default'   => 'search-filter-screen-reader-text',
+			),
+			array(
+				'name'      => 'a11yNoResultsText',
+				'label'     => __( 'No Results Text', 'search-filter' ),
+				'help'      => __( 'Screen reader announcement when no results are found.', 'search-filter' ),
+				'group'     => 'accessibility',
+				'type'      => 'string',
+				'inputType' => 'Text',
+				'default'   => __( 'No results found', 'search-filter' ),
+			),
+			array(
+				'name'      => 'a11ySingleResultText',
+				'label'     => __( 'Single Result Text', 'search-filter' ),
+				/* translators: %d is a placeholder for the result count */
+				'help'      => __( 'Screen reader announcement for one result. Use %d for the count.', 'search-filter' ),
+				'group'     => 'accessibility',
+				'type'      => 'string',
+				'inputType' => 'Text',
+				/* translators: %d is the number of results */
+				'default'   => __( '%d result found', 'search-filter' ),
+			),
+			array(
+				'name'      => 'a11yMultipleResultsText',
+				'label'     => __( 'Multiple Results Text', 'search-filter' ),
+				/* translators: %d is a placeholder for the result count */
+				'help'      => __( 'Screen reader announcement for multiple results. Use %d for the count.', 'search-filter' ),
+				'group'     => 'accessibility',
+				'type'      => 'string',
+				'inputType' => 'Text',
+				/* translators: %d is the number of results */
+				'default'   => __( '%d results found', 'search-filter' ),
+			),
+			array(
+				'name'      => 'a11yPageText',
+				'label'     => __( 'Page Text', 'search-filter' ),
+				/* translators: %1$d is the current page placeholder, %2$d is the total pages placeholder */
+				'help'      => __( 'Screen reader page context. Use %1$d for current page, %2$d for total pages.', 'search-filter' ),
+				'group'     => 'accessibility',
+				'type'      => 'string',
+				'inputType' => 'Text',
+				/* translators: %1$d is the current page number, %2$d is the total number of pages */
+				'default'   => __( 'Page %1$d of %2$d', 'search-filter' ),
+			),
 		);
 		return $settings_data;
 	}

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Shortcodes REST API.
+ *
+ * @package Search_Filter_Pro
+ */
+
 namespace Search_Filter_Pro\Features\Shortcodes;
 
 use WP_REST_Response;

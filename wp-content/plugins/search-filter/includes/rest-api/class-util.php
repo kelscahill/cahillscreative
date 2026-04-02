@@ -17,10 +17,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Utility helper functions for REST API operations.
  *
+ * @since 3.0.0
  */
 class Util {
 
+	/**
+	 * Get the count of records for each status.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param object $query      The query object.
+	 * @param array  $extra_args Optional. Additional query arguments. Default empty array.
+	 * @return array Array of status counts.
+	 */
 	public static function get_records_section_status_counts( $query, $extra_args = array() ) {
 		// Figure out how many results there are for each record status -
 		// Enabled, Disabled, Trashed.
@@ -45,6 +56,14 @@ class Util {
 		return $status_count;
 	}
 
+	/**
+	 * Prepare query arguments for fetching records.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $extra_args Optional. Additional query arguments. Default empty array.
+	 * @return array Prepared query arguments.
+	 */
 	public static function get_records_query_args( $extra_args = array() ) {
 		$per_page = 10;
 		if ( isset( $extra_args['per_page'] ) ) {

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Task Runner Cron functionality.
+ *
+ * @package Search_Filter_Pro
+ */
+
 namespace Search_Filter_Pro\Task_Runner;
 
 use Search_Filter_Pro\Core\Dependencies;
@@ -31,7 +37,9 @@ class Cron {
 		// Check for missed tasks.
 		add_action( 'admin_init', array( __CLASS__, 'validate' ) );
 		// Create the schedule.
+		// @codingStandardsIgnoreStart - Custom interval is intentional for task runner
 		add_filter( 'cron_schedules', array( __CLASS__, 'schedules' ) );
+		// @codingStandardsIgnoreEnd
 		// Add the cron job action.
 		add_action( self::CRON_HOOK, array( __CLASS__, 'run_task' ) );
 		// Attach the cron job to the init action.
@@ -45,9 +53,8 @@ class Cron {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param array $schedules
-	 *
-	 * @return array    The schedules.
+	 * @param array $schedules The existing schedules.
+	 * @return array The schedules.
 	 */
 	public static function schedules( $schedules ) {
 		// Create a search_filter_pro_1day interval.
@@ -68,7 +75,6 @@ class Cron {
 		if ( ! wp_next_scheduled( self::CRON_HOOK ) ) {
 			wp_schedule_event( time(), self::CRON_INTERVAL_NAME, self::CRON_HOOK );
 		}
-
 	}
 
 	/**
@@ -93,7 +99,7 @@ class Cron {
 			return;
 		}
 		// Maybe spawn a new process.
-        Task_Runner::test_background_process();
+		Task_Runner::test_background_process();
 	}
 
 	/**
@@ -115,7 +121,7 @@ class Cron {
 			// This means our scheduled event has been missed by more then 5 minutes.
 			// So lets run manually and reschedule.
 			self::run_task();
-			Util::error_log( 'Expired indexer cron job found, re-running and rescheduling.', 'error' );
+			Util::error_log( 'Expired task runner cron job found, re-running and rescheduling.', 'notice' );
 			wp_clear_scheduled_hook( self::CRON_HOOK );
 			wp_schedule_event( time(), self::CRON_INTERVAL_NAME, self::CRON_HOOK );
 		}

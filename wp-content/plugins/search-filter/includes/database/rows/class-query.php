@@ -1,4 +1,14 @@
 <?php
+/**
+ * Query Row Class.
+ *
+ * @package     Database
+ * @subpackage  Rows
+ * @copyright   Copyright (c) 2020
+ * @license     https://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       3.0.0
+ */
+
 namespace Search_Filter\Database\Rows;
 
 use Search_Filter\Core\Data_Store;
@@ -7,22 +17,90 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Query row class.
+ *
+ * @since 3.0.0
+ */
 class Query extends \Search_Filter\Database\Engine\Row {
-	public $id   = 0;
+	/**
+	 * The ID of the query.
+	 *
+	 * @since 3.0.0
+	 * @var int
+	 */
+	public $id = 0;
+
+	/**
+	 * The name of the query.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
 	public $name = '';
+
+	/**
+	 * The attributes of the query.
+	 *
+	 * @since 3.0.0
+	 * @var array
+	 */
 	public $attributes;
-	public $status        = '';
-	public $css           = '';
-	public $context       = '';
-	public $integration   = '';
-	public $date_created  = false;
-	public $date_modified = false;
+
+	/**
+	 * The status of the query.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $status = '';
+
+	/**
+	 * The CSS of the query.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $css = '';
+
+	/**
+	 * The context of the query.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $context = '';
+
+	/**
+	 * The integration type of the query.
+	 *
+	 * @since 3.0.0
+	 * @var string
+	 */
+	public $integration = '';
+
+	/**
+	 * The date the query was created.
+	 *
+	 * @since 3.0.0
+	 * @var int
+	 */
+	public $date_created = 0;
+
+	/**
+	 * The date the query was modified.
+	 *
+	 * @since 3.0.0
+	 * @var int
+	 */
+	public $date_modified = 0;
+
 	/**
 	 * Queries constructor.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
-	 * @param $item
+	 * @param object $item The query item data.
 	 */
 	public function __construct( $item ) {
 		parent::__construct( $item );
@@ -30,14 +108,14 @@ class Query extends \Search_Filter\Database\Engine\Row {
 		// This is optional, but recommended. Set the type of each column, and prepare.
 		$this->id         = (int) $this->id;
 		$this->name       = (string) $this->name;
-		$this->attributes = json_decode( $this->attributes, true );
+		$this->attributes = is_string( $this->attributes ) ? json_decode( $this->attributes, true ) : $this->attributes;
 		// Need to check the property exists, as it may not be set when accessing the DB on the frontend.
 		// DB upgrade routines only run on the admin side, so we need to check for these properties.
 		$this->context     = (string) $this->context;
 		$this->integration = (string) $this->integration;
 
-		$this->date_created  = false === $this->date_created ? 0 : strtotime( $this->date_created );
-		$this->date_modified = false === $this->date_modified ? 0 : strtotime( $this->date_modified );
+		$this->date_created  = empty( $this->date_created ) ? 0 : strtotime( (string) $this->date_created );
+		$this->date_modified = empty( $this->date_modified ) ? 0 : strtotime( (string) $this->date_modified );
 
 		Data_Store::set( 'query', $this->id, $this );
 	}
@@ -45,7 +123,7 @@ class Query extends \Search_Filter\Database\Engine\Row {
 	/**
 	 * Retrieves the HTML to display the information about this book.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 *
 	 * @return string HTML output to display this record's data.
 	 */

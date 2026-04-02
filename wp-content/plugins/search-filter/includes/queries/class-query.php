@@ -13,7 +13,11 @@ namespace Search_Filter\Queries;
 
 use Search_Filter\Core\CSS_Loader;
 use Search_Filter\Fields;
+use Search_Filter\Fields\Field;
+use Search_Filter\Fields\Field_Factory;
+use Search_Filter\Query\Template_Data;
 use Search_Filter\Record_Base;
+use Search_Filter\Database\Rows\Query as Query_Row;
 use Search_Filter\Util;
 
 // If this file is called directly, abort.
@@ -56,6 +60,15 @@ class Query extends Record_Base {
 	 * @var      string    $base_class    ID
 	 */
 	public static $base_class = 'Search_Filter\\Queries';
+
+	/**
+	 * Usually we only want to instantiate & lookup a record once,
+	 * so store the instance for easy re-use later.
+	 *
+	 * @var array
+	 */
+	protected static $instances = array();
+
 	/**
 	 * Context for the query, such as single, archive, etc.
 	 *
@@ -88,10 +101,24 @@ class Query extends Record_Base {
 	 */
 	protected $render_meta_data = array();
 
-	/*
-	public function __construct( $id = 0 ) {
-		parent::__construct( $id );
-	} */
+	/**
+	 * The connected fields list
+	 *
+	 * @since    3.0.0
+	 * @access   protected
+	 * @var      null|array    $fields    Fields
+	 */
+	private $fields = null;
+
+	/**
+	 * The connected WP_Query
+	 *
+	 * @since    3.0.0
+	 * @access   protected
+	 * @var      null|\WP_Query    $wp_query    WP_Query
+	 */
+	private $wp_query = null;
+
 	/**
 	 * Init the render config values.
 	 *
@@ -109,7 +136,7 @@ class Query extends Record_Base {
 			$this->set_render_config_value( 'postsPerPage', 1 );
 		}
 		if ( ! $this->get_render_config_value( 'foundPosts' ) ) {
-			$this->set_render_config_value( 'foundPosts', 1 );
+			$this->set_render_config_value( 'foundPosts', 0 );
 		}
 
 		$this->init_tax_archive_render_data();
@@ -132,131 +159,133 @@ class Query extends Record_Base {
 		if ( $archive_type !== 'post_type' ) {
 			return;
 		}
-		$filter_tax_archives = $this->get_attribute( 'archiveFilterTaxonomies' );
-		if ( $filter_tax_archives !== 'yes' ) {
+		$archive_filter_taxonomies = $this->get_attribute( 'archiveFilterTaxonomies' );
+		if ( ! $archive_filter_taxonomies || $archive_filter_taxonomies === 'none' ) {
 			return;
 		}
 
 		global $wp_query;
 
+		// TODO: we're having to check if $wp_query is set because sometinmes this is caused in admin.
+		// We should probably move function to a point where its not called in admin in the first place.
 		if ( ! $wp_query ) {
 			return;
 		}
-
-		if ( ! $wp_query->is_archive() ) {
+		if ( ! Template_Data::is_taxonomy_archive() ) {
 			return;
 		}
-		if ( ! $wp_query->is_tax() ) {
-			return;
-		}
-		$archive_post_type = $this->get_attribute( 'postType' );
-		if ( $filter_tax_archives === 'yes' && $wp_query->is_archive() && $wp_query->is_tax() ) {
 
-			// Build the term archive URL.
-			$queried_object = get_queried_object();
-			// Get the postType taxonomies.
-			$taxonomies      = get_object_taxonomies( $archive_post_type );
-			$tax_archive_url = '';
-			$tax_slug        = '';
-			foreach ( $taxonomies as $taxonomy ) {
-				if ( $queried_object->taxonomy === $taxonomy ) {
-					$tax_archive_url = get_term_link( $queried_object->term_id );
-					$tax_slug        = $taxonomy;
-					break;
-				}
+		$archive_post_type = $this->get_attribute( 'archivePostType' );
+
+		// Build the term archive URL.
+		$queried_object = get_queried_object();
+
+		$taxonomies = array();
+		// Get all the taxonomies for the post type.
+		if ( $archive_filter_taxonomies === 'all' ) {
+			$taxonomies = get_object_taxonomies( $archive_post_type );
+		} elseif ( $archive_filter_taxonomies === 'custom' ) {
+			// Get the custom list of taxonomies.
+			$taxonomies = $this->get_attribute( 'archivePostTypeTaxonomies' ) ?? array();
+		}
+
+		$tax_archive_url = '';
+		$tax_slug        = '';
+		$term_slug       = '';
+		foreach ( $taxonomies as $taxonomy ) {
+			if ( $queried_object->taxonomy === $taxonomy ) {
+				$tax_archive_url = get_term_link( $queried_object->term_id );
+				$tax_slug        = $taxonomy;
+				$term_slug       = $queried_object->slug;
+				break;
 			}
-			$this->set_render_config_value( 'currentTaxonomyArchive', $tax_slug );
-			$this->set_render_config_value( 'taxonomyArchiveUrl', $tax_archive_url );
 		}
+
+		$this->set_render_config_value( 'currentTaxonomyArchive', $tax_slug );
+		$this->set_render_config_value( 'currentTaxonomyTermArchive', $term_slug );
+		$this->set_render_config_value( 'taxonomyArchiveUrl', $tax_archive_url );
 	}
-	/**
-	 * Overridable function for setting query defaults.
-	 *
-	 * @param array $defaults Default attributes.
-	 *
-	 * @return array New default attributes.
-	 */
-	public function get_default_attributes() {
-		$defaults = \Search_Filter\Queries\Settings::get_defaults();
-		return $defaults;
-	}
+
+
+
+
 	/**
 	 * Inits the data from a DB record.
 	 *
-	 * @param [type] $item Database record.
+	 * @param Query_Row $item The database record.
 	 */
 	public function load_record( $item ) {
-		parent::load_record( $item );
+		$this->set_id( $item->get_id() );
+		$this->set_status( $item->get_status() );
+		$this->set_name( $item->get_name() );
+		$this->set_record( $item );
+		$this->set_attributes( $item->get_attributes() );
+		$this->set_date_modified( $item->get_date_modified() );
+		$this->set_date_created( $item->get_date_created() );
+
 		$this->set_context( $item->get_context() );
 		$this->set_integration( $item->get_integration() );
+
+		$this->init();
 	}
 	/**
 	 * Process the attributes and run init local vars
 	 *
 	 * @param array $attributes  Field attributes.
+	 * @param bool  $replace     Whether to replace all attributes.
 	 *
 	 * @since    3.0.0
 	 */
-	public function set_attributes( $attributes, $replace = false ) {
+	public function set_attributes( array $attributes, bool $replace = false ) {
 		parent::set_attributes( $attributes, $replace );
 		$this->generate_context();
-		// TODO - maybe we need to move init() out of here.
-		$this->init();
-
-		// Set sensible defaults for the query data.
-		$this->init_render_config_values();
 	}
 	/**
 	 * Get the settings related to the display of the results, based on
 	 * query parameters.
 	 *
+	 * @param bool $is_admin Whether the request is from admin context.
+	 *
 	 * TODO - we need to rethink this function, for taxonomy terms we're checking
 	 * if we're in the frontend or not (for dynamic archive urls) - its won't be
 	 * flexible enough going forward.
 	 */
-	public function get_results_data( $is_admin = false ) {
+	public function get_results_data( bool $is_admin = false ) {
 		$results_data = array(
 			'type'  => 'url',
 			'url'   => $this->get_results_url(),
 			'label' => '',
 		);
 
-		if ( ! isset( $this->attributes['integrationType'] ) ) {
-			return $results_data;
-		}
-
-		$integration_type = $this->attributes['integrationType'];
+		$integration_type = $this->get_attribute( 'integrationType' );
 		$error            = false; // TODO - lets use some more specific messaging.
 		switch ( $integration_type ) {
 			case 'basic':
 				$results_data['label'] = '*Not available - fields will allow users to jump between archives in your site.';
 				break;
 			case 'results_page':
-				$post_id = $this->attributes['post_id'];
+				$post_id = absint( $this->get_attribute( 'post_id' ) );
 				if ( 0 === $post_id ) {
 					$results_data['label'] = __( 'Choose a Post/Page first', 'search-filter' );
 				}
 				break;
 
 			case 'archive':
-				if ( ! isset( $this->attributes['archiveType'] ) ) {
-					break;
-				}
-				$archive_type = $this->attributes['archiveType'];
+				$archive_type = $this->get_attribute( 'archiveType' );
 				if ( 'post_type' === $archive_type ) {
-					$post_type    = $this->attributes['postType'];
+					$post_type    = $this->get_attribute( 'archivePostType' );
 					$archive_link = get_post_type_archive_link( $post_type );
 					if ( $archive_link ) {
 						$results_data['url'] = $archive_link;
 					} else {
 						$error = true;
 					}
-				} elseif ( 'taxonomy' === $archive_type && isset( $this->attributes['taxonomy'] ) ) {
-					$taxonomy = $this->attributes['taxonomy'];
+				} elseif ( 'taxonomy' === $archive_type && $this->get_attribute( 'archiveTaxonomy' ) !== null ) {
+					$taxonomy = $this->get_attribute( 'archiveTaxonomy' );
 					// Otherwise, try to generate a term link to get the base URL.
 					$tax_terms = get_terms(
-						$taxonomy,
 						array(
+							'taxonomy'   => $taxonomy,
 							'hide_empty' => false,
 							'parent'     => 0,
 						)
@@ -294,9 +323,9 @@ class Query extends Record_Base {
 			case 'search':
 				break;
 			case 'single':
-				$location  = isset( $this->attributes['singleLocation'] ) ? $this->attributes['singleLocation'] : false;
+				$location  = $this->get_attribute( 'singleLocation' );
 				$permalink = false;
-				if ( $location && $location !== '' ) {
+				if ( ! empty( $location ) ) {
 					$permalink = get_permalink( $location );
 				}
 				if ( $permalink ) {
@@ -307,39 +336,44 @@ class Query extends Record_Base {
 				break;
 		}
 		// TODO - rename according to the correct convention (its also used in the WC integration).
-		$results_data = apply_filters( 'search-filter/queries/query/get_results_data', $results_data, $this->attributes );
+		$results_data = apply_filters( 'search-filter/queries/query/get_results_data', $results_data, $this->get_attributes() );
 		return $results_data;
 	}
 
+	/**
+	 * Get the results URL based on the integration type.
+	 *
+	 * @return string The results URL.
+	 */
 	public function get_results_url() {
 		// TODO - rename according to the correct convention (its also used in the WC integration).
-		$override_url = apply_filters( 'search-filter/queries/query/get_results_url/override_url', false, $this->attributes );
+		$override_url = apply_filters( 'search-filter/queries/query/get_results_url/override_url', false, $this->get_attributes() );
 
 		if ( $override_url ) {
 			return $override_url;
 		}
-		$integration_type = $this->attributes['integrationType'];
+		$integration_type = $this->get_attribute( 'integrationType' );
 
 		switch ( $integration_type ) {
 			case 'basic':
 				break;
 			case 'results_page':
-				$post_id = $this->attributes['post_id'];
+				$post_id = $this->get_attribute( 'post_id' );
 				if ( 0 !== $post_id ) {
 					return get_permalink( $post_id );
 				}
 				break;
 			case 'archive':
-				if ( ! isset( $this->attributes['archiveType'] ) ) {
+				if ( null === $this->get_attribute( 'archiveType' ) ) {
 					return '';
 				}
-				$archive_type = $this->attributes['archiveType'];
+				$archive_type = $this->get_attribute( 'archiveType' );
 				if ( 'post_type' === $archive_type ) {
-					$post_type = $this->attributes['postType'];
+					$post_type = $this->get_attribute( 'archivePostType' );
 					return get_post_type_archive_link( $post_type );
 
-				} elseif ( 'taxonomy' === $archive_type && isset( $this->attributes['taxonomy'] ) ) {
-					$taxonomy       = $this->attributes['taxonomy'];
+				} elseif ( 'taxonomy' === $archive_type && $this->get_attribute( 'archiveTaxonomy' ) !== null ) {
+					$taxonomy       = $this->get_attribute( 'archiveTaxonomy' );
 					$queried_object = get_queried_object();
 					if ( isset( $queried_object->taxonomy ) && $queried_object->taxonomy === $taxonomy ) {
 						return get_term_link( $queried_object->term_id );
@@ -349,9 +383,9 @@ class Query extends Record_Base {
 			case 'search':
 				return add_query_arg( 's', '', trailingslashit( get_home_url() ) );
 			case 'single':
-				$location  = isset( $this->attributes['singleLocation'] ) ? $this->attributes['singleLocation'] : false;
+				$location  = $this->get_attribute( 'singleLocation' );
 				$permalink = false;
-				if ( $location !== '' ) {
+				if ( ! empty( $location ) ) {
 					$permalink = get_permalink( $location );
 				}
 				if ( $permalink ) {
@@ -394,44 +428,174 @@ class Query extends Record_Base {
 		return '';
 	}
 
-	public function apply_wp_query_args( $query_args = array() ) {
+	/**
+	 * Apply the wp query args.
+	 *
+	 * @param array $query_args The query args.
+	 * @return array The updated query args.
+	 */
+	public function apply_wp_query_args( array $query_args = array() ) {
 		$query_map = array(
 			'post_status'    => 'postStatus',
 			'posts_per_page' => 'postsPerPage',
 		);
 		foreach ( $query_map as $key => $data_key ) {
-			$query_args[ $key ] = $this->attributes[ $data_key ];
+			$query_args[ $key ] = $this->get_attribute( $data_key );
 		}
 
 		$query_args = $this->get_post_type_args( $query_args );
+		$query_args = $this->get_post_paged_args( $query_args );
 		$query_args = $this->get_sort_order_args( $query_args );
 		$query_args = $this->get_tax_query_args( $query_args );
 		$query_args = $this->get_sticky_posts_args( $query_args );
+		$query_args = $this->restrict_post_ids_args( $query_args );
 		$query_args = $this->exclude_current_post_args( $query_args );
 
 		$query_args = apply_filters( 'search-filter/queries/query/apply_wp_query_args', $query_args, $this );
-
 		return $query_args;
 	}
 
 	/**
+	 * Get the pagination and offset args for the query.
+	 *
+	 * Handles the relationship between offset and pagination - when offset is used,
+	 * it must be recalculated for each page to maintain correct positioning.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $query_args The query args to add pagination args to.
+	 * @return array The updated query args with paged/offset.
+	 */
+	private function get_post_paged_args( array $query_args ) {
+
+		$offset = $this->get_query_offset();
+
+		$already_has_paged = isset( $query_args['paged'] ) && absint( $query_args['paged'] ) > 0;
+		// Always set the paged (for pagination).
+		if ( ! $already_has_paged ) {
+			// Override the paged value from the WP Query if its set.
+			$query_paged = $this->get_query_paged();
+			// Query paged = 0 means we were unable to determine the page, so skip.
+			if ( $query_paged > 0 ) {
+				$query_args['paged'] = $query_paged;
+			}
+		}
+
+		// If there is an offset `paged` no longer works as expected and the offset
+		// is used to apply the correct positioning.
+		if ( $offset > 0 ) {
+			$query_args['offset'] = $offset;
+		}
+
+		return $query_args;
+	}
+	/**
+	 * Get the paged value for the query.
+	 *
+	 * @return int The paged value.
+	 */
+	public function get_query_paged() {
+		// No WP_Query set - unable to accurately get page number.
+		if ( ! $this->get_wp_query() ) {
+			return 0;
+		}
+
+		$paged = 0;
+		// Check if query_vars has the key 'paged'.
+		$query_vars = $this->get_wp_query()->query_vars;
+		if ( array_key_exists( 'paged', $query_vars ) ) {
+			$paged = $query_vars['paged'];
+		}
+
+		// If $paged is 0, then we might be on the first page, or we could be
+		// using offset to create pagination (ie the Query Loop Block).
+		if ( $paged === 0 ) {
+			// Some plugins might use a custom pagination key which we set as a render
+			// config value, so try to use that.
+			$pagination_key = $this->get_render_config_value( 'paginationKey' );
+			if ( $pagination_key ) {
+				$paged = (int) Util::get_request_var( $pagination_key );
+			}
+		}
+		return (int) $paged;
+	}
+
+	/**
+	 * Get the posts per page for a query.
+	 *
+	 * Resolves the query setting as well as any potential 'per page' control field
+	 * that might be applied.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return int
+	 */
+	public function get_query_posts_per_page() {
+		$posts_per_page = $this->get_attribute( 'postsPerPage' );
+		// Check if a per page field is set.
+		$fields = $this->get_fields();
+		foreach ( $fields as $field ) {
+			if ( $field->get_attribute( 'type' ) !== 'control' ) {
+				continue;
+			}
+
+			if ( $field->get_attribute( 'controlType' ) !== 'per_page' ) {
+				continue;
+			}
+
+			$posts_per_page = $field->get_value();
+		}
+
+		return (int) $posts_per_page;
+	}
+
+	/**
+	 * Get the calculated offset for the current page.
+	 *
+	 * When using offset with pagination, the actual offset must be calculated as:
+	 * (posts_per_page * (current_page - 1)) + base_offset
+	 *
+	 * This ensures consistent results across paginated pages.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return int The calculated offset value, or 0 if no offset is configured.
+	 */
+	public function get_query_offset() {
+
+		$query_offset = (int) ( $this->get_attribute( 'offset' ) ?? 0 );
+
+		if ( $query_offset === 0 ) {
+			return 0;
+		}
+
+		$per_page  = $this->get_query_posts_per_page();
+		$paged     = $this->get_query_paged();
+		$real_page = $paged > 0 ? $paged : 1;
+
+		return ( $per_page * ( $real_page - 1 ) ) + $query_offset;
+	}
+	/**
 	 * Loop through the fields and add their query args.
 	 *
 	 * @param array $query_args The query args.
-	 * @param array $fields     The fields to apply the query args to.
 	 *
 	 * @return array The updated query args.
 	 */
-	public function apply_fields_wp_query_args( $query_args = array() ) {
+	public function apply_fields_wp_query_args( array $query_args = array() ) {
 		$fields = $this->get_fields();
 		foreach ( $fields as $field ) {
 			if ( is_wp_error( $field ) ) {
 				continue;
 			}
-			if ( $field->get_query_type() !== 'wp_query' ) {
+			if ( ! $field->is_enabled() ) {
 				continue;
 			}
-			$query_args = $field->apply_wp_query_args( $query_args );
+
+			if ( count( $field->get_values() ) > 0 ) {
+				Fields::register_active_field( $field );
+				$query_args = $field->apply_wp_query_args( $query_args );
+			}
 		}
 		return $query_args;
 	}
@@ -443,7 +607,7 @@ class Query extends Record_Base {
 	 *
 	 * @return array The updated query args.
 	 */
-	public function get_sticky_posts_args( $query_args ) {
+	public function get_sticky_posts_args( array $query_args ) {
 
 		$sticky_posts = $this->get_attribute( 'stickyPosts' );
 
@@ -469,7 +633,14 @@ class Query extends Record_Base {
 		return $query_args;
 	}
 
-	public function get_tax_query_args( $query_args ) {
+	/**
+	 * Get the tax query args.
+	 *
+	 * @param array $query_args The query args.
+	 *
+	 * @return array The updated query args.
+	 */
+	public function get_tax_query_args( array $query_args ) {
 
 		// Don't apply the tax query if the query is a tax query archive.
 		$integration_type = $this->get_attribute( 'integrationType' );
@@ -491,12 +662,14 @@ class Query extends Record_Base {
 		}
 
 		if ( ! isset( $query_args['tax_query'] ) ) {
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Required for taxonomy filtering.
 			$query_args['tax_query'] = array(
 				'relation' => 'AND',
 			);
 		}
 
 		if ( ! isset( $query_args['tax_query']['relation'] ) ) {
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Required for taxonomy filtering.
 			$query_args['tax_query']['relation'] = 'AND';
 		}
 
@@ -517,6 +690,7 @@ class Query extends Record_Base {
 				if ( isset( $tax_query_item['includeChildren'] ) ) {
 					$new_item['include_children'] = $tax_query_item['includeChildren'];
 				}
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Required for taxonomy filtering.
 				$query_args['tax_query'][] = $new_item;
 			}
 		}
@@ -526,12 +700,16 @@ class Query extends Record_Base {
 	/**
 	 * Check if the query has any active fields.
 	 *
+	 * @param array $exclude_ids The IDs to exclude.
 	 * @return bool
 	 */
-	public function has_active_fields() {
+	public function has_active_fields( array $exclude_ids = array() ) {
 		$fields = $this->get_fields();
 		foreach ( $fields as $field ) {
 			if ( is_wp_error( $field ) ) {
+				continue;
+			}
+			if ( in_array( $field->get_id(), $exclude_ids, true ) ) {
 				continue;
 			}
 			if ( ! empty( $field->get_values() ) ) {
@@ -541,28 +719,13 @@ class Query extends Record_Base {
 		return false;
 	}
 
-	private function get_fields_taxonomy_archives() {
-		$fields            = $this->get_fields();
-		$taxonomy_archives = array();
-		foreach ( $fields as $field ) {
-			if ( is_wp_error( $field ) ) {
-				continue;
-			}
-			if ( $field->get_attribute( 'type' ) !== 'choice' ) {
-				continue;
-			}
-			// Only choice fields have the function `filters_taxonomy_archives`.
-			if ( $field->filters_taxonomy_archives() ) {
-				$taxonomy_archives[] = $field->get_attribute( 'taxonomy' );
-			}
-		}
-		return $taxonomy_archives;
-	}
-
 	/**
 	 * Checks if we are on an archive of one of the passed in taxonomy names.
+	 *
+	 * @param array $taxonomies The taxonomies to check.
+	 * @return bool
 	 */
-	private function is_tax_archive( $taxonomies ) {
+	private function is_tax_archive( array $taxonomies ) {
 		foreach ( $taxonomies as $taxonomy ) {
 			if ( $taxonomy === 'category' && is_category() ) {
 				return true;
@@ -577,6 +740,11 @@ class Query extends Record_Base {
 		return false;
 	}
 
+	/**
+	 * Checks if the query can be applied at the current location.
+	 *
+	 * @return bool
+	 */
 	public function can_apply_at_current_location() {
 		$location = $this->get_attribute( 'integrationType' );
 
@@ -605,7 +773,7 @@ class Query extends Record_Base {
 		if ( $location === 'archive' ) {
 			$archive_type = $this->get_attribute( 'archiveType' );
 			if ( $archive_type === 'post_type' ) {
-				$post_type = $this->get_attribute( 'postType' );
+				$post_type = $this->get_attribute( 'archivePostType' );
 
 				if ( $post_type === 'post' ) {
 					if ( is_home() ) {
@@ -615,24 +783,12 @@ class Query extends Record_Base {
 					return true;
 				}
 
-				if ( $this->get_attribute( 'taxonomyFilterArchive' ) !== 'yes' ) {
-					return false;
-				}
+				// Check if query is filtering taxonomy archives.
+				$supported_taxonomy_archives = $this->get_post_type_archive_taxonomies();
+				return $this->is_tax_archive( $supported_taxonomy_archives );
 
-				// Look for any fields that are set to filter the tax archive and collect their
-				// taxonomies.
-				$taxonomy_archives = $this->get_fields_taxonomy_archives();
-				if ( empty( $taxonomy_archives ) ) {
-					return false;
-				}
-
-				// Check if the current archive matches any of the taxonomies.
-				if ( $this->is_tax_archive( $taxonomy_archives ) ) {
-					return true;
-				}
-			}
-			if ( $archive_type === 'taxonomy' ) {
-				$taxonomy = $this->get_attribute( 'taxonomy' );
+			} elseif ( $archive_type === 'taxonomy' ) {
+				$taxonomy = $this->get_attribute( 'archiveTaxonomy' );
 
 				if ( $taxonomy === 'category' ) {
 					return is_category();
@@ -657,6 +813,8 @@ class Query extends Record_Base {
 
 	/**
 	 * Has a search query.
+	 *
+	 * @return bool
 	 */
 	public function has_search() {
 		$fields = $this->get_fields();
@@ -684,7 +842,7 @@ class Query extends Record_Base {
 	 * @param string $order The order to get the direction for.
 	 * @return string
 	 */
-	private static function get_order_direction( $order ) {
+	private static function get_order_direction( string $order ) {
 		if ( $order === 'desc' ) {
 			return 'DESC';
 		}
@@ -694,10 +852,12 @@ class Query extends Record_Base {
 	/**
 	 * Get the sort params from a sort setting.
 	 *
-	 * @param array $sort_setting The sort setting to get the params for.
+	 * @param array      $sort_setting   The sort setting to get the params for.
+	 * @param Query|null $query          Optionally pass the query for use in the filter hook.
+	 *
 	 * @return array
 	 */
-	public static function get_sort_params_from_setting( $sort_setting ) {
+	public static function get_sort_params_from_setting( array $sort_setting, $query = null ) {
 		$order_by                   = $sort_setting['orderBy'];
 		$order_direction            = $sort_setting['order'];
 		$meta_key                   = $sort_setting['metaKey'];
@@ -753,12 +913,17 @@ class Query extends Record_Base {
 					);
 			}
 		} else {
+			// Handle rand with seed.
+			if ( $order_by === 'rand()' ) {
+				$seed     = apply_filters( 'search-filter/queries/query/order/random_seed', 123, $query );
+				$order_by = 'rand(' . absint( $seed ) . ')';
+			}
 			$order_params[ $order_by ] = self::get_order_direction( $order_direction );
 		}
 
 		return array(
 			'order_option' => $order_params,
-			'meta_query'   => $sort_meta_query,
+			'meta_query'   => $sort_meta_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required for custom field sorting.
 		);
 	}
 
@@ -768,7 +933,7 @@ class Query extends Record_Base {
 	 * @param array $query_args The query args to get the post type args for.
 	 * @return array
 	 */
-	public function get_post_type_args( $query_args ) {
+	public function get_post_type_args( array $query_args ) {
 		$post_types = $this->get_attribute( 'postTypes' );
 
 		if ( empty( $post_types ) ) {
@@ -788,6 +953,21 @@ class Query extends Record_Base {
 		}
 
 		$query_args['post_type'] = $post_types;
+
+		// If the post types includes attachments, we need to make sure to set
+		// the post status to 'inherit' if its not already set to something else.
+		if ( in_array( 'attachment', $post_types, true ) ) {
+			if ( ! isset( $query_args['post_status'] ) ) {
+				$query_args['post_status'] = 'inherit';
+			} else {
+				if ( ! is_array( $query_args['post_status'] ) ) {
+					$query_args['post_status'] = array( $query_args['post_status'] );
+				}
+				if ( ! in_array( 'inherit', $query_args['post_status'], true ) ) {
+					$query_args['post_status'][] = 'inherit';
+				}
+			}
+		}
 		return $query_args;
 	}
 	/**
@@ -796,7 +976,7 @@ class Query extends Record_Base {
 	 * @param array $query_args The query args to get the sort order args for.
 	 * @return array
 	 */
-	public function get_sort_order_args( $query_args ) {
+	public function get_sort_order_args( array $query_args ) {
 
 		// Just in case our updater didn't upgrade the sortOrder field, lets make
 		// sure it's an array.
@@ -841,12 +1021,14 @@ class Query extends Record_Base {
 		}
 
 		if ( ! isset( $query_args['meta_query'] ) ) {
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required for custom field sorting.
 			$query_args['meta_query'] = array(
 				'relation' => 'AND',
 			);
 		}
 
 		// Add our meta query as a nested meta query, ignoring the relationship etc.
+		// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required for custom field sorting.
 		$query_args['meta_query'][] = $sort_meta_query;
 		return $query_args;
 	}
@@ -857,7 +1039,8 @@ class Query extends Record_Base {
 	 * @param array $query_args The query args to exclude the current post from.
 	 * @return array
 	 */
-	public function exclude_current_post_args( $query_args ) {
+	public function exclude_current_post_args( array $query_args ) {
+
 		if ( $this->get_attribute( 'excludeCurrentPost' ) !== 'yes' ) {
 			return $query_args;
 		}
@@ -881,21 +1064,60 @@ class Query extends Record_Base {
 		return $query_args;
 	}
 	/**
+	 * Handles the post include/exclude settings.
+	 *
+	 * @param array $query_args The query args to exclude the current post from.
+	 * @return array
+	 */
+	public function restrict_post_ids_args( array $query_args ) {
+
+		if ( $this->get_attribute( 'queryPostsIncludeExclude' ) === 'include' ) {
+			$query_args['post__in'] = $this->get_attribute( 'queryRestrictPostIds' );
+		}
+
+		if ( $this->get_attribute( 'queryPostsIncludeExclude' ) === 'exclude' ) {
+
+			$excluded_ids = $this->get_attribute( 'queryExcludePostIds' );
+			if ( empty( $excluded_ids ) ) {
+				return $query_args;
+			}
+
+			// If the query is using `post__in` to restrict the posts (which takes precedence over `post__not_in`)
+			// then we can remove our excluded IDs from the array, otherwise, we can just add them to the `post__not_in` array.
+			if ( isset( $query_args['post__in'] ) ) {
+				$query_args['post__in'] = array_diff( $query_args['post__in'], $excluded_ids );
+			} else {
+				if ( ! isset( $query_args['post__not_in'] ) ) {
+					$query_args['post__not_in'] = array();
+				}
+				$query_args['post__not_in'] = array_merge( $query_args['post__not_in'], $excluded_ids );
+			}
+
+			$query_args['post__not_in'] = $this->get_attribute( 'queryExcludePostIds' );
+		}
+
+		return $query_args;
+	}
+	/**
 	 * Sets the Query context (single, archive etc)
 	 *
 	 * @param string $context The context to set.
 	 */
-	public function set_context( $context ) {
+	public function set_context( string $context ) {
 		$this->context = $context;
 	}
 	/**
 	 * Gets the Query context (theme)
+	 *
+	 * @return string The context.
 	 */
 	public function get_context() {
 		return $this->context;
 	}
 	/**
 	 * Get the css for the query
+	 *
+	 * @return string The css.
 	 */
 	public function get_css() {
 		return $this->css;
@@ -905,8 +1127,28 @@ class Query extends Record_Base {
 	 *
 	 * @param string $css The css to set.
 	 */
-	public function set_css( $css ) {
+	public function set_css( string $css ) {
 		$this->css = $css;
+	}
+
+	/**
+	 * Invalidate the cached fields for this query.
+	 *
+	 * Use this when field instances have been updated in the singleton
+	 * and you need the Query to fetch fresh instances on next get_fields() call.
+	 *
+	 * Example usage:
+	 * ```php
+	 * $field->set_values( ['new', 'values'] );
+	 * Field::set_instance( $field );
+	 * $query->flush_fields();  // Force query to use new instance
+	 * ```
+	 *
+	 * @since 3.0.1
+	 * @return void
+	 */
+	public function flush_fields() {
+		$this->fields = null;
 	}
 
 	/**
@@ -914,9 +1156,28 @@ class Query extends Record_Base {
 	 *
 	 * @since 3.0.0
 	 *
+	 * @param array $args The arguments to get the fields with.
+	 *                    Supports 'force_refresh' => true to bypass cache.
+	 *
 	 * @return array The fields.
 	 */
-	public function get_fields( $args = array() ) {
+	public function get_fields( array $args = array() ) {
+
+		// Check for force_refresh parameter before processing.
+		$force_refresh = isset( $args['force_refresh'] ) && $args['force_refresh'];
+
+		// Remove force_refresh from args before passing to query.
+		// This ensures it doesn't interfere with Fields::find().
+		if ( isset( $args['force_refresh'] ) ) {
+			unset( $args['force_refresh'] );
+		}
+
+		$using_custom_args = ! empty( $args );
+
+		// Only re-use the fields if we're not passing any args and not forcing refresh.
+		if ( ! $using_custom_args && ! $force_refresh && $this->fields !== null ) {
+			return $this->fields;
+		}
 
 		$defaults = array(
 			'query_id' => $this->get_id(),
@@ -929,7 +1190,33 @@ class Query extends Record_Base {
 			unset( $args['status'] );
 		}
 
-		$fields = Fields::find( $args );
+		// Find the records first so we can init the fields that need
+		// to be initialized, and we can re-use already instantiated
+		// versions.
+		$fields_records = Fields::find( $args, 'records' );
+
+		$fields = array();
+		foreach ( $fields_records as $field_record ) {
+
+			if ( is_wp_error( $field_record ) ) {
+				continue;
+			}
+
+			if ( Field::has_instance( $field_record->get_id() ) ) {
+				$fields[] = Field::get_instance( $field_record->get_id() );
+			} else {
+				try {
+					$field_instance = Field_Factory::create_from_record( $field_record );
+					$fields[]       = $field_instance;
+					Field::set_instance( $field_instance );
+				} catch ( \Exception $e ) {
+					continue;
+				}
+			}
+		}
+		if ( ! $using_custom_args ) {
+			$this->fields = $fields;
+		}
 		return $fields;
 	}
 
@@ -938,12 +1225,14 @@ class Query extends Record_Base {
 	 *
 	 * @param string $integration The path of the context.
 	 */
-	public function set_integration( $integration ) {
+	public function set_integration( string $integration ) {
 		$this->integration = $integration;
 	}
 
 	/**
 	 * Gets the Query integration path
+	 *
+	 * @return string The integration path.
 	 */
 	public function get_integration() {
 		return $this->integration;
@@ -953,14 +1242,24 @@ class Query extends Record_Base {
 	 * and set the integration.
 	 */
 	public function generate_context() {
-		$integration_type = $this->attributes['integrationType'];
+		$integration_type = $this->get_attribute( 'integrationType' );
+
+		if ( ! $integration_type ) {
+			return;
+		}
 
 		$integration = $integration_type;
 		if ( $integration_type === 'archive' ) {
-			$integration .= "/{$this->attributes['postType']}";
+			$archive_type = $this->get_attribute( 'archiveType' );
+			if ( $archive_type === 'post_type' ) {
+				$integration .= "/{$this->get_attribute( 'archivePostType' )}";
+			} elseif ( $archive_type === 'taxonomy' ) {
+				$integration .= "/{$this->get_attribute( 'archiveTaxonomy' )}";
+			}
 		} elseif ( $integration_type === 'single' ) {
-			$integration .= "/{$this->attributes['singleLocation']}";
+			$integration .= "/{$this->get_attribute( 'singleLocation' )}";
 		}
+
 		$this->set_integration( $integration );
 	}
 
@@ -971,7 +1270,7 @@ class Query extends Record_Base {
 	 *
 	 * @return int The saved query ID.
 	 */
-	public function save( $args = array() ) {
+	public function save( array $args = array() ) {
 
 		if ( $this->get_id() === 0 ) {
 			// If this is a new record, save it to get an ID.
@@ -993,12 +1292,12 @@ class Query extends Record_Base {
 
 		// We want to store the integration data as meta so we can query it.
 		// Eg, get all queries that are connected to the query loop block, etc.
-		$integration_type    = $this->get_attribute( 'integrationType' ) !== null ? $this->get_attribute( 'integrationType' ) : '';
-		$single_location     = $this->get_attribute( 'singleLocation' ) !== null ? $this->get_attribute( 'singleLocation' ) : '';
-		$query_integration   = $this->get_attribute( 'queryIntegration' ) !== null ? $this->get_attribute( 'queryIntegration' ) : '';
-		$archive_type        = $this->get_attribute( 'archiveType' ) !== null ? $this->get_attribute( 'archiveType' ) : '';
-		$archive_integration = $this->get_attribute( 'archiveIntegration' ) !== null ? $this->get_attribute( 'archiveIntegration' ) : '';
-		$archive_post_type   = $this->get_attribute( 'archivePostType' ) !== null ? $this->get_attribute( 'archivePostType' ) : '';
+		$integration_type    = $this->get_attribute( 'integrationType' ) ?? '';
+		$single_location     = $this->get_attribute( 'singleLocation' ) ?? '';
+		$query_integration   = $this->get_attribute( 'queryIntegration' ) ?? '';
+		$archive_type        = $this->get_attribute( 'archiveType' ) ?? '';
+		$archive_integration = $this->get_attribute( 'archiveIntegration' ) ?? '';
+		$archive_post_type   = $this->get_attribute( 'archivePostType' ) ?? '';
 
 		self::update_meta( $id, 'integration_type', $integration_type );
 		self::update_meta( $id, 'single_location', $single_location );
@@ -1006,6 +1305,11 @@ class Query extends Record_Base {
 		self::update_meta( $id, 'archive_type', $archive_type );
 		self::update_meta( $id, 'archive_integration', $archive_integration );
 		self::update_meta( $id, 'archive_post_type', $archive_post_type );
+
+		// Update instance cache with current data.
+		// Ensures downstream code (e.g., table lifecycle validation) sees fresh attributes.
+		// Critical for validation logic that uses get_instance() to check useIndexer.
+		self::set_instance( $this );
 
 		return $id;
 	}
@@ -1026,10 +1330,16 @@ class Query extends Record_Base {
 	 */
 	private function generate_css() {
 		$css = '';
+
+		$attributes_css = $this->create_attributes_css( $this->get_attributes() );
+		if ( empty( $attributes_css ) ) {
+			return $css;
+		}
+
 		// Get the base styles class for the ID.
 		$query_class = '.search-filter-query--id-' . intval( $this->get_id() );
 		$css        .= $query_class . '{';
-		$css        .= CSS_Loader::clean_css( $this->create_attributes_css( $this->get_attributes() ) );
+		$css        .= CSS_Loader::clean_css( $attributes_css );
 		$css        .= '}';
 
 		return $css;
@@ -1104,6 +1414,185 @@ class Query extends Record_Base {
 	 * Gets the render data.
 	 */
 	public function get_render_settings() {
-		return Query_Render_Store::get_render_data( $this->get_id() );
+		// Set sensible defaults for the query data.
+		$this->init_render_config_values();
+
+		$render_settings = Query_Render_Store::get_render_data( $this->get_id() );
+		return apply_filters( 'search-filter/queries/query/get_render_settings', $render_settings, $this );
+	}
+
+	/**
+	 * Check if the query should be attached to the given WP_Query.
+	 *
+	 * @param \WP_Query $wp_query The WP_Query instance to check.
+	 * @return bool True if the query should attach, false otherwise.
+	 */
+	public function should_attach_to_query( \WP_Query $wp_query ) {
+
+		$should_attach = false;
+		// Based on the integration type, check if we need to attach to this query.
+		if ( $this->should_attach_wp_search_query( $wp_query ) ) {
+			$should_attach = true;
+		} elseif ( $this->should_attach_archive_query( $wp_query ) ) {
+			$should_attach = true;
+		}
+
+		return $should_attach;
+	}
+
+	/**
+	 * Detect whether the query is the one used on WP Search Results page (yoursite.com/?s=) and
+	 *
+	 * @since    3.0.0
+	 *
+	 * @param \WP_Query $wp_query The WP_Query instance.
+	 *
+	 * @return bool True if the query should be attached, false if not.
+	 */
+	private function should_attach_wp_search_query( \WP_Query $wp_query ) {
+
+		$integration_type = $this->get_attribute( 'integrationType' );
+
+		if ( $integration_type !== 'search' ) {
+			return false;
+		}
+
+		if ( is_admin() ) {
+			return false;
+		}
+
+		if ( ! $wp_query->is_main_query() ) {
+			return false;
+		}
+
+		if ( ! is_search() ) {
+			return false;
+		}
+
+		if ( is_archive() ) {
+			return false;
+		}
+
+		if ( ( $wp_query->is_search() ) && ( isset( $wp_query->query['s'] ) ) ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Get the supported taxonomy archives associated with the post type archive and user
+	 * settings.
+	 *
+	 * @return array The taxonomies.
+	 */
+	private function get_post_type_archive_taxonomies() {
+		// Get the archive post type for the query.
+		$post_type                 = $this->get_attribute( 'archivePostType' );
+		$archive_filter_taxonomies = $this->get_attribute( 'archiveFilterTaxonomies' );
+		if ( $archive_filter_taxonomies === 'all' ) {
+			// Get all the taxonomies connected  to the post type but we should
+			// not support taxonomies that belong to multiple post types.
+			return Template_Data::get_only_post_type_taxonomies( $post_type );
+		}
+		// If custom taxonomies are selected, return those.
+		if ( $archive_filter_taxonomies === 'custom' ) {
+			$archive_post_type_taxonomies = $this->get_attribute( 'archivePostTypeTaxonomies' ) ?? array();
+			return $archive_post_type_taxonomies;
+		}
+		return array();
+	}
+	/**
+	 * Detect whether the query is the one used on WP Search Results page (yoursite.com/?s=) and
+	 *
+	 * @since    3.0.0
+	 *
+	 * @param \WP_Query $wp_query   The WP Query object.
+	 *
+	 * @return bool True if the query should be attached, false if not.
+	 */
+	private function should_attach_archive_query( \WP_Query $wp_query ) {
+
+		if ( $this->get_attribute( 'integrationType' ) !== 'archive' ) {
+			return false;
+		}
+
+		// TODO - this should be extendable.
+		// It its set to main_query, or its unset, then set to true by default.
+		$should_attach_archive = $this->get_attribute( 'archiveIntegration' ) === 'main_query' || empty( $this->get_attribute( 'archiveIntegration' ) );
+
+		if ( ! $should_attach_archive ) {
+			return false;
+		}
+
+		if ( is_admin() ) {
+			return false;
+		}
+
+		if ( ! $wp_query->is_main_query() ) {
+			return false;
+		}
+
+		// Now check if we need to attach to a specific taxonomy archive or post type archive.
+		$archive_type = $this->get_attribute( 'archiveType' );
+
+		// Check for the special case of the blog first.
+		if ( $archive_type === 'post_type' ) {
+			$post_type = $this->get_attribute( 'archivePostType' );
+			if ( $post_type === 'post' ) {
+				// If the reading setting "homepage displays" is set to "posts".
+				if ( is_home() ) {
+					return true;
+				}
+			}
+		}
+		// So its not the blog, so bail if its not an archive.
+		if ( ! $wp_query->is_archive() ) {
+			return false;
+		}
+		if ( $archive_type === 'post_type' ) {
+			$post_type = $this->get_attribute( 'archivePostType' );
+			if ( $wp_query->is_post_type_archive( $post_type ) ) {
+				return true;
+			}
+
+			$supported_taxonomy_archives = $this->get_post_type_archive_taxonomies();
+			foreach ( $supported_taxonomy_archives as $taxonomy ) {
+				if ( Template_Data::is_taxonomy_archive( $taxonomy ) ) {
+					return true;
+				}
+			}
+		} elseif ( $archive_type === 'taxonomy' ) {
+			$taxonomy = $this->get_attribute( 'archiveTaxonomy' );
+			if ( $taxonomy === 'category' ) {
+				if ( $wp_query->is_category() ) {
+					return true;
+				}
+			} elseif ( $taxonomy === 'post_tag' ) {
+				if ( $wp_query->is_tag() ) {
+					return true;
+				}
+			} elseif ( $wp_query->is_tax( $taxonomy ) && Template_Data::is_singular_taxonomy_term_archive() ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Set the connected WP_Query instance.
+	 *
+	 * @param \WP_Query $wp_query The WP_Query instance to set.
+	 */
+	public function set_wp_query( \WP_Query $wp_query ) {
+		$this->wp_query = $wp_query;
+	}
+
+	/**
+	 * Get the connected WP_Query instance.
+	 *
+	 * @return null|\WP_Query The connected WP_Query instance or null.
+	 */
+	public function get_wp_query() {
+		return $this->wp_query;
 	}
 }

@@ -48,29 +48,35 @@ class Tasks_Schema extends Schema {
 			'default'  => '0',
 			'unsigned' => true,
 		),
+		// parent_id.
+		array(
+			'name'     => 'parent_id',
+			'type'     => 'bigint',
+			'length'   => '20',
+			'default'  => '0',
+			'unsigned' => true,
+		),
 		// type.
 		array(
-			'name'     => 'type',
-			'type'     => 'varchar',
-			'length'   => '20',
-			'default'  => '',
-			'unsigned' => true,
+			'name'    => 'type',
+			'type'    => 'varchar',
+			'length'  => '20',
+			'default' => '',
 		),
 		// action.
 		array(
-			'name'     => 'action',
-			'type'     => 'varchar',
-			'length'   => '20',
-			'default'  => '',
-			'unsigned' => true,
+			'name'    => 'action',
+			'type'    => 'varchar',
+			'length'  => '20',
+			'default' => '',
+			'in'      => true, // Enable action__in query support for batch indexing.
 		),
 		// status.
 		array(
-			'name'     => 'status',
-			'type'     => 'varchar',
-			'length'   => '20',
-			'default'  => '',
-			'unsigned' => true,
+			'name'    => 'status',
+			'type'    => 'varchar',
+			'length'  => '20',
+			'default' => '',
 		),
 
 		// Date modified.
@@ -80,6 +86,14 @@ class Tasks_Schema extends Schema {
 			'default'    => '', // Defaults to current time in query class.
 			'modified'   => true,
 			'date_query' => true,
+		),
+
+		// Date modified.
+		array(
+			'name'    => 'batch_id',
+			'type'    => 'varchar',
+			'length'  => '32',
+			'default' => '',
 		),
 	);
 }

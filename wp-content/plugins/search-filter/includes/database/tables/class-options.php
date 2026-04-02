@@ -1,4 +1,11 @@
 <?php
+/**
+ * Options Database Table.
+ *
+ * @package Search_Filter
+ * @since 3.0.0
+ */
+
 namespace Search_Filter\Database\Tables;
 
 use Search_Filter\Core\Data_Store;
@@ -7,29 +14,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-
+/**
+ * Class for managing the options database table.
+ *
+ * @since 3.0.0
+ */
 class Options extends \Search_Filter\Database\Engine\Table {
 
 	/**
 	 * Table name, without the global table prefix.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	public $name = 'options';
 
 	/**
-	 * Database version key (saved in _options or _sitemeta)
-	 *
-	 * @since 1.0.0
-	 * @var   string
-	 */
-	protected $db_version_key = 'search_filter_options_table_version';
-
-	/**
 	 * Optional description.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	public $description = 'Options';
@@ -37,14 +40,14 @@ class Options extends \Search_Filter\Database\Engine\Table {
 	/**
 	 * Database version.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   mixed
 	 */
 	protected $version = '3.0.1';
 	/**
 	 * Key => value array of versions => methods.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   array
 	 */
 	protected $upgrades = array(
@@ -53,7 +56,7 @@ class Options extends \Search_Filter\Database\Engine\Table {
 	/**
 	 * Setup this database table.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 */
 	protected function set_schema() {
 		$this->schema = '
@@ -65,11 +68,17 @@ class Options extends \Search_Filter\Database\Engine\Table {
 		';
 	}
 
-	// Clear the data_store cache when the table is dropped.
+	/**
+	 * Drop the table and clear the data_store cache.
+	 *
+	 * @since 3.0.0
+	 * @return bool True if the table was dropped successfully.
+	 */
 	public function drop() {
-		// Drop the table
-		parent::drop();
-		Data_Store::flush( 'options' );
+		// Drop the table.
+		$dropped = parent::drop();
+		Data_Store::flush( 'option' );
+		return $dropped;
 	}
 
 	/**

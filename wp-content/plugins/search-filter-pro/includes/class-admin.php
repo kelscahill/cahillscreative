@@ -11,11 +11,10 @@
 namespace Search_Filter_Pro;
 
 use Search_Filter\Admin\Screens;
+use Search_Filter\Core\Asset_Loader;
 use Search_Filter_Pro\Core\Dependencies;
 use Search_Filter_Pro\Core\Plugin_Installer;
-use Search_Filter_Pro\Core\Scripts;
-use Search_Filter\Util;
-use Search_Filter_Pro\Core\Update_Manager;
+use Search_Filter_Pro\Core\Upgrader\Upgrade_Status;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -28,80 +27,69 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Admin {
 
 	/**
-	 * The ID of this plugin.
-	 *
-	 * @since    3.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
-	 */
-	private $plugin_name;
-
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since    3.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
-	private $version;
-
-	/**
-	 * Initialize the class and set its properties.
-	 *
-	 * @since    3.0.0
-	 * @param  string $plugin_name The name of this plugin.
-	 * @param  string $version     The version of this plugin.
-	 */
-	public function __construct( $plugin_name, $version /*, $screens */ ) {
-		$this->plugin_name = $plugin_name;
-		$this->version     = $version;
-
-		// Note: we should not attach hooks here or any other init methods
-		// because we still load the admin class even when S&F Free is not installed.
-	}
-	/**
 	 * Init
 	 */
-	public function init() {
+	public static function init() {
 		\Search_Filter_Pro\Fields::init();
 		\Search_Filter_Pro\Queries::init();
 
 		// Add actions on heartbeat.
 		Heartbeat::init();
 
-		// TODO - move this into the Gutenberg integration class.
-		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
-
 		// Scripts & css.
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_screen_assets' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'register_assets' ), 11 ); // After Search & Filter plugin at 10.
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ), 11 ); // After Search & Filter plugin at 10.
 
-		add_filter( 'search-filter/admin/screens/get_pages', array( $this, 'menu_pages' ) );
+		// TODO - move this into the Gutenberg integration class.
+		add_action( 'enqueue_block_editor_assets', array( __CLASS__, 'enqueue_block_editor_assets' ) );
 
-		// Plugin updater.
-		Update_Manager::add(
+		add_filter( 'search-filter/admin/screens/get_pages', array( __CLASS__, 'menu_pages' ) );
+	}
+
+	/**
+	 * Register the assets for the admin area.
+	 *
+	 * @since 3.2.0
+	 */
+	public static function register_assets() {
+
+		if ( ! Screens::is_search_filter_screen() ) {
+			return;
+		}
+
+		// Register the admin assets.
+		$asset_configs = array(
 			array(
-				'file'    => SEARCH_FILTER_PRO_BASE_FILE,
-				'id'      => 526297,
-				'version' => $this->version,
-				'license' => 'search-filter-extension-free',
-			)
+				'name'   => 'search-filter-pro-admin',
+				'script' => array(
+					'src'          => SEARCH_FILTER_PRO_URL . 'assets/admin/app.js',
+					'asset_path'   => SEARCH_FILTER_PRO_PATH . 'assets/admin/app.asset.php',
+					'dependencies' => array( 'search-filter-frontend', 'search-filter-admin' ), // Additional dependencies.
+					'footer'       => true,
+				),
+				'style'  => array(
+					'src'          => SEARCH_FILTER_PRO_URL . 'assets/admin/app.css',
+					'dependencies' => array( 'search-filter-frontend', 'search-filter-admin' ),
+				),
+			),
 		);
 
-		// Handle base plugin updates via the update manager.
-		if ( version_compare( SEARCH_FILTER_VERSION, '3.0.6-beta', '>=' ) ) {
-			// Unhook the existing plugin updater.
-			remove_action( 'admin_init', array( \Search_Filter\Admin::class, 'update_plugin' ), 20 );
-			// Add it to the update manager instead.
-			Update_Manager::add(
-				array(
-					'file'    => SEARCH_FILTER_BASE_FILE,
-					'id'      => 514539,
-					'version' => SEARCH_FILTER_VERSION,
-					'license' => 'search-filter-extension-free',
-				)
-			);
+		$assets = Asset_Loader::create( $asset_configs );
+		Asset_Loader::register( $assets );
+	}
 
+	/**
+	 * Enqueue the assets for the admin area.
+	 *
+	 * @since 3.2.0
+	 */
+	public static function enqueue_assets() {
+		if ( ! Screens::is_search_filter_screen() ) {
+			return;
 		}
+
+		// Enqueue the admin assets.
+		Asset_Loader::enqueue( array( 'search-filter-pro-admin' ) );
 	}
 
 	/**
@@ -111,109 +99,10 @@ class Admin {
 	 *
 	 * @since 3.0.0
 	 */
-	public function enqueue_block_editor_assets() {
+	public static function enqueue_block_editor_assets() {
 		$screens = new \Search_Filter\Admin\Screens();
 		if ( $screens->is_search_filter_screen() ) {
 			return;
-		}
-
-		$this->enqueue_styles();
-		$this->enqueue_scripts();
-	}
-
-	/**
-	 * Enqueue admin screen assets.
-	 *
-	 * This is fired on our admin screens (parent plugin fires a do_action()) and our own screens.
-	 *
-	 * @since 3.0.0
-	 */
-	public function enqueue_admin_screen_assets() {
-		$screens = new \Search_Filter\Admin\Screens();
-		if ( ! $screens->is_search_filter_screen() ) {
-			return;
-		}
-
-		$this->enqueue_styles();
-		$this->enqueue_scripts();
-	}
-
-	/**
-	 * Register the stylesheets for the admin area.
-	 *
-	 * @since    3.0.0
-	 */
-	public function enqueue_styles() {
-
-		// Currently does not need 'search-filter-admin' because we're loading the admin script on block editor and admin screens.
-		// Need seperate dependencies if we build a seperate admin script.
-
-		$registered_styles = array(
-			$this->plugin_name . '-admin' => array(
-				'src'     => Scripts::get_admin_assets_url() . 'css/admin/app.css',
-				// 'deps'    => array( 'search-filter-admin', 'wp-components' ),
-				'deps'    => array( 'search-filter', 'wp-components' ),
-				'version' => $this->version,
-				'media'   => 'all',
-			),
-		);
-
-		$registered_styles = apply_filters( 'search-filter-pro/admin/register_styles', $registered_styles );
-
-		foreach ( $registered_styles as $handle => $args ) {
-			wp_register_style( $handle, $args['src'], $args['deps'], $args['version'], $args['media'] );
-		}
-
-		$enqueued_styles = array();
-
-		foreach ( $registered_styles as $handle => $args ) {
-			if ( wp_style_is( $handle, 'registered' ) ) {
-				wp_enqueue_style( $handle );
-				$enqueued_styles[] = $handle;
-			}
-		}
-
-		$enqueued_styles = apply_filters( 'search-filter-pro/admin/enqueue_styles', $enqueued_styles );
-
-		foreach ( $enqueued_styles as $handle ) {
-			wp_enqueue_style( $handle );
-		}
-	}
-
-	/**
-	 * Register the JavaScript for the admin area.
-	 *
-	 * @since    3.0.0
-	 */
-	public function enqueue_scripts() {
-		
-		if ( ! Screens::is_search_filter_screen() ) {
-			return;
-		}
-
-		$registered_scripts = array(
-			'search-filter-pro-admin' => array(
-				'src'     => Scripts::get_admin_assets_url() . 'js/admin/app.js',
-				// Currently does not need 'search-filter-admin' because we're loading the admin script on block editor and admin screens.
-				// Need seperate dependencies if we build a seperate admin script.
-				'deps'    => array( 'search-filter', 'wp-element', 'wp-components', 'wp-date', 'wp-compose', 'wp-data', 'wp-editor', 'wp-api-fetch', 'wp-dom-ready' ),
-				'version' => $this->version,
-				'footer'  => true,
-			),
-		);
-		$registered_scripts = apply_filters( 'search-filter-pro/admin/register_scripts', $registered_scripts );
-
-		foreach ( $registered_scripts as $handle => $args ) {
-			wp_register_script( $handle, $args['src'], $args['deps'], $args['version'], $args['footer'] );
-		}
-
-		$enqueued_scripts = array_keys( $registered_scripts );
-		$enqueued_scripts = apply_filters( 'search-filter-pro/admin/enqueue_scripts', $enqueued_scripts );
-
-		foreach ( $enqueued_scripts as $handle ) {
-			if ( wp_script_is( $handle, 'registered' ) ) {
-				wp_enqueue_script( $handle );
-			}
 		}
 	}
 
@@ -225,11 +114,11 @@ class Admin {
 	 * @param array $pages    The pages to add.
 	 * @return array    The pages.
 	 */
-	public function menu_pages( $pages ) {
+	public static function menu_pages( $pages ) {
 		// Remove the page entry referencing "pro".
 		$pages = array_filter(
 			$pages,
-			function( $page ) {
+			function ( $page ) {
 				// Not all pages will have a section.
 				if ( ! property_exists( $page, 'section' ) ) {
 					return true;
@@ -241,6 +130,13 @@ class Admin {
 				return true;
 			}
 		);
+
+		/*
+		$pages[] = (object) array(
+			'title'   => __( 'Wizard', 'search-filter-pro' ),
+			'section' => 'wizard',
+		);
+		*/
 		return $pages;
 	}
 
@@ -249,7 +145,7 @@ class Admin {
 	 *
 	 * @since 3.0.0
 	 */
-	public function search_filter_actions() {
+	public static function search_filter_actions() {
 
 		if ( ! isset( $_REQUEST['search_filter_action'] ) ) {
 			return;
@@ -273,7 +169,8 @@ class Admin {
 
 				// TODO - change to .org version once the free version goes live on .org.
 				// Installing from wp.org.
-				// $result      = $plugin_installer->install_package_from_wp_org( 'search-filter' );
+				// phpcs:ignore Squiz.Commenting.InlineComment.InvalidEndChar -- Commented out code.
+				// $result = $plugin_installer->install_package_from_wp_org( 'search-filter' );
 				if ( $result['status'] === 'success' && current_user_can( 'activate_plugins' ) ) {
 					activate_plugin( $plugin_file );
 				}
@@ -293,7 +190,7 @@ class Admin {
 	 *
 	 * @since 3.0.0
 	 */
-	public function search_filter_is_legacy_version() {
+	public static function search_filter_is_legacy_version() {
 
 		// Only show on the dashboard and plugins screen.
 		$current_screen = \get_current_screen();
@@ -305,7 +202,7 @@ class Admin {
 		<div class="notice notice-error">
 			<p>
 				<?php
-					echo sprintf(
+					printf(
 						// Translators: 1: Search & Filter.
 						esc_html__( 'The %1$s base plugin needs to be updated.', 'search-filter-pro' ),
 						'<strong>' . esc_html__( 'Search & Filter', 'search-filter-pro' ) . '</strong>'
@@ -328,7 +225,7 @@ class Admin {
 	 *
 	 * @since 3.0.0
 	 */
-	public function search_filter_missing_notice() {
+	public static function search_filter_missing_notice() {
 
 		// Only show on the dashboard and plugins screen.
 		$current_screen = \get_current_screen();
@@ -337,8 +234,8 @@ class Admin {
 			return;
 		}
 
-		$is_search_filter_installed        = Dependencies::is_search_filter_installed();
-		$is_search_filter_enabled          = Dependencies::is_search_filter_enabled();
+		$is_search_filter_installed = Dependencies::is_search_filter_installed();
+		$is_search_filter_enabled   = Dependencies::is_search_filter_enabled();
 
 		global $pagenow;
 		$actions_url = admin_url( 'index.php' );
@@ -350,7 +247,7 @@ class Admin {
 		<div class="notice notice-warning">
 			<p>
 				<?php
-					echo sprintf(
+					printf(
 						// Translators: 1: Search & Filter Pro 2: Search & Filter.
 						esc_html__( '"%1$s" requires "%2$s" to be installed and activated.', 'search-filter-pro' ),
 						'<strong>' . esc_html__( 'Search & Filter Pro', 'search-filter-pro' ) . '</strong>',
@@ -389,14 +286,7 @@ class Admin {
 	 *
 	 * @since 3.0.0
 	 */
-	public function search_filter_outdated_notice() {
-
-		// Only show on the dashboard and plugins screen.
-		$current_screen = \get_current_screen();
-		$screen_name    = $current_screen->id;
-		if ( $screen_name !== 'dashboard' && $screen_name !== 'plugins' ) {
-			return;
-		}
+	public static function search_filter_outdated_notice() {
 
 		$is_search_filter_enabled          = Dependencies::is_search_filter_enabled();
 		$is_search_filter_required_version = Dependencies::is_search_filter_required_version();
@@ -433,7 +323,7 @@ class Admin {
 	 *
 	 * @since 3.0.0
 	 */
-	public function search_filter_outdated_recommended_notice() {
+	public static function search_filter_outdated_recommended_notice() {
 
 		// Only show on the dashboard and plugins screen.
 		$current_screen = \get_current_screen();
@@ -442,10 +332,9 @@ class Admin {
 			return;
 		}
 
-		$is_search_filter_enabled          = Dependencies::is_search_filter_enabled();
+		$is_search_filter_enabled             = Dependencies::is_search_filter_enabled();
 		$is_search_filter_recommended_version = Dependencies::is_search_filter_recommended_version();
 
-		global $pagenow;
 		// If the verion is outdated, show a notice about which version is required.
 		if ( $is_search_filter_enabled && ! $is_search_filter_recommended_version ) {
 			?>
@@ -464,5 +353,111 @@ class Admin {
 			</div>
 			<?php
 		}
+	}
+
+	/**
+	 * Display a notice if upgrades have failed.
+	 *
+	 * @since 3.2.0
+	 */
+	public static function upgrade_failure_notice() {
+		$has_failures  = Upgrade_Status::has_failures();
+		$has_suspended = Upgrade_Status::has_suspended();
+
+		if ( ! $has_failures && ! $has_suspended ) {
+			return;
+		}
+
+		// Only show on the dashboard, plugins screen, and S&F screens.
+		$current_screen = \get_current_screen();
+		$screen_name    = $current_screen->id;
+
+		$allowed_screens = array( 'dashboard', 'plugins' );
+		$is_sf_screen    = strpos( $screen_name, 'search-filter' ) !== false;
+
+		if ( ! in_array( $screen_name, $allowed_screens, true ) && ! $is_sf_screen ) {
+			return;
+		}
+
+		// Handle suspended upgrades (max retries reached).
+		if ( $has_suspended ) {
+			$suspended = Upgrade_Status::get_suspended();
+			$versions  = array_keys( $suspended );
+			?>
+			<div class="notice notice-error">
+				<p>
+					<?php
+					printf(
+						/* translators: %1$s: Search & Filter Pro plugin name, %2$s: comma-separated list of suspended versions */
+						esc_html__( '%1$s: Database upgrade(s) suspended after maximum retry attempts for version(s): %2$s.', 'search-filter-pro' ),
+						'<strong>' . esc_html__( 'Search & Filter Pro', 'search-filter-pro' ) . '</strong>',
+						'<strong>' . esc_html( implode( ', ', $versions ) ) . '</strong>'
+					);
+					?>
+				</p>
+				<p>
+					<?php foreach ( $versions as $version ) : ?>
+						<button type="button" class="button sf-retry-upgrade" data-version="<?php echo esc_attr( $version ); ?>">
+							<?php
+							printf(
+								/* translators: %s: version number */
+								esc_html__( 'Retry upgrade to %s', 'search-filter-pro' ),
+								esc_html( $version )
+							);
+							?>
+						</button>
+					<?php endforeach; ?>
+				</p>
+			</div>
+			<script>
+			(function() {
+				document.querySelectorAll('.sf-retry-upgrade').forEach(function(button) {
+					button.addEventListener('click', function() {
+						var version = this.getAttribute('data-version');
+						this.disabled = true;
+						this.textContent = '<?php echo esc_js( __( 'Retrying...', 'search-filter-pro' ) ); ?>';
+						fetch('<?php echo esc_url( rest_url( 'search-filter-pro/v1/upgrader/retry' ) ); ?>', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								'X-WP-Nonce': '<?php echo esc_js( wp_create_nonce( 'wp_rest' ) ); ?>'
+							},
+							body: JSON.stringify({ version: version })
+						}).then(function(response) {
+							if (response.ok) {
+								window.location.reload();
+							} else {
+								alert('<?php echo esc_js( __( 'Failed to reset upgrade status. Please try again.', 'search-filter-pro' ) ); ?>');
+								button.disabled = false;
+							}
+						}).catch(function() {
+							alert('<?php echo esc_js( __( 'Failed to reset upgrade status. Please try again.', 'search-filter-pro' ) ); ?>');
+							button.disabled = false;
+						});
+					});
+				});
+			})();
+			</script>
+			<?php
+			return;
+		}
+
+		// Handle regular failures (not yet suspended).
+		$failed   = Upgrade_Status::get_failed();
+		$versions = array_keys( $failed );
+		?>
+		<div class="notice notice-error">
+			<p>
+				<?php
+				printf(
+					/* translators: %1$s: Search & Filter Pro plugin name, %2$s: comma-separated list of failed versions */
+					esc_html__( '%1$s: Database upgrade(s) failed for version(s): %2$s. Please check the error logs or contact support.', 'search-filter-pro' ),
+					'<strong>' . esc_html__( 'Search & Filter Pro', 'search-filter-pro' ) . '</strong>',
+					'<strong>' . esc_html( implode( ', ', $versions ) ) . '</strong>'
+				);
+				?>
+			</p>
+		</div>
+		<?php
 	}
 }

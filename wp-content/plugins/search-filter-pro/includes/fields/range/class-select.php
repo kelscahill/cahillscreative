@@ -52,31 +52,55 @@ class Select extends Range {
 	 * @var array
 	 */
 	public static $styles = array(
-		'inputColor',
-		'inputBackgroundColor',
-		'inputSelectedColor',
-		'inputSelectedBackgroundColor',
-		'inputBorderColor',
-		'inputBorderHoverColor',
-		'inputBorderFocusColor',
-		'inputIconColor',
-		'inputInteractiveColor',
-		'inputInteractiveHoverColor',
-		'inputClearColor',
-		'inputClearHoverColor',
 
-		'labelColor',
-		'labelBackgroundColor',
-		'labelPadding',
-		'labelMargin',
-		'labelScale',
+		'fieldMargin'                  => true,
+		'inputMargin'                  => true,
+		'labelBorderStyle'             => true,
+		'labelBorderRadius'            => true,
+		'descriptionBorderStyle'       => true,
+		'descriptionBorderRadius'      => true,
+		'inputBorderRadius'            => true,
+		'inputBorderAccentColor'       => true,
 
-		'descriptionColor',
-		'descriptionBackgroundColor',
-		'descriptionPadding',
-		'descriptionMargin',
-		'descriptionScale',
+		'inputScale'                   => true,
+		'inputColor'                   => true,
+		'inputBackgroundColor'         => true,
+		'inputPlaceholderColor'        => true,
+		'inputSelectedColor'           => true,
+		'inputSelectedBackgroundColor' => true,
+		'inputBorder'                  => true,
+		'inputBorderHoverColor'        => true,
+		'inputBorderFocusColor'        => true,
+		'inputIconColor'               => true,
+		'inputInteractiveColor'        => true,
+		'inputInteractiveHoverColor'   => true,
+		'inputClearColor'              => true,
+		'inputClearHoverColor'         => true,
+		'inputShadow'                  => true,
+		'inputPadding'                 => true,
+		'inputGap'                     => true,
+
+		'labelColor'                   => true,
+		'labelBackgroundColor'         => true,
+		'labelPadding'                 => true,
+		'labelMargin'                  => true,
+		'labelScale'                   => true,
+
+		'descriptionColor'             => true,
+		'descriptionBackgroundColor'   => true,
+		'descriptionPadding'           => true,
+		'descriptionMargin'            => true,
+		'descriptionScale'             => true,
 	);
+
+	/**
+	 * The processed (cached) styles.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_styles    The processed styles, null if not processed yet.
+	 */
+	protected static $processed_styles = null;
 
 	/**
 	 * The input type.
@@ -88,6 +112,16 @@ class Select extends Range {
 	public static $input_type = 'select';
 
 	/**
+	 * List of components this field relies on.
+	 *
+	 * @var array
+	 */
+	public $components = array(
+		'combobox',
+		'range',
+	);
+
+	/**
 	 * The setting support.
 	 *
 	 * @since 3.0.0
@@ -95,34 +129,73 @@ class Select extends Range {
 	 * @var array
 	 */
 	public static $setting_support = array(
-		'autoSubmit'             => true,
-		'autoSubmitDelay'        => true,
-		'showLabel'              => true,
-		'labelInitialVisibility' => true,
-		'labelToggleVisibility'  => true,
-		'rangeAutodetectMin'     => true,
-		'rangeAutodetectMax'     => true,
-		'rangeMin'               => true,
-		'rangeMax'               => true,
-		'rangeStep'              => true,
-		'rangeDecimalPlaces'     => true,
-		'rangeDecimalCharacter'  => true,
-		'rangeThousandCharacter' => true,
-		'rangeValuePrefix'       => true,
-		'rangeValueSuffix'       => true,
-		'rangeSeparator'         => true,
+		'addClass'                     => true,
+		'width'                        => true,
+		'queryId'                      => true,
+		'stylesId'                     => true,
+		'type'                         => true,
+		'label'                        => true,
+		'showLabel'                    => true,
+		'showDescription'              => true,
+		'description'                  => true,
+		'dataType'                     => array(
+			'values' => array(
+				'custom_field' => true,
+			),
+		),
+		'inputType'                    => true,
+		'placeholder'                  => true,
 
+		'autoSubmit'                   => true,
+		'autoSubmitDelay'              => true,
+		'labelInitialVisibility'       => true,
+		'labelToggleVisibility'        => true,
+		'dataMaxRangeOptionsNotice'    => true,
+		'rangeAutodetectMin'           => true,
+		'rangeAutodetectMax'           => true,
+		'rangeMin'                     => true,
+		'rangeMax'                     => true,
+		'rangeStep'                    => true,
+		'rangeDecimalPlaces'           => true,
+		'rangeDecimalCharacter'        => true,
+		'rangeThousandCharacter'       => true,
+		'rangeValuePrefix'             => true,
+		'rangeValueSuffix'             => true,
+		'rangeSeparator'               => true,
+		'hideFieldWhenEmpty'           => true,
+
+		'dataUrlName'                  => true,
+		'dataCustomField'              => true,
+		'dataCustomFieldIndexerNotice' => true,
 	);
 
 	/**
-	 * The type of the field.
+	 * The processed (cached) setting support.
+	 *
+	 * @since 3.2.0
+	 * @access private
+	 * @var array|null $processed_setting_support    The processed settings, null if not processed yet.
+	 */
+	protected static $processed_setting_support = null;
+
+	/**
+	 * Get the label for the input type.
 	 *
 	 * @since 3.0.0
 	 *
-	 * @var string
+	 * @return string The label.
 	 */
 	public static function get_label() {
 		return __( 'Select', 'search-filter' );
+	}
+
+	/**
+	 * Get the description for the input type.
+	 *
+	 * @return string The label.
+	 */
+	public static function get_description() {
+		return __( 'Allow users to filter by ranges by choosing from a dropdown.', 'search-filter' );
 	}
 
 	/**

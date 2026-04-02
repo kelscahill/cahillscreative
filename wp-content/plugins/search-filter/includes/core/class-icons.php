@@ -21,7 +21,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Icons {
 
-	private static $init  = false;
+	/**
+	 * Whether the icons have been initialized.
+	 *
+	 * @var bool
+	 */
+	private static $init = false;
+
+	/**
+	 * Array of registered icons.
+	 *
+	 * @var array
+	 */
 	private static $icons = array();
 
 	/**
@@ -42,23 +53,45 @@ class Icons {
 	 * @return void
 	 */
 	public static function register() {
-		// TODO - this should be moved into its own class.
+
 		self::$icons = array(
-			'search'           => SEARCH_FILTER_PATH . 'assets/images/svg/search.svg',
-			'clear'            => SEARCH_FILTER_PATH . 'assets/images/svg/clear.svg',
-			'arrow-down'       => SEARCH_FILTER_PATH . 'assets/images/svg/arrow-down.svg',
-			'radio'            => SEARCH_FILTER_PATH . 'assets/images/svg/radio.svg',
-			'radio-checked'    => SEARCH_FILTER_PATH . 'assets/images/svg/radio-checked.svg',
-			'checkbox'         => SEARCH_FILTER_PATH . 'assets/images/svg/checkbox.svg',
-			'checkbox-checked' => SEARCH_FILTER_PATH . 'assets/images/svg/checkbox-checked.svg',
-			'checkbox-mixed'   => SEARCH_FILTER_PATH . 'assets/images/svg/checkbox-mixed-3.svg',
-			'event'            => SEARCH_FILTER_PATH . 'assets/images/svg/event.svg',
+			// Frontend UI icons.
+			'search'                     => SEARCH_FILTER_PATH . 'assets/images/svg/search.svg',
+			'clear'                      => SEARCH_FILTER_PATH . 'assets/images/svg/clear.svg',
+			'arrow-down'                 => SEARCH_FILTER_PATH . 'assets/images/svg/arrow-down.svg',
+			'arrow-right'                => SEARCH_FILTER_PATH . 'assets/images/svg/arrow-right.svg',
+			'arrow-right-double'         => SEARCH_FILTER_PATH . 'assets/images/svg/arrow-right-double.svg',
+			'radio'                      => SEARCH_FILTER_PATH . 'assets/images/svg/radio.svg',
+			'radio-checked'              => SEARCH_FILTER_PATH . 'assets/images/svg/radio-checked.svg',
+			'checkbox'                   => SEARCH_FILTER_PATH . 'assets/images/svg/checkbox.svg',
+			'checkbox-checked'           => SEARCH_FILTER_PATH . 'assets/images/svg/checkbox-checked.svg',
+			'checkbox-mixed'             => SEARCH_FILTER_PATH . 'assets/images/svg/checkbox-mixed.svg',
+			'event'                      => SEARCH_FILTER_PATH . 'assets/images/svg/event.svg',
+			// Admin Integration icons.
+			'integration-acf'            => SEARCH_FILTER_PATH . 'assets/images/integrations/acf.svg',
+			'integration-beaverbuilder'  => SEARCH_FILTER_PATH . 'assets/images/integrations/beaverbuilder.svg',
+			'integration-bricks'         => SEARCH_FILTER_PATH . 'assets/images/integrations/bricks.svg',
+			'integration-divi'           => SEARCH_FILTER_PATH . 'assets/images/integrations/divi.svg',
+			'integration-elementor'      => SEARCH_FILTER_PATH . 'assets/images/integrations/elementor.svg',
+			'integration-generateblocks' => SEARCH_FILTER_PATH . 'assets/images/integrations/generateblocks.svg',
+			'integration-polylang'       => SEARCH_FILTER_PATH . 'assets/images/integrations/polylang.svg',
+			'integration-relevanssi'     => SEARCH_FILTER_PATH . 'assets/images/integrations/relevanssi.svg',
+			'integration-woocommerce'    => SEARCH_FILTER_PATH . 'assets/images/integrations/woocommerce.svg',
+			'integration-wordpress'      => SEARCH_FILTER_PATH . 'assets/images/integrations/wordpress.svg',
+			'integration-wpbakery'       => SEARCH_FILTER_PATH . 'assets/images/integrations/wpbakery.svg',
+			'integration-wpml'           => SEARCH_FILTER_PATH . 'assets/images/integrations/wpml.svg',
 		);
 
 		foreach ( self::$icons as $icon => $file ) {
-			SVG_Loader::register( $icon, $file );
+			SVG_Loader::register( $icon, $file, false );
 		}
 	}
+
+	/**
+	 * Enqueues all registered icons.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function enqueue() {
 		foreach ( self::$icons as $icon_name => $path ) {
 			SVG_Loader::enqueue( $icon_name );

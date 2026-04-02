@@ -18,28 +18,20 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 3.0.0
  */
-class Tasks_Meta_Table extends \Search_Filter\Database\Engine\Table {
+class Tasks_Meta_Table extends \Search_Filter_Pro\Database\Engine\Table {
 
 	/**
 	 * Table name, without the global table prefix.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	public $name = 'taskmeta';
 
 	/**
-	 * Database version key (saved in _options or _sitemeta)
-	 *
-	 * @since 1.0.0
-	 * @var   string
-	 */
-	protected $db_version_key = 'search_filter_pro_taskmeta_table_version';
-
-	/**
 	 * Optional description.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   string
 	 */
 	public $description = 'Tasks Meta';
@@ -47,7 +39,7 @@ class Tasks_Meta_Table extends \Search_Filter\Database\Engine\Table {
 	/**
 	 * Database version.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   mixed
 	 */
 	protected $version = '3.0.0';
@@ -55,7 +47,7 @@ class Tasks_Meta_Table extends \Search_Filter\Database\Engine\Table {
 	/**
 	 * Key => value array of versions => methods.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 * @var   array
 	 */
 	protected $upgrades = array();
@@ -63,7 +55,7 @@ class Tasks_Meta_Table extends \Search_Filter\Database\Engine\Table {
 	/**
 	 * Setup this database table.
 	 *
-	 * @since 1.0.0
+	 * @since 3.0.0
 	 */
 	protected function set_schema() {
 		$this->schema = "

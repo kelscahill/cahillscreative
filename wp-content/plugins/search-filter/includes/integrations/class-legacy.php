@@ -24,8 +24,20 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Included to keep supporting users who have not migrated yet.
  */
 class Legacy {
-	private static $legacy_option;
+	/**
+	 * The legacy option value.
+	 *
+	 * @var string|false|null
+	 */
+	private static $legacy_option = null;
 
+	/**
+	 * Check if a legacy version exists.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool True if legacy version exists, false otherwise.
+	 */
 	public static function has_legacy_version() {
 		if ( ! isset( self::$legacy_option ) ) {
 			self::$legacy_option = get_option( 'searchandfilter_version' );
@@ -36,30 +48,44 @@ class Legacy {
 		return false;
 	}
 
+	/**
+	 * Initialize the legacy integration.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function init() {
 		if ( ! self::has_legacy_version() ) {
 			return;
 		}
 		// Add the legacy support option regardless of whether the feature is enabled or not.
-		add_action( 'search-filter/settings/features/init', '\\Search_Filter\\Integrations\\Legacy::add_legacy_setting', 10 );
+		add_action( 'search-filter/settings/features/init', array( __CLASS__, 'add_legacy_setting' ), 10 );
 		// Can't use `Features::is_enabled` until after the features are registered.
-		add_action( 'search-filter/settings/features/init', '\\Search_Filter\\Integrations\\Legacy::load_plugin', 10 );
+		add_action( 'search-filter/settings/features/init', array( __CLASS__, 'load_plugin' ), 10 );
 	}
 
+	/**
+	 * Load the legacy plugin.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function load_plugin() {
 		if ( ! Features::is_enabled( 'legacyShortcodes' ) ) {
 			return;
 		}
-
 		// Run the legacy plugin.
 		new Plugin();
 	}
 
+	/**
+	 * Add the legacy setting to the features settings.
+	 *
+	 * @since 3.0.0
+	 */
 	public static function add_legacy_setting() {
 		$setting = array(
 			'name'        => 'legacyShortcodes',
 			'label'       => __( 'Legacy shortcodes', 'search-filter' ),
-			'notice'      => __( 'Notice: this feature will be removed by October 2024.', 'search-filter' ),
+			'notice'      => __( 'Notice: this feature will be removed by April 2026.', 'search-filter' ),
 			'description' => __( 'Enables the old Search & Filter shortcodes used on the wordpress.org version of the plugin - it is made available to ensure a smooth upgrade process. Disable when the migration is complete.', 'search-filter' ),
 			'default'     => true,
 			'type'        => 'string',

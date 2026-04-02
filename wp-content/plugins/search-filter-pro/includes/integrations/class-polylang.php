@@ -19,9 +19,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Polylang integration handler.
  */
 class Polylang {
 
+	/**
+	 * The plugin file.
+	 *
+	 * @var string
+	 */
 	private static $plugin_file = 'search-filter-polylang/search-filter-polylang.php';
 	/**
 	 * Init
@@ -52,7 +58,7 @@ class Polylang {
 		$is_polylang_enabled = self::polylang_enabled();
 
 		$update_integration_settings = array(
-			'isPluginEnabled' => $is_polylang_enabled,
+			'isIntegrationEnabled' => $is_polylang_enabled,
 		);
 
 		// If we detect Polylang is enabled, then lets also set the plugin installed
@@ -60,7 +66,7 @@ class Polylang {
 		// folder name and it we would initially detect is as not installed by using
 		// by using `plugin_exists()` which is unreliable.
 		if ( $is_polylang_enabled ) {
-			$update_integration_settings['isPluginInstalled'] = true;
+			$update_integration_settings['isIntegrationInstalled'] = true;
 		}
 
 		// Also check if the extension plugin is installed.
@@ -71,6 +77,13 @@ class Polylang {
 		$polylang_integration->update( $update_integration_settings );
 	}
 
+	/**
+	 * Install the Polylang extension.
+	 *
+	 * @param bool   $installed Whether the extension is already installed.
+	 * @param string $extension The extension name.
+	 * @return bool
+	 */
 	public static function install_extension( $installed, $extension ) {
 		if ( $extension !== 'polylang' ) {
 			return $installed;
@@ -98,6 +111,11 @@ class Polylang {
 		return false;
 	}
 
+	/**
+	 * Enable the Polylang extension.
+	 *
+	 * @param string $extension The extension name.
+	 */
 	public static function enable_extension( $extension ) {
 		if ( $extension !== 'polylang' ) {
 			return;
@@ -106,6 +124,11 @@ class Polylang {
 			Dependants::enable_plugin( self::$plugin_file );
 		}
 	}
+	/**
+	 * Disable the Polylang extension.
+	 *
+	 * @param string $extension The extension name.
+	 */
 	public static function disable_extension( $extension ) {
 		if ( $extension !== 'polylang' ) {
 			return;
@@ -140,7 +163,6 @@ class Polylang {
 		if ( ! $is_enabled && $is_plugin_enabled && $is_extension_enabled ) {
 			\Search_Filter\Integrations::enable( 'polylang', true );
 		}
-
 	}
 
 
@@ -154,5 +176,4 @@ class Polylang {
 	private static function polylang_enabled() {
 		return defined( 'POLYLANG_VERSION' );
 	}
-
 }
