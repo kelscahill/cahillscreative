@@ -35,6 +35,48 @@ class AdminManager
         add_action('wp_head', array($this, 'install_ma_and_chat_script'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_carts_fragment'));
         add_action('wp_footer', array($this, 'brevo_hook_javascript_footer'));
+        add_action('wp_ajax_sendinblue_dismiss_security_banner', array($this, 'dismissSecurityBanner'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueueSecurityBannerScript'));
+    }
+
+    public function dismissSecurityBanner()
+    {
+        check_ajax_referer( 'sendinblue_dismiss_security_banner', 'nonce' );
+        update_option( SENDINBLUE_SECURITY_BANNER_DISMISSED, true );
+        wp_send_json_success();
+    }
+
+    public function enqueueSecurityBannerScript( $hook )
+    {
+        if ( $hook !== 'plugins.php' ) {
+            return;
+        }
+        if ( ! get_option( SENDINBLUE_IS_PLUGIN_INFO_UPDATED, false ) || get_option( SENDINBLUE_SECURITY_BANNER_DISMISSED, false ) ) {
+            return;
+        }
+        $nonce    = wp_create_nonce( 'sendinblue_dismiss_security_banner' );
+        $ajax_url = admin_url( 'admin-ajax.php' );
+        $script   = '(function () {
+            ["sendinblue-security-banner", "sendinblue-security-banner-row"].forEach(function (id) {
+                var banner = document.getElementById(id);
+                if (!banner) { return; }
+                banner.addEventListener("click", function (e) {
+                    if (e.target.classList.contains("notice-dismiss")) {
+                        var data = new FormData();
+                        data.append("action", "sendinblue_dismiss_security_banner");
+                        data.append("nonce", ' . wp_json_encode( $nonce ) . ');
+                        fetch(' . wp_json_encode( $ajax_url ) . ', {
+                            method: "POST",
+                            credentials: "same-origin",
+                            body: data
+                        });
+                    }
+                });
+            });
+        })();';
+        wp_register_script( 'sendinblue-security-banner-dismiss', false, [], false, true );
+        wp_enqueue_script( 'sendinblue-security-banner-dismiss' );
+        wp_add_inline_script( 'sendinblue-security-banner-dismiss', $script );
     }
 
     public function adminMenu()

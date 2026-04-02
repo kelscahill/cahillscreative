@@ -395,6 +395,7 @@ trait broadcasting
 			else
 				$this->debug( "Ignoring post's parent." );
 
+			$broadcasting_data->existing_child_post = false;
 			// Insert new? Or update? Depends on whether the parent post was linked before or is newly linked?
 			$need_to_insert_post = true;
 			if ( $bcd->broadcast_data !== null )
@@ -407,6 +408,7 @@ trait broadcasting
 					$child_post = get_post( $child_post_id );
 					if ( is_a( $child_post, 'WP_Post' ) )
 					{
+						$broadcasting_data->existing_child_post = $child_post;
 						$temp_post_data = $bcd->new_post;
 						$temp_post_data->ID = $child_post_id;
 

@@ -14,13 +14,27 @@ trait step_results_fail_missing_post
 
 		if ( $button->pressed() )
 		{
-			// Delete all of the missing post broadcast datas.
-			foreach( $this->data->missing_post as $id => $bcd )
+			// Delete missing post broadcast data in batches to avoid memory spikes.
+			$batch_size = 200;
+			$deleted = 0;
+			foreach( $this->data->missing_post as $id => $info )
 			{
-				$o->bc->sql_delete_broadcast_data( $bcd->id );
-				$this->data->missing_post->forget( $bcd->id );
+				$o->bc->sql_delete_broadcast_data( $id );
+				$this->data->missing_post->forget( $id );
+				$deleted++;
+				if ( $deleted >= $batch_size )
+					break;
 			}
-			$o->bc->message( 'The broadcast data objects without existing posts have been deleted.' );
+			$remaining = count( $this->data->missing_post );
+			if ( $remaining > 0 )
+			{
+				$o->bc->message( sprintf( 'Deleted %d broadcast data objects. %d remaining.', $deleted, $remaining ) );
+				$o->r .= $this->next_step( 'results' );
+			}
+			else
+			{
+				$o->bc->message( 'The broadcast data objects without existing posts have been deleted.' );
+			}
 			return;
 		}
 
@@ -32,13 +46,13 @@ trait step_results_fail_missing_post
 		$row->th()->text( 'Broadcast data row ID' );
 		$row->th()->text( 'Belonging to post' );
 
-		foreach( $this->data->missing_post as $id => $bcd )
+		foreach( $this->data->missing_post as $id => $info )
 		{
 			$row = $table->body()->row();
 			$row->td()->text_( $id );
 			$row->td()->text_( 'Post %s on %s',
-				$bcd->post_id,
-				$this->blogname( $bcd->blog_id )
+				$info[ 'post_id' ],
+				$this->blogname( $info[ 'blog_id' ] )
 			);
 		}
 

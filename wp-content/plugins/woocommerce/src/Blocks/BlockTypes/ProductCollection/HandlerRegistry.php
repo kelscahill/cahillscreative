@@ -87,6 +87,18 @@ class HandlerRegistry {
 		);
 
 		$this->register_collection_handlers(
+			'woocommerce/product-collection/by-brand',
+			function ( $collection_args, $common_query_values, $query ) {
+				// For Products by Brand collection, if no brand is selected, we should return an empty result set.
+				if ( empty( $query['taxonomies_query'] ) ) {
+					return array(
+						'post__in' => array( -1 ),
+					);
+				}
+			}
+		);
+
+		$this->register_collection_handlers(
 			'woocommerce/product-collection/related',
 			function ( $collection_args ) {
 				// No products should be shown if no related product reference is set.
@@ -411,15 +423,7 @@ class HandlerRegistry {
 		$location = $collection_args['productCollectionLocation'] ?? array();
 
 		if ( $request ) {
-			$user_id    = $request->get_param( 'userId' ) ? absint( $request->get_param( 'userId' ) ) : null;
-			$user_email = $request->get_param( 'userEmail' ) ? sanitize_email( $request->get_param( 'userEmail' ) ) : null;
-			if ( $user_id || $user_email ) {
-				$cart_ids = CartCheckoutUtils::get_cart_product_ids_for_user( $user_id, $user_email );
-				if ( ! empty( $cart_ids ) ) {
-					return $cart_ids;
-				}
-			}
-			// In editor context (REST request), show sample products for preview when cart is empty.
+			// In editor context (REST request), show sample products for preview. Only emails to the customer show live data.
 			$recent_product_ids = wc_get_products(
 				array(
 					'status'  => 'publish',

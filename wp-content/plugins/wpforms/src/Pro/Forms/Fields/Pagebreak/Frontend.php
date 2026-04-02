@@ -142,13 +142,13 @@ class Frontend extends FrontendBase {
 	}
 
 	/**
-	 * Open page indicator container.
+	 * Open a page indicator container.
 	 *
 	 * @since 1.8.1
 	 *
 	 * @param array $pagebreak Field data and settings.
 	 */
-	public function open_page_indicator_container( $pagebreak ) {
+	public function open_page_indicator_container( $pagebreak ): void {
 
 		$modern_attributes = '';
 
@@ -159,13 +159,16 @@ class Frontend extends FrontendBase {
 			);
 		}
 
+		$allow_page_navigation = ! empty( $pagebreak['allow_page_navigation'] ) ? ' data-allow-page-navigation="1"' : '';
+
 		printf(
-			'<div class="wpforms-page-indicator %1$s" data-indicator="%2$s" data-indicator-color="%3$s" data-scroll="%4$d"%5$s>',
+			'<div class="wpforms-page-indicator %1$s" data-indicator="%2$s" data-indicator-color="%3$s" data-scroll="%4$d"%5$s%6$s>',
 			esc_attr( $pagebreak['indicator'] ),
 			esc_attr( $pagebreak['indicator'] ),
 			esc_attr( $pagebreak['color'] ),
 			(int) $pagebreak['scroll'],
-			$modern_attributes // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$modern_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$allow_page_navigation // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 	}
 

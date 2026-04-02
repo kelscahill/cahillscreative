@@ -147,7 +147,7 @@ extends \threewp_broadcast\maintenance\checks\check
 				$post_id = $parent[ 'post_id' ];
 
 				if ( count( $bcd->get_linked_children() ) > 0 )
-					$this->data->unnecessary_children->set( $id, $bcd );
+					$this->data->unnecessary_children->set( $id, true );
 
 				// The parent blog + post must exist.
 				if ( ! $this->blog_and_post_exists( $blog_id, $post_id ) )
@@ -310,30 +310,35 @@ extends \threewp_broadcast\maintenance\checks\check
 	{
 		$r = '';
 
-		$max = count( $this->data->ids_to_check );
-		if ( $max < 1 )
+		$query = sprintf(
+			"SELECT * FROM `%s` WHERE `id` > %d ORDER BY `id` ASC LIMIT %d",
+			$this->table,
+			$this->data->last_id,
+			data::$rows_per_step
+		);
+		$results = $this->broadcast()->query( $query );
+
+		if ( count( $results ) < 1 )
 		{
 			$r .= $this->broadcast()->p( __( 'Finished checking database rows. Now checking the actual broadcast data relations.', 'threewp-broadcast' ) );
 			$r .= $this->next_step( 'check_relations' );
 			return $r;
 		}
 
-
+		$remaining = max( 0, $this->data->total_rows - $this->data->checked_rows );
 		$r .= $this->broadcast()->p(
 			// Translators: NUMBER rows left to check
-			__( '%d rows left to check...', 'threewp-broadcast' ),
-			count( $this->data->ids_to_check )
+			__( '%1$d of %2$d rows checked. %3$d left to check...', 'threewp-broadcast' ),
+			$this->data->checked_rows,
+			$this->data->total_rows,
+			$remaining
 		);
 
-		// Check the next ids
-		$max = min( $max, data::$rows_per_step );
-		$ids = [];
-		for ( $counter = 0; $counter < $max; $counter++ )
+		foreach( $results as $result )
 		{
-			$id = array_shift( $this->data->ids_to_check );
-			$query = sprintf( "SELECT * FROM `%s` WHERE `id` = '%s'", $this->table, $id );
-			$results = $this->broadcast()->query( $query );
-			$result = reset( $results );
+			$id = (int) $result[ 'id' ];
+			$this->data->last_id = max( $this->data->last_id, $id );
+			$this->data->checked_rows++;
 
 			$bcd = BroadcastData::sql( $result );
 
@@ -343,7 +348,7 @@ extends \threewp_broadcast\maintenance\checks\check
 			// 1. Is the broadcast data readable?
 			if ( ! BroadcastData::unserialize_data( $result[ 'data' ] ) )
 			{
-				$this->data->broken_bcd->set( $id, $bcd );
+				$this->data->broken_bcd->set( $id, true );
 				continue;
 			}
 
@@ -355,7 +360,7 @@ extends \threewp_broadcast\maintenance\checks\check
 			$key = sprintf( '%s_%s', $blog_id, $post_id );
 			if ( $this->data->seen_blog_post->has( $key ) )
 			{
-				$this->data->duplicate_bcd->put( $id, $bcd );
+				$this->data->duplicate_bcd->put( $id, true );
 				continue;
 			}
 			else
@@ -365,7 +370,10 @@ extends \threewp_broadcast\maintenance\checks\check
 
 			if ( ! $this->blog_and_post_exists( $blog_id, $post_id ) )
 			{
-				$this->data->missing_post->put( $id, $bcd );
+				$this->data->missing_post->put( $id, [
+					'blog_id' => $blog_id,
+					'post_id' => $post_id,
+				] );
 				continue;
 			}
 
@@ -402,19 +410,19 @@ extends \threewp_broadcast\maintenance\checks\check
 		}
 
 		// Count the rows in the table.
-		$query = sprintf( 'SELECT `id` FROM `%s`', $this->table );
+		$query = sprintf( 'SELECT COUNT(*) AS row_count FROM `%s`', $this->table );
 		$results = $this->broadcast()->query( $query );
+		$row = is_array( $results ) ? reset( $results ) : null;
+		$count = isset( $row[ 'row_count' ] ) ? intval( $row[ 'row_count' ] ) : 0;
 
-		$this->data->ids = [];
-		foreach( $results as $result )
-			$this->data->ids []= $result[ 'id' ];
-
-		$this->data->ids_to_check = $this->data->ids;
+		$this->data->last_id = 0;
+		$this->data->checked_rows = 0;
+		$this->data->total_rows = $count;
 
 		$r = $this->broadcast()->p(
 			// Translators: NUMBER rows to check
 			__( 'Beginning to check broadcast data. %d rows to check.', 'threewp-broadcast' ),
-			count( $this->data->ids_to_check )
+			$count
 		);
 		$r .= $this->next_step( 'check_ids' );
 		return $r;

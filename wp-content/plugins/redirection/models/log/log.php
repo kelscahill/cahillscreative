@@ -138,7 +138,7 @@ abstract class Red_Log {
 	 */
 	final public function __construct( $values ) {
 		foreach ( $values as $key => $value ) {
-			// @phpstan-ignore property.notFound, assign.propertyType, property.dynamicName
+			// @phpstan-ignore property.notFound, assign.propertyType
 			$this->$key = $value;
 		}
 
@@ -307,17 +307,7 @@ abstract class Red_Log {
 
 		foreach ( $rows as $row ) {
 			$row->count = intval( $row->count, 10 );
-
-			if ( isset( $row->url ) ) {
-				// @phpstan-ignore property.notFound
-				$row->id = $row->url;
-			} elseif ( isset( $row->ip ) ) {
-				// @phpstan-ignore property.notFound
-				$row->id = $row->ip;
-			} elseif ( isset( $row->agent ) ) {
-				// @phpstan-ignore property.notFound
-				$row->id = $row->agent;
-			}
+			$row->id = isset( $row->{ $group } ) ? $row->{ $group } : '';
 		}
 
 		/** @var list<object> $rows */

@@ -19,7 +19,7 @@
 .gla-connected-icon-label{fill:currentcolor;color:#23a713}.gla-connected-icon-label svg{display:block}
 .gla-authorize-google-account-card__error-text{color:#cc1818;font-weight:500}
 .gla-ads-claim-account-notice{background-color:#ffeec1;font-size:12px;margin:0 var(--large-gap) var(--large-gap);padding:16px}
-.app-modal{overflow:hidden}@media(min-width:960px){.app-modal{width:600px}}.app-modal .app-modal__footer{display:flex;flex-direction:column-reverse;gap:calc(var(--main-gap)/2);margin-top:var(--large-gap)}@media(min-width:480px){.app-modal .app-modal__footer{flex-direction:row;justify-content:flex-end}}.app-modal .app-modal__footer button{justify-content:center}.app-modal .components-modal__content{overflow:auto}.app-modal__styled--overflow-visible .components-modal__content,.app-modal__styled--overflow-visible.app-modal{overflow:visible}
+.app-modal{overflow:hidden}@media(min-width:960px){.app-modal{width:600px}}.app-modal .app-modal__footer{display:flex;flex-direction:column-reverse;gap:calc(var(--main-gap)/2);margin-top:var(--large-gap)}@media(min-width:480px){.app-modal .app-modal__footer{flex-direction:row;justify-content:flex-end}}.app-modal .app-modal__footer button{justify-content:center}.app-modal .components-modal__content{overflow:auto}.app-modal .components-modal__content .components-modal__header-heading{line-height:1.2}.app-modal__styled--overflow-visible .components-modal__content,.app-modal__styled--overflow-visible.app-modal{overflow:visible}
 .gla-ads-terms-modal{max-width:600px}.gla-ads-terms-modal .main{font-weight:700}
 .gla-content-button-layout{align-items:center;display:flex;gap:calc(var(--main-gap)/2);justify-content:space-between}
 .gla-loading-label{align-items:center;color:var(--wp-admin-theme-color);display:inline-flex;gap:8px;height:36px}.gla-loading-label .woocommerce-spinner{height:24px;min-width:24px;width:24px}.gla-loading-label .woocommerce-spinner__circle{stroke:currentcolor;stroke-width:8px}
@@ -33,6 +33,7 @@
 .gla-mc-warning-modal{max-width:600px}.gla-mc-warning-modal__warning-text{display:flex;font-weight:700;gap:8px}.gla-mc-warning-modal__warning-text svg{flex-shrink:0}
 .gla-mc-terms-modal{max-width:600px}.gla-mc-terms-modal .main{font-weight:700}
 @media(min-width:600px){.gla-disconnect-accounts-modal{max-width:600px}}.gla-disconnect-accounts-modal .components-modal__header-heading{align-items:center;display:flex}.gla-disconnect-accounts-modal .gridicon.gridicons-notice-outline{margin-right:8px;fill:#cc1818}.gla-disconnect-accounts-modal .components-base-control{margin:var(--main-gap) 0 var(--large-gap)}
+.gla-connect-youtube-account-card__description p{margin:0 0 4px}
 .gla-wpcom-connection-lost-card.gla-account-card{background-color:#facfd2;border-radius:0}.gla-wpcom-connection-lost-card .gla-account-card__helper{color:#000}
 .gla-stepper-top-bar{align-items:center;background-color:#fff;box-shadow:inset 0 -1px 0 0 #ccc;display:flex;min-height:64px}.gla-stepper-top-bar .components-button{align-self:stretch;height:auto}.gla-stepper-top-bar__back-button{padding:0 calc(var(--main-gap)/2)}.gla-stepper-top-bar__title{flex:1;font-size:16px;letter-spacing:0}
 .AnC9WXFuKgCBURYIRcRY{display:flex;flex-direction:column;gap:4px;justify-content:center}

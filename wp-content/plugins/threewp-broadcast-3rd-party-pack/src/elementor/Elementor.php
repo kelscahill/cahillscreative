@@ -889,6 +889,29 @@ class Elementor
  					$this->debug( 'Sending %s for preparse.', $preparse_action->id );
 					$preparse_content->execute();
 					break;
+				case 'eael-filterable-gallery':
+					// Simple sanity check.
+					if ( ! isset( $element->settings->eael_fg_gallery_items ) )
+						break;
+					foreach( $element->settings->eael_fg_gallery_items as $item_index => $eael_fg_gallery_item )
+					{
+						$eael_fg_gallery_img = $eael_fg_gallery_item->eael_fg_gallery_img;
+						if ( $eael_fg_gallery_img->source != 'library' )
+						{
+							$this->debug( '%s item %s is not a library image.',
+								$element->widgetType,
+								$item_index,
+							);
+							continue;
+						}
+						$image_id = $eael_fg_gallery_img->id;
+						if ( $bcd->try_add_attachment( $image_id ) )
+								$this->debug( 'Found %s widget. Adding attachment $item_index = %s',
+									$element->widgetType,
+									$image_id,
+								);
+					}
+					break;
 				case 'gallery':
 					if ( ! isset( $element->settings->gallery ) )
 						break;
@@ -1405,6 +1428,35 @@ class Elementor
 					$this->debug( 'Replaced modal_content %s with %s', $element->id, htmlspecialchars( $parse_content->content ) );
 					$element->settings->modal_content = $parse_content->content;
 
+					break;
+				case 'eael-filterable-gallery':
+					// Simple sanity check.
+					if ( ! isset( $element->settings->eael_fg_gallery_items ) )
+						break;
+					foreach( $element->settings->eael_fg_gallery_items as $item_index => $eael_fg_gallery_item )
+					{
+						$eael_fg_gallery_img = $eael_fg_gallery_item->eael_fg_gallery_img;
+						if ( $eael_fg_gallery_img->source != 'library' )
+						{
+							$this->debug( '%s item %s is not a library image.',
+								$element->widgetType,
+								$item_index,
+							);
+							continue;
+						}
+						$image_id = $eael_fg_gallery_img->id;
+						$new_image_id = $bcd->copied_attachments()->get( $image_id );
+						$old_url = $eael_fg_gallery_img->url;
+						$new_url = ThreeWP_Broadcast()->update_attachment_ids( $bcd, $old_url );
+						$this->debug( 'Replaced %s item %s in eael-filterable-gallery widget: %s with %s (%s)',
+							$element->widgetType,
+							$image_id,
+							$new_image_id,
+							$new_url,
+						);
+						$element->settings->eael_fg_gallery_items[ $item_index ]->eael_fg_gallery_img->id = $new_image_id;
+						$element->settings->eael_fg_gallery_items[ $item_index ]->eael_fg_gallery_img->url = $new_url;
+					}
 					break;
 				case 'gallery':
 					if ( ! isset( $element->settings->gallery ) )

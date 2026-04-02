@@ -329,6 +329,12 @@ class Loader {
 				'name' => 'Admin\Splash\SplashUpgrader',
 				'id'   => 'splash_upgrader',
 				'hook' => 'plugins_loaded',
+			],
+			[
+				'name' => 'Integrations\UsageTracking\AddonsDates',
+			],
+			[
+				'name' => 'Admin\Builder\PurgeEntries',
 			]
 		);
 	}
@@ -357,6 +363,8 @@ class Loader {
 	 * Populate Fields related classes.
 	 *
 	 * @since 1.8.2
+	 *
+	 * @noinspection ClassConstantCanBeUsedInspection
 	 */
 	private function populate_fields(): void {
 
@@ -524,6 +532,12 @@ class Loader {
 			'name'        => 'Forms\Fields\Addons\NetPromoterScore\Field',
 			'addon_class' => 'WPFormsSurveys\Fields\NetPromoterScore\Field',
 			'addon_slug'  => 'surveys-polls',
+		];
+
+		$this->classes[] = [
+			'name'        => 'Forms\Fields\Addons\Map\Field',
+			'addon_class' => 'WPFormsGeolocation\Forms\Field',
+			'addon_slug'  => 'geolocation',
 		];
 	}
 

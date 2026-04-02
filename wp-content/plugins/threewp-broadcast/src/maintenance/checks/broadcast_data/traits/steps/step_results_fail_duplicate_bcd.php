@@ -14,13 +14,26 @@ trait step_results_fail_duplicate_bcd
 
 		if ( $button->pressed() )
 		{
-			// Delete all of the duplicate post broadcast datas.
-			foreach( $this->data->duplicate_bcd as $bcd )
+			$batch_size = 200;
+			$deleted = 0;
+			foreach( $this->data->duplicate_bcd as $id => $ignore )
 			{
-				$o->bc->sql_delete_broadcast_data( $bcd->id );
-				$this->data->duplicate_bcd->forget( $bcd->id );
+				$o->bc->sql_delete_broadcast_data( $id );
+				$this->data->duplicate_bcd->forget( $id );
+				$deleted++;
+				if ( $deleted >= $batch_size )
+					break;
 			}
-			$o->bc->message( 'The duplicate broadcast data objects have been deleted.' );
+			$remaining = count( $this->data->duplicate_bcd );
+			if ( $remaining > 0 )
+			{
+				$o->bc->message( sprintf( 'Deleted %d duplicate broadcast data objects. %d remaining.', $deleted, $remaining ) );
+				$o->r .= $this->next_step( 'results' );
+			}
+			else
+			{
+				$o->bc->message( 'The duplicate broadcast data objects have been deleted.' );
+			}
 			return;
 		}
 
@@ -32,8 +45,11 @@ trait step_results_fail_duplicate_bcd
 		$row->th()->text( 'Broadcast data row ID' );
 		$row->th()->text( 'Belonging to post' );
 
-		foreach( $this->data->duplicate_bcd as $id => $bcd )
+		foreach( $this->data->duplicate_bcd as $id => $ignore )
 		{
+			$bcd = $this->data->broadcast_data->get( $id );
+			if ( ! $bcd )
+				continue;
 			$row = $table->body()->row();
 			$row->td()->text_( $id );
 			$row->td()->text_( $this->blogpost( $bcd->blog_id, $bcd->post_id ) );

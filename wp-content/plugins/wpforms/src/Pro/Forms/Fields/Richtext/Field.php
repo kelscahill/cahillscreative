@@ -134,18 +134,18 @@ class Field extends FieldLite {
 		// upload media to the form.
 		add_action( 'wp_ajax_nopriv_query-attachments', [ $this, 'media_query_attachments' ], 5 );
 
-		// Allow insert images for the unauthorized users.
+		// Allow inserting images for the unauthorized users.
 		add_action( 'wp_ajax_nopriv_send-attachment-to-editor', 'wp_ajax_send_attachment_to_editor', 1 );
 
 		add_filter( 'upload_mimes', [ $this, 'upload_mimes' ], 1001, 2 );
 
 		add_filter( 'ajax_query_attachments_args', [ $this, 'restrict_attachments_by_mime_types' ] );
 
-		// Don't allow a shortcode with caption.
+		// Don't allow a shortcode with a caption.
 		remove_action( 'image_send_to_editor', 'image_add_caption', 20 );
 
 		// We hook in super early in the async-upload.php call so that we can override all the
-		// auth and do upload related things without being logged in.
+		// auth and do upload-related things without being logged in.
 		add_filter( 'secure_auth_redirect', [ $this, 'override_auth_for_ajax_media_calls' ] );
 	}
 
@@ -372,7 +372,7 @@ class Field extends FieldLite {
 
 		// Make sure that the "editor.css" style is not dequeued by the Divi builder.
 		if ( ! wp_style_is( 'editor-buttons' ) ) {
-			// Added "wpforms" prefix to the handle to avoid conflicts between the Gutenberg and Elementor #9064.
+			// Added the "wpforms" prefix to the handle to avoid conflicts between the Gutenberg and Elementor #9064.
 			// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			wp_enqueue_style(
 				'wpforms-editor-buttons',
@@ -505,7 +505,7 @@ class Field extends FieldLite {
 	 *
 	 * @param array  $field   Field data.
 	 * @param array  $primary Field data.
-	 * @param string $value   Text value of field.
+	 * @param string $value   Text value of a field.
 	 */
 	private function add_rich_text_editor_field( $field, $primary, $value ): void {
 
@@ -617,7 +617,7 @@ class Field extends FieldLite {
 	 * @since 1.7.0
 	 *
 	 * @param array            $mimes Mime types.
-	 * @param int|WP_User|null $user  User ID, User object or null if not provided (indicates current user).
+	 * @param int|WP_User|null $user  User ID, User object, or null if not provided (indicates current user).
 	 *
 	 * @return array
 	 */
@@ -636,7 +636,7 @@ class Field extends FieldLite {
 		 * @since 1.7.0
 		 *
 		 * @param array            $mimes     Mime types.
-		 * @param int|WP_User|null $user      User ID, User object or null if not provided (indicates current user).
+		 * @param int|WP_User|null $user      User ID, User object, or null if not provided (indicates current user).
 		 * @param array            $form_data Form data and settings.
 		 *
 		 * @return array
@@ -839,8 +839,8 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Helper to determine if the ID of a post is the magic wpforms post ID
-	 * e.g. 'wpforms-{form_id}-field_{field_id}'.
+	 * Helper to determine if the ID of a post is the magic wpforms post ID.
+	 * E.g., 'wpforms-{form_id}-field_{field_id}'.
 	 *
 	 * @since 1.7.0
 	 *
@@ -926,39 +926,21 @@ class Field extends FieldLite {
 	 */
 	private function process_submitted_images_for_field( $field_value ): void {
 
-		preg_match_all( '/<img.*src=([\'\"])(.*)\1.*>/mU', $field_value, $matches );
+		$attachment_ids = self::get_attachment_ids_from_html( $field_value );
 
-		if ( empty( $matches[2] ) ) {
+		if ( empty( $attachment_ids ) ) {
 			return;
 		}
 
-		$upload_url     = wp_upload_dir()['url'];
-		$wpf_upload_url = wpforms_upload_dir()['url'];
+		$tasks = wpforms()->obj( 'tasks' );
 
-		foreach ( $matches[2] as $url ) {
+		if ( ! $tasks ) {
+			return;
+		}
 
-			if ( strpos( $url, $upload_url ) === false && strpos( $url, $wpf_upload_url ) === false ) {
-				continue;
-			}
-
-			// Remove image size from the image name.
-			$file_name        = pathinfo( $url, PATHINFO_FILENAME );
-			$file_name_origin = preg_replace( '/-\d+x\d+$/', '', $file_name );
-			$url              = str_replace( $file_name, $file_name_origin, $url );
-			$attachment_id    = attachment_url_to_postid( $url );
-
-			if ( empty( $attachment_id ) ) {
-				return;
-			}
-
-			$tasks = wpforms()->obj( 'tasks' );
-
-			if ( ! $tasks ) {
-				return;
-			}
-
+		foreach ( $attachment_ids as $attachment_id ) {
 			$tasks->create( self::MEDIA_CLEANUP_ACTION )
-				->params( absint( $attachment_id ) )
+				->params( $attachment_id )
 				->cancel();
 		}
 	}
@@ -1026,7 +1008,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Filter the entry view to allow for HTML display, instead of stripping all tags.
+	 * Filter the entry view to allow for HTML display instead of stripping all tags.
 	 *
 	 * @since 1.7.0
 	 *
@@ -1087,8 +1069,8 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Helper to easily check if a request is for the Rich Text field media, as we
-	 * modify the post ID in the request for our actions.
+	 * Helper to easily check if a request is for the Rich Text field media,
+	 * as we modify the post ID in the request for our actions.
 	 *
 	 * @since 1.7.0
 	 *
@@ -1110,7 +1092,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * If a non-logged in user attempts to upload media through the media modal, they
+	 * If a non-logged-in user attempts to upload media through the media modal, they
 	 * get redirected to the admin page and the upload fails. We check to make
 	 * sure the request is for the Rich Text field, and if so, we bypass the redirect.
 	 *
@@ -1260,7 +1242,7 @@ class Field extends FieldLite {
 	 *
 	 * @param array $dir Array of data to pass to wp_upload_dir().
 	 *
-	 * @return array WPForms upload root path (no trailing slash).
+	 * @return array WPForms upload the root path (no trailing slash).
 	 */
 	public function modify_upload_directory( $dir ): array { // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks
 
@@ -1301,7 +1283,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Generate the attachment data + add a few meta values.
+	 * Generate the attachment data and add a few meta values.
 	 *
 	 * @since 1.7.0
 	 *
@@ -1334,7 +1316,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Check if media is integrated. That is, uploading to WordPress Media Library instead of WPForms directory.
+	 * Check if media is integrated. That is, uploading to WordPress Media Library instead of the WPForms directory.
 	 *
 	 * @since 1.7.0
 	 *
@@ -1421,7 +1403,7 @@ class Field extends FieldLite {
 	public function get_entry_single_field_value_iframe( $field ): string {
 
 		return sprintf(
-			'<iframe data-src="%s" class="wpforms-entry-field-value-richtext"></iframe>',
+			'<iframe data-src="%s" class="wpforms-entry-field-value-iframe wpforms-entry-field-value-richtext"></iframe>',
 			add_query_arg(
 				[
 					'richtext_field_id' => wpforms_validate_field_id( $field['id'] ),
@@ -1482,7 +1464,7 @@ class Field extends FieldLite {
 	}
 
 	/**
-	 * Wrap up the entry preview to iframe container.
+	 * Wrap up the entry preview to the iframe container.
 	 *
 	 * @since 1.7.0
 	 *
@@ -1514,7 +1496,7 @@ class Field extends FieldLite {
 		$qt_init = (array) $qt_init;
 
 		// This callback is executed for all TinyMCE editors, on the Builder page as well.
-		// The first conditional check for verifying a prefix of editor ID is not enough
+		// The first conditional check for verifying a prefix of editor ID is not enough,
 		// and `link` quick buttons are removed through the Builder page.
 		// That's why we run the second conditional check.
 		if (
@@ -1640,5 +1622,120 @@ class Field extends FieldLite {
 	private function get_escaped_value_in_div( $value ): string {
 
 		return sprintf( '<div class="wpforms-iframe">%s</div>', wpforms_esc_richtext_field( $value ) );
+	}
+
+	/**
+	 * Check if a field is a Rich Text field with media enabled and has a value.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param array $field        Form field settings.
+	 * @param array $entry_fields Entry fields data.
+	 *
+	 * @return bool
+	 */
+	private static function is_media_richtext_field( array $field, array $entry_fields ): bool {
+
+		return ! empty( $field['type'] ) &&
+			$field['type'] === 'richtext' &&
+			! empty( $field['media_enabled'] ) &&
+			! empty( $entry_fields[ $field['id'] ]['value'] );
+	}
+
+	/**
+	 * Delete media attachments uploaded via Rich Text fields from an entry.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param int $entry_id Entry ID.
+	 */
+	public static function delete_uploaded_files_from_entry( $entry_id ): void {
+
+		$entry_obj = wpforms()->obj( 'entry' );
+		$entry     = $entry_obj ? $entry_obj->get( $entry_id ) : null;
+
+		if ( empty( $entry ) ) {
+			return;
+		}
+
+		$form_obj  = wpforms()->obj( 'form' );
+		$form_data = $form_obj ? $form_obj->get( (int) $entry->form_id, [ 'content_only' => true ] ) : null;
+
+		if ( empty( $form_data['fields'] ) ) {
+			return;
+		}
+
+		$entry_fields = wpforms_decode( $entry->fields );
+
+		if ( empty( $entry_fields ) ) {
+			return;
+		}
+
+		// Only delete attachments from Rich Text fields with media enabled.
+		foreach ( $form_data['fields'] as $field ) {
+			if ( ! self::is_media_richtext_field( $field, $entry_fields ) ) {
+				continue;
+			}
+
+			self::delete_field_attachments( $entry_fields[ $field['id'] ]['value'] );
+		}
+	}
+
+	/**
+	 * Delete media attachments found in a Rich Text field HTML value.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param string $field_value Field HTML value.
+	 */
+	private static function delete_field_attachments( string $field_value ): void {
+
+		$attachment_ids = self::get_attachment_ids_from_html( $field_value );
+
+		foreach ( $attachment_ids as $attachment_id ) {
+			wp_delete_attachment( $attachment_id, true );
+		}
+	}
+
+	/**
+	 * Extract attachment IDs from image URLs in HTML content.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param string $html HTML content containing img tags.
+	 *
+	 * @return int[] Attachment IDs.
+	 */
+	private static function get_attachment_ids_from_html( string $html ): array {
+
+		preg_match_all( '/<img.*src=([\'\"])(.*)\1.*>/mU', $html, $matches );
+
+		if ( empty( $matches[2] ) ) {
+			return [];
+		}
+
+		$upload_url     = wp_upload_dir()['baseurl'];
+		$wpf_upload_url = wpforms_upload_dir()['url'];
+		$attachment_ids = [];
+
+		foreach ( $matches[2] as $url ) {
+			if ( strpos( $url, $upload_url ) === false && strpos( $url, $wpf_upload_url ) === false ) {
+				continue;
+			}
+
+			// Remove image size suffix from the image name.
+			$file_name        = pathinfo( $url, PATHINFO_FILENAME );
+			$file_name_origin = preg_replace( '/-\d+x\d+$/', '', $file_name );
+			$url              = str_replace( $file_name, $file_name_origin, $url );
+			$attachment_id    = attachment_url_to_postid( $url );
+
+			if ( empty( $attachment_id ) ) {
+				continue;
+			}
+
+			$attachment_ids[] = $attachment_id;
+		}
+
+		return $attachment_ids;
 	}
 }

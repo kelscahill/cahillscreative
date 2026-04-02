@@ -27,9 +27,8 @@ class Field extends FieldLite {
 		add_action( 'wpforms_display_fields_after', [ $this, 'display_fields_after' ], 5, 2 );
 		add_action( 'wpforms_display_field_after', [ $this, 'display_field_after' ], 20, 2 );
 		add_filter( "wpforms_pro_admin_entries_edit_is_field_displayable_{$this->type}", '__return_false' );
-
-		// Admin form builder enqueues.
 		add_action( 'wpforms_builder_enqueues', [ $this, 'admin_builder_enqueues' ] );
+		add_action( 'wpforms_frontend_js', [ $this, 'enqueue_page_navigation_script' ] );
 	}
 
 	/**
@@ -48,6 +47,65 @@ class Field extends FieldLite {
 			[ 'jquery', 'wpforms-builder' ],
 			WPFORMS_VERSION,
 			false
+		);
+
+		// Localize script.
+		$strings = $this->get_allow_page_navigation_strings();
+
+		wp_localize_script(
+			'wpforms-builder-page-break-field',
+			'wpforms_builder_page_break',
+			[
+				'allow_page_navigation_enabled'  => $strings['enabled'],
+				'allow_page_navigation_disabled' => $strings['disabled'],
+			]
+		);
+	}
+
+	/**
+	 * Enqueue page navigation script.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param array $forms Forms data.
+	 */
+	public function enqueue_page_navigation_script( $forms ): void {
+
+		$forms = (array) $forms;
+
+		if ( empty( $forms ) ) {
+			return;
+		}
+
+		$should_enqueue = false;
+
+		// Check if any form has pagebreak fields with allow_page_navigation enabled.
+		foreach ( $forms as $form_data ) {
+			if ( empty( $form_data['fields'] ) ) {
+				continue;
+			}
+
+			foreach ( $form_data['fields'] as $field ) {
+				if ( $field['type'] === 'pagebreak' && ! empty( $field['allow_page_navigation'] ) ) {
+					$should_enqueue = true;
+
+					break 2;
+				}
+			}
+		}
+
+		if ( ! $should_enqueue ) {
+			return;
+		}
+
+		$min = wpforms_get_min_suffix();
+
+		wp_enqueue_script(
+			'wpforms-page-navigation',
+			WPFORMS_PLUGIN_URL . "assets/pro/js/frontend/wpforms-page-navigation{$min}.js",
+			[ 'jquery', 'wpforms' ],
+			WPFORMS_VERSION,
+			true
 		);
 	}
 
@@ -107,122 +165,18 @@ class Field extends FieldLite {
 	 *
 	 * @noinspection HtmlUnknownAttribute
 	 */
-	public function display_page_indicator( $form_data ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function display_page_indicator( $form_data ): void {
 
-		$top = ! empty( wpforms()->obj( 'frontend' )->pages['top'] ) ? wpforms()->obj( 'frontend' )->pages['top'] : false;
+		$top = ! empty( wpforms()->obj( 'frontend' )->pages['top'] ) ? (array) wpforms()->obj( 'frontend' )->pages['top'] : false;
 
 		if ( empty( $top['indicator'] ) || $top['indicator'] === 'none' ) {
 			return;
 		}
 
-		$pagebreak = [
-			'indicator' => sanitize_html_class( $top['indicator'] ),
-			'color'     => wpforms_sanitize_hex_color( $top['indicator_color'] ?? self::get_default_indicator_color() ),
-			'pages'     => array_merge( [ wpforms()->obj( 'frontend' )->pages['top'] ], wpforms()->obj( 'frontend' )->pages['pages'] ),
-			'scroll'    => empty( $top['scroll_disabled'] ),
-		];
-		$p         = 1;
+		$pagebreak = $this->prepare_pagebreak_data( $top );
 
 		$this->frontend_obj->open_page_indicator_container( $pagebreak );
-
-		if ( $pagebreak['indicator'] === 'circles' ) {
-
-			// Circles theme.
-			foreach ( $pagebreak['pages'] as $page ) {
-				$is_first         = $p === 1;
-				$class            = $is_first ? 'active' : '';
-				$background_color = ! empty( $pagebreak['color'] ) ? $pagebreak['color'] : '';
-
-				printf(
-					'<div class="wpforms-page-indicator-page %s wpforms-page-indicator-page-%d">',
-					sanitize_html_class( $class ),
-					absint( $p )
-				);
-				printf(
-					'<span class="wpforms-page-indicator-page-number"%s>%d</span>',
-					$is_first && ! empty( $background_color ) ? ' style="background-color:' . sanitize_hex_color( $background_color ) . '"' : '',
-					absint( $p )
-				);
-				if ( ! empty( $page['title'] ) ) {
-					printf( '<span class="wpforms-page-indicator-page-title">%s</span>', esc_html( $page['title'] ) );
-				}
-				echo '</div>';
-
-				++$p;
-			}
-		} elseif ( $pagebreak['indicator'] === 'connector' ) {
-
-			// Connector theme.
-			foreach ( $pagebreak['pages'] as $page ) {
-				$is_first = $p === 1;
-				$class    = $is_first ? 'active ' : '';
-				$color    = ! empty( $pagebreak['color'] ) ? $pagebreak['color'] : '';
-				$width    = 100 / ( count( $pagebreak['pages'] ) ) . '%';
-
-				printf(
-					'<div class="wpforms-page-indicator-page %s wpforms-page-indicator-page-%d" style="width:%s;">',
-					sanitize_html_class( $class ),
-					absint( $p ),
-					esc_attr( $width )
-				);
-				printf(
-					'<span class="wpforms-page-indicator-page-number"%s>%d',
-					$is_first && ! empty( $color ) ? ' style="background-color:' . sanitize_hex_color( $color ) . '"' : '',
-					absint( $p )
-				);
-				printf(
-					'<span class="wpforms-page-indicator-page-triangle"%s></span></span>',
-					$is_first && ! empty( $color ) ? ' style="border-top-color:' . sanitize_hex_color( $color ) . '"' : ''
-				);
-				if ( ! empty( $page['title'] ) ) {
-					printf( '<span class="wpforms-page-indicator-page-title">%s</span>', esc_html( $page['title'] ) );
-				}
-				echo '</div>';
-
-				++$p;
-			}
-		} elseif ( $pagebreak['indicator'] === 'progress' ) {
-
-			// Progress theme.
-			$p1               = ! empty( $pagebreak['pages'][0]['title'] ) ? $pagebreak['pages'][0]['title'] : '';
-			$width            = 100 / count( $pagebreak['pages'] ) . '%';
-			$names            = [];
-			$background_color = ! empty( $pagebreak['color'] ) ? $pagebreak['color'] : '';
-
-			foreach ( $pagebreak['pages'] as $page ) {
-				if ( ! empty( $page['title'] ) ) {
-					$names[ sprintf( 'page-%d-title', $p ) ] = $page['title'];
-				}
-
-				++$p;
-			}
-			printf(
-				'<span class="wpforms-page-indicator-page-title" %s>%s</span>',
-				wpforms_html_attributes( '', [], $names ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				esc_html( $p1 )
-			);
-			printf(
-				'<span class="wpforms-page-indicator-page-title-sep" %s> - </span>',
-				empty( $p1 ) ? 'style="display:none;"' : ''
-			);
-
-			$progress_text = ! empty( $top['progress_text'] ) ?
-				str_replace( [ '{current_page}', '{last_page}' ], [ '%1$s', '%2$s' ], str_replace( '%', '%%', $top['progress_text'] ) ) :
-				/* translators: %1$s - current step in multipage form, %2$d - total number of pages. */
-				esc_html__( 'Step %1$s of %2$d', 'wpforms' );
-
-			printf(
-				'<span class="wpforms-page-indicator-steps">' . esc_html( $progress_text ) . '</span>',
-				'<span class="wpforms-page-indicator-steps-current">1</span>',
-				count( $pagebreak['pages'] )
-			);
-
-			printf(
-				'<div class="wpforms-page-indicator-page-progress-wrap"><div class="wpforms-page-indicator-page-progress" style="width:%s;%s"></div></div>',
-				esc_attr( $width ),
-				! empty( $background_color ) ? 'background-color:' . sanitize_hex_color( $background_color ) : ''
-			);
-		}
+		$this->render_indicator_by_type( $pagebreak, $top );
 
 		/**
 		 * Fires after the page indicator is displayed.
@@ -234,7 +188,149 @@ class Field extends FieldLite {
 		 */
 		do_action( 'wpforms_pagebreak_indicator', $pagebreak, $form_data ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 
-		echo '</div>';
+		echo '</div>'; // Close wpforms-page-indicator.
+	}
+
+	/**
+	 * Prepare pagebreak data array.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param array $top Top pagebreak field data.
+	 *
+	 * @return array Prepared pagebreak data.
+	 */
+	private function prepare_pagebreak_data( array $top ): array {
+
+		return [
+			'indicator'             => sanitize_html_class( $top['indicator'] ),
+			'color'                 => wpforms_sanitize_hex_color( $top['indicator_color'] ?? self::get_default_indicator_color() ),
+			'pages'                 => array_merge( [ wpforms()->obj( 'frontend' )->pages['top'] ], wpforms()->obj( 'frontend' )->pages['pages'] ),
+			'scroll'                => empty( $top['scroll_disabled'] ),
+			'allow_page_navigation' => ! empty( $top['allow_page_navigation'] ) ? 1 : 0,
+		];
+	}
+
+	/**
+	 * Render indicator by type.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param array $pagebreak Pagebreak data.
+	 * @param array $top       Top pagebreak field data.
+	 */
+	private function render_indicator_by_type( array $pagebreak, array $top ): void {
+
+		switch ( $pagebreak['indicator'] ) {
+			case 'circles':
+				$this->render_circles_indicator( $pagebreak );
+				break;
+
+			case 'connector':
+				$this->render_connector_indicator( $pagebreak );
+				break;
+
+			case 'progress':
+				$this->render_progress_indicator( $pagebreak, $top );
+				break;
+		}
+	}
+
+	/**
+	 * Render circles indicator.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param array $pagebreak Pagebreak data.
+	 */
+	private function render_circles_indicator( array $pagebreak ): void {
+
+		$page_num = 1;
+
+		$allow_page_navigation = $pagebreak['allow_page_navigation'] ?? false;
+
+		foreach ( $pagebreak['pages'] as $page ) {
+			$this->render_circles_indicator_item( $page, $page_num, $pagebreak['color'], (bool) $allow_page_navigation );
+			++$page_num;
+		}
+	}
+
+	/**
+	 * Render connector indicator.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param array $pagebreak Pagebreak data.
+	 */
+	private function render_connector_indicator( array $pagebreak ): void {
+
+		$page_num = 1;
+		$width    = 100 / ( count( $pagebreak['pages'] ) ) . '%';
+
+		$allow_page_navigation = $pagebreak['allow_page_navigation'] ?? false;
+
+		foreach ( $pagebreak['pages'] as $page ) {
+			$this->render_connector_indicator_item( $page, $page_num, $pagebreak['color'], $width, (bool) $allow_page_navigation );
+			++$page_num;
+		}
+	}
+
+	/**
+	 * Render progress indicator.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param array $pagebreak Pagebreak data.
+	 * @param array $top       Top pagebreak field data.
+	 */
+	private function render_progress_indicator( array $pagebreak, array $top ): void {
+
+		$p1               = ! empty( $pagebreak['pages'][0]['title'] ) ? (string) $pagebreak['pages'][0]['title'] : '';
+		$width            = 100 / count( $pagebreak['pages'] ) . '%';
+		$background_color = ! empty( $pagebreak['color'] ) ? $pagebreak['color'] : '';
+		$pages            = (array) $pagebreak['pages'];
+
+		// Render page title.
+		$this->render_progress_page_title( $pages, $p1 );
+
+		// Render progress text.
+		$this->render_progress_text( $top, count( $pages ) );
+
+		// Render progress bar.
+		$this->render_progress_bar( $width, $background_color );
+	}
+
+	/**
+	 * Render progress page title.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param array  $pages            Pages data.
+	 * @param string $first_page_title First page title.
+	 */
+	private function render_progress_page_title( array $pages, string $first_page_title ): void {
+
+		$names    = [];
+		$page_num = 1;
+
+		foreach ( $pages as $page ) {
+			if ( ! empty( $page['title'] ) ) {
+				$names[ sprintf( 'page-%d-title', $page_num ) ] = $page['title'];
+			}
+
+			++$page_num;
+		}
+
+		printf(
+			'<span class="wpforms-page-indicator-page-title" %s>%s</span>',
+			wpforms_html_attributes( '', [], $names ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			esc_html( $first_page_title )
+		);
+
+		printf(
+			'<span class="wpforms-page-indicator-page-title-sep" %s> - </span>',
+			empty( $first_page_title ) ? 'style="display:none;"' : ''
+		);
 	}
 
 	/**

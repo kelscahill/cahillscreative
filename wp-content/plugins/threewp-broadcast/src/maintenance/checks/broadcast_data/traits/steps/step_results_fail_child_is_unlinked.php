@@ -14,18 +14,37 @@ trait step_results_fail_child_is_unlinked
 
 		if ( $button->pressed() )
 		{
+			$batch_size = 200;
+			$processed = 0;
 			foreach( $this->data->child_is_unlinked as $id => $blog_post )
 			{
 				// Create a link from all of the child posts back to this parent.
 				$bcd = $this->data->broadcast_data->get( $id );
+				if ( ! $bcd )
+				{
+					$this->data->child_is_unlinked->forget( $id );
+					continue;
+				}
 				$child_blog_id = key( $blog_post );
 				$child_post_id = reset( $blog_post );
 				$child_bcd = $o->bc->get_post_broadcast_data( $child_blog_id, $child_post_id );
 				$child_bcd->set_linked_parent( $bcd->blog_id, $bcd->post_id );
 				$o->bc->set_post_broadcast_data( $child_blog_id, $child_post_id, $child_bcd );
 				$this->data->child_is_unlinked->forget( $id );
+				$processed++;
+				if ( $processed >= $batch_size )
+					break;
 			}
-			$o->bc->message( 'The children now have links back to the parents.' );
+			$remaining = count( $this->data->child_is_unlinked );
+			if ( $remaining > 0 )
+			{
+				$o->bc->message( sprintf( 'Linked %d children. %d remaining.', $processed, $remaining ) );
+				$o->r .= $this->next_step( 'results' );
+			}
+			else
+			{
+				$o->bc->message( 'The children now have links back to the parents.' );
+			}
 			return;
 		}
 

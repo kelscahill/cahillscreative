@@ -3,7 +3,7 @@ Contributors: johnny5
 Donate link: https://redirection.me/donation/
 Tags: redirect, htaccess, 301, 404, apache
 Tested up to: 6.9
-Stable tag: 5.6.1
+Stable tag: 5.7.5
 License: GPLv3
 
 Manage 301 redirects, track 404 errors, and improve your site. No knowledge of Apache or Nginx required.
@@ -18,7 +18,7 @@ It has been a WordPress plugin for over 10 years and has been recommended countl
 
 Full documentation can be found at [https://redirection.me](https://redirection.me)
 
-Redirection is compatible with PHP from 7.2 to 8.4.
+Redirection is compatible with PHP from 7.4 to 8.4.
 
 = Redirect manager =
 
@@ -181,9 +181,44 @@ The plugin works in a similar manner to how WordPress handles permalinks and sho
 = 5.6 =
 * Requires minimum PHP 7.2
 
+= 5.7 =
+* Requires minimum PHP 7.4
+
 == Changelog ==
 
 A x.1 version increase introduces new or updated features and can be considered to contain 'breaking' changes. A x.x.1 increase is purely a bug fix and introduces no new features, and can be considered as containing no breaking changes.
+
+= 5.7.5 - 1st March 2026 =
+* Fix delete all regression from 5.7.4
+
+= 5.7.4 - 28th February 2026 =
+* Fix display setting not saving
+* Fix 'view data' on logs
+* Fix missing filters on select all
+
+= 5.7.3 - 21st February 2026 =
+* Fix log target having double domain
+* Fix from/notfrom data not being used when editing
+* Cleaned up behaviour around pagination and checkboxes
+* Improved some styles
+
+= 5.7.2 - 17th February 2026 =
+* Fix select-all bulk action
+* Improve setup page handling of problems
+* Improve 404 page handling of incomplete data
+
+= 5.7.1 - 16th February 2026 =
+* Fix bulk delete on log and 404 page
+* Restore filter by IP button
+* Remove referrer from standard log display
+
+= 5.7 - 15th February 2026 =
+* Bump minimum PHP to 7.4
+* Add multi-select support with shift-click in tables
+* Add WP-CLI verbose flag for settings command to display setting names
+* Improve log deletion performance with adaptive batch sizing for large backlogs
+* Add permissions policy header
+* Improve trash monitoring
 
 = 5.6.1 - 17th January 2026 =
 * Fix issue with spaces in Apache .htaccess

@@ -26,10 +26,6 @@ class ComposerStaticInit74da323fdee1fb5e92b0c5723e907303
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Iconv\\' => 23,
         ),
-        'P' => 
-        array (
-            'Psr\\Log\\' => 8,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -61,10 +57,6 @@ class ComposerStaticInit74da323fdee1fb5e92b0c5723e907303
         'Symfony\\Polyfill\\Iconv\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-iconv',
-        ),
-        'Psr\\Log\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
     );
 
@@ -529,6 +521,17 @@ class ComposerStaticInit74da323fdee1fb5e92b0c5723e907303
         'WPForms\\Vendor\\HTMLPurifier_VarParser_Flexible' => __DIR__ . '/../..' . '/vendor_prefixed/ezyang/htmlpurifier/library/HTMLPurifier/VarParser/Flexible.php',
         'WPForms\\Vendor\\HTMLPurifier_VarParser_Native' => __DIR__ . '/../..' . '/vendor_prefixed/ezyang/htmlpurifier/library/HTMLPurifier/VarParser/Native.php',
         'WPForms\\Vendor\\HTMLPurifier_Zipper' => __DIR__ . '/../..' . '/vendor_prefixed/ezyang/htmlpurifier/library/HTMLPurifier/Zipper.php',
+        'WPForms\\Vendor\\Psr\\Log\\AbstractLogger' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/AbstractLogger.php',
+        'WPForms\\Vendor\\Psr\\Log\\InvalidArgumentException' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/InvalidArgumentException.php',
+        'WPForms\\Vendor\\Psr\\Log\\LogLevel' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/LogLevel.php',
+        'WPForms\\Vendor\\Psr\\Log\\LoggerAwareInterface' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/LoggerAwareInterface.php',
+        'WPForms\\Vendor\\Psr\\Log\\LoggerAwareTrait' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/LoggerAwareTrait.php',
+        'WPForms\\Vendor\\Psr\\Log\\LoggerInterface' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/LoggerInterface.php',
+        'WPForms\\Vendor\\Psr\\Log\\LoggerTrait' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/LoggerTrait.php',
+        'WPForms\\Vendor\\Psr\\Log\\NullLogger' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/NullLogger.php',
+        'WPForms\\Vendor\\Psr\\Log\\Test\\DummyTest' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/Test/DummyTest.php',
+        'WPForms\\Vendor\\Psr\\Log\\Test\\LoggerInterfaceTest' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/Test/LoggerInterfaceTest.php',
+        'WPForms\\Vendor\\Psr\\Log\\Test\\TestLogger' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/Test/TestLogger.php',
         'WPForms\\Vendor\\Rs\\Json\\Pointer' => __DIR__ . '/../..' . '/vendor_prefixed/php-jsonpointer/php-jsonpointer/src/Rs/Json/Pointer.php',
         'WPForms\\Vendor\\Rs\\Json\\Pointer\\InvalidJsonException' => __DIR__ . '/../..' . '/vendor_prefixed/php-jsonpointer/php-jsonpointer/src/Rs/Json/Pointer/InvalidJsonException.php',
         'WPForms\\Vendor\\Rs\\Json\\Pointer\\InvalidPointerException' => __DIR__ . '/../..' . '/vendor_prefixed/php-jsonpointer/php-jsonpointer/src/Rs/Json/Pointer/InvalidPointerException.php',

@@ -46,6 +46,9 @@ trait step_results_fail_same_parent
 
 		if ( $button->pressed() )
 		{
+			$batch_size = 50;
+			$deleted = 0;
+			$stop = false;
 			foreach( $this->data->same_parent as $blog_id => $blog )
 			{
 				foreach( $blog as $post_id => $posts )
@@ -64,12 +67,44 @@ trait step_results_fail_same_parent
 						restore_current_blog();
 
 						$posts->forget( $id );
+						$deleted++;
+						if ( $deleted >= $batch_size )
+						{
+							$stop = true;
+							break;
+						}
 					}
-					$blog->forget( $post_id );
+					if ( $posts->count() < 1 )
+						$blog->forget( $post_id );
+					if ( $stop )
+						break;
 				}
-				$this->data->same_parent->forget( $blog_id );
+				if ( $blog->count() < 1 )
+					$this->data->same_parent->forget( $blog_id );
+				if ( $stop )
+					break;
 			}
-			$o->bc->message( 'The orphaned children have been deleted.' );
+
+			$remaining = 0;
+			foreach( $this->data->same_parent as $blog )
+			{
+				foreach( $blog as $posts )
+				{
+					foreach( $posts as $post )
+						if ( ! isset( $post->link ) )
+							$remaining++;
+				}
+			}
+
+			if ( $remaining > 0 )
+			{
+				$o->bc->message( sprintf( 'Deleted %d orphaned children. %d remaining.', $deleted, $remaining ) );
+				$o->r .= $this->next_step( 'results' );
+			}
+			else
+			{
+				$o->bc->message( 'The orphaned children have been deleted.' );
+			}
 			return;
 		}
 

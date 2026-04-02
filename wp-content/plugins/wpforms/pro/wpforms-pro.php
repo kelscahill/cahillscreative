@@ -916,6 +916,32 @@ class WPForms_Pro {
 	 */
 	public function form_settings_general( $instance ) {
 
+		wpforms_panel_field(
+			'toggle',
+			'settings',
+			'purge_entries_enable',
+			$instance->form_data,
+			esc_html__( 'Purge Entries Automatically', 'wpforms' ),
+			[
+				'tooltip'     => esc_html__( 'Automatically delete entries older than the specified number of days. This will also remove all associated files, notes, and logs.', 'wpforms' ),
+				'input_class' => 'wpforms-panel-field-toggle-next-field',
+			]
+		);
+
+		wpforms_panel_field(
+			'text',
+			'settings',
+			'purge_entries_days',
+			$instance->form_data,
+			esc_html__( 'Number of days to retain entries before deletion', 'wpforms' ),
+			[
+				'type'    => 'number',
+				'min'     => 1,
+				'default' => 365,
+				'after'   => sprintf( '<span class="wpforms-panel-field-after">%s</span>', esc_html__( 'days', 'wpforms' ) ),
+			]
+		);
+
 		$is_enabled = $instance->form_data['settings']['disable_entries'] ?? false;
 		// Make this option disabled by default since we will determine when
 		// it can be available to interact on the JS side.

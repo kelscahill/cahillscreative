@@ -330,10 +330,13 @@ class PrintPreview {
 		 * Modify entry fields data for the print page.
 		 *
 		 * @since 1.8.1.2
+		 * @since 1.10.0 Added $entry and $form_data parameters.
 		 *
-		 * @param array $fields Entry fields.
+		 * @param array  $fields    Entry fields.
+		 * @param object $entry     Entry data.
+		 * @param array  $form_data Form data and settings.
 		 */
-		return apply_filters( 'wpforms_pro_admin_entries_print_preview_fields', $fields );
+		return apply_filters( 'wpforms_pro_admin_entries_print_preview_fields', $fields, $this->entry, $this->form_data );
 	}
 
 	/**
@@ -366,15 +369,22 @@ class PrintPreview {
 
 		// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
 		/** This filter is documented in src/SmartTags/SmartTag/FieldHtmlId.php.*/
-		$field_value = isset( $field['value'] ) ? apply_filters( 'wpforms_html_field_value', wp_strip_all_tags( $field['value'] ), $field, $this->form_data, 'entry-single' ) : '';
+		$field_value     = isset( $field['value'] ) ? apply_filters( 'wpforms_html_field_value', wp_strip_all_tags( $field['value'] ), $field, $this->form_data, 'entry-single' ) : '';
+		$field_value_raw = $field['value_raw'] ?? '';
 		// phpcs:enable WPForms.PHP.ValidateHooks.InvalidHookName
 
 		if ( $field['type'] === 'html' ) {
-			$field_value = isset( $field['code'] ) ? $field['code'] : '';
+			$field_value = $field['code'] ?? '';
 		}
 
 		if ( $field['type'] === 'content' ) {
-			$field_value = isset( $field['content'] ) ? $field['content'] : '';
+			$field_value = $field['content'] ?? '';
+		}
+
+		// Dropdown field supports the "Show Values" feature.
+		// It means that if a default value is an empty string, then use a value_raw as a fallback.
+		if ( $field['type'] === 'select' ) {
+			$field_value = wpforms_is_empty_string( $field_value ) ? $field_value_raw : $field_value;
 		}
 
 		if (
@@ -424,7 +434,19 @@ class PrintPreview {
 		$template_name   = $is_image_choice && ! $is_images_hide ? 'image-choice' : 'choice';
 		$is_dynamic      = ! empty( $field['dynamic'] );
 
-		$value = ! empty( $is_dynamic ) ? $field['value'] : wpforms_get_choices_value( $field, $this->form_data );
+		$field_value     = $field['value'] ?? '';
+		$field_value_raw = $field['value_raw'] ?? '';
+
+		// If a field supports the "Show Values" feature and a default value is an empty string,
+		// then use a value_raw as a fallback. In addition, there is a workaround for Checkboxes field:
+		// "\n" should be considered as an empty string as well.
+		$value = wpforms_is_support_show_values( $field ) &&
+		( wpforms_is_empty_string( $field_value ) || $field_value === "\n" ) ?
+			$field_value_raw : $field_value;
+
+		// Always use a value for dynamic choices.
+		$value = ! empty( $is_dynamic ) ? $field_value : $value;
+
 		// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
 		/** This filter is documented in src/SmartTags/SmartTag/FieldHtmlId.php.*/
 		$value = apply_filters( 'wpforms_html_field_value', wp_strip_all_tags( $value ), $field, $this->form_data, 'entry-single' );
@@ -448,7 +470,7 @@ class PrintPreview {
 			// pass the actual entered text to the template so it can be displayed.
 			if ( $field['type'] === 'radio' && $is_checked && ! empty( $choice['other'] ) ) {
 				$choice['is_other']    = true;
-				$choice['other_value'] = isset( $field['value'] ) ? (string) $field['value'] : '';
+				$choice['other_value'] = $field_value;
 			}
 
 			$choices_html .= wpforms_render(
@@ -552,7 +574,9 @@ class PrintPreview {
 			'entry-preview',
 		];
 
-		if ( in_array( $field['type'], $ignore, true ) ) {
+		$field_type = $field['type'];
+
+		if ( in_array( $field_type, $ignore, true ) ) {
 			return false;
 		}
 
@@ -560,7 +584,20 @@ class PrintPreview {
 
 		// If field is not dynamic, it is allowed.
 		if ( ! $is_dynamic ) {
-			return true;
+			// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
+			/**
+			 * Determine if the field is displayable on the print page.
+			 *
+			 * @since 1.10.0
+			 *
+			 * @param bool  $is_displayable Is the field displayable?
+			 * @param array $field          Field data.
+			 * @param array $form_data      Form data and settings.
+			 *
+			 * @return bool
+			 */
+			return (bool) apply_filters( "wpforms_pro_admin_entries_print_is_field_displayable_$field_type", true, $field, $this->form_data );
+			// phpcs:enable WPForms.PHP.ValidateHooks.InvalidHookName
 		}
 
 		$form_data       = $this->form_data;

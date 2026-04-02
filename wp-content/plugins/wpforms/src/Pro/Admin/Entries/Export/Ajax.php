@@ -98,12 +98,14 @@ class Ajax {
 				throw new Exception( $this->export->errors['security'] );
 			}
 
-			if ( empty( $this->export->data['form_data'] ) ) {
+			$export_data = $this->export->data['form_data'] ?? null;
+
+			if ( ! $export_data || empty( $export_data['id'] ) ) {
 				throw new Exception( $this->export->errors['form_data'] );
 			}
 
-			$fields         = empty( $this->export->data['form_data']['fields'] ) ? [] : (array) $this->export->data['form_data']['fields'];
-			$payment_fields = empty( $this->export->data['form_data']['payment_fields'] ) ? [] : (array) $this->export->data['form_data']['payment_fields'];
+			$fields         = empty( $export_data['fields'] ) ? [] : (array) $export_data['fields'];
+			$payment_fields = empty( $export_data['payment_fields'] ) ? [] : (array) $export_data['payment_fields'];
 
 			$dynamic_choices_count = $this->get_dynamic_choices_count( $fields );
 
@@ -111,7 +113,7 @@ class Ajax {
 				[
 					'fields'                 => $this->get_prepared_fields( $fields ),
 					'payment_fields'         => $this->get_prepared_fields( $payment_fields ),
-					'statuses'               => $this->get_available_form_entry_statuses( $this->export->data['form_data']['id'] ),
+					'statuses'               => $this->get_available_form_entry_statuses( $export_data['id'] ),
 					'dynamic_columns'        => $dynamic_choices_count > 1,
 					'dynamic_columns_notice' => $this->get_dynamic_columns_notice( $dynamic_choices_count ),
 				]
@@ -207,8 +209,11 @@ class Ajax {
 	 * @param array $args Arguments array.
 	 *
 	 * @return array Request data.
+	 *
+	 * @throws Exception Form data isn't found or corrupted.
+	 * @noinspection PhpMissingParamTypeInspection
 	 */
-	public function get_request_data( $args ) {
+	public function get_request_data( $args ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Prepare arguments.
 		$db_args = [
@@ -240,6 +245,10 @@ class Ajax {
 				'content_only' => true,
 			]
 		);
+
+		if ( empty( $form_data['id'] ) ) {
+			throw new Exception( esc_html__( 'Form data not found', 'wpforms' ) );
+		}
 
 		/**
 		 * Filter the form data before exporting.

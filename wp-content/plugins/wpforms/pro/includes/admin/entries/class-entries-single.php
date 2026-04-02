@@ -1133,8 +1133,9 @@ class WPForms_Entries_Single {
 	 */
 	public function print_field( $field, $form_data, array $context = [] ): void {
 
-		// Get field default value.
-		$field_value = $field['value'] ?? '';
+		// Get field default value and value_raw.
+		$field_value     = $field['value'] ?? '';
+		$field_value_raw = $field['value_raw'] ?? '';
 
 		// Set field value for HTML and Content fields.
 		if ( in_array( $field['type'], [ 'html', 'content' ], true ) ) {
@@ -1143,8 +1144,14 @@ class WPForms_Entries_Single {
 
 		$field_value = ! $this->needs_unformatted_value( $field['type'] ) ? $field_value : $field['formatted_value'];
 
-		$field_value = $this->is_choice_field( $field['type'] ) ? wpforms_get_choices_value( $field, $form_data ) : $field_value;
+		// If a field supports the "Show Values" feature and a default value is an empty string,
+		// then use a value_raw as a fallback. In addition, there is a workaround for Checkboxes field:
+		// "\n" should be considered as an empty string as well.
+		$field_value = wpforms_is_support_show_values( $field ) &&
+			( wpforms_is_empty_string( $field_value ) || $field_value === "\n" ) ?
+			$field_value_raw : $field_value;
 
+		// Always use a value for dynamic choices.
 		$field_value = ! empty( $field['dynamic'] ) ? $field['value'] : $field_value;
 
 		/** This filter is documented in src/SmartTags/SmartTag/FieldHtmlId.php.*/
@@ -1201,6 +1208,19 @@ class WPForms_Entries_Single {
 	private function print_layout_field( array $field, array $form_data ): void {
 
 		$field_type = $field['type'] ?? '';
+
+		foreach ( $field['columns'] as $column_id => $column ) {
+			foreach ( $column['fields'] as $field_id => $sub_field ) {
+				$sub_field_type = $sub_field['type'] ?? '';
+
+				// phpcs:disable WPForms.PHP.ValidateHooks.InvalidHookName
+				/** This filter is documented in /src/Pro/Admin/Entries/Edit.php */
+				if ( ! apply_filters( "wpforms_pro_admin_entries_edit_is_field_displayable_$sub_field_type", true, $sub_field, $form_data ) ) {
+					unset( $field['columns'][ $column_id ]['fields'][ $field_id ] );
+				}
+				// phpcs:enable WPForms.PHP.ValidateHooks.InvalidHookName
+			}
+		}
 
 		echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			"admin/entries/single-entry/{$field_type}",

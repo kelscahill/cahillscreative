@@ -1,6 +1,58 @@
 # Changelog
 All notable changes to this project will be documented in this file and formatted via [this recommendation](https://keepachangelog.com/).
 
+## [1.10.0.2] - 2026-03-26
+### Fixed
+- Dropdown field with a choice label containing quote characters was causing a JavaScript error in the form builder, preventing fields from being added correctly.
+- Compatibility with Divi Builder.
+
+## [1.10.0.1] - 2026-03-19
+### Fixed
+- Fastlane payment was declined when the mapped Billing Address did not include Address Line 2.
+
+## [1.10.0] - 2026-03-17
+### Added
+- Users can connect their PayPal Commerce accounts and receive payments via their payment forms.
+- Users can now navigate to different pages of a multi-page form by clicking the steps/icons in the progress bar (Page Break field).
+- Ability to configure per-form entry auto-purge after a specific number of days.
+- Warning modal now appears when enabling Conditional Logic for a field without completing the rule setup.
+
+### Changed
+- Refactored the Form Builder JavaScript into modular architecture for improved maintainability and performance.
+- Refactored and optimized drag fields JavaScript for more consistent field reordering and positioning.
+- The Lite Connect modals and settings description now include a notice that entry backups expire after 1 year.
+
+### Fixed
+- The "Preview" button on email templates didn't wrap text on the Settings > Email admin page.
+- Compatibility with Sugar Calendar on the Tools > Export page.
+- A conflict with Monolog was causing fatal errors on some sites.
+- Choices.js was non-functional after undo in the provider connection settings.
+- The Square field width inside Layout field was incorrect.
+- PHP warning for templates with an Internal Information Field.
+- Entries export was failing with a fatal error for forms with choice fields when the form ID was missing.
+- Reply-To email header was silently dropped when using the smart tag widget due to non-breaking space characters.
+- Console errors could occur when the Icon Choices library was missing or corrupted.
+- Missing Dependencies errors during new form creation.
+- Coupon field was incorrectly included in the keyboard copy/paste toast notification and the Duplicate Fields confirmation count in the form builder.
+- Delete icon overlapped right-aligned page navigation buttons on the Page Break field preview.
+- Confirmation modal was shown when disabling Conditional Logic even if no rules had been configured.
+- The icon library error pop-up was incorrectly shown after a successful icon library installation when interacting with the form builder before the page reload.
+
+## [1.9.9.4] - 2026-03-03
+### Fixed
+- Gutenberg education notice incorrectly showing in Classic Editor when Classic Editor plugin is active.
+- GDPR agreement field was truncated in the Form Builder.
+
+## [1.9.9.3] - 2026-02-24
+### Added
+- Support for upcoming addon releases.
+
+### Fixed
+- Undo/Redo in marketing addons' settings didn't restore the input value.
+- AI Form Generator panel was not opening automatically after installing or activating the addons.
+- The Cloudflare Turnstile captcha rendered twice if a CF7 form was also added on the same page.
+- Quiz help link in the Fields tab was incorrect.
+
 ## [1.9.9.2] - 2026-01-29
 ### Fixed
 - "Settings" links are now available for several addons to provide quicker access to their configuration pages.

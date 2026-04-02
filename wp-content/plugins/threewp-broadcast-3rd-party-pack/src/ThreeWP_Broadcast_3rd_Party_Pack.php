@@ -18,6 +18,7 @@ class ThreeWP_Broadcast_3rd_Party_Pack
 		[
 			__NAMESPACE__ . '\\acf\\ACF',
 			__NAMESPACE__ . '\\activity_monitor\\Activity_Monitor',
+			__NAMESPACE__ . '\\advanced_ads\\Advanced_Ads',
 			__NAMESPACE__ . '\\all_in_one_event_calendar\\All_In_One_Event_Calendar',
 			__NAMESPACE__ . '\\aioseo\\AIOSEO',
 			__NAMESPACE__ . '\\aqua_page_builder\\Aqua_Page_Builder',

@@ -86,6 +86,11 @@ trait Replace_Attachments_Trait
 					->get( $old_id );
 			}
 			$new_attachment = $broadcasting_data->copied_attachments()->get_attachment( $old_id );
+			if ( ! $new_attachment )
+			{
+				$this->debug( 'Warning! No equivalent attachment of %s found. Returning 0.', $old_id );
+				return 0;
+			}
 			$new_id = wp_get_attachment_url( $new_attachment->ID );
 			$this->debug( "Retrieved URL %s from %s", $new_id, $old_id );
 		}

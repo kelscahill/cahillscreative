@@ -113,6 +113,9 @@ class Field extends FieldLite {
 		add_filter( 'wpforms_pro_admin_entries_edit_field_output_editable', [ $this, 'is_editable' ], 10, 4 );
 
 		add_filter( 'wpforms_pro_admin_entries_export_ajax_get_entry_fields_data_field', [ $this, 'export_entry_field_data' ] );
+
+		// Update smart tag value for protected files.
+		add_filter( 'wpforms_smart_tags_formatted_field_value', [ $this, 'smart_tags_formatted_field_value' ], 10, 4 );
 	}
 
 	/**
@@ -889,8 +892,19 @@ class Field extends FieldLite {
 			return '';
 		}
 
-		// We delete attachments from Media Library only for spam entries.
-		if ( $entry->status === 'spam' && ! empty( $file_data['attachment_id'] ) ) {
+		/**
+		 * Allow forcing to delete an uploaded file.
+		 *
+		 * @since 1.10.0
+		 *
+		 * @param bool   $force_delete Whether to force to delete an uploaded file.
+		 * @param object $entry        Entry object.
+		 */
+		$force_delete = (bool) apply_filters( 'wpforms_pro_forms_fields_camera_field_delete_uploaded_file_force', false, $entry );
+
+		// We delete attachments from Media Library for spam entries
+		// or when the AS task for purge entries is run.
+		if ( ( $entry->status === 'spam' || $force_delete ) && ! empty( $file_data['attachment_id'] ) ) {
 			wp_delete_attachment( $file_data['attachment_id'], true );
 
 			return (string) $file_data['file_user_name'];
@@ -1075,56 +1089,6 @@ class Field extends FieldLite {
 		$field['value'] = $this->get_formatted_value( $value, $field );
 
 		return $field;
-	}
-
-	/**
-	 * Get formatted value.
-	 *
-	 * @since 1.9.8
-	 *
-	 * @param string $value Field value.
-	 * @param array  $field Field settings.
-	 *
-	 * @return string
-	 */
-	private function get_formatted_value( string $value, array $field ): string {
-
-		$type = $field['type'] ?? '';
-
-		if ( $type !== $this->type ) {
-			return $value;
-		}
-
-		if ( empty( $field['style'] ) ) {
-			return $this->get_file_url( $field );
-		}
-
-		$values = (array) $field['value_raw'];
-		$values = array_filter( $values );
-
-		$urls = $this->get_file_urls( $values );
-
-		return empty( $urls ) ? $value : implode( "\n", $urls );
-	}
-
-	/**
-	 * Get file URLs.
-	 *
-	 * @since 1.9.8
-	 *
-	 * @param array $values Field values.
-	 *
-	 * @return array
-	 */
-	private function get_file_urls( array $values ): array {
-
-		$urls = [];
-
-		foreach ( $values as $file ) {
-			$urls[] = $this->get_file_url( $file );
-		}
-
-		return $urls;
 	}
 
 	/**

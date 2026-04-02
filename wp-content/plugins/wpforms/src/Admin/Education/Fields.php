@@ -49,6 +49,15 @@ class Fields {
 				'order'   => '70',
 			],
 			[
+				'icon'    => 'fa-map-location-dot',
+				'name'    => esc_html__( 'Map', 'wpforms-lite' ),
+				'name_en' => 'Map',
+				'type'    => 'Map',
+				'group'   => 'fancy',
+				'addon'   => 'wpforms-geolocation',
+				'order'   => '75',
+			],
+			[
 				'icon'    => 'fa-calendar-o',
 				'name'    => esc_html__( 'Date / Time', 'wpforms-lite' ),
 				'name_en' => 'Date / Time',
@@ -207,16 +216,6 @@ class Fields {
 				'group'    => 'fancy',
 				'addon'    => 'wpforms-surveys-polls',
 				'order'    => '410',
-			],
-			[
-				'icon'     => 'fa-credit-card',
-				'name'     => esc_html__( 'PayPal Commerce', 'wpforms-lite' ),
-				'keywords' => esc_html__( 'store, ecommerce, credit card, pay, payment, debit card', 'wpforms-lite' ),
-				'name_en'  => 'PayPal Commerce',
-				'type'     => 'paypal-commerce',
-				'group'    => 'payment',
-				'addon'    => 'wpforms-paypal-commerce',
-				'order'    => '89',
 			],
 			[
 				'icon'     => 'fa-credit-card',

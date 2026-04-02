@@ -14,14 +14,33 @@ trait step_results_fail_unnecessary_children
 
 		if ( $button->pressed() )
 		{
-			// Delete all of the missing post broadcast datas.
-			foreach( $this->data->unnecessary_children as $id => $bcd )
+			$batch_size = 200;
+			$processed = 0;
+			foreach( $this->data->unnecessary_children as $id => $ignore )
 			{
+				$bcd = $this->data->broadcast_data->get( $id );
+				if ( ! $bcd )
+				{
+					$this->data->unnecessary_children->forget( $id );
+					continue;
+				}
 				$bcd->remove_linked_children();
 				$o->bc->set_post_broadcast_data( $bcd->blog_id, $bcd->post_id, $bcd );
 				$this->data->unnecessary_children->forget( $id );
+				$processed++;
+				if ( $processed >= $batch_size )
+					break;
 			}
-			$o->bc->message( 'The broadcast data has been cleared of unnecessary children.' );
+			$remaining = count( $this->data->unnecessary_children );
+			if ( $remaining > 0 )
+			{
+				$o->bc->message( sprintf( 'Removed unnecessary children for %d posts. %d remaining.', $processed, $remaining ) );
+				$o->r .= $this->next_step( 'results' );
+			}
+			else
+			{
+				$o->bc->message( 'The broadcast data has been cleared of unnecessary children.' );
+			}
 			return;
 		}
 
@@ -33,8 +52,11 @@ trait step_results_fail_unnecessary_children
 		$row->th()->text( 'Broadcast data row ID' );
 		$row->th()->text( 'Belonging to post' );
 
-		foreach( $this->data->unnecessary_children as $id => $bcd )
+		foreach( $this->data->unnecessary_children as $id => $ignore )
 		{
+			$bcd = $this->data->broadcast_data->get( $id );
+			if ( ! $bcd )
+				continue;
 			$row = $table->body()->row();
 			$row->td()->text_( $id );
 			$row->td()->text_( 'Post %s on %s has %s extra children.',

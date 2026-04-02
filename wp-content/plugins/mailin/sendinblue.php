@@ -3,7 +3,7 @@
  * Plugin Name: Brevo - Email, SMS, Web Push, Chat, and more.
  * Plugin URI: https://www.brevo.com/?r=wporg
  * Description: Manage your contact lists, subscription forms and all email and marketing-related topics from your wp panel, within one single plugin
- * Version: 3.3.1
+ * Version: 3.3.3
  * Author: Brevo
  * Author URI: https://www.brevo.com/?r=wporg
  * License: GPLv2 or later

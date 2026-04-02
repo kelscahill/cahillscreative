@@ -14,15 +14,34 @@ trait step_results_fail_missing_parents
 
 		if ( $button->pressed() )
 		{
+			$batch_size = 200;
+			$processed = 0;
 			foreach( $this->data->missing_parents as $id => $ignore )
 			{
 				// Remove the link to this non-existent parent.
 				$bcd = $this->data->broadcast_data->get( $id );
+				if ( ! $bcd )
+				{
+					$this->data->missing_parents->forget( $id );
+					continue;
+				}
 				$bcd->remove_linked_parent();
 				$o->bc->set_post_broadcast_data( $bcd->blog_id, $bcd->post_id, $bcd );
 				$this->data->missing_parents->forget( $id );
+				$processed++;
+				if ( $processed >= $batch_size )
+					break;
 			}
-			$o->bc->message( 'The missing parents have been removed from the broadcast data.' );
+			$remaining = count( $this->data->missing_parents );
+			if ( $remaining > 0 )
+			{
+				$o->bc->message( sprintf( 'Removed %d missing parents. %d remaining.', $processed, $remaining ) );
+				$o->r .= $this->next_step( 'results' );
+			}
+			else
+			{
+				$o->bc->message( 'The missing parents have been removed from the broadcast data.' );
+			}
 			return;
 		}
 

@@ -244,6 +244,7 @@ if ( ! class_exists( 'SIB_Push_API' ) ) {
 				'pushOptions' => SIB_Push_Utils::wonderpush_init_options(),
 				'imgUrl' => plugins_url('img', dirname(__FILE__)),
 				'bypassWordPressHttpClient' => $settings->getBypassWordPressHttpClient(),
+				'curlInstalled' => function_exists('\curl_exec'),
 				'deliveryTimeSeconds' => $settings->getDeliveryTimeSeconds(),
 				'notificationTitle' => $settings->getNotificationTitle(),
 				'defaultTargetSegmentId' => (int)$settings->getDefaultTargetSegmentId() ?: null,

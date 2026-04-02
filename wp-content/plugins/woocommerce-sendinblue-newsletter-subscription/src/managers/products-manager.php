@@ -151,6 +151,16 @@ class ProductsManager
             }
         }
 
+        $brands = get_the_terms($product->get_id(), 'product_brand');
+        $data['brands'] = [];
+        if (!empty($brands) && !is_wp_error($brands)) {
+            foreach ($brands as $brand) {
+                $data['brands'][] = [
+                    'name' => $brand->name
+                ];
+            }
+        }
+
         if (!empty($product->get_image_id())) {
             $data['images'] = [];
             $data['main_image_src'] = '';

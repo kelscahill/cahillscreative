@@ -780,6 +780,10 @@ class WPForms_Conditional_Logic_Fields {
 
 		$conditionals = $this->clear_empty_rules( $form_data['fields'][ $field_id ]['conditionals'] );
 
+		if ( empty( $conditionals ) ) {
+			return true;
+		}
+
 		// Determine the field visibility.
 		$visible = wpforms_conditional_logic()->process( wpforms()->obj( 'process' )->fields, $form_data, $conditionals );
 

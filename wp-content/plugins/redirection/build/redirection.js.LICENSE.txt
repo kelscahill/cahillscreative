@@ -4,8 +4,6 @@
 	http://jedwatson.github.io/classnames
 */
 
-/*! https://mths.be/punycode v1.4.1 by @mathias */
-
 /**
  * @license React
  * use-sync-external-store-with-selector.production.js

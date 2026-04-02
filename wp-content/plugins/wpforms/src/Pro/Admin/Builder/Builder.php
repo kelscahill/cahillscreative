@@ -24,14 +24,15 @@ class Builder {
 	 *
 	 * @since 1.7.6
 	 */
-	private function hooks() {
+	private function hooks(): void {
 
-		// Terminate initialization if not in builder.
+		// Terminate initialization if not in the builder.
 		if ( ! wpforms_is_admin_page( 'builder' ) ) {
 			return;
 		}
 
 		add_filter( 'wpforms_builder_strings', [ $this, 'form_builder_strings' ], 10, 2 );
+		add_filter( 'wpforms_builder_js_modules', [ $this, 'add_js_modules' ] );
 		add_action( 'wpforms_builder_print_footer_scripts', [ $this, 'builder_templates' ] );
 		add_action( 'wpforms_builder_enqueues', [ $this, 'builder_enqueues' ] );
 	}
@@ -116,6 +117,24 @@ class Builder {
 		</script>
 
 		<?php
+	}
+
+	/**
+	 * Add Pro JS modules to the builder.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param array $modules List of JS modules.
+	 *
+	 * @return array
+	 */
+	public function add_js_modules( array $modules ): array {
+
+		$min = wpforms_get_min_suffix();
+
+		$modules['DragFieldsPro'] = WPFORMS_PLUGIN_URL . "assets/pro/js/admin/builder/modules/drag-fields$min.js";
+
+		return $modules;
 	}
 
 	/**

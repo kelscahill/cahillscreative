@@ -46,6 +46,7 @@ if ( ! class_exists( 'SIB_Push_Settings' ) ) {
 
 		public function getBypassWordPressHttpClient() {
 			$storedValue = $this->get('bypassWordPressHttpClient');
+			if (!function_exists('curl_exec')) return false; // No curl, force use WP_Http
 			if ($storedValue === null) return true; // Bypass by default
 			return $storedValue ? true : false;
 		}

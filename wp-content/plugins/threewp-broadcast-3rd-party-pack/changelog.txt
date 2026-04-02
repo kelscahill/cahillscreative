@@ -1,4 +1,8 @@
-<strong>52.01</strong> 20250207
+<strong>52.03</strong> 20260325
+
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for the eael-filterable-gallery element.
+
+<strong>52.01</strong> 20260207
 
 Removed Tao Schedule Update because it has been abandoned.
 

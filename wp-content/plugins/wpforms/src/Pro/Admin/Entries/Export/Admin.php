@@ -574,6 +574,9 @@ class Admin {
 			'wpforms_tools_entries_export',
 			$this->export->get_localized_data()
 		);
+
+		// Dequeue Sugar Calendar style on our page, since it breaks the layout of choices fields.
+		wp_dequeue_style( 'sugar-calendar-admin-shortcode-helper' );
 	}
 
 	/**

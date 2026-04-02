@@ -122,6 +122,14 @@ class broadcasting_data
 	public $dynamic_data = false;
 
 	/**
+		@brief		The WP_Post of the existing child post on the child blog.
+		@details	The post data is retrieved after switching to the child blog and reset to false after each switch.
+					Can be used in conjunction with the modify_post action to get the existing child post's data.
+		@since		2026-03-12 16:42:09
+	**/
+	public $existing_child_post = false;
+
+	/**
 		@brief		Storage for equivalent post IDs on various blogs.
 		@details	Used as a "seen" lookup table to prevent looping.
 		@see		equivalent_posts

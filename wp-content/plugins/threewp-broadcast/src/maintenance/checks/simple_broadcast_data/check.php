@@ -58,19 +58,27 @@ class check
 
 		global $wpdb;
 		$table = $this->broadcast()->broadcast_data_table();
-		$query = $wpdb->prepare( 'SELECT * FROM %i LIMIT %d OFFSET %d',
+		$query = $wpdb->prepare( 'SELECT * FROM %i WHERE `id` > %d ORDER BY `id` LIMIT %d',
 		[
 			$table,
-			$this->data->per_page,
-			$this->data->counter
+			$this->data->last_id,
+			$this->data->per_page
 		] );
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 		$rows = $wpdb->get_results( $query );
 
-		$r .= wpautop( sprintf( 'Checking from row %d.', $this->data->counter ) );
+		if ( count( $rows ) < 1 )
+		{
+			$r .= wpautop( sprintf( 'Finished checking %d rows.', $this->data->checked_rows ) );
+			return $r;
+		}
+
+		$r .= wpautop( sprintf( 'Checking from row %d of %d.', $this->data->checked_rows, $this->data->count ) );
 
 		foreach( $rows as $row )
 		{
+			$this->data->last_id = max( $this->data->last_id, (int) $row->id );
+			$this->data->checked_rows++;
 			$delete_query = $wpdb->prepare( "DELETE FROM %i WHERE `id` = %d", [ $table, $row->id ] );
 
 			if ( ! $this->blog_and_post_exists( $row->blog_id, $row->post_id ) )
@@ -108,13 +116,10 @@ class check
 			}
 		}
 
-		if ( $this->data->counter > $this->data->count )
-			$r .= wpautop( sprintf( 'Finished checking %d rows.', $this->data->counter ) );
+		if ( count( $rows ) < $this->data->per_page )
+			$r .= wpautop( sprintf( 'Finished checking %d rows.', $this->data->checked_rows ) );
 		else
-		{
-			$this->data->counter += $this->data->per_page;
 			$r .= $this->next_step( 'check_rows' );
-		}
 
 		return $r;
 	}
@@ -131,7 +136,8 @@ class check
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive. Prepared above.
 		$count = $wpdb->get_var( $query );
 
-		$this->data->counter = 0;
+		$this->data->last_id = 0;
+		$this->data->checked_rows = 0;
 		$this->data->count = $count;
 		$this->data->per_page = 100;
 

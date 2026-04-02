@@ -12,6 +12,9 @@ class data
 	extends \threewp_broadcast\maintenance\checks\data
 {
 	public static $rows_per_step = 500;
+	public $last_id = 0;
+	public $checked_rows = 0;
+	public $total_rows = 0;
 
 	public function __construct()
 	{

@@ -76,18 +76,20 @@ class check
 			foreach( $values as $value )
 			{
 				$json_decoded = json_decode( $value );
-				$maybe_unserialized = maybe_unserialize( $value );
+				$maybe_unserialized = @ unserialize( $value );
 
 				$exportable = false;
-				if ( $json_decoded )
+				if ( $json_decoded !== null )
 					$exportable = $json_decoded;
-				if ( $maybe_unserialized )
-					$exportable = $maybe_unserialized;
+				if ( ! $exportable )
+					if ( $maybe_unserialized !== false )
+						$exportable = $maybe_unserialized;
 
 				if ( $exportable )
 					$value = var_export( $exportable, true );
-				else
-					$value = htmlspecialchars( $value );
+
+				$value = htmlspecialchars( $value );
+
 				$metas [ $key ] []= $value;
 			}
 		}

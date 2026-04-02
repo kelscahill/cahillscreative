@@ -11,6 +11,18 @@ class Global_Blocks_For_Cornerstone
 	extends \threewp_broadcast\premium_pack\base
 {
 	/**
+		@brief		The v2 version instance.
+		@since		2026-03-17 22:22:42
+	**/
+	public $v2;
+
+	/**
+		@brief		The v3 version instance.
+		@since		2026-03-17 22:22:42
+	**/
+	public $v3;
+
+	/**
 		@brief		Constructor.
 		@since		2019-04-09 20:47:04
 	**/
