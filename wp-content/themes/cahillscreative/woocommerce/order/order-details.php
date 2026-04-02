@@ -12,7 +12,7 @@
  *
  * @see     https://woocommerce.com/document/template-structure/
  * @package WooCommerce\Templates
- * @version 9.6.0
+ * @version 10.1.0
  *
  * @var bool $show_downloads Controls whether the downloads table should be rendered.
  */
@@ -32,9 +32,10 @@ $show_purchase_note = $order->has_status( apply_filters( 'woocommerce_purchase_n
 $downloads          = $order->get_downloadable_items();
 $actions            = array_filter(
   wc_get_account_orders_actions( $order ),
-  function ( $action ) {
-    return 'View' !== $action['name'];
-  }
+  function ( $key ) {
+    return 'view' !== $key;
+  },
+  ARRAY_FILTER_USE_KEY
 );
 
 // We make sure the order belongs to the user. This will also be true if the user is a guest, and the order belongs to a guest (userID === 0).
@@ -53,7 +54,7 @@ if ( $show_downloads ) {
 <section class="woocommerce-order-details u-spacing">
   <?php do_action( 'woocommerce_order_details_before_order_table', $order ); ?>
 
-  <h3 class="woocommerce-order-details__title"><?php esc_html_e( 'Order details', 'woocommerce' ); ?></h3>
+  <h2 class="woocommerce-order-details__title"><?php esc_html_e( 'Order details', 'woocommerce' ); ?></h2>
   <hr />
   <table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
 
@@ -127,7 +128,10 @@ if ( $show_downloads ) {
       <?php if ( $order->get_customer_note() ) : ?>
         <tr>
           <th><?php esc_html_e( 'Note:', 'woocommerce' ); ?></th>
-          <td><?php echo wp_kses( nl2br( wptexturize( $order->get_customer_note() ) ), array( 'br' => array() ) ); ?></td>
+          <td><?php
+          $customer_note = wc_wptexturize_order_note( $order->get_customer_note() );
+          echo wp_kses( nl2br( $customer_note ), array( 'br' => array() ) );
+          ?></td>
         </tr>
       <?php endif; ?>
     </tfoot>
