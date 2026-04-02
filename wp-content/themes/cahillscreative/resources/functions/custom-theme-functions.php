@@ -90,6 +90,7 @@ add_post_type_support( 'page', 'excerpt' );
  */
 add_filter('woocommerce_enqueue_styles', '__return_empty_array');
 
+
 /**
  * Remove woocommerce tags and categories.
  */

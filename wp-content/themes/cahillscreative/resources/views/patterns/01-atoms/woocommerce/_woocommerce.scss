@@ -340,6 +340,10 @@
     display: none;
   }
 
+  .logo-popover img {
+    display: inline-block;
+  }
+
   img + a {
     margin-left: $space-half;
   }
