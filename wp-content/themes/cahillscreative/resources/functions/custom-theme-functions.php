@@ -90,6 +90,19 @@ add_post_type_support( 'page', 'excerpt' );
  */
 add_filter('woocommerce_enqueue_styles', '__return_empty_array');
 
+/**
+ * Change cart remove link text from × to "Remove".
+ */
+add_filter('woocommerce_cart_item_remove_link', function ($link) {
+  return str_replace('&times;', 'Remove', $link);
+});
+
+/**
+ * Change empty cart button text.
+ */
+add_filter('woocommerce_return_to_shop_text', function () {
+  return 'Shop our products';
+});
 
 /**
  * Remove woocommerce tags and categories.
