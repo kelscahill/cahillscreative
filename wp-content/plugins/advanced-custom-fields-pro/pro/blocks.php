@@ -3,7 +3,7 @@
  * @package ACF
  * @author  WP Engine
  *
- * © 2025 Advanced Custom Fields (ACF®). All rights reserved.
+ * © 2026 Advanced Custom Fields (ACF®). All rights reserved.
  * "ACF" is a trademark of WP Engine.
  * Licensed under the GNU General Public License v2 or later.
  * https://www.gnu.org/licenses/gpl-2.0.html
@@ -1045,8 +1045,15 @@ function acf_ajax_fetch_block() {
 		$raw_context = json_decode( $raw_context, true );
 		if ( is_array( $raw_context ) ) {
 			$context = $raw_context;
-			// Check if a postId is set in the context, otherwise try and use it the default post_id.
-			$post_id = isset( $context['postId'] ) ? intval( $context['postId'] ) : intval( $args['post_id'] );
+			// Check if a postId is set in the context, and verify the user has access to that post.
+			if ( isset( $context['postId'] ) ) {
+				if ( ! acf_current_user_can_edit_post( intval( $context['postId'] ) ) ) {
+					wp_send_json_error();
+				}
+				$post_id = intval( $context['postId'] );
+			} else {
+				$post_id = intval( $args['post_id'] );
+			}
 		}
 	}
 

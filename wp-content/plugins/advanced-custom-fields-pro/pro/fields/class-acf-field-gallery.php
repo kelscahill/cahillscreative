@@ -3,7 +3,7 @@
  * @package ACF
  * @author  WP Engine
  *
- * © 2025 Advanced Custom Fields (ACF®). All rights reserved.
+ * © 2026 Advanced Custom Fields (ACF®). All rights reserved.
  * "ACF" is a trademark of WP Engine.
  * Licensed under the GNU General Public License v2 or later.
  * https://www.gnu.org/licenses/gpl-2.0.html
@@ -151,6 +151,7 @@ if ( ! class_exists( 'acf_field_gallery' ) ) :
 
 			// loop over attachments
 			foreach ( $_POST['attachments'] as $id => $changes ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized by WP core when saved.
+				$id = (int) $id;
 
 				if ( ! current_user_can( 'edit_post', $id ) ) {
 					wp_send_json_error();

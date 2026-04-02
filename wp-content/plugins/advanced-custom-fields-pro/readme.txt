@@ -2,9 +2,9 @@
 Contributors: deliciousbrains, wpengine, elliotcondon, mattshaw, lgladdy, antpb, johnstonphilip, dalewilliams, polevaultweb
 Tags: acf, fields, custom fields, meta, repeater
 Requires at least: 6.2
-Tested up to: 6.9
+Tested up to: 6.9.4
 Requires PHP: 7.4
-Stable tag: 6.7.0.2
+Stable tag: 6.7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -93,6 +93,21 @@ From your WordPress dashboard
 
 
 == Changelog ==
+
+= 6.7.2 =
+*Release Date 26th March 2026*
+
+* Security - Users' `unfiltered_html` capability is now correctly applied to REST API calls
+* Security - Block Preview rendering now correctly checks the user has permission to edit that post
+* Security - Repeater fields using pagination now correctly checks the user has permissions to edit that post
+* Security - Flexible content fields layout title AJAX requests now correctly verify security nonces
+* Security - Clone field AJAX admin endpoints now correctly check ACF admin permissions for field group listings
+
+= 6.7.1 =
+*Release Date 3rd March 2026*
+
+* Security - User field AJAX queries now enforce field-configured role restrictions and validate search permissions
+* Security - Post Object, Relationship, and Page Link field AJAX queries now enforce field-configured restrictions for post status, post type, and taxonomy
 
 = 6.7.0.2 =
 *Release Date 11th December 2025*
