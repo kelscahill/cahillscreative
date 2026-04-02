@@ -12,6 +12,7 @@ wp-content/upgrade/
 wp-content/uploads/
 wp-content/wp-cache-config.php
 wp-content/mu-plugins/
+wp-content/wflogs/
 
 wp-content/themes/**/.cache-loader/
 wp-content/themes/**/node_modules/
