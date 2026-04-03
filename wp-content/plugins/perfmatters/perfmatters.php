@@ -3,7 +3,8 @@
 Plugin Name: Perfmatters
 Plugin URI: https://perfmatters.io/
 Description: Perfmatters is a lightweight performance plugin developed to speed up your WordPress site.
-Version: 2.3.2
+Version: 2.6.0
+Requires PHP: 8.1
 Author: forgemedia
 Author URI: https://forgemedia.io/
 License: GPLv2 or later
@@ -18,9 +19,14 @@ Domain Path: /languages
 define('PERFMATTERS_STORE_URL', 'https://perfmatters.io/');
 define('PERFMATTERS_ITEM_ID', 696);
 define('PERFMATTERS_ITEM_NAME', 'perfmatters');
-define('PERFMATTERS_VERSION', '2.3.2');
+define('PERFMATTERS_VERSION', '2.6.0');
 define('PERFMATTERS_PATH', plugin_dir_path(__FILE__ ));
+define('PERFMATTERS_URL', plugin_dir_url(__FILE__));
+if(!defined('PMMU_PLUGIN_DIR')) {
+	define('PMMU_PLUGIN_DIR', WPMU_PLUGIN_DIR);
+}
 
+//plugins loaded
 function perfmatters_plugins_loaded() {
 
 	//setup cache constants
@@ -34,21 +40,23 @@ function perfmatters_plugins_loaded() {
 		define('PERFMATTERS_CACHE_URL', str_replace('http:', 'https:', content_url('/')) . $perfmatters_cache_path . "/perfmatters/$host/");
 	}
 
-	//load translations
-	load_plugin_textdomain('perfmatters', false, dirname(plugin_basename( __FILE__)) . '/languages/');
-
-	//initialize plugin classes
+	//config
 	Perfmatters\Config::init();
-	Perfmatters\Meta::init();
 
-	//initialize classes that filter the buffer
+	//core plugin classes
+	Perfmatters\General::init();
+    Perfmatters\Analytics::init();
+    Perfmatters\License::init();
+
+	//buffer classes
     Perfmatters\Fonts::init();
     Perfmatters\Images::init();
     Perfmatters\CSS::init();
+    Perfmatters\JS::init();
 	Perfmatters\LazyLoad::init_iframes();
     Perfmatters\Preload::init();
     Perfmatters\LazyLoad::init_images();
-    Perfmatters\JS::init();
+    Perfmatters\LazyLoad::init_elements();
     Perfmatters\CDN::init();
 	Perfmatters\Buffer::init();
 
@@ -57,8 +65,22 @@ function perfmatters_plugins_loaded() {
 
 	//initialize ajax
 	new Perfmatters\Ajax();
+
+	//code snippets
+	Perfmatters\PMCS\PMCS::init();
 }
 add_action('plugins_loaded', 'perfmatters_plugins_loaded');
+
+//init
+function perfmatters_init() {
+
+	//load translations
+	load_plugin_textdomain('perfmatters', false, dirname(plugin_basename( __FILE__)) . '/languages/');
+
+	//classes with translations
+	Perfmatters\Meta::init();
+}
+add_action('init', 'perfmatters_init');
 
 //setup cli commands
 if(defined('WP_CLI' ) && WP_CLI) {
@@ -79,7 +101,7 @@ function perfmatters_edd_plugin_updater() {
 	}
 
 	//retrieve our license key from the DB
-	$license_key = is_multisite() ? trim(get_site_option('perfmatters_edd_license_key')) : trim(get_option('perfmatters_edd_license_key'));
+	$license_key = Perfmatters\License::get_key_constant() ?? (is_multisite() ? trim(get_site_option('perfmatters_edd_license_key')) : trim(get_option('perfmatters_edd_license_key')));
 	
 	//setup the updater
 	$edd_updater = new Perfmatters_Plugin_Updater(PERFMATTERS_STORE_URL, __FILE__, array(
@@ -135,12 +157,26 @@ function perfmatters_admin_scripts() {
 			)
 		));
 
-		if(empty($_GET['tab']) || $_GET['tab'] == 'options') {
+		if(empty($_GET['snippet'])) {
 			$cm_settings['codeEditor'] = wp_enqueue_code_editor(array('type' => 'text/html'));
-			wp_localize_script('jquery', 'cm_settings', $cm_settings);
-			wp_enqueue_script('wp-theme-plugin-editor');
-			wp_enqueue_style('wp-codemirror');
+	        wp_add_inline_script(
+	        'code-editor',
+	        sprintf(
+	                'jQuery(function() {
+	                    var $codemirror = jQuery(".perfmatters-codemirror");
+	                    if($codemirror.length) {
+	                        $codemirror.each(function() {
+	                            wp.codeEditor.initialize(this, %1$s);
+	                        });
+	                    }
+	                });',
+	                wp_json_encode($cm_settings)
+	            )
+	        );
+	        wp_enqueue_script('wp-theme-plugin-editor');
+	        wp_enqueue_style('wp-codemirror');
 		}
+		
 	}
 }
 
@@ -186,7 +222,7 @@ function perfmatters_plugin_update_message() {
 	$license_status = is_multisite() ? get_site_option('perfmatters_edd_license_status') : get_option('perfmatters_edd_license_status');
 
 	if(empty($license_status) || $license_status !== 'valid') {
-		echo ' <strong><a href="' . esc_url(admin_url('options-general.php?page=perfmatters&tab=license')) . '">' . __('Enter valid license key for automatic updates.', 'perfmatters') . '</a></strong>';
+		echo ' <strong><a href="' . esc_url(admin_url('options-general.php?page=perfmatters#license')) . '">' . __('Enter valid license key for automatic updates.', 'perfmatters') . '</a></strong>';
 	}
 }
 add_action('in_plugin_update_message-perfmatters/perfmatters.php', 'perfmatters_plugin_update_message', 10, 2);
@@ -203,9 +239,9 @@ function perfmatters_activate() {
 
 	//check if we need to copy mu plugin file
 	$pmsm_settings = get_option('perfmatters_script_manager_settings');
-	if(!empty($pmsm_settings['mu_mode']) && !file_exists(WPMU_PLUGIN_DIR . "/perfmatters_mu.php")) {
+	if(!empty($pmsm_settings['mu_mode']) && !file_exists(PMMU_PLUGIN_DIR . "/perfmatters_mu.php")) {
 		if(file_exists(plugin_dir_path(__FILE__) . "/inc/perfmatters_mu.php")) {
-			@copy(plugin_dir_path(__FILE__) . "/inc/perfmatters_mu.php", WPMU_PLUGIN_DIR . "/perfmatters_mu.php");
+			@copy(plugin_dir_path(__FILE__) . "/inc/perfmatters_mu.php", PMMU_PLUGIN_DIR . "/perfmatters_mu.php");
 		}
 	}
 }
@@ -231,15 +267,15 @@ function perfmatters_install() {
     }
 
 	//mu plugin file check
-	if(file_exists(WPMU_PLUGIN_DIR . "/perfmatters_mu.php")) {
+	if(file_exists(PMMU_PLUGIN_DIR . "/perfmatters_mu.php")) {
 
 		//get plugin data
-    	$mu_plugin_data = get_plugin_data(WPMU_PLUGIN_DIR . "/perfmatters_mu.php");
+    	$mu_plugin_data = get_plugin_data(PMMU_PLUGIN_DIR . "/perfmatters_mu.php");
 
 		if(!empty($mu_plugin_data['Version']) && $mu_plugin_data['Version'] != PERFMATTERS_VERSION) {
-			@unlink(WPMU_PLUGIN_DIR . "/perfmatters_mu.php");
+			@unlink(PMMU_PLUGIN_DIR . "/perfmatters_mu.php");
 			if(file_exists(plugin_dir_path(__FILE__) . "/inc/perfmatters_mu.php")) {
-				@copy(plugin_dir_path(__FILE__) . "/inc/perfmatters_mu.php", WPMU_PLUGIN_DIR . "/perfmatters_mu.php");
+				@copy(plugin_dir_path(__FILE__) . "/inc/perfmatters_mu.php", PMMU_PLUGIN_DIR . "/perfmatters_mu.php");
 			}
 		}
 	}
@@ -405,6 +441,36 @@ function perfmatters_install() {
 		}
 	}
 
+	if($perfmatters_version < '2.3.5') {
+		$perfmatters_options = get_option('perfmatters_options');
+		$perfmatters_options['fonts']['subsets'] = array('latin');
+		update_option('perfmatters_options', $perfmatters_options);
+	}
+
+	//migrate code snippet data from cache to uploads
+	if($perfmatters_version < '2.5.4') {
+	   	
+	   	//cache code snippets directory
+	   	$source = trailingslashit(PERFMATTERS_CACHE_DIR) . 'code-snippets';
+    
+	    //parent perfmatters directory in /uploads/
+	    $upload_dir = wp_get_upload_dir();
+	    $parent_dest = trailingslashit($upload_dir['basedir']) . 'perfmatters';
+	    
+	    //final destination directory
+	    $destination = $parent_dest . '/code-snippets';
+
+	    if(is_dir($source) && !is_dir($destination)) {
+
+	    	//parent folder needs to exist for a rename
+	    	if(!is_dir($parent_dest)) {
+	            wp_mkdir_p($parent_dest);
+	        }
+
+	        @rename($source, $destination);
+	    }
+	}
+
 	//update version
 	if($perfmatters_version != PERFMATTERS_VERSION) {
 		update_option('perfmatters_version', PERFMATTERS_VERSION, false);
@@ -439,7 +505,7 @@ add_action('plugins_loaded', 'perfmatters_version_check');
 function perfmatters_uninstall() {
 
 	//deactivate license if needed
-	perfmatters_deactivate_license();
+	Perfmatters\License::deactivate();
 
 	//plugin options
 	$perfmatters_options = array(
@@ -452,6 +518,7 @@ function perfmatters_uninstall() {
 		'perfmatters_script_manager',
 		'perfmatters_script_manager_settings',
 		'perfmatters_edd_license_key',
+		'perfmatters_edd_license_key_constant',
 		'perfmatters_edd_license_status',
 		'perfmatters_version',
 		'perfmatters_close_cta'
@@ -460,6 +527,10 @@ function perfmatters_uninstall() {
 	//meta options
 	$perfmatters_meta_options = array(
 		'perfmatters_exclude_defer_js',
+		'perfmatters_exclude_delay_js',
+		'perfmatters_exclude_minify_js',
+		'perfmatters_exclude_unused_css',
+		'perfmatters_exclude_minify_css',
 		'perfmatters_exclude_lazy_loading',
 		'perfmatters_exclude_instant_page'
 	);
@@ -526,8 +597,8 @@ function perfmatters_uninstall() {
 	}
 
 	//remove mu plugin file if needed
-	if(file_exists(WPMU_PLUGIN_DIR . "/perfmatters_mu.php")) {
-   		@unlink(WPMU_PLUGIN_DIR . "/perfmatters_mu.php");
+	if(file_exists(PMMU_PLUGIN_DIR . "/perfmatters_mu.php")) {
+   		@unlink(PMMU_PLUGIN_DIR . "/perfmatters_mu.php");
    	}
 }
 register_uninstall_hook(__FILE__, 'perfmatters_uninstall');
@@ -535,7 +606,6 @@ register_uninstall_hook(__FILE__, 'perfmatters_uninstall');
 //main file includes
 require_once plugin_dir_path(__FILE__) . 'EDD_SL_Plugin_Updater.php';
 require_once plugin_dir_path(__FILE__) . 'inc/settings.php';
-require_once plugin_dir_path(__FILE__) . 'inc/functions.php';
 require_once plugin_dir_path(__FILE__) . 'inc/functions_script_manager.php';
 require_once plugin_dir_path(__FILE__) . 'inc/functions_network.php';
 

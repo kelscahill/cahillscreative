@@ -43,8 +43,26 @@ return array(
     		'title' => 'CookieYes',
     		'exclusions' => array(
     			'jquery.min.js',
-    			'/plugins/cookie-law-info/legacy/public/js/cookie-law-info-public.js',
-				'cookie-law-info-js-extra'
+				'cookie-law-info',
+				'cookieyes'
+    		)
+    	),
+    	'fluentform' => array(
+    		'id' => 'fluentform/fluentform.php',
+    		'title' => 'Fluent Forms',
+    		'exclusions' => array(
+    			'jquery.min.js',
+    			'fluentform',
+    			'turnstile'
+    		)
+    	),
+    	'fluentformpro' => array(
+    		'id' => 'fluentformpro/fluentformpro.php',
+    		'title' => 'Fluent Forms Pro',
+    		'exclusions' => array(
+    			'jquery.min.js',
+    			'fluentform',
+    			'turnstile'
     		)
     	),
     	'gdpr-cookie-compliance' => array(
@@ -54,6 +72,14 @@ return array(
     			'jquery.min.js',
     			'/plugins/gdpr-cookie-compliance/',
 				'moove_gdpr'
+    		)
+    	),
+    	'generateblocks-pro' => array(
+    		'id' => 'generateblocks-pro/plugin.php',
+    		'title' => 'GenerateBlocks Pro',
+    		'exclusions' => array(
+    			'/generateblocks-pro/dist/classic-menu.js',
+    			'/generateblocks-pro/dist/sticky-element.js'
     		)
     	),
     	'gravityforms' => array(
@@ -105,6 +131,7 @@ return array(
     		'exclusions' => array(
     			'kadence-blocks-tabs-js',
 				'kad-splide-js',
+				'kadence-splide-js',
 				'kadence-slide-init-js',
 				'kadence-blocks-splide-init-js',
 				'kadence-blocks-pro-splide-init-js',
@@ -156,6 +183,13 @@ return array(
 				'nf-'
     		)
     	),
+    	'plausible' => array(
+    		'id' => 'plausible-analytics/plausible-analytics.php',
+    		'title' => 'Plausible Analytics',
+    		'exclusions' => array(
+    			'plausible'
+    		)
+    	),
     	'presto-player' => array(
     		'id' => 'presto-player/presto-player.php',
     		'title' => 'Presto Player',
@@ -184,14 +218,15 @@ return array(
     	),
     	'revslider' => array(
     		'id' => 'revslider/revslider.php',
-    		'title' => 'Revolution Slider',
+    		'title' => 'Slider Revolution',
     		'exclusions' => array(
     			'jquery.min.js',
 				'jquery-migrate.min.js',
 				'revslider',
 				'rev_slider',
 				'setREVStartSize',
-				'window.RS_MODULES'
+				'window.RS_MODULES',
+				'SR7'
     		)
     	),
     	'sheknows-infuse' => array(
@@ -205,7 +240,8 @@ return array(
     		'id' => 'shortpixel-adaptive-images/short-pixel-ai.php',
     		'title' => 'ShortPixel Adaptive Images',
     		'exclusions' => array(
-    			'shortpixel.ai/assets/js/bundles/spai-lib'
+    			'jquery.min.js',
+				'spai'
     		)
     	),
     	'slick-engagement' => array(
@@ -231,12 +267,30 @@ return array(
 				'_N2'
     		)
     	),
+    	'surecart' => array(
+    		'id' => 'surecart/surecart.php',
+    		'title' => 'SureCart',
+    		'exclusions' => array(
+    			'surecart',
+				'hooks.min.js',
+				'i18n.min.js',
+				'url.min.js',
+				'api-fetch.min.js',
+				'a11y.min.js',
+				'dom-ready.min.js'
+    		),
+    		'deferral_exclusions' => array(
+    			'hooks.min.js',
+				'i18n.min.js'
+    		)
+    	),
         'elementor' => array(
             'id' => 'elementor/elementor.php',
             'title' => 'Elementor',
             'exclusions' => array(
                 'jquery.min.js',
                 'jquery.smartmenus.min.js',
+                'jquery.sticky.min.js',
                 'webpack.runtime.min.js',
                 'webpack-pro.runtime.min.js',
 				'/elementor/assets/js/frontend.min.js',
@@ -245,7 +299,9 @@ return array(
                 'elements-handlers.min.js',
                 'elementorFrontendConfig',
                 'ElementorProFrontendConfig',
-                'imagesloaded.min.js'
+                'imagesloaded.min.js',
+                'swiper.min.js',
+                'e-gallery'
             )   
         ),
         'elementor-search' => array(
@@ -297,6 +353,14 @@ return array(
         		'wpa_field_info'
         	)
         ),
+        'wpbakery' => array(
+        	'id' => 'js_composer/js_composer.php',
+        	'title' => 'WPBakery',
+        	'exclusions' => array(
+        		'jquery.min.js',
+        		'js_composer_front.min.js'
+        	)
+        ),
         'wpforms-lite' => array(
     		'id' => 'wpforms-lite/wpforms.php',
     		'title' => 'WPForms Lite',
@@ -344,7 +408,7 @@ return array(
     		'exclusions' => array(
     			'jquery.min.js',
     			'jquery/ui',
-				'ws-form-pro',
+				'ws-form',
 				'wsf-wp-footer',
 				'quicktags-js-extra'
     		)
@@ -376,6 +440,7 @@ return array(
     		'exclusions' => array(
     			'/themes/bricks/assets/js/bricks.min.js',
     			'/themes/bricks/assets/js/libs/swiper.min.js',
+    			'/themes/bricks/assets/js/libs/splide.min.js',
     			'bricks-scripts-js-extra'
     		)
     	),

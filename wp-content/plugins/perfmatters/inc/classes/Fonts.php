@@ -24,12 +24,12 @@ class Fonts
 
         //add display swap to the buffer
         if(!empty(Config::$options['fonts']['display_swap'])) {
-            add_action('perfmatters_output_buffer_template_redirect', array('Perfmatters\Fonts', 'display_swap'));
+            add_action('perfmatters_output_buffer', array('Perfmatters\Fonts', 'display_swap'));
         }
 
         //add local google fonts to the buffer
         if(!empty(Config::$options['fonts']['local_google_fonts'])) {
-            add_action('perfmatters_output_buffer_template_redirect', array('Perfmatters\Fonts', 'local_google_fonts'));
+            add_action('perfmatters_output_buffer', array('Perfmatters\Fonts', 'local_google_fonts'));
         }
     }
 
@@ -83,6 +83,9 @@ class Fonts
         //find google fonts
         preg_match_all('#<link[^>]+?href=(["\'])([^>]*?fonts\.googleapis\.com\/(css|icon).*?)\1.*?>#i', $html, $google_fonts, PREG_SET_ORDER);
         if(!empty($google_fonts)) {
+
+            $count = 1;
+
             foreach($google_fonts as $google_font) {
      
                 //create unique file details
@@ -97,17 +100,19 @@ class Fonts
                     }
                 }
 
-                //create font tag with new url
-                $new_google_font = str_replace($google_font[2], $file_url, $google_font[0]);
-
-                //async
-                if(!empty(Config::$options['fonts']['async'])) {
-                    $new_google_font = preg_replace(array('#media=([\'"]).+?\1#', '#onload=([\'"]).+?\1#'), '', $new_google_font);
-                    $new_google_font = str_replace('<link', '<link media="print" onload="this.media=\'all\';this.onload=null;"', $new_google_font);
+                //swap url in original tag
+                if(empty(Config::$options['fonts']['method'])) {
+                    $new_google_font = str_replace($google_font[2], $file_url, $google_font[0]);
                 }
-
+                //inline font
+                else {
+                    $new_google_font = '<style id="perfmatters-google-font-' . $count . '">' . file_get_contents($file_path) . '</style>';
+                }
+                
                 //replace original font tag
                 $html = str_replace($google_font[0], $new_google_font, $html);
+
+                $count++;
             }
         }
 
@@ -132,6 +137,20 @@ class Fonts
 
         //css content
         $css = $css_response['body'];
+
+        //limit subsets
+        if(!empty(Config::$options['fonts']['limit_subsets']) && !empty(Config::$options['fonts']['subsets'])) {
+
+            preg_match_all('/\/\*\s([a-z\-]+?)\s\*\/.*?}/s', $css, $fonts, PREG_SET_ORDER);
+
+            if(!empty($fonts)) {
+                foreach($fonts as $font) {
+                    if(!empty($font[1]) && !in_array($font[1], Config::$options['fonts']['subsets'])) {
+                        $css = str_replace($font[0], '', $css);
+                    }
+                }
+            }
+        }
 
         //find font files inside the css
         $regex = '/url\((https:\/\/fonts\.gstatic\.com\/.*?)\)/';
@@ -176,9 +195,16 @@ class Fonts
     }
 
     //delete all files in the fonts cache directory
-    public static function clear_local_fonts()
+    public static function clear_local_fonts($site = null)
     {
-        $files = glob(PERFMATTERS_CACHE_DIR . 'fonts/*');
+        $path = '';
+
+        //add site path if specified
+        if(is_object($site) && !empty($site->path)) {
+           $path = ltrim($site->path, '/');
+        }
+
+        $files = glob(PERFMATTERS_CACHE_DIR . $path . 'fonts/*');
         foreach($files as $file) {
             if(is_file($file)) {
                 unlink($file);

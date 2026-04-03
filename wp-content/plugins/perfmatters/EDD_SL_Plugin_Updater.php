@@ -9,18 +9,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Allows plugins to use their own update API.
  *
  * @author Easy Digital Downloads
- * @version 1.9.2
+ * @version 1.9.4
  */
 class Perfmatters_Plugin_Updater {
 
-	private $api_url              = '';
-	private $api_data             = array();
-	private $plugin_file          = '';
-	private $name                 = '';
-	private $slug                 = '';
-	private $version              = '';
-	private $wp_override          = false;
-	private $beta                 = false;
+	private $api_url     = '';
+	private $api_data    = array();
+	private $plugin_file = '';
+	private $name        = '';
+	private $slug        = '';
+	private $version     = '';
+	private $wp_override = false;
+	private $beta        = false;
 	private $failed_request_cache_key;
 
 	/**
@@ -29,9 +29,9 @@ class Perfmatters_Plugin_Updater {
 	 * @uses plugin_basename()
 	 * @uses hook()
 	 *
-	 * @param string  $_api_url     The URL pointing to the custom API endpoint.
-	 * @param string  $_plugin_file Path to the plugin file.
-	 * @param array   $_api_data    Optional data to send with API calls.
+	 * @param string $_api_url     The URL pointing to the custom API endpoint.
+	 * @param string $_plugin_file Path to the plugin file.
+	 * @param array  $_api_data    Optional data to send with API calls.
 	 */
 	public function __construct( $_api_url, $_plugin_file, $_api_data = null ) {
 
@@ -41,7 +41,7 @@ class Perfmatters_Plugin_Updater {
 		$this->api_data                 = $_api_data;
 		$this->plugin_file              = $_plugin_file;
 		$this->name                     = plugin_basename( $_plugin_file );
-		$this->slug                     = basename( $_plugin_file, '.php' );
+		$this->slug                     = basename( dirname( $_plugin_file ) );
 		$this->version                  = $_api_data['version'];
 		$this->wp_override              = isset( $_api_data['wp_override'] ) ? (bool) $_api_data['wp_override'] : false;
 		$this->beta                     = ! empty( $this->api_data['beta'] ) ? true : false;
@@ -60,7 +60,6 @@ class Perfmatters_Plugin_Updater {
 
 		// Set up hooks.
 		$this->init();
-
 	}
 
 	/**
@@ -76,7 +75,6 @@ class Perfmatters_Plugin_Updater {
 		add_filter( 'plugins_api', array( $this, 'plugins_api_filter' ), 10, 3 );
 		add_action( 'after_plugin_row', array( $this, 'show_update_notification' ), 10, 2 );
 		add_action( 'admin_init', array( $this, 'show_changelog' ) );
-
 	}
 
 	/**
@@ -89,12 +87,10 @@ class Perfmatters_Plugin_Updater {
 	 *
 	 * @uses api_request()
 	 *
-	 * @param array   $_transient_data Update array build by WordPress.
+	 * @param array $_transient_data Update array build by WordPress.
 	 * @return array Modified update array with custom plugin data.
 	 */
 	public function check_update( $_transient_data ) {
-
-		global $pagenow;
 
 		if ( ! is_object( $_transient_data ) ) {
 			$_transient_data = new stdClass();
@@ -104,7 +100,7 @@ class Perfmatters_Plugin_Updater {
 			return $_transient_data;
 		}
 
-		$current = $this->get_repo_api_data();
+		$current = $this->get_update_transient_data();
 		if ( false !== $current && is_object( $current ) && isset( $current->new_version ) ) {
 			if ( version_compare( $this->version, $current->new_version, '<' ) ) {
 				$_transient_data->response[ $this->name ] = $current;
@@ -145,10 +141,46 @@ class Perfmatters_Plugin_Updater {
 			$version_info->id     = $this->name;
 			$version_info->tested = $this->get_tested_version( $version_info );
 
+			if ( ! isset( $version_info->requires ) ) {
+				$version_info->requires = '';
+			}
+			if ( ! isset( $version_info->requires_php ) ) {
+					$version_info->requires_php = '';
+			}
+
 			$this->set_version_info_cache( $version_info );
 		}
 
 		return $version_info;
+	}
+
+	/**
+	 * Gets a limited set of data from the API response.
+	 * This is used for the update_plugins transient.
+	 *
+	 * @since 3.8.12
+	 * @return \stdClass|false
+	 */
+	private function get_update_transient_data() {
+		$version_info = $this->get_repo_api_data();
+		if ( ! $version_info ) {
+				return false;
+		}
+		$limited_data               = new \stdClass();
+		$limited_data->slug         = $this->slug;
+		$limited_data->plugin       = $this->name;
+		$limited_data->url          = $version_info->url;
+		$limited_data->package      = $version_info->package;
+		$limited_data->icons        = $this->convert_object_to_array( $version_info->icons );
+		$limited_data->banners      = $this->convert_object_to_array( $version_info->banners );
+		$limited_data->new_version  = $version_info->new_version;
+		$limited_data->tested       = $version_info->tested;
+		//edd patch fix
+		//$limited_data->requires     = $version_info->requires;
+		//$limited_data->requires_php = $version_info->requires_php;
+		$limited_data->requires     = !empty($version_info->requires) ? $version_info->requires : '';
+		$limited_data->requires_php = !empty($version_info->requires_php) ? $version_info->requires_php : '';
+		return $limited_data;
 	}
 
 	/**
@@ -186,8 +218,8 @@ class Perfmatters_Plugin_Updater {
 	/**
 	 * Show the update notification on multisite subsites.
 	 *
-	 * @param string  $file
-	 * @param array   $plugin
+	 * @param string $file
+	 * @param array  $plugin
 	 */
 	public function show_update_notification( $file, $plugin ) {
 
@@ -311,9 +343,9 @@ class Perfmatters_Plugin_Updater {
 	 *
 	 * @uses api_request()
 	 *
-	 * @param mixed   $_data
-	 * @param string  $_action
-	 * @param object  $_args
+	 * @param mixed  $_data
+	 * @param string $_action
+	 * @param object $_args
 	 * @return object $_data
 	 */
 	public function plugins_api_filter( $_data, $_action = '', $_args = null ) {
@@ -343,7 +375,7 @@ class Perfmatters_Plugin_Updater {
 		// Get the transient where we store the api request for this plugin for 24 hours
 		$edd_api_request_transient = $this->get_cached_version_info();
 
-		//If we have no transient-saved value, run the API, set a fresh transient with the API value, and return that value too right now.
+		// If we have no transient-saved value, run the API, set a fresh transient with the API value, and return that value too right now.
 		if ( empty( $edd_api_request_transient ) ) {
 
 			$api_response = $this->api_request( 'plugin_information', $to_send );
@@ -382,6 +414,10 @@ class Perfmatters_Plugin_Updater {
 			$_data->plugin = $this->name;
 		}
 
+		if ( ! isset( $_data->version ) && ! empty( $_data->new_version ) ) {
+			$_data->version = $_data->new_version;
+		}
+
 		return $_data;
 	}
 
@@ -412,8 +448,8 @@ class Perfmatters_Plugin_Updater {
 	/**
 	 * Disable SSL verification in order to prevent download update failures
 	 *
-	 * @param array   $args
-	 * @param string  $url
+	 * @param array  $args
+	 * @param string $url
 	 * @return object $array
 	 */
 	public function http_request_args( $args, $url ) {
@@ -422,7 +458,6 @@ class Perfmatters_Plugin_Updater {
 			$args['sslverify'] = $this->verify_ssl();
 		}
 		return $args;
-
 	}
 
 	/**
@@ -432,8 +467,8 @@ class Perfmatters_Plugin_Updater {
 	 * @uses wp_remote_post()
 	 * @uses is_wp_error()
 	 *
-	 * @param string  $_action The requested action.
-	 * @param array   $_data   Parameters for the API action.
+	 * @param string $_action The requested action.
+	 * @param array  $_data   Parameters for the API action.
 	 * @return false|object|void
 	 */
 	private function api_request( $_action, $_data ) {
@@ -625,7 +660,6 @@ class Perfmatters_Plugin_Updater {
 		}
 
 		return $cache['value'];
-
 	}
 
 	/**
@@ -672,5 +706,4 @@ class Perfmatters_Plugin_Updater {
 
 		return 'edd_sl_' . md5( serialize( $string ) );
 	}
-
 }

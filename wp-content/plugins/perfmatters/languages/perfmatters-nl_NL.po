@@ -1,0 +1,2061 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: crowdin-prompt-testing\n"
+"POT-Creation-Date: 2025-01-07 14:43-0800\n"
+"PO-Revision-Date: 2025-01-08 21:08\n"
+"Last-Translator: \n"
+"Language-Team: Dutch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.5\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: perfmatters.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.min.js\n"
+"X-Poedit-SearchPathExcluded-1: vendor\n"
+"X-Crowdin-Project: crowdin-prompt-testing\n"
+"X-Crowdin-Project-ID: 634426\n"
+"X-Crowdin-Language: nl\n"
+"X-Crowdin-File: perfmatters.pot\n"
+"X-Crowdin-File-ID: 70\n"
+"Language: nl_NL\n"
+
+#. translators: the plugin name.
+#: EDD_SL_Plugin_Updater.php:257
+#, php-format
+msgid "There is a new version of %1$s available."
+msgstr "Er is een nieuwe versie van %1$s beschikbaar."
+
+#: EDD_SL_Plugin_Updater.php:263
+msgid "Contact your network administrator to install the update."
+msgstr "Neem contact met je netwerkbeheerder op om de update te installeren."
+
+#. translators: 1. opening anchor tag, do not translate 2. the new plugin version 3. closing anchor tag, do not translate.
+#: EDD_SL_Plugin_Updater.php:268
+#, php-format
+msgid "%1$sView version %2$s details%3$s."
+msgstr "%1$sBekijk versie %2$s details%3$s."
+
+#: EDD_SL_Plugin_Updater.php:276
+#, php-format
+msgid "%1$sView version %2$s details%3$s or %4$supdate now%5$s."
+msgstr "%1$sBekijk versie %2$s details%3$s of %4$supdate nu%5$s."
+
+#: EDD_SL_Plugin_Updater.php:287
+msgid "Update now."
+msgstr "Update nu."
+
+#: EDD_SL_Plugin_Updater.php:519
+msgid "You do not have permission to install plugin updates"
+msgstr "Je hebt geen toestemming om plugin updates te installeren"
+
+#: EDD_SL_Plugin_Updater.php:519
+msgid "Error"
+msgstr "Fout"
+
+#: inc/CLI.php:32
+msgid "Unlimited site license required."
+msgstr "Onbeperkte site licentie vereist."
+
+#: inc/CLI.php:38
+msgid "License activated!"
+msgstr "Licentie geactiveerd!"
+
+#: inc/CLI.php:41
+msgid "License could not be activated."
+msgstr "Licentie kon niet worden geactiveerd."
+
+#: inc/CLI.php:55
+msgid "License deactivated!"
+msgstr "Licentie gedeactiveerd!"
+
+#: inc/CLI.php:58
+msgid "License could not be deactivated."
+msgstr "Licentie kon niet worden gedeactiveerd."
+
+#: inc/CLI.php:78
+msgid "License removed!"
+msgstr "Licentie verwijderd!"
+
+#: inc/CLI.php:81
+msgid "License could not be removed."
+msgstr "Licentie kon niet worden verwijderd."
+
+#: inc/CLI.php:102
+msgid "Used CSS cleared for all network sites."
+msgstr "Gebruikte CSS gewist voor alle netwerksites."
+
+#: inc/CLI.php:106 inc/classes/CSS.php:747 inc/classes/CSS.php:787
+msgid "Used CSS cleared."
+msgstr "Gebruikte CSS gewist."
+
+#: inc/admin.php:37 inc/admin.php:98
+msgid "General"
+msgstr "Algemeen"
+
+#: inc/admin.php:38 inc/admin.php:106
+msgid "JavaScript"
+msgstr "JavaScript"
+
+#: inc/admin.php:39 inc/admin.php:114
+msgid "CSS"
+msgstr "CSS"
+
+#: inc/admin.php:40 inc/admin.php:121
+msgid "Preloading"
+msgstr "Voorladen"
+
+#: inc/admin.php:41 inc/admin.php:127 inc/classes/Meta.php:144
+msgid "Lazy Loading"
+msgstr "Lazy-loading"
+
+#: inc/admin.php:42 inc/admin.php:136
+msgid "Fonts"
+msgstr "Lettertypen"
+
+#: inc/admin.php:43 inc/admin.php:142
+msgid "CDN"
+msgstr "CDN"
+
+#: inc/admin.php:44
+msgid "Analytics"
+msgstr "Analytics"
+
+#: inc/admin.php:45 inc/admin.php:154
+msgid "Code"
+msgstr "Code"
+
+#: inc/admin.php:51 inc/admin.php:164
+msgid "Tools"
+msgstr "Gereedschap"
+
+#: inc/admin.php:52 inc/admin.php:172
+msgid "Database"
+msgstr "Database"
+
+#: inc/admin.php:57
+msgid "Network"
+msgstr "Netwerk"
+
+#: inc/admin.php:62 inc/license.php:58
+msgid "License"
+msgstr "Licentie"
+
+#: inc/admin.php:66 inc/support.php:2 perfmatters.php:170
+msgid "Support"
+msgstr "Ondersteuning"
+
+#: inc/admin.php:75
+#, no-php-format
+msgid "Get 25% off our social sharing plugin."
+msgstr "Krijg 25% korting op onze social sharing plugin."
+
+#: inc/admin.php:86
+msgid "Version"
+msgstr "Versie"
+
+#: inc/admin.php:148
+msgid "Google Analytics"
+msgstr "Google Analytics"
+
+#: inc/admin.php:179 inc/script_manager.php:417
+msgid "Save Changes"
+msgstr "Wijzigingen opslaan"
+
+#: inc/classes/Ajax.php:32
+msgid "Settings saved."
+msgstr "Instellingen opgeslagen."
+
+#: inc/classes/Ajax.php:48
+msgid "Successfully restored default options."
+msgstr "Standaardopties succesvol teruggezet."
+
+#: inc/classes/Ajax.php:64
+msgid "Settings exported."
+msgstr "Instellingen geëxporteerd."
+
+#: inc/classes/Ajax.php:81
+msgid "No import file given."
+msgstr "Geen importbestand opgegeven."
+
+#: inc/classes/Ajax.php:90
+msgid "Please upload a valid .json file."
+msgstr "Upload een geldig .json bestand."
+
+#: inc/classes/Ajax.php:106
+msgid "Successfully imported Perfmatters settings."
+msgstr "Succesvol Perfmatters instellingen geïmporteerd."
+
+#: inc/classes/Ajax.php:126
+msgid "Permission denied."
+msgstr "Toestemming geweigerd."
+
+#: inc/classes/Ajax.php:133
+msgid "Nonce is invalid."
+msgstr "Nonce is ongeldig."
+
+#: inc/classes/CSS.php:713 inc/classes/CSS.php:727 inc/classes/Meta.php:85
+#: inc/settings.php:895 inc/settings.php:904
+msgid "Clear Used CSS"
+msgstr "Gebruikte CSS wissen"
+
+#: inc/classes/CSS.php:713
+msgid "All"
+msgstr "Alle"
+
+#: inc/classes/CSS.php:727
+msgid "Current"
+msgstr "Huidige"
+
+#: inc/classes/CSS.php:799
+msgid "Minified CSS cleared."
+msgstr "Verkleinde CSS gewist."
+
+#: inc/classes/DatabaseOptimizer.php:71
+msgid "Database optimization is running in the background."
+msgstr "Database optimalisatie draait op de achtergrond."
+
+#: inc/classes/DatabaseOptimizer.php:89
+msgid "Database optimization completed. The following items were removed:"
+msgstr "Database optimalisatie afgerond. De volgende items zijn verwijderd:"
+
+#: inc/classes/DatabaseOptimizer.php:100
+msgid "Database optimization completed. No optimizations found."
+msgstr "Database optimalisatie afgerond. Geen optimalisaties gevonden."
+
+#: inc/classes/DatabaseOptimizer.php:127
+msgid "Once Weekly"
+msgstr "Eens per week"
+
+#: inc/classes/DatabaseOptimizer.php:134
+msgid "Once Monthly"
+msgstr "Eens per maand"
+
+#: inc/classes/DatabaseOptimizer.php:177
+msgid "Revisions"
+msgstr "Revisies"
+
+#: inc/classes/DatabaseOptimizer.php:178
+msgid "Auto Drafts"
+msgstr "Automatische concepten"
+
+#: inc/classes/DatabaseOptimizer.php:179 inc/settings.php:1899
+msgid "Trashed Posts"
+msgstr "Verwijderde berichten"
+
+#: inc/classes/DatabaseOptimizer.php:180 inc/settings.php:1914
+msgid "Spam Comments"
+msgstr "Spam reacties"
+
+#: inc/classes/DatabaseOptimizer.php:181 inc/settings.php:1929
+msgid "Trashed Comments"
+msgstr "Verwijderde reacties"
+
+#: inc/classes/DatabaseOptimizer.php:182
+msgid "Expired transients"
+msgstr "Verlopen transiënten"
+
+#: inc/classes/DatabaseOptimizer.php:183
+msgid "Transients"
+msgstr "Transiënten"
+
+#: inc/classes/DatabaseOptimizer.php:184 inc/settings.php:1974
+msgid "Tables"
+msgstr "Tabellen"
+
+#: inc/classes/DatabaseOptimizer.php:197
+msgid "There is already an existing database optimization process running."
+msgstr "Er draait al een database optimalisatieproces."
+
+#: inc/classes/DatabaseOptimizer.php:220
+msgid "No items selected for optimization."
+msgstr "Geen items geselecteerd voor optimalisatie."
+
+#: inc/classes/DatabaseOptimizer.php:225
+msgid "Database optimization process started."
+msgstr "Database optimalisatieproces gestart."
+
+#: inc/classes/DatabaseOptimizer.php:240
+msgid "Database optimization process cancelled."
+msgstr "Database optimalisatieproces geannuleerd."
+
+#: inc/classes/DatabaseOptimizer.php:255
+msgid "Revisions Found"
+msgstr "Revisies gevonden"
+
+#: inc/classes/DatabaseOptimizer.php:258
+msgid "Auto-Drafts Found"
+msgstr "Automatische concepten gevonden"
+
+#: inc/classes/DatabaseOptimizer.php:261
+msgid "Trashed Posts Found"
+msgstr "Verwijderde berichten gevonden"
+
+#: inc/classes/DatabaseOptimizer.php:264
+msgid "Spam Comments Found"
+msgstr "Spam reacties gevonden"
+
+#: inc/classes/DatabaseOptimizer.php:267
+msgid "Trashed Comments Found"
+msgstr "Verwijderde reacties gevonden"
+
+#: inc/classes/DatabaseOptimizer.php:271
+msgid "Expired Transients Found"
+msgstr "Verlopen transiënten gevonden"
+
+#: inc/classes/DatabaseOptimizer.php:274
+msgid "Transients Found"
+msgstr "Transiënten gevonden"
+
+#: inc/classes/DatabaseOptimizer.php:277
+msgid "Unoptimized Tables Found"
+msgstr "Niet-geoptimaliseerde tabellen gevonden"
+
+#: inc/classes/DatabaseOptimizer.php:280
+msgid "Database scan completed."
+msgstr "Database scan afgerond."
+
+#: inc/classes/Fonts.php:216
+msgid "Local fonts cleared."
+msgstr "Lokale lettertypen gewist."
+
+#: inc/classes/JS.php:317
+msgid "Minified JS cleared."
+msgstr "Minified JS gewist."
+
+#: inc/classes/LazyLoad.php:171
+msgid "video"
+msgstr "video"
+
+#: inc/classes/Meta.php:124
+msgid "Defer JavaScript"
+msgstr "JavaScript uitstellen"
+
+#: inc/classes/Meta.php:128 inc/settings.php:600
+msgid "Delay JavaScript"
+msgstr "JavaScript vertragen"
+
+#: inc/classes/Meta.php:132 inc/settings.php:734
+msgid "Minify JavaScript"
+msgstr "JavaScript verkleinen"
+
+#: inc/classes/Meta.php:136
+msgid "Unused CSS"
+msgstr "Niet-gebruikte CSS"
+
+#: inc/classes/Meta.php:140 inc/settings.php:916
+msgid "Minify CSS"
+msgstr "CSS verkleinen"
+
+#: inc/classes/Meta.php:148
+msgid "Instant Page"
+msgstr "Instant pagina"
+
+#: inc/classes/Meta.php:164
+msgid "No meta options selected."
+msgstr "Geen meta opties geselecteerd."
+
+#: inc/classes/Meta.php:185
+msgid "Meta options purged."
+msgstr "Meta opties gewist."
+
+#: inc/classes/Meta.php:190
+msgid "Meta options not purged."
+msgstr "Meta opties niet gewist."
+
+#: inc/classes/Minify.php:149
+msgid "Clear Minified JS/CSS"
+msgstr "Verkleinde JS/CSS wissen"
+
+#: inc/classes/Minify.php:169
+msgid "Minified JS/CSS cleared."
+msgstr "Verkleinde JS/CSS gewist."
+
+#: inc/functions.php:104
+#, php-format
+msgid "No feed available, please visit the <a href='%s'>homepage</a>!"
+msgstr "Geen feed beschikbaar, bezoek de <a href='%s'>homepage</a>!"
+
+#: inc/functions.php:172
+msgid "Sorry, you do not have permission to make REST API requests."
+msgstr "Je hebt geen toestemming om REST API-aanvragen te doen."
+
+#: inc/functions.php:308 inc/functions.php:401 inc/functions.php:406
+msgid "Comments are disabled."
+msgstr "Reacties zijn uitgeschakeld."
+
+#: inc/functions.php:613 inc/functions.php:633 inc/functions.php:1248
+#: inc/functions_script_manager.php:1536 inc/functions_script_manager.php:1544
+msgid "Perfmatters Warning"
+msgstr "Perfmatters waarschuwing"
+
+#: inc/functions.php:614
+msgid "WP_POST_REVISIONS is already enabled somewhere else on your site. We suggest only enabling this feature in one place."
+msgstr "WP_POST_REVISIONS is al ergens anders op je site ingeschakeld. We raden aan om deze functie op slechts één plaats in te schakelen."
+
+#: inc/functions.php:634
+msgid "AUTOSAVE_INTERVAL is already enabled somewhere else on your site. We suggest only enabling this feature in one place."
+msgstr "AUTOSAVE_INTERVAL is al ergens anders op je site ingeschakeld. We raden aan om deze functie op slechts één plaats in te schakelen."
+
+#: inc/functions.php:1041 inc/settings.php:444
+msgid "This has been disabled."
+msgstr "Dit is uitgeschakeld."
+
+#: inc/functions.php:1249
+msgid "Local Analytics is enabled but no Tracking ID is set."
+msgstr "Lokale Analytics is ingeschakeld maar er is geen volg ID ingesteld."
+
+#: inc/functions_network.php:22
+msgid "Network Access"
+msgstr "Netwerktoegang"
+
+#: inc/functions_network.php:27
+msgid "Choose who has access to manage Perfmatters plugin settings."
+msgstr "Kies wie toegang heeft tot het beheren van Perfmatters plugininstellingen."
+
+#: inc/functions_network.php:33
+msgid "Network Default"
+msgstr "Netwerk standaard"
+
+#: inc/functions_network.php:38
+msgid "Choose a subsite that you want to pull default settings from."
+msgstr "Kies een subsite waar je de standaardinstellingen van wilt halen."
+
+#: inc/functions_network.php:45 inc/settings.php:1769
+msgid "Clean Uninstall"
+msgstr "Schone deïnstallatie"
+
+#: inc/functions_network.php:52 inc/settings.php:1776
+msgid "When enabled, this will cause all Perfmatters options data to be removed from your database when the plugin is uninstalled."
+msgstr "Wanneer ingeschakeld, wordt alle gegevens van Perfmatters opties uit je database verwijderd wanneer de plugin wordt gedeïnstalleerd."
+
+#: inc/functions_network.php:66
+msgid "Site Admins (Default)"
+msgstr "Site beheerders (standaard)"
+
+#: inc/functions_network.php:67
+msgid "Super Admins Only"
+msgstr "Alleen super beheerders"
+
+#: inc/functions_network.php:83
+msgid "None"
+msgstr "Geen"
+
+#: inc/functions_script_manager.php:49 inc/functions_script_manager.php:61
+#: inc/functions_script_manager.php:103 inc/script_manager.php:169
+#: inc/script_manager.php:215 inc/settings.php:1692
+msgid "Script Manager"
+msgstr "Script manager"
+
+#: inc/functions_script_manager.php:64
+msgid "Close Script Manager"
+msgstr "Script manager sluiten"
+
+#: inc/functions_script_manager.php:135
+msgid "Save"
+msgstr "Opslaan"
+
+#: inc/functions_script_manager.php:136
+msgid "Saving"
+msgstr "Opslaan"
+
+#: inc/functions_script_manager.php:137 inc/functions_script_manager.php:1252
+msgid "Settings saved successfully!"
+msgstr "Instellingen succesvol opgeslagen!"
+
+#: inc/functions_script_manager.php:138
+msgid "Settings failed to update."
+msgstr "Instellingen konden niet worden geüpdatet."
+
+#: inc/functions_script_manager.php:139
+msgid "No disabled location selected."
+msgstr "Geen uitgeschakelde locatie geselecteerd."
+
+#: inc/functions_script_manager.php:140
+msgid "No options were changed."
+msgstr "Er zijn geen opties gewijzigd."
+
+#: inc/functions_script_manager.php:329
+msgid "Status"
+msgstr "Status"
+
+#: inc/functions_script_manager.php:330
+msgid "Script"
+msgstr "Script"
+
+#: inc/functions_script_manager.php:331
+msgid "Type"
+msgstr "Type"
+
+#: inc/functions_script_manager.php:332
+msgid "Size"
+msgstr "Grootte"
+
+#: inc/functions_script_manager.php:358
+msgid "MU Mode is currently enabled, the above settings will apply to the entire plugin."
+msgstr "MU modus is momenteel ingeschakeld, de bovenstaande instellingen gelden voor de hele plugin."
+
+#: inc/functions_script_manager.php:361
+msgid "The above settings will apply to all assets in this group."
+msgstr "De bovenstaande instellingen gelden voor alle middelen in deze groep."
+
+#: inc/functions_script_manager.php:435
+msgid "Depends on"
+msgstr "Hangt af van"
+
+#: inc/functions_script_manager.php:448
+msgid "Required by"
+msgstr "Vereist door"
+
+#: inc/functions_script_manager.php:521 inc/script_manager.php:332
+msgid "MU Mode"
+msgstr "MU modus"
+
+#: inc/functions_script_manager.php:527
+msgid "ON"
+msgstr "AAN"
+
+#: inc/functions_script_manager.php:528
+msgid "OFF"
+msgstr "UIT"
+
+#: inc/functions_script_manager.php:552 inc/settings.php:2041
+msgid "Disabled"
+msgstr "Uitgeschakeld"
+
+#: inc/functions_script_manager.php:566
+msgid "Everywhere"
+msgstr "Overal"
+
+#: inc/functions_script_manager.php:584 inc/functions_script_manager.php:750
+#: inc/settings.php:424
+msgid "404 Template"
+msgstr "404 template"
+
+#: inc/functions_script_manager.php:599 inc/functions_script_manager.php:764
+msgid "Current URL"
+msgstr "Huidige URL"
+
+#: inc/functions_script_manager.php:687 inc/functions_script_manager.php:852
+msgid "Users"
+msgstr "Gebruikers"
+
+#: inc/functions_script_manager.php:689 inc/functions_script_manager.php:701
+#: inc/functions_script_manager.php:854 inc/functions_script_manager.php:866
+#: inc/settings.php:310 inc/settings.php:329 inc/settings.php:349
+#: inc/settings.php:377 inc/settings.php:423 inc/settings.php:624
+#: inc/settings.php:812 inc/settings.php:832 inc/settings.php:1048
+#: inc/settings.php:1164 inc/settings.php:1416 inc/settings.php:1614
+#: inc/settings.php:1633 inc/settings.php:2511
+msgid "Default"
+msgstr "Standaard"
+
+#: inc/functions_script_manager.php:690 inc/functions_script_manager.php:855
+msgid "Logged In"
+msgstr "Ingelogd"
+
+#: inc/functions_script_manager.php:691 inc/functions_script_manager.php:856
+msgid "Logged Out"
+msgstr "Uitgelogd"
+
+#: inc/functions_script_manager.php:699 inc/functions_script_manager.php:864
+msgid "Devices"
+msgstr "Apparaten"
+
+#: inc/functions_script_manager.php:702 inc/functions_script_manager.php:867
+#: inc/settings.php:2393 inc/settings.php:2444
+msgid "Desktop"
+msgstr "Desktop"
+
+#: inc/functions_script_manager.php:703 inc/functions_script_manager.php:868
+#: inc/settings.php:2394 inc/settings.php:2445
+msgid "Mobile"
+msgstr "Mobiel"
+
+#: inc/functions_script_manager.php:711 inc/functions_script_manager.php:876
+msgid "Regex"
+msgstr "Regex"
+
+#: inc/functions_script_manager.php:729
+msgid "Exceptions"
+msgstr "Uitzonderingen"
+
+#: inc/functions_script_manager.php:1537 inc/script_manager.php:357
+msgid "MU plugin version mismatch."
+msgstr "MU plugin versie komt niet overeen."
+
+#: inc/functions_script_manager.php:1537 inc/functions_script_manager.php:1545
+#: inc/script_manager.php:194 inc/script_manager.php:328
+#: inc/script_manager.php:340 inc/settings.php:2691
+msgid "View Documentation"
+msgstr "Documentatie bekijken"
+
+#: inc/functions_script_manager.php:1545 inc/script_manager.php:366
+msgid "MU plugin file not found."
+msgstr "MU plugin bestand niet gevonden."
+
+#: inc/license.php:72
+msgid "License Key"
+msgstr "Licentiesleutel"
+
+#: inc/license.php:79
+msgid "Save License"
+msgstr "Licentie opslaan"
+
+#: inc/license.php:83
+msgid "Remove License"
+msgstr "Licentie verwijderen"
+
+#: inc/license.php:86
+msgid "Save or remove your license key."
+msgstr "Sla je licentiesleutel op of verwijder deze."
+
+#: inc/license.php:112 inc/license.php:119
+msgid "Activate License"
+msgstr "Licentie activeren"
+
+#: inc/license.php:115
+msgid "Deactivate License"
+msgstr "Licentie deactiveren"
+
+#: inc/license.php:116
+msgid "License is activated."
+msgstr "Licentie is geactiveerd."
+
+#: inc/license.php:120
+msgid "License is not activated."
+msgstr "Licentie is niet geactiveerd."
+
+#: inc/license.php:123
+msgid "Unlimited License needed for use in a multisite environment. Please contact support to upgrade."
+msgstr "Onbeperkte licentie nodig voor gebruik in een multisite omgeving. Neem contact op met ondersteuning om te upgraden."
+
+#: inc/license.php:132
+msgid "License Status"
+msgstr "Licentiestatus"
+
+#: inc/license.php:137
+msgid "Renew Your License for Updates + Support!"
+msgstr "Verleng je licentie voor updates + ondersteuning!"
+
+#: inc/license.php:146
+msgid "Licenses Used"
+msgstr "Gebruikte licenties"
+
+#: inc/license.php:154
+msgid "Expiration Date"
+msgstr "Vervaldatum"
+
+#: inc/license.php:155
+msgid "Lifetime"
+msgstr "Levensduur"
+
+#: inc/network.php:46 inc/network.php:85
+msgid "Default settings applied!"
+msgstr "Standaardinstellingen toegepast!"
+
+#: inc/network.php:50
+msgid "Select a site that is not already the Network Default."
+msgstr "Selecteer een site die nog niet de Netwerk Standaard is."
+
+#: inc/network.php:55 inc/network.php:95
+msgid "Network Default not set."
+msgstr "Netwerk Standaard niet ingesteld."
+
+#: inc/network.php:60
+msgid "Error: Blog Not Found."
+msgstr "Fout: Blog Niet Gevonden."
+
+#: inc/network.php:90
+msgid "No available sites found."
+msgstr "Geen beschikbare sites gevonden."
+
+#: inc/network.php:101
+msgid "Options saved."
+msgstr "Opties opgeslagen."
+
+#: inc/network.php:104
+msgid "Network Setup"
+msgstr "Netwerkinstelling"
+
+#: inc/network.php:114 inc/network.php:129
+msgid "Apply Default Settings"
+msgstr "Standaardinstellingen toepassen"
+
+#: inc/network.php:117
+msgid "Select a site from the dropdown and click to apply the settings from your network default (above)."
+msgstr "Selecteer een site uit de dropdown en klik om de instellingen van je netwerkstandaard (hierboven) toe te passen."
+
+#: inc/network.php:122
+msgid "Select a Site"
+msgstr "Selecteer een site"
+
+#: inc/network.php:133
+msgid "Apply the settings from your network default to all sites. Depending on the amount, this may take a while."
+msgstr "Pas de instellingen van je netwerkstandaard toe op alle sites. Afhankelijk van de hoeveelheid kan dit even duren."
+
+#: inc/network.php:135
+msgid "Apply Default Settings to All Sites"
+msgstr "Standaardinstellingen toepassen op alle sites"
+
+#: inc/network.php:135
+msgid "Are you sure? This will permanently overwrite all Perfmatters options for all subsites."
+msgstr "Weet je het zeker? Dit zal alle Perfmatters-opties voor alle subsites permanent overschrijven."
+
+#: inc/script_manager.php:170 inc/script_manager_global.php:7
+msgid "Global View"
+msgstr "Globaal overzicht"
+
+#: inc/script_manager.php:171 inc/script_manager.php:287 inc/settings.php:1762
+#: inc/settings.php:2385 inc/settings.php:2434 inc/settings.php:2477
+#: perfmatters.php:183
+msgid "Settings"
+msgstr "Instellingen"
+
+#: inc/script_manager.php:193
+msgid "We recommend testing Script Manager changes on a staging/dev site first, as you could break your site's appearance."
+msgstr "We raden aan om wijzigingen in de Scriptmanager eerst op een staging-/ontwikkelomgeving te testen, omdat je de weergave van je site kunt verstoren."
+
+#: inc/script_manager.php:200
+msgid "You are in Testing Mode. Changes will only be visible to logged-in admins."
+msgstr "Je bevindt je in Testmodus. Wijzigingen zijn alleen zichtbaar voor ingelogde beheerders."
+
+#: inc/script_manager.php:216
+msgid "Manage scripts loading on the current page."
+msgstr "Beheer het laden van scripts op de huidige pagina."
+
+#: inc/script_manager.php:241
+msgid "Total size"
+msgstr "Totale grootte"
+
+#: inc/script_manager.php:270
+msgid "The Script Manager does not support AMP pages."
+msgstr "De Scriptmanager ondersteunt geen AMP pagina's."
+
+#: inc/script_manager.php:273
+msgid "Loading Scripts"
+msgstr "Scripts laden"
+
+#: inc/script_manager.php:288
+msgid "View and manage all of your Script Manager settings."
+msgstr "Bekijk en beheer al je Scriptmanager instellingen."
+
+#: inc/script_manager.php:299
+msgid "Display Archives"
+msgstr "Archieven weergeven"
+
+#: inc/script_manager.php:306
+msgid "Add WordPress archives to your Script Manager selection options. Archive posts will no longer be grouped with their post type."
+msgstr "Voeg WordPress archieven toe aan je Scriptmanager selectiemogelijkheden. Archiefberichten worden niet langer met hun berichttype gegroepeerd."
+
+#: inc/script_manager.php:310
+msgid "Display Dependencies"
+msgstr "Afhankelijkheden weergeven"
+
+#: inc/script_manager.php:317
+msgid "Show dependencies for each script."
+msgstr "Toon afhankelijkheden voor elk script."
+
+#: inc/script_manager.php:321
+msgid "Testing Mode"
+msgstr "Testmodus"
+
+#: inc/script_manager.php:328
+msgid "Restrict your Script Manager configuration to logged-in admins only."
+msgstr "Beperk je Scriptmanager configuratie tot alleen ingelogde beheerders."
+
+#: inc/script_manager.php:340
+msgid "Must-use (MU) mode requires elevated permissions and a file to be copied into the mu-plugins directory. This gives you more control and the ability to disable plugin queries, inline CSS, etc."
+msgstr "Moet-gebruiken (MU) modus vereist verhoogde permissies en een bestand om te worden gekopieerd naar de mu-plugins folder. Dit geeft je meer controle en de mogelijkheid om plugin queries, inline CSS, enz. uit te schakelen."
+
+#: inc/script_manager.php:342
+msgid "Warning"
+msgstr "Waarschuwing"
+
+#: inc/script_manager.php:342
+msgid "Any previous plugin-level disables will now disable the entire plugin. Please review your existing Script Manager configuration before enabling this option."
+msgstr "Alle eerdere plugin niveau uitschakelingen zullen nu de hele plugin uitschakelen. Controleer je bestaande Scriptmanager configuratie voordat je deze optie inschakelt."
+
+#: inc/script_manager.php:361
+msgid "MU plugin installed."
+msgstr "MU plugin geïnstalleerd."
+
+#: inc/script_manager.php:376
+msgid "Hide Disclaimer"
+msgstr "Disclaimer verbergen"
+
+#: inc/script_manager.php:383
+msgid "Hide the disclaimer message box across all Script Manager views."
+msgstr "Verberg het disclaimermeldingsvenster in alle Scriptmanager weergaven."
+
+#: inc/script_manager.php:387 inc/script_manager.php:391
+msgid "Reset Script Manager"
+msgstr "Scriptmanager resetten"
+
+#: inc/script_manager.php:394
+msgid "Remove and reset all of your existing Script Manager settings."
+msgstr "Verwijder en reset al je bestaande Scriptmanager instellingen."
+
+#: inc/script_manager.php:436
+msgid "Are you sure? This will remove and reset all of your existing Script Manager settings and cannot be undone!"
+msgstr "Weet je het zeker? Dit zal al je bestaande Scriptmanager instellingen verwijderen en resetten en kan niet ongedaan worden gemaakt!"
+
+#: inc/script_manager_global.php:8
+msgid "This is a visual representation of the Script Manager configuration across your entire site."
+msgstr "Dit is een visuele weergave van de Scriptmanager configuratie over je hele site."
+
+#: inc/script_manager_global.php:41
+msgid "Handle"
+msgstr "Behandel"
+
+#: inc/script_manager_global.php:42
+msgid "Setting"
+msgstr "Instelling"
+
+#: inc/script_manager_global.php:130
+msgid "You don't have any scripts disabled yet."
+msgstr "Je hebt nog geen scripts uitgeschakeld."
+
+#: inc/settings.php:14
+msgid "Core"
+msgstr "Core"
+
+#: inc/settings.php:19
+msgid "Disable Emojis"
+msgstr "Emojis uitschakelen"
+
+#: inc/settings.php:25
+msgid "Removes WordPress Emojis JavaScript file (wp-emoji-release.min.js)."
+msgstr "Verwijdert WordPress emoji JavaScript bestand (wp-emoji-release.min.js)."
+
+#: inc/settings.php:32
+msgid "Disable Dashicons"
+msgstr "Schakel dashicons uit"
+
+#: inc/settings.php:38
+msgid "Disables dashicons on the front end when not logged in."
+msgstr "Schakelt dashicons uit aan de front-end wanneer je niet bent ingelogd."
+
+#: inc/settings.php:45
+msgid "Disable Embeds"
+msgstr "Schakel insluitingen uit"
+
+#: inc/settings.php:51
+msgid "Removes WordPress Embed JavaScript file (wp-embed.min.js)."
+msgstr "Verwijdert WordPress embed JavaScript bestand (wp-embed.min.js)."
+
+#: inc/settings.php:58
+msgid "Disable XML-RPC"
+msgstr "Schakel XML-RPC uit"
+
+#: inc/settings.php:64
+msgid "Disables WordPress XML-RPC functionality."
+msgstr "Schakelt WordPress XML-RPC functionaliteit uit."
+
+#: inc/settings.php:71
+msgid "Remove jQuery Migrate"
+msgstr "Verwijder jQuery Migrate"
+
+#: inc/settings.php:77
+msgid "Removes jQuery Migrate JavaScript file (jquery-migrate.min.js)."
+msgstr "Verwijdert jQuery Migrate JavaScript bestand (jquery-migrate.min.js)."
+
+#: inc/settings.php:84
+msgid "Hide WP Version"
+msgstr "Verberg WP versie"
+
+#: inc/settings.php:90
+msgid "Removes WordPress version meta tag."
+msgstr "Verwijdert WordPress versie metatag."
+
+#: inc/settings.php:97
+msgid "Remove RSD Link"
+msgstr "Verwijder RSD link"
+
+#: inc/settings.php:103
+msgid "Remove RSD (Real Simple Discovery) link tag."
+msgstr "Verwijder RSD (Real Simple Discovery) linktag."
+
+#: inc/settings.php:110
+msgid "Remove Shortlink"
+msgstr "Verwijder shortlink"
+
+#: inc/settings.php:116
+msgid "Remove Shortlink link tag."
+msgstr "Verwijder shortlink link tag."
+
+#: inc/settings.php:123
+msgid "Disable RSS Feeds"
+msgstr "Schakel RSS feeds uit"
+
+#: inc/settings.php:129
+msgid "Disable WordPress generated RSS feeds and 301 redirect URL to parent."
+msgstr "Schakel WordPress gegenereerde RSS feeds uit en 301 omleidings URL naar hoofd."
+
+#: inc/settings.php:136
+msgid "Remove RSS Feed Links"
+msgstr "Verwijder RSS feed links"
+
+#: inc/settings.php:142
+msgid "Disable WordPress generated RSS feed link tags."
+msgstr "Schakel WordPress gegenereerde RSS feed link tags uit."
+
+#: inc/settings.php:149
+msgid "Disable Self Pingbacks"
+msgstr "Schakel zelf pingbacks uit"
+
+#: inc/settings.php:155
+msgid "Disable Self Pingbacks (generated when linking to an article on your own blog)."
+msgstr "Schakel zelf pingbacks uit (gegenereerd bij het linken naar een artikel op je eigen blog)."
+
+#: inc/settings.php:162
+msgid "Disable REST API"
+msgstr "Schakel REST API uit"
+
+#: inc/settings.php:170
+msgid "Default (Enabled)"
+msgstr "Standaard (Ingeschakeld)"
+
+#: inc/settings.php:171
+msgid "Disable for Non-Admins"
+msgstr "Uitschakelen voor niet-beheerders"
+
+#: inc/settings.php:172
+msgid "Disable When Logged Out"
+msgstr "Schakel uit wanneer uitgelogd"
+
+#: inc/settings.php:174
+msgid "Disables REST API requests and displays an error message if the requester doesn't have permission."
+msgstr "Schakelt REST API aanvragen uit en toont een foutmelding als de aanvrager geen toestemming heeft."
+
+#: inc/settings.php:181
+msgid "Remove REST API Links"
+msgstr "Verwijder REST API links"
+
+#: inc/settings.php:187
+msgid "Removes REST API link tag from the front end and the REST API header link from page requests."
+msgstr "Verwijdert REST API link tag aan de voorkant en de REST API header link van paginaverzoeken."
+
+#: inc/settings.php:194
+msgid "Disable Google Maps"
+msgstr "Schakel Google Maps uit"
+
+#: inc/settings.php:201
+msgid "Removes any instances of Google Maps being loaded across your entire site."
+msgstr "Verwijdert alle instanties van Google Maps die overal op je site worden geladen."
+
+#: inc/settings.php:208
+msgid "Exclude Post IDs"
+msgstr "Sluit bericht ID's uit"
+
+#: inc/settings.php:217
+msgid "Prevent Google Maps from being disabled on specific post IDs. Format: comma separated"
+msgstr "Voorkom dat Google Maps wordt uitgeschakeld op specifieke bericht ID's. Formaat: komma gescheiden"
+
+#: inc/settings.php:224
+msgid "Disable Password Strength Meter"
+msgstr "Schakel wachtwoordsterktemeter uit"
+
+#: inc/settings.php:230
+msgid "Removes WordPress and WooCommerce Password Strength Meter scripts from non essential pages."
+msgstr "Verwijdert WordPress en WooCommerce wachtwoordsterktemeter scripts van niet-essentiële pagina's."
+
+#: inc/settings.php:237
+msgid "Disable Comments"
+msgstr "Schakel reacties uit"
+
+#: inc/settings.php:243
+msgid "Disables WordPress comments across your entire site."
+msgstr "Schakelt WordPress reacties uit op je hele site."
+
+#: inc/settings.php:250
+msgid "Remove Comment URLs"
+msgstr "Verwijder reactie links"
+
+#: inc/settings.php:256
+msgid "Removes the WordPress comment author link and website field from blog posts."
+msgstr "Verwijdert de WordPress reactie auteur link en site veld van blogberichten."
+
+#: inc/settings.php:263
+msgid "Add Blank Favicon"
+msgstr "Voeg blanco favicon toe"
+
+#: inc/settings.php:269
+msgid "Adds a blank favicon to your WordPress header, which will prevent a missing favicon or 404 error. If you already have a favicon on your site, you should leave this off. "
+msgstr "Voegt een blanco favicon toe aan je WordPress header, wat een ontbrekende favicon of 404 fout zal voorkomen. Als je al een favicon op je site hebt, laat dit dan uit. "
+
+#: inc/settings.php:276
+msgid "Remove Global Styles"
+msgstr "Verwijder globale stijlen"
+
+#: inc/settings.php:282
+msgid "Remove the inline global styles (CSS and SVG code) related to duotone filters."
+msgstr "Verwijder de inline globale stijlen (CSS en SVG code) gerelateerd aan duotone filters."
+
+#: inc/settings.php:289
+msgid "Separate Block Styles"
+msgstr "Scheiding van blokstijlen"
+
+#: inc/settings.php:295
+msgid "Load core block styles only when they are rendered instead of in a global stylesheet."
+msgstr "Laad core blokstijlen alleen wanneer ze worden weergegeven in plaats van in een globale stylesheet."
+
+#: inc/settings.php:302
+msgid "Disable Heartbeat"
+msgstr "Schakel Heartbeat uit"
+
+#: inc/settings.php:311
+msgid "Disable Everywhere"
+msgstr "Schakel overal uit"
+
+#: inc/settings.php:312
+msgid "Only Allow When Editing Posts/Pages"
+msgstr "Alleen toestaan ​​bij het bewerken van berichten/pagina's"
+
+#: inc/settings.php:314
+msgid "Disable WordPress Heartbeat everywhere or in certain areas (used for auto saving and revision tracking)."
+msgstr "Schakel WordPress heartbeat overal of in bepaalde gebieden uit (gebruikt voor automatisch opslaan en herziening volgen)."
+
+#: inc/settings.php:321
+msgid "Heartbeat Frequency"
+msgstr "Heartbeat frequentie"
+
+#: inc/settings.php:329 inc/settings.php:330 inc/settings.php:331
+#: inc/settings.php:332
+#, php-format
+msgid "%s Seconds"
+msgstr "%s seconden"
+
+#: inc/settings.php:334
+msgid "Controls how often the WordPress Heartbeat API is allowed to run."
+msgstr "Bepaalt hoe vaak de WordPress Heartbeat API mag uitvoeren."
+
+#: inc/settings.php:341
+msgid "Limit Post Revisions"
+msgstr "Beperk berichtrevisies"
+
+#: inc/settings.php:350
+msgid "Disable Post Revisions"
+msgstr "Schakel berichtrevisies uit"
+
+#: inc/settings.php:362
+msgid "Limits the maximum amount of revisions that are allowed for posts and pages."
+msgstr "Beperkt het maximale aantal revisies dat voor berichten en pagina's is toegestaan."
+
+#: inc/settings.php:369
+msgid "Autosave Interval"
+msgstr "Auto opslaan interval"
+
+#: inc/settings.php:377
+msgid "Minute"
+msgstr "Minuut"
+
+#: inc/settings.php:378
+msgid "Disable Autosave Interval"
+msgstr "Schakel auto opslaan interval uit"
+
+#: inc/settings.php:379 inc/settings.php:380 inc/settings.php:381
+#: inc/settings.php:382 inc/settings.php:383 inc/settings.php:384
+#: inc/settings.php:385 inc/settings.php:386 inc/settings.php:387
+msgid "Minutes"
+msgstr "Minuten"
+
+#: inc/settings.php:389
+msgid "Controls how often WordPress will auto save posts and pages while editing."
+msgstr "Bepaalt hoe vaak WordPress berichten en pagina's automatisch opslaat tijdens het bewerken."
+
+#: inc/settings.php:394
+msgid "Login URL"
+msgstr "Login URL"
+
+#: inc/settings.php:399
+msgid "Custom Login URL"
+msgstr "Aangepaste login URL"
+
+#: inc/settings.php:408
+msgid "When set, this will change your WordPress login URL (slug) to the provided string and will block wp-admin and wp-login endpoints from being directly accessed."
+msgstr "Wanneer ingesteld, zal dit je WordPress login URL (slug) veranderen naar de verstrekte string en de wp-admin en wp-login endpoints blokkeren tegen directe toegang."
+
+#: inc/settings.php:415
+msgid "Disabled Behavior"
+msgstr "Uitgeschakeld gedrag"
+
+#: inc/settings.php:423 inc/settings.php:436
+msgid "Message"
+msgstr "Bericht"
+
+#: inc/settings.php:425
+msgid "Home URL"
+msgstr "Home URL"
+
+#: inc/settings.php:426
+msgid "Local Redirect"
+msgstr "Lokale omleiding"
+
+#: inc/settings.php:429
+msgid "Change what happens when an original login endpoint is visited."
+msgstr "Verander wat er gebeurt wanneer een origineel login endpoint wordt bezocht."
+
+#: inc/settings.php:445
+msgid "Change the disabled message that is displayed."
+msgstr "Wijzig het uitgeschakelde bericht dat wordt weergegeven."
+
+#: inc/settings.php:452
+msgid "Redirect Slug"
+msgstr "Omleiding slug"
+
+#: inc/settings.php:460
+msgid "404"
+msgstr "404"
+
+#: inc/settings.php:461
+msgid "Change the slug that is used for the local redirect."
+msgstr "Verander de slug die wordt gebruikt voor de lokale omleiding."
+
+#: inc/settings.php:473
+msgid "Disable Scripts"
+msgstr "Schakel scripts uit"
+
+#: inc/settings.php:479
+msgid "Disables WooCommerce scripts and styles except on product, cart, and checkout pages."
+msgstr "Schakelt WooCommerce scripts en stijlen uit, behalve op product-, winkelwagen- en afrekenpagina's."
+
+#: inc/settings.php:486
+msgid "Disable Cart Fragmentation"
+msgstr "Schakel winkelwagen fragmentatie uit"
+
+#: inc/settings.php:492
+msgid "Disables WooCommerce cart fragmentation script when there are no items in the cart."
+msgstr "Schakelt WooCommerce winkelwagen fragmentatie script uit wanneer er geen items in de winkelwagen zijn."
+
+#: inc/settings.php:499
+msgid "Disable Status Meta Box"
+msgstr "Schakel status meta box uit"
+
+#: inc/settings.php:505
+msgid "Disables WooCommerce status meta box from the WP Admin Dashboard."
+msgstr "Schakelt WooCommerce status meta box uit van het WP beheer dashboard."
+
+#: inc/settings.php:512
+msgid "Disable Widgets"
+msgstr "Schakel widgets uit"
+
+#: inc/settings.php:518
+msgid "Disables all WooCommerce widgets."
+msgstr "Schakelt alle WooCommerce widgets uit."
+
+#: inc/settings.php:528
+msgid "Defer"
+msgstr "Uitstellen"
+
+#: inc/settings.php:533
+msgid "Defer Javascript"
+msgstr "Stel JavaScript uit"
+
+#: inc/settings.php:540
+msgid "Add the defer attribute to your JavaScript files."
+msgstr "Voeg het defer attribuut toe aan je JavaScript bestanden."
+
+#: inc/settings.php:548
+msgid "Include Inline Scripts"
+msgstr "Inclusief inline scripts"
+
+#: inc/settings.php:555
+msgid "Include inline scripts in deferral."
+msgstr "Inclusief inline scripts in uitstel."
+
+#: inc/settings.php:563
+msgid "Include jQuery"
+msgstr "Inclusief jQuery"
+
+#: inc/settings.php:570
+msgid "Many plugins and themes require jQuery. We recommend either testing jQuery deferral separately or leaving this option turned off."
+msgstr "Veel plugins en thema's vereisen jQuery. We raden aan om jQuery afstelling afzonderlijk te testen of deze optie uit te laten staan."
+
+#: inc/settings.php:571
+msgid "Allow jQuery core to be deferred. We recommend testing this separately or leaving it off."
+msgstr "Sta jQuery core toe om uitgesteld te worden. We raden aan om dit afzonderlijk te testen of uit te laten."
+
+#: inc/settings.php:579
+msgid "Excluded from Deferral"
+msgstr "Uitgesloten van uitstel"
+
+#: inc/settings.php:589
+msgid "Exclude specific JavaScript files from deferral. Exclude a file by adding the source URL (example.js). Format: one per line"
+msgstr "Sluit specifieke JavaScript bestanden uit van uitstellen door de bron URL toe te voegen (example.js). Formaat: één per regel"
+
+#: inc/settings.php:595 inc/settings.php:832
+msgid "Delay"
+msgstr "Vertraging"
+
+#: inc/settings.php:607
+msgid "Delay JavaScript from loading until user interaction."
+msgstr "Stel het laden van JavaScript uit tot gebruikersinteractie."
+
+#: inc/settings.php:615
+msgid "Delay Behavior"
+msgstr "Vertragingsgedrag"
+
+#: inc/settings.php:624
+msgid "Only Delay Specified Scripts"
+msgstr "Alleen specifieke scripts uitstellen"
+
+#: inc/settings.php:625
+msgid "Delay All Scripts"
+msgstr "Vertraging van alle scripts"
+
+#: inc/settings.php:627
+msgid "Choose the method used to delay scripts."
+msgstr "Kies de methode die wordt gebruikt om scripts uit te stellen."
+
+#: inc/settings.php:635
+msgid "Delayed Scripts"
+msgstr "Uitgestelde scripts"
+
+#: inc/settings.php:645
+msgid "Delay specific JavaScript files by adding the source URL (example.js), or delay an inline script by adding a unique string from that script. Format: one per line"
+msgstr "Stel specifieke JavaScript bestanden uit door de bron URL toe te voegen (example.js), of stel een inline script uit door een unieke string uit dat script toe te voegen. Formaat: één per regel"
+
+#: inc/settings.php:653
+msgid "Quick Exclusions"
+msgstr "Snelle uitsluitingen"
+
+#: inc/settings.php:660
+msgid "Exclude scripts for popular plugins and themes based on our predefined lists of common exclusions."
+msgstr "Sluit scripts uit voor populaire plugins en thema's op basis van onze vooraf gedefinieerde lijsten van veelvoorkomende uitsluitingen."
+
+#: inc/settings.php:668
+msgid "Excluded from Delay"
+msgstr "Uitgesloten van vertraging"
+
+#: inc/settings.php:678
+msgid "Exclude specific JavaScript files from delay by adding the source URL (example.js), or exclude an inline script by adding a unique string from that script. Format: one per line"
+msgstr "Sluit specifieke JavaScript bestanden uit van vertraging door de bron URL toe te voegen (example.js), of sluit een inline script uit door een unieke string uit dat script toe te voegen. Formaat: één per regel"
+
+#: inc/settings.php:686
+msgid "Delay Timeout"
+msgstr "Vertraging time-out"
+
+#: inc/settings.php:693
+msgid "Load delayed scripts after a set amount of time if no user interaction has been detected."
+msgstr "Laad uitgestelde scripts na een bepaalde tijd als er geen gebruikersinteractie is gedetecteerd."
+
+#: inc/settings.php:701
+msgid "Disable Click Delay"
+msgstr "Schakel klik vertraging uit"
+
+#: inc/settings.php:708
+msgid "Prevents the first click from being delayed until JavaScript has finished loading. This can be helpful if you are excluding scripts for interactive elements manually."
+msgstr "Voorkomt dat de eerste klik wordt vertraagd totdat JavaScript is geladen. Dit kan nuttig zijn als je scripts handmatig uitsluit voor interactieve elementen."
+
+#: inc/settings.php:716
+msgid "Enable FastClick"
+msgstr "Schakel FastClick in"
+
+#: inc/settings.php:723
+msgid "Load the FastClick library locally to fix the double-click issue on iOS."
+msgstr "Laad de FastClick bibliotheek lokaal om het dubbelklik probleem op iOS op te lossen."
+
+#: inc/settings.php:729 inc/settings.php:911
+msgid "Minify"
+msgstr "Verkleinen"
+
+#: inc/settings.php:741
+msgid "Remove unnecessary characters and optimize JavaScript files."
+msgstr "Verwijder onnodige tekens en optimaliseer JavaScript bestanden."
+
+#: inc/settings.php:749 inc/settings.php:931
+msgid "Excluded from Minification"
+msgstr "Uitgesloten van verkleining"
+
+#: inc/settings.php:759
+msgid "Exclude specific JavaScript files from minification by adding the source URL (example.js). Format: one per line"
+msgstr "Sluit specifieke JavaScript bestanden uit van verkleining door de bron URL toe te voegen (example.js). Formaat: één per regel"
+
+#: inc/settings.php:767 inc/settings.php:776
+msgid "Clear Minified JS"
+msgstr "Wis verkleinde JS"
+
+#: inc/settings.php:778
+msgid "Remove all existing minified JavaScript files that have been generated."
+msgstr "Verwijder alle bestaande verkleinde JavaScript bestanden die zijn gegenereerd."
+
+#: inc/settings.php:783
+msgid "Unused"
+msgstr "Ongebruikt"
+
+#: inc/settings.php:788
+msgid "Remove Unused CSS"
+msgstr "Verwijder ongebruikte CSS"
+
+#: inc/settings.php:795
+msgid "Remove unused CSS from your stylesheets and print out used CSS inline in the header."
+msgstr "Verwijder ongebruikte CSS uit je stylesheets en druk gebruikte CSS inline af in de header."
+
+#: inc/settings.php:803
+msgid "Used CSS Method"
+msgstr "Gebruikte CSS methode"
+
+#: inc/settings.php:812 inc/settings.php:1417
+msgid "Inline"
+msgstr "Inline"
+
+#: inc/settings.php:813 inc/settings.php:1416
+msgid "File"
+msgstr "Bestand"
+
+#: inc/settings.php:815
+msgid "Choose how the used CSS will be included."
+msgstr "Kies hoe de gebruikte CSS wordt opgenomen."
+
+#: inc/settings.php:823
+msgid "Stylesheet Behavior"
+msgstr "Stylesheet gedrag"
+
+#: inc/settings.php:833
+msgid "Async"
+msgstr "Async"
+
+#: inc/settings.php:834 inc/settings.php:2386 inc/settings.php:2436
+#: inc/settings.php:2478
+msgid "Remove"
+msgstr "Verwijderen"
+
+#: inc/settings.php:836
+msgid "Choose how the original stylesheets (unused CSS) will be included."
+msgstr "Kies hoe de originele stylesheets (ongebruikte CSS) worden opgenomen."
+
+#: inc/settings.php:844
+msgid "Excluded Stylesheets"
+msgstr "Uitgesloten stylesheets"
+
+#: inc/settings.php:853
+msgid "Exclude specific stylesheets from unused CSS removal by adding a unique portion of the source URL (example.css). Format: one per line"
+msgstr "Sluit specifieke stylesheets uit van ongebruikte CSS verwijdering door een uniek deel van de bron URL toe te voegen (example.css). Formaat: één per regel"
+
+#: inc/settings.php:861
+msgid "Excluded Selectors"
+msgstr "Uitgesloten selectors"
+
+#: inc/settings.php:870
+msgid "Exclude specific CSS selectors from being removed by adding the element ID, class name, etc. (#id, .class). Format: one per line"
+msgstr "Sluit specifieke CSS selectors uit van verwijdering door het element ID, klasse naam, enz. toe te voegen. (#id, .class). Formaat: één per regel"
+
+#: inc/settings.php:878 inc/settings.php:1456 inc/settings.php:1524
+msgid "CDN URL"
+msgstr "CDN URL"
+
+#: inc/settings.php:886
+msgid "Provide your CDN URL if you are using a CDN rewrite outside of Perfmatters."
+msgstr "Voorzie je CDN URL als je een CDN herschrijving gebruikt buiten Perfmatters."
+
+#: inc/settings.php:906
+msgid "Remove all existing unused CSS files that have been generated."
+msgstr "Verwijder alle bestaande ongebruikte CSS bestanden die zijn gegenereerd."
+
+#: inc/settings.php:923
+msgid "Remove unnecessary characters and optimize CSS files."
+msgstr "Verwijder onnodige tekens en optimaliseer CSS bestanden."
+
+#: inc/settings.php:941
+msgid "Exclude specific CSS files from minification by adding the source URL (example.css). Format: one per line"
+msgstr "Sluit specifieke CSS bestanden uit van verkleining door de bron URL toe te voegen (example.css). Formaat: één per regel"
+
+#: inc/settings.php:949 inc/settings.php:958
+msgid "Clear Minified CSS"
+msgstr "Wis verkleinde CSS"
+
+#: inc/settings.php:960
+msgid "Remove all existing minified CSS files that have been generated."
+msgstr "Verwijder alle bestaande verkleinde CSS bestanden die zijn gegenereerd."
+
+#: inc/settings.php:970
+msgid "Add Header Code"
+msgstr "Voeg header code toe"
+
+#: inc/settings.php:979
+msgid "Code added here will be printed in the head section on every page of your website."
+msgstr "Code hier toegevoegd zal worden afgedrukt in de head sectie op elke pagina van je site."
+
+#: inc/settings.php:988
+msgid "Add Body Code"
+msgstr "Voeg body code toe"
+
+#: inc/settings.php:997
+msgid "Code added here will be printed below the opening body tag on every page of your website."
+msgstr "Code hier toegevoegd zal worden afgedrukt onder de opening body tag op elke pagina van je site."
+
+#: inc/settings.php:1005
+msgid "Add Footer Code"
+msgstr "Voeg footer code toe"
+
+#: inc/settings.php:1014
+msgid "Code added here will be printed above the closing body tag on every page of your website."
+msgstr "Code hier toegevoegd zal worden afgedrukt boven de sluiting body tag op elke pagina van je site."
+
+#: inc/settings.php:1025
+msgid "Enable Instant Page"
+msgstr "Schakel Instant Page in"
+
+#: inc/settings.php:1032
+msgid "Automatically prefetch URLs in the background after a user hovers over a link. This results in almost instantaneous load times and improves the user experience."
+msgstr "Automatisch URL's voorladen op de achtergrond nadat een gebruiker over een link zweeft. Dit resulteert in bijna onmiddellijke laadtijden en verbeterde gebruikerservaring."
+
+#: inc/settings.php:1039
+msgid "Preload Critical Images"
+msgstr "Kritieke afbeeldingen voorladen"
+
+#: inc/settings.php:1055
+msgid "Automatically preload leading images to help improve Largest Contentful Paint (LCP)."
+msgstr "Automatisch leidende afbeeldingen voorladen om Largest Contentful Paint (LCP) te verbeteren."
+
+#: inc/settings.php:1062
+msgid "Preload"
+msgstr "Voorladen"
+
+#: inc/settings.php:1069
+msgid "Preload allows you to specify resources (such as fonts or CSS) needed right away during a page load. This helps fix render-blocking resource warnings. Format: https://example.com/font.woff2"
+msgstr "Voorladen stelt je in staat om bronnen (zoals lettertypen of CSS) direct nodig tijdens een paginalading te specificeren. Dit helpt bij het oplossen van render blokkerende bronwaarschuwingen. Formaat: https://example.com/font.woff2"
+
+#: inc/settings.php:1076
+msgid "Fetch Priority"
+msgstr "Ophalen prioriteit"
+
+#: inc/settings.php:1083
+msgid "Add the fetchpriority HTML attribute to a resource to proritize it higher or lower. This can help improve Largest Contentful Paint (LCP)."
+msgstr "Voeg het fetchpriority HTML attribuut toe aan een gegevensbron om deze hoger of lager te prioriteren. Dit kan helpen de Largest Contentful Paint (LCP) te verbeteren."
+
+#: inc/settings.php:1090
+msgid "Disable Core Fetch"
+msgstr "Schakel core fetch uit"
+
+#: inc/settings.php:1097
+msgid "Disable the fetch priority attribute added by WordPress core."
+msgstr "Schakel het fetch prioriteit attribuut uit dat is toegevoegd door WordPress core."
+
+#: inc/settings.php:1105
+msgid "Preconnect"
+msgstr "Preconnectie"
+
+#: inc/settings.php:1112
+msgid "Preconnect allows the browser to set up early connections before an HTTP request, eliminating roundtrip latency and saving time for users. Format: https://example.com"
+msgstr "Preconnectie laat de browser toe om vroege verbindingen op te zetten vóór een HTTP aanvraag, waardoor roundtrip latentie wordt geëlimineerd en tijd wordt bespaard voor gebruikers. Formaat: https://example.com"
+
+#: inc/settings.php:1119
+msgid "DNS Prefetch"
+msgstr "DNS prefetch"
+
+#: inc/settings.php:1129
+msgid "Resolve domain names before a user clicks. Format: //example.com (one per line)"
+msgstr "Los domeinnamen op voordat een gebruiker klikt. Formaat: //example.com (één per regel)"
+
+#: inc/settings.php:1140
+msgid "Images"
+msgstr "Afbeeldingen"
+
+#: inc/settings.php:1147
+msgid "Enable lazy loading on images."
+msgstr "Schakel lazy-loading in voor afbeeldingen."
+
+#: inc/settings.php:1155
+msgid "Exclude Leading Images"
+msgstr "Sluit leidende afbeeldingen uit"
+
+#: inc/settings.php:1171
+msgid "Exclude a certain number of images starting from the top of the page."
+msgstr "Sluit een bepaald aantal afbeeldingen vanaf de bovenkant van de pagina uit."
+
+#: inc/settings.php:1179
+msgid "iFrames and Videos"
+msgstr "iFrames en video's"
+
+#: inc/settings.php:1186
+msgid "Enable lazy loading on iframes and videos."
+msgstr "Schakel lazy-loading in voor iframes en video's."
+
+#: inc/settings.php:1194
+msgid "YouTube Preview Thumbnails"
+msgstr "YouTube voorbeeld thumbnails"
+
+#: inc/settings.php:1201
+msgid "Swap out YouTube iFrames with preview thumbnails. The original iFrame is loaded when the thumbnail is clicked."
+msgstr "Vervang YouTube iframes door voorbeeld thumbnails. Het originele iFrame wordt geladen wanneer de thumbnail wordt aangeklikt."
+
+#: inc/settings.php:1209
+msgid "Exclude from Lazy Loading"
+msgstr "Uitsluiten van lazy-loading"
+
+#: inc/settings.php:1219
+msgid "Exclude specific elements from lazy loading. Exclude an element by adding the source URL (example.png) or by adding any unique portion of its attribute string (class=\"example\"). Format: one per line"
+msgstr "Sluit specifieke elementen uit van lazy-loading. Sluit een element uit door de bron URL toe te voegen (example.png) of door een uniek deel van zijn attribuutstring toe te voegen (class=\"example\"). Formaat: één per regel"
+
+#: inc/settings.php:1226
+msgid "Exclude by Parent Selector"
+msgstr "Uitsluiten op hoofd selector"
+
+#: inc/settings.php:1236
+msgid "Exclude specific images from lazy loading by adding any unique portion of an attribute string (class=\"example\") from a parent container. Format: one per line"
+msgstr "Sluit specifieke afbeeldingen uit van lazy-loading door een uniek deel van een attribuut string (class=\"example\") van een hoofdcontainer toe te voegen. Formaat: één per regel"
+
+#: inc/settings.php:1244
+msgid "Threshold"
+msgstr "Drempel"
+
+#: inc/settings.php:1254
+msgid "Extend the lazy loading threshold allowing images to load before they are visible in the viewport. (px or %)"
+msgstr "Verleng de lazy-loading drempel zodat afbeeldingen geladen worden voordat ze zichtbaar zijn in de viewport. (px of %)"
+
+#: inc/settings.php:1261
+msgid "DOM Monitoring"
+msgstr "DOM monitoring"
+
+#: inc/settings.php:1268
+msgid "Watch for changes in the DOM and dynamically lazy load newly added elements."
+msgstr "Let op veranderingen in de DOM en lazy-load nieuw toegevoegde elementen dynamisch."
+
+#: inc/settings.php:1275
+msgid "Add Missing Image Dimensions"
+msgstr "Voeg ontbrekende afbeelding afmetingen toe"
+
+#: inc/settings.php:1282
+msgid "Add missing width and height attributes to images."
+msgstr "Voeg ontbrekende breedte en hoogte attributen toe aan afbeeldingen."
+
+#: inc/settings.php:1289
+msgid "Fade In"
+msgstr "Vervaag in"
+
+#: inc/settings.php:1296
+msgid "Add fade in effect when images are loaded in."
+msgstr "Voeg vervagen effect toe wanneer afbeeldingen geladen zijn."
+
+#: inc/settings.php:1303
+msgid "CSS Background Images"
+msgstr "CSS achtergrondafbeeldingen"
+
+#: inc/settings.php:1310
+msgid "Allow lazy loading of background images coming from (CSS) stylesheets."
+msgstr "Sta lazy-loading toe van achtergrondafbeeldingen afkomstig van (CSS) stylesheets."
+
+#: inc/settings.php:1318
+msgid "Background Selectors"
+msgstr "Achtergrond selectors"
+
+#: inc/settings.php:1328
+msgid "Lazy load a CSS background image by adding a unique selector (ID or class) found on the element that the background image has been applied to. Format: one per line"
+msgstr "Lazy-load een CSS achtergrondafbeelding door een unieke selector (ID of klasse) toe te voegen die te vinden is op het element waarop de achtergrondafbeelding is toegepast. Format: een per regel"
+
+#: inc/settings.php:1334
+msgid "Lazy Elements"
+msgstr "Lazy elementen"
+
+#: inc/settings.php:1339
+msgid "Elements"
+msgstr "Elementen"
+
+#: inc/settings.php:1346
+msgid "Allow lazy loading of elements in the DOM."
+msgstr "Sta lazy-loading van elementen in de DOM toe."
+
+#: inc/settings.php:1354
+msgid "Element Selectors"
+msgstr "Element selectoren"
+
+#: inc/settings.php:1364
+msgid "Lazy load specific elements and their descendants by adding any unique portion of an attribute string (class=\"example\") from a parent container. Format: one per line"
+msgstr "Lazy-load specifieke elementen en hun nakomelingen door een uniek gedeelte van een attribuut string (class=\"example\") toe te voegen vanuit een hoofdcontainer. Format: een per regel"
+
+#: inc/settings.php:1376
+msgid "Local Google Fonts"
+msgstr "Lokale Google Fonts"
+
+#: inc/settings.php:1384
+msgid "Host Google Font files locally on your server or CDN."
+msgstr "Host Google Font bestanden lokaal op je server of CDN."
+
+#: inc/settings.php:1391
+msgid "Display Swap"
+msgstr "Toon swap"
+
+#: inc/settings.php:1399
+msgid "Add the font-display swap property to your Google Fonts."
+msgstr "Voeg de font-display swap eigenschap toe aan je Google Fonts."
+
+#: inc/settings.php:1406
+msgid "Print Method"
+msgstr "Printmethode"
+
+#: inc/settings.php:1419
+msgid "Choose how the local font stylesheet will be included."
+msgstr "Kies hoe het lokale lettertype stylesheet zal worden opgenomen."
+
+#: inc/settings.php:1426
+msgid "Limit Subsets"
+msgstr "Beperk subsets"
+
+#: inc/settings.php:1434
+msgid "Limit subsets that are downloaded and included in the stylesheet."
+msgstr "Beperk subsets die worden gedownload en opgenomen in het stylesheet."
+
+#: inc/settings.php:1441
+msgid "Allowed Subsets"
+msgstr "Toegestane subsets"
+
+#: inc/settings.php:1449
+msgid "Choose which subsets to download locally."
+msgstr "Kies welke subsets je lokaal wilt downloaden."
+
+#: inc/settings.php:1466
+msgid "Use your CDN URL when referencing Google Font files inside a parent stylesheet. Example: https://cdn.example.com"
+msgstr "Gebruik je CDN URL wanneer je Google Font bestanden verwijst binnen een hoofd stylesheet. Voorbeeld: https://cdn.example.com"
+
+#: inc/settings.php:1473 inc/settings.php:1482
+msgid "Clear Local Fonts"
+msgstr "Wis lokale lettertypes"
+
+#: inc/settings.php:1484
+msgid "Remove all existing local Google Font files and stylesheets."
+msgstr "Verwijder alle bestaande lokale Google Font bestanden en stylesheets."
+
+#: inc/settings.php:1491
+msgid "Disable Google Fonts"
+msgstr "Schakel Google Fonts uit"
+
+#: inc/settings.php:1499
+msgid "Removes any instances of Google Fonts being loaded across your entire site."
+msgstr "Verwijdert alle gevallen van Google Fonts die worden geladen op je gehele site."
+
+#: inc/settings.php:1510
+msgid "Enable CDN Rewrite"
+msgstr "Schakel CDN herschrijven in"
+
+#: inc/settings.php:1517
+msgid "Enables rewriting of your site URLs with your CDN URLs which can be configured below."
+msgstr "Schakelt het herschrijven van je site URL's met je CDN URL's in die hieronder kunnen worden geconfigureerd."
+
+#: inc/settings.php:1533
+msgid "Enter your CDN URL without the trailing backslash. Example: https://cdn.example.com"
+msgstr "Voer je CDN URL in zonder de schuine streep aan het einde. Voorbeeld: https://cdn.example.com"
+
+#: inc/settings.php:1540
+msgid "Included Directories"
+msgstr "Opgenomen folders"
+
+#: inc/settings.php:1549
+msgid "Enter any directories you would like to be included in CDN rewriting, separated by commas (,). Default: wp-content,wp-includes"
+msgstr "Voer alle folders in die je opgenomen wilt hebben in CDN herschrijven, gescheiden door komma's (,). Standaard: wp-content,wp-includes"
+
+#: inc/settings.php:1556
+msgid "CDN Exclusions"
+msgstr "CDN uitsluitingen"
+
+#: inc/settings.php:1565
+msgid "Enter any directories or file extensions you would like to be excluded from CDN rewriting, separated by commas (,). Default: .php"
+msgstr "Voer alle folders of bestandsextensies in die je uitgesloten wilt hebben van CDN herschrijven, gescheiden door komma's (,). Standaard: .php"
+
+#: inc/settings.php:1576
+msgid "Enable Local Analytics"
+msgstr "Schakel lokale analytics in"
+
+#: inc/settings.php:1583
+msgid "Enable syncing of the Google Analytics script to your own server."
+msgstr "Schakel synchronisatie van het Google Analytics script naar je eigen server in."
+
+#: inc/settings.php:1590
+msgid "Tracking ID"
+msgstr "Volgings ID"
+
+#: inc/settings.php:1598
+msgid "Input your Google Analytics tracking or measurement ID."
+msgstr "Voer je Google Analytics volging of meet ID in."
+
+#: inc/settings.php:1605
+msgid "Tracking Code Position"
+msgstr "Positie van volgcode"
+
+#: inc/settings.php:1614
+msgid "Header"
+msgstr "header"
+
+#: inc/settings.php:1615
+msgid "Footer"
+msgstr "footer"
+
+#: inc/settings.php:1617
+msgid "Load your analytics script in the header (default) or footer of your site. Default: Header"
+msgstr "Laad je analytics script in de header (standaard) of footer van je site. Standaard: Header"
+
+#: inc/settings.php:1624
+msgid "Script Type"
+msgstr "Script type"
+
+#: inc/settings.php:1637
+msgid "Choose which script method you would like to use. Default Google Analytics 4 is larger and includes all features, while Minimal is smaller and only includes basic reporting features."
+msgstr "Kies welke script methode je wilt gebruiken. Standaard Google Analytics 4 is groter en bevat alle functies, terwijl Minimal kleiner is en alleen basis rapportagefuncties bevat."
+
+#: inc/settings.php:1644
+msgid "Track Logged In Admins"
+msgstr "Volg ingelogde beheerders"
+
+#: inc/settings.php:1651
+msgid "Include logged-in WordPress admins in your Google Analytics reports."
+msgstr "Neem ingelogde WordPress beheerders op in je Google Analytics rapporten."
+
+#: inc/settings.php:1658
+msgid "Use MonsterInsights"
+msgstr "Gebruik MonsterInsights"
+
+#: inc/settings.php:1666
+msgid "Allows MonsterInsights to manage your Google Analytics while still using the locally hosted gtag.js file generated by Perfmatters."
+msgstr "Staat MonsterInsights toe om je Google Analytics te beheren terwijl je nog steeds het lokaal gehoste gtag.js-bestand gebruikt dat door Perfmatters is gegenereerd."
+
+#: inc/settings.php:1673
+msgid "Enable AMP Support"
+msgstr "Schakel AMP ondersteuning in"
+
+#: inc/settings.php:1680
+msgid "Enable support for analytics tracking on AMP sites. This is not a local script, but a native AMP script."
+msgstr "Schakel ondersteuning in voor volging van analytics op AMP sites. Dit is geen lokaal script, maar een native AMP script."
+
+#: inc/settings.php:1687
+msgid "Plugin"
+msgstr "plugin"
+
+#: inc/settings.php:1699
+msgid "Enables the Perfmatters Script Manager, which gives you the ability to disable CSS and JS files on a page by page basis."
+msgstr "Schakelt de Perfmatters Script Manager in, waarmee je de mogelijkheid krijgt om CSS en JS bestanden uit te schakelen op pagina voor pagina basis."
+
+#: inc/settings.php:1706
+msgid "Show Advanced Options"
+msgstr "Toon geavanceerde opties"
+
+#: inc/settings.php:1713
+msgid "Show advanced options in the Perfmatters UI."
+msgstr "Toon geavanceerde opties in de Perfmatters UI."
+
+#: inc/settings.php:1714
+msgid "Advanced options should only be used if you know exactly what you are doing, as they can break certain plugin functionality if used improperly."
+msgstr "Geavanceerde opties moeten alleen worden gebruikt als je precies weet wat je doet, omdat ze bepaalde plugin functionaliteiten kunnen breken als ze onjuist worden gebruikt."
+
+#: inc/settings.php:1721
+msgid "Disable for Logged In Users"
+msgstr "Schakel uit voor ingelogde gebruikers"
+
+#: inc/settings.php:1728
+msgid "Disable optimizations for logged in users."
+msgstr "Schakel optimalisaties uit voor ingelogde gebruikers."
+
+#: inc/settings.php:1735
+msgid "Hide Admin Bar Menu"
+msgstr "Verberg toolbar menu"
+
+#: inc/settings.php:1742
+msgid "Hide the Perfmatters menu in the admin bar."
+msgstr "Verberg het Perfmatters menu in de toolbar."
+
+#: inc/settings.php:1749
+msgid "Accessibility Mode"
+msgstr "Toegankelijkheidsmodus"
+
+#: inc/settings.php:1757
+msgid "Disable the use of visual UI elements in the plugin settings such as checkbox toggles and hovering tooltips."
+msgstr "Schakel het gebruik van visuele UI elementen in de plugin instellingen uit, zoals selectievakje toggles en hoverende tooltips."
+
+#: inc/settings.php:1784 inc/settings.php:1792
+msgid "Restore Default Options"
+msgstr "Standaard opties terugzetten"
+
+#: inc/settings.php:1793
+msgid "Are you sure? This will remove all existing plugin options and restore them to their default states."
+msgstr "Weet je het zeker? Dit zal alle bestaande plugin opties verwijderen en ze terugzetten naar hun standaardstatus."
+
+#: inc/settings.php:1795
+msgid "Restore all plugin options to their default settings."
+msgstr "Alle plugin opties terugzetten naar hun standaardinstellingen."
+
+#: inc/settings.php:1802 inc/settings.php:1810 inc/settings.php:2563
+msgid "Purge Meta Options"
+msgstr "Opschonen meta opties"
+
+#: inc/settings.php:1811
+msgid "Are you sure? This will delete all existing Perfmatters meta options for all posts from the database."
+msgstr "Weet je het zeker? Dit zal alle bestaande Perfmatters meta opties voor alle berichten uit de database verwijderen."
+
+#: inc/settings.php:1812
+msgid "Permanently delete all existing Perfmatters meta options from your database."
+msgstr "Verwijder permanent alle bestaande Perfmatters meta opties uit je database."
+
+#: inc/settings.php:1819
+msgid "Export Settings"
+msgstr "Exporteer instellingen"
+
+#: inc/settings.php:1827
+msgid "Export Plugin Settings"
+msgstr "Exporteer plugin instellingen"
+
+#: inc/settings.php:1829
+msgid "Export your Perfmatters settings for this site as a .json file. This lets you easily import the configuration into another site."
+msgstr "Exporteer je Perfmatters instellingen voor deze site als een .json bestand. Hiermee kun je eenvoudig de configuratie in een andere site importeren."
+
+#: inc/settings.php:1836
+msgid "Import Settings"
+msgstr "Importeer instellingen"
+
+#: inc/settings.php:1841
+msgid "Import Perfmatters settings from an exported .json file."
+msgstr "Importeer Perfmatters instellingen uit een geëxporteerd .json bestand."
+
+#: inc/settings.php:1851
+msgid "Scan Database"
+msgstr "Scan database"
+
+#: inc/settings.php:1859
+msgid "Scan Now"
+msgstr "Scan nu"
+
+#: inc/settings.php:1862
+msgid "Scan the database to calculate items available for optimization."
+msgstr "Scan de database om items te berekenen die beschikbaar zijn voor optimalisatie."
+
+#: inc/settings.php:1869
+msgid "Post Revisions"
+msgstr "Bericht revisies"
+
+#: inc/settings.php:1877
+msgid "Include post revisions in your database optimization. This also includes revisions for pages and custom post types."
+msgstr "Neem bericht revisies op in je database optimalisatie. Dit omvat ook revisies voor pagina's en extra berichttypen."
+
+#: inc/settings.php:1884
+msgid "Post Auto-Drafts"
+msgstr "Bericht auto concepten"
+
+#: inc/settings.php:1892
+msgid "Include post auto-drafts in your database optimization. This also includes auto-drafts for pages and custom post types."
+msgstr "Neem bericht auto concepten op in je database optimalisatie. Dit omvat ook auto concepten voor pagina's en extra berichttypen."
+
+#: inc/settings.php:1907
+msgid "Include trashed posts in your database optimization. This also includes trashed pages and custom post types."
+msgstr "Neem verwijderde berichten op in je database optimalisatie. Dit omvat ook verwijderde pagina's en extra berichttypen."
+
+#: inc/settings.php:1922
+msgid "Include spam comments in your database optimization."
+msgstr "Neem spam reacties op in je database optimalisatie."
+
+#: inc/settings.php:1937
+msgid "Include trashed comments in your database optimization."
+msgstr "Neem verwijderde reacties op in je database optimalisatie."
+
+#: inc/settings.php:1944
+msgid "Expired Transients"
+msgstr "Verlopen transiënten"
+
+#: inc/settings.php:1952
+msgid "Include expired transients in your database optimization."
+msgstr "Neem verlopen transiënten op in je databaseoptimalisatie."
+
+#: inc/settings.php:1959
+msgid "All Transients"
+msgstr "Alle transiënten"
+
+#: inc/settings.php:1967
+msgid "Include all transients in your database optimization."
+msgstr "Neem alle transiënten op in je database optimalisatie."
+
+#: inc/settings.php:1982
+msgid "Include tables in your database optimization."
+msgstr "Neem tabellen op in je database optimalisatie."
+
+#: inc/settings.php:1991
+msgid "Optimize Database"
+msgstr "Optimaliseer database"
+
+#: inc/settings.php:1999
+msgid "Optimize Now"
+msgstr "Optimaliseer nu"
+
+#: inc/settings.php:2002
+msgid "This will make permanent changes that cannot be reverted! Are you sure you want to proceed with optimization?"
+msgstr "Dit zal permanente wijzigingen maken die niet ongedaan kunnen worden gemaakt! Weet je zeker dat je wilt doorgaan met optimalisatie?"
+
+#: inc/settings.php:2003
+msgid "Run a one-time optimization of your WordPress database based on the selected options above. This process runs in the background."
+msgstr "Voer een eenmalige optimalisatie uit van je WordPress database op basis van de geselecteerde opties hierboven. Dit proces draait op de achtergrond."
+
+#: inc/settings.php:2012
+msgid "Cancel Optimization"
+msgstr "Annuleer optimalisatie"
+
+#: inc/settings.php:2020
+msgid "Cancel Current Optimization"
+msgstr "Annuleer huidige optimalisatie"
+
+#: inc/settings.php:2023
+msgid "Cancel the current database optimization process."
+msgstr "Annuleer het huidige database optimalisatieproces."
+
+#: inc/settings.php:2031
+msgid "Scheduled Optimization"
+msgstr "Geplande optimalisatie"
+
+#: inc/settings.php:2042
+msgid "Daily"
+msgstr "Dagelijks"
+
+#: inc/settings.php:2043
+msgid "Weekly"
+msgstr "Wekelijks"
+
+#: inc/settings.php:2044
+msgid "Monthly"
+msgstr "Maandelijks"
+
+#: inc/settings.php:2046
+msgid "Schedule a routine optimization of your WordPress database based on the selected options above. This process runs in the background and starts immediately after saving."
+msgstr "Plan een routine optimalisatie van je WordPress database op basis van de geselecteerde opties hierboven. Dit proces draait op de achtergrond en start onmiddellijk na het opslaan."
+
+#: inc/settings.php:2238
+msgid "Plugins"
+msgstr "plugins"
+
+#: inc/settings.php:2243
+msgid "Themes"
+msgstr "Thema's"
+
+#: inc/settings.php:2351
+msgid "Add New"
+msgstr "Toevoegen"
+
+#: inc/settings.php:2379
+msgid "Select Type"
+msgstr "Selecteer type"
+
+#: inc/settings.php:2392 inc/settings.php:2443
+msgid "All Devices"
+msgstr "Alle apparaten"
+
+#: inc/settings.php:2397 inc/settings.php:2448
+msgid "Location"
+msgstr "Locatie"
+
+#: inc/settings.php:2401
+msgid "Priority"
+msgstr "Prioriteit"
+
+#: inc/settings.php:2403
+msgid "Auto"
+msgstr "Auto"
+
+#: inc/settings.php:2404
+msgid "High"
+msgstr "Hoog"
+
+#: inc/settings.php:2405
+msgid "Low"
+msgstr "Laag"
+
+#: inc/settings.php:2428
+msgid "Select Priority"
+msgstr "Selecteer prioriteit"
+
+#: inc/settings.php:2576
+msgid "Import Plugin Settings"
+msgstr "Importeer plugin Instellingen"
+
+#: inc/settings.php:2669
+#, php-format
+msgid "Click %s to view documentation."
+msgstr "Klik %s om documentatie te bekijken."
+
+#: inc/support.php:6 inc/support.php:9
+msgid "Documentation"
+msgstr "Documentatie"
+
+#: inc/support.php:8
+msgid "Need help? Check out our in-depth documentation. Every feature has a step-by-step walkthrough."
+msgstr "Hulp nodig? Bekijk onze uitgebreide documentatie. Elke functie heeft een stapsgewijze handleiding."
+
+#: inc/support.php:15 inc/support.php:18
+msgid "Contact Us"
+msgstr "Neem contact met ons op"
+
+#: inc/support.php:17
+msgid "If you have questions or problems, please send us a message. We’ll get back to you as soon as possible."
+msgstr "Als je vragen of problemen hebt, stuur ons dan een bericht. We nemen zo snel mogelijk contact met je op."
+
+#: inc/support.php:24
+msgid "Frequently Asked Questions"
+msgstr "Veelgestelde vragen"
+
+#: inc/support.php:28
+msgid "How do I license activate the plugin?"
+msgstr "Hoe activeer ik de licentie van de plugin?"
+
+#: inc/support.php:29
+msgid "How do I update the plugin?"
+msgstr "Hoe update ik de plugin?"
+
+#: inc/support.php:30
+msgid "How do I upgrade my license?"
+msgstr "Hoe upgrade ik mijn licentie?"
+
+#: inc/support.php:31
+msgid "Where can I view the changelog?"
+msgstr "Waar kan ik de changelog bekijken?"
+
+#: inc/support.php:32
+msgid "Where can I sign up for the affiliate program?"
+msgstr "Waar kan ik me aanmelden voor het affiliate programma?"
+
+#: inc/support.php:35
+msgid "How do I disable scripts on a per post/page basis?"
+msgstr "Hoe schakel ik scripts per bericht/pagina uit?"
+
+#: inc/support.php:36
+msgid "How do I delay JavaScript?"
+msgstr "Hoe vertraag ik JavaScript?"
+
+#: inc/support.php:37
+msgid "How do I remove unused CSS?"
+msgstr "Hoe verwijder ik ongebruikte CSS?"
+
+#: inc/support.php:38
+msgid "How do I lazy load images and videos?"
+msgstr "Hoe lazy-load ik afbeeldingen en video’s?"
+
+#: inc/support.php:39
+msgid "How do I host Google Analytics locally?"
+msgstr "Hoe host ik Google Analytics lokaal?"
+
+#: perfmatters.php:141
+msgid "Action failed."
+msgstr "Actie mislukt."
+
+#: perfmatters.php:196
+msgid "Enter valid license key for automatic updates."
+msgstr "Voer een geldige licentiesleutel in voor automatische updates."
+
+#. Plugin Name of the plugin/theme
+msgid "Perfmatters"
+msgstr "Perfmatters"
+
+#. Plugin URI of the plugin/theme
+msgid "https://perfmatters.io/"
+msgstr "https://perfmatters.io/"
+
+#. Description of the plugin/theme
+msgid "Perfmatters is a lightweight performance plugin developed to speed up your WordPress site."
+msgstr "Perfmatters is een lichte prestatie plugin ontwikkeld om je WordPress site te versnellen."
+
+#. Author of the plugin/theme
+msgid "forgemedia"
+msgstr "forgemedia"
+
+#. Author URI of the plugin/theme
+msgid "https://forgemedia.io/"
+msgstr "https://forgemedia.io/"
+

@@ -1,4 +1,5 @@
 <?php
+$perfmatters_tools = get_option('perfmatters_tools');
 
 //actions and filters
 if(!empty($perfmatters_tools['script_manager'])) {
@@ -27,7 +28,7 @@ function perfmatters_script_manager() {
 function perfmatters_script_manager_admin_bar(WP_Admin_Bar $wp_admin_bar) {
 
 	//check for proper access
-	if(!current_user_can('manage_options') || !perfmatters_network_access() || perfmatters_is_page_builder()) {
+	if(!current_user_can('manage_options') || !perfmatters_network_access() || Perfmatters\Utilities::is_page_builder()) {
 		return;
 	}
 
@@ -303,10 +304,10 @@ function perfmatters_script_manager_load_master_array() {
 function perfmatters_script_manager_print_section($category, $group, $scripts = false) {
 	global $perfmatters_script_manager_options;
 	global $currentID;
+	global $perfmatters_script_manager_settings;
 	$options = $perfmatters_script_manager_options;
-	$settings = get_option('perfmatters_script_manager_settings');
 
-	$mu_mode = !empty($settings['mu_mode']) && $category == 'plugins';
+	$mu_mode = !empty($perfmatters_script_manager_settings['mu_mode']) && $category == 'plugins';
 
 	$statusDisabled = false;
 	if(isset($options['disabled'][$category][$group]['everywhere']) 
@@ -495,10 +496,10 @@ function perfmatters_script_manager_print_status($type, $handle) {
 	global $perfmatters_tools;
 	global $perfmatters_script_manager_options;
 	global $currentID;
+	global $perfmatters_script_manager_settings;
 	$options = $perfmatters_script_manager_options;
-	$settings = get_option('perfmatters_script_manager_settings');
 
-	$mu_mode = !empty($settings['mu_mode']) && $type == 'plugins';
+	$mu_mode = !empty($perfmatters_script_manager_settings['mu_mode']) && $type == 'plugins';
 
 	global $statusDisabled;
 	$statusDisabled = false;
@@ -1208,7 +1209,7 @@ function perfmatters_script_manager_update() {
 		//clean up the options array before saving
 		perfmatters_script_manager_filter_options($options);
 
-		if(update_option('perfmatters_script_manager', $options)) {
+		if(update_option('perfmatters_script_manager', $options, false)) {
 			echo 'update_success';
 		}
 		elseif($options == $options_old) {
@@ -1258,31 +1259,31 @@ function pmsm_settings_update_process($old_value, $value) {
 		$mu_version_match = false;
 
 		//make sure mu directory exists
-		if(!file_exists(WPMU_PLUGIN_DIR)) {
-			@mkdir(WPMU_PLUGIN_DIR);
+		if(!file_exists(PMMU_PLUGIN_DIR)) {
+			@mkdir(PMMU_PLUGIN_DIR);
 		}
 
 		//remove existing mu plugin file
-		if(file_exists(WPMU_PLUGIN_DIR . "/perfmatters_mu.php")) {
+		if(file_exists(PMMU_PLUGIN_DIR . "/perfmatters_mu.php")) {
 
 			if(!function_exists('get_plugin_data')) {
 		        require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 		    }
 
 		    //get plugin data
-		    $mu_plugin_data = get_plugin_data(WPMU_PLUGIN_DIR . "/perfmatters_mu.php");
+		    $mu_plugin_data = get_plugin_data(PMMU_PLUGIN_DIR . "/perfmatters_mu.php");
 
 			if(!empty($mu_plugin_data['Version']) && defined('PERFMATTERS_VERSION') && $mu_plugin_data['Version'] == PERFMATTERS_VERSION) {
 				$mu_version_match = true;
 			}
 			else {
-				@unlink(WPMU_PLUGIN_DIR . "/perfmatters_mu.php");
+				@unlink(PMMU_PLUGIN_DIR . "/perfmatters_mu.php");
 			}
 		}
 		
 		//copy current mu plugin file
 		if(file_exists(plugin_dir_path(__FILE__) . "/perfmatters_mu.php") && !$mu_version_match) {
-			@copy(plugin_dir_path(__FILE__) . "/perfmatters_mu.php", WPMU_PLUGIN_DIR . "/perfmatters_mu.php");
+			@copy(plugin_dir_path(__FILE__) . "/perfmatters_mu.php", PMMU_PLUGIN_DIR . "/perfmatters_mu.php");
 		}
 	}
 }
@@ -1290,7 +1291,7 @@ function pmsm_settings_update_process($old_value, $value) {
 //dequeue scripts based on script manager configuration
 function perfmatters_dequeue_scripts($src, $handle) {
 	
-	if(is_admin() || isset($_GET['perfmatters']) || isset($_GET['perfmattersoff']) || perfmatters_is_page_builder() || empty($src)) {
+	if(is_admin() || isset($_GET['perfmatters']) || isset($_GET['perfmattersoff']) || Perfmatters\Utilities::is_page_builder() || empty($src)) {
 		return $src;
 	}
 
@@ -1314,6 +1315,11 @@ function perfmatters_dequeue_scripts($src, $handle) {
 		$match = explode("/", $match[1]);
 		$category = $match[0];
 		$group = $match[1];
+	}
+
+	//prevent disabling dashicons when logged in
+	if(!empty($options['disabled']['css']['dashicons']) && is_user_logged_in()) {
+		unset($options['disabled']['css']['dashicons']);
 	}
 
 	//check for group disable settings and override
@@ -1527,22 +1533,22 @@ function perfmatters_script_manager_mu_notice() {
 	    }
 
 	    //get plugin data
-	    $mu_plugin_data = get_plugin_data(WPMU_PLUGIN_DIR . "/perfmatters_mu.php");
+	    $mu_plugin_data = get_plugin_data(PMMU_PLUGIN_DIR . "/perfmatters_mu.php");
 
 		//display mu version mismatch notice
 		if(defined('PERFMATTERS_VERSION') && !empty($mu_plugin_data['Version']) && $mu_plugin_data['Version'] != PERFMATTERS_VERSION) {
 			echo "<div class='notice notice-warning'>";
 				echo "<p>";
 					echo "<strong>" . __('Perfmatters Warning', 'perfmatters') . ":</strong> ";
-					echo __('MU plugin version mismatch.', 'perfmatters') . " <a href='https://perfmatters.io/docs/mu-mode/' target='_blank'>" . __('View Documentation', 'perfmatters') . "</a>";
+					echo __('MU plugin version mismatch.', 'perfmatters') . " <a href='https://perfmatters.io/docs/mu-mode/#mu-plugin-version-mismatch' target='_blank'>" . __('View Documentation', 'perfmatters') . "</a>";
 				echo "</p>";
 			echo "</div>";
 		}
-		elseif(!file_exists(WPMU_PLUGIN_DIR . "/perfmatters_mu.php")) {
+		elseif(!file_exists(PMMU_PLUGIN_DIR . "/perfmatters_mu.php")) {
 			echo "<div class='notice notice-error'>";
 				echo "<p>";
 					echo "<strong>" . __('Perfmatters Warning', 'perfmatters') . ":</strong> ";
-					echo __('MU plugin file not found.', 'perfmatters') . " <a href='https://perfmatters.io/docs/mu-mode/' target='_blank'>" . __('View Documentation', 'perfmatters') . "</a>";
+					echo __('MU plugin file not found.', 'perfmatters') . " <a href='https://perfmatters.io/docs/mu-mode/#mu-plugin-file-not-found' target='_blank'>" . __('View Documentation', 'perfmatters') . "</a>";
 				echo "</p>";
 			echo "</div>";
 		}

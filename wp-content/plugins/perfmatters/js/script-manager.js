@@ -105,34 +105,31 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	});
 
-	//set changed status of selected inputs
-	var inputs = document.querySelectorAll("#pmsm-main-form input, #pmsm-main-form select");
-
-	inputs.forEach(function(input) {
-
-		input.addEventListener('change', function(e) {
-
-			var elem = e.target;
-
-			elem.classList.add('pmsm-changed');
-
-			if(elem.type == 'checkbox') {
-
-				var checkboxContainer = elem.closest('.pmsm-checkbox-container');
-				var checkboxes = checkboxContainer.querySelectorAll('input');
-
-				checkboxes.forEach(function(checkbox) {
-					checkbox.classList.add('pmsm-changed');
-				});
-			}
-		});
-	});
-
 	var mainForm = document.getElementById("pmsm-main-form");
 
-	//submit main script manager form
+	//main script manager form event listeners
 	if(mainForm) {
 
+		//set changed status of selected inputs
+		mainForm.addEventListener('change', function(e) {
+			if(e.target.matches('input, select')) {
+
+				e.target.classList.add('pmsm-changed');
+
+				if(e.target.type == 'checkbox') {
+
+					const checkboxContainer = e.target.closest('.pmsm-checkbox-container');
+
+					if(checkboxContainer) {
+						checkboxContainer.querySelectorAll('input').forEach(input => {
+		                	input.classList.add('pmsm-changed');
+		                });
+					}
+				}
+			}
+		});
+
+		//main form submit
 		mainForm.addEventListener('submit', function(e) {
 
 			//prevent server side submission

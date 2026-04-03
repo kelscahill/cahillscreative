@@ -13,8 +13,8 @@ class Images
     public static function queue() 
     {
         //image dimensions
-        if(!empty(Config::$options['lazyload']['image_dimensions']) && !empty(Config::$options['lazyload']['image_dimensions'])) {
-            add_action('perfmatters_output_buffer_template_redirect', array('Perfmatters\Images', 'image_dimensions'));
+        if(!empty(Config::$options['lazyload']['image_dimensions'])) {
+            add_action('perfmatters_output_buffer', array('Perfmatters\Images', 'image_dimensions'));
         }
     }
 
@@ -46,10 +46,9 @@ class Images
 
                 if(!empty($src)) {
 
-                    foreach($image_exclusions as $exclude) {
-                        if(strpos($image[1], $exclude) !== false) {
-                            continue 2;
-                        }
+                    //check exclusions
+                    if(Utilities::match_in_array($image[1], $image_exclusions)) {
+                        continue;
                     }
 
                     //get image dimensions
@@ -84,12 +83,7 @@ class Images
         }
 
         //get image path
-        $parsed_url = @parse_url($url);
-        if(empty($parsed_url['path'])) {
-            return false;
-        }
-        
-        $image_path = Utilities::get_root_dir_path() . ltrim($parsed_url['path'], '/');
+        $image_path = Utilities::get_file_path($url);
 
         if(file_exists($image_path)) {
 

@@ -3,7 +3,7 @@
 function perfmatters_settings() {
 
 	if(get_option('perfmatters_options') == false) {	
-		add_option('perfmatters_options', apply_filters('perfmatters_default_options', perfmatters_default_options()));
+		add_option('perfmatters_options', perfmatters_default_options());
 	}
 
     $perfmatters_options = get_option('perfmatters_options');
@@ -61,8 +61,23 @@ function perfmatters_settings() {
     	'perfmatters_options', 
     	array(
     		'id' => 'disable_xmlrpc',
+            'class' => 'perfmatters-input-controller',
     		'tooltip' => __('Disables WordPress XML-RPC functionality.', 'perfmatters')
     	)
+    );
+
+    //remove rsd link
+    add_settings_field(
+        'remove_rsd_link', 
+        perfmatters_title(__('Remove RSD Link', 'perfmatters'), 'remove_rsd_link', 'https://perfmatters.io/docs/remove-rsd-link-wordpress/'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'perfmatters_options', 
+        array(
+            'id' => 'remove_rsd_link',
+            'class' => 'disable_xmlrpc' . (!empty($perfmatters_options['disable_xmlrpc']) ? ' hidden' : ''),
+            'tooltip' => __('Remove RSD (Real Simple Discovery) link tag.', 'perfmatters')
+        )
     );
 
 	//remove jquery migrate
@@ -91,19 +106,6 @@ function perfmatters_settings() {
     	)
     );
 
-    //remove rsd link
-    add_settings_field(
-    	'remove_rsd_link', 
-    	perfmatters_title(__('Remove RSD Link', 'perfmatters'), 'remove_rsd_link', 'https://perfmatters.io/docs/remove-rsd-link-wordpress/'), 
-    	'perfmatters_print_input', 
-    	'perfmatters_options', 
-    	'perfmatters_options', 
-    	array(
-    		'id' => 'remove_rsd_link',
-    		'tooltip' => __('Remove RSD (Real Simple Discovery) link tag.', 'perfmatters')
-    	)
-    );
-
     //remove shortlink
     add_settings_field(
     	'remove_shortlink', 
@@ -126,6 +128,7 @@ function perfmatters_settings() {
     	'perfmatters_options', 
     	array(
     		'id' => 'disable_rss_feeds',
+            'class' => 'perfmatters-input-controller',
     		'tooltip' => __('Disable WordPress generated RSS feeds and 301 redirect URL to parent.', 'perfmatters')
     	)
     );
@@ -139,6 +142,7 @@ function perfmatters_settings() {
     	'perfmatters_options', 
     	array(
     		'id' => 'remove_feed_links',
+            'class' => 'disable_rss_feeds' . (!empty($perfmatters_options['disable_rss_feeds']) ? ' hidden' : ''),
     		'tooltip' => __('Disable WordPress generated RSS feed link tags.', 'perfmatters')
     	)
     );
@@ -244,18 +248,21 @@ function perfmatters_settings() {
         )
     );
 
-    //remove comment urls
-    add_settings_field(
-        'remove_comment_urls', 
-        perfmatters_title(__('Remove Comment URLs', 'perfmatters'), 'remove_comment_urls', 'https://perfmatters.io/docs/remove-wordpress-comment-author-link'),
-        'perfmatters_print_input', 
-        'perfmatters_options', 
-        'perfmatters_options', 
-        array(
-            'id' => 'remove_comment_urls',
-            'tooltip' => __('Removes the WordPress comment author link and website field from blog posts.', 'perfmatters')
-        )
-    );
+    if(!defined('KADENCE_VERSION')) {
+
+        //remove comment urls
+        add_settings_field(
+            'remove_comment_urls', 
+            perfmatters_title(__('Remove Comment URLs', 'perfmatters'), 'remove_comment_urls', 'https://perfmatters.io/docs/remove-wordpress-comment-author-link'),
+            'perfmatters_print_input', 
+            'perfmatters_options', 
+            'perfmatters_options', 
+            array(
+                'id' => 'remove_comment_urls',
+                'tooltip' => __('Removes the WordPress comment author link and website field from blog posts.', 'perfmatters')
+            )
+        );
+    }
 
     //blank favicon
     add_settings_field(
@@ -279,22 +286,46 @@ function perfmatters_settings() {
         'perfmatters_options', 
         array(
             'id' => 'remove_global_styles',
-            'tooltip' => __('Remove the inline global styles (CSS and SVG code) related to duotone filters.', 'perfmatters')
+            'tooltip' => __('Remove the inline global styles related to WordPress core blocks.', 'perfmatters')
         )
     );
 
     //separate block styles
-    add_settings_field(
-        'separate_block_styles', 
-        perfmatters_title(__('Separate Block Styles', 'perfmatters'), 'separate_block_styles', 'https://perfmatters.io/docs/separate-core-block-styles-wordpress/'), 
-        'perfmatters_print_input', 
-        'perfmatters_options', 
-        'perfmatters_options', 
-        array(
-            'id' => 'separate_block_styles',
-            'tooltip' => __('Load core block styles only when they are rendered instead of in a global stylesheet.', 'perfmatters')
-        )
-    );
+    if(version_compare(get_bloginfo('version'), '6.9' , '<')) {
+
+        //pre 6.9 toggle
+        add_settings_field(
+            'separate_block_styles', 
+            perfmatters_title(__('Separate Block Styles', 'perfmatters'), 'separate_block_styles', 'https://perfmatters.io/docs/separate-core-block-styles-wordpress/'), 
+            'perfmatters_print_input', 
+            'perfmatters_options', 
+            'perfmatters_options', 
+            array(
+                'id' => 'separate_block_styles',
+                'tooltip' => __('Load core block styles only when they are rendered instead of in a global stylesheet.', 'perfmatters')
+            )
+        );
+    }
+    else {
+
+        //6.9+ dropdown
+        add_settings_field(
+            'separate_block_styles', 
+            perfmatters_title(__('Block Style Behavior', 'perfmatters'), 'separate_block_styles', 'https://perfmatters.io/docs/block-style-behavior/'), 
+            'perfmatters_print_input', 
+            'perfmatters_options', 
+            'perfmatters_options', 
+            array(
+                'id' => 'separate_block_styles',
+                'input' => 'select',
+                'options' => array(
+                    ''           => __('Separate Styles Inline', 'perfmatters') . ' (' . __('Default', 'perfmatters') . ')',
+                    'stylesheet' => __('Load Global Stylesheet', 'perfmatters')
+                ),
+                'tooltip' => __('Choose how WordPress core block styles are loaded.', 'perfmatters')
+            )
+        );
+    }
 
     //disable heartbeat
     add_settings_field(
@@ -530,7 +561,7 @@ function perfmatters_settings() {
     //defer js
     add_settings_field(
         'defer_js', 
-        perfmatters_title(__('Defer Javascript', 'perfmatters'), 'defer_js', 'https://perfmatters.io/docs/defer-javascript-wordpress/#defer'), 
+        perfmatters_title(__('Defer Javascript', 'perfmatters'), 'assets-defer_js', 'https://perfmatters.io/docs/defer-javascript-wordpress/#defer'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_defer', 
@@ -545,7 +576,7 @@ function perfmatters_settings() {
     //defer inline
     add_settings_field(
         'defer_inline', 
-        perfmatters_title(__('Include Inline Scripts', 'perfmatters'), 'defer_inline', 'https://perfmatters.io/docs/defer-javascript-wordpress/#include-inline-scripts'), 
+        perfmatters_title(__('Include Inline Scripts', 'perfmatters'), 'assets-defer_inline', 'https://perfmatters.io/docs/defer-javascript-wordpress/#include-inline-scripts'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_defer', 
@@ -560,7 +591,7 @@ function perfmatters_settings() {
     //defer jquery
     add_settings_field(
         'defer_jquery', 
-        perfmatters_title(__('Include jQuery', 'perfmatters'), 'defer_jquery', 'https://perfmatters.io/docs/defer-javascript-wordpress/#include-jquery'), 
+        perfmatters_title(__('Include jQuery', 'perfmatters'), 'assets-defer_jquery', 'https://perfmatters.io/docs/defer-javascript-wordpress/#include-jquery'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_defer', 
@@ -576,7 +607,7 @@ function perfmatters_settings() {
     //js exlusions
     add_settings_field(
         'js_exclusions', 
-        perfmatters_title(__('Excluded from Deferral', 'perfmatters'), 'js_exclusions', 'https://perfmatters.io/docs/defer-javascript-wordpress/#exclude'), 
+        perfmatters_title(__('Excluded from Deferral', 'perfmatters'), 'assets-js_exclusions', 'https://perfmatters.io/docs/defer-javascript-wordpress/#exclude'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_defer', 
@@ -597,7 +628,7 @@ function perfmatters_settings() {
     //delay_js
     add_settings_field(
         'delay_js', 
-        perfmatters_title(__('Delay JavaScript', 'perfmatters'), 'delay_js', 'https://perfmatters.io/docs/delay-javascript/'), 
+        perfmatters_title(__('Delay JavaScript', 'perfmatters'), 'assets-delay_js', 'https://perfmatters.io/docs/delay-javascript/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_delay', 
@@ -612,7 +643,7 @@ function perfmatters_settings() {
     //delayed js behavior
     add_settings_field(
         'delay_js_behavior', 
-        perfmatters_title(__('Delay Behavior', 'perfmatters'), 'delay_js_behavior', 'https://perfmatters.io/docs/delay-javascript/#behavior'), 
+        perfmatters_title(__('Delay Behavior', 'perfmatters'), 'assets-delay_js_behavior', 'https://perfmatters.io/docs/delay-javascript/#behavior'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_delay', 
@@ -632,7 +663,7 @@ function perfmatters_settings() {
     //delay js inclusions
     add_settings_field(
         'delay_js_inclusions', 
-        perfmatters_title(__('Delayed Scripts', 'perfmatters'), 'delay_js_inclusions', 'https://perfmatters.io/docs/delay-javascript/#scripts'), 
+        perfmatters_title(__('Delayed Scripts', 'perfmatters'), 'assets-delay_js_inclusions', 'https://perfmatters.io/docs/delay-javascript/#scripts'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_delay', 
@@ -650,7 +681,7 @@ function perfmatters_settings() {
     //delay js quick exclusions
     add_settings_field(
         'delay_js_quick_exclusions', 
-        perfmatters_title(__('Quick Exclusions', 'perfmatters'), 'delay_js_quick_exclusions', 'https://perfmatters.io/docs/delay-javascript/#quick-exclusions'), 
+        perfmatters_title(__('Quick Exclusions', 'perfmatters'), false, 'https://perfmatters.io/docs/delay-javascript/#quick-exclusions'), 
         'perfmatters_print_quick_exclusions', 
         'perfmatters_options', 
         'assets_js_delay', 
@@ -665,7 +696,7 @@ function perfmatters_settings() {
     //delay js exclusions
     add_settings_field(
         'delay_js_exclusions', 
-        perfmatters_title(__('Excluded from Delay', 'perfmatters'), 'delay_js_exclusions', 'https://perfmatters.io/docs/delay-javascript/#excluded'), 
+        perfmatters_title(__('Excluded from Delay', 'perfmatters'), 'assets-delay_js_exclusions', 'https://perfmatters.io/docs/delay-javascript/#excluded'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_delay', 
@@ -683,7 +714,7 @@ function perfmatters_settings() {
     //delay timeout
     add_settings_field(
         'delay_timeout', 
-        perfmatters_title(__('Delay Timeout', 'perfmatters'), 'delay_timeout', 'https://perfmatters.io/docs/delay-javascript/#timeout'), 
+        perfmatters_title(__('Delay Timeout', 'perfmatters'), 'assets-delay_timeout', 'https://perfmatters.io/docs/delay-javascript/#timeout'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_delay', 
@@ -698,7 +729,7 @@ function perfmatters_settings() {
     //disable click delay
     add_settings_field(
         'disable_click_delay', 
-        perfmatters_title(__('Disable Click Delay', 'perfmatters'), 'disable_click_delay', 'https://perfmatters.io/docs/delay-javascript/#disable-click-delay'), 
+        perfmatters_title(__('Disable Click Delay', 'perfmatters'), 'assets-disable_click_delay', 'https://perfmatters.io/docs/delay-javascript/#disable-click-delay'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_delay', 
@@ -713,7 +744,7 @@ function perfmatters_settings() {
     //fastclick
     add_settings_field(
         'fastclick', 
-        perfmatters_title(__('Enable FastClick', 'perfmatters'), 'fastclick', 'https://perfmatters.io/docs/delay-javascript/#fastclick'), 
+        perfmatters_title(__('Enable FastClick', 'perfmatters'), 'assets-fastclick', 'https://perfmatters.io/docs/delay-javascript/#fastclick'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_delay', 
@@ -721,6 +752,7 @@ function perfmatters_settings() {
             'id' => 'fastclick',
             'section' => 'assets',
             'tooltip' => __('Load the FastClick library locally to fix the double-click issue on iOS.', 'perfmatters'),
+            'confirmation' => __('Using FastClick is not recommended for most modern mobile browsers and enabling it can sometimes cause problems.', 'perfmatters'),
             'class' => 'assets-delay_js' . (empty($perfmatters_options['assets']['delay_js']) ? ' hidden' : ''). ' pm-advanced-option'
         )
     );
@@ -731,7 +763,7 @@ function perfmatters_settings() {
     //minify js
     add_settings_field(
         'minify_js', 
-        perfmatters_title(__('Minify JavaScript', 'perfmatters'), 'minify_js', 'https://perfmatters.io/docs/minify-javascript-wordpress/#minify'), 
+        perfmatters_title(__('Minify JavaScript', 'perfmatters'), 'assets-minify_js', 'https://perfmatters.io/docs/minify-javascript-wordpress/#minify'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_minify', 
@@ -746,7 +778,7 @@ function perfmatters_settings() {
     //minify js exclusions
     add_settings_field(
         'minify_js_exclusions', 
-        perfmatters_title(__('Excluded from Minification', 'perfmatters'), 'minify_js_exclusions', 'https://perfmatters.io/docs/minify-javascript-wordpress/#exclude'), 
+        perfmatters_title(__('Excluded from Minification', 'perfmatters'), 'assets-minify_js_exclusions', 'https://perfmatters.io/docs/minify-javascript-wordpress/#exclude'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_js_minify', 
@@ -764,7 +796,7 @@ function perfmatters_settings() {
     //clear minified js
     add_settings_field(
         'clear_minified_js', 
-        perfmatters_title(__('Clear Minified JS', 'perfmatters'), 'clear_minified_js', 'https://perfmatters.io/docs/minify-javascript-wordpress/#clear'), 
+        perfmatters_title(__('Clear Minified JS', 'perfmatters'), false, 'https://perfmatters.io/docs/minify-javascript-wordpress/#clear'), 
         'perfmatters_print_input',
         'perfmatters_options', 
         'assets_js_minify', 
@@ -785,7 +817,7 @@ function perfmatters_settings() {
     //remove unused css
     add_settings_field(
         'remove_unused_css', 
-        perfmatters_title(__('Remove Unused CSS', 'perfmatters'), 'remove_unused_css', 'https://perfmatters.io/docs/remove-unused-css/#remove-unused-css'), 
+        perfmatters_title(__('Remove Unused CSS', 'perfmatters'), 'assets-remove_unused_css', 'https://perfmatters.io/docs/remove-unused-css/#remove-unused-css'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_css', 
@@ -800,7 +832,7 @@ function perfmatters_settings() {
     //used css method
     add_settings_field(
         'rucss_method', 
-        perfmatters_title(__('Used CSS Method', 'perfmatters'), 'rucss_method', 'https://perfmatters.io/docs/remove-unused-css/#css-method'), 
+        perfmatters_title(__('Used CSS Method', 'perfmatters'), 'assets-rucss_method', 'https://perfmatters.io/docs/remove-unused-css/#css-method'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_css', 
@@ -820,7 +852,7 @@ function perfmatters_settings() {
     //unused css stylesheet behavior
     add_settings_field(
         'rucss_stylesheet_behavior', 
-        perfmatters_title(__('Stylesheet Behavior', 'perfmatters'), 'rucss_stylesheet_behavior', 'https://perfmatters.io/docs/remove-unused-css/#stylesheet-behavior'), 
+        perfmatters_title(__('Stylesheet Behavior', 'perfmatters'), 'assets-rucss_stylesheet_behavior', 'https://perfmatters.io/docs/remove-unused-css/#stylesheet-behavior'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_css', 
@@ -841,7 +873,7 @@ function perfmatters_settings() {
     //remove unused css excluded stylesheets
     add_settings_field(
         'rucss_excluded_stylesheets', 
-        perfmatters_title(__('Excluded Stylesheets', 'perfmatters'), 'rucss_excluded_stylesheets', 'https://perfmatters.io/docs/remove-unused-css/#excluded-stylesheets'), 
+        perfmatters_title(__('Excluded Stylesheets', 'perfmatters'), 'assets-rucss_excluded_stylesheets', 'https://perfmatters.io/docs/remove-unused-css/#excluded-stylesheets'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_css', 
@@ -858,7 +890,7 @@ function perfmatters_settings() {
     //remove unused css excluded selectors
     add_settings_field(
         'rucss_excluded_selectors', 
-        perfmatters_title(__('Excluded Selectors', 'perfmatters'), 'rucss_excluded_selectors', 'https://perfmatters.io/docs/remove-unused-css/#excluded-selectors'), 
+        perfmatters_title(__('Excluded Selectors', 'perfmatters'), 'assets-rucss_excluded_selectors', 'https://perfmatters.io/docs/remove-unused-css/#excluded-selectors'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_css', 
@@ -875,7 +907,7 @@ function perfmatters_settings() {
     //cdn url
     add_settings_field(
         'rucss_cdn_url', 
-        perfmatters_title(__('CDN URL', 'perfmatters'), 'rucss_cdn_url', 'https://perfmatters.io/docs/remove-unused-css/#cdn-url'), 
+        perfmatters_title(__('CDN URL', 'perfmatters'), 'assets-rucss_cdn_url', 'https://perfmatters.io/docs/remove-unused-css/#cdn-url'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_css', 
@@ -885,14 +917,14 @@ function perfmatters_settings() {
             'input' => 'text',
             'tooltip' => __('Provide your CDN URL if you are using a CDN rewrite outside of Perfmatters.', 'perfmatters'),
             'placeholder' => 'https://cdn.example.com',
-            'class' => 'assets-remove_unused_css' . (empty($perfmatters_options['assets']['remove_unused_css']) ? ' hidden' : ''). ' pm-advanced-option'
+            'class' => 'assets-remove_unused_css' . (empty($perfmatters_options['assets']['remove_unused_css']) ? ' hidden' : '') . ' pm-advanced-option'
         )
     );
 
     //clear used css
     add_settings_field(
         'clear_used_css', 
-        perfmatters_title(__('Clear Used CSS', 'perfmatters'), 'clear_used_css', 'https://perfmatters.io/docs/remove-unused-css/#clear-used-css'), 
+        perfmatters_title(__('Clear Used CSS', 'perfmatters'), false, 'https://perfmatters.io/docs/remove-unused-css/#clear-used-css'), 
         'perfmatters_print_input',
         'perfmatters_options', 
         'assets_css', 
@@ -903,7 +935,7 @@ function perfmatters_settings() {
             'action' => 'clear_used_css',
             'title' => __('Clear Used CSS', 'perfmatters'),
             'class' => 'assets-remove_unused_css' . (empty($perfmatters_options['assets']['remove_unused_css']) ? ' hidden' : ''),
-            'tooltip' => __('Remove all existing unused CSS files that have been generated.', 'perfmatters')
+            'tooltip' => __('Remove all existing used CSS files that have been generated.', 'perfmatters')
         )
     );
 
@@ -913,7 +945,7 @@ function perfmatters_settings() {
     //minify css
     add_settings_field(
         'minify_css', 
-        perfmatters_title(__('Minify CSS', 'perfmatters'), 'minify_css', 'https://perfmatters.io/docs/minify-css-wordpress/#minify'), 
+        perfmatters_title(__('Minify CSS', 'perfmatters'), 'assets-minify_css', 'https://perfmatters.io/docs/minify-css-wordpress/#minify'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_css_minify', 
@@ -928,7 +960,7 @@ function perfmatters_settings() {
     //minify css exclusions
     add_settings_field(
         'minify_css_exclusions', 
-        perfmatters_title(__('Excluded from Minification', 'perfmatters'), 'minify_css_exclusions', 'https://perfmatters.io/docs/minify-css-wordpress/#exclude'), 
+        perfmatters_title(__('Excluded from Minification', 'perfmatters'), 'assets-minify_css_exclusions', 'https://perfmatters.io/docs/minify-css-wordpress/#exclude'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_css_minify', 
@@ -946,7 +978,7 @@ function perfmatters_settings() {
     //clear minified css
     add_settings_field(
         'clear_minified_css', 
-        perfmatters_title(__('Clear Minified CSS', 'perfmatters'), 'clear_minified_css', 'https://perfmatters.io/docs/minify-css-wordpress/#clear'), 
+        perfmatters_title(__('Clear Minified CSS', 'perfmatters'), false, 'https://perfmatters.io/docs/minify-css-wordpress/#clear'), 
         'perfmatters_print_input',
         'perfmatters_options', 
         'assets_css_minify', 
@@ -967,7 +999,7 @@ function perfmatters_settings() {
     //header code
     add_settings_field(
         'header_code', 
-        perfmatters_title(__('Add Header Code', 'perfmatters'), 'header_code', 'https://perfmatters.io/docs/wordpress-add-code-to-header-footer/'), 
+        perfmatters_title(__('Add Header Code', 'perfmatters'), 'assets-header_code', 'https://perfmatters.io/docs/wordpress-add-code-to-header-footer/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_code', 
@@ -985,7 +1017,7 @@ function perfmatters_settings() {
 
         add_settings_field(
             'body_code', 
-            perfmatters_title(__('Add Body Code', 'perfmatters'), 'body_code', 'https://perfmatters.io/docs/wordpress-add-code-to-header-footer/'), 
+            perfmatters_title(__('Add Body Code', 'perfmatters'), 'assets-body_code', 'https://perfmatters.io/docs/wordpress-add-code-to-header-footer/'), 
             'perfmatters_print_input', 
             'perfmatters_options', 
             'assets_code', 
@@ -1002,7 +1034,7 @@ function perfmatters_settings() {
     //footer code
     add_settings_field(
         'footer_code', 
-        perfmatters_title(__('Add Footer Code', 'perfmatters'), 'footer_code', 'https://perfmatters.io/docs/wordpress-add-code-to-header-footer/'), 
+        perfmatters_title(__('Add Footer Code', 'perfmatters'), 'assets-footer_code', 'https://perfmatters.io/docs/wordpress-add-code-to-header-footer/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'assets_code', 
@@ -1019,24 +1051,28 @@ function perfmatters_settings() {
     /**********************************************************/
     add_settings_section('preload', '', '__return_false', 'perfmatters_options');
 
-    //enable instant page
-    add_settings_field(
-        'instant_page', 
-        perfmatters_title(__('Enable Instant Page', 'perfmatters'), 'instant_page', 'https://perfmatters.io/docs/link-prefetch/'), 
-        'perfmatters_print_input', 
-        'perfmatters_options', 
-        'preload', 
-        array(
-            'id' => 'instant_page',
-            'section' => 'preload',
-            'tooltip' => __('Automatically prefetch URLs in the background after a user hovers over a link. This results in almost instantaneous load times and improves the user experience.', 'perfmatters')
-        )
-    );
+    if(version_compare(get_bloginfo('version'), '6.8' , '<')) {
+
+        //enable instant page
+        add_settings_field(
+            'instant_page', 
+            perfmatters_title(__('Enable Instant Page', 'perfmatters'), 'preload-instant_page', 'https://perfmatters.io/docs/link-prefetch/'), 
+            'perfmatters_print_input', 
+            'perfmatters_options', 
+            'preload', 
+            array(
+                'id' => 'instant_page',
+                'section' => 'preload',
+                'tooltip' => __('Automatically prefetch URLs in the background after a user hovers over a link. This results in almost instantaneous load times and improves the user experience.', 'perfmatters')
+            )
+        );
+
+    }
 
     //preload critical images
     add_settings_field(
         'critical_images', 
-        perfmatters_title(__('Preload Critical Images', 'perfmatters'), 'critical_images', 'https://perfmatters.io/docs/preload/#critical-images'), 
+        perfmatters_title(__('Preload Critical Images', 'perfmatters'), 'preload-critical_images', 'https://perfmatters.io/docs/preload/#critical-images'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'preload', 
@@ -1059,7 +1095,7 @@ function perfmatters_settings() {
     //preload
     add_settings_field(
         'preload', 
-        perfmatters_title(__('Preload', 'perfmatters'), 'preload', 'https://perfmatters.io/docs/preload/'), 
+        perfmatters_title(__('Preload', 'perfmatters'), false, 'https://perfmatters.io/docs/preload/'), 
         'perfmatters_print_input_rows', 
         'perfmatters_options', 
         'preload', 
@@ -1070,10 +1106,40 @@ function perfmatters_settings() {
         )
     );
 
+    //early hints
+    add_settings_field(
+        'early_hints', 
+        perfmatters_title(__('Cloudflare Early Hints', 'perfmatters'), 'preload-early_hints', 'https://perfmatters.io/docs/early-hints'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'preload', 
+        array(
+            'id' => 'early_hints',
+            'section' => 'preload',
+            'tooltip' => __('Send early hint link headers for existing Perfmatters preloads.', 'perfmatters'),
+            'class' => 'perfmatters-input-controller pm-advanced-option'
+        )
+    );
+
+    //early hint types
+    add_settings_field(
+        'early_hint_types', 
+        perfmatters_title(__('Early Hint Types', 'perfmatters'), false, 'https://perfmatters.io/docs/early-hints#types'), 
+        'perfmatters_print_early_hint_types', 
+        'perfmatters_options', 
+        'preload', 
+        array(
+            'id' => 'early_hint_types',
+            'section' => 'preload',
+            'tooltip' => __('Choose which file types get early hint link headers.', 'perfmatters'),
+            'class' => 'pm-advanced-option preload-early_hints' . (empty($perfmatters_options['preload']['early_hints']) ? ' hidden' : '')
+        )
+    );
+
     //fetch priority
     add_settings_field(
         'fetch_priority', 
-        perfmatters_title(__('Fetch Priority', 'perfmatters'), 'fetch_priority', 'https://perfmatters.io/docs/fetch-priority/'), 
+        perfmatters_title(__('Fetch Priority', 'perfmatters'), false, 'https://perfmatters.io/docs/fetch-priority/'), 
         'perfmatters_print_input_rows', 
         'perfmatters_options', 
         'preload', 
@@ -1087,7 +1153,7 @@ function perfmatters_settings() {
     //disable core fetch
     add_settings_field(
         'disable_core_fetch', 
-        perfmatters_title(__('Disable Core Fetch', 'perfmatters'), 'disable_core_fetch', 'https://perfmatters.io/docs/fetch-priority/#disable-core'), 
+        perfmatters_title(__('Disable Core Fetch', 'perfmatters'), 'preload-disable_core_fetch', 'https://perfmatters.io/docs/fetch-priority/#disable-core'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'preload', 
@@ -1099,13 +1165,66 @@ function perfmatters_settings() {
         )
     );
 
+    if(version_compare(get_bloginfo('version'), '6.8' , '>=')) {
+
+        //speculative loading
+        add_settings_section('preload_speculative', __('Speculative Loading', 'perfmatters'), '__return_false', 'perfmatters_options');
+
+        //mode
+        add_settings_field(
+            'speculative_mode', 
+            perfmatters_title(__('Mode', 'perfmatters'), 'preload-speculative_mode', 'https://perfmatters.io/docs/speculative-loading/#mode'), 
+            'perfmatters_print_input', 
+            'perfmatters_options', 
+            'preload_speculative', 
+            array(
+                'id' => 'speculative_mode',
+                'section' => 'preload',
+                'input' => 'select',
+                'options' => array(
+                    ''          => __('Auto', 'perfmatters') . ' (' . __('Default', 'perfmatters') . ')',
+                    'prefetch'  => __('Prefetch', 'perfmatters'),
+                    'prerender' => __('Prerender', 'perfmatters'),
+                    'disabled'  => __('Disabled', 'perfmatters')
+                ),
+                'tooltip' => __('Change the mode used for speculative loading.', 'perfmatters'),
+                'class' => 'perfmatters-input-controller'
+            )
+        );
+
+        //eagerness
+        add_settings_field(
+            'speculative_eagerness', 
+            perfmatters_title(__('Eagerness', 'perfmatters'), 'preload-speculative_eagerness', 'https://perfmatters.io/docs/speculative-loading/#eagerness'), 
+            'perfmatters_print_input', 
+            'perfmatters_options', 
+            'preload_speculative', 
+            array(
+                'id' => 'speculative_eagerness',
+                'section' => 'preload',
+                'input' => 'select',
+                'options' => array(
+                    ''             => __('Auto', 'perfmatters') . ' (' . __('Default', 'perfmatters') . ')',
+                    'conservative' => __('Conservative', 'perfmatters'),
+                    'moderate'     => __('Moderate', 'perfmatters'),
+                    'eager'        => __('Eager', 'perfmatters')
+                ),
+                'tooltip' => __('Change how agressive speculative loading will behave.', 'perfmatters'),
+                'class' => 'preload-speculative_mode perfmatters-select-control-disabled perfmatters-control-reverse' . (!empty($perfmatters_options['preload']['speculative_mode']) && $perfmatters_options['preload']['speculative_mode'] == 'disabled' ? ' hidden' : '')
+            )
+        );
+    }
+
+    //connection
+    add_settings_section('preload_connection', __('Connection', 'perfmatters'), '__return_false', 'perfmatters_options');
+
     //preconnect
     add_settings_field(
         'preconnect', 
-        perfmatters_title(__('Preconnect', 'perfmatters'), 'preconnect', 'https://perfmatters.io/docs/preconnect/'), 
+        perfmatters_title(__('Preconnect', 'perfmatters'), false, 'https://perfmatters.io/docs/preconnect/'), 
         'perfmatters_print_input_rows', 
         'perfmatters_options', 
-        'preload', 
+        'preload_connection', 
         array(
             'id' => 'preconnect',
             'section' => 'preload',
@@ -1116,10 +1235,10 @@ function perfmatters_settings() {
     //dns prefetch
     add_settings_field(
         'dns_prefetch', 
-        perfmatters_title(__('DNS Prefetch', 'perfmatters'), 'dns_prefetch', 'https://perfmatters.io/docs/dns-prefetching/'), 
+        perfmatters_title(__('DNS Prefetch', 'perfmatters'), 'preload-dns_prefetch', 'https://perfmatters.io/docs/dns-prefetching/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
-        'preload', 
+        'preload_connection', 
         array(
             'id' => 'dns_prefetch',
             'section' => 'preload',
@@ -1137,7 +1256,7 @@ function perfmatters_settings() {
     //images
     add_settings_field(
         'lazy_loading', 
-        perfmatters_title(__('Images', 'perfmatters'), 'lazy_loading', 'https://perfmatters.io/docs/lazy-load-wordpress/#images'), 
+        perfmatters_title(__('Images', 'perfmatters'), 'lazyload-lazy_loading', 'https://perfmatters.io/docs/lazy-load-wordpress/#images'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'lazyload', 
@@ -1152,7 +1271,7 @@ function perfmatters_settings() {
     //exclude leading
     add_settings_field(
         'exclude_leading_images', 
-        perfmatters_title(__('Exclude Leading Images', 'perfmatters'), 'exclude_leading_images', 'https://perfmatters.io/docs/lazy-load-wordpress/#exclude-leading-images'), 
+        perfmatters_title(__('Exclude Leading Images', 'perfmatters'), 'lazyload-exclude_leading_images', 'https://perfmatters.io/docs/lazy-load-wordpress/#exclude-leading-images'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'lazyload', 
@@ -1176,7 +1295,7 @@ function perfmatters_settings() {
     //iframes and videos
     add_settings_field(
         'lazy_loading_iframes', 
-        perfmatters_title(__('iFrames and Videos', 'perfmatters'), 'lazy_loading_iframes', 'https://perfmatters.io/docs/lazy-load-wordpress/#iframes-videos'), 
+        perfmatters_title(__('iFrames and Videos', 'perfmatters'), 'lazyload-lazy_loading_iframes', 'https://perfmatters.io/docs/lazy-load-wordpress/#iframes-videos'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'lazyload', 
@@ -1191,7 +1310,7 @@ function perfmatters_settings() {
     //youtube preview thumbnails
     add_settings_field(
         'youtube_preview_thumbnails', 
-        perfmatters_title(__('YouTube Preview Thumbnails', 'perfmatters'), 'youtube_preview_thumbnails', 'https://perfmatters.io/docs/lazy-load-wordpress/#youtube-preview-thumbnails'), 
+        perfmatters_title(__('YouTube Preview Thumbnails', 'perfmatters'), 'lazyload-youtube_preview_thumbnails', 'https://perfmatters.io/docs/lazy-load-wordpress/#youtube-preview-thumbnails'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'lazyload', 
@@ -1206,7 +1325,7 @@ function perfmatters_settings() {
     //lazy load exclusions
     add_settings_field(
         'lazy_loading_exclusions', 
-        perfmatters_title(__('Exclude from Lazy Loading', 'perfmatters'), 'lazy_loading_exclusions', 'https://perfmatters.io/docs/lazy-load-wordpress/#exclude'), 
+        perfmatters_title(__('Exclude from Lazy Loading', 'perfmatters'), 'lazyload-lazy_loading_exclusions', 'https://perfmatters.io/docs/lazy-load-wordpress/#exclude'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'lazyload', 
@@ -1223,7 +1342,7 @@ function perfmatters_settings() {
     //lazy load parent exclusions
     add_settings_field(
         'lazy_loading_parent_exclusions', 
-        perfmatters_title(__('Exclude by Parent Selector', 'perfmatters'), 'lazy_loading_parent_exclusions', 'https://perfmatters.io/docs/lazy-load-wordpress/#exclude-parent-selector'),
+        perfmatters_title(__('Exclude by Parent Selector', 'perfmatters'), 'lazyload-lazy_loading_parent_exclusions', 'https://perfmatters.io/docs/lazy-load-wordpress/#exclude-parent-selector'),
         'perfmatters_print_input', 
         'perfmatters_options', 
         'lazyload', 
@@ -1241,7 +1360,7 @@ function perfmatters_settings() {
     //threshold
     add_settings_field(
         'threshold', 
-        perfmatters_title(__('Threshold', 'perfmatters'), 'threshold', 'https://perfmatters.io/docs/lazy-load-wordpress/#threshold'), 
+        perfmatters_title(__('Threshold', 'perfmatters'), 'lazyload-threshold', 'https://perfmatters.io/docs/lazy-load-wordpress/#threshold'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'lazyload', 
@@ -1258,7 +1377,7 @@ function perfmatters_settings() {
     //DOM monitoring
     add_settings_field(
         'lazy_loading_dom_monitoring', 
-        perfmatters_title(__('DOM Monitoring', 'perfmatters'), 'lazy_loading_dom_monitoring', 'https://perfmatters.io/docs/lazy-load-wordpress/#dom-monitoring'), 
+        perfmatters_title(__('DOM Monitoring', 'perfmatters'), 'lazyload-lazy_loading_dom_monitoring', 'https://perfmatters.io/docs/lazy-load-wordpress/#dom-monitoring'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'lazyload', 
@@ -1272,7 +1391,7 @@ function perfmatters_settings() {
     //image dimensions
     add_settings_field(
         'image_dimensions', 
-        perfmatters_title(__('Add Missing Image Dimensions', 'perfmatters'), 'image_dimensions', 'https://perfmatters.io/docs/missing-width-height-images/'), 
+        perfmatters_title(__('Add Missing Image Dimensions', 'perfmatters'), 'lazyload-image_dimensions', 'https://perfmatters.io/docs/missing-width-height-images/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'lazyload', 
@@ -1286,7 +1405,7 @@ function perfmatters_settings() {
     //fade in
     add_settings_field(
         'fade_in', 
-        perfmatters_title(__('Fade In', 'perfmatters'), 'fade_in', 'https://perfmatters.io/docs/lazy-load-wordpress/#fade-in'), 
+        perfmatters_title(__('Fade In', 'perfmatters'), 'lazyload-fade_in', 'https://perfmatters.io/docs/lazy-load-wordpress/#fade-in'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'lazyload', 
@@ -1297,13 +1416,16 @@ function perfmatters_settings() {
         )
     );
 
+    //lazy elements
+    add_settings_section('lazyload_css_background_images', __('CSS Background Images', 'perfmatters'), '__return_false', 'perfmatters_options');
+
     //css background images
     add_settings_field(
         'css_background_images', 
-        perfmatters_title(__('CSS Background Images', 'perfmatters'), 'css_background_images', 'https://perfmatters.io/docs/lazy-load-wordpress/#css-background-images'), 
+        perfmatters_title(__('Background Images', 'perfmatters'), 'lazyload-css_background_images', 'https://perfmatters.io/docs/lazy-load-wordpress/#css-background-images'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
-        'lazyload', 
+        'lazyload_css_background_images', 
         array(
             'section' => 'lazyload',
             'id' => 'css_background_images',
@@ -1315,10 +1437,10 @@ function perfmatters_settings() {
     //css background selectors
     add_settings_field(
         'css_background_selectors', 
-        perfmatters_title(__('Background Selectors', 'perfmatters'), 'css_background_selectors', 'https://perfmatters.io/docs/lazy-load-wordpress/#css-background-images'), 
+        perfmatters_title(__('Background Selectors', 'perfmatters'), 'lazyload-css_background_selectors', 'https://perfmatters.io/docs/lazy-load-wordpress/#css-background-images'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
-        'lazyload', 
+        'lazyload_css_background_images', 
         array(
             'section' => 'lazyload',
             'id' => 'css_background_selectors',
@@ -1330,6 +1452,66 @@ function perfmatters_settings() {
         )
     );
 
+    //exclude leading
+    add_settings_field(
+        'css_background_exclude_leading', 
+        perfmatters_title(__('Exclude Leading', 'perfmatters'), 'lazyload-css_background_exclude_leading', 'https://perfmatters.io/docs/lazy-load-wordpress/#css-background-exclude-leading'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'lazyload_css_background_images', 
+        array(
+            'section' => 'lazyload',
+            'id' => 'css_background_exclude_leading',
+            'input' => 'select',
+            'options' => array(
+                '' => '0' . ' (' . __('Default', 'perfmatters') . ')',
+                '1' => '1',
+                '2' => '2',
+                '3' => '3',
+                '4' => '4',
+                '5' => '5'
+            ),
+            'tooltip' => __('Exclude a certain number of background image containers from being lazy loaded starting from the first match.', 'perfmatters'),
+            'class' => 'lazyload-css_background_images' . (empty($perfmatters_options['lazyload']['css_background_images']) ? ' hidden' : '')
+        )
+    );
+
+    //lazy elements
+    add_settings_section('lazyload_elements', __('Lazy Elements', 'perfmatters'), '__return_false', 'perfmatters_options');
+
+    //elements
+    add_settings_field(
+        'elements', 
+        perfmatters_title(__('Elements', 'perfmatters'), 'lazyload-elements', 'https://perfmatters.io/docs/lazy-load-elements/'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'lazyload_elements', 
+        array(
+            'section' => 'lazyload',
+            'id' => 'elements',
+            'tooltip' => __('Allow lazy loading of elements in the DOM.', 'perfmatters'),
+            'class' => 'perfmatters-input-controller'
+        )
+    );
+
+    //element selectors
+    add_settings_field(
+        'element_selectors', 
+        perfmatters_title(__('Element Selectors', 'perfmatters'), 'lazyload-element_selectors', 'https://perfmatters.io/docs/lazy-load-elements/'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'lazyload_elements', 
+        array(
+            'section' => 'lazyload',
+            'id' => 'element_selectors',
+            'input' => 'textarea',
+            'textareatype' => 'oneperline',
+            'placeholder' => 'div-background-class',
+            'tooltip' => __('Lazy load specific elements and their descendants by adding any unique portion of an attribute string (class="example") from a parent container. Format: one per line', 'perfmatters'),
+            'class' => 'lazyload-elements' . (empty($perfmatters_options['lazyload']['elements']) ? ' hidden' : '')
+        )
+    );
+
     /* fonts section
     /**********************************************************/
     add_settings_section('perfmatters_fonts', '', '__return_false', 'perfmatters_options');
@@ -1337,7 +1519,7 @@ function perfmatters_settings() {
     //local google fonts
     add_settings_field(
         'local_google_fonts', 
-        perfmatters_title(__('Local Google Fonts', 'perfmatters'), 'local_google_fonts', 'https://perfmatters.io/docs/host-google-fonts-locally/'), 
+        perfmatters_title(__('Local Google Fonts', 'perfmatters'), 'fonts-local_google_fonts', 'https://perfmatters.io/docs/host-google-fonts-locally/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_fonts', 
@@ -1352,7 +1534,7 @@ function perfmatters_settings() {
     //display swap
     add_settings_field(
         'display_swap', 
-        perfmatters_title(__('Display Swap', 'perfmatters'), 'display_swap', 'https://perfmatters.io/docs/font-display-swap/'), 
+        perfmatters_title(__('Display Swap', 'perfmatters'), 'fonts-display_swap', 'https://perfmatters.io/docs/font-display-swap/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_fonts', 
@@ -1364,10 +1546,60 @@ function perfmatters_settings() {
         )
     );
 
+    //method
+    add_settings_field(
+        'method', 
+        perfmatters_title(__('Print Method', 'perfmatters'), 'fonts-method', 'https://perfmatters.io/docs/host-google-fonts-locally/#print-method'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'perfmatters_fonts', 
+        array(
+            'section' => 'fonts',
+            'id' => 'method',
+            'class' => 'fonts-disable_google_fonts fonts-local_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) || empty($perfmatters_options['fonts']['local_google_fonts']) ? ' hidden' : ''),
+            'input' => 'select',
+            'options' => array(
+                '' => __('File', 'perfmatters') . ' (' . __('Default', 'perfmatters') . ')',
+                'inline' => __('Inline', 'perfmatters')
+            ),
+            'tooltip' => __('Choose how the local font stylesheet will be included.', 'perfmatters')
+        )
+    );
+
+    //limit subsets
+    add_settings_field(
+        'limit_subsets', 
+        perfmatters_title(__('Limit Subsets', 'perfmatters'), 'fonts-limit_subsets', 'https://perfmatters.io/docs/limit-google-fonts-subsets/'), 
+        'perfmatters_print_input', 
+        'perfmatters_options', 
+        'perfmatters_fonts', 
+        array(
+            'section' => 'fonts',
+            'id' => 'limit_subsets',
+            'class' => 'perfmatters-input-controller fonts-disable_google_fonts fonts-local_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) || empty($perfmatters_options['fonts']['local_google_fonts']) ? ' hidden' : ''),
+            'tooltip' => __('Limit subsets that are downloaded and included in the stylesheet.', 'perfmatters')
+        )
+    );
+
+    //subsets
+    add_settings_field(
+        'subsets', 
+        perfmatters_title(__('Allowed Subsets', 'perfmatters'), false, 'https://perfmatters.io/docs/limit-google-fonts-subsets/'), 
+        'perfmatters_print_subsets', 
+        'perfmatters_options', 
+        'perfmatters_fonts', 
+        array(
+            'section' => 'fonts',
+            'id' => 'subsets',
+            'class' => 'fonts-disable_google_fonts fonts-local_google_fonts fonts-limit_subsets' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) || empty($perfmatters_options['fonts']['local_google_fonts']) || empty($perfmatters_options['fonts']['limit_subsets']) ? ' hidden' : ''),
+            'tooltip' => __('Choose which subsets to download locally.', 'perfmatters')
+        )
+    );
+
     //cdn url
     add_settings_field(
         'cdn_url', 
-        perfmatters_title(__('CDN URL', 'perfmatters'), 'cdn_url', 'https://perfmatters.io/docs/host-google-fonts-locally/#cdn'), 
+        perfmatters_title(__('CDN URL', 'perfmatters'), 'fonts-cdn_url', 'https://perfmatters.io/docs/host-google-fonts-locally/#cdn'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_fonts', 
@@ -1384,7 +1616,7 @@ function perfmatters_settings() {
     //clear fonts
     add_settings_field(
         'clear_fonts', 
-        perfmatters_title(__('Clear Local Fonts', 'perfmatters'), 'clear_fonts', 'https://perfmatters.io/docs/host-google-fonts-locally/#clear-local-fonts'), 
+        perfmatters_title(__('Clear Local Fonts', 'perfmatters'), false, 'https://perfmatters.io/docs/host-google-fonts-locally/#clear-local-fonts'), 
         'perfmatters_print_input',
         'perfmatters_options', 
         'perfmatters_fonts', 
@@ -1399,25 +1631,10 @@ function perfmatters_settings() {
         )
     );
 
-    //async
-    add_settings_field(
-        'async', 
-        perfmatters_title(__('Load Asynchronously', 'perfmatters'), 'async', 'https://perfmatters.io/docs/host-google-fonts-locally/#async'), 
-        'perfmatters_print_input', 
-        'perfmatters_options', 
-        'perfmatters_fonts', 
-        array(
-            'section' => 'fonts',
-            'id' => 'async',
-            'class' => 'fonts-disable_google_fonts fonts-local_google_fonts' . (!empty($perfmatters_options['fonts']['disable_google_fonts']) || empty($perfmatters_options['fonts']['local_google_fonts']) ? ' hidden' : '') . ' pm-advanced-option',
-            'tooltip' => __('Load local font stylesheets asynchronously. Preloading individual font files is recommended when this option is enabled.', 'perfmatters')
-        )
-    );
-
     //disable google fonts
     add_settings_field(
         'disable_google_fonts', 
-        perfmatters_title(__('Disable Google Fonts', 'perfmatters'), 'disable_google_fonts', 'https://perfmatters.io/docs/disable-google-fonts/'), 
+        perfmatters_title(__('Disable Google Fonts', 'perfmatters'), 'fonts-disable_google_fonts', 'https://perfmatters.io/docs/disable-google-fonts/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_fonts', 
@@ -1436,7 +1653,7 @@ function perfmatters_settings() {
     //enable cdn rewrite
     add_settings_field(
         'enable_cdn', 
-        perfmatters_title(__('Enable CDN Rewrite', 'perfmatters'), 'enable_cdn', 'https://perfmatters.io/docs/cdn-rewrite/'), 
+        perfmatters_title(__('Enable CDN Rewrite', 'perfmatters'), 'cdn-enable_cdn', 'https://perfmatters.io/docs/cdn-rewrite/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_cdn', 
@@ -1450,7 +1667,7 @@ function perfmatters_settings() {
     //cdn url
     add_settings_field(
         'cdn_url', 
-        perfmatters_title(__('CDN URL', 'perfmatters'), 'cdn_url', 'https://perfmatters.io/docs/cdn-url/'), 
+        perfmatters_title(__('CDN URL', 'perfmatters'), 'cdn-cdn_url', 'https://perfmatters.io/docs/cdn-url/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_cdn', 
@@ -1466,7 +1683,7 @@ function perfmatters_settings() {
     //cdn included directories
     add_settings_field(
         'cdn_directories', 
-        perfmatters_title(__('Included Directories', 'perfmatters'), 'cdn_directories', 'https://perfmatters.io/docs/cdn-included-directories/'), 
+        perfmatters_title(__('Included Directories', 'perfmatters'), 'cdn-cdn_directories', 'https://perfmatters.io/docs/cdn-included-directories/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_cdn', 
@@ -1482,7 +1699,7 @@ function perfmatters_settings() {
     //cdn exclusions
     add_settings_field(
         'cdn_exclusions', 
-        perfmatters_title(__('CDN Exclusions', 'perfmatters'), 'cdn_exclusions', 'https://perfmatters.io/docs/cdn-exclusions/'), 
+        perfmatters_title(__('CDN Exclusions', 'perfmatters'), 'cdn-cdn_exclusions', 'https://perfmatters.io/docs/cdn-exclusions/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_cdn', 
@@ -1502,7 +1719,7 @@ function perfmatters_settings() {
     //enable local ga
     add_settings_field(
         'enable_local_ga', 
-        perfmatters_title(__('Enable Local Analytics', 'perfmatters'), 'enable_local_ga', 'https://perfmatters.io/docs/local-analytics/'),
+        perfmatters_title(__('Enable Local Analytics', 'perfmatters'), 'analytics-enable_local_ga', 'https://perfmatters.io/docs/local-analytics/'),
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_analytics', 
@@ -1516,7 +1733,7 @@ function perfmatters_settings() {
     //google analytics id
     add_settings_field(
         'tracking_id', 
-        perfmatters_title(__('Tracking ID', 'perfmatters'), 'tracking_id', 'https://perfmatters.io/docs/local-analytics/#trackingid'), 
+        perfmatters_title(__('Tracking ID', 'perfmatters'), 'analytics-tracking_id', 'https://perfmatters.io/docs/local-analytics/#trackingid'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_analytics', 
@@ -1531,7 +1748,7 @@ function perfmatters_settings() {
     //tracking code position
     add_settings_field(
         'tracking_code_position', 
-        perfmatters_title(__('Tracking Code Position', 'perfmatters'), 'tracking_code_position', 'https://perfmatters.io/docs/local-analytics/#trackingcodeposition'), 
+        perfmatters_title(__('Tracking Code Position', 'perfmatters'), 'analytics-tracking_code_position', 'https://perfmatters.io/docs/local-analytics/#trackingcodeposition'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_analytics', 
@@ -1550,7 +1767,7 @@ function perfmatters_settings() {
     //script type
     add_settings_field(
         'script_type', 
-        perfmatters_title(__('Script Type', 'perfmatters'), 'tracking_code_position', 'https://perfmatters.io/docs/local-analytics/#script-type'), 
+        perfmatters_title(__('Script Type', 'perfmatters'), 'analytics-script_type', 'https://perfmatters.io/docs/local-analytics/#script-type'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_analytics', 
@@ -1570,7 +1787,7 @@ function perfmatters_settings() {
     //track logged in admins
     add_settings_field(
         'track_admins', 
-        perfmatters_title(__('Track Logged In Admins', 'perfmatters'), 'track_admins', 'https://perfmatters.io/docs/local-analytics/#track-logged-in-admins'), 
+        perfmatters_title(__('Track Logged In Admins', 'perfmatters'), 'analytics-track_admins', 'https://perfmatters.io/docs/local-analytics/#track-logged-in-admins'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_analytics', 
@@ -1584,7 +1801,7 @@ function perfmatters_settings() {
     //use monsterinsights
     add_settings_field(
         'use_monster_insights', 
-        perfmatters_title(__('Use MonsterInsights', 'perfmatters'), 'use_monster_insights', 'https://perfmatters.io/docs/local-analytics/#monster-insights'), 
+        perfmatters_title(__('Use MonsterInsights', 'perfmatters'), 'analytics-use_monster_insights', 'https://perfmatters.io/docs/local-analytics/#monster-insights'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_analytics', 
@@ -1599,7 +1816,7 @@ function perfmatters_settings() {
     //enable amp support
     add_settings_field(
         'enable_amp', 
-        perfmatters_title(__('Enable AMP Support', 'perfmatters'), 'enable_amp', 'https://perfmatters.io/docs/local-analytics/#amp'), 
+        perfmatters_title(__('Enable AMP Support', 'perfmatters'), 'analytics-enable_amp', 'https://perfmatters.io/docs/local-analytics/#amp'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_analytics', 
@@ -1710,7 +1927,7 @@ function perfmatters_settings() {
     //restore defaults
     add_settings_field(
         'restore_defaults', 
-        perfmatters_title(__('Restore Default Options', 'perfmatters'), 'restore_defaults', 'https://perfmatters.io/docs/restore-default-options/'), 
+        perfmatters_title(__('Restore Default Options', 'perfmatters'), false, 'https://perfmatters.io/docs/restore-default-options/'), 
         'perfmatters_print_input',
         'perfmatters_tools', 
         'settings', 
@@ -1745,7 +1962,7 @@ function perfmatters_settings() {
     //export settings
     add_settings_field(
         'export_settings', 
-        perfmatters_title(__('Export Settings', 'perfmatters'), 'export_settings', 'https://perfmatters.io/docs/import-export/'), 
+        perfmatters_title(__('Export Settings', 'perfmatters'), false, 'https://perfmatters.io/docs/import-export/'), 
         'perfmatters_print_input',
         'perfmatters_tools', 
         'settings', 
@@ -1762,7 +1979,7 @@ function perfmatters_settings() {
     //import settings
     add_settings_field(
         'import_settings', 
-        perfmatters_title(__('Import Settings', 'perfmatters'), 'import_settings', 'https://perfmatters.io/docs/import-export/'), 
+        perfmatters_title(__('Import Settings', 'perfmatters'), false, 'https://perfmatters.io/docs/import-export/'), 
         'perfmatters_print_import_settings',
         'perfmatters_tools', 
         'settings', 
@@ -1777,7 +1994,7 @@ function perfmatters_settings() {
     //optimize database
     add_settings_field(
         'scan_database', 
-        perfmatters_title(__('Scan Database', 'perfmatters'), 'scan_database', 'https://perfmatters.io/docs/optimize-wordpress-database/#scan'), 
+        perfmatters_title(__('Scan Database', 'perfmatters'), false, 'https://perfmatters.io/docs/optimize-wordpress-database/#scan'), 
         'perfmatters_print_input',
         'perfmatters_tools', 
         'database', 
@@ -1795,7 +2012,7 @@ function perfmatters_settings() {
     //post revisions
     add_settings_field(
         'post_revisions', 
-        perfmatters_title(__('Post Revisions', 'perfmatters'), 'post_revisions', 'https://perfmatters.io/docs/wordpress-post-revisions/'), 
+        perfmatters_title(__('Post Revisions', 'perfmatters'), 'database-post_revisions', 'https://perfmatters.io/docs/wordpress-post-revisions/'), 
         'perfmatters_print_input', 
         'perfmatters_tools', 
         'database', 
@@ -1810,7 +2027,7 @@ function perfmatters_settings() {
     //post auto-drafts
     add_settings_field(
         'post_auto_drafts', 
-        perfmatters_title(__('Post Auto-Drafts', 'perfmatters'), 'post_auto_drafts', 'https://perfmatters.io/docs/wordpress-auto-drafts/'), 
+        perfmatters_title(__('Post Auto-Drafts', 'perfmatters'), 'database-post_auto_drafts', 'https://perfmatters.io/docs/wordpress-auto-drafts/'), 
         'perfmatters_print_input', 
         'perfmatters_tools', 
         'database', 
@@ -1825,7 +2042,7 @@ function perfmatters_settings() {
     //trashed posts
     add_settings_field(
         'trashed_posts', 
-        perfmatters_title(__('Trashed Posts', 'perfmatters'), 'trashed_posts', 'https://perfmatters.io/docs/wordpress-trash/#posts'), 
+        perfmatters_title(__('Trashed Posts', 'perfmatters'), 'database-trashed_posts', 'https://perfmatters.io/docs/wordpress-trash/#posts'), 
         'perfmatters_print_input', 
         'perfmatters_tools', 
         'database', 
@@ -1840,7 +2057,7 @@ function perfmatters_settings() {
     //spam comments
     add_settings_field(
         'spam_comments', 
-        perfmatters_title(__('Spam Comments', 'perfmatters'), 'spam_comments', 'https://perfmatters.io/docs/wordpress-spam-comments/'), 
+        perfmatters_title(__('Spam Comments', 'perfmatters'), 'database-spam_comments', 'https://perfmatters.io/docs/wordpress-spam-comments/'), 
         'perfmatters_print_input', 
         'perfmatters_tools', 
         'database', 
@@ -1855,7 +2072,7 @@ function perfmatters_settings() {
     //trashed comments
     add_settings_field(
         'trashed_comments', 
-        perfmatters_title(__('Trashed Comments', 'perfmatters'), 'trashed_comments', 'https://perfmatters.io/docs/wordpress-trash/#comments'), 
+        perfmatters_title(__('Trashed Comments', 'perfmatters'), 'database-trashed_comments', 'https://perfmatters.io/docs/wordpress-trash/#comments'), 
         'perfmatters_print_input', 
         'perfmatters_tools', 
         'database', 
@@ -1870,7 +2087,7 @@ function perfmatters_settings() {
     //expired transients
     add_settings_field(
         'expired_transients', 
-        perfmatters_title(__('Expired Transients', 'perfmatters'), 'expired_transients', 'https://perfmatters.io/docs/wordpress-transients/#expired'), 
+        perfmatters_title(__('Expired Transients', 'perfmatters'), 'database-expired_transients', 'https://perfmatters.io/docs/wordpress-transients/#expired'), 
         'perfmatters_print_input', 
         'perfmatters_tools', 
         'database', 
@@ -1885,7 +2102,7 @@ function perfmatters_settings() {
     //all transients
     add_settings_field(
         'all_transients', 
-        perfmatters_title(__('All Transients', 'perfmatters'), 'all_transients', 'https://perfmatters.io/docs/wordpress-transients/#all'), 
+        perfmatters_title(__('All Transients', 'perfmatters'), 'database-all_transients', 'https://perfmatters.io/docs/wordpress-transients/#all'), 
         'perfmatters_print_input', 
         'perfmatters_tools', 
         'database', 
@@ -1900,7 +2117,7 @@ function perfmatters_settings() {
     //tables
     add_settings_field(
         'tables', 
-        perfmatters_title(__('Tables', 'perfmatters'), 'tables', 'https://perfmatters.io/docs/wordpress-database-tables/'), 
+        perfmatters_title(__('Tables', 'perfmatters'), 'database-tables', 'https://perfmatters.io/docs/wordpress-database-tables/'), 
         'perfmatters_print_input', 
         'perfmatters_tools', 
         'database', 
@@ -1912,29 +2129,52 @@ function perfmatters_settings() {
         )
     );
 
-    //optimize database
-    add_settings_field(
-        'optimize_database', 
-        perfmatters_title(__('Optimize Database', 'perfmatters'), 'optimize_database', 'https://perfmatters.io/docs/optimize-wordpress-database/'), 
-        'perfmatters_print_input',
-        'perfmatters_tools', 
-        'database', 
-        array(
-            'id' => 'optimize_database',
-            'input' => 'button',
-            'action' => 'optimize_database',
-            'title' => __('Optimize Now', 'perfmatters'),
-            'option' => 'perfmatters_tools',
-            'section' => 'database',
-            'confirmation' => __('This will make permanent changes that cannot be reverted! Are you sure you want to proceed with optimization?', 'perfmatters'),
-            'tooltip' => __('Run a one-time optimization of your WordPress database based on the selected options above. This process runs in the background.', 'perfmatters')
-        )
-    );
+    if(!get_transient('perfmatters_database_optimization_process')) {
+
+        //optimize database
+        add_settings_field(
+            'optimize_database', 
+            perfmatters_title(__('Optimize Database', 'perfmatters'), false, 'https://perfmatters.io/docs/optimize-wordpress-database/'), 
+            'perfmatters_print_input',
+            'perfmatters_tools', 
+            'database', 
+            array(
+                'id' => 'optimize_database',
+                'input' => 'button',
+                'action' => 'optimize_database',
+                'title' => __('Optimize Now', 'perfmatters'),
+                'option' => 'perfmatters_tools',
+                'section' => 'database',
+                'confirmation' => __('This will make permanent changes that cannot be reverted! Are you sure you want to proceed with optimization?', 'perfmatters'),
+                'tooltip' => __('Run a one-time optimization of your WordPress database based on the selected options above. This process runs in the background.', 'perfmatters')
+            )
+        );
+    }
+    else {
+
+        //cancel optimization
+        add_settings_field(
+            'cancel_optimization', 
+            perfmatters_title(__('Cancel Optimization', 'perfmatters'), false, 'https://perfmatters.io/docs/optimize-wordpress-database/'), 
+            'perfmatters_print_input',
+            'perfmatters_tools', 
+            'database', 
+            array(
+                'id' => 'cancel_optimization',
+                'input' => 'button',
+                'action' => 'cancel_optimization',
+                'title' => __('Cancel Current Optimization', 'perfmatters'),
+                'option' => 'perfmatters_tools',
+                'section' => 'database',
+                'tooltip' => __('Cancel the current database optimization process.', 'perfmatters')
+            )
+        );
+    }
 
     //Scheduled Optimization
     add_settings_field(
         'optimize_schedule', 
-        perfmatters_title(__('Scheduled Optimization', 'perfmatters'), 'optimize_schedule', 'https://perfmatters.io/docs/optimize-wordpress-database/#schedule'), 
+        perfmatters_title(__('Scheduled Optimization', 'perfmatters'), 'database-optimize_schedule', 'https://perfmatters.io/docs/optimize-wordpress-database/#schedule'), 
         'perfmatters_print_input', 
         'perfmatters_tools', 
         'database', 
@@ -1963,32 +2203,9 @@ add_action('admin_init', 'perfmatters_settings');
 //options default values
 function perfmatters_default_options() {
 	$defaults = array(
-		'disable_emojis' => "0",
-		'disable_embeds' => "0",
-		'disable_xmlrpc' => "0",
-		'remove_jquery_migrate' => "0",
-		'hide_wp_version' => "0",
-		'remove_rsd_link' => "0",
-		'remove_shortlink' => "0",
-		'disable_rss_feeds' => "0",
-		'remove_feed_links' => "0",
-		'disable_self_pingbacks' => "0",
-		'disable_rest_api' => "",
-		'remove_rest_api_links' => "0",
-        'disable_dashicons' => "0",
-        'disable_google_maps' => "0",
-        'disable_password_strength_meter' => "0",
-        'disable_comments' => "0",
-        'remove_comment_urls' => "0",
-		'disable_heartbeat' => "",
-		'heartbeat_frequency' => "",
-		'limit_post_revisions' => "",
-		'autosave_interval' => "",
-        'login_url' => "",
-        'disable_woocommerce_scripts' => "0",
-        'disable_woocommerce_cart_fragmentation' => "0",
-        'disable_woocommerce_status' => "0",
-        'disable_woocommerce_widgets' => "0",
+        'fonts' => array(
+            'subsets' => array('latin')
+        ),
         'cdn' => array(
             'cdn_directories' => 'wp-content,wp-includes',
             'cdn_exclusions' => '.php'
@@ -2277,7 +2494,7 @@ function perfmatters_print_input_rows($args) {
         echo '</div>';
 
         //add new row
-        echo '<a href="#" class="perfmatters-add-input-row button button-secondary" rel="' . $rowCount . '"><span class="dashicons dashicons-plus"></span>' . __('Add New', 'perfmatters') . '</a>';
+        echo '<a href="#" class="perfmatters-add-input-row button button-secondary" rel="' . $rowCount . '">' . __('Add New', 'perfmatters') . '</a>';
 
     echo '</div>';
 
@@ -2296,18 +2513,12 @@ function perfmatters_print_preload_row($rowCount = 0, $line = array()) {
             echo '<input type="text" id="preload-' . $rowCount . '-url" name="perfmatters_options[preload][preload][' . $rowCount . '][url]" value="' . (isset($line['url']) ? $line['url'] : '') . '" placeholder="https://example.com/font.woff2" />';
 
             $types = array(
-                'audio'    => 'Audio',
-                'document' => 'Document',
-                'embed'    => 'Embed',
-                'fetch'    => 'Fetch',
-                'font'     => 'Font',
-                'image'    => 'Image',
-                'object'   => 'Object',
-                'script'   => 'Script',
-                'style'    => 'Style',
-                'track'    => 'Track',
-                'worker'   => 'Worker',
-                'video'    => 'Video'
+                'fetch'  => 'Fetch',
+                'font'   => 'Font',
+                'image'  => 'Image',
+                'script' => 'Script',
+                'style'  => 'Style',
+                'track'  => 'Track'
             );
 
             echo '<select id="preload-' . $rowCount . '-as" name="perfmatters_options[preload][preload][' . $rowCount . '][as]" style="margin-left: 5px;">';
@@ -2330,15 +2541,47 @@ function perfmatters_print_preload_row($rowCount = 0, $line = array()) {
             echo '</select>';
 
             echo '<label class="perfmatters-inline-label-input"><span>' . __('Location', 'perfmatters') . '</span>';
-                echo '<input type="text" id="preload-' . $rowCount . '-locations" name="perfmatters_options[preload][preload][' . $rowCount . '][locations]" value="' . (isset($line['locations']) ? $line['locations'] : '') . '" placeholder="23,19,blog" style="min-width: auto; padding-left: 74px;" />';
+                echo '<input type="text" id="preload-' . $rowCount . '-locations" name="perfmatters_options[preload][preload][' . $rowCount . '][locations]" value="' . (isset($line['locations']) ? $line['locations'] : '') . '" placeholder="23,19,blog" />';
             echo '</label>';
 
-            echo '<label for="preload-' . $rowCount . '-crossorigin">';
-                echo '<input type="checkbox" id="preload-' . $rowCount . '-crossorigin" name="perfmatters_options[preload][preload][' . $rowCount . '][crossorigin]"' . (!empty($line['crossorigin']) ? ' checked' : '') . ' value="1" /> CrossOrigin';
+            echo '<label class="perfmatters-inline-label-input"><span>' . __('Priority', 'perfmatters') . '</span>';
+                echo '<select id="preload-' . $rowCount . '-priority" name="perfmatters_options[preload][preload][' . $rowCount . '][priority]" />';
+                    echo '<option value="">' . __('Auto', 'perfmatters') . '</option>';
+                    echo '<option value="high"' . (isset($line['priority']) && $line['priority'] == 'high' ? ' selected="selected"' : '') . '>' . __('High', 'perfmatters') . '</option>';
+                    echo '<option value="low"' . (isset($line['priority']) && $line['priority'] == 'low' ? ' selected="selected"' : '') . '>' . __('Low', 'perfmatters') . '</option>';
+
+                echo '</select>';
             echo '</label>';
 
         echo '</div>';
     echo "</div>";
+}
+
+//print early hint types
+function perfmatters_print_early_hint_types($args) {
+
+    $options = get_option('perfmatters_options');
+    
+    $types = array(
+        'font'   => 'Font',
+        'image'  => 'Image',
+        'script' => 'Script',
+        'style'  => 'Style'
+    );
+
+    echo "<div style='margin: 5px auto;' id='perfmatters-early-hint-types'>";
+        foreach($types as $key => $name) {
+            echo "<label for='perfmatters-early-hint-types-" . $key . "' style='margin-right: 10px; text-wrap: nowrap;'>";
+                echo "<input type='checkbox' name='perfmatters_options[preload][early_hint_types][]' id='perfmatters-early-hint-types-" . $key . "' " . (!empty($options['preload']['early_hint_types']) && in_array($key, $options['preload']['early_hint_types']) ? ' checked' : '') . " value='" . $key . "' />";
+                echo $name;
+            echo "</label>";
+        }
+    echo "</div>";
+
+    //tooltip
+    if(!empty($args['tooltip'])) {
+        perfmatters_tooltip($args['tooltip']);
+    }
 }
 
 //fetch priority input row
@@ -2362,7 +2605,6 @@ function perfmatters_print_fetch_priority_row($rowCount = 0, $line = array()) {
             echo '</select>';
 
             echo '<a href="#" class="perfmatters-expand-input-row" title="' . __('Settings', 'perfmatters') . '" style="margin-left: 8px; text-decoration: none;"><span class="dashicons dashicons-admin-generic"></span></a>';
-
             echo '<a href="#" class="perfmatters-delete-input-row" title="' . __('Remove', 'perfmatters') . '"><span class="dashicons dashicons-trash"></span></a>';
 
         echo '</div>';
@@ -2415,6 +2657,60 @@ function perfmatters_print_preconnect_row($rowCount = 0, $line = '') {
     echo '</div>';
 }
 
+//print subset options
+function perfmatters_print_subsets($args) {
+
+    $perfmatters = get_option('perfmatters_options');
+
+    $subset_options = array(
+        'arabic'              => 'Arabic',
+        'bengali'             => 'Bengali',
+        'chinese-hongkong'    => 'Chinese (Hong Kong)',
+        'chinese-simplified'  => 'Chinese (Simplified)',
+        'chinese-traditional' => 'Chinese (Traditional)',
+        'cyrillic'            => 'Cyrillic',
+        'cyrillic-ext'        => 'Cyrillic Extended',
+        'devanagari'          => 'Devanagari',
+        'greek'               => 'Greek',
+        'greek-ext'           => 'Greek Extended',
+        'gujarati'            => 'Gujarati',
+        'gurmukhi'            => 'Gurmukhi',
+        'hebrew'              => 'Hebrew',
+        'japanese'            => 'Japanese',
+        'kannada'             => 'Kannada',
+        'khmer'               => 'Khmer',
+        'korean'              => 'Korean',
+        'latin'               => 'Latin (' . __('Default', 'perfmatters') . ')',
+        'latin-ext'           => 'Latin Extended',
+        'malayalam'           => 'Malayalam',
+        'math'                => 'Math',
+        'myanmar'             => 'Myanmar',
+        'oriya'               => 'Oriya',
+        'sinhala'             => 'Sinhala',
+        'symbols'             => 'Symbols',
+        'tamil'               => 'Tamil',
+        'telugu'              => 'Telugu',
+        'thai'                => 'Thai',
+        'tibetan'             => 'Tibetan',
+        'vietnamese'          => 'Vietnamese'
+    );
+
+    //checkboxes
+    echo '<div id="perfmatters-subsets">';
+        foreach($subset_options as $key => $name) {
+            echo '<label for="perfmatters-subsets-' . $key . '" style="margin-right: 10px; text-wrap: nowrap;">';
+                echo '<input type="checkbox" name="perfmatters_options[fonts][subsets][]" id="perfmatters-subsets-' . $key . '" value="' . $key . '"' . (!empty($perfmatters['fonts']['subsets']) && in_array($key, $perfmatters['fonts']['subsets']) ? ' checked' : '') . ' />';
+                echo $name;
+            echo '</label>';
+        }
+    echo '</div>';
+
+    //tooltip
+    if(!empty($args['tooltip'])) {
+        perfmatters_tooltip($args['tooltip']);
+    }
+}
+
 //print purge meta options
 function perfmatters_print_purge_meta($args) {
 
@@ -2423,11 +2719,16 @@ function perfmatters_print_purge_meta($args) {
         'perfmatters_exclude_defer_js' => 'Defer JavaScript', 
         'perfmatters_exclude_delay_js' => 'Delay JavaScript', 
         'perfmatters_exclude_minify_js' => 'Minify JavaScript',
-        'perfmatters_exclude_unused_css' => 'Unused CSS', 
+        'perfmatters_exclude_unused_css' => 'Unused CSS',
         'perfmatters_exclude_minify_css' => 'Minify CSS', 
-        'perfmatters_exclude_lazy_loading' => 'Lazy Loading', 
-        'perfmatters_exclude_instant_page' => 'Instant Page'
+        'perfmatters_exclude_lazy_loading' => 'Lazy Loading'
     );
+
+    //deprecated
+    if(version_compare(get_bloginfo('version'), '6.8' , '<')) {
+        $meta_options['perfmatters_exclude_instant_page'] = 'Instant Page';
+    }
+
     echo "<div style='margin-bottom: 10px;' id='perfmatters-purge-meta'>";
         foreach($meta_options as $key => $name) {
             echo "<label for='perfmatters-purge-meta-" . $key . "' style='margin-right: 10px; text-wrap: nowrap;'>";
@@ -2465,7 +2766,8 @@ function perfmatters_sanitize_options($values) {
         'lazyload' => array(
             'lazy_loading_exclusions',
             'lazy_loading_parent_exclusions',
-            'css_background_selectors'
+            'css_background_selectors',
+            'element_selectors'
         ),
         'assets' => array(
             'js_exclusions',
@@ -2563,7 +2865,7 @@ function perfmatters_title($title, $id = false, $link = false) {
             //tooltip icon + link
             if(!empty($link)) {
                 $tools = get_option('perfmatters_tools');
-                 $var.= "<a" . (!empty($link) ? " href='" . $link . "'" : "") . " class='perfmatters-tooltip'" . (!empty($tools['accessibility_mode']) ? " title='" . __("View Documentation", 'perfmatters') . "'" : "") . " target='_blank'>?</a>";
+                $var.= "<a" . (!empty($link) ? " href='" . $link . "'" : "") . " class='perfmatters-tooltip'" . (!empty($tools['accessibility_mode']) ? " title='" . __("View Documentation", 'perfmatters') . "'" : "") . " target='_blank'>?</a>";
             }
 
         $var.= "</span>";
@@ -2575,7 +2877,7 @@ function perfmatters_title($title, $id = false, $link = false) {
 //action button
 function perfmatters_action_button($action, $label, $type = 'primary', $confirmation = '') {
     echo '<div class="perfmatters-button-container">';
-        echo '<button name="submit" id="submit" class="button button-' . $type . '" data-pm-action="' . $action . '"' . (!empty($confirmation) ? ' data-pm-confirmation="' . $confirmation . '"' : '') . ' style="display: flex; align-items: center;">';
+        echo '<button name="submit" class="button button-' . $type . '" data-pm-action="' . $action . '"' . (!empty($confirmation) ? ' data-pm-confirmation="' . $confirmation . '"' : '') . ' style="display: flex; align-items: center;">';
             echo '<span class="perfmatters-button-text">' . $label . '</span>';
             echo '<svg class="perfmatters-button-spinner" viewBox="0 0 100 100" role="presentation" focusable="false" style="background: rgba(0,0,0,.1); border-radius: 100%; width: 16px; height: 28px; margin: 0px 2px; overflow: visible; opacity: 1; background-color: transparent; display: none;"><circle cx="50" cy="50" r="50" vector-effect="non-scaling-stroke" style="fill: transparent; stroke-width: 1.5px; stroke: #fff;"></circle><path d="m 50 0 a 50 50 0 0 1 50 50" vector-effect="non-scaling-stroke" style="fill: transparent; stroke-width: 1.5px; stroke: #4A89DD; stroke-linecap: round; transform-origin: 50% 50%; animation: 1.4s linear 0s infinite normal both running perfmatters-spinner;"></path></svg>';
         echo '</button>';

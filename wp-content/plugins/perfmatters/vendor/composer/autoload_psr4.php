@@ -6,7 +6,9 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Sabberworm\\CSS\\' => array($vendorDir . '/sabberworm/php-css-parser/src'),
+    'Perfmatters\\Vendor\\Safe\\Exceptions\\' => array($baseDir . '/vendor-prefixed/thecodingmachine/safe/lib/Exceptions', $baseDir . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions'),
+    'Perfmatters\\Vendor\\Safe\\' => array($baseDir . '/vendor-prefixed/thecodingmachine/safe/lib'),
+    'Perfmatters\\Vendor\\Sabberworm\\CSS\\' => array($baseDir . '/vendor-prefixed/sabberworm/php-css-parser/src'),
     'Perfmatters\\' => array($baseDir . '/inc/classes'),
     'MatthiasMullie\\PathConverter\\' => array($vendorDir . '/matthiasmullie/path-converter/src'),
     'MatthiasMullie\\Minify\\' => array($vendorDir . '/matthiasmullie/minify/src'),

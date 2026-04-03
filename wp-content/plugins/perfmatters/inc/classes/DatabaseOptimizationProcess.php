@@ -138,4 +138,15 @@ class DatabaseOptimizationProcess extends \WP_Background_Process {
 		//run parent complete
 		parent::complete();
 	}
+
+	//compatibility fix for ajax conflict
+	public function get_chain_id() {
+
+		//ignore our UI ajax actions
+		if(!empty($_REQUEST['action']) && in_array($_REQUEST['action'], array('perfmatters_optimize_database', 'perfmatters_cancel_optimization'))) {
+			return;
+		}
+
+		parent::get_chain_id();
+	}
 }

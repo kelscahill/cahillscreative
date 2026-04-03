@@ -112,7 +112,7 @@ class Meta
 			if(!empty($_POST[$key]) || get_post_meta($post->ID, $key, true) != false) {
 
 				//update option in post meta
-				update_post_meta($post->ID, $key, $_POST[$key] ?? "");
+				update_post_meta($post->ID, $key, $_POST[$key] ?? '');
 			}
 		}
 	}
@@ -143,12 +143,16 @@ class Meta
 			'lazy_loading' => array(
 				'name'     => __('Lazy Loading', 'perfmatters'),
 				'value'    => !empty(Config::$options['lazyload']['lazy_loading']) || !empty(Config::$options['lazyload']['lazy_loading_iframes'])
-			),
-			'instant_page' => array(
-				'name'     => __('Instant Page', 'perfmatters'),
-				'value'    => !empty(Config::$options['preload']['instant_page'])
 			)
 		);
+
+		//deprecated
+    	if(version_compare(get_bloginfo('version'), '6.8' , '<')) {
+    		self::$meta_options['instant_page'] = array(
+				'name'     => __('Instant Page', 'perfmatters'),
+				'value'    => !empty(Config::$options['preload']['instant_page'])
+			);
+    	}
 	}
 
 	//purge meta ajax action

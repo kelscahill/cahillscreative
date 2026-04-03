@@ -3,7 +3,7 @@
 Plugin Name: Perfmatters MU
 Plugin URI: https://perfmatters.io/
 Description: Perfmatters is a lightweight performance plugin developed to speed up your WordPress site.
-Version: 2.3.2
+Version: 2.6.0
 Author: forgemedia
 Author URI: https://forgemedia.io/
 License: GPLv2 or later
@@ -210,8 +210,7 @@ function perfmatters_mu_get_current_ID() {
     if($currentID === 0) {
 
         //check for home url match
-        //$request = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . strtok($_SERVER['REQUEST_URI']);
-        $request = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $request = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . strtok($_SERVER['REQUEST_URI'], '?');
 
         if(trailingslashit(home_url()) !== trailingslashit($request)) {
             $currentID = '';
@@ -481,7 +480,7 @@ function perfmatters_url_to_postid($url) {
             $request_match = $url . '/' . $request;
         }
 
-        if ( preg_match( "!^$match!", $request_match, $matches ) ) {
+        if ( preg_match( "#^$match#", $request_match, $matches ) ) {
 
             if ( $wp_rewrite->use_verbose_page_rules && preg_match( '/pagename=\$matches\[([0-9]+)\]/', $query, $varmatch ) ) {
                 // This is a verbose page match, let's check to be sure about it.

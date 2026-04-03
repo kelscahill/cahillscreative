@@ -1,18 +1,15 @@
 //assign variables
 //const pmDelayTimer = setTimeout(pmTriggerDOMListener, 10000); //set inline before main minified script for filterable timeout variable
+if(window.pmDT) {
+    var pmDelayTimer = setTimeout(pmTriggerDOMListener, window.pmDT * 1000);
+}
 const pmUserInteractions =["keydown","mousedown","mousemove","wheel","touchmove","touchstart","touchend"];
 const pmDelayedScripts = {normal: [], defer: [], async: []};
 const jQueriesArray = [];
 const pmInterceptedClicks = [];
-//const pmTrash = [];
 var pmDOMLoaded = false;
 var pmClickTarget = '';
 window.pmIsClickPending = false;
-
-//add pageshow listener
-window.addEventListener("pageshow", (e) => {
-    window.pmPersisted = e.persisted;
-});
 
 //add user interaction event listeners
 pmUserInteractions.forEach(function(event) {
@@ -20,13 +17,10 @@ pmUserInteractions.forEach(function(event) {
 });
 
 //add click handling listeners
-if(pmDelayClick) {
+if(window.pmDC) {
     window.addEventListener("touchstart", pmTouchStartHandler, {passive: true});
     window.addEventListener("mousedown", pmTouchStartHandler);
 }
-
-//add visibility change listener
-document.addEventListener("visibilitychange", pmTriggerDOMListener);
 
 //add dom listener and trigger scripts
 function pmTriggerDOMListener() {
@@ -40,9 +34,6 @@ function pmTriggerDOMListener() {
     pmUserInteractions.forEach(function(event) {
         window.removeEventListener(event, pmTriggerDOMListener, {passive:true});
     });
-
-    //remove visibility change listener
-    document.removeEventListener("visibilitychange", pmTriggerDOMListener);
 
     //add dom listner if page is still loading
     if(document.readyState === 'loading') {
@@ -61,7 +52,6 @@ async function pmTriggerDelayedScripts() {
     //prep
     pmDelayEventListeners();
     pmDelayJQueryReady();
-    pmProcessDocumentWrite();
     pmSortDelayedScripts();
     pmPreloadDelayedScripts();
 
@@ -80,11 +70,9 @@ async function pmTriggerDelayedScripts() {
 
     //start click replay event
     window.dispatchEvent(new Event("perfmatters-allScriptsLoaded")), 
-        pmWaitForPendingClicks().then(() => {
-            pmReplayClicks();
-        });
-        //pmEmptyTrash();
-    //pmReplayClicks();    
+    pmWaitForPendingClicks().then(() => {
+        pmReplayClicks();
+    });
 }
 
 //delay original page event listeners
@@ -143,13 +131,13 @@ function pmDelayEventListeners() {
     delayDOMEvent(document, "DOMContentLoaded");
     delayDOMEvent(window, "DOMContentLoaded");
     delayDOMEvent(window, "load");
-    delayDOMEvent(window, "pageshow");
+    //delayDOMEvent(window, "pageshow");
     delayDOMEvent(document, "readystatechange");
 
     //delay dom event triggers
     delayDOMEventTrigger(document, "onreadystatechange");
     delayDOMEventTrigger(window, "onload");
-    delayDOMEventTrigger(window, "onpageshow");
+    //delayDOMEventTrigger(window, "onpageshow");
 }
 
 //delay jquery ready
@@ -235,36 +223,6 @@ function pmDelayJQueryReady() {
     });
 }
 
-//print document write values directly after their parent script
-function pmProcessDocumentWrite() {
-
-    //create map to store scripts
-    const map = new Map();
-
-    //modify document.write functions
-    document.write = document.writeln = function(value) {
-
-        //prep
-        var script = document.currentScript;
-        var range = document.createRange();
-
-        //make sure script isn't in map yet
-        let mapScript = map.get(script);
-        if(mapScript === void 0) {
-
-            //add script's next sibling to map
-            mapScript = script.nextSibling;
-            map.set(script, mapScript);
-        }
-        
-        //insert value before script's next sibling
-        var fragment = document.createDocumentFragment();
-        range.setStart(fragment, 0);
-        fragment.appendChild(range.createContextualFragment(value));
-        script.parentElement.insertBefore(fragment, mapScript);
-    };
-}
-
 //find all delayed scripts and sort them by load order
 function pmSortDelayedScripts() {
     document.querySelectorAll("script[type=pmdelayedscript]").forEach(function(event) {
@@ -293,8 +251,13 @@ function pmPreloadDelayedScripts() {
         if(src) {
             var link = document.createElement("link");
             link.href = src;
-            link.rel = "preload";
-            link.as = "script";
+            if(script.getAttribute("data-perfmatters-type") == "module") {
+                link.rel = "modulepreload";
+            }
+            else {
+                link.rel = "preload";
+                link.as = "script";
+            }
             preloadFragment.appendChild(link);
         }
     });
@@ -336,7 +299,7 @@ async function pmReplaceScript(script) {
             if(attributeName !== "type") {
 
                 //swap data-type if needed
-                if(attributeName === "data-type") {
+                if(attributeName === "data-perfmatters-type") {
                     attributeName = "type";
                 }
 
@@ -358,7 +321,11 @@ async function pmReplaceScript(script) {
         }
 
         //replace original script with final
-        script.parentNode.replaceChild(newscript, script);
+        if(script.parentNode) {
+            script.parentNode.replaceChild(newscript, script);
+        } else {
+            replaceScript();
+        }
     });
 }
 
@@ -389,13 +356,6 @@ async function pmTriggerEventListeners() {
     jQueriesArray.forEach(function(singleJQuery) {
         singleJQuery(window).trigger("perfmatters-jquery-load")
     });
-    const pmPageShowEvent = new Event("perfmatters-pageshow");
-    pmPageShowEvent.persisted = window.pmPersisted;
-    window.dispatchEvent(pmPageShowEvent);
-    await pmNextFrame();
-    if(window.perfmattersonpageshow) {
-        window.perfmattersonpageshow({ persisted: window.pmPersisted });
-    }
 }
 
 //wait for next frame before proceeding
@@ -404,10 +364,6 @@ async function pmNextFrame() {
         requestAnimationFrame(e);
     });   
 }
-
-/*function pmEmptyTrash() {
-    window.pmTrash.forEach((t) => t.remove());
-}*/
 
 function pmReplayClicks() {
     window.removeEventListener("touchstart", pmTouchStartHandler, {passive: true});
@@ -424,7 +380,7 @@ function pmWaitForPendingClicks() {
         window.pmIsClickPending ? (pmPendingClickFinished = t) : t();
     });
 }
-function pmPndingClickStarted() {
+function pmPendingClickStarted() {
     window.pmIsClickPending = true;
 }
 function pmPendingClickFinished() {
@@ -441,7 +397,6 @@ function pmClickHandler(e) {
 }
 
 function pmTouchStartHandler(e) {
-    
     if(e.target.tagName !== "HTML") {
         if(!pmClickTarget) {
             pmClickTarget = e.target.outerHTML;
