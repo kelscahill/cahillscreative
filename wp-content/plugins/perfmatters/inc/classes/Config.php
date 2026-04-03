@@ -7,6 +7,7 @@ class Config
 {
 	public static $options;
 	public static $tools;
+	public static $code_disabled = false;
 
 	//initialize config
 	public static function init()
@@ -18,6 +19,11 @@ class Config
 		//actions
 		add_action('admin_bar_menu', array('Perfmatters\Config', 'admin_bar_menu'), 500);
 		add_action('wp', array('Perfmatters\Config', 'queue'));
+
+		//check for code disable constant
+        if(defined('PERFMATTERS_DISABLE_CODE') && PERFMATTERS_DISABLE_CODE) {
+        	self::$code_disabled = true;
+		}
 	}
 
 	//setup admin bar menu
@@ -40,7 +46,7 @@ class Config
 	public static function queue() {
 
 		//inital checks
-        if(is_admin() || perfmatters_is_dynamic_request() || perfmatters_is_page_builder() || isset($_GET['perfmatters']) || isset($_GET['perfmattersoff'])) {
+        if(is_admin() || Utilities::is_dynamic_request() || Utilities::is_page_builder() || isset($_GET['perfmatters']) || isset($_GET['perfmattersoff'])) {
             return;
         }
 

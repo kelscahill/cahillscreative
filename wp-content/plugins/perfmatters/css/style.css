@@ -3,8 +3,8 @@
   margin-top: 5px;
 }
 .settings_page_perfmatters #wpbody-content>.notice {
-  margin: 15px auto 15px 2px;
-  max-width: 1200px;
+  margin: 15px 20px 15px 0px;
+  max-width: 1600px;
   box-sizing: border-box;
 }
 .settings_page_perfmatters #wpbody-content>.update-nag {
@@ -18,9 +18,15 @@
 }
 
 /* admin wrappers */
-#perfmatters-admin {
-  max-width: 1200px;
-  margin-top: 15px;
+#perfmatters-admin { 
+  max-width: 1600px;
+  margin: 15px 20px 0px 0px;
+  --wp-admin-theme-color: #4A89DD;
+  --wp-admin-theme-color--rgb: 74, 137, 221;
+  --wp-admin-theme-color-darker-10: #437BC7;
+  --wp-admin-theme-color-darker-10--rgb: 67, 123, 199;
+  --wp-admin-theme-color-darker-20: #3B6EB1;
+  --wp-admin-theme-color-darker-20--rgb: 59, 110, 177;
 }
 #perfmatters-admin-container {
   display: flex; 
@@ -30,7 +36,7 @@
   position: relative;
   background: #fff;
   border: 1px solid #e2e4e7;
-  border-radius: 3px;
+  border-radius: 8px;
   padding: 20px;
   box-sizing: border-box;
 }
@@ -38,8 +44,8 @@
 /* header */
 #perfmatters-admin-header {
   margin-bottom: 10px;
-  width: 220px;
-  min-width: 220px;
+  width: 200px;
+  min-width: 200px;
 }
 #perfmatters-logo-bar {
   display: flex;
@@ -104,6 +110,13 @@
 }
 
 /* general ui */
+#perfmatters-main {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+#perfmatters-main.pm-loaded {
+  opacity: 1;
+}
 .perfmatters-settings-section {
   margin-bottom: 10px;
   border-bottom: 1px solid #f2f2f2;
@@ -128,11 +141,11 @@
   display: flex;
   align-items: center;
   font-size: 22px;
-  margin: -20px -20px 20px -20px;
+  margin: -20px -21px 20px -21px;
   padding: 20px;
   font-weight: 500;
   background: #282E34;
-  border-radius: 3px 3px 0px 0px;
+  border-radius: 8px 8px 0px 0px;
   color: #fff;
 }
 #perfmatters-admin .perfmatters-settings-header .dashicons {
@@ -142,7 +155,7 @@
   margin-right: 8px;
   color: #fff;
 }
-#perfmatters-admin .perfmatters-settings-section:last-of-type {
+#perfmatters-admin .perfmatters-settings-section:last-of-type, .pm-hide-advanced .perfmatters-settings-section:has(+ .pm-advanced-option) {
   border-bottom: none;
   padding-bottom: 0px;
   margin-bottom: 0px;
@@ -151,10 +164,10 @@
   margin: 0px;
 }
 #perfmatters-admin .form-table th {
-  padding: 15px 10px 15px 0px;
-  font-size: 13px;
+  /*padding: 15px 10px 15px 0px;
+  font-size: 14px;*/
   font-weight: normal;
-  min-width: 200px;
+  /*min-width: 200px;*/
 }
 #perfmatters-admin .form-table td {
   position: relative;
@@ -164,17 +177,19 @@
   display: flex;
   justify-content: space-between;
 }
-#perfmatters-admin .form-table th label {
+/*#perfmatters-admin .form-table th label {
   vertical-align: top;
   padding-right: 5px;
-}
+}*/
 .perfmatters-beta {
   background: #ED5464;
   color: #ffffff;
   padding: 5px;
   vertical-align: middle;
+  line-height: normal;
   font-size: 10px;
-  margin-left: 3px;
+  margin-left: 5px;
+  border-radius: 3px;
 }
 #pm-version {
   position: absolute;
@@ -220,6 +235,7 @@
   border: none;
   outline: none;
   box-shadow: none;
+  background: none;
 }
 #perfmatters-admin .perfmatters-switch input[type=checkbox]:checked::before {
   height: 0;
@@ -253,10 +269,10 @@
 #perfmatters-admin input:checked + .perfmatters-slider:before {
   transform: translateX(20px);
 }
-#perfmatters-admin input[type="text"], #perfmatters-admin select, #perfmatters-admin input[type="file"] {
+#perfmatters-admin input[type="text"], #perfmatters-admin select, #perfmatters-admin input[type="file"], #perfmatters-admin input[type="number"] {
   min-width: 300px;
   margin: 0px;
-  border: .5px solid #ccc;
+  border: 1px solid #ddd;
 }
 #perfmatters-admin input[type="checkbox"] {
   border-color: #ccc;
@@ -269,12 +285,11 @@
   width: 100%;
   resize: vertical;
   min-height: 150px;
-  border: .5px solid #ccc;
+  border: 1px solid #ddd;
 }
 #perfmatters-admin .CodeMirror {
-  max-width: 700px;
   height: 200px;
-  border: .5px solid #ccc;
+  border: 1px solid #ddd;
   border-radius: 4px;
   resize: vertical;
 }
@@ -283,13 +298,7 @@
 }
 
 /* tooltips */
-#perfmatters-admin .perfmatters-tooltip-wrapper {
-  position: relative;
-  display: inline-block;
-  float: right;
-}
 #perfmatters-admin .perfmatters-tooltip {
-  display: inline-block;
   flex-shrink: 0;
   float: right;
   margin-right: -10px;
@@ -375,7 +384,6 @@
 
 /* buttons */
 #perfmatters-admin-container .button-primary {
-  padding: 3px 10px;
   background: #4A89DD;
   border-color: #4A89DD;
 }
@@ -408,7 +416,7 @@
   background: #c14552;
   border-color: #c14552;
 }
-#perfmatters-options-form[data-pm-option="license"] #perfmatters-save, #perfmatters-options-form[data-pm-option="support"] #perfmatters-save {
+#perfmatters-settings[data-pm-option="code"] #perfmatters-save, #perfmatters-settings[data-pm-option="license"] #perfmatters-save, #perfmatters-settings[data-pm-option="support"] #perfmatters-save {
   display: none;
 }
 
@@ -424,12 +432,15 @@
   flex-grow: 1;
 }
 .perfmatters-input-row label {
+  /*min-height: 30px;*/
   margin: 0px 0px 0px 5px;
-  font-size: 12px;
+  /*font-size: 12px;*/
   white-space: nowrap;
+  display: inline-flex;
+  align-items: stretch;
 }
 .perfmatters-input-row input[type="checkbox"] {
-  margin-right: 0px;
+  margin: 0px 4px 0px 0px;
 }
 #perfmatters-admin .perfmatters-input-row select {
   min-width: auto;
@@ -448,29 +459,27 @@ a.perfmatters-add-input-row {
   text-decoration: none;
   margin-top: 10px;
 }
-a.perfmatters-add-input-row span.dashicons {
-  line-height: 30px;
-  margin-right: 2px;
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-}
 .perfmatters-inline-label-input {
   position: relative;
   display: inline-flex;
-  align-items: center;
+  align-items: stretch;
 }
 .perfmatters-inline-label-input span {
-  position: absolute;
-  left: 1px;
   background: #F0F0F1;
-  border-right: .5px solid #ccc;
+  border: 1px solid #ddd;
+  border-right: 0px;
   color: #8c8f94;
-  height: 28px;
+  /*height: 29px;*/
   padding: 0px 10px;
   display: inline-flex;
   align-items: center;
   border-radius: 3px 0px 0px 3px;
+}
+#perfmatters-admin .perfmatters-inline-label-input input, #perfmatters-admin .perfmatters-inline-label-input select {
+  min-width: auto;
+  border-radius: 0px 3px 3px 0px;
+  flex-grow: 1;
+  max-width: unset;
 }
 .perfmatters-input-row-hero {
   display: flex;
@@ -479,6 +488,8 @@ a.perfmatters-add-input-row span.dashicons {
 }
 .perfmatters-input-row-extra {
   display: none;
+}
+#perfmatters-admin .perfmatters-input-row-extra>* {
   margin-top: 5px;
 }
 .perfmatters-input-row.perfmatters-opened .perfmatters-input-row-extra {
@@ -497,10 +508,10 @@ a.perfmatters-add-input-row span.dashicons {
 
 /* quick exclusions ui */
 .perfmatters-quick-exclusion {
-  padding: 4px 8px;
+  padding: 9px 8px;
   margin-bottom: 10px;
-  border: .5px solid #ccc;
-  border-radius: 3px; 
+  border: 1px solid #ddd;
+  border-radius: 2px; 
 }
 .perfmatters-quick-exclusion:last-of-type {
   margin-bottom: 0px;
@@ -515,9 +526,9 @@ a.perfmatters-add-input-row span.dashicons {
 }
 .perfmatters-quick-exclusion-items {
   display: none;
-  margin-top: 4px;
-  border-top: .5px solid #f2f2f2;
-  padding-top: 4px;
+  margin-top: 10px;
+  border-top: 1px solid #f2f2f2;
+  padding-top: 10px;
 }
 .perfmatters-quick-exclusion:not(.perfmatters-opened) .dashicons-minus {
   display: none;
@@ -527,6 +538,13 @@ a.perfmatters-add-input-row span.dashicons {
 }
 .perfmatters-quick-exclusion.perfmatters-opened .perfmatters-quick-exclusion-items {
   display: block;
+}
+
+/* subsets */
+#perfmatters-subsets > label {
+  min-width: 160px;
+  display: inline-block;
+  font-size: 12px;
 }
 
 /* action buttons */
@@ -604,6 +622,9 @@ a.perfmatters-add-input-row span.dashicons {
   #perfmatters-admin textarea {
     min-width:  0px;
   }
+  .perfmatters-inline-label-input span {
+    height: 39px;
+  }
 }
 
 @keyframes perfmatters-spinner {
@@ -665,14 +686,10 @@ a.perfmatters-add-input-row span.dashicons {
   margin-right: 8px;
   margin-left: 0;
 }
-.rtl a.perfmatters-add-input-row span.dashicons {
-  margin-left: 2px;
-  margin-right: 0;
-}
 .rtl .perfmatters-inline-label-input span {
   right: 1px;
   left: auto;
-  border-left: .5px solid #ccc;
+  border-left: 1px solid #ddd;
   border-right: none;
   border-radius: 4px 0px 0px 4px;
 }

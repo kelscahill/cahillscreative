@@ -4,18 +4,21 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitf44a6754192f24e2a51152e4c571b08b
+class ComposerStaticInit7a42fff091e657c198b6c242da2f2c4b
 {
+    public static $files = array (
+        '438d29b3df64d28da94fa4f493d901be' => __DIR__ . '/../..' . '/inc/prefixed-safe-autoload.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
-        'S' => 
+        'P' =>
         array (
-            'Sabberworm\\CSS\\' => 15,
-        ),
-        'P' => 
-        array (
+            'Perfmatters\\Vendor\\Safe\\Exceptions\\' => 35,
+            'Perfmatters\\Vendor\\Safe\\' => 24,
+            'Perfmatters\\Vendor\\Sabberworm\\CSS\\' => 34,
             'Perfmatters\\' => 12,
         ),
-        'M' => 
+        'M' =>
         array (
             'MatthiasMullie\\PathConverter\\' => 29,
             'MatthiasMullie\\Minify\\' => 22,
@@ -23,19 +26,28 @@ class ComposerStaticInitf44a6754192f24e2a51152e4c571b08b
     );
 
     public static $prefixDirsPsr4 = array (
-        'Sabberworm\\CSS\\' => 
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\' =>
         array (
-            0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/src',
+            0 => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/lib/Exceptions',
+            1 => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions',
         ),
-        'Perfmatters\\' => 
+        'Perfmatters\\Vendor\\Safe\\' =>
+        array (
+            0 => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/lib',
+        ),
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\' =>
+        array (
+            0 => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src',
+        ),
+        'Perfmatters\\' =>
         array (
             0 => __DIR__ . '/../..' . '/inc/classes',
         ),
-        'MatthiasMullie\\PathConverter\\' => 
+        'MatthiasMullie\\PathConverter\\' =>
         array (
             0 => __DIR__ . '/..' . '/matthiasmullie/path-converter/src',
         ),
-        'MatthiasMullie\\Minify\\' => 
+        'MatthiasMullie\\Minify\\' =>
         array (
             0 => __DIR__ . '/..' . '/matthiasmullie/minify/src',
         ),
@@ -43,6 +55,179 @@ class ComposerStaticInitf44a6754192f24e2a51152e4c571b08b
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'MatthiasMullie\\Minify\\CSS' => __DIR__ . '/..' . '/matthiasmullie/minify/src/CSS.php',
+        'MatthiasMullie\\Minify\\Exception' => __DIR__ . '/..' . '/matthiasmullie/minify/src/Exception.php',
+        'MatthiasMullie\\Minify\\Exceptions\\BasicException' => __DIR__ . '/..' . '/matthiasmullie/minify/src/Exceptions/BasicException.php',
+        'MatthiasMullie\\Minify\\Exceptions\\FileImportException' => __DIR__ . '/..' . '/matthiasmullie/minify/src/Exceptions/FileImportException.php',
+        'MatthiasMullie\\Minify\\Exceptions\\IOException' => __DIR__ . '/..' . '/matthiasmullie/minify/src/Exceptions/IOException.php',
+        'MatthiasMullie\\Minify\\Exceptions\\PatternMatchException' => __DIR__ . '/..' . '/matthiasmullie/minify/src/Exceptions/PatternMatchException.php',
+        'MatthiasMullie\\Minify\\JS' => __DIR__ . '/..' . '/matthiasmullie/minify/src/JS.php',
+        'MatthiasMullie\\Minify\\Minify' => __DIR__ . '/..' . '/matthiasmullie/minify/src/Minify.php',
+        'MatthiasMullie\\PathConverter\\Converter' => __DIR__ . '/..' . '/matthiasmullie/path-converter/src/Converter.php',
+        'MatthiasMullie\\PathConverter\\ConverterInterface' => __DIR__ . '/..' . '/matthiasmullie/path-converter/src/ConverterInterface.php',
+        'MatthiasMullie\\PathConverter\\NoConverter' => __DIR__ . '/..' . '/matthiasmullie/path-converter/src/NoConverter.php',
+        'Perfmatters\\Ajax' => __DIR__ . '/../..' . '/inc/classes/Ajax.php',
+        'Perfmatters\\Analytics' => __DIR__ . '/../..' . '/inc/classes/Analytics.php',
+        'Perfmatters\\Buffer' => __DIR__ . '/../..' . '/inc/classes/Buffer.php',
+        'Perfmatters\\CDN' => __DIR__ . '/../..' . '/inc/classes/CDN.php',
+        'Perfmatters\\CSS' => __DIR__ . '/../..' . '/inc/classes/CSS.php',
+        'Perfmatters\\Config' => __DIR__ . '/../..' . '/inc/classes/Config.php',
+        'Perfmatters\\DatabaseOptimizationProcess' => __DIR__ . '/../..' . '/inc/classes/DatabaseOptimizationProcess.php',
+        'Perfmatters\\DatabaseOptimizer' => __DIR__ . '/../..' . '/inc/classes/DatabaseOptimizer.php',
+        'Perfmatters\\Fonts' => __DIR__ . '/../..' . '/inc/classes/Fonts.php',
+        'Perfmatters\\General' => __DIR__ . '/../..' . '/inc/classes/General.php',
+        'Perfmatters\\HTML' => __DIR__ . '/../..' . '/inc/classes/HTML.php',
+        'Perfmatters\\Images' => __DIR__ . '/../..' . '/inc/classes/Images.php',
+        'Perfmatters\\JS' => __DIR__ . '/../..' . '/inc/classes/JS.php',
+        'Perfmatters\\LazyLoad' => __DIR__ . '/../..' . '/inc/classes/LazyLoad.php',
+        'Perfmatters\\License' => __DIR__ . '/../..' . '/inc/classes/License.php',
+        'Perfmatters\\Meta' => __DIR__ . '/../..' . '/inc/classes/Meta.php',
+        'Perfmatters\\Minify' => __DIR__ . '/../..' . '/inc/classes/Minify.php',
+        'Perfmatters\\PMCS\\Ajax' => __DIR__ . '/../..' . '/inc/classes/PMCS/Ajax.php',
+        'Perfmatters\\PMCS\\Conditions' => __DIR__ . '/../..' . '/inc/classes/PMCS/Conditions.php',
+        'Perfmatters\\PMCS\\Editor' => __DIR__ . '/../..' . '/inc/classes/PMCS/Editor.php',
+        'Perfmatters\\PMCS\\Error' => __DIR__ . '/../..' . '/inc/classes/PMCS/Error.php',
+        'Perfmatters\\PMCS\\ListTable' => __DIR__ . '/../..' . '/inc/classes/PMCS/ListTable.php',
+        'Perfmatters\\PMCS\\PMCS' => __DIR__ . '/../..' . '/inc/classes/PMCS/PMCS.php',
+        'Perfmatters\\PMCS\\PhpValidator' => __DIR__ . '/../..' . '/inc/classes/PMCS/PhpValidator.php',
+        'Perfmatters\\PMCS\\Snippet' => __DIR__ . '/../..' . '/inc/classes/PMCS/Snippet.php',
+        'Perfmatters\\Preload' => __DIR__ . '/../..' . '/inc/classes/Preload.php',
+        'Perfmatters\\Utilities' => __DIR__ . '/../..' . '/inc/classes/Utilities.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\CSSElement' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/CSSElement.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\CSSList\\AtRuleBlockList' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/CSSList/AtRuleBlockList.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\CSSList\\CSSBlockList' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/CSSList/CSSBlockList.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\CSSList\\CSSList' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/CSSList/CSSList.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\CSSList\\CSSListItem' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/CSSList/CSSListItem.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\CSSList\\Document' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/CSSList/Document.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\CSSList\\KeyFrame' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/CSSList/KeyFrame.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Comment\\Comment' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Comment/Comment.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Comment\\CommentContainer' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Comment/CommentContainer.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Comment\\Commentable' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Comment/Commentable.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\OutputFormat' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/OutputFormat.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\OutputFormatter' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/OutputFormatter.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Parser' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Parser.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Parsing\\Anchor' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Parsing/Anchor.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Parsing\\OutputException' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Parsing/OutputException.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Parsing\\ParserState' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Parsing/ParserState.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Parsing\\SourceException' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Parsing/SourceException.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Parsing\\UnexpectedEOFException' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Parsing/UnexpectedEOFException.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Parsing\\UnexpectedTokenException' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Parsing/UnexpectedTokenException.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Position\\Position' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Position/Position.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Position\\Positionable' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Position/Positionable.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Property\\AtRule' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Property/AtRule.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Property\\CSSNamespace' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Property/CSSNamespace.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Property\\Charset' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Property/Charset.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Property\\Declaration' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Property/Declaration.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Property\\Import' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Property/Import.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Property\\KeyframeSelector' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Property/KeyframeSelector.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Property\\Selector' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Property/Selector.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Property\\Selector\\Combinator' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Property/Selector/Combinator.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Property\\Selector\\Component' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Property/Selector/Component.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Property\\Selector\\CompoundSelector' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Property/Selector/CompoundSelector.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Property\\Selector\\SpecificityCalculator' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Property/Selector/SpecificityCalculator.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Renderable' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Renderable.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\RuleSet\\AtRuleSet' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/RuleSet/AtRuleSet.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\RuleSet\\DeclarationBlock' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/RuleSet/DeclarationBlock.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\RuleSet\\DeclarationList' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/RuleSet/DeclarationList.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\RuleSet\\LegacyDeclarationListMethods' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/RuleSet/LegacyDeclarationListMethods.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\RuleSet\\RuleSet' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/RuleSet/RuleSet.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Settings' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Settings.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\ShortClassNameProvider' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/ShortClassNameProvider.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Value\\CSSFunction' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Value/CSSFunction.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Value\\CSSString' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Value/CSSString.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Value\\CalcFunction' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Value/CalcFunction.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Value\\CalcRuleValueList' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Value/CalcRuleValueList.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Value\\Color' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Value/Color.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Value\\LineName' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Value/LineName.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Value\\PrimitiveValue' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Value/PrimitiveValue.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Value\\RuleValueList' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Value/RuleValueList.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Value\\Size' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Value/Size.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Value\\URL' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Value/URL.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Value\\Value' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Value/Value.php',
+        'Perfmatters\\Vendor\\Sabberworm\\CSS\\Value\\ValueList' => __DIR__ . '/../..' . '/vendor-prefixed/sabberworm/php-css-parser/src/Value/ValueList.php',
+        'Perfmatters\\Vendor\\Safe\\DateTime' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/lib/DateTime.php',
+        'Perfmatters\\Vendor\\Safe\\DateTimeImmutable' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/lib/DateTimeImmutable.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ApacheException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ApacheException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ApcuException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ApcuException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ArrayException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ArrayException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\Bzip2Exception' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/Bzip2Exception.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\CalendarException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/CalendarException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ClassobjException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ClassobjException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ComException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ComException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\CubridException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/CubridException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\CurlException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/lib/Exceptions/CurlException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\DatetimeException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/DatetimeException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\DirException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/DirException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\EioException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/EioException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ErrorfuncException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ErrorfuncException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ExecException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ExecException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\FileinfoException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/FileinfoException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\FilesystemException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/FilesystemException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\FilterException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/FilterException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\FpmException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/FpmException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\FtpException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/FtpException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\FunchandException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/FunchandException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\GettextException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/GettextException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\GmpException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/GmpException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\GnupgException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/GnupgException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\HashException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/HashException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\IbaseException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/IbaseException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\IbmDb2Exception' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/IbmDb2Exception.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\IconvException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/IconvException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ImageException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ImageException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ImapException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ImapException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\InfoException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/InfoException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\InotifyException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/InotifyException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\JsonException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/lib/Exceptions/JsonException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\LdapException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/LdapException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\LibxmlException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/LibxmlException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\LzfException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/LzfException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\MailparseException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/MailparseException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\MbstringException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/MbstringException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\MiscException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/MiscException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\MysqlException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/MysqlException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\MysqliException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/MysqliException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\NetworkException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/NetworkException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\Oci8Exception' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/Oci8Exception.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\OpcacheException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/OpcacheException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\OpensslException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/lib/Exceptions/OpensslException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\OutcontrolException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/OutcontrolException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\PcntlException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/PcntlException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\PcreException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/lib/Exceptions/PcreException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\PgsqlException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/PgsqlException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\PosixException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/PosixException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\PsException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/PsException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\PspellException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/PspellException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ReadlineException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ReadlineException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\RnpException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/RnpException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\RpminfoException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/RpminfoException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\RrdException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/RrdException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\SafeExceptionInterface' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/lib/Exceptions/SafeExceptionInterface.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\SemException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/SemException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\SessionException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/SessionException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ShmopException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ShmopException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\SimplexmlException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/lib/Exceptions/SimplexmlException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\SocketsException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/SocketsException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\SodiumException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/SodiumException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\SolrException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/SolrException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\SplException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/SplException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\SqlsrvException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/SqlsrvException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\SsdeepException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/SsdeepException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\Ssh2Exception' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/Ssh2Exception.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\StreamException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/StreamException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\StringsException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/StringsException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\SwooleException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/SwooleException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\UodbcException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/UodbcException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\UopzException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/UopzException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\UrlException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/UrlException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\VarException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/VarException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\XdiffException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/XdiffException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\XmlException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/XmlException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\XmlrpcException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/XmlrpcException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\YamlException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/YamlException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\YazException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/YazException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ZipException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ZipException.php',
+        'Perfmatters\\Vendor\\Safe\\Exceptions\\ZlibException' => __DIR__ . '/../..' . '/vendor-prefixed/thecodingmachine/safe/generated/Exceptions/ZlibException.php',
         'WP_Async_Request' => __DIR__ . '/..' . '/deliciousbrains/wp-background-processing/classes/wp-async-request.php',
         'WP_Background_Process' => __DIR__ . '/..' . '/deliciousbrains/wp-background-processing/classes/wp-background-process.php',
     );
@@ -50,9 +235,9 @@ class ComposerStaticInitf44a6754192f24e2a51152e4c571b08b
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitf44a6754192f24e2a51152e4c571b08b::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitf44a6754192f24e2a51152e4c571b08b::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitf44a6754192f24e2a51152e4c571b08b::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit7a42fff091e657c198b6c242da2f2c4b::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit7a42fff091e657c198b6c242da2f2c4b::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit7a42fff091e657c198b6c242da2f2c4b::$classMap;
 
         }, null, ClassLoader::class);
     }

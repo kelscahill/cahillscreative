@@ -18,6 +18,7 @@ class DatabaseOptimizer {
 		add_action('init', array($this, 'perfmatters_schedule_database_optimization'));
 		add_action('perfmatters_database_optimization', array($this, 'perfmatters_run_scheduled_database_optimization'));
 		add_action('wp_ajax_perfmatters_optimize_database', array($this, 'optimize_database'));
+		add_action('wp_ajax_perfmatters_cancel_optimization', array($this, 'cancel_optimization'));
 		add_action('wp_ajax_perfmatters_scan_database', array($this, 'scan_database'));
 	}
 
@@ -222,6 +223,21 @@ class DatabaseOptimizer {
 
 		wp_send_json_success(array(
 	    	'message' => __('Database optimization process started.', 'perfmatters'),
+	    	'reload' => true
+		));
+	}
+
+	//optimize database ajax action
+	public function cancel_optimization() {
+
+		Ajax::security_check();
+
+		$this->optimizer->cancel();
+
+		delete_transient('perfmatters_database_optimization_process');
+
+		wp_send_json_success(array(
+	    	'message' => __('Database optimization process cancelled.', 'perfmatters'),
 	    	'reload' => true
 		));
 	}

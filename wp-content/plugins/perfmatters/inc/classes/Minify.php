@@ -29,11 +29,6 @@ class Minify
 		    return;
 		}
 
-		//exclusion check
-		if(Utilities::match_in_array($src, self::get_exclusions($ext))) {
-		   return;
-		}
-
 		//check if file is accessible
 		$file_relative_path = $parsed_url['path'];
 		$file_path = Utilities::get_root_dir_path() . ltrim($file_relative_path, '/');
@@ -73,7 +68,8 @@ class Minify
 		$percent_wasted = ($bytes_wasted / $file_size) * 100;
 
 		//still point to original file
-		if($bytes_wasted < 1024 || $percent_wasted < 5) {
+		$threshold = apply_filters('perfmatters_minify_threshold', 10);
+		if(!empty($threshold) && $percent_wasted < $threshold) {
 		    return;
 		}
 
@@ -81,7 +77,7 @@ class Minify
 	}
 
 	//return exclusions array
-	private static function get_exclusions($type) {
+	public static function get_exclusions($type) {
 
 		if(!isset(self::$data['exclusions'][$type])) {
 			
@@ -93,12 +89,15 @@ class Minify
 		    //js
 		    if($type == 'js') {
 		    	self::$data['exclusions']['js'] = array_merge(self::$data['exclusions']['js'], array(
-		    		'uploads/perfmatters'
+		    		PERFMATTERS_CACHE_URL,
+		    		'uploads/perfmatters',
+		    		'wp-recipe-maker'
 		    	));
 		    }
 		    //css
 		    elseif($type == 'css') {
 		    	self::$data['exclusions']['css'] = array_merge(self::$data['exclusions']['css'], array(
+		    		PERFMATTERS_CACHE_URL,
 		    		'/uploads/elementor/css/post-'
 		    	));
 		    }

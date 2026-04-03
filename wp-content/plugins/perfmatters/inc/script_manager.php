@@ -1,6 +1,6 @@
 <?php
 //security check
-if(!function_exists('wp_get_current_user') || !current_user_can('manage_options') || is_admin() || !isset($_GET['perfmatters']) || !perfmatters_network_access() || perfmatters_is_page_builder()) {
+if(!function_exists('wp_get_current_user') || !current_user_can('manage_options') || is_admin() || !isset($_GET['perfmatters']) || !perfmatters_network_access() || Perfmatters\Utilities::is_page_builder()) {
 	return;
 }
 
@@ -18,10 +18,10 @@ global $perfmatters_tools;
 global $wp;
 global $wp_scripts;
 global $wp_styles;
-global $perfmatters_options;
 global $currentID;
 $currentID = perfmatters_get_current_ID();
 $pmsm_tab = !empty($_POST['tab']) ? $_POST['tab'] : 'main';
+$perfmatters_options = get_option('perfmatters_options');
 
 //filter language locale for script manager ui
 switch_to_locale(apply_filters('perfmatters_script_manager_locale', ''));
@@ -37,7 +37,7 @@ if(isset($_POST['pmsm_save_settings'])) {
 	else {
 
 		//update settings
-		update_option('perfmatters_script_manager_settings', (!empty($_POST['perfmatters_script_manager_settings']) ? $_POST['perfmatters_script_manager_settings'] : ''));
+		update_option('perfmatters_script_manager_settings', (!empty($_POST['perfmatters_script_manager_settings']) ? $_POST['perfmatters_script_manager_settings'] : ''), false);
 	}
 }
 
@@ -49,7 +49,7 @@ if(isset($_POST['pmsm_disclaimer_close'])) {
 			$settings = array();
 		}
 		$settings['hide_disclaimer'] = 1;
-		update_option('perfmatters_script_manager_settings', $settings);
+		update_option('perfmatters_script_manager_settings', $settings, false);
 	}
 }
 
@@ -79,7 +79,7 @@ if(isset($_POST['pmsm_global_trash']) && wp_verify_nonce($_POST['pmsm_global_non
 		//clean up the options array before saving
 		perfmatters_script_manager_filter_options($options);
 
-		update_option('perfmatters_script_manager', $options);
+		update_option('perfmatters_script_manager', $options, false);
 	}
 }
 
@@ -104,7 +104,7 @@ if(isset($_POST['pmsm_global_refresh']) && wp_verify_nonce($_POST['pmsm_global_n
 		//clean up the options array before saving
 		perfmatters_script_manager_filter_options($options);
 
-		update_option('perfmatters_script_manager', $options);
+		update_option('perfmatters_script_manager', $options, false);
 	}
 }
 
@@ -159,7 +159,7 @@ echo "<div id='perfmatters-script-manager-wrapper'>";
 			echo "<span id='pmsm-menu-toggle'><span class='dashicons dashicons-menu'></span></span>";
 
 			//logo
-			echo "<img src='" . plugins_url('img/logo.svg', dirname(__FILE__)) . "' title='Perfmatters' id='perfmatters-logo' />";
+			echo "<img src='" . plugins_url('img/logo-light.svg', dirname(__FILE__)) . "' title='Perfmatters' id='perfmatters-logo' />";
 
 		echo "</div>";
 	
@@ -343,7 +343,7 @@ echo "<div id='perfmatters-script-manager-wrapper'>";
 
 												//mu plugin file check
 												if(!empty($perfmatters_script_manager_settings['mu_mode'])) {
-													if(file_exists(WPMU_PLUGIN_DIR . "/perfmatters_mu.php")) {
+													if(file_exists(PMMU_PLUGIN_DIR . "/perfmatters_mu.php")) {
 
 														//$mu_plugins = get_mu_plugins();
 														if(!function_exists('get_plugin_data')) {
@@ -351,7 +351,7 @@ echo "<div id='perfmatters-script-manager-wrapper'>";
 													    }
 
 													    //get plugin data
-													    $mu_plugin_data = get_plugin_data(WPMU_PLUGIN_DIR . "/perfmatters_mu.php");
+													    $mu_plugin_data = get_plugin_data(PMMU_PLUGIN_DIR . "/perfmatters_mu.php");
 
 														if(empty($mu_plugin_data['Version']) || !defined('PERFMATTERS_VERSION') || ($mu_plugin_data['Version'] != PERFMATTERS_VERSION)) {
 															$mu_message = __("MU plugin version mismatch.", 'perfmatters');

@@ -5,6 +5,7 @@ class JS
 {
 	private static $run = [];
 	private static $data = [];
+	public static $snippet_optimizations = [];
 
 	//initialize js
 	public static function init()
@@ -19,7 +20,6 @@ class JS
 		if(!empty(Config::$options['assets']['minify_js'])) {
             Minify::queue_admin_bar();
         }
-
 
 		//ajax actions
 		add_action('wp_ajax_perfmatters_clear_minified_js', array('Perfmatters\JS', 'clear_minified_js_ajax'));
@@ -38,10 +38,13 @@ class JS
 		self::$run['delay'] = !empty(apply_filters('perfmatters_delay_js', !empty(Config::$options['assets']['delay_js']))) && !Utilities::get_post_meta('perfmatters_exclude_delay_js');
 		self::$run['minify'] = !empty(apply_filters('perfmatters_minify_js', !empty(Config::$options['assets']['minify_js']))) && !Utilities::get_post_meta('perfmatters_exclude_minify_js');
 
+		//pmcs js optimizations
+        self::$run['snippets'] = !empty(self::$snippet_optimizations);
+
 		if(array_filter(self::$run)) {
 
 			//add to buffer
-			add_filter('perfmatters_output_buffer_template_redirect', array('Perfmatters\JS', 'optimize'));
+			add_filter('perfmatters_output_buffer', array('Perfmatters\JS', 'optimize'));
 
 			//fastclick
 			if(self::$run['delay'] && !empty(apply_filters('perfmatters_delay_js_fastclick', !empty(Config::$options['assets']['fastclick'])))) {
@@ -64,36 +67,67 @@ class JS
 			return $html;
 		}
 
+		//global scripts array in case we need to update registered src
+        global $wp_scripts;
+
 		self::populate_data();
+
+		$print_delay_js = false;
 
 		//loop through scripts
 		foreach($matches[0] as $i => $tag) {
 
-			$atts_array = !empty($matches[2][$i]) ? Utilities::get_atts_array($matches[2][$i]) : array();
+			$atts_array = Utilities::get_atts_array($matches[2][$i] ?? '');
 			
 			//skip if type is not javascript
-			if(isset($atts_array['type']) && stripos($atts_array['type'], 'javascript') == false) {
+			if(isset($atts_array['type']) && !Utilities::match_in_array($atts_array['type'], array('javascript', 'module'))) {
 				continue;
 			}
 
 			$delay_flag = false;
+			$defer_flag = false;
 			$atts_array_new = $atts_array;
+
+			//snippet optimizations
+            if(!empty(self::$snippet_optimizations) && !empty($atts_array['id'])) {
+                if(isset(self::$snippet_optimizations[$atts_array['id']])) {
+
+                    //delay flag
+                    if(self::$snippet_optimizations[$atts_array['id']] == 'delay') {
+                        $delay_flag = true;
+                        $print_delay_js = true;
+                    }
+                    elseif(self::$snippet_optimizations[$atts_array['id']] == 'defer') {
+                    	$defer_flag = true;
+                    }
+                }
+            }
 
 			//minify
 			if(self::$run['minify']) {
-				if(!empty($atts_array['src']) && $minified_src = Minify::minify($atts_array['src'])) {
+				if(!empty($atts_array['src']) && !Utilities::match_in_array($matches[2][$i], Minify::get_exclusions('js')) && $minified_src = Minify::minify($atts_array['src'])) {
 					$atts_array_new['src'] = $minified_src;
+
+					//update registered src
+                    if(!empty($atts_array['id'])) {
+                        $handle = rtrim($atts_array['id'], '-js');
+                        if(isset($wp_scripts->registered[$handle])) {
+                            $wp_scripts->registered[$handle]->src = $minified_src;
+                        }
+                    }
 				}
 			}
 
 			//delay
-			if(self::$run['delay']) {
+			if(self::$run['delay'] || $delay_flag) {
 
-				if(empty(self::$data['delay']['behavior'])) {
-					$delay_flag = Utilities::match_in_array($tag, self::$data['delay']['inclusions']);
-				}
-				else {
-					$delay_flag = !Utilities::match_in_array($tag, self::$data['delay']['exclusions']);
+				if(!$delay_flag) {
+					if(empty(self::$data['delay']['behavior'])) {
+						$delay_flag = Utilities::match_in_array($tag, self::$data['delay']['inclusions']);
+					}
+					else {
+						$delay_flag = !Utilities::match_in_array($tag, self::$data['delay']['exclusions']);
+					}
 				}
 
 				if($delay_flag) {
@@ -116,16 +150,16 @@ class JS
 			}
 
 			//defer
-			if(self::$run['defer'] && !$delay_flag) {
+			if((self::$run['defer'] || $defer_flag) && !$delay_flag) {
 
 				//inline script
 				if(empty($atts_array['src'])) {
 
 					//script content
-					if(!empty(Config::$options['assets']['defer_inline']) && !empty($matches[3][$i])) {
+					if((!empty(Config::$options['assets']['defer_inline']) && !empty($matches[3][$i])) || $defer_flag) {
 					
 						//exclusion check
-						if(!Utilities::match_in_array($tag, self::$data['defer']['exclusions'])) {
+						if(!Utilities::match_in_array($tag, self::$data['defer']['exclusions']) || $defer_flag) {
 							$atts_array_new['defer'] = '';
 							$atts_array_new['src'] = 'data:text/javascript;base64,' . base64_encode($matches[3][$i]);
 							$matches[3][$i] = '';
@@ -139,7 +173,7 @@ class JS
 					if(!isset($atts_array['async']) && (empty($atts_array['data-wp-strategy']) || $atts_array['data-wp-strategy'] != 'async')) {
 						
 						//exclusion check
-						if(!Utilities::match_in_array($tag, self::$data['defer']['exclusions'])) {
+						if(!Utilities::match_in_array($tag, self::$data['defer']['exclusions']) || $defer_flag) {
 							$atts_array_new['defer'] = '';
 						}
 					}
@@ -156,7 +190,7 @@ class JS
 		}
 
 		//print delay js
-		if(self::$run['delay']) {
+		if(self::$run['delay'] || $print_delay_js) {
             $pos = strpos($html, '</body>');
             if($pos !== false) {
             	$html = substr_replace($html, self::print_delay_js() . '</body>', $pos, 7);
@@ -167,6 +201,16 @@ class JS
 	}
 
 	private static function populate_data() {
+
+		self::$data = [
+			'delay' => [
+				'inclusions' => [],
+				'exclusions' => []
+			],
+			'defer' => [
+				'exclusions' => []
+			]
+		];
 
 		//delay exclusions/inclusions
 		if(self::$run['delay']) {
@@ -184,24 +228,37 @@ class JS
 				//exclusions for delay all
 				self::$data['delay']['exclusions'] = array(
 					'perfmatters-delayed-scripts-js',
+					'pmcs-',
 					'lazyload.min.js',
 					'lazyLoadInstance',
 					'lazysizes',
 					'customize-support',
 					'fastclick',
 					'jqueryParams',
-					'et_link_options_data'
+					'et_link_options_data',
+					'document.write(',
+					'cmp.min.js', //ezoic
+					'sa.min.js',
+					'ShowAds',
+					'ezstandalone',
+					'ezoic'
 				);
 
 				//add quick exclusions
 				if(!empty(Config::$options['assets']['delay_js_quick_exclusions'])) {
 
 				    $master = self::get_quick_exclusions_master();
+				    $delay_defer_exclusions = array();
 
 					foreach(Config::$options['assets']['delay_js_quick_exclusions'] as $type => $items) {
 						foreach($items as $key => $val) {
 							if(!empty($master[$type][$key])) {
 								self::$data['delay']['exclusions'] = array_merge(self::$data['delay']['exclusions'], $master[$type][$key]['exclusions']);
+
+								//save deferral exclusions if needed
+								if(!empty($master[$type][$key]['deferral_exclusions'])) {
+									$delay_defer_exclusions = array_merge($delay_defer_exclusions, $master[$type][$key]['deferral_exclusions']);
+								}
 							}
 						}
 					}
@@ -223,8 +280,20 @@ class JS
 			//base exclusions
 			self::$data['defer']['exclusions'] = array(
 				'perfmatters-lazy-load-js',
-				'jqueryParams'
+				'pmcs-',
+				'jqueryParams',
+				'cmp.min.js', //ezoic
+				'sa.min.js',
+				'ShowAds',
+				'ezstandalone',
+				'ezoic',
+				'cloudflare.com/turnstile' //turnstile
 			);
+
+			//add deferral exclusions from delay quick exclusions
+			if(!empty($delay_defer_exclusions)) {
+				self::$data['defer']['exclusions'] = array_merge(self::$data['defer']['exclusions'], $delay_defer_exclusions);
+			}
 
 			//add jquery
 			if(empty(apply_filters('perfmatters_defer_jquery', !empty(Config::$options['assets']['defer_jquery'])))) {
@@ -244,34 +313,39 @@ class JS
 	//print inline delay js
 	public static function print_delay_js() {
 
-		$timeout = apply_filters('perfmatters_delay_js_timeout', !empty(Config::$options['assets']['delay_timeout']) ? 10 : '');
+		$timeout = apply_filters('perfmatters_delay_js_timeout', !empty(Config::$options['assets']['delay_timeout']) ? 15 : '');
 
-		if(!empty(apply_filters('perfmatters_delay_js_behavior', Config::$options['assets']['delay_js_behavior'] ?? ''))) {
-			$delay_click = json_encode(apply_filters('perfmatters_delay_js_delay_click', empty(Config::$options['assets']['disable_click_delay'])));
+		if(self::$run['delay'] && (!empty(apply_filters('perfmatters_delay_js_behavior', Config::$options['assets']['delay_js_behavior'] ?? '')))) {
+			$delay_click = (int)apply_filters('perfmatters_delay_js_delay_click', empty(Config::$options['assets']['disable_click_delay']));
 		}
 		else {
-			$delay_click = json_encode(false);
+			$delay_click = 0;
 		}
 
-	  	if(!empty(apply_filters('perfmatters_delay_js', !empty(Config::$options['assets']['delay_js'])))) {
+	  	//if(!empty(apply_filters('perfmatters_delay_js', !empty(Config::$options['assets']['delay_js'])))) {
 
 	  		$script = '<script id="perfmatters-delayed-scripts-js">';
-	  			
-				$script.= 'const pmDelayClick=' . $delay_click . ';';
-				if(!empty($timeout)) {
-					$script.= 'const pmDelayTimer=setTimeout(pmTriggerDOMListener,' . $timeout . '*1000);';
-				}
-	  			$script.= 'const pmUserInteractions=["keydown","mousedown","mousemove","wheel","touchmove","touchstart","touchend"],pmDelayedScripts={normal:[],defer:[],async:[]},jQueriesArray=[],pmInterceptedClicks=[];var pmDOMLoaded=!1,pmClickTarget="";function pmTriggerDOMListener(){"undefined"!=typeof pmDelayTimer&&clearTimeout(pmDelayTimer),pmUserInteractions.forEach(function(e){window.removeEventListener(e,pmTriggerDOMListener,{passive:!0})}),document.removeEventListener("visibilitychange",pmTriggerDOMListener),"loading"===document.readyState?document.addEventListener("DOMContentLoaded",pmTriggerDelayedScripts):pmTriggerDelayedScripts()}async function pmTriggerDelayedScripts(){pmDelayEventListeners(),pmDelayJQueryReady(),pmProcessDocumentWrite(),pmSortDelayedScripts(),pmPreloadDelayedScripts(),await pmLoadDelayedScripts(pmDelayedScripts.normal),await pmLoadDelayedScripts(pmDelayedScripts.defer),await pmLoadDelayedScripts(pmDelayedScripts.async),await pmTriggerEventListeners(),document.querySelectorAll("link[data-pmdelayedstyle]").forEach(function(e){e.setAttribute("href",e.getAttribute("data-pmdelayedstyle"))}),window.dispatchEvent(new Event("perfmatters-allScriptsLoaded")),pmReplayClicks()}function pmDelayEventListeners(){let e={};function t(t,r){function n(r){return e[t].delayedEvents.indexOf(r)>=0?"perfmatters-"+r:r}e[t]||(e[t]={originalFunctions:{add:t.addEventListener,remove:t.removeEventListener},delayedEvents:[]},t.addEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.add.apply(t,arguments)},t.removeEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.remove.apply(t,arguments)}),e[t].delayedEvents.push(r)}function r(e,t){let r=e[t];Object.defineProperty(e,t,{get:r||function(){},set:function(r){e["perfmatters"+t]=r}})}t(document,"DOMContentLoaded"),t(window,"DOMContentLoaded"),t(window,"load"),t(window,"pageshow"),t(document,"readystatechange"),r(document,"onreadystatechange"),r(window,"onload"),r(window,"onpageshow")}function pmDelayJQueryReady(){let e=window.jQuery;Object.defineProperty(window,"jQuery",{get:()=>e,set(t){if(t&&t.fn&&!jQueriesArray.includes(t)){t.fn.ready=t.fn.init.prototype.ready=function(e){pmDOMLoaded?e.bind(document)(t):document.addEventListener("perfmatters-DOMContentLoaded",function(){e.bind(document)(t)})};let r=t.fn.on;t.fn.on=t.fn.init.prototype.on=function(){if(this[0]===window){function e(e){return e=(e=(e=e.split(" ")).map(function(e){return"load"===e||0===e.indexOf("load.")?"perfmatters-jquery-load":e})).join(" ")}"string"==typeof arguments[0]||arguments[0]instanceof String?arguments[0]=e(arguments[0]):"object"==typeof arguments[0]&&Object.keys(arguments[0]).forEach(function(t){delete Object.assign(arguments[0],{[e(t)]:arguments[0][t]})[t]})}return r.apply(this,arguments),this},jQueriesArray.push(t)}e=t}})}function pmProcessDocumentWrite(){let e=new Map;document.write=document.writeln=function(t){var r=document.currentScript,n=document.createRange();let a=e.get(r);void 0===a&&(a=r.nextSibling,e.set(r,a));var i=document.createDocumentFragment();n.setStart(i,0),i.appendChild(n.createContextualFragment(t)),r.parentElement.insertBefore(i,a)}}function pmSortDelayedScripts(){document.querySelectorAll("script[type=pmdelayedscript]").forEach(function(e){e.hasAttribute("src")?e.hasAttribute("defer")&&!1!==e.defer?pmDelayedScripts.defer.push(e):e.hasAttribute("async")&&!1!==e.async?pmDelayedScripts.async.push(e):pmDelayedScripts.normal.push(e):pmDelayedScripts.normal.push(e)})}function pmPreloadDelayedScripts(){var e=document.createDocumentFragment();[...pmDelayedScripts.normal,...pmDelayedScripts.defer,...pmDelayedScripts.async].forEach(function(t){var r=t.getAttribute("src");if(r){var n=document.createElement("link");n.href=r,n.rel="preload",n.as="script",e.appendChild(n)}}),document.head.appendChild(e)}async function pmLoadDelayedScripts(e){var t=e.shift();return t?(await pmReplaceScript(t),pmLoadDelayedScripts(e)):Promise.resolve()}async function pmReplaceScript(e){return await pmNextFrame(),new Promise(function(t){let r=document.createElement("script");[...e.attributes].forEach(function(e){let t=e.nodeName;"type"!==t&&("data-type"===t&&(t="type"),r.setAttribute(t,e.nodeValue))}),e.hasAttribute("src")?(r.addEventListener("load",t),r.addEventListener("error",t)):(r.text=e.text,t()),e.parentNode.replaceChild(r,e)})}async function pmTriggerEventListeners(){pmDOMLoaded=!0,await pmNextFrame(),document.dispatchEvent(new Event("perfmatters-DOMContentLoaded")),await pmNextFrame(),window.dispatchEvent(new Event("perfmatters-DOMContentLoaded")),await pmNextFrame(),document.dispatchEvent(new Event("perfmatters-readystatechange")),await pmNextFrame(),document.perfmattersonreadystatechange&&document.perfmattersonreadystatechange(),await pmNextFrame(),window.dispatchEvent(new Event("perfmatters-load")),await pmNextFrame(),window.perfmattersonload&&window.perfmattersonload(),await pmNextFrame(),jQueriesArray.forEach(function(e){e(window).trigger("perfmatters-jquery-load")});let e=new Event("perfmatters-pageshow");e.persisted=window.pmPersisted,window.dispatchEvent(e),await pmNextFrame(),window.perfmattersonpageshow&&window.perfmattersonpageshow({persisted:window.pmPersisted})}async function pmNextFrame(){return new Promise(function(e){requestAnimationFrame(e)})}function pmClickHandler(e){e.target.removeEventListener("click",pmClickHandler),pmRenameDOMAttribute(e.target,"pm-onclick","onclick"),pmInterceptedClicks.push(e),e.preventDefault(),e.stopPropagation(),e.stopImmediatePropagation()}function pmReplayClicks(){window.removeEventListener("touchstart",pmTouchStartHandler,{passive:!0}),window.removeEventListener("mousedown",pmTouchStartHandler),pmInterceptedClicks.forEach(e=>{e.target.outerHTML===pmClickTarget&&e.target.dispatchEvent(new MouseEvent("click",{view:e.view,bubbles:!0,cancelable:!0}))})}function pmTouchStartHandler(e){"HTML"!==e.target.tagName&&(pmClickTarget||(pmClickTarget=e.target.outerHTML),window.addEventListener("touchend",pmTouchEndHandler),window.addEventListener("mouseup",pmTouchEndHandler),window.addEventListener("touchmove",pmTouchMoveHandler,{passive:!0}),window.addEventListener("mousemove",pmTouchMoveHandler),e.target.addEventListener("click",pmClickHandler),pmRenameDOMAttribute(e.target,"onclick","pm-onclick"))}function pmTouchMoveHandler(e){window.removeEventListener("touchend",pmTouchEndHandler),window.removeEventListener("mouseup",pmTouchEndHandler),window.removeEventListener("touchmove",pmTouchMoveHandler,{passive:!0}),window.removeEventListener("mousemove",pmTouchMoveHandler),e.target.removeEventListener("click",pmClickHandler),pmRenameDOMAttribute(e.target,"pm-onclick","onclick")}function pmTouchEndHandler(e){window.removeEventListener("touchend",pmTouchEndHandler),window.removeEventListener("mouseup",pmTouchEndHandler),window.removeEventListener("touchmove",pmTouchMoveHandler,{passive:!0}),window.removeEventListener("mousemove",pmTouchMoveHandler)}function pmRenameDOMAttribute(e,t,r){e.hasAttribute&&e.hasAttribute(t)&&(event.target.setAttribute(r,event.target.getAttribute(t)),event.target.removeAttribute(t))}window.addEventListener("pageshow",e=>{window.pmPersisted=e.persisted}),pmUserInteractions.forEach(function(e){window.addEventListener(e,pmTriggerDOMListener,{passive:!0})}),pmDelayClick&&(window.addEventListener("touchstart",pmTouchStartHandler,{passive:!0}),window.addEventListener("mousedown",pmTouchStartHandler)),document.addEventListener("visibilitychange",pmTriggerDOMListener);';
+
+	  			$script.= '(function(){';
+
+		  			$script.= 'window.pmDC=' . $delay_click . ';';
+		  			if(!empty($timeout)) {
+		  				$script.= 'window.pmDT=' . $timeout . ';';
+		  			}
+
+	  				$script.= 'if(window.pmDT){var e=setTimeout(d,window.pmDT*1e3)}const t=["keydown","mousedown","mousemove","wheel","touchmove","touchstart","touchend"];const n={normal:[],defer:[],async:[]};const o=[];const i=[];var r=false;var a="";window.pmIsClickPending=false;t.forEach(function(e){window.addEventListener(e,d,{passive:true})});if(window.pmDC){window.addEventListener("touchstart",b,{passive:true});window.addEventListener("mousedown",b)}function d(){if(typeof e!=="undefined"){clearTimeout(e)}t.forEach(function(e){window.removeEventListener(e,d,{passive:true})});if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",s)}else{s()}}async function s(){c();u();f();m();await w(n.normal);await w(n.defer);await w(n.async);await p();document.querySelectorAll("link[data-pmdelayedstyle]").forEach(function(e){e.setAttribute("href",e.getAttribute("data-pmdelayedstyle"))});window.dispatchEvent(new Event("perfmatters-allScriptsLoaded")),E().then(()=>{h()})}function c(){let o={};function e(t,e){function n(e){return o[t].delayedEvents.indexOf(e)>=0?"perfmatters-"+e:e}if(!o[t]){o[t]={originalFunctions:{add:t.addEventListener,remove:t.removeEventListener},delayedEvents:[]};t.addEventListener=function(){arguments[0]=n(arguments[0]);o[t].originalFunctions.add.apply(t,arguments)};t.removeEventListener=function(){arguments[0]=n(arguments[0]);o[t].originalFunctions.remove.apply(t,arguments)}}o[t].delayedEvents.push(e)}function t(t,n){const e=t[n];Object.defineProperty(t,n,{get:!e?function(){}:e,set:function(e){t["perfmatters"+n]=e}})}e(document,"DOMContentLoaded");e(window,"DOMContentLoaded");e(window,"load");e(document,"readystatechange");t(document,"onreadystatechange");t(window,"onload")}function u(){let n=window.jQuery;Object.defineProperty(window,"jQuery",{get(){return n},set(t){if(t&&t.fn&&!o.includes(t)){t.fn.ready=t.fn.init.prototype.ready=function(e){if(r){e.bind(document)(t)}else{document.addEventListener("perfmatters-DOMContentLoaded",function(){e.bind(document)(t)})}};const e=t.fn.on;t.fn.on=t.fn.init.prototype.on=function(){if(this[0]===window){function t(e){e=e.split(" ");e=e.map(function(e){if(e==="load"||e.indexOf("load.")===0){return"perfmatters-jquery-load"}else{return e}});e=e.join(" ");return e}if(typeof arguments[0]=="string"||arguments[0]instanceof String){arguments[0]=t(arguments[0])}else if(typeof arguments[0]=="object"){Object.keys(arguments[0]).forEach(function(e){delete Object.assign(arguments[0],{[t(e)]:arguments[0][e]})[e]})}}return e.apply(this,arguments),this};o.push(t)}n=t}})}function f(){document.querySelectorAll("script[type=pmdelayedscript]").forEach(function(e){if(e.hasAttribute("src")){if(e.hasAttribute("defer")&&e.defer!==false){n.defer.push(e)}else if(e.hasAttribute("async")&&e.async!==false){n.async.push(e)}else{n.normal.push(e)}}else{n.normal.push(e)}})}function m(){var o=document.createDocumentFragment();[...n.normal,...n.defer,...n.async].forEach(function(e){var t=e.getAttribute("src");if(t){var n=document.createElement("link");n.href=t;if(e.getAttribute("data-perfmatters-type")=="module"){n.rel="modulepreload"}else{n.rel="preload";n.as="script"}o.appendChild(n)}});document.head.appendChild(o)}async function w(e){var t=e.shift();if(t){await l(t);return w(e)}return Promise.resolve()}async function l(t){await v();return new Promise(function(e){const n=document.createElement("script");[...t.attributes].forEach(function(e){let t=e.nodeName;if(t!=="type"){if(t==="data-perfmatters-type"){t="type"}n.setAttribute(t,e.nodeValue)}});if(t.hasAttribute("src")){n.addEventListener("load",e);n.addEventListener("error",e)}else{n.text=t.text;e()}t.parentNode?t.parentNode.replaceChild(n,t):e()})}async function p(){r=true;await v();document.dispatchEvent(new Event("perfmatters-DOMContentLoaded"));await v();window.dispatchEvent(new Event("perfmatters-DOMContentLoaded"));await v();document.dispatchEvent(new Event("perfmatters-readystatechange"));await v();if(document.perfmattersonreadystatechange){document.perfmattersonreadystatechange()}await v();window.dispatchEvent(new Event("perfmatters-load"));await v();if(window.perfmattersonload){window.perfmattersonload()}await v();o.forEach(function(e){e(window).trigger("perfmatters-jquery-load")})}async function v(){return new Promise(function(e){requestAnimationFrame(e)})}function h(){window.removeEventListener("touchstart",b,{passive:true});window.removeEventListener("mousedown",b);i.forEach(e=>{if(e.target.outerHTML===a){e.target.dispatchEvent(new MouseEvent("click",{view:e.view,bubbles:true,cancelable:true}))}})}function E(){return new Promise(e=>{window.pmIsClickPending?g=e:e()})}function y(){window.pmIsClickPending=true}function g(){window.pmIsClickPending=false}function L(e){e.target.removeEventListener("click",L);C(e.target,"pm-onclick","onclick");i.push(e),e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();g()}function b(e){if(e.target.tagName!=="HTML"){if(!a){a=e.target.outerHTML}window.addEventListener("touchend",A);window.addEventListener("mouseup",A);window.addEventListener("touchmove",k,{passive:true});window.addEventListener("mousemove",k);e.target.addEventListener("click",L);C(e.target,"onclick","pm-onclick");y()}}function k(e){window.removeEventListener("touchend",A);window.removeEventListener("mouseup",A);window.removeEventListener("touchmove",k,{passive:true});window.removeEventListener("mousemove",k);e.target.removeEventListener("click",L);C(e.target,"pm-onclick","onclick");g()}function A(e){window.removeEventListener("touchend",A);window.removeEventListener("mouseup",A);window.removeEventListener("touchmove",k,{passive:true});window.removeEventListener("mousemove",k)}function C(e,t,n){if(e.hasAttribute&&e.hasAttribute(t)){event.target.setAttribute(n,event.target.getAttribute(t));event.target.removeAttribute(t)}}';
+
+	  			$script.= '})();';
 
 	  			//trigger elementor animations
 	  			if(function_exists('\is_plugin_active') && \is_plugin_active('elementor/elementor.php')) {
-	  				$script.= 'var pmeDeviceMode,pmeAnimationSettingsKeys,pmeCurrentAnimation;function pmeAnimation(){(pmeDeviceMode=document.createElement("span")).id="elementor-device-mode",pmeDeviceMode.setAttribute("class","elementor-screen-only"),document.body.appendChild(pmeDeviceMode),requestAnimationFrame(pmeDetectAnimations)}function pmeDetectAnimations(){pmeAnimationSettingsKeys=pmeListAnimationSettingsKeys(getComputedStyle(pmeDeviceMode,":after").content.replace(/"/g,"")),document.querySelectorAll(".elementor-invisible[data-settings]").forEach(a=>{let b=a.getBoundingClientRect();if(b.bottom>=0&&b.top<=window.innerHeight)try{pmeAnimateElement(a)}catch(c){}})}function pmeAnimateElement(a){let b=JSON.parse(a.dataset.settings),d=b._animation_delay||b.animation_delay||0,c=b[pmeAnimationSettingsKeys.find(a=>b[a])];if("none"===c)return void a.classList.remove("elementor-invisible");a.classList.remove(c),pmeCurrentAnimation&&a.classList.remove(pmeCurrentAnimation),pmeCurrentAnimation=c;let e=setTimeout(()=>{a.classList.remove("elementor-invisible"),a.classList.add("animated",c),pmeRemoveAnimationSettings(a,b)},d);window.addEventListener("perfmatters-startLoading",function(){clearTimeout(e)})}function pmeListAnimationSettingsKeys(b="mobile"){let a=[""];switch(b){case"mobile":a.unshift("_mobile");case"tablet":a.unshift("_tablet");case"desktop":a.unshift("_desktop")}let c=[];return["animation","_animation"].forEach(b=>{a.forEach(a=>{c.push(b+a)})}),c}function pmeRemoveAnimationSettings(a,b){pmeListAnimationSettingsKeys().forEach(a=>delete b[a]),a.dataset.settings=JSON.stringify(b)}document.addEventListener("DOMContentLoaded",pmeAnimation)';
+	  				$script.= '(function(){var e,a,s;function t(){(e=document.createElement("span")).id="elementor-device-mode",e.setAttribute("class","elementor-screen-only"),document.body.appendChild(e),requestAnimationFrame(n)}function n(){a=o(getComputedStyle(e,":after").content.replace(/"/g,"")),document.querySelectorAll(".elementor-invisible[data-settings]").forEach(e=>{let t=e.getBoundingClientRect();if(t.bottom>=0&&t.top<=window.innerHeight)try{i(e)}catch(e){}})}function i(e){let t=JSON.parse(e.dataset.settings),n=t._animation_delay||t.animation_delay||0,i=t[a.find(e=>t[e])];if("none"===i)return void e.classList.remove("elementor-invisible");e.classList.remove(i),s&&e.classList.remove(s),s=i;let o=setTimeout(()=>{e.classList.remove("elementor-invisible"),e.classList.add("animated",i),l(e,t)},n);window.addEventListener("perfmatters-startLoading",function(){clearTimeout(o)})}function o(e="mobile"){let n=[""];switch(e){case"mobile":n.unshift("_mobile");case"tablet":n.unshift("_tablet");case"desktop":n.unshift("_desktop")}let i=[];return["animation","_animation"].forEach(t=>{n.forEach(e=>{i.push(t+e)})}),i}function l(e,t){o().forEach(e=>delete t[e]),e.dataset.settings=JSON.stringify(t)}document.addEventListener("DOMContentLoaded",t)})();';
 				}
 
 		  	$script.= '</script>';
 
 	  		return $script;
-	  	}
+	  	//}
 	}
 
 	//print fastclick js

@@ -17,6 +17,8 @@ if(isset($_POST['perfmatters_apply_defaults'])) {
 
 					foreach($option_names as $option_name) {
 
+						$old_option = get_blog_option($blog->blog_id, $option_name);
+
 						//clear selected blog previous option
 						delete_blog_option($blog->blog_id, $option_name);
 
@@ -24,8 +26,15 @@ if(isset($_POST['perfmatters_apply_defaults'])) {
 						$new_option = get_blog_option($perfmatters_network['default'], $option_name);
 
 						//remove options we don't want to copy
-						if($option_name == 'perfmatters_option') {
-							unset($new_option['cdn']['cdn_url']);
+						if($option_name == 'perfmatters_options') {
+
+							//preserve existing cdn url if set already
+							if(!empty($old_option['cdn']['cdn_url'])) {
+								$new_option['cdn']['cdn_url'] = $old_option['cdn']['cdn_url'];
+							}
+							else {
+								unset($new_option['cdn']['cdn_url']);
+							}
 						}
 
 						//update selected blog with default option
@@ -143,6 +152,8 @@ function perfmatters_apply_defaults_to_blog($blog_id, $network_default) {
 
 			foreach($option_names as $option_name) {
 
+				$old_option = get_blog_option($blog->blog_id, $option_name);
+
 				//clear selected blog previous option
 				delete_blog_option($blog->blog_id, $option_name);
 
@@ -151,7 +162,14 @@ function perfmatters_apply_defaults_to_blog($blog_id, $network_default) {
 
 				//remove options we don't want to copy
 				if($option_name == 'perfmatters_options') {
-					unset($new_option['cdn']['cdn_url']);
+
+					//preserve existing cdn url if set already
+					if(!empty($old_option['cdn']['cdn_url'])) {
+						$new_option['cdn']['cdn_url'] = $old_option['cdn']['cdn_url'];
+					}
+					else {
+						unset($new_option['cdn']['cdn_url']);
+					}
 				}
 
 				//update selected blog with default option
