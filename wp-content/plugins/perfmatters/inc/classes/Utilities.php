@@ -93,6 +93,16 @@ class Utilities
         return false;
     }
 
+    //replace only first string occurrence
+    public static function replace_first_occurrence(string $string, string $search, string $replace): string {
+        $position = strpos($string, $search);
+        if($position === false) {
+            return $string;
+        }
+
+        return substr_replace($string, $replace, $position, strlen($search));
+    }
+
     //check for specific woocommerce pages
     public static function is_woocommerce(): bool {
         return apply_filters('perfmatters_is_woocommerce', class_exists('WooCommerce') && (is_cart() || is_checkout() || is_account_page()));
@@ -290,5 +300,15 @@ class Utilities
         else {
             return untrailingslashit($string);
         }
+    }
+
+    //?perfmattersoff request check
+    public static function is_perfmatters_off(): bool {
+        static $off = null;
+        if($off !== null) {
+            return $off;
+        }
+        $off = isset($_GET['perfmattersoff']);
+        return $off;
     }
 }

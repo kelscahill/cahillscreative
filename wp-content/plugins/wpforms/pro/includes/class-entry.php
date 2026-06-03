@@ -546,6 +546,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 			        COUNT(CASE WHEN $this->table_name.status = '' THEN 1 END) AS published,
 					COUNT(CASE WHEN $this->table_name.viewed = 0 AND $publish THEN 1 END) AS unread,
                     COUNT(CASE WHEN $this->table_name.type = 'payment' AND $publish THEN 1 END) AS payment,
+                    COUNT(CASE WHEN $this->table_name.type = 'imported' AND $publish THEN 1 END) AS imported,
        				COUNT(CASE WHEN $this->table_name.starred = 1 AND $publish THEN 1 END) AS starred,
        				COUNT(CASE WHEN $this->table_name.status = 'spam' THEN 1 END)  AS spam,
        				COUNT(CASE WHEN $this->table_name.status = 'trash' THEN 1 END)  AS trash

@@ -164,18 +164,37 @@
   margin: 0px;
 }
 #perfmatters-admin .form-table th {
-  /*padding: 15px 10px 15px 0px;
-  font-size: 14px;*/
+  position: relative;
+  padding: 15px 0px;
+  /*font-size: 14px;*/
   font-weight: normal;
-  /*min-width: 200px;*/
+  min-width: 225px;
 }
 #perfmatters-admin .form-table td {
   position: relative;
   padding: 10px;
+  /*height: 52px;
+  box-sizing: border-box;*/
 }
 #perfmatters-admin .perfmatters-title-wrapper {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+/* desktop only */
+@media screen and (min-width: 783px) {
+
+  #perfmatters-admin .perfmatters-title-wrapper {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: min(100%, 60px);
+  }
+
 }
 /*#perfmatters-admin .form-table th label {
   vertical-align: top;
@@ -228,6 +247,7 @@
   width: 48px;
   height: 28px;
   font-size: 1px;
+  margin: 2px 0px;
 }
 #perfmatters-admin .perfmatters-switch input {
   display: block;
@@ -274,6 +294,9 @@
   margin: 0px;
   border: 1px solid #ddd;
 }
+#perfmatters-admin select {
+  padding-right: 28px;
+}
 #perfmatters-admin input[type="checkbox"] {
   border-color: #ccc;
 }
@@ -301,7 +324,7 @@
 #perfmatters-admin .perfmatters-tooltip {
   flex-shrink: 0;
   float: right;
-  margin-right: -10px;
+  /*margin-right: -10px;*/
   height: 16px;
   width: 16px;
   vertical-align: top;
@@ -615,6 +638,9 @@ a.perfmatters-add-input-row {
   }
   #perfmatters-admin .form-table td {
     padding: 0px;
+  }
+  #perfmatters-admin .perfmatters-title-wrapper {
+    justify-content: start;;
   }
   #perfmatters-admin .perfmatters-tooltip-text {
     display: none !important;

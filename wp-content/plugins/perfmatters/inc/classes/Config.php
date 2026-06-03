@@ -46,7 +46,7 @@ class Config
 	public static function queue() {
 
 		//inital checks
-        if(is_admin() || Utilities::is_dynamic_request() || Utilities::is_page_builder() || isset($_GET['perfmatters']) || isset($_GET['perfmattersoff'])) {
+        if(is_admin() || Utilities::is_dynamic_request() || Utilities::is_page_builder() || isset($_GET['perfmatters']) || Utilities::is_perfmatters_off()) {
             return;
         }
 

@@ -316,6 +316,11 @@ class Loader {
 				'hook' => 'admin_init',
 			],
 			[
+				'name' => 'Admin\PluginsCategory',
+				'id'   => 'plugins_category',
+				'hook' => 'admin_init',
+			],
+			[
 				'name' => 'Admin\Splash\SplashScreen',
 				'id'   => 'splash_screen',
 				'hook' => 'admin_init',
@@ -624,6 +629,15 @@ class Loader {
 				'hook' => 'init',
 			],
 			[
+				'name' => 'Admin\Entries\Import\Import',
+				'id'   => 'entries_import',
+				'hook' => 'init',
+			],
+			[
+				'name' => 'Admin\Entries\Import\Ajax',
+				'hook' => 'init',
+			],
+			[
 				'name' => 'Admin\Entries\DefaultScreen',
 				'hook' => 'admin_init',
 			]
@@ -678,6 +692,11 @@ class Loader {
 				'name' => 'Admin\Builder\ContextMenu',
 				'hook' => 'wpforms_builder_init',
 				'id'   => 'context_menu',
+			],
+			[
+				'name' => 'Admin\Builder\PreviewDropdown',
+				'hook' => 'wpforms_builder_init',
+				'id'   => 'preview_dropdown',
 			],
 			[
 				'name' => 'Admin\Builder\ImageUpload',
@@ -904,6 +923,10 @@ class Loader {
 				'name'     => 'Admin\Education\Pointers\Payment',
 				'hook'     => 'admin_init',
 				'priority' => 20,
+			],
+			[
+				'name' => 'Education\ActiveLayer\InstallTracker',
+				'id'   => 'activelayer_install_tracker',
 			]
 		);
 
@@ -925,6 +948,7 @@ class Loader {
 			'Admin\DidYouKnow',
 			'Admin\Settings\Integrations',
 			'Admin\Settings\Geolocation',
+			'Admin\Settings\Gdpr',
 			'Admin\NoticeBar',
 			'Admin\Entries\Geolocation',
 			'Admin\Entries\UserJourney',

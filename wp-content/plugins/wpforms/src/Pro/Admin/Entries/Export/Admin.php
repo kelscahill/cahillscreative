@@ -6,7 +6,7 @@ use WPForms\Pro\Admin\Entries\Helpers;
 use WPForms\Pro\Admin\Entries\Export\Traits\Export as ExportTrait;
 
 /**
- * HTML-related stuff for Admin page.
+ * HTML-related stuff for the Admin page.
  *
  * @since 1.5.5
  */
@@ -19,7 +19,7 @@ class Admin {
 	 *
 	 * @since 1.5.5
 	 *
-	 * @var \WPForms\Pro\Admin\Entries\Export\Export
+	 * @var Export
 	 */
 	protected $export;
 
@@ -28,7 +28,7 @@ class Admin {
 	 *
 	 * @since 1.5.5
 	 *
-	 * @param \WPForms\Pro\Admin\Entries\Export\Export $export Instance of Export.
+	 * @param Export $export Instance of Export.
 	 */
 	public function __construct( $export ) {
 
@@ -45,21 +45,22 @@ class Admin {
 	public function hooks() {
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'scripts' ] );
-		add_action( 'wpforms_admin_tools_export_top', [ $this, 'display_entries_export_form' ] );
 	}
 
 	/**
 	 * Output HTML of the Entries export form.
 	 *
-	 * @since 1.5.5
+	 * @since 1.10.1
 	 */
-	public function display_entries_export_form() {
+	public function display(): void {
 
 		wp_enqueue_style( 'wpforms-flatpickr' );
 		wp_enqueue_script( 'wpforms-flatpickr' );
 		wp_enqueue_script( 'wpforms-tools-entries-export' );
+
+		$form_id = (int) $this->export->data['get_args']['form_id'];
 		?>
-		<div class="wpforms-setting-row tools wpforms-settings-row-divider">
+		<div class="wpforms-setting-row tools">
 
 			<h4><?php esc_html_e( 'Export Entries', 'wpforms' ); ?></h4>
 
@@ -126,17 +127,17 @@ class Admin {
 						<?php $this->display_search_block(); ?>
 					</section>
 
-					<section class="wp-clearfix">
-						<button type="submit" name="submit-entries-export" id="wpforms-tools-entries-export-submit"
-							class="wpforms-btn wpforms-btn-md wpforms-btn-orange">
-							<span class="wpforms-btn-text"><?php esc_html_e( 'Download Export File', 'wpforms' ); ?></span>
-							<span class="wpforms-btn-spinner"><i class="fa fa-cog fa-spin fa-lg"></i></span>
-						</button>
-						<a href="#" class="hidden" id="wpforms-tools-entries-export-cancel"><?php esc_html_e( 'Cancel', 'wpforms' ); ?></a>
-						<div id="wpforms-tools-entries-export-process-msg" class="wpforms-notice notice-success wpforms-hidden"></div>
-					</section>
-
 				</div>
+
+				<section class="wp-clearfix" id="wpforms-tools-entries-export-submit-section">
+					<button type="submit" name="submit-entries-export" id="wpforms-tools-entries-export-submit"
+						class="wpforms-btn wpforms-btn-md wpforms-btn-orange" aria-disabled="<?php echo $form_id > 0 ? 'false' : 'true'; ?>">
+						<span class="wpforms-btn-text"><?php esc_html_e( 'Export Entries', 'wpforms' ); ?></span>
+						<span class="wpforms-btn-spinner"><i class="fa fa-cog fa-spin fa-lg"></i></span>
+					</button>
+					<a href="#" class="hidden" id="wpforms-tools-entries-export-cancel"><?php esc_html_e( 'Cancel', 'wpforms' ); ?></a>
+					<div id="wpforms-tools-entries-export-process-msg" class="wpforms-notice notice-success wpforms-hidden"></div>
+				</section>
 			</form>
 		</div>
 		<?php

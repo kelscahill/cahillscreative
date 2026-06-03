@@ -65,13 +65,23 @@ class PMCS
 
         //safe mode check
         if(!self::disabled()) {
-
-            //error handling
-            Error::init();
-
-            //snippet runner
             self::run();
         }
+    }
+
+    /**
+     * Whether to register PMCS global error handling for this request.
+     * True when at least one active snippet is php or html (types that execute server-side code).
+     */
+    private static function should_init_pmcs_error_handler(array $config) {
+        foreach($config['active'] as $snippet) {
+            $type = $snippet['type'] ?? 'php';
+            if($type === 'php' || $type === 'html') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     //load pmcs specific settings
@@ -310,7 +320,6 @@ class PMCS
                 $config['meta']['force_disabled'] = 1;
                 self::update_snippet_config($config);
                 self::admin_notice_redirect('enable_safe_mode', '');
-
             }
 
             //disable safe mode
@@ -861,6 +870,10 @@ PHP;
         //forcefully disabled via URL
         if(!empty($config['meta']['force_disabled'])) {
             return;
+        }
+
+        if(self::should_init_pmcs_error_handler($config)) {
+            Error::init();
         }
 
         $invalid_files = false;

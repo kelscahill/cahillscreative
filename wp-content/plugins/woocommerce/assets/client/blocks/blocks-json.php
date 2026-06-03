@@ -577,7 +577,6 @@ return array(
 			'interactivity' => true
 		),
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
-		'style' => 'file:../woocommerce/add-to-cart-with-options-quantity-selector-style.css',
 		'viewScriptModule' => 'woocommerce/add-to-cart-with-options-quantity-selector'
 	),
 	'add-to-cart-with-options-variation-description' => array(
@@ -995,16 +994,11 @@ return array(
 		),
 		'example' => array(
 			'attributes' => array(
-				'isPreview' => true,
 				'cartIcon' => 'cart',
 				'content' => 'Cart'
 			)
 		),
 		'attributes' => array(
-			'isPreview' => array(
-				'type' => 'boolean',
-				'default' => false
-			),
 			'cartIcon' => array(
 				'type' => 'string',
 				'default' => 'cart'
@@ -1144,17 +1138,9 @@ return array(
 			'multiple' => false
 		),
 		'example' => array(
-			'attributes' => array(
-				'isPreview' => true
-			),
 			'viewportWidth' => 800
 		),
 		'attributes' => array(
-			'isPreview' => array(
-				'type' => 'boolean',
-				'default' => false,
-				'save' => false
-			),
 			'align' => array(
 				'type' => 'string',
 				'default' => 'wide'
@@ -1263,6 +1249,94 @@ return array(
 			'couponCode' => array(
 				'type' => 'string',
 				'default' => ''
+			),
+			'source' => array(
+				'type' => 'string',
+				'default' => 'createNew',
+				'enum' => array(
+					'createNew',
+					'existing'
+				)
+			),
+			'discountType' => array(
+				'type' => 'string',
+				'default' => 'percent'
+			),
+			'amount' => array(
+				'type' => 'number',
+				'default' => 10
+			),
+			'expiryDay' => array(
+				'type' => 'number',
+				'default' => 10
+			),
+			'freeShipping' => array(
+				'type' => 'boolean',
+				'default' => false
+			),
+			'usageLimit' => array(
+				'type' => 'number',
+				'default' => 0
+			),
+			'usageLimitPerUser' => array(
+				'type' => 'number',
+				'default' => 0
+			),
+			'minimumAmount' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'maximumAmount' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'individualUse' => array(
+				'type' => 'boolean',
+				'default' => false
+			),
+			'excludeSaleItems' => array(
+				'type' => 'boolean',
+				'default' => false
+			),
+			'productIds' => array(
+				'type' => 'array',
+				'default' => array(
+					
+				),
+				'items' => array(
+					'type' => 'object'
+				)
+			),
+			'excludedProductIds' => array(
+				'type' => 'array',
+				'default' => array(
+					
+				),
+				'items' => array(
+					'type' => 'object'
+				)
+			),
+			'productCategoryIds' => array(
+				'type' => 'array',
+				'default' => array(
+					
+				),
+				'items' => array(
+					'type' => 'object'
+				)
+			),
+			'excludedProductCategoryIds' => array(
+				'type' => 'array',
+				'default' => array(
+					
+				),
+				'items' => array(
+					'type' => 'object'
+				)
+			),
+			'emailRestrictions' => array(
+				'type' => 'string',
+				'default' => ''
 			)
 		),
 		'textdomain' => 'woocommerce'
@@ -1277,13 +1351,11 @@ return array(
 			'My Account'
 		),
 		'supports' => array(
-			'interactivity' => array(
-				'clientNavigation' => true
-			),
 			'align' => true,
 			'color' => array(
 				'text' => true
 			),
+			'interactivity' => true,
 			'typography' => array(
 				'fontSize' => true,
 				'__experimentalFontFamily' => true
@@ -1298,6 +1370,10 @@ return array(
 				'type' => 'string',
 				'default' => 'icon_and_text'
 			),
+			'hasDropdownNavigation' => array(
+				'type' => 'boolean',
+				'default' => false
+			),
 			'iconStyle' => array(
 				'type' => 'string',
 				'default' => 'default'
@@ -1307,6 +1383,9 @@ return array(
 				'default' => 'icon'
 			)
 		),
+		'viewScriptModule' => 'woocommerce/customer-account',
+		'style' => 'file:../woocommerce/customer-account-style.css',
+		'editorStyle' => 'file:../woocommerce/customer-account-editor.css',
 		'textdomain' => 'woocommerce',
 		'apiVersion' => 3,
 		'$schema' => 'https://schemas.wp.org/trunk/block.json'
@@ -1714,15 +1793,10 @@ return array(
 		),
 		'example' => array(
 			'attributes' => array(
-				'isPreview' => true,
 				'className' => 'wc-block-mini-cart--preview'
 			)
 		),
 		'attributes' => array(
-			'isPreview' => array(
-				'type' => 'boolean',
-				'default' => false
-			),
 			'miniCartIcon' => array(
 				'type' => 'string',
 				'default' => 'cart'
@@ -1793,10 +1867,6 @@ return array(
 			)
 		),
 		'attributes' => array(
-			'isPreview' => array(
-				'type' => 'boolean',
-				'default' => false
-			),
 			'lock' => array(
 				'type' => 'object',
 				'default' => array(
@@ -5341,7 +5411,8 @@ return array(
 		'textdomain' => 'woocommerce',
 		'attributes' => array(
 			'label' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'role' => 'content'
 			)
 		),
 		'usesContext' => array(
@@ -5431,7 +5502,8 @@ return array(
 		'textdomain' => 'woocommerce',
 		'attributes' => array(
 			'label' => array(
-				'type' => 'string'
+				'type' => 'string',
+				'role' => 'content'
 			)
 		),
 		'usesContext' => array(
@@ -5642,11 +5714,13 @@ return array(
 			),
 			'prefix' => array(
 				'type' => 'string',
-				'default' => 'SKU:'
+				'default' => 'SKU:',
+				'role' => 'content'
 			),
 			'suffix' => array(
 				'type' => 'string',
-				'default' => ''
+				'default' => '',
+				'role' => 'content'
 			)
 		),
 		'usesContext' => array(
@@ -7093,7 +7167,7 @@ return array(
 			),
 			'showReturnToCart' => array(
 				'type' => 'boolean',
-				'default' => true
+				'default' => false
 			),
 			'className' => array(
 				'type' => 'string',

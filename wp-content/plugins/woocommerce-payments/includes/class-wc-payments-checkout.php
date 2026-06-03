@@ -15,6 +15,7 @@ use WC_Payments;
 use WC_Payments_Account;
 use WC_Payments_Customer_Service;
 use WC_Payments_Fraud_Service;
+use WC_Payments_Styles_Cache;
 use WC_Payments_Utils;
 use WC_Payments_Features;
 use WCPay\Constants\Payment_Method;
@@ -200,6 +201,7 @@ class WC_Payments_Checkout {
 			'isWooPayEmailInputEnabled'         => $this->woopay_util->is_woopay_email_input_enabled(),
 			'isWooPayDirectCheckoutEnabled'     => WC_Payments_Features::is_woopay_direct_checkout_enabled(),
 			'isWooPayGlobalThemeSupportEnabled' => $this->gateway->is_woopay_global_theme_support_enabled(),
+			'isShortcodeCheckout'               => is_checkout() && ! has_block( 'woocommerce/checkout' ),
 			'woopayHost'                        => WooPay_Utilities::get_woopay_url(),
 			'platformTrackerNonce'              => wp_create_nonce( 'platform_tracks_nonce' ),
 			'accountIdForIntentConfirmation'    => apply_filters( 'wc_payments_account_id_for_intent_confirmation', '' ),
@@ -211,6 +213,12 @@ class WC_Payments_Checkout {
 			'woopayMinimumSessionData'          => WooPay_Session::get_woopay_minimum_session_data(),
 		];
 
+		// Provide the admin nonce when previewing in the Customizer so the
+		// frontend can POST the live appearance to the admin endpoint.
+		if ( is_customize_preview() && current_user_can( 'manage_woocommerce' ) ) {
+			$js_config['adminAppearanceNonce'] = wp_create_nonce( 'wcpay_admin_woopay_appearance_nonce' );
+		}
+
 		$payment_fields = $js_config;
 
 		$payment_fields['gatewayId']                = WC_Payment_Gateway_WCPay::GATEWAY_ID;
@@ -219,7 +227,7 @@ class WC_Payments_Checkout {
 		$payment_fields['testMode']                 = WC_Payments::mode()->is_test();
 		$payment_fields['cartContainsSubscription'] = $this->gateway->is_subscription_item_in_cart();
 		$payment_fields['currency']                 = get_woocommerce_currency();
-		$payment_fields['stylesCacheVersion']       = WC_Payments_Utils::get_styles_cache_version();
+		$payment_fields['stylesCacheVersion']       = WC_Payments_Styles_Cache::get_styles_cache_version();
 		$cart_total                                 = ( WC()->cart ? WC()->cart->get_total( '' ) : 0 );
 		$payment_fields['cartTotal']                = WC_Payments_Utils::prepare_amount( $cart_total, get_woocommerce_currency() );
 

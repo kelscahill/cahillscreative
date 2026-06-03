@@ -491,16 +491,23 @@ class LearnDash
 
 				$source = $abspath . $original_snc_file_info->url;
 				$source = dirname( $source );
-				$target = $abspath . $snc_file_info->url;
-				$target = dirname( $target );
 
-				$this->debug( 'Deleting %s', $target );
-				if ( is_dir( $target ) )
-					static::delete_recursive( $target );
+				if ( is_readable( $source ) )
+				{
+					$target = $abspath . $snc_file_info->url;
+					$target = dirname( $target );
 
-				$this->debug( 'Copying %s to %s', $source, $target );
+					$this->debug( 'Deleting %s', $target );
+					if ( is_dir( $target ) )
+						static::delete_recursive( $target );
 
-				static::copy_recursive( $source, $target );
+					$this->debug( 'Copying %s to %s', $source, $target );
+
+					static::copy_recursive( $source, $target );
+				}
+				else
+					$this->debug( 'Skipping copying %s to %s because source is not readable.', $source, $target );
+
 
 				// Replace the block with the new info.
 				$block[ 'attrs' ][ 'contentId' ] = $snc_file_info->ID . '';

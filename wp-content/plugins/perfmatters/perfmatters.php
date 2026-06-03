@@ -3,7 +3,8 @@
 Plugin Name: Perfmatters
 Plugin URI: https://perfmatters.io/
 Description: Perfmatters is a lightweight performance plugin developed to speed up your WordPress site.
-Version: 2.6.0
+Version: 2.6.2
+Requires at least: 5.5
 Requires PHP: 8.1
 Author: forgemedia
 Author URI: https://forgemedia.io/
@@ -19,7 +20,7 @@ Domain Path: /languages
 define('PERFMATTERS_STORE_URL', 'https://perfmatters.io/');
 define('PERFMATTERS_ITEM_ID', 696);
 define('PERFMATTERS_ITEM_NAME', 'perfmatters');
-define('PERFMATTERS_VERSION', '2.6.0');
+define('PERFMATTERS_VERSION', '2.6.2');
 define('PERFMATTERS_PATH', plugin_dir_path(__FILE__ ));
 define('PERFMATTERS_URL', plugin_dir_url(__FILE__));
 if(!defined('PMMU_PLUGIN_DIR')) {
@@ -50,9 +51,10 @@ function perfmatters_plugins_loaded() {
 
 	//buffer classes
     Perfmatters\Fonts::init();
-    Perfmatters\Images::init();
+    Perfmatters\ImageDimensions::init();
     Perfmatters\CSS::init();
     Perfmatters\JS::init();
+	Perfmatters\LazyLoad::init_assets();
 	Perfmatters\LazyLoad::init_iframes();
     Perfmatters\Preload::init();
     Perfmatters\LazyLoad::init_images();

@@ -380,7 +380,10 @@ trait broadcasting
 				{
 					$linked_parent = $bcd->parent_broadcast_data->get_linked_child_on_this_blog();
 					$bcd->new_post->post_parent = $linked_parent;
-					$this->debug( "Parent post has a child here. The post's new parent is %s", $linked_parent );
+					$this->debug( "Parent post %s has a child here. The post's new parent is %s",
+						$bcd->post->ID,
+						$linked_parent,
+					);
 				}
 				else
 				{
@@ -388,7 +391,10 @@ trait broadcasting
 					if ( $bcd->parent_broadcast_data->blog_id == $bcd->current_child_blog_id )
 					{
 						$bcd->new_post->post_parent = $bcd->parent_broadcast_data->post_id;
-						$this->debug( "Parent post has a parent here. The post's new parent is %s", $bcd->new_post->post_parent );
+						$this->debug( "Parent post %s has a parent here. The post's new parent is %s",
+							$bcd->post->ID,
+							$bcd->new_post->post_parent,
+						);
 					}
 				}
 			}

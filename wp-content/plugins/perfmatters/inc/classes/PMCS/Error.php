@@ -6,9 +6,15 @@ class Error
     private static $previous_handler = null;
     private static $is_processing = false;
     private static $storage_dir = '';
+    private static $initialized = false;
 
     public static function init()
     {
+        if(self::$initialized) {
+            return;
+        }
+        self::$initialized = true;
+
         //capture directory path once at boot to prevent method calls during crashes
         self::$storage_dir = (string)PMCS::get_storage_dir();
 
@@ -21,7 +27,7 @@ class Error
         //native php shutdown
         register_shutdown_function(function() {
             $error = error_get_last();
-            if($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+            if($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
                 if(!defined('PMCS_CRASHING')) {
                     self::handle_fatal_error($error, ['response' => 500]);
                 }
@@ -32,35 +38,52 @@ class Error
     //uncaught exception/error handler
     public static function exception_handler($e) {
 
-        //prevent recursion
+        //re-entry guard
         if(defined('PMCS_CRASHING')) {
-            return;
+            exit(1);
         }
+        //also skips duplicate snippet handling in shutdown handler
         define('PMCS_CRASHING', true);
 
         try {
 
             $file = $e->getFile();
+            
+            //throw site must be under snippet storage to count as snippet error
+            $is_snippet_exception = !empty(self::$storage_dir) && self::$storage_dir === dirname($file);
 
-            //handle snippet error
-            if(!empty(self::$storage_dir) && self::$storage_dir === dirname($file)) {
-                
+            if($is_snippet_exception) {
                 self::handle_fatal_error([
                     'message' => $e->getMessage(),
                     'file'    => $file,
                     'type'    => ($e instanceof \Exception) ? 'exception' : 'error',
                     'line'    => $e->getLine()
                 ], ['response' => 500]);
-            }
 
-            //manual logging
-            error_log(sprintf(
-                'PMCS Caught %s: %s in %s on line %d',
-                get_class($e),
-                $e->getMessage(),
-                $file,
-                $e->getLine()
-            ));
+                //manual logging
+                error_log(sprintf(
+                    'PMCS Caught %s: %s in %s on line %d',
+                    get_class($e),
+                    $e->getMessage(),
+                    $file,
+                    $e->getLine()
+                ));
+            }
+            //no chained php exception handler; mirror native fatal log shape
+            elseif(!is_callable(self::$previous_handler)) {
+                $trace = $e->getTraceAsString();
+                if(strlen($trace) > 32768) {
+                    $trace = substr($trace, 0, 32768) . "\n... (trace truncated)";
+                }
+                error_log(sprintf(
+                    "PHP Fatal error: Uncaught %s: %s in %s:%d\nStack trace:\n%s",
+                    get_class($e),
+                    $e->getMessage(),
+                    $file,
+                    $e->getLine(),
+                    $trace
+                ));
+            }
 
         } catch (\Throwable $t) {
 
@@ -68,15 +91,15 @@ class Error
             error_log('PMCS Internal Handler Failure: ' . $t->getMessage());
         }
 
-        //restore original handler
+        //restore default exception handler
         restore_exception_handler();
 
-        //hand off to original handler
+        //hand off to previous handler if registered
         if(is_callable(self::$previous_handler)) {
             call_user_func(self::$previous_handler, $e);
-            exit(1);
         }
 
+        //uncaught exceptions must not return from this callback
         exit(1);
     }
 

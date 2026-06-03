@@ -117,8 +117,8 @@ echo '<div class="perfmatters-settings-section">';
 					echo '</div>';
 
 					//type
-					echo '<div' . (($_GET['snippet'] ?? '') !== 'create' ? ' class="hidden"' : '') . '>';
-						echo '<label for="pmcs-code-type">' . esc_html__('Type', 'perfmatters') . '</label>';
+					echo '<div' . (($_GET['snippet'] ?? '') !== 'create' ? ' class="hidden"' : '') . ' style="display: flex; flex-direction: column;">';
+						echo '<label>' . esc_html__('Type', 'perfmatters') . '</label>';
 
 						//radio bar
 						echo '<nav id="pmcs-code-type" class="pmcs-radio-bar">';
@@ -195,7 +195,7 @@ echo '<div class="perfmatters-settings-section">';
 
 					//title + tooltip
 					echo '<div class="pmcs-title">';
-						echo '<label for="pmcs-optimizations">' . esc_html__('Optimizations', 'perfmatters') . '</label>';
+						echo '<label>' . esc_html__('Optimizations', 'perfmatters') . '</label>';
 						echo '<a href="https://perfmatters.io/docs/code-snippets/#optimizations" class="perfmatters-tooltip" target="_blank"' . (!empty($tools['accessibility_mode']) ? " title='" . esc_attr__("View Documentation", 'perfmatters') . "'" : "") . '>?</a>';
 						echo '<div class="perfmatters-tooltip-container">';
 							echo perfmatters_tooltip(__('Apply various Perfmatters optimizations to your code snippet to boost performance.', 'perfmatters'));
@@ -257,7 +257,7 @@ echo '<div class="perfmatters-settings-section">';
 
 					//title + tooltip
 					echo '<div class="pmcs-title">';
-							echo '<label for="pmcs-conditions">' . esc_html__('Conditions', 'perfmatters') . '</label>';
+							echo '<label>' . esc_html__('Conditions', 'perfmatters') . '</label>';
 							echo '<a href="https://perfmatters.io/docs/code-snippets/#conditions" class="perfmatters-tooltip" target="_blank"' . (!empty($tools['accessibility_mode']) ? " title='" . esc_attr__("View Documentation", 'perfmatters') . "'" : "") . '>?</a>';
 							echo '<div class="perfmatters-tooltip-container">';
 								echo perfmatters_tooltip('Choose where and for whom your code snippet is allowed to run.');

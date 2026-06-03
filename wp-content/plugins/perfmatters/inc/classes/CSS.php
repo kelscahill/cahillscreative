@@ -175,7 +175,8 @@ class CSS
 
                     //update registered src
                     if(!empty($atts_array['id'])) {
-                        $handle = rtrim($atts_array['id'], '-css');
+
+                        $handle = str_ends_with($atts_array['id'], '-css') ? substr($atts_array['id'], 0, -4) : $atts_array['id'];
                         if(isset($wp_styles->registered[$handle])) {
                             $wp_styles->registered[$handle]->src = $minified_src;
                         }
@@ -208,13 +209,20 @@ class CSS
                             //get used css from stylesheet
                             $used_css = self::clean_stylesheet($atts_array['href'], @file_get_contents($file));
 
-                            //wrap in media query if needed
-                            if(!empty($atts_array['media']) && $atts_array['media'] != 'all') {
-                                $used_css = '@media ' . $atts_array['media'] . '{' . $used_css . '}';
-                            }
+                            if($used_css !== false) {
 
-                            //add used stylesheet css to total used
-                            $used_css_string.= $used_css;
+                                //wrap in media query if needed
+                                if(!empty($atts_array['media']) && $atts_array['media'] != 'all') {
+                                    $used_css = '@media ' . $atts_array['media'] . '{' . $used_css . '}';
+                                }
+
+                                //add used stylesheet css to total used
+                                $used_css_string.= $used_css;
+                            }
+                            else {
+                                //cannot parse: keep original link loading; skip delay/async/remove for this sheet
+                                $skip = true;
+                            }
                         }
                         else {
                             $skip = true;
@@ -495,6 +503,7 @@ class CSS
             '.active',
             '.dropdown-nav-special-toggle',
             'rs-fw-forcer', //rev slider
+            '.woocommerce-js', //woocommerce
             '#altEmail_container' //wp armour
         );
 
@@ -552,17 +561,32 @@ class CSS
         // Normalize @layer name1, name2; (no block) to @layer name1, name2 {} so the parser doesn't consume the rest of the file
         $css = preg_replace('/@layer\s+([^;{}]+);/', '@layer $1 {}', $css);
 
-        //setup css parser
-        $settings = Settings::create()->withMultibyteSupport(false);
-        $parser = new CSSParser($css, $settings);
-        $parsed_css = $parser->parse();
+        // Fast path: byte-oriented parser. On failure (e.g. Safe PCRE + UTF-8), retry once with multibyte if available.
+        $multibyte_attempts = array(false);
+        if(extension_loaded('mbstring')) {
+            $multibyte_attempts[] = true;
+        }
 
-        //convert relative urls to full urls
-        self::fix_relative_urls($url, $parsed_css);
+        foreach($multibyte_attempts as $use_multibyte) {
 
-        $css_data = self::prep_css_data($parsed_css);
+            try {
+                $settings = Settings::create()->withMultibyteSupport($use_multibyte);
+                $parser = new CSSParser($css, $settings);
+                $parsed_css = $parser->parse();
 
-        return self::remove_unused_selectors($css_data);
+                //convert relative urls to full urls
+                self::fix_relative_urls($url, $parsed_css);
+
+                $css_data = self::prep_css_data($parsed_css);
+
+                return self::remove_unused_selectors($css_data);
+            }
+            catch(\Throwable $e) {
+                // try next setting, or fall through to return false
+            }
+        }
+
+        return false;
     }
 
     //convert relative urls to full urls
@@ -609,35 +633,50 @@ class CSS
             return $css;
         }
 
-        return preg_replace_callback(
-            '/url\(\s*([\'"]?)([^)\'"]+)\1\s*\)/i',
-            function($matches) use ($base_url) {
+        $rewrite = function($url) use ($base_url) {
 
-                $quote = $matches[1];
-                $url   = trim($matches[2]);
+            $url = trim($url);
 
-                //skip absolute and data urls
-                if(preg_match('/^(https?:|data:|\/\/)/i', $url)) {
-                    return $matches[0];
-                }
+            //skip absolute and data urls
+            if(preg_match('/^(https?:|data:|\/\/)/i', $url)) {
+                return $url;
+            }
 
-                //skip root-relative paths
-                if(isset($url[0]) && $url[0] === '/') {
-                    return $matches[0];
-                }
+            //skip root-relative paths
+            if(isset($url[0]) && $url[0] === '/') {
+                return $url;
+            }
 
-                //basic relative url handling (no host, non-empty path)
-                $parsed_url = parse_url($url);
-                if(!empty($parsed_url['host']) || empty($parsed_url['path'])) {
-                    return $matches[0];
-                }
+            //basic relative url handling (no host, non-empty path)
+            $parsed_url = parse_url($url);
+            if(!empty($parsed_url['host']) || empty($parsed_url['path'])) {
+                return $url;
+            }
 
-                $new_url = $base_url . $url;
+            return $base_url . $url;
+        };
 
-                return 'url(' . $quote . $new_url . $quote . ')';
+        // Quoted url() — required when filenames contain ")" (e.g. …(RoundDots)…).
+        $css = preg_replace_callback(
+            '/url\(\s*(["\'])([^"\']*)\1\s*\)/i',
+            function($matches) use ($rewrite) {
+                $new_url = $rewrite($matches[2]);
+                return 'url(' . $matches[1] . $new_url . $matches[1] . ')';
             },
             $css
         );
+
+        // Unquoted url() — run after quoted so url("…") is not matched here.
+        $css = preg_replace_callback(
+            '/url\(\s*(?![\'"])((?:[^\\()]|\\.)+)\s*\)/i',
+            function($matches) use ($rewrite) {
+                $new_url = $rewrite($matches[1]);
+                return 'url(' . $new_url . ')';
+            },
+            $css
+        );
+
+        return $css;
     }
 
     //prep parsed css for cleaning

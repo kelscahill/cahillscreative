@@ -5,7 +5,7 @@ Tags: perfmatters
 Requires at least: 5.5
 Requires PHP: 8.1
 Tested up to: 6.9.4
-Stable tag: 2.6.0
+Stable tag: 2.6.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,6 +36,32 @@ Perfmatters is a lightweight performance plugin developed to speed up your WordP
 Check out our [documentation](https://perfmatters.io/docs/) for more information on how to use Perfmatters.
 
 == Changelog ==
+
+= 2.6.2 - 04.29.2026 =
+* Added support to automatically optimize and lazy load Elementor Atomic YouTube elements and legacy video widgets when Perfmatters iframe lazy loading is turned on. YouTube preview thumbnails are also supported, as well as Elementor image overlays if set for the video.
+* Added request-level caching to excluded and forced lazy loading attribute arrays to prevent unnecessary calls.
+* Added multiple stripos and str_contains (PHP 8) checks in lazy loading image and iframe functions to prevent expensive regex scans if tags don't exist on the page.
+* Added new should_skip_request method in core LazyLoad class with request-level caching to prevent duplicate checks for WooCommerce pages and post-specific meta options.
+* Added support to various General class functions to respect ?perfmattersoff.
+* Added filters back to turn off WordPress' lazy loading and auto sizing styles when Perfmatters lazy loading is turned on.
+* Added built-in JS and CSS exclusions for Woocommerce's dynamically added woocommerce-js body class.
+* Refactored LazyLoad class into multiple subclasses for better maintainability.
+* Removed duplicate list normalization step before replacement across LazyLoad classes to reduce loop overhead.
+* Renamed previous Images class to ImageDimensions to make room for new Images lazy loading subclass.
+* Fixed an issue where certain lazy loaded tags were getting replaced globally in the document instead of only at the specific tag match instance.
+* Translation updates.
+
+= 2.6.1 - 04.10.2026 =
+* Made additional plugin UI styles adjustments in preparation for WordPress 7.
+* Made some adjustments to our code snippets error handler initialization logic to avoid unnecessary handling if no relevant code snippets are active.
+* Updated our exception_handler method with more specific error logging when our handler is dealing with an error outside of our code snippets.
+* Updated Disable RSS Feeds tooltip text to reflect the recent header changes in the previous update.
+* Fixed an error that would occur when UTF-8 stylesheets with specific multibyte characters were parsed for used CSS.
+* Fixed multiple incorrect form label IDs that showed up when creating a new code snippet.
+* Fixed an issue with Disable Self Pingbacks functionality that was introduced after the functions.php refactor.
+* Fixed an issue where a JS or CSS file preloaded dynamically by handle would not serve the minified version of the file in certain cases.
+* Fixed an issue where the inline stylesheet fallback was not always converting relative URLs correctly if certain characters were present in the string.
+* Translation updates.
 
 = 2.6.0 - 03.25.2026 =
 * Increased minimum required PHP version to 8.1 to allow for library updates and support for future codebase performance improvements.

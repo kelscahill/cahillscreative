@@ -105,7 +105,7 @@
     background: #4F5B93;
     color: #fff;
     padding: 2px 6px;
-    border-radius: 3px;
+    border-radius: 2px;
     text-transform: uppercase;
 }
 #perfmatters-admin a.pmcs-snippet-type-badge[data-snippet-type="html"] {
@@ -234,15 +234,16 @@
 #pmcs-snippet .pmcs-radio-bar label {
     display: inline-flex;
     margin: 0px;
-    padding: 0px 10px;
+    padding: 0px 12px;
     background-color: #eee;
     cursor: pointer;
     transition: all 0.3s;
-    height: 30px;
+    height: 100%;
     box-sizing: border-box;
     align-items: center;
     opacity: .5;
-    border-radius: 3px;
+    border-radius: 2px;
+	font-size: 15px;
 }
 #pmcs-snippet .pmcs-radio-bar input[type="radio"]:checked + label {
     background-color: #4F5B93;
@@ -266,6 +267,7 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
+	height: 100%;
 }
 
 /* inline lable adjustments */
@@ -336,7 +338,7 @@
 #perfmatters-admin-container .perfmatters-notice-container .notice {
 	display: block;
 	margin: 5px 0px 10px;
-	border-radius: 3px;
+	border-radius: 2px;
 
 }
 
@@ -371,7 +373,7 @@
     gap: 10px;
     padding: 10px;
     border-top: .5px solid #ccc;
-    border-radius: 0px 0px 3px 3px;
+    border-radius: 0px 0px 2px 2px;
 }
 #pmcs-tags-wrap:not(:has(.pmcs-tag)) {
 	display: none;
@@ -384,7 +386,7 @@
     background-color: #f7f7f7;
     border: 1px solid #f7f7f7;
     padding: 4px 8px;
-    border-radius: 4px;
+    border-radius: 2px;
     font-size: 13px;
     align-items: center;
 }
@@ -417,7 +419,7 @@
 }
 #pmcs-conditions-wrapper {
 	border: 1px solid #f2f2f2;
-	border-radius: 3px;
+	border-radius: 2px;
 }
 .pmcs-condition-type {
 	display: flex;
@@ -451,7 +453,7 @@
 .pmcs-condition-type .perfmatters-input-row {
 	background: #f7f7f7;
     padding: 10px;
-    border-radius: 3px;
+    border-radius: 2px;
     flex-grow: 0;
     margin: 0px;
     border: .5px solid #ccc;
@@ -497,10 +499,10 @@
     outline: none !important;
     box-shadow: none !important;
     cursor: default;
-    border-radius: 3px 0px 0px 3px;
+    border-radius: 2px 0px 0px 2px;
 }
 #perfmatters-admin #pmcs-recovery-url span {
 	border-right: .5px solid #ccc;
 	border-left: 0px;
-	border-radius: 0px 3px 3px 0px;
+	border-radius: 0px 2px 2px 0px;
 }

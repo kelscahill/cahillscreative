@@ -505,6 +505,26 @@ class Elementor
 		// Remember things.
 		foreach( $ed as $index => $section )
 			$this->preparse_element( $bcd, $section );
+
+		$this->maybe_save_global_classes( $bcd );
+	}
+
+	/**
+		@brief		Decide whether there are any global classes to save.
+		@since		2026-05-13 09:50:46
+	**/
+	public function maybe_save_global_classes( $bcd )
+	{
+		$gc = $bcd->elementor->collection( 'global_classes' );
+		if ( count( $gc->collection( 'used' ) ) < 1 )
+			return;
+
+		$active_kit_id = $this->get_elementor_active_kit();
+		$key = '_elementor_global_classes';
+		$elementor_global_classes = get_post_meta( $active_kit_id, $key, true );
+		$elementor_global_classes = json_decode( $elementor_global_classes );
+		$gc->set( 'elementor_global_classes', $elementor_global_classes );
+		$this->debug( '_elementor_global_classes are: %s', $elementor_global_classes );
 	}
 
 	/**
@@ -680,10 +700,49 @@ class Elementor
 
 		$ed = json_encode( $ed );
 
+		$this->maybe_restore_global_classes( $bcd );
+
 		$this->debug( 'Updating elementor data: <pre>%s</pre>', htmlspecialchars( $ed ) );
 		$bcd->custom_fields()
 			->child_fields()
 			->update_meta_json( $meta_key, $ed );
+	}
+
+	/**
+		@brief		Maybe restore the global classes, if any.
+		@since		2026-05-13 09:51:23
+	**/
+	public function maybe_restore_global_classes( $bcd )
+	{
+		$gc = $bcd->elementor->collection( 'global_classes' );
+		if ( count( $gc->collection( 'used' ) ) < 1 )
+			return;
+
+		$active_kit_id = $this->get_elementor_active_kit();
+
+		if ( ! $active_kit_id )
+		{
+			$this->debug( 'Warning! No elementor_active_kit on blog. Not restoring global classes.' );
+			return;
+		}
+
+		$key = '_elementor_global_classes';
+		$parent_elementor_global_classes = $gc->get( 'elementor_global_classes' );
+		$child_elementor_global_classes = get_post_meta( $active_kit_id, $key, true );
+		$child_elementor_global_classes = json_decode( $child_elementor_global_classes );
+
+		// If there are no global classes on this child, just copy the parent's.
+		if ( ! $child_elementor_global_classes )
+			$child_elementor_global_classes = $parent_elementor_global_classes;
+
+		foreach( $gc->collection( 'used' ) as $class_id )
+		{
+			$this->debug( 'Copying parent class %s', $class_id );
+			$parent_class = $parent_elementor_global_classes->items->$class_id;
+			$child_elementor_global_classes->items->$class_id = $parent_class;
+		}
+
+		update_post_meta( $active_kit_id, $key, json_encode( $child_elementor_global_classes ) );
 	}
 
 	/**
@@ -716,6 +775,16 @@ class Elementor
 	// --------------------------------------------------------------------------------------------
 	// ----------------------------------------- Misc functions
 	// --------------------------------------------------------------------------------------------
+
+	/**
+		@brief		Return the ID of the post that is the active kit.
+		@since		2026-05-12 17:35:55
+	**/
+	public function get_elementor_active_kit()
+	{
+		$id = get_option( 'elementor_active_kit', true );
+		return intval( $id );
+	}
 
 	/**
 		@brief		Returns the post's Elementor CSS filename.
@@ -827,6 +896,27 @@ class Elementor
 				}
 			}
 		}
+
+		if ( isset( $element->settings->classes ) )
+			if ( isset( $element->settings->classes->value ) )
+			{
+				foreach( $element->settings->classes->value as $class_id )
+				{
+					if ( ! str_starts_with( $class_id, 'g-' ) )
+						continue;
+
+					// Skip it if we know it.
+					if ( $bcd->elementor->collection( 'global_classes' )
+						->collection( 'used' )
+						->has( $class_id ) )
+						continue;
+
+					$this->debug( 'Found global class %s', $class_id );
+					$bcd->elementor->collection( 'global_classes' )
+						->collection( 'used' )
+						->set( $class_id, $class_id );
+				}
+			}
 
 		if ( $element->elType == 'widget' )
 		{

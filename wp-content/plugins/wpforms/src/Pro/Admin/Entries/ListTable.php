@@ -195,12 +195,13 @@ class ListTable extends WP_List_Table {
 		$this->counts = (array) apply_filters( 'wpforms_entries_table_counts', $this->counts, $this->form_data ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 
 		$defaults = [
-			'total'   => 0,
-			'unread'  => 0,
-			'payment' => 0,
-			'starred' => 0,
-			'spam'    => 0,
-			'trash'   => 0,
+			'total'    => 0,
+			'unread'   => 0,
+			'payment'  => 0,
+			'imported' => 0,
+			'starred'  => 0,
+			'spam'     => 0,
+			'trash'    => 0,
 		];
 
 		$this->counts = wp_parse_args( $this->counts, $defaults );
@@ -250,6 +251,17 @@ class ListTable extends WP_List_Table {
 				esc_url( add_query_arg( 'type', 'payment', $base ) ),
 				$current === 'payment' ? ' class="current"' : '',
 				_n( 'Payment', 'Payments', $this->counts['payment'], 'wpforms' ) . $payment
+			);
+		}
+
+		// Only show the imported view if there are imported entries.
+		if ( $this->counts['imported'] > 0 ) {
+			$imported          = '&nbsp;<span class="count">(<span class="imported-num">' . $this->counts['imported'] . '</span>)</span>';
+			$views['imported'] = sprintf(
+				'<a href="%s"%s>%s</a>',
+				esc_url( add_query_arg( 'type', 'imported', $base ) ),
+				$current === 'imported' ? ' class="current"' : '',
+				esc_html__( 'Imported', 'wpforms' ) . $imported
 			);
 		}
 
@@ -442,7 +454,8 @@ class ListTable extends WP_List_Table {
 		}
 
 		// If the entry has a status, show it.
-		if ( ! empty( $entry->status ) && $entry->type !== 'payment' && $entry->status !== Page::TRASH_ENTRY_STATUS ) {
+		// Skip for payment and imported entry types.
+		if ( ! empty( $entry->status ) && ! in_array( $entry->type, [ 'payment', 'imported' ], true ) && $entry->status !== Page::TRASH_ENTRY_STATUS ) {
 			return ucwords( sanitize_text_field( $entry->status ) );
 		}
 
@@ -1937,6 +1950,11 @@ class ListTable extends WP_List_Table {
 		if ( ! empty( $_GET['type'] ) && $_GET['type'] === 'payment' ) {
 			$data_args['type'] = 'payment';
 			$total_items       = $this->counts['payment'];
+		}
+
+		if ( ! empty( $_GET['type'] ) && $_GET['type'] === 'imported' ) {
+			$data_args['type'] = 'imported';
+			$total_items       = $this->counts['imported'];
 		}
 
 		if ( ! empty( $_GET['status'] ) ) {

@@ -241,7 +241,8 @@ class JS
 					'sa.min.js',
 					'ShowAds',
 					'ezstandalone',
-					'ezoic'
+					'ezoic',
+					'woocommerce-no-js' //woocommerce
 				);
 
 				//add quick exclusions
@@ -338,7 +339,7 @@ class JS
 	  			$script.= '})();';
 
 	  			//trigger elementor animations
-	  			if(function_exists('\is_plugin_active') && \is_plugin_active('elementor/elementor.php')) {
+	  			if(function_exists('is_plugin_active') && is_plugin_active('elementor/elementor.php')) {
 	  				$script.= '(function(){var e,a,s;function t(){(e=document.createElement("span")).id="elementor-device-mode",e.setAttribute("class","elementor-screen-only"),document.body.appendChild(e),requestAnimationFrame(n)}function n(){a=o(getComputedStyle(e,":after").content.replace(/"/g,"")),document.querySelectorAll(".elementor-invisible[data-settings]").forEach(e=>{let t=e.getBoundingClientRect();if(t.bottom>=0&&t.top<=window.innerHeight)try{i(e)}catch(e){}})}function i(e){let t=JSON.parse(e.dataset.settings),n=t._animation_delay||t.animation_delay||0,i=t[a.find(e=>t[e])];if("none"===i)return void e.classList.remove("elementor-invisible");e.classList.remove(i),s&&e.classList.remove(s),s=i;let o=setTimeout(()=>{e.classList.remove("elementor-invisible"),e.classList.add("animated",i),l(e,t)},n);window.addEventListener("perfmatters-startLoading",function(){clearTimeout(o)})}function o(e="mobile"){let n=[""];switch(e){case"mobile":n.unshift("_mobile");case"tablet":n.unshift("_tablet");case"desktop":n.unshift("_desktop")}let i=[];return["animation","_animation"].forEach(t=>{n.forEach(e=>{i.push(t+e)})}),i}function l(e,t){o().forEach(e=>delete t[e]),e.dataset.settings=JSON.stringify(t)}document.addEventListener("DOMContentLoaded",t)})();';
 				}
 
@@ -355,7 +356,7 @@ class JS
 			return;
 		}
 
-		if(isset($_GET['perfmattersoff'])) {
+		if(Utilities::is_perfmatters_off()) {
 			return;
 		}
 

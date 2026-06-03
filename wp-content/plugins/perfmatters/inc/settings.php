@@ -129,7 +129,7 @@ function perfmatters_settings() {
     	array(
     		'id' => 'disable_rss_feeds',
             'class' => 'perfmatters-input-controller',
-    		'tooltip' => __('Disable WordPress generated RSS feeds and 301 redirect URL to parent.', 'perfmatters')
+    		'tooltip' => __('Disable WordPress generated RSS feeds and return a 410 response.', 'perfmatters')
     	)
     );
 
@@ -225,7 +225,7 @@ function perfmatters_settings() {
     //disable password strength meter
     add_settings_field(
         'disable_password_strength_meter', 
-        perfmatters_title(__('Disable Password Strength Meter', 'perfmatters'), 'disable_password_strength_meter', 'https://perfmatters.io/docs/disable-password-meter-strength/'),
+        perfmatters_title(__('Disable Password Meter', 'perfmatters'), 'disable_password_strength_meter', 'https://perfmatters.io/docs/disable-password-meter-strength/'),
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_options', 
@@ -1391,7 +1391,7 @@ function perfmatters_settings() {
     //image dimensions
     add_settings_field(
         'image_dimensions', 
-        perfmatters_title(__('Add Missing Image Dimensions', 'perfmatters'), 'lazyload-image_dimensions', 'https://perfmatters.io/docs/missing-width-height-images/'), 
+        perfmatters_title(__('Add Image Dimensions', 'perfmatters'), 'lazyload-image_dimensions', 'https://perfmatters.io/docs/missing-width-height-images/'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'lazyload', 

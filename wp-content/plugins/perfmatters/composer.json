@@ -1,5 +1,8 @@
 {
     "autoload": {
+        "classmap": [
+            "inc/classes/LazyLoad/"
+        ],
         "psr-4": {
             "Perfmatters\\": "inc/classes",
             "Perfmatters\\Vendor\\Sabberworm\\CSS\\": "vendor-prefixed/sabberworm/php-css-parser/src",

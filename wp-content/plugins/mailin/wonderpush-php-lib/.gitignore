@@ -1,7 +1,0 @@
-/composer.phar
-/.idea
-/vendor/
-# composer.lock prevents Travis builds that use older PHP versions
-/composer.lock
-/coverage/
-/clover.xml

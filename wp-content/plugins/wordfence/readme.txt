@@ -3,8 +3,8 @@ Contributors: mmaunder, wfryan, wfmatt, wfmattr
 Tags: security, malware, 2fa, firewall, scanner
 Requires at least: 4.7
 Requires PHP: 7.0
-Tested up to: 6.9
-Stable tag: 8.1.4
+Tested up to: 7.0
+Stable tag: 8.2.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -206,6 +206,34 @@ Secure your website with Wordfence.
 9. Logging in is easy with Wordfence 2FA.
 
 == Changelog ==
+
+= 8.2.2 - May 13, 2026 =
+* Improvement: Better presentation of Live Traffic data on wide screens
+* Improvement: Increased legibility of token fields
+* Improvement: Reworked the pagination of the Blocking page for a better UX
+* Improvement: Country blocking token field can now expand to show all entries
+* Improvement: Performance improvements for the activity log and better pause behavior on window blur/focus
+* Improvement: GeoIP database updated
+* Change: Removed deprecated Central endpoint
+* Fix: Addressed issue where the last activity log entry could repeatedly appear
+* Fix: Using the embedded shortcode for the 2FA form now correctly enqueues core JavaScript dependencies
+* Fix: Modals with content that overflows on smaller viewports can now be scrolled
+* Fix: The changelog link in plugin upgrade scan issues now links correctly
+
+= 8.2.1 - May 6, 2026 =
+* Fix: Fixed issue with some i18n plugins/themes when a user has no 2FA recovery codes
+* Fix: Toggled options with additional help links now correctly open the link rather than toggling the option
+* Fix: Country Blocking editing fixed when there are multiple pages of block rules
+* Fix: Added better error handling to the initial Vue data load
+* Fix: Handled error when logging in using legacy 2FA with separate prompts enabled
+
+= 8.2.0 - April 29, 2026 =
+* Improvement: Migrated all deprecated JavaScript libraries in use to a Vue-based infrastructure
+* Improvement: GeoIP database update
+* Improvement: Better coverage of `aria-` accessibility attributes
+* Improvement: Added `translators` comments to translatable strings where previously missing
+* Fix: WordPress 7.0 compatibility fixes
+* Note: Legacy two factor authentication using SMS-based codes will be discontinued around July 1, 2026. Sites using this functionality should migrate users to the TOTP-based two factor authentication on the Login Security page of the plugin
 
 = 8.1.4 - December 20, 2025 =
 * Fix: Fixed an issue with `inet_pton` introduced by a recent patch to PHP 8.1+ that could cause a fatal error if a malformed IP address was passed to the call

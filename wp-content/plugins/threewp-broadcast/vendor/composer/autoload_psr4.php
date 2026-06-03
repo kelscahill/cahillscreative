@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'threewp_broadcast\\' => array($baseDir . '/src'),
     'plainview\\sdk_broadcast\\' => array($vendorDir . '/plainview/sdk'),
+    'plainview\\sdk\\' => array($vendorDir . '/plainview/sdk'),
 );

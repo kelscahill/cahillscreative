@@ -1,0 +1,50 @@
+{
+    "packages": [
+        {
+            "name": "plainview/sdk",
+            "version": "20260121",
+            "version_normalized": "20260121",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/edward_electric/plainview-sdk.git",
+                "reference": "823ea59b877f46849d3d8cd4b5544e8e26d7cda1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/edward_electric/plainview-sdk/get/823ea59b877f46849d3d8cd4b5544e8e26d7cda1.zip",
+                "reference": "823ea59b877f46849d3d8cd4b5544e8e26d7cda1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "time": "2026-01-21T17:56:15+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "plainview\\sdk\\": "."
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Edward Plainview",
+                    "email": "edward@plainview.se"
+                }
+            ],
+            "description": "Plainview SDK",
+            "homepage": "https://plainviewplugins.com/sdk/",
+            "support": {
+                "issues": "https://bitbucket.org/edward_electric/plainview-sdk/issues",
+                "source": "https://bitbucket.org/edward_electric/plainview-sdk/src/823ea59b877f46849d3d8cd4b5544e8e26d7cda1/?at=20260121"
+            },
+            "install-path": "../plainview/sdk"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": []
+}

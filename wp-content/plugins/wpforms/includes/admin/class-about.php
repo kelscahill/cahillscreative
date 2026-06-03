@@ -1165,18 +1165,21 @@ class WPForms_About {
 					'status' => 'full',
 					'text'   => [
 						'<strong>' . esc_html__( 'Complete Entry Management inside WordPress', 'wpforms-lite' ) . '</strong>',
+						esc_html__( 'View, Edit, Import, and Export', 'wpforms-lite' ),
 					],
 				],
 				'plus'  => [
 					'status' => 'full',
 					'text'   => [
 						'<strong>' . esc_html__( 'Complete Entry Management inside WordPress', 'wpforms-lite' ) . '</strong>',
+						esc_html__( 'View, Edit, Import, and Export', 'wpforms-lite' ),
 					],
 				],
 				'pro'   => [
 					'status' => 'full',
 					'text'   => [
 						'<strong>' . esc_html__( 'Complete Entry Management inside WordPress', 'wpforms-lite' ) . '</strong>',
+						esc_html__( 'View, Edit, Import, and Export', 'wpforms-lite' ),
 					],
 				],
 			],
@@ -1328,6 +1331,7 @@ class WPForms_About {
 								'MailerLite',
 								'MailPoet',
 								'Kit',
+								'Klaviyo',
 								'Slack',
 								'Twilio',
 							]
@@ -1350,6 +1354,7 @@ class WPForms_About {
 								'MailerLite',
 								'MailPoet',
 								'Kit',
+								'Klaviyo',
 								'Slack',
 								'Twilio',
 								'Make',
@@ -1384,6 +1389,7 @@ class WPForms_About {
 								'MailerLite',
 								'MailPoet',
 								'Kit',
+								'Klaviyo',
 								'Slack',
 								'Twilio',
 								'Pipedrive',
@@ -1420,6 +1426,7 @@ class WPForms_About {
 								'MailerLite',
 								'MailPoet',
 								'Kit',
+								'Klaviyo',
 								'Slack',
 								'Twilio',
 								'Pipedrive',
@@ -1456,6 +1463,7 @@ class WPForms_About {
 								'MailerLite',
 								'MailPoet',
 								'Kit',
+								'Klaviyo',
 								'Slack',
 								'Twilio',
 								'Pipedrive',

@@ -132,6 +132,7 @@ trait WC_Payment_Gateway_WCPay_Subscriptions_Trait {
 	 *
 	 * For credit cards, returns "{title} ending in {last4}".
 	 * For Amazon Pay, returns "{title} ({redacted_email})".
+	 * For Stripe Link, returns "{title} ({redacted_email})".
 	 * For other tokens, returns the default title.
 	 *
 	 * @param WC_Payment_Token|null $token   The payment token.
@@ -147,8 +148,12 @@ trait WC_Payment_Gateway_WCPay_Subscriptions_Trait {
 			$last4 = $token->get_last4();
 			// Avoid duplication if the title already contains the last4.
 			if ( ! empty( $last4 ) && false === strpos( $default, $last4 ) ) {
+				// Use the specific card brand (e.g. "Visa") when available instead of $default,
+				// which may refer to a different payment method type (e.g. "Link" from a previous subscription payment).
+				$card_type = $token->get_card_type();
+				$title     = ! empty( $card_type ) ? wc_get_credit_card_type_label( $card_type ) : $default;
 				// translators: 1: payment method likely credit card, 2: last 4 digit.
-				return sprintf( __( '%1$s ending in %2$s', 'woocommerce-payments' ), $default, $last4 );
+				return sprintf( __( '%1$s ending in %2$s', 'woocommerce-payments' ), $title, $last4 );
 			}
 		}
 
@@ -158,6 +163,16 @@ trait WC_Payment_Gateway_WCPay_Subscriptions_Trait {
 			if ( ! empty( $email ) && false === strpos( $default, $email ) ) {
 				// translators: 1: payment method (Amazon Pay), 2: redacted customer email.
 				return sprintf( __( '%1$s (%2$s)', 'woocommerce-payments' ), $default, $email );
+			}
+		}
+
+		if ( $token instanceof WC_Payment_Token_WCPay_Link ) {
+			$email = $token->get_redacted_email();
+			// Avoid duplication if the title already contains the email.
+			if ( ! empty( $email ) && false === strpos( $default, $email ) ) {
+				// Link uses the card gateway, so $default is "Card". Use "Stripe Link" instead.
+				// translators: 1: payment method (Stripe Link), 2: redacted customer email.
+				return sprintf( __( '%1$s (%2$s)', 'woocommerce-payments' ), __( 'Stripe Link', 'woocommerce-payments' ), $email );
 			}
 		}
 
@@ -262,10 +277,7 @@ trait WC_Payment_Gateway_WCPay_Subscriptions_Trait {
 
 		add_filter( 'woocommerce_email_classes', [ $this, 'add_emails' ], 20 );
 
-		// Switch Amazon Pay ECE subscriptions to the correct gateway (priority 10, before manual renewal check).
-		add_action( 'woocommerce_checkout_subscription_created', [ $this, 'maybe_switch_subscription_to_amazon_pay_gateway' ], 10, 1 );
-		// Force non-reusable payment methods to manual renewal (priority 11, after gateway switch).
-		add_action( 'woocommerce_checkout_subscription_created', [ $this, 'maybe_force_subscription_to_manual' ], 11, 1 );
+		add_action( 'woocommerce_checkout_subscription_created', [ $this, 'maybe_force_subscription_to_manual' ], 10, 1 );
 
 		// Register gateway-specific hooks for all reusable gateways.
 		foreach ( $this->get_reusable_wcpay_gateway_ids() as $gateway_id ) {
@@ -277,6 +289,10 @@ trait WC_Payment_Gateway_WCPay_Subscriptions_Trait {
 
 		// Display the payment method used for a subscription in the "My Subscriptions" table.
 		add_filter( 'woocommerce_my_subscriptions_payment_method', [ $this, 'maybe_render_subscription_payment_method' ], 10, 2 );
+
+		// Override the payment method display for Link subscriptions in all contexts (admin + customer).
+		// The gateway title is "Card" for Link subscriptions because Link uses the card gateway.
+		add_filter( 'woocommerce_subscription_payment_method_to_display', [ $this, 'maybe_override_link_subscription_payment_method_display' ], 10, 2 );
 
 		// Hide "Change payment" button for manual subscriptions with non-reusable payment methods.
 		add_filter( 'wcs_view_subscription_actions', [ $this, 'maybe_hide_change_payment_for_manual_subscriptions' ], 10, 2 );
@@ -614,6 +630,34 @@ trait WC_Payment_Gateway_WCPay_Subscriptions_Trait {
 	}
 
 	/**
+	 * Override the payment method display for Link subscriptions in all contexts.
+	 *
+	 * Stripe Link uses the card gateway (woocommerce_payments), so the gateway title is "Card".
+	 * This replaces it with the Link token's display name (e.g. "Stripe Link (r***@r***.com)").
+	 *
+	 * @param string          $payment_method_to_display Default payment method to display.
+	 * @param WC_Subscription $subscription              Subscription object.
+	 *
+	 * @return string Payment method string to display.
+	 */
+	public function maybe_override_link_subscription_payment_method_display( $payment_method_to_display, $subscription ) {
+		try {
+			if ( ! $this->should_handle_order( $subscription ) ) {
+				return $payment_method_to_display;
+			}
+
+			$token = $this->get_payment_token( $subscription );
+			if ( $token instanceof \WC_Payment_Token_WCPay_Link ) {
+				return $token->get_display_name();
+			}
+
+			return $payment_method_to_display;
+		} catch ( \Exception $e ) {
+			return $payment_method_to_display;
+		}
+	}
+
+	/**
 	 * Render the payment method used for a subscription in My Account pages
 	 *
 	 * @param string          $payment_method_to_display Default payment method to display.
@@ -901,6 +945,11 @@ trait WC_Payment_Gateway_WCPay_Subscriptions_Trait {
 				if ( ! empty( $payment_method['amazon_pay']['email'] ) ) {
 					// translators: 1: payment method (Amazon Pay), 2: redacted customer email.
 					return sprintf( __( '%1$s (%2$s)', 'woocommerce-payments' ), $new_payment_method_title, $payment_method['amazon_pay']['email'] );
+				}
+				if ( ! empty( $payment_method['link']['email'] ) ) {
+					// Link uses the card gateway, so $new_payment_method_title is "Card". Use "Stripe Link" instead.
+					// translators: 1: payment method (Stripe Link), 2: customer email.
+					return sprintf( __( '%1$s (%2$s)', 'woocommerce-payments' ), __( 'Stripe Link', 'woocommerce-payments' ), $payment_method['link']['email'] );
 				}
 			} catch ( Exception $e ) {
 				Logger::error( $e );
@@ -1191,45 +1240,7 @@ trait WC_Payment_Gateway_WCPay_Subscriptions_Trait {
 	}
 
 	/**
-	 * Switch subscription to Amazon Pay gateway when created via Express Checkout.
-	 *
-	 * ECE payments are initially processed by the base gateway, but Amazon Pay subscriptions
-	 * need to use the split Amazon Pay gateway for proper renewal handling.
-	 *
-	 * This runs at priority 9, before maybe_force_subscription_to_manual (priority 10).
-	 *
-	 * @param WC_Subscription $subscription The subscription being created.
-	 */
-	public function maybe_switch_subscription_to_amazon_pay_gateway( $subscription ) {
-		// Only process subscriptions using the base WCPay gateway.
-		$payment_method_id = $subscription->get_payment_method();
-		if ( WC_Payment_Gateway_WCPay::GATEWAY_ID !== $payment_method_id ) {
-			return;
-		}
-
-		// Check if this is an Amazon Pay Express Checkout payment.
-		$parent_order = $subscription->get_parent();
-		if ( ! $parent_order ) {
-			return;
-		}
-
-		// technically, `$express_checkout_type` could also be `google_pay` or `apple_pay`.
-		// But those are card methods, processed through `woocommerce_payments`, not through `woocommerce_payments_google_pay`.
-		$express_checkout_type = $parent_order->get_meta( '_wcpay_express_checkout_payment_method' );
-		if ( AmazonPayDefinition::get_id() !== $express_checkout_type ) {
-			return;
-		}
-
-		// Switch to the Amazon Pay split gateway.
-		$amazon_pay_gateway_id = WC_Payment_Gateway_WCPay::GATEWAY_ID . '_' . AmazonPayDefinition::get_id();
-		$subscription->set_payment_method( $amazon_pay_gateway_id );
-		$subscription->save();
-	}
-
-	/**
 	 * Force subscription to manual renewal if non-reusable payment method was used.
-	 *
-	 * This runs at priority 10, after maybe_switch_subscription_to_amazon_pay_gateway (priority 9).
 	 *
 	 * @param WC_Subscription $subscription The subscription being created.
 	 */
@@ -1266,5 +1277,62 @@ trait WC_Payment_Gateway_WCPay_Subscriptions_Trait {
 				$payment_method_type
 			)
 		);
+	}
+
+	/**
+	 * Propagate the order's payment method and title to any subscriptions created from it.
+	 *
+	 * When an order flows through Express Checkout (Amazon Pay in particular), the subscription
+	 * is created before Stripe has confirmed the payment method, so the subscription inherits
+	 * the default card gateway/title. Once the real payment method is known (in
+	 * `set_payment_method_title_for_order()`), we sync it to the subscription so the
+	 * "My Subscriptions" view and future renewals use the right one.
+	 *
+	 * @param \WC_Order $order The parent order whose payment method has just been finalised.
+	 */
+	private function sync_payment_method_to_subscriptions( $order ) {
+		if ( ! function_exists( 'wcs_get_subscriptions_for_order' ) ) {
+			return;
+		}
+
+		$subscriptions = wcs_get_subscriptions_for_order( $order, [ 'order_type' => 'parent' ] );
+		if ( empty( $subscriptions ) ) {
+			return;
+		}
+
+		$payment_method       = $order->get_payment_method();
+		$payment_method_title = $order->get_payment_method_title();
+
+		foreach ( $subscriptions as $subscription ) {
+			if ( $subscription->get_payment_method() === $payment_method
+				&& $subscription->get_payment_method_title() === $payment_method_title ) {
+				continue;
+			}
+			$subscription->set_payment_method( $payment_method );
+			$subscription->set_payment_method_title( $payment_method_title );
+			$subscription->save();
+		}
+	}
+
+	/**
+	 * When a customer changes the payment method for a subscription order, updates the
+	 * payment method via WC_Subscriptions_Change_Payment_Gateway and adds a notice.
+	 *
+	 * @param WC_Order $order The order whose payment method was changed.
+	 */
+	public function maybe_update_subscription_payment_method( WC_Order $order ) {
+		if ( ! class_exists( 'WC_Subscriptions_Change_Payment_Gateway' ) ) {
+			return;
+		}
+
+		$payment_token = $this->get_payment_token( $order );
+		WC_Subscriptions_Change_Payment_Gateway::update_payment_method( $order, $payment_token->get_gateway_id() );
+		$notice = __( 'Payment method updated.', 'woocommerce-payments' );
+
+		if ( WC_Subscriptions_Change_Payment_Gateway::will_subscription_update_all_payment_methods( $order ) && WC_Subscriptions_Change_Payment_Gateway::update_all_payment_methods_from_subscription( $order, $payment_token->get_gateway_id() ) ) {
+			$notice = __( 'Payment method updated for all your current subscriptions.', 'woocommerce-payments' );
+		}
+
+		wc_add_notice( $notice );
 	}
 }

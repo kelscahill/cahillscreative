@@ -515,7 +515,7 @@ class Preload
             
             add_action('wp_enqueue_scripts', function() {
                 
-                if(isset($_GET['perfmattersoff'])) {
+                if(Utilities::is_perfmatters_off()) {
                     return;
                 }
         

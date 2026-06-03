@@ -1493,14 +1493,19 @@ class WPForms_Entries_Single {
 					$count = 1;
 
 					foreach ( $entry->entry_notes as $note ) {
-						$user      = get_userdata( $note->user_id );
-						$user_name = ! empty( $user->display_name ) ? $user->display_name : $user->user_login;
-						$user_url  = add_query_arg(
-							[
-								'user_id' => absint( $user->ID ),
-							],
-							admin_url( 'user-edit.php' )
-						);
+						$user_name = __( 'Deleted User', 'wpforms' );
+						$user_url  = '';
+						$user      = $note->user_id ? get_userdata( $note->user_id ) : null;
+
+						if ( $user ) {
+							$user_name = ! empty( $user->display_name ) ? $user->display_name : $user->user_login;
+							$user_url  = add_query_arg(
+								[
+									'user_id' => absint( $user->ID ),
+								],
+								admin_url( 'user-edit.php' )
+							);
+						}
 
 						$date  = wpforms_datetime_format( $note->date, '', true );
 						$class = $count % 2 === 0 ? 'even' : 'odd';
@@ -1525,10 +1530,14 @@ class WPForms_Entries_Single {
 						<div class="wpforms-entry-notes-single <?php echo esc_attr( $class ); ?>">
 							<div class="wpforms-entry-notes-byline">
 								<?php
+								$author = ! empty( $user_url )
+									? '<a href="' . esc_url( $user_url ) . '" class="note-user">' . esc_html( $user_name ) . '</a>'
+									: '<span class="note-user">' . esc_html( $user_name ) . '</span>';
+
 								printf(
 									/* translators: %1$s - user name, %2$s - date. */
 									esc_html__( 'Added by %1$s on %2$s', 'wpforms' ),
-									'<a href="' . esc_url( $user_url ) . '" class="note-user">' . esc_html( $user_name ) . '</a>',
+									$author, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									esc_html( $date )
 								);
 								?>
@@ -1587,25 +1596,34 @@ class WPForms_Entries_Single {
 					$count = 1;
 
 					foreach ( $entry->entry_logs as $log ) {
-						$user      = get_userdata( $log->user_id );
-						$user_name = ! empty( $user->display_name ) ? $user->display_name : $user->user_login;
-						$user_url  = add_query_arg(
-							[
-								'user_id' => absint( $user->ID ),
-							],
-							admin_url( 'user-edit.php' )
-						);
-						$date      = wpforms_datetime_format( $log->date, '', true );
-						$class     = $count % 2 === 0 ? 'even' : 'odd';
+						$user_name = __( 'Deleted User', 'wpforms' );
+						$user_url  = '';
+						$user      = $log->user_id ? get_userdata( $log->user_id ) : null;
+
+						if ( $user ) {
+							$user_name = ! empty( $user->display_name ) ? $user->display_name : $user->user_login;
+							$user_url  = add_query_arg(
+								[
+									'user_id' => absint( $user->ID ),
+								],
+								admin_url( 'user-edit.php' )
+							);
+						}
+						$date  = wpforms_datetime_format( $log->date, '', true );
+						$class = $count % 2 === 0 ? 'even' : 'odd';
 						?>
 
 						<div class="wpforms-entry-logs-single <?php echo esc_attr( $class ); ?>">
 							<div class="wpforms-entry-logs-byline">
 								<?php
+								$author = ! empty( $user_url )
+									? '<a href="' . esc_url( $user_url ) . '" class="log-user">' . esc_html( $user_name ) . '</a>'
+									: '<span class="log-user">' . esc_html( $user_name ) . '</span>';
+
 								$log_details = sprintf(
 									/* translators: %1$s - user name, %2$s - date. */
 									esc_html__( 'Added by %1$s on %2$s', 'wpforms' ),
-									'<a href="' . esc_url( $user_url ) . '" class="log-user">' . esc_html( $user_name ) . '</a>',
+									$author,
 									esc_html( $date )
 								);
 

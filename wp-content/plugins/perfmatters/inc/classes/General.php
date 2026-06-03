@@ -9,19 +9,63 @@ class General {
         //load options
         $options = Config::$options;
 
-        //disable emojis
-        if(!empty($options['disable_emojis'])) {
-            self::disable_emojis();
-        }
+        //options that respect ?perfmattersoff query string
+        if(!Utilities::is_perfmatters_off()) {
 
-        //disable dashicons
-        if(!empty($options['disable_dashicons'])) {
-            self::disable_dashicons();
-        }
+             //disable emojis
+            if(!empty($options['disable_emojis'])) {
+                self::disable_emojis();
+            }
 
-        //disable embeds
-        if(!empty($options['disable_embeds'])) {
-            self::disable_embeds();
+            //disable dashicons
+            if(!empty($options['disable_dashicons'])) {
+                self::disable_dashicons();
+            }
+
+            //disable embeds
+            if(!empty($options['disable_embeds'])) {
+                self::disable_embeds();
+            }
+
+            //remove jquery migrate
+            if(!empty($options['remove_jquery_migrate']) && !Utilities::is_page_builder()) {
+                self::remove_jquery_migrate();
+            }
+
+            //disable google maps
+            if(!empty($options['disable_google_maps'])) {
+                self::disable_google_maps();
+            }
+
+            //disable google fonts
+            if(!empty($options['fonts']['disable_google_fonts'])) {
+                self::disable_google_fonts();
+            }
+
+            //remove global styles
+            if(!empty($options['remove_global_styles'])) {
+                add_action('after_setup_theme', function() {
+                    remove_action('wp_enqueue_scripts', 'wp_enqueue_global_styles');
+                    remove_action('wp_footer', 'wp_enqueue_global_styles', 1);
+                });
+            }
+
+            //block style behavior (wp 6.9+ uses combined assets by default; pre-6.9 we enable separate)
+            if(!empty($options['separate_block_styles'])) {
+                add_filter('should_load_separate_core_block_assets', function(): bool {
+                    return version_compare(get_bloginfo('version'), '6.9', '<');
+                });
+            }
+
+            //disable woocommerce scripts
+            if(!empty($options['disable_woocommerce_scripts'])) {
+                add_action('wp_enqueue_scripts', [__CLASS__, 'disable_woocommerce_scripts'], 99);
+            }
+
+            //disable woocommerce cart fragmentation
+            if(!empty($options['disable_woocommerce_cart_fragmentation'])) {
+                add_action('wp_enqueue_scripts', [__CLASS__, 'disable_woocommerce_cart_fragmentation'], 99);
+            }
         }
 
         //disable xml-rpc
@@ -33,11 +77,6 @@ class General {
         //remove rsd link
         if(!empty($options['remove_rsd_link'])) {
             remove_action('wp_head', 'rsd_link');
-        }
-
-        //remove jquery migrate
-        if(!empty($options['remove_jquery_migrate']) && !Utilities::is_page_builder()) {
-            self::remove_jquery_migrate();
         }
 
         //hide wp version
@@ -80,16 +119,6 @@ class General {
             remove_action('template_redirect', 'rest_output_link_header', 11, 0);
         }
 
-        //disable google maps
-        if(!empty($options['disable_google_maps'])) {
-            self::disable_google_maps();
-        }
-
-        //disable google fonts
-        if(!empty($options['fonts']['disable_google_fonts'])) {
-            self::disable_google_fonts();
-        }
-
         //disable password strength meter
         if(!empty($options['disable_password_strength_meter'])) {
             self::disable_password_strength_meter();
@@ -104,6 +133,7 @@ class General {
         if(!empty($options['remove_comment_urls'])) {
             self::remove_comment_urls();
         }
+
         //blank favicon
         if(!empty($options['blank_favicon'])) {
             add_action('wp_head', function() {
@@ -111,20 +141,6 @@ class General {
             });
         }
 
-        //remove global styles
-        if(!empty($options['remove_global_styles'])) {
-            add_action('after_setup_theme', function() {
-                remove_action('wp_enqueue_scripts', 'wp_enqueue_global_styles');
-                remove_action('wp_footer', 'wp_enqueue_global_styles', 1);
-            });
-        }
-
-        //block style behavior (wp 6.9+ uses combined assets by default; pre-6.9 we enable separate)
-        if(!empty($options['separate_block_styles'])) {
-            add_filter('should_load_separate_core_block_assets', function(): bool {
-                return version_compare(get_bloginfo('version'), '6.9', '<');
-            });
-        }
         //disable heartbeat
         if(!empty($options['disable_heartbeat'])) {
             self::disable_heartbeat();
@@ -143,16 +159,6 @@ class General {
         //autosave interval
         if(!empty($options['autosave_interval'])) {
             self::autosave_interval();
-        }
-
-        //disable woocommerce scripts
-        if(!empty($options['disable_woocommerce_scripts'])) {
-            add_action('wp_enqueue_scripts', [__CLASS__, 'disable_woocommerce_scripts'], 99);
-        }
-
-        //disable woocommerce cart fragmentation
-        if(!empty($options['disable_woocommerce_cart_fragmentation'])) {
-            add_action('wp_enqueue_scripts', [__CLASS__, 'disable_woocommerce_cart_fragmentation'], 99);
         }
 
         //disable woocommerce status meta box
@@ -375,17 +381,15 @@ class General {
     //disable self pingbacks (strip same-site URLs from the list of URLs to ping)
     public static function disable_self_pingbacks(): void {
 
-        add_filter('pre_ping', function(array $links): array {
+        add_action('pre_ping', function(array &$post_links, array &$pung, int $post_id): void {
             $home = home_url('/');
-
-            foreach($links as $key => $link) {
-                if(strpos($link, $home) === 0) {
-                    unset($links[$key]);
+            foreach($post_links as $key => $link) {
+                if (strpos($link, $home) === 0) {
+                    unset($post_links[$key]);
                 }
             }
+        }, 10, 3);
 
-            return $links;
-        });
     }
 
     //disable rest api (block or restrict by role/login; allow exceptions for known plugins)
@@ -737,11 +741,16 @@ class General {
 
             if(!empty($wp_scripts->registered['wc-cart-fragments'])) {
 
-                $cart_fragments_src = $wp_scripts->registered['wc-cart-fragments']->src;
-                $wp_scripts->registered['wc-cart-fragments']->src = null;
+                $cart_fragments = $wp_scripts->registered['wc-cart-fragments'];
+                $cart_fragments_src = $cart_fragments->src;
+                $cart_fragments->src = null;
+
+                //wp 6.3+
+                if(isset($cart_fragments->extra['strategy'])) {
+                    unset($cart_fragments->extra['strategy']);
+                }
 
                 add_action('wp_head', function() use ($cart_fragments_src) {
-
                     echo '<script>function perfmatters_check_cart_fragments(){if(null!==document.getElementById("perfmatters-cart-fragments"))return!1;if(document.cookie.match("(^|;) ?woocommerce_cart_hash=([^;]*)(;|$)")){var e=document.createElement("script");e.id="perfmatters-cart-fragments",e.src="' . $cart_fragments_src . '",e.async=!0,document.head.appendChild(e)}}perfmatters_check_cart_fragments(),document.addEventListener("click",function(){setTimeout(perfmatters_check_cart_fragments,1e3)});</script>';
                 });
             }
