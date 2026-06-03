@@ -55,6 +55,9 @@ jQuery(function($) {
 		pmcsUpdateLoadBehavior();
 	});
 
+	//location change
+	$("#pmcs-location").on('change', pmcsUpdateShortcodeSection);
+
   	//delete snippet confirmation
     $('a.pmcs-delete').on('click', function(e) {
     	e.preventDefault();
@@ -98,6 +101,24 @@ jQuery(function($) {
 				$(this).find(":input[name]").prop("disabled", true);
 			}
 		});
+
+		pmcsUpdateShortcodeSection();
+	}
+
+	function pmcsUpdateShortcodeSection() {
+
+		var $section = $('#pmcs-shortcode');
+
+		if(!$section.length) {
+			return;
+		}
+
+		if($('#pmcs-location').val() === 'shortcode') {
+			$section.removeClass('hidden');
+		}
+		else {
+			$section.addClass('hidden');
+		}
 	}
 
 	//update load behavior options for selected code type
@@ -135,44 +156,53 @@ jQuery(function($) {
 
 	//document ready
 	$(document).ready(function() {
-		
-		//update options once on load
-	    pmcsGetLocationOptions();
-	    pmcsUpdateLoadBehavior();
 
-	    //hide loader
-		$("#pmcs-snippet-loader").addClass('loaded');
+		//update options once on load
+		pmcsGetLocationOptions();
+		pmcsUpdateLoadBehavior();
+
+		var $editorPanel = $('#pmcs-code-editor-panel');
+
+		if(!$editorPanel.length) {
+			return;
+		}
+
+		//wait for CodeMirror to mount before revealing panel.
+		function revealEditorPanel() {
+			var hasCodeMirror = $editorPanel.find('.CodeMirror').length > 0;
+			if(hasCodeMirror) {
+				$editorPanel.addClass('loaded');
+				return;
+			}
+			window.requestAnimationFrame(revealEditorPanel);
+		}
+
+		revealEditorPanel();
 	});
     
-    //store timer
-    let copyTimeout; 
+    //copy input
+    $('#perfmatters-admin').on('click', '.pmcs-copy-input', function(e) {
 
-    //recovery url copy
-    $('#pmcs-recovery-url').on('click', function(e) {
-        
-        e.preventDefault(); 
-        
-        //clear existing timeout
-        clearTimeout(copyTimeout); 
+        e.preventDefault();
 
-        const value = $(this).find('input').val();
-        
+        const $label = $(this);
+        const value = $label.find('input').val();
+
         if(!value) {
             return;
         }
 
-        const $copySpan = $(this).find('span');
+        const $copySpan = $label.find('span');
 
-        //copy value to clipboard
+        clearTimeout($label.data('copyTimeout'));
+
         navigator.clipboard.writeText(value).then(() => {
 
-            //feedback
             $copySpan.text(PMCS.strings.copied);
-            
-            //timeout to restore span text
-            copyTimeout = setTimeout(() => {
+
+            $label.data('copyTimeout', setTimeout(() => {
                 $copySpan.text(PMCS.strings.copy);
-            }, 1200);
+            }, 1200));
         });
     });
 });

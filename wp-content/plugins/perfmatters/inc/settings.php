@@ -209,16 +209,16 @@ function perfmatters_settings() {
     //disable google maps exclusions
     add_settings_field(
         'disable_google_maps_exclusions', 
-        perfmatters_title(__('Exclude Post IDs', 'perfmatters'), 'disable_google_maps_exclusions', 'https://perfmatters.io/docs/disable-google-maps-api-wordpress/#exclude'), 
+        perfmatters_title(__('Exclude Locations', 'perfmatters'), 'disable_google_maps_exclusions', 'https://perfmatters.io/docs/disable-google-maps-api-wordpress/#exclude'), 
         'perfmatters_print_input', 
         'perfmatters_options', 
         'perfmatters_options', 
         array(
             'id' => 'disable_google_maps_exclusions',
             'input' => 'text',
-            'placeholder' => '23,19,blog',
+            'placeholder' => 'front,blog,23,19',
             'class' => 'disable_google_maps' . (empty($perfmatters_options['disable_google_maps']) ? ' hidden' : ''),
-            'tooltip' => __('Prevent Google Maps from being disabled on specific post IDs. Format: comma separated', 'perfmatters')
+            'tooltip' => __('Prevent Google Maps from being disabled in specific locations. Format: comma separated', 'perfmatters')
         )
     );
 
@@ -2322,7 +2322,12 @@ function perfmatters_print_input($args) {
 
     //button
     elseif(!empty($args['input']) && $args['input'] == 'button') {
-        perfmatters_action_button($args['action'] ?? '', $args['title'], 'secondary', $args['confirmation'] ?? '');
+        perfmatters_action_button(
+            $args['action'] ?? '',
+            $args['title'],
+            'secondary',
+            $args['confirmation'] ?? ''
+        );
     }
 
     //text area
@@ -2343,20 +2348,30 @@ function perfmatters_print_input($args) {
 
     //checkbox + toggle
     else {
-        if(empty($tools['accessibility_mode']) && (empty($args['input']) || $args['input'] != 'checkbox')) {
+
+        $is_toggle = empty($tools['accessibility_mode']) && (empty($args['input']) || $args['input'] != 'checkbox');
+        $has_manual_tooltip = !$is_toggle && !empty($tools['accessibility_mode']) && !empty($args['tooltip']);
+
+        if($is_toggle) {
             echo "<label for='" . $selection_id . "' class='perfmatters-switch'>";
         }
+        elseif($has_manual_tooltip) {
+            echo "<div class='perfmatters-checkbox-tooltip-offset'>";
+        }
+        
             echo "<input type='checkbox' id='" . $selection_id . "' name='" . $option . "[" . $args['id'] . "]' value='1' style='display: inline-block; margin: 0px;' ";
-            if(!empty($options[$args['id']])) {
-                echo "checked";
-            }
+            checked(!empty($options[$args['id']]));
             if(!empty($args['confirmation'])) {
                 echo " onChange=\"this.checked=this.checked?confirm('" . $args['confirmation'] . "'):false;\"";
             }
             echo ">";
-        if(empty($tools['accessibility_mode']) && (empty($args['input']) || $args['input'] != 'checkbox')) {
+            
+        if($is_toggle) {
                echo "<div class='perfmatters-slider'></div>";
            echo "</label>";
+        }
+        elseif($has_manual_tooltip) {
+            echo '</div>';
         }
 
         if(!empty($args['section']) && $args['section'] == 'database') {
@@ -2541,7 +2556,7 @@ function perfmatters_print_preload_row($rowCount = 0, $line = array()) {
             echo '</select>';
 
             echo '<label class="perfmatters-inline-label-input"><span>' . __('Location', 'perfmatters') . '</span>';
-                echo '<input type="text" id="preload-' . $rowCount . '-locations" name="perfmatters_options[preload][preload][' . $rowCount . '][locations]" value="' . (isset($line['locations']) ? $line['locations'] : '') . '" placeholder="23,19,blog" />';
+                echo '<input type="text" id="preload-' . $rowCount . '-locations" name="perfmatters_options[preload][preload][' . $rowCount . '][locations]" value="' . (isset($line['locations']) ? $line['locations'] : '') . '" placeholder="front,blog,23,19" />';
             echo '</label>';
 
             echo '<label class="perfmatters-inline-label-input"><span>' . __('Priority', 'perfmatters') . '</span>';
@@ -2618,7 +2633,7 @@ function perfmatters_print_fetch_priority_row($rowCount = 0, $line = array()) {
             echo '</select>';
 
             echo '<label class="perfmatters-inline-label-input" style="margin-left: 5px;"><span>' . __('Location', 'perfmatters') . '</span>';
-                echo '<input type="text" id="fetch-priority-' . $rowCount . '-locations" name="perfmatters_options[preload][fetch_priority][' . $rowCount . '][locations]" value="' . (isset($line['locations']) ? $line['locations'] : '') . '" placeholder="23,19,blog" style="min-width: auto; padding-left: 74px;" />';
+                echo '<input type="text" id="fetch-priority-' . $rowCount . '-locations" name="perfmatters_options[preload][fetch_priority][' . $rowCount . '][locations]" value="' . (isset($line['locations']) ? $line['locations'] : '') . '" placeholder="front,blog,23,19" />';
             echo '</label>';
 
             echo '<label for="fetch-priority-' . $rowCount . '-parent">';
@@ -2729,7 +2744,7 @@ function perfmatters_print_purge_meta($args) {
         $meta_options['perfmatters_exclude_instant_page'] = 'Instant Page';
     }
 
-    echo "<div style='margin-bottom: 10px;' id='perfmatters-purge-meta'>";
+    echo "<div style='margin: 10px auto; line-height: 20px;' id='perfmatters-purge-meta'>";
         foreach($meta_options as $key => $name) {
             echo "<label for='perfmatters-purge-meta-" . $key . "' style='margin-right: 10px; text-wrap: nowrap;'>";
                 echo "<input type='checkbox' name='perfmatters_tools_temp[purge_meta_options][]' id='perfmatters-purge-meta-" . $key . "' value='" . $key . "' />";
@@ -2876,11 +2891,18 @@ function perfmatters_title($title, $id = false, $link = false) {
 
 //action button
 function perfmatters_action_button($action, $label, $type = 'primary', $confirmation = '') {
+
     echo '<div class="perfmatters-button-container">';
-        echo '<button name="submit" class="button button-' . $type . '" data-pm-action="' . $action . '"' . (!empty($confirmation) ? ' data-pm-confirmation="' . $confirmation . '"' : '') . ' style="display: flex; align-items: center;">';
+        echo '<button name="submit" class="button button-' . $type . '" data-pm-action="' . esc_attr($action) . '"' . (!empty($confirmation) ? ' data-pm-confirmation="' . esc_attr($confirmation) . '"' : '') . ' style="display: flex; align-items: center;">';
             echo '<span class="perfmatters-button-text">' . $label . '</span>';
             echo '<svg class="perfmatters-button-spinner" viewBox="0 0 100 100" role="presentation" focusable="false" style="background: rgba(0,0,0,.1); border-radius: 100%; width: 16px; height: 28px; margin: 0px 2px; overflow: visible; opacity: 1; background-color: transparent; display: none;"><circle cx="50" cy="50" r="50" vector-effect="non-scaling-stroke" style="fill: transparent; stroke-width: 1.5px; stroke: #fff;"></circle><path d="m 50 0 a 50 50 0 0 1 50 50" vector-effect="non-scaling-stroke" style="fill: transparent; stroke-width: 1.5px; stroke: #4A89DD; stroke-linecap: round; transform-origin: 50% 50%; animation: 1.4s linear 0s infinite normal both running perfmatters-spinner;"></path></svg>';
         echo '</button>';
-        echo '<div class="perfmatters-button-message" style="display: none; margin-left: 10px; "></div>';
+        echo '<div class="perfmatters-button-message" style="display: none; margin-left: 10px;">';
+
+            if(($message_text = perfmatters_get_reload_notice_text($action)) !== '') {
+                echo '<span class="perfmatters-reload-notice">' . esc_html($message_text) . '</span>';
+            }
+
+        echo '</div>';
     echo '</div>';
 }

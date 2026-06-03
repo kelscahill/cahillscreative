@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Perfmatters\n"
-"POT-Creation-Date: 2026-04-10 08:56-0700\n"
-"PO-Revision-Date: 2026-04-13 14:51+0300\n"
+"POT-Creation-Date: 2026-05-27 13:52-0700\n"
+"PO-Revision-Date: 2026-05-31 09:36+0300\n"
 "Last-Translator: Irina\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -88,7 +88,7 @@ msgstr "Не удалось удалить лицензию."
 msgid "Used CSS cleared for all network sites."
 msgstr "Используемый CSS очищен для всех сайтов сети."
 
-#: inc/CLI.php:105 inc/classes/CSS.php:966 inc/classes/CSS.php:1006
+#: inc/CLI.php:105 inc/classes/CSS.php:972 inc/classes/CSS.php:1012
 msgid "Used CSS cleared."
 msgstr "Используемые CSS очищены."
 
@@ -96,7 +96,7 @@ msgstr "Используемые CSS очищены."
 msgid "Minified CSS cleared for all network sites."
 msgstr "Минифицированый CSS очищен для всех сайтов сети."
 
-#: inc/CLI.php:130 inc/classes/CSS.php:1018
+#: inc/CLI.php:130 inc/classes/CSS.php:1024
 msgid "Minified CSS cleared."
 msgstr "Очищен минифицированный CSS."
 
@@ -104,7 +104,7 @@ msgstr "Очищен минифицированный CSS."
 msgid "Minified JS cleared for all network sites."
 msgstr "Минифицированый JS очищен для всех сайтов сети."
 
-#: inc/CLI.php:155 inc/classes/JS.php:379
+#: inc/CLI.php:155 inc/classes/JS.php:380
 msgid "Minified JS cleared."
 msgstr "Очищен минифицированный JS."
 
@@ -116,7 +116,7 @@ msgstr "Локальные шрифты очищены для всех сайт�
 msgid "Local fonts cleared."
 msgstr "Локальные шрифты очищены."
 
-#: inc/CLI.php:199 inc/classes/PMCS/PMCS.php:357
+#: inc/CLI.php:199 inc/classes/PMCS/PMCS.php:355
 #: inc/classes/PMCS/Snippet.php:65 inc/classes/PMCS/Snippet.php:70
 #: inc/classes/PMCS/Snippet.php:251 inc/classes/PMCS/Snippet.php:257
 msgid "File not found."
@@ -142,32 +142,32 @@ msgstr "Параметр включен."
 msgid "Option disabled."
 msgstr "Параметры отключен."
 
-#: inc/admin.php:37 inc/admin.php:101 inc/classes/PMCS/Conditions.php:223
+#: inc/admin.php:37 inc/admin.php:102 inc/classes/PMCS/Conditions.php:223
 #: inc/classes/PMCS/Conditions.php:306
 msgid "General"
 msgstr "Общие"
 
-#: inc/admin.php:38 inc/admin.php:109
+#: inc/admin.php:38 inc/admin.php:110
 msgid "JavaScript"
 msgstr "JavaScript"
 
-#: inc/admin.php:39 inc/admin.php:117
+#: inc/admin.php:39 inc/admin.php:118
 msgid "CSS"
 msgstr "CSS"
 
-#: inc/admin.php:40 inc/admin.php:124
+#: inc/admin.php:40 inc/admin.php:125
 msgid "Preloading"
 msgstr "Предзагрузка"
 
-#: inc/admin.php:41 inc/admin.php:134 inc/classes/Meta.php:144
+#: inc/admin.php:41 inc/admin.php:135 inc/classes/Meta.php:144
 msgid "Lazy Loading"
 msgstr "Отложеная загрузка"
 
-#: inc/admin.php:42 inc/admin.php:144
+#: inc/admin.php:42 inc/admin.php:145
 msgid "Fonts"
 msgstr "Шрифты"
 
-#: inc/admin.php:43 inc/admin.php:150
+#: inc/admin.php:43 inc/admin.php:151
 msgid "CDN"
 msgstr "CDN"
 
@@ -175,16 +175,16 @@ msgstr "CDN"
 msgid "Analytics"
 msgstr "Analytics"
 
-#: inc/admin.php:47 inc/code.php:5 inc/code.php:28 inc/pmcs.php:2
-#: inc/pmcs.php:141
+#: inc/admin.php:47 inc/code.php:8 inc/code.php:27 inc/pmcs.php:2
+#: inc/pmcs.php:138
 msgid "Code"
 msgstr "Код"
 
-#: inc/admin.php:54 inc/admin.php:173
+#: inc/admin.php:54 inc/admin.php:174
 msgid "Tools"
 msgstr "Инструменты"
 
-#: inc/admin.php:55 inc/admin.php:180
+#: inc/admin.php:55 inc/admin.php:181
 msgid "Database"
 msgstr "База данных"
 
@@ -196,7 +196,7 @@ msgstr "Сеть"
 msgid "License"
 msgstr "Лицензия"
 
-#: inc/admin.php:69 inc/support.php:2 perfmatters.php:200
+#: inc/admin.php:69 inc/support.php:2 perfmatters.php:242
 msgid "Support"
 msgstr "Поддержка"
 
@@ -204,52 +204,92 @@ msgstr "Поддержка"
 msgid "Get 25% off our social sharing plugin."
 msgstr "Получите скидку 25 % на наш плагин для обмена в соцсетях."
 
-#: inc/admin.php:89
+#: inc/admin.php:90
 msgid "Version"
 msgstr "Версия"
 
-#: inc/admin.php:156
+#: inc/admin.php:157
 msgid "Google Analytics"
 msgstr "Google Analytics"
 
-#: inc/admin.php:187 inc/code.php:21 inc/script_manager.php:417
+#: inc/admin.php:188 inc/script_manager.php:417
 msgid "Save Changes"
 msgstr "Сохранить изменения"
 
-#: inc/classes/Ajax.php:32
+#: inc/classes/Admin/CodeMirror.php:58
+msgid "No file uploaded."
+msgstr "Нет загруженных файлов."
+
+#: inc/classes/Admin/CodeMirror.php:62
+msgid "Invalid upload."
+msgstr "Ошибка при загрузке."
+
+#: inc/classes/Admin/CodeMirror.php:67
+msgid "Unable to resolve upload directory."
+msgstr "Не удалось определить каталог для загрузки."
+
+#: inc/classes/Admin/CodeMirror.php:71
+msgid "Unable to create upload directory."
+msgstr "Не удалось создать каталог для загрузки."
+
+#: inc/classes/Admin/CodeMirror.php:78
+msgid "Please upload a valid .css file."
+msgstr "Загрузите действительный .css файл."
+
+#: inc/classes/Admin/CodeMirror.php:83
+msgid "The uploaded file could not be moved."
+msgstr "Загруженный файл не удалось переместить."
+
+#: inc/classes/Admin/CodeMirror.php:97 inc/functions_script_manager.php:690
+#: inc/functions_script_manager.php:702 inc/functions_script_manager.php:855
+#: inc/functions_script_manager.php:867 inc/settings.php:322
+#: inc/settings.php:341 inc/settings.php:360 inc/settings.php:380
+#: inc/settings.php:408 inc/settings.php:454 inc/settings.php:655
+#: inc/settings.php:844 inc/settings.php:864 inc/settings.php:1084
+#: inc/settings.php:1185 inc/settings.php:1207 inc/settings.php:1283
+#: inc/settings.php:1467 inc/settings.php:1562 inc/settings.php:1760
+#: inc/settings.php:1779 inc/settings.php:2698
+msgid "Default"
+msgstr "по умолчанию"
+
+#: inc/classes/Admin/CodeMirror.php:110
+msgid "Custom"
+msgstr "Пользовательский"
+
+#: inc/classes/Ajax.php:53 perfmatters.php:226
 msgid "Settings saved."
 msgstr "Настройки сохранены."
 
-#: inc/classes/Ajax.php:48
+#: inc/classes/Ajax.php:76 perfmatters.php:228
 msgid "Successfully restored default options."
 msgstr "Параметры по умолчанию успешно восстановлены."
 
-#: inc/classes/Ajax.php:64
+#: inc/classes/Ajax.php:93
 msgid "Settings exported."
 msgstr "Настройки экспортированы."
 
-#: inc/classes/Ajax.php:81 inc/classes/PMCS/Ajax.php:82
+#: inc/classes/Ajax.php:110 inc/classes/PMCS/Ajax.php:90
 msgid "No import file given."
 msgstr "Файл импорта не указан."
 
-#: inc/classes/Ajax.php:90 inc/classes/PMCS/Ajax.php:91
+#: inc/classes/Ajax.php:119 inc/classes/PMCS/Ajax.php:99
 msgid "Please upload a valid .json file."
 msgstr "Загрузите действительный .json файл."
 
-#: inc/classes/Ajax.php:106
+#: inc/classes/Ajax.php:135 perfmatters.php:227
 msgid "Successfully imported Perfmatters settings."
 msgstr "Настройки Perfmatters успешно импортированы."
 
-#: inc/classes/Ajax.php:126 inc/classes/PMCS/Snippet.php:11
+#: inc/classes/Ajax.php:156 inc/classes/PMCS/Snippet.php:11
 msgid "Permission denied."
 msgstr "Доступ запрещен."
 
-#: inc/classes/Ajax.php:133 inc/classes/PMCS/Snippet.php:16
+#: inc/classes/Ajax.php:163 inc/classes/PMCS/Snippet.php:16
 msgid "Nonce is invalid."
 msgstr "Nonce недействителен."
 
-#: inc/classes/Analytics.php:142 inc/classes/General.php:852
-#: inc/classes/General.php:868 inc/functions_script_manager.php:1542
+#: inc/classes/Analytics.php:142 inc/classes/General.php:849
+#: inc/classes/General.php:865 inc/functions_script_manager.php:1542
 #: inc/functions_script_manager.php:1550
 msgid "Perfmatters Warning"
 msgstr "Предупреждение Perfmatters"
@@ -258,16 +298,16 @@ msgstr "Предупреждение Perfmatters"
 msgid "Local Analytics is enabled but no Tracking ID is set."
 msgstr "Локальная аналитика включена, но ID отслеживания не установлен."
 
-#: inc/classes/CSS.php:932 inc/classes/CSS.php:946 inc/classes/Meta.php:85
+#: inc/classes/CSS.php:938 inc/classes/CSS.php:952 inc/classes/Meta.php:85
 #: inc/settings.php:927 inc/settings.php:936
 msgid "Clear Used CSS"
 msgstr "Очистить используемые CSS"
 
-#: inc/classes/CSS.php:932 inc/classes/PMCS/ListTable.php:281
+#: inc/classes/CSS.php:938 inc/classes/PMCS/ListTable.php:281
 msgid "All"
 msgstr "Все"
 
-#: inc/classes/CSS.php:946
+#: inc/classes/CSS.php:952
 msgid "Current"
 msgstr "Текущий"
 
@@ -375,20 +415,20 @@ msgstr "неоптимизированные таблицы найдены"
 msgid "Database scan completed."
 msgstr "Сканирование БД завершено."
 
-#: inc/classes/General.php:365
+#: inc/classes/General.php:371
 msgid "RSS feeds have been disabled."
 msgstr "RSS-каналы отключены."
 
-#: inc/classes/General.php:429
+#: inc/classes/General.php:435
 msgid "Sorry, you do not have permission to make REST API requests."
 msgstr "У вас нет разрешения на запросы к REST API."
 
-#: inc/classes/General.php:529 inc/classes/General.php:635
-#: inc/classes/General.php:640
+#: inc/classes/General.php:526 inc/classes/General.php:632
+#: inc/classes/General.php:637
 msgid "Comments are disabled."
 msgstr "Комментарии отключены."
 
-#: inc/classes/General.php:853
+#: inc/classes/General.php:850
 msgid ""
 "WP_POST_REVISIONS is already enabled somewhere else on your site. We suggest "
 "only enabling this feature in one place."
@@ -396,7 +436,7 @@ msgstr ""
 "WP-POST-REVISIONS уже включен где-то еще на вашем сайте. Мы предлагаем "
 "включить эту функцию только в одном месте."
 
-#: inc/classes/General.php:869
+#: inc/classes/General.php:866
 msgid ""
 "AUTOSAVE_INTERVAL is already enabled somewhere else on your site. We suggest "
 "only enabling this feature in one place."
@@ -404,13 +444,17 @@ msgstr ""
 "AUTOSAVE_INTERVAL (интервал автосохранения) уже включен где-то еще на вашем "
 "сайте. Мы предлагаем включить эту функцию только в одном месте."
 
-#: inc/classes/General.php:1131 inc/settings.php:475
+#: inc/classes/General.php:1128 inc/settings.php:475
 msgid "This has been disabled."
 msgstr "Это было отключено."
 
-#: inc/classes/LazyLoad.php:183
+#: inc/classes/LazyLoad/Iframes.php:217
 msgid "video"
 msgstr "видео"
+
+#: inc/classes/LazyLoad/Integrations/Elementor.php:202
+msgid "YouTube video player"
+msgstr "Видеоплеер YouTube"
 
 #: inc/classes/Meta.php:124
 msgid "Defer JavaScript"
@@ -464,25 +508,25 @@ msgstr "Фрагмент активирован."
 msgid "Snippet deactivated."
 msgstr "Фрагмент деактивирован."
 
-#: inc/classes/PMCS/Ajax.php:60
+#: inc/classes/PMCS/Ajax.php:60 inc/classes/PMCS/Transfer.php:49
 msgid "No valid snippets found."
 msgstr "Не найдено подходящих фрагментов."
 
-#: inc/classes/PMCS/Ajax.php:65
+#: inc/classes/PMCS/Ajax.php:73
 msgid "Snippets exported."
 msgstr "Фрагменты экспортированы."
 
-#: inc/classes/PMCS/Ajax.php:145
+#: inc/classes/PMCS/Ajax.php:161
 msgid "No snippets were imported."
 msgstr "Фрагменты не были импортированы."
 
-#: inc/classes/PMCS/Ajax.php:155
+#: inc/classes/PMCS/Ajax.php:171
 #, php-format
 msgid "Successfully imported %d Perfmatters code snippet."
 msgid_plural "Successfully imported %d Perfmatters code snippets."
-msgstr[0] "Успешно импортирован фрагмент кода Perfmatters (%d)."
-msgstr[1] "Успешно импортировано фрагмента кода Perfmatters (%d)."
-msgstr[2] "Успешно импортировано фрагментов кода Perfmatters (%d)."
+msgstr[0] "Успешно импортирован фрагмент кода фрагмента Perfmatters (%d)."
+msgstr[1] "Успешно импортировано фрагмента кода фрагмента Perfmatters (%d)."
+msgstr[2] "Успешно импортировано фрагментов кода фрагмента Perfmatters (%d)."
 
 #: inc/classes/PMCS/Conditions.php:225
 msgid "Front Page"
@@ -552,7 +596,7 @@ msgid "Select an option"
 msgstr "Выберите параметр"
 
 #: inc/classes/PMCS/Conditions.php:367 inc/settings.php:866
-#: inc/settings.php:2532 inc/settings.php:2608 inc/settings.php:2650
+#: inc/settings.php:2547 inc/settings.php:2623 inc/settings.php:2665
 msgid "Remove"
 msgstr "Удалить"
 
@@ -561,19 +605,19 @@ msgid "Name"
 msgstr "Название"
 
 #: inc/classes/PMCS/ListTable.php:42 inc/functions_script_manager.php:332
-#: inc/pmcs.php:121
+#: inc/pmcs.php:118
 msgid "Type"
 msgstr "Тип"
 
-#: inc/classes/PMCS/ListTable.php:43 inc/pmcs.php:395
+#: inc/classes/PMCS/ListTable.php:43 inc/pmcs.php:417
 msgid "Description"
 msgstr "Описание"
 
-#: inc/classes/PMCS/ListTable.php:44 inc/pmcs.php:362
+#: inc/classes/PMCS/ListTable.php:44 inc/pmcs.php:384
 msgid "Tags"
 msgstr "Теги"
 
-#: inc/classes/PMCS/ListTable.php:45 inc/pmcs.php:172
+#: inc/classes/PMCS/ListTable.php:45 inc/pmcs.php:171
 msgid "Author"
 msgstr "Автор"
 
@@ -581,11 +625,11 @@ msgstr "Автор"
 msgid "Created"
 msgstr "Создано"
 
-#: inc/classes/PMCS/ListTable.php:47 inc/pmcs.php:180
+#: inc/classes/PMCS/ListTable.php:47 inc/pmcs.php:179
 msgid "Modified"
 msgstr "Изменено"
 
-#: inc/classes/PMCS/ListTable.php:48 inc/pmcs.php:160 inc/settings.php:2547
+#: inc/classes/PMCS/ListTable.php:48 inc/pmcs.php:159 inc/settings.php:2562
 msgid "Priority"
 msgstr "Приоритет"
 
@@ -629,7 +673,7 @@ msgstr "Фильтр"
 msgid "Screen Options"
 msgstr "Параметры экрана"
 
-#: inc/classes/PMCS/PMCS.php:104
+#: inc/classes/PMCS/PMCS.php:101
 msgid ""
 "This will permanently delete the code snippet. Are you sure you want to "
 "proceed?"
@@ -637,60 +681,60 @@ msgstr ""
 "Это приведет к безвозвратному удалению фрагмента кода. Вы уверены, что "
 "хотите продолжить?"
 
-#: inc/classes/PMCS/PMCS.php:105 inc/code.php:105
+#: inc/classes/PMCS/PMCS.php:102 inc/code.php:142 inc/pmcs.php:268
 msgid "Copy"
 msgstr "Копировать"
 
-#: inc/classes/PMCS/PMCS.php:106
+#: inc/classes/PMCS/PMCS.php:103
 msgid "Copied"
 msgstr "Скопировано"
 
-#: inc/classes/PMCS/PMCS.php:161
+#: inc/classes/PMCS/PMCS.php:157
 msgid "Code Snippets per page"
 msgstr "Фрагменты кода на страницу"
 
-#: inc/classes/PMCS/PMCS.php:342
+#: inc/classes/PMCS/PMCS.php:338
 msgid "Safe mode is enabled in wp-config.php."
 msgstr "Безопасный режим включен в wp-config.php."
 
-#: inc/classes/PMCS/PMCS.php:346 inc/code.php:88
+#: inc/classes/PMCS/PMCS.php:342 inc/code.php:125
 msgid "Safe mode is enabled."
 msgstr "Безопасный режим включен."
 
-#: inc/classes/PMCS/PMCS.php:346
+#: inc/classes/PMCS/PMCS.php:342
 msgid "Disable"
 msgstr "Отключить"
 
-#: inc/classes/PMCS/PMCS.php:353 inc/classes/PMCS/Snippet.php:153
+#: inc/classes/PMCS/PMCS.php:351 inc/classes/PMCS/Snippet.php:153
 msgid "Snippet saved."
 msgstr "Фрагмент сохранен."
 
-#: inc/classes/PMCS/PMCS.php:354
+#: inc/classes/PMCS/PMCS.php:352
 msgid "Snippet deleted successfully."
 msgstr "Фрагмент успешно удален."
 
-#: inc/classes/PMCS/PMCS.php:355
+#: inc/classes/PMCS/PMCS.php:353
 msgid "Snippet activated successfully."
 msgstr "Фрагмент успешно активирован."
 
-#: inc/classes/PMCS/PMCS.php:356
+#: inc/classes/PMCS/PMCS.php:354
 msgid "Snippet deactivated successfully."
 msgstr "Фрагмент успешно деактивирован."
 
-#: inc/classes/PMCS/PMCS.php:358
+#: inc/classes/PMCS/PMCS.php:356
 msgid "Safe mode disabled."
 msgstr "Безопасный режим отключен."
 
-#: inc/classes/PMCS/PMCS.php:359
+#: inc/classes/PMCS/PMCS.php:357
 msgid "Security check failed. Please try again."
 msgstr "Ошибка проверки безопасности. Попробуйте еще раз."
 
-#: inc/classes/PMCS/PMCS.php:1222
+#: inc/classes/PMCS/PMCS.php:1269
 #, php-format
 msgid "%s ago"
 msgstr "%s тому назад"
 
-#: inc/classes/PMCS/PMCS.php:1324
+#: inc/classes/PMCS/PMCS.php:1312
 msgid "Code Snippets"
 msgstr "Фрагменты кода"
 
@@ -747,29 +791,49 @@ msgstr "Удалить теги &lt;script&gt;&lt;/script&gt; из кода."
 msgid "Please remove &lt;style&gt;&lt;/style&gt; tags from the code."
 msgstr "Удалить теги &lt;style&gt;&lt;/style&gt; из кода."
 
-#: inc/code.php:11 inc/code.php:34 inc/pmcs.php:445
+#: inc/classes/PMCS/Transfer.php:58
+msgid "Failed to encode snippet export data."
+msgstr "Не удалось закодировать данные экспорта фрагмента."
+
+#: inc/classes/PMCS/Transfer.php:68
+msgid "Invalid JSON file."
+msgstr "Недействительный JSON-файл."
+
+#: inc/classes/PMCS/Transfer.php:79
+msgid "Unsupported export file version."
+msgstr "Неподдерживаемая версия файла экспорта."
+
+#: inc/classes/PMCS/Transfer.php:83
+msgid "Invalid export file structure."
+msgstr "Неверная структура файла экспорта."
+
+#: inc/classes/PMCS/Transfer.php:121
+msgid "No valid snippets were found in the export file."
+msgstr "В файле экспорта не было найдено ни одного допустимого фрагмента кода."
+
+#: inc/code.php:14 inc/code.php:33 inc/pmcs.php:467
 msgid "Snippets"
 msgstr "Фрагменты"
 
-#: inc/code.php:12 inc/code.php:35 inc/pmcs.php:446
+#: inc/code.php:15 inc/code.php:34 inc/pmcs.php:468
 msgid "Global Scripts"
 msgstr "Глобальные скрипты"
 
-#: inc/code.php:13 inc/code.php:36 inc/pmcs.php:447 inc/script_manager.php:171
-#: inc/script_manager.php:287 inc/settings.php:1908 inc/settings.php:2531
-#: inc/settings.php:2607 inc/settings.php:2649 perfmatters.php:213
+#: inc/code.php:16 inc/code.php:35 inc/pmcs.php:469 inc/script_manager.php:171
+#: inc/script_manager.php:287 inc/settings.php:1908 inc/settings.php:2546
+#: inc/settings.php:2622 inc/settings.php:2664 perfmatters.php:255
 msgid "Settings"
 msgstr "Настройки"
 
-#: inc/code.php:50
+#: inc/code.php:49
 msgid "Export Snippets"
 msgstr "Экспорт фрагментов"
 
-#: inc/code.php:52
+#: inc/code.php:51
 msgid "Export All Snippets"
 msgstr "Экспорт всех фрагментов"
 
-#: inc/code.php:53
+#: inc/code.php:52
 msgid ""
 "Export your Perfmatters code snippets for this site as a .json file. This "
 "lets you easily import the configuration into another site."
@@ -777,35 +841,60 @@ msgstr ""
 "Экспортируйте фрагменты кода Perfmatters для этого сайта в файл .json. Это "
 "позволит вам легко импортировать конфигурацию на другой сайт."
 
-#: inc/code.php:59
+#: inc/code.php:58
 msgid "Import Snippets"
 msgstr "Импорт фрагментов"
 
-#: inc/code.php:64
+#: inc/code.php:63
 msgid "Import Code Snippets"
 msgstr "Импорт фрагментов кода"
 
-#: inc/code.php:65
+#: inc/code.php:64
 msgid "Import Perfmatters code snippets from an exported .json file."
 msgstr "Импорт фрагментов кода Perfmatters из экспортированного файла .json."
 
-#: inc/code.php:71
+#: inc/code.php:70
+msgid "Editor Theme"
+msgstr "Редактор темы"
+
+#: inc/code.php:81
+msgid "Choose the theme used in code editors throughout the plugin."
+msgstr ""
+"Выберите тему оформления, используемую в редакторах кода во всем плагине."
+
+#: inc/code.php:87
+msgid "Custom Theme Stylesheet"
+msgstr "Таблица стилей пользовательской темы"
+
+#: inc/code.php:98
+msgid "Current custom theme"
+msgstr "Текущая пользовательская тема"
+
+#: inc/code.php:98
+msgid "unknown"
+msgstr "неизвестнр"
+
+#: inc/code.php:101
+msgid "Upload a custom .css CodeMirror 5 theme stylesheet."
+msgstr "Загрузите собственный файл .css из темы CodeMirror 5."
+
+#: inc/code.php:108
 msgid "Safe Mode"
 msgstr "Безопасный режим"
 
-#: inc/code.php:78 inc/code.php:83
+#: inc/code.php:115 inc/code.php:120
 msgid "Enable Safe Mode"
 msgstr "Включить безопасный режим"
 
-#: inc/code.php:87
+#: inc/code.php:124
 msgid "Disable Safe Mode"
 msgstr "Отключить безопасный режим"
 
-#: inc/code.php:92
+#: inc/code.php:129
 msgid "Safe mode enabled via PMCS_SAFE_MODE constant."
 msgstr "Безопасный режим включается с помощью константы PMCS_SAFE_MODE."
 
-#: inc/code.php:95
+#: inc/code.php:132
 msgid ""
 "Enable safe mode to prevent all code snippets from running regardless of "
 "active status. This can also be done using your recovery URL or by defining "
@@ -815,15 +904,15 @@ msgstr ""
 "независимо от их активного статуса. Это также можно сделать, используя URL-"
 "адрес восстановления или определив нашу константу PMCS_SAFE_MODE."
 
-#: inc/code.php:101
+#: inc/code.php:138
 msgid "Recovery URL"
 msgstr "URL восстановления"
 
-#: inc/code.php:104
+#: inc/code.php:141
 msgid "Create a snippet first."
 msgstr "Сначала создайте фрагмент."
 
-#: inc/code.php:108
+#: inc/code.php:145
 msgid ""
 "This URL can be used to enable safe mode in the event of an unrecoverable "
 "snippet error."
@@ -957,7 +1046,7 @@ msgstr "ОТКЛ"
 msgid "Disabled"
 msgstr "Отключено"
 
-#: inc/functions_script_manager.php:567 inc/pmcs.php:100
+#: inc/functions_script_manager.php:567 inc/pmcs.php:97
 msgid "Everywhere"
 msgstr "Везде"
 
@@ -966,32 +1055,21 @@ msgid "Current URL"
 msgstr "Текущий URL"
 
 #: inc/functions_script_manager.php:688 inc/functions_script_manager.php:853
-#: inc/pmcs.php:331
+#: inc/pmcs.php:353
 msgid "Users"
 msgstr "Пользователи"
-
-#: inc/functions_script_manager.php:690 inc/functions_script_manager.php:702
-#: inc/functions_script_manager.php:855 inc/functions_script_manager.php:867
-#: inc/settings.php:322 inc/settings.php:341 inc/settings.php:360
-#: inc/settings.php:380 inc/settings.php:408 inc/settings.php:454
-#: inc/settings.php:655 inc/settings.php:844 inc/settings.php:864
-#: inc/settings.php:1084 inc/settings.php:1185 inc/settings.php:1207
-#: inc/settings.php:1283 inc/settings.php:1467 inc/settings.php:1562
-#: inc/settings.php:1760 inc/settings.php:1779 inc/settings.php:2683
-msgid "Default"
-msgstr "по умолчанию"
 
 #: inc/functions_script_manager.php:700 inc/functions_script_manager.php:865
 msgid "Devices"
 msgstr "Устройства"
 
 #: inc/functions_script_manager.php:703 inc/functions_script_manager.php:868
-#: inc/settings.php:2539 inc/settings.php:2616
+#: inc/settings.php:2554 inc/settings.php:2631
 msgid "Desktop"
 msgstr "Настольный ПК"
 
 #: inc/functions_script_manager.php:704 inc/functions_script_manager.php:869
-#: inc/settings.php:2540 inc/settings.php:2617
+#: inc/settings.php:2555 inc/settings.php:2632
 msgid "Mobile"
 msgstr "Мобильный"
 
@@ -1008,8 +1086,8 @@ msgid "MU plugin version mismatch."
 msgstr "Несоответствие версии плагина MU."
 
 #: inc/functions_script_manager.php:1543 inc/functions_script_manager.php:1551
-#: inc/pmcs.php:199 inc/pmcs.php:261 inc/script_manager.php:194
-#: inc/script_manager.php:328 inc/script_manager.php:340 inc/settings.php:2868
+#: inc/pmcs.php:198 inc/pmcs.php:283 inc/script_manager.php:194
+#: inc/script_manager.php:328 inc/script_manager.php:340 inc/settings.php:2883
 msgid "View Documentation"
 msgstr "Посмотреть документацию"
 
@@ -1145,63 +1223,63 @@ msgstr ""
 msgid "All Snippets"
 msgstr "Все фрагменты"
 
-#: inc/pmcs.php:40 inc/pmcs.php:86
+#: inc/pmcs.php:40 inc/pmcs.php:83
 msgid "Example Snippet"
 msgstr "Пример фрагмента"
 
-#: inc/pmcs.php:68
-msgid "Loading snippet"
-msgstr "Загрузка фрагмента"
-
-#: inc/pmcs.php:72
+#: inc/pmcs.php:69
 msgid "Snippet Error"
 msgstr "Ошибка фрагмента"
 
-#: inc/pmcs.php:91 inc/settings.php:2543 inc/settings.php:2620
+#: inc/pmcs.php:88 inc/settings.php:2558 inc/settings.php:2635
 msgid "Location"
 msgstr "Местонахождение"
 
-#: inc/pmcs.php:101
+#: inc/pmcs.php:98
 msgid "Frontend Only"
 msgstr "Только внешний интерфейс"
 
-#: inc/pmcs.php:102
+#: inc/pmcs.php:99
 msgid "Admin Only"
 msgstr "Только админ"
 
-#: inc/pmcs.php:105
+#: inc/pmcs.php:102
 msgid "Frontend Header"
 msgstr "Хедер внешнего интерфейса"
 
-#: inc/pmcs.php:106
+#: inc/pmcs.php:103
 msgid "Frontend Footer"
 msgstr "Футер внешнего интерфейса"
 
-#: inc/pmcs.php:107
+#: inc/pmcs.php:104
 msgid "Admin Header"
 msgstr "Хедер админа"
 
-#: inc/pmcs.php:108
+#: inc/pmcs.php:105
 msgid "Admin Footer"
 msgstr "Футер админа"
 
-#: inc/pmcs.php:111
+#: inc/pmcs.php:108
 msgid "Frontend Body"
 msgstr "Body внешнего интерфейса"
 
-#: inc/pmcs.php:112
+#: inc/pmcs.php:109
 msgid "Before Content"
 msgstr "Перед содержимым"
 
-#: inc/pmcs.php:113
+#: inc/pmcs.php:110
 msgid "After Content"
 msgstr "После содержания"
 
-#: inc/pmcs.php:198
+#: inc/pmcs.php:111 inc/pmcs.php:259
+msgid "Shortcode"
+msgstr "Шорткод"
+
+#: inc/pmcs.php:197
 msgid "Optimizations"
 msgstr "Оптимизации"
 
-#: inc/pmcs.php:201
+#: inc/pmcs.php:200
 msgid ""
 "Apply various Perfmatters optimizations to your code snippet to boost "
 "performance."
@@ -1209,55 +1287,59 @@ msgstr ""
 "Примените различные оптимизации Perfmatters к вашему фрагменту кода, чтобы "
 "повысить производительность."
 
-#: inc/pmcs.php:211 inc/settings.php:1552
+#: inc/pmcs.php:210 inc/settings.php:1552
 msgid "Print Method"
 msgstr "Способ вывода"
 
-#: inc/pmcs.php:222 inc/pmcs.php:235
+#: inc/pmcs.php:221 inc/pmcs.php:234
 msgid "Load Behavior"
 msgstr "Поведение при загрузке"
 
-#: inc/pmcs.php:247 inc/settings.php:761 inc/settings.php:943
+#: inc/pmcs.php:246 inc/settings.php:761 inc/settings.php:943
 msgid "Minify"
 msgstr "Минификация"
 
-#: inc/pmcs.php:260
+#: inc/pmcs.php:272
+msgid "Save your code snippet to generate a shortcode."
+msgstr "Сохраните фрагмент кода, чтобы сгенерировать шоркод."
+
+#: inc/pmcs.php:282
 msgid "Conditions"
 msgstr "Условия"
 
-#: inc/pmcs.php:276
+#: inc/pmcs.php:298
 msgid "Include"
 msgstr "Включить"
 
-#: inc/pmcs.php:295 inc/pmcs.php:322 inc/pmcs.php:352
+#: inc/pmcs.php:317 inc/pmcs.php:344 inc/pmcs.php:374
 msgid "Add Condition"
 msgstr "Добавить условие"
 
-#: inc/pmcs.php:303
+#: inc/pmcs.php:325
 msgid "Exclude"
 msgstr "Исключить"
 
-#: inc/pmcs.php:367
+#: inc/pmcs.php:389
 msgid "Enter or Search for Tags"
 msgstr "Введите или поиск по тегам"
 
-#: inc/pmcs.php:408
+#: inc/pmcs.php:430
 msgid "Save Snippet"
 msgstr "Сохранить фрагмент"
 
-#: inc/pmcs.php:415
+#: inc/pmcs.php:437
 msgid "Export Snippet"
 msgstr "Экспорт фрагмента"
 
-#: inc/pmcs.php:419
+#: inc/pmcs.php:441
 msgid "Delete Snippet"
 msgstr "Удалить фрагмент"
 
-#: inc/pmcs.php:454
+#: inc/pmcs.php:476
 msgid "New Snippet"
 msgstr "Новый фрагмент"
 
-#: inc/pmcs.php:471
+#: inc/pmcs.php:493
 msgid "Search Snippets"
 msgstr "Поиск фрагментов"
 
@@ -1399,7 +1481,7 @@ msgstr "Дескриптор"
 msgid "Setting"
 msgstr "Настройка"
 
-#: inc/script_manager_global.php:130
+#: inc/script_manager_global.php:146
 msgid "You don't have any scripts disabled yet."
 msgstr "У вас еще нет отключенных скриптов."
 
@@ -1546,15 +1628,15 @@ msgid ""
 msgstr "Удаляет все случаи загрузки карт Google по всему вашему сайту."
 
 #: inc/settings.php:212
-msgid "Exclude Post IDs"
-msgstr "Исключить ID записей"
+msgid "Exclude Locations"
+msgstr "Исключить места"
 
 #: inc/settings.php:221
 msgid ""
-"Prevent Google Maps from being disabled on specific post IDs. Format: comma "
+"Prevent Google Maps from being disabled in specific locations. Format: comma "
 "separated"
 msgstr ""
-"Запретить отключение Google Maps для определенных ID записей. Формат: через "
+"Предотвратить отключение Google Maps в определенных местах. Формат: через "
 "запятую"
 
 #: inc/settings.php:228
@@ -2222,7 +2304,7 @@ msgstr "Спекулятивная загрузка"
 msgid "Mode"
 msgstr "Режим"
 
-#: inc/settings.php:1185 inc/settings.php:1207 inc/settings.php:2549
+#: inc/settings.php:1185 inc/settings.php:1207 inc/settings.php:2564
 msgid "Auto"
 msgstr "Авто"
 
@@ -2722,7 +2804,7 @@ msgstr ""
 msgid "Restore all plugin options to their default settings."
 msgstr "Восстановите все параметры плагина до значений по умолчанию."
 
-#: inc/settings.php:1948 inc/settings.php:1956 inc/settings.php:2740
+#: inc/settings.php:1948 inc/settings.php:1956 inc/settings.php:2755
 msgid "Purge Meta Options"
 msgstr "Очистить мета-параметры"
 
@@ -2898,43 +2980,43 @@ msgstr ""
 "параметров. Этот процесс выполняется в фоновом режиме и запускается сразу "
 "после сохранения."
 
-#: inc/settings.php:2384
+#: inc/settings.php:2399
 msgid "Plugins"
 msgstr "Плагины"
 
-#: inc/settings.php:2389
+#: inc/settings.php:2404
 msgid "Themes"
 msgstr "Темы"
 
-#: inc/settings.php:2497
+#: inc/settings.php:2512
 msgid "Add New"
 msgstr "Добавить новый"
 
-#: inc/settings.php:2525
+#: inc/settings.php:2540
 msgid "Select Type"
 msgstr "Выбрать тип"
 
-#: inc/settings.php:2538 inc/settings.php:2615
+#: inc/settings.php:2553 inc/settings.php:2630
 msgid "All Devices"
 msgstr "Все устройства"
 
-#: inc/settings.php:2550
+#: inc/settings.php:2565
 msgid "High"
 msgstr "Высокий"
 
-#: inc/settings.php:2551
+#: inc/settings.php:2566
 msgid "Low"
 msgstr "Низкий"
 
-#: inc/settings.php:2601
+#: inc/settings.php:2616
 msgid "Select Priority"
 msgstr "Выберите приоритет"
 
-#: inc/settings.php:2753
+#: inc/settings.php:2768
 msgid "Import Plugin Settings"
 msgstr "Импортировать настройки плагина"
 
-#: inc/settings.php:2846
+#: inc/settings.php:2861
 #, php-format
 msgid "Click %s to view documentation."
 msgstr "Нажмите %s, чтобы просмотреть документацию."
@@ -3007,11 +3089,15 @@ msgstr "Как отложить загрузку изображения и ви�
 msgid "How do I host Google Analytics locally?"
 msgstr "Как разместить Google Analytics локально?"
 
-#: perfmatters.php:157
+#: perfmatters.php:158
 msgid "Action failed."
 msgstr "Действие не удалось."
 
-#: perfmatters.php:226
+#: perfmatters.php:229
+msgid "Successfully imported Perfmatters code snippets."
+msgstr "Фрагменты кода Perfmatters успешно импортированы."
+
+#: perfmatters.php:268
 msgid "Enter valid license key for automatic updates."
 msgstr "Введите действительный лицензионный ключ для авто обновлений."
 
@@ -3038,6 +3124,12 @@ msgstr "forgemedia"
 #. Author URI of the plugin/theme
 msgid "https://forgemedia.io/"
 msgstr "https://forgemedia.io/"
+
+#~ msgid "Loading snippet"
+#~ msgstr "Загрузка фрагмента"
+
+#~ msgid "Exclude Post IDs"
+#~ msgstr "Исключить ID записей"
 
 #, php-format
 #~ msgid "No feed available, please visit the <a href='%s'>homepage</a>!"

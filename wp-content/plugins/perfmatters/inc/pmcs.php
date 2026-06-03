@@ -10,7 +10,7 @@ echo '<div class="perfmatters-settings-section">';
 		echo '<form method="POST">';
 
 			echo '<input type="hidden" name="nonce" value="' . wp_create_nonce('pmcs-nonce') . '" />';
-			echo '<input type="hidden" name="file_name" value="' . ($_GET['snippet'] !== 'create' ? $_GET['snippet'] : '') . '" />';
+			echo '<input type="hidden" name="file_name" value="' . esc_attr($_GET['snippet'] !== 'create' ? $_GET['snippet'] : '') . '" />';
 
 			if(!$pmcs_error && $_GET['snippet'] !== 'create') {
 
@@ -37,10 +37,10 @@ echo '<div class="perfmatters-settings-section">';
 				echo '<div style="display: flex; align-items: center;">';
 					echo '<a href="?page=perfmatters#code" style="text-decoration: none;">' . esc_html__('All Snippets', 'perfmatters') . '</a>';
 					echo '<span style="margin: 0px 7px;">/</span>';
-					echo '<span id="pmcs-snippet-name">' . (!empty($snippet['name']) ? esc_html__($snippet['name']) : '<span style="opacity: .2;">' . esc_html__('Example Snippet', 'perfmatters') . '</span>') . '</span>';
+					echo '<span id="pmcs-snippet-name">' . (!empty($snippet['name']) ? esc_html($snippet['name']) : '<span style="opacity: .2;">' . esc_html__('Example Snippet', 'perfmatters') . '</span>') . '</span>';
 
 					if(!empty($snippet['type'])) {
-						echo '<a class="pmcs-snippet-type-badge" data-snippet-type="' . $snippet['type'] . '" style="margin-left: 7px; font-size: 12px; height: 26px; box-sizing: border-box; display: flex; align-items: center; padding: 0px 8px;">' . $snippet['type'] . '</a>';
+						echo '<a class="pmcs-snippet-type-badge" data-snippet-type="' . esc_attr($snippet['type']) . '" style="margin-left: 10px; font-size: 12px; height: 26px; box-sizing: border-box; display: flex; align-items: center; padding: 0px 8px;">' . esc_html($snippet['type']) . '</a>';
 					}
 					
 				echo '</div>';
@@ -62,10 +62,7 @@ echo '<div class="perfmatters-settings-section">';
 			echo '</div>';
 
 			//snippet content container
-			echo '<div id="pmcs-snippet" data-code-type="' . (!empty($snippet['type']) ? strtolower($snippet['type']) : 'php') . '">';
-
-				//snippet loader
-				echo '<div id="pmcs-snippet-loader">' . esc_html__('Loading snippet' , 'perfmatters') . '<div class="pmcs-loader"></div></div>';
+			echo '<div id="pmcs-snippet" data-code-type="' . esc_attr(!empty($snippet['type']) ? strtolower($snippet['type']) : 'php') . '">';
 
 				//stored snippet error
 				if(!empty($config['error_files'][$_GET['snippet']])) {
@@ -111,13 +108,13 @@ echo '<div class="perfmatters-settings-section">';
 							echo '<option value="wp_body_open" data-code-type="html"' . (!empty($snippet['location']) && $snippet['location'] == 'wp_body_open' ? ' selected' : '') . '>' . esc_html__('Frontend Body', 'perfmatters') . '</option>';
 							echo '<option value="before_content" data-code-type="html"' . (!empty($snippet['location']) && $snippet['location'] == 'before_content' ? ' selected' : '') . '>' . esc_html__('Before Content', 'perfmatters') . '</option>';
 							echo '<option value="after_content" data-code-type="html"' . (!empty($snippet['location']) && $snippet['location'] == 'after_content' ? ' selected' : '') . '>' . esc_html__('After Content', 'perfmatters') . '</option>';
-							//echo '<option value="shortcode" data-code-type="html"' . (!empty($snippet['location']) && $snippet['location'] == 'shortcode' ? ' selected' : '') . '>' . esc_html__('Shortcode', 'perfmatters') . '</option>';
+							echo '<option value="shortcode" data-code-type="html"' . (!empty($snippet['location']) && $snippet['location'] == 'shortcode' ? ' selected' : '') . '>' . esc_html__('Shortcode', 'perfmatters') . '</option>';
 
 						echo '</select>';
 					echo '</div>';
 
 					//type
-					echo '<div' . (($_GET['snippet'] ?? '') !== 'create' ? ' class="hidden"' : '') . ' style="display: flex; flex-direction: column;">';
+					echo '<div ' . (($_GET['snippet'] ?? '') !== 'create' ? ' class="hidden"' : ' style="display: flex; flex-direction: column;"') . '>';
 						echo '<label>' . esc_html__('Type', 'perfmatters') . '</label>';
 
 						//radio bar
@@ -136,16 +133,18 @@ echo '<div class="perfmatters-settings-section">';
 					echo '</div>';
 				echo '</div>';
 
-				//code
+				//code — label always visible; editor panel hidden until CodeMirror is ready (pmcs.js)
 				echo '<div class="perfmatters-code-snippet">';
 					echo '<label for="pmcs-code">' . esc_html__('Code', 'perfmatters') . '</label>';
-					echo '<textarea id="pmcs-code" name="code">';
+					echo '<div id="pmcs-code-editor-panel">';
+						echo '<textarea id="pmcs-code" name="code">';
 
-						if(!empty($snippet['code'])) {
-							echo esc_textarea($snippet['code']);
-						}
+							if(!empty($snippet['code'])) {
+								echo esc_textarea($snippet['code']);
+							}
 
-					echo '</textarea>';
+						echo '</textarea>';
+					echo '</div>';
 				echo '</div>';
 
 				//bottom control row
@@ -250,6 +249,29 @@ echo '<div class="perfmatters-settings-section">';
 						echo '</div>';
 
 					echo '</div>';
+				echo '</div>';
+
+				//shortcode
+				echo '<div id="pmcs-shortcode" class="' . (($snippet['location'] ?? '') === 'shortcode' ? '' : 'hidden') . '" style="margin: 0px -20px 20px; border-bottom: 1px solid #f2f2f2; padding: 0px 20px 20px 20px;">';
+
+					//title + tooltip
+					echo '<div class="pmcs-title">';
+						echo '<label>' . esc_html__('Shortcode', 'perfmatters') . '</label>';
+					echo '</div>';
+
+					$snippet_id = !empty($snippet['file_name']) ? str_replace('.php', '', $snippet['file_name']) : '';
+
+					if($snippet_id) {
+						$shortcode = '[pmcs id="' . esc_attr($snippet_id) . '"]';
+						echo '<label class="perfmatters-inline-label-input pmcs-copy-input">';
+							echo '<input type="text" value="' . esc_attr($shortcode) . '" readonly style="width: 500px;">';
+							echo '<span>' . esc_html__('Copy', 'perfmatters') . '</span>';
+						echo '</label>';
+					}
+					else {
+						echo '<span>' . esc_html__('Save your code snippet to generate a shortcode.', 'perfmatters') . '</span>';
+					}
+
 				echo '</div>';
 
 				//conditions
@@ -373,7 +395,7 @@ echo '<div class="perfmatters-settings-section">';
 
 		                    	if(!empty($snippet['tags'])) {
 		                    		foreach($snippet['tags'] as $tag) {
-		                    			echo '<div class="pmcs-tag" data-tag-name="' . $tag . '">' . esc_html($tag) . '<span class="pmcs-tag-close">×</span></div>';
+		                    			echo '<div class="pmcs-tag" data-tag-name="' . esc_attr($tag) . '">' . esc_html($tag) . '<span class="pmcs-tag-close">×</span></div>';
 		                    		}
 		                    	}
 
@@ -386,7 +408,7 @@ echo '<div class="perfmatters-settings-section">';
 		            echo '</div>';
                     
                     //hidden form input
-            		echo '<input type="hidden" name="tags" id="pmcs-selected-tags-input" value="' . (!empty($snippet['tags']) ? implode(',', $snippet['tags']) : '') . '">';
+            		echo '<input type="hidden" name="tags" id="pmcs-selected-tags-input" value="' . esc_attr(!empty($snippet['tags']) ? implode(',', $snippet['tags']) : '') . '">';
                         
                 echo '</div>';
 
@@ -434,7 +456,7 @@ echo '<div class="perfmatters-settings-section">';
 
 			//hidden inputs
 			echo '<input type="hidden" name="page" value="perfmatters" />';
-			echo '<input type="hidden" name="status" value="' . ($_GET['status'] ?? '') . '" />';
+			echo '<input type="hidden" name="status" value="' . esc_attr($_GET['status'] ?? '') . '" />';
 			wp_nonce_field('pmcs-action', 'pmcs_nonce');
 
 			//control bar

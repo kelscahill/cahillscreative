@@ -148,19 +148,19 @@
 #pmcs-snippet {
 	position: relative;
 }
-#pmcs-snippet-loader {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background: #fff;
-    z-index: 999;
-    text-align: center;
-    padding: 20px;
+#pmcs-code-editor-panel {
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	min-height: 400px;
+	transform: translateZ(0);
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
 }
-#pmcs-snippet-loader.loaded {
-	display: none;
+#pmcs-code-editor-panel.loaded {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
 }
 #pmcs-snippet label {
 	display: block;
@@ -170,9 +170,20 @@
 #pmcs-snippet input[type="text"], #pmcs-snippet select, #pmcs-snippet input[type="file"] {
 	min-width: unset;
 }
-#perfmatters-admin .perfmatters-code-snippet .CodeMirror {
+#pmcs-code-editor-panel #pmcs-code {
+	display: block;
+	height: 400px;
+	min-height: 400px;
+	box-sizing: border-box;
+}
+#pmcs-code-editor-panel .CodeMirror ~ #pmcs-code {
+	display: none;
+}
+#perfmatters-admin #pmcs-code-editor-panel .CodeMirror {
 	max-width: 100%;
 	height: 400px;
+	min-height: 400px;
+	box-sizing: border-box;
 	font-size: 14px;
 }
 .CodeMirror-sizer:after, .CodeMirror-sizer:before {
@@ -182,6 +193,7 @@
 .CodeMirror-sizer:before {
     content: "";
     position: absolute;
+	top: 10px;
 }
 [data-code-type="php"] .CodeMirror-sizer:before {
     content: "<?php";
@@ -193,10 +205,10 @@
     content: "<style>";
 }
 #pmcs-snippet .CodeMirror-lines {
-	padding: 25px 0px 4px 0px;
+	padding: 35px 0px 4px 0px;
 }
 #pmcs-snippet[data-code-type="html"] .CodeMirror-lines {
-    padding-top: 4px;
+    padding-top: 14px;
 }
 
 #pmcs-active ~ #pmcs-active-text:after {
@@ -243,7 +255,7 @@
     align-items: center;
     opacity: .5;
     border-radius: 2px;
-	font-size: 15px;
+	font-size: 14px;
 }
 #pmcs-snippet .pmcs-radio-bar input[type="radio"]:checked + label {
     background-color: #4F5B93;
@@ -321,8 +333,8 @@
     margin-right: 3px;
 }
 
-/* global scripts bottom fix */
-#code-global .perfmatters-settings-section {
+/* /settings scripts bottom fix */
+#code-code .perfmatters-settings-section {
     border-bottom: none;
     padding-bottom: 0px;
     margin-bottom: 0px;
@@ -342,7 +354,6 @@
 
 }
 
-/* tooltips */
 #perfmatters-admin .pmcs-title {
 	display: flex;
 	flex-wrap: wrap;
@@ -409,6 +420,11 @@
 }
 .pmcs-tag-close:hover {
     opacity: 1;
+}
+
+/* optimizations */
+#pmcs-snippet[data-code-type="php"] #pmcs-optimizations, #pmcs-snippet[data-code-type="html"] #pmcs-optimizations {
+	display: none;
 }
 
 /* conditions */
@@ -490,18 +506,18 @@
 	color: #8f8f8f;
 }
 
-/* recovery url */
-#perfmatters-admin #pmcs-recovery-url {
+/* copy input */
+#perfmatters-admin td .pmcs-copy-input {
 	width: 100%;
 }
-#perfmatters-admin #pmcs-recovery-url input {
+#perfmatters-admin .pmcs-copy-input input {
     user-select: none;
     outline: none !important;
     box-shadow: none !important;
     cursor: default;
     border-radius: 2px 0px 0px 2px;
 }
-#perfmatters-admin #pmcs-recovery-url span {
+#perfmatters-admin .pmcs-copy-input span {
 	border-right: .5px solid #ccc;
 	border-left: 0px;
 	border-radius: 0px 2px 2px 0px;

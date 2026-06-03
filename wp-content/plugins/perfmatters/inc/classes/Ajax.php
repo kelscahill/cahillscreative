@@ -1,6 +1,8 @@
 <?php
 namespace Perfmatters;
 
+use Perfmatters\Admin\CodeMirror;
+
 class Ajax
 {
 
@@ -19,8 +21,27 @@ class Ajax
 		self::security_check();
 
 		parse_str(stripslashes($_POST['form']), $form);
+		$reload = false;
 		
 		if(!empty($form['perfmatters_options'])) {
+
+			//reload UI when the CodeMirror theme setting changes
+			$current_options = get_option('perfmatters_options');
+			$old_editor_theme = $current_options['code']['editor_theme'] ?? '';
+			$new_editor_theme = $form['perfmatters_options']['code']['editor_theme'] ?? '';
+			if($old_editor_theme !== $new_editor_theme) {
+				$reload = true;
+			}
+
+			//custom CodeMirror theme upload
+			if(!empty($_FILES['code_custom_theme_file']['tmp_name'])) {
+				$upload_result = CodeMirror::save_custom_theme_upload($_FILES['code_custom_theme_file']);
+				if(is_wp_error($upload_result)) {
+					wp_send_json_error(array('message' => $upload_result->get_error_message()));
+				}
+				$reload = true;
+			}
+
 			update_option('perfmatters_options', $form['perfmatters_options']);
 		}
 		
@@ -28,9 +49,16 @@ class Ajax
 			update_option('perfmatters_tools', $form['perfmatters_tools']);
 		}
 
-		wp_send_json_success(array(
-		    'message' => __('Settings saved.', 'perfmatters'), 
-		));
+		$response = array(
+		    'message' => __('Settings saved.', 'perfmatters'),
+		    'reload' => $reload
+		);
+
+		if($reload) {
+			$response['message_key'] = 'save_settings';
+		}
+
+		wp_send_json_success($response);
 	}
 
 	//restore defaults ajax action
@@ -46,7 +74,8 @@ class Ajax
 
 		wp_send_json_success(array(
 	    	'message' => __('Successfully restored default options.', 'perfmatters'),
-	    	'reload' => true
+	    	'reload' => true,
+	    	'message_key' => 'restore_defaults'
 		));
 	}
 
@@ -104,7 +133,8 @@ class Ajax
 
 		wp_send_json_success(array(
 	    	'message' => __('Successfully imported Perfmatters settings.', 'perfmatters'),
-	    	'reload' => true
+	    	'reload' => true,
+	    	'message_key' => 'import_settings'
 		));
 
 	}

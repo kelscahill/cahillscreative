@@ -2,6 +2,14 @@ jQuery(function($) {
 
 	var pmActionButtonTimeouts = [];
 
+	function perfmattersFadeButtonMessage($message, action) {
+		$message.fadeIn();
+		clearTimeout(pmActionButtonTimeouts[action]);
+		pmActionButtonTimeouts[action] = setTimeout(function() {
+			$message.fadeOut();
+		}, 10000);
+	}
+
 	//tab-content display
 	$('#perfmatters-menu a[rel][href^="#"]').on('click', function(e) {
 
@@ -296,6 +304,16 @@ jQuery(function($) {
 	    });
 	});
 
+	// PHP-rendered success after full reload: same fadeIn + 10s fadeOut as AJAX .always.
+	$('.perfmatters-reload-notice').each(function() {
+		var $message = $(this).closest('.perfmatters-button-message');
+		var action = $(this).closest('.perfmatters-button-container').find('button[data-pm-action]').attr('data-pm-action');
+		if(!action) {
+			return;
+		}
+		perfmattersFadeButtonMessage($message, action);
+	});
+
 	//action button press
 	$('button[data-pm-action]').on('click', function(e) {
 
@@ -346,6 +364,14 @@ jQuery(function($) {
 			    this.CodeMirror.save();
 			});
 	    	formData.append('form', form.serialize());
+
+	    	//include custom CodeMirror theme file upload when saving settings.
+	    	if(action == 'save_settings') {
+	    		var customThemeInput = document.getElementById('code-custom-theme-file');
+	    		if(customThemeInput && customThemeInput.files && customThemeInput.files[0]) {
+	    			formData.append('code_custom_theme_file', customThemeInput.files[0]);
+	    		}
+	    	}
 	    }
 
 	    //ajax request
@@ -402,17 +428,26 @@ jQuery(function($) {
 			message.addClass('perfmatters-error');
 			message.html(PERFMATTERS.strings.failed);
 		})
-		.always(function(r) {
+	.always(function(r) {
+
+			//forced reload
+			if(r.data && r.data.reload) {
+				if(r.data.message_key) {
+					var reloadUrl = new URL(window.location.href);
+					reloadUrl.searchParams.set('message', r.data.message_key);
+					window.location.assign(reloadUrl.href);
+				}
+				else {
+					window.location.reload();
+				}
+				return;
+			}
 			
 			//show response message
 			if(r.data && r.data.message) {
 				message.html(r.data.message);
 			}
-			message.fadeIn();
-			clearTimeout(pmActionButtonTimeouts[action]);
-			pmActionButtonTimeouts[action] = setTimeout(function() {
-				message.fadeOut();
-			}, 10000);
+			perfmattersFadeButtonMessage(message, action);
 
 			//re-enable button
 			button.attr('disabled', false);
@@ -422,13 +457,6 @@ jQuery(function($) {
 	       	//clear checkboxes
 	       	if(action == 'purge_meta') {
 	       		$('#perfmatters-purge-meta input:checkbox').removeAttr('checked');
-	       	}
-
-	       	//reload page
-	       	if(r.data && r.data.reload) {
-	       		setTimeout(function() {
-                    location.reload();
-                }, 2000);
 	       	}
 		})
 	});

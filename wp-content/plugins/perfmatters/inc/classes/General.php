@@ -445,18 +445,9 @@ class General {
         add_action('template_redirect', function(): void {
             $options = Config::$options;
 
-            //exclusions: skip stripping on listed post IDs or blog home
+            //exclusions: skip stripping on matching locations
             if(!empty($options['disable_google_maps_exclusions'])) {
-                $exclusions = array_map('trim', explode(',', $options['disable_google_maps_exclusions']));
-
-                if(is_singular()) {
-                    global $post;
-                    if(!empty($post->ID) && in_array((string) $post->ID, $exclusions, true)) {
-                        return;
-                    }
-                }
-
-                if(is_home() && in_array('blog', $exclusions, true)) {
+                if(Location::matches($options['disable_google_maps_exclusions'])) {
                     return;
                 }
             }

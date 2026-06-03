@@ -93,9 +93,6 @@ class PMCS
             //pmcs styles
             wp_enqueue_style('pmcs', PERFMATTERS_URL . 'css/pmcs.css', [], PERFMATTERS_VERSION);
 
-            //pmcs main script
-            wp_enqueue_script('pmcs', PERFMATTERS_URL . 'js/pmcs.js', [], PERFMATTERS_VERSION);
-
             //pmcs script args
             $pmcs_js_args = array(
                 'ajaxurl' => admin_url('admin-ajax.php'),
@@ -124,34 +121,33 @@ class PMCS
                     )
                 )
             );
-            
-            //add helper scripts for snippet edit page
+
+            //snippet edit: enqueue code editor before pmcs.js so initializer runs before our reveal logic
+            $pmcs_deps = array('jquery');
             if(!empty($_GET['snippet'])) {
 
-                //eventually need to move this to a static variable that we can use throughout
                 $editor_type = 'php';
 
                 if($_GET['snippet'] !== 'create') {
                     $current_snippet = Snippet::get($_GET['snippet']);
-                    $editor_type = $current_snippet['meta']['type'] ?? 'php';
+                    $editor_type     = $current_snippet['meta']['type'] ?? 'php';
                 }
-                else {
+                elseif(!empty($_POST['type'])) {
 
-                    //on create (including validation error re-render), prefer the submitted type from our form.
-                    if(!empty($_POST['type'])) {
-                        $editor_type = $_POST['type'];
-                    }
+                    //on create (including validation error re-render), prefer the submitted type from our form
+                    $editor_type = $_POST['type'];
                 }
+
+                Editor::init($editor_type);
+                $pmcs_deps[] = 'code-editor';
 
                 wp_enqueue_script('pmcs-conditions', PERFMATTERS_URL . 'js/pmcs-conditions.js', [], time());
                 wp_enqueue_script('pmcs-tags', PERFMATTERS_URL . 'js/pmcs-tags.js', [], time());
                 $pmcs_js_args['tags'] = self::get_snippet_tags();
-
-                //initialize code editor
-                Editor::init($editor_type);
             }
 
-            //add script args to main pmcs script
+            wp_enqueue_script('pmcs', PERFMATTERS_URL . 'js/pmcs.js', $pmcs_deps, PERFMATTERS_VERSION);
+
             wp_localize_script('pmcs', 'PMCS', $pmcs_js_args);
 
         });
@@ -224,7 +220,7 @@ class PMCS
 
                     case 'export':
 
-                        self::export($snippet_files);
+                        Transfer::export($snippet_files);
 
                         break;
 
@@ -248,7 +244,7 @@ class PMCS
                     self::admin_notice_redirect('export', 'file_not_found');
                 }
 
-                self::export($file_name);
+                Transfer::export($file_name);
             }
 
             //delete snippet
@@ -347,20 +343,22 @@ class PMCS
             }
 
             //notice messages
-            if(!empty($_GET['message'])) {
+            $message_key = isset($_GET['message']) ? sanitize_key(wp_unslash($_GET['message'])) : '';
+
+            if(!empty($message_key)) {
 
                 $messages = [
-                    'saved'              => ['snippet_saved', __('Snippet saved.', 'perfmatters'), 'success'],
-                    'deleted'            => ['delete_success', __('Snippet deleted successfully.', 'perfmatters'), 'success'],
-                    'activated'          => ['activate_success', __('Snippet activated successfully.', 'perfmatters'), 'success'],
-                    'deactivated'        => ['deactivate_success', __('Snippet deactivated successfully.', 'perfmatters'), 'success'],
-                    'file_not_found'     => ['file_not_found', __('File not found.', 'perfmatters'), 'error'],
-                    'safe_mode_disabled' => ['safe_mode_disabled', __('Safe mode disabled.', 'perfmatters'), 'success'],
-                    'invalid_nonce'      => ['invalid_nonce', __('Security check failed. Please try again.', 'perfmatters'), 'error']
+                    'saved'                => ['snippet_saved', __('Snippet saved.', 'perfmatters'), 'success'],
+                    'deleted'              => ['delete_success', __('Snippet deleted successfully.', 'perfmatters'), 'success'],
+                    'activated'            => ['activate_success', __('Snippet activated successfully.', 'perfmatters'), 'success'],
+                    'deactivated'          => ['deactivate_success', __('Snippet deactivated successfully.', 'perfmatters'), 'success'],
+                    'file_not_found'       => ['file_not_found', __('File not found.', 'perfmatters'), 'error'],
+                    'safe_mode_disabled'   => ['safe_mode_disabled', __('Safe mode disabled.', 'perfmatters'), 'success'],
+                    'invalid_nonce'        => ['invalid_nonce', __('Security check failed. Please try again.', 'perfmatters'), 'error'],
                 ];
 
-                if(isset($messages[$_GET['message']])) {
-                    self::admin_notice(...$messages[$_GET['message']]);
+                if(isset($messages[$message_key])) {
+                    self::admin_notice(...$messages[$message_key]);
                 }
             }
         }
@@ -432,7 +430,7 @@ class PMCS
 					'id'                 => $id,
 					'type'               => $type,
 					'dismissible'        => $dismissible,
-                    'additional_classes' => ['inline']
+					'additional_classes' => array( 'inline' ),
 				)
 			);
 		});
@@ -862,6 +860,13 @@ PHP;
         //add admin bar menu item for snippets
         add_action('admin_bar_menu', array('Perfmatters\PMCS\PMCS', 'admin_bar_menu'), 1);
 
+        //register before active check; map populated in loop below (by reference)
+        $shortcode_snippets = [];
+
+        add_shortcode('pmcs', function($atts) use (&$shortcode_snippets) {
+            return self::render_shortcode($atts, $shortcode_snippets);
+        });
+
         //no active snippets
         if(empty($config['active']) || !is_array($config['active'])) {
             return;
@@ -1117,6 +1122,16 @@ PHP;
 
                     $location = $snippet['location'];
 
+                    if($location === 'shortcode') {
+
+                        $shortcode_snippets[str_replace('.php', '', $file_name)] = [
+                            'file'    => $file,
+                            'snippet' => $snippet
+                        ];
+
+                        break;
+                    }
+
                     if(in_array($location, ['wp_head', 'wp_body_open', 'wp_footer'])) {
 
                         add_action($location, function() use($file, $snippet) {
@@ -1132,7 +1147,7 @@ PHP;
                     }
 
                     //content filters
-                    if(isset($content_filters[$location])) {
+                    elseif(isset($content_filters[$location])) {
 
                         $filter = $content_filters[$location];
 
@@ -1163,6 +1178,8 @@ PHP;
                         }, self::get_priority($snippet['priority'] ?? null));
                     }
 
+                    break;
+
                 default:
                     break;
             }
@@ -1171,6 +1188,36 @@ PHP;
         if($invalid_files) {
             self::build_snippet_config();
         }
+    }
+
+    //render pmcs shortcode output
+    public static function render_shortcode($atts, $shortcode_snippets)
+    {
+        $atts = shortcode_atts(['id' => ''], $atts, 'pmcs');
+
+        if(empty($atts['id'])) {
+            return '';
+        }
+
+        $id = preg_replace('/\.php$/i', '', sanitize_file_name($atts['id']));
+
+        if(empty($id) || !isset($shortcode_snippets[$id])) {
+            return '';
+        }
+
+        $entry = $shortcode_snippets[$id];
+
+        if(!Conditions::evaluate($entry['snippet']['conditions'])) {
+            return '';
+        }
+
+        if(!is_file($entry['file'])) {
+            return '';
+        }
+
+        ob_start();
+        require $entry['file'];
+        return ob_get_clean();
     }
 
     //get url of cached js or css file
@@ -1250,65 +1297,6 @@ PHP;
         }
 
         return false;
-    }
-
-    //return export content for requested snippets
-    public static function get_export_content($file_names) {
-
-        $snippet_data = [];
-
-        foreach((array)$file_names as $file_name) {
-
-            $snippet = Snippet::get($file_name);
-
-            if(!empty($snippet['meta']) && !empty($snippet['code'])) {
-                $snippet_data[$file_name] = $snippet;
-            }
-        }
-
-        return $snippet_data;
-    }
-
-    //export snippet, supports multiple
-    private static function export($file_names) {
-
-        $snippet_data = self::get_export_content($file_names);
-
-        if(empty($snippet_data)) {
-            self::admin_notice_redirect('export', 'file_not_found');
-        }
-
-        if(count($snippet_data) > 1) {
-            $download_name = 'perfmatters-snippets-bulk-export-' . $_SERVER['HTTP_HOST'] . '-' . date('Y-m-d') . '.json';
-        }
-        else {
-            $download_name = 'perfmatters-snippet-' . preg_replace('/\.php$/', '', key($snippet_data)) . '-' . date('Y-m-d') . '.json';
-        }
-
-        $json_output = json_encode($snippet_data, JSON_PRETTY_PRINT);
-
-
-        self::force_download($download_name, $json_output);
-    }
-
-    private static function force_download($filename, $content, $temp_file_path = null) {
-        header('Content-Description: File Transfer');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Content-Type: application/json; charset=utf-8');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . strlen($content));
-        
-        // Output the file content and stop execution
-        echo $content;
-
-        // 1. CONDITIONAL CLEANUP: Delete the temporary file if a path was passed
-        if($temp_file_path && is_file($temp_file_path)) {
-            unlink($temp_file_path);
-        }
-
-        exit;
     }
 
     //add admin bar menu item

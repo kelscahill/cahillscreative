@@ -86,7 +86,7 @@ class Preload
 
             //location check
             if(!empty($line['locations'])) {
-                if(!self::location_check($line['locations'])) {
+                if(!Location::matches($line['locations'])) {
                     continue;
                 }
             }
@@ -194,7 +194,7 @@ class Preload
 
                 //location check
                 if(!empty($line['locations'])) {
-                    if(!self::location_check($line['locations'])) {
+                    if(!Location::matches($line['locations'])) {
                         continue;
                     }
                 }
@@ -429,36 +429,6 @@ class Preload
             }
             return true;
         }
-    }
-
-    private static function location_check($locations) {
-
-        $location_match = false;
-
-        $exploded_locations = explode(',', $locations);
-        $trimmed_locations = array_map('trim', $exploded_locations);
-
-        //single post exclusion
-        if(is_singular()) {
-            global $post;
-            if(in_array($post->ID, $trimmed_locations)) {
-                $location_match = true;
-            }
-        }
-        //posts page exclusion
-        elseif(is_home() && in_array('blog', $trimmed_locations)) {
-            $location_match = true;
-        }
-        elseif(is_archive()) {
-            //woocommerce shop check
-            if(function_exists('is_shop') && is_shop()) {
-                if(in_array(wc_get_page_id('shop'), $trimmed_locations)) {
-                    $location_match = true;
-                }
-            }
-        }
-
-        return $location_match;
     }
 
     public static function disable_core_fetch($loading_attrs) {

@@ -535,6 +535,11 @@ class CSS
 
         if(!empty($stylesheet_url)) {
 
+            //normalize protocol-relative urls so local URL matching works
+            if(strpos($stylesheet_url, '//') === 0) {
+                $stylesheet_url = set_url_scheme($stylesheet_url);
+            }
+
             //get any custom set url
             $custom_url = apply_filters('perfmatters_local_stylesheet_url', !empty(Config::$options['assets']['rucss_cdn_url']) ? Config::$options['assets']['rucss_cdn_url'] : '');
 

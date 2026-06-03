@@ -58,12 +58,28 @@ if(!empty($options)) {
 													echo '<tr>';
 														echo '<td>' . $script . '</td>';
 														echo '<td>';
-															echo '' . $detail . '';
+															echo $detail;
 															if($detail == 'current' || $detail == 'post_types' || $detail == 'archives') {
 																if(!empty($values)) {
+
+																	//sort values in ascending order with 404 at the end
+																	if(is_array($values)) {
+																		$key_404 = array_search('pmsm-404', $values, true);
+
+																		if($key_404 !== false) {
+																			unset($values[$key_404]);
+																		}
+
+																		sort($values, SORT_NUMERIC);
+
+																		if($key_404 !== false) {
+																			$values[] = 'pmsm-404';
+																		}
+																	}
+
 																	echo ' (';
 																	$valueString = '';
-																	foreach($values as $key => $value) {
+																	foreach($values as $value) {
 																		if($detail == 'current') {
 																			if((int)$value !== 0) {
 																				if($value == 'pmsm-404') {

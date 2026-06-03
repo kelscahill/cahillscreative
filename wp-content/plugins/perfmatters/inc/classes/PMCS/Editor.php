@@ -1,6 +1,8 @@
 <?php
 namespace Perfmatters\PMCS;
 
+use Perfmatters\Admin\CodeMirror;
+
 class Editor
 {
 	//editor instance settings array
@@ -43,6 +45,8 @@ class Editor
 				'lint'                      => self::is_lint_enabled($code_type)
 			)
 		);
+
+		$editor_args = CodeMirror::apply_theme_to_settings($editor_args, 'perfmatters-codemirror-theme');
 
 		//force syntax highlighting
 		add_filter('get_user_metadata', array('Perfmatters\PMCS\Editor', 'force_syntax_highlighting'), 10, 4);
@@ -113,6 +117,6 @@ class Editor
 
 	//get lint status for code type
 	public static function is_lint_enabled($code_type) {
-		return in_array($code_type, array('js', 'html'));
+		return in_array($code_type, array('js'), true);
 	}
 }

@@ -33,9 +33,10 @@ class Elements
 
 	//lazy load elements
 	public static function lazyload_elements($html) {
-		$lazy_element = null;
 
 		if(!empty(Config::$options['lazyload']['elements'])) {
+
+			$lazy_element = null;
 
 			$selectors = array(
 				'perfmatters-lazy-element',

@@ -90,14 +90,14 @@ class ListTable extends \WP_List_Table
 				//snippet name and row actions
 				if(!empty($item['file_name'])) {
 
-					$output = '<a href="?page=' . $_REQUEST['page'] . '&snippet=' . esc_attr($item['file_name']) . '#code">';
+					$output = '<a href="?page=perfmatters&snippet=' . esc_attr($item['file_name']) . '#code">';
 						$output.= esc_html($item['name']);
 					$output.= '</a>';
 					
 					$actions = array(
-	                	'edit'   => sprintf('<a href="?page=%s&snippet=%s#code">' . esc_html__('Edit', 'perfmatters') . '</a>', $_REQUEST['page'], esc_attr($item['file_name'])),
-	                	'export' => sprintf('<a href="%s#code">' . esc_html__('Export', 'perfmatters') . '</a>', esc_url(wp_nonce_url(add_query_arg(array('page' => sanitize_text_field($_REQUEST['page']), 'export' => $item['file_name']), admin_url('admin.php')), 'pmcs-action'))),
-	                	'delete' => sprintf('<a href="%s#code" class="pmcs-delete">' . esc_html__('Delete', 'perfmatters') . '</a>', esc_url(wp_nonce_url(add_query_arg(array('page' => sanitize_text_field($_REQUEST['page']), 'delete' => $item['file_name']), admin_url('admin.php')), 'pmcs-action'))),
+	                	'edit'   => sprintf('<a href="?page=perfmatters&snippet=%s#code">' . esc_html__('Edit', 'perfmatters') . '</a>', esc_attr($item['file_name'])),
+	                	'export' => sprintf('<a href="%s#code">' . esc_html__('Export', 'perfmatters') . '</a>', esc_url(wp_nonce_url(add_query_arg(array('page' => 'perfmatters', 'export' => $item['file_name']), admin_url('admin.php')), 'pmcs-action'))),
+	                	'delete' => sprintf('<a href="%s#code" class="pmcs-delete">' . esc_html__('Delete', 'perfmatters') . '</a>', esc_url(wp_nonce_url(add_query_arg(array('page' => 'perfmatters', 'delete' => $item['file_name']), admin_url('admin.php')), 'pmcs-action'))),
 					);
 
 					$output.= $this->row_actions($actions, true);
@@ -111,7 +111,7 @@ class ListTable extends \WP_List_Table
 
 				//code type badge
 				if(!empty($item['type'])) {
-					return '<a class="pmcs-snippet-type-badge" href="' . add_query_arg('type', $item['type']) . '#code" data-snippet-type="' . $item['type'] . '">' . $item['type'] . '</a>';
+					return '<a class="pmcs-snippet-type-badge" href="' . esc_url(add_query_arg('type', $item['type'])) . '#code" data-snippet-type="' . esc_attr($item['type']) . '">' . esc_html($item['type']) . '</a>';
 				}
 				
 				break;
@@ -124,7 +124,7 @@ class ListTable extends \WP_List_Table
 					$tag_html = '';
 
 					foreach($item['tags'] as $tag) {
-						$tag_html.= '<a class="" href="' . esc_url(add_query_arg('tag', urlencode($tag))) . '#code">' . esc_html__($tag) . '</a>, ';
+						$tag_html.= '<a class="" href="' . esc_url(add_query_arg('tag', urlencode($tag))) . '#code">' . esc_html($tag) . '</a>, ';
 					}
 
 					return rtrim($tag_html, ', ');
@@ -138,7 +138,7 @@ class ListTable extends \WP_List_Table
 				if(!empty($item['author'])) {
 					$author = get_user_by('id', $item['author']);
 					if(!empty($author->display_name)) {
-						return $author->display_name;
+						return esc_html($author->display_name);
 					}
 				}
 		
@@ -246,7 +246,7 @@ class ListTable extends \WP_List_Table
         $this->set_pagination_args(array(
             'total_items' => $total_items,
             'per_page'    => $per_page,
-            'total_pages' => ceil($total_items / $per_page)
+            'total_pages' => (int) ceil($total_items / $per_page)
         ));
 
         //snippets being viewed

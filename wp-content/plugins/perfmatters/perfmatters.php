@@ -3,7 +3,7 @@
 Plugin Name: Perfmatters
 Plugin URI: https://perfmatters.io/
 Description: Perfmatters is a lightweight performance plugin developed to speed up your WordPress site.
-Version: 2.6.2
+Version: 2.6.4
 Requires at least: 5.5
 Requires PHP: 8.1
 Author: forgemedia
@@ -20,7 +20,7 @@ Domain Path: /languages
 define('PERFMATTERS_STORE_URL', 'https://perfmatters.io/');
 define('PERFMATTERS_ITEM_ID', 696);
 define('PERFMATTERS_ITEM_NAME', 'perfmatters');
-define('PERFMATTERS_VERSION', '2.6.2');
+define('PERFMATTERS_VERSION', '2.6.4');
 define('PERFMATTERS_PATH', plugin_dir_path(__FILE__ ));
 define('PERFMATTERS_URL', plugin_dir_url(__FILE__));
 if(!defined('PMMU_PLUGIN_DIR')) {
@@ -156,27 +156,32 @@ function perfmatters_admin_scripts() {
 			'nonce' => wp_create_nonce('perfmatters-nonce'),
 			'strings' => array(
 				'failed' => __('Action failed.', 'perfmatters')
-			)
+			),
 		));
 
+		//Global script textareas: wp.codeEditor.initialize() expects the object returned from
+		//wp_enqueue_code_editor() (top-level "codemirror" key), not a "codeEditor" wrapper.
 		if(empty($_GET['snippet'])) {
-			$cm_settings['codeEditor'] = wp_enqueue_code_editor(array('type' => 'text/html'));
-	        wp_add_inline_script(
-	        'code-editor',
-	        sprintf(
-	                'jQuery(function() {
-	                    var $codemirror = jQuery(".perfmatters-codemirror");
-	                    if($codemirror.length) {
-	                        $codemirror.each(function() {
-	                            wp.codeEditor.initialize(this, %1$s);
-	                        });
-	                    }
-	                });',
-	                wp_json_encode($cm_settings)
-	            )
-	        );
-	        wp_enqueue_script('wp-theme-plugin-editor');
-	        wp_enqueue_style('wp-codemirror');
+			$cm_settings = wp_enqueue_code_editor(array('type' => 'text/html'));
+			if(false !== $cm_settings) {
+				wp_enqueue_style('wp-codemirror');
+				$cm_settings = Perfmatters\Admin\CodeMirror::apply_theme_to_settings($cm_settings, 'perfmatters-codemirror-theme');
+				wp_add_inline_script(
+					'code-editor',
+					sprintf(
+						'jQuery(function() {
+							var $codemirror = jQuery(".perfmatters-codemirror");
+							if($codemirror.length) {
+								$codemirror.each(function() {
+									wp.codeEditor.initialize(this, %1$s);
+								});
+							}
+						});',
+						wp_json_encode($cm_settings)
+					)
+				);
+			}
+			wp_enqueue_script('wp-theme-plugin-editor');
 		}
 		
 	}
@@ -191,6 +196,42 @@ function perfmatters_network_access() {
 		}
 	}
 	return true;
+}
+
+/**
+ * Inline notice text after a full-page reload for the given `data-pm-action`, or empty string.
+ * `?message=` must match `$action`; other buttons return immediately.
+ */
+function perfmatters_get_reload_notice_text($action) {
+
+	static $message_key = null;
+	static $resolved     = false;
+
+	if(!$resolved) {
+		$resolved    = true;
+		$message_key = '';
+		if(perfmatters_network_access() && isset($_GET['message'])) {
+			$message_key = sanitize_key(wp_unslash($_GET['message']));
+		}
+	}
+
+	if($message_key === '' || $message_key !== $action) {
+		return '';
+	}
+
+	static $text = null;
+
+	if($text === null) {
+		$messages = array(
+			'save_settings'    => __('Settings saved.', 'perfmatters'),
+			'import_settings'  => __('Successfully imported Perfmatters settings.', 'perfmatters'),
+			'restore_defaults' => __('Successfully restored default options.', 'perfmatters'),
+			'import_snippets'  => __('Successfully imported Perfmatters code snippets.', 'perfmatters'),
+		);
+		$text = $messages[$message_key] ?? '';
+	}
+
+	return $text;
 }
 
 //license messages in plugins table

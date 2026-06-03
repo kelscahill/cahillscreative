@@ -82,7 +82,8 @@ echo '<div id="perfmatters-admin" class="wrap">';
 
 		echo '</div>';
 
-		echo '<div id="perfmatters-main" style="flex-grow: 1; min-width: 0px;">';
+		echo '<div id="perfmatters-main" class="' . (!empty($_GET['snippet']) ? 'pm-no-load-fade' : '') . '" style="flex-grow: 1; min-width: 0px;">';
+
 			echo '<div id="perfmatters-settings" class="perfmatters-admin-block" data-pm-tab="options">';
 
 				//version number

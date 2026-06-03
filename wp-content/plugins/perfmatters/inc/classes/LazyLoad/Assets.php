@@ -52,9 +52,15 @@ class Assets
 
 		//video placeholders (youtube setting on, or elementor video conversion can prep custom thumbnail attrs)
 		if(Iframes::should_enqueue_video_placeholder_assets()) {
-			$styles.= '.perfmatters-lazy-video,.perfmatters-lazy-youtube{position:relative;width:100%;max-width:100%;height:0;padding-bottom:56.23%;overflow:hidden}.perfmatters-lazy-video img,.perfmatters-lazy-youtube img{position:absolute;top:0;right:0;bottom:0;left:0;display:block;width:100%;height:100%;max-width:none;margin:0;object-fit:cover;object-position:center;border:none;cursor:pointer;transition:.5s all;-webkit-transition:.5s all;-moz-transition:.5s all}.perfmatters-lazy-video img:hover,.perfmatters-lazy-youtube img:hover{-webkit-filter:brightness(75%)}.perfmatters-lazy-video .play,.perfmatters-lazy-youtube .play{position:absolute;top:50%;left:50%;right:auto;width:68px;height:48px;margin-left:-34px;margin-top:-24px;background:url('.plugins_url('perfmatters/img/youtube.svg').') no-repeat;background-position:center;background-size:cover;pointer-events:none;filter:grayscale(1)}.perfmatters-lazy-video:hover .play,.perfmatters-lazy-youtube:hover .play{filter:grayscale(0)}.perfmatters-lazy-video iframe,.perfmatters-lazy-youtube iframe{position:absolute;top:0;left:0;width:100%;height:100%;z-index:99}';
+			$styles.= '.perfmatters-lazy-video{position:relative;width:100%;max-width:100%;height:0;padding-bottom:56.23%;overflow:hidden}.perfmatters-lazy-video img{position:absolute;top:0;right:0;bottom:0;left:0;display:block;width:100%;height:100%;max-width:none;margin:0;object-fit:cover;object-position:center;border:none;cursor:pointer;transition:.5s all;-webkit-transition:.5s all;-moz-transition:.5s all}.perfmatters-lazy-video img:hover{-webkit-filter:brightness(75%)}.perfmatters-lazy-video .play{position:absolute;top:50%;left:50%;right:auto;width:68px;height:48px;margin-left:-34px;margin-top:-24px;background:url('.plugins_url('perfmatters/img/youtube.svg').') no-repeat;background-position:center;background-size:cover;pointer-events:none;filter:grayscale(1)}.perfmatters-lazy-video:hover .play{filter:grayscale(0)}.perfmatters-lazy-video iframe{position:absolute;top:0;left:0;width:100%;height:100%;z-index:99}';
+			
+			//elementor fix
+			if(function_exists('is_plugin_active') && is_plugin_active('elementor/elementor.php')) {
+				$styles.= '.elementor-widget-html:has(.perfmatters-lazy-video),.elementor-widget-text-editor:has(.perfmatters-lazy-video){width:100%}';
+			}
+
 			if(current_theme_supports('responsive-embeds') || in_array('wp-embed-responsive', get_body_class())) {
-				$styles.= '.wp-has-aspect-ratio .wp-block-embed__wrapper{position:relative;}.wp-has-aspect-ratio .perfmatters-lazy-video,.wp-has-aspect-ratio .perfmatters-lazy-youtube{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;padding-bottom:0}';
+				$styles.= '.wp-block-embed.wp-has-aspect-ratio .wp-block-embed__wrapper:has(.perfmatters-lazy-video)::before{display:none;}';
 			}
 		}
 

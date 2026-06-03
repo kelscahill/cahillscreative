@@ -53,7 +53,7 @@ class Ajax extends \Perfmatters\Ajax
 
         $file_names = array_map('basename', glob(PMCS::get_storage_dir() . '/*.php'));
 
-        $snippet_data = PMCS::get_export_content($file_names);
+        $snippet_data = Transfer::get_export_content($file_names);
 
         if(empty($snippet_data)) {
             wp_send_json_error(array(
@@ -61,9 +61,17 @@ class Ajax extends \Perfmatters\Ajax
 			));
         }
 
+		$export = Transfer::encode($snippet_data);
+
+		if(is_wp_error($export)) {
+			wp_send_json_error(array(
+		    	'message' => $export->get_error_message()
+			));
+		}
+
 		wp_send_json_success(array(
 		    'message' => __('Snippets exported.', 'perfmatters'), 
-		    'export' => json_encode($snippet_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+		    'export' => $export
 		));
 	}
 
@@ -93,11 +101,19 @@ class Ajax extends \Perfmatters\Ajax
 		}
 
 		//unpack snippet data from file
-		$snippet_data = (array) json_decode(file_get_contents($import_file), true);
+		$payload = json_decode(file_get_contents($import_file), true);
 
 		//json file error
 		if(json_last_error() !== JSON_ERROR_NONE) {
 		    wp_send_json_error(['message' => 'Invalid JSON file.']);
+		}
+
+		$snippet_data = Transfer::parse_import($payload);
+
+		if(is_wp_error($snippet_data)) {
+			wp_send_json_error(array(
+		    	'message' => $snippet_data->get_error_message()
+			));
 		}
 
         wp_mkdir_p(PMCS::get_storage_dir());
@@ -159,7 +175,8 @@ class Ajax extends \Perfmatters\Ajax
 			    ),
 			    $import_count
 			),
-	    	'reload' => true
+	    	'reload' => true,
+	    	'message_key' => 'import_snippets'
 		));
 	}
 

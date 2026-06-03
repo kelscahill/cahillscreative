@@ -1,4 +1,7 @@
 <?php
+
+use Perfmatters\Config;
+
 //code global
 echo '<section id="code-global" class="section-content pm-child" data-pm-parent="code-code">';
 
@@ -16,10 +19,6 @@ echo '<section id="code-global" class="section-content pm-child" data-pm-parent=
 	echo '</div>';
 
 	perfmatters_settings_section('perfmatters_options', 'assets_code');
-
-	echo '<div style="margin-top: 20px;">';
-		perfmatters_action_button('save_settings', __('Save Changes', 'perfmatters'));
-    echo '</div>';
 echo '</section>';
 
 //code settings
@@ -65,6 +64,44 @@ echo '<section id="code-settings" class="section-content pm-child" data-pm-paren
 						perfmatters_tooltip(__('Import Perfmatters code snippets from an exported .json file.', 'perfmatters'));
 					echo '</td>';
 				echo '</tr>';
+
+				//editor theme
+				echo '<tr class="perfmatters-input-controller">';
+					echo '<th>' . perfmatters_title(__('Editor Theme', 'perfmatters'), false, 'https://perfmatters.io/docs/code-snippets/#editor-theme') . '</th>';
+					echo '<td>';
+
+						$selected_theme = Config::$options['code']['editor_theme'] ?? '';
+						$theme_options = \Perfmatters\Admin\CodeMirror::get_theme_options();
+
+						echo '<select id="code-editor_theme" name="perfmatters_options[code][editor_theme]">';
+							foreach($theme_options as $theme_slug => $theme_label) {
+								echo '<option value="' . esc_attr($theme_slug) . '"' . selected($selected_theme, $theme_slug, false) . '>' . esc_html($theme_label) . '</option>';
+							}
+						echo '</select>';
+						perfmatters_tooltip(__('Choose the theme used in code editors throughout the plugin.', 'perfmatters'));
+					echo '</td>';
+				echo '</tr>';
+
+				//custom editor theme stylesheet: .css in uploads/perfmatters/codemirror-theme/
+				echo '<tr class="code-editor_theme perfmatters-select-control-custom' . ($selected_theme === 'custom' ? '' : ' hidden') . '">';
+					echo '<th>' . perfmatters_title(__('Custom Theme Stylesheet', 'perfmatters'), false, 'https://perfmatters.io/docs/code-snippets/#custom-theme-stylesheet') . '</th>';
+					echo '<td>';
+
+						$custom_theme_path = \Perfmatters\Admin\CodeMirror::get_custom_theme_path();
+
+						echo '<input type="file" id="code-custom-theme-file" name="code_custom_theme_file" accept=".css,text/css" />';
+						if($custom_theme_path) {
+
+							$custom_theme_name = \Perfmatters\Admin\CodeMirror::get_custom_theme_name();
+
+							echo '<div>';
+								echo __('Current custom theme', 'perfmatters') . ': <code>' . esc_html(!empty($custom_theme_name) ? $custom_theme_name : __('unknown', 'perfmatters')) . '</code>';
+							echo '</div>';
+						}
+						perfmatters_tooltip(__('Upload a custom .css CodeMirror 5 theme stylesheet.', 'perfmatters'));
+					echo '</td>';
+				echo '</tr>';
+
 			echo '</tbody>';
 		echo '</table>';
 
@@ -100,8 +137,8 @@ echo '<section id="code-settings" class="section-content pm-child" data-pm-paren
 				echo '<tr>';
 					echo '<th>' . perfmatters_title(__('Recovery URL', 'perfmatters') , false, 'https://perfmatters.io/docs/code-snippets/#safe-mode') . '</th>';
 					echo '<td>';
-						echo '<label id="pmcs-recovery-url" class="perfmatters-inline-label-input">';
-							echo '<input type="text" value="' . (!empty($config['meta']['secret_key']) ? site_url('index.php?pmcs_secret=' . $config['meta']['secret_key']) : '') . '" placeholder="' . esc_html__('Create a snippet first.', 'perfmatters') . '" readonly>';
+						echo '<label class="perfmatters-inline-label-input pmcs-copy-input">';
+							echo '<input type="text" value="' . esc_attr(!empty($config['meta']['secret_key']) ? site_url('index.php?pmcs_secret=' . $config['meta']['secret_key']) : '') . '" placeholder="' . esc_html__('Create a snippet first.', 'perfmatters') . '" readonly>';
 							echo '<span>' . esc_html__('Copy', 'perfmatters') . '</span>';
 						echo '</label>';
 

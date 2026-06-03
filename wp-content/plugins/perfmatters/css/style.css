@@ -117,6 +117,10 @@
 #perfmatters-main.pm-loaded {
   opacity: 1;
 }
+#perfmatters-main.pm-no-load-fade {
+  opacity: 1;
+  transition: none;
+}
 .perfmatters-settings-section {
   margin-bottom: 10px;
   border-bottom: 1px solid #f2f2f2;
@@ -300,8 +304,14 @@
 #perfmatters-admin input[type="checkbox"] {
   border-color: #ccc;
 }
+#perfmatters-admin .perfmatters-checkbox-tooltip-offset {
+  margin-top: 10px;
+  line-height: 20px;
+}
 #perfmatters-admin input[type="file"] {
-  margin-bottom: 5px;
+  line-height: 40px;
+  margin: 0px;
+  padding: 0px;
   border: 0px;
 }
 #perfmatters-admin textarea {
@@ -310,14 +320,19 @@
   min-height: 150px;
   border: 1px solid #ddd;
 }
+#perfmatters-admin ::placeholder {
+  color: #ccc;
+}
+
+/* codemirror */
 #perfmatters-admin .CodeMirror {
   height: 200px;
   border: 1px solid #ddd;
   border-radius: 4px;
   resize: vertical;
 }
-#perfmatters-admin ::placeholder {
-  color: #ccc;
+#perfmatters-admin .CodeMirror-lines {
+  padding-top: 10px;
 }
 
 /* tooltips */
@@ -439,7 +454,9 @@
   background: #c14552;
   border-color: #c14552;
 }
-#perfmatters-settings[data-pm-option="code"] #perfmatters-save, #perfmatters-settings[data-pm-option="license"] #perfmatters-save, #perfmatters-settings[data-pm-option="support"] #perfmatters-save {
+#perfmatters-settings[data-pm-option="license"] #perfmatters-save,
+#perfmatters-settings[data-pm-option="support"] #perfmatters-save,
+#perfmatters-settings:has(#code-snippets.active) #perfmatters-save {
   display: none;
 }
 
