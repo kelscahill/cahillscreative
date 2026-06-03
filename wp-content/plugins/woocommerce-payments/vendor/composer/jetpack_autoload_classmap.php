@@ -7,15 +7,15 @@ $baseDir   = dirname($vendorDir);
 
 return array(
 	'Autoloader' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-autoloader.php'
 	),
 	'Autoloader_Handler' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-autoloader-handler.php'
 	),
 	'Autoloader_Locator' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-autoloader-locator.php'
 	),
 	'Automattic\\Jetpack\\A8c_Mc_Stats' => array(
@@ -39,23 +39,23 @@ return array(
 		'path'    => $vendorDir . '/automattic/jetpack-assets/src/class-semver.php'
 	),
 	'Automattic\\Jetpack\\Autoloader\\AutoloadFileWriter' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/AutoloadFileWriter.php'
 	),
 	'Automattic\\Jetpack\\Autoloader\\AutoloadGenerator' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/AutoloadGenerator.php'
 	),
 	'Automattic\\Jetpack\\Autoloader\\AutoloadProcessor' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/AutoloadProcessor.php'
 	),
 	'Automattic\\Jetpack\\Autoloader\\CustomAutoloaderPlugin' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/CustomAutoloaderPlugin.php'
 	),
 	'Automattic\\Jetpack\\Autoloader\\ManifestGenerator' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/ManifestGenerator.php'
 	),
 	'Automattic\\Jetpack\\Config' => array(
@@ -923,11 +923,11 @@ return array(
 		'path'    => $vendorDir . '/composer/installers/src/Composer/Installers/ZikulaInstaller.php'
 	),
 	'Container' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-container.php'
 	),
 	'Hook_Manager' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-hook-manager.php'
 	),
 	'Jetpack_IXR_Client' => array(
@@ -959,523 +959,523 @@ return array(
 		'path'    => $vendorDir . '/automattic/jetpack-connection/legacy/class-jetpack-xmlrpc-server.php'
 	),
 	'Latest_Autoloader_Guard' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-latest-autoloader-guard.php'
 	),
 	'Manifest_Reader' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-manifest-reader.php'
 	),
 	'PHP_Autoloader' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-php-autoloader.php'
 	),
 	'Path_Processor' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-path-processor.php'
 	),
 	'Plugin_Locator' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-plugin-locator.php'
 	),
 	'Plugins_Handler' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-plugins-handler.php'
 	),
 	'Shutdown_Handler' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-shutdown-handler.php'
 	),
 	'Version_Loader' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-version-loader.php'
 	),
 	'Version_Selector' => array(
-		'version' => '5.0.15',
+		'version' => '5.0.16',
 		'path'    => $vendorDir . '/automattic/jetpack-autoloader/src/class-version-selector.php'
 	),
 	'WCPay\\Container' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Container.php'
 	),
 	'WCPay\\Internal\\DependencyManagement\\AbstractServiceProvider' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/DependencyManagement/AbstractServiceProvider.php'
 	),
 	'WCPay\\Internal\\DependencyManagement\\DelegateContainer\\LegacyContainer' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/DependencyManagement/DelegateContainer/LegacyContainer.php'
 	),
 	'WCPay\\Internal\\DependencyManagement\\DelegateContainer\\WooContainer' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/DependencyManagement/DelegateContainer/WooContainer.php'
 	),
 	'WCPay\\Internal\\DependencyManagement\\ExtendedContainer' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/DependencyManagement/ExtendedContainer.php'
 	),
 	'WCPay\\Internal\\DependencyManagement\\ServiceProvider\\GenericServiceProvider' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/DependencyManagement/ServiceProvider/GenericServiceProvider.php'
 	),
 	'WCPay\\Internal\\DependencyManagement\\ServiceProvider\\PaymentsServiceProvider' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/DependencyManagement/ServiceProvider/PaymentsServiceProvider.php'
 	),
 	'WCPay\\Internal\\DependencyManagement\\ServiceProvider\\ProxiesServiceProvider' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/DependencyManagement/ServiceProvider/ProxiesServiceProvider.php'
 	),
 	'WCPay\\Internal\\Logger' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/Logger.php'
 	),
 	'WCPay\\Internal\\LoggerContext' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/LoggerContext.php'
 	),
 	'WCPay\\Internal\\PluginManagement\\TranslationsLoader' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/PluginManagement/TranslationsLoader.php'
 	),
 	'WCPay\\Internal\\Proxy\\HooksProxy' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/Proxy/HooksProxy.php'
 	),
 	'WCPay\\Internal\\Proxy\\LegacyProxy' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/Proxy/LegacyProxy.php'
 	),
 	'WCPay\\Internal\\Proxy\\ProxyException' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/Proxy/ProxyException.php'
 	),
 	'WCPay\\Internal\\Service\\DuplicatePaymentPreventionService' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/Service/DuplicatePaymentPreventionService.php'
 	),
 	'WCPay\\Internal\\Service\\ExampleService' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/Service/ExampleService.php'
 	),
 	'WCPay\\Internal\\Service\\ExampleServiceWithDependencies' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/Service/ExampleServiceWithDependencies.php'
 	),
 	'WCPay\\Internal\\Service\\Level3Service' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/Service/Level3Service.php'
 	),
 	'WCPay\\Internal\\Service\\OrderService' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/Service/OrderService.php'
 	),
 	'WCPay\\Internal\\Service\\SessionService' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/src/Internal/Service/SessionService.php'
 	),
 	'WCPay\\MultiCurrency\\AdminNotices' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/AdminNotices.php'
 	),
 	'WCPay\\MultiCurrency\\Analytics' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Analytics.php'
 	),
 	'WCPay\\MultiCurrency\\AsyncPriceRenderer' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/AsyncPriceRenderer.php'
 	),
 	'WCPay\\MultiCurrency\\Compatibility' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Compatibility.php'
 	),
 	'WCPay\\MultiCurrency\\Compatibility\\BaseCompatibility' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Compatibility/BaseCompatibility.php'
 	),
 	'WCPay\\MultiCurrency\\Compatibility\\WooCommerceBookings' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Compatibility/WooCommerceBookings.php'
 	),
 	'WCPay\\MultiCurrency\\Compatibility\\WooCommerceDeposits' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Compatibility/WooCommerceDeposits.php'
 	),
 	'WCPay\\MultiCurrency\\Compatibility\\WooCommerceFedEx' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Compatibility/WooCommerceFedEx.php'
 	),
 	'WCPay\\MultiCurrency\\Compatibility\\WooCommerceNameYourPrice' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Compatibility/WooCommerceNameYourPrice.php'
 	),
 	'WCPay\\MultiCurrency\\Compatibility\\WooCommercePointsAndRewards' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Compatibility/WooCommercePointsAndRewards.php'
 	),
 	'WCPay\\MultiCurrency\\Compatibility\\WooCommercePreOrders' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Compatibility/WooCommercePreOrders.php'
 	),
 	'WCPay\\MultiCurrency\\Compatibility\\WooCommerceProductAddOns' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Compatibility/WooCommerceProductAddOns.php'
 	),
 	'WCPay\\MultiCurrency\\Compatibility\\WooCommerceSubscriptions' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Compatibility/WooCommerceSubscriptions.php'
 	),
 	'WCPay\\MultiCurrency\\Compatibility\\WooCommerceUPS' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Compatibility/WooCommerceUPS.php'
 	),
 	'WCPay\\MultiCurrency\\CountryFlags' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/CountryFlags.php'
 	),
 	'WCPay\\MultiCurrency\\Currency' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Currency.php'
 	),
 	'WCPay\\MultiCurrency\\CurrencySwitcherBlock' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/CurrencySwitcherBlock.php'
 	),
 	'WCPay\\MultiCurrency\\CurrencySwitcherWidget' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/CurrencySwitcherWidget.php'
 	),
 	'WCPay\\MultiCurrency\\Exceptions\\InvalidCurrencyException' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Exceptions/InvalidCurrencyException.php'
 	),
 	'WCPay\\MultiCurrency\\Exceptions\\InvalidCurrencyRateException' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Exceptions/InvalidCurrencyRateException.php'
 	),
 	'WCPay\\MultiCurrency\\FrontendCurrencies' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/FrontendCurrencies.php'
 	),
 	'WCPay\\MultiCurrency\\FrontendPrices' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/FrontendPrices.php'
 	),
 	'WCPay\\MultiCurrency\\Geolocation' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Geolocation.php'
 	),
 	'WCPay\\MultiCurrency\\Interfaces\\MultiCurrencyAccountInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Interfaces/MultiCurrencyAccountInterface.php'
 	),
 	'WCPay\\MultiCurrency\\Interfaces\\MultiCurrencyApiClientInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Interfaces/MultiCurrencyApiClientInterface.php'
 	),
 	'WCPay\\MultiCurrency\\Interfaces\\MultiCurrencyCacheInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Interfaces/MultiCurrencyCacheInterface.php'
 	),
 	'WCPay\\MultiCurrency\\Interfaces\\MultiCurrencyLocalizationInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Interfaces/MultiCurrencyLocalizationInterface.php'
 	),
 	'WCPay\\MultiCurrency\\Interfaces\\MultiCurrencySettingsInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Interfaces/MultiCurrencySettingsInterface.php'
 	),
 	'WCPay\\MultiCurrency\\Logger' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Logger.php'
 	),
 	'WCPay\\MultiCurrency\\MultiCurrency' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/MultiCurrency.php'
 	),
 	'WCPay\\MultiCurrency\\Notes\\NoteMultiCurrencyAvailable' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Notes/NoteMultiCurrencyAvailable.php'
 	),
 	'WCPay\\MultiCurrency\\RestController' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/RestController.php'
 	),
 	'WCPay\\MultiCurrency\\Settings' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Settings.php'
 	),
 	'WCPay\\MultiCurrency\\SettingsOnboardCta' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/SettingsOnboardCta.php'
 	),
 	'WCPay\\MultiCurrency\\StorefrontIntegration' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/StorefrontIntegration.php'
 	),
 	'WCPay\\MultiCurrency\\Tracking' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Tracking.php'
 	),
 	'WCPay\\MultiCurrency\\UserSettings' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/UserSettings.php'
 	),
 	'WCPay\\MultiCurrency\\Utils' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/multi-currency/Utils.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Constants\\PaymentMethodCapability' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Constants/PaymentMethodCapability.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\AffirmDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/AffirmDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\AfterpayDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/AfterpayDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\AlipayDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/AlipayDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\AmazonPayDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/AmazonPayDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\ApplePayDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/ApplePayDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\BancontactDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/BancontactDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\BecsDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/BecsDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\CardDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/CardDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\EpsDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/EpsDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\GiropayDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/GiropayDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\GooglePayDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/GooglePayDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\GrabPayDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/GrabPayDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\IdealDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/IdealDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\KlarnaDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/KlarnaDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\LinkDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/LinkDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\MultibancoDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/MultibancoDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\P24Definition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/P24Definition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\SepaDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/SepaDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\SofortDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/SofortDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Definitions\\WechatPayDefinition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Definitions/WechatPayDefinition.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Interfaces\\PaymentMethodDefinitionInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Interfaces/PaymentMethodDefinitionInterface.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Registry\\PaymentMethodDefinitionRegistry' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Registry/PaymentMethodDefinitionRegistry.php'
 	),
 	'WCPay\\PaymentMethods\\Configs\\Utils\\PaymentMethodUtils' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/includes/payment-methods/Configs/Utils/PaymentMethodUtils.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\ArgumentInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/ArgumentInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\ArgumentResolverInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/ArgumentResolverInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\ArgumentResolverTrait' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/ArgumentResolverTrait.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\DefaultValueArgument' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/DefaultValueArgument.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\DefaultValueInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/DefaultValueInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\LiteralArgument' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/LiteralArgument.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\LiteralArgumentInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/LiteralArgumentInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\Literal\\ArrayArgument' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/Literal/ArrayArgument.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\Literal\\BooleanArgument' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/Literal/BooleanArgument.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\Literal\\CallableArgument' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/Literal/CallableArgument.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\Literal\\FloatArgument' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/Literal/FloatArgument.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\Literal\\IntegerArgument' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/Literal/IntegerArgument.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\Literal\\ObjectArgument' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/Literal/ObjectArgument.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\Literal\\StringArgument' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/Literal/StringArgument.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\ResolvableArgument' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/ResolvableArgument.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Argument\\ResolvableArgumentInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Argument/ResolvableArgumentInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Container' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Container.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\ContainerAwareInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/ContainerAwareInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\ContainerAwareTrait' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/ContainerAwareTrait.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\DefinitionContainerInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/DefinitionContainerInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Definition\\Definition' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Definition/Definition.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Definition\\DefinitionAggregate' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Definition/DefinitionAggregate.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Definition\\DefinitionAggregateInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Definition/DefinitionAggregateInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Definition\\DefinitionInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Definition/DefinitionInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Exception\\ContainerException' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Exception/ContainerException.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Exception\\NotFoundException' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Exception/NotFoundException.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Inflector\\Inflector' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Inflector/Inflector.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Inflector\\InflectorAggregate' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Inflector/InflectorAggregate.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Inflector\\InflectorAggregateInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Inflector/InflectorAggregateInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\Inflector\\InflectorInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/Inflector/InflectorInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\ReflectionContainer' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/ReflectionContainer.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\ServiceProvider\\AbstractServiceProvider' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/ServiceProvider/AbstractServiceProvider.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\ServiceProvider\\BootableServiceProviderInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/ServiceProvider/BootableServiceProviderInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\ServiceProvider\\ServiceProviderAggregate' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/ServiceProvider/ServiceProviderAggregate.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\ServiceProvider\\ServiceProviderAggregateInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/ServiceProvider/ServiceProviderAggregateInterface.php'
 	),
 	'WCPay\\Vendor\\League\\Container\\ServiceProvider\\ServiceProviderInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/League/Container/ServiceProvider/ServiceProviderInterface.php'
 	),
 	'WCPay\\Vendor\\Psr\\Container\\ContainerExceptionInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/Psr/Container/ContainerExceptionInterface.php'
 	),
 	'WCPay\\Vendor\\Psr\\Container\\ContainerInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/Psr/Container/ContainerInterface.php'
 	),
 	'WCPay\\Vendor\\Psr\\Container\\NotFoundExceptionInterface' => array(
-		'version' => 'dev-release/10.6.0',
+		'version' => 'dev-release/10.8.0',
 		'path'    => $baseDir . '/lib/packages/Psr/Container/NotFoundExceptionInterface.php'
 	),
 );

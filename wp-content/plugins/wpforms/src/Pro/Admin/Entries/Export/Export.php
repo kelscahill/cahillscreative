@@ -2,6 +2,8 @@
 
 namespace WPForms\Pro\Admin\Entries\Export;
 
+use WPForms\Pro\Admin\Tools\Export\Views\Entries\Page;
+
 /**
  * Entries Export.
  *
@@ -14,7 +16,7 @@ class Export {
 	 *
 	 * @since 1.6.5
 	 */
-	const TASK_CLEANUP = 'wpforms_pro_admin_entries_export_remove_old_export_files';
+	public const TASK_CLEANUP = 'wpforms_pro_admin_entries_export_remove_old_export_files';
 
 	/**
 	 * Configuration.
@@ -295,6 +297,25 @@ class Export {
 	private function hooks() {
 
 		add_filter( 'wpforms_pro_admin_entries_export_form_data', [ $this, 'filter_form_data' ] );
+		add_filter( 'wpforms_admin_tools_views_export_get_sub_views', [ $this, 'register_entries_sub_view' ] );
+	}
+
+	/**
+	 * Register the Pro entries export sub-view.
+	 *
+	 * Replaces the Lite Education placeholder with the real functionality.
+	 *
+	 * @since 1.10.1
+	 *
+	 * @param array $views Array of export sub-views.
+	 *
+	 * @return array
+	 */
+	public function register_entries_sub_view( array $views ): array {
+
+		$views['entries'] = new Page();
+
+		return $views;
 	}
 
 	/**

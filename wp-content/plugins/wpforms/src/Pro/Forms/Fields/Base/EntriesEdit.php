@@ -61,9 +61,13 @@ class EntriesEdit {
 	 */
 	public function field_display( $entry_field, $field, $form_data ) {
 
+		if ( $this->field_object === null || ! method_exists( $this->field_object, 'field_display' ) ) {
+			return;
+		}
+
 		$value = $entry_field['value'] ?? '';
 
-		if ( $value !== '' ) {
+		if ( $value !== '' && method_exists( $this->field_object, 'get_field_populated_single_property_value_public' ) ) {
 			$field['properties'] = $this->field_object->get_field_populated_single_property_value_public( (string) $value, 'primary', $field['properties'], $field );
 		}
 
@@ -84,6 +88,10 @@ class EntriesEdit {
 	 */
 	public function validate( $field_id, $field_submit, $field_data, $form_data ) {
 
+		if ( $this->field_object === null || ! method_exists( $this->field_object, 'validate' ) ) {
+			return;
+		}
+
 		$this->field_object->validate( $field_id, $field_submit, $form_data );
 	}
 
@@ -98,6 +106,10 @@ class EntriesEdit {
 	 * @param array $form_data    Form data and settings.
 	 */
 	public function format( $field_id, $field_submit, $field_data, $form_data ) {
+
+		if ( $this->field_object === null || ! method_exists( $this->field_object, 'format' ) ) {
+			return;
+		}
 
 		$this->field_object->format( $field_id, $field_submit, $form_data );
 	}

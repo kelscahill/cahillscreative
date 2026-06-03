@@ -124,7 +124,11 @@ class Polylang
 		$langs = [];
 		$languages_list = $this->get_languages_list();
 		foreach( $languages_list as $data )
-			$langs[ $data->term_id ] = $data->name;
+			$langs[ $data->term_id ] = sprintf( '%s %s (%s)',
+				$data->name,
+				$data->locale,
+				$data->term_id,
+			);
 		$languages_select = $form->select( 'languages' )
 			->description( __( 'Select the string translations you wish to broadcast.', 'threewp_broadcast' ) )
 			->label( __( 'Languages', 'threewp_broadcast' ) )
@@ -155,12 +159,9 @@ class Polylang
 			$blogs = $blogs_select->get_post_value();
 			foreach( $languages_select->get_post_value() as $lang_id )
 			{
-				$lang = $languages_list[ $lang_id ];
-				$parent_slug = $lang->slug;
-				// Find the polylang_mo post for this lang.
-				$post_id = \PLL_MO::get_id( $languages_list[ $lang_id ] );
 				$meta_key = '_pll_strings_translations';
-				$meta_value = get_post_meta( $post_id, $meta_key, true );
+				$meta_value = get_term_meta( $lang_id, $meta_key, true );
+				$parent_locale = $languages_list[ $lang_id ]->locale;
 				foreach( $blogs as $blog_id )
 				{
 					switch_to_blog( $blog_id );
@@ -170,10 +171,10 @@ class Polylang
 					$languages_list = $this->get_languages_list();
 					foreach( $languages_list as $lang )
 					{
-						if ( $lang->slug != $parent_slug )
+						if ( $lang->locale != $parent_locale )
 							continue;
-						$child_post_id = \PLL_MO::get_id( $lang );
-						$this->debug( 'Updating child_post %s for language %s with %s', $child_post_id, $lang->term_id, $meta_value );
+						$child_lang_id = $lang->term_id;
+						$this->debug( 'Updating child term %s for language %s with %s', $child_lang_id, $parent_locale, $meta_value );
 						update_post_meta( $child_post_id, $meta_key, $meta_value );
 					}
 					restore_current_blog();

@@ -1,6 +1,44 @@
 # Changelog
 All notable changes to this project will be documented in this file and formatted via [this recommendation](https://keepachangelog.com/).
 
+## [1.10.1] - 2026-05-26
+### Added
+- New Entry Importer tool that allows importing form submission records into WPForms from other form plugins (Gravity Forms, Ninja Forms, Contact Form 7) or from an existing WPForms form.
+- Secret key fields in the admin settings are now masked for improved privacy.
+- Smart Form Editing allows modifying existing forms using natural language through an AI chat interface directly inside the form builder.
+
+### Changed
+- Updated `symfony/polyfill-mbstring` library to v1.37.0.
+- Updated `symfony/polyfill-iconv` library to v1.37.0.
+- Updated DOMPurify library to v3.4.1.
+
+### Fixed
+- Users couldn't continue the WPForms Challenge if they set their WPForms license during initial form configuration.
+- The wrong PayPal Commerce connection status was displayed in certain cases.
+- Form Builder was stuck loading when third-party plugins prevented WordPress footer scripts from rendering.
+- Settings input values were saved with a trailing space, which could cause unexpected behavior.
+- Smart tag parsing returned an invalid value when no smart tags were present in the content.
+- Form Builder was not loading on sites with inconsistent URL configurations (e.g., www vs non-www mismatch or root-relative URL plugins).
+- Field labels were not displayed for fields placed after a Repeater field in the Compact email template.
+- Undo/Redo feature didn't fully work for the Quiz addon.
+- Lack of spacing between the Page Break Progress Bar indicator and Offline forms notice.
+- PHP fatal errors could occur in some cases on PHP 8.0+.
+- The Allow/Deny list settings were being cleared when a form had more than one Email field.
+- Outdated image asset paths were causing 404 errors on sites using the Divi theme.
+- Failed email validation incorrectly redirected users to the first page instead of displaying the error message on the current page of multi-page forms with the Stripe Credit Card field.
+- Visually-hidden radio inputs in addons (e.g., Surveys & Polls Graph Settings menu) became partially visible as small dashes on entry view pages.
+- An incorrect error message was shown when the daily AI request limit was reached, referring to form generation instead of AI usage.
+- Duplicate confirmations, notifications, or Quiz Outcomes were created in the Form Builder when the "OK" button was clicked multiple times quickly.
+- Stripe payment submissions failed when a Multiple Choice payment field with HTML in its labels was controlled by Conditional Logic.
+
+## [1.10.0.5] - 2026-05-12
+### Changed
+- Updated intl-tel-input library to 28.0.4.
+
+### Fixed
+- Compatibility with WordPress 7.0.
+- Improved validation of submitted values for Multiple Choice, Checkboxes, Dropdown, and GDPR Checkbox fields to ensure only configured options are accepted.
+
 ## [1.10.0.4] - 2026-04-10
 ### Fixed
 - Stripe payment with Link and a 3D Secure card did not trigger the authentication modal, leaving the payment incomplete on Stripe.

@@ -4,9 +4,9 @@ Donate link: https://broadcast.plainviewplugins.com
 License: GPLv3
 Requires at least: 6.2
 Requires PHP: 8.0
-Stable tag: 52.03
+Stable tag: 52.04
 Tags: multipost, sharing, duplicate, syndication, marketing
-Tested up to: 6.9.1
+Tested up to: 7.0
 
 Network content syndication made easy! Automatically share content by multiposting between multisite blogs.
 
@@ -371,6 +371,11 @@ This will broadcast all normal product settings: SKU, price, etc.
 If your products have variations, a product image gallery, you want to sync stock, you want to sync orders, need the attribute taxonomies to be synced, you'll be wanting the <a href="https://broadcast.plainviewplugins.com/addon/woocommerce/">WooCommerce add-on</a>.
 
 == Changelog ==
+
+= 52.04 20260521 =
+
+* Added support for WP 7.0
+* New add-on: <a href="https://broadcast.plainviewplugins.com/addon/wp-job-manager/">WP Job Manager</a>: Adds support support for the <a href="https://wordpress.org/plugins/wp-job-manager/">WP Job Manager plugin</a>.
 
 = 52.03 20260325 =
 

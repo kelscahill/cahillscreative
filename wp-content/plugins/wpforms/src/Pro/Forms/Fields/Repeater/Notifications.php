@@ -196,6 +196,29 @@ class Notifications extends \WPForms\Pro\Forms\Fields\Base\Notifications {
 	}
 
 	/**
+	 * Get a single sub-field HTML message.
+	 *
+	 * Adds a distinguishing CSS class to the sub-field row for compact templates
+	 * so that label-hiding CSS targets only repeater rows, not fields outside.
+	 *
+	 * @since 1.10.1
+	 *
+	 * @param array $field Field data.
+	 *
+	 * @return string
+	 */
+	protected function get_subfield_message( array $field ): string {
+
+		$message = parent::get_subfield_message( $field );
+
+		if ( $message !== '' && $this->is_compact() ) {
+			$message = str_replace( '<tr class="field-', '<tr class="wpforms-repeater-field field-', $message );
+		}
+
+		return $message;
+	}
+
+	/**
 	 * Get field markup for an email.
 	 *
 	 * @since 1.9.3

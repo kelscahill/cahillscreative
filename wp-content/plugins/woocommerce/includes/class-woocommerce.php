@@ -29,6 +29,7 @@ use Automattic\WooCommerce\Internal\Settings\OptionSanitizer;
 use Automattic\WooCommerce\Internal\Utilities\LegacyRestApiStub;
 use Automattic\WooCommerce\Internal\Utilities\WebhookUtil;
 use Automattic\WooCommerce\Internal\Admin\EmailImprovements\EmailImprovements;
+use Automattic\WooCommerce\Internal\Email\DeferredEmailQueue;
 use Automattic\WooCommerce\Internal\Admin\Marketplace;
 use Automattic\WooCommerce\Proxies\LegacyProxy;
 use Automattic\WooCommerce\Utilities\{LoggingUtil, TimeUtil};
@@ -52,7 +53,7 @@ final class WooCommerce {
 	 *
 	 * @var string
 	 */
-	public $version = '10.6.2';
+	public $version = '10.8.1';
 
 	/**
 	 * WooCommerce Schema version.
@@ -321,6 +322,7 @@ final class WooCommerce {
 		add_action( 'after_setup_theme', array( $this, 'include_template_functions' ), 11 );
 		add_action( 'load-post.php', array( $this, 'includes' ) );
 		add_action( 'init', array( $this, 'init' ), 0 );
+		add_action( 'init', array( $this, 'maybe_init_order_reviews' ), 1 );
 		add_action( 'init', array( 'WC_Shortcodes', 'init' ) );
 		add_action( 'init', array( 'WC_Emails', 'init_transactional_emails' ) );
 		add_action( 'init', array( $this, 'add_image_sizes' ) );
@@ -368,6 +370,7 @@ final class WooCommerce {
 		$container->get( ComingSoonRequestHandler::class );
 		$container->get( OrderCountCacheService::class );
 		$container->get( EmailImprovements::class );
+		$container->get( DeferredEmailQueue::class );
 		$container->get( AddressProviderController::class );
 		$container->get( AbilitiesRegistry::class );
 		$container->get( MCPAdapterProvider::class );
@@ -392,10 +395,11 @@ final class WooCommerce {
 		$container->get( Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\WooPayments\WooPaymentsController::class )->register();
 		$container->get( Automattic\WooCommerce\Internal\Utilities\LegacyRestApiStub::class )->register();
 		$container->get( Automattic\WooCommerce\Internal\Email\EmailStyleSync::class )->register();
-		$container->get( Automattic\WooCommerce\Internal\Fulfillments\FulfillmentsController::class )->register();
+		$container->get( Automattic\WooCommerce\Admin\Features\Fulfillments\FulfillmentsController::class )->register();
 		$container->get( Automattic\WooCommerce\Internal\Admin\Agentic\AgenticController::class )->register();
 		$container->get( Automattic\WooCommerce\Internal\ProductFeed\ProductFeed::class )->register();
 		$container->get( Automattic\WooCommerce\Internal\PushNotifications\PushNotifications::class )->register();
+		$container->get( Automattic\WooCommerce\Internal\Orders\PointOfSaleEmailHandler::class )->register();
 
 		// Classes inheriting from RestApiControllerBase.
 		$container->get( Automattic\WooCommerce\Internal\ReceiptRendering\ReceiptRenderingRestController::class )->register();
@@ -408,6 +412,9 @@ final class WooCommerce {
 
 		$container->get( Automattic\WooCommerce\Internal\ProductFilters\MainQueryController::class )->register();
 		$container->get( Automattic\WooCommerce\Internal\ProductFilters\CacheController::class )->register();
+
+		// Code+GraphQL API.
+		Automattic\WooCommerce\Internal\Api\Main::register();
 
 		// Integration point between legacy reports and orders APIs (the reports caches invalidation focused).
 		\WC_Admin_Reports::register_orders_hook_handlers();
@@ -954,6 +961,25 @@ final class WooCommerce {
 	}
 
 	/**
+	 * Resolve the OrderReviews services when the `customer_review_request`
+	 * feature flag is on. Hooked to `init` priority 1 from `init_hooks()`
+	 * so it runs after the textdomain is loaded.
+	 *
+	 * @since 10.8.0
+	 * @internal
+	 */
+	public function maybe_init_order_reviews(): void {
+		if ( ! \Automattic\WooCommerce\Utilities\FeaturesUtil::feature_is_enabled( 'customer_review_request' ) ) {
+			return;
+		}
+		$container = wc_get_container();
+		$container->get( \Automattic\WooCommerce\Internal\OrderReviews\Scheduler::class );
+		$container->get( \Automattic\WooCommerce\Internal\OrderReviews\Endpoint::class );
+		$container->get( \Automattic\WooCommerce\Internal\OrderReviews\SubmissionHandler::class );
+		$container->get( \Automattic\WooCommerce\Internal\OrderReviews\ItemEligibility::class );
+	}
+
+	/**
 	 * Load Localisation files.
 	 *
 	 * Note: the first-loaded translation file overrides any following ones if the same translation is present.
@@ -1179,7 +1205,8 @@ final class WooCommerce {
 	 * @internal For exclusive usage of WooCommerce core, backwards compatibility not guaranteed.
 	 */
 	public function robots_txt( $output ) {
-		$path = ( ! empty( $site_url['path'] ) ) ? $site_url['path'] : '';
+		$site_url = wp_parse_url( site_url() );
+		$path     = ( ! empty( $site_url['path'] ) ) ? $site_url['path'] : '';
 
 		$lines       = preg_split( '/\r\n|\r|\n/', $output );
 		$agent_index = array_search( 'User-agent: *', $lines, true );
@@ -1659,7 +1686,7 @@ final class WooCommerce {
 
 		as_schedule_recurring_action( $tomorrow_3am, DAY_IN_SECONDS, 'woocommerce_cleanup_rate_limits_wrapper', array(), 'woocommerce', true );
 
-		as_schedule_recurring_action( time(), DAY_IN_SECONDS, 'wc_admin_daily_wrapper', array(), 'woocommerce', true );
+		as_schedule_recurring_action( $tomorrow_3am, DAY_IN_SECONDS, 'wc_admin_daily_wrapper', array(), 'woocommerce', true );
 
 		// Note: this is potentially redundant when the core package exists.
 		as_schedule_single_action( time() + 10, 'generate_category_lookup_table_wrapper', array(), 'woocommerce', true );

@@ -1,3 +1,9 @@
+<strong>52.04</strong> 20260521
+
+New add-on: <a href="https://broadcast.plainviewplugins.com/addon/wp-job-manager/">WP Job Manager</a>: Adds support support for the <a href="https://wordpress.org/plugins/wp-job-manager/">WP Job Manager plugin</a>.
+<a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for the global classes in v4.
+<a href="https://broadcast.plainviewplugins.com/addon/polylang/">Polylang</a>: Fix broadcasting of string translations since a Polylang function has disappeared.
+
 <strong>52.03</strong> 20260325
 
 <a href="https://broadcast.plainviewplugins.com/addon/elementor/">Elementor</a>: Add support for the eael-filterable-gallery element.

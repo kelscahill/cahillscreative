@@ -14,6 +14,7 @@ class ComposerStaticInitd86fd562f397608bc7c550fc81c43400
         'p' => 
         array (
             'plainview\\sdk_broadcast\\' => 24,
+            'plainview\\sdk\\' => 14,
         ),
     );
 
@@ -23,6 +24,10 @@ class ComposerStaticInitd86fd562f397608bc7c550fc81c43400
             0 => __DIR__ . '/../..' . '/src',
         ),
         'plainview\\sdk_broadcast\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/plainview/sdk',
+        ),
+        'plainview\\sdk\\' => 
         array (
             0 => __DIR__ . '/..' . '/plainview/sdk',
         ),

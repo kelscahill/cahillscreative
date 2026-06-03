@@ -1290,6 +1290,7 @@ class Edit {
 			'fields'        => wp_json_encode( $this->get_updated_entry_fields( $updated_fields ) ),
 			'date_modified' => $this->date_modified,
 		];
+
 		wpforms()->obj( 'entry' )->update( $this->entry_id, $entry_data, '', 'edit_entry', [ 'cap' => 'edit_entry_single' ] );
 
 		// Add record to entry meta.
@@ -1606,21 +1607,36 @@ class Edit {
 	 *
 	 * @return EntriesEdit
 	 */
-	private function get_entries_edit_field_object( $type ) {
+	public function get_entries_edit_field_object( string $type ): EntriesEdit {
 
 		// Runtime objects' holder.
 		static $objects = [];
 
-		// Getting the class name.
+		if ( ! empty( $objects[ $type ] ) ) {
+			return $objects[ $type ];
+		}
+
 		$class_name = implode( '', array_map( 'ucfirst', explode( '-', $type ) ) );
 		$class_name = '\WPForms\Pro\Forms\Fields\\' . $class_name . '\EntriesEdit';
 
-		// Init object if needed.
-		if ( empty( $objects[ $type ] ) ) {
-			$objects[ $type ] = class_exists( $class_name ) ? new $class_name() : new EntriesEdit( $type );
+		$objects[ $type ] = class_exists( $class_name ) ? new $class_name() : new EntriesEdit( $type );
+
+		/**
+		 * Get an entry editing field object.
+		 *
+		 * @since 1.6.0
+		 *
+		 * @param string $type Field type.
+		 *
+		 * @return EntriesEdit Entry editing field object.
+		 */
+		$filtered_object = apply_filters( "wpforms_pro_admin_entries_edit_field_object_$type", $objects[ $type ] );
+
+		if ( $filtered_object instanceof EntriesEdit ) {
+			$objects[ $type ] = $filtered_object;
 		}
 
-		return apply_filters( "wpforms_pro_admin_entries_edit_field_object_{$type}", $objects[ $type ] );
+		return $objects[ $type ];
 	}
 
 	/**
