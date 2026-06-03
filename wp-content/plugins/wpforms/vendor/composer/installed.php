@@ -108,7 +108,7 @@
             'aliases' => array(
                 0 => '9999999-dev',
             ),
-            'reference' => '9f3d152a7085bb58b982d329d90907cb32750fbe',
+            'reference' => 'c5e319c36bb8e95f3662f05e46f16e89c44da480',
             'dev_requirement' => true,
         ),
         'square/square' => array(

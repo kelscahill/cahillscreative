@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file and formatted via [this recommendation](https://keepachangelog.com/).
 
+## [1.10.0.4] - 2026-04-10
+### Fixed
+- Stripe payment with Link and a 3D Secure card did not trigger the authentication modal, leaving the payment incomplete on Stripe.
+
+## [1.10.0.3] - 2026-04-08
+### Fixed
+- PayPal Connection URL was cached and contains the old site URL after the site migration.
+
 ## [1.10.0.2] - 2026-03-26
 ### Fixed
 - Dropdown field with a choice label containing quote characters was causing a JavaScript error in the form builder, preventing fields from being added correctly.
