@@ -2,16 +2,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Perfmatters\n"
-"POT-Creation-Date: 2025-12-11 14:05-0800\n"
-"PO-Revision-Date: 2026-01-18 11:24+0100\n"
-"Last-Translator: Radics József Géza\n"
+"POT-Creation-Date: 2026-05-27 13:52-0700\n"
+"PO-Revision-Date: 2026-06-13 15:44+0200\n"
+"Last-Translator: Radics József Géza <hello@slyweb.hu>\n"
 "Language-Team: József Géza Radics - www.slyweb.hu\n"
 "Language: hu_HU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.9\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: perfmatters.php\n"
@@ -88,7 +88,7 @@ msgstr "A licencet nem lehetett eltávolítani."
 msgid "Used CSS cleared for all network sites."
 msgstr "A használt CSS minden hálózati weboldalon megtisztítva."
 
-#: inc/CLI.php:105 inc/classes/CSS.php:869 inc/classes/CSS.php:909
+#: inc/CLI.php:105 inc/classes/CSS.php:972 inc/classes/CSS.php:1012
 msgid "Used CSS cleared."
 msgstr "Használt CSS megtisztítva."
 
@@ -96,7 +96,7 @@ msgstr "Használt CSS megtisztítva."
 msgid "Minified CSS cleared for all network sites."
 msgstr "A tömörített CSS törölve lett az összes hálózati oldalon."
 
-#: inc/CLI.php:130 inc/classes/CSS.php:921
+#: inc/CLI.php:130 inc/classes/CSS.php:1024
 msgid "Minified CSS cleared."
 msgstr "Minimalizált CSS törölve."
 
@@ -104,7 +104,7 @@ msgstr "Minimalizált CSS törölve."
 msgid "Minified JS cleared for all network sites."
 msgstr "A tömörített JavaScript törölve lett az összes hálózati oldalon."
 
-#: inc/CLI.php:155 inc/classes/JS.php:379
+#: inc/CLI.php:155 inc/classes/JS.php:380
 msgid "Minified JS cleared."
 msgstr "Minimizált JS törölve."
 
@@ -116,8 +116,9 @@ msgstr "A helyi betűtípusok törölve lettek az összes hálózati oldalon."
 msgid "Local fonts cleared."
 msgstr "Helyi betűtípusok törölve."
 
-#: inc/CLI.php:199 inc/classes/PMCS/PMCS.php:313
-#: inc/classes/PMCS/Snippet.php:66 inc/classes/PMCS/Snippet.php:243
+#: inc/CLI.php:199 inc/classes/PMCS/PMCS.php:355
+#: inc/classes/PMCS/Snippet.php:65 inc/classes/PMCS/Snippet.php:70
+#: inc/classes/PMCS/Snippet.php:251 inc/classes/PMCS/Snippet.php:257
 msgid "File not found."
 msgstr "Fájl nem található."
 
@@ -141,32 +142,32 @@ msgstr "Opció engedélyezve."
 msgid "Option disabled."
 msgstr "Opció letiltva."
 
-#: inc/admin.php:37 inc/admin.php:98 inc/classes/PMCS/Conditions.php:213
-#: inc/classes/PMCS/Conditions.php:296
+#: inc/admin.php:37 inc/admin.php:102 inc/classes/PMCS/Conditions.php:223
+#: inc/classes/PMCS/Conditions.php:306
 msgid "General"
 msgstr "Általános"
 
-#: inc/admin.php:38 inc/admin.php:106
+#: inc/admin.php:38 inc/admin.php:110
 msgid "JavaScript"
 msgstr "JavaScript"
 
-#: inc/admin.php:39 inc/admin.php:114
+#: inc/admin.php:39 inc/admin.php:118
 msgid "CSS"
 msgstr "CSS"
 
-#: inc/admin.php:40 inc/admin.php:121
+#: inc/admin.php:40 inc/admin.php:125
 msgid "Preloading"
 msgstr "Előtöltés"
 
-#: inc/admin.php:41 inc/admin.php:131 inc/classes/Meta.php:144
+#: inc/admin.php:41 inc/admin.php:135 inc/classes/Meta.php:144
 msgid "Lazy Loading"
 msgstr "Késleltetett betöltés"
 
-#: inc/admin.php:42 inc/admin.php:141
+#: inc/admin.php:42 inc/admin.php:145
 msgid "Fonts"
 msgstr "Betűtípusok"
 
-#: inc/admin.php:43 inc/admin.php:147
+#: inc/admin.php:43 inc/admin.php:151
 msgid "CDN"
 msgstr "CDN"
 
@@ -174,89 +175,139 @@ msgstr "CDN"
 msgid "Analytics"
 msgstr "Analitika"
 
-#: inc/admin.php:45 inc/code.php:5 inc/code.php:28 inc/pmcs.php:2
-#: inc/pmcs.php:141
+#: inc/admin.php:47 inc/code.php:8 inc/code.php:27 inc/pmcs.php:2
+#: inc/pmcs.php:138
 msgid "Code"
 msgstr "Kód"
 
-#: inc/admin.php:51 inc/admin.php:168
+#: inc/admin.php:54 inc/admin.php:174
 msgid "Tools"
 msgstr "Eszközök"
 
-#: inc/admin.php:52 inc/admin.php:175
+#: inc/admin.php:55 inc/admin.php:181
 msgid "Database"
 msgstr "Adatbázis"
 
-#: inc/admin.php:57
+#: inc/admin.php:60
 msgid "Network"
 msgstr "Hálózat"
 
-#: inc/admin.php:62 inc/license.php:58
+#: inc/admin.php:65 inc/license.php:58
 msgid "License"
 msgstr "Licensz"
 
-#: inc/admin.php:66 inc/support.php:2 perfmatters.php:193
+#: inc/admin.php:69 inc/support.php:2 perfmatters.php:242
 msgid "Support"
 msgstr "Támogatás"
 
-#: inc/admin.php:75
+#: inc/admin.php:78
 msgid "Get 25% off our social sharing plugin."
 msgstr "Szerezd meg a 25% kedvezményt közösségi megosztással."
 
-#: inc/admin.php:86
+#: inc/admin.php:90
 msgid "Version"
 msgstr "Verzió"
 
-#: inc/admin.php:153
+#: inc/admin.php:157
 msgid "Google Analytics"
 msgstr "Google Analytics"
 
-#: inc/admin.php:182 inc/code.php:21 inc/script_manager.php:417
+#: inc/admin.php:188 inc/script_manager.php:417
 msgid "Save Changes"
 msgstr "Módosítások mentése"
 
-#: inc/classes/Ajax.php:32
+#: inc/classes/Admin/CodeMirror.php:58
+msgid "No file uploaded."
+msgstr "Nincs fájl feltöltve."
+
+#: inc/classes/Admin/CodeMirror.php:62
+msgid "Invalid upload."
+msgstr "Érvénytelen feltöltés."
+
+#: inc/classes/Admin/CodeMirror.php:67
+msgid "Unable to resolve upload directory."
+msgstr "Nem sikerült feloldani a feltöltési könyvtárat."
+
+#: inc/classes/Admin/CodeMirror.php:71
+msgid "Unable to create upload directory."
+msgstr "Nem sikerült létrehozni az upload könyvtárat."
+
+#: inc/classes/Admin/CodeMirror.php:78
+msgid "Please upload a valid .css file."
+msgstr "Kérlek, tölts fel egy érvényes .css fájlt."
+
+#: inc/classes/Admin/CodeMirror.php:83
+msgid "The uploaded file could not be moved."
+msgstr "A feltöltött fájlt nem sikerült áthelyezni."
+
+#: inc/classes/Admin/CodeMirror.php:97 inc/functions_script_manager.php:690
+#: inc/functions_script_manager.php:702 inc/functions_script_manager.php:855
+#: inc/functions_script_manager.php:867 inc/settings.php:322
+#: inc/settings.php:341 inc/settings.php:360 inc/settings.php:380
+#: inc/settings.php:408 inc/settings.php:454 inc/settings.php:655
+#: inc/settings.php:844 inc/settings.php:864 inc/settings.php:1084
+#: inc/settings.php:1185 inc/settings.php:1207 inc/settings.php:1283
+#: inc/settings.php:1467 inc/settings.php:1562 inc/settings.php:1760
+#: inc/settings.php:1779 inc/settings.php:2698
+msgid "Default"
+msgstr "Alapértelmezett"
+
+#: inc/classes/Admin/CodeMirror.php:110
+msgid "Custom"
+msgstr "Egyedi"
+
+#: inc/classes/Ajax.php:53 perfmatters.php:226
 msgid "Settings saved."
 msgstr "A beállításokat elmentettük."
 
-#: inc/classes/Ajax.php:48
+#: inc/classes/Ajax.php:76 perfmatters.php:228
 msgid "Successfully restored default options."
 msgstr "Sikeresen visszaállította az alapértelmezett beállításokat."
 
-#: inc/classes/Ajax.php:64
+#: inc/classes/Ajax.php:93
 msgid "Settings exported."
 msgstr "Beállítások exportálva."
 
-#: inc/classes/Ajax.php:81 inc/classes/PMCS/Ajax.php:82
+#: inc/classes/Ajax.php:110 inc/classes/PMCS/Ajax.php:90
 msgid "No import file given."
 msgstr "Nincs importálandó fájl megadva."
 
-#: inc/classes/Ajax.php:90 inc/classes/PMCS/Ajax.php:91
+#: inc/classes/Ajax.php:119 inc/classes/PMCS/Ajax.php:99
 msgid "Please upload a valid .json file."
 msgstr "Kérjük, töltsön fel egy érvényes .json fájlt."
 
-#: inc/classes/Ajax.php:106
+#: inc/classes/Ajax.php:135 perfmatters.php:227
 msgid "Successfully imported Perfmatters settings."
 msgstr "Sikeresen importálta a Perfmatters beállításokat."
 
-#: inc/classes/Ajax.php:126 inc/classes/PMCS/Snippet.php:11
+#: inc/classes/Ajax.php:156 inc/classes/PMCS/Snippet.php:11
 msgid "Permission denied."
 msgstr "Hozzáférés megtagadva."
 
-#: inc/classes/Ajax.php:133 inc/classes/PMCS/Snippet.php:16
+#: inc/classes/Ajax.php:163 inc/classes/PMCS/Snippet.php:16
 msgid "Nonce is invalid."
 msgstr "A nonce érvénytelen."
 
-#: inc/classes/CSS.php:835 inc/classes/CSS.php:849 inc/classes/Meta.php:85
-#: inc/settings.php:922 inc/settings.php:931
+#: inc/classes/Analytics.php:142 inc/classes/General.php:849
+#: inc/classes/General.php:865 inc/functions_script_manager.php:1542
+#: inc/functions_script_manager.php:1550
+msgid "Perfmatters Warning"
+msgstr "Perfmatters figyelmeztetés"
+
+#: inc/classes/Analytics.php:143
+msgid "Local Analytics is enabled but no Tracking ID is set."
+msgstr "A helyi analitika engedélyezve van, de nincs nyomkövető ID beállítva."
+
+#: inc/classes/CSS.php:938 inc/classes/CSS.php:952 inc/classes/Meta.php:85
+#: inc/settings.php:927 inc/settings.php:936
 msgid "Clear Used CSS"
 msgstr "Használt CSS törlése"
 
-#: inc/classes/CSS.php:835 inc/classes/PMCS/ListTable.php:281
+#: inc/classes/CSS.php:938 inc/classes/PMCS/ListTable.php:281
 msgid "All"
 msgstr "Összes"
 
-#: inc/classes/CSS.php:849
+#: inc/classes/CSS.php:952
 msgid "Current"
 msgstr "Jelenlegi"
 
@@ -291,15 +342,15 @@ msgstr "Revíziók"
 msgid "Auto Drafts"
 msgstr "Automatikus piszkozatok"
 
-#: inc/classes/DatabaseOptimizer.php:179 inc/settings.php:2040
+#: inc/classes/DatabaseOptimizer.php:179 inc/settings.php:2045
 msgid "Trashed Posts"
 msgstr "Lomtárba helyezett hozzászólások"
 
-#: inc/classes/DatabaseOptimizer.php:180 inc/settings.php:2055
+#: inc/classes/DatabaseOptimizer.php:180 inc/settings.php:2060
 msgid "Spam Comments"
 msgstr "Spam megjegyzések"
 
-#: inc/classes/DatabaseOptimizer.php:181 inc/settings.php:2070
+#: inc/classes/DatabaseOptimizer.php:181 inc/settings.php:2075
 msgid "Trashed Comments"
 msgstr "Törölt hozzászólások"
 
@@ -311,7 +362,7 @@ msgstr "Lejárt tranziensek"
 msgid "Transients"
 msgstr "Átmenetek"
 
-#: inc/classes/DatabaseOptimizer.php:184 inc/settings.php:2115
+#: inc/classes/DatabaseOptimizer.php:184 inc/settings.php:2120
 msgid "Tables"
 msgstr "Táblák"
 
@@ -367,19 +418,56 @@ msgstr "Optimalizálatlan tábla"
 msgid "Database scan completed."
 msgstr "Adatbázis ellenőrzése befejeződött."
 
-#: inc/classes/LazyLoad.php:171
+#: inc/classes/General.php:371
+msgid "RSS feeds have been disabled."
+msgstr "Az RSS-hírcsatornák le lettek tiltva."
+
+#: inc/classes/General.php:435
+msgid "Sorry, you do not have permission to make REST API requests."
+msgstr "Sajnáljuk, nincs jogosultsága REST API-kérésekhez."
+
+#: inc/classes/General.php:526 inc/classes/General.php:632
+#: inc/classes/General.php:637
+msgid "Comments are disabled."
+msgstr "A hozzászólások le vannak tiltva."
+
+#: inc/classes/General.php:850
+msgid ""
+"WP_POST_REVISIONS is already enabled somewhere else on your site. We suggest "
+"only enabling this feature in one place."
+msgstr ""
+"A WP_POST_REVISIONS már engedélyezve van valahol máshol a weboldalon. "
+"Javasoljuk, hogy csak egy helyen engedélyezd ezt a funkciót."
+
+#: inc/classes/General.php:866
+msgid ""
+"AUTOSAVE_INTERVAL is already enabled somewhere else on your site. We suggest "
+"only enabling this feature in one place."
+msgstr ""
+"Az AUTOSAVE_INTERVAL már engedélyezve van valahol máshol a weboldalon. "
+"Javasoljuk, hogy csak egy helyen engedélyezd ezt a funkciót."
+
+#: inc/classes/General.php:1128 inc/settings.php:475
+msgid "This has been disabled."
+msgstr "Ezt letiltották."
+
+#: inc/classes/LazyLoad/Iframes.php:217
 msgid "video"
 msgstr "videó"
+
+#: inc/classes/LazyLoad/Integrations/Elementor.php:202
+msgid "YouTube video player"
+msgstr "YouTube videólejátszó"
 
 #: inc/classes/Meta.php:124
 msgid "Defer JavaScript"
 msgstr "JavaScript halasztása"
 
-#: inc/classes/Meta.php:128 inc/settings.php:627
+#: inc/classes/Meta.php:128 inc/settings.php:631
 msgid "Delay JavaScript"
 msgstr "JavaScript késleltetés"
 
-#: inc/classes/Meta.php:132 inc/settings.php:761
+#: inc/classes/Meta.php:132 inc/settings.php:766
 msgid "Minify JavaScript"
 msgstr "Minimalizálja a JavaScriptet"
 
@@ -387,7 +475,7 @@ msgstr "Minimalizálja a JavaScriptet"
 msgid "Unused CSS"
 msgstr "Nem Használt CSS"
 
-#: inc/classes/Meta.php:140 inc/settings.php:943
+#: inc/classes/Meta.php:140 inc/settings.php:948
 msgid "Minify CSS"
 msgstr "Minimalizálja a CSS-t"
 
@@ -423,94 +511,94 @@ msgstr "Kódrészlet aktiválva."
 msgid "Snippet deactivated."
 msgstr "Kódrészlet deaktiválva."
 
-#: inc/classes/PMCS/Ajax.php:60
+#: inc/classes/PMCS/Ajax.php:60 inc/classes/PMCS/Transfer.php:49
 msgid "No valid snippets found."
 msgstr "Nem található érvényes kódrészlet."
 
-#: inc/classes/PMCS/Ajax.php:65
+#: inc/classes/PMCS/Ajax.php:73
 msgid "Snippets exported."
 msgstr "Kódrészlet exportálva."
 
-#: inc/classes/PMCS/Ajax.php:143
+#: inc/classes/PMCS/Ajax.php:161
 msgid "No snippets were imported."
 msgstr "Nem lett importálva egyetlen kódrészlet sem."
 
-#: inc/classes/PMCS/Ajax.php:153
+#: inc/classes/PMCS/Ajax.php:171
 #, php-format
 msgid "Successfully imported %d Perfmatters code snippet."
 msgid_plural "Successfully imported %d Perfmatters code snippets."
 msgstr[0] "A %d Perfmatters kódrészletet sikeresen importálva."
 msgstr[1] "A %d Perfmatters kódrészletetek sikeresen importálva."
 
-#: inc/classes/PMCS/Conditions.php:215
+#: inc/classes/PMCS/Conditions.php:225
 msgid "Front Page"
 msgstr "Kezdő oldal"
 
-#: inc/classes/PMCS/Conditions.php:216
+#: inc/classes/PMCS/Conditions.php:226
 msgid "Blog"
 msgstr "Blog"
 
-#: inc/classes/PMCS/Conditions.php:217
+#: inc/classes/PMCS/Conditions.php:227
 msgid "All Singular"
 msgstr "Minden egyedi"
 
-#: inc/classes/PMCS/Conditions.php:218
+#: inc/classes/PMCS/Conditions.php:228
 msgid "All Archives"
 msgstr "Összes archívum"
 
-#: inc/classes/PMCS/Conditions.php:219
+#: inc/classes/PMCS/Conditions.php:229
 msgid "Author Archives"
 msgstr "Szerzői archívum"
 
-#: inc/classes/PMCS/Conditions.php:220
+#: inc/classes/PMCS/Conditions.php:230
 msgid "Date Archives"
 msgstr "Dátum archívumok"
 
-#: inc/classes/PMCS/Conditions.php:221
+#: inc/classes/PMCS/Conditions.php:231
 msgid "Search Results"
 msgstr "Keresési találatok"
 
-#: inc/classes/PMCS/Conditions.php:222
+#: inc/classes/PMCS/Conditions.php:232
 msgid "No Search Results"
 msgstr "Nincs találat"
 
-#: inc/classes/PMCS/Conditions.php:223 inc/functions_script_manager.php:584
-#: inc/functions_script_manager.php:750 inc/settings.php:451
+#: inc/classes/PMCS/Conditions.php:233 inc/functions_script_manager.php:585
+#: inc/functions_script_manager.php:751 inc/settings.php:455
 msgid "404 Template"
 msgstr "404 sablon"
 
-#: inc/classes/PMCS/Conditions.php:224
+#: inc/classes/PMCS/Conditions.php:234
 msgid "Paginated Results"
 msgstr "Oldalszámozott eredmények"
 
-#: inc/classes/PMCS/Conditions.php:248
+#: inc/classes/PMCS/Conditions.php:258
 msgid "Archives"
 msgstr "Archívumok"
 
-#: inc/classes/PMCS/Conditions.php:250 inc/classes/PMCS/Conditions.php:282
+#: inc/classes/PMCS/Conditions.php:260 inc/classes/PMCS/Conditions.php:292
 msgid "Archive"
 msgstr "Archívum"
 
-#: inc/classes/PMCS/Conditions.php:298 inc/functions_script_manager.php:690
-#: inc/functions_script_manager.php:855
+#: inc/classes/PMCS/Conditions.php:308 inc/functions_script_manager.php:691
+#: inc/functions_script_manager.php:856
 msgid "Logged In"
 msgstr "Bejelentkezve"
 
-#: inc/classes/PMCS/Conditions.php:299 inc/functions_script_manager.php:691
-#: inc/functions_script_manager.php:856
+#: inc/classes/PMCS/Conditions.php:309 inc/functions_script_manager.php:692
+#: inc/functions_script_manager.php:857
 msgid "Logged Out"
 msgstr "Kijelentkezve"
 
-#: inc/classes/PMCS/Conditions.php:303
+#: inc/classes/PMCS/Conditions.php:313
 msgid "Roles"
 msgstr "Szerepkörök"
 
-#: inc/classes/PMCS/Conditions.php:334
+#: inc/classes/PMCS/Conditions.php:344
 msgid "Select an option"
 msgstr "Válasszon ki egy lehetőséget"
 
-#: inc/classes/PMCS/Conditions.php:357 inc/settings.php:861
-#: inc/settings.php:2527 inc/settings.php:2604 inc/settings.php:2646
+#: inc/classes/PMCS/Conditions.php:367 inc/settings.php:866
+#: inc/settings.php:2547 inc/settings.php:2623 inc/settings.php:2665
 msgid "Remove"
 msgstr "Eltávolítás"
 
@@ -518,20 +606,20 @@ msgstr "Eltávolítás"
 msgid "Name"
 msgstr "Név"
 
-#: inc/classes/PMCS/ListTable.php:42 inc/functions_script_manager.php:331
-#: inc/pmcs.php:121
+#: inc/classes/PMCS/ListTable.php:42 inc/functions_script_manager.php:332
+#: inc/pmcs.php:118
 msgid "Type"
 msgstr "Típus"
 
-#: inc/classes/PMCS/ListTable.php:43 inc/pmcs.php:395
+#: inc/classes/PMCS/ListTable.php:43 inc/pmcs.php:417
 msgid "Description"
 msgstr "Leírás"
 
-#: inc/classes/PMCS/ListTable.php:44 inc/pmcs.php:362
+#: inc/classes/PMCS/ListTable.php:44 inc/pmcs.php:384
 msgid "Tags"
 msgstr "Címkék"
 
-#: inc/classes/PMCS/ListTable.php:45 inc/pmcs.php:172
+#: inc/classes/PMCS/ListTable.php:45 inc/pmcs.php:171
 msgid "Author"
 msgstr "Szerző"
 
@@ -539,11 +627,11 @@ msgstr "Szerző"
 msgid "Created"
 msgstr "Létrehozva"
 
-#: inc/classes/PMCS/ListTable.php:47 inc/pmcs.php:180
+#: inc/classes/PMCS/ListTable.php:47 inc/pmcs.php:179
 msgid "Modified"
 msgstr "Módosítva"
 
-#: inc/classes/PMCS/ListTable.php:48 inc/pmcs.php:160 inc/settings.php:2542
+#: inc/classes/PMCS/ListTable.php:48 inc/pmcs.php:159 inc/settings.php:2562
 msgid "Priority"
 msgstr "Fontosság"
 
@@ -551,11 +639,11 @@ msgstr "Fontosság"
 msgid "Edit"
 msgstr "Szerkesztés"
 
-#: inc/classes/PMCS/ListTable.php:99 inc/classes/PMCS/ListTable.php:302
+#: inc/classes/PMCS/ListTable.php:99 inc/classes/PMCS/ListTable.php:300
 msgid "Export"
 msgstr "Exportálás"
 
-#: inc/classes/PMCS/ListTable.php:100 inc/classes/PMCS/ListTable.php:303
+#: inc/classes/PMCS/ListTable.php:100 inc/classes/PMCS/ListTable.php:301
 msgid "Delete"
 msgstr "Törlés"
 
@@ -567,82 +655,86 @@ msgstr "Aktív"
 msgid "Inactive"
 msgstr "Inaktív"
 
-#: inc/classes/PMCS/ListTable.php:300
+#: inc/classes/PMCS/ListTable.php:298
 msgid "Activate"
 msgstr "Aktiválás"
 
-#: inc/classes/PMCS/ListTable.php:301
+#: inc/classes/PMCS/ListTable.php:299
 msgid "Deactivate"
 msgstr "Deaktiválás"
 
-#: inc/classes/PMCS/ListTable.php:319
+#: inc/classes/PMCS/ListTable.php:317
 msgid "All Types"
 msgstr "Összes típus"
 
-#: inc/classes/PMCS/ListTable.php:328
+#: inc/classes/PMCS/ListTable.php:326
 msgid "Filter"
 msgstr "Szűrő"
 
-#: inc/classes/PMCS/ListTable.php:340
+#: inc/classes/PMCS/ListTable.php:338
 msgid "Screen Options"
 msgstr "Képernyő beállítások"
 
-#: inc/classes/PMCS/PMCS.php:81
+#: inc/classes/PMCS/PMCS.php:101
 msgid ""
 "This will permanently delete the code snippet. Are you sure you want to "
 "proceed?"
 msgstr "Ez véglegesen törli a kódrészletet. Biztosan folytatni szeretnéd?"
 
-#: inc/classes/PMCS/PMCS.php:82 inc/code.php:103
+#: inc/classes/PMCS/PMCS.php:102 inc/code.php:142 inc/pmcs.php:268
 msgid "Copy"
 msgstr "Másolás"
 
-#: inc/classes/PMCS/PMCS.php:83
+#: inc/classes/PMCS/PMCS.php:103
 msgid "Copied"
 msgstr "Másolva"
 
-#: inc/classes/PMCS/PMCS.php:128
+#: inc/classes/PMCS/PMCS.php:157
 msgid "Code Snippets per page"
 msgstr "Kódrészletek oldalonként"
 
-#: inc/classes/PMCS/PMCS.php:299
+#: inc/classes/PMCS/PMCS.php:338
 msgid "Safe mode is enabled in wp-config.php."
 msgstr "A Safe mode engedélyezve van a wp-config.php fájlban."
 
-#: inc/classes/PMCS/PMCS.php:302 inc/code.php:86
+#: inc/classes/PMCS/PMCS.php:342 inc/code.php:125
 msgid "Safe mode is enabled."
 msgstr "A Safe mode engedélyezve van."
 
-#: inc/classes/PMCS/PMCS.php:302
+#: inc/classes/PMCS/PMCS.php:342
 msgid "Disable"
 msgstr "Letiltás"
 
-#: inc/classes/PMCS/PMCS.php:309 inc/classes/PMCS/Snippet.php:149
+#: inc/classes/PMCS/PMCS.php:351 inc/classes/PMCS/Snippet.php:153
 msgid "Snippet saved."
 msgstr "Kódrészlet sikeresen elmentve."
 
-#: inc/classes/PMCS/PMCS.php:310
+#: inc/classes/PMCS/PMCS.php:352
 msgid "Snippet deleted successfully."
 msgstr "A kódrészlet sikeresen törölve."
 
-#: inc/classes/PMCS/PMCS.php:311
+#: inc/classes/PMCS/PMCS.php:353
 msgid "Snippet activated successfully."
 msgstr "A kódrészlet sikeresen aktiválva."
 
-#: inc/classes/PMCS/PMCS.php:312
+#: inc/classes/PMCS/PMCS.php:354
 msgid "Snippet deactivated successfully."
 msgstr "A kódrészlet sikeresen deaktiválva."
 
-#: inc/classes/PMCS/PMCS.php:314
+#: inc/classes/PMCS/PMCS.php:356
 msgid "Safe mode disabled."
 msgstr "Biztonságos mód letiltva."
 
-#: inc/classes/PMCS/PMCS.php:1079
+#: inc/classes/PMCS/PMCS.php:357
+msgid "Security check failed. Please try again."
+msgstr "A biztonsági ellenőrzés sikertelen. Kérlek, próbáld újra."
+
+#: inc/classes/PMCS/PMCS.php:1269
 #, php-format
 msgid "%s ago"
 msgstr "%s előtt"
 
-#: inc/classes/PMCS/PMCS.php:1182
+#: inc/classes/PMCS/PMCS.php:1312
 msgid "Code Snippets"
 msgstr "Kódrészletek"
 
@@ -678,7 +770,7 @@ msgstr "A(z) %s nem lehet újradefiniálni."
 msgid "Parse error: syntax error, unexpected end of snippet"
 msgstr "Elemzési hiba: szintaxis hiba, váratlan vége a kódrészletnek"
 
-#: inc/classes/PMCS/Snippet.php:21
+#: inc/classes/PMCS/Snippet.php:24
 msgid "No snippet name given."
 msgstr "Nincs megadva a Kódrészlet neve."
 
@@ -686,41 +778,61 @@ msgstr "Nincs megadva a Kódrészlet neve."
 msgid "File already exists."
 msgstr "A fájl már létezik."
 
-#: inc/classes/PMCS/Snippet.php:96
+#: inc/classes/PMCS/Snippet.php:100
 msgid "Please remove <?php from the beginning of the code."
 msgstr "Kérlek, távolítsd el a <?php jelölést a kód elejéről."
 
-#: inc/classes/PMCS/Snippet.php:126
+#: inc/classes/PMCS/Snippet.php:130
 msgid "Please remove &lt;script&gt;&lt;/script&gt; tags from the code."
 msgstr "Kérlek, távolítsd el a &lt;script&gt;&lt;/script&gt; tageket a kódból."
 
-#: inc/classes/PMCS/Snippet.php:133
+#: inc/classes/PMCS/Snippet.php:137
 msgid "Please remove &lt;style&gt;&lt;/style&gt; tags from the code."
 msgstr "Kérlek, távolítsd el a &lt;style&gt;&lt;/style&gt; tageket a kódból."
 
-#: inc/code.php:11 inc/code.php:34 inc/pmcs.php:442
+#: inc/classes/PMCS/Transfer.php:58
+msgid "Failed to encode snippet export data."
+msgstr "Nem sikerült kódolni a kódrészlet-export adatait."
+
+#: inc/classes/PMCS/Transfer.php:68
+msgid "Invalid JSON file."
+msgstr "Érvénytelen JSON-fájl."
+
+#: inc/classes/PMCS/Transfer.php:79
+msgid "Unsupported export file version."
+msgstr "Nem támogatott exportfájl-verzió."
+
+#: inc/classes/PMCS/Transfer.php:83
+msgid "Invalid export file structure."
+msgstr "Érvénytelen exportfájl-struktúra."
+
+#: inc/classes/PMCS/Transfer.php:121
+msgid "No valid snippets were found in the export file."
+msgstr "Nem találhatók érvényes snippetek az exportfájlban."
+
+#: inc/code.php:14 inc/code.php:33 inc/pmcs.php:467
 msgid "Snippets"
 msgstr "Kódrészletek"
 
-#: inc/code.php:12 inc/code.php:35 inc/pmcs.php:443
+#: inc/code.php:15 inc/code.php:34 inc/pmcs.php:468
 msgid "Global Scripts"
 msgstr "Globális szkriptek"
 
-#: inc/code.php:13 inc/code.php:36 inc/pmcs.php:444 inc/script_manager.php:171
-#: inc/script_manager.php:287 inc/settings.php:1903 inc/settings.php:2526
-#: inc/settings.php:2602 inc/settings.php:2645 perfmatters.php:206
+#: inc/code.php:16 inc/code.php:35 inc/pmcs.php:469 inc/script_manager.php:171
+#: inc/script_manager.php:287 inc/settings.php:1908 inc/settings.php:2546
+#: inc/settings.php:2622 inc/settings.php:2664 perfmatters.php:255
 msgid "Settings"
 msgstr "Beállítások"
 
-#: inc/code.php:50
+#: inc/code.php:49
 msgid "Export Snippets"
 msgstr "Kódrészlet exportálás"
 
-#: inc/code.php:52
+#: inc/code.php:51
 msgid "Export All Snippets"
 msgstr "Minden Kódrészlet exportálása"
 
-#: inc/code.php:53
+#: inc/code.php:52
 msgid ""
 "Export your Perfmatters code snippets for this site as a .json file. This "
 "lets you easily import the configuration into another site."
@@ -728,35 +840,59 @@ msgstr ""
 "Exportálja a Perfmatters kódrészleteket .json fájlként. Így könnyen "
 "importálhatod a konfigurációt egy másik weboldalra."
 
-#: inc/code.php:59
+#: inc/code.php:58
 msgid "Import Snippets"
 msgstr "Kódrészlet importálása"
 
-#: inc/code.php:64
+#: inc/code.php:63
 msgid "Import Code Snippets"
 msgstr "Kódrészletek importálása"
 
-#: inc/code.php:65
+#: inc/code.php:64
 msgid "Import Perfmatters code snippets from an exported .json file."
 msgstr "Perfmatters kódrészletek importálása exportált .json fájlból."
 
-#: inc/code.php:71
+#: inc/code.php:70
+msgid "Editor Theme"
+msgstr "Szerkesztő téma"
+
+#: inc/code.php:81
+msgid "Choose the theme used in code editors throughout the plugin."
+msgstr "Válaszd ki a bővítményben használt kódszerkesztők témáját."
+
+#: inc/code.php:87
+msgid "Custom Theme Stylesheet"
+msgstr "Egyéni téma stíluslapja"
+
+#: inc/code.php:98
+msgid "Current custom theme"
+msgstr "Jelenlegi egyéni téma"
+
+#: inc/code.php:98
+msgid "unknown"
+msgstr "ismeretlen"
+
+#: inc/code.php:101
+msgid "Upload a custom .css CodeMirror 5 theme stylesheet."
+msgstr "Tölts fel egy egyéni .css CodeMirror 5 téma stíluslapot."
+
+#: inc/code.php:108
 msgid "Safe Mode"
 msgstr "Biztonságos mód"
 
-#: inc/code.php:78 inc/code.php:82
+#: inc/code.php:115 inc/code.php:120
 msgid "Enable Safe Mode"
 msgstr "Biztonságos mód engedélyezése"
 
-#: inc/code.php:85
+#: inc/code.php:124
 msgid "Disable Safe Mode"
 msgstr "Biztonságos mód letiltása"
 
-#: inc/code.php:90
+#: inc/code.php:129
 msgid "Safe mode enabled via PMCS_SAFE_MODE constant."
 msgstr "A biztonságos mód a PMCS_SAFE_MODE konstans miatt aktív."
 
-#: inc/code.php:93
+#: inc/code.php:132
 msgid ""
 "Enable safe mode to prevent all code snippets from running regardless of "
 "active status. This can also be done using your recovery URL or by defining "
@@ -766,63 +902,21 @@ msgstr ""
 "futását, az aktív állapottól függetlenül. Ez megtehető a helyreállítási URL "
 "használatával is, vagy a PMCS_SAFE_MODE konstans definiálásával."
 
-#: inc/code.php:99
+#: inc/code.php:138
 msgid "Recovery URL"
 msgstr "Helyreállítási URL"
 
-#: inc/code.php:102
+#: inc/code.php:141
 msgid "Create a snippet first."
 msgstr "Hozd létre az első kódrészletet."
 
-#: inc/code.php:106
+#: inc/code.php:145
 msgid ""
 "This URL can be used to enable safe mode in the event of an unrecoverable "
 "snippet error."
 msgstr ""
 "Ezt az URL-t használhatod a biztonságos mód bekapcsolására, ha egy "
 "kódrészlet hibája helyrehozhatatlan."
-
-#: inc/functions.php:104
-#, php-format
-msgid "No feed available, please visit the <a href='%s'>homepage</a>!"
-msgstr "Nincs elérhető feed, kérjük, látogass el a <a href='%s'>honlapra</a>!"
-
-#: inc/functions.php:175
-msgid "Sorry, you do not have permission to make REST API requests."
-msgstr "Sajnáljuk, nincs jogosultsága REST API-kérésekhez."
-
-#: inc/functions.php:311 inc/functions.php:404 inc/functions.php:409
-msgid "Comments are disabled."
-msgstr "A hozzászólások le vannak tiltva."
-
-#: inc/functions.php:620 inc/functions.php:640 inc/functions.php:1281
-#: inc/functions_script_manager.php:1541 inc/functions_script_manager.php:1549
-msgid "Perfmatters Warning"
-msgstr "Perfmatters figyelmeztetés"
-
-#: inc/functions.php:621
-msgid ""
-"WP_POST_REVISIONS is already enabled somewhere else on your site. We suggest "
-"only enabling this feature in one place."
-msgstr ""
-"A WP_POST_REVISIONS már engedélyezve van valahol máshol a weboldalon. "
-"Javasoljuk, hogy csak egy helyen engedélyezd ezt a funkciót."
-
-#: inc/functions.php:641
-msgid ""
-"AUTOSAVE_INTERVAL is already enabled somewhere else on your site. We suggest "
-"only enabling this feature in one place."
-msgstr ""
-"Az AUTOSAVE_INTERVAL már engedélyezve van valahol máshol a weboldalon. "
-"Javasoljuk, hogy csak egy helyen engedélyezd ezt a funkciót."
-
-#: inc/functions.php:1073 inc/settings.php:471
-msgid "This has been disabled."
-msgstr "Ezt letiltották."
-
-#: inc/functions.php:1282
-msgid "Local Analytics is enabled but no Tracking ID is set."
-msgstr "A helyi analitika engedélyezve van, de nincs nyomkövető ID beállítva."
 
 #: inc/functions_network.php:22
 msgid "Network Access"
@@ -844,11 +938,11 @@ msgstr ""
 "Válassza ki azt az aloldalt, ahonnan az alapértelmezett beállításokat "
 "szeretné átvenni."
 
-#: inc/functions_network.php:45 inc/settings.php:1910
+#: inc/functions_network.php:45 inc/settings.php:1915
 msgid "Clean Uninstall"
 msgstr "Adatbázis tisztítása Perfmatters törléskor"
 
-#: inc/functions_network.php:52 inc/settings.php:1917
+#: inc/functions_network.php:52 inc/settings.php:1922
 msgid ""
 "When enabled, this will cause all Perfmatters options data to be removed "
 "from your database when the plugin is uninstalled."
@@ -868,53 +962,53 @@ msgstr "Csak szuper adminok"
 msgid "None"
 msgstr "Nincs"
 
-#: inc/functions_script_manager.php:49 inc/functions_script_manager.php:61
-#: inc/functions_script_manager.php:103 inc/script_manager.php:169
-#: inc/script_manager.php:215 inc/settings.php:1833
+#: inc/functions_script_manager.php:50 inc/functions_script_manager.php:62
+#: inc/functions_script_manager.php:104 inc/script_manager.php:169
+#: inc/script_manager.php:215 inc/settings.php:1838
 msgid "Script Manager"
 msgstr "Script Manager"
 
-#: inc/functions_script_manager.php:64
+#: inc/functions_script_manager.php:65
 msgid "Close Script Manager"
 msgstr "Script Manager bezárása"
 
-#: inc/functions_script_manager.php:135
+#: inc/functions_script_manager.php:136
 msgid "Save"
 msgstr "Mentés"
 
-#: inc/functions_script_manager.php:136
+#: inc/functions_script_manager.php:137
 msgid "Saving"
 msgstr "Mentés"
 
-#: inc/functions_script_manager.php:137 inc/functions_script_manager.php:1252
+#: inc/functions_script_manager.php:138 inc/functions_script_manager.php:1253
 msgid "Settings saved successfully!"
 msgstr "A beállítások mentése sikeres!"
 
-#: inc/functions_script_manager.php:138
+#: inc/functions_script_manager.php:139
 msgid "Settings failed to update."
 msgstr "A beállítások frissítése nem sikerült."
 
-#: inc/functions_script_manager.php:139
+#: inc/functions_script_manager.php:140
 msgid "No disabled location selected."
 msgstr "Nincs kijelölve letiltott hely."
 
-#: inc/functions_script_manager.php:140
+#: inc/functions_script_manager.php:141
 msgid "No options were changed."
 msgstr "Nem történt változás a beállításokon."
 
-#: inc/functions_script_manager.php:329
+#: inc/functions_script_manager.php:330
 msgid "Status"
 msgstr "Állapot"
 
-#: inc/functions_script_manager.php:330
+#: inc/functions_script_manager.php:331
 msgid "Script"
 msgstr "Script"
 
-#: inc/functions_script_manager.php:332
+#: inc/functions_script_manager.php:333
 msgid "Size"
 msgstr "Méret"
 
-#: inc/functions_script_manager.php:358
+#: inc/functions_script_manager.php:359
 msgid ""
 "MU Mode is currently enabled, the above settings will apply to the entire "
 "plugin."
@@ -922,92 +1016,81 @@ msgstr ""
 "MU mód jelenleg engedélyezve van, a fenti beállítások a teljes bővítményre "
 "vonatkoznak."
 
-#: inc/functions_script_manager.php:361
+#: inc/functions_script_manager.php:362
 msgid "The above settings will apply to all assets in this group."
 msgstr "A fenti beállítások a csoportban lévő összes eszközre vonatkoznak."
 
-#: inc/functions_script_manager.php:435
+#: inc/functions_script_manager.php:436
 msgid "Depends on"
 msgstr "Függésben ettől"
 
-#: inc/functions_script_manager.php:448
+#: inc/functions_script_manager.php:449
 msgid "Required by"
 msgstr "Kötelező"
 
-#: inc/functions_script_manager.php:521 inc/script_manager.php:332
+#: inc/functions_script_manager.php:522 inc/script_manager.php:332
 msgid "MU Mode"
 msgstr "MU üzemmód"
 
-#: inc/functions_script_manager.php:527
+#: inc/functions_script_manager.php:528
 msgid "ON"
 msgstr "BE"
 
-#: inc/functions_script_manager.php:528
+#: inc/functions_script_manager.php:529
 msgid "OFF"
 msgstr "KI"
 
-#: inc/functions_script_manager.php:552 inc/settings.php:1183
-#: inc/settings.php:2182
+#: inc/functions_script_manager.php:553 inc/settings.php:1188
+#: inc/settings.php:2187
 msgid "Disabled"
 msgstr "Kikapcsolva"
 
-#: inc/functions_script_manager.php:566 inc/pmcs.php:100
+#: inc/functions_script_manager.php:567 inc/pmcs.php:97
 msgid "Everywhere"
 msgstr "Bárhol"
 
-#: inc/functions_script_manager.php:599 inc/functions_script_manager.php:764
+#: inc/functions_script_manager.php:600 inc/functions_script_manager.php:765
 msgid "Current URL"
 msgstr "Jelenlegi URL"
 
-#: inc/functions_script_manager.php:687 inc/functions_script_manager.php:852
-#: inc/pmcs.php:331
+#: inc/functions_script_manager.php:688 inc/functions_script_manager.php:853
+#: inc/pmcs.php:353
 msgid "Users"
 msgstr "Felhasználók"
 
-#: inc/functions_script_manager.php:689 inc/functions_script_manager.php:701
-#: inc/functions_script_manager.php:854 inc/functions_script_manager.php:866
-#: inc/settings.php:318 inc/settings.php:337 inc/settings.php:356
-#: inc/settings.php:376 inc/settings.php:404 inc/settings.php:450
-#: inc/settings.php:651 inc/settings.php:839 inc/settings.php:859
-#: inc/settings.php:1079 inc/settings.php:1180 inc/settings.php:1202
-#: inc/settings.php:1278 inc/settings.php:1462 inc/settings.php:1557
-#: inc/settings.php:1755 inc/settings.php:1774 inc/settings.php:2679
-msgid "Default"
-msgstr "Alapértelmezett"
-
-#: inc/functions_script_manager.php:699 inc/functions_script_manager.php:864
+#: inc/functions_script_manager.php:700 inc/functions_script_manager.php:865
 msgid "Devices"
 msgstr "Eszközök"
 
-#: inc/functions_script_manager.php:702 inc/functions_script_manager.php:867
-#: inc/settings.php:2534 inc/settings.php:2612
+#: inc/functions_script_manager.php:703 inc/functions_script_manager.php:868
+#: inc/settings.php:2554 inc/settings.php:2631
 msgid "Desktop"
 msgstr "Asztali"
 
-#: inc/functions_script_manager.php:703 inc/functions_script_manager.php:868
-#: inc/settings.php:2535 inc/settings.php:2613
+#: inc/functions_script_manager.php:704 inc/functions_script_manager.php:869
+#: inc/settings.php:2555 inc/settings.php:2632
 msgid "Mobile"
 msgstr "Mobil"
 
-#: inc/functions_script_manager.php:711 inc/functions_script_manager.php:876
+#: inc/functions_script_manager.php:712 inc/functions_script_manager.php:877
 msgid "Regex"
 msgstr "Regex"
 
-#: inc/functions_script_manager.php:729
+#: inc/functions_script_manager.php:730
 msgid "Exceptions"
 msgstr "Kivételek"
 
-#: inc/functions_script_manager.php:1542 inc/script_manager.php:357
+#: inc/functions_script_manager.php:1543 inc/script_manager.php:357
 msgid "MU plugin version mismatch."
 msgstr "MU plugin verzió eltérés."
 
-#: inc/functions_script_manager.php:1542 inc/functions_script_manager.php:1550
-#: inc/pmcs.php:199 inc/pmcs.php:261 inc/script_manager.php:194
-#: inc/script_manager.php:328 inc/script_manager.php:340 inc/settings.php:2864
+#: inc/functions_script_manager.php:1543 inc/functions_script_manager.php:1551
+#: inc/pmcs.php:198 inc/pmcs.php:283 inc/script_manager.php:194
+#: inc/script_manager.php:328 inc/script_manager.php:340 inc/settings.php:2883
 msgid "View Documentation"
 msgstr "Dokumentáció megtekintése"
 
-#: inc/functions_script_manager.php:1550 inc/script_manager.php:366
+#: inc/functions_script_manager.php:1551 inc/script_manager.php:366
 msgid "MU plugin file not found."
 msgstr "MU plugin fájl nem található."
 
@@ -1141,63 +1224,63 @@ msgstr ""
 msgid "All Snippets"
 msgstr "Összes kódrészlet"
 
-#: inc/pmcs.php:40 inc/pmcs.php:86
+#: inc/pmcs.php:40 inc/pmcs.php:83
 msgid "Example Snippet"
 msgstr "Kódrészlet példa"
 
-#: inc/pmcs.php:68
-msgid "Loading snippet"
-msgstr "Kódrészlet betöltése"
-
-#: inc/pmcs.php:72
+#: inc/pmcs.php:69
 msgid "Snippet Error"
 msgstr "Kódrészlet hiba"
 
-#: inc/pmcs.php:91 inc/settings.php:2538 inc/settings.php:2616
+#: inc/pmcs.php:88 inc/settings.php:2558 inc/settings.php:2635
 msgid "Location"
 msgstr "Helyszín"
 
-#: inc/pmcs.php:101
+#: inc/pmcs.php:98
 msgid "Frontend Only"
 msgstr "Csak Frontend"
 
-#: inc/pmcs.php:102
+#: inc/pmcs.php:99
 msgid "Admin Only"
 msgstr "Csak adminisztrátorok"
 
-#: inc/pmcs.php:105
+#: inc/pmcs.php:102
 msgid "Frontend Header"
 msgstr "Frontend Header"
 
-#: inc/pmcs.php:106
+#: inc/pmcs.php:103
 msgid "Frontend Footer"
 msgstr "Frontend Footer"
 
-#: inc/pmcs.php:107
+#: inc/pmcs.php:104
 msgid "Admin Header"
 msgstr "Admin fejléc"
 
-#: inc/pmcs.php:108
+#: inc/pmcs.php:105
 msgid "Admin Footer"
 msgstr "Admin lábléc"
 
-#: inc/pmcs.php:111
+#: inc/pmcs.php:108
 msgid "Frontend Body"
 msgstr "Frontend Body"
 
-#: inc/pmcs.php:112
+#: inc/pmcs.php:109
 msgid "Before Content"
 msgstr "Tartalom előtt"
 
-#: inc/pmcs.php:113
+#: inc/pmcs.php:110
 msgid "After Content"
 msgstr "Tartalom után"
 
-#: inc/pmcs.php:198
+#: inc/pmcs.php:111 inc/pmcs.php:259
+msgid "Shortcode"
+msgstr "Rövid kód"
+
+#: inc/pmcs.php:197
 msgid "Optimizations"
 msgstr "Optimalizálás"
 
-#: inc/pmcs.php:201
+#: inc/pmcs.php:200
 msgid ""
 "Apply various Perfmatters optimizations to your code snippet to boost "
 "performance."
@@ -1205,55 +1288,59 @@ msgstr ""
 "Alkalmazz különböző Perfmatters optimalizálásokat a kódrészletedre a jobb "
 "teljesítmény érdekében."
 
-#: inc/pmcs.php:211 inc/settings.php:1547
+#: inc/pmcs.php:210 inc/settings.php:1552
 msgid "Print Method"
 msgstr "Nyomtatási módszer"
 
-#: inc/pmcs.php:222 inc/pmcs.php:235
+#: inc/pmcs.php:221 inc/pmcs.php:234
 msgid "Load Behavior"
 msgstr "Betöltési viselkedés"
 
-#: inc/pmcs.php:247 inc/settings.php:756 inc/settings.php:938
+#: inc/pmcs.php:246 inc/settings.php:761 inc/settings.php:943
 msgid "Minify"
 msgstr "Minimalizálás"
 
-#: inc/pmcs.php:260
+#: inc/pmcs.php:272
+msgid "Save your code snippet to generate a shortcode."
+msgstr "Mentsd el a kódrészletedet egy shrtcode létrehozásához."
+
+#: inc/pmcs.php:282
 msgid "Conditions"
 msgstr "Feltételek"
 
-#: inc/pmcs.php:276
+#: inc/pmcs.php:298
 msgid "Include"
 msgstr "Tartalmazza"
 
-#: inc/pmcs.php:295 inc/pmcs.php:322 inc/pmcs.php:352
+#: inc/pmcs.php:317 inc/pmcs.php:344 inc/pmcs.php:374
 msgid "Add Condition"
 msgstr "Feltétel hozzáadása"
 
-#: inc/pmcs.php:303
+#: inc/pmcs.php:325
 msgid "Exclude"
 msgstr "Kizárás"
 
-#: inc/pmcs.php:367
+#: inc/pmcs.php:389
 msgid "Enter or Search for Tags"
 msgstr "Címkék megadása vagy keresése"
 
-#: inc/pmcs.php:408
+#: inc/pmcs.php:430
 msgid "Save Snippet"
 msgstr "Kódrészlet mentése"
 
-#: inc/pmcs.php:414
+#: inc/pmcs.php:437
 msgid "Export Snippet"
 msgstr "Kódrészlet exportálása"
 
-#: inc/pmcs.php:417
+#: inc/pmcs.php:441
 msgid "Delete Snippet"
 msgstr "Kódrészlet törlése"
 
-#: inc/pmcs.php:451
+#: inc/pmcs.php:476
 msgid "New Snippet"
 msgstr "Új Kódrészlet"
 
-#: inc/pmcs.php:468
+#: inc/pmcs.php:493
 msgid "Search Snippets"
 msgstr "Kódrészlet keresése"
 
@@ -1399,7 +1486,7 @@ msgstr "Azonosító"
 msgid "Setting"
 msgstr "Beállítás"
 
-#: inc/script_manager_global.php:130
+#: inc/script_manager_global.php:146
 msgid "You don't have any scripts disabled yet."
 msgstr "Még nincsenek letiltva a scriptek."
 
@@ -1436,65 +1523,65 @@ msgstr "Eltávolítja a WordPress Embed JavaScript fájlt (wp-embed.min.js)."
 msgid "Disable XML-RPC"
 msgstr "XML-RPC letiltása"
 
-#: inc/settings.php:64
+#: inc/settings.php:65
 msgid "Disables WordPress XML-RPC functionality."
 msgstr "Letiltja a WordPress XML-RPC funkcióit."
 
-#: inc/settings.php:71
-msgid "Remove jQuery Migrate"
-msgstr "A jQuery Migrate eltávolítása"
-
-#: inc/settings.php:77
-msgid "Removes jQuery Migrate JavaScript file (jquery-migrate.min.js)."
-msgstr "Eltávolítja a jQuery Migrate JavaScript fájlt (jquery-migrate.min.js)."
-
-#: inc/settings.php:84
-msgid "Hide WP Version"
-msgstr "WP verzió elrejtése"
-
-#: inc/settings.php:90
-msgid "Removes WordPress version meta tag."
-msgstr "Eltávolítja a WordPress verzió meta tag-et."
-
-#: inc/settings.php:97
+#: inc/settings.php:72
 msgid "Remove RSD Link"
 msgstr "RSD link eltávolítása"
 
-#: inc/settings.php:103
+#: inc/settings.php:79
 msgid "Remove RSD (Real Simple Discovery) link tag."
 msgstr "RSD (Real Simple Discovery) linkcímke eltávolítása."
 
-#: inc/settings.php:110
+#: inc/settings.php:86
+msgid "Remove jQuery Migrate"
+msgstr "A jQuery Migrate eltávolítása"
+
+#: inc/settings.php:92
+msgid "Removes jQuery Migrate JavaScript file (jquery-migrate.min.js)."
+msgstr "Eltávolítja a jQuery Migrate JavaScript fájlt (jquery-migrate.min.js)."
+
+#: inc/settings.php:99
+msgid "Hide WP Version"
+msgstr "WP verzió elrejtése"
+
+#: inc/settings.php:105
+msgid "Removes WordPress version meta tag."
+msgstr "Eltávolítja a WordPress verzió meta tag-et."
+
+#: inc/settings.php:112
 msgid "Remove Shortlink"
 msgstr "Shortlink eltávolítása"
 
-#: inc/settings.php:116
+#: inc/settings.php:118
 msgid "Remove Shortlink link tag."
 msgstr "Shortlink link tag eltávolítása."
 
-#: inc/settings.php:123
+#: inc/settings.php:125
 msgid "Disable RSS Feeds"
 msgstr "RSS-feedek letiltása"
 
-#: inc/settings.php:129
-msgid "Disable WordPress generated RSS feeds and 301 redirect URL to parent."
+#: inc/settings.php:132
+msgid "Disable WordPress generated RSS feeds and return a 410 response."
 msgstr ""
-"Tiltja le a WordPress által generált RSS feedeket és 301 átirányítás az URL-"
-"t a szülőre."
+"Tiltsd le a WordPress által generált RSS-hírcsatornákat, és adj vissza 410-"
+"es választ."
 
-#: inc/settings.php:136
+#: inc/settings.php:139
 msgid "Remove RSS Feed Links"
 msgstr "RSS Feed linkek eltávolítása"
 
-#: inc/settings.php:142
+#: inc/settings.php:146
 msgid "Disable WordPress generated RSS feed link tags."
 msgstr "A WordPress által generált RSS feed linkcímkék letiltása."
 
-#: inc/settings.php:149
+#: inc/settings.php:153
 msgid "Disable Self Pingbacks"
 msgstr "Önálló pingbackek letiltása"
 
-#: inc/settings.php:155
+#: inc/settings.php:159
 msgid ""
 "Disable Self Pingbacks (generated when linking to an article on your own "
 "blog)."
@@ -1502,23 +1589,23 @@ msgstr ""
 "A Self Pingbacks (a saját blogodon lévő cikkre való hivatkozáskor generált) "
 "kikapcsolása."
 
-#: inc/settings.php:162
+#: inc/settings.php:166
 msgid "Disable REST API"
 msgstr "REST API letiltása"
 
-#: inc/settings.php:170
+#: inc/settings.php:174
 msgid "Default (Enabled)"
 msgstr "Alapértelmezett (engedélyezve)"
 
-#: inc/settings.php:171
+#: inc/settings.php:175
 msgid "Disable for Non-Admins"
 msgstr "Letiltás nem adminisztrátorok számára"
 
-#: inc/settings.php:172
+#: inc/settings.php:176
 msgid "Disable When Logged Out"
 msgstr "Letiltás amikor kijelentkezik"
 
-#: inc/settings.php:174
+#: inc/settings.php:178
 msgid ""
 "Disables REST API requests and displays an error message if the requester "
 "doesn't have permission."
@@ -1526,11 +1613,11 @@ msgstr ""
 "Letiltja a REST API-kérelmeket, és hibaüzenetet jelenít meg, ha a "
 "kérvényezőnek nincs jogosultsága."
 
-#: inc/settings.php:181
+#: inc/settings.php:185
 msgid "Remove REST API Links"
 msgstr "REST API linkek eltávolítása"
 
-#: inc/settings.php:187
+#: inc/settings.php:191
 msgid ""
 "Removes REST API link tag from the front end and the REST API header link "
 "from page requests."
@@ -1538,32 +1625,32 @@ msgstr ""
 "Eltávolítja a REST API link taget a front endről és a REST API fejléc linket "
 "az oldalkérésekből."
 
-#: inc/settings.php:194
+#: inc/settings.php:198
 msgid "Disable Google Maps"
 msgstr "A Google Maps letiltása"
 
-#: inc/settings.php:201
+#: inc/settings.php:205
 msgid ""
 "Removes any instances of Google Maps being loaded across your entire site."
 msgstr "Eltávolítja a Google Térképek betöltését az egész weboldalon."
 
-#: inc/settings.php:208
-msgid "Exclude Post IDs"
-msgstr "Bejegyzés ID-k kizárása"
+#: inc/settings.php:212
+msgid "Exclude Locations"
+msgstr "Helyszínek kizárása"
 
-#: inc/settings.php:217
+#: inc/settings.php:221
 msgid ""
-"Prevent Google Maps from being disabled on specific post IDs. Format: comma "
+"Prevent Google Maps from being disabled in specific locations. Format: comma "
 "separated"
 msgstr ""
-"A Google Térképek letiltásának megakadályozása bizonyos bejegyzés ID-ken. "
+"Akadályozd meg, hogy a Google Térkép bizonyos helyeken le legyen tiltva. "
 "Formátum: vesszővel elválasztva"
 
-#: inc/settings.php:224
-msgid "Disable Password Strength Meter"
-msgstr "Jelszóerősségmérő letiltása"
+#: inc/settings.php:228
+msgid "Disable Password Meter"
+msgstr "Jelszóerősség-mérő kikapcsolása"
 
-#: inc/settings.php:230
+#: inc/settings.php:234
 msgid ""
 "Removes WordPress and WooCommerce Password Strength Meter scripts from non "
 "essential pages."
@@ -1571,30 +1658,30 @@ msgstr ""
 "Eltávolítja a WordPress és a WooCommerce jelszó erősség mérő scriptet a nem "
 "lényeges oldalakról."
 
-#: inc/settings.php:237
+#: inc/settings.php:241
 msgid "Disable Comments"
 msgstr "Hozzászólások letiltása"
 
-#: inc/settings.php:243
+#: inc/settings.php:247
 msgid "Disables WordPress comments across your entire site."
 msgstr "Letiltja a WordPress hozzászólási lehetőséget az egész weboldalon."
 
-#: inc/settings.php:252
+#: inc/settings.php:256
 msgid "Remove Comment URLs"
 msgstr "Komment URL-ek eltávolítása"
 
-#: inc/settings.php:258
+#: inc/settings.php:262
 msgid ""
 "Removes the WordPress comment author link and website field from blog posts."
 msgstr ""
 "Eltávolítja a WordPress hozzászólás szerzői linkjét és a weboldal mezőt a "
 "blog bejegyzésekből."
 
-#: inc/settings.php:266
+#: inc/settings.php:270
 msgid "Add Blank Favicon"
 msgstr "Üres Favicon hozzáadása"
 
-#: inc/settings.php:272
+#: inc/settings.php:276
 msgid ""
 "Adds a blank favicon to your WordPress header, which will prevent a missing "
 "favicon or 404 error. If you already have a favicon on your site, you should "
@@ -1604,21 +1691,21 @@ msgstr ""
 "hiányzó favicon vagy 404-es hiba megjelenését. Ha már van favicon az "
 "oldaladon, akkor ezt hagyd ki. "
 
-#: inc/settings.php:279
+#: inc/settings.php:283
 msgid "Remove Global Styles"
 msgstr "Globális stílusok eltávolítása"
 
-#: inc/settings.php:285
+#: inc/settings.php:289
 msgid "Remove the inline global styles related to WordPress core blocks."
 msgstr ""
 "Törli azokat az inline globális stílusokat, amik a WordPress alapblokkjaihoz "
 "tartoznak."
 
-#: inc/settings.php:295
+#: inc/settings.php:299
 msgid "Separate Block Styles"
 msgstr "Külön blokkstílusok"
 
-#: inc/settings.php:301
+#: inc/settings.php:305
 msgid ""
 "Load core block styles only when they are rendered instead of in a global "
 "stylesheet."
@@ -1626,35 +1713,35 @@ msgstr ""
 "Az alapvető blokkstílusok betöltése csak a megjelenítéskor, nem pedig egy "
 "globális stílustáblázatban."
 
-#: inc/settings.php:310
+#: inc/settings.php:314
 msgid "Block Style Behavior"
 msgstr "Blokkstílus viselkedés"
 
-#: inc/settings.php:318
+#: inc/settings.php:322
 msgid "Separate Styles Inline"
 msgstr "Stílusok elkülönítése inline módban"
 
-#: inc/settings.php:319
+#: inc/settings.php:323
 msgid "Load Global Stylesheet"
 msgstr "Globális stíluslap betöltése"
 
-#: inc/settings.php:321
+#: inc/settings.php:325
 msgid "Choose how WordPress core block styles are loaded."
 msgstr "Válassza ki, hogyan töltődjenek be a WordPress alapvető blokkstílusai."
 
-#: inc/settings.php:329
+#: inc/settings.php:333
 msgid "Disable Heartbeat"
 msgstr "Heartbeat kikapcsolás"
 
-#: inc/settings.php:338
+#: inc/settings.php:342
 msgid "Disable Everywhere"
 msgstr "Mindenhol letiltva"
 
-#: inc/settings.php:339
+#: inc/settings.php:343
 msgid "Only Allow When Editing Posts/Pages"
 msgstr "Engedélyezés csak a hozzászólások/oldalak szerkesztésekor"
 
-#: inc/settings.php:341
+#: inc/settings.php:345
 msgid ""
 "Disable WordPress Heartbeat everywhere or in certain areas (used for auto "
 "saving and revision tracking)."
@@ -1662,69 +1749,69 @@ msgstr ""
 "A WordPress Heartbeat kikapcsolása mindenhol vagy bizonyos területeken "
 "(automatikus mentéshez és a revíziókövetéshez használatos)."
 
-#: inc/settings.php:348
+#: inc/settings.php:352
 msgid "Heartbeat Frequency"
 msgstr "Heartbeat frekvencia"
 
-#: inc/settings.php:356 inc/settings.php:357 inc/settings.php:358
-#: inc/settings.php:359
+#: inc/settings.php:360 inc/settings.php:361 inc/settings.php:362
+#: inc/settings.php:363
 #, php-format
 msgid "%s Seconds"
 msgstr "%s Másodperc"
 
-#: inc/settings.php:361
+#: inc/settings.php:365
 msgid "Controls how often the WordPress Heartbeat API is allowed to run."
 msgstr "Szabályozza, hogy a WordPress Heartbeat API milyen gyakran fusson."
 
-#: inc/settings.php:368
+#: inc/settings.php:372
 msgid "Limit Post Revisions"
 msgstr "Bejegyzés felülvizsgálatok limit"
 
-#: inc/settings.php:377
+#: inc/settings.php:381
 msgid "Disable Post Revisions"
 msgstr "Bejegyzés Revíziók letiltása"
 
-#: inc/settings.php:389
+#: inc/settings.php:393
 msgid ""
 "Limits the maximum amount of revisions that are allowed for posts and pages."
 msgstr ""
 "Korlátozza a bejegyzések és oldalak maximálisan engedélyezett módosításainak "
 "számát."
 
-#: inc/settings.php:396
+#: inc/settings.php:400
 msgid "Autosave Interval"
 msgstr "Automatikus mentési időköz"
 
-#: inc/settings.php:404
+#: inc/settings.php:408
 msgid "Minute"
 msgstr "Perc"
 
-#: inc/settings.php:405
+#: inc/settings.php:409
 msgid "Disable Autosave Interval"
 msgstr "Automatikus mentési idő kikapcsolása"
 
-#: inc/settings.php:406 inc/settings.php:407 inc/settings.php:408
-#: inc/settings.php:409 inc/settings.php:410 inc/settings.php:411
-#: inc/settings.php:412 inc/settings.php:413 inc/settings.php:414
+#: inc/settings.php:410 inc/settings.php:411 inc/settings.php:412
+#: inc/settings.php:413 inc/settings.php:414 inc/settings.php:415
+#: inc/settings.php:416 inc/settings.php:417 inc/settings.php:418
 msgid "Minutes"
 msgstr "Perc"
 
-#: inc/settings.php:416
+#: inc/settings.php:420
 msgid ""
 "Controls how often WordPress will auto save posts and pages while editing."
 msgstr ""
 "Szabályozza, hogy a WordPress milyen gyakran mentse automatikusan a "
 "bejegyzéseket és oldalakat szerkesztés közben."
 
-#: inc/settings.php:421
+#: inc/settings.php:425
 msgid "Login URL"
 msgstr "Bejelentkezés URL"
 
-#: inc/settings.php:426
+#: inc/settings.php:430
 msgid "Custom Login URL"
 msgstr "Egyedi bejelentkezési URL"
 
-#: inc/settings.php:435
+#: inc/settings.php:439
 msgid ""
 "When set, this will change your WordPress login URL (slug) to the provided "
 "string and will block wp-admin and wp-login endpoints from being directly "
@@ -1733,49 +1820,49 @@ msgstr ""
 "Ha be van állítva, akkor a WordPress bejelentkezési URL-jét az itt megadott "
 "linkre változtatja, és blokkolja a wp-admin és wp-login közvetlen elérését."
 
-#: inc/settings.php:442
+#: inc/settings.php:446
 msgid "Disabled Behavior"
 msgstr "Letiltott viselkedés"
 
-#: inc/settings.php:450 inc/settings.php:463
+#: inc/settings.php:454 inc/settings.php:467
 msgid "Message"
 msgstr "Üzenet"
 
-#: inc/settings.php:452
+#: inc/settings.php:456
 msgid "Home URL"
 msgstr "Főoldal URL"
 
-#: inc/settings.php:453
+#: inc/settings.php:457
 msgid "Local Redirect"
 msgstr "Helyi átirányítás"
 
-#: inc/settings.php:456
+#: inc/settings.php:460
 msgid "Change what happens when an original login endpoint is visited."
 msgstr ""
 "Változtassa meg, mi történik, ha egy eredeti bejelentkezési végpontot "
 "látogat meg."
 
-#: inc/settings.php:472
+#: inc/settings.php:476
 msgid "Change the disabled message that is displayed."
 msgstr "A megjelenő letiltott üzenet módosítása."
 
-#: inc/settings.php:479
+#: inc/settings.php:483
 msgid "Redirect Slug"
 msgstr "Átirányítás Slug"
 
-#: inc/settings.php:487
+#: inc/settings.php:491
 msgid "404"
 msgstr "404"
 
-#: inc/settings.php:488
+#: inc/settings.php:492
 msgid "Change the slug that is used for the local redirect."
 msgstr "A helyi átirányításhoz használt slug megváltoztatása."
 
-#: inc/settings.php:500
+#: inc/settings.php:504
 msgid "Disable Scripts"
 msgstr "Szkriptek letiltása"
 
-#: inc/settings.php:506
+#: inc/settings.php:510
 msgid ""
 "Disables WooCommerce scripts and styles except on product, cart, and "
 "checkout pages."
@@ -1783,11 +1870,11 @@ msgstr ""
 "Letiltja a WooCommerce scripteket és stílusokat, kivéve a termék, kosár és "
 "pénztár oldalakon."
 
-#: inc/settings.php:513
+#: inc/settings.php:517
 msgid "Disable Cart Fragmentation"
 msgstr "A kosár töredezettségének letiltása"
 
-#: inc/settings.php:519
+#: inc/settings.php:523
 msgid ""
 "Disables WooCommerce cart fragmentation script when there are no items in "
 "the cart."
@@ -1795,47 +1882,47 @@ msgstr ""
 "Letiltja a WooCommerce cart fragmentation scriptet, ha nincsenek tételek a "
 "kosárban."
 
-#: inc/settings.php:526
+#: inc/settings.php:530
 msgid "Disable Status Meta Box"
 msgstr "Állapot Meta mező letiltása"
 
-#: inc/settings.php:532
+#: inc/settings.php:536
 msgid "Disables WooCommerce status meta box from the WP Admin Dashboard."
 msgstr "Letiltja a WooCommerce státusz meta dobozát a WP Admin műszerfalon."
 
-#: inc/settings.php:539
+#: inc/settings.php:543
 msgid "Disable Widgets"
 msgstr "Widgetek letiltása"
 
-#: inc/settings.php:545
+#: inc/settings.php:549
 msgid "Disables all WooCommerce widgets."
 msgstr "Letiltja az összes WooCommerce widgetet."
 
-#: inc/settings.php:555
+#: inc/settings.php:559
 msgid "Defer"
 msgstr "Halasztás (defer)"
 
-#: inc/settings.php:560
+#: inc/settings.php:564
 msgid "Defer Javascript"
 msgstr "Javascript halasztása"
 
-#: inc/settings.php:567
+#: inc/settings.php:571
 msgid "Add the defer attribute to your JavaScript files."
 msgstr "Adja hozzá a defer attribútumot a JavaScript-fájlokhoz."
 
-#: inc/settings.php:575
+#: inc/settings.php:579
 msgid "Include Inline Scripts"
 msgstr "Inline szkriptek bevonása"
 
-#: inc/settings.php:582
+#: inc/settings.php:586
 msgid "Include inline scripts in deferral."
 msgstr "Inline Scriptek bevonása a halasztásba."
 
-#: inc/settings.php:590
+#: inc/settings.php:594
 msgid "Include jQuery"
 msgstr "A jQuery bevonása"
 
-#: inc/settings.php:597
+#: inc/settings.php:601
 msgid ""
 "Many plugins and themes require jQuery. We recommend either testing jQuery "
 "deferral separately or leaving this option turned off."
@@ -1843,7 +1930,7 @@ msgstr ""
 "Számos bővítmény és téma igényel jQuery-t. Javasoljuk, hogy vagy külön "
 "tesztelje a jQuery halasztást, vagy hagyja kikapcsolva ezt az opciót."
 
-#: inc/settings.php:598
+#: inc/settings.php:602
 msgid ""
 "Allow jQuery core to be deferred. We recommend testing this separately or "
 "leaving it off."
@@ -1851,11 +1938,11 @@ msgstr ""
 "A jQuery halasztás engedélyezése. Javasoljuk, hogy ezt külön teszteld, vagy "
 "hagyd ki."
 
-#: inc/settings.php:606
+#: inc/settings.php:610
 msgid "Excluded from Deferral"
 msgstr "A halasztásból kizárt"
 
-#: inc/settings.php:616
+#: inc/settings.php:620
 msgid ""
 "Exclude specific JavaScript files from deferral. Exclude a file by adding "
 "the source URL (example.js). Format: one per line"
@@ -1863,35 +1950,35 @@ msgstr ""
 "Bizonyos JavaScript-fájlok kizárása a késleltetésből. Egy fájl kizárása a "
 "forrás URL-címének (example.js) hozzáadásával. Formátum: soronként egy"
 
-#: inc/settings.php:622 inc/settings.php:859
+#: inc/settings.php:626 inc/settings.php:864
 msgid "Delay"
 msgstr "Késleltetés (delay)"
 
-#: inc/settings.php:634
+#: inc/settings.php:638
 msgid "Delay JavaScript from loading until user interaction."
 msgstr "A JavaScript betöltésének késleltetése a felhasználói interakcióig."
 
-#: inc/settings.php:642
+#: inc/settings.php:646
 msgid "Delay Behavior"
 msgstr "Késleltetési viselkedés"
 
-#: inc/settings.php:651
+#: inc/settings.php:655
 msgid "Only Delay Specified Scripts"
 msgstr "Csak a megadott scriptek késleltetése"
 
-#: inc/settings.php:652
+#: inc/settings.php:656
 msgid "Delay All Scripts"
 msgstr "Minden Script késleltetése"
 
-#: inc/settings.php:654
+#: inc/settings.php:658
 msgid "Choose the method used to delay scripts."
 msgstr "Válassza ki a scriptek késleltetésére használt módszert."
 
-#: inc/settings.php:662
+#: inc/settings.php:666
 msgid "Delayed Scripts"
 msgstr "Késleltetett scriptek"
 
-#: inc/settings.php:672
+#: inc/settings.php:676
 msgid ""
 "Delay specific JavaScript files by adding the source URL (example.js), or "
 "delay an inline script by adding a unique string from that script. Format: "
@@ -1901,11 +1988,11 @@ msgstr ""
 "hozzáadásával, vagy késleltethet egy soron belüli scriptet a script egyedi "
 "karakterláncának hozzáadásával. Formátum: soronként egy"
 
-#: inc/settings.php:680
+#: inc/settings.php:684
 msgid "Quick Exclusions"
 msgstr "Gyors kizárások"
 
-#: inc/settings.php:687
+#: inc/settings.php:691
 msgid ""
 "Exclude scripts for popular plugins and themes based on our predefined lists "
 "of common exclusions."
@@ -1913,11 +2000,11 @@ msgstr ""
 "A népszerű bővítmények és témák scriptjeinek kizárása a gyakori kizárások "
 "előre meghatározott listái alapján."
 
-#: inc/settings.php:695
+#: inc/settings.php:699
 msgid "Excluded from Delay"
 msgstr "Késleltetésből kizárt"
 
-#: inc/settings.php:705
+#: inc/settings.php:709
 msgid ""
 "Exclude specific JavaScript files from delay by adding the source URL "
 "(example.js), or exclude an inline script by adding a unique string from "
@@ -1927,11 +2014,11 @@ msgstr ""
 "(példa.js) hozzáadásával, vagy kizárhat egy soron belüli scriptet a script "
 "egyedi karakterláncának hozzáadásával. Formátum: soronként egy"
 
-#: inc/settings.php:713
+#: inc/settings.php:717
 msgid "Delay Timeout"
 msgstr "Késleltetési idő"
 
-#: inc/settings.php:720
+#: inc/settings.php:724
 msgid ""
 "Load delayed scripts after a set amount of time if no user interaction has "
 "been detected."
@@ -1939,11 +2026,11 @@ msgstr ""
 "Késleltetett parancsfájlok betöltése egy meghatározott idő után, ha nem "
 "észleltek felhasználói interakciót."
 
-#: inc/settings.php:728
+#: inc/settings.php:732
 msgid "Disable Click Delay"
 msgstr "Kattintás késleltetés kikapcsolása"
 
-#: inc/settings.php:735
+#: inc/settings.php:739
 msgid ""
 "Prevents the first click from being delayed until JavaScript has finished "
 "loading. This can be helpful if you are excluding scripts for interactive "
@@ -1953,28 +2040,36 @@ msgstr ""
 "betöltődik. Ez hasznos lehet, ha az interaktív elemek scriptjeit kézzel "
 "zárja ki."
 
-#: inc/settings.php:743
+#: inc/settings.php:747
 msgid "Enable FastClick"
 msgstr "FastClick engedélyezése"
 
-#: inc/settings.php:750
+#: inc/settings.php:754
 msgid ""
 "Load the FastClick library locally to fix the double-click issue on iOS."
 msgstr ""
 "A FastClick könyvtár helyi betöltése a dupla kattintás problémájának "
 "megoldásához iOS alatt."
 
-#: inc/settings.php:768
+#: inc/settings.php:755
+msgid ""
+"Using FastClick is not recommended for most modern mobile browsers and "
+"enabling it can sometimes cause problems."
+msgstr ""
+"A FastClick használata a legtöbb modern mobilböngészőben nem ajánlott, és az "
+"engedélyezése néha problémákat okozhat."
+
+#: inc/settings.php:773
 msgid "Remove unnecessary characters and optimize JavaScript files."
 msgstr ""
 "Távolítsa el a felesleges karaktereket és optimalizálja a JavaScript-"
 "fájlokat."
 
-#: inc/settings.php:776 inc/settings.php:958
+#: inc/settings.php:781 inc/settings.php:963
 msgid "Excluded from Minification"
 msgstr "Minimalizálásból kizárt"
 
-#: inc/settings.php:786
+#: inc/settings.php:791
 msgid ""
 "Exclude specific JavaScript files from minification by adding the source URL "
 "(example.js). Format: one per line"
@@ -1982,24 +2077,24 @@ msgstr ""
 "A forrás URL-címének (pelda.js) hozzáadásával kizárhat bizonyos JavaScript-"
 "fájlokat a minimlaizálásból. Formátum: soronként egy"
 
-#: inc/settings.php:794 inc/settings.php:803
+#: inc/settings.php:799 inc/settings.php:808
 msgid "Clear Minified JS"
 msgstr "Minimalizált JS tisztítása"
 
-#: inc/settings.php:805
+#: inc/settings.php:810
 msgid "Remove all existing minified JavaScript files that have been generated."
 msgstr ""
 "Eltávolítja az összes létező, már generált minimalizált JavaScript-fájlt."
 
-#: inc/settings.php:810
+#: inc/settings.php:815
 msgid "Unused"
 msgstr "Nem használt CSS"
 
-#: inc/settings.php:815
+#: inc/settings.php:820
 msgid "Remove Unused CSS"
 msgstr "Nem használt CSS eltávolítása"
 
-#: inc/settings.php:822
+#: inc/settings.php:827
 msgid ""
 "Remove unused CSS from your stylesheets and print out used CSS inline in the "
 "header."
@@ -2007,41 +2102,41 @@ msgstr ""
 "Távolítsa el a nem használt CSS-t a stíluslapokból, és nyomtassa ki a "
 "használt CSS-t inline a fejlécben."
 
-#: inc/settings.php:830
+#: inc/settings.php:835
 msgid "Used CSS Method"
 msgstr "Használt CSS módszer"
 
-#: inc/settings.php:839 inc/settings.php:1558
+#: inc/settings.php:844 inc/settings.php:1563
 msgid "Inline"
 msgstr "Egysorban"
 
-#: inc/settings.php:840 inc/settings.php:1557
+#: inc/settings.php:845 inc/settings.php:1562
 msgid "File"
 msgstr "Fájl"
 
-#: inc/settings.php:842
+#: inc/settings.php:847
 msgid "Choose how the used CSS will be included."
 msgstr "Válassza ki, hogy a használt CSS hogyan kerüljön beillesztésre."
 
-#: inc/settings.php:850
+#: inc/settings.php:855
 msgid "Stylesheet Behavior"
 msgstr "Stíluslap viselkedés"
 
-#: inc/settings.php:860
+#: inc/settings.php:865
 msgid "Async"
 msgstr "Async"
 
-#: inc/settings.php:863
+#: inc/settings.php:868
 msgid "Choose how the original stylesheets (unused CSS) will be included."
 msgstr ""
 "Válassza ki, hogy az eredeti stílustáblák (nem használt CSS) hogyan kerüljön "
 "be."
 
-#: inc/settings.php:871
+#: inc/settings.php:876
 msgid "Excluded Stylesheets"
 msgstr "Kizárt stíluslapok"
 
-#: inc/settings.php:880
+#: inc/settings.php:885
 msgid ""
 "Exclude specific stylesheets from unused CSS removal by adding a unique "
 "portion of the source URL (example.css). Format: one per line"
@@ -2050,11 +2145,11 @@ msgstr ""
 "bizonyos stíluslapokat a nem használt CSS eltávolításából. Formátum: "
 "soronként egy"
 
-#: inc/settings.php:888
+#: inc/settings.php:893
 msgid "Excluded Selectors"
 msgstr "Kizárt szelektorok"
 
-#: inc/settings.php:897
+#: inc/settings.php:902
 msgid ""
 "Exclude specific CSS selectors from being removed by adding the element ID, "
 "class name, etc. (#id, .class). Format: one per line"
@@ -2063,26 +2158,26 @@ msgstr ""
 "kizárhat bizonyos CSS-szelektorokat az eltávolításból. Formátum: soronként "
 "egy"
 
-#: inc/settings.php:905 inc/settings.php:1597 inc/settings.php:1665
+#: inc/settings.php:910 inc/settings.php:1602 inc/settings.php:1670
 msgid "CDN URL"
 msgstr "CDN URL"
 
-#: inc/settings.php:913
+#: inc/settings.php:918
 msgid ""
 "Provide your CDN URL if you are using a CDN rewrite outside of Perfmatters."
 msgstr ""
 "Adja meg a CDN URL-címét, ha a Perfmatters-en kívüli CDN átírást használ."
 
-#: inc/settings.php:933
+#: inc/settings.php:938
 msgid "Remove all existing used CSS files that have been generated."
 msgstr "Távolítsa el az összes meglévő, korábban generált CSS-fájlt."
 
-#: inc/settings.php:950
+#: inc/settings.php:955
 msgid "Remove unnecessary characters and optimize CSS files."
 msgstr ""
 "Távolítsa el a felesleges karaktereket és optimalizálja a CSS-fájlokat."
 
-#: inc/settings.php:968
+#: inc/settings.php:973
 msgid ""
 "Exclude specific CSS files from minification by adding the source URL "
 "(example.css). Format: one per line"
@@ -2090,30 +2185,30 @@ msgstr ""
 "A forrás URL (example.css) hozzáadásával kizárhat bizonyos CSS-fájlokat az "
 "aprításból. Formátum: soronként egy"
 
-#: inc/settings.php:976 inc/settings.php:985
+#: inc/settings.php:981 inc/settings.php:990
 msgid "Clear Minified CSS"
 msgstr "Minimalizált CSS törlése"
 
-#: inc/settings.php:987
+#: inc/settings.php:992
 msgid "Remove all existing minified CSS files that have been generated."
 msgstr "Távolítsa el az összes létező, már generált tömörített CSS-fájlt."
 
-#: inc/settings.php:997
+#: inc/settings.php:1002
 msgid "Add Header Code"
 msgstr "Head kód hozzáadása"
 
-#: inc/settings.php:1006
+#: inc/settings.php:1011
 msgid ""
 "Code added here will be printed in the head section on every page of your "
 "website."
 msgstr ""
 "Az itt hozzáadott kód a weboldal minden oldalának Head részében jelenik meg."
 
-#: inc/settings.php:1015
+#: inc/settings.php:1020
 msgid "Add Body Code"
 msgstr "Body kód hozzáadása"
 
-#: inc/settings.php:1024
+#: inc/settings.php:1029
 msgid ""
 "Code added here will be printed below the opening body tag on every page of "
 "your website."
@@ -2121,11 +2216,11 @@ msgstr ""
 "Az ide beillesztett kód a weboldal minden oldalának nyitó body tag alá kerül "
 "be."
 
-#: inc/settings.php:1032
+#: inc/settings.php:1037
 msgid "Add Footer Code"
 msgstr "Lábléc kód hozzáadása"
 
-#: inc/settings.php:1041
+#: inc/settings.php:1046
 msgid ""
 "Code added here will be printed above the closing body tag on every page of "
 "your website."
@@ -2133,11 +2228,11 @@ msgstr ""
 "Az ide beillesztett kód a weboldal minden oldalának a záró body tag fölé "
 "kerül be."
 
-#: inc/settings.php:1054
+#: inc/settings.php:1059
 msgid "Enable Instant Page"
 msgstr "Azonnali oldal engedélyezése"
 
-#: inc/settings.php:1061
+#: inc/settings.php:1066
 msgid ""
 "Automatically prefetch URLs in the background after a user hovers over a "
 "link. This results in almost instantaneous load times and improves the user "
@@ -2147,11 +2242,11 @@ msgstr ""
 "link fölé mozgatja az egeret. Ez szinte azonnali betöltési időt eredményez, "
 "és javítja a felhasználói élményt."
 
-#: inc/settings.php:1070
+#: inc/settings.php:1075
 msgid "Preload Critical Images"
 msgstr "Kritikus képek előzetes betöltése"
 
-#: inc/settings.php:1086
+#: inc/settings.php:1091
 msgid ""
 "Automatically preload leading images to help improve Largest Contentful "
 "Paint (LCP)."
@@ -2159,11 +2254,11 @@ msgstr ""
 "Automatikusan előretölti a kezdő képeket a Largest Contentful Paint (LCP) "
 "javítása érdekében."
 
-#: inc/settings.php:1093
+#: inc/settings.php:1098
 msgid "Preload"
 msgstr "Előtöltés"
 
-#: inc/settings.php:1100
+#: inc/settings.php:1105
 msgid ""
 "Preload allows you to specify resources (such as fonts or CSS) needed right "
 "away during a page load. This helps fix render-blocking resource warnings. "
@@ -2174,29 +2269,29 @@ msgstr ""
 "kijavítani a renderelést blokkoló erőforrás-figyelmeztetéseket. Formátum: "
 "https://example.com/font.woff2"
 
-#: inc/settings.php:1107
+#: inc/settings.php:1112
 msgid "Cloudflare Early Hints"
 msgstr "Cloudflare korai utalások"
 
-#: inc/settings.php:1114
+#: inc/settings.php:1119
 msgid "Send early hint link headers for existing Perfmatters preloads."
 msgstr ""
 "Küldje el a meglévő Perfmatters-előtöltésekhez a korai célzási link "
 "fejléceket."
 
-#: inc/settings.php:1122
+#: inc/settings.php:1127
 msgid "Early Hint Types"
 msgstr "Korai utalások típusai"
 
-#: inc/settings.php:1129
+#: inc/settings.php:1134
 msgid "Choose which file types get early hint link headers."
 msgstr "Válaszd ki, mely fájltípusok kapjanak korai utalás link fejléceket."
 
-#: inc/settings.php:1137
+#: inc/settings.php:1142
 msgid "Fetch Priority"
 msgstr "Hívási prioritás"
 
-#: inc/settings.php:1144
+#: inc/settings.php:1149
 msgid ""
 "Add the fetchpriority HTML attribute to a resource to proritize it higher or "
 "lower. This can help improve Largest Contentful Paint (LCP)."
@@ -2205,68 +2300,68 @@ msgstr ""
 "vagy alacsonyabb prioritást adjon neki. Ez segíthet a legnagyobb tartalmi "
 "festék (Largest Contentful Paint, LCP) javításában."
 
-#: inc/settings.php:1151
+#: inc/settings.php:1156
 msgid "Disable Core Fetch"
 msgstr "Core Fetch letiltása"
 
-#: inc/settings.php:1158
+#: inc/settings.php:1163
 msgid "Disable the fetch priority attribute added by WordPress core."
 msgstr "A WordPress által hozzáadott fetch priority attribútum kikapcsolása."
 
-#: inc/settings.php:1166
+#: inc/settings.php:1171
 msgid "Speculative Loading"
 msgstr "Spekulatív betöltés"
 
-#: inc/settings.php:1171
+#: inc/settings.php:1176
 msgid "Mode"
 msgstr "Mód – itt választhatod ki a spekulatív betöltés típusát"
 
-#: inc/settings.php:1180 inc/settings.php:1202 inc/settings.php:2544
+#: inc/settings.php:1185 inc/settings.php:1207 inc/settings.php:2564
 msgid "Auto"
 msgstr "Automatikus"
 
-#: inc/settings.php:1181
+#: inc/settings.php:1186
 msgid "Prefetch"
 msgstr ""
 "Előbetöltés – fájlokat előre lehív, még mielőtt a felhasználó rákattinta"
 
-#: inc/settings.php:1182
+#: inc/settings.php:1187
 msgid "Prerender"
 msgstr "Előzetes renderelés – az egész oldalt előre megpróbálja betölteni"
 
-#: inc/settings.php:1185
+#: inc/settings.php:1190
 msgid "Change the mode used for speculative loading."
 msgstr "Állítsd be, melyik módot használja a spekulatív betöltéshez."
 
-#: inc/settings.php:1193
+#: inc/settings.php:1198
 msgid "Eagerness"
 msgstr "Türelmetlen mód – nagyon agresszíven előre betölt mindent"
 
-#: inc/settings.php:1203
+#: inc/settings.php:1208
 msgid "Conservative"
 msgstr "Óvatos mód – csak minimálisan tölt előre"
 
-#: inc/settings.php:1204
+#: inc/settings.php:1209
 msgid "Moderate"
 msgstr "Kiegyensúlyozott mód – se nem túl óvatos, se nem túl agresszív"
 
-#: inc/settings.php:1205
+#: inc/settings.php:1210
 msgid "Eager"
 msgstr "Töltsön be mindent, most"
 
-#: inc/settings.php:1207
+#: inc/settings.php:1212
 msgid "Change how agressive speculative loading will behave."
 msgstr "Állítsd be, mennyire legyen agresszív a spekulatív betöltés működése."
 
-#: inc/settings.php:1214
+#: inc/settings.php:1219
 msgid "Connection"
 msgstr "Kapcsolat"
 
-#: inc/settings.php:1219
+#: inc/settings.php:1224
 msgid "Preconnect"
 msgstr "Preconnect"
 
-#: inc/settings.php:1226
+#: inc/settings.php:1231
 msgid ""
 "Preconnect allows the browser to set up early connections before an HTTP "
 "request, eliminating roundtrip latency and saving time for users. Format: "
@@ -2276,11 +2371,11 @@ msgstr ""
 "korai kapcsolatokat hozzon létre, kiküszöbölve ezzel a körkörös késleltetést "
 "és időt takarítva meg a felhasználók számára. Formátum: https://pelda.hu"
 
-#: inc/settings.php:1233
+#: inc/settings.php:1238
 msgid "DNS Prefetch"
 msgstr "DNS Prefetch"
 
-#: inc/settings.php:1243
+#: inc/settings.php:1248
 msgid ""
 "Resolve domain names before a user clicks. Format: //example.com (one per "
 "line)"
@@ -2288,35 +2383,35 @@ msgstr ""
 "A domain nevek feloldása a felhasználó kattintása előtt. Formátum: //"
 "pelda.hu (soronként egy)"
 
-#: inc/settings.php:1254
+#: inc/settings.php:1259
 msgid "Images"
 msgstr "Képek"
 
-#: inc/settings.php:1261
+#: inc/settings.php:1266
 msgid "Enable lazy loading on images."
 msgstr "A képek lazy load betöltésének engedélyezése."
 
-#: inc/settings.php:1269
+#: inc/settings.php:1274
 msgid "Exclude Leading Images"
 msgstr "Bevezető képek kizárása"
 
-#: inc/settings.php:1285
+#: inc/settings.php:1290
 msgid "Exclude a certain number of images starting from the top of the page."
 msgstr "Kizár egy bizonyos számú képet az oldal tetejétől kezdve."
 
-#: inc/settings.php:1293
+#: inc/settings.php:1298
 msgid "iFrames and Videos"
 msgstr "iFrame-ek és videók"
 
-#: inc/settings.php:1300
+#: inc/settings.php:1305
 msgid "Enable lazy loading on iframes and videos."
 msgstr "Lazy load engedélyezése az iframe-ek és a videók esetében."
 
-#: inc/settings.php:1308
+#: inc/settings.php:1313
 msgid "YouTube Preview Thumbnails"
 msgstr "YouTube előnézet bélyegképek"
 
-#: inc/settings.php:1315
+#: inc/settings.php:1320
 msgid ""
 "Swap out YouTube iFrames with preview thumbnails. The original iFrame is "
 "loaded when the thumbnail is clicked."
@@ -2324,11 +2419,11 @@ msgstr ""
 "YouTube iFrame-ek kicserélése előnézeti miniatűrökre. Az eredeti iFrame "
 "betöltődik, amikor a miniatűrre kattint."
 
-#: inc/settings.php:1323
+#: inc/settings.php:1328
 msgid "Exclude from Lazy Loading"
 msgstr "Lazy load kizárása"
 
-#: inc/settings.php:1333
+#: inc/settings.php:1338
 msgid ""
 "Exclude specific elements from lazy loading. Exclude an element by adding "
 "the source URL (example.png) or by adding any unique portion of its "
@@ -2338,11 +2433,11 @@ msgstr ""
 "(example.png) vagy az attribútumsor bármely egyedi részének "
 "(class=\"example\") hozzáadásával zárhatsz ki. Formátum: soronként egy"
 
-#: inc/settings.php:1340
+#: inc/settings.php:1345
 msgid "Exclude by Parent Selector"
 msgstr "Kizárás szülő szelektor szerint"
 
-#: inc/settings.php:1350
+#: inc/settings.php:1355
 msgid ""
 "Exclude specific images from lazy loading by adding any unique portion of an "
 "attribute string (class=\"example\") from a parent container. Format: one "
@@ -2352,11 +2447,11 @@ msgstr ""
 "(class=\"example\") bármely egyedi részének hozzáadásával a szülő "
 "konténerből. Formátum: soronként egy"
 
-#: inc/settings.php:1358
+#: inc/settings.php:1363
 msgid "Threshold"
 msgstr "Határérték"
 
-#: inc/settings.php:1368
+#: inc/settings.php:1373
 msgid ""
 "Extend the lazy loading threshold allowing images to load before they are "
 "visible in the viewport. (px or %)"
@@ -2365,52 +2460,52 @@ msgstr ""
 "a képek betöltődjenek, mielőtt láthatóvá válnának a nézetablakban. (px vagy "
 "%)"
 
-#: inc/settings.php:1375
+#: inc/settings.php:1380
 msgid "DOM Monitoring"
 msgstr "DOM Monitorozás"
 
-#: inc/settings.php:1382
+#: inc/settings.php:1387
 msgid ""
 "Watch for changes in the DOM and dynamically lazy load newly added elements."
 msgstr ""
 "Figyeli a DOM-ban bekövetkező változásokat, és dinamikusan lazy módon tölti "
 "be az újonnan hozzáadott elemeket."
 
-#: inc/settings.php:1389
-msgid "Add Missing Image Dimensions"
-msgstr "Hiányzó képméretek hozzáadása"
+#: inc/settings.php:1394
+msgid "Add Image Dimensions"
+msgstr "Képméretek hozzáadása"
 
-#: inc/settings.php:1396
+#: inc/settings.php:1401
 msgid "Add missing width and height attributes to images."
 msgstr "Hiányzó szélesség és magasság érték hozzáadása a képekhez."
 
-#: inc/settings.php:1403
+#: inc/settings.php:1408
 msgid "Fade In"
 msgstr "Áttűnés"
 
-#: inc/settings.php:1410
+#: inc/settings.php:1415
 msgid "Add fade in effect when images are loaded in."
 msgstr "Áttűnés effekt hozzáadása a képek betöltésekor."
 
-#: inc/settings.php:1415
+#: inc/settings.php:1420
 msgid "CSS Background Images"
 msgstr "CSS háttérképek"
 
-#: inc/settings.php:1420
+#: inc/settings.php:1425
 msgid "Background Images"
 msgstr "Háttérképek – a spekulatív betöltés érinti ezeket is"
 
-#: inc/settings.php:1427
+#: inc/settings.php:1432
 msgid "Allow lazy loading of background images coming from (CSS) stylesheets."
 msgstr ""
 "A CSS stíluslapokból származó háttérképek lazy load betöltésének "
 "engedélyezése."
 
-#: inc/settings.php:1435
+#: inc/settings.php:1440
 msgid "Background Selectors"
 msgstr "Háttér szelektorok"
 
-#: inc/settings.php:1445
+#: inc/settings.php:1450
 msgid ""
 "Lazy load a CSS background image by adding a unique selector (ID or class) "
 "found on the element that the background image has been applied to. Format: "
@@ -2420,11 +2515,11 @@ msgstr ""
 "hozzáadásával, amely azon az elemen található, amelyre a háttérképet "
 "alkalmazták. Formátum: soronként egy"
 
-#: inc/settings.php:1453
+#: inc/settings.php:1458
 msgid "Exclude Leading"
 msgstr "Kezdő elemek kizárása"
 
-#: inc/settings.php:1469
+#: inc/settings.php:1474
 msgid ""
 "Exclude a certain number of background image containers from being lazy "
 "loaded starting from the first match."
@@ -2432,23 +2527,23 @@ msgstr ""
 "Kihagyhatsz egy megadott számú háttérkép konténert a lazy load (lustán "
 "betöltés) alól, az első egyezéstől kezdve."
 
-#: inc/settings.php:1475
+#: inc/settings.php:1480
 msgid "Lazy Elements"
 msgstr "Lazy elemek"
 
-#: inc/settings.php:1480
+#: inc/settings.php:1485
 msgid "Elements"
 msgstr "Elemek"
 
-#: inc/settings.php:1487
+#: inc/settings.php:1492
 msgid "Allow lazy loading of elements in the DOM."
 msgstr "Lehetővé teszi a DOM elemeinek lazy betöltését."
 
-#: inc/settings.php:1495
+#: inc/settings.php:1500
 msgid "Element Selectors"
 msgstr "Elem szelektorok"
 
-#: inc/settings.php:1505
+#: inc/settings.php:1510
 msgid ""
 "Lazy load specific elements and their descendants by adding any unique "
 "portion of an attribute string (class=\"example\") from a parent container. "
@@ -2458,44 +2553,44 @@ msgstr ""
 "karakterlánc (class=“pelda”) bármely egyedi részének hozzáadásával a "
 "szülőtárolóból. Formátum: soronként egy"
 
-#: inc/settings.php:1517
+#: inc/settings.php:1522
 msgid "Local Google Fonts"
 msgstr "Helyi Google betűtípusok"
 
-#: inc/settings.php:1525
+#: inc/settings.php:1530
 msgid "Host Google Font files locally on your server or CDN."
 msgstr ""
 "A Google betűtípus fájlokat helyileg a saját tárhelyén vagy CDN-en tárolja."
 
-#: inc/settings.php:1532
+#: inc/settings.php:1537
 msgid "Display Swap"
 msgstr "Megjelenítés Swap"
 
-#: inc/settings.php:1540
+#: inc/settings.php:1545
 msgid "Add the font-display swap property to your Google Fonts."
 msgstr "Adja hozzá a font-display swap tulajdonságot a Google Font-hoz."
 
-#: inc/settings.php:1560
+#: inc/settings.php:1565
 msgid "Choose how the local font stylesheet will be included."
 msgstr "Válaszd ki, hogyan kerüljön bele betűkészlet a css stílusba."
 
-#: inc/settings.php:1567
+#: inc/settings.php:1572
 msgid "Limit Subsets"
 msgstr "Font variáció limit"
 
-#: inc/settings.php:1575
+#: inc/settings.php:1580
 msgid "Limit subsets that are downloaded and included in the stylesheet."
 msgstr "Korlátozza font variációkat a letöltött CSS-ben ."
 
-#: inc/settings.php:1582
+#: inc/settings.php:1587
 msgid "Allowed Subsets"
 msgstr "Engedélyezett font variációk"
 
-#: inc/settings.php:1590
+#: inc/settings.php:1595
 msgid "Choose which subsets to download locally."
 msgstr "Válaszd ki, hogy mely variációkat akarod letölteni."
 
-#: inc/settings.php:1607
+#: inc/settings.php:1612
 msgid ""
 "Use your CDN URL when referencing Google Font files inside a parent "
 "stylesheet. Example: https://cdn.example.com"
@@ -2503,28 +2598,28 @@ msgstr ""
 "Használja a CDN URL-címét, amikor a Google Font fájlokra hivatkozik egy "
 "szülői stíluslapon belül. Példa: https://cdn.example.com"
 
-#: inc/settings.php:1614 inc/settings.php:1623
+#: inc/settings.php:1619 inc/settings.php:1628
 msgid "Clear Local Fonts"
 msgstr "Helyi betűtípusok törlése"
 
-#: inc/settings.php:1625
+#: inc/settings.php:1630
 msgid "Remove all existing local Google Font files and stylesheets."
 msgstr "Távolítson el minden meglévő helyi Google Font fájlt és stílustáblát."
 
-#: inc/settings.php:1632
+#: inc/settings.php:1637
 msgid "Disable Google Fonts"
 msgstr "Google betűtípusok letiltása"
 
-#: inc/settings.php:1640
+#: inc/settings.php:1645
 msgid ""
 "Removes any instances of Google Fonts being loaded across your entire site."
 msgstr "Eltávolítja a Google betűtípusok betöltését az egész weboldalon."
 
-#: inc/settings.php:1651
+#: inc/settings.php:1656
 msgid "Enable CDN Rewrite"
 msgstr "CDN újraírás engedélyezése"
 
-#: inc/settings.php:1658
+#: inc/settings.php:1663
 msgid ""
 "Enables rewriting of your site URLs with your CDN URLs which can be "
 "configured below."
@@ -2532,18 +2627,18 @@ msgstr ""
 "Lehetővé teszi a webhely URL-címeinek átírását a CDN URL-címeivel, amelyeket "
 "alább lehet beállítani."
 
-#: inc/settings.php:1674
+#: inc/settings.php:1679
 msgid ""
 "Enter your CDN URL without the trailing backslash. Example: https://"
 "cdn.example.com"
 msgstr ""
 "Írja be a CDN URL-címét a perjel nélkül nélkül. Példa: https://cdn.valami.hu"
 
-#: inc/settings.php:1681
+#: inc/settings.php:1686
 msgid "Included Directories"
 msgstr "Beépített könyvtárak"
 
-#: inc/settings.php:1690
+#: inc/settings.php:1695
 msgid ""
 "Enter any directories you would like to be included in CDN rewriting, "
 "separated by commas (,). Default: wp-content,wp-includes"
@@ -2551,11 +2646,11 @@ msgstr ""
 "Adja meg azokat a könyvtárakat, amelyeket szeretne bevonni a CDN átírásába, "
 "vesszővel (,) elválasztva. Alapértelmezett: wp-content,wp-includes"
 
-#: inc/settings.php:1697
+#: inc/settings.php:1702
 msgid "CDN Exclusions"
 msgstr "CDN kizárások"
 
-#: inc/settings.php:1706
+#: inc/settings.php:1711
 msgid ""
 "Enter any directories or file extensions you would like to be excluded from "
 "CDN rewriting, separated by commas (,). Default: .php"
@@ -2563,36 +2658,36 @@ msgstr ""
 "Adja meg azokat a könyvtárakat vagy fájlkiterjesztéseket, amelyeket szeretne "
 "kizárni a CDN átírásából, vesszővel (,) elválasztva. Alapértelmezett: .php"
 
-#: inc/settings.php:1717
+#: inc/settings.php:1722
 msgid "Enable Local Analytics"
 msgstr "Helyi analitika engedélyezése"
 
-#: inc/settings.php:1724
+#: inc/settings.php:1729
 msgid "Enable syncing of the Google Analytics script to your own server."
 msgstr ""
 "Engedélyezze a Google Analytics script szinkronizálását a saját szerverére."
 
-#: inc/settings.php:1731
+#: inc/settings.php:1736
 msgid "Tracking ID"
 msgstr "Követő azonosító"
 
-#: inc/settings.php:1739
+#: inc/settings.php:1744
 msgid "Input your Google Analytics tracking or measurement ID."
 msgstr "Adja meg a Google Analytics nyomonkövetési vagy mérési azonosítóját."
 
-#: inc/settings.php:1746
+#: inc/settings.php:1751
 msgid "Tracking Code Position"
 msgstr "Nyomkövetési kód pozíciója"
 
-#: inc/settings.php:1755
+#: inc/settings.php:1760
 msgid "Header"
 msgstr "Fejléc"
 
-#: inc/settings.php:1756
+#: inc/settings.php:1761
 msgid "Footer"
 msgstr "Lábléc"
 
-#: inc/settings.php:1758
+#: inc/settings.php:1763
 msgid ""
 "Load your analytics script in the header (default) or footer of your site. "
 "Default: Header"
@@ -2600,11 +2695,11 @@ msgstr ""
 "Töltse be az analitikai scriptet a weboldal fejlécébe (alapértelmezett) vagy "
 "láblécébe. Alapértelmezett: Fejléc"
 
-#: inc/settings.php:1765
+#: inc/settings.php:1770
 msgid "Script Type"
 msgstr "Script típus"
 
-#: inc/settings.php:1778
+#: inc/settings.php:1783
 msgid ""
 "Choose which script method you would like to use. Default Google Analytics 4 "
 "is larger and includes all features, while Minimal is smaller and only "
@@ -2614,21 +2709,21 @@ msgstr ""
 "alapértelmezett Google Analytics 4 nagyobb és minden funkciót tartalmaz, míg "
 "a Minimal kisebb és csak az alapvető jelentési funkciókat tartalmazza."
 
-#: inc/settings.php:1785
+#: inc/settings.php:1790
 msgid "Track Logged In Admins"
 msgstr "Bejelentkezett adminok nyomon követése"
 
-#: inc/settings.php:1792
+#: inc/settings.php:1797
 msgid "Include logged-in WordPress admins in your Google Analytics reports."
 msgstr ""
 "A bejelentkezett WordPress-adminisztrátorok bevonása a Google Analytics-"
 "jelentésekbe."
 
-#: inc/settings.php:1799
+#: inc/settings.php:1804
 msgid "Use MonsterInsights"
 msgstr "MonsterInsights használata"
 
-#: inc/settings.php:1807
+#: inc/settings.php:1812
 msgid ""
 "Allows MonsterInsights to manage your Google Analytics while still using the "
 "locally hosted gtag.js file generated by Perfmatters."
@@ -2637,11 +2732,11 @@ msgstr ""
 "miközben továbbra is a Perfmatters által generált, helyben tárolt gtag.js "
 "fájlt használja."
 
-#: inc/settings.php:1814
+#: inc/settings.php:1819
 msgid "Enable AMP Support"
 msgstr "AMP támogatás engedélyezése"
 
-#: inc/settings.php:1821
+#: inc/settings.php:1826
 msgid ""
 "Enable support for analytics tracking on AMP sites. This is not a local "
 "script, but a native AMP script."
@@ -2649,11 +2744,11 @@ msgstr ""
 "Az AMP oldalakon az analitikai nyomon követés támogatásának engedélyezése. "
 "Ez nem egy helyi script, hanem egy natív AMP-script."
 
-#: inc/settings.php:1828
+#: inc/settings.php:1833
 msgid "Plugin"
 msgstr "Bővítmény"
 
-#: inc/settings.php:1840
+#: inc/settings.php:1845
 msgid ""
 "Enables the Perfmatters Script Manager, which gives you the ability to "
 "disable CSS and JS files on a page by page basis."
@@ -2661,16 +2756,16 @@ msgstr ""
 "Bekapcsolja a Perfmatters Script Manager-t, amely lehetővé teszi a CSS és JS "
 "fájlok oldalankénti kezelését."
 
-#: inc/settings.php:1847
+#: inc/settings.php:1852
 msgid "Show Advanced Options"
 msgstr "Speciális beállítások megjelenítése"
 
-#: inc/settings.php:1854
+#: inc/settings.php:1859
 msgid "Show advanced options in the Perfmatters UI."
 msgstr ""
 "A Perfmatters felhasználói felületén a speciális beállítások megjelenítése."
 
-#: inc/settings.php:1855
+#: inc/settings.php:1860
 msgid ""
 "Advanced options should only be used if you know exactly what you are doing, "
 "as they can break certain plugin functionality if used improperly."
@@ -2679,27 +2774,27 @@ msgstr ""
 "hogy mit csinálsz, mivel helytelen használat esetén bizonyos bővítmény "
 "funkciókat megszakíthatnak."
 
-#: inc/settings.php:1862
+#: inc/settings.php:1867
 msgid "Disable for Logged In Users"
 msgstr "Letiltás a Bejelentkezett felhasználók számára"
 
-#: inc/settings.php:1869
+#: inc/settings.php:1874
 msgid "Disable optimizations for logged in users."
 msgstr "Optimalizálás letiltása a bejelentkezett felhasználók számára."
 
-#: inc/settings.php:1876
+#: inc/settings.php:1881
 msgid "Hide Admin Bar Menu"
 msgstr "Admin sávban perfmatters elrejtése"
 
-#: inc/settings.php:1883
+#: inc/settings.php:1888
 msgid "Hide the Perfmatters menu in the admin bar."
 msgstr "Rejtse el a Perfmatters menüt az admin sávban."
 
-#: inc/settings.php:1890
+#: inc/settings.php:1895
 msgid "Accessibility Mode"
 msgstr "Accessibility mód"
 
-#: inc/settings.php:1898
+#: inc/settings.php:1903
 msgid ""
 "Disable the use of visual UI elements in the plugin settings such as "
 "checkbox toggles and hovering tooltips."
@@ -2707,11 +2802,11 @@ msgstr ""
 "Letiltja a vizuális felhasználói felület elemeinek használatát a bővítmény "
 "beállításaiban, például a jelölőnégyzetek kapcsolóit és a tooltipeket."
 
-#: inc/settings.php:1925 inc/settings.php:1933
+#: inc/settings.php:1930 inc/settings.php:1938
 msgid "Restore Default Options"
 msgstr "Alapértelmezett beállítások visszaállítása"
 
-#: inc/settings.php:1934
+#: inc/settings.php:1939
 msgid ""
 "Are you sure? This will remove all existing plugin options and restore them "
 "to their default states."
@@ -2719,17 +2814,17 @@ msgstr ""
 "Biztos vagy benne? Ez eltávolítja az összes meglévő bővítménybeállítást, és "
 "visszaállítja az alapértelmezett állapotukat."
 
-#: inc/settings.php:1936
+#: inc/settings.php:1941
 msgid "Restore all plugin options to their default settings."
 msgstr ""
 "A plugin összes beállításának visszaállítása az alapértelmezett "
 "beállításokra."
 
-#: inc/settings.php:1943 inc/settings.php:1951 inc/settings.php:2736
+#: inc/settings.php:1948 inc/settings.php:1956 inc/settings.php:2755
 msgid "Purge Meta Options"
 msgstr "Meta beállítások tisztítása"
 
-#: inc/settings.php:1952
+#: inc/settings.php:1957
 msgid ""
 "Are you sure? This will delete all existing Perfmatters meta options for all "
 "posts from the database."
@@ -2737,21 +2832,21 @@ msgstr ""
 "Biztos vagy benne? Ez az összes meglévő Perfmatters meta opciót törli az "
 "adatbázisból az összes bejegyzéshez."
 
-#: inc/settings.php:1953
+#: inc/settings.php:1958
 msgid ""
 "Permanently delete all existing Perfmatters meta options from your database."
 msgstr ""
 "Törölje véglegesen az összes meglévő Perfmatters meta opciót az adatbázisból."
 
-#: inc/settings.php:1960
+#: inc/settings.php:1965
 msgid "Export Settings"
 msgstr "Beállítások exportálása"
 
-#: inc/settings.php:1968
+#: inc/settings.php:1973
 msgid "Export Plugin Settings"
 msgstr "Beállítások exportálása"
 
-#: inc/settings.php:1970
+#: inc/settings.php:1975
 msgid ""
 "Export your Perfmatters settings for this site as a .json file. This lets "
 "you easily import the configuration into another site."
@@ -2759,33 +2854,33 @@ msgstr ""
 "Exportálja a Perfmatters beállításait .json fájlként. Így könnyedén "
 "importálhatja a konfigurációt egy másik weboldalra."
 
-#: inc/settings.php:1977
+#: inc/settings.php:1982
 msgid "Import Settings"
 msgstr "Beállítások importálása"
 
-#: inc/settings.php:1982
+#: inc/settings.php:1987
 msgid "Import Perfmatters settings from an exported .json file."
 msgstr "Perfmatters beállítások importálása .json fájlból."
 
-#: inc/settings.php:1992
+#: inc/settings.php:1997
 msgid "Scan Database"
 msgstr "Adatbázis beolvasása"
 
-#: inc/settings.php:2000
+#: inc/settings.php:2005
 msgid "Scan Now"
 msgstr "Szkennelés most"
 
-#: inc/settings.php:2003
+#: inc/settings.php:2008
 msgid "Scan the database to calculate items available for optimization."
 msgstr ""
 "Az adatbázis átvizsgálása az optimalizáláshoz rendelkezésre álló elemek "
 "kiszámításához."
 
-#: inc/settings.php:2010
+#: inc/settings.php:2015
 msgid "Post Revisions"
 msgstr "Bejegyzések változatai"
 
-#: inc/settings.php:2018
+#: inc/settings.php:2023
 msgid ""
 "Include post revisions in your database optimization. This also includes "
 "revisions for pages and custom post types."
@@ -2793,11 +2888,11 @@ msgstr ""
 "Tartalmazza a bejegyzések felülvizsgálatát az adatbázis-optimalizálásban. Ez "
 "magában foglalja az oldalak és az egyéni bejegyzés típusok revízióit is."
 
-#: inc/settings.php:2025
+#: inc/settings.php:2030
 msgid "Post Auto-Drafts"
 msgstr "Bejegyzés Auto-piszkozatok"
 
-#: inc/settings.php:2033
+#: inc/settings.php:2038
 msgid ""
 "Include post auto-drafts in your database optimization. This also includes "
 "auto-drafts for pages and custom post types."
@@ -2806,7 +2901,7 @@ msgstr ""
 "foglalja az oldalak és az egyéni bejegyzés típusok automatikus szerkesztését "
 "is."
 
-#: inc/settings.php:2048
+#: inc/settings.php:2053
 msgid ""
 "Include trashed posts in your database optimization. This also includes "
 "trashed pages and custom post types."
@@ -2814,43 +2909,43 @@ msgstr ""
 "Tartalmazza a törölt hozzászólásokat az adatbázis optimalizálásába. Ez "
 "magában foglalja a törölt oldalakat és az egyéni bejegyzés típusokat is."
 
-#: inc/settings.php:2063
+#: inc/settings.php:2068
 msgid "Include spam comments in your database optimization."
 msgstr "Tartalmazza a spam hozzászólásokat az adatbázis-optimalizálásban."
 
-#: inc/settings.php:2078
+#: inc/settings.php:2083
 msgid "Include trashed comments in your database optimization."
 msgstr "Tartalmazza a törölt hozzászólásokat az adatbázis-optimalizálásba."
 
-#: inc/settings.php:2085
+#: inc/settings.php:2090
 msgid "Expired Transients"
 msgstr "Lejárt tranziensek"
 
-#: inc/settings.php:2093
+#: inc/settings.php:2098
 msgid "Include expired transients in your database optimization."
 msgstr "Tartalmazza a lejárt tranzienseket az adatbázis-optimalizálásban."
 
-#: inc/settings.php:2100
+#: inc/settings.php:2105
 msgid "All Transients"
 msgstr "Minden tranziens"
 
-#: inc/settings.php:2108
+#: inc/settings.php:2113
 msgid "Include all transients in your database optimization."
 msgstr "Az összes tranziens elemet vegye fel az adatbázis-optimalizálásba."
 
-#: inc/settings.php:2123
+#: inc/settings.php:2128
 msgid "Include tables in your database optimization."
 msgstr "Tartalmazza a táblákat az adatbázis-optimalizálásban."
 
-#: inc/settings.php:2132
+#: inc/settings.php:2137
 msgid "Optimize Database"
 msgstr "Adatbázis optimalizálása"
 
-#: inc/settings.php:2140
+#: inc/settings.php:2145
 msgid "Optimize Now"
 msgstr "Optimalizálás most"
 
-#: inc/settings.php:2143
+#: inc/settings.php:2148
 msgid ""
 "This will make permanent changes that cannot be reverted! Are you sure you "
 "want to proceed with optimization?"
@@ -2858,7 +2953,7 @@ msgstr ""
 "Ez végleges változásokat hoz létre, amelyeket nem lehet visszaállítani! "
 "Biztos, hogy folytatni szeretné az optimalizálást?"
 
-#: inc/settings.php:2144
+#: inc/settings.php:2149
 msgid ""
 "Run a one-time optimization of your WordPress database based on the selected "
 "options above. This process runs in the background."
@@ -2866,35 +2961,35 @@ msgstr ""
 "Futtasson egyszeri optimalizálást a WordPress adatbázisán a fent "
 "kiválasztott beállítások alapján. Ez a folyamat a háttérben fut."
 
-#: inc/settings.php:2153
+#: inc/settings.php:2158
 msgid "Cancel Optimization"
 msgstr "Optimalizálás megszakítása"
 
-#: inc/settings.php:2161
+#: inc/settings.php:2166
 msgid "Cancel Current Optimization"
 msgstr "Jelenlegi optimalizálás megszakítása"
 
-#: inc/settings.php:2164
+#: inc/settings.php:2169
 msgid "Cancel the current database optimization process."
 msgstr "Az aktuális adatbázis-optimalizálási folyamat megszakítása."
 
-#: inc/settings.php:2172
+#: inc/settings.php:2177
 msgid "Scheduled Optimization"
 msgstr "Ütemezett optimalizálás"
 
-#: inc/settings.php:2183
+#: inc/settings.php:2188
 msgid "Daily"
 msgstr "Naponta"
 
-#: inc/settings.php:2184
+#: inc/settings.php:2189
 msgid "Weekly"
 msgstr "Hetente"
 
-#: inc/settings.php:2185
+#: inc/settings.php:2190
 msgid "Monthly"
 msgstr "Havonta"
 
-#: inc/settings.php:2187
+#: inc/settings.php:2192
 msgid ""
 "Schedule a routine optimization of your WordPress database based on the "
 "selected options above. This process runs in the background and starts "
@@ -2904,43 +2999,43 @@ msgstr ""
 "kiválasztott beállítások alapján. Ez a folyamat a háttérben fut, és a mentés "
 "után azonnal elindul."
 
-#: inc/settings.php:2379
+#: inc/settings.php:2399
 msgid "Plugins"
 msgstr "Bővítmények"
 
-#: inc/settings.php:2384
+#: inc/settings.php:2404
 msgid "Themes"
 msgstr "Sablonok"
 
-#: inc/settings.php:2492
+#: inc/settings.php:2512
 msgid "Add New"
 msgstr "Új hozzáadása"
 
-#: inc/settings.php:2520
+#: inc/settings.php:2540
 msgid "Select Type"
 msgstr "Típus kiválasztása"
 
-#: inc/settings.php:2533 inc/settings.php:2611
+#: inc/settings.php:2553 inc/settings.php:2630
 msgid "All Devices"
 msgstr "Minden eszköz"
 
-#: inc/settings.php:2545
+#: inc/settings.php:2565
 msgid "High"
 msgstr "Magas"
 
-#: inc/settings.php:2546
+#: inc/settings.php:2566
 msgid "Low"
 msgstr "Alacsony"
 
-#: inc/settings.php:2596
+#: inc/settings.php:2616
 msgid "Select Priority"
 msgstr "Válassza ki a prioritást"
 
-#: inc/settings.php:2749
+#: inc/settings.php:2768
 msgid "Import Plugin Settings"
 msgstr "Beállítások importálása"
 
-#: inc/settings.php:2842
+#: inc/settings.php:2861
 #, php-format
 msgid "Click %s to view documentation."
 msgstr "Kattints a %s gombra a dokumentáció megtekintéséhez."
@@ -3013,11 +3108,15 @@ msgstr "Hogyan tölthetek be lazy képeket és videókat?"
 msgid "How do I host Google Analytics locally?"
 msgstr "Hogyan lehet a Google Analyticset helyben hosztolni?"
 
-#: perfmatters.php:150
+#: perfmatters.php:158
 msgid "Action failed."
 msgstr "A művelet sikertelen."
 
-#: perfmatters.php:219
+#: perfmatters.php:229
+msgid "Successfully imported Perfmatters code snippets."
+msgstr "A Perfmatters kódrészletek importálása sikeresen megtörtént."
+
+#: perfmatters.php:268
 msgid "Enter valid license key for automatic updates."
 msgstr "Az automatikus frissítésekhez add meg érvényes licenckulcsot."
 
@@ -3044,6 +3143,17 @@ msgstr "forgemedia"
 #. Author URI of the plugin/theme
 msgid "https://forgemedia.io/"
 msgstr "https://forgemedia.io/"
+
+#, php-format
+#~ msgid "No feed available, please visit the <a href='%s'>homepage</a>!"
+#~ msgstr ""
+#~ "Nincs elérhető feed, kérjük, látogass el a <a href='%s'>honlapra</a>!"
+
+#~ msgid "Loading snippet"
+#~ msgstr "Kódrészlet betöltése"
+
+#~ msgid "Exclude Post IDs"
+#~ msgstr "Bejegyzés ID-k kizárása"
 
 #~ msgid "Load Asynchronously"
 #~ msgstr "Aszinkron betöltés"

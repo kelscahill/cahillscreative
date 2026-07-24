@@ -483,14 +483,17 @@
 }
 #pmcs-conditions .perfmatters-input-row {
 	gap: 10px;
+	align-items: center;
 }
-#pmcs-conditions .perfmatters-input-row select {
-	display: flex;
-	flex: 1 1 0;
-	max-width: none;
+#pmcs-conditions .condition-object-wrap:empty {
+	display: none;
+}
+#pmcs-conditions input,
+#pmcs-conditions select {
 	width: 200px;
 }
-#pmcs-conditions .perfmatters-input-row:not(.pmcs-condition-objects-loaded) .condition-object-select, #pmcs-conditions .perfmatters-input-row:not(.pmcs-condition-load-objects) .perfmatters-button-spinner {
+#pmcs-conditions .perfmatters-input-row:not(.pmcs-condition-objects-loaded) .condition-object-wrap .condition-object-select,
+#pmcs-conditions .perfmatters-input-row:not(.pmcs-condition-load-objects) .condition-object-wrap .perfmatters-button-spinner {
 	display: none;
 }
 #pmcs-conditions .perfmatters-add-input-row {
@@ -500,7 +503,6 @@
 }
 #pmcs-conditions .perfmatters-delete-input-row {
 	margin-left: 0px;
-	
 }
 #pmcs-conditions .perfmatters-delete-input-row span {
 	color: #8f8f8f;

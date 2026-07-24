@@ -2,9 +2,9 @@
 Contributors: deliciousbrains, wpengine, elliotcondon, mattshaw, lgladdy, antpb, johnstonphilip, dalewilliams, polevaultweb
 Tags: acf, fields, custom fields, meta, repeater
 Requires at least: 6.2
-Tested up to: 7.0
+Tested up to: 7.0.1
 Requires PHP: 7.4
-Stable tag: 6.8.3
+Stable tag: 6.8.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,10 @@ From your WordPress dashboard
 
 Our plugin's non-minified JS and CSS files are available on [GitHub](https://github.com/advancedcustomfields/acf).
 
+= Does ACF collect any data? =
+
+ACF includes an optional email signup to receive plugin updates and news. No data is collected unless you choose to subscribe. Your email is stored in accordance with [WP Engine's Privacy Policy](https://wpengine.com/legal/privacy/).
+
 == Screenshots ==
 
 1. Simple & Intuitive
@@ -96,6 +100,36 @@ Our plugin's non-minified JS and CSS files are available on [GitHub](https://git
 
 
 == Changelog ==
+
+= 6.8.6 =
+*Release Date 14th July 2026*
+
+* Fix - Google Maps field values are no longer double-encoded when saved in an ACF block
+* Fix - Inserting a Link field value in the Classic Editor no longer triggers validation for other required fields before the post is saved
+* Fix - Auto Inline Editing blocks no longer return truthy placeholder strings for empty field values fetched from a different post inside the block render template
+* Fix - ACF Blocks (V2 and V3) no longer crash when rendering an oEmbed field whose title begins with `[` or `{`
+* Fix - Field group location rules without a location value no longer cause PHP warnings on page load
+* Fix - The appearance of the URL, Number, and Select fields has been improved on WordPress 7.0+
+* Fix - ACF fields now save on WooCommerce orders when using HPOS in compatibility mode
+
+= 6.8.5 =
+*Release Date 30th June 2026*
+
+* Security - ACF PRO's save handler for WooCommerce order fields now verifies security nonces and only attaches on the order edit screen, preventing unauthenticated field value updates for stores utilizing HPOS
+* Security - The Flexible Content "Rename Layout" modal no longer allows for the execution of a potential stored XSS vulnerability
+* Security - A default limit of 1000 has been applied to user-contributed choices for Checkbox, Radio, and Select fields to improve security, with a new `acf/fields/max_appended_choices` filter available for customization
+* Security - Special characters within LIKE patterns are now fully escaped in `wp_options` queries via `$wpdb->esc_like()`
+
+= 6.8.4 =
+*Release Date 10th June 2026*
+
+* Security - ACF AJAX field handlers now validate that the request nonce was created for the expected field type
+* Enhancement - ACF PRO now satisfies plugin dependencies declared against `advanced-custom-fields`, so plugins requiring ACF can activate when only ACF PRO is installed
+* Enhancement - `acf_inline_toolbar_editing_attrs()` now accepts a `return_array` argument that returns the attributes as an escaped array suitable for use with `wp_get_attachment_image()`
+* Fix - `acf_form()` with `'post_id' => 'new_post'` and a `fields` list of field names no longer fatal errors when `acf_form_head()` runs before WordPress's main query is built
+* Fix - Multiple `acf_form()` calls wrapped inside a single outer `<form>` tag with one submit button no longer silently drop field values, `post_title`, or `post_content` from the non-last forms
+* Fix - Duplicating a V3 block with identical attributes no longer displays corrupted preview content in the duplicate
+* Fix - Switching between tabs containing WYSIWYG fields no longer leaves the admin menu pinned against a shorter page, which could lock page scroll
 
 = 6.8.3 =
 *Release Date 2nd June 2026*

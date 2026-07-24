@@ -236,6 +236,7 @@ echo '<div class="perfmatters-settings-section">';
 									echo '<option value="">Default</option>';
 									echo '<option value="preload"' . (!empty($snippet['optimizations']['behavior']) && $snippet['optimizations']['behavior'] == 'preload' ? ' selected' : '') . ' data-method="file">Preload</option>';
 									echo '<option value="async"' . (!empty($snippet['optimizations']['behavior']) && $snippet['optimizations']['behavior'] == 'async' ? ' selected' : '') . ' data-method="file">Async</option>';
+									echo '<option value="delay"' . (!empty($snippet['optimizations']['behavior']) && $snippet['optimizations']['behavior'] == 'delay' ? ' selected' : '') . ' data-method="file">Delay</option>';
 								echo '</select>';
 							echo '</label>';
 						echo '</div>';

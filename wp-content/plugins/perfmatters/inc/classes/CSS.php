@@ -88,6 +88,8 @@ class CSS
         //global styles array in case we need to update registered src
         global $wp_styles;
 
+        $print_delay_js = false;
+
         //pre loop
         //unused css
         if(self::$run['rucss']) {
@@ -135,6 +137,9 @@ class CSS
                 'animations.min.css',
                 '/animations/'
             ));
+            
+            //delay stylesheets
+            self::$data['rucss']['delay'] = apply_filters('perfmatters_rucss_delay_stylesheets', array());
 
             //inline stylesheets
             self::$data['rucss']['inline'] = apply_filters('perfmatters_rucss_inline_stylesheets', array());
@@ -164,6 +169,12 @@ class CSS
                     if(self::$snippet_optimizations[$atts_array['id']] == 'async') {
                         $atts_array_new['media'] = 'print';
                         $atts_array_new['onload'] = 'this.media=\'all\';this.onload=null;';
+                    }
+                    //delay
+                    elseif(self::$snippet_optimizations[$atts_array['id']] == 'delay') {
+                        $atts_array_new['data-pmdelayedstyle'] = $atts_array_new['href'];
+                        unset($atts_array_new['href']);
+                        $print_delay_js = true;
                     }
                 }
             }
@@ -234,8 +245,10 @@ class CSS
                 
                         //delay stylesheets
                         if(empty(Config::$options['assets']['rucss_stylesheet_behavior'])) {
-                            $atts_array_new['data-pmdelayedstyle'] = $atts_array_new['href'];
-                            unset($atts_array_new['href']);
+                            if(empty($atts_array_new['data-pmdelayedstyle']) && !empty($atts_array_new['href'])) {
+                                $atts_array_new['data-pmdelayedstyle'] = $atts_array_new['href'];
+                                unset($atts_array_new['href']);
+                            }
                         }
                         //async stylesheets
                         elseif(Config::$options['assets']['rucss_stylesheet_behavior'] == 'async') {
@@ -280,6 +293,12 @@ class CSS
                     elseif(Utilities::match_in_array($stylesheet[0], self::$data['rucss']['async'])) {
                         $atts_array_new['media'] = 'print';
                         $atts_array_new['onload'] = 'this.media=\'all\';this.onload=null;';
+                    }
+                    //delay fallback
+                    elseif(Utilities::match_in_array($stylesheet[0], self::$data['rucss']['delay'])) {
+                        $atts_array_new['data-pmdelayedstyle'] = $atts_array_new['href'];
+                        unset($atts_array_new['href']);
+                        $print_delay_js = true;
                     }
                 }
             }
@@ -345,15 +364,28 @@ class CSS
                 //delay stylesheet script
                 if(empty(Config::$options['assets']['rucss_stylesheet_behavior'])) {
 
-                    $delay_check = !empty(apply_filters('perfmatters_delay_js', !empty(Config::$options['assets']['delay_js']))) && !Utilities::get_post_meta('perfmatters_exclude_delay_js');
+                    $print_delay_js = true;
+
+                    /*$delay_check = !empty(apply_filters('perfmatters_delay_js', !empty(Config::$options['assets']['delay_js']))) && !Utilities::get_post_meta('perfmatters_exclude_delay_js');
 
                     if(!$delay_check || isset($_GET['perfmattersjsoff'])) {
                         $script = '<script type="text/javascript" id="perfmatters-delayed-styles-js">!function(){const e=["keydown","mousemove","wheel","touchmove","touchstart","touchend"];function t(){document.querySelectorAll("link[data-pmdelayedstyle]").forEach(function(e){e.setAttribute("href",e.getAttribute("data-pmdelayedstyle"))}),e.forEach(function(e){window.removeEventListener(e,t,{passive:!0})})}e.forEach(function(e){window.addEventListener(e,t,{passive:!0})})}();</script>';
                         $html = str_replace('</body>', $script . '</body>', $html);
-                    }
+                    }*/
                 }
             }
         }
+
+        //print delay js
+		if($print_delay_js) {
+
+            $delay_check = !empty(apply_filters('perfmatters_delay_js', !empty(Config::$options['assets']['delay_js']))) && !Utilities::get_post_meta('perfmatters_exclude_delay_js');
+            
+            if(!$delay_check || isset($_GET['perfmattersjsoff'])) {
+                $script = '<script type="text/javascript" id="perfmatters-delayed-styles-js">!function(){const e=["keydown","mousemove","wheel","touchmove","touchstart","touchend"];function t(){document.querySelectorAll("link[data-pmdelayedstyle]").forEach(function(e){e.setAttribute("href",e.getAttribute("data-pmdelayedstyle"))}),e.forEach(function(e){window.removeEventListener(e,t,{passive:!0})})}e.forEach(function(e){window.addEventListener(e,t,{passive:!0})})}();</script>';
+                $html = str_replace('</body>', $script . '</body>', $html);
+            }
+		}
 
         return $html;
     }

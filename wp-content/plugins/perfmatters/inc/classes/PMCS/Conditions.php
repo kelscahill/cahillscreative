@@ -72,7 +72,11 @@ class Conditions
                 }
             }
             //when on front page or blog page, also match conditions that target the current page by post type + ID
-            elseif(in_array(($location['rule'] ?? null), ['general:front_page', 'general:blog']) && !empty($condition['object'])) {
+            elseif(
+                in_array(($location['rule'] ?? null), ['general:front_page', 'general:blog'])
+                && strpos($condition['rule'], 'post:') === 0
+                && !empty($condition['object'])
+            ) {
                 $queried_id = (int) get_queried_object_id();
                 if($queried_id && (int) $condition['object'] === $queried_id) {
                     $post_type = get_post_type($queried_id);
@@ -87,15 +91,40 @@ class Conditions
                     return true;
                 }
             }
-            /*elseif(is_front_page() && is_home() && ($condition['rule'] === 'general:blog' || $condition['rule'] === 'general:front_page')) {
-                return true;
-            }*/
             elseif(is_paged() && $condition['rule'] === 'general:is_paged') {
                 return true;
+            }
+            elseif(strpos($condition['rule'], 'path:') === 0 && !empty($condition['object'])) {
+
+                $current_path = isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : '';
+                $target = self::normalize_path_condition_input($condition['object']);
+
+                switch($condition['rule']) {
+                    case 'path:contains':
+                        return str_contains($current_path, $target);
+                    case 'path:equals':
+                        return $current_path === $target;
+                    case 'path:regex':
+                        return @preg_match('#' . $condition['object'] . '#', $current_path) === 1;
+                }
             }
         }
 
         return false;
+    }
+
+    //strip protocol/domain prefix from full URL input so path comparisons still work
+    private static function normalize_path_condition_input($input) {
+
+        $input = trim((string) $input);
+
+        if($input === '') {
+            return $input;
+        }
+
+        $path = preg_replace('~^(?:https?:)?//[^/?]+~i', '', $input);
+
+        return $path !== '' ? $path : '/';
     }
 
     //get current location
@@ -220,7 +249,7 @@ class Conditions
         //general
         $types = array(
             'general' => array(
-                'label' => esc_attr__('General', 'perfmatters'),
+                'label'  => esc_attr__('General', 'perfmatters'),
                 'options' => array(
                     'general:front_page' => esc_attr__('Front Page', 'perfmatters'),
                     'general:blog'       => esc_attr__('Blog', 'perfmatters'),
@@ -232,6 +261,24 @@ class Conditions
                     'general:no_results' => esc_attr__('No Search Results', 'perfmatters'),
                     'general:404'        => esc_attr__('404 Template', 'perfmatters'),
                     'general:is_paged'   => esc_attr__('Paginated Results', 'perfmatters'),
+                ),
+            ),
+            'url' => array(
+                'label'  => esc_attr__('URL', 'perfmatters'),
+                'object' => 'text',
+                'options' => array(
+                    'path:contains' => array(
+                        'label'       => esc_attr__('Path Contains', 'perfmatters'),
+                        'placeholder' => esc_attr__('e.g. /shop/', 'perfmatters'),
+                    ),
+                    'path:equals' => array(
+                        'label'       => esc_attr__('Path Equals', 'perfmatters'),
+                        'placeholder' => esc_attr__('e.g. /about-us/', 'perfmatters'),
+                    ),
+                    'path:regex' => array(
+                        'label'       => esc_attr__('Path Regex', 'perfmatters'),
+                        'placeholder' => esc_attr__('e.g. ^/products/.*', 'perfmatters'),
+                    ),
                 ),
             ),
         );
@@ -247,6 +294,7 @@ class Conditions
             //add post type
             $types[$post_type_slug] = array(
                 'label'   => $post_type->labels->name,
+                'object'  => 'select',
                 'options' => array(
                     'post:' . $post_type_slug => $post_type->labels->singular_name,
                 )
@@ -255,7 +303,7 @@ class Conditions
             //add post type archive
             if($post_type_slug === 'post' || !empty($post_type_object->has_archive)) {
                 $types[$post_type_slug . '_archive'] = array(
-                    'label' => $post_type->labels->singular_name . ' ' . esc_attr__('Archives', 'perfmatters'),
+                    'label'  => $post_type->labels->singular_name . ' ' . esc_attr__('Archives', 'perfmatters'),
                     'options' => array(
                         'archive:' . $post_type_slug => $post_type->labels->singular_name . ' ' . esc_attr__('Archive', 'perfmatters'),
                     )
@@ -289,7 +337,10 @@ class Conditions
 
                 //add post type taxonomy archive
                 if(isset($types[$post_type_slug . '_archive']['options'])) {
-                    $types[$post_type_slug . '_archive' ]['options']['taxonomy:' . $taxonomy_slug] = $post_type->labels->singular_name . ' ' . $label . ' ' . esc_attr__('Archive', 'perfmatters');
+                    $types[$post_type_slug . '_archive']['options']['taxonomy:' . $taxonomy_slug] = array(
+                        'label'  => $post_type->labels->singular_name . ' ' . $label . ' ' . esc_attr__('Archive', 'perfmatters'),
+                        'object' => 'select',
+                    );
                 }
             }
         }
@@ -324,20 +375,89 @@ class Conditions
         return $rules;
     }
 
+    //return normalized option metadata
+    private static function get_option_meta($option, $group) {
+
+        $meta = is_array($option) ? $option : array('label' => $option);
+
+        return array(
+            'label'       => $meta['label'] ?? '',
+            'placeholder' => $meta['placeholder'] ?? '',
+            'object'      => $meta['object'] ?? ($group['object'] ?? ''),
+        );
+    }
+
+    //return metadata for a condition rule
+    public static function get_rule_meta($rule, $conditions = null) {
+
+        if(empty($rule)) {
+            return array(
+                'label'       => '',
+                'placeholder' => '',
+                'object'      => '',
+            );
+        }
+
+        if($conditions === null) {
+            $conditions = self::get_conditions();
+        }
+
+        foreach($conditions as $group) {
+            if(isset($group['options'][$rule])) {
+                return self::get_option_meta($group['options'][$rule], $group);
+            }
+        }
+
+        return array(
+            'label'       => '',
+            'placeholder' => '',
+            'object'      => '',
+        );
+    }
+
+    //print object control markup inside condition-object-wrap
+    private static function print_object_control($type, $row_count, $object_type, $selected_object = '', $placeholder = '') {
+
+        $name = 'conditions[' . $type . '][' . $row_count . '][object]';
+
+        if($object_type === 'text') {
+            printf(
+                '<input type="text" class="condition-object-input" name="%1$s" value="%2$s" placeholder="%3$s" />',
+                esc_attr($name),
+                esc_attr($selected_object),
+                esc_attr($placeholder)
+            );
+            return;
+        }
+
+        if($object_type === 'select') {
+            echo '<select class="condition-object-select" data-saved-value="' . esc_attr($selected_object) . '" name="' . esc_attr($name) . '"></select>';
+            self::print_object_spinner();
+        }
+    }
+
+    //print object field loading spinner
+    private static function print_object_spinner() {
+        echo '<svg class="perfmatters-button-spinner" viewBox="0 0 100 100" role="presentation" focusable="false" style="background: rgba(0,0,0,.1); border-radius: 100%; width: 16px; height: 28px; margin: 0px 2px; overflow: visible; opacity: 1; background-color: transparent;"><circle cx="50" cy="50" r="50" vector-effect="non-scaling-stroke" style="fill: transparent; stroke-width: 1.5px; stroke: #fff;"></circle><path d="m 50 0 a 50 50 0 0 1 50 50" vector-effect="non-scaling-stroke" style="fill: transparent; stroke-width: 1.5px; stroke: #4A89DD; stroke-linecap: round; transform-origin: 50% 50%; animation: 1.4s linear 0s infinite normal both running perfmatters-spinner;"></path></svg>';
+    }
+
     //print condition input row html
     public static function print_input_row($type, $conditions, $row_count = 0, $value = [], $hidden = false) {
 
-        $load_objects = !empty($value['rule']) && array_intersect(['post', 'taxonomy'], explode(':', $value['rule'])) ? true : false;
-       
         if(is_array($value)) {
             $selected_rule = $value['rule'] ?? '';
             $selected_object = $value['object'] ?? '';
         }
         else {
             $selected_rule = $value;
+            $selected_object = '';
         }
-        
-        echo '<div class="condition perfmatters-input-row' . ($load_objects ? ' pmcs-condition-load-objects' : '') . ($hidden ? ' hidden screen-reader-text' : '') . '"' . (empty($value) ? ' style="display: none;"' : '') . '>';
+
+        $rule_meta = self::get_rule_meta($selected_rule, $conditions);
+        $object_type = $rule_meta['object'];
+        $load_objects = ($object_type === 'select');
+       
+        echo '<div class="condition perfmatters-input-row' . ($load_objects ? ' pmcs-condition-load-objects' : '') . ($hidden ? ' hidden screen-reader-text' : '') . '" data-object-type="' . esc_attr($object_type) . '" data-saved-object="' . esc_attr($selected_object) . '"' . (empty($value) ? ' style="display: none;"' : '') . '>';
             
             //primary condition select
             echo '<select class="condition-select" name="conditions[' . $type . '][' . $row_count. '][rule]">';
@@ -347,8 +467,17 @@ class Conditions
 
                     echo '<optgroup label="' . $group['label'] . '">';
 
-                        foreach($group['options'] as $id => $label) {
-                            printf('<option value="%1$s" %2$s>%3$s</option>', esc_attr($id), selected($selected_rule, $id), esc_html($label));
+                        foreach($group['options'] as $id => $option) {
+                            $option_meta = self::get_option_meta($option, $group);
+
+                            printf(
+                                '<option value="%1$s" data-object-type="%2$s" data-object-placeholder="%3$s" %4$s>%5$s</option>',
+                                esc_attr($id),
+                                esc_attr($option_meta['object']),
+                                esc_attr($option_meta['placeholder']),
+                                selected($selected_rule, $id, false),
+                                esc_html($option_meta['label'])
+                            );
                         }
 
                     echo '</optgroup>';
@@ -357,11 +486,11 @@ class Conditions
             echo '</select>';
 
             if($type !== 'users') {
-
-                //condition object select
-                echo '<select class="condition-object-select" data-saved-value="' . (!empty($selected_object) ? $selected_object : '') . '" name="conditions[' . $type . '][' . $row_count . '][object]"></select>';
-
-                echo '<svg class="perfmatters-button-spinner" viewBox="0 0 100 100" role="presentation" focusable="false" style="background: rgba(0,0,0,.1); border-radius: 100%; width: 16px; height: 28px; margin: 0px 2px; overflow: visible; opacity: 1; background-color: transparent;"><circle cx="50" cy="50" r="50" vector-effect="non-scaling-stroke" style="fill: transparent; stroke-width: 1.5px; stroke: #fff;"></circle><path d="m 50 0 a 50 50 0 0 1 50 50" vector-effect="non-scaling-stroke" style="fill: transparent; stroke-width: 1.5px; stroke: #4A89DD; stroke-linecap: round; transform-origin: 50% 50%; animation: 1.4s linear 0s infinite normal both running perfmatters-spinner;"></path></svg>';
+                echo '<span class="condition-object-wrap">';
+                    if(!empty($object_type)) {
+                        self::print_object_control($type, $row_count, $object_type, $selected_object, $rule_meta['placeholder']);
+                    }
+                echo '</span>';
             }
 
             echo '<a href="#" class="perfmatters-delete-input-row" title="' . esc_attr__('Remove', 'perfmatters') . '"><span class="dashicons dashicons-trash"></span></a>';

@@ -41,6 +41,10 @@ class Fonts
         if(!empty($google_fonts)) {
             foreach($google_fonts as $google_font) {
 
+                if(!self::is_google_fonts_link_host($google_font[2], array('fonts.googleapis.com'))) {
+                    continue;
+                }
+
                 //replace display parameter
                 $new_href = preg_replace('/&display=(auto|block|fallback|optional|swap)/', '', html_entity_decode($google_font[2]));
                 $new_href.= '&display=swap';
@@ -74,6 +78,9 @@ class Fonts
         preg_match_all('#<link(?:[^>]+)?href=(["\'])([^>]*?fonts\.(gstatic|googleapis)\.com.*?)\1.*?>#i', $html, $google_links, PREG_SET_ORDER);
         if(!empty($google_links)) {
             foreach($google_links as $google_link) {
+                if(!self::is_google_fonts_link_host($google_link[2], array('fonts.googleapis.com', 'fonts.gstatic.com'))) {
+                    continue;
+                }
                 if(preg_match('#rel=(["\'])(.*?(preconnect|prefetch).*?)\1#i', $google_link[0])) {
                     $html = str_replace($google_link[0], '', $html);
                 }
@@ -87,6 +94,10 @@ class Fonts
             $count = 1;
 
             foreach($google_fonts as $google_font) {
+
+                if(!self::is_google_fonts_link_host($google_font[2], array('fonts.googleapis.com'))) {
+                    continue;
+                }
      
                 //create unique file details
                 $file_name = substr(md5($google_font[2]), 0, 12) . ".google-fonts.min.css";
@@ -122,16 +133,28 @@ class Fonts
     //download and save google font css file
     private static function download_google_font($url, $file_path)
     {
+        if(!self::is_google_fonts_link_host($url, array('fonts.googleapis.com'))) {
+            return false;
+        }
+
+        $url = html_entity_decode($url);
+
         //add https if using relative scheme
         if(substr($url, 0, 2) === '//') {
             $url = 'https:' . $url;
         }
 
         //download css file
-        $css_response = wp_remote_get(html_entity_decode($url), array('user-agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36'));
+        $css_response = wp_remote_get($url, array(
+            'user-agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
+            'redirection' => 0,
+        ));
 
-        //check valid response
-        if(wp_remote_retrieve_response_code($css_response) !== 200) {
+        if(is_wp_error($css_response) || wp_remote_retrieve_response_code($css_response) !== 200) {
+            return false;
+        }
+
+        if(!self::is_css_content_type($css_response)) {
             return false;
         }
 
@@ -192,6 +215,42 @@ class Fonts
         $minifier->minify($file_path);
 
         return true;
+    }
+
+    //validate link href host against an allowed list
+    private static function is_google_fonts_link_host($url, array $allowed_hosts)
+    {
+        $url = html_entity_decode($url);
+
+        if(substr($url, 0, 2) === '//') {
+            $url = 'https:' . $url;
+        }
+
+        $host = wp_parse_url($url, PHP_URL_HOST);
+
+        if(empty($host)) {
+            return false;
+        }
+
+        return in_array(strtolower($host), $allowed_hosts, true);
+    }
+
+    //validate remote response content type is css
+    private static function is_css_content_type($response)
+    {
+        $content_type = wp_remote_retrieve_header($response, 'content-type');
+
+        if(is_array($content_type)) {
+            $content_type = end($content_type);
+        }
+
+        if(empty($content_type)) {
+            return false;
+        }
+
+        $content_type = strtolower(trim(strtok($content_type, ';')));
+
+        return $content_type === 'text/css';
     }
 
     //delete all files in the fonts cache directory

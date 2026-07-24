@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2026-05-27 13:52-0700\n"
-"PO-Revision-Date: 2026-05-31 10:00+0300\n"
+"POT-Creation-Date: 2026-06-30 09:06-0700\n"
+"PO-Revision-Date: 2026-07-05 09:59+0300\n"
 "Last-Translator: Irina\n"
 "Language-Team: \n"
 "Language: uk_UA\n"
@@ -79,7 +79,7 @@ msgstr "Ліцензію не вдалося вилучити."
 msgid "Used CSS cleared for all network sites."
 msgstr "Використаний CSS очищено для всіх сайтів мережі."
 
-#: inc/CLI.php:105 inc/classes/CSS.php:972 inc/classes/CSS.php:1012
+#: inc/CLI.php:105 inc/classes/CSS.php:1002 inc/classes/CSS.php:1042
 msgid "Used CSS cleared."
 msgstr "Використані CSS очищено."
 
@@ -87,7 +87,7 @@ msgstr "Використані CSS очищено."
 msgid "Minified CSS cleared for all network sites."
 msgstr "Мініфікований CSS очищено для всіх сайтів мережі."
 
-#: inc/CLI.php:130 inc/classes/CSS.php:1024
+#: inc/CLI.php:130 inc/classes/CSS.php:1054
 msgid "Minified CSS cleared."
 msgstr "Мініфікований CSS очищено."
 
@@ -103,11 +103,11 @@ msgstr "Мініфікований JS очищено."
 msgid "Local Fonts cleared for all network sites."
 msgstr "Локальні шрифти очищено для всіх сайтів мережі."
 
-#: inc/CLI.php:180 inc/classes/Fonts.php:223
+#: inc/CLI.php:180 inc/classes/Fonts.php:282
 msgid "Local fonts cleared."
 msgstr "Локальні шрифти очищено."
 
-#: inc/CLI.php:199 inc/classes/PMCS/PMCS.php:355
+#: inc/CLI.php:199 inc/classes/PMCS/PMCS.php:478
 #: inc/classes/PMCS/Snippet.php:65 inc/classes/PMCS/Snippet.php:70
 #: inc/classes/PMCS/Snippet.php:251 inc/classes/PMCS/Snippet.php:257
 msgid "File not found."
@@ -133,8 +133,8 @@ msgstr "Параметр увімкнено."
 msgid "Option disabled."
 msgstr "Параметри вимкнено."
 
-#: inc/admin.php:37 inc/admin.php:102 inc/classes/PMCS/Conditions.php:223
-#: inc/classes/PMCS/Conditions.php:306
+#: inc/admin.php:37 inc/admin.php:102 inc/classes/PMCS/Conditions.php:252
+#: inc/classes/PMCS/Conditions.php:357
 msgid "General"
 msgstr "Загальне"
 
@@ -290,16 +290,16 @@ msgstr "Попередження Perfmatters"
 msgid "Local Analytics is enabled but no Tracking ID is set."
 msgstr "Локальна аналітика ввімкнена, але ID відстеження не встановлено."
 
-#: inc/classes/CSS.php:938 inc/classes/CSS.php:952 inc/classes/Meta.php:85
+#: inc/classes/CSS.php:968 inc/classes/CSS.php:982 inc/classes/Meta.php:85
 #: inc/settings.php:927 inc/settings.php:936
 msgid "Clear Used CSS"
 msgstr "Очистити використані CSS"
 
-#: inc/classes/CSS.php:938 inc/classes/PMCS/ListTable.php:281
+#: inc/classes/CSS.php:968 inc/classes/PMCS/ListTable.php:297
 msgid "All"
 msgstr "Усі"
 
-#: inc/classes/CSS.php:952
+#: inc/classes/CSS.php:982
 msgid "Current"
 msgstr "Поточний"
 
@@ -520,79 +520,107 @@ msgstr[0] "Успішно імпортовано %d фрагмент коду Pe
 msgstr[1] "Успішно імпортовано %d фрагмента коду Perfmatters."
 msgstr[2] "Успішно імпортовано %d фрагментів коду Perfmatters."
 
-#: inc/classes/PMCS/Conditions.php:225
+#: inc/classes/PMCS/Conditions.php:254
 msgid "Front Page"
 msgstr "Головна сторінка"
 
-#: inc/classes/PMCS/Conditions.php:226
+#: inc/classes/PMCS/Conditions.php:255
 msgid "Blog"
 msgstr "Блог"
 
-#: inc/classes/PMCS/Conditions.php:227
+#: inc/classes/PMCS/Conditions.php:256
 msgid "All Singular"
 msgstr "Усі в однині"
 
-#: inc/classes/PMCS/Conditions.php:228
+#: inc/classes/PMCS/Conditions.php:257
 msgid "All Archives"
 msgstr "Усі архіви"
 
-#: inc/classes/PMCS/Conditions.php:229
+#: inc/classes/PMCS/Conditions.php:258
 msgid "Author Archives"
 msgstr "Архіви автора"
 
-#: inc/classes/PMCS/Conditions.php:230
+#: inc/classes/PMCS/Conditions.php:259
 msgid "Date Archives"
 msgstr "Архіви дат"
 
-#: inc/classes/PMCS/Conditions.php:231
+#: inc/classes/PMCS/Conditions.php:260
 msgid "Search Results"
 msgstr "Результати пошуку"
 
-#: inc/classes/PMCS/Conditions.php:232
+#: inc/classes/PMCS/Conditions.php:261
 msgid "No Search Results"
 msgstr "Немає результатів пошуку"
 
-#: inc/classes/PMCS/Conditions.php:233 inc/functions_script_manager.php:585
+#: inc/classes/PMCS/Conditions.php:262 inc/functions_script_manager.php:585
 #: inc/functions_script_manager.php:751 inc/settings.php:455
 msgid "404 Template"
 msgstr "Шаблон помилки 404"
 
-#: inc/classes/PMCS/Conditions.php:234
+#: inc/classes/PMCS/Conditions.php:263
 msgid "Paginated Results"
 msgstr "Результати з нумерацією сторінок"
 
-#: inc/classes/PMCS/Conditions.php:258
+#: inc/classes/PMCS/Conditions.php:267
+msgid "URL"
+msgstr "URL"
+
+#: inc/classes/PMCS/Conditions.php:271
+msgid "Path Contains"
+msgstr "Шлях містить"
+
+#: inc/classes/PMCS/Conditions.php:272
+msgid "e.g. /shop/"
+msgstr "напр. /shop/"
+
+#: inc/classes/PMCS/Conditions.php:275
+msgid "Path Equals"
+msgstr "Шлях дорівнює"
+
+#: inc/classes/PMCS/Conditions.php:276
+msgid "e.g. /about-us/"
+msgstr "напр, /about-us/"
+
+#: inc/classes/PMCS/Conditions.php:279
+msgid "Path Regex"
+msgstr "Регулярний вираз для шляху"
+
+#: inc/classes/PMCS/Conditions.php:280
+msgid "e.g. ^/products/.*"
+msgstr "напр. ^/products/.*"
+
+#: inc/classes/PMCS/Conditions.php:306
 msgid "Archives"
 msgstr "Архіви"
 
-#: inc/classes/PMCS/Conditions.php:260 inc/classes/PMCS/Conditions.php:292
+#: inc/classes/PMCS/Conditions.php:308 inc/classes/PMCS/Conditions.php:341
 msgid "Archive"
 msgstr "Архів"
 
-#: inc/classes/PMCS/Conditions.php:308 inc/functions_script_manager.php:691
+#: inc/classes/PMCS/Conditions.php:359 inc/functions_script_manager.php:691
 #: inc/functions_script_manager.php:856
 msgid "Logged In"
 msgstr "Авторизовані"
 
-#: inc/classes/PMCS/Conditions.php:309 inc/functions_script_manager.php:692
+#: inc/classes/PMCS/Conditions.php:360 inc/functions_script_manager.php:692
 #: inc/functions_script_manager.php:857
 msgid "Logged Out"
 msgstr "Вийти з системи"
 
-#: inc/classes/PMCS/Conditions.php:313
+#: inc/classes/PMCS/Conditions.php:364
 msgid "Roles"
 msgstr "Ролі"
 
-#: inc/classes/PMCS/Conditions.php:344
+#: inc/classes/PMCS/Conditions.php:464
 msgid "Select an option"
 msgstr "Оберіть опцію"
 
-#: inc/classes/PMCS/Conditions.php:367 inc/settings.php:866
+#: inc/classes/PMCS/Conditions.php:496 inc/settings.php:866
 #: inc/settings.php:2547 inc/settings.php:2623 inc/settings.php:2665
 msgid "Remove"
 msgstr "Видалити"
 
-#: inc/classes/PMCS/ListTable.php:41
+#: inc/classes/PMCS/ListTable.php:41 inc/classes/PMCS/PMCS.php:237
 msgid "Name"
 msgstr "Назва"
 
@@ -601,11 +629,11 @@ msgstr "Назва"
 msgid "Type"
 msgstr "Тип"
 
-#: inc/classes/PMCS/ListTable.php:43 inc/pmcs.php:417
+#: inc/classes/PMCS/ListTable.php:43 inc/pmcs.php:418
 msgid "Description"
 msgstr "Опис"
 
-#: inc/classes/PMCS/ListTable.php:44 inc/pmcs.php:384
+#: inc/classes/PMCS/ListTable.php:44 inc/pmcs.php:385
 msgid "Tags"
 msgstr "Теги"
 
@@ -613,11 +641,12 @@ msgstr "Теги"
 msgid "Author"
 msgstr "Автор"
 
-#: inc/classes/PMCS/ListTable.php:46
+#: inc/classes/PMCS/ListTable.php:46 inc/classes/PMCS/PMCS.php:238
 msgid "Created"
 msgstr "Створено"
 
-#: inc/classes/PMCS/ListTable.php:47 inc/pmcs.php:179
+#: inc/classes/PMCS/ListTable.php:47 inc/classes/PMCS/PMCS.php:239
+#: inc/pmcs.php:179
 msgid "Modified"
 msgstr "Модифіково"
 
@@ -629,103 +658,123 @@ msgstr "Пріоритет"
 msgid "Edit"
 msgstr "Редагувати"
 
-#: inc/classes/PMCS/ListTable.php:99 inc/classes/PMCS/ListTable.php:300
+#: inc/classes/PMCS/ListTable.php:99 inc/classes/PMCS/ListTable.php:316
 msgid "Export"
 msgstr "Експорт"
 
-#: inc/classes/PMCS/ListTable.php:100 inc/classes/PMCS/ListTable.php:301
+#: inc/classes/PMCS/ListTable.php:100 inc/classes/PMCS/ListTable.php:317
 msgid "Delete"
 msgstr "Видалити"
 
-#: inc/classes/PMCS/ListTable.php:284
+#: inc/classes/PMCS/ListTable.php:300
 msgid "Active"
 msgstr "Діючий"
 
-#: inc/classes/PMCS/ListTable.php:287
+#: inc/classes/PMCS/ListTable.php:303
 msgid "Inactive"
 msgstr "Недіючий"
 
-#: inc/classes/PMCS/ListTable.php:298
+#: inc/classes/PMCS/ListTable.php:314
 msgid "Activate"
 msgstr "Activate"
 
-#: inc/classes/PMCS/ListTable.php:299
+#: inc/classes/PMCS/ListTable.php:315
 msgid "Deactivate"
 msgstr "Вимкнути"
 
-#: inc/classes/PMCS/ListTable.php:317
+#: inc/classes/PMCS/ListTable.php:333
 msgid "All Types"
 msgstr "Усі типи"
 
-#: inc/classes/PMCS/ListTable.php:326
+#: inc/classes/PMCS/ListTable.php:342
 msgid "Filter"
 msgstr "Фільтр"
 
-#: inc/classes/PMCS/ListTable.php:338
+#: inc/classes/PMCS/ListTable.php:354
 msgid "Screen Options"
 msgstr "Параметри екрану"
 
-#: inc/classes/PMCS/PMCS.php:101
+#: inc/classes/PMCS/PMCS.php:105
 msgid ""
 "This will permanently delete the code snippet. Are you sure you want to "
 "proceed?"
 msgstr ""
 "Це остаточно видалить фрагмент коду. Ви впевнені, що хочете продовжити?"
 
-#: inc/classes/PMCS/PMCS.php:102 inc/code.php:142 inc/pmcs.php:268
+#: inc/classes/PMCS/PMCS.php:106 inc/code.php:142 inc/pmcs.php:269
 msgid "Copy"
 msgstr "Копіювати"
 
-#: inc/classes/PMCS/PMCS.php:103
+#: inc/classes/PMCS/PMCS.php:107
 msgid "Copied"
 msgstr "Скопійовано"
 
-#: inc/classes/PMCS/PMCS.php:157
+#: inc/classes/PMCS/PMCS.php:161
 msgid "Code Snippets per page"
 msgstr "Фрагментів коду на сторінці"
 
-#: inc/classes/PMCS/PMCS.php:338
+#: inc/classes/PMCS/PMCS.php:190
+msgid "Sort Order"
+msgstr "Порядок сортування"
+
+#: inc/classes/PMCS/PMCS.php:193
+msgid "Order by"
+msgstr "Впорядкувати за"
+
+#: inc/classes/PMCS/PMCS.php:201
+msgid "Order"
+msgstr "Урорядкувати"
+
+#: inc/classes/PMCS/PMCS.php:246
+msgid "Ascending"
+msgstr "Висхідний"
+
+#: inc/classes/PMCS/PMCS.php:247
+msgid "Descending"
+msgstr "Спадний"
+
+#: inc/classes/PMCS/PMCS.php:461
 msgid "Safe mode is enabled in wp-config.php."
 msgstr "Безпечний режим увімкнено у wp-config.php."
 
-#: inc/classes/PMCS/PMCS.php:342 inc/code.php:125
+#: inc/classes/PMCS/PMCS.php:465 inc/code.php:125
 msgid "Safe mode is enabled."
 msgstr "Безпечний режим увімкнено."
 
-#: inc/classes/PMCS/PMCS.php:342
+#: inc/classes/PMCS/PMCS.php:465
 msgid "Disable"
 msgstr "Вимкнути"
 
-#: inc/classes/PMCS/PMCS.php:351 inc/classes/PMCS/Snippet.php:153
+#: inc/classes/PMCS/PMCS.php:474 inc/classes/PMCS/Snippet.php:153
 msgid "Snippet saved."
 msgstr "Фрагмент збережено."
 
-#: inc/classes/PMCS/PMCS.php:352
+#: inc/classes/PMCS/PMCS.php:475
 msgid "Snippet deleted successfully."
 msgstr "Фрагмент успішно видалено."
 
-#: inc/classes/PMCS/PMCS.php:353
+#: inc/classes/PMCS/PMCS.php:476
 msgid "Snippet activated successfully."
 msgstr "Фрагмент успішно активовано."
 
-#: inc/classes/PMCS/PMCS.php:354
+#: inc/classes/PMCS/PMCS.php:477
 msgid "Snippet deactivated successfully."
 msgstr "Фрагмент успішно деактивовано."
 
-#: inc/classes/PMCS/PMCS.php:356
+#: inc/classes/PMCS/PMCS.php:479
 msgid "Safe mode disabled."
 msgstr "Безпечний режим вимкнено."
 
-#: inc/classes/PMCS/PMCS.php:357
+#: inc/classes/PMCS/PMCS.php:480
 msgid "Security check failed. Please try again."
 msgstr "Перевірка безпеки не пройшла. Спробуйте ще раз."
 
-#: inc/classes/PMCS/PMCS.php:1269
+#: inc/classes/PMCS/PMCS.php:1388
 #, php-format
 msgid "%s ago"
 msgstr "%s тому"
 
-#: inc/classes/PMCS/PMCS.php:1312
+#: inc/classes/PMCS/PMCS.php:1431
 msgid "Code Snippets"
 msgstr "Фрагменти коду"
 
@@ -803,15 +852,15 @@ msgstr "Недійсна структура експортного файлу."
 msgid "No valid snippets were found in the export file."
 msgstr "У файлі експорту не знайдено жодних дійсних фрагментів."
 
-#: inc/code.php:14 inc/code.php:33 inc/pmcs.php:467
+#: inc/code.php:14 inc/code.php:33 inc/pmcs.php:468
 msgid "Snippets"
 msgstr "Фрагменти"
 
-#: inc/code.php:15 inc/code.php:34 inc/pmcs.php:468
+#: inc/code.php:15 inc/code.php:34 inc/pmcs.php:469
 msgid "Global Scripts"
 msgstr "Глобальні скрипти"
 
-#: inc/code.php:16 inc/code.php:35 inc/pmcs.php:469 inc/script_manager.php:171
+#: inc/code.php:16 inc/code.php:35 inc/pmcs.php:470 inc/script_manager.php:171
 #: inc/script_manager.php:287 inc/settings.php:1908 inc/settings.php:2546
 #: inc/settings.php:2622 inc/settings.php:2664 perfmatters.php:255
 msgid "Settings"
@@ -1048,7 +1097,7 @@ msgid "Current URL"
 msgstr "Поточний URL"
 
 #: inc/functions_script_manager.php:688 inc/functions_script_manager.php:853
-#: inc/pmcs.php:353
+#: inc/pmcs.php:354
 msgid "Users"
 msgstr "Користувачі"
 
@@ -1079,7 +1128,7 @@ msgid "MU plugin version mismatch."
 msgstr "Невідповідність версії плагіна MU."
 
 #: inc/functions_script_manager.php:1543 inc/functions_script_manager.php:1551
-#: inc/pmcs.php:198 inc/pmcs.php:283 inc/script_manager.php:194
+#: inc/pmcs.php:198 inc/pmcs.php:284 inc/script_manager.php:194
 #: inc/script_manager.php:328 inc/script_manager.php:340 inc/settings.php:2883
 msgid "View Documentation"
 msgstr "Дивитись документацію"
@@ -1264,7 +1313,7 @@ msgstr "Перед вмістом"
 msgid "After Content"
 msgstr "Після вмисту"
 
-#: inc/pmcs.php:111 inc/pmcs.php:259
+#: inc/pmcs.php:111 inc/pmcs.php:260
 msgid "Shortcode"
 msgstr "Короткий код"
 
@@ -1288,51 +1337,51 @@ msgstr "Спосіб виведення"
 msgid "Load Behavior"
 msgstr "Поведінка завантаження"
 
-#: inc/pmcs.php:246 inc/settings.php:761 inc/settings.php:943
+#: inc/pmcs.php:247 inc/settings.php:761 inc/settings.php:943
 msgid "Minify"
 msgstr "Мінімальні"
 
-#: inc/pmcs.php:272
+#: inc/pmcs.php:273
 msgid "Save your code snippet to generate a shortcode."
 msgstr "Збережіть фрагмент коду для створення шорткоду."
 
-#: inc/pmcs.php:282
+#: inc/pmcs.php:283
 msgid "Conditions"
 msgstr "Умови"
 
-#: inc/pmcs.php:298
+#: inc/pmcs.php:299
 msgid "Include"
 msgstr "Включити"
 
-#: inc/pmcs.php:317 inc/pmcs.php:344 inc/pmcs.php:374
+#: inc/pmcs.php:318 inc/pmcs.php:345 inc/pmcs.php:375
 msgid "Add Condition"
 msgstr "Додати умову"
 
-#: inc/pmcs.php:325
+#: inc/pmcs.php:326
 msgid "Exclude"
 msgstr "Вилучити"
 
-#: inc/pmcs.php:389
+#: inc/pmcs.php:390
 msgid "Enter or Search for Tags"
 msgstr "Введіть або пошук за тегами"
 
-#: inc/pmcs.php:430
+#: inc/pmcs.php:431
 msgid "Save Snippet"
 msgstr "Зберегти фрагмент"
 
-#: inc/pmcs.php:437
+#: inc/pmcs.php:438
 msgid "Export Snippet"
 msgstr "Експорт фрагмента"
 
-#: inc/pmcs.php:441
+#: inc/pmcs.php:442
 msgid "Delete Snippet"
 msgstr "Видалити фрагмент"
 
-#: inc/pmcs.php:476
+#: inc/pmcs.php:477
 msgid "New Snippet"
 msgstr "Новий фрагмент"
 
-#: inc/pmcs.php:493
+#: inc/pmcs.php:494
 msgid "Search Snippets"
 msgstr "Пошук фрагментів"
 

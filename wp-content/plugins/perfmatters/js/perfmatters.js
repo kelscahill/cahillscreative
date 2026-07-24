@@ -2,16 +2,16 @@ jQuery(function($) {
 
 	var pmActionButtonTimeouts = [];
 
-	function perfmattersFadeButtonMessage($message, action) {
-		$message.fadeIn();
-		clearTimeout(pmActionButtonTimeouts[action]);
-		pmActionButtonTimeouts[action] = setTimeout(function() {
-			$message.fadeOut();
-		}, 10000);
-	}
-
 	//tab-content display
 	$('#perfmatters-menu a[rel][href^="#"]').on('click', function(e) {
+
+		//leave snippet editor when already on Code tab; otherwise return via client-side switch
+		if(new URLSearchParams(location.search).has('snippet') && $(this).attr('rel') === 'code-code' && $('#perfmatters-menu a.active').attr('rel') === 'code-code') {
+			e.preventDefault();
+			var hash = $(this).attr('href');
+			location.href = '?page=perfmatters' + (hash === '#' ? '' : hash);
+			return;
+		}
 
 		$('.perfmatters-button-message').hide();
 					
@@ -110,9 +110,9 @@ jQuery(function($) {
 
 			/* snippet conditions */
 			if($clonedRow.hasClass('condition')) {
-				$clonedRow.removeClass('pmcs-condition-objects-loaded');
-				var $clonedObject = $clonedRow.find('.condition-object-select');
-				$clonedObject.empty();
+				$clonedRow.removeClass('pmcs-condition-load-objects pmcs-condition-objects-loaded');
+				$clonedRow.attr('data-object-type', '').attr('data-saved-object', '');
+				$clonedRow.find('.condition-object-wrap').empty();
 			}
 
 			$clonedRow.find(':text, select').val('');
@@ -142,7 +142,9 @@ jQuery(function($) {
 
 			/* snippet conditions */
 			if($row.hasClass('condition')) {
-				$row.removeClass('pmcs-condition-objects-loaded');
+				$row.removeClass('pmcs-condition-load-objects pmcs-condition-objects-loaded');
+				$row.attr('data-object-type', '').attr('data-saved-object', '');
+				$row.find('.condition-object-wrap').empty();
 			}
 		}
 		else {
@@ -304,10 +306,58 @@ jQuery(function($) {
 	    });
 	});
 
-	// PHP-rendered success after full reload: same fadeIn + 10s fadeOut as AJAX .always.
-	$('.perfmatters-reload-notice').each(function() {
+	// PHP-rendered success beside a button (?message= after full reload): same fadeIn + 10s fadeOut as AJAX .always.
+	$('.perfmatters-button-message[data-pm-post-reload-notice="1"]').each(function() {
+		var $message = $(this);
+		var action = $message.closest('.perfmatters-button-container').find('button[data-pm-action]').attr('data-pm-action');
+		if(!action) {
+			return;
+		}
+		$message.fadeIn();
+		clearTimeout(pmActionButtonTimeouts[action]);
+		pmActionButtonTimeouts[action] = setTimeout(function() {
+			//$message.fadeOut();
+		}, 10000);
+	});
+
+
+	function perfmattersFadeButtonMessage($message, action) {
+		$message.fadeIn();
+		clearTimeout(pmActionButtonTimeouts[action]);
+		pmActionButtonTimeouts[action] = setTimeout(function() {
+			$message.fadeOut();
+		}, 10000);
+	}
+
+	function perfmattersReloadWithNotice(data) {
+		if(!data.message_key) {
+			window.location.reload();
+			return;
+		}
+
+		var url = new URL(window.location.href);
+
+		url.search = '';
+		url.searchParams.set('page', 'perfmatters');
+		url.searchParams.set('message', data.message_key);
+
+		var messageKeyHashes = {
+			snippets_imported: '#code/settings',
+			editor_theme_updated: '#code/settings',
+			settings_imported: '#tools',
+			settings_restored: '#tools'
+		};
+		if(messageKeyHashes[data.message_key]) {
+			url.hash = messageKeyHashes[data.message_key];
+		}
+
+		window.location.assign(url.toString());
+	}
+
+	// PHP-rendered success after full reload.
+	$('.perfmatters-button-message .perfmatters-reload-notice').each(function() {
 		var $message = $(this).closest('.perfmatters-button-message');
-		var action = $(this).closest('.perfmatters-button-container').find('button[data-pm-action]').attr('data-pm-action');
+		var action = $message.closest('.perfmatters-button-container').find('button[data-pm-action]').attr('data-pm-action');
 		if(!action) {
 			return;
 		}
@@ -430,19 +480,11 @@ jQuery(function($) {
 		})
 	.always(function(r) {
 
-			//forced reload
 			if(r.data && r.data.reload) {
-				if(r.data.message_key) {
-					var reloadUrl = new URL(window.location.href);
-					reloadUrl.searchParams.set('message', r.data.message_key);
-					window.location.assign(reloadUrl.href);
-				}
-				else {
-					window.location.reload();
-				}
+				perfmattersReloadWithNotice(r.data);
 				return;
 			}
-			
+
 			//show response message
 			if(r.data && r.data.message) {
 				message.html(r.data.message);

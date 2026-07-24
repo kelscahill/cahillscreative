@@ -2,8 +2,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Perfmatters\n"
-"POT-Creation-Date: 2026-05-27 13:52-0700\n"
-"PO-Revision-Date: 2026-05-27 13:52-0700\n"
+"POT-Creation-Date: 2026-06-30 09:06-0700\n"
+"PO-Revision-Date: 2026-06-30 09:06-0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -86,7 +86,7 @@ msgstr ""
 msgid "Used CSS cleared for all network sites."
 msgstr ""
 
-#: inc/CLI.php:105 inc/classes/CSS.php:972 inc/classes/CSS.php:1012
+#: inc/CLI.php:105 inc/classes/CSS.php:1002 inc/classes/CSS.php:1042
 msgid "Used CSS cleared."
 msgstr ""
 
@@ -94,7 +94,7 @@ msgstr ""
 msgid "Minified CSS cleared for all network sites."
 msgstr ""
 
-#: inc/CLI.php:130 inc/classes/CSS.php:1024
+#: inc/CLI.php:130 inc/classes/CSS.php:1054
 msgid "Minified CSS cleared."
 msgstr ""
 
@@ -110,11 +110,11 @@ msgstr ""
 msgid "Local Fonts cleared for all network sites."
 msgstr ""
 
-#: inc/CLI.php:180 inc/classes/Fonts.php:223
+#: inc/CLI.php:180 inc/classes/Fonts.php:282
 msgid "Local fonts cleared."
 msgstr ""
 
-#: inc/CLI.php:199 inc/classes/PMCS/PMCS.php:355
+#: inc/CLI.php:199 inc/classes/PMCS/PMCS.php:478
 #: inc/classes/PMCS/Snippet.php:65 inc/classes/PMCS/Snippet.php:70
 #: inc/classes/PMCS/Snippet.php:251 inc/classes/PMCS/Snippet.php:257
 msgid "File not found."
@@ -140,8 +140,8 @@ msgstr ""
 msgid "Option disabled."
 msgstr ""
 
-#: inc/admin.php:37 inc/admin.php:102 inc/classes/PMCS/Conditions.php:223
-#: inc/classes/PMCS/Conditions.php:306
+#: inc/admin.php:37 inc/admin.php:102 inc/classes/PMCS/Conditions.php:252
+#: inc/classes/PMCS/Conditions.php:357
 msgid "General"
 msgstr ""
 
@@ -296,16 +296,16 @@ msgstr ""
 msgid "Local Analytics is enabled but no Tracking ID is set."
 msgstr ""
 
-#: inc/classes/CSS.php:938 inc/classes/CSS.php:952 inc/classes/Meta.php:85
+#: inc/classes/CSS.php:968 inc/classes/CSS.php:982 inc/classes/Meta.php:85
 #: inc/settings.php:927 inc/settings.php:936
 msgid "Clear Used CSS"
 msgstr ""
 
-#: inc/classes/CSS.php:938 inc/classes/PMCS/ListTable.php:281
+#: inc/classes/CSS.php:968 inc/classes/PMCS/ListTable.php:297
 msgid "All"
 msgstr ""
 
-#: inc/classes/CSS.php:952
+#: inc/classes/CSS.php:982
 msgid "Current"
 msgstr ""
 
@@ -521,79 +521,107 @@ msgid_plural "Successfully imported %d Perfmatters code snippets."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/classes/PMCS/Conditions.php:225
+#: inc/classes/PMCS/Conditions.php:254
 msgid "Front Page"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:226
+#: inc/classes/PMCS/Conditions.php:255
 msgid "Blog"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:227
+#: inc/classes/PMCS/Conditions.php:256
 msgid "All Singular"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:228
+#: inc/classes/PMCS/Conditions.php:257
 msgid "All Archives"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:229
+#: inc/classes/PMCS/Conditions.php:258
 msgid "Author Archives"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:230
+#: inc/classes/PMCS/Conditions.php:259
 msgid "Date Archives"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:231
+#: inc/classes/PMCS/Conditions.php:260
 msgid "Search Results"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:232
+#: inc/classes/PMCS/Conditions.php:261
 msgid "No Search Results"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:233 inc/functions_script_manager.php:585
+#: inc/classes/PMCS/Conditions.php:262 inc/functions_script_manager.php:585
 #: inc/functions_script_manager.php:751 inc/settings.php:455
 msgid "404 Template"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:234
+#: inc/classes/PMCS/Conditions.php:263
 msgid "Paginated Results"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:258
+#: inc/classes/PMCS/Conditions.php:267
+msgid "URL"
+msgstr ""
+
+#: inc/classes/PMCS/Conditions.php:271
+msgid "Path Contains"
+msgstr ""
+
+#: inc/classes/PMCS/Conditions.php:272
+msgid "e.g. /shop/"
+msgstr ""
+
+#: inc/classes/PMCS/Conditions.php:275
+msgid "Path Equals"
+msgstr ""
+
+#: inc/classes/PMCS/Conditions.php:276
+msgid "e.g. /about-us/"
+msgstr ""
+
+#: inc/classes/PMCS/Conditions.php:279
+msgid "Path Regex"
+msgstr ""
+
+#: inc/classes/PMCS/Conditions.php:280
+msgid "e.g. ^/products/.*"
+msgstr ""
+
+#: inc/classes/PMCS/Conditions.php:306
 msgid "Archives"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:260 inc/classes/PMCS/Conditions.php:292
+#: inc/classes/PMCS/Conditions.php:308 inc/classes/PMCS/Conditions.php:341
 msgid "Archive"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:308 inc/functions_script_manager.php:691
+#: inc/classes/PMCS/Conditions.php:359 inc/functions_script_manager.php:691
 #: inc/functions_script_manager.php:856
 msgid "Logged In"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:309 inc/functions_script_manager.php:692
+#: inc/classes/PMCS/Conditions.php:360 inc/functions_script_manager.php:692
 #: inc/functions_script_manager.php:857
 msgid "Logged Out"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:313
+#: inc/classes/PMCS/Conditions.php:364
 msgid "Roles"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:344
+#: inc/classes/PMCS/Conditions.php:464
 msgid "Select an option"
 msgstr ""
 
-#: inc/classes/PMCS/Conditions.php:367 inc/settings.php:866
+#: inc/classes/PMCS/Conditions.php:496 inc/settings.php:866
 #: inc/settings.php:2547 inc/settings.php:2623 inc/settings.php:2665
 msgid "Remove"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:41
+#: inc/classes/PMCS/ListTable.php:41 inc/classes/PMCS/PMCS.php:237
 msgid "Name"
 msgstr ""
 
@@ -602,11 +630,11 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:43 inc/pmcs.php:417
+#: inc/classes/PMCS/ListTable.php:43 inc/pmcs.php:418
 msgid "Description"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:44 inc/pmcs.php:384
+#: inc/classes/PMCS/ListTable.php:44 inc/pmcs.php:385
 msgid "Tags"
 msgstr ""
 
@@ -614,11 +642,12 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:46
+#: inc/classes/PMCS/ListTable.php:46 inc/classes/PMCS/PMCS.php:238
 msgid "Created"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:47 inc/pmcs.php:179
+#: inc/classes/PMCS/ListTable.php:47 inc/classes/PMCS/PMCS.php:239
+#: inc/pmcs.php:179
 msgid "Modified"
 msgstr ""
 
@@ -630,102 +659,122 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:99 inc/classes/PMCS/ListTable.php:300
+#: inc/classes/PMCS/ListTable.php:99 inc/classes/PMCS/ListTable.php:316
 msgid "Export"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:100 inc/classes/PMCS/ListTable.php:301
+#: inc/classes/PMCS/ListTable.php:100 inc/classes/PMCS/ListTable.php:317
 msgid "Delete"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:284
+#: inc/classes/PMCS/ListTable.php:300
 msgid "Active"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:287
+#: inc/classes/PMCS/ListTable.php:303
 msgid "Inactive"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:298
+#: inc/classes/PMCS/ListTable.php:314
 msgid "Activate"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:299
+#: inc/classes/PMCS/ListTable.php:315
 msgid "Deactivate"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:317
+#: inc/classes/PMCS/ListTable.php:333
 msgid "All Types"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:326
+#: inc/classes/PMCS/ListTable.php:342
 msgid "Filter"
 msgstr ""
 
-#: inc/classes/PMCS/ListTable.php:338
+#: inc/classes/PMCS/ListTable.php:354
 msgid "Screen Options"
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:101
+#: inc/classes/PMCS/PMCS.php:105
 msgid ""
 "This will permanently delete the code snippet. Are you sure you want to "
 "proceed?"
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:102 inc/code.php:142 inc/pmcs.php:268
+#: inc/classes/PMCS/PMCS.php:106 inc/code.php:142 inc/pmcs.php:269
 msgid "Copy"
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:103
+#: inc/classes/PMCS/PMCS.php:107
 msgid "Copied"
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:157
+#: inc/classes/PMCS/PMCS.php:161
 msgid "Code Snippets per page"
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:338
+#: inc/classes/PMCS/PMCS.php:190
+msgid "Sort Order"
+msgstr ""
+
+#: inc/classes/PMCS/PMCS.php:193
+msgid "Order by"
+msgstr ""
+
+#: inc/classes/PMCS/PMCS.php:201
+msgid "Order"
+msgstr ""
+
+#: inc/classes/PMCS/PMCS.php:246
+msgid "Ascending"
+msgstr ""
+
+#: inc/classes/PMCS/PMCS.php:247
+msgid "Descending"
+msgstr ""
+
+#: inc/classes/PMCS/PMCS.php:461
 msgid "Safe mode is enabled in wp-config.php."
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:342 inc/code.php:125
+#: inc/classes/PMCS/PMCS.php:465 inc/code.php:125
 msgid "Safe mode is enabled."
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:342
+#: inc/classes/PMCS/PMCS.php:465
 msgid "Disable"
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:351 inc/classes/PMCS/Snippet.php:153
+#: inc/classes/PMCS/PMCS.php:474 inc/classes/PMCS/Snippet.php:153
 msgid "Snippet saved."
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:352
+#: inc/classes/PMCS/PMCS.php:475
 msgid "Snippet deleted successfully."
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:353
+#: inc/classes/PMCS/PMCS.php:476
 msgid "Snippet activated successfully."
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:354
+#: inc/classes/PMCS/PMCS.php:477
 msgid "Snippet deactivated successfully."
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:356
+#: inc/classes/PMCS/PMCS.php:479
 msgid "Safe mode disabled."
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:357
+#: inc/classes/PMCS/PMCS.php:480
 msgid "Security check failed. Please try again."
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:1269
+#: inc/classes/PMCS/PMCS.php:1388
 #, php-format
 msgid "%s ago"
 msgstr ""
 
-#: inc/classes/PMCS/PMCS.php:1312
+#: inc/classes/PMCS/PMCS.php:1431
 msgid "Code Snippets"
 msgstr ""
 
@@ -801,15 +850,15 @@ msgstr ""
 msgid "No valid snippets were found in the export file."
 msgstr ""
 
-#: inc/code.php:14 inc/code.php:33 inc/pmcs.php:467
+#: inc/code.php:14 inc/code.php:33 inc/pmcs.php:468
 msgid "Snippets"
 msgstr ""
 
-#: inc/code.php:15 inc/code.php:34 inc/pmcs.php:468
+#: inc/code.php:15 inc/code.php:34 inc/pmcs.php:469
 msgid "Global Scripts"
 msgstr ""
 
-#: inc/code.php:16 inc/code.php:35 inc/pmcs.php:469 inc/script_manager.php:171
+#: inc/code.php:16 inc/code.php:35 inc/pmcs.php:470 inc/script_manager.php:171
 #: inc/script_manager.php:287 inc/settings.php:1908 inc/settings.php:2546
 #: inc/settings.php:2622 inc/settings.php:2664 perfmatters.php:255
 msgid "Settings"
@@ -1030,7 +1079,7 @@ msgid "Current URL"
 msgstr ""
 
 #: inc/functions_script_manager.php:688 inc/functions_script_manager.php:853
-#: inc/pmcs.php:353
+#: inc/pmcs.php:354
 msgid "Users"
 msgstr ""
 
@@ -1061,7 +1110,7 @@ msgid "MU plugin version mismatch."
 msgstr ""
 
 #: inc/functions_script_manager.php:1543 inc/functions_script_manager.php:1551
-#: inc/pmcs.php:198 inc/pmcs.php:283 inc/script_manager.php:194
+#: inc/pmcs.php:198 inc/pmcs.php:284 inc/script_manager.php:194
 #: inc/script_manager.php:328 inc/script_manager.php:340 inc/settings.php:2883
 msgid "View Documentation"
 msgstr ""
@@ -1238,7 +1287,7 @@ msgstr ""
 msgid "After Content"
 msgstr ""
 
-#: inc/pmcs.php:111 inc/pmcs.php:259
+#: inc/pmcs.php:111 inc/pmcs.php:260
 msgid "Shortcode"
 msgstr ""
 
@@ -1260,51 +1309,51 @@ msgstr ""
 msgid "Load Behavior"
 msgstr ""
 
-#: inc/pmcs.php:246 inc/settings.php:761 inc/settings.php:943
+#: inc/pmcs.php:247 inc/settings.php:761 inc/settings.php:943
 msgid "Minify"
 msgstr ""
 
-#: inc/pmcs.php:272
+#: inc/pmcs.php:273
 msgid "Save your code snippet to generate a shortcode."
 msgstr ""
 
-#: inc/pmcs.php:282
+#: inc/pmcs.php:283
 msgid "Conditions"
 msgstr ""
 
-#: inc/pmcs.php:298
+#: inc/pmcs.php:299
 msgid "Include"
 msgstr ""
 
-#: inc/pmcs.php:317 inc/pmcs.php:344 inc/pmcs.php:374
+#: inc/pmcs.php:318 inc/pmcs.php:345 inc/pmcs.php:375
 msgid "Add Condition"
 msgstr ""
 
-#: inc/pmcs.php:325
+#: inc/pmcs.php:326
 msgid "Exclude"
 msgstr ""
 
-#: inc/pmcs.php:389
+#: inc/pmcs.php:390
 msgid "Enter or Search for Tags"
 msgstr ""
 
-#: inc/pmcs.php:430
+#: inc/pmcs.php:431
 msgid "Save Snippet"
 msgstr ""
 
-#: inc/pmcs.php:437
+#: inc/pmcs.php:438
 msgid "Export Snippet"
 msgstr ""
 
-#: inc/pmcs.php:441
+#: inc/pmcs.php:442
 msgid "Delete Snippet"
 msgstr ""
 
-#: inc/pmcs.php:476
+#: inc/pmcs.php:477
 msgid "New Snippet"
 msgstr ""
 
-#: inc/pmcs.php:493
+#: inc/pmcs.php:494
 msgid "Search Snippets"
 msgstr ""
 

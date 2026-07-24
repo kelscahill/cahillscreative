@@ -209,9 +209,25 @@ class ListTable extends \WP_List_Table
 					($snippet['type'] ?? '') . ' ' .
 					(is_array($snippet['tags']) ? implode(' ', $snippet['tags']) : '')
 				);
-				
-				//search combined string
-				return strpos($haystack, $search_term) !== false;
+
+				if(str_contains($haystack, $search_term)) {
+					return true;
+				}
+
+				//fall back to searching snippet file contents
+				if(empty($snippet['file_name'])) {
+					return false;
+				}
+
+				$file = PMCS::get_storage_dir() . '/' . $snippet['file_name'];
+
+				if(!is_readable($file)) {
+					return false;
+				}
+
+				$code = PMCS::parse_doc_block(file_get_contents($file), true);
+
+				return $code !== '' && stripos($code, $search_term) !== false;
 			});
 		}
 
@@ -331,7 +347,7 @@ class ListTable extends \WP_List_Table
 
 		    	//selected tag
 			    if(!empty($_GET['tag'])) {
-			    	echo '<a href="' . remove_query_arg('tag') . '#code" class="pmcs-tag" style="color: #333; text-decoration: none; margin-right: 10px;">' . esc_html($_GET['tag']) . '<span class="pmcs-tag-close">×</span></a>';
+			    	echo '<a href="' . esc_url(remove_query_arg('tag')) . '#code" class="pmcs-tag" style="color: #333; text-decoration: none; margin-right: 10px;">' . esc_html($_GET['tag']) . '<span class="pmcs-tag-close">×</span></a>';
 			    }
 
 		        //screen options toggle
@@ -344,11 +360,8 @@ class ListTable extends \WP_List_Table
 	//sorting function
     function usort_reorder($a, $b)
     {
-        //default orderby
-        $orderby = (!empty($_GET['orderby'])) ? $_GET['orderby'] : 'created';
-
-        //default order
-        $order = (!empty($_GET['order'])) ? $_GET['order'] : 'desc';
+        $orderby = PMCS::get_snippet_sort_orderby();
+        $order   = PMCS::get_snippet_sort_order();
 
         //determine sort order
         $result = strcmp($a[$orderby] ?? '', $b[$orderby] ?? '');

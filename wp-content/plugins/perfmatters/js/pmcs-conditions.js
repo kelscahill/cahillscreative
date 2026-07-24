@@ -1,86 +1,113 @@
 jQuery(function($) {
 
-	var getLocationObjects = function(select, onload = false, data = '') {
+	var objectSpinnerHtml = '<svg class="perfmatters-button-spinner" viewBox="0 0 100 100" role="presentation" focusable="false" style="background: rgba(0,0,0,.1); border-radius: 100%; width: 16px; height: 28px; margin: 0px 2px; overflow: visible; opacity: 1; background-color: transparent;"><circle cx="50" cy="50" r="50" vector-effect="non-scaling-stroke" style="fill: transparent; stroke-width: 1.5px; stroke: #fff;"></circle><path d="m 50 0 a 50 50 0 0 1 50 50" vector-effect="non-scaling-stroke" style="fill: transparent; stroke-width: 1.5px; stroke: #4A89DD; stroke-linecap: round; transform-origin: 50% 50%; animation: 1.4s linear 0s infinite normal both running perfmatters-spinner;"></path></svg>';
 
+	var getObjectFieldName = function($row) {
+		return $row.find('.condition-select').attr('name').replace('[rule]', '[object]');
+	};
+
+	var getSelectLocationMeta = function(location) {
+		return {
+			locationID: location.split(':').pop(),
+			locationType: location.includes(':taxonomy:') ? 'taxonomy' : location.split(':')[0]
+		};
+	};
+
+	var fillObjectSelect = function($row, location, objectSelect, onload, response) {
+		var meta = getSelectLocationMeta(location);
+		var objects = response[meta.locationID].objects;
+		var blankName = location.includes(':taxonomy:') ? 'Select an option' : 'All ' + response[meta.locationID].label;
+
+		objectSelect.empty();
+
+		objectSelect.append($('<option>', {
+			value: '',
+			label: blankName,
+			text: blankName,
+		}));
+
+		$.each(objects, function(key, value) {
+			objectSelect.append($('<option>', {
+				value: value.id,
+				text: value.name + ' (' + value.id + ')'
+			}));
+		});
+
+		$row.removeClass('pmcs-condition-load-objects').addClass('pmcs-condition-objects-loaded');
+
+		if(onload) {
+			objectSelect.val(objectSelect.attr('data-saved-value') || $row.attr('data-saved-object') || '');
+		}
+	};
+
+	var loadSelectObjects = function($row, location, objectSelect, onload, data) {
+		var meta = getSelectLocationMeta(location);
+
+		$row.removeClass('pmcs-condition-objects-loaded').addClass('pmcs-condition-load-objects');
+
+		if(data && onload) {
+			fillObjectSelect($row, location, objectSelect, onload, data);
+			return;
+		}
+
+		var actionType = (meta.locationType === 'post') ? 'posts' : 'terms';
+
+		$.post(ajaxurl, {
+			action: 'pmcs_get_location_' + actionType,
+			id: meta.locationID,
+			nonce : PERFMATTERS.nonce
+		},
+		function(response) {
+			fillObjectSelect($row, location, objectSelect, onload, JSON.parse(response));
+		});
+	};
+
+	var updateConditionObject = function(select, onload, data) {
 		var location = select.val();
-		var parent = select.parent();
+		var $row = select.closest('.perfmatters-input-row');
+		var $wrap = $row.find('.condition-object-wrap');
+		var objectType = location === '' ? '' : (select.find(':selected').data('object-type') || '');
+		var fieldName = getObjectFieldName($row);
+		var savedObject = onload ? ($row.attr('data-saved-object') || '') : '';
 
-		if(location === '') {
-			parent.removeClass('pmcs-condition-objects-loaded');
-		} 
-		else {
+		$row.attr('data-object-type', objectType);
+		$row.removeClass('pmcs-condition-load-objects pmcs-condition-objects-loaded');
+		$wrap.empty();
 
-			var locationID = location.split(':').pop();
-			var locationType = location.includes(':taxonomy:') ? 'taxonomy' : location.split(':')[0];
-			var objectSelect = parent.find('.condition-object-select');
+		if(!objectType || location === '') {
+			return;
+		}
 
-			//check if location type needs objects loaded
-			if(locationType === 'post' || locationType === 'taxonomy') {
-					
-				//set loading class
-				parent.removeClass('pmcs-condition-objects-loaded').addClass('pmcs-condition-load-objects');
+		if(objectType === 'text') {
+			$wrap.append($('<input>', {
+				type: 'text',
+				class: 'condition-object-input',
+				name: fieldName,
+				value: savedObject,
+				placeholder: select.find(':selected').data('object-placeholder') || ''
+			}));
+			return;
+		}
 
-				//fill objects with response
-				var fillObjects = function(response) {
+		if(objectType === 'select') {
+			var objectSelect = $('<select>', {
+				class: 'condition-object-select',
+				name: fieldName,
+				'data-saved-value': savedObject
+			});
 
-					var objects = response[locationID].objects;
-					const blankName = location.includes(':taxonomy:') ? 'Select an option' : 'All ' + response[locationID].label;
+			$wrap.append(objectSelect);
+			$wrap.append($(objectSpinnerHtml));
 
-					//empty first
-					objectSelect.empty();
-
-					//add blank option
-					objectSelect.append($('<option>', {
-						value: '',
-						label: blankName,
-						text: blankName,
-					}));
-
-					//add objects
-					$.each(objects, function(key, value) {
-						objectSelect.append($('<option>', {
-							value: value.id,
-							text: value.name + ' (' + value.id + ')'
-						}));
-					});
-
-					parent.removeClass('pmcs-condition-load-objects').addClass('pmcs-condition-objects-loaded');
-
-					//preselect saved value
-					if(onload) {
-						objectSelect.val(objectSelect.attr('data-saved-value'));
-					}
-				};
-
-				if(data && onload) {
-					fillObjects(data);
-				} 
-				else {
-
-					const actionType = (locationType === 'post') ? 'posts' : 'terms';
-
-					$.post(ajaxurl, {
-						action: 'pmcs_get_location_' + actionType,
-						id: locationID,
-						nonce : PERFMATTERS.nonce
-					},
-					function(response) {
-						response = JSON.parse(response);
-						fillObjects(response);
-					});
-				}
-			} 
-			else {
-
-				parent.removeClass('pmcs-condition-objects-loaded');
-				objectSelect.empty();
-			}
+			loadSelectObjects($row, location, objectSelect, onload, data);
 		}
 	};
 
 	//load location objects on condition change
 	$('.perfmatters-input-row-wrapper').on('change', '.condition select.condition-select', function() {
-		getLocationObjects($(this));
+		var $row = $(this).closest('.perfmatters-input-row');
+		$row.attr('data-saved-object', '');
+		updateConditionObject($(this));
 	});
 
 	//saved object id arrays
@@ -89,16 +116,14 @@ jQuery(function($) {
 
 	//populate saved object ids
 	$('.pmcs-condition-load-objects').each(function() {
-
 		var location = $(this).find('select.condition-select').val();
-		var locationID = location.split(':').pop();
-		var locationType = location.includes(':taxonomy:') ? 'taxonomy' : location.split(':')[0];
+		var meta = getSelectLocationMeta(location);
 
-		if(locationType === 'post' && !postObjects.includes(locationID)) {
-			postObjects.push(locationID);
+		if(meta.locationType === 'post' && !postObjects.includes(meta.locationID)) {
+			postObjects.push(meta.locationID);
 		}
-		else if(locationType === 'taxonomy' && !termObjects.includes(locationID)) {
-			termObjects.push(locationID);
+		else if(meta.locationType === 'taxonomy' && !termObjects.includes(meta.locationID)) {
+			termObjects.push(meta.locationID);
 		}
 	});
 
@@ -111,16 +136,11 @@ jQuery(function($) {
 			nonce : PERFMATTERS.nonce
 		},
 		function(response) {
-
 			response = JSON.parse(response);
 
 			$('.pmcs-condition-load-objects').each(function() {
-
 				var select = $(this).find('select.condition-select');
-
-				$(this).addClass('pmcs-condition-load-objects');
-
-				getLocationObjects(select, true, response);
+				updateConditionObject(select, true, response);
 			});
 		});
 	}

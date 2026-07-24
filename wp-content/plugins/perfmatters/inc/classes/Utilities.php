@@ -66,7 +66,9 @@ class Utilities
                     if($value === '') {
                         return $name;
                     }
-                    return sprintf('%s="%s"', $name, esc_attr($value));
+                    //decode existing entities, then escape for double-quoted attributes only
+                    $value = html_entity_decode((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    return sprintf('%s="%s"', $name, htmlspecialchars($value, ENT_COMPAT | ENT_HTML5, 'UTF-8', false));
                 },
                 array_keys($atts_array),
                 $atts_array

@@ -239,6 +239,7 @@ class Images
 
 	//prep img tag for lazy loading
 	private static function lazyload_image($image) {
+
 		//if there are no attributes, return original match
 		if(empty($image[1])) {
 			return $image[0];
@@ -247,8 +248,8 @@ class Images
 		//get image attributes array
 		$image_atts = Utilities::get_atts_array($image[1]);
 
-		//get new attributes
-		if(empty($image_atts['src']) || (!Utilities::match_in_array($image[1], Attributes::forced()) && ((!empty($image_atts['class']) && strpos($image_atts['class'], 'no-lazy') !== false) || Utilities::match_in_array($image[1], Attributes::excluded()) || (!empty($image_atts['fetchpriority']) && $image_atts['fetchpriority'] == 'high')))) {
+		//skip/exclude image
+		if((empty($image_atts['src']) && empty($image_atts['srcset'])) || (!Utilities::match_in_array($image[1], Attributes::forced()) && ((!empty($image_atts['class']) && strpos($image_atts['class'], 'no-lazy') !== false) || Utilities::match_in_array($image[1], Attributes::excluded()) || (!empty($image_atts['fetchpriority']) && $image_atts['fetchpriority'] == 'high')))) {
 			//remove loading attribute
 			if(isset($image_atts['loading'])) {
 				unset($image_atts['loading']);
@@ -262,7 +263,7 @@ class Images
 		$image_atts['class'] = !empty($image_atts['class']) ? $image_atts['class'] . ' ' . 'perfmatters-lazy' : 'perfmatters-lazy';
 
 		//migrate src
-		$image_atts['data-src'] = $image_atts['src'];
+		$image_atts['data-src'] = $image_atts['src'] ?? '';
 
 		//add placeholder src
 		$width = !empty($image_atts['width']) ? $image_atts['width'] : 0;
