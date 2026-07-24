@@ -288,6 +288,21 @@ class Chunk {
 	}
 
 	/**
+	 * Delete the metadata file of the current upload.
+	 *
+	 * Used to clean up an upload session that was initialized but rejected during validation,
+	 * so its metadata cannot be reused to continue the upload.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return void
+	 */
+	public function delete_metadata(): void {
+
+		wp_delete_file( $this->get_metadata_file_path() );
+	}
+
+	/**
 	 * Verify the $_FILE entry is valid before returning it.
 	 *
 	 * @since 1.6.2

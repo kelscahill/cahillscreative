@@ -117,6 +117,34 @@ class Helpers {
 	}
 
 	/**
+	 * Determine whether card-testing protections should run.
+	 *
+	 * Returns true on live mode. In test mode, returns the value of the
+	 * `wpforms_stripe_run_protections_in_test_mode` filter (default false).
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return bool
+	 */
+	public static function should_apply_protections(): bool {
+
+		if ( self::get_stripe_mode() !== 'test' ) {
+			return true;
+		}
+
+		/**
+		 * Filter whether card-testing protections run in test mode.
+		 *
+		 * Defaults to false.
+		 *
+		 * @since 2.0.0
+		 *
+		 * @param bool $run_in_test_mode Whether to run protections in test mode.
+		 */
+		return (bool) apply_filters( 'wpforms_stripe_run_protections_in_test_mode', false ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+	}
+
+	/**
 	 * Get Stripe key from the WPForms settings.
 	 *
 	 * @since 1.8.2
@@ -176,14 +204,9 @@ class Helpers {
 	 *
 	 * @return bool
 	 */
-	public static function is_license_active() {
+	public static function is_license_active(): bool {
 
-		$license = (array) get_option( 'wpforms_license', [] );
-
-		return ! empty( wpforms_get_license_key() ) &&
-			empty( $license['is_expired'] ) &&
-			empty( $license['is_disabled'] ) &&
-			empty( $license['is_invalid'] );
+		return wpforms_is_license_valid();
 	}
 
 	/**
@@ -518,5 +541,23 @@ class Helpers {
 		$mode = self::get_stripe_mode();
 
 		return get_option( "wpforms_stripe_{$mode}_account_country", '' );
+	}
+
+	/**
+	 * Get the WPForms Payments settings page URL.
+	 *
+	 * @since 1.10.1.1
+	 *
+	 * @return string
+	 */
+	public static function get_settings_page_url(): string {
+
+		return add_query_arg(
+			[
+				'page' => 'wpforms-settings',
+				'view' => 'payments',
+			],
+			admin_url( 'admin.php' )
+		);
 	}
 }

@@ -108,6 +108,10 @@ final class Admin {
 		// Maybe refresh entries count.
 		add_action( 'wp_loaded', [ $this, 'maybe_refresh_entries_count' ], 2 );
 
+		// Retry a wizard-consented restore once Action Scheduler and the
+		// Lite-side counter are ready.
+		add_action( 'wp_loaded', [ $this, 'maybe_run_pending_restore' ], 2 );
+
 		// Maybe start the import process.
 		add_action( 'wp_loaded', [ $this, 'maybe_start_import_process' ], 3 );
 
@@ -125,6 +129,24 @@ final class Admin {
 			// Display admin notice if the process fails for any reasons.
 			add_action( 'admin_notices', [ $this, 'display_error_notices' ] );
 		}
+	}
+
+	/**
+	 * Whether the wizard-consented restore is still waiting on preconditions.
+	 *
+	 * Reads the option fresh so a `maybe_run_pending_restore()` pass earlier in
+	 * the same request that already cleared the flag is reflected here — the
+	 * cached `$this->import_option` snapshot from the constructor is not.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return bool
+	 */
+	private function is_restore_pending(): bool {
+
+		$settings = get_option( Integration::get_option_name(), [] );
+
+		return ! empty( $settings['import']['pending_consent'] );
 	}
 
 	/**
@@ -188,8 +210,26 @@ final class Admin {
 			);
 		}
 
+		// Wizard consent is stored but the schedule could not run yet because
+		// Action Scheduler is still finishing its migration or the Lite-side
+		// entries counter has not caught up. maybe_run_pending_restore() will
+		// retry on later admin requests.
+		if ( $this->action !== 'import' && empty( $this->import_status ) && $this->is_restore_pending() ) {
+
+			$message = wpforms_render(
+				'admin/admin-fancy-notice',
+				[
+					'slug'  => 'lite-connect-entries-restore',
+					'icon'  => '',
+					'title' => esc_html__( 'Preparing Entry Restore', 'wpforms' ),
+					'desc'  => esc_html__( 'Your form entries will be restored as soon as WPForms finishes setting up. This usually takes less than a minute — please refresh the page shortly.', 'wpforms' ),
+				],
+				true
+			);
+		}
+
 		// Entries Restore has not started yet.
-		if ( $this->action !== 'import' && empty( $this->import_status ) ) {
+		if ( $this->action !== 'import' && empty( $this->import_status ) && ! $this->is_restore_pending() ) {
 
 			// Do not display an admin notice if.
 			if (
@@ -402,6 +442,65 @@ final class Admin {
 		if ( ! in_array( $this->import_status, [ 'scheduled', 'running', 'done' ], true ) ) {
 			( new ImportEntriesTask() )->create();
 		}
+	}
+
+	/**
+	 * Retry a wizard-consented restore that could not be scheduled at the time.
+	 *
+	 * Set by {@see \WPForms\Pro\SetupWizard\Service\StateManager::trigger_lite_connect_restore()}
+	 * when a soft gate blocks the immediate schedule — typically Action Scheduler
+	 * still finishing its migration on first Pro activation, or the Lite-side
+	 * entries counter still at zero because SendEntryTask's random 10-60 minute
+	 * retry hasn't run yet. Re-runs the same gate checks; on success, schedules
+	 * the task and clears the flag. On persistent failure the flag stays set so
+	 * a future admin request can try again.
+	 *
+	 * @since 2.0.0
+	 */
+	public function maybe_run_pending_restore(): void {
+
+		$settings = get_option( Integration::get_option_name(), [] );
+
+		if ( empty( $settings['import']['pending_consent'] ) ) {
+			return;
+		}
+
+		// A restore already in flight means the consent has been honored
+		// through another path (a direct admin click, or an earlier retry
+		// this same request). Clear the flag so we don't try again.
+		if ( ! empty( $settings['import']['status'] ) ) {
+			unset( $settings['import']['pending_consent'] );
+
+			update_option( Integration::get_option_name(), $settings );
+
+			return;
+		}
+
+		// Hard gate: no license, no restore. Ever.
+		if ( ! wpforms_is_license_valid() ) {
+			return;
+		}
+
+		// Soft gates: leave the pending flag set for a future request.
+		if ( ! ImportEntriesTask::can_schedule() ) {
+			return;
+		}
+
+		// Clear the flag before scheduling to keep this method idempotent
+		// within the request. Reading and re-saving the option is not atomic,
+		// so a concurrent request may still slip through — harmless, because
+		// process() only runs while the status is `scheduled`, and the first
+		// run moves it on, turning any duplicate action into a no-op.
+		unset( $settings['import']['pending_consent'] );
+
+		update_option( Integration::get_option_name(), $settings );
+
+		( new ImportEntriesTask() )->create();
+
+		// Refresh the constructor-time snapshot: notices render later in this
+		// same request and would otherwise show the "Restore Your Form Entries"
+		// CTA for the restore that has just been scheduled.
+		$this->import_status = $this->get_import_status();
 	}
 
 	/**

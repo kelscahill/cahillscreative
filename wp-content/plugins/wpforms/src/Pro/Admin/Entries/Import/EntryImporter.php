@@ -192,7 +192,11 @@ class EntryImporter {
 	 */
 	public function get_destination_fields(): array {
 
-		$form_fields = wpforms_get_form_fields( $this->form_id, self::get_supported_destination_fields() );
+		// Apply the import-specific allowlist (which includes Password) to the shared form read.
+		$form_fields = (array) wpforms_get_form_fields(
+			$this->get_raw_form_content(),
+			self::get_supported_destination_fields()
+		);
 
 		$no_fields_error = __( 'Form has no supported fields.', 'wpforms' );
 
@@ -208,6 +212,115 @@ class EntryImporter {
 		}
 
 		return $destination_fields;
+	}
+
+	/**
+	 * Read the raw decoded form content.
+	 *
+	 * Reads the form the same way wpforms_get_form_fields() does internally for a
+	 * numeric form ID. get_destination_fields() and
+	 * get_unsupported_destination_field_labels() pass this decoded array to
+	 * wpforms_get_form_fields() with their own distinct allowlists.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return array
+	 */
+	private function get_raw_form_content(): array {
+
+		return (array) wpforms()->obj( 'form' )->get(
+			$this->form_id,
+			[
+				'content_only' => true,
+			]
+		);
+	}
+
+	/**
+	 * Retrieve the labels of the form's data fields that are not supported by entry import.
+	 *
+	 * These are the data fields that get_destination_fields() silently drops.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return array
+	 */
+	private function get_unsupported_destination_field_labels(): array {
+
+		// Use the core default allowlist (no override) so file-upload, signature and
+		// payment fields are present here and can be reported as unsupported.
+		$form_fields = (array) wpforms_get_form_fields( $this->get_raw_form_content() );
+
+		return self::filter_unsupported_field_labels( $form_fields );
+	}
+
+	/**
+	 * Filter a form's fields down to the labels of the fields whose type is not supported by entry import.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param array $form_fields Form fields as returned by wpforms_get_form_fields() with the core
+	 *                           default allowlist (so unsupported types are still present).
+	 *
+	 * @return array
+	 */
+	public static function filter_unsupported_field_labels( array $form_fields ): array {
+
+		if ( empty( $form_fields ) ) {
+			return [];
+		}
+
+		$supported_types = self::get_supported_destination_fields();
+		$labels          = [];
+
+		foreach ( $form_fields as $field ) {
+			if ( empty( $field['type'] ) || in_array( $field['type'], $supported_types, true ) ) {
+				continue;
+			}
+
+			$labels[] = WPFormsDbSource::get_field_label( $field );
+		}
+
+		return $labels;
+	}
+
+	/**
+	 * Build the notice text about the data fields skipped because they are not supported by entry import.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param AbstractSource|null $source Import source. A WPForms source also contributes its own unsupported fields.
+	 *
+	 * @return string
+	 */
+	public function get_unsupported_fields_notice( ?AbstractSource $source = null ): string {
+
+		$labels = $this->get_unsupported_destination_field_labels();
+
+		// When importing from a WPForms source form, also report the source form's
+		// unsupported fields. Source form fields are listed first, then destination
+		// form fields, deduped by label so a type shared by both forms is listed once.
+		if ( $source instanceof WPFormsDbSource ) {
+			$labels = array_values( array_unique( array_merge( $source->get_unsupported_field_labels(), $labels ) ) );
+		}
+
+		if ( empty( $labels ) ) {
+			return '';
+		}
+
+		$count = count( $labels );
+
+		return sprintf(
+			/* translators: %1$d - number of skipped fields; %2$s - comma-separated field labels. */
+			_n(
+				'%1$d unsupported field was skipped: %2$s.',
+				'%1$d unsupported fields were skipped: %2$s.',
+				$count,
+				'wpforms'
+			),
+			$count,
+			implode( ', ', $labels )
+		);
 	}
 
 	/**

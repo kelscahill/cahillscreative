@@ -97,6 +97,8 @@ class Frontend extends FrontendBase {
 			return;
 		}
 
+		echo '<span class="wpforms-page-button-group">';
+
 		printf(
 			'<button class="wpforms-page-button wpforms-page-%1$s wpforms-disabled"
 					data-action="%1$s" data-page="%2$d" data-formid="%3$d" aria-disabled="true" aria-describedby="wpforms-error-noscript">%4$s</button>',
@@ -106,12 +108,42 @@ class Frontend extends FrontendBase {
 			esc_html( $caption )
 		);
 
-		if ( $action !== 'next' ) {
-			return;
+		if ( $action === 'next' ) {
+			self::display_page_button_spinner( $form_data );
 		}
 
-		/** This action is documented in includes/class-frontend.php. */
-		do_action( 'wpforms_display_submit_after', $form_data, 'next' ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+		echo '</span>';
+
+		if ( $action === 'next' ) {
+			/** This action is documented in includes/class-frontend.php. */
+			do_action( 'wpforms_display_submit_after', $form_data, 'next' ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+		}
+	}
+
+	/**
+	 * Render a hidden loading spinner alongside the Next button.
+	 *
+	 * Mirrors the Submit-button spinner so JS only needs to toggle visibility
+	 * during page-navigation validation, rather than constructing DOM nodes.
+	 *
+	 * @since 1.10.2
+	 *
+	 * @param array $form_data Form data and settings.
+	 */
+	public static function display_page_button_spinner( array $form_data ) {
+
+		/** This filter is documented in includes/class-frontend.php. */
+		$src = apply_filters( // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+			'wpforms_display_submit_spinner_src',
+			WPFORMS_PLUGIN_URL . 'assets/images/submit-spin.svg',
+			$form_data
+		);
+
+		printf(
+			'<img src="%s" class="wpforms-page-button-spinner" style="display: none;" width="26" height="26" alt="%s">',
+			esc_url( $src ),
+			esc_attr__( 'Loading', 'wpforms' )
+		);
 	}
 
 	/**

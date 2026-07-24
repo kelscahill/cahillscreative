@@ -346,7 +346,7 @@ class EntriesCount {
 
 			$utc_date_start = clone $utc_date_start;
 
-			$utc_date_start->modify( $modify_offset );
+			$utc_date_start = $utc_date_start->modify( $modify_offset );
 
 			$placeholders[] = $utc_date_start->format( $format );
 		}
@@ -356,7 +356,7 @@ class EntriesCount {
 
 			$utc_date_end = clone $utc_date_end;
 
-			$utc_date_end->modify( $modify_offset );
+			$utc_date_end = $utc_date_end->modify( $modify_offset );
 
 			$placeholders[] = $utc_date_end->format( $format );
 		}

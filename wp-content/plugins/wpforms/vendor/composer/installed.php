@@ -64,6 +64,15 @@
             'reference' => '9bdb027d312b732515b884a341c0ad70372c6295',
             'dev_requirement' => false,
         ),
+        'enshrined/svg-sanitize' => array(
+            'pretty_version' => '0.22.0',
+            'version' => '0.22.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../enshrined/svg-sanitize',
+            'aliases' => array(),
+            'reference' => '0afa95ea74be155a7bcd6c6fb60c276c39984500',
+            'dev_requirement' => false,
+        ),
         'ezyang/htmlpurifier' => array(
             'pretty_version' => 'v4.19.0',
             'version' => '4.19.0.0',
@@ -108,7 +117,7 @@
             'aliases' => array(
                 0 => '9999999-dev',
             ),
-            'reference' => 'f9f1a88a11437cacd4d26b4953416af5c5425389',
+            'reference' => '011e632da5c47d2334aa53af9659be61cc52cd54',
             'dev_requirement' => true,
         ),
         'square/square' => array(
@@ -148,12 +157,12 @@
             'dev_requirement' => false,
         ),
         'symfony/polyfill-mbstring' => array(
-            'pretty_version' => 'v1.37.0',
-            'version' => '1.37.0.0',
+            'pretty_version' => 'v1.38.2',
+            'version' => '1.38.2.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/polyfill-mbstring',
             'aliases' => array(),
-            'reference' => '6a21eb99c6973357967f6ce3708cd55a6bec6315',
+            'reference' => 'd3d318bad5e7a1bfbd026009c8bfb8d8f99ae6b6',
             'dev_requirement' => false,
         ),
         'symfony/polyfill-php80' => array(
@@ -184,12 +193,12 @@
             'dev_requirement' => false,
         ),
         'woocommerce/action-scheduler' => array(
-            'pretty_version' => '3.9.3',
-            'version' => '3.9.3.0',
+            'pretty_version' => '4.0.0',
+            'version' => '4.0.0.0',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../woocommerce/action-scheduler',
             'aliases' => array(),
-            'reference' => 'c58cdbab17651303d406cd3b22cf9d75c71c986c',
+            'reference' => '7321e865436e125a997de5ad95bdc8821c5a53e3',
             'dev_requirement' => false,
         ),
     ),

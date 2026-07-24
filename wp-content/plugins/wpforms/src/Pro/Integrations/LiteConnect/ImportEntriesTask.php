@@ -22,6 +22,33 @@ class ImportEntriesTask {
 	const LITE_CONNECT_IMPORT_TASK = 'wpforms_lite_connect_import_entries';
 
 	/**
+	 * Import status: the Action Scheduler task is queued but has not started yet.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @var string
+	 */
+	public const STATUS_SCHEDULED = 'scheduled';
+
+	/**
+	 * Import status: the import is in progress.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @var string
+	 */
+	public const STATUS_RUNNING = 'running';
+
+	/**
+	 * Import status: the import has finished.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @var string
+	 */
+	public const STATUS_DONE = 'done';
+
+	/**
 	 * ImportEntriesTask constructor.
 	 *
 	 * @since 1.7.4
@@ -74,6 +101,28 @@ class ImportEntriesTask {
 	}
 
 	/**
+	 * Whether the import task can be scheduled right now.
+	 *
+	 * Soft preconditions shared by every scheduling path: Action Scheduler must
+	 * be usable (it may still be migrating right after the first Pro activation),
+	 * and there must be Lite Connect entries to restore.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return bool
+	 */
+	public static function can_schedule(): bool {
+
+		$tasks = wpforms()->obj( 'tasks' );
+
+		if ( ! $tasks || ! $tasks->is_usable() ) {
+			return false;
+		}
+
+		return (int) Integration::get_new_entries_count() > 0;
+	}
+
+	/**
 	 * Process the task to import entries from the Lite Connect API via Action Scheduler.
 	 *
 	 * @since 1.7.4
@@ -90,7 +139,7 @@ class ImportEntriesTask {
 		// Grab current import status.
 		$import = wpforms_setting( 'import', false, Integration::get_option_name() );
 
-		if ( ! isset( $import['status'] ) || $import['status'] !== 'scheduled' ) {
+		if ( ! isset( $import['status'] ) || $import['status'] !== self::STATUS_SCHEDULED ) {
 			return;
 		}
 
@@ -134,7 +183,7 @@ class ImportEntriesTask {
 
 		$settings = get_option( Integration::get_option_name() );
 
-		$settings['import']['status'] = 'scheduled';
+		$settings['import']['status'] = self::STATUS_SCHEDULED;
 
 		update_option( Integration::get_option_name(), $settings );
 	}

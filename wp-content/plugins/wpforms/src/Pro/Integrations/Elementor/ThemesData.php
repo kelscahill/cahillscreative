@@ -47,8 +47,7 @@ class ThemesData extends ThemesDataBase {
 	/**
 	 * Check if the license is active.
 	 *
-	 * The code runs before wpforms() is ready, so we need to have here the same implementation as in WPForms_License::is_active.
-	 * Different from in WPForms_License::is_active, we check also if the key is empty.
+	 * Delegates to the canonical wpforms_is_license_valid() helper.
 	 *
 	 * @since 1.9.6
 	 *
@@ -56,17 +55,7 @@ class ThemesData extends ThemesDataBase {
 	 */
 	private function is_license_active(): bool {
 
-		$license = get_option( 'wpforms_license', false );
-
-		return (
-		! (
-			empty( $license ) ||
-			empty( $license['key'] ) ||
-			! empty( $license['is_expired'] ) ||
-			! empty( $license['is_disabled'] ) ||
-			! empty( $license['is_invalid'] )
-		)
-		);
+		return wpforms_is_license_valid();
 	}
 
 	/**

@@ -3,6 +3,7 @@
 namespace WPForms\Pro\Forms\Fields\Pagebreak;
 
 use WPForms\Forms\Fields\Pagebreak\Field as FieldLite;
+use WPForms\Pro\Forms\Fields\PageBreak\Frontend;
 
 /**
  * Pagebreak field.
@@ -539,21 +540,29 @@ class Field extends FieldLite {
 		echo '<div class="wpforms-clear ' . sanitize_html_class( $align ) . '">';
 
 		if ( $current > 1 && ! empty( $prev ) ) {
+			echo '<span class="wpforms-page-button-group">';
 			printf(
 				'<button class="wpforms-page-button wpforms-page-prev" data-action="prev" data-page="%d" data-formid="%d" disabled>%s</button>',
 				(int) $current,
 				(int) $form_data['id'],
 				esc_html( $prev )
 			);
+			echo '</span>';
 		}
 
 		if ( $current < $total && ! empty( $next ) ) {
+			echo '<span class="wpforms-page-button-group">';
+
 			printf(
 				'<button class="wpforms-page-button wpforms-page-next" data-action="next" data-page="%d" data-formid="%d" disabled>%s</button>',
 				(int) $current,
 				(int) $form_data['id'],
 				esc_html( $next )
 			);
+
+			Frontend::display_page_button_spinner( $form_data );
+
+			echo '</span>';
 
 			/** This action is documented in includes/class-frontend.php. */
 			do_action( 'wpforms_display_submit_after', $form_data, 'next' ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName

@@ -89,12 +89,45 @@ class FormSelector extends FormSelectorBase {
 			);
 		}
 
+		// In Classic markup the standalone field stylesheets are not compiled into the
+		// full bundle, so register them as editor styles to match the frontend preview.
+		if ( $disable_css_setting !== 3 && $this->render_engine === 'classic' ) {
+			$deps = array_merge( $deps, $this->register_classic_field_styles( $min ) );
+		}
+
 		wp_register_style(
 			'wpforms-pro-integrations',
 			WPFORMS_PLUGIN_URL . "assets/pro/css/admin-integrations{$min}.css",
 			$deps,
 			WPFORMS_VERSION
 		);
+	}
+
+	/**
+	 * Register standalone field stylesheets used by the Classic markup editor preview.
+	 *
+	 * These stylesheets are enqueued on the frontend by the individual field classes
+	 * (e.g. the Password field icon sizing). They are not part of the Classic full
+	 * bundle, so the block preview must load them explicitly to match the frontend.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param string $min Minified asset suffix.
+	 *
+	 * @return array Registered field stylesheet handles to use as dependencies.
+	 */
+	private function register_classic_field_styles( string $min ): array {
+
+		// Password field icon sizing lives only in the standalone stylesheet for Classic markup.
+		// Reuse the same handle/path/version the frontend enqueues in Password\Field::enqueue_frontend_css().
+		wp_register_style(
+			'wpforms-password-field',
+			WPFORMS_PLUGIN_URL . "assets/pro/css/fields/password{$min}.css",
+			[ 'wpforms-gutenberg-form-selector' ],
+			WPFORMS_VERSION
+		);
+
+		return [ 'wpforms-password-field' ];
 	}
 
 	/**

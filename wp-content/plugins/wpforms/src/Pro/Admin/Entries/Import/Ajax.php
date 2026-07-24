@@ -454,10 +454,11 @@ class Ajax {
 
 		wp_send_json_success(
 			[
-				'request_id'         => $session->get_request_id(),
-				'source_fields'      => $source->get_fields(),
-				'destination_fields' => $destination_fields,
-				'total'              => $source->get_total(),
+				'request_id'                => $session->get_request_id(),
+				'source_fields'             => $source->get_fields(),
+				'destination_fields'        => $destination_fields,
+				'total'                     => $source->get_total(),
+				'unsupported_fields_notice' => $importer->get_unsupported_fields_notice( $source ),
 			]
 		);
 	}

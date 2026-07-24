@@ -53,7 +53,9 @@ class Notifications extends \WPForms\Pro\Forms\Fields\Base\Notifications {
 		foreach ( $layout_fields as $layout_field ) {
 			$fields = LayoutHelpers::get_layout_all_field_ids( $layout_field );
 
-			if ( in_array( (int) $field['id'], $fields, true ) ) {
+			// Field IDs in $fields can be stored as either integers or strings
+			// depending on how the form was built, so a non-strict comparison is required.
+			if ( in_array( $field['id'], $fields, false ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.FoundNonStrictFalse
 				return true;
 			}
 		}

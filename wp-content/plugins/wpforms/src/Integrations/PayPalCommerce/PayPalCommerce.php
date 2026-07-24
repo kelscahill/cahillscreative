@@ -33,6 +33,13 @@ final class PayPalCommerce implements IntegrationInterface {
 	public const SLUG = 'paypal_commerce';
 
 	/**
+	 * Payment meta key that stores the PayPal Order ID for a one-time payment.
+	 *
+	 * @since 1.10.2
+	 */
+	public const PAYPAL_ORDER_ID_META_KEY = 'paypal_order_id';
+
+	/**
 	 * Determine if the integration is allowed to load.
 	 *
 	 * @since 1.10.0
@@ -44,6 +51,12 @@ final class PayPalCommerce implements IntegrationInterface {
 	 */
 	public function allow_load() {
 
+		static $allow_load;
+
+		if ( $allow_load !== null ) {
+			return $allow_load;
+		}
+
 		// Determine whether the PayPal Commerce addon version is compatible with the WPForms plugin version.
 		$addon_compat = ( new AddonCompatibility() )->init();
 
@@ -51,7 +64,9 @@ final class PayPalCommerce implements IntegrationInterface {
 		if ( $addon_compat && ! $addon_compat->is_supported_version() ) {
 			$addon_compat->hooks();
 
-			return false;
+			$allow_load = false;
+
+			return $allow_load;
 		}
 
 		/**
@@ -61,7 +76,9 @@ final class PayPalCommerce implements IntegrationInterface {
 		 *
 		 * @param bool $is_allowed Integration loading state.
 		 */
-		return (bool) apply_filters( 'wpforms_integrations_paypal_commerce_allow_load', true ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+		$allow_load = (bool) apply_filters( 'wpforms_integrations_paypal_commerce_allow_load', true ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+
+		return $allow_load;
 	}
 
 	/**
@@ -76,6 +93,7 @@ final class PayPalCommerce implements IntegrationInterface {
 		$this->load_admin_entries();
 		$this->load_connect();
 		$this->load_field();
+		$this->load_analytics();
 		$this->load_builder();
 		$this->load_settings();
 		$this->load_payment_methods();
@@ -93,6 +111,45 @@ final class PayPalCommerce implements IntegrationInterface {
 
 		$this->load_processing();
 		$this->load_builder_settings();
+	}
+
+	/**
+	 * Build the PayPal Commerce tile for the Payments Get Started empty state.
+	 *
+	 * @since 1.10.1.1
+	 *
+	 * @return array|null
+	 */
+	public static function get_started_gateway(): ?array {
+
+		if ( ! ( new self() )->allow_load() ) {
+			return null;
+		}
+
+		$settings_payments_url = add_query_arg(
+			[
+				'page' => 'wpforms-settings',
+				'view' => 'payments',
+			],
+			admin_url( 'admin.php' )
+		);
+
+		$connect_url = ( new Admin\Connect() )->get_connect_url( '', $settings_payments_url );
+
+		if ( empty( $connect_url ) ) {
+			$connect_url = $settings_payments_url . '#wpforms-setting-row-paypal-commerce-heading';
+		}
+
+		return [
+			'icon'        => WPFORMS_PLUGIN_URL . 'assets/images/addon-icon-paypal-commerce.png',
+			'name'        => __( 'PayPal Commerce', 'wpforms-lite' ),
+			'description' => __( 'Accept PayPal, Venmo, and credit cards with trusted buyer protection.', 'wpforms-lite' ),
+			'url'         => $connect_url,
+			'badge'       => '',
+			'cta'         => __( 'Connect', 'wpforms-lite' ),
+			'cta_target'  => '_self',
+			'cta_class'   => '',
+		];
 	}
 
 	/**
@@ -152,6 +209,16 @@ final class PayPalCommerce implements IntegrationInterface {
 	private function load_field(): void {
 
 		( new Fields\PayPalCommerce() );
+	}
+
+	/**
+	 * Load Form Analytics integration ( composite subfield tracking ).
+	 *
+	 * @since 2.0.0
+	 */
+	private function load_analytics(): void {
+
+		( new Analytics() )->hooks();
 	}
 
 	/**
@@ -271,12 +338,18 @@ final class PayPalCommerce implements IntegrationInterface {
 	 * Get the correct API instance.
 	 *
 	 * @since 1.10.0
+	 * @since 1.10.1.1 Returns `null` when no connection is available.
 	 *
-	 * @param mixed $connection Connection instance.
+	 * @param mixed $connection Connection instance, or null/falsy if absent.
 	 *
-	 * @return Api|\WPFormsPaypalCommerce\Api\Api
+	 * @return Api|\WPFormsPaypalCommerce\Api\Api|null
 	 */
 	public static function get_api( $connection ) {
+
+		// Accept the core Connection class and the legacy Pro addon's Connection class.
+		if ( ! $connection instanceof Connection && ! $connection instanceof \WPFormsPaypalCommerce\Connection ) {
+			return null;
+		}
 
 		if ( Helpers::is_pro() && Helpers::is_legacy() ) {
 			return wpforms_paypal_commerce()->get_api( $connection );

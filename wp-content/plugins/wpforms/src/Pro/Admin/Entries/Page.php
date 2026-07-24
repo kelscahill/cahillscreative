@@ -1238,18 +1238,52 @@ class Page {
 		if ( $is_form_template ) {
 			$form_title_suffix = sprintf( '<span> — %s</span>', esc_html__( 'Template', 'wpforms' ) );
 		}
+
+		$form_list_items_html = '';
+
+		if ( wpforms_current_user_can( 'view_forms' ) && ! empty( $this->forms ) ) {
+			foreach ( $this->forms as $form ) {
+				if ( $this->form_id === $form->ID ) {
+					continue;
+				}
+
+				$form_url = add_query_arg(
+					[
+						'page'    => 'wpforms-entries',
+						'view'    => 'list',
+						'form_id' => absint( $form->ID ),
+					],
+					admin_url( 'admin.php' )
+				);
+
+				$item_title = $form->post_type === 'wpforms-template'
+					? $form->post_title . ' – ' . __( 'Template', 'wpforms' )
+					: $form->post_title;
+
+				$form_list_items_html .= sprintf(
+					'<li><a href="%1$s">%2$s</a></li>',
+					esc_url( $form_url ),
+					esc_html( $item_title )
+				);
+			}
+		}
+
 		?>
-
 		<div class="form-details">
-
-			<span class="form-details-sub"><?php esc_html_e( 'Select Form', 'wpforms' ); ?></span>
-
-			<h3 class="form-details-title">
-				<?php
-				echo esc_html( wp_strip_all_tags( $form_title ) ) . wp_kses( $form_title_suffix, [ 'span' => [] ] );
-				$this->form_selector_html();
-				?>
-			</h3>
+			<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wpforms_render(
+				'admin/components/form-details',
+				[
+					'sub_label'            => __( 'Select Form', 'wpforms' ),
+					'current_form_id'      => $this->form_id,
+					'current_form_title'   => $form_title,
+					'title_suffix'         => $form_title_suffix,
+					'form_list_items_html' => $form_list_items_html,
+				],
+				true
+			);
+			?>
 
 			<div class="form-details-actions">
 
@@ -1304,56 +1338,6 @@ class Page {
 				<?php endif; ?>
 
 			</div>
-
-		</div>
-		<?php
-	}
-
-	/**
-	 * Display form selector HTML.
-	 *
-	 * @since 1.8.6
-	 */
-	protected function form_selector_html() {
-
-		if ( ! wpforms_current_user_can( 'view_forms' ) ) {
-			return;
-		}
-
-		if ( empty( $this->forms ) ) {
-			return;
-		}
-
-		?>
-		<div class="form-selector">
-			<a href="#" title="<?php esc_attr_e( 'Open form selector', 'wpforms' ); ?>" class="toggle dashicons dashicons-arrow-down-alt2"></a>
-			<div class="form-list">
-				<ul>
-					<?php
-					foreach ( $this->forms as $form ) {
-						if ( $this->form_id === $form->ID ) {
-							continue;
-						}
-
-						$form_url = add_query_arg(
-							[
-								'page'    => 'wpforms-entries',
-								'view'    => 'list',
-								'form_id' => absint( $form->ID ),
-							],
-							admin_url( 'admin.php' )
-						);
-
-						$form_title = $form->post_type === 'wpforms-template'
-							? $form->post_title . ' – ' . __( 'Template', 'wpforms' )
-							: $form->post_title;
-
-						printf( '<li><a href="%s">%s</a></li>', esc_url( $form_url ), esc_html( $form_title ) );
-					}
-					?>
-				</ul>
-			</div>
-
 		</div>
 		<?php
 	}

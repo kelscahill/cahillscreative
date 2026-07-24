@@ -555,8 +555,9 @@ class Single implements PaymentsViewsInterface {
 	private function get_renewal_date() {
 
 		if (
-			$this->payment->subscription_status === 'cancelled'
-			|| $this->is_renewal_of_cancelled_subscription()
+			$this->is_renewal_of_finished_subscription()
+			|| in_array( $this->payment->subscription_status, $this->get_finished_subscription_statuses(), true )
+			|| $this->is_final_renewal_reached()
 		) {
 			return Helpers::get_placeholder_na_text( false );
 		}
@@ -574,20 +575,78 @@ class Single implements PaymentsViewsInterface {
 			return '';
 		}
 
-		return gmdate( 'M d, Y', strtotime( $this->payment->date_updated_gmt . $converted_periods[ $this->subscription_meta['subscription_period']->value ] ) );
+		return gmdate( 'M d, Y', strtotime( $this->get_latest_subscription_payment_date() . $converted_periods[ $this->subscription_meta['subscription_period']->value ] ) );
 	}
 
 	/**
-	 * Is renewal of cancelled subscription.
+	 * Get the most recent billing date across the subscription and its renewals.
+	 *
+	 * The renewal date must reflect the latest billing in the subscription rather than the payment
+	 * currently being viewed, so it advances as renewals are processed regardless of which payment
+	 * page is open. The billing date is "date_created_gmt" (the Stripe period start), not
+	 * "date_updated_gmt" which only tracks when the row was last written.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return string GMT datetime string.
+	 */
+	private function get_latest_subscription_payment_date(): string {
+
+		$dates = [];
+
+		if ( ! empty( $this->subscription->date_created_gmt ) ) {
+			$dates[] = $this->subscription->date_created_gmt;
+		}
+
+		foreach ( $this->renewals as $renewal ) {
+			if ( ! empty( $renewal->date_created_gmt ) ) {
+				$dates[] = $renewal->date_created_gmt;
+			}
+		}
+
+		// Date strings in "Y-m-d H:i:s" format compare lexicographically as chronologically.
+		return $dates ? max( $dates ) : $this->payment->date_created_gmt;
+	}
+
+	/**
+	 * Is renewal of a finished (cancelled or completed) subscription.
 	 *
 	 * @since 1.8.4
 	 *
 	 * @return bool
 	 */
-	private function is_renewal_of_cancelled_subscription() {
+	private function is_renewal_of_finished_subscription(): bool {
 
 		return $this->payment->type === 'renewal'
-			&& $this->subscription->subscription_status === 'cancelled';
+			&& ! empty( $this->subscription )
+			&& in_array( $this->subscription->subscription_status, $this->get_finished_subscription_statuses(), true );
+	}
+
+	/**
+	 * Get subscription statuses that represent a finished subscription with no future renewal.
+	 *
+	 * @since 1.10.2
+	 *
+	 * @return string[]
+	 */
+	private function get_finished_subscription_statuses(): array {
+
+		return [ 'cancelled', 'completed' ];
+	}
+
+	/**
+	 * Whether the subscription's final renewal has already been billed.
+	 *
+	 * Limited-cycle subscriptions stay active until their scheduled end date, so the next renewal date
+	 * must read N/A once the last cycle is processed instead of pointing to a period that never bills.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return bool
+	 */
+	private function is_final_renewal_reached(): bool {
+
+		return ! empty( $this->subscription_meta['subscription_final_renewal']->value );
 	}
 
 	/**

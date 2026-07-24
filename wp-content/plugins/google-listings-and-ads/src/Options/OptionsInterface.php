@@ -34,6 +34,7 @@ interface OptionsInterface {
 	public const INSTALL_TIMESTAMP                         = 'install_timestamp';
 	public const INSTALL_VERSION                           = 'install_version';
 	public const JETPACK_CONNECTED                         = 'jetpack_connected';
+	public const MAPI_DATA_SOURCES                         = 'mapi_data_sources';
 	public const MC_SETUP_COMPLETED_AT                     = 'mc_setup_completed_at';
 	public const MERCHANT_ACCOUNT_STATE                    = 'merchant_account_state';
 	public const MERCHANT_CENTER                           = 'merchant_center';
@@ -51,7 +52,6 @@ interface OptionsInterface {
 	public const WP_TOS_ACCEPTED                           = 'wp_tos_accepted';
 	public const WPCOM_REST_API_STATUS                     = 'wpcom_rest_api_status';
 	public const GTIN_MIGRATION_STATUS                     = 'gtin_migration_status';
-	public const API_PULL_SYNC_MODE                        = 'api_pull_sync_mode';
 	public const YOUTUBE_ORDER_IDS_CACHE                   = 'youtube_export_order_ids';
 	public const YOUTUBE_EXPORT_FILES                      = 'youtube_export_files';
 	public const YOUTUBE_THIRD_PARTY_LINK                  = 'youtube_third_party_link';
@@ -79,6 +79,7 @@ interface OptionsInterface {
 		self::INSTALL_TIMESTAMP                         => true,
 		self::INSTALL_VERSION                           => true,
 		self::JETPACK_CONNECTED                         => true,
+		self::MAPI_DATA_SOURCES                         => true,
 		self::MC_SETUP_COMPLETED_AT                     => true,
 		self::MERCHANT_ACCOUNT_STATE                    => true,
 		self::MERCHANT_CENTER                           => true,
@@ -98,7 +99,6 @@ interface OptionsInterface {
 		self::WPCOM_REST_API_STATUS                     => true,
 		self::GOOGLE_WPCOM_AUTH_NONCE                   => true,
 		self::GTIN_MIGRATION_STATUS                     => true,
-		self::API_PULL_SYNC_MODE                        => true,
 		self::YOUTUBE_ORDER_IDS_CACHE                   => true,
 		self::YOUTUBE_EXPORT_FILES                      => true,
 		self::YOUTUBE_THIRD_PARTY_LINK                  => true,

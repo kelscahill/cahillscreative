@@ -1,5 +1,9 @@
 <?php
 
+use WPForms\Integrations\PayPalCommerce\Connection;
+use WPForms\Integrations\Square\Helpers as SquareHelpers;
+use WPForms\Integrations\Stripe\Helpers as StripeHelpers;
+
 /**
  * Payment class.
  *
@@ -183,13 +187,14 @@ abstract class WPForms_Payment {
 	 *
 	 * @since 1.0.0
 	 * @since 1.7.5.3 Added `is_payments_enabled` method to check if payments are enabled.
+	 * @since 2.0.0 Require an active provider connection before showing the configured icon.
 	 */
 	public function builder_sidebar() {
 
 		echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			'builder/payment/sidebar',
 			[
-				'configured'  => $this->is_payments_enabled() ? 'configured' : '',
+				'configured'  => $this->is_payments_enabled() && $this->is_payment_provider_connected() ? 'configured' : '',
 				'slug'        => $this->slug,
 				'icon'        => $this->icon,
 				'name'        => $this->name,
@@ -410,5 +415,39 @@ abstract class WPForms_Payment {
 	private function is_payments_enabled() {
 
 		return ! empty( $this->form_data['payments'][ $this->slug ]['enable'] ) || ! empty( $this->form_data['payments'][ $this->slug ]['enable_one_time'] ) || ! empty( $this->form_data['payments'][ $this->slug ]['enable_recurring'] );
+	}
+
+	/**
+	 * Determine whether the payment provider account is connected.
+	 *
+	 * Gates the Form Builder sidebar "configured" icon on an active connection,
+	 * using the core integration helpers. Providers whose connection check lives
+	 * outside core (e.g. Authorize.Net) override this; providers without a global
+	 * account connection keep the default.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return bool
+	 */
+	protected function is_payment_provider_connected(): bool {
+
+		switch ( $this->slug ) {
+			case 'paypal_commerce':
+				$is_connected = (bool) Connection::get();
+				break;
+
+			case 'square':
+				$is_connected = SquareHelpers::is_square_configured();
+				break;
+
+			case 'stripe':
+				$is_connected = StripeHelpers::has_stripe_keys();
+				break;
+
+			default:
+				$is_connected = true;
+		}
+
+		return $is_connected;
 	}
 }
