@@ -4,12 +4,15 @@
  *
  * @since 1.8.8
  *
- * @var int  $form_id          The form ID.
- * @var bool $is_form_template Whether it's a form template (`wpforms-template`), or form (`wpforms`).
- * @var bool $has_entries      Whether the form has entries.
- * @var bool $has_payments     Whether the form has payments.
- * @var bool $can_duplicate    Whether the form can be duplicated.
+ * @var int  $form_id              The form ID.
+ * @var bool $is_form_template     Whether it's a form template (`wpforms-template`), or form (`wpforms`).
+ * @var bool $has_entries          Whether the form has entries.
+ * @var bool $has_payments         Whether the form has payments.
+ * @var bool $can_duplicate        Whether the form can be duplicated.
+ * @var bool $has_analytics_access Whether the license tier (Pro/Elite) includes Form Analytics.
  */
+
+use WPForms\Admin\Education\Helpers;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -72,6 +75,44 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<?php if ( $can_duplicate || ! $is_form_template ) : ?>
 			<li class="wpforms-context-menu-list-divider"></li>
+		<?php endif; ?>
+
+		<?php if ( $has_analytics_access ) : ?>
+
+			<li class="wpforms-context-menu-list-item"
+				data-action="view-analytics"
+				data-action-url="<?php echo esc_url( admin_url( 'admin.php?page=wpforms-analytics&form_id=' . $form_id ) ); ?>"
+			>
+				<span class="wpforms-context-menu-list-item-icon">
+					<i class="fa fa-bar-chart"></i>
+				</span>
+
+				<span class="wpforms-context-menu-list-item-text">
+					<?php esc_html_e( 'View Analytics', 'wpforms' ); ?>
+				</span>
+
+				<?php Helpers::print_badge( 'New', 'sm', 'inline', 'stone' ); ?>
+			</li>
+
+		<?php else : ?>
+
+			<li class="wpforms-context-menu-list-item education-modal"
+				data-action="upgrade"
+				data-license="pro"
+				data-name="Analytics"
+				data-utm-content="Upgrade to Pro - Analytics Context Menu Item"
+			>
+				<span class="wpforms-context-menu-list-item-icon">
+					<i class="fa fa-bar-chart"></i>
+				</span>
+
+				<span class="wpforms-context-menu-list-item-text">
+					<?php esc_html_e( 'View Analytics', 'wpforms' ); ?>
+				</span>
+
+				<?php Helpers::print_badge( 'Pro', 'sm', 'inline', 'stone' ); ?>
+			</li>
+
 		<?php endif; ?>
 
 		<li class="<?php echo esc_attr( $has_entries ? 'wpforms-context-menu-list-item' : 'wpforms-context-menu-list-item wpforms-context-menu-list-item-inactive' ); ?>"

@@ -21,6 +21,9 @@ class Summaries extends BaseSummaries {
 
 		parent::__construct();
 
+		// Register the re-engagement alert filter for both cron and preview paths.
+		( new ReengagementAlert() )->init();
+
 		// Unregister it if scheduled.
 		$this->maybe_unregister_entries_count_schedule();
 	}

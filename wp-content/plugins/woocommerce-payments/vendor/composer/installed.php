@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'woocommerce/payments',
-        'pretty_version' => 'dev-release/10.8.0',
-        'version' => 'dev-release/10.8.0',
-        'reference' => '72d10c0dc9e79fd019ad22c3037e4a95c2f83df7',
+        'pretty_version' => 'dev-release/10.9.0',
+        'version' => 'dev-release/10.9.0',
+        'reference' => 'a29fdcc6e97bb19d18b5cd2f264264088d9fde60',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -149,9 +149,9 @@
             ),
         ),
         'woocommerce/payments' => array(
-            'pretty_version' => 'dev-release/10.8.0',
-            'version' => 'dev-release/10.8.0',
-            'reference' => '72d10c0dc9e79fd019ad22c3037e4a95c2f83df7',
+            'pretty_version' => 'dev-release/10.9.0',
+            'version' => 'dev-release/10.9.0',
+            'reference' => 'a29fdcc6e97bb19d18b5cd2f264264088d9fde60',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

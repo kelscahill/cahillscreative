@@ -2,6 +2,8 @@
 
 namespace WPForms\Pro\LicenseApi;
 
+use WPForms\Helpers\Plugin;
+
 /**
  * License api plugin update cache.
  *
@@ -110,7 +112,7 @@ class PluginUpdateCache extends LicenseApiCache {
 
 		$plugins = array_keys( get_plugins() );
 
-		$plugins = array_filter( $plugins, [ $this, 'is_wpforms_addon' ] );
+		$plugins = array_filter( $plugins, [ Plugin::class, 'is_wpforms_addon' ] );
 
 		$plugin_slugs = array_map(
 			function ( $plugin_file ) {
@@ -122,37 +124,6 @@ class PluginUpdateCache extends LicenseApiCache {
 		$plugin_slugs[] = 'wpforms';
 
 		return implode( ',', $plugin_slugs );
-	}
-
-	/**
-	 * Check whether a plugin is a wpforms addon.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @param string $plugin Path to the plugin file relative to the plugins' directory.
-	 *
-	 * @return bool
-	 */
-	private function is_wpforms_addon( string $plugin ): bool {
-
-		if ( strpos( $plugin, 'wpforms-' ) !== 0 ) {
-			// No more actions for general plugin.
-			return false;
-		}
-
-		if ( ! function_exists( 'get_plugin_data' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-
-		/**
-		 * There are some forks of our plugins having the 'wpforms-' prefix.
-		 * We have to check the Author name in the plugin header.
-		 */
-		$plugin_data   = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
-		$plugin_author = isset( $plugin_data['Author'] ) ? strtolower( $plugin_data['AuthorName'] ) : '';
-
-		// No more actions on forks.
-		return $plugin_author === 'wpforms';
 	}
 
 	/**

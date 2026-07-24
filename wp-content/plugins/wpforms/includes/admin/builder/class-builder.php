@@ -263,7 +263,7 @@ class WPForms_Builder {
 
 		// Allow based styles added in WP 7.0.
 		// Otherwise, there is an issue with the Upload Media button.
-		if ( version_compare( $GLOBALS['wp_version'], '7.0-alpha', '>=' ) ) {
+		if ( wpforms_is_wp_version_at_least( '7.0-alpha' ) ) {
 			$allowed_styles[] = 'wp-base-styles';
 		}
 
@@ -480,6 +480,8 @@ class WPForms_Builder {
 		// Force hide an admin side menu.
 		echo '<style>#adminmenumain { display: none !important }</style>';
 
+		$this->suppress_view_transition_abort_error();
+
 		/**
 		 * Form Builder admin head action.
 		 *
@@ -488,6 +490,25 @@ class WPForms_Builder {
 		 * @since 1.4.6
 		 */
 		do_action( 'wpforms_builder_admin_head', $this->view );
+	}
+
+	/**
+	 * Prevent the `AbortError: Transition was skipped` console error on WP 7.0+.
+	 *
+	 * @since 1.10.2
+	 */
+	private function suppress_view_transition_abort_error(): void {
+
+		// View Transitions in the admin are a WP 7.0+ feature, so there's nothing to do before that.
+		if ( ! wpforms_is_wp_version_at_least( '7.0-alpha' ) ) {
+			return;
+		}
+
+		// Opt the Builder into the transition (overrides the opt-out in builder-basic.css).
+		echo '<style>@view-transition { navigation: auto; }</style>';
+
+		// Skip the transition on both ends and resolve its promises so nothing stays unhandled.
+		echo '<script>(function(){var skip=function(event){var transition=event.viewTransition;if(!transition){return;}transition.skipTransition();transition.ready.catch(function(){});transition.finished.catch(function(){});};window.addEventListener("pagereveal",skip);window.addEventListener("pageswap",skip);})();</script>';
 	}
 
 	/**
@@ -514,7 +535,7 @@ class WPForms_Builder {
 
 		// Make sure that base styles (added in WP 7.0) are enqueued.
 		// Otherwise, there is an issue with the Upload Media button.
-		if ( version_compare( $GLOBALS['wp_version'], '7.0-alpha', '>=' ) ) {
+		if ( wpforms_is_wp_version_at_least( '7.0-alpha' ) ) {
 			wp_enqueue_style( 'wp-base-styles' );
 		}
 
@@ -654,7 +675,7 @@ class WPForms_Builder {
 			'dom-purify',
 			WPFORMS_PLUGIN_URL . 'assets/lib/purify.min.js',
 			[],
-			'3.4.1',
+			'3.4.11',
 			false
 		);
 
@@ -962,6 +983,7 @@ class WPForms_Builder {
 			'upload_image_remove'                     => esc_html__( 'Remove Image', 'wpforms-lite' ),
 			'upload_image_extensions'                 => $image_extensions,
 			'upload_image_extensions_error'           => esc_html__( 'You tried uploading a file type that is not allowed. Please try again.', 'wpforms-lite' ),
+			'add_media'                               => esc_html__( 'Add Media', 'wpforms-lite' ),
 			'provider_add_new_acc_btn'                => esc_html__( 'Add', 'wpforms-lite' ),
 			'pro'                                     => wpforms()->is_pro(),
 			'is_gutenberg'                            => ! is_plugin_active( 'classic-editor/classic-editor.php' ),
@@ -1202,6 +1224,7 @@ class WPForms_Builder {
 			'MultiSelect'                       => "multi-select/multi-select$min.js",
 			'MultiSelectKeyboardShortcuts'      => "multi-select/keyboard-shortcuts$min.js",
 			'CopyPaste'                         => "copy-paste$min.js",
+			'TemplatesInfiniteScroll'           => "templates-infinite-scroll$min.js",
 			'Deprecated'                        => "deprecated$min.js",
 		];
 
@@ -1460,6 +1483,10 @@ class WPForms_Builder {
 			$entry_obj             = wpforms()->obj( 'entry' );
 			$args['has_entries']   = $entry_obj && $entry_obj->get_entries( [ 'form_id' => $this->form->ID ], true );
 			$args['can_duplicate'] = $this->can_duplicate();
+
+			// Form Analytics is a Pro/Elite feature. Basic and Plus see the upgrade
+			// upsell in the Pro context-menu template, mirroring Lite.
+			$args['has_analytics_access'] = in_array( wpforms_get_license_type(), [ 'pro', 'elite', 'agency', 'ultimate' ], true );
 		}
 
 		return $args;

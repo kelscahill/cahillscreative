@@ -172,6 +172,12 @@ function wpforms_panel_field( $option, $panel, $field, $form_data, $label, $args
 
 		// Textarea.
 		case 'textarea':
+			// Guard against non-string values (e.g. corrupted form data) reaching esc_textarea(),
+			// which would throw a TypeError in htmlspecialchars() and crash the builder.
+			if ( ! is_string( $value ) ) {
+				$value = is_array( $value ) || is_object( $value ) ? (string) wp_json_encode( $value ) : (string) $value;
+			}
+
 			$output = sprintf(
 				'<textarea id="%s" name="%s" rows="%d" placeholder="%s" class="%s" %s>%s</textarea>',
 				$input_id,
@@ -678,7 +684,8 @@ function wpforms_builder_preview_get_allowed_tags(): array {
  * @since 1.6.6
  *
  * @param string $inner   Inner HTML to wrap.
- * @param array  $args    Array of arguments.
+ * @param array  $args    Array of arguments. Supports `group`, `unfoldable`, `default`, `class`,
+ *                        `borders`, `title`, `title_badge` (trusted HTML shown after the title), `description`.
  * @param bool   $do_echo Flag to display.
  *
  * @return string|null
@@ -705,7 +712,9 @@ function wpforms_panel_fields_group( $inner, $args = [], $do_echo = true ): ?str
 
 	if ( ! empty( $args['title'] ) ) {
 		$chevron = $unfoldable ? '<i class="fa fa-chevron-circle-right"></i>' : '';
-		$output .= '<div class="wpforms-panel-fields-group-title">' . esc_html( $args['title'] ) . $chevron . '</div>';
+		// Caller-controlled trusted markup (e.g. a "New" badge) shown after the title.
+		$title_badge = ! empty( $args['title_badge'] ) ? $args['title_badge'] : '';
+		$output     .= '<div class="wpforms-panel-fields-group-title">' . esc_html( $args['title'] ) . $title_badge . $chevron . '</div>';
 	}
 
 	if ( ! empty( $args['description'] ) ) {

@@ -2,6 +2,7 @@
 
 namespace WPForms\Pro\Migrations;
 
+use WPForms\Helpers\Plugin;
 use WPForms\Pro\Integrations\UsageTracking\AddonsDates;
 use WPForms\Integrations\PayPalCommerce\Helpers;
 use WPForms\Integrations\PayPalCommerce\Connection;
@@ -59,7 +60,7 @@ class Upgrade1_10_0 extends UpgradeBase {
 		}
 
 		// Ensure WordPress plugin functions are available.
-		AddonsDates::ensure_plugin_functions();
+		Plugin::ensure_plugin_functions();
 
 		// Get all installed plugins.
 		$all_plugins = get_plugins();
@@ -96,7 +97,7 @@ class Upgrade1_10_0 extends UpgradeBase {
 	private function process_plugin( string $plugin_path, array $plugin_data ): array {
 
 		// Check if it's a WPForms addon.
-		if ( ! AddonsDates::is_wpforms_addon( $plugin_path ) ) {
+		if ( ! Plugin::is_wpforms_addon( $plugin_path ) ) {
 			return [];
 		}
 
@@ -140,7 +141,7 @@ class Upgrade1_10_0 extends UpgradeBase {
 	 */
 	private function is_plugin_active( string $plugin_path ): bool {
 
-		AddonsDates::ensure_plugin_functions();
+		Plugin::ensure_plugin_functions();
 
 		return is_plugin_active( $plugin_path );
 	}

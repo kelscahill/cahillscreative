@@ -113,6 +113,15 @@ class Notifications extends Mailer {
 	public $rendering_context;
 
 	/**
+	 * Headers value returned by filter.
+	 *
+	 * @since 1.10.2
+	 *
+	 * @var string|array|null
+	 */
+	private $filtered_headers;
+
+	/**
 	 * Get the instance of a class.
 	 *
 	 * @since 1.8.9
@@ -195,6 +204,9 @@ class Notifications extends Mailer {
 			return false;
 		}
 
+		// Reset per-send state so a value captured for a previous email never bleeds into this one.
+		$this->filtered_headers = null;
+
 		// Don't send anything if emails have been disabled.
 		if ( $this->is_email_disabled() ) {
 			return false;
@@ -264,6 +276,10 @@ class Notifications extends Mailer {
 
 		// Set the attachments to the email.
 		$this->__set( 'attachments', $data['attachments'] );
+
+		if ( isset( $data['headers'] ) && ( is_string( $data['headers'] ) || is_array( $data['headers'] ) ) ) {
+			$this->filtered_headers = $data['headers'];
+		}
 
 		$entry_obj = wpforms()->obj( 'entry' );
 
@@ -945,6 +961,7 @@ class Notifications extends Mailer {
 		// In these contexts, we need to check if the smart tag is allowed.
 		$address_context = [
 			'notification-from',
+			'notification-reply-to',
 		];
 
 		// Check if the smart tag is allowed AND if the context is allowed.
@@ -1095,6 +1112,9 @@ class Notifications extends Mailer {
 			$matches = [];
 
 			if ( preg_match( $regex, $reply_to, $matches ) ) {
+				// The display name accepts any field value and is made header-safe by
+				// sanitize_email_header_name() below, so it must not run through the
+				// address-field validation that the 'notification-reply-to' context applies.
 				$reply_to_name = $this->sanitize( $matches[1] );
 				$reply_to      = trim( $matches[2], '<> ' );
 			}
@@ -1108,7 +1128,7 @@ class Notifications extends Mailer {
 		}
 
 		if ( $reply_to_name ) {
-			$reply_to = "$reply_to_name <{$reply_to}>";
+			$reply_to = $this->sanitize_email_header_name( $reply_to_name ) . " <{$reply_to}>";
 		}
 
 		/**
@@ -1136,6 +1156,18 @@ class Notifications extends Mailer {
 	public function sanitize( $input = '', $context = 'notification' ): string {
 
 		return wpforms_decode_string( $this->process_tag( $input, $context ) );
+	}
+
+	/**
+	 * Get the email headers.
+	 *
+	 * @since 1.10.2
+	 *
+	 * @return string|array
+	 */
+	public function get_headers() {
+
+		return $this->filtered_headers ?? parent::get_headers();
 	}
 
 	/**

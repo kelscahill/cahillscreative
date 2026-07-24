@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: WPForms 1.10.1\n"
+"Project-Id-Version: WPForms 2.0.0.2\n"
 "Report-Msgid-Bugs-To: https://wpforms.com/support/\n"
 "Last-Translator: WPForms <support@wpforms.com>\n"
 "Language-Team: WPForms <support@wpforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-05-25T20:18:32+00:00\n"
+"POT-Creation-Date: 2026-07-16T20:30:08+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: wpforms\n"
@@ -132,6 +132,7 @@ msgstr ""
 #: pro/includes/admin/class-license.php:675
 #: pro/includes/admin/class-license.php:698
 #: pro/includes/admin/class-license.php:727
+#: pro/templates/admin/analytics/goal-popover.php:34
 #: pro/templates/education/admin/did-you-know.php:30
 #: src/Pro/Admin/Builder/LicenseAlert.php:134
 #: src/Pro/Admin/DashboardWidget.php:328
@@ -214,6 +215,7 @@ msgstr ""
 
 #: pro/includes/admin/entries/class-entries-export.php:224
 #: src/Pro/Admin/Entries/Table/Facades/Columns.php:145
+#: src/Pro/Analytics/SubfieldLabels.php:254
 #: src/Pro/Forms/Fields/DateTime/Field.php:121
 msgid "Date"
 msgstr ""
@@ -388,7 +390,7 @@ msgstr ""
 #: src/Pro/Admin/Entries/Export/Admin.php:138
 #: src/Pro/AntiSpam/KeywordFilter.php:122
 #: src/Pro/Integrations/Elementor/Elementor.php:72
-#: src/Pro/Integrations/Gutenberg/FormSelector.php:162
+#: src/Pro/Integrations/Gutenberg/FormSelector.php:195
 msgid "Cancel"
 msgstr ""
 
@@ -574,10 +576,9 @@ msgstr ""
 
 #. translators: %s - choice number.
 #: pro/includes/admin/entries/class-entries-single.php:2642
-#: pro/includes/admin/entries/class-entries-single.php:2713
 #: src/Pro/Admin/Entries/Export/Ajax.php:696
-#: src/Pro/Admin/Entries/Import/EntryImporter.php:350
-#: src/Pro/Admin/Entries/PrintPreview.php:549
+#: src/Pro/Admin/Entries/Import/EntryImporter.php:463
+#: src/Pro/Admin/Entries/PrintPreview.php:552
 msgid "Choice %s"
 msgstr ""
 
@@ -736,31 +737,31 @@ msgstr ""
 msgid "Entry Confirmation stopped by conditional logic."
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:250
+#: pro/includes/payments/class-payment.php:255
 msgid "One-Time Payments"
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:258
+#: pro/includes/payments/class-payment.php:263
 msgid "Enable one-time payments"
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:262
+#: pro/includes/payments/class-payment.php:267
 msgid "Allow your customers to one-time pay via the form."
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:284
+#: pro/includes/payments/class-payment.php:289
 msgid "Recurring Payments"
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:287
+#: pro/includes/payments/class-payment.php:292
 msgid "Add New Plan"
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:295
+#: pro/includes/payments/class-payment.php:300
 msgid "Enable recurring subscription payments"
 msgstr ""
 
-#: pro/includes/payments/class-payment.php:299
+#: pro/includes/payments/class-payment.php:304
 msgid "Allow your customer to pay recurringly via the form."
 msgstr ""
 
@@ -779,6 +780,76 @@ msgstr ""
 
 #: pro/templates/admin/addons-item.php:86
 msgid "Settings"
+msgstr ""
+
+#: pro/templates/admin/analytics/ai-notice.php:21
+msgid "Need Help Making Sense of These Numbers?"
+msgstr ""
+
+#: pro/templates/admin/analytics/ai-notice.php:22
+msgid "Use WPForms AI to analyze your stats and suggest ways to improve form completion."
+msgstr ""
+
+#: pro/templates/admin/analytics/ai-notice.php:26
+msgid "Try WPForms AI"
+msgstr ""
+
+#: pro/templates/admin/analytics/ai-notice.php:31
+msgid "Dismiss this notice"
+msgstr ""
+
+#: pro/templates/admin/analytics/goal-popover.php:17
+#: src/Pro/Admin/Analytics/Page.php:652
+msgid "Conversion Rate"
+msgstr ""
+
+#: pro/templates/admin/analytics/goal-popover.php:27
+msgid "Conversion rate goal"
+msgstr ""
+
+#: pro/templates/admin/analytics/goal-popover.php:33
+msgid "Set a goal to quickly see if your form is hitting its target. Without a benchmark, it’s hard to know if your conversion rate is good or needs attention."
+msgstr ""
+
+#: pro/templates/admin/analytics/goal-popover.php:41
+#: src/Pro/AntiSpam/KeywordFilter.php:119
+msgid "Save Changes"
+msgstr ""
+
+#: pro/templates/admin/analytics/onboarding-banner.php:20
+msgid "Dismiss this banner"
+msgstr ""
+
+#: pro/templates/admin/analytics/onboarding-banner.php:24
+msgid "Form Analytics"
+msgstr ""
+
+#: pro/templates/admin/analytics/onboarding-banner.php:25
+msgid "Monitor form views, conversions, and field-level activity to optimize performance."
+msgstr ""
+
+#: pro/templates/admin/analytics/onboarding-banner.php:35
+msgid "Understand Your Form's Performance"
+msgstr ""
+
+#: pro/templates/admin/analytics/onboarding-banner.php:38
+msgid "See how users interact with your forms at a glance. Track views, conversions, abandonments, and errors to understand what's working."
+msgstr ""
+
+#: pro/templates/admin/analytics/onboarding-banner.php:45
+msgid "Set Goals and Track Your Progress Over Time"
+msgstr ""
+
+#: pro/templates/admin/analytics/onboarding-banner.php:48
+msgid "Set a conversion rate goal for each form and monitor whether you're hitting your target over time."
+msgstr ""
+
+#: pro/templates/admin/analytics/onboarding-banner.php:55
+msgid "Get Actionable Insights Powered by WPForms AI"
+msgstr ""
+
+#: pro/templates/admin/analytics/onboarding-banner.php:58
+msgid "Ask questions about your form's performance and get actionable recommendations to improve conversions."
 msgstr ""
 
 #: pro/templates/admin/empty-states/no-entries.php:17
@@ -852,7 +923,7 @@ msgstr ""
 #: pro/templates/admin/entries/import/entry-import-block.php:160
 #: src/Pro/Admin/Builder/Settings/Themes.php:55
 #: src/Pro/Integrations/Elementor/Elementor.php:71
-#: src/Pro/Integrations/Gutenberg/FormSelector.php:161
+#: src/Pro/Integrations/Gutenberg/FormSelector.php:194
 msgid "Continue"
 msgstr ""
 
@@ -907,21 +978,21 @@ msgid "%1$s entries were imported to %2$s."
 msgstr ""
 
 #: pro/templates/admin/entries/import/entry-import-block.php:260
-#: assets/pro/js/admin/entries/tools-entries-import.js:1801
+#: assets/pro/js/admin/entries/tools-entries-import.js:1809
 msgid "total entry"
 msgid_plural "total entries"
 msgstr[0] ""
 msgstr[1] ""
 
 #: pro/templates/admin/entries/import/entry-import-block.php:264
-#: assets/pro/js/admin/entries/tools-entries-import.js:1802
+#: assets/pro/js/admin/entries/tools-entries-import.js:1810
 msgid "imported entries"
 msgid_plural "imported entries"
 msgstr[0] ""
 msgstr[1] ""
 
 #: pro/templates/admin/entries/import/entry-import-block.php:268
-#: assets/pro/js/admin/entries/tools-entries-import.js:1803
+#: assets/pro/js/admin/entries/tools-entries-import.js:1811
 msgid "with issue"
 msgid_plural "with issues"
 msgstr[0] ""
@@ -1002,7 +1073,7 @@ msgstr ""
 #: src/Pro/Admin/Builder/LicenseAlert.php:165
 #: src/Pro/Admin/Builder/Settings/Themes.php:59
 #: src/Pro/Integrations/Elementor/Elementor.php:75
-#: src/Pro/Integrations/Gutenberg/FormSelector.php:165
+#: src/Pro/Integrations/Gutenberg/FormSelector.php:198
 msgid "Close"
 msgstr ""
 
@@ -1035,7 +1106,7 @@ msgstr ""
 
 #. translators: %d - entry ID.
 #: pro/templates/admin/entry-print/legend-start.php:85
-#: assets/pro/js/admin/entries/tools-entries-import.js:1866
+#: assets/pro/js/admin/entries/tools-entries-import.js:1874
 msgid "Entry #%d"
 msgstr ""
 
@@ -1049,17 +1120,17 @@ msgid "Continue with Google"
 msgstr ""
 
 #: pro/templates/admin/lite-connect/dashboard-widget-notice-in-progress.php:20
-#: src/Pro/Integrations/LiteConnect/Admin.php:184
+#: src/Pro/Integrations/LiteConnect/Admin.php:206
 msgid "Entry Restore in Progress"
 msgstr ""
 
 #: pro/templates/admin/lite-connect/dashboard-widget-notice-in-progress.php:23
-#: src/Pro/Integrations/LiteConnect/Admin.php:185
+#: src/Pro/Integrations/LiteConnect/Admin.php:207
 msgid "Your entries are currently being imported. This should only take a few minutes. An admin notice will be displayed when the process is complete."
 msgstr ""
 
 #: pro/templates/admin/lite-connect/dashboard-widget-notice-restore.php:25
-#: src/Pro/Integrations/LiteConnect/Admin.php:213
+#: src/Pro/Integrations/LiteConnect/Admin.php:253
 msgid "Restore Your Form Entries"
 msgstr ""
 
@@ -1068,7 +1139,7 @@ msgid "Restore them now and get instant access to reports."
 msgstr ""
 
 #: pro/templates/admin/lite-connect/dashboard-widget-notice-restore.php:33
-#: src/Pro/Integrations/LiteConnect/Admin.php:215
+#: src/Pro/Integrations/LiteConnect/Admin.php:255
 msgid "Restore Entries Now"
 msgstr ""
 
@@ -1080,34 +1151,39 @@ msgstr ""
 msgid "Yes, Reformat"
 msgstr ""
 
-#: pro/templates/builder/context-menu.php:36
+#: pro/templates/builder/context-menu.php:39
 msgid "Duplicate Template"
 msgstr ""
 
-#: pro/templates/builder/context-menu.php:53
+#: pro/templates/builder/context-menu.php:56
 msgid "Duplicate Form"
 msgstr ""
 
-#: pro/templates/builder/context-menu.php:67
+#: pro/templates/builder/context-menu.php:70
 msgid "Save as Template"
 msgstr ""
 
-#: pro/templates/builder/context-menu.php:86
+#: pro/templates/builder/context-menu.php:91
+#: pro/templates/builder/context-menu.php:110
+msgid "View Analytics"
+msgstr ""
+
+#: pro/templates/builder/context-menu.php:127
 #: src/Pro/Admin/Settings/Access.php:186
-#: src/Pro/Integrations/LiteConnect/Admin.php:280
+#: src/Pro/Integrations/LiteConnect/Admin.php:320
 msgid "View Entries"
 msgstr ""
 
-#: pro/templates/builder/context-menu.php:99
-#: src/Pro/Admin/Entries/Page.php:1265
+#: pro/templates/builder/context-menu.php:140
+#: src/Pro/Admin/Entries/Page.php:1299
 msgid "View Payments"
 msgstr ""
 
-#: pro/templates/builder/context-menu.php:113
+#: pro/templates/builder/context-menu.php:154
 msgid "What's New"
 msgstr ""
 
-#: pro/templates/builder/context-menu.php:125
+#: pro/templates/builder/context-menu.php:166
 msgid "Keyboard Shortcuts"
 msgstr ""
 
@@ -1120,7 +1196,7 @@ msgid "Upgrade to Pro"
 msgstr ""
 
 #: pro/templates/education/admin/did-you-know.php:35
-#: pro/wpforms-pro.php:1098
+#: pro/wpforms-pro.php:1112
 msgid "Dismiss this message."
 msgstr ""
 
@@ -1138,7 +1214,8 @@ msgstr ""
 #: pro/templates/education/admin/entries/geolocation.php:51
 #: src/Pro/Admin/Entries/Export/Ajax.php:1044
 #: src/Pro/Admin/Entries/Export/Ajax.php:1401
-#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:698
+#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:736
+#: src/Pro/Analytics/SubfieldLabels.php:220
 msgid "Country"
 msgstr ""
 
@@ -1161,9 +1238,9 @@ msgstr ""
 
 #: pro/templates/education/admin/entries/geolocation.php:80
 #: pro/templates/education/admin/entries/user-journey.php:258
-#: pro/wpforms-pro.php:551
-#: pro/wpforms-pro.php:716
-#: pro/wpforms-pro.php:2073
+#: pro/wpforms-pro.php:565
+#: pro/wpforms-pro.php:730
+#: pro/wpforms-pro.php:2088
 msgid "Activate"
 msgstr ""
 
@@ -1323,8 +1400,8 @@ msgid ", or"
 msgstr ""
 
 #: pro/templates/fields/file-upload-frontend.php:50
-#: src/Pro/Forms/Fields/Camera/Field.php:175
-#: src/Pro/Forms/Fields/FileUpload/Field.php:588
+#: src/Pro/Forms/Fields/Camera/Field.php:172
+#: src/Pro/Forms/Fields/FileUpload/Field.php:589
 msgid "Capture With Your Camera"
 msgstr ""
 
@@ -1373,195 +1450,197 @@ msgstr ""
 msgid "Sorry, you don’t have access to this file."
 msgstr ""
 
-#: pro/wpforms-pro.php:462
+#: pro/wpforms-pro.php:476
 msgid "Go to WPForms.com Support page"
 msgstr ""
 
-#: pro/wpforms-pro.php:463
+#: pro/wpforms-pro.php:477
 msgid "Support"
 msgstr ""
 
-#: pro/wpforms-pro.php:479
+#: pro/wpforms-pro.php:493
 msgid "Read the documentation"
 msgstr ""
 
-#: pro/wpforms-pro.php:480
+#: pro/wpforms-pro.php:494
 msgid "Docs"
 msgstr ""
 
-#: pro/wpforms-pro.php:498
+#: pro/wpforms-pro.php:512
 msgid "Inactive &mdash; You've got a paid version of WPForms"
 msgstr ""
 
-#: pro/wpforms-pro.php:573
-#: pro/wpforms-pro.php:717
+#: pro/wpforms-pro.php:587
+#: pro/wpforms-pro.php:731
 msgid "You cannot activate WPForms Lite because you have a paid version of WPForms activated."
 msgstr ""
 
-#: pro/wpforms-pro.php:640
+#: pro/wpforms-pro.php:654
 msgid "Verify Key"
 msgstr ""
 
-#: pro/wpforms-pro.php:646
+#: pro/wpforms-pro.php:660
 msgid "Renew License"
 msgstr ""
 
-#: pro/wpforms-pro.php:652
+#: pro/wpforms-pro.php:666
 msgid "Remove Key"
 msgstr ""
 
 #. translators: $s - license type.
-#: pro/wpforms-pro.php:662
+#: pro/wpforms-pro.php:676
 msgid "Your license key level is %s."
 msgstr ""
 
 #. translators: %s - refresh link.
-#: pro/wpforms-pro.php:669
+#: pro/wpforms-pro.php:683
 msgid "If your license has been upgraded or is incorrect, then please %1$sforce a refresh%2$s."
 msgstr ""
 
-#: pro/wpforms-pro.php:758
+#: pro/wpforms-pro.php:772
 msgid "Website URL"
 msgstr ""
 
-#: pro/wpforms-pro.php:760
-#: pro/wpforms-pro.php:1804
+#: pro/wpforms-pro.php:774
+#: pro/wpforms-pro.php:1819
 #: src/Pro/Forms/Fields/Url/Field.php:76
 msgid "Please enter a valid URL."
 msgstr ""
 
-#: pro/wpforms-pro.php:764
+#: pro/wpforms-pro.php:778
 msgid "Phone"
 msgstr ""
 
-#: pro/wpforms-pro.php:766
+#: pro/wpforms-pro.php:780
 #: src/Pro/Forms/Fields/Phone/Field.php:220
 #: src/Pro/Forms/Fields/Phone/Field.php:325
 msgid "Please enter a valid phone number."
 msgstr ""
 
-#: pro/wpforms-pro.php:770
+#: pro/wpforms-pro.php:784
 msgid "File Extension"
 msgstr ""
 
-#: pro/wpforms-pro.php:772
-#: pro/wpforms-pro.php:1807
-#: src/Pro/Forms/Fields/Camera/Field.php:658
-#: src/Pro/Forms/Fields/Camera/Field.php:687
+#: pro/wpforms-pro.php:786
+#: pro/wpforms-pro.php:1822
+#: src/Pro/Forms/Fields/Camera/Field.php:774
+#: src/Pro/Forms/Fields/Camera/Field.php:803
 #: src/Pro/Forms/Fields/FileUpload/Field.php:281
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1753
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1781
+#: src/Pro/Forms/Fields/FileUpload/Field.php:782
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1524
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1790
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1818
 msgid "File type is not allowed."
 msgstr ""
 
-#: pro/wpforms-pro.php:776
+#: pro/wpforms-pro.php:790
 msgid "File Size"
 msgstr ""
 
-#: pro/wpforms-pro.php:778
-#: pro/wpforms-pro.php:1808
+#: pro/wpforms-pro.php:792
+#: pro/wpforms-pro.php:1823
 msgid "File exceeds max size allowed. File was not uploaded."
 msgstr ""
 
-#: pro/wpforms-pro.php:782
+#: pro/wpforms-pro.php:796
 msgid "File Uploads"
 msgstr ""
 
 #. translators: %s - max number of files allowed.
-#: pro/wpforms-pro.php:785
+#: pro/wpforms-pro.php:799
 #: src/Pro/Forms/Fields/FileUpload/Field.php:277
-#: src/Pro/Forms/Fields/FileUpload/Field.php:897
+#: src/Pro/Forms/Fields/FileUpload/Field.php:910
 msgid "File uploads exceed the maximum number allowed (%s)."
 msgstr ""
 
-#: pro/wpforms-pro.php:791
+#: pro/wpforms-pro.php:805
 msgid "Time (12 hour)"
 msgstr ""
 
-#: pro/wpforms-pro.php:793
-#: pro/wpforms-pro.php:1799
+#: pro/wpforms-pro.php:807
+#: pro/wpforms-pro.php:1814
 msgid "Please enter time in 12-hour AM/PM format (eg 8:45 AM)."
 msgstr ""
 
-#: pro/wpforms-pro.php:797
+#: pro/wpforms-pro.php:811
 msgid "Time (24 hour)"
 msgstr ""
 
-#: pro/wpforms-pro.php:799
-#: pro/wpforms-pro.php:1800
+#: pro/wpforms-pro.php:813
+#: pro/wpforms-pro.php:1815
 msgid "Please enter time in 24-hour format (eg 22:45)."
 msgstr ""
 
-#: pro/wpforms-pro.php:803
+#: pro/wpforms-pro.php:817
 msgid "Limit Hours"
 msgstr ""
 
-#: pro/wpforms-pro.php:805
-#: pro/wpforms-pro.php:1801
+#: pro/wpforms-pro.php:819
+#: pro/wpforms-pro.php:1816
 #: src/Pro/Forms/Fields/DateTime/Field.php:791
 msgid "Please enter time between {minTime} and {maxTime}."
 msgstr ""
 
-#: pro/wpforms-pro.php:809
+#: pro/wpforms-pro.php:823
 msgid "File Upload Total Size"
 msgstr ""
 
 #. translators: %1$s - total size of the selected files in megabytes, %2$s - allowed file upload limit in megabytes.
-#: pro/wpforms-pro.php:812
-#: pro/wpforms-pro.php:1792
+#: pro/wpforms-pro.php:826
+#: pro/wpforms-pro.php:1807
 msgid "The total size of the selected files %1$s MB exceeds the allowed limit %2$s MB."
 msgstr ""
 
-#: pro/wpforms-pro.php:819
+#: pro/wpforms-pro.php:833
 msgid "Password Strength"
 msgstr ""
 
-#: pro/wpforms-pro.php:821
+#: pro/wpforms-pro.php:835
 #: src/Pro/Forms/Fields/Password/Field.php:495
 msgid "A stronger password is required. Consider using upper and lower case letters, numbers, and symbols."
 msgstr ""
 
-#: pro/wpforms-pro.php:830
+#: pro/wpforms-pro.php:844
 msgid "Disable User Cookies"
 msgstr ""
 
-#: pro/wpforms-pro.php:831
+#: pro/wpforms-pro.php:845
 msgid "Disable user tracking cookies. This will disable the Related Entries feature and the Form Abandonment addon."
 msgstr ""
 
-#: pro/wpforms-pro.php:838
+#: pro/wpforms-pro.php:852
 msgid "Disable User Details"
 msgstr ""
 
-#: pro/wpforms-pro.php:839
+#: pro/wpforms-pro.php:853
 msgid "Disable storage IP addresses and User Agent on all forms. If unchecked, then this can be managed on a form-by-form basis inside the form builder under Settings → General"
 msgstr ""
 
-#: pro/wpforms-pro.php:924
+#: pro/wpforms-pro.php:938
 msgid "Purge Entries Automatically"
 msgstr ""
 
-#: pro/wpforms-pro.php:926
+#: pro/wpforms-pro.php:940
 msgid "Automatically delete entries older than the specified number of days. This will also remove all associated files, notes, and logs."
 msgstr ""
 
-#: pro/wpforms-pro.php:936
+#: pro/wpforms-pro.php:950
 msgid "Number of days to retain entries before deletion"
 msgstr ""
 
-#: pro/wpforms-pro.php:941
+#: pro/wpforms-pro.php:955
 msgid "days"
 msgstr ""
 
-#: pro/wpforms-pro.php:958
+#: pro/wpforms-pro.php:972
 msgid "Disable storing entry information in WordPress"
 msgstr ""
 
-#: pro/wpforms-pro.php:970
+#: pro/wpforms-pro.php:984
 msgid "Disable storing user details (IP address and user agent)"
 msgstr ""
 
-#: pro/wpforms-pro.php:995
+#: pro/wpforms-pro.php:1009
 #: src/Pro/Admin/AdminBarMenu.php:96
 #: src/Pro/Admin/DashboardWidget.php:216
 #: src/Pro/Admin/Entries/Overview/Page.php:187
@@ -1573,229 +1652,233 @@ msgid "Entries"
 msgstr ""
 
 #. translators: %s - form name.
-#: pro/wpforms-pro.php:1072
+#: pro/wpforms-pro.php:1086
 msgid "New %s Entry"
 msgstr ""
 
-#: pro/wpforms-pro.php:1089
+#: pro/wpforms-pro.php:1103
 msgid "Notifications"
 msgstr ""
 
-#: pro/wpforms-pro.php:1091
+#: pro/wpforms-pro.php:1105
 msgid "Add New Notification"
 msgstr ""
 
 #. translators: %s - link to the WPForms.com doc article.
-#: pro/wpforms-pro.php:1102
+#: pro/wpforms-pro.php:1116
 msgid "Notifications are emails sent when a form is submitted. By default, these emails include entry details. For setup and customization options, including a video overview, please <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">see our tutorial</a>."
 msgstr ""
 
 #. translators: 1$s, %2$s - links to the WPForms.com doc articles.
-#: pro/wpforms-pro.php:1117
+#: pro/wpforms-pro.php:1131
 msgid "After saving these settings, be sure to <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">test a form submission</a>. This lets you see how emails will look, and to ensure that they <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">are delivered successfully</a>."
 msgstr ""
 
-#: pro/wpforms-pro.php:1139
+#: pro/wpforms-pro.php:1153
 msgid "Enable Notifications"
 msgstr ""
 
-#: pro/wpforms-pro.php:1147
+#: pro/wpforms-pro.php:1161
 msgid "Default Notification"
 msgstr ""
 
-#: pro/wpforms-pro.php:1209
+#: pro/wpforms-pro.php:1223
 msgid "Clone"
 msgstr ""
 
-#: pro/wpforms-pro.php:1210
-#: pro/wpforms-pro.php:1592
+#: pro/wpforms-pro.php:1224
+#: pro/wpforms-pro.php:1606
 #: src/Pro/Admin/Entries/ListTable.php:750
 #: src/Pro/Admin/Entries/ListTable.php:976
 msgid "Delete"
 msgstr ""
 
-#: pro/wpforms-pro.php:1211
-#: pro/wpforms-pro.php:1593
+#: pro/wpforms-pro.php:1225
+#: pro/wpforms-pro.php:1607
 msgid "Open / Close"
 msgstr ""
 
-#: pro/wpforms-pro.php:1223
-#: pro/wpforms-pro.php:1604
+#: pro/wpforms-pro.php:1237
+#: pro/wpforms-pro.php:1618
 #: src/Pro/Admin/Entries/Edit.php:562
 #: src/Pro/Admin/Entries/ListTable.php:788
 msgid "Edit"
 msgstr ""
 
-#: pro/wpforms-pro.php:1234
+#: pro/wpforms-pro.php:1248
 msgid "Send To Email Address"
 msgstr ""
 
-#: pro/wpforms-pro.php:1237
+#: pro/wpforms-pro.php:1251
 msgid "Enter the email address to receive form entry notifications. For multiple notifications, separate email addresses with a comma."
 msgstr ""
 
-#: pro/wpforms-pro.php:1257
+#: pro/wpforms-pro.php:1271
 msgid "CC"
 msgstr ""
 
-#: pro/wpforms-pro.php:1259
+#: pro/wpforms-pro.php:1273
 msgid "Enter the email address to add it to the carbon copy of the form entry notifications. For multiple notifications, separate email addresses with a comma."
 msgstr ""
 
-#: pro/wpforms-pro.php:1280
+#: pro/wpforms-pro.php:1294
 msgid "Email Subject Line"
 msgstr ""
 
 #. translators: %s - form name.
-#: pro/wpforms-pro.php:1283
+#: pro/wpforms-pro.php:1297
 msgid "New Entry: %s"
 msgstr ""
 
-#: pro/wpforms-pro.php:1300
+#: pro/wpforms-pro.php:1314
 msgid "From Name"
 msgstr ""
 
-#: pro/wpforms-pro.php:1334
+#: pro/wpforms-pro.php:1348
 msgid "From Email"
 msgstr ""
 
-#: pro/wpforms-pro.php:1369
+#: pro/wpforms-pro.php:1383
 msgid "Reply-To"
 msgstr ""
 
 #. translators: %s - <email@example.com>.
-#: pro/wpforms-pro.php:1373
+#: pro/wpforms-pro.php:1387
 msgid "Enter the email address or email address with recipient's name in \"First Last %s\" format."
 msgstr ""
 
-#: pro/wpforms-pro.php:1395
+#: pro/wpforms-pro.php:1409
 msgid "Email Message"
 msgstr ""
 
 #. translators: %s - all fields smart tag.
-#: pro/wpforms-pro.php:1408
+#: pro/wpforms-pro.php:1422
 msgid "To display all form fields, use the %s Smart Tag."
 msgstr ""
 
-#: pro/wpforms-pro.php:1420
+#: pro/wpforms-pro.php:1434
 msgid "Send"
 msgstr ""
 
-#: pro/wpforms-pro.php:1421
+#: pro/wpforms-pro.php:1435
 msgid "Don't send"
 msgstr ""
 
-#: pro/wpforms-pro.php:1423
+#: pro/wpforms-pro.php:1437
 msgid "this notification if"
 msgstr ""
 
-#: pro/wpforms-pro.php:1424
+#: pro/wpforms-pro.php:1438
 msgid "Email notifications"
 msgstr ""
 
-#: pro/wpforms-pro.php:1531
-#: pro/wpforms-pro.php:1639
+#: pro/wpforms-pro.php:1545
+#: pro/wpforms-pro.php:1653
 msgid "Thanks for contacting us! We will be in touch with you shortly."
 msgstr ""
 
-#: pro/wpforms-pro.php:1544
+#: pro/wpforms-pro.php:1558
 msgid "Confirmations"
 msgstr ""
 
-#: pro/wpforms-pro.php:1545
+#: pro/wpforms-pro.php:1559
 msgid "Add New Confirmation"
 msgstr ""
 
-#: pro/wpforms-pro.php:1550
+#: pro/wpforms-pro.php:1564
 msgid "Default Confirmation"
 msgstr ""
 
-#: pro/wpforms-pro.php:1616
+#: pro/wpforms-pro.php:1630
 msgid "Confirmation Type"
 msgstr ""
 
-#: pro/wpforms-pro.php:1620
+#: pro/wpforms-pro.php:1634
 msgid "Message"
 msgstr ""
 
-#: pro/wpforms-pro.php:1621
+#: pro/wpforms-pro.php:1635
 msgid "Show Page"
 msgstr ""
 
-#: pro/wpforms-pro.php:1622
+#: pro/wpforms-pro.php:1636
 msgid "Go to URL (Redirect)"
 msgstr ""
 
-#: pro/wpforms-pro.php:1637
+#: pro/wpforms-pro.php:1651
 #: src/Pro/Admin/Builder/Builder.php:97
 msgid "Confirmation Message"
 msgstr ""
 
-#: pro/wpforms-pro.php:1660
+#: pro/wpforms-pro.php:1674
 msgid "Automatically scroll to the confirmation message"
 msgstr ""
 
-#: pro/wpforms-pro.php:1674
+#: pro/wpforms-pro.php:1688
 msgid "Confirmation Page"
 msgstr ""
 
-#: pro/wpforms-pro.php:1694
-msgid "URL Parameters"
-msgstr ""
-
-#: pro/wpforms-pro.php:1700
-msgid "Add query string parameters to append to the URL when the form is submitted. Separate multiple parameters with an ampersand (&)."
+#: pro/wpforms-pro.php:1696
+msgid "Search for a page"
 msgstr ""
 
 #: pro/wpforms-pro.php:1709
+msgid "URL Parameters"
+msgstr ""
+
+#: pro/wpforms-pro.php:1715
+msgid "Add query string parameters to append to the URL when the form is submitted. Separate multiple parameters with an ampersand (&)."
+msgstr ""
+
+#: pro/wpforms-pro.php:1724
 msgid "Confirmation Redirect URL"
 msgstr ""
 
-#: pro/wpforms-pro.php:1723
+#: pro/wpforms-pro.php:1738
 msgid "Open confirmation in new tab"
 msgstr ""
 
-#: pro/wpforms-pro.php:1757
+#: pro/wpforms-pro.php:1772
 msgid "Use"
 msgstr ""
 
-#: pro/wpforms-pro.php:1758
+#: pro/wpforms-pro.php:1773
 msgid "Don't use"
 msgstr ""
 
-#: pro/wpforms-pro.php:1760
+#: pro/wpforms-pro.php:1775
 msgid "this confirmation if"
 msgstr ""
 
-#: pro/wpforms-pro.php:1761
+#: pro/wpforms-pro.php:1776
 msgid "Form confirmations"
 msgstr ""
 
 #. translators: %s - WPForms.com announcement page URL.
-#: pro/wpforms-pro.php:1830
+#: pro/wpforms-pro.php:1845
 msgid "Conditional logic functionality is now included in the core WPForms plugin! The WPForms Conditional Logic addon can be removed without affecting your forms. For more details <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">read our announcement</a>."
 msgstr ""
 
 #. translators: %s - WPForms.com Account dashboard URL.
-#: pro/wpforms-pro.php:1871
+#: pro/wpforms-pro.php:1886
 msgid "Your WPForms license key has expired. In order to continue receiving support and plugin updates you must renew your license key. Please log in to <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">your WPForms.com account</a> to renew your license."
 msgstr ""
 
-#: pro/wpforms-pro.php:1991
+#: pro/wpforms-pro.php:2006
 msgid "Addon auto-updates controlled by WPForms"
 msgstr ""
 
-#: pro/wpforms-pro.php:2072
+#: pro/wpforms-pro.php:2087
 #: assets/js/admin/builder/modules/undo-redo/input-toggle.js:442
 msgid "Active"
 msgstr ""
 
-#: pro/wpforms-pro.php:2074
+#: pro/wpforms-pro.php:2089
 #: assets/js/admin/builder/modules/undo-redo/input-toggle.js:442
 msgid "Inactive"
 msgstr ""
 
-#: pro/wpforms-pro.php:2075
+#: pro/wpforms-pro.php:2090
 msgid "Deactivate"
 msgstr ""
 
@@ -1872,6 +1955,164 @@ msgstr ""
 #. translators: %1$s - Google Sheets Re-Authentication doc link.
 #: src/Pro/Admin/Addons/GoogleSheets.php:126
 msgid "WPForms Google Sheets addon version 2.0 is now available. All users who are sending entries to Google Sheets need to <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">update the addon and re-authenticate their Google connection</a> as soon as possible to avoid interruptions in service."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Ajax.php:50
+#: src/Pro/Admin/Analytics/Ajax.php:167
+#: src/Pro/Admin/Entries/Edit.php:1106
+#: src/Pro/Admin/Entries/Edit.php:1147
+msgid "Invalid form."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Ajax.php:74
+#: src/Pro/Admin/Analytics/Page.php:1213
+msgid "Please enter a goal between 0.1 and 100."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Ajax.php:145
+#: src/Pro/Admin/Analytics/Page.php:1206
+msgid "Your session has expired. Please reload the page."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Ajax.php:171
+#: src/Pro/Admin/Analytics/Page.php:1207
+msgid "You do not have permission to view this data."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Ajax.php:175
+msgid "You do not have permission to change this goal."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:194
+#: src/Pro/Admin/Analytics/Page.php:195
+#: src/Pro/Admin/Analytics/Page.php:1052
+msgid "Forms Analytics"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:254
+msgid "Analytics"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:578
+msgid "Set Goal"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:590
+msgid "Goal:"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:592
+msgid "Edit Conversion Rate Goal"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:640
+#: src/Pro/Admin/Analytics/Page.php:738
+msgid "Views"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:642
+msgid "Total number of times this form was displayed to a visitor."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:646
+#: src/Pro/Admin/Analytics/Page.php:739
+msgid "Interactions"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:648
+msgid "An interaction is counted each time a user clicks or focuses on a form field."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:654
+msgid "Percentage of form views that resulted in a submission."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:658
+#: src/Pro/Admin/Analytics/Page.php:740
+msgid "Abandonments"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:660
+msgid "Fields that were seen and interacted with but not submitted."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:664
+#: src/Pro/Admin/Analytics/Page.php:741
+msgid "Errors"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:666
+msgid "Validation errors encountered across all fields."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:725
+#: src/Pro/Admin/Entries/Export/Admin.php:81
+#: src/Pro/Admin/Entries/Page.php:1098
+msgid "Form Fields"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:728
+msgid "Reset Order"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:736
+msgid "Name"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:737
+#: src/Pro/Admin/Entries/Export/Ajax.php:1211
+#: src/Pro/Admin/Entries/Export/Export.php:158
+msgid "Type"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:742
+msgid "Avg. Time (m:s)"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:764
+#: src/Pro/Admin/Analytics/Page.php:1212
+msgid "No analytics data for this period."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:871
+#: src/Pro/Admin/Entries/Page.php:1278
+msgid "Select Form"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:916
+msgid "Export CSV"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:920
+msgid "Print Report"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:1060
+msgid "Back to All Forms"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:1068
+msgid "Previous form"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:1074
+msgid "Next form"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:1208
+msgid "Unable to load analytics data. Please try again."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:1209
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:1210
+msgid "Try Again"
+msgstr ""
+
+#: src/Pro/Admin/Analytics/Page.php:1211
+msgid "Reload"
 msgstr ""
 
 #: src/Pro/Admin/Builder/AntiSpam.php:47
@@ -2008,49 +2249,49 @@ msgstr ""
 
 #: src/Pro/Admin/Builder/Settings/Themes.php:50
 #: src/Pro/Integrations/Elementor/Elementor.php:77
-#: src/Pro/Integrations/Gutenberg/FormSelector.php:167
+#: src/Pro/Integrations/Gutenberg/FormSelector.php:200
 msgid "Choose a Stock Photo"
 msgstr ""
 
 #: src/Pro/Admin/Builder/Settings/Themes.php:51
 #: src/Pro/Integrations/Elementor/Elementor.php:78
-#: src/Pro/Integrations/Gutenberg/FormSelector.php:168
+#: src/Pro/Integrations/Gutenberg/FormSelector.php:201
 msgid "Browse for the perfect image for your form background."
 msgstr ""
 
 #: src/Pro/Admin/Builder/Settings/Themes.php:52
 #: src/Pro/Integrations/Elementor/Elementor.php:68
-#: src/Pro/Integrations/Gutenberg/FormSelector.php:158
+#: src/Pro/Integrations/Gutenberg/FormSelector.php:191
 msgid "The theme you’ve selected has a background image."
 msgstr ""
 
 #: src/Pro/Admin/Builder/Settings/Themes.php:53
 #: src/Pro/Integrations/Elementor/Elementor.php:69
-#: src/Pro/Integrations/Gutenberg/FormSelector.php:159
+#: src/Pro/Integrations/Gutenberg/FormSelector.php:192
 msgid "In order to use Stock Photos, an image library must be downloaded and installed."
 msgstr ""
 
 #: src/Pro/Admin/Builder/Settings/Themes.php:54
 #: src/Pro/Integrations/Elementor/Elementor.php:70
-#: src/Pro/Integrations/Gutenberg/FormSelector.php:160
+#: src/Pro/Integrations/Gutenberg/FormSelector.php:193
 msgid "It's quick and easy, and you'll only have to do this once."
 msgstr ""
 
 #: src/Pro/Admin/Builder/Settings/Themes.php:57
 #: src/Pro/Integrations/Elementor/Elementor.php:74
-#: src/Pro/Integrations/Gutenberg/FormSelector.php:163
+#: src/Pro/Integrations/Gutenberg/FormSelector.php:196
 msgid "Installing"
 msgstr ""
 
 #: src/Pro/Admin/Builder/Settings/Themes.php:58
 #: src/Pro/Integrations/Elementor/Elementor.php:73
-#: src/Pro/Integrations/Gutenberg/FormSelector.php:164
+#: src/Pro/Integrations/Gutenberg/FormSelector.php:197
 msgid "Uh oh!"
 msgstr ""
 
 #: src/Pro/Admin/Builder/Settings/Themes.php:60
 #: src/Pro/Integrations/Elementor/Elementor.php:76
-#: src/Pro/Integrations/Gutenberg/FormSelector.php:166
+#: src/Pro/Integrations/Gutenberg/FormSelector.php:199
 msgid "Something went wrong while performing an AJAX request."
 msgstr ""
 
@@ -2398,7 +2639,7 @@ msgid "Form ID is missing."
 msgstr ""
 
 #: src/Pro/Admin/Entries/Ajax/Columns.php:111
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1563
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1600
 msgid "You are not allowed to perform this action."
 msgstr ""
 
@@ -2460,11 +2701,6 @@ msgstr ""
 msgid "You don't have any fields in this form."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Edit.php:1106
-#: src/Pro/Admin/Entries/Edit.php:1147
-msgid "Invalid form."
-msgstr ""
-
 #: src/Pro/Admin/Entries/Edit.php:1110
 msgid "Invalid Entry."
 msgstr ""
@@ -2500,11 +2736,6 @@ msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Admin.php:67
 msgid "Select a form to export entries, then select the fields you would like to include. You can also define search and date filters to further personalize the list of entries you want to retrieve. WPForms will generate a downloadable CSV/XLSX file of your entries."
-msgstr ""
-
-#: src/Pro/Admin/Entries/Export/Admin.php:81
-#: src/Pro/Admin/Entries/Page.php:1098
-msgid "Form Fields"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Admin.php:89
@@ -2551,8 +2782,8 @@ msgid "You need to have at least one form before you can use entries export."
 msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Admin.php:277
-#: assets/pro/js/admin/entries/tools-entries-import.js:1919
-#: assets/pro/js/admin/entries/tools-entries-import.js:1974
+#: assets/pro/js/admin/entries/tools-entries-import.js:1927
+#: assets/pro/js/admin/entries/tools-entries-import.js:1982
 msgid "Status"
 msgstr ""
 
@@ -2620,7 +2851,7 @@ msgid "Yes"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Ajax.php:873
-#: assets/pro/js/admin/entries/tools-entries-import.js:1674
+#: assets/pro/js/admin/entries/tools-entries-import.js:1682
 msgid "No"
 msgstr ""
 
@@ -2647,11 +2878,6 @@ msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Ajax.php:1210
 msgid "Gateway"
-msgstr ""
-
-#: src/Pro/Admin/Entries/Export/Ajax.php:1211
-#: src/Pro/Admin/Entries/Export/Export.php:158
-msgid "Type"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Ajax.php:1212
@@ -2688,35 +2914,42 @@ msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Ajax.php:1384
 #: src/Pro/Admin/Entries/Export/Ajax.php:1388
+#: src/Pro/Analytics/SubfieldLabels.php:179
 msgid "First"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Ajax.php:1385
 #: src/Pro/Admin/Entries/Export/Ajax.php:1390
+#: src/Pro/Analytics/SubfieldLabels.php:180
 msgid "Last"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Ajax.php:1389
+#: src/Pro/Analytics/SubfieldLabels.php:184
 msgid "Middle"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Ajax.php:1396
-#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:688
+#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:726
+#: src/Pro/Analytics/SubfieldLabels.php:208
 msgid "Address Line 1"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Ajax.php:1397
-#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:689
+#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:727
+#: src/Pro/Analytics/SubfieldLabels.php:209
 msgid "Address Line 2"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Ajax.php:1398
-#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:690
+#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:728
+#: src/Pro/Analytics/SubfieldLabels.php:210
 msgid "City"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Ajax.php:1399
-#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:692
+#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:730
+#: src/Pro/Analytics/SubfieldLabels.php:211
 msgid "State"
 msgstr ""
 
@@ -2725,7 +2958,7 @@ msgid "Zip/Postal Code"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Export/Ajax.php:1407
-#: assets/pro/js/admin/entries/tools-entries-import.js:1917
+#: assets/pro/js/admin/entries/tools-entries-import.js:1925
 msgid "Value"
 msgstr ""
 
@@ -2942,21 +3175,28 @@ msgstr ""
 msgid "No import source registered for identifier \"%s\"."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Import/EntryImporter.php:197
+#: src/Pro/Admin/Entries/Import/EntryImporter.php:201
 #: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:58
 #: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:85
 msgid "Form has no supported fields."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Import/EntryImporter.php:410
+#. translators: %1$d - number of skipped fields; %2$s - comma-separated field labels.
+#: src/Pro/Admin/Entries/Import/EntryImporter.php:315
+msgid "%1$d unsupported field was skipped: %2$s."
+msgid_plural "%1$d unsupported fields were skipped: %2$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Pro/Admin/Entries/Import/EntryImporter.php:523
 msgid "Empty Entry. The record was skipped."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Import/EntryImporter.php:419
+#: src/Pro/Admin/Entries/Import/EntryImporter.php:532
 msgid "No fields were mapped. The record was skipped."
 msgstr ""
 
-#: src/Pro/Admin/Entries/Import/EntryImporter.php:438
+#: src/Pro/Admin/Entries/Import/EntryImporter.php:551
 msgid "Entry creation failed. The record was skipped."
 msgstr ""
 
@@ -3097,19 +3337,22 @@ msgstr ""
 #: src/Pro/Admin/Entries/Import/Source/Database/GravityFormsDbSource.php:990
 #: src/Pro/Admin/Entries/Import/Source/Database/NinjaFormsDbSource.php:379
 #: src/Pro/Admin/Entries/Import/Source/Database/NinjaFormsDbSource.php:749
-#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:562
+#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:600
 msgid "Field %d"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:691
+#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:729
+#: src/Pro/Analytics/SubfieldLabels.php:212
 msgid "Zip Code"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:696
+#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:734
+#: src/Pro/Analytics/SubfieldLabels.php:219
 msgid "Postal Code"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:697
+#: src/Pro/Admin/Entries/Import/Source/Database/WPFormsDbSource.php:735
+#: src/Pro/Analytics/SubfieldLabels.php:218
 msgid "State / Province / Region"
 msgstr ""
 
@@ -3198,7 +3441,7 @@ msgid "Trash Form Entry"
 msgstr ""
 
 #: src/Pro/Admin/Entries/ListTable.php:874
-#: src/Pro/Admin/Entries/Page.php:1302
+#: src/Pro/Admin/Entries/Page.php:1336
 msgid "Empty Trash"
 msgstr ""
 
@@ -3215,14 +3458,14 @@ msgid "----------"
 msgstr ""
 
 #: src/Pro/Admin/Entries/ListTable.php:965
-#: src/Pro/AntiSpam/SpamEntry.php:367
-#: src/Pro/AntiSpam/SpamEntry.php:665
+#: src/Pro/AntiSpam/SpamEntry.php:373
+#: src/Pro/AntiSpam/SpamEntry.php:671
 msgid "Mark as Not Spam"
 msgstr ""
 
 #: src/Pro/Admin/Entries/ListTable.php:967
-#: src/Pro/AntiSpam/SpamEntry.php:563
-#: src/Pro/AntiSpam/SpamEntry.php:688
+#: src/Pro/AntiSpam/SpamEntry.php:569
+#: src/Pro/AntiSpam/SpamEntry.php:694
 msgid "Mark as Spam"
 msgstr ""
 
@@ -3306,7 +3549,7 @@ msgid "No entries found."
 msgstr ""
 
 #: src/Pro/Admin/Entries/ListTable.php:1768
-#: assets/pro/js/admin/entries/tools-entries-import.js:1916
+#: assets/pro/js/admin/entries/tools-entries-import.js:1924
 msgid "Field"
 msgstr ""
 
@@ -3365,7 +3608,7 @@ msgstr ""
 
 #: src/Pro/Admin/Entries/Page.php:344
 #: src/Pro/Admin/Entries/Page.php:424
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1558
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1595
 msgid "Your session expired. Please reload the builder."
 msgstr ""
 
@@ -3407,7 +3650,7 @@ msgid "Whoops, you haven't created a form yet. Want to <a href=\"%s\">give it a 
 msgstr ""
 
 #: src/Pro/Admin/Entries/Page.php:936
-#: src/Pro/Admin/Entries/Page.php:1470
+#: src/Pro/Admin/Entries/Page.php:1454
 msgid "Storing entry information has been disabled for this form."
 msgstr ""
 
@@ -3427,56 +3670,48 @@ msgid "Entry Meta"
 msgstr ""
 
 #: src/Pro/Admin/Entries/Page.php:1239
-#: src/Pro/Admin/Entries/Page.php:1348
+#: src/Pro/Admin/Entries/Page.php:1260
 msgid "Template"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1245
-msgid "Select Form"
-msgstr ""
-
-#: src/Pro/Admin/Entries/Page.php:1259
+#: src/Pro/Admin/Entries/Page.php:1293
 msgid "All Entries"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1272
+#: src/Pro/Admin/Entries/Page.php:1306
 msgid "Edit This Template"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1272
+#: src/Pro/Admin/Entries/Page.php:1306
 msgid "Edit This Form"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1279
+#: src/Pro/Admin/Entries/Page.php:1313
 msgid "Preview Template"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1279
+#: src/Pro/Admin/Entries/Page.php:1313
 msgid "Preview Form"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1286
+#: src/Pro/Admin/Entries/Page.php:1320
 msgid "Export Filtered"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1286
+#: src/Pro/Admin/Entries/Page.php:1320
 msgid "Export All"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1293
+#: src/Pro/Admin/Entries/Page.php:1327
 msgid "Mark All Read"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1302
+#: src/Pro/Admin/Entries/Page.php:1336
 msgid "Trash All"
 msgstr ""
 
-#: src/Pro/Admin/Entries/Page.php:1329
-msgid "Open form selector"
-msgstr ""
-
 #. translators: %d - number of form entries.
-#: src/Pro/Admin/Entries/Page.php:1416
+#: src/Pro/Admin/Entries/Page.php:1400
 msgid "See %d new entry"
 msgid_plural "See %d new entries"
 msgstr[0] ""
@@ -3838,6 +4073,20 @@ msgstr ""
 msgid "You can't import entries because you don't have unfiltered HTML permissions. Please contact your site administrator or <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">reach out to our support team</a>."
 msgstr ""
 
+#: src/Pro/Analytics/SubfieldLabels.php:255
+#: src/Pro/Forms/Fields/DateTime/Field.php:174
+msgid "Time"
+msgstr ""
+
+#: src/Pro/Analytics/SubfieldLabels.php:282
+msgid "Confirm Email"
+msgstr ""
+
+#: src/Pro/Analytics/SubfieldLabels.php:299
+#: src/Pro/Forms/Fields/Password/Field.php:115
+msgid "Confirm Password"
+msgstr ""
+
 #: src/Pro/AntiSpam/CountryFilter.php:87
 msgid "Enable country filter"
 msgstr ""
@@ -3915,10 +4164,6 @@ msgstr ""
 msgid "Each word or phrase should be on its own line."
 msgstr ""
 
-#: src/Pro/AntiSpam/KeywordFilter.php:119
-msgid "Save Changes"
-msgstr ""
-
 #: src/Pro/AntiSpam/KeywordFilter.php:133
 msgid "Keyword Filter Message"
 msgstr ""
@@ -3931,39 +4176,39 @@ msgstr ""
 msgid "Sorry, your message can't be submitted because it contains prohibited words."
 msgstr ""
 
-#: src/Pro/AntiSpam/SpamEntry.php:280
-#: src/Pro/AntiSpam/SpamEntry.php:689
+#: src/Pro/AntiSpam/SpamEntry.php:286
+#: src/Pro/AntiSpam/SpamEntry.php:695
 msgid "Spam"
 msgstr ""
 
-#: src/Pro/AntiSpam/SpamEntry.php:317
+#: src/Pro/AntiSpam/SpamEntry.php:323
 msgid "Entry successfully unmarked as spam."
 msgstr ""
 
 #. translators: %s - antispam method.
-#: src/Pro/AntiSpam/SpamEntry.php:364
+#: src/Pro/AntiSpam/SpamEntry.php:370
 msgid "This entry was marked as spam by %s."
 msgstr ""
 
 #. translators: %d - number of days.
-#: src/Pro/AntiSpam/SpamEntry.php:397
+#: src/Pro/AntiSpam/SpamEntry.php:403
 msgid "%d days"
 msgstr ""
 
 #. translators: %s - number of days wrapped in the link to the settings page.
-#: src/Pro/AntiSpam/SpamEntry.php:407
+#: src/Pro/AntiSpam/SpamEntry.php:413
 msgid "Spam entries older than %s are automatically deleted."
 msgstr ""
 
-#: src/Pro/AntiSpam/SpamEntry.php:598
+#: src/Pro/AntiSpam/SpamEntry.php:604
 msgid "Marked as not spam."
 msgstr ""
 
-#: src/Pro/AntiSpam/SpamEntry.php:666
+#: src/Pro/AntiSpam/SpamEntry.php:672
 msgid "Not Spam"
 msgstr ""
 
-#: src/Pro/AntiSpam/SpamEntry.php:746
+#: src/Pro/AntiSpam/SpamEntry.php:752
 msgid "Empty Spam"
 msgstr ""
 
@@ -4008,72 +4253,118 @@ msgstr ""
 msgid "Turn on Automatic Renewal"
 msgstr ""
 
-#: src/Pro/Forms/Fields/Camera/Field.php:197
+#: src/Pro/Emails/ReengagementAlert.php:338
+msgid "Your forms aren't collecting entries yet"
+msgstr ""
+
+#: src/Pro/Emails/ReengagementAlert.php:339
+msgid "Forms only collect entries when they're embedded on a page visitors can see. Check that each form is added to a page (via shortcode or block) and that the page actually gets traffic."
+msgstr ""
+
+#: src/Pro/Emails/ReengagementAlert.php:340
+#: src/Pro/Emails/ReengagementAlert.php:346
+#: src/Pro/Emails/ReengagementAlert.php:400
+msgid "Check Your Forms"
+msgstr ""
+
+#: src/Pro/Emails/ReengagementAlert.php:344
+msgid "Your forms have been quiet for a while"
+msgstr ""
+
+#: src/Pro/Emails/ReengagementAlert.php:345
+msgid "After a few months at zero, the most common cause is page placement. Try moving your form to a higher-traffic page: homepage, pricing, or a top blog post."
+msgstr ""
+
+#: src/Pro/Emails/ReengagementAlert.php:350
+msgid "Still no entries? Try a different form type."
+msgstr ""
+
+#: src/Pro/Emails/ReengagementAlert.php:351
+msgid "When placement isn't the issue, matching the form to visitor intent usually unsticks things: quote request for services, newsletter signup for content, or demo booking for software."
+msgstr ""
+
+#: src/Pro/Emails/ReengagementAlert.php:352
+msgid "Browse Templates"
+msgstr ""
+
+#: src/Pro/Emails/ReengagementAlert.php:397
+msgid "Your forms have gone quiet this week."
+msgstr ""
+
+#: src/Pro/Emails/ReengagementAlert.php:398
+msgid "Your submissions dropped compared to recent activity. If this is unexpected, take a look at your form analytics or <a href=\"mailto:support@wpforms.com\">reach out to our support team</a>."
+msgstr ""
+
+#: src/Pro/Emails/ReengagementAlert.php:399
+msgid "Your submissions dropped compared to recent activity. If this is unexpected, take a look at your form analytics or reach out to our support team at support@wpforms.com."
+msgstr ""
+
+#: src/Pro/Forms/Fields/Camera/Field.php:194
 msgid "Remove file"
 msgstr ""
 
 #. translators: %s - allowed file size in MB.
 #. translators: $s - allowed file size in MB.
-#: src/Pro/Forms/Fields/Camera/Field.php:629
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1725
+#: src/Pro/Forms/Fields/Camera/Field.php:745
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1762
 msgid "File exceeds max size allowed (%s)."
 msgstr ""
 
-#: src/Pro/Forms/Fields/Camera/Field.php:653
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1748
+#: src/Pro/Forms/Fields/Camera/Field.php:769
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1785
 msgid "File must have an extension."
 msgstr ""
 
-#: src/Pro/Forms/Fields/Camera/Field.php:724
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1632
+#: src/Pro/Forms/Fields/Camera/Field.php:840
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1669
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
 msgstr ""
 
-#: src/Pro/Forms/Fields/Camera/Field.php:725
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1633
+#: src/Pro/Forms/Fields/Camera/Field.php:841
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1670
 msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
 msgstr ""
 
-#: src/Pro/Forms/Fields/Camera/Field.php:726
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1634
+#: src/Pro/Forms/Fields/Camera/Field.php:842
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1671
 msgid "The uploaded file was only partially uploaded."
 msgstr ""
 
-#: src/Pro/Forms/Fields/Camera/Field.php:727
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1635
+#: src/Pro/Forms/Fields/Camera/Field.php:843
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1672
 msgid "No file was uploaded."
 msgstr ""
 
-#: src/Pro/Forms/Fields/Camera/Field.php:729
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1637
+#: src/Pro/Forms/Fields/Camera/Field.php:845
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1674
 msgid "Missing a temporary folder."
 msgstr ""
 
-#: src/Pro/Forms/Fields/Camera/Field.php:730
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1638
+#: src/Pro/Forms/Fields/Camera/Field.php:846
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1675
 msgid "Failed to write file to disk."
 msgstr ""
 
-#: src/Pro/Forms/Fields/Camera/Field.php:731
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1639
+#: src/Pro/Forms/Fields/Camera/Field.php:847
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1676
 msgid "File upload stopped by extension."
 msgstr ""
 
 #. translators: %s - error text.
-#: src/Pro/Forms/Fields/Camera/Field.php:736
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1644
+#: src/Pro/Forms/Fields/Camera/Field.php:852
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1681
 msgid "File upload error. %s"
 msgstr ""
 
-#: src/Pro/Forms/Fields/Camera/Field.php:1105
+#: src/Pro/Forms/Fields/Camera/Field.php:1221
 msgid "Camera access denied or not available. Please check your browser permissions"
 msgstr ""
 
-#: src/Pro/Forms/Fields/Camera/Field.php:1106
+#: src/Pro/Forms/Fields/Camera/Field.php:1222
 msgid "Camera or microphone access denied or not available. Please check your browser permissions"
 msgstr ""
 
-#: src/Pro/Forms/Fields/Camera/Field.php:1107
+#: src/Pro/Forms/Fields/Camera/Field.php:1223
 msgid "Video recording is not supported in your browser."
 msgstr ""
 
@@ -4126,10 +4417,6 @@ msgstr ""
 
 #: src/Pro/Forms/Fields/CustomCaptcha/Frontend.php:83
 msgid "Incorrect answer."
-msgstr ""
-
-#: src/Pro/Forms/Fields/DateTime/Field.php:174
-msgid "Time"
 msgstr ""
 
 #: src/Pro/Forms/Fields/DateTime/Field.php:468
@@ -4185,9 +4472,9 @@ msgid "Preview Style"
 msgstr ""
 
 #: src/Pro/Forms/Fields/FileUpload/Field.php:272
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1382
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1437
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1465
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1400
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1458
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1486
 msgid "Something went wrong, please try again."
 msgstr ""
 
@@ -4208,15 +4495,19 @@ msgstr ""
 msgid "File upload is in progress. Please submit the form once uploading is completed."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:883
+#: src/Pro/Forms/Fields/FileUpload/Field.php:492
+msgid "Search by username"
+msgstr ""
+
+#: src/Pro/Forms/Fields/FileUpload/Field.php:896
 msgid "File(s) not uploaded. Remove and re-attach file(s)."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1350
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1368
 msgid "Something went wrong while removing the file."
 msgstr ""
 
-#: src/Pro/Forms/Fields/FileUpload/Field.php:1567
+#: src/Pro/Forms/Fields/FileUpload/Field.php:1604
 msgid "Incorrect usage of this operation."
 msgstr ""
 
@@ -4247,21 +4538,21 @@ msgstr ""
 msgid "column, row"
 msgstr ""
 
-#: src/Pro/Forms/Fields/Pagebreak/Field.php:386
+#: src/Pro/Forms/Fields/Pagebreak/Field.php:387
 msgid "Previous"
 msgstr ""
 
+#: src/Pro/Forms/Fields/Pagebreak/Frontend.php:145
+msgid "Loading"
+msgstr ""
+
 #. translators: %1$s - current step in multi-page form, %2$s - total number of pages.
-#: src/Pro/Forms/Fields/Pagebreak/Frontend.php:187
+#: src/Pro/Forms/Fields/Pagebreak/Frontend.php:219
 msgid "Step %1$s of %2$s"
 msgstr ""
 
 #: src/Pro/Forms/Fields/Password/Field.php:91
 msgid "Password"
-msgstr ""
-
-#: src/Pro/Forms/Fields/Password/Field.php:115
-msgid "Confirm Password"
 msgstr ""
 
 #: src/Pro/Forms/Fields/Password/Field.php:239
@@ -4637,6 +4928,14 @@ msgstr ""
 msgid "Entry handler not available."
 msgstr ""
 
+#: src/Pro/Integrations/AI/Admin/Chat/Scope/Analytics/Analytics.php:548
+msgid "Reading your analytics…"
+msgstr ""
+
+#: src/Pro/Integrations/AI/Admin/Chat/Scope/FormsInventory/FormsInventory.php:73
+msgid "Looking up your forms…"
+msgstr ""
+
 #: src/Pro/Integrations/Elementor/StockPhotos.php:175
 #: src/Pro/Integrations/Gutenberg/StockPhotos.php:175
 msgid "Can't download file."
@@ -4657,46 +4956,54 @@ msgstr ""
 msgid "Can't create the stock photos storage directory."
 msgstr ""
 
-#: src/Pro/Integrations/LiteConnect/Admin.php:278
+#: src/Pro/Integrations/LiteConnect/Admin.php:224
+msgid "Preparing Entry Restore"
+msgstr ""
+
+#: src/Pro/Integrations/LiteConnect/Admin.php:225
+msgid "Your form entries will be restored as soon as WPForms finishes setting up. This usually takes less than a minute — please refresh the page shortly."
+msgstr ""
+
+#: src/Pro/Integrations/LiteConnect/Admin.php:318
 msgid "Entry Restore Complete"
 msgstr ""
 
 #. translators: %d - number of imported entries.
-#: src/Pro/Integrations/LiteConnect/Admin.php:325
+#: src/Pro/Integrations/LiteConnect/Admin.php:365
 msgid "%d entry has been successfully imported."
 msgid_plural "%d entries have been successfully imported."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d - number of imported entries.
-#: src/Pro/Integrations/LiteConnect/Admin.php:339
+#: src/Pro/Integrations/LiteConnect/Admin.php:379
 msgid "%d entry was not imported."
 msgid_plural "%d entries were not imported."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Pro/Integrations/LiteConnect/Admin.php:351
+#: src/Pro/Integrations/LiteConnect/Admin.php:391
 msgid "No entries were imported."
 msgstr ""
 
 #. translators: %s - WPForms Logs admin page URL.
-#: src/Pro/Integrations/LiteConnect/Admin.php:357
+#: src/Pro/Integrations/LiteConnect/Admin.php:397
 msgid "<a href=\"%s\">View log</a> for details."
 msgstr ""
 
-#: src/Pro/Integrations/LiteConnect/Admin.php:383
+#: src/Pro/Integrations/LiteConnect/Admin.php:423
 msgid "Unfortunately, there were some issues during the entries importing process. Don't worry - data is not lost. Please try again later."
 msgstr ""
 
 #. translators: %d - backed up entries count.
-#: src/Pro/Integrations/LiteConnect/Admin.php:550
+#: src/Pro/Integrations/LiteConnect/Admin.php:649
 msgid "%d form entry has been backed up"
 msgid_plural "%d form entries have been backed up"
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s - time when Lite Connect was enabled.
-#: src/Pro/Integrations/LiteConnect/Admin.php:563
+#: src/Pro/Integrations/LiteConnect/Admin.php:662
 msgid "since you enabled Lite Connect on %s"
 msgstr ""
 
@@ -4767,12 +5074,21 @@ msgid_plural "%d items were resent."
 msgstr[0] ""
 msgstr[1] ""
 
+#. translators: %1$s - comma-separated list of addon names, %2$s - addon download URL, %3$s - link to manual installation guide, %4$s - link to contact support.
+#: src/Pro/SetupWizard/FailedInstallsNotice.php:77
+msgid "Could not install the following addons during setup: %1$s. Please <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">download them from wpforms.com</a> and <a href=\"%3$s\" target=\"_blank\" rel=\"noopener noreferrer\">install them manually</a>, or <a href=\"%4$s\" target=\"_blank\" rel=\"noopener noreferrer\">contact support</a> for assistance."
+msgstr ""
+
 #: src/Pro/SmartTags/SmartTags.php:29
 msgid "Entry Details URL"
 msgstr ""
 
 #: assets/js/admin/builder/modules/read-only-field.js:97
 msgid "Disabled because this field is set to Read-Only in the Advanced tab."
+msgstr ""
+
+#: assets/js/admin/builder/modules/templates-infinite-scroll.js:429
+msgid "Failed to load templates. Please refresh the page."
 msgstr ""
 
 #: assets/js/admin/builder/modules/undo-redo.js:431
@@ -4964,7 +5280,7 @@ msgid "Settings block"
 msgstr ""
 
 #: assets/pro/js/admin/entries/tools-entries-import.js:345
-#: assets/pro/js/admin/entries/tools-entries-import.js:2529
+#: assets/pro/js/admin/entries/tools-entries-import.js:2550
 msgid "File exceeds max size allowed."
 msgstr ""
 
@@ -4978,9 +5294,9 @@ msgstr ""
 #: assets/pro/js/admin/entries/tools-entries-import.js:488
 #: assets/pro/js/admin/entries/tools-entries-import.js:537
 #: assets/pro/js/admin/entries/tools-entries-import.js:751
-#: assets/pro/js/admin/entries/tools-entries-import.js:1332
-#: assets/pro/js/admin/entries/tools-entries-import.js:1380
-#: assets/pro/js/admin/entries/tools-entries-import.js:2536
+#: assets/pro/js/admin/entries/tools-entries-import.js:1340
+#: assets/pro/js/admin/entries/tools-entries-import.js:1388
+#: assets/pro/js/admin/entries/tools-entries-import.js:2557
 msgid "An error occurred. Please try again."
 msgstr ""
 
@@ -4988,111 +5304,123 @@ msgstr ""
 msgid "No forms found"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:842
+#: assets/pro/js/admin/entries/tools-entries-import.js:850
 msgid "You're about to import {entries} to {destination}."
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:843
+#: assets/pro/js/admin/entries/tools-entries-import.js:851
 msgid "You're about to import {entries} from {source} to {destination}."
 msgstr ""
 
 #. translators: %d - the number of entries.
-#: assets/pro/js/admin/entries/tools-entries-import.js:863
-#: assets/pro/js/admin/entries/tools-entries-import.js:2289
+#: assets/pro/js/admin/entries/tools-entries-import.js:871
+#: assets/pro/js/admin/entries/tools-entries-import.js:2310
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] ""
 msgstr[1] ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:882
+#: assets/pro/js/admin/entries/tools-entries-import.js:890
 msgid "the export file"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:997
+#: assets/pro/js/admin/entries/tools-entries-import.js:1005
 msgid "Source Meta"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:999
+#: assets/pro/js/admin/entries/tools-entries-import.js:1007
 msgid "Destination Meta"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:1006
+#: assets/pro/js/admin/entries/tools-entries-import.js:1014
 msgid "--- Select a Field ---"
 msgstr ""
 
 #. translators: %d - the number of fields.
-#: assets/pro/js/admin/entries/tools-entries-import.js:1259
+#: assets/pro/js/admin/entries/tools-entries-import.js:1267
 msgid "All %d field is mapped and your data is ready to be imported."
 msgid_plural "All %d fields are mapped and your data is ready to be imported."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %1$d - mapped count, %2$d - total fields, %3$d - skipped count.
-#: assets/pro/js/admin/entries/tools-entries-import.js:1269
+#: assets/pro/js/admin/entries/tools-entries-import.js:1277
 msgid "%1$d of %2$d fields are mapped, %3$d fields will be skipped during import."
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:1626
+#: assets/pro/js/admin/entries/tools-entries-import.js:1634
 msgid "If you change the Plugin, Source Form, or Destination Form, the Field Mapping settings will be reset. This cannot be undone."
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:1660
+#: assets/pro/js/admin/entries/tools-entries-import.js:1668
 msgid "Cancel Import"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:1661
+#: assets/pro/js/admin/entries/tools-entries-import.js:1669
 msgid "Are you sure you want to cancel this import? All settings will be reset."
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:1666
+#: assets/pro/js/admin/entries/tools-entries-import.js:1674
 msgid "Yes, Cancel"
 msgstr ""
 
 #. translators: %d - row number.
-#: assets/pro/js/admin/entries/tools-entries-import.js:1863
+#: assets/pro/js/admin/entries/tools-entries-import.js:1871
 msgid "Row #%d"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:1915
+#: assets/pro/js/admin/entries/tools-entries-import.js:1923
 msgid "Entry"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:1918
-#: assets/pro/js/admin/entries/tools-entries-import.js:1973
+#: assets/pro/js/admin/entries/tools-entries-import.js:1926
+#: assets/pro/js/admin/entries/tools-entries-import.js:1981
 msgid "Issue"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:1938
-#: assets/pro/js/admin/entries/tools-entries-import.js:1993
+#: assets/pro/js/admin/entries/tools-entries-import.js:1946
+#: assets/pro/js/admin/entries/tools-entries-import.js:2001
 msgid "Fixed"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:1939
-#: assets/pro/js/admin/entries/tools-entries-import.js:1994
+#: assets/pro/js/admin/entries/tools-entries-import.js:1947
+#: assets/pro/js/admin/entries/tools-entries-import.js:2002
 msgid "Skipped"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:1972
+#: assets/pro/js/admin/entries/tools-entries-import.js:1980
 msgid "Row"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:2143
+#: assets/pro/js/admin/entries/tools-entries-import.js:2164
 msgid "Select source plugin first"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:2485
-#: assets/pro/js/admin/entries/tools-entries-import.js:2487
+#: assets/pro/js/admin/entries/tools-entries-import.js:2506
+#: assets/pro/js/admin/entries/tools-entries-import.js:2508
 msgid "Import is in progress. Are you sure you want to leave?"
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:2520
+#: assets/pro/js/admin/entries/tools-entries-import.js:2541
 msgid "The request timed out. Please try again."
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:2525
+#: assets/pro/js/admin/entries/tools-entries-import.js:2546
 msgid "A network error occurred. Please check your connection and try again."
 msgstr ""
 
-#: assets/pro/js/admin/entries/tools-entries-import.js:2533
+#: assets/pro/js/admin/entries/tools-entries-import.js:2554
 msgid "A server error occurred. Please try again later."
+msgstr ""
+
+#: assets/pro/js/integrations/ai/chat/modules/surface-wpforms-analytics.js:93
+msgid "How does the conversion rate compare to last week?"
+msgstr ""
+
+#: assets/pro/js/integrations/ai/chat/modules/surface-wpforms-analytics.js:97
+msgid "Which fields have the most drop-offs?"
+msgstr ""
+
+#: assets/pro/js/integrations/ai/chat/modules/surface-wpforms-analytics.js:101
+msgid "Summarize this form’s overall performance"
 msgstr ""

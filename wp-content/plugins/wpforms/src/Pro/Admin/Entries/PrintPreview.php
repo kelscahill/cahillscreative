@@ -544,10 +544,12 @@ class PrintPreview {
 		$show_values      = $this->form_data['fields'][ $field['id'] ]['show_values'] ?? false;
 		$choice_value_key = ! wpforms_is_empty_string( $field['value_raw'] ) && $show_values ? 'value' : 'label';
 
-		$label = wpforms_is_empty_string( $choice[ $choice_value_key ] )
+		// Guard against a missing dynamic key (label or value) on a label-less leftover choice.
+		// A '0' is a valid value, so check with isset() rather than empty().
+		$label = isset( $choice[ $choice_value_key ] ) && ! wpforms_is_empty_string( $choice[ $choice_value_key ] )
+			? sanitize_text_field( $choice[ $choice_value_key ] )
 			/* translators: %s - choice number. */
-			? sprintf( esc_html__( 'Choice %s', 'wpforms' ), $key )
-			: sanitize_text_field( $choice[ $choice_value_key ] );
+			: sprintf( esc_html__( 'Choice %s', 'wpforms' ), $key );
 
 		return in_array( $label, $active_choices, true );
 	}

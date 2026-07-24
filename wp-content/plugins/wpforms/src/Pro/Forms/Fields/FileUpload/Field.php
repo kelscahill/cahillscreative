@@ -489,6 +489,7 @@ class Field extends FieldLite {
 	public function add_builder_strings( $strings, $form ) {
 
 		$strings['file_upload'] = $this->get_strings();
+		$strings['file_upload']['users_search_placeholder'] = esc_html__( 'Search by username', 'wpforms' );
 
 		return $strings;
 	}
@@ -767,6 +768,18 @@ class Field extends FieldLite {
 
 		if ( ! empty( $validated_filetype ) ) {
 			wpforms()->obj( 'process' )->errors[ $this->form_id ][ $this->field_id ] = $validated_filetype;
+
+			return;
+		}
+
+		/*
+		 * Sanitize SVG uploads to strip scripts, event handlers and remote references.
+		 * Sanitization fails closed, so reject the file with an error when it cannot be
+		 * safely sanitized — mirroring the modern uploader, which would otherwise drop
+		 * the file silently on the classic uploader.
+		 */
+		if ( ! wpforms_sanitize_svg_file( $_FILES[ $input_name ]['tmp_name'], $name ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			wpforms()->obj( 'process' )->errors[ $this->form_id ][ $this->field_id ] = esc_html__( 'File type is not allowed.', 'wpforms' );
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
@@ -1204,6 +1217,11 @@ class Field extends FieldLite {
 			$this->is_media_integrated()
 		);
 
+		// Stop here when the file could not be processed (e.g. moved or rejected during sanitization).
+		if ( empty( $processed_file ) ) {
+			return $processed_field;
+		}
+
 		$processed_file_data = [
 			'value'          => esc_url_raw( $processed_file['file_url'] ),
 			'file'           => $processed_file['file_name_new'],
@@ -1404,6 +1422,9 @@ class Field extends FieldLite {
 			->value();
 
 		if ( count( $errors ) > 0 ) {
+			// Remove the metadata created above so the rejected upload session cannot be resumed.
+			$handler->delete_metadata();
+
 			wp_send_json_error( implode( ',', $errors ) );
 		}
 
@@ -1462,8 +1483,14 @@ class Field extends FieldLite {
 	 */
 	public function ajax_chunk_upload_finalize(): void {
 
-		$default_error = esc_html__( 'Something went wrong, please try again.', 'wpforms' );
-		$handler       = Chunk::from_current_request( $this );
+		$default_error        = esc_html__( 'Something went wrong, please try again.', 'wpforms' );
+		$validated_form_field = $this->ajax_validate_form_field_modern();
+
+		if ( empty( $validated_form_field ) ) {
+			wp_send_json_error( $default_error );
+		}
+
+		$handler = Chunk::from_current_request( $this );
 
 		if ( ! $handler || ! $handler->load_metadata() ) {
 			wp_send_json_error( $default_error, 403 );
@@ -1484,7 +1511,17 @@ class Field extends FieldLite {
 		$is_valid_type = $this->validate_wp_filetype_and_ext( $tmp_path, $file_name );
 
 		if ( $is_valid_type !== false ) {
+			// Remove the assembled file so a rejected type is never left on disk.
+			wp_delete_file( $tmp_path );
+
 			wp_send_json_error( $is_valid_type, 403 );
+		}
+
+		// Sanitize SVG uploads to strip scripts and event handlers before the file is stored.
+		if ( ! wpforms_sanitize_svg_file( $tmp_path ) ) {
+			wp_delete_file( $tmp_path );
+
+			wp_send_json_error( esc_html__( 'File type is not allowed.', 'wpforms' ), 403 );
 		}
 
 		$this->clean_tmp_files();
@@ -1820,6 +1857,9 @@ class Field extends FieldLite {
 
 		// Check if the index.html exists in the directory, if not - create it.
 		wpforms_create_index_html_file( $tmp_root );
+
+		// Restrict direct browser access to temporary files (force download, no inline rendering).
+		wpforms_create_tmp_dir_htaccess_file( $tmp_root );
 
 		return $tmp_root;
 	}

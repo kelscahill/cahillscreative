@@ -2,6 +2,7 @@
 
 namespace WPForms\Integrations\Square\Admin\Builder\Traits;
 
+use WPForms\Integrations\Square\Admin\Connect;
 use WPForms\Integrations\Square\Admin\Notices;
 use WPForms\Integrations\Square\Connection;
 use WPForms\Integrations\Square\Helpers;
@@ -416,25 +417,19 @@ trait Content {
 		$connection = Connection::get();
 
 		if ( ! $connection ) {
-			$this->alert_content(
-				__( 'Heads up! Square payments can\'t be enabled yet.', 'wpforms-lite' ),
-				sprintf(
-					wp_kses( /* translators: %s - Admin area Payments settings page URL. */
-						__( "First, please connect to your Square account on the <a href='%s'>WPForms Settings</a> page.", 'wpforms-lite' ),
-						[
-							'a' => [
-								'href' => [],
-							],
-						]
-					),
-					esc_url( Helpers::get_settings_page_url() . '#wpforms-setting-row-square-heading' )
-				)
-			);
+			$this->disconnected_alert();
 
 			return true;
 		}
 
 		if ( ! $connection->is_usable() ) {
+
+			// The invalid status requires re-connecting the account; other non-usable reasons (e.g. currency mismatch) do not.
+			if ( ! $connection->is_valid() ) {
+				$this->reconnect_alert();
+
+				return true;
+			}
 
 			$this->alert_content(
 				__( 'Square payments can\'t be processed because there\'s a problem with the account connection.', 'wpforms-lite' ),
@@ -560,6 +555,89 @@ trait Content {
 			'<a href="%1$s" target="_blank" rel="noopener noreferrer" class="secondary-text">%2$s</a>',
 			esc_url( wpforms_utm_link( 'https://wpforms.com/docs/how-to-install-and-use-the-square-addon-with-wpforms/', 'builder-payments', 'Square Documentation' ) ),
 			esc_html__( 'Learn more about our Square integration.', 'wpforms-lite' )
+		);
+	}
+
+	/**
+	 * Display the disconnected-state alert with an inline Connect button.
+	 *
+	 * @since 1.10.1.1
+	 */
+	private function disconnected_alert(): void {
+
+		$connect_url = $this->get_builder_connect_url();
+
+		$this->alert_icon();
+		?>
+		<div class="wpforms-builder-payment-settings-default-content">
+			<p><?php esc_html_e( 'Connect to your Square account and start accepting payments today.', 'wpforms-lite' ); ?></p>
+			<p class="wpforms-builder-payment-settings-learn-more">
+				<?php echo $this->learn_more_link(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			</p>
+			<?php
+			$this->connect_button( $connect_url, __( 'Connect with Square', 'wpforms-lite' ) );
+
+			// The WPForms transaction fee applies to Lite only; Pro has no extra fees.
+			if ( ! wpforms()->is_pro() ) {
+				echo '<p class="wpforms-builder-payment-settings-fee-notice">' . esc_html__( 'No extra WPForms transaction fees on Pro.', 'wpforms-lite' ) . '</p>';
+			}
+			?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Display the invalid-connection alert with an inline Reconnect button.
+	 *
+	 * @since 2.0.0
+	 */
+	private function reconnect_alert(): void {
+
+		$connect_url = $this->get_builder_connect_url();
+
+		$this->alert_icon();
+		?>
+		<div class="wpforms-builder-payment-settings-default-content">
+			<p class="wpforms-builder-payment-settings-error-title">
+				<?php esc_html_e( 'Heads up! Square payments can\'t be processed because there\'s a problem with the account connection.', 'wpforms-lite' ); ?>
+			</p>
+			<p class="wpforms-builder-payment-settings-learn-more">
+				<?php echo $this->learn_more_link(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			</p>
+			<?php $this->connect_button( $connect_url, __( 'Reconnect with Square', 'wpforms-lite' ) ); ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Build the OAuth connect URL for the Form Builder, scoped to the current form.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return string
+	 */
+	private function get_builder_connect_url(): string {
+
+		$form_id = isset( $this->form_data['id'] ) ? absint( $this->form_data['id'] ) : 0;
+
+		return ( new Connect() )->get_connect_url( '', $form_id );
+	}
+
+	/**
+	 * Render an inline Square connect/reconnect button.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param string $connect_url The OAuth connect URL.
+	 * @param string $label       The button label.
+	 */
+	private function connect_button( string $connect_url, string $label ): void {
+
+		printf(
+			'<a href="%1$s" class="wpforms-btn wpforms-btn-md wpforms-btn-orange wpforms-payments-connect-btn wpforms-square-connect" data-gateway-label="%2$s">%3$s</a>',
+			esc_url( $connect_url ),
+			esc_attr__( 'Square', 'wpforms-lite' ),
+			esc_html( $label )
 		);
 	}
 }

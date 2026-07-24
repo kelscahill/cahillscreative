@@ -2,6 +2,8 @@
 
 namespace WPForms\Pro\Integrations\UsageTracking;
 
+use WPForms\Helpers\Plugin;
+
 /**
  * Addons Dates tracking functionality.
  *
@@ -17,15 +19,6 @@ class AddonsDates {
 	 * @since 1.10.0
 	 */
 	private const OPTION_NAME = 'wpforms_addons_dates';
-
-	/**
-	 * Cache for plugin data to avoid multiple get_plugin_data() calls.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @var array
-	 */
-	private static $plugin_data_cache = [];
 
 	/**
 	 * Load an integration.
@@ -265,7 +258,7 @@ class AddonsDates {
 	 */
 	private function validate_and_get_addon_data( string $plugin ): array {
 
-		if ( ! self::is_wpforms_addon( $plugin ) ) {
+		if ( ! Plugin::is_wpforms_addon( $plugin ) ) {
 			return [];
 		}
 
@@ -299,28 +292,6 @@ class AddonsDates {
 	}
 
 	/**
-	 * Check if a plugin is a WPForms addon.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param string $plugin Plugin basename.
-	 *
-	 * @return bool True if WPForms addon, false otherwise.
-	 */
-	public static function is_wpforms_addon( string $plugin ): bool {
-
-		// Check if a plugin starts with the 'wpforms-' prefix and is not the core plugin.
-		if ( $plugin === 'wpforms/wpforms.php' || strpos( $plugin, 'wpforms-' ) !== 0 ) {
-			return false;
-		}
-
-		// Verify the author is WPForms to exclude forks.
-		$plugin_data = self::get_plugin_data( $plugin );
-
-		return isset( $plugin_data['Author'] ) && $plugin_data['Author'] === 'WPForms';
-	}
-
-	/**
 	 * Get addon data from plugin basename.
 	 *
 	 * @since 1.10.0
@@ -331,7 +302,7 @@ class AddonsDates {
 	 */
 	private function get_addon_data_from_plugin( string $plugin ): array {
 
-		$plugin_data = self::get_plugin_data( $plugin );
+		$plugin_data = Plugin::get_plugin_data( $plugin );
 
 		if ( empty( $plugin_data ) ) {
 			return [];
@@ -345,37 +316,6 @@ class AddonsDates {
 			'name'    => $plugin_data['Name'] ?? '',
 			'version' => $plugin_data['Version'] ?? '',
 		];
-	}
-
-	/**
-	 * Get plugin data for the given plugin basename.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param string $plugin Plugin basename (e.g., "wpforms-stripe/wpforms-stripe.php").
-	 *
-	 * @return array Plugin data or empty array if a file doesn't exist.
-	 */
-	private static function get_plugin_data( string $plugin ): array {
-
-		// Return cached data if available.
-		if ( isset( self::$plugin_data_cache[ $plugin ] ) ) {
-			return self::$plugin_data_cache[ $plugin ];
-		}
-
-		$plugin_file = WP_PLUGIN_DIR . '/' . $plugin;
-
-		if ( ! file_exists( $plugin_file ) ) {
-			self::$plugin_data_cache[ $plugin ] = [];
-
-			return [];
-		}
-
-		self::ensure_plugin_functions();
-
-		self::$plugin_data_cache[ $plugin ] = get_plugin_data( $plugin_file, false, false );
-
-		return self::$plugin_data_cache[ $plugin ];
 	}
 
 	/**
@@ -411,17 +351,5 @@ class AddonsDates {
 		}
 
 		return $default_value;
-	}
-
-	/**
-	 * Ensure WordPress plugin functions are available.
-	 *
-	 * @since 1.10.0
-	 */
-	public static function ensure_plugin_functions(): void {
-
-		if ( ! function_exists( 'get_plugins' ) || ! function_exists( 'get_plugin_data' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
 	}
 }

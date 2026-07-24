@@ -50,6 +50,12 @@ class Addons extends \WPForms\Admin\Addons\Addons {
 	 */
 	protected function get_status( $slug ) {
 
+		// The status check relies on the admin plugin API, which is not loaded in
+		// non-admin contexts such as the Setup Wizard REST install request.
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
 		$slug      = str_replace( 'wpforms-', '', $slug );
 		$full_slug = 'wpforms-' . $slug;
 		$plugin    = sprintf( '%1$s/%1$s.php', sanitize_key( $full_slug ) );
@@ -85,6 +91,11 @@ class Addons extends \WPForms\Admin\Addons\Addons {
 
 		if ( ! $addon['plugin_allow'] ) {
 			$addon['action'] = ! $this->license['type'] ? 'license' : 'upgrade';
+
+			// License-gated, not a version incompatibility: show the upgrade CTA, not the error.
+			if ( $addon['status'] === 'incompatible' ) {
+				$addon['status'] = 'installed';
+			}
 
 			return $addon;
 		}
@@ -139,7 +150,7 @@ class Addons extends \WPForms\Admin\Addons\Addons {
 	 *
 	 * @return string
 	 */
-	protected function get_url( $slug ) {
+	public function get_url( string $slug ): string {
 
 		$urls = $this->get_urls();
 
@@ -188,7 +199,13 @@ class Addons extends \WPForms\Admin\Addons\Addons {
 	 */
 	protected function get_remote_urls() {
 
-		$addons = wpforms()->obj( 'license' )->get_addons();
+		$license = wpforms()->obj( 'license' );
+
+		if ( $license === null ) {
+			return [];
+		}
+
+		$addons = $license->get_addons();
 
 		// If there was an API error, set transient for only 10 minutes.
 		if ( empty( $addons ) ) {

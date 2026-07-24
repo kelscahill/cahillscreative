@@ -52,7 +52,7 @@ class WPFormsDbSource extends AbstractDatabaseSource {
 			return [];
 		}
 
-		$form_fields = wpforms_get_form_fields( $this->source_form_id, EntryImporter::get_supported_destination_fields() );
+		$form_fields = wpforms_get_form_fields( $this->get_raw_form_content(), EntryImporter::get_supported_destination_fields() );
 
 		if ( empty( $form_fields ) ) {
 			throw new RuntimeException( esc_html__( 'Form has no supported fields.', 'wpforms' ) );
@@ -86,6 +86,44 @@ class WPFormsDbSource extends AbstractDatabaseSource {
 		}
 
 		return $fields;
+	}
+
+	/**
+	 * Read the raw decoded source-form content.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return array
+	 */
+	private function get_raw_form_content(): array {
+
+		return (array) wpforms()->obj( 'form' )->get(
+			$this->source_form_id,
+			[
+				'content_only' => true,
+			]
+		);
+	}
+
+	/**
+	 * Return the labels of the source form's fields that are not supported by entry import.
+	 *
+	 * These are the fields get_fields() silently drops.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return array
+	 */
+	public function get_unsupported_field_labels(): array {
+
+		if ( ! $this->source_form_id ) {
+			return [];
+		}
+
+		// Use the core default allowlist (no override) so unsupported types are present.
+		$form_fields = (array) wpforms_get_form_fields( $this->get_raw_form_content() );
+
+		return EntryImporter::filter_unsupported_field_labels( $form_fields );
 	}
 
 	/**

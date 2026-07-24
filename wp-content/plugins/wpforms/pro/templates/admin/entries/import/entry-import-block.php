@@ -189,12 +189,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 			</div>
 
+			<div class="wpforms-entries-import-step2-notices"></div>
+
 			<!-- Total Entries Info -->
 			<div class="notice notice-info inline wpforms-entries-import-total">
 				<p><span id="wpforms-entries-import-total-text"></span></p>
 			</div>
-
-			<div class="wpforms-entries-import-step2-notices"></div>
 
 			<!-- Action Buttons -->
 			<div class="wpforms-entries-import-actions">

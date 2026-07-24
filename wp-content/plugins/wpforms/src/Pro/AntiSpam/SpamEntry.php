@@ -111,6 +111,12 @@ class SpamEntry {
 	 */
 	public function add_meta_data( $fields, $entry, $form_data, $entry_id ) {
 
+		// Entry meta rows require a parent entry. Skip when entry storage is disabled
+		// (entry_id is 0), otherwise we orphan the spam/post_data_raw rows in the table.
+		if ( empty( $entry_id ) ) {
+			return;
+		}
+
 		$spam_reason = ! empty( $form_data['spam_reason'] ) ? $form_data['spam_reason'] : null;
 
 		if ( ! $spam_reason ) {
